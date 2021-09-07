@@ -25,7 +25,8 @@ import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.service.email.EmailProperties;
+import com.synopsys.integration.alert.service.email.JavamailPropertiesFactory;
+import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
 @Component
 public class EmailGlobalTestAction extends TestAction {
@@ -41,26 +42,34 @@ public class EmailGlobalTestAction extends TestAction {
 
     @Override
     public MessageResult testConfig(String configId, FieldModel fieldModel, FieldUtility registeredFieldValues) throws AlertException {
-        EmailProperties emailProperties = new EmailProperties(registeredFieldValues);
-
-        List<String> emailAddresses = extractAndValidateDestination(fieldModel);
+        List<String> emailAddresses = validateAndWrapDestinationAsList(fieldModel.getFieldValue(TestAction.KEY_DESTINATION_NAME).orElse(""));
         EmailJobDetailsModel distributionDetails = new EmailJobDetailsModel(null, TEST_SUBJECT_LINE, false, true, EmailAttachmentFormat.NONE.name(), emailAddresses);
 
         EmailChannelMessageModel testMessage = EmailChannelMessageModel.simple(TEST_SUBJECT_LINE, TEST_MESSAGE_CONTENT, "", "");
+        JavamailPropertiesFactory javamailPropertiesFactory = new JavamailPropertiesFactory();
 
-        return emailChannelMessageSender.sendMessages(emailProperties.getJavamailProperties(), distributionDetails, List.of(testMessage));
+        return emailChannelMessageSender.sendMessages(javamailPropertiesFactory.createJavaMailProperties(registeredFieldValues), distributionDetails, List.of(testMessage));
     }
 
-    private List<String> extractAndValidateDestination(FieldModel fieldModel) throws AlertException {
-        String destination = fieldModel.getFieldValue(TestAction.KEY_DESTINATION_NAME).orElse("");
-        if (StringUtils.isNotBlank(destination)) {
+    public MessageResult testConfig(String testAddress, EmailGlobalConfigModel emailGlobalConfigModel) throws AlertException {
+        List<String> emailAddresses = validateAndWrapDestinationAsList(testAddress);
+        EmailJobDetailsModel distributionDetails = new EmailJobDetailsModel(null, TEST_SUBJECT_LINE, false, true, EmailAttachmentFormat.NONE.name(), emailAddresses);
+
+        EmailChannelMessageModel testMessage = EmailChannelMessageModel.simple(TEST_SUBJECT_LINE, TEST_MESSAGE_CONTENT, "", "");
+        JavamailPropertiesFactory javamailPropertiesFactory = new JavamailPropertiesFactory();
+        
+        return emailChannelMessageSender.sendMessages(javamailPropertiesFactory.createJavaMailProperties(emailGlobalConfigModel), distributionDetails, List.of(testMessage));
+    }
+
+    private List<String> validateAndWrapDestinationAsList(String addressString) throws AlertException {
+        if (StringUtils.isNotBlank(addressString)) {
             try {
-                InternetAddress emailAddr = new InternetAddress(destination);
-                emailAddr.validate();
+                InternetAddress emailAddress = new InternetAddress(addressString);
+                emailAddress.validate();
             } catch (AddressException ex) {
-                throw new AlertException(String.format("%s is not a valid email address. %s", destination, ex.getMessage()));
+                throw new AlertException(String.format("%s is not a valid email address. %s", addressString, ex.getMessage()));
             }
-            return List.of(destination);
+            return List.of(addressString);
         }
         return List.of();
     }

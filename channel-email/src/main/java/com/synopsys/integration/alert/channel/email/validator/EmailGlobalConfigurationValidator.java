@@ -13,9 +13,9 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.email.web.EmailGlobalConfigModel;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatusMessages;
+import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
 @Component
 public class EmailGlobalConfigurationValidator {

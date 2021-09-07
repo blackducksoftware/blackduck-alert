@@ -27,7 +27,6 @@ import com.synopsys.integration.alert.common.descriptor.config.field.errors.Aler
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
@@ -35,6 +34,8 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
+import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModelTransformer;
 
 @Component
 public class EmailGlobalConfigActions {
@@ -167,7 +168,7 @@ public class EmailGlobalConfigActions {
         return new ActionResponse<>(HttpStatus.NO_CONTENT);
     }
 
-    public ActionResponse<ValidationResponseModel> test(EmailGlobalConfigModel requestResource) {
+    public ActionResponse<ValidationResponseModel> test(String testAddress, EmailGlobalConfigModel requestResource) {
         if (!authorizationManager.hasExecutePermission(ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL)) {
             ValidationResponseModel responseModel = ValidationResponseModel.generalError(ActionResponse.FORBIDDEN_MESSAGE);
             return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
@@ -176,14 +177,12 @@ public class EmailGlobalConfigActions {
         if (validationResponse.isError()) {
             return ValidationActionResponse.createOKResponseWithContent(validationResponse);
         }
-        return testWithoutChecks(requestResource);
+        return testWithoutChecks(testAddress, requestResource);
     }
 
-    public ActionResponse<ValidationResponseModel> testWithoutChecks(EmailGlobalConfigModel requestResource) {
+    public ActionResponse<ValidationResponseModel> testWithoutChecks(String testAddress, EmailGlobalConfigModel requestResource) {
         try {
-            FieldModel resourceAsFieldModel = concreteModelTransformer.toFieldModel(requestResource);
-            FieldUtility fieldUtility = modelConverter.convertToFieldAccessor(resourceAsFieldModel);
-            MessageResult messageResult = testAction.testConfig(/* not used by EmailGlobalTestAction::testConfig */ null, resourceAsFieldModel, fieldUtility);
+            MessageResult messageResult = testAction.testConfig(testAddress, requestResource);
             return new ValidationActionResponse(HttpStatus.OK, ValidationResponseModel.success(messageResult.getStatusMessage()));
         } catch (AlertException e) {
             return new ValidationActionResponse(HttpStatus.OK, ValidationResponseModel.generalError(e.getMessage()));

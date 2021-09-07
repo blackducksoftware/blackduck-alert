@@ -43,8 +43,8 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Email
 import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.service.email.EmailMessagingService;
-import com.synopsys.integration.alert.service.email.EmailProperties;
 import com.synopsys.integration.alert.service.email.EmailTarget;
+import com.synopsys.integration.alert.service.email.JavamailPropertiesFactory;
 import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.service.email.template.FreemarkerTemplatingService;
 
@@ -59,6 +59,7 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
     private final EmailAttachmentFileCreator emailAttachmentFileCreator;
     private final EmailMessagingService emailMessagingService;
     private final ConfigurationAccessor configurationAccessor;
+    private final JavamailPropertiesFactory javamailPropertiesFactory;
 
     @Autowired
     public EmailChannelMessageSender(
@@ -68,7 +69,8 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
         EmailAddressGatherer emailAddressGatherer,
         EmailAttachmentFileCreator emailAttachmentFileCreator,
         EmailMessagingService emailMessagingService,
-        ConfigurationAccessor configurationAccessor
+        ConfigurationAccessor configurationAccessor,
+        JavamailPropertiesFactory javamailPropertiesFactory
     ) {
         this.emailChannelKey = emailChannelKey;
         this.alertProperties = alertProperties;
@@ -77,14 +79,12 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
         this.emailAttachmentFileCreator = emailAttachmentFileCreator;
         this.emailMessagingService = emailMessagingService;
         this.configurationAccessor = configurationAccessor;
+        this.javamailPropertiesFactory = javamailPropertiesFactory;
     }
 
     @Override
     public MessageResult sendMessages(EmailJobDetailsModel emailJobDetails, List<EmailChannelMessageModel> emailMessages) throws AlertException {
-        EmailProperties emailProperties = new EmailProperties(retrieveFieldModelGlobalEmailConfig());
-        Properties properties = new Properties();
-        properties.putAll(emailProperties.getJavamailProperties());
-        return sendMessages(properties, emailJobDetails, emailMessages);
+        return sendMessages(javamailPropertiesFactory.createJavaMailProperties(retrieveFieldModelGlobalEmailConfig()), emailJobDetails, emailMessages);
     }
 
     public MessageResult sendMessages(Properties javamailProperties, EmailJobDetailsModel emailJobDetails, List<EmailChannelMessageModel> emailMessages) throws AlertException {

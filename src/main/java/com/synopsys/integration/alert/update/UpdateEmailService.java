@@ -29,8 +29,8 @@ import com.synopsys.integration.alert.common.persistence.model.SettingsKeyModel;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.service.email.EmailMessagingService;
-import com.synopsys.integration.alert.service.email.EmailProperties;
 import com.synopsys.integration.alert.service.email.EmailTarget;
+import com.synopsys.integration.alert.service.email.JavamailPropertiesFactory;
 import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.service.email.template.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.update.model.UpdateModel;
@@ -48,14 +48,16 @@ public class UpdateEmailService {
     private final UserAccessor userAccessor;
     private final ConfigurationAccessor configurationAccessor;
     private final EmailMessagingService emailMessagingService;
+    private final JavamailPropertiesFactory javamailPropertiesFactory;
 
     @Autowired
-    public UpdateEmailService(AlertProperties alertProperties, SettingsKeyAccessor settingsKeyAccessor, UserAccessor userAccessor, ConfigurationAccessor configurationAccessor, EmailMessagingService emailMessagingService) {
+    public UpdateEmailService(AlertProperties alertProperties, SettingsKeyAccessor settingsKeyAccessor, UserAccessor userAccessor, ConfigurationAccessor configurationAccessor, EmailMessagingService emailMessagingService, JavamailPropertiesFactory javamailPropertiesFactory) {
         this.alertProperties = alertProperties;
         this.settingsKeyAccessor = settingsKeyAccessor;
         this.userAccessor = userAccessor;
         this.configurationAccessor = configurationAccessor;
         this.emailMessagingService = emailMessagingService;
+        this.javamailPropertiesFactory = javamailPropertiesFactory;
     }
 
     public void sendUpdateEmail(UpdateModel updateModel) {
@@ -74,9 +76,6 @@ public class UpdateEmailService {
                                                      .stream()
                                                      .findFirst()
                                                      .orElseThrow(() -> new AlertException("No global email configuration found"));
-                EmailProperties emailProperties = new EmailProperties(emailConfig);
-                Properties javamailProperties = new Properties();
-                javamailProperties.putAll(emailProperties.getJavamailProperties());
 
                 String alertServerUrl = alertProperties.getServerURL();
                 Map<String, Object> templateFields = new HashMap<>();
@@ -84,7 +83,7 @@ public class UpdateEmailService {
                 templateFields.put("newVersionName", updateVersion);
                 templateFields.put("repositoryUrl", updateModel.getRepositoryUrl());
                 templateFields.put(FreemarkerTemplatingService.KEY_ALERT_SERVER_URL, alertServerUrl);
-                handleSendAndUpdateDatabase(javamailProperties, templateFields, optionalEmailAddress.get());
+                handleSendAndUpdateDatabase(javamailPropertiesFactory.createJavaMailProperties(emailConfig), templateFields, optionalEmailAddress.get());
 
                 settingsKeyAccessor.saveSettingsKey(SETTINGS_KEY_VERSION_FOR_UPDATE_EMAIL, updateVersion);
             } catch (AlertException e) {

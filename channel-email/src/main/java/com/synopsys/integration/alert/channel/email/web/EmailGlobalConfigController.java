@@ -8,16 +8,19 @@
 package com.synopsys.integration.alert.channel.email.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.api.BaseResourceController;
-import com.synopsys.integration.alert.common.rest.api.TestController;
 import com.synopsys.integration.alert.common.rest.api.ValidateController;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
+import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
 //@RestController
 //@RequestMapping(AlertRestConstants.EMAIL_CONFIGURATION_PATH)
-public class EmailGlobalConfigController implements BaseResourceController<EmailGlobalConfigModel>, TestController<EmailGlobalConfigModel>, ValidateController<EmailGlobalConfigModel> {
+public class EmailGlobalConfigController implements BaseResourceController<EmailGlobalConfigModel>, ValidateController<EmailGlobalConfigModel> {
     private final EmailGlobalConfigActions configActions;
 
     @Autowired
@@ -49,10 +52,10 @@ public class EmailGlobalConfigController implements BaseResourceController<Email
     public void delete(Long id) {
         ResponseFactory.createContentResponseFromAction(configActions.delete(id));
     }
-
-    @Override
-    public ValidationResponseModel test(EmailGlobalConfigModel resource) {
-        return ResponseFactory.createContentResponseFromAction(configActions.test(resource));
+    
+    @PostMapping("/test")
+    public ValidationResponseModel test(@RequestParam String sendTo, @RequestBody EmailGlobalConfigModel resource) {
+        return ResponseFactory.createContentResponseFromAction(configActions.test(sendTo, resource));
     }
 
 }

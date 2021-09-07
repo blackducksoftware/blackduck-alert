@@ -6,9 +6,9 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.channel.email.web.EmailGlobalConfigModel;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
+import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
 public class EmailGlobalConfigurationValidatorTest {
 
