@@ -30,6 +30,7 @@ import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.Is
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueMissingTransitionException;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
@@ -65,6 +66,9 @@ public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsMod
         List<IssueTrackerIssueResponseModel<T>> createdIssues;
         try {
             createdIssues = messageSender.sendMessages(creationRequestModelHolder);
+        } catch (AlertFieldException e) {
+            logger.error("Failed to create test issue", e);
+            return new MessageResult("Failed to create issue: " + e.getMessage(), e.getFieldErrors());
         } catch (AlertException e) {
             logger.error("Failed to create test issue", e);
             return new MessageResult("Failed to create issue: " + e.getMessage(), createAlertFieldStatusWithoutField(e.getMessage()));
@@ -113,12 +117,16 @@ public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsMod
         try {
             transitionedIssues = messageSender.sendMessages(resolveRequestModelHolder);
         } catch (IssueMissingTransitionException e) {
-            logger.debug("Failed to transition test issue", e);
+            logger.error("Failed to transition test issue", e);
             String validTransitions = StringUtils.join(e.getValidTransitions(), ", ");
             String errorMessage = String.format("Invalid transition: %s. Please choose a valid transition: %s", e.getMissingTransition(), validTransitions);
             return Optional.of(new MessageResult(errorMessage, createAlertFieldStatusWithoutField(errorMessage)));
+        } catch (AlertFieldException e) {
+            logger.error("Failed to transition test issue", e);
+            String errorMessage = String.format("Failed to perform %s transition: %s", operation.name(), e.getMessage());
+            return Optional.of(new MessageResult(errorMessage, e.getFieldErrors()));
         } catch (AlertException e) {
-            logger.debug("Failed to transition test issue", e);
+            logger.error("Failed to transition test issue", e);
             String errorMessage = String.format("Failed to perform %s transition: %s", operation.name(), e.getMessage());
             return Optional.of(new MessageResult(errorMessage, createAlertFieldStatusWithoutField(errorMessage)));
         }
