@@ -61,8 +61,9 @@ public interface DistributionJobRepository extends JpaRepository<DistributionJob
                        + "            OR policyFilters.policyName IN (:policyNames)"
                        + "          )"
                        + "    )"
+                       + "GROUP BY jobEntity.jobId ORDER BY jobEntity.createdAt ASC"
     )
-    Page<DistributionJobEntity> findMatchingEnabledJobsByFilteredNotifications(
+    Page<DistributionJobEntity> findMatchingEnabledJobsByFilteredNotificationsGroupByJobIdOrderByCreatedAt(
         @Param("blackDuckConfigId") Long blackDuckConfigId,
         @Param("frequencies") Collection<String> frequencies,
         @Param("notificationTypeSet") Set<String> notificationTypeSet,
