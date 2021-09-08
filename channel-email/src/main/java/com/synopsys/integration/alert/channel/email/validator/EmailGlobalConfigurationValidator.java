@@ -23,18 +23,18 @@ public class EmailGlobalConfigurationValidator {
 
     public Set<AlertFieldStatus> validate(EmailGlobalConfigModel model) {
         Set<AlertFieldStatus> statuses = new HashSet<>();
-        if (StringUtils.isBlank(model.host)) {
+        if (StringUtils.isBlank(model.getHost())) {
             statuses.add(AlertFieldStatus.error("host", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
         }
-        if (StringUtils.isBlank(model.from)) {
+        if (StringUtils.isBlank(model.getFrom())) {
             statuses.add(AlertFieldStatus.error("from", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
         }
 
-        if (Boolean.TRUE.equals(model.auth)) {
-            if (StringUtils.isBlank(model.user)) {
+        if (Boolean.TRUE.equals(model.getAuth())) {
+            if (StringUtils.isBlank(model.getUsername())) {
                 statuses.add(AlertFieldStatus.error("user", REQUIRED_BECAUSE_AUTH));
             }
-            if (StringUtils.isBlank(model.password)) {
+            if (StringUtils.isBlank(model.getPassword())) {
                 statuses.add(AlertFieldStatus.error("password", REQUIRED_BECAUSE_AUTH));
             }
         }

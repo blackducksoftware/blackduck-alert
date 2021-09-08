@@ -17,7 +17,7 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 public abstract class ConfigurationAction {
     private final DescriptorKey descriptorKey;
     private final Map<ConfigContextEnum, ApiAction> apiActionMap = new EnumMap<>(ConfigContextEnum.class);
-    private final Map<ConfigContextEnum, TestAction> testActionMap = new EnumMap<>(ConfigContextEnum.class);
+    private final Map<ConfigContextEnum, FieldModelTestAction> testActionMap = new EnumMap<>(ConfigContextEnum.class);
 
     protected ConfigurationAction(DescriptorKey descriptorKey) {
         this.descriptorKey = descriptorKey;
@@ -31,11 +31,11 @@ public abstract class ConfigurationAction {
         apiActionMap.put(ConfigContextEnum.GLOBAL, apiAction);
     }
 
-    public void addGlobalTestAction(TestAction testAction) {
+    public void addGlobalTestAction(FieldModelTestAction testAction) {
         testActionMap.put(ConfigContextEnum.GLOBAL, testAction);
     }
 
-    public void addDistributionTestAction(TestAction testAction) {
+    public void addDistributionTestAction(FieldModelTestAction testAction) {
         testActionMap.put(ConfigContextEnum.DISTRIBUTION, testAction);
     }
 
@@ -43,7 +43,7 @@ public abstract class ConfigurationAction {
         return apiActionMap.get(context);
     }
 
-    public TestAction getTestAction(ConfigContextEnum context) {
+    public FieldModelTestAction getTestAction(ConfigContextEnum context) {
         return testActionMap.get(context);
     }
 

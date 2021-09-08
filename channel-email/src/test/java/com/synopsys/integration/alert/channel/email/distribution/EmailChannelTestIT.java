@@ -28,6 +28,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Email
 import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.service.email.EmailMessagingService;
+import com.synopsys.integration.alert.service.email.JavamailPropertiesFactory;
 import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.service.email.template.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
@@ -55,7 +56,8 @@ public class EmailChannelTestIT {
         EmailAddressGatherer emailAddressGatherer = new EmailAddressGatherer(null, null);
         EmailAttachmentFileCreator emailAttachmentFileCreator = new EmailAttachmentFileCreator(testAlertProperties, new MessageContentGroupCsvCreator(), gson);
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService();
-        EmailMessagingService emailMessagingService = new EmailMessagingService(freemarkerTemplatingService);
+        JavamailPropertiesFactory javamailPropertiesFactory = new JavamailPropertiesFactory();
+        EmailMessagingService emailMessagingService = new EmailMessagingService(freemarkerTemplatingService, javamailPropertiesFactory);
 
         ConfigurationModel emailGlobalConfig = createEmailGlobalConfig();
         ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);

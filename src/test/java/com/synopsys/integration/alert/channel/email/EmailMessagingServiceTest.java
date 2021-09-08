@@ -13,6 +13,7 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.service.email.EmailMessagingService;
+import com.synopsys.integration.alert.service.email.JavamailPropertiesFactory;
 import com.synopsys.integration.alert.service.email.template.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.test.common.TestProperties;
 
@@ -22,7 +23,8 @@ public class EmailMessagingServiceTest {
         TestProperties testProperties = new TestProperties();
 
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService();
-        EmailMessagingService emailMessagingService = new EmailMessagingService(freemarkerTemplatingService);
+        JavamailPropertiesFactory javamailPropertiesFactory = new JavamailPropertiesFactory();
+        EmailMessagingService emailMessagingService = new EmailMessagingService(freemarkerTemplatingService, javamailPropertiesFactory);
 
         Session mockSession = Mockito.mock(Session.class);
         Transport mockTransport = Mockito.mock(Transport.class);

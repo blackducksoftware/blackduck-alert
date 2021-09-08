@@ -21,7 +21,7 @@ import org.springframework.security.ldap.authentication.LdapAuthenticationProvid
 import org.springframework.security.saml.metadata.ExtendedMetadataDelegate;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.action.TestAction;
+import com.synopsys.integration.alert.common.action.FieldModelTestAction;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
@@ -33,7 +33,7 @@ import com.synopsys.integration.alert.component.authentication.security.saml.SAM
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class AuthenticationTestAction extends TestAction {
+public class AuthenticationTestAction extends FieldModelTestAction {
     private final Logger logger = LoggerFactory.getLogger(AuthenticationTestAction.class);
     private final LdapManager ldapManager;
     private final SAMLManager samlManager;

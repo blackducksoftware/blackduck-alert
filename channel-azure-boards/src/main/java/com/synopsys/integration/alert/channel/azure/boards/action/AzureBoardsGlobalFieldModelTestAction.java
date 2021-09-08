@@ -19,7 +19,7 @@ import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties
 import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUrlCreator;
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
-import com.synopsys.integration.alert.common.action.TestAction;
+import com.synopsys.integration.alert.common.action.FieldModelTestAction;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -34,8 +34,8 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 @Component
-public class AzureBoardsGlobalTestAction extends TestAction {
-    public static final Logger logger = LoggerFactory.getLogger(AzureBoardsGlobalTestAction.class);
+public class AzureBoardsGlobalFieldModelTestAction extends FieldModelTestAction {
+    public static final Logger logger = LoggerFactory.getLogger(AzureBoardsGlobalFieldModelTestAction.class);
 
     private final Gson gson;
     private final AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory;
@@ -43,7 +43,7 @@ public class AzureBoardsGlobalTestAction extends TestAction {
     private final ProxyManager proxyManager;
 
     @Autowired
-    public AzureBoardsGlobalTestAction(Gson gson, AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory, AzureRedirectUrlCreator azureRedirectUrlCreator, ProxyManager proxyManager) {
+    public AzureBoardsGlobalFieldModelTestAction(Gson gson, AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory, AzureRedirectUrlCreator azureRedirectUrlCreator, ProxyManager proxyManager) {
         this.gson = gson;
         this.azureBoardsCredentialDataStoreFactory = azureBoardsCredentialDataStoreFactory;
         this.azureRedirectUrlCreator = azureRedirectUrlCreator;

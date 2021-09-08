@@ -13,7 +13,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -37,6 +36,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
+import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 import com.synopsys.integration.alert.service.email.template.FreemarkerTemplatingService;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -50,13 +50,15 @@ public class EmailMessagingService {
     private final Logger logger = LoggerFactory.getLogger(EmailMessagingService.class);
 
     private final FreemarkerTemplatingService freemarkerTemplatingService;
+    private final JavamailPropertiesFactory javamailPropertiesFactory;
 
     @Autowired
-    public EmailMessagingService(FreemarkerTemplatingService freemarkerTemplatingService) {
+    public EmailMessagingService(FreemarkerTemplatingService freemarkerTemplatingService, JavamailPropertiesFactory javamailPropertiesFactory) {
         this.freemarkerTemplatingService = freemarkerTemplatingService;
+        this.javamailPropertiesFactory = javamailPropertiesFactory;
     }
 
-    public void sendEmailMessage(Properties javamailProperties, EmailTarget emailTarget) throws AlertException {
+    public void sendEmailMessage(EmailGlobalConfigModel emailGlobalConfigModel, EmailTarget emailTarget) throws AlertException {
         try {
             String templateName = StringUtils.trimToEmpty(emailTarget.getTemplateName());
             Set<String> emailAddresses = emailTarget.getEmailAddresses()
@@ -71,7 +73,7 @@ public class EmailMessagingService {
             }
 
             Map<String, Object> model = emailTarget.getModel();
-            Session session = Session.getInstance(javamailProperties);
+            Session session = Session.getInstance(javamailPropertiesFactory.createJavaMailProperties(emailGlobalConfigModel));
             TemplateLoader templateLoader = freemarkerTemplatingService.createClassTemplateLoader("/templates/email");
             Configuration templateDirectory = freemarkerTemplatingService.createFreemarkerConfig(templateLoader);
             Template emailTemplate = templateDirectory.getTemplate(templateName);
@@ -95,17 +97,8 @@ public class EmailMessagingService {
             Template subjectLineTemplate = new Template(EMAIL_SUBJECT_LINE_TEMPLATE, subjectLine, templateDirectory);
             String resolvedSubjectLine = freemarkerTemplatingService.resolveTemplate(model, subjectLineTemplate);
 
-            String from = javamailProperties.getProperty(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey());
-            boolean auth = Boolean.parseBoolean(javamailProperties.getProperty(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey()));
-            String host = javamailProperties.getProperty(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey());
-            int port = Integer.parseInt(javamailProperties.getProperty(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey()));
-            String username = javamailProperties.getProperty(EmailPropertyKeys.JAVAMAIL_USER_KEY.getPropertyKey());
-
-            // Not technically a JavaMail prop
-            String password = javamailProperties.getProperty(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey());
-
-            List<Message> messages = createMessages(emailAddresses, resolvedSubjectLine, session, mimeMultipart, from);
-            sendMessages(auth, host, port, username, password, session, messages);
+            List<Message> messages = createMessages(emailAddresses, resolvedSubjectLine, session, mimeMultipart, emailGlobalConfigModel.getFrom());
+            sendMessages(emailGlobalConfigModel.getAuth(), emailGlobalConfigModel.getHost(), emailGlobalConfigModel.getPort(), emailGlobalConfigModel.getUsername(), emailGlobalConfigModel.getPassword(), session, messages);
         } catch (MessagingException | IOException | IntegrationException ex) {
             String errorMessage = "Could not send the email. " + ex.getMessage();
             throw new AlertException(errorMessage, ex);

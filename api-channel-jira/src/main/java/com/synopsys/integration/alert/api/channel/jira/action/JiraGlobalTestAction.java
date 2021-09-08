@@ -8,14 +8,14 @@
 package com.synopsys.integration.alert.api.channel.jira.action;
 
 import com.synopsys.integration.alert.api.channel.jira.JiraConstants;
-import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.common.action.FieldModelTestAction;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.exception.IntegrationException;
 
-public abstract class JiraGlobalTestAction extends TestAction {
+public abstract class JiraGlobalTestAction extends FieldModelTestAction {
     public static final String JIRA_ADMIN_PERMISSION_NAME = "ADMINISTER";
 
     protected abstract boolean isAppCheckEnabled(FieldUtility fieldUtility);

@@ -85,7 +85,8 @@ public class EmailGlobalConfigActions {
     }
 
     public ActionResponse<EmailGlobalConfigModel> createWithoutChecks(EmailGlobalConfigModel requestResource) {
-        FieldModel requestAsFieldModel = concreteModelTransformer.toFieldModel(requestResource);
+        // TODO: Implement with persistence changes
+        FieldModel requestAsFieldModel = null; // concreteModelTransformer.toFieldModel(requestResource);
         Map<String, ConfigurationFieldModel> configurationFieldModelMap = modelConverter.convertToConfigurationFieldModelMap(requestAsFieldModel);
         ConfigurationModel configuration = configurationAccessor.createConfiguration(ChannelKeys.EMAIL, ConfigContextEnum.GLOBAL, configurationFieldModelMap.values());
         EmailGlobalConfigModel responseResource = concreteModelTransformer.fromConfigurationModel(configuration);
@@ -111,7 +112,8 @@ public class EmailGlobalConfigActions {
 
     public ActionResponse<EmailGlobalConfigModel> updateWithoutChecks(Long id, EmailGlobalConfigModel requestResource) {
         try {
-            FieldModel resourceAsFieldModel = concreteModelTransformer.toFieldModel(requestResource);
+            // TODO: implement with persistence changes
+            FieldModel resourceAsFieldModel = null; // concreteModelTransformer.toFieldModel(requestResource);
 
             configurationAccessor.getConfigurationById(id)
                 .map(modelConverter::convertToFieldModel)

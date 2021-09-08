@@ -1,5 +1,5 @@
 /*
- * channel-email
+ * service-email
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
@@ -7,112 +7,85 @@
  */
 package com.synopsys.integration.alert.service.email.model;
 
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.synopsys.integration.alert.common.rest.model.Config;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.deser.std.MapDeserializer;
 
-public class EmailGlobalConfigModel extends Config {
-    private static final long serialVersionUID = -3469352637107648653L;
+public class EmailGlobalConfigModel {
+    @JsonProperty("smtpFrom")
+    private String from;
+    @JsonProperty("smtpHost")
+    private String host;
+    @JsonProperty("smtpPort")
+    private Integer port;
 
-    @JsonProperty("host")
-    public String host;
-    @JsonProperty("from")
-    public String from;
+    @JsonProperty("smtpAuth")
+    private Boolean auth;
+    @JsonProperty("smtpUsername")
+    private String username;
+    @JsonProperty("smtpPassword")
+    private String password;
 
-    @JsonProperty("auth")
-    public Boolean auth;
-    @JsonProperty("user")
-    public String user;
-    @JsonProperty("password")
-    public String password;
+    @JsonDeserialize(using = MapDeserializer.class)
+    @JsonProperty("additionalJavaMailProperties")
+    private Map<String, String> additionalJavaMailProperties;
+    
+    public String getFrom() {
+        return from;
+    }
 
-    @JsonProperty("port")
-    public Integer port;
-    @JsonProperty("connectionTimeout")
-    public Integer connectionTimeout;
-    @JsonProperty("timeout")
-    public Integer timeout;
-    @JsonProperty("writeTimeout")
-    public Integer writeTimeout;
-    @JsonProperty("localhost")
-    public String localhost;
-    @JsonProperty("localaddress")
-    public String localaddress;
-    @JsonProperty("localport")
-    public Integer localport;
-    @JsonProperty("ehlo")
-    public String ehlo;
-    @JsonProperty("authMechanisms")
-    public String authMechanisms;
-    @JsonProperty("authLoginDisable")
-    public Boolean authLoginDisable;
-    @JsonProperty("authPlainDisable")
-    public Boolean authPlainDisable;
-    @JsonProperty("authDigestMd5Disable")
-    public Boolean authDigestMd5Disable;
-    @JsonProperty("authNtlmDisable")
-    public Boolean authNtlmDisable;
-    @JsonProperty("authNtlmDomain")
-    public String authNtlmDomain;
-    @JsonProperty("authNtlmFlags")
-    public Integer authNtlmFlags;
-    @JsonProperty("authXoauth2Disable")
-    public Boolean authXoauth2Disable;
-    @JsonProperty("submitter")
-    public String submitter;
-    @JsonProperty("dsnNotify")
-    public String dsnNotify;
-    @JsonProperty("dsnRet")
-    public String dsnRet;
-    @JsonProperty("allow8bitmime")
-    public Boolean allow8bitmime;
-    @JsonProperty("sendPartial")
-    public Boolean sendPartial;
+    public void setFrom(String from) {
+        this.from = from;
+    }
 
-    @JsonProperty("saslEnabled")
-    public Boolean saslEnabled;
-    @JsonProperty("saslMechanisms")
-    public String saslMechanisms;
-    @JsonProperty("saslAuthorizationId")
-    public String saslAuthorizationId;
-    @JsonProperty("saslRealm")
-    public String saslRealm;
-    @JsonProperty("saslUseCanonicalHostname")
-    public Boolean saslUseCanonicalHostname;
+    public String getHost() {
+        return host;
+    }
 
-    @JsonProperty("quitwait")
-    public Boolean quitwait;
-    @JsonProperty("reportSuccess")
-    public Boolean reportSuccess;
+    public void setHost(String host) {
+        this.host = host;
+    }
 
-    @JsonProperty("sslEnable")
-    public Boolean sslEnable;
-    @JsonProperty("sslCheckServerIdentity")
-    public Boolean sslCheckServerIdentity;
-    @JsonProperty("sslTrust")
-    public String sslTrust;
-    @JsonProperty("sslProtocols")
-    public String sslProtocols;
-    @JsonProperty("sslCipherSuites")
-    public String sslCipherSuites;
-    @JsonProperty("startTlsEnable")
+    public Integer getPort() {
+        return port;
+    }
 
-    public Boolean startTlsEnable;
-    @JsonProperty("startTlsRequired")
-    public Boolean startTlsRequired;
-    @JsonProperty("proxyHost")
+    public void setPort(Integer port) {
+        this.port = port;
+    }
 
-    public String proxyHost;
-    @JsonProperty("proxyPort")
-    public Integer proxyPort;
-    @JsonProperty("socksHost")
-    public String socksHost;
-    @JsonProperty("socksPort")
-    public Integer socksPort;
-    @JsonProperty("mailExtension")
-    public String mailExtension;
-    @JsonProperty("userSet")
-    public Boolean userSet;
-    @JsonProperty("noopStrict")
-    public Boolean noopStrict;
+    public Boolean getAuth() {
+        return auth;
+    }
+
+    public void setAuth(Boolean auth) {
+        this.auth = auth;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Map<String, String> getAdditionalJavaMailProperties() {
+        return additionalJavaMailProperties;
+    }
+
+    public void setAdditionalJavaMailProperties(Map<String, String> additionalJavaMailProperties) {
+        this.additionalJavaMailProperties = additionalJavaMailProperties;
+    }
 
 }

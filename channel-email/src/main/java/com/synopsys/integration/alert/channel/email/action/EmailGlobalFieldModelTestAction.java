@@ -20,24 +20,27 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFormat;
 import com.synopsys.integration.alert.channel.email.distribution.EmailChannelMessageModel;
 import com.synopsys.integration.alert.channel.email.distribution.EmailChannelMessageSender;
+import com.synopsys.integration.alert.common.action.FieldModelTestAction;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
-import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
 @Component
-public class EmailGlobalTestAction {
+public class EmailGlobalFieldModelTestAction extends FieldModelTestAction {
     private static final String TEST_SUBJECT_LINE = "Email Global Configuration Test";
     private static final String TEST_MESSAGE_CONTENT = "This is a test message from Alert to confirm your Global Email Configuration is valid.";
 
     private final EmailChannelMessageSender emailChannelMessageSender;
 
     @Autowired
-    public EmailGlobalTestAction(EmailChannelMessageSender emailChannelMessageSender) {
+    public EmailGlobalFieldModelTestAction(EmailChannelMessageSender emailChannelMessageSender) {
         this.emailChannelMessageSender = emailChannelMessageSender;
     }
 
-    public MessageResult testConfig(String testAddress, EmailGlobalConfigModel emailGlobalConfigModel) throws AlertException {
-        List<String> emailAddresses = validateAndWrapDestinationAsList(testAddress);
+    @Override
+    public MessageResult testConfig(String configId, FieldModel fieldModel, FieldUtility registeredFieldValues) throws AlertException {
+        List<String> emailAddresses = validateAndWrapDestinationAsList(fieldModel.getFieldValue(FieldModelTestAction.KEY_DESTINATION_NAME).orElse(""));
         EmailJobDetailsModel distributionDetails = new EmailJobDetailsModel(null, TEST_SUBJECT_LINE, false, true, EmailAttachmentFormat.NONE.name(), emailAddresses);
 
         EmailChannelMessageModel testMessage = EmailChannelMessageModel.simple(TEST_SUBJECT_LINE, TEST_MESSAGE_CONTENT, "", "");
