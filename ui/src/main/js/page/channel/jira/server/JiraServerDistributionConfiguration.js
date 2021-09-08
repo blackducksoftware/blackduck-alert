@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useEffect } from 'react';
+import React from 'react';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import { JIRA_SERVER_DISTRIBUTION_FIELD_KEYS } from 'page/channel/jira/server/JiraServerModel';
 import CheckboxInput from 'common/input/CheckboxInput';
@@ -10,11 +10,10 @@ import FieldMappingField from 'common/input/FieldMappingField';
 const JiraServerDistributionConfiguration = ({
     data, setData, errors, readonly
 }) => {
-    useEffect(() => {
-        if (!FieldModelUtilities.hasValue(JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueType)) {
-            setData(FieldModelUtilities.updateFieldModelSingleValue(data, JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueType, 'Task'));
-        }
-    }, []);
+    if (!FieldModelUtilities.hasValue(data, JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueType)) {
+        setData(FieldModelUtilities.updateFieldModelSingleValue(data, JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueType, 'Task'));
+    }
+
     return (
         <>
             <CheckboxInput
