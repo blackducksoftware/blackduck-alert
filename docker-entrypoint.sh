@@ -13,6 +13,10 @@ alertDatabaseUser="${ALERT_DB_USERNAME:-sa}"
 alertDatabasePassword="${ALERT_DB_PASSWORD:-blackduck}"
 alertDatabaseAdminUser="${ALERT_DB_ADMIN_USERNAME:-$alertDatabaseUser}"
 alertDatabaseAdminPassword="${ALERT_DB_ADMIN_PASSWORD:-$alertDatabasePassword}"
+alertDatabaseSslMode="${ALERT_DB_SSL_MODE:allow}"
+alertDatabaseSslKey=${ALERT_DB_SSL_KEY}
+alertDatabaseSslCert=${ALERT_DB_SSL_CERT}
+alertDatabaseSslRootCert=${ALERT_DB_SSL_ROOT_CERT}
 upgradeResourcesDir=$alertHome/alert-tar/upgradeResources
 
 serverCertName=$APPLICATION_NAME-server
@@ -82,8 +86,32 @@ then
   echo "Alert Database admin password variable set to secret value."
 fi
 
-alertDatabaseAdminConfig="host=$alertDatabaseHost port=$alertDatabasePort dbname=$alertDatabaseName user=$alertDatabaseAdminUser password=$alertDatabaseAdminPassword"
-alertDatabaseConfig="host=$alertDatabaseHost port=$alertDatabasePort dbname=$alertDatabaseName user=$alertDatabaseUser password=$alertDatabasePassword"
+if [ -e $dockerSecretDir/ALERT_DB_SSL_KEY_PATH ];
+then
+  echo "Alert Database SSL key set; using value from secret."
+  alertDatabaseSslKey=$dockerSecretDir/ALERT_DB_SSL_KEY_PATH
+  export ALERT_DB_SSL_KEY_PATH=$alertDatabaseSslKey
+  echo "Alert Database SSL key variable set to secret value."
+fi
+
+if [ -e $dockerSecretDir/ALERT_DB_SSL_CERT_PATH ];
+then
+  echo "Alert Database SSL key set; using value from secret."
+  alertDatabaseSslCert=$dockerSecretDir/ALERT_DB_SSL_CERT_PATH
+  export ALERT_DB_SSL_CERT_PATH=$alertDatabaseSslCert
+  echo "Alert Database SSL cert variable set to secret value."
+fi
+
+if [ -e $dockerSecretDir/ALERT_DB_SSL_ROOT_CERT_PATH ];
+then
+  echo "Alert Database SSL key set; using value from secret."
+  alertDatabaseSslRootCert=$dockerSecretDir/ALERT_DB_SSL_ROOT_CERT_PATH
+  export ALERT_DB_SSL_ROOT_CERT_PATH=alertDatabaseSslRootCert
+  echo "Alert Database SSL root cert variable set to secret value."
+fi
+
+alertDatabaseAdminConfig="host=$alertDatabaseHost port=$alertDatabasePort dbname=$alertDatabaseName user=$alertDatabaseAdminUser password=$alertDatabaseAdminPassword sslmode=$alertDatabaseSslMode sslkey=$alertDatabaseSslKey sslcert=$alertDatabaseSslCert sslrootcert=$alertDatabaseSslRootCert"
+alertDatabaseConfig="host=$alertDatabaseHost port=$alertDatabasePort dbname=$alertDatabaseName user=$alertDatabaseUser password=$alertDatabasePassword sslmode=$alertDatabaseSslMode sslkey=$alertDatabaseSslKey sslcert=$alertDatabaseSslCert sslrootcert=$alertDatabaseSslRootCert"
 
 echo "Alert max heap size: $ALERT_MAX_HEAP_SIZE"
 echo "Certificate authority host: $targetCAHost"
