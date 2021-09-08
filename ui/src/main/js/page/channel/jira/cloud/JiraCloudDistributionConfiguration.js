@@ -10,11 +10,10 @@ import FieldMappingField from 'common/input/FieldMappingField';
 const JiraCloudDistributionConfiguration = ({
     data, setData, errors, readonly
 }) => {
-    useEffect(() => {
-        if (!FieldModelUtilities.hasValue(data, JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.issueType)) {
-            setData(FieldModelUtilities.updateFieldModelSingleValue(data, JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.issueType, 'Task'));
-        }
-    }, []);
+    if (!FieldModelUtilities.hasValue(data, JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.issueType)) {
+        setData(FieldModelUtilities.updateFieldModelSingleValue(data, JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.issueType, 'Task'));
+    }
+
     return (
         <>
             <CheckboxInput
