@@ -14,6 +14,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.TaskScheduler;
@@ -23,6 +24,7 @@ import com.synopsys.integration.alert.api.event.NotificationReceivedEvent;
 import com.synopsys.integration.alert.api.provider.lifecycle.ProviderTask;
 import com.synopsys.integration.alert.api.provider.state.ProviderProperties;
 import com.synopsys.integration.alert.api.task.ScheduledTask;
+import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
@@ -39,11 +41,12 @@ import com.synopsys.integration.exception.IntegrationException;
 
 public class BlackDuckAccumulator extends ProviderTask {
     private static final List<String> SUPPORTED_NOTIFICATION_TYPES = Stream.of(NotificationType.values())
-                                                                         .filter(type -> type != NotificationType.VERSION_BOM_CODE_LOCATION_BOM_COMPUTED)
-                                                                         .map(Enum::name)
-                                                                         .collect(Collectors.toList());
+        .filter(type -> type != NotificationType.VERSION_BOM_CODE_LOCATION_BOM_COMPUTED)
+        .map(Enum::name)
+        .collect(Collectors.toList());
 
     private final Logger logger = LoggerFactory.getLogger(BlackDuckAccumulator.class);
+    private final Logger notificationLogger = AlertLoggerFactory.getNotificationLogger(getClass());
 
     private final BlackDuckProviderKey blackDuckProviderKey;
     private final NotificationAccessor notificationAccessor;
@@ -107,7 +110,7 @@ public class BlackDuckAccumulator extends ProviderTask {
 
     private void retrieveAndStoreNotifications(BlackDuckNotificationRetriever notificationRetriever, DateRange dateRange) throws IntegrationException {
         StatefulAlertPage<NotificationUserView, IntegrationException> notificationPage = notificationRetriever.retrievePageOfFilteredNotifications(dateRange, SUPPORTED_NOTIFICATION_TYPES);
-        while (!notificationPage.isEmpty()) {
+        while (!notificationPage.isCurrentPageEmpty()) {
             List<NotificationUserView> currentNotifications = notificationPage.getCurrentModels();
             logger.debug("Retrieved a page of {} notifications", currentNotifications.size());
             storeNotifications(currentNotifications);
@@ -120,7 +123,7 @@ public class BlackDuckAccumulator extends ProviderTask {
         List<AlertNotificationModel> alertNotifications = convertToAlertNotificationModels(notifications);
         write(alertNotifications);
         Optional<OffsetDateTime> optionalNextSearchTime = computeLatestNotificationCreatedAtDate(alertNotifications)
-                                                              .map(latestNotification -> latestNotification.plusNanos(1000000));
+            .map(latestNotification -> latestNotification.plusNanos(1000000));
         if (optionalNextSearchTime.isPresent()) {
             OffsetDateTime nextSearchTime = optionalNextSearchTime.get();
             logger.info("Notifications found; the next search time will be: {}", nextSearchTime);
@@ -130,15 +133,22 @@ public class BlackDuckAccumulator extends ProviderTask {
 
     private List<AlertNotificationModel> convertToAlertNotificationModels(List<NotificationUserView> notifications) {
         return notifications
-                   .stream()
-                   .sorted(Comparator.comparing(NotificationView::getCreatedAt))
-                   .map(this::convertToAlertNotificationModel)
-                   .collect(Collectors.toList());
+            .stream()
+            .sorted(Comparator.comparing(NotificationView::getCreatedAt))
+            .map(this::convertToAlertNotificationModel)
+            .collect(Collectors.toList());
     }
 
     private void write(List<AlertNotificationModel> contentList) {
         logger.info("Writing {} notifications...", contentList.size());
-        notificationAccessor.saveAllNotifications(contentList);
+        List<AlertNotificationModel> savedNotifications = notificationAccessor.saveAllNotifications(contentList);
+        if (logger.isDebugEnabled()) {
+            List<Long> notificationIds = savedNotifications.stream()
+                .map(AlertNotificationModel::getId)
+                .collect(Collectors.toList());
+            String joinedIds = StringUtils.join(notificationIds, ", ");
+            notificationLogger.debug("Saved notifications: {}", joinedIds);
+        }
         eventManager.sendEvent(new NotificationReceivedEvent());
     }
 

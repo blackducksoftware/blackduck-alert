@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.processor.api.detail.DetailedNotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.processor.NotificationExtractorBlackDuckServicesFactoryCache;
@@ -55,6 +56,25 @@ public class BomEditNotificationDetailExtractorTest {
         assertEquals(0, detailedNotificationContent.getVulnerabilitySeverities().size());
     }
 
+    @Test
+    public void extractDetailedContentErrorTest() throws IOException, IntegrationException {
+        Long blackDuckConfigId = 0L;
+
+        String notificationString = TestResourceUtils.readFileToString(BOM_EDIT_JSON_PATH);
+        BomEditNotificationView notificationView = gson.fromJson(notificationString, BomEditNotificationView.class);
+
+        NotificationExtractorBlackDuckServicesFactoryCache cache = Mockito.mock(NotificationExtractorBlackDuckServicesFactoryCache.class);
+        Mockito.doThrow(new AlertConfigurationException("Expected Exception thrown creating BlackDuckServicesFactory")).when(cache).retrieveBlackDuckServicesFactory(Mockito.anyLong());
+
+        BomEditNotificationDetailExtractor extractor = new BomEditNotificationDetailExtractor(cache);
+
+        AlertNotificationModel notification = new AlertNotificationModel(0L, blackDuckConfigId, "BlackDuck", "Config 1", null, null, null, null, false);
+
+        List<DetailedNotificationContent> detailedNotificationContents = extractor.extractDetailedContent(notification, notificationView);
+
+        assertEquals(0, detailedNotificationContents.size());
+    }
+
     private NotificationExtractorBlackDuckServicesFactoryCache createCache(Long blackDuckConfigId, String projectName, String projectVersionName) throws IntegrationException {
         ProjectView projectView = Mockito.mock(ProjectView.class);
         Mockito.when(projectView.getName()).thenReturn(projectName);
@@ -74,5 +94,4 @@ public class BomEditNotificationDetailExtractorTest {
 
         return cache;
     }
-
 }

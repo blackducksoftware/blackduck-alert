@@ -80,7 +80,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
                 BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
 
                 ProjectView foundProject = blackDuckApiClient.getResponse(new HttpUrl(projectHref), ProjectView.class);
-                convertBlackDuckProjects(List.of(foundProject), blackDuckApiClient);
+                return convertBlackDuckProjects(List.of(foundProject), blackDuckApiClient).stream().findFirst();
             }
         } catch (IntegrationException e) {
             logger.errorAndDebug(createProjectNotFoundString(providerConfigId, e.getMessage()), e);
@@ -104,15 +104,15 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
     @Override
     public List<ProviderProject> getProjectsByProviderConfigId(Long providerConfigId) {
         return configurationAccessor.getConfigurationById(providerConfigId)
-                   .flatMap(providerConfig -> retrieveOptionalProjectData(() -> getProjectsForProvider(providerConfig)))
-                   .orElse(List.of());
+            .flatMap(providerConfig -> retrieveOptionalProjectData(() -> getProjectsForProvider(providerConfig)))
+            .orElse(List.of());
     }
 
     @Override
     public AlertPagedModel<ProviderProject> getProjectsByProviderConfigId(Long providerConfigId, int pageNumber, int pageSize, String searchTerm) {
         return configurationAccessor.getConfigurationById(providerConfigId)
-                   .flatMap(providerConfig -> retrieveOptionalProjectData(() -> retrieveProjectsForProvider(providerConfig, pageNumber, pageSize, searchTerm)))
-                   .orElse(new AlertPagedModel<>(0, pageNumber, pageSize, List.of()));
+            .flatMap(providerConfig -> retrieveOptionalProjectData(() -> retrieveProjectsForProvider(providerConfig, pageNumber, pageSize, searchTerm)))
+            .orElse(new AlertPagedModel<>(0, pageNumber, pageSize, List.of()));
     }
 
     @Override
@@ -173,8 +173,8 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
     @Override
     public AlertPagedModel<ProviderUserModel> getUsersByProviderConfigId(Long providerConfigId, int pageNumber, int pageSize, String searchTerm) {
         return configurationAccessor.getConfigurationById(providerConfigId)
-                   .flatMap(providerConfig -> retrieveOptionalProjectData(() -> retrieveUsersForProvider(providerConfig, pageNumber, pageSize, searchTerm)))
-                   .orElse(new AlertPagedModel<>(0, pageNumber, pageSize, List.of()));
+            .flatMap(providerConfig -> retrieveOptionalProjectData(() -> retrieveUsersForProvider(providerConfig, pageNumber, pageSize, searchTerm)))
+            .orElse(new AlertPagedModel<>(0, pageNumber, pageSize, List.of()));
     }
 
     @Override
@@ -201,10 +201,10 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
                 BlackDuckServicesFactory blackDuckServicesFactory = createBlackDuckServicesFactory(providerConfigOptional.get());
                 UserService userService = blackDuckServicesFactory.createUserService();
                 return userService.findUsersByEmail(emailAddress, new BlackDuckPageDefinition(1, 0))
-                           .getItems()
-                           .stream()
-                           .map(userView -> new ProviderUserModel(userView.getEmail(), false))
-                           .findFirst();
+                    .getItems()
+                    .stream()
+                    .map(userView -> new ProviderUserModel(userView.getEmail(), false))
+                    .findFirst();
             } catch (IntegrationException e) {
                 logger.errorAndDebug(createProjectNotFoundString(providerConfigId, e.getMessage()), e);
             }
@@ -264,10 +264,10 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
         BlackDuckPageResponse<UserView> pageOfUsers = retrieveBlackDuckPageResponse(blackDuckServicesFactory, apiDiscovery.metaUsersLink(), pageNumber, pageSize, searchFilter);
 
         List<ProviderUserModel> foundUsers = pageOfUsers.getItems()
-                                                 .stream()
-                                                 .map(UserView::getEmail)
-                                                 .map(email -> new ProviderUserModel(email, false))
-                                                 .collect(Collectors.toList());
+            .stream()
+            .map(UserView::getEmail)
+            .map(email -> new ProviderUserModel(email, false))
+            .collect(Collectors.toList());
         // Due to a limitation in the blackduck-common library, the totalCount in the BlackDuckPageResponse does not represent the count the matches the searchFilter. It is the totalCount from Black Duck
         int totalPageCount = computeTotalCount(pageOfUsers, pageSize);
         return new AlertPagedModel<>(totalPageCount, pageNumber, pageSize, foundUsers);
@@ -279,8 +279,8 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
         ApiDiscovery apiDiscovery = blackDuckServicesFactory.getApiDiscovery();
         Set<String> allActiveBlackDuckEmailAddresses = getAllActiveBlackDuckEmailAddresses(blackDuckService, apiDiscovery);
         return allActiveBlackDuckEmailAddresses.stream()
-                   .map(email -> new ProviderUserModel(email, false))
-                   .collect(Collectors.toList());
+           .map(email -> new ProviderUserModel(email, false))
+           .collect(Collectors.toList());
     }
 
     private List<ProviderProject> convertBlackDuckProjects(List<ProjectView> projectViews, BlackDuckApiClient blackDuckService) {
@@ -316,21 +316,21 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
 
     private Set<String> getEmailAddressesForProject(ProjectView projectView, ProjectUsersService projectUsersService) throws IntegrationException {
         return projectUsersService.getAllActiveUsersForProject(projectView)
-                   .stream()
-                   .filter(UserView::getActive)
-                   .map(UserView::getEmail)
-                   .filter(StringUtils::isNotBlank)
-                   .collect(Collectors.toSet());
+            .stream()
+            .filter(UserView::getActive)
+            .map(UserView::getEmail)
+            .filter(StringUtils::isNotBlank)
+            .collect(Collectors.toSet());
 
     }
 
     private Set<String> getAllActiveBlackDuckEmailAddresses(BlackDuckApiClient blackDuckService, ApiDiscovery apiDiscovery) throws IntegrationException {
         return blackDuckService.getAllResponses(apiDiscovery.metaUsersLink())
-                   .stream()
-                   .filter(UserView::getActive)
-                   .map(UserView::getEmail)
-                   .filter(StringUtils::isNotBlank)
-                   .collect(Collectors.toSet());
+            .stream()
+            .filter(UserView::getActive)
+            .map(UserView::getEmail)
+            .filter(StringUtils::isNotBlank)
+            .collect(Collectors.toSet());
     }
 
     private int computeTotalCount(BlackDuckPageResponse<?> blackDuckPageResponse, int pageSize) {

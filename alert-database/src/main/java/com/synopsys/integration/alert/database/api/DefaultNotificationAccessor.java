@@ -61,14 +61,14 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     @Override
     public List<AlertNotificationModel> saveAllNotifications(Collection<AlertNotificationModel> notifications) {
         List<NotificationEntity> entitiesToSave = notifications
-                                                      .stream()
-                                                      .map(this::fromModel)
-                                                      .collect(Collectors.toList());
+            .stream()
+            .map(this::fromModel)
+            .collect(Collectors.toList());
 
         return notificationContentRepository.saveAll(entitiesToSave)
-                   .stream()
-                   .map(this::toModel)
-                   .collect(Collectors.toList());
+            .stream()
+            .map(this::toModel)
+            .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
@@ -122,8 +122,8 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     @Override
     public List<AlertNotificationModel> findByCreatedAtBeforeDayOffset(int dayOffset) {
         OffsetDateTime searchTime = DateUtils.createCurrentDateTimestamp()
-                                        .minusDays(dayOffset)
-                                        .withHour(0).withMinute(0).withSecond(0).withNano(0);
+            .minusDays(dayOffset)
+            .withHour(0).withMinute(0).withSecond(0).withNano(0);
         return findByCreatedAtBefore(searchTime);
     }
 
@@ -162,8 +162,8 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
         int currentPage = 0;
         Sort.Order sortingOrder = Sort.Order.asc("providerCreationTime");
         PageRequest pageRequest = PageRequest.of(currentPage, pageSize, Sort.by(sortingOrder));
-        Page<AlertNotificationModel> pageOfNotifications = notificationContentRepository.findByProcessedFalse(pageRequest)
-                                                               .map(this::toModel);
+        Page<AlertNotificationModel> pageOfNotifications = notificationContentRepository.findByProcessedFalseOrderByProviderCreationTimeAsc(pageRequest)
+            .map(this::toModel);
         List<AlertNotificationModel> alertNotificationModels = pageOfNotifications.getContent();
         return new AlertPagedModel<>(pageOfNotifications.getTotalPages(), currentPage, pageSize, alertNotificationModels);
     }
@@ -171,9 +171,9 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     @Override
     public void setNotificationsProcessed(List<AlertNotificationModel> notifications) {
         Set<Long> notificationIds = notifications
-                                        .stream()
-                                        .map(AlertNotificationModel::getId)
-                                        .collect(Collectors.toSet());
+            .stream()
+            .map(AlertNotificationModel::getId)
+            .collect(Collectors.toSet());
         setNotificationsProcessedById(notificationIds);
     }
 
@@ -186,18 +186,18 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     private void deleteAuditEntries(Long notificationId) {
         List<AuditNotificationRelation> foundRelations = auditNotificationRepository.findByNotificationId(notificationId);
         List<Long> auditIdList = foundRelations
-                                     .stream()
-                                     .map(AuditNotificationRelation::getAuditEntryId)
-                                     .collect(Collectors.toList());
+            .stream()
+            .map(AuditNotificationRelation::getAuditEntryId)
+            .collect(Collectors.toList());
         List<AuditEntryEntity> auditEntryList = auditEntryRepository.findAllById(auditIdList);
         auditEntryRepository.deleteAll(auditEntryList);
     }
 
     private List<AlertNotificationModel> toModels(List<NotificationEntity> notificationEntities) {
         return notificationEntities
-                   .stream()
-                   .map(this::toModel)
-                   .collect(Collectors.toList());
+            .stream()
+            .map(this::toModel)
+            .collect(Collectors.toList());
     }
 
     private NotificationEntity fromModel(AlertNotificationModel model) {
@@ -209,9 +209,9 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
         String providerConfigName = "DELETED CONFIGURATION";
         if (null != providerConfigId) {
             providerConfigName = configurationAccessor.getConfigurationById(providerConfigId)
-                                     .flatMap(field -> field.getField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME))
-                                     .flatMap(ConfigurationFieldModel::getFieldValue)
-                                     .orElse(providerConfigName);
+                .flatMap(field -> field.getField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME))
+                .flatMap(ConfigurationFieldModel::getFieldValue)
+                .orElse(providerConfigName);
         }
         return new AlertNotificationModel(entity.getId(),
             providerConfigId,
