@@ -124,14 +124,4 @@ public class AuthenticationControllerTestIT {
         }
     }
 
-    @Test
-    public void testResetPasswordControllerPath() throws Exception {
-        TestProperties testProperties = new TestProperties();
-        ReflectionTestUtils.setField(alertProperties, "alertTrustCertificate", Boolean.valueOf(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TRUST_HTTPS_CERT)));
-        String url = AlertRestConstants.BASE_PATH + "/resetPassword/alertuser";
-        // by default the 3 alert users don't have the email address set so a bad request is expected.
-        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(url);
-        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isBadRequest());
-    }
-
 }

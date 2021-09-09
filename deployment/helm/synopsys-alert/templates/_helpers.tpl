@@ -32,3 +32,18 @@ Environs for Alert Config Map
 {{ $key }}: {{ $value | quote }}
 {{- end }}
 {{- end -}}
+
+{{/*
+Enable SSL for External Postgres
+*/}}
+{{- define "enablePostgresSSL" -}}
+{{- if and (eq .Values.postgres.isExternal true) (eq .Values.postgres.ssl true) -}}
+{{- if (eq .Values.postgres.sslUseFiles true) -}}
+ALERT_DB_SSL_MODE: "verify-ca"
+{{- else -}}
+ALERT_DB_SSL_MODE: "require"
+{{- end -}}
+{{- else -}}
+ALERT_DB_SSL_MODE: "disable"
+{{- end -}}
+{{- end -}}
