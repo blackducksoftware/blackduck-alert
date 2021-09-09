@@ -49,7 +49,6 @@ import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationTyp
 @AlertIntegrationTest
 public class ProcessingJobAccessorTestIT {
     private static final List<UUID> CREATED_JOBS = new LinkedList<>();
-    private static final String POLICY_FILTER_NAME = "policyName";
     private static final String PROJECT_NAME_1 = "testProject1";
     private static final String PROJECT_NAME_2 = "testProject2";
     private Long providerConfigId;
@@ -85,6 +84,7 @@ public class ProcessingJobAccessorTestIT {
     public void removeCreatedJobsIfExist() {
         CREATED_JOBS.forEach(jobAccessor::deleteJob);
         CREATED_JOBS.clear();
+        configurationAccessor.deleteConfiguration(providerConfigId);
     }
 
     @Test
