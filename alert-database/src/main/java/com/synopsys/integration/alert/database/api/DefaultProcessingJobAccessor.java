@@ -54,7 +54,7 @@ public class DefaultProcessingJobAccessor implements ProcessingJobAccessor {
         Set<String> vulnerabilitySeverities = filteredDistributionJobRequestModel.getVulnerabilitySeverities().isEmpty() ? null : filteredDistributionJobRequestModel.getVulnerabilitySeverities();
 
         PageRequest pageRequest = PageRequest.of(pageNumber, pageLimit);
-        Page<DistributionJobEntity> pageOfDistributionJobEntities = distributionJobRepository.findMatchingEnabledJobsByFilteredNotifications(
+        Page<DistributionJobEntity> pageOfDistributionJobEntities = distributionJobRepository.findAndSortMatchingEnabledJobsByFilteredNotifications(
             filteredDistributionJobRequestModel.getProviderConfigId(),
             frequencyTypes,
             notificationTypes,
