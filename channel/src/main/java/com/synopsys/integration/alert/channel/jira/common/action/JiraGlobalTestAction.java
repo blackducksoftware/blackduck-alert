@@ -22,7 +22,7 @@ public abstract class JiraGlobalTestAction extends TestAction {
 
     protected abstract boolean isAppMissing(FieldUtility fieldUtility) throws IntegrationException;
 
-    protected abstract boolean isUserMissing(FieldUtility fieldUtility) throws IntegrationException;
+    protected abstract boolean canUserViewProjects(FieldUtility fieldUtility) throws IntegrationException;
 
     protected abstract boolean isUserAdmin(FieldUtility fieldUtility) throws IntegrationException;
 
@@ -31,8 +31,8 @@ public abstract class JiraGlobalTestAction extends TestAction {
     @Override
     public MessageResult testConfig(String configId, FieldModel fieldModel, FieldUtility registeredFieldValues) throws IntegrationException {
         try {
-            if (isUserMissing(registeredFieldValues)) {
-                throw new AlertException("User did not match any known users.");
+            if (!canUserViewProjects(registeredFieldValues)) {
+                throw new AlertException("User does not have access to any projects in Jira.");
             }
 
             if (isAppCheckEnabled(registeredFieldValues)) {

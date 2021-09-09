@@ -22,10 +22,10 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
 import com.synopsys.integration.jira.common.cloud.service.MyPermissionsService;
-import com.synopsys.integration.jira.common.cloud.service.UserSearchService;
+import com.synopsys.integration.jira.common.cloud.service.ProjectService;
 import com.synopsys.integration.jira.common.model.response.MultiPermissionResponseModel;
+import com.synopsys.integration.jira.common.model.response.PageOfProjectsResponseModel;
 import com.synopsys.integration.jira.common.model.response.PermissionModel;
-import com.synopsys.integration.jira.common.model.response.UserDetailsResponseModel;
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 
 @Component
@@ -56,14 +56,12 @@ public class JiraCloudGlobalTestAction extends JiraGlobalTestAction {
     }
 
     @Override
-    protected boolean isUserMissing(FieldUtility fieldUtility) throws IntegrationException {
+    protected boolean canUserViewProjects(FieldUtility fieldUtility) throws IntegrationException {
         JiraCloudProperties jiraProperties = jiraCloudPropertiesFactory.createJiraProperties(fieldUtility);
         JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
-        UserSearchService userSearchService = jiraCloudServiceFactory.createUserSearchService();
-        String username = jiraProperties.getUsername();
-        return userSearchService.findUser(username).stream()
-                   .map(UserDetailsResponseModel::getEmailAddress)
-                   .noneMatch(email -> email.equals(username));
+        ProjectService projectService = jiraCloudServiceFactory.createProjectService();
+        PageOfProjectsResponseModel projects = projectService.getProjects(1, 0);
+        return projects.getProjects().size() > 0;
     }
 
     @Override
