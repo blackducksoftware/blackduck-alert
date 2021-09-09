@@ -19,20 +19,20 @@ import com.synopsys.integration.rest.HttpUrl;
 public final class BlackDuckMessageAttributesUtils {
     public static LinkableItem extractLicense(ProjectVersionComponentVersionView projectVersionComponentVersionView) {
         return projectVersionComponentVersionView.getLicenses()
-                   .stream()
-                   .filter(Objects::nonNull)
-                   .findFirst()
-                   .map(license -> new LinkableItem(BlackDuckMessageLabels.LABEL_LICENSE, license.getLicenseDisplay(), license.getLicense()))
-                   .orElse(new LinkableItem(BlackDuckMessageLabels.LABEL_LICENSE, BlackDuckMessageLabels.VALUE_UNKNOWN_LICENSE));
+            .stream()
+            .filter(Objects::nonNull)
+            .findFirst()
+            .map(license -> new LinkableItem(BlackDuckMessageLabels.LABEL_LICENSE, license.getLicenseDisplay()))
+            .orElse(new LinkableItem(BlackDuckMessageLabels.LABEL_LICENSE, BlackDuckMessageLabels.VALUE_UNKNOWN_LICENSE));
     }
 
     public static String extractUsage(ProjectVersionComponentVersionView projectVersionComponentVersionView) {
         return projectVersionComponentVersionView.getUsages()
-                   .stream()
-                   .filter(Objects::nonNull)
-                   .findFirst()
-                   .map(UsageType::prettyPrint)
-                   .orElse(BlackDuckMessageLabels.VALUE_UNKNOWN_USAGE);
+            .stream()
+            .filter(Objects::nonNull)
+            .findFirst()
+            .map(UsageType::prettyPrint)
+            .orElse(BlackDuckMessageLabels.VALUE_UNKNOWN_USAGE);
     }
 
     public static Optional<String> extractIssuesUrl(ProjectVersionComponentVersionView bomComponent) {
