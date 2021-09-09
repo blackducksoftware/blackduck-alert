@@ -10,6 +10,7 @@ package com.synopsys.integration.alert.update;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -21,6 +22,7 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.SettingsKeyAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -29,6 +31,7 @@ import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.service.email.EmailMessagingService;
 import com.synopsys.integration.alert.service.email.EmailTarget;
+import com.synopsys.integration.alert.service.email.JavamailPropertiesFactory;
 import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModelTransformer;
@@ -48,14 +51,16 @@ public class UpdateEmailService {
     private final UserAccessor userAccessor;
     private final ConfigurationAccessor configurationAccessor;
     private final EmailMessagingService emailMessagingService;
+    private final JavamailPropertiesFactory javamailPropertiesFactory;
 
     @Autowired
-    public UpdateEmailService(AlertProperties alertProperties, SettingsKeyAccessor settingsKeyAccessor, UserAccessor userAccessor, ConfigurationAccessor configurationAccessor, EmailMessagingService emailMessagingService) {
+    public UpdateEmailService(AlertProperties alertProperties, SettingsKeyAccessor settingsKeyAccessor, UserAccessor userAccessor, ConfigurationAccessor configurationAccessor, EmailMessagingService emailMessagingService, JavamailPropertiesFactory javamailPropertiesFactory) {
         this.alertProperties = alertProperties;
         this.settingsKeyAccessor = settingsKeyAccessor;
         this.userAccessor = userAccessor;
         this.configurationAccessor = configurationAccessor;
         this.emailMessagingService = emailMessagingService;
+        this.javamailPropertiesFactory = javamailPropertiesFactory;
     }
 
     public void sendUpdateEmail(UpdateModel updateModel) {
@@ -70,9 +75,11 @@ public class UpdateEmailService {
                                                     .filter(StringUtils::isNotBlank);
         if (optionalEmailAddress.isPresent()) {
             try {
-                ConfigurationModel emailConfig = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(ChannelKeys.EMAIL, ConfigContextEnum.GLOBAL)
+                FieldUtility emailConfig = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(ChannelKeys.EMAIL, ConfigContextEnum.GLOBAL)
                                                      .stream()
                                                      .findFirst()
+                                                     .map(ConfigurationModel::getCopyOfKeyToFieldMap)
+                                                     .map(FieldUtility::new)
                                                      .orElseThrow(() -> new AlertException("No global email configuration found"));
 
                 String alertServerUrl = alertProperties.getServerURL();
@@ -82,8 +89,17 @@ public class UpdateEmailService {
                 templateFields.put("repositoryUrl", updateModel.getRepositoryUrl());
                 templateFields.put(FreemarkerTemplatingService.KEY_ALERT_SERVER_URL, alertServerUrl);
 
-                EmailGlobalConfigModelTransformer emailGlobalConfigModelTransformer = new EmailGlobalConfigModelTransformer();
-                handleSendAndUpdateDatabase(emailGlobalConfigModelTransformer.fromConfigurationModel(emailConfig), templateFields, optionalEmailAddress.get());
+                handleSendAndUpdateDatabase(
+                    javamailPropertiesFactory.createJavaMailProperties(emailConfig),
+                    emailConfig.getStringOrEmpty(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey()),
+                    emailConfig.getStringOrEmpty(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey()),
+                    emailConfig.getInteger(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey()).orElse(0),
+                    emailConfig.getBooleanOrFalse(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey()),
+                    emailConfig.getStringOrEmpty(EmailPropertyKeys.JAVAMAIL_USER_KEY.getPropertyKey()),
+                    emailConfig.getStringOrEmpty(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey()),
+                    templateFields,
+                    optionalEmailAddress.get()
+                );
 
                 settingsKeyAccessor.saveSettingsKey(SETTINGS_KEY_VERSION_FOR_UPDATE_EMAIL, updateVersion);
             } catch (AlertException e) {
@@ -102,7 +118,7 @@ public class UpdateEmailService {
                    .isPresent();
     }
 
-    private void handleSendAndUpdateDatabase(EmailGlobalConfigModel emailGlobalConfigModel, Map<String, Object> templateFields, String emailAddress) throws AlertException {
+    private void handleSendAndUpdateDatabase(Properties javamailProperties, String smtpFrom, String smtpHost, int smtpPort, boolean smtpAuth, String smtpUsername, String smtpPassword, Map<String, Object> templateFields, String emailAddress) throws AlertException {
         try {
             String alertLogo = alertProperties.createSynopsysLogoPath();
 
@@ -110,7 +126,7 @@ public class UpdateEmailService {
             emailMessagingService.addTemplateImage(templateFields, contentIdsToFilePaths, EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), alertLogo);
 
             EmailTarget passwordResetEmail = new EmailTarget(emailAddress, TEMPLATE_NAME, templateFields, contentIdsToFilePaths);
-            emailMessagingService.sendEmailMessage(emailGlobalConfigModel, passwordResetEmail);
+            emailMessagingService.sendEmailMessage(javamailProperties, smtpFrom, smtpHost, smtpPort, smtpAuth, smtpUsername, smtpPassword, passwordResetEmail);
         } catch (Exception genericException) {
             throw new AlertException("Problem sending version update email. " + StringUtils.defaultIfBlank(genericException.getMessage(), StringUtils.EMPTY), genericException);
         }

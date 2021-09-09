@@ -22,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.channel.ChannelMessageSender;
-import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFileCreator;
 import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFormat;
@@ -33,50 +32,38 @@ import com.synopsys.integration.alert.channel.email.distribution.address.Validat
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.FieldStatusSeverity;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
-import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.service.email.EmailMessagingService;
 import com.synopsys.integration.alert.service.email.EmailTarget;
 import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
-import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
-import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModelTransformer;
 import com.synopsys.integration.alert.service.email.template.FreemarkerTemplatingService;
 
 @Component
 public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobDetailsModel, EmailChannelMessageModel, MessageResult> {
     public static final String FILE_NAME_MESSAGE_TEMPLATE = "message_content.ftl";
 
-    private final EmailChannelKey emailChannelKey;
     private final AlertProperties alertProperties;
     private final JobEmailAddressValidator emailAddressValidator;
     private final EmailAddressGatherer emailAddressGatherer;
     private final EmailAttachmentFileCreator emailAttachmentFileCreator;
     private final EmailMessagingService emailMessagingService;
-    private final ConfigurationAccessor configurationAccessor;
 
     @Autowired
     public EmailChannelMessageSender(
-        EmailChannelKey emailChannelKey,
         AlertProperties alertProperties,
         JobEmailAddressValidator emailAddressValidator,
         EmailAddressGatherer emailAddressGatherer,
         EmailAttachmentFileCreator emailAttachmentFileCreator,
-        EmailMessagingService emailMessagingService,
-        ConfigurationAccessor configurationAccessor
+        EmailMessagingService emailMessagingService
         ) {
-        this.emailChannelKey = emailChannelKey;
         this.alertProperties = alertProperties;
         this.emailAddressValidator = emailAddressValidator;
         this.emailAddressGatherer = emailAddressGatherer;
         this.emailAttachmentFileCreator = emailAttachmentFileCreator;
         this.emailMessagingService = emailMessagingService;
-        this.configurationAccessor = configurationAccessor;
     }
 
     @Override
@@ -89,6 +76,13 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
         if (!invalidEmailAddresses.isEmpty()) {
             emailJobDetails = new EmailJobDetailsModel(
                 emailJobDetails.getJobId(),
+                emailJobDetails.getJavamailProperties(),
+                emailJobDetails.getSmtpFrom(),
+                emailJobDetails.getSmtpHost(),
+                emailJobDetails.getSmtpPort(),
+                emailJobDetails.isSmtpAuth(),
+                emailJobDetails.getSmtpUsername(),
+                emailJobDetails.getSmtpPassword(),
                 emailJobDetails.getSubjectLine().orElse(null),
                 emailJobDetails.isProjectOwnerOnly(),
                 emailJobDetails.isAdditionalEmailAddressesOnly(),
@@ -96,9 +90,6 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
                 new ArrayList<>(validatedAdditionalEmailAddresses.getValidEmailAddresses())
             );
         }
-
-        EmailGlobalConfigModelTransformer emailGlobalConfigModelTransformer = new EmailGlobalConfigModelTransformer();
-        EmailGlobalConfigModel emailGlobalConfigModel = emailGlobalConfigModelTransformer.fromConfigurationModel(retrieveFieldModelGlobalEmailConfig());
 
         // Distribution
         int totalEmailsSent = 0;
@@ -112,7 +103,7 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
             Set<String> gatheredEmailAddresses = emailAddressGatherer.gatherEmailAddresses(emailJobDetails, projectHrefs);
             validateGatheredEmailAddresses(gatheredEmailAddresses, invalidEmailAddresses);
 
-            sendMessage(emailGlobalConfigModel, attachmentFormat, message, gatheredEmailAddresses);
+            sendMessage(emailJobDetails, attachmentFormat, message, gatheredEmailAddresses);
             totalEmailsSent += gatheredEmailAddresses.size();
         }
 
@@ -124,13 +115,6 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
             return new MessageResult(errorMessage, List.of(errorStatus));
         }
         return new MessageResult(String.format("Successfully sent %d email(s)", totalEmailsSent));
-    }
-
-    private ConfigurationModel retrieveFieldModelGlobalEmailConfig() throws AlertException {
-        return configurationAccessor.getConfigurationsByDescriptorKeyAndContext(emailChannelKey, ConfigContextEnum.GLOBAL)
-                   .stream()
-                   .findAny()
-                   .orElseThrow(() -> new AlertConfigurationException("ERROR: Missing Email global config."));
     }
 
     private ValidatedEmailAddresses validateAdditionalEmailAddresses(EmailJobDetailsModel emailJobDetails) {
@@ -152,7 +136,7 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
         }
     }
 
-    private void sendMessage(EmailGlobalConfigModel emailGlobalConfigModel, EmailAttachmentFormat attachmentFormat, EmailChannelMessageModel message, Set<String> emailAddresses) throws AlertException {
+    private void sendMessage(EmailJobDetailsModel emailJobDetails, EmailAttachmentFormat attachmentFormat, EmailChannelMessageModel message, Set<String> emailAddresses) throws AlertException {
         HashMap<String, Object> model = new HashMap<>();
         model.put(EmailPropertyKeys.EMAIL_CONTENT.getPropertyKey(), message.getContent());
         model.put(EmailPropertyKeys.EMAIL_CATEGORY.getPropertyKey(), message.getMessageFormat());
@@ -170,7 +154,16 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
         EmailTarget emailTarget = new EmailTarget(emailAddresses, FILE_NAME_MESSAGE_TEMPLATE, model, contentIdsToFilePaths);
         Optional<File> optionalAttachment = message.getSource().flatMap(projectMessage -> addAttachment(emailTarget, attachmentFormat, projectMessage));
         
-        emailMessagingService.sendEmailMessage(emailGlobalConfigModel, emailTarget);
+        emailMessagingService.sendEmailMessage(
+            emailJobDetails.getJavamailProperties(),
+            emailJobDetails.getSmtpFrom(),
+            emailJobDetails.getSmtpHost(),
+            emailJobDetails.getSmtpPort(),
+            emailJobDetails.isSmtpAuth(),
+            emailJobDetails.getSmtpUsername(),
+            emailJobDetails.getSmtpPassword(),
+            emailTarget
+        );
         optionalAttachment.ifPresent(emailAttachmentFileCreator::cleanUpAttachmentFile);
     }
 

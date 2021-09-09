@@ -19,6 +19,7 @@ import java.util.function.BiConsumer;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
@@ -36,6 +37,24 @@ public class JavamailPropertiesFactory {
         putIfNotEmpty(javaMailProperties::setProperty, JAVAMAIL_AUTH_KEY, String.valueOf(globalConfiguration.getAuth()));
         putIfNotEmpty(javaMailProperties::setProperty, JAVAMAIL_USER_KEY, globalConfiguration.getUsername());
         javaMailProperties.putAll(globalConfiguration.getAdditionalJavaMailProperties());
+
+        return javaMailProperties;
+    }
+
+    @Deprecated(forRemoval = true)
+    public Properties createJavaMailProperties(FieldUtility fieldUtility) {
+        if (fieldUtility == null) {
+            throw new IllegalArgumentException("Could not find the global Email configuration");
+        }
+
+        Properties javaMailProperties = new Properties();
+        for (EmailPropertyKeys emailPropertyKey : EmailPropertyKeys.values()) {
+            String key = emailPropertyKey.getPropertyKey();
+            String value = fieldUtility.getStringOrEmpty(key);
+            if (StringUtils.isNotBlank(value)) {
+                javaMailProperties.setProperty(key, value);
+            }
+        }
 
         return javaMailProperties;
     }

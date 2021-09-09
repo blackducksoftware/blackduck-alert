@@ -42,7 +42,7 @@ public class EmailGlobalTestAction {
 
         EmailChannelMessageModel testMessage = EmailChannelMessageModel.simple(TEST_SUBJECT_LINE, TEST_MESSAGE_CONTENT, "", "");
 
-        return emailChannelMessageSender.sendMessages(distributionDetails, List.of(testMessage));
+        return emailChannelMessageSender.sendMessages(emailGlobalConfigModel, distributionDetails, List.of(testMessage));
     }
 
     private List<String> validateAndWrapDestinationAsList(String addressString) throws AlertException {

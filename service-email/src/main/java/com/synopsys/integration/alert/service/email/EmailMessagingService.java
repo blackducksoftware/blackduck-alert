@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -50,15 +51,13 @@ public class EmailMessagingService {
     private final Logger logger = LoggerFactory.getLogger(EmailMessagingService.class);
 
     private final FreemarkerTemplatingService freemarkerTemplatingService;
-    private final JavamailPropertiesFactory javamailPropertiesFactory;
 
     @Autowired
-    public EmailMessagingService(FreemarkerTemplatingService freemarkerTemplatingService, JavamailPropertiesFactory javamailPropertiesFactory) {
+    public EmailMessagingService(FreemarkerTemplatingService freemarkerTemplatingService) {
         this.freemarkerTemplatingService = freemarkerTemplatingService;
-        this.javamailPropertiesFactory = javamailPropertiesFactory;
     }
 
-    public void sendEmailMessage(EmailGlobalConfigModel emailGlobalConfigModel, EmailTarget emailTarget) throws AlertException {
+    public void sendEmailMessage(Properties javamailProperties, String smtpFrom, String smtpHost, int smtpPort, boolean smtpAuth, String smtpUsername, String smtpPassword, EmailTarget emailTarget) throws AlertException {
         try {
             String templateName = StringUtils.trimToEmpty(emailTarget.getTemplateName());
             Set<String> emailAddresses = emailTarget.getEmailAddresses()
@@ -73,7 +72,7 @@ public class EmailMessagingService {
             }
 
             Map<String, Object> model = emailTarget.getModel();
-            Session session = Session.getInstance(javamailPropertiesFactory.createJavaMailProperties(emailGlobalConfigModel));
+            Session session = Session.getInstance(javamailProperties);
             TemplateLoader templateLoader = freemarkerTemplatingService.createClassTemplateLoader("/templates/email");
             Configuration templateDirectory = freemarkerTemplatingService.createFreemarkerConfig(templateLoader);
             Template emailTemplate = templateDirectory.getTemplate(templateName);
@@ -97,8 +96,8 @@ public class EmailMessagingService {
             Template subjectLineTemplate = new Template(EMAIL_SUBJECT_LINE_TEMPLATE, subjectLine, templateDirectory);
             String resolvedSubjectLine = freemarkerTemplatingService.resolveTemplate(model, subjectLineTemplate);
 
-            List<Message> messages = createMessages(emailAddresses, resolvedSubjectLine, session, mimeMultipart, emailGlobalConfigModel.getFrom());
-            sendMessages(emailGlobalConfigModel.getAuth(), emailGlobalConfigModel.getHost(), emailGlobalConfigModel.getPort(), emailGlobalConfigModel.getUsername(), emailGlobalConfigModel.getPassword(), session, messages);
+            List<Message> messages = createMessages(emailAddresses, resolvedSubjectLine, session, mimeMultipart, smtpFrom);
+            sendMessages(smtpAuth, smtpHost, smtpPort, smtpUsername, smtpPassword, session, messages);
         } catch (MessagingException | IOException | IntegrationException ex) {
             String errorMessage = "Could not send the email. " + ex.getMessage();
             throw new AlertException(errorMessage, ex);

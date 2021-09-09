@@ -12,13 +12,25 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
 
 // TODO: Remove this when we no longer support FieldModels.
+@Component
 public class EmailGlobalConfigModelTransformer {
+    private final ConfigurationFieldModelConverter configurationFieldModelConverter;
+
+    @Autowired
+    public EmailGlobalConfigModelTransformer(ConfigurationFieldModelConverter configurationFieldModelConverter) {
+        this.configurationFieldModelConverter = configurationFieldModelConverter;
+    }
+
     public EmailGlobalConfigModel fromFieldUtility(FieldUtility fieldUtility){
         EmailGlobalConfigModel concreteModel = new EmailGlobalConfigModel();
 
@@ -49,6 +61,10 @@ public class EmailGlobalConfigModelTransformer {
 
     public EmailGlobalConfigModel fromConfigurationModel(ConfigurationModel configurationModel){
         return fromFieldUtility(new FieldUtility(configurationModel.getCopyOfKeyToFieldMap()));
+    }
+
+    public EmailGlobalConfigModel fromFieldModel(FieldModel fieldModel){
+        return fromFieldUtility(configurationFieldModelConverter.convertToFieldAccessor(fieldModel));
     }
 
 }

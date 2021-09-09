@@ -20,4 +20,5 @@ dependencies {
     implementation 'com.synopsys.integration:integration-rest'
 
     testImplementation project(':test-common-channel')
+    testImplementation project(':alert-database')
 }

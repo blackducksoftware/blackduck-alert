@@ -23,8 +23,7 @@ public class EmailMessagingServiceTest {
         TestProperties testProperties = new TestProperties();
 
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService();
-        JavamailPropertiesFactory javamailPropertiesFactory = new JavamailPropertiesFactory();
-        EmailMessagingService emailMessagingService = new EmailMessagingService(freemarkerTemplatingService, javamailPropertiesFactory);
+        EmailMessagingService emailMessagingService = new EmailMessagingService(freemarkerTemplatingService);
 
         Session mockSession = Mockito.mock(Session.class);
         Transport mockTransport = Mockito.mock(Transport.class);

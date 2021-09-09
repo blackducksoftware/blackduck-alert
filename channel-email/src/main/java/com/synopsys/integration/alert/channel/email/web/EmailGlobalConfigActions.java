@@ -48,13 +48,13 @@ public class EmailGlobalConfigActions {
     private final EmailGlobalConfigModelTransformer concreteModelTransformer;
 
     @Autowired
-    public EmailGlobalConfigActions(AuthorizationManager authorizationManager, ConfigurationAccessor configurationAccessor, ConfigurationFieldModelConverter modelConverter, EmailGlobalConfigurationValidator validator, EmailGlobalTestAction testAction) {
+    public EmailGlobalConfigActions(AuthorizationManager authorizationManager, ConfigurationAccessor configurationAccessor, ConfigurationFieldModelConverter modelConverter, EmailGlobalConfigurationValidator validator, EmailGlobalTestAction testAction, EmailGlobalConfigModelTransformer concreteModelTransformer) {
         this.authorizationManager = authorizationManager;
         this.configurationAccessor = configurationAccessor;
         this.modelConverter = modelConverter;
         this.validator = validator;
         this.testAction = testAction;
-        this.concreteModelTransformer = new EmailGlobalConfigModelTransformer();
+        this.concreteModelTransformer = concreteModelTransformer;
     }
 
     public ActionResponse<EmailGlobalConfigModel> getOne(Long id) {
