@@ -13,7 +13,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -119,7 +118,6 @@ public class ProcessingJobAccessorTestIT {
                 // this will update the job id such that last updated time will change.
                 // need to make sure the subsequent page requests don't return duplicate jobs.
                 UUID jobId = jobResponseModel.getId();
-                updateDistributionJob(jobId);
                 // cannot find the same job id in subsequent page requests for jobs.
                 assertFalse(previousJobIdSet.contains(jobId), String.format("Job id: %s found in set of previously mapped job ids.", jobId));
                 previousJobIdSet.add(jobId);
@@ -145,31 +143,6 @@ public class ProcessingJobAccessorTestIT {
         AffectedProjectVersion affectedProjectVersion = new AffectedProjectVersion();
         affectedProjectVersion.setProjectName(projectName);
         return new VulnerabilityUniqueProjectNotificationContent(new VulnerabilityNotificationContent(), affectedProjectVersion);
-    }
-
-    private void updateDistributionJob(UUID jobId) {
-        try {
-            DistributionJobModel distributionJobModel = jobAccessor.getJobById(jobId)
-                .orElseThrow(() -> new IllegalStateException(String.format("Job missing when it was just mapped to notifications. Job ID: %s ", jobId)));
-            DistributionJobRequestModel distributionJobRequestModel = new DistributionJobRequestModel(
-                distributionJobModel.isEnabled(),
-                distributionJobModel.getName(),
-                distributionJobModel.getDistributionFrequency(),
-                distributionJobModel.getProcessingType(),
-                distributionJobModel.getChannelDescriptorName(),
-                distributionJobModel.getBlackDuckGlobalConfigId(),
-                distributionJobModel.isFilterByProject(),
-                distributionJobModel.getProjectNamePattern().orElse(null),
-                distributionJobModel.getNotificationTypes(),
-                distributionJobModel.getProjectFilterDetails(),
-                distributionJobModel.getPolicyFilterPolicyNames(),
-                distributionJobModel.getVulnerabilityFilterSeverityNames(),
-                distributionJobModel.getDistributionJobDetails());
-            jobAccessor.updateJob(jobId, distributionJobRequestModel);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            Assertions.fail(String.format("Job Id existed prior to update. Job Id: %s", jobId));
-        }
     }
 
     private AlertNotificationModel createAlertNotificationModel(NotificationType notificationType) {
