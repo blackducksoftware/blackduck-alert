@@ -28,6 +28,7 @@ import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessage
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.channel.DistributionChannelTestAction;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
+import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
@@ -65,8 +66,11 @@ public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsMod
         List<IssueTrackerIssueResponseModel<T>> createdIssues;
         try {
             createdIssues = messageSender.sendMessages(creationRequestModelHolder);
+        } catch (AlertFieldException e) {
+            logger.error("Failed to create test issue", e);
+            return new MessageResult("Failed to create issue: " + e.getMessage(), e.getFieldErrors());
         } catch (AlertException e) {
-            logger.debug("Failed to create test issue", e);
+            logger.error("Failed to create test issue", e);
             return new MessageResult("Failed to create issue: " + e.getMessage(), fieldStatusCreator.createWithoutField(e.getMessage()));
         }
 

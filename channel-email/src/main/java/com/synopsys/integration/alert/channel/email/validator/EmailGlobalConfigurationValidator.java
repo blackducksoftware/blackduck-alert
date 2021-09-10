@@ -7,47 +7,38 @@
  */
 package com.synopsys.integration.alert.channel.email.validator;
 
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.email.web.EmailGlobalConfigModel;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
-import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatusMessages;
 
 @Component
-public class EmailGlobalConfigurationValidator implements GlobalConfigurationValidator {
-    @Override
-    public Set<AlertFieldStatus> validate(FieldModel fieldModel) {
-        ConfigurationFieldValidator configurationFieldValidator = ConfigurationFieldValidator.fromFieldModel(fieldModel);
-        configurationFieldValidator.validateRequiredFieldIsNotBlank(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey());
-        configurationFieldValidator.validateRequiredFieldIsNotBlank(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey());
+public class EmailGlobalConfigurationValidator {
+    public static final String REQUIRED_BECAUSE_AUTH = "Field is required to be set because 'auth' is set to 'true'.";
 
-        configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey());
-        configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_CONNECTION_TIMEOUT_KEY.getPropertyKey());
-        configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_TIMEOUT_KEY.getPropertyKey());
-        configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_WRITETIMEOUT_KEY.getPropertyKey());
-        configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_LOCALHOST_PORT_KEY.getPropertyKey());
-        configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_AUTH_NTLM_FLAGS_KEY.getPropertyKey());
-        configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_PROXY_PORT_KEY.getPropertyKey());
-        configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_SOCKS_PORT_KEY.getPropertyKey());
-
-        boolean useAuth = fieldModel.getFieldValueModel(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey())
-                              .flatMap(FieldValueModel::getValue)
-                              .map(Boolean::valueOf)
-                              .orElse(false);
-
-        if (useAuth) {
-            configurationFieldValidator.validateRequiredFieldsAreNotBlank(List.of(
-                EmailPropertyKeys.JAVAMAIL_USER_KEY.getPropertyKey(),
-                EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey()
-            ));
+    public Set<AlertFieldStatus> validate(EmailGlobalConfigModel model) {
+        Set<AlertFieldStatus> statuses = new HashSet<>();
+        if (StringUtils.isBlank(model.host)) {
+            statuses.add(AlertFieldStatus.error("host", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
+        }
+        if (StringUtils.isBlank(model.from)) {
+            statuses.add(AlertFieldStatus.error("from", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
         }
 
-        return configurationFieldValidator.getValidationResults();
+        if (Boolean.TRUE.equals(model.auth)) {
+            if (StringUtils.isBlank(model.user)) {
+                statuses.add(AlertFieldStatus.error("user", REQUIRED_BECAUSE_AUTH));
+            }
+            if (StringUtils.isBlank(model.password)) {
+                statuses.add(AlertFieldStatus.error("password", REQUIRED_BECAUSE_AUTH));
+            }
+        }
+
+        return statuses;
     }
 }

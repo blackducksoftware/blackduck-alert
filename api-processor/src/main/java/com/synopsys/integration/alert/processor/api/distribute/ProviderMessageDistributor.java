@@ -10,12 +10,14 @@ package com.synopsys.integration.alert.processor.api.distribute;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.event.EventManager;
+import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
@@ -27,6 +29,7 @@ public class ProviderMessageDistributor {
     private static final String DESTINATION_WRAPPER_CLASS_NAME = ChannelKey.class.getSimpleName();
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger notificationLogger = AlertLoggerFactory.getNotificationLogger(getClass());
 
     private final ProcessingAuditAccessor auditAccessor;
     private final EventManager eventManager;
@@ -56,6 +59,10 @@ public class ProviderMessageDistributor {
 
         DistributionEvent event = new DistributionEvent(destinationKey, jobId, jobName, notificationIds, processedMessageHolder.toProviderMessageHolder());
         logger.info("Sending {}. Event ID: {}. Job ID: {}. Destination: {}", EVENT_CLASS_NAME, event.getEventId(), jobId, destinationKey);
+        if (logger.isDebugEnabled()) {
+            String joinedIds = StringUtils.join(notificationIds, ", ");
+            notificationLogger.debug("Creating event: {}. Job ID: {}. For notifications: {}", event.getEventId(), jobId, joinedIds);
+        }
         eventManager.sendEvent(event);
     }
 

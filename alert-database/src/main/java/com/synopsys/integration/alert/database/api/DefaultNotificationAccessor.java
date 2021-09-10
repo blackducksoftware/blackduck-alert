@@ -159,7 +159,7 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
         int currentPage = 0;
         Sort.Order sortingOrder = Sort.Order.asc("providerCreationTime");
         PageRequest pageRequest = PageRequest.of(currentPage, pageSize, Sort.by(sortingOrder));
-        Page<AlertNotificationModel> pageOfNotifications = notificationContentRepository.findByProcessedFalse(pageRequest)
+        Page<AlertNotificationModel> pageOfNotifications = notificationContentRepository.findByProcessedFalseOrderByProviderCreationTimeAsc(pageRequest)
             .map(this::toModel);
         List<AlertNotificationModel> alertNotificationModels = pageOfNotifications.getContent();
         return new AlertPagedModel<>(pageOfNotifications.getTotalPages(), currentPage, pageSize, alertNotificationModels);

@@ -12,7 +12,7 @@ import java.util.Set;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
-public interface GlobalConfigurationValidator {
+public interface GlobalConfigurationFieldModelValidator {
 
     Set<AlertFieldStatus> validate(FieldModel fieldModel);
 }

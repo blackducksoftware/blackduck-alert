@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptorKey;
-import com.synopsys.integration.alert.component.scheduling.validator.SchedulingConfigurationValidator;
+import com.synopsys.integration.alert.component.scheduling.validator.SchedulingConfigurationFieldModelValidator;
 import com.synopsys.integration.alert.test.common.channel.GlobalConfigurationValidatorAsserter;
 
 public class SchedulingConfigurationValidatorTest {
@@ -44,7 +44,7 @@ public class SchedulingConfigurationValidatorTest {
     }
 
     private GlobalConfigurationValidatorAsserter createValidatorAsserter() {
-        return new GlobalConfigurationValidatorAsserter(new SchedulingDescriptorKey().getUniversalKey(), new SchedulingConfigurationValidator(), createValidConfig());
+        return new GlobalConfigurationValidatorAsserter(new SchedulingDescriptorKey().getUniversalKey(), new SchedulingConfigurationFieldModelValidator(), createValidConfig());
     }
 
     private Map<String, FieldValueModel> createValidConfig() {

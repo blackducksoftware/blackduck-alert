@@ -16,17 +16,17 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
 public class GlobalConfigurationValidatorAsserter {
     private final String descriptorKey;
-    private final GlobalConfigurationValidator globalConfigurationValidator;
+    private final GlobalConfigurationFieldModelValidator globalConfigurationValidator;
     private final Map<String, FieldValueModel> defaultKeyToValues;
 
-    public GlobalConfigurationValidatorAsserter(String descriptorKey, GlobalConfigurationValidator globalConfigurationValidator, Map<String, FieldValueModel> defaultKeyToValues) {
+    public GlobalConfigurationValidatorAsserter(String descriptorKey, GlobalConfigurationFieldModelValidator globalConfigurationValidator, Map<String, FieldValueModel> defaultKeyToValues) {
         this.descriptorKey = descriptorKey;
         this.globalConfigurationValidator = globalConfigurationValidator;
         this.defaultKeyToValues = new HashMap<>(defaultKeyToValues);

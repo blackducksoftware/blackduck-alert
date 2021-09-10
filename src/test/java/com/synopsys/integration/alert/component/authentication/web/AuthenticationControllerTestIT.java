@@ -93,7 +93,7 @@ public class AuthenticationControllerTestIT {
         AuthenticationActions authenticationActions = Mockito.mock(AuthenticationActions.class);
         Mockito.when(authenticationActions.authenticateUser(Mockito.any(HttpServletRequest.class), Mockito.any(HttpServletResponse.class), Mockito.any()))
             .thenReturn(new ActionResponse<>(HttpStatus.NO_CONTENT));
-        AuthenticationController loginController = new AuthenticationController(authenticationActions, null, csrfTokenRepository);
+        AuthenticationController loginController = new AuthenticationController(authenticationActions);
 
         HttpServletRequest servletRequest = new MockHttpServletRequest();
         HttpSession session = servletRequest.getSession(true);
@@ -112,7 +112,7 @@ public class AuthenticationControllerTestIT {
         AuthenticationActions authenticationActions = Mockito.mock(AuthenticationActions.class);
         Mockito.when(authenticationActions.authenticateUser(Mockito.any(HttpServletRequest.class), Mockito.any(HttpServletResponse.class), Mockito.any()))
             .thenReturn(new ActionResponse<>(HttpStatus.UNAUTHORIZED));
-        AuthenticationController loginController = new AuthenticationController(authenticationActions, null, csrfTokenRepository);
+        AuthenticationController loginController = new AuthenticationController(authenticationActions);
 
         HttpServletRequest servletRequest = new MockHttpServletRequest();
         HttpServletResponse servletResponse = new MockHttpServletResponse();
@@ -122,16 +122,6 @@ public class AuthenticationControllerTestIT {
         } catch (ResponseStatusException ex) {
             assertEquals(HttpStatus.UNAUTHORIZED, ex.getStatus());
         }
-    }
-
-    @Test
-    public void testResetPasswordControllerPath() throws Exception {
-        TestProperties testProperties = new TestProperties();
-        ReflectionTestUtils.setField(alertProperties, "alertTrustCertificate", Boolean.valueOf(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TRUST_HTTPS_CERT)));
-        String url = AlertRestConstants.BASE_PATH + "/resetPassword/alertuser";
-        // by default the 3 alert users don't have the email address set so a bad request is expected.
-        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(url);
-        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
 }

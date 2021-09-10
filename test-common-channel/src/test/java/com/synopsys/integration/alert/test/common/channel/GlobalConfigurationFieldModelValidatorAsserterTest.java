@@ -8,10 +8,10 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
 
-public class GlobalConfigurationValidatorAsserterTest {
-    private static final String CLASS_NAME = GlobalConfigurationValidatorAsserterTest.class.getSimpleName();
+public class GlobalConfigurationFieldModelValidatorAsserterTest {
+    private static final String CLASS_NAME = GlobalConfigurationFieldModelValidatorAsserterTest.class.getSimpleName();
 
     @Test
     public void assertInvalidValueTest() {
@@ -45,8 +45,8 @@ public class GlobalConfigurationValidatorAsserterTest {
     }
 
     private static GlobalConfigurationValidatorAsserter createAsserter(Set<AlertFieldStatus> fieldStatuses) {
-        GlobalConfigurationValidator globalConfigurationValidator = fieldModel -> fieldStatuses;
-        return new GlobalConfigurationValidatorAsserter(CLASS_NAME, globalConfigurationValidator, Map.of());
+        GlobalConfigurationFieldModelValidator globalConfigurationFieldModelValidator = fieldModel -> fieldStatuses;
+        return new GlobalConfigurationValidatorAsserter(CLASS_NAME, globalConfigurationFieldModelValidator, Map.of());
     }
 
 }

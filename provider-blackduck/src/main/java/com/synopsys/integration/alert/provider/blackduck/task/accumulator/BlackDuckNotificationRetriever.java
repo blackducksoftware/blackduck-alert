@@ -26,6 +26,7 @@ import com.synopsys.integration.blackduck.service.request.NotificationEditor;
 import com.synopsys.integration.exception.IntegrationException;
 
 public class BlackDuckNotificationRetriever {
+    public static final String PAGE_SORT_FIELD = "createdat";
     public static final int DEFAULT_PAGE_SIZE = 100;
     public static final int INITIAL_PAGE_OFFSET = 0;
 
@@ -59,6 +60,7 @@ public class BlackDuckNotificationRetriever {
         BlackDuckMultipleRequest<NotificationUserView> spec = new BlackDuckRequestBuilder()
             .commonGet()
             .apply(notificationEditor)
+            .addQueryParameter("sort", String.format("%s asc", PAGE_SORT_FIELD))
             .buildBlackDuckRequest(currentUserNotificationsUrl);
         return spec;
     }

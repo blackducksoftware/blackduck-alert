@@ -24,13 +24,45 @@ This document describes how to install and upgrade Alert in Docker Swarm.
   - [Changing Memory Settings](#changing-memory-settings)
 
 ## Requirements
-
 - A Docker host with at least 2GB of allocatable memory.
 - Administrative access to the docker host machine. 
 - You must create a Postgres user and database that the created user owns for Alert to create the database structure.
 - Before installing or upgrading Alert the desired persistent storage volumes must be created for Alert and needs to be either:
     - Node locked.     
     - Backed by an NFS volume or a similar mechanism.
+- Postgres Version: 12
+- Extension: uuid-ossp (Note: this should be installed prior to creating the database)
+- Schemas: public, alert
+- Roles/Privileges: Alert requires two sets of Postgres Privileges. One set of privileges is necessary for initializing and upgrading the database. The other set (which is a subset of the first) is for reading and writing data when the
+  application is running. Although it is possible to use one role to handle both of these cases, it is recommended to separate them.
+    - Ensure the DB roles have the public schema on their search_path(s):
+      ```bash
+      ALTER ROLE <user> SET search_path = "$user", public;
+      ```
+    - The Alert Admin role should have the following privileges on all objects in the alert schema (or the schema/database when relevant):
+        - SELECT
+        - INSERT
+        - CREATE
+        - UPDATE
+        - DELETE
+        - TRUNCATE
+        - REFERENCES
+        - TRIGGER
+        - TEMPORARY
+        - EXECUTE
+        - USAGE
+    - The Alert Admin role should have the following privileges on all objects in the public schema (or the schema/database when relevant):
+        - SELECT
+        - INSERT
+        - UPDATE
+        - DELETE
+        - EXECUTE
+    - The Alert User role should have the following privileges on all objects in the alert schema (or the schema/database when relevant):
+        - SELECT
+        - INSERT
+        - UPDATE
+        - DELETE
+        - EXECUTE
 
 ## Installing Alert
 

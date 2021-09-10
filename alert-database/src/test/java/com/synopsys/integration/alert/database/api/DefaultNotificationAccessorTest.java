@@ -31,7 +31,6 @@ import com.synopsys.integration.alert.database.notification.NotificationContentR
 import com.synopsys.integration.alert.database.notification.NotificationEntity;
 
 public class DefaultNotificationAccessorTest {
-
     private final Long id = 1L;
     private final Long providerConfigId = 2L;
 
@@ -276,7 +275,7 @@ public class DefaultNotificationAccessorTest {
         NotificationContentRepository notificationContentRepository = Mockito.mock(NotificationContentRepository.class);
         ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
 
-        Mockito.when(notificationContentRepository.findByProcessedFalse(Mockito.any())).thenReturn(pageOfNotificationEntities);
+        Mockito.when(notificationContentRepository.findByProcessedFalseOrderByProviderCreationTimeAsc(Mockito.any())).thenReturn(pageOfNotificationEntities);
         Mockito.when(configurationAccessor.getConfigurationById(Mockito.any())).thenReturn(Optional.of(configurationModel));
 
         DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(notificationContentRepository, null, configurationAccessor);

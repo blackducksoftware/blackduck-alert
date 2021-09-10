@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.channel.jira.server.validator;
+package com.synopsys.integration.alert.channel.jira.cloud.validator;
 
 import java.util.HashMap;
 import java.util.List;
@@ -6,16 +6,17 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
+import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.descriptor.api.JiraCloudChannelKey;
 import com.synopsys.integration.alert.test.common.channel.GlobalConfigurationValidatorAsserter;
 
-public class JiraServerGlobalConfigurationValidatorTest {
+public class JiraCloudGlobalConfigurationFieldModelValidatorTest {
+
     /*
      * Jira url: required, valid url
-     * username: required
-     * password: required
+     * Admin email: required
+     * Api token: required
      */
 
     @Test
@@ -27,28 +28,28 @@ public class JiraServerGlobalConfigurationValidatorTest {
     @Test
     public void invalidUrl() {
         GlobalConfigurationValidatorAsserter globalConfigurationValidatorAsserter = createGlobalConfigurationValidatorAsserter();
-        globalConfigurationValidatorAsserter.assertInvalidValue(JiraServerDescriptor.KEY_SERVER_URL, "not_a_url");
+        globalConfigurationValidatorAsserter.assertInvalidValue(JiraCloudDescriptor.KEY_JIRA_URL, "not_a_url");
     }
 
     @Test
-    public void missingPassword() {
+    public void missingApiToken() {
         GlobalConfigurationValidatorAsserter globalConfigurationValidatorAsserter = createGlobalConfigurationValidatorAsserter();
-        globalConfigurationValidatorAsserter.assertMissingValue(JiraServerDescriptor.KEY_SERVER_PASSWORD);
+        globalConfigurationValidatorAsserter.assertMissingValue(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
     }
 
     private GlobalConfigurationValidatorAsserter createGlobalConfigurationValidatorAsserter() {
-        return new GlobalConfigurationValidatorAsserter(new JiraCloudChannelKey().getUniversalKey(), new JiraServerGlobalConfigurationValidator(), createValidKeyToValues());
+        return new GlobalConfigurationValidatorAsserter(new JiraCloudChannelKey().getUniversalKey(), new JiraCloudGlobalConfigurationFieldModelValidator(), createValidKeyToValues());
     }
 
     private Map<String, FieldValueModel> createValidKeyToValues() {
         Map<String, FieldValueModel> keyToValues = new HashMap<>();
         FieldValueModel url = new FieldValueModel(List.of("http://url.com"), true);
-        FieldValueModel username = new FieldValueModel(List.of("username"), true);
-        FieldValueModel password = new FieldValueModel(List.of("password"), true);
+        FieldValueModel email = new FieldValueModel(List.of("email"), true);
+        FieldValueModel apiToken = new FieldValueModel(List.of("apiToken"), true);
 
-        keyToValues.put(JiraServerDescriptor.KEY_SERVER_URL, url);
-        keyToValues.put(JiraServerDescriptor.KEY_SERVER_USERNAME, username);
-        keyToValues.put(JiraServerDescriptor.KEY_SERVER_PASSWORD, password);
+        keyToValues.put(JiraCloudDescriptor.KEY_JIRA_URL, url);
+        keyToValues.put(JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS, email);
+        keyToValues.put(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN, apiToken);
 
         return keyToValues;
     }

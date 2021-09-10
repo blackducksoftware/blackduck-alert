@@ -72,6 +72,23 @@ spec:
               key: ALERT_POSTGRES_ADMIN_PASSWORD_FILE
               name: {{ .Release.Name }}-db-creds
         {{- end }}
+        {{- if (eq .Values.postgres.sslUseFiles true) }}
+        - name: ALERT_DB_SSL_KEY_PATH
+          valueFrom:
+            secretKeyRef:
+              key: {{ required ".Values.postgres.sslSecrets.sslKeyKey is missing." .Values.postgres.sslSecrets.sslKeyKey }}
+              name: {{ .Values.postgres.sslSecrets.secretName }}
+        - name: ALERT_DB_SSL_CERT_PATH
+          valueFrom:
+            secretKeyRef:
+              key: {{ required ".Values.postgres.sslSecrets.sslCertKey is missing." .Values.postgres.sslSecrets.sslCertKey }}
+              name: {{ .Values.postgres.sslSecrets.secretName }}
+        - name: ALERT_DB_SSL_ROOT_CERT_PATH
+          valueFrom:
+            secretKeyRef:
+              key: {{ required ".Values.postgres.sslSecrets.sslRootCertKey is missing." .Values.postgres.sslSecrets.sslRootCertKey }}
+              name: {{ .Values.postgres.sslSecrets.secretName }}
+        {{- end }}
         envFrom:
         - configMapRef:
             name: {{ .Release.Name}}-db-config
