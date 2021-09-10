@@ -52,7 +52,7 @@ public class AzureBoardsComponentIssueFinderTest {
         IssueCategoryRetriever issueCategoryRetriever = new IssueCategoryRetriever();
 
         AzureBoardsExistingIssueDetailsCreator issueDetailsCreator = new AzureBoardsExistingIssueDetailsCreator(organizationName, issueCategoryRetriever, azureBoardsIssueStatusResolver);
-        AzureBoardsWorkItemFinder workItemFinder = new AzureBoardsWorkItemFinder(queryManager);
+        AzureBoardsWorkItemFinder workItemFinder = new AzureBoardsWorkItemFinder(queryManager, "test proj");
         AzureBoardsComponentIssueFinder componentIssueFinder = new AzureBoardsComponentIssueFinder(gson, workItemFinder, issueDetailsCreator);
 
         IssuePolicyDetails testPolicy = new IssuePolicyDetails("Test Policy", ItemOperation.ADD, ComponentConcernSeverity.UNSPECIFIED_UNKNOWN);
