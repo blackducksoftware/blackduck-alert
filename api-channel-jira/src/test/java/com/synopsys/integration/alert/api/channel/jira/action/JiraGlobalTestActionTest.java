@@ -23,8 +23,8 @@ public class JiraGlobalTestActionTest {
     }
 
     @Test
-    public void testConfigUserMissingTest() throws IntegrationException {
-        Mockito.doReturn(true).when(testAction).isUserMissing(Mockito.any());
+    public void testConfigGetIssuesTest() throws IntegrationException {
+        Mockito.doReturn(false).when(testAction).canUserGetIssues(Mockito.any());
 
         try {
             testAction.testConfig("0", null, null);
@@ -36,7 +36,7 @@ public class JiraGlobalTestActionTest {
 
     @Test
     public void testConfigNonAdminTest() throws IntegrationException {
-        Mockito.doReturn(false).when(testAction).isUserMissing(Mockito.any());
+        Mockito.doReturn(false).when(testAction).canUserGetIssues(Mockito.any());
         Mockito.doReturn(true).when(testAction).isAppCheckEnabled(Mockito.any());
         Mockito.doReturn(false).when(testAction).isUserAdmin(Mockito.any());
 
@@ -50,7 +50,7 @@ public class JiraGlobalTestActionTest {
 
     @Test
     public void testConfigAppMissingTest() throws IntegrationException {
-        Mockito.doReturn(false).when(testAction).isUserMissing(Mockito.any());
+        Mockito.doReturn(false).when(testAction).canUserGetIssues(Mockito.any());
         Mockito.doReturn(true).when(testAction).isAppCheckEnabled(Mockito.any());
         Mockito.doReturn(true).when(testAction).isUserAdmin(Mockito.any());
         Mockito.doReturn(true).when(testAction).isAppMissing(Mockito.any());
@@ -66,7 +66,7 @@ public class JiraGlobalTestActionTest {
     @Test
     public void testConfigExceptionTest() throws IntegrationException {
         String exceptionMessage = "fake exception message";
-        Mockito.doThrow(new IntegrationException(exceptionMessage)).when(testAction).isUserMissing(Mockito.any());
+        Mockito.doThrow(new IntegrationException(exceptionMessage)).when(testAction).canUserGetIssues(Mockito.any());
 
         try {
             testAction.testConfig("0", null, null);
@@ -78,7 +78,7 @@ public class JiraGlobalTestActionTest {
 
     @Test
     public void testConfigSuccessTest() throws IntegrationException {
-        Mockito.doReturn(false).when(testAction).isUserMissing(Mockito.any());
+        Mockito.doReturn(true).when(testAction).canUserGetIssues(Mockito.any());
         Mockito.doReturn(false).when(testAction).isAppCheckEnabled(Mockito.any());
 
         MessageResult messageResult = testAction.testConfig("0", null, null);
