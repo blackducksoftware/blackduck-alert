@@ -46,13 +46,15 @@ import com.synopsys.integration.azure.boards.common.util.AzureFieldDefinition;
 public class AzureBoardsSearcher extends IssueTrackerSearcher<Integer> {
     private final Gson gson;
     private final String organizationName;
+    private final String teamProjectName;
     private final AzureBoardsIssueTrackerQueryManager queryManager;
 
-    public AzureBoardsSearcher(Gson gson, String organizationName, AzureBoardsIssueTrackerQueryManager queryManager, ProjectMessageToIssueModelTransformer modelTransformer) {
+    public AzureBoardsSearcher(Gson gson, String organizationName, AzureBoardsIssueTrackerQueryManager queryManager, ProjectMessageToIssueModelTransformer modelTransformer, String teamProjectName) {
         super(modelTransformer);
         this.gson = gson;
         this.organizationName = organizationName;
         this.queryManager = queryManager;
+        this.teamProjectName = teamProjectName;
     }
 
     @Override
@@ -87,7 +89,7 @@ public class AzureBoardsSearcher extends IssueTrackerSearcher<Integer> {
     @Override
     protected List<ExistingIssueDetails<Integer>> findExistingIssuesByProjectIssueModel(ProjectIssueModel projectIssueModel) throws AlertException {
         LinkableItem projectVersion = projectIssueModel.getProjectVersion()
-                                          .orElseThrow(() -> new AlertRuntimeException("Missing project-version"));
+            .orElseThrow(() -> new AlertRuntimeException("Missing project-version"));
 
         String categoryKey = AzureBoardsAlertIssuePropertiesManager.CATEGORY_TYPE_VULNERABILITY_COMPATIBILITY_LABEL;
         Map<String, String> fieldRefNameToValue = createBomFieldReferenceToValueMap(projectVersion, projectIssueModel.getBomComponentDetails());
@@ -104,9 +106,9 @@ public class AzureBoardsSearcher extends IssueTrackerSearcher<Integer> {
         fieldRefNameToValue.put(AzureCustomFieldManager.ALERT_CATEGORY_KEY_FIELD_REFERENCE_NAME, categoryKey);
 
         return findWorkItems(projectIssueModel.getProvider(), projectIssueModel.getProject(), fieldRefNameToValue)
-                   .stream()
-                   .map(this::createIssueDetails)
-                   .collect(Collectors.toList());
+            .stream()
+            .map(this::createIssueDetails)
+            .collect(Collectors.toList());
     }
 
     private Map<String, String> createBomFieldReferenceToValueMap(LinkableItem projectVersion, AbstractBomComponentDetails bomComponent) {
@@ -145,11 +147,13 @@ public class AzureBoardsSearcher extends IssueTrackerSearcher<Integer> {
         String topicKey = AzureBoardsSearchPropertiesUtils.createNullableLinkableItemKey(project);
 
         String systemIdFieldName = WorkItemResponseFields.System_Id.getFieldName();
+        String teamProjectFieldName = WorkItemResponseFields.System_TeamProject.getFieldName();
         WorkItemQueryWhere queryBuilder = WorkItemQuery
-                                              .select(systemIdFieldName)
-                                              .fromWorkItems()
-                                              .whereGroup(AzureCustomFieldManager.ALERT_PROVIDER_KEY_FIELD_REFERENCE_NAME, WorkItemQueryWhereOperator.EQ, providerKey)
-                                              .and(AzureCustomFieldManager.ALERT_TOPIC_KEY_FIELD_REFERENCE_NAME, WorkItemQueryWhereOperator.EQ, topicKey);
+            .select(systemIdFieldName)
+            .fromWorkItems()
+            .whereGroup(teamProjectFieldName, WorkItemQueryWhereOperator.EQ, teamProjectName)
+            .and(AzureCustomFieldManager.ALERT_PROVIDER_KEY_FIELD_REFERENCE_NAME, WorkItemQueryWhereOperator.EQ, providerKey)
+            .and(AzureCustomFieldManager.ALERT_TOPIC_KEY_FIELD_REFERENCE_NAME, WorkItemQueryWhereOperator.EQ, topicKey);
 
         for (Map.Entry<String, String> refToValue : fieldReferenceNameToExpectedValue.entrySet()) {
             queryBuilder = queryBuilder.and(refToValue.getKey(), WorkItemQueryWhereOperator.EQ, refToValue.getValue());
@@ -176,7 +180,7 @@ public class AzureBoardsSearcher extends IssueTrackerSearcher<Integer> {
         AzureFieldDefinition<String> subComponentFieldDef = AzureFieldDefinition.stringField(AzureCustomFieldManager.ALERT_SUB_COMPONENT_KEY_FIELD_REFERENCE_NAME);
 
         LinkableItem projectVersion = Optional.ofNullable(nullableProjectVersion)
-                                          .orElse(AzureBoardsWorkItemExtractionUtils.extractLinkableItem(workItemFields, projectVersionFieldDef));
+            .orElse(AzureBoardsWorkItemExtractionUtils.extractLinkableItem(workItemFields, projectVersionFieldDef));
         LinkableItem component = AzureBoardsWorkItemExtractionUtils.extractLinkableItem(workItemFields, componentFieldDef);
 
         LinkableItem componentVersion = null;
