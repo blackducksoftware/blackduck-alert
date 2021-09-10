@@ -20,11 +20,11 @@ import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudPropertiesFact
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.jira.common.cloud.model.IssueSearchResponseModel;
+import com.synopsys.integration.jira.common.cloud.service.IssueSearchService;
 import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
 import com.synopsys.integration.jira.common.cloud.service.MyPermissionsService;
-import com.synopsys.integration.jira.common.cloud.service.ProjectService;
 import com.synopsys.integration.jira.common.model.response.MultiPermissionResponseModel;
-import com.synopsys.integration.jira.common.model.response.PageOfProjectsResponseModel;
 import com.synopsys.integration.jira.common.model.response.PermissionModel;
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 
@@ -56,12 +56,12 @@ public class JiraCloudGlobalTestAction extends JiraGlobalTestAction {
     }
 
     @Override
-    protected boolean canUserViewProjects(FieldUtility fieldUtility) throws IntegrationException {
+    protected boolean canUserGetIssues(FieldUtility fieldUtility) throws IntegrationException {
         JiraCloudProperties jiraProperties = jiraCloudPropertiesFactory.createJiraProperties(fieldUtility);
         JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
-        ProjectService projectService = jiraCloudServiceFactory.createProjectService();
-        PageOfProjectsResponseModel projects = projectService.getProjects(1, 0);
-        return projects.getProjects().size() > 0;
+        IssueSearchService issueSearchService = jiraCloudServiceFactory.createIssueSearchService();
+        IssueSearchResponseModel issueSearchResponseModel = issueSearchService.queryForIssuePage("", 0, 1);
+        return issueSearchResponseModel.getIssues().size() > 0;
     }
 
     @Override

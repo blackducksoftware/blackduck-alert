@@ -7,8 +7,6 @@
  */
 package com.synopsys.integration.alert.channel.jira.server.action;
 
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +20,13 @@ import com.synopsys.integration.alert.channel.jira.server.JiraServerPropertiesFa
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.model.components.ProjectComponent;
 import com.synopsys.integration.jira.common.model.response.MultiPermissionResponseModel;
 import com.synopsys.integration.jira.common.model.response.PermissionModel;
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
+import com.synopsys.integration.jira.common.server.model.IssueSearchResponseModel;
+import com.synopsys.integration.jira.common.server.service.IssueSearchService;
 import com.synopsys.integration.jira.common.server.service.JiraServerServiceFactory;
 import com.synopsys.integration.jira.common.server.service.MyPermissionsService;
-import com.synopsys.integration.jira.common.server.service.ProjectService;
 
 @Component
 public class JiraServerGlobalTestAction extends JiraGlobalTestAction {
@@ -57,12 +55,12 @@ public class JiraServerGlobalTestAction extends JiraGlobalTestAction {
     }
 
     @Override
-    protected boolean canUserViewProjects(FieldUtility fieldUtility) throws IntegrationException {
+    protected boolean canUserGetIssues(FieldUtility fieldUtility) throws IntegrationException {
         JiraServerProperties jiraProperties = jiraServerPropertiesFactory.createJiraProperties(fieldUtility);
         JiraServerServiceFactory jiraServerServiceFactory = jiraProperties.createJiraServicesServerFactory(logger, gson);
-        ProjectService projectService = jiraServerServiceFactory.createProjectService();
-        List<ProjectComponent> projects = projectService.getProjects();
-        return projects.size() > 0;
+        IssueSearchService issueSearchService = jiraServerServiceFactory.createIssueSearchService();
+        IssueSearchResponseModel issueSearchResponseModel = issueSearchService.queryForIssuePage("", 0, 1);
+        return issueSearchResponseModel.getIssues().size() > 0;
     }
 
     @Override
