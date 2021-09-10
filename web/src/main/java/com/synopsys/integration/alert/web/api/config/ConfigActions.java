@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.apache.commons.lang3.EnumUtils;
 import org.slf4j.Logger;
@@ -21,15 +22,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.action.api.AbstractConfigResourceActions;
+import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
+import com.synopsys.integration.alert.common.descriptor.config.field.validation.EncryptionSettingsValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
@@ -41,8 +44,10 @@ import com.synopsys.integration.alert.common.rest.FieldModelProcessor;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.MultiFieldModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
+import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.certificates.web.PKIXErrorResponseFactory;
+import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
@@ -56,11 +61,13 @@ public class ConfigActions extends AbstractConfigResourceActions {
     private final ConfigurationFieldModelConverter modelConverter;
     private final DescriptorMap descriptorMap;
     private final PKIXErrorResponseFactory pkixErrorResponseFactory;
+    private final EncryptionUtility encryptionUtility;
+    private final SettingsDescriptorKey settingsDescriptorKey;
 
     @Autowired
     public ConfigActions(AuthorizationManager authorizationManager, DescriptorAccessor descriptorAccessor, ConfigurationAccessor configurationAccessor,
         FieldModelProcessor fieldModelProcessor, DescriptorProcessor descriptorProcessor, ConfigurationFieldModelConverter modelConverter,
-        DescriptorMap descriptorMap, PKIXErrorResponseFactory pkixErrorResponseFactory) {
+        DescriptorMap descriptorMap, PKIXErrorResponseFactory pkixErrorResponseFactory, EncryptionUtility encryptionUtility, SettingsDescriptorKey settingsDescriptorKey) {
         super(authorizationManager, descriptorAccessor);
         this.configurationAccessor = configurationAccessor;
         this.fieldModelProcessor = fieldModelProcessor;
@@ -68,6 +75,8 @@ public class ConfigActions extends AbstractConfigResourceActions {
         this.modelConverter = modelConverter;
         this.descriptorMap = descriptorMap;
         this.pkixErrorResponseFactory = pkixErrorResponseFactory;
+        this.encryptionUtility = encryptionUtility;
+        this.settingsDescriptorKey = settingsDescriptorKey;
     }
 
     @Override
@@ -186,7 +195,16 @@ public class ConfigActions extends AbstractConfigResourceActions {
 
     @Override
     protected ValidationActionResponse validateWithoutChecks(FieldModel resource) {
-        List<AlertFieldStatus> fieldStatuses = fieldModelProcessor.validateFieldModel(resource);
+        if (!encryptionUtility.isInitialized() && !settingsDescriptorKey.getUniversalKey().equals(resource.getDescriptorName())) {
+            ValidationResponseModel validationResponseModel = ValidationResponseModel.generalError(EncryptionSettingsValidator.ENCRYPTION_MISSING);
+            return new ValidationActionResponse(HttpStatus.INTERNAL_SERVER_ERROR, validationResponseModel);
+        }
+
+        Set<AlertFieldStatus> fieldStatuses = descriptorProcessor.retrieveDescriptor(resource.getDescriptorName())
+            .flatMap(Descriptor::getGlobalValidator)
+            .map(globalValidator -> globalValidator.validate(resource))
+            .orElse(Set.copyOf(fieldModelProcessor.validateFieldModel(resource)));
+
         ValidationResponseModel responseModel;
         HttpStatus status = HttpStatus.OK;
         if (fieldStatuses.isEmpty()) {
@@ -202,7 +220,6 @@ public class ConfigActions extends AbstractConfigResourceActions {
     protected ValidationActionResponse testWithoutChecks(FieldModel resource) {
         Optional<TestAction> testActionOptional = descriptorProcessor.retrieveTestAction(resource);
         ValidationResponseModel responseModel;
-        String id = resource.getId();
         if (testActionOptional.isPresent()) {
             try {
                 FieldModel upToDateFieldModel = fieldModelProcessor.createCustomMessageFieldModel(resource);
@@ -223,12 +240,12 @@ public class ConfigActions extends AbstractConfigResourceActions {
             } catch (IntegrationException e) {
                 // FIXME there are definitely other possibilities than this
                 responseModel = pkixErrorResponseFactory.createSSLExceptionResponse(e)
-                                    .orElse(ValidationResponseModel.generalError(e.getMessage()));
+                    .orElse(ValidationResponseModel.generalError(e.getMessage()));
                 return new ValidationActionResponse(HttpStatus.OK, responseModel);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
                 responseModel = pkixErrorResponseFactory.createSSLExceptionResponse(e)
-                                    .orElse(ValidationResponseModel.generalError(e.getMessage()));
+                    .orElse(ValidationResponseModel.generalError(e.getMessage()));
                 return new ValidationActionResponse(HttpStatus.OK, responseModel);
             }
         }

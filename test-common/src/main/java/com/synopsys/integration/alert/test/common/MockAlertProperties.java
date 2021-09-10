@@ -15,7 +15,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 
 public class MockAlertProperties extends AlertProperties {
     private static final String SUB_PROJECT_DIR_NAME = "test-common";

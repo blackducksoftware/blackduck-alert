@@ -10,6 +10,8 @@ package com.synopsys.integration.alert.common.rest.model;
 import java.util.List;
 import java.util.UUID;
 
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+
 public class JobIdsRequestModel extends AlertSerializableModel {
     private List<UUID> jobIds;
 

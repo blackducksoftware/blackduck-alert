@@ -14,8 +14,8 @@ import java.util.stream.Collectors;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class UserModel extends AlertSerializableModel {
     public static final String ROLE_PREFIX = "ROLE_";
@@ -117,4 +117,5 @@ public class UserModel extends AlertSerializableModel {
     public boolean isExternal() {
         return AuthenticationType.DATABASE != authenticationType;
     }
+
 }

@@ -1,11 +1,8 @@
 package com.synopsys.integration.alert.web.config;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -27,8 +24,10 @@ import com.synopsys.integration.alert.common.rest.FieldModelProcessor;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.certificates.web.PKIXErrorResponseFactory;
+import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.web.api.config.ConfigActions;
@@ -54,16 +53,16 @@ public class ConfigActionTestIT {
     private DescriptorMap descriptorMap;
     @Autowired
     private DescriptorAccessor descriptorAccessor;
+    @Autowired
+    private EncryptionUtility encryptionUtility;
 
     @Test
     public void deleteSensitiveFieldFromConfig() {
-        FieldModelProcessor spiedFieldModelProcessor = Mockito.spy(fieldModelProcessor);
-        Mockito.doReturn(List.of()).when(spiedFieldModelProcessor).validateFieldModel(Mockito.any());
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
         Mockito.when(authorizationManager.hasDeletePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
         Mockito.when(authorizationManager.hasWritePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
-        ConfigActions configActions = new ConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, spiedFieldModelProcessor, descriptorProcessor, configurationFieldModelConverter, descriptorMap,
-            pkixErrorResponseFactory);
+        ConfigActions configActions = new ConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter, descriptorMap,
+            pkixErrorResponseFactory, encryptionUtility, settingsDescriptorKey);
         ConfigurationFieldModel proxyHost = ConfigurationFieldModel.create(ProxyManager.KEY_PROXY_HOST);
         proxyHost.setFieldValue("proxyHost");
         ConfigurationFieldModel proxyPort = ConfigurationFieldModel.create(ProxyManager.KEY_PROXY_PORT);
@@ -72,28 +71,33 @@ public class ConfigActionTestIT {
         proxyUsername.setFieldValue("username");
         ConfigurationFieldModel proxyPassword = ConfigurationFieldModel.createSensitive(ProxyManager.KEY_PROXY_PWD);
         proxyPassword.setFieldValue("somestuff");
-        ConfigurationModel configurationModel = configurationAccessor.createConfiguration(settingsDescriptorKey, ConfigContextEnum.GLOBAL, Set.of(proxyHost, proxyPort, proxyUsername, proxyPassword));
+        ConfigurationFieldModel encryptionPassword = ConfigurationFieldModel.createSensitive(SettingsDescriptor.KEY_ENCRYPTION_PWD);
+        encryptionPassword.setFieldValue("pants");
+        ConfigurationFieldModel encryptionSalt = ConfigurationFieldModel.createSensitive(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT);
+        encryptionSalt.setFieldValue("salty pants");
+        ConfigurationModel configurationModel = configurationAccessor.createConfiguration(settingsDescriptorKey, ConfigContextEnum.GLOBAL, Set.of(proxyHost, proxyPort, proxyUsername, proxyPassword, encryptionPassword, encryptionSalt));
 
         FieldValueModel proxyHostFieldValue = new FieldValueModel(Set.of("proxyHost"), true);
         FieldValueModel proxyPortFieldValue = new FieldValueModel(Set.of("80"), true);
-        final String newUsername = "Hello";
-        FieldValueModel proxyUsernameFieldValue = new FieldValueModel(Set.of(newUsername), true);
+        FieldValueModel proxyUsernameFieldValue = new FieldValueModel(Set.of(), false);
         FieldValueModel proxyPasswordFieldValue = new FieldValueModel(Set.of(), false);
+        FieldValueModel encryptionPasswordFieldValue = new FieldValueModel(Set.of("encryptionPassword"), true);
+        FieldValueModel encryptionSaltFieldValue = new FieldValueModel(Set.of("sodiumChloride"), true);
 
         Long longConfigId = configurationModel.getConfigurationId();
         String configId = String.valueOf(longConfigId);
 
         FieldModel fieldModel = new FieldModel(configId, settingsDescriptorKey.getUniversalKey(), ConfigContextEnum.GLOBAL.name(),
             new HashMap<>(Map.of(ProxyManager.KEY_PROXY_HOST, proxyHostFieldValue, ProxyManager.KEY_PROXY_PORT, proxyPortFieldValue,
-                ProxyManager.KEY_PROXY_USERNAME, proxyUsernameFieldValue, ProxyManager.KEY_PROXY_PWD, proxyPasswordFieldValue)));
+                ProxyManager.KEY_PROXY_USERNAME, proxyUsernameFieldValue, ProxyManager.KEY_PROXY_PWD, proxyPasswordFieldValue,
+                SettingsDescriptor.KEY_ENCRYPTION_PWD, encryptionPasswordFieldValue, SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, encryptionSaltFieldValue)));
 
         ActionResponse<FieldModel> response = configActions.update(longConfigId, fieldModel);
         assertTrue(response.hasContent());
         FieldModel updatedConfig = response.getContent().orElseThrow(() -> new AssertionFailedError("content missing from response."));
-        Map<String, FieldValueModel> updatedValues = updatedConfig.getKeyToValues();
 
-        assertEquals(newUsername, updatedValues.get(ProxyManager.KEY_PROXY_USERNAME).getValue().orElse(""));
-        assertNull(updatedValues.get(ProxyManager.KEY_PROXY_PWD), "Saving an empty values should remove it from DB.");
+        assertTrue(updatedConfig.getFieldValue(ProxyManager.KEY_PROXY_USERNAME).isEmpty(), "Need to remove username in order to remove password as well.");
+        assertTrue(updatedConfig.getFieldValue(ProxyManager.KEY_PROXY_PWD).isEmpty(), "Saving an empty values should remove it from DB.");
     }
 
 }

@@ -10,6 +10,7 @@ package com.synopsys.integration.alert.common.exception;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 
 public class AlertFieldException extends AlertException {

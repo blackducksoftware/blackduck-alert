@@ -54,8 +54,8 @@ public class BlackDuckProviderService {
         this.blackDuckProviderKey = new BlackDuckProviderKey().getUniversalKey();
 
         TestProperties testProperties = new TestProperties();
-        this.blackDuckProviderUrl = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL);
-        this.blackDuckApiToken = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY);
+        this.blackDuckProviderUrl = testProperties.getBlackDuckURL();
+        this.blackDuckApiToken = testProperties.getBlackDuckAPIToken();
         this.blackDuckTimeout = testProperties.getOptionalProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT).orElse("300");
         this.blackDuckProviderUniqueName = blackDuckProviderUrl + UUID.randomUUID();
         this.blackDuckProjectName = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_PROJECT_NAME);
@@ -72,7 +72,7 @@ public class BlackDuckProviderService {
                                                    .orElseThrow(() -> new IntegrationException(String.format("Could not find the Black Duck project '%s' version '%s'", blackDuckProjectName, blackDuckProjectVersion)));
 
         ProjectVersionView projectVersionView = projectVersion.getProjectVersionView();
-        List<ProjectVersionComponentView> bomComponents = blackDuckService.getAllResponses(projectVersionView, ProjectVersionView.COMPONENTS_LINK_RESPONSE);
+        List<ProjectVersionComponentView> bomComponents = blackDuckService.getAllResponses(projectVersionView.metaComponentsLink());
         Optional<ProjectVersionComponentView> apacheCommonsFileUpload = bomComponents.stream()
                                                                             .filter(component -> component.getComponentName().equals("Apache Commons FileUpload"))
                                                                             .filter(component -> component.getComponentVersionName().equals("1.2.1"))

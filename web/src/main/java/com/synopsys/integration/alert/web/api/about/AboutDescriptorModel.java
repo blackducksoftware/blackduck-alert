@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.web.api.about;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
 public class AboutDescriptorModel extends AlertSerializableModel {
     private final String iconKey;

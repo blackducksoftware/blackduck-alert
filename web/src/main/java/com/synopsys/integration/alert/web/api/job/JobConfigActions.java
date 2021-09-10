@@ -19,6 +19,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -29,6 +30,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.provider.ProviderProjectExistencePopulator;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
@@ -43,9 +46,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.errors.Aler
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
-import com.synopsys.integration.alert.common.exception.AlertMethodNotAllowedException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
@@ -57,9 +58,7 @@ import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.job.BlackDuckProjectDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.processor.DistributionJobModelExtractor;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
-import com.synopsys.integration.alert.common.provider.ProviderProjectExistencePopulator;
 import com.synopsys.integration.alert.common.rest.FieldModelProcessor;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -273,6 +272,20 @@ public class JobConfigActions extends AbstractJobResourceActions {
         return Optional.empty();
     }
 
+    private boolean shouldValidateWithDescriptorValidators(JobFieldModel resource) {
+        for (FieldModel fieldModel : resource.getFieldModels()) {
+            boolean descriptorOrValidatorDoNotExist = descriptorMap.getDescriptorKey(fieldModel.getDescriptorName())
+                                                                      .flatMap(descriptorMap::getDescriptor)
+                                                                      .flatMap(Descriptor::getDistributionValidator)
+                                                                      .isEmpty();
+
+            if (descriptorOrValidatorDoNotExist) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     @Override
     protected ValidationActionResponse validateWithoutChecks(JobFieldModel resource) {
         UUID jobId = null;
@@ -282,7 +295,14 @@ public class JobConfigActions extends AbstractJobResourceActions {
         List<AlertFieldStatus> fieldStatuses = new ArrayList<>();
 
         validateJobNameUnique(jobId, resource).ifPresent(fieldStatuses::add);
-        fieldStatuses.addAll(fieldModelProcessor.validateJobFieldModel(resource));
+
+        boolean validateWithDescriptorValidators = shouldValidateWithDescriptorValidators(resource);
+
+        if (validateWithDescriptorValidators) {
+            fieldStatuses.addAll(validateWithDescriptorValidators(resource));
+        } else {
+            fieldStatuses.addAll(fieldModelProcessor.validateJobFieldModel(resource));
+        }
 
         if (!fieldStatuses.isEmpty()) {
             ValidationResponseModel responseModel = ValidationResponseModel.fromStatusCollection("Invalid Configuration", fieldStatuses);
@@ -321,12 +341,35 @@ public class JobConfigActions extends AbstractJobResourceActions {
         }
 
         for (JobFieldModel jobFieldModel : jobFieldModels) {
-            List<AlertFieldStatus> fieldErrors = fieldModelProcessor.validateJobFieldModel(jobFieldModel);
+            List<AlertFieldStatus> fieldErrors;
+            if (shouldValidateWithDescriptorValidators(jobFieldModel)) {
+                fieldErrors = validateWithDescriptorValidators(jobFieldModel);
+            } else {
+                fieldErrors = fieldModelProcessor.validateJobFieldModel(jobFieldModel);
+            }
+
             if (!fieldErrors.isEmpty()) {
                 errorsList.add(new JobFieldStatuses(jobFieldModel.getJobId(), fieldErrors));
             }
         }
         return new ActionResponse<>(HttpStatus.OK, errorsList);
+    }
+
+    private List<AlertFieldStatus> validateWithDescriptorValidators(JobFieldModel jobFieldModel) {
+        List<AlertFieldStatus> fieldErrors;
+        fieldErrors = jobFieldModel.getFieldModels()
+                          .stream()
+                          .map(FieldModel::getDescriptorName)
+                          .map(descriptorMap::getDescriptorKey)
+                          .flatMap(Optional::stream)
+                          .map(descriptorMap::getDescriptor)
+                          .flatMap(Optional::stream)
+                          .map(Descriptor::getDistributionValidator)
+                          .flatMap(Optional::stream)
+                          .map(validator -> validator.validate(jobFieldModel))
+                          .flatMap(Collection::stream)
+                          .collect(Collectors.toList());
+        return fieldErrors;
     }
 
     @Override
@@ -354,7 +397,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
                 messageField.ifPresent(model -> fields.put(TestAction.KEY_CUSTOM_MESSAGE, model));
 
                 MessageResult providerTestResult = testProviderConfig(new FieldUtility(fields), jobIdString, channelFieldModel);
-                if (providerTestResult.hasErrors() || providerTestResult.hasWarnings()) {
+                if (providerTestResult.hasErrors()) {
                     responseModel = ValidationResponseModel.fromStatusCollection(providerTestResult.getStatusMessage(), providerTestResult.getFieldStatuses());
                     return new ValidationActionResponse(HttpStatus.OK, responseModel);
                 }
@@ -373,7 +416,8 @@ public class JobConfigActions extends AbstractJobResourceActions {
                     messageField.flatMap(ConfigurationFieldModel::getFieldValue).orElse(null)
                 );
                 List<AlertFieldStatus> resultFieldStatuses = testActionResult.getFieldStatuses();
-                responseModel = ValidationResponseModel.fromStatusCollection(testActionResult.getStatusMessage(), resultFieldStatuses);
+                List<AlertFieldStatus> allStatuses = Stream.concat(resultFieldStatuses.stream(), providerTestResult.fieldWarnings().stream()).collect(Collectors.toList());
+                responseModel = ValidationResponseModel.fromStatusCollection(testActionResult.getStatusMessage(), allStatuses);
                 return new ValidationActionResponse(HttpStatus.OK, responseModel);
             }
             responseModel = ValidationResponseModel.generalError("No field model of type channel was was sent to test.");
@@ -385,10 +429,8 @@ public class JobConfigActions extends AbstractJobResourceActions {
             logger.error("Test Error with field Errors", e);
             responseModel = ValidationResponseModel.fromStatusCollection(e.getMessage(), e.getFieldErrors());
             return new ValidationActionResponse(HttpStatus.OK, responseModel);
-        } catch (AlertMethodNotAllowedException e) {
-            logger.error(e.getMessage(), e);
-            return new ValidationActionResponse(HttpStatus.METHOD_NOT_ALLOWED, ValidationResponseModel.generalError(e.getMessage()));
         } catch (IntegrationException e) {
+            // TODO this is not necessarily a PKIX
             responseModel = pkixErrorResponseFactory.createSSLExceptionResponse(e)
                                 .orElse(ValidationResponseModel.generalError(e.getMessage()));
             return new ValidationActionResponse(HttpStatus.OK, responseModel);

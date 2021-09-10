@@ -1,0 +1,7 @@
+ext.moduleName = 'com.synopsys.integration.alert.descriptor.api'
+
+dependencies {
+    implementation platform(project(':alert-platform'))
+    implementation project(':api-common-model')
+    implementation 'org.springframework:spring-context'
+}

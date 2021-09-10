@@ -13,6 +13,7 @@ import java.util.Map;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
+@Deprecated(forRemoval = true)
 public abstract class ConfigurationAction {
     private final DescriptorKey descriptorKey;
     private final Map<ConfigContextEnum, ApiAction> apiActionMap = new EnumMap<>(ConfigContextEnum.class);

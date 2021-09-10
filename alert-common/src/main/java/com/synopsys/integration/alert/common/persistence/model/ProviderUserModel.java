@@ -7,11 +7,11 @@
  */
 package com.synopsys.integration.alert.common.persistence.model;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
 public class ProviderUserModel extends AlertSerializableModel {
-    private String emailAddress;
-    private Boolean optOut;
+    private final String emailAddress;
+    private final Boolean optOut;
 
     public ProviderUserModel(String emailAddress, Boolean optOut) {
         this.emailAddress = emailAddress;

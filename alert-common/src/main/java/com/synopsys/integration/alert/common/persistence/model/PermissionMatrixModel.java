@@ -11,8 +11,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class PermissionMatrixModel extends AlertSerializableModel {
     private final Map<PermissionKey, Integer> permissions;

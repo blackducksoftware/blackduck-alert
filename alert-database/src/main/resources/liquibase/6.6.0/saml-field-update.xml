@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="bmandel" id="add-saml-want-assertions-field">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM alert.descriptor_fields
+                WHERE descriptor_id = GET_DESCRIPTOR_ID('component_authentication')
+                AND field_id = GET_FIELD_ID('settings.saml.want.assertions.signed')
+            </sqlCheck>
+        </preConditions>
+        <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY">settings.saml.want.assertions.signed</column>
+            <column name="SENSITIVE">false</column>
+        </insert>
+        <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_authentication')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.saml.want.assertions.signed')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('settings.saml.want.assertions.signed')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+        </insert>
+    </changeSet>
+    <changeSet author="bmandel" id="saml-want-assertions-field-default">
+        <sql>
+            INSERT INTO ALERT.FIELD_VALUES (FIELD_VALUE, FIELD_ID, CONFIG_ID)
+            SELECT 'true', GET_FIELD_ID('settings.saml.want.assertions.signed'), ID
+            FROM ALERT.DESCRIPTOR_CONFIGS
+            WHERE DESCRIPTOR_ID = GET_DESCRIPTOR_ID('component_authentication')
+            AND CONTEXT_ID = GET_CONTEXT_ID('GLOBAL')
+        </sql>
+    </changeSet>
+</databaseChangeLog>

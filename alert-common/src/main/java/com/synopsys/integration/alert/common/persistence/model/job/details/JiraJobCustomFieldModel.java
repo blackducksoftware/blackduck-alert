@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.common.persistence.model.job.details;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
 public class JiraJobCustomFieldModel extends AlertSerializableModel {
     private String fieldName;

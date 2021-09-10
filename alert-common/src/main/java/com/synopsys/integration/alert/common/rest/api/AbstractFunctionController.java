@@ -19,6 +19,7 @@ import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
+@Deprecated
 public abstract class AbstractFunctionController<T> extends BaseController {
     public static final String API_FUNCTION_URL = "/api/function";
     private final CustomFunctionAction<T> functionAction;

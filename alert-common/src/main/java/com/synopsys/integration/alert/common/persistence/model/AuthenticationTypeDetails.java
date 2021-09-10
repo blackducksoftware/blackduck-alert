@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.common.persistence.model;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
 public class AuthenticationTypeDetails extends AlertSerializableModel {
     private final Long id;
@@ -25,4 +25,5 @@ public class AuthenticationTypeDetails extends AlertSerializableModel {
     public String getName() {
         return name;
     }
+
 }

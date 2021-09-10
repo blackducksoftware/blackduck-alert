@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
+import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -29,7 +29,8 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderDataAc
 import com.synopsys.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.blackduck.api.core.ResourceMetadata;
-import com.synopsys.integration.blackduck.api.core.response.BlackDuckPathMultipleResponses;
+import com.synopsys.integration.blackduck.api.core.response.UrlMultipleResponses;
+import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.generated.view.UserView;
 import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
@@ -58,6 +59,7 @@ public class ProviderDataAccessorTestIT {
     private final BlackDuckJsonTransformer blackDuckJsonTransformer = new BlackDuckJsonTransformer(gson, new ObjectMapper(), new BlackDuckResponseResolver(gson), new SilentIntLogger());
 
     private BlackDuckPropertiesFactory blackDuckPropertiesFactory;
+    private ApiDiscovery apiDiscovery;
     private ProjectService projectService;
     private BlackDuckApiClient blackDuckService;
     private ProjectUsersService projectUsersService;
@@ -79,6 +81,11 @@ public class ProviderDataAccessorTestIT {
         Mockito.when(blackDuckServicesFactory.getBlackDuckApiClient()).thenReturn(blackDuckService);
         projectUsersService = Mockito.mock(ProjectUsersService.class);
         Mockito.when(blackDuckServicesFactory.createProjectUsersService()).thenReturn(projectUsersService);
+
+        apiDiscovery = Mockito.mock(ApiDiscovery.class);
+        UrlMultipleResponses<UserView> usersLink = Mockito.mock(UrlMultipleResponses.class);
+        Mockito.when(apiDiscovery.metaUsersLink()).thenReturn(usersLink);
+        Mockito.when(blackDuckServicesFactory.getApiDiscovery()).thenReturn(apiDiscovery);
 
         ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
         configurationFieldModel.setFieldValue(PROVIDER_CONFIG_NAME);
@@ -125,7 +132,7 @@ public class ProviderDataAccessorTestIT {
         Long providerConfigId = providerConfiguration.getConfigurationId();
 
         List<UserView> userViews = new ArrayList<>(createUserViews());
-        Mockito.when(blackDuckService.getAllResponses(Mockito.any(BlackDuckPathMultipleResponses.class))).thenReturn(userViews);
+        Mockito.when(blackDuckService.getAllResponses(Mockito.any(UrlMultipleResponses.class))).thenReturn(userViews);
 
         BlackDuckProviderDataAccessor providerDataAccessor = new BlackDuckProviderDataAccessor(configurationAccessor, blackDuckPropertiesFactory, blackDuckJsonTransformer);
         List<ProviderUserModel> allProviderUsers = providerDataAccessor.getUsersByProviderConfigId(providerConfigId);
@@ -135,7 +142,7 @@ public class ProviderDataAccessorTestIT {
     @Test
     public void getAllUsersByConfigNameTest() throws Exception {
         List<UserView> userViews = new ArrayList<>(createUserViews());
-        Mockito.when(blackDuckService.getAllResponses(Mockito.any(BlackDuckPathMultipleResponses.class))).thenReturn(userViews);
+        Mockito.when(blackDuckService.getAllResponses(Mockito.any(UrlMultipleResponses.class))).thenReturn(userViews);
 
         BlackDuckProviderDataAccessor providerDataAccessor = new BlackDuckProviderDataAccessor(configurationAccessor, blackDuckPropertiesFactory, blackDuckJsonTransformer);
         List<ProviderUserModel> allProviderUsers = providerDataAccessor.getUsersByProviderConfigName(PROVIDER_CONFIG_NAME);

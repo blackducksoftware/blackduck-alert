@@ -29,7 +29,7 @@ public class HomeController {
         this.actions = actions;
     }
 
-    @GetMapping(value = { "/", "/error", "/channels/**", "/providers/**", "/general/**" }, produces = MediaType.TEXT_HTML_VALUE)
+    @GetMapping(value = { "/error" }, produces = MediaType.TEXT_HTML_VALUE)
     public String index() {
         return "index.html";
     }
@@ -42,8 +42,8 @@ public class HomeController {
 
     @ResponseBody
     @GetMapping("/api/verify/saml")
-    public SAMLEnabledResponseModel checkSaml() {
-        return ResponseFactory.createContentResponseFromAction(actions.verifySaml());
+    public SAMLEnabledResponseModel checkSaml(HttpServletRequest request) {
+        return ResponseFactory.createContentResponseFromAction(actions.verifySaml(request));
     }
 
 }

@@ -9,7 +9,7 @@ package com.synopsys.integration.alert.common.descriptor.accessor;
 
 import java.util.Optional;
 
-import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;

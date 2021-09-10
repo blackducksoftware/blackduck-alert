@@ -125,7 +125,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    protected void configure(AuthenticationManagerBuilder auth) {
         auth.authenticationProvider(samlAuthenticationProvider());
     }
 
@@ -133,7 +133,6 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         configureActiveMQProvider();
         configureWithSSL(http);
-        configureH2Console(http);
         http.authorizeRequests()
             .requestMatchers(createAllowedPathMatchers()).permitAll()
             .and().authorizeRequests().anyRequest().authenticated()
@@ -157,17 +156,9 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
             logger.info("Alert Application Configuration: Removing Bouncy Castle provider");
             Security.addProvider(bouncycastle);
             logger.info("Alert Application Configuration: Adding Bouncy Castle provider to the end of the provider list");
-
         } catch (Exception e) {
             // nothing needed here if that provider does not exist
             logger.info("Alert Application Configuration: Bouncy Castle provider not found");
-        }
-    }
-
-    private void configureH2Console(HttpSecurity http) throws Exception {
-        if (alertProperties.getH2ConsoleEnabled()) {
-            ignorePaths(HttpPathManager.PATH_H2_CONSOLE);
-            http.headers().frameOptions().disable();
         }
     }
 
@@ -201,7 +192,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     private ObjectPostProcessor<AffirmativeBased> createRoleProcessor() {
         return new ObjectPostProcessor<>() {
             @Override
-            public AffirmativeBased postProcess(AffirmativeBased affirmativeBased) {
+            public <O extends AffirmativeBased> O postProcess(O affirmativeBased) {
                 WebExpressionVoter webExpressionVoter = new WebExpressionVoter();
                 DefaultWebSecurityExpressionHandler expressionHandler = new DefaultWebSecurityExpressionHandler();
                 expressionHandler.setRoleHierarchy(authorities -> {

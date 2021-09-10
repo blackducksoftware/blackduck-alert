@@ -16,6 +16,8 @@ import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
@@ -72,8 +74,12 @@ public abstract class Descriptor extends Stringable {
         return Optional.ofNullable(uiConfigs.get(actionApiType));
     }
 
+    public abstract Optional<GlobalConfigurationValidator> getGlobalValidator();
+
+    public abstract Optional<DistributionConfigurationValidator> getDistributionValidator();
+
     public Optional<DescriptorMetadata> createMetaData(ConfigContextEnum context) {
-        return getUIConfig(context).map(uiConfig -> createMetaData(uiConfig, context));
+        return getUIConfig(context).map(uiConfig -> new DescriptorMetadata(descriptorKey, getType(), context));
     }
 
     public Set<DefinedFieldModel> getAllDefinedFields(ConfigContextEnum context) {
@@ -85,25 +91,12 @@ public abstract class Descriptor extends Stringable {
                    .collect(Collectors.toSet());
     }
 
-    public Set<ConfigContextEnum> getAppliedUIContexts() {
-        return uiConfigs.keySet();
-    }
-
     public boolean hasUIConfigs() {
         return uiConfigs.size() > 0;
     }
 
     public boolean hasUIConfigForType(ConfigContextEnum actionApiType) {
         return uiConfigs.containsKey(actionApiType);
-    }
-
-    private DescriptorMetadata createMetaData(UIConfig uiConfig, ConfigContextEnum context) {
-        String label = uiConfig.getLabel();
-        String urlName = uiConfig.getUrlName();
-        String description = uiConfig.getDescription();
-        boolean autoGenerateUI = uiConfig.autoGenerateUI();
-        String componentNamespace = uiConfig.getComponentNamespace();
-        return new DescriptorMetadata(descriptorKey, label, urlName, description, getType(), context, autoGenerateUI, componentNamespace, uiConfig.getMetadataFields(), uiConfig.createTestFields());
     }
 
 }

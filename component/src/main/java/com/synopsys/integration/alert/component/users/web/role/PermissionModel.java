@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.component.users.web.role;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
 public class PermissionModel extends AlertSerializableModel {
     private String descriptorName;
@@ -117,4 +117,5 @@ public class PermissionModel extends AlertSerializableModel {
     public void setUploadDelete(boolean uploadDelete) {
         this.uploadDelete = uploadDelete;
     }
+
 }

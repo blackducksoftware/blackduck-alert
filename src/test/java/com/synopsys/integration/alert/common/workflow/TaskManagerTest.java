@@ -10,8 +10,8 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
-import com.synopsys.integration.alert.common.workflow.task.TaskManager;
+import com.synopsys.integration.alert.api.task.ScheduledTask;
+import com.synopsys.integration.alert.api.task.TaskManager;
 
 public class TaskManagerTest {
     @Test

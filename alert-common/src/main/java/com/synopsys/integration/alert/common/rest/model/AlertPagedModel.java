@@ -10,6 +10,7 @@ package com.synopsys.integration.alert.common.rest.model;
 import java.io.Serializable;
 import java.util.List;
 
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.rest.api.ReadPageController;
 
 import net.minidev.json.annotate.JsonIgnore;
@@ -17,7 +18,7 @@ import net.minidev.json.annotate.JsonIgnore;
 public class AlertPagedModel<M extends AlertSerializableModel> extends AlertPagedDetails<M> implements Serializable {
     public static final Integer DEFAULT_PAGE_NUMBER = Integer.valueOf(ReadPageController.DEFAULT_PAGE_NUMBER);
     public static final Integer DEFAULT_PAGE_SIZE = Integer.valueOf(ReadPageController.DEFAULT_PAGE_SIZE);
-    
+
     public AlertPagedModel(int totalPages, int currentPage, int pageSize, List<M> models) {
         super(totalPages, currentPage, pageSize, models);
     }
@@ -27,4 +28,5 @@ public class AlertPagedModel<M extends AlertSerializableModel> extends AlertPage
     public List<M> getModels() {
         return super.getModels();
     }
+
 }

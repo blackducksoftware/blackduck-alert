@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.google.gson.annotations.JsonAdapter;
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 

@@ -21,17 +21,18 @@ import org.springframework.security.web.SecurityFilterChain;
 public class AlertFilterChainProxy extends FilterChainProxy {
     final SAMLContext samlContext;
 
-    public AlertFilterChainProxy(final List<SecurityFilterChain> chains, final SAMLContext samlContext) {
+    public AlertFilterChainProxy(List<SecurityFilterChain> chains, SAMLContext samlContext) {
         super(chains);
         this.samlContext = samlContext;
     }
 
     @Override
-    public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain) throws IOException, ServletException {
-        if (samlContext.isSAMLEnabled()) {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        if (samlContext.isSAMLEnabledForRequest(request)) {
             super.doFilter(request, response, chain);
             return;
         }
         chain.doFilter(request, response);
     }
+
 }

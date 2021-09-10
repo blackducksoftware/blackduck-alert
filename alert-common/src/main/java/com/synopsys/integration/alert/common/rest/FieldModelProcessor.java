@@ -19,12 +19,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.action.ApiAction;
 import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
@@ -33,6 +33,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
 
+@Deprecated(forRemoval = true)
 @Component
 public class FieldModelProcessor {
     private final ConfigurationFieldModelConverter fieldModelConverter;
@@ -65,7 +66,7 @@ public class FieldModelProcessor {
     }
 
     public void performAfterDeleteAction(FieldModel fieldModel) throws AlertException {
-        Optional<ApiAction> optionalApiAction = descriptorProcessor.retrieveApiAction(fieldModel.getDescriptorName(), fieldModel.getContext());
+        Optional<ApiAction> optionalApiAction = descriptorProcessor.retrieveApiAction(fieldModel);
         if (optionalApiAction.isPresent()) {
             ApiAction apiAction = optionalApiAction.get();
             apiAction.afterDeleteAction(fieldModel);

@@ -14,9 +14,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.model.mutable.ConfigurationModelMutable;
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class ConfigurationModel extends AlertSerializableModel {
     private final Long descriptorId;
@@ -93,4 +93,5 @@ public class ConfigurationModel extends AlertSerializableModel {
     public boolean isConfiguredFieldsNotEmpty() {
         return configuredFields != null && !configuredFields.isEmpty();
     }
+
 }
