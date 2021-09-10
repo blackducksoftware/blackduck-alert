@@ -7,9 +7,12 @@
  */
 package com.synopsys.integration.alert.channel.azure.boards.distribution;
 
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -28,15 +31,19 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Azure
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.azure.boards.common.http.AzureApiVersionAppender;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
+import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
 import com.synopsys.integration.azure.boards.common.service.comment.AzureWorkItemCommentService;
 import com.synopsys.integration.azure.boards.common.service.process.AzureProcessService;
 import com.synopsys.integration.azure.boards.common.service.project.AzureProjectService;
+import com.synopsys.integration.azure.boards.common.service.project.TeamProjectResponseModel;
 import com.synopsys.integration.azure.boards.common.service.query.AzureWorkItemQueryService;
 import com.synopsys.integration.azure.boards.common.service.state.AzureWorkItemTypeStateService;
 import com.synopsys.integration.azure.boards.common.service.workitem.AzureWorkItemService;
 
 @Component
 public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory<AzureBoardsJobDetailsModel, Integer> {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     private final Gson gson;
     private final AzureBoardsMessageFormatter formatter;
     private final AzureBoardsPropertiesFactory azureBoardsPropertiesFactory;
@@ -72,20 +79,24 @@ public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory
 
         // Common Azure Boards Services
         AzureApiVersionAppender apiVersionAppender = new AzureApiVersionAppender();
+        AzureProjectService projectService = new AzureProjectService(azureHttpService, apiVersionAppender);
         AzureWorkItemService workItemService = new AzureWorkItemService(azureHttpService);
         AzureWorkItemQueryService workItemQueryService = new AzureWorkItemQueryService(azureHttpService, apiVersionAppender);
 
+        String projectNameOrId = distributionDetails.getProjectNameOrId();
+        String teamProjectName = retrieveProjectNameIfNecessary(projectService, organizationName, projectNameOrId);
+
         installCustomFieldsIfNecessary(
             organizationName,
-            distributionDetails.getProjectNameOrId(),
+            teamProjectName,
             distributionDetails.getWorkItemType(),
-            new AzureProjectService(azureHttpService, apiVersionAppender),
+            projectService,
             new AzureProcessService(azureHttpService, apiVersionAppender)
         );
 
         // Extractor Requirements
         AzureBoardsIssueTrackerQueryManager queryManager = new AzureBoardsIssueTrackerQueryManager(organizationName, distributionDetails, workItemService, workItemQueryService);
-        AzureBoardsSearcher azureBoardsSearcher = new AzureBoardsSearcher(gson, organizationName, queryManager, modelTransformer);
+        AzureBoardsSearcher azureBoardsSearcher = new AzureBoardsSearcher(gson, organizationName, queryManager, modelTransformer, teamProjectName);
 
         IssueTrackerModelExtractor<Integer> extractor = new IssueTrackerModelExtractor<>(formatter, azureBoardsSearcher);
 
@@ -105,6 +116,27 @@ public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory
             azureCustomFieldInstaller.installCustomFields(projectName, issueType);
         } finally {
             executorService.shutdown();
+        }
+    }
+
+    private String retrieveProjectNameIfNecessary(AzureProjectService projectService, String organizationName, String teamProjectNameOrId) {
+        if (isStringPossibleUUID(teamProjectNameOrId)) {
+            try {
+                TeamProjectResponseModel teamProject = projectService.getProject(organizationName, teamProjectNameOrId);
+                return teamProject.getName();
+            } catch (HttpServiceException e) {
+                logger.warn("Failed to look-up Azure Boards project name", e);
+            }
+        }
+        return teamProjectNameOrId;
+    }
+
+    private boolean isStringPossibleUUID(String uuidCandidateString) {
+        try {
+            UUID.fromString(uuidCandidateString);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
         }
     }
 
