@@ -8,8 +8,8 @@
 package com.synopsys.integration.alert.api.channel.jira.action;
 
 import com.synopsys.integration.alert.api.channel.jira.JiraConstants;
-import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -22,7 +22,7 @@ public abstract class JiraGlobalTestAction extends TestAction {
 
     protected abstract boolean isAppMissing(FieldUtility fieldUtility) throws IntegrationException;
 
-    protected abstract boolean isUserMissing(FieldUtility fieldUtility) throws IntegrationException;
+    protected abstract boolean canUserGetIssues(FieldUtility fieldUtility) throws IntegrationException;
 
     protected abstract boolean isUserAdmin(FieldUtility fieldUtility) throws IntegrationException;
 
@@ -31,8 +31,8 @@ public abstract class JiraGlobalTestAction extends TestAction {
     @Override
     public MessageResult testConfig(String configId, FieldModel fieldModel, FieldUtility registeredFieldValues) throws IntegrationException {
         try {
-            if (isUserMissing(registeredFieldValues)) {
-                throw new AlertException("User did not match any known users.");
+            if (!canUserGetIssues(registeredFieldValues)) {
+                throw new AlertException("User does not have access to view any issues in Jira.");
             }
 
             if (isAppCheckEnabled(registeredFieldValues)) {

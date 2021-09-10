@@ -20,12 +20,12 @@ import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudPropertiesFact
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.jira.common.cloud.model.IssueSearchResponseModel;
+import com.synopsys.integration.jira.common.cloud.service.IssueSearchService;
 import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
 import com.synopsys.integration.jira.common.cloud.service.MyPermissionsService;
-import com.synopsys.integration.jira.common.cloud.service.UserSearchService;
 import com.synopsys.integration.jira.common.model.response.MultiPermissionResponseModel;
 import com.synopsys.integration.jira.common.model.response.PermissionModel;
-import com.synopsys.integration.jira.common.model.response.UserDetailsResponseModel;
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 
 @Component
@@ -56,14 +56,12 @@ public class JiraCloudGlobalTestAction extends JiraGlobalTestAction {
     }
 
     @Override
-    protected boolean isUserMissing(FieldUtility fieldUtility) throws IntegrationException {
+    protected boolean canUserGetIssues(FieldUtility fieldUtility) throws IntegrationException {
         JiraCloudProperties jiraProperties = jiraCloudPropertiesFactory.createJiraProperties(fieldUtility);
         JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
-        UserSearchService userSearchService = jiraCloudServiceFactory.createUserSearchService();
-        String username = jiraProperties.getUsername();
-        return userSearchService.findUser(username).stream()
-                   .map(UserDetailsResponseModel::getEmailAddress)
-                   .noneMatch(email -> email.equals(username));
+        IssueSearchService issueSearchService = jiraCloudServiceFactory.createIssueSearchService();
+        IssueSearchResponseModel issueSearchResponseModel = issueSearchService.queryForIssuePage("", 0, 1);
+        return issueSearchResponseModel.getIssues().size() > 0;
     }
 
     @Override
