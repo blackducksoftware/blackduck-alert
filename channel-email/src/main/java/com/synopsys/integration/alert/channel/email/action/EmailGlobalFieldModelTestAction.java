@@ -25,8 +25,6 @@ import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.service.email.JavamailPropertiesFactory;
-import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
 
 @Component
 public class EmailGlobalFieldModelTestAction extends FieldModelTestAction {
@@ -34,12 +32,10 @@ public class EmailGlobalFieldModelTestAction extends FieldModelTestAction {
     private static final String TEST_MESSAGE_CONTENT = "This is a test message from Alert to confirm your Global Email Configuration is valid.";
 
     private final EmailChannelMessageSender emailChannelMessageSender;
-    private final JavamailPropertiesFactory javamailPropertiesFactory;
 
     @Autowired
-    public EmailGlobalFieldModelTestAction(EmailChannelMessageSender emailChannelMessageSender, JavamailPropertiesFactory javamailPropertiesFactory) {
+    public EmailGlobalFieldModelTestAction(EmailChannelMessageSender emailChannelMessageSender) {
         this.emailChannelMessageSender = emailChannelMessageSender;
-        this.javamailPropertiesFactory = javamailPropertiesFactory;
     }
 
     @Override
@@ -47,13 +43,6 @@ public class EmailGlobalFieldModelTestAction extends FieldModelTestAction {
         List<String> emailAddresses = validateAndWrapDestinationAsList(fieldModel.getFieldValue(FieldModelTestAction.KEY_DESTINATION_NAME).orElse(""));
         EmailJobDetailsModel distributionDetails = new EmailJobDetailsModel(
             null,
-            javamailPropertiesFactory.createJavaMailProperties(registeredFieldValues),
-            registeredFieldValues.getStringOrEmpty(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey()),
-            registeredFieldValues.getStringOrEmpty(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey()),
-            registeredFieldValues.getInteger(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey()).orElse(0),
-            registeredFieldValues.getBooleanOrFalse(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey()),
-            registeredFieldValues.getStringOrEmpty(EmailPropertyKeys.JAVAMAIL_USER_KEY.getPropertyKey()),
-            registeredFieldValues.getStringOrEmpty(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey()),
             TEST_SUBJECT_LINE,
             false,
             true,
