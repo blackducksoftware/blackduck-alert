@@ -22,9 +22,11 @@ import com.synopsys.integration.azure.boards.common.service.workitem.response.Wo
 
 public class AzureBoardsWorkItemFinder {
     private final AzureBoardsIssueTrackerQueryManager queryManager;
+    private final String teamProjectName;
 
-    public AzureBoardsWorkItemFinder(AzureBoardsIssueTrackerQueryManager queryManager) {
+    public AzureBoardsWorkItemFinder(AzureBoardsIssueTrackerQueryManager queryManager, String teamProjectName) {
         this.queryManager = queryManager;
+        this.teamProjectName = teamProjectName;
     }
 
     public List<WorkItemResponseModel> findWorkItems(LinkableItem provider, LinkableItem project, Map<String, String> fieldReferenceNameToExpectedValue) throws AlertException {
@@ -32,11 +34,13 @@ public class AzureBoardsWorkItemFinder {
         String topicKey = AzureBoardsSearchPropertiesUtils.createNullableLinkableItemKey(project);
 
         String systemIdFieldName = WorkItemResponseFields.System_Id.getFieldName();
+        String teamProjectFieldName = WorkItemResponseFields.System_TeamProject.getFieldName();
         WorkItemQueryWhere queryBuilder = WorkItemQuery
-                                              .select(systemIdFieldName)
-                                              .fromWorkItems()
-                                              .whereGroup(AzureCustomFieldManager.ALERT_PROVIDER_KEY_FIELD_REFERENCE_NAME, WorkItemQueryWhereOperator.EQ, providerKey)
-                                              .and(AzureCustomFieldManager.ALERT_TOPIC_KEY_FIELD_REFERENCE_NAME, WorkItemQueryWhereOperator.EQ, topicKey);
+            .select(systemIdFieldName)
+            .fromWorkItems()
+            .whereGroup(teamProjectFieldName, WorkItemQueryWhereOperator.EQ, teamProjectName)
+            .and(AzureCustomFieldManager.ALERT_PROVIDER_KEY_FIELD_REFERENCE_NAME, WorkItemQueryWhereOperator.EQ, providerKey)
+            .and(AzureCustomFieldManager.ALERT_TOPIC_KEY_FIELD_REFERENCE_NAME, WorkItemQueryWhereOperator.EQ, topicKey);
 
         for (Map.Entry<String, String> refToValue : fieldReferenceNameToExpectedValue.entrySet()) {
             queryBuilder = queryBuilder.and(refToValue.getKey(), WorkItemQueryWhereOperator.EQ, refToValue.getValue());

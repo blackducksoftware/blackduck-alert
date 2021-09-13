@@ -22,11 +22,11 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.model.response.MultiPermissionResponseModel;
 import com.synopsys.integration.jira.common.model.response.PermissionModel;
-import com.synopsys.integration.jira.common.model.response.UserDetailsResponseModel;
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
+import com.synopsys.integration.jira.common.server.model.IssueSearchResponseModel;
+import com.synopsys.integration.jira.common.server.service.IssueSearchService;
 import com.synopsys.integration.jira.common.server.service.JiraServerServiceFactory;
 import com.synopsys.integration.jira.common.server.service.MyPermissionsService;
-import com.synopsys.integration.jira.common.server.service.UserSearchService;
 
 @Component
 public class JiraServerGlobalTestAction extends JiraGlobalTestAction {
@@ -55,12 +55,12 @@ public class JiraServerGlobalTestAction extends JiraGlobalTestAction {
     }
 
     @Override
-    protected boolean isUserMissing(FieldUtility fieldUtility) throws IntegrationException {
+    protected boolean canUserGetIssues(FieldUtility fieldUtility) throws IntegrationException {
         JiraServerProperties jiraProperties = jiraServerPropertiesFactory.createJiraProperties(fieldUtility);
         JiraServerServiceFactory jiraServerServiceFactory = jiraProperties.createJiraServicesServerFactory(logger, gson);
-        UserSearchService userSearchService = jiraServerServiceFactory.createUserSearchService();
-        String username = jiraProperties.getUsername();
-        return userSearchService.findUserByUsername(username).stream().map(UserDetailsResponseModel::getName).noneMatch(email -> email.equals(username));
+        IssueSearchService issueSearchService = jiraServerServiceFactory.createIssueSearchService();
+        IssueSearchResponseModel issueSearchResponseModel = issueSearchService.queryForIssuePage("", 0, 1);
+        return issueSearchResponseModel.getIssues().size() > 0;
     }
 
     @Override
