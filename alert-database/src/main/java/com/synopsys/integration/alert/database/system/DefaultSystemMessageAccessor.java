@@ -31,7 +31,6 @@ import com.synopsys.integration.alert.common.util.DateUtils;
 @Component
 @Transactional
 public class DefaultSystemMessageAccessor implements SystemMessageAccessor {
-
     private final Logger logger = LoggerFactory.getLogger(DefaultSystemMessageAccessor.class);
     private final SystemMessageRepository systemMessageRepository;
 
@@ -97,17 +96,22 @@ public class DefaultSystemMessageAccessor implements SystemMessageAccessor {
     @Override
     public void deleteSystemMessages(List<SystemMessageModel> messagesToDelete) {
         List<SystemMessageEntity> convertedMessages = messagesToDelete.stream()
-                                                          .map(this::convertToSystemMessage)
-                                                          .filter(Objects::nonNull)
-                                                          .collect(Collectors.toList());
+            .map(this::convertToSystemMessage)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
         systemMessageRepository.deleteAll(convertedMessages);
+    }
+
+    @Override
+    public int deleteSystemMessagesCreatedBefore(OffsetDateTime date) {
+        return systemMessageRepository.bulkDeleteCreatedBefore(date);
     }
 
     private List<SystemMessageModel> convertAllToSystemMessageModel(List<SystemMessageEntity> systemMessages) {
         return systemMessages
-                   .stream()
-                   .map(this::convertToSystemMessageModel)
-                   .collect(Collectors.toList());
+            .stream()
+            .map(this::convertToSystemMessageModel)
+            .collect(Collectors.toList());
     }
 
     private SystemMessageModel convertToSystemMessageModel(SystemMessageEntity systemMessage) {
