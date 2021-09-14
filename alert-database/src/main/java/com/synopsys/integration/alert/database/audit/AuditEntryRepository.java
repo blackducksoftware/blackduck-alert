@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -35,5 +36,11 @@ public interface AuditEntryRepository extends JpaRepository<AuditEntryEntity, Lo
                + " AND relation.notificationContent.id = ?1"
     )
     Optional<AuditEntryEntity> findMatchingAudit(Long notificationId, UUID commonConfigId);
+
+    @Query("DELETE FROM AuditEntryEntity audit"
+               + " WHERE audit.id NOT IN (SELECT relation.auditEntryId FROM com.synopsys.integration.alert.database.audit.AuditNotificationRelation relation)"
+    )
+    @Modifying
+    void bulkDeleteOrphanedEntries();
 
 }
