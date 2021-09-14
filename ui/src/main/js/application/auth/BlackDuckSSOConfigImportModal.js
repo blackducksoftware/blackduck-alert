@@ -83,7 +83,7 @@ const BlackDuckSSOConfigImportModal = ({
                 endpoint={DISTRIBUTION_URLS.endpointSelectPath}
                 fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId}
                 label="Black Duck Configuration"
-                description="The Black Duck configuration from which to retrieve the SAML configuration. Does not import Entity ID as that will not usually match the Entity ID used for Alert."
+                description="The Black Duck configuration from which to retrieve the SAML configuration. Does not import Entity ID as that will usually not match the Entity ID used for Alert."
                 clearable={false}
                 readOnly={readOnly}
                 required
