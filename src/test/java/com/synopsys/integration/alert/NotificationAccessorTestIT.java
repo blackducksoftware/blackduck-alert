@@ -331,29 +331,30 @@ public class NotificationAccessorTestIT {
     }
 
     @Test
-    public void testDeleteNotificationList() {
-        OffsetDateTime time = DateUtils.createCurrentDateTimestamp();
-        OffsetDateTime startDate = time.minusHours(1);
-        OffsetDateTime endDate = time.plusHours(1);
-        OffsetDateTime createdAt = time.minusHours(3);
-        AlertNotificationModel entity = createNotificationModel(createdAt);
-        notificationManager.saveAllNotifications(List.of(entity));
-        OffsetDateTime createdAtInRange = time.plusMinutes(1);
-        AlertNotificationModel entityToFind1 = createNotificationModel(createdAtInRange);
-        createdAtInRange = time.plusMinutes(5);
-        AlertNotificationModel entityToFind2 = createNotificationModel(createdAtInRange);
-        OffsetDateTime createdAtLater = time.plusHours(3);
-        entity = createNotificationModel(createdAtLater);
-        notificationManager.saveAllNotifications(List.of(entity));
-        notificationManager.saveAllNotifications(List.of(entityToFind1));
-        notificationManager.saveAllNotifications(List.of(entityToFind2));
+    public void deleteNotificationsCreatedBeforeTest() {
+        OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
+        OffsetDateTime oneHourAgo = currentTime.minusHours(1);
+        OffsetDateTime oneAndAHalfHoursAgo = oneHourAgo.minusMinutes(30);
+        OffsetDateTime twoHoursAgo = currentTime.minusHours(2);
+        OffsetDateTime threeHoursAgo = currentTime.minusHours(3);
+        OffsetDateTime oneDayAgo = currentTime.minusDays(1);
 
-        List<AlertNotificationModel> foundList = notificationManager.findByCreatedAtBetween(startDate, endDate);
-        assertEquals(4, notificationContentRepository.count());
+        NotificationEntity notification1 = createNotificationContent(oneHourAgo);
+        // These notifications should be deleted
+        NotificationEntity notification2 = createNotificationContent(twoHoursAgo);
+        NotificationEntity notification3 = createNotificationContent(threeHoursAgo);
+        NotificationEntity notification4 = createNotificationContent(oneDayAgo);
 
-        notificationManager.deleteNotificationList(foundList);
+        notificationContentRepository.saveAll(List.of(notification1, notification2, notification3, notification4));
 
-        assertEquals(2, notificationContentRepository.count());
+        int deletedCount = notificationManager.deleteNotificationsCreatedBefore(oneAndAHalfHoursAgo);
+        assertEquals(3, deletedCount);
+
+        List<NotificationEntity> remainingNotifications = notificationContentRepository.findAll();
+        assertEquals(1, remainingNotifications.size());
+
+        NotificationEntity remainingNotification = remainingNotifications.get(0);
+        assertEquals(notification1.getCreatedAt(), remainingNotification.getCreatedAt());
     }
 
     @Test
@@ -387,9 +388,9 @@ public class NotificationAccessorTestIT {
 
         List<AlertNotificationModel> savedModels = notificationManager.saveAllNotifications(List.of(notificationModel));
         List<Long> notificationIds = savedModels
-                                         .stream()
-                                         .map(AlertNotificationModel::getId)
-                                         .collect(Collectors.toList());
+            .stream()
+            .map(AlertNotificationModel::getId)
+            .collect(Collectors.toList());
 
         notificationManager.setNotificationsProcessedById(new HashSet<>(notificationIds));
 

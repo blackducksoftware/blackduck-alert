@@ -15,14 +15,14 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.exception.IntegrationException;
 
-public abstract class JiraGlobalTestAction extends FieldModelTestAction {
+public abstract class JiraGlobalFieldModelTestAction extends FieldModelTestAction {
     public static final String JIRA_ADMIN_PERMISSION_NAME = "ADMINISTER";
 
     protected abstract boolean isAppCheckEnabled(FieldUtility fieldUtility);
 
     protected abstract boolean isAppMissing(FieldUtility fieldUtility) throws IntegrationException;
 
-    protected abstract boolean isUserMissing(FieldUtility fieldUtility) throws IntegrationException;
+    protected abstract boolean canUserGetIssues(FieldUtility fieldUtility) throws IntegrationException;
 
     protected abstract boolean isUserAdmin(FieldUtility fieldUtility) throws IntegrationException;
 
@@ -31,8 +31,8 @@ public abstract class JiraGlobalTestAction extends FieldModelTestAction {
     @Override
     public MessageResult testConfig(String configId, FieldModel fieldModel, FieldUtility registeredFieldValues) throws IntegrationException {
         try {
-            if (isUserMissing(registeredFieldValues)) {
-                throw new AlertException("User did not match any known users.");
+            if (!canUserGetIssues(registeredFieldValues)) {
+                throw new AlertException("User does not have access to view any issues in Jira.");
             }
 
             if (isAppCheckEnabled(registeredFieldValues)) {

@@ -412,7 +412,7 @@ const DistributionConfigurationTable = ({
                             Id
                         </TableHeaderColumn>
                         {column('name', 'Distribution Job', nameColumnFormatter)}
-                        {column('distributionType', 'Type', descriptorColumnFormatter)}
+                        {column('distributionType', 'Channel', descriptorColumnFormatter)}
                         {column('providerName', 'Provider', descriptorColumnFormatter)}
                         {column('frequency', 'Frequency Type', frequencyColumnFormatter)}
                         {column('lastRan', 'Last Run')}
@@ -442,7 +442,7 @@ const DistributionConfigurationTable = ({
             >
                 <TableHeaderColumn dataField="id" hidden isKey>Id</TableHeaderColumn>
                 {column('name', 'Name', nameColumnFormatter)}
-                {column('distributionType', 'Type', descriptorColumnFormatter)}
+                {column('distributionType', 'Channel', descriptorColumnFormatter)}
                 {column('providerName', 'Provider', descriptorColumnFormatter)}
                 {column('frequency', 'Frequency Type', frequencyColumnFormatter)}
                 {column('lastRan', 'Last Run')}
