@@ -34,4 +34,7 @@ public interface SystemMessageAccessor {
     List<SystemMessageModel> findBetween(DateRange dateRange);
 
     void deleteSystemMessages(List<SystemMessageModel> messagesToDelete);
+
+    int deleteSystemMessagesCreatedBefore(OffsetDateTime date);
+
 }

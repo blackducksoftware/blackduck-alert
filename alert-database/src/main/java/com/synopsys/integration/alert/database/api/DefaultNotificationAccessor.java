@@ -32,10 +32,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
-import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
-import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
 import com.synopsys.integration.alert.database.notification.NotificationEntity;
 
@@ -44,17 +41,16 @@ import com.synopsys.integration.alert.database.notification.NotificationEntity;
 public class DefaultNotificationAccessor implements NotificationAccessor {
     private final NotificationContentRepository notificationContentRepository;
     private final AuditEntryRepository auditEntryRepository;
-    private final AuditNotificationRepository auditNotificationRepository;
     private final ConfigurationAccessor configurationAccessor;
 
     @Autowired
-    public DefaultNotificationAccessor(NotificationContentRepository notificationContentRepository,
+    public DefaultNotificationAccessor(
+        NotificationContentRepository notificationContentRepository,
         AuditEntryRepository auditEntryRepository,
-        AuditNotificationRepository auditNotificationRepository,
-        ConfigurationAccessor configurationAccessor) {
+        ConfigurationAccessor configurationAccessor
+    ) {
         this.notificationContentRepository = notificationContentRepository;
         this.auditEntryRepository = auditEntryRepository;
-        this.auditNotificationRepository = auditNotificationRepository;
         this.configurationAccessor = configurationAccessor;
     }
 
@@ -128,14 +124,15 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     }
 
     @Override
-    public void deleteNotificationList(List<AlertNotificationModel> notifications) {
-        notifications.forEach(this::deleteNotification);
+    public void deleteNotification(AlertNotificationModel notification) {
+        notificationContentRepository.deleteById(notification.getId());
     }
 
     @Override
-    public void deleteNotification(AlertNotificationModel notification) {
-        deleteAuditEntries(notification.getId());
-        notificationContentRepository.deleteById(notification.getId());
+    public int deleteNotificationsCreatedBefore(OffsetDateTime date) {
+        int deletedNotificationsCount = notificationContentRepository.bulkDeleteCreatedAtBefore(date);
+        auditEntryRepository.bulkDeleteOrphanedEntries();
+        return deletedNotificationsCount;
     }
 
     public PageRequest getPageRequestForNotifications(Integer pageNumber, Integer pageSize, @Nullable String sortField, @Nullable String sortOrder) {
@@ -181,16 +178,6 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     @Transactional
     public void setNotificationsProcessedById(Set<Long> notificationIds) {
         notificationContentRepository.setProcessedByIds(notificationIds);
-    }
-
-    private void deleteAuditEntries(Long notificationId) {
-        List<AuditNotificationRelation> foundRelations = auditNotificationRepository.findByNotificationId(notificationId);
-        List<Long> auditIdList = foundRelations
-            .stream()
-            .map(AuditNotificationRelation::getAuditEntryId)
-            .collect(Collectors.toList());
-        List<AuditEntryEntity> auditEntryList = auditEntryRepository.findAllById(auditIdList);
-        auditEntryRepository.deleteAll(auditEntryList);
     }
 
     private List<AlertNotificationModel> toModels(List<NotificationEntity> notificationEntities) {
