@@ -98,7 +98,7 @@ public class EmailGlobalFieldModelTestActionTest {
 
     @Test
     public void testConfigInvalidDestinationTest() {
-        EmailGlobalFieldModelTestAction emailGlobalFieldModelTestAction = new EmailGlobalFieldModelTestAction(null , null);
+        EmailGlobalFieldModelTestAction emailGlobalFieldModelTestAction = new EmailGlobalFieldModelTestAction(null, null);
 
         FieldModel validFieldModel = createFieldModelToTest("not a valid email address");
 

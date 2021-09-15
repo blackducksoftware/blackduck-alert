@@ -97,7 +97,7 @@ public class EmailChannelTestIT {
         Mockito.when(emailAddressValidator.validate(Mockito.any(), Mockito.anyCollection())).thenReturn(new ValidatedEmailAddresses(Set.of(testEmailRecipient), Set.of()));
 
         EmailChannelMessageConverter emailChannelMessageConverter = new EmailChannelMessageConverter(new EmailChannelMessageFormatter());
-        EmailChannelMessageSender emailChannelMessageSender = new EmailChannelMessageSender(configurationAccessor, emailChannelKey,null, emailAddressValidator,null);
+        EmailChannelMessageSender emailChannelMessageSender = new EmailChannelMessageSender(configurationAccessor, emailChannelKey, null, emailAddressValidator, null);
 
         EmailChannel emailChannel = new EmailChannel(emailChannelMessageConverter, emailChannelMessageSender);
 
