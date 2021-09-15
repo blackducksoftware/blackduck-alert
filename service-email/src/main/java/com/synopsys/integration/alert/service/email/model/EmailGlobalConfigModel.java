@@ -8,6 +8,7 @@
 package com.synopsys.integration.alert.service.email.model;
 
 import java.util.Map;
+import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -32,56 +33,56 @@ public class EmailGlobalConfigModel {
     @JsonProperty("additionalJavaMailProperties")
     private Map<String, String> additionalJavaMailProperties;
     
-    public String getFrom() {
-        return from;
+    public Optional<String> getFrom() {
+        return  Optional.ofNullable(from);
     }
 
     public void setFrom(String from) {
         this.from = from;
     }
 
-    public String getHost() {
-        return host;
+    public Optional<String> getHost() {
+        return Optional.ofNullable(host);
     }
 
     public void setHost(String host) {
         this.host = host;
     }
 
-    public Integer getPort() {
-        return port;
+    public Optional<Integer> getPort() {
+        return Optional.ofNullable(port);
     }
 
     public void setPort(Integer port) {
         this.port = port;
     }
 
-    public Boolean getAuth() {
-        return auth;
+    public Optional<Boolean> getAuth() {
+        return Optional.ofNullable(auth);
     }
 
     public void setAuth(Boolean auth) {
         this.auth = auth;
     }
 
-    public String getUsername() {
-        return username;
+    public Optional<String> getUsername() {
+        return Optional.ofNullable(username);
     }
 
     public void setUsername(String username) {
         this.username = username;
     }
 
-    public String getPassword() {
-        return password;
+    public Optional<String> getPassword() {
+        return Optional.ofNullable(password);
     }
 
     public void setPassword(String password) {
         this.password = password;
     }
 
-    public Map<String, String> getAdditionalJavaMailProperties() {
-        return additionalJavaMailProperties;
+    public Optional<Map<String, String>> getAdditionalJavaMailProperties() {
+        return Optional.ofNullable(additionalJavaMailProperties);
     }
 
     public void setAdditionalJavaMailProperties(Map<String, String> additionalJavaMailProperties) {

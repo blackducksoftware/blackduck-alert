@@ -22,32 +22,29 @@ import com.synopsys.integration.alert.channel.email.distribution.address.JobEmai
 import com.synopsys.integration.alert.channel.email.distribution.address.ValidatedEmailAddresses;
 import com.synopsys.integration.alert.common.action.FieldModelTestAction;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.service.email.EmailMessagingService;
 import com.synopsys.integration.alert.service.email.JavamailPropertiesFactory;
 import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
+import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 import com.synopsys.integration.alert.service.email.template.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
 import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.test.common.TestTags;
 
-public class EmailGlobalFieldModelTestActionTest {
+public class EmailGlobalTestActionTest {
     @Test
     public void testConfigValidTest() throws AlertException {
         EmailChannelMessagingService emailChannelMessagingService = Mockito.mock(EmailChannelMessagingService.class);
         Mockito.when(emailChannelMessagingService.sendMessage(Mockito.any(), Mockito.any())).thenReturn(new MessageResult("PASS"));
 
         JavamailPropertiesFactory javamailPropertiesFactory = new JavamailPropertiesFactory();
-        EmailGlobalFieldModelTestAction emailGlobalFieldModelTestAction = new EmailGlobalFieldModelTestAction(emailChannelMessagingService, javamailPropertiesFactory);
-
-        FieldModel validFieldModel = createFieldModelToTest("noreply@synopsys.com");
+        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(emailChannelMessagingService, javamailPropertiesFactory);
 
         try {
-            MessageResult messageResult = emailGlobalFieldModelTestAction.testConfig("0", validFieldModel, new FieldUtility(Map.of()));
+            MessageResult messageResult = emailGlobalTestAction.testConfig("noreply@synopsys.com", new EmailGlobalConfigModel());
             assertFalse(messageResult.hasErrors(), "Expected the message result to not have errors");
             assertFalse(messageResult.hasWarnings(), "Expected the message result to not have warnings");
         } catch (AlertException e) {
@@ -75,11 +72,10 @@ public class EmailGlobalFieldModelTestActionTest {
 
         JavamailPropertiesFactory javamailPropertiesFactory = new JavamailPropertiesFactory();
 
-        EmailGlobalFieldModelTestAction emailGlobalFieldModelTestAction = new EmailGlobalFieldModelTestAction(emailChannelMessagingService, javamailPropertiesFactory);
-        FieldModel validFieldModel = createFieldModelToTest("");
+        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(emailChannelMessagingService, javamailPropertiesFactory);
 
         try {
-            emailGlobalFieldModelTestAction.testConfig("0", validFieldModel, new FieldUtility(Map.of()));
+            emailGlobalTestAction.testConfig("", new EmailGlobalConfigModel());
             fail("Expected an exception to be thrown");
         } catch (AlertException e) {
             // Pass
@@ -88,12 +84,10 @@ public class EmailGlobalFieldModelTestActionTest {
 
     @Test
     public void testConfigInvalidDestinationTest() {
-        EmailGlobalFieldModelTestAction emailGlobalFieldModelTestAction = new EmailGlobalFieldModelTestAction(null, null);
-
-        FieldModel validFieldModel = createFieldModelToTest("not a valid email address");
+        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(null, null);
 
         try {
-            emailGlobalFieldModelTestAction.testConfig("0", validFieldModel, new FieldUtility(Map.of()));
+            emailGlobalTestAction.testConfig("not a valid email address", new EmailGlobalConfigModel());
             fail("Expected an exception to be thrown");
         } catch (AlertException e) {
             // Pass
@@ -109,16 +103,14 @@ public class EmailGlobalFieldModelTestActionTest {
         TestProperties testProperties = new TestProperties();
         String emailAddress = testProperties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT);
 
-        FieldModel validFieldModel = createFieldModelToTest(emailAddress);
-
         JavamailPropertiesFactory javamailPropertiesFactory = new JavamailPropertiesFactory();
         EmailChannelMessagingService validEmailChannelMessagingService = createValidEmailChannelMessagingService(emailAddress);
-        EmailGlobalFieldModelTestAction emailGlobalFieldModelTestAction = new EmailGlobalFieldModelTestAction(validEmailChannelMessagingService, javamailPropertiesFactory);
+        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(validEmailChannelMessagingService, javamailPropertiesFactory);
 
-        FieldUtility validFieldUtility = createValidEmailGlobalFieldUtility(testProperties);
+        EmailGlobalConfigModel globalConfigModel = createValidEmailGlobalConfigModel(testProperties);
 
         try {
-            MessageResult messageResult = emailGlobalFieldModelTestAction.testConfig("0", validFieldModel, validFieldUtility);
+            MessageResult messageResult = emailGlobalTestAction.testConfig(emailAddress, globalConfigModel);
             assertFalse(messageResult.hasErrors(), "Expected the message result to not have errors");
             assertFalse(messageResult.hasWarnings(), "Expected the message result to not have warnings");
         } catch (AlertException e) {
@@ -155,24 +147,22 @@ public class EmailGlobalFieldModelTestActionTest {
         return new EmailChannelMessagingService(emailAddressGatherer, testAlertProperties, emailMessagingService, emailAttachmentFileCreator);
     }
 
-    private FieldUtility createValidEmailGlobalFieldUtility(TestProperties testProperties) {
-        Map<String, ConfigurationFieldModel> configuredFields = new HashMap<>();
-        addConfigurationFieldToMap(configuredFields, EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey(), testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST));
-        addConfigurationFieldToMap(configuredFields, EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey(), testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM));
+    private EmailGlobalConfigModel createValidEmailGlobalConfigModel(TestProperties testProperties) {
+        EmailGlobalConfigModel emailGlobalConfigModel = new EmailGlobalConfigModel();
+        emailGlobalConfigModel.setFrom(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM));
+        emailGlobalConfigModel.setHost(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST));
+        testProperties.getOptionalProperty(TestPropertyKey.TEST_EMAIL_SMTP_PORT).map(Integer::valueOf).ifPresent(emailGlobalConfigModel::setPort);
 
-        testProperties.getOptionalProperty(TestPropertyKey.TEST_EMAIL_SMTP_USER).ifPresent(prop -> addConfigurationFieldToMap(configuredFields, EmailPropertyKeys.JAVAMAIL_USER_KEY.getPropertyKey(), prop));
-        testProperties.getOptionalProperty(TestPropertyKey.TEST_EMAIL_SMTP_PASSWORD).ifPresent(prop -> addConfigurationFieldToMap(configuredFields, EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey(), prop));
-        testProperties.getOptionalProperty(TestPropertyKey.TEST_EMAIL_SMTP_EHLO).ifPresent(prop -> addConfigurationFieldToMap(configuredFields, EmailPropertyKeys.JAVAMAIL_EHLO_KEY.getPropertyKey(), prop));
-        testProperties.getOptionalProperty(TestPropertyKey.TEST_EMAIL_SMTP_AUTH).ifPresent(prop -> addConfigurationFieldToMap(configuredFields, EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey(), prop));
-        testProperties.getOptionalProperty(TestPropertyKey.TEST_EMAIL_SMTP_PORT).ifPresent(prop -> addConfigurationFieldToMap(configuredFields, EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), prop));
+        testProperties.getOptionalProperty(TestPropertyKey.TEST_EMAIL_SMTP_AUTH).map(Boolean::valueOf).ifPresent(emailGlobalConfigModel::setAuth);
+        testProperties.getOptionalProperty(TestPropertyKey.TEST_EMAIL_SMTP_USER).ifPresent(emailGlobalConfigModel::setUsername);
+        testProperties.getOptionalProperty(TestPropertyKey.TEST_EMAIL_SMTP_PASSWORD).ifPresent(emailGlobalConfigModel::setPassword);
 
-        return new FieldUtility(configuredFields);
-    }
+        Map<String, String> additionalPropertiesMap = new HashMap<>();
+        testProperties.getOptionalProperty(TestPropertyKey.TEST_EMAIL_SMTP_EHLO).ifPresent(prop -> additionalPropertiesMap.put(EmailPropertyKeys.JAVAMAIL_EHLO_KEY.getPropertyKey(), prop));
 
-    private void addConfigurationFieldToMap(Map<String, ConfigurationFieldModel> configuredFields, String key, String value) {
-        ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create(key);
-        configurationFieldModel.setFieldValue(value);
-        configuredFields.put(key, configurationFieldModel);
+        emailGlobalConfigModel.setAdditionalJavaMailProperties(additionalPropertiesMap);
+
+        return emailGlobalConfigModel;
     }
 
 }

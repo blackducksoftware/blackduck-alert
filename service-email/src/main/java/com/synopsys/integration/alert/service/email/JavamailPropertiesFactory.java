@@ -31,12 +31,29 @@ public class JavamailPropertiesFactory {
         }
 
         Properties javaMailProperties = new Properties();
-        putIfNotEmpty(javaMailProperties::setProperty, JAVAMAIL_FROM_KEY, globalConfiguration.getFrom());
-        putIfNotEmpty(javaMailProperties::setProperty, JAVAMAIL_HOST_KEY, globalConfiguration.getHost());
-        putIfNotEmpty(javaMailProperties::setProperty, JAVAMAIL_PORT_KEY, String.valueOf(globalConfiguration.getPort()));
-        putIfNotEmpty(javaMailProperties::setProperty, JAVAMAIL_AUTH_KEY, String.valueOf(globalConfiguration.getAuth()));
-        putIfNotEmpty(javaMailProperties::setProperty, JAVAMAIL_USER_KEY, globalConfiguration.getUsername());
-        javaMailProperties.putAll(globalConfiguration.getAdditionalJavaMailProperties());
+        globalConfiguration.getFrom()
+            .filter(StringUtils::isNotBlank)
+            .ifPresent(value -> javaMailProperties.setProperty(JAVAMAIL_FROM_KEY.getPropertyKey(), value));
+
+        globalConfiguration.getHost()
+            .filter(StringUtils::isNotBlank)
+            .ifPresent(value -> javaMailProperties.setProperty(JAVAMAIL_HOST_KEY.getPropertyKey(), value));
+
+        globalConfiguration.getPort()
+            .map(String::valueOf)
+            .filter(StringUtils::isNotBlank)
+            .ifPresent(value -> javaMailProperties.setProperty(JAVAMAIL_PORT_KEY.getPropertyKey(), value));
+
+        globalConfiguration.getAuth()
+            .map(String::valueOf)
+            .filter(StringUtils::isNotBlank)
+            .ifPresent(value -> javaMailProperties.setProperty(JAVAMAIL_AUTH_KEY.getPropertyKey(), value));
+
+        globalConfiguration.getUsername()
+            .filter(StringUtils::isNotBlank)
+            .ifPresent(value -> javaMailProperties.setProperty(JAVAMAIL_USER_KEY.getPropertyKey(), value));
+
+        globalConfiguration.getAdditionalJavaMailProperties().ifPresent(javaMailProperties::putAll);
 
         return javaMailProperties;
     }
@@ -57,13 +74,6 @@ public class JavamailPropertiesFactory {
         }
 
         return javaMailProperties;
-    }
-
-    private void putIfNotEmpty(BiConsumer<String, String> setter, EmailPropertyKeys emailPropertyKey, String value) {
-        String keyString = emailPropertyKey.getPropertyKey();
-        if (StringUtils.isNotEmpty(value)) {
-            setter.accept(keyString, value);
-        }
     }
 
 }

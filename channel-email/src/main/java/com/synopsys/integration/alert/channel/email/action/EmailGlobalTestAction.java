@@ -23,6 +23,7 @@ import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.service.email.EmailTarget;
 import com.synopsys.integration.alert.service.email.JavamailPropertiesFactory;
 import com.synopsys.integration.alert.service.email.SmtpConfig;
+import com.synopsys.integration.alert.service.email.SmtpConfigBuilder;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
 @Component
@@ -53,15 +54,17 @@ public class EmailGlobalTestAction {
 
         EmailChannelMessageModel testMessage = EmailChannelMessageModel.simple(TEST_SUBJECT_LINE, TEST_MESSAGE_CONTENT, "", "");
 
-        SmtpConfig smtpConfig = SmtpConfig.builder()
-                    .setJavamailProperties(javamailPropertiesFactory.createJavaMailProperties(emailGlobalConfigModel))
-                    .setSmtpFrom(emailGlobalConfigModel.getFrom())
-                    .setSmtpHost(emailGlobalConfigModel.getHost())
-                    .setSmtpPort(emailGlobalConfigModel.getPort())
-                    .setSmtpAuth(emailGlobalConfigModel.getAuth())
-                    .setSmtpUsername(emailGlobalConfigModel.getUsername())
-                    .setSmtpPassword(emailGlobalConfigModel.getPassword())
-                    .build();
+        SmtpConfigBuilder smtpConfigBuilder = SmtpConfig.builder();
+        smtpConfigBuilder.setJavamailProperties(javamailPropertiesFactory.createJavaMailProperties(emailGlobalConfigModel));
+
+        emailGlobalConfigModel.getFrom().ifPresent(smtpConfigBuilder::setSmtpFrom);
+        emailGlobalConfigModel.getHost().ifPresent(smtpConfigBuilder::setSmtpFrom);
+        emailGlobalConfigModel.getPort().ifPresent(smtpConfigBuilder::setSmtpPort);
+        emailGlobalConfigModel.getAuth().ifPresent(smtpConfigBuilder::setSmtpAuth);
+        emailGlobalConfigModel.getUsername().ifPresent(smtpConfigBuilder::setSmtpUsername);
+        emailGlobalConfigModel.getPassword().ifPresent(smtpConfigBuilder::setSmtpPassword);
+
+        SmtpConfig smtpConfig = smtpConfigBuilder.build();
 
         EmailTarget emailTarget = emailChannelMessagingService.createTarget(testMessage, testAddress);
 
