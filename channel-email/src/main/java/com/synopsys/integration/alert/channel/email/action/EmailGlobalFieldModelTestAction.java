@@ -7,8 +7,6 @@
  */
 package com.synopsys.integration.alert.channel.email.action;
 
-import java.util.List;
-
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
@@ -17,55 +15,60 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFormat;
 import com.synopsys.integration.alert.channel.email.distribution.EmailChannelMessageModel;
-import com.synopsys.integration.alert.channel.email.distribution.EmailChannelMessageSender;
+import com.synopsys.integration.alert.channel.email.distribution.EmailChannelMessagingService;
 import com.synopsys.integration.alert.common.action.FieldModelTestAction;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
-import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.service.email.EmailTarget;
+import com.synopsys.integration.alert.service.email.JavamailPropertiesFactory;
+import com.synopsys.integration.alert.service.email.SmtpConfig;
+import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
 
 @Component
 public class EmailGlobalFieldModelTestAction extends FieldModelTestAction {
     private static final String TEST_SUBJECT_LINE = "Email Global Configuration Test";
     private static final String TEST_MESSAGE_CONTENT = "This is a test message from Alert to confirm your Global Email Configuration is valid.";
 
-    private final EmailChannelMessageSender emailChannelMessageSender;
+    private final EmailChannelMessagingService emailChannelMessagingService;
+    private final JavamailPropertiesFactory javamailPropertiesFactory;
 
     @Autowired
-    public EmailGlobalFieldModelTestAction(EmailChannelMessageSender emailChannelMessageSender) {
-        this.emailChannelMessageSender = emailChannelMessageSender;
+    public EmailGlobalFieldModelTestAction(EmailChannelMessagingService emailChannelMessagingService, JavamailPropertiesFactory javamailPropertiesFactory) {
+        this.emailChannelMessagingService = emailChannelMessagingService;
+        this.javamailPropertiesFactory = javamailPropertiesFactory;
     }
 
     @Override
     public MessageResult testConfig(String configId, FieldModel fieldModel, FieldUtility registeredFieldValues) throws AlertException {
-        List<String> emailAddresses = validateAndWrapDestinationAsList(fieldModel.getFieldValue(FieldModelTestAction.KEY_DESTINATION_NAME).orElse(""));
-        EmailJobDetailsModel distributionDetails = new EmailJobDetailsModel(
-            null,
-            TEST_SUBJECT_LINE,
-            false,
-            true,
-            EmailAttachmentFormat.NONE.name(),
-            emailAddresses
-        );
+        String addressString = fieldModel.getFieldValue(FieldModelTestAction.KEY_DESTINATION_NAME).orElse("");
+        if (StringUtils.isBlank(addressString)) {
+            throw new AlertException(String.format("Could not determine what email address to send this content to. %s was not provided or was blank. Please provide a valid email address to test the configuration.", FieldModelTestAction.KEY_DESTINATION_NAME));
+        }
+
+        try {
+            InternetAddress emailAddress = new InternetAddress(addressString);
+            emailAddress.validate();
+        } catch (AddressException ex) {
+            throw new AlertException(String.format("%s is not a valid email address. %s", addressString, ex.getMessage()));
+        }
 
         EmailChannelMessageModel testMessage = EmailChannelMessageModel.simple(TEST_SUBJECT_LINE, TEST_MESSAGE_CONTENT, "", "");
 
-        return emailChannelMessageSender.sendMessages(distributionDetails, List.of(testMessage));
-    }
+        EmailTarget emailTarget = emailChannelMessagingService.createTarget(testMessage, addressString);
 
-    private List<String> validateAndWrapDestinationAsList(String addressString) throws AlertException {
-        if (StringUtils.isNotBlank(addressString)) {
-            try {
-                InternetAddress emailAddress = new InternetAddress(addressString);
-                emailAddress.validate();
-            } catch (AddressException ex) {
-                throw new AlertException(String.format("%s is not a valid email address. %s", addressString, ex.getMessage()));
-            }
-            return List.of(addressString);
-        }
-        return List.of();
+        SmtpConfig smtpConfig = SmtpConfig.builder()
+            .setJavamailProperties(javamailPropertiesFactory.createJavaMailProperties(registeredFieldValues))
+            .setSmtpFrom(registeredFieldValues.getString(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey()).orElse(null))
+            .setSmtpHost(registeredFieldValues.getString(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey()).orElse(null))
+            .setSmtpPort(registeredFieldValues.getInteger(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey()).orElse(-1))
+            .setSmtpAuth(registeredFieldValues.getBooleanOrFalse(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey()))
+            .setSmtpUsername(registeredFieldValues.getString(EmailPropertyKeys.JAVAMAIL_USER_KEY.name()).orElse(null))
+            .setSmtpPassword(registeredFieldValues.getString(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey()).orElse(null))
+            .build();
+
+        return emailChannelMessagingService.sendMessage(smtpConfig, emailTarget);
     }
 
 }

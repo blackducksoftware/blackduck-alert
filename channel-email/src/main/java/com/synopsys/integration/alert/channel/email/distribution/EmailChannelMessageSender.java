@@ -94,12 +94,12 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
 
         SmtpConfig smtpConfig = SmtpConfig.builder()
             .setJavamailProperties(javamailPropertiesFactory.createJavaMailProperties(globalConfiguration))
-            .setSmtpFrom(globalConfiguration.getStringOrEmpty(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey()))
-            .setSmtpHost(globalConfiguration.getStringOrEmpty(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey()))
-            .setSmtpPort(globalConfiguration.getInteger(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey()).orElse(0))
+            .setSmtpFrom(globalConfiguration.getString(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey()).orElse(null))
+            .setSmtpHost(globalConfiguration.getString(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey()).orElse(null))
+            .setSmtpPort(globalConfiguration.getInteger(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey()).orElse(-1))
             .setSmtpAuth(globalConfiguration.getBooleanOrFalse(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey()))
-            .setSmtpUsername(globalConfiguration.getStringOrEmpty(EmailPropertyKeys.JAVAMAIL_USER_KEY.name()))
-            .setSmtpPassword(globalConfiguration.getStringOrEmpty(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey()))
+            .setSmtpUsername(globalConfiguration.getString(EmailPropertyKeys.JAVAMAIL_USER_KEY.name()).orElse(null))
+            .setSmtpPassword(globalConfiguration.getString(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey()).orElse(null))
             .build();
 
         MessageResult emailsSentSuccessfully = emailChannelMessagingService.sendMessages(smtpConfig, emailJobDetails, emailMessages, invalidEmailAddresses);

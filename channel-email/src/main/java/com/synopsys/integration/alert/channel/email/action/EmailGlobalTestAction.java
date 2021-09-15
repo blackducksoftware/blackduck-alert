@@ -40,7 +40,16 @@ public class EmailGlobalTestAction {
     }
 
     public MessageResult testConfig(String testAddress, EmailGlobalConfigModel emailGlobalConfigModel) throws AlertException {
-        Set<String> emailAddresses = validateAndWrapDestinationAsList(testAddress);
+        if (StringUtils.isBlank(testAddress)) {
+            throw new AlertException("Could not determine what email address to send this content to. testAddress was not provided or was blank. Please provide a valid email address to test the configuration.");
+        }
+
+        try {
+            InternetAddress emailAddress = new InternetAddress(testAddress);
+            emailAddress.validate();
+        } catch (AddressException ex) {
+            throw new AlertException(String.format("%s is not a valid email address. %s", testAddress, ex.getMessage()));
+        }
 
         EmailChannelMessageModel testMessage = EmailChannelMessageModel.simple(TEST_SUBJECT_LINE, TEST_MESSAGE_CONTENT, "", "");
 
@@ -52,24 +61,11 @@ public class EmailGlobalTestAction {
                     .setSmtpAuth(emailGlobalConfigModel.getAuth())
                     .setSmtpUsername(emailGlobalConfigModel.getUsername())
                     .setSmtpPassword(emailGlobalConfigModel.getPassword())
-                        .build();
+                    .build();
 
-        EmailTarget emailTarget = emailChannelMessagingService.createTarget(testMessage, emailAddresses);
+        EmailTarget emailTarget = emailChannelMessagingService.createTarget(testMessage, testAddress);
 
         return emailChannelMessagingService.sendMessage(smtpConfig, emailTarget);
-    }
-
-    private Set<String> validateAndWrapDestinationAsList(String addressString) throws AlertException {
-        if (StringUtils.isNotBlank(addressString)) {
-            try {
-                InternetAddress emailAddress = new InternetAddress(addressString);
-                emailAddress.validate();
-            } catch (AddressException ex) {
-                throw new AlertException(String.format("%s is not a valid email address. %s", addressString, ex.getMessage()));
-            }
-            return Set.of(addressString);
-        }
-        return Set.of();
     }
 
 }
