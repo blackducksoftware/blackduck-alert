@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.test.common.processor.api;
+package com.synopsys.integration.alert.test.common.blackduck;
 
 import java.util.List;
 

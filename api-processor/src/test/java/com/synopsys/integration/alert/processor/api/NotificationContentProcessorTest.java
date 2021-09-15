@@ -34,7 +34,7 @@ import com.synopsys.integration.alert.provider.blackduck.processor.message.servi
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.policy.BlackDuckPolicyComponentConcernCreator;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.policy.BlackDuckPolicySeverityConverter;
 import com.synopsys.integration.alert.provider.blackduck.processor.model.RuleViolationUniquePolicyNotificationContent;
-import com.synopsys.integration.alert.test.common.processor.api.BlackDuckResponseTestUtility;
+import com.synopsys.integration.alert.test.common.blackduck.BlackDuckResponseTestUtility;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentVersionView;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.view.RuleViolationNotificationView;
