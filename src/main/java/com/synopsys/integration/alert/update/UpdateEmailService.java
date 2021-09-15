@@ -33,8 +33,6 @@ import com.synopsys.integration.alert.service.email.EmailMessagingService;
 import com.synopsys.integration.alert.service.email.EmailTarget;
 import com.synopsys.integration.alert.service.email.JavamailPropertiesFactory;
 import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
-import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
-import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModelTransformer;
 import com.synopsys.integration.alert.service.email.template.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.update.model.UpdateModel;
 
@@ -89,7 +87,7 @@ public class UpdateEmailService {
                 templateFields.put("repositoryUrl", updateModel.getRepositoryUrl());
                 templateFields.put(FreemarkerTemplatingService.KEY_ALERT_SERVER_URL, alertServerUrl);
 
-                handleSendAndUpdateDatabase(
+                handleSend(
                     javamailPropertiesFactory.createJavaMailProperties(emailConfig),
                     emailConfig.getStringOrEmpty(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey()),
                     emailConfig.getStringOrEmpty(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey()),
@@ -118,7 +116,7 @@ public class UpdateEmailService {
                    .isPresent();
     }
 
-    private void handleSendAndUpdateDatabase(Properties javamailProperties, String smtpFrom, String smtpHost, int smtpPort, boolean smtpAuth, String smtpUsername, String smtpPassword, Map<String, Object> templateFields, String emailAddress) throws AlertException {
+    private void handleSend(Properties javamailProperties, String smtpFrom, String smtpHost, int smtpPort, boolean smtpAuth, String smtpUsername, String smtpPassword, Map<String, Object> templateFields, String emailAddress) throws AlertException {
         try {
             String alertLogo = alertProperties.createSynopsysLogoPath();
 
