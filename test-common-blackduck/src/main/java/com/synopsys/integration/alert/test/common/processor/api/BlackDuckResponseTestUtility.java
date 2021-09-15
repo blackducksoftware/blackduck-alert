@@ -23,7 +23,7 @@ public class BlackDuckResponseTestUtility {
         ProjectVersionComponentVersionView projectVersionComponentVersionView = new ProjectVersionComponentVersionView();
 
         projectVersionComponentVersionView.setComponentName("component name");
-        projectVersionComponentVersionView.setComponentVersion("http://component-versio-url");
+        projectVersionComponentVersionView.setComponentVersion("http://component-version-url");
         projectVersionComponentVersionView.setComponentVersionName("component version name");
         projectVersionComponentVersionView.setPolicyStatus(ProjectVersionComponentPolicyStatusType.IN_VIOLATION);
         projectVersionComponentVersionView.setUsages(List.of(UsageType.DYNAMICALLY_LINKED));

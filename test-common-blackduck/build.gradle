@@ -1,0 +1,8 @@
+dependencies {
+    api project(':test-common')
+
+    implementation platform(project(':alert-platform'))
+    implementation project(':alert-common')
+    implementation project(':provider-blackduck')
+    implementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
+}

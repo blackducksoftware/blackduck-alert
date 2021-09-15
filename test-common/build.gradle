@@ -3,8 +3,6 @@ dependencies {
 
     implementation platform(project(':alert-platform'))
     implementation project(':alert-common')
-    implementation project(':provider-blackduck')
-    implementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
 
     api 'org.springframework:spring-test'
     api 'org.springframework.security:spring-security-test'
