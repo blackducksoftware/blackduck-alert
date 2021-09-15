@@ -52,7 +52,7 @@ public class EmailGlobalConfigController implements BaseResourceController<Email
     public void delete(Long id) {
         ResponseFactory.createContentResponseFromAction(configActions.delete(id));
     }
-    
+
     @PostMapping("/test")
     public ValidationResponseModel test(@RequestParam String sendTo, @RequestBody EmailGlobalConfigModel resource) {
         return ResponseFactory.createContentResponseFromAction(configActions.test(sendTo, resource));
