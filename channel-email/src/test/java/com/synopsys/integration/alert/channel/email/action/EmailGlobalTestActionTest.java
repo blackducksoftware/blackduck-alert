@@ -20,10 +20,7 @@ import com.synopsys.integration.alert.channel.email.distribution.EmailChannelMes
 import com.synopsys.integration.alert.channel.email.distribution.address.EmailAddressGatherer;
 import com.synopsys.integration.alert.channel.email.distribution.address.JobEmailAddressValidator;
 import com.synopsys.integration.alert.channel.email.distribution.address.ValidatedEmailAddresses;
-import com.synopsys.integration.alert.common.action.FieldModelTestAction;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.service.email.EmailMessagingService;
 import com.synopsys.integration.alert.service.email.JavamailPropertiesFactory;
 import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
@@ -116,17 +113,6 @@ public class EmailGlobalTestActionTest {
         } catch (AlertException e) {
             fail("An exception was thrown where none was expected", e);
         }
-    }
-
-    private FieldModel createFieldModelToTest(String destinationValue) {
-        Map<String, FieldValueModel> keyToValues = new HashMap<>();
-
-        Set<String> values = null != destinationValue ? Set.of(destinationValue) : Set.of();
-
-        FieldValueModel destinationFieldValueModel = new FieldValueModel(values, false);
-        keyToValues.put(FieldModelTestAction.KEY_DESTINATION_NAME, destinationFieldValueModel);
-
-        return new FieldModel(null, null, keyToValues);
     }
 
     private EmailChannelMessagingService createValidEmailChannelMessagingService(String emailAddress) {
