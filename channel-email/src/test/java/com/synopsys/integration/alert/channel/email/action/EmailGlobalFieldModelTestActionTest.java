@@ -41,7 +41,7 @@ import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.test.common.TestTags;
 
-public class EmailGlobalTestActionTest {
+public class EmailGlobalFieldModelTestActionTest {
     @Test
     public void testConfigValidTest() throws AlertException {
         EmailChannelMessagingService emailChannelMessagingService = Mockito.mock(EmailChannelMessagingService.class);
