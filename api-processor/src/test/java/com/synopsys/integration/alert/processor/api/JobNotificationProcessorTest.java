@@ -39,16 +39,8 @@ import com.synopsys.integration.alert.provider.blackduck.processor.message.servi
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.policy.BlackDuckComponentPolicyDetailsCreatorFactory;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.policy.BlackDuckPolicyComponentConcernCreator;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.policy.BlackDuckPolicySeverityConverter;
-import com.synopsys.integration.blackduck.api.core.ResourceLink;
-import com.synopsys.integration.blackduck.api.core.ResourceMetadata;
-import com.synopsys.integration.blackduck.api.generated.component.ProjectVersionComponentVersionLicensesView;
-import com.synopsys.integration.blackduck.api.generated.enumeration.PolicyRuleSeverityType;
-import com.synopsys.integration.blackduck.api.generated.enumeration.ProjectVersionComponentPolicyStatusType;
-import com.synopsys.integration.blackduck.api.generated.enumeration.UsageType;
+import com.synopsys.integration.alert.test.common.blackduck.BlackDuckResponseTestUtility;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentVersionView;
-import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
-import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
-import com.synopsys.integration.blackduck.api.manual.component.RuleViolationNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.view.RuleViolationNotificationView;
 import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
@@ -63,11 +55,8 @@ public class JobNotificationProcessorTest {
     private static final BlackDuckResponseResolver RESPONSE_RESOLVER = new BlackDuckResponseResolver(GSON);
 
     private static final ProviderDetails PROVIDER_DETAILS = new ProviderDetails(15L, new LinkableItem("Black Duck", "bd-server", "https://bd-server"));
-    private static final LinkableItem COMPONENT = new LinkableItem("Component", "BOM component name");
-    private static final LinkableItem COMPONENT_VERSION = new LinkableItem("Component Version", "0.8.7");
-    private static final String COMPONENT_VERSION_URL = "http://componentVersionUrl";
-    private static final String LICENSE_DISPLAY = "licenseDisplay";
     private static final String CHANNEL_KEY = ChannelKeys.SLACK.getUniversalKey();
+    private final BlackDuckResponseTestUtility blackDuckResponseTestUtility = new BlackDuckResponseTestUtility();
 
     private final UUID uuid = UUID.randomUUID();
     private final Long notificationId = 123L;
@@ -93,9 +82,7 @@ public class JobNotificationProcessorTest {
         //Create Requirements for processNotificationForJob
         ProcessedNotificationDetails processedNotificationDetails = new ProcessedNotificationDetails(uuid, CHANNEL_KEY, "JobName");
 
-        RuleViolationNotificationView ruleViolationNotificationView = createRuleViolationNotificationView("TestProjectName");
-        String notificationContentString = GSON.toJson(ruleViolationNotificationView);
-        AlertNotificationModel notificationModel = createNotification(NotificationType.RULE_VIOLATION.name(), notificationContentString);
+        AlertNotificationModel notificationModel = createNotification(NotificationType.RULE_VIOLATION.name());
 
         // Run test and verify notification saved by ProcessingAuditAccessor
 
@@ -108,8 +95,6 @@ public class JobNotificationProcessorTest {
         assertEquals(1, auditNotificationIds.size());
         assertTrue(auditNotificationIds.contains(notificationId));
     }
-
-    // Helper Methods
 
     private RuleViolationNotificationMessageExtractor createRuleViolationNotificationMessageExtractor() throws IntegrationException {
         BlackDuckProviderKey providerKey = new BlackDuckProviderKey();
@@ -130,7 +115,7 @@ public class JobNotificationProcessorTest {
 
         BlackDuckApiClient blackDuckApiClient = Mockito.mock(BlackDuckApiClient.class);
         Mockito.when(blackDuckServicesFactory.getBlackDuckApiClient()).thenReturn(blackDuckApiClient);
-        ProjectVersionComponentVersionView projectVersionComponentVersionView = createProjectVersionComponentVersionView();
+        ProjectVersionComponentVersionView projectVersionComponentVersionView = blackDuckResponseTestUtility.createProjectVersionComponentVersionView();
         Mockito.when(blackDuckApiClient.getResponse(Mockito.any(), Mockito.eq(ProjectVersionComponentVersionView.class))).thenReturn(projectVersionComponentVersionView);
 
         BomComponent404Handler bomComponent404Handler = new BomComponent404Handler();
@@ -147,38 +132,10 @@ public class JobNotificationProcessorTest {
         return new NotificationExtractorBlackDuckServicesFactoryCache(blackDuckPropertiesFactory);
     }
 
-    private RuleViolationNotificationView createRuleViolationNotificationView(String projectName) {
-        RuleViolationNotificationContent notificationContent = new RuleViolationNotificationContent();
-        notificationContent.setProjectName(projectName);
-        notificationContent.setProjectVersionName("a-project-version");
-        notificationContent.setProjectVersion("https://a-project-version");
-        notificationContent.setComponentVersionsInViolation(1);
+    private AlertNotificationModel createNotification(String notificationType) {
+        RuleViolationNotificationView ruleViolationNotificationView = blackDuckResponseTestUtility.createRuleViolationNotificationView("project-name", "project-version-name");
+        String notificationContent = GSON.toJson(ruleViolationNotificationView);
 
-        PolicyInfo policyInfo = new PolicyInfo();
-        policyInfo.setPolicy("https://a-policy");
-        policyInfo.setPolicyName("a policy");
-        policyInfo.setSeverity(PolicyRuleSeverityType.MAJOR.name());
-        notificationContent.setPolicyInfos(List.of(policyInfo));
-
-        ComponentVersionStatus componentVersionStatus = new ComponentVersionStatus();
-        componentVersionStatus.setBomComponent("https://bom-component");
-        componentVersionStatus.setComponentName("component name");
-        componentVersionStatus.setComponent("https://component");
-        componentVersionStatus.setComponentVersionName("component-version name");
-        componentVersionStatus.setComponentVersion("https://component-version");
-        componentVersionStatus.setPolicies(List.of(policyInfo.getPolicy()));
-        componentVersionStatus.setBomComponentVersionPolicyStatus(ProjectVersionComponentPolicyStatusType.IN_VIOLATION.name());
-        componentVersionStatus.setComponentIssueLink("https://component-issues");
-        notificationContent.setComponentVersionStatuses(List.of(componentVersionStatus));
-
-        RuleViolationNotificationView notificationView = new RuleViolationNotificationView();
-        notificationView.setContent(notificationContent);
-        notificationView.setType(NotificationType.RULE_VIOLATION);
-
-        return notificationView;
-    }
-
-    private AlertNotificationModel createNotification(String notificationType, String notificationContent) {
         return new AlertNotificationModel(
             123L,
             PROVIDER_DETAILS.getProviderConfigId(),
@@ -190,30 +147,5 @@ public class JobNotificationProcessorTest {
             OffsetDateTime.now(),
             false
         );
-    }
-
-    private ProjectVersionComponentVersionView createProjectVersionComponentVersionView() throws IntegrationException {
-        ProjectVersionComponentVersionView projectVersionComponentVersionView = new ProjectVersionComponentVersionView();
-
-        projectVersionComponentVersionView.setComponentName(COMPONENT.getValue());
-        projectVersionComponentVersionView.setComponentVersion(COMPONENT_VERSION_URL);
-        projectVersionComponentVersionView.setComponentVersionName(COMPONENT_VERSION.getValue());
-        projectVersionComponentVersionView.setPolicyStatus(ProjectVersionComponentPolicyStatusType.IN_VIOLATION);
-        projectVersionComponentVersionView.setUsages(List.of(UsageType.DYNAMICALLY_LINKED));
-
-        ProjectVersionComponentVersionLicensesView projectVersionComponentVersionLicensesView = new ProjectVersionComponentVersionLicensesView();
-        projectVersionComponentVersionLicensesView.setLicense("http://licenseLink");
-        projectVersionComponentVersionLicensesView.setLicenseDisplay(LICENSE_DISPLAY);
-        projectVersionComponentVersionView.setLicenses(List.of(projectVersionComponentVersionLicensesView));
-
-        ResourceLink resourceLink = new ResourceLink();
-        resourceLink.setHref(new HttpUrl("https://someHref"));
-        resourceLink.setRel("policy-rules");
-        ResourceMetadata meta = new ResourceMetadata();
-        meta.setHref(new HttpUrl("https://someUrl"));
-        meta.setLinks(List.of(resourceLink));
-        projectVersionComponentVersionView.setMeta(meta);
-
-        return projectVersionComponentVersionView;
     }
 }
