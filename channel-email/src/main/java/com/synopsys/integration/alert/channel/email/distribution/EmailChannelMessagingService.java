@@ -61,13 +61,29 @@ public class EmailChannelMessagingService {
     }
 
 
-    public MessageResult sendMessages(SmtpConfig smtpConfig, EmailJobDetailsModel emailJobDetails, List<EmailChannelMessageModel> emailMessages, Set<String> invalidEmailAddresses) throws AlertException {
+    public MessageResult sendMessages(SmtpConfig smtpConfig, EmailJobDetailsModel emailJobDetails, List<EmailChannelMessageModel> emailMessages, Set<String> invalidAdditionalEmailAddresses) throws AlertException {
         EmailAttachmentFormat attachmentFormat = EmailAttachmentFormat.getValueSafely(emailJobDetails.getAttachmentFileType());
         int totalEmailsSent = 0;
 
         for (EmailChannelMessageModel message : emailMessages) {
-            Set<String> validatedGatheredEmailAddresses = gatherAndValidateEmails(emailJobDetails, message, invalidEmailAddresses);
-            EmailTarget emailTarget = createTarget(message, validatedGatheredEmailAddresses);
+            Set<String> projectHrefs = message.getSource()
+                .map(ProjectMessage::getProject)
+                .flatMap(LinkableItem::getUrl)
+                .map(Set::of)
+                .orElse(Set.of());
+
+            Set<String> gatheredEmailAddresses = emailAddressGatherer.gatherEmailAddresses(emailJobDetails, projectHrefs);
+
+            if (gatheredEmailAddresses.isEmpty()) {
+                if (invalidAdditionalEmailAddresses.isEmpty()) {
+                    throw new AlertException("Could not determine what email addresses to send this content to");
+                } else {
+                    String invalidEmailAddressesString = StringUtils.join(invalidAdditionalEmailAddresses, ", ");
+                    throw new AlertException(String.format("No valid email addresses to send this content to. The following email addresses were invalid: %s", invalidEmailAddressesString));
+                }
+            }
+
+            EmailTarget emailTarget = createTarget(message, gatheredEmailAddresses);
 
             sendMessageWithAttachmentAndCleanUp(smtpConfig, emailTarget,  message.getSource().orElse(null), attachmentFormat);
 
@@ -75,26 +91,6 @@ public class EmailChannelMessagingService {
         }
 
         return new MessageResult(String.format("Successfully sent %d email(s)", totalEmailsSent));
-    }
-
-    public Set<String> gatherAndValidateEmails(EmailJobDetailsModel emailJobDetails, EmailChannelMessageModel message, Set<String> invalidEmailAddresses) throws AlertException {
-        Set<String> projectHrefs = message.getSource()
-            .map(ProjectMessage::getProject)
-            .flatMap(LinkableItem::getUrl)
-            .map(Set::of)
-            .orElse(Set.of());
-
-        Set<String> gatheredEmailAddresses = emailAddressGatherer.gatherEmailAddresses(emailJobDetails, projectHrefs);
-        if (gatheredEmailAddresses.isEmpty()) {
-            if (invalidEmailAddresses.isEmpty()) {
-                throw new AlertException("Could not determine what email addresses to send this content to");
-            } else {
-                String invalidEmailAddressesString = StringUtils.join(invalidEmailAddresses, ", ");
-                throw new AlertException(String.format("No valid email addresses to send this content to. The following email addresses were invalid: %s", invalidEmailAddressesString));
-            }
-        }
-
-        return gatheredEmailAddresses;
     }
 
     public EmailTarget createTarget(EmailChannelMessageModel message, String... validatedEmailAddresses) throws AlertException {
