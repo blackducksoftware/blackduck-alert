@@ -101,7 +101,8 @@ public interface DistributionJobRepository extends JpaRepository<DistributionJob
             + " ORDER BY job_entity.created_at ASC";
 
     @Query(nativeQuery = true,
-        value = "SELECT job_entity " + QUERY_FROM_ENABLED_JOBS_MATCHING_FILTERS,
+        value = "SELECT job_entity.job_id, job_entity.name, job_entity.enabled, job_entity.distribution_frequency, job_entity.processing_type, job_entity.channel_descriptor_name, job_entity.created_at, job_entity.last_updated "
+                    + QUERY_FROM_ENABLED_JOBS_MATCHING_FILTERS,
         countQuery = "SELECT count(job_entity.job_id) " + QUERY_FROM_ENABLED_JOBS_MATCHING_FILTERS
     )
     Page<DistributionJobEntity> findAndSortEnabledJobsMatchingFilters(
