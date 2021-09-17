@@ -18,9 +18,9 @@ public class BlackDuckConfigurationAction extends ConfigurationAction {
     @Autowired
     protected BlackDuckConfigurationAction(
         BlackDuckGlobalApiAction blackDuckGlobalApiAction,
-        BlackDuckGlobalTestAction blackDuckGlobalTestAction,
+        BlackDuckGlobalFieldModelTestAction blackDuckGlobalTestAction,
         BlackDuckProviderKey blackDuckProviderKey,
-        BlackDuckDistributionTestAction blackDuckDistributionTestAction
+        BlackDuckDistributionFieldModelTestAction blackDuckDistributionTestAction
     ) {
         super(blackDuckProviderKey);
         addGlobalApiAction(blackDuckGlobalApiAction);

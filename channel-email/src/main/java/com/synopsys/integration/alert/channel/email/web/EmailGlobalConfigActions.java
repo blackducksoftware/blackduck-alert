@@ -19,7 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.channel.email.action.EmailGlobalTestAction;
+import com.synopsys.integration.alert.channel.email.action.EmailGlobalFieldModelTestAction;
 import com.synopsys.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
@@ -43,11 +43,11 @@ public class EmailGlobalConfigActions {
     private final ConfigurationAccessor configurationAccessor;
     private final ConfigurationFieldModelConverter modelConverter;
     private final EmailGlobalConfigurationValidator validator;
-    private final EmailGlobalTestAction testAction;
+    private final EmailGlobalFieldModelTestAction testAction;
     private final EmailGlobalConfigModelTransformer concreteModelTransformer;
 
     @Autowired
-    public EmailGlobalConfigActions(AuthorizationManager authorizationManager, ConfigurationAccessor configurationAccessor, ConfigurationFieldModelConverter modelConverter, EmailGlobalConfigurationValidator validator, EmailGlobalTestAction testAction) {
+    public EmailGlobalConfigActions(AuthorizationManager authorizationManager, ConfigurationAccessor configurationAccessor, ConfigurationFieldModelConverter modelConverter, EmailGlobalConfigurationValidator validator, EmailGlobalFieldModelTestAction testAction) {
         this.authorizationManager = authorizationManager;
         this.configurationAccessor = configurationAccessor;
         this.modelConverter = modelConverter;

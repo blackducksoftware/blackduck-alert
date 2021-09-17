@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.api.provider.state.StatefulProvider;
-import com.synopsys.integration.alert.common.action.TestAction;
+import com.synopsys.integration.alert.common.action.FieldModelTestAction;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.FieldStatusSeverity;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
@@ -33,13 +33,13 @@ import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckApiT
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class BlackDuckDistributionTestAction extends TestAction {
+public class BlackDuckDistributionFieldModelTestAction extends FieldModelTestAction {
     private final ProviderDataAccessor blackDuckDataAccessor;
     private final BlackDuckProvider blackDuckProvider;
     private final ConfigurationAccessor configurationAccessor;
 
     @Autowired
-    public BlackDuckDistributionTestAction(ProviderDataAccessor blackDuckDataAccessor, BlackDuckProvider blackDuckProvider, ConfigurationAccessor configurationAccessor) {
+    public BlackDuckDistributionFieldModelTestAction(ProviderDataAccessor blackDuckDataAccessor, BlackDuckProvider blackDuckProvider, ConfigurationAccessor configurationAccessor) {
         this.blackDuckDataAccessor = blackDuckDataAccessor;
         this.blackDuckProvider = blackDuckProvider;
         this.configurationAccessor = configurationAccessor;

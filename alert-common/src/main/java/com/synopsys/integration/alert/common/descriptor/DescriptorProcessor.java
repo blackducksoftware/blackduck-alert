@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ApiAction;
 import com.synopsys.integration.alert.common.action.ConfigurationAction;
-import com.synopsys.integration.alert.common.action.TestAction;
+import com.synopsys.integration.alert.common.action.FieldModelTestAction;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -38,12 +38,12 @@ public class DescriptorProcessor {
         this.allConfigurationActions = DataStructureUtils.mapToValues(configurationActions, action -> action.getDescriptorKey().getUniversalKey());
     }
 
-    public Optional<TestAction> retrieveTestAction(FieldModel fieldModel) {
+    public Optional<FieldModelTestAction> retrieveTestAction(FieldModel fieldModel) {
         ConfigContextEnum descriptorContext = EnumUtils.getEnum(ConfigContextEnum.class, fieldModel.getContext());
         return retrieveTestAction(fieldModel.getDescriptorName(), descriptorContext);
     }
 
-    public Optional<TestAction> retrieveTestAction(String descriptorName, ConfigContextEnum context) {
+    public Optional<FieldModelTestAction> retrieveTestAction(String descriptorName, ConfigContextEnum context) {
         return retrieveConfigurationAction(descriptorName).map(configurationAction -> configurationAction.getTestAction(context));
     }
 

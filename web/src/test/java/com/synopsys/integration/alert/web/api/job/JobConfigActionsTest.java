@@ -24,7 +24,7 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.action.TestAction;
+import com.synopsys.integration.alert.common.action.FieldModelTestAction;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.channel.DistributionChannelTestAction;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
@@ -562,7 +562,7 @@ public class JobConfigActionsTest {
     private FieldModel createFieldModel() {
         String value = "testValue";
         Map<String, FieldValueModel> keyToValues = new HashMap<>();
-        keyToValues.put(TestAction.KEY_CUSTOM_TOPIC, new FieldValueModel(List.of(value), false));
+        keyToValues.put(FieldModelTestAction.KEY_CUSTOM_TOPIC, new FieldValueModel(List.of(value), false));
         keyToValues.put(ChannelDescriptor.KEY_NAME, new FieldValueModel(List.of(value), false));
         return new FieldModel(descriptorKey.getUniversalKey(), ConfigContextEnum.DISTRIBUTION.name(), keyToValues);
     }
@@ -576,26 +576,26 @@ public class JobConfigActionsTest {
         };
     }
 
-    private TestAction createTestActionWithErrors() {
-        TestAction testAction = new TestAction() {
+    private FieldModelTestAction createTestActionWithErrors() {
+        FieldModelTestAction fieldModelTestAction = new FieldModelTestAction() {
             @Override
             public MessageResult testConfig(String configId, FieldModel fieldModel, FieldUtility registeredFieldValues) throws IntegrationException {
                 AlertFieldStatus alertFieldStatus = AlertFieldStatus.error("fieldNameTest", "Alert Error Message");
                 return new MessageResult("Test Status Message", List.of(alertFieldStatus));
             }
         };
-        return testAction;
+        return fieldModelTestAction;
     }
 
     //Mockito can't throw an IntegrationRestException through a mock, we will need to create a mock instance that throws the specific exception
-    private TestAction createTestActionWithIntegrationRestException() {
-        TestAction testAction = new TestAction() {
+    private FieldModelTestAction createTestActionWithIntegrationRestException() {
+        FieldModelTestAction fieldModelTestAction = new FieldModelTestAction() {
             @Override
             public MessageResult testConfig(String configId, FieldModel fieldModel, FieldUtility registeredFieldValues) throws IntegrationException {
                 throw new IntegrationRestException(HttpMethod.GET, new HttpUrl("https://google.com"), HttpStatus.OK.value(), "httpStatusMessageTest", "httpResponseContentTest", "IntegrationRestExceptionForAlertTest");
             }
         };
-        return testAction;
+        return fieldModelTestAction;
     }
 
     private JobConfigActions createJobConfigActions(DescriptorMap customDescriptorMap, List<DistributionChannelTestAction> customDistributionChannelTestActions) {

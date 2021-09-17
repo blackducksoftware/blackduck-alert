@@ -20,7 +20,7 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFormat;
 import com.synopsys.integration.alert.channel.email.distribution.EmailChannelMessageModel;
 import com.synopsys.integration.alert.channel.email.distribution.EmailChannelMessageSender;
-import com.synopsys.integration.alert.common.action.TestAction;
+import com.synopsys.integration.alert.common.action.FieldModelTestAction;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
@@ -28,14 +28,14 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.service.email.EmailProperties;
 
 @Component
-public class EmailGlobalTestAction extends TestAction {
+public class EmailGlobalFieldModelTestAction extends FieldModelTestAction {
     private static final String TEST_SUBJECT_LINE = "Email Global Configuration Test";
     private static final String TEST_MESSAGE_CONTENT = "This is a test message from Alert to confirm your Global Email Configuration is valid.";
 
     private final EmailChannelMessageSender emailChannelMessageSender;
 
     @Autowired
-    public EmailGlobalTestAction(EmailChannelMessageSender emailChannelMessageSender) {
+    public EmailGlobalFieldModelTestAction(EmailChannelMessageSender emailChannelMessageSender) {
         this.emailChannelMessageSender = emailChannelMessageSender;
     }
 
@@ -52,7 +52,7 @@ public class EmailGlobalTestAction extends TestAction {
     }
 
     private List<String> extractAndValidateDestination(FieldModel fieldModel) throws AlertException {
-        String destination = fieldModel.getFieldValue(TestAction.KEY_DESTINATION_NAME).orElse("");
+        String destination = fieldModel.getFieldValue(FieldModelTestAction.KEY_DESTINATION_NAME).orElse("");
         if (StringUtils.isNotBlank(destination)) {
             try {
                 InternetAddress emailAddr = new InternetAddress(destination);
