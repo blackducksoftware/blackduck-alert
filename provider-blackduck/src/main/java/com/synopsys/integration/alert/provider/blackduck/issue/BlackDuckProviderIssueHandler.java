@@ -27,7 +27,6 @@ import com.synopsys.integration.rest.HttpMethod;
 import com.synopsys.integration.rest.HttpUrl;
 import com.synopsys.integration.rest.body.BodyContentConverter;
 import com.synopsys.integration.rest.body.StringBodyContent;
-import com.synopsys.integration.rest.request.Request;
 
 public class BlackDuckProviderIssueHandler {
     private final Gson gson;
