@@ -7,7 +7,6 @@
  */
 package com.synopsys.integration.alert.component.authentication.security.saml;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.saml.metadata.MetadataGenerator;
