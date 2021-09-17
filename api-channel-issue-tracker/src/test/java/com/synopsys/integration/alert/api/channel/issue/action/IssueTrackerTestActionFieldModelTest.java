@@ -24,8 +24,8 @@ import com.synopsys.integration.alert.common.persistence.model.job.DistributionJ
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.model.IssueTrackerChannelKey;
 
-public class IssueTrackerTestActionTest {
-    private static final String CLASS_NAME = IssueTrackerTestActionTest.class.getSimpleName();
+public class IssueTrackerTestActionFieldModelTest {
+    private static final String CLASS_NAME = IssueTrackerTestActionFieldModelTest.class.getSimpleName();
     private static final IssueTrackerChannelKey ISSUE_TRACKER_KEY = new IssueTrackerChannelKey(CLASS_NAME, CLASS_NAME) {};
 
     public static final String EXPECTED_ERRORS = "Expected the message result to have errors";

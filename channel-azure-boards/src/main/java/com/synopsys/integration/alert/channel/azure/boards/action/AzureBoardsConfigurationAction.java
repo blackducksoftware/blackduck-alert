@@ -16,7 +16,7 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 @Component
 public class AzureBoardsConfigurationAction extends ConfigurationAction {
     @Autowired
-    protected AzureBoardsConfigurationAction(AzureBoardsGlobalTestAction azureBoardsGlobalTestAction, AzureBoardsGlobalApiAction azureBoardsGlobalApiAction) {
+    protected AzureBoardsConfigurationAction(AzureBoardsGlobalFieldModelTestAction azureBoardsGlobalTestAction, AzureBoardsGlobalApiAction azureBoardsGlobalApiAction) {
         super(ChannelKeys.AZURE_BOARDS);
         addGlobalTestAction(azureBoardsGlobalTestAction);
         addGlobalApiAction(azureBoardsGlobalApiAction);

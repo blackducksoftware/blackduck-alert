@@ -17,8 +17,8 @@ import com.synopsys.integration.alert.common.persistence.model.job.DistributionJ
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
-public class DistributionChannelMessageTestActionTest {
-    private static final String CLASS_NAME = DistributionChannelMessageTestActionTest.class.getSimpleName();
+public class DistributionChannelMessageTestActionFieldModelTest {
+    private static final String CLASS_NAME = DistributionChannelMessageTestActionFieldModelTest.class.getSimpleName();
 
     @Test
     public void testConfigTest() throws AlertException {
