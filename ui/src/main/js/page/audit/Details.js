@@ -1,15 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import {
-    BootstrapTable,
-    TableHeaderColumn
-} from 'react-bootstrap-table';
-import {
-    Modal,
-    Tab,
-    Tabs
-} from 'react-bootstrap';
+import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import { Modal, Tab, Tabs } from 'react-bootstrap';
 import DescriptorLabel from 'common/DescriptorLabel';
 import TextInput from 'common/input/TextInput';
 import TextArea from 'common/input/TextArea';

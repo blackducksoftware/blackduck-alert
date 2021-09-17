@@ -1,14 +1,4 @@
-import {
-    SAML_ENABLED,
-    SESSION_CANCEL_LOGOUT,
-    SESSION_CONFIRM_LOGOUT,
-    SESSION_INITIALIZING,
-    SESSION_LOGGED_IN,
-    SESSION_LOGGED_OUT,
-    SESSION_LOGGING_IN,
-    SESSION_LOGIN_ERROR,
-    SESSION_LOGOUT
-} from 'store/actions/types';
+import { SAML_ENABLED, SESSION_CANCEL_LOGOUT, SESSION_CONFIRM_LOGOUT, SESSION_INITIALIZING, SESSION_LOGGED_IN, SESSION_LOGGED_OUT, SESSION_LOGGING_IN, SESSION_LOGIN_ERROR, SESSION_LOGOUT } from 'store/actions/types';
 import HeaderUtilities from 'common/util/HeaderUtilities';
 import { push } from 'connected-react-router';
 

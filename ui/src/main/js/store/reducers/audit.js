@@ -1,12 +1,4 @@
-import {
-    AUDIT_FETCH_ERROR,
-    AUDIT_FETCHED,
-    AUDIT_FETCHING,
-    AUDIT_RESEND_COMPLETE,
-    AUDIT_RESEND_ERROR,
-    AUDIT_RESEND_START,
-    SERIALIZE
-} from 'store/actions/types';
+import { AUDIT_FETCH_ERROR, AUDIT_FETCHED, AUDIT_FETCHING, AUDIT_RESEND_COMPLETE, AUDIT_RESEND_ERROR, AUDIT_RESEND_START, SERIALIZE } from 'store/actions/types';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 
 const initialState = {
