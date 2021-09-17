@@ -1,13 +1,8 @@
-import React, {
-    useState
-} from 'react';
+import React, { useState } from 'react';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import PopUp from 'common/PopUp';
 import EndpointSelectField from 'common/input/EndpointSelectField';
-import {
-    DISTRIBUTION_COMMON_FIELD_KEYS,
-    DISTRIBUTION_URLS
-} from 'page/distribution/DistributionModel';
+import { DISTRIBUTION_COMMON_FIELD_KEYS, DISTRIBUTION_URLS } from 'page/distribution/DistributionModel';
 import { CONTEXT_TYPE } from 'common/util/descriptorUtilities';
 import { BLACKDUCK_INFO } from 'page/provider/blackduck/BlackDuckModel';
 import { createReadRequest } from 'common/util/configurationRequestBuilder';
