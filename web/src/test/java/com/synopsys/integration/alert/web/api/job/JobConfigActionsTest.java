@@ -577,25 +577,25 @@ public class JobConfigActionsTest {
     }
 
     private FieldModelTestAction createTestActionWithErrors() {
-        FieldModelTestAction testAction = new FieldModelTestAction() {
+        FieldModelTestAction fieldModelTestAction = new FieldModelTestAction() {
             @Override
             public MessageResult testConfig(String configId, FieldModel fieldModel, FieldUtility registeredFieldValues) throws IntegrationException {
                 AlertFieldStatus alertFieldStatus = AlertFieldStatus.error("fieldNameTest", "Alert Error Message");
                 return new MessageResult("Test Status Message", List.of(alertFieldStatus));
             }
         };
-        return testAction;
+        return fieldModelTestAction;
     }
 
     //Mockito can't throw an IntegrationRestException through a mock, we will need to create a mock instance that throws the specific exception
     private FieldModelTestAction createTestActionWithIntegrationRestException() {
-        FieldModelTestAction testAction = new FieldModelTestAction() {
+        FieldModelTestAction fieldModelTestAction = new FieldModelTestAction() {
             @Override
             public MessageResult testConfig(String configId, FieldModel fieldModel, FieldUtility registeredFieldValues) throws IntegrationException {
                 throw new IntegrationRestException(HttpMethod.GET, new HttpUrl("https://google.com"), HttpStatus.OK.value(), "httpStatusMessageTest", "httpResponseContentTest", "IntegrationRestExceptionForAlertTest");
             }
         };
-        return testAction;
+        return fieldModelTestAction;
     }
 
     private JobConfigActions createJobConfigActions(DescriptorMap customDescriptorMap, List<DistributionChannelTestAction> customDistributionChannelTestActions) {

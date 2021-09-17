@@ -31,12 +31,12 @@ public abstract class ConfigurationAction {
         apiActionMap.put(ConfigContextEnum.GLOBAL, apiAction);
     }
 
-    public void addGlobalTestAction(FieldModelTestAction testAction) {
-        testActionMap.put(ConfigContextEnum.GLOBAL, testAction);
+    public void addGlobalTestAction(FieldModelTestAction fieldModelTestAction) {
+        testActionMap.put(ConfigContextEnum.GLOBAL, fieldModelTestAction);
     }
 
-    public void addDistributionTestAction(FieldModelTestAction testAction) {
-        testActionMap.put(ConfigContextEnum.DISTRIBUTION, testAction);
+    public void addDistributionTestAction(FieldModelTestAction fieldModelTestAction) {
+        testActionMap.put(ConfigContextEnum.DISTRIBUTION, fieldModelTestAction);
     }
 
     public ApiAction getApiAction(ConfigContextEnum context) {

@@ -224,10 +224,10 @@ public class ConfigActions extends AbstractConfigResourceActions {
             try {
                 FieldModel upToDateFieldModel = fieldModelProcessor.createCustomMessageFieldModel(resource);
                 FieldUtility fieldUtility = modelConverter.convertToFieldAccessor(upToDateFieldModel);
-                FieldModelTestAction testAction = testActionOptional.get();
+                FieldModelTestAction fieldModelTestAction = testActionOptional.get();
 
                 // TODO return the message from the result of testAction.testConfig(...)
-                testAction.testConfig(upToDateFieldModel.getId(), upToDateFieldModel, fieldUtility);
+                fieldModelTestAction.testConfig(upToDateFieldModel.getId(), upToDateFieldModel, fieldUtility);
                 responseModel = ValidationResponseModel.success("Successfully sent test message.");
                 return new ValidationActionResponse(HttpStatus.OK, responseModel);
             } catch (IntegrationRestException e) {
