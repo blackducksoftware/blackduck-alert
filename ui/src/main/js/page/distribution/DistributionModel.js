@@ -74,6 +74,12 @@ export const DISTRIBUTION_PROCESSING_TYPES = [
     { label: 'Summary', value: 'SUMMARY' }
 ];
 
+export const DISTRIBUTION_PROCESSING_DESCRIPTIONS = {
+    DEFAULT: 'The message will contain all the relevant data found in your selected provider.',
+    DIGEST: 'The message will contain a delta of the content found in your selected provider since it was last queried."\n Add and Delete operations will cancel each other out depending on the order they occurred.',
+    SUMMARY: 'The message contains only a summarized form of the Digest data'
+};
+
 export const DISTRIBUTION_VULNERABILITY_SEVERITY_OPTIONS = [
     { label: 'CRITICAL', value: 'CRITICAL' },
     { label: 'HIGH', value: 'HIGH' },
