@@ -8,12 +8,15 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFileCreator;
 import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFormat;
 import com.synopsys.integration.alert.channel.email.attachment.MessageContentGroupCsvCreator;
@@ -61,15 +64,23 @@ public class EmailChannelMessagingServiceTest {
     }
 
     @Test
+    public void testSendMessage() {
+        EmailChannelMessageModel emailChannelMessageModel = EmailChannelMessageModel.simple(EXPECTED_SUBJECT_LINE, EXPECTED_CONTENT, EXPECTED_PROVIDER_NAME, EXPECTED_PROVIDER_URL);
+
+        try {
+            EmailTarget emailTarget = emailChannelMessagingService.createTarget(emailChannelMessageModel, EXPECTED_EMAIL_ADDRESS_A, EXPECTED_EMAIL_ADDRESS_B);
+            MessageResult messageResult = emailChannelMessagingService.sendMessage(SmtpConfig.builder().build(), emailTarget);
+
+            assertFalse(messageResult.hasErrors());
+            assertEquals("Successfully sent 2 email(s)", messageResult.getStatusMessage());
+        } catch (Exception e) {
+            fail("Unexpected exception occurred when sending emails", e);
+        }
+    }
+
+    @Test
     public void testSendMessages() {
-        EmailJobDetailsModel emailJobDetailsModel = new EmailJobDetailsModel(
-            new UUID(0L,0L),
-            EXPECTED_SUBJECT_LINE,
-            false,
-            true,
-            EmailAttachmentFormat.NONE.toString(),
-            List.of(EXPECTED_EMAIL_ADDRESS_A, EXPECTED_EMAIL_ADDRESS_B)
-        );
+        EmailJobDetailsModel emailJobDetailsModel = createSimpleEmailJobDetailsModel(List.of(EXPECTED_EMAIL_ADDRESS_A, EXPECTED_EMAIL_ADDRESS_B));
 
         EmailChannelMessageModel emailChannelMessageModel = EmailChannelMessageModel.simple(EXPECTED_SUBJECT_LINE, EXPECTED_CONTENT, EXPECTED_PROVIDER_NAME, EXPECTED_PROVIDER_URL);
         EmailChannelMessageModel emailChannelMessageModel2 = EmailChannelMessageModel.simple(EXPECTED_SUBJECT_LINE, EXPECTED_CONTENT, EXPECTED_PROVIDER_NAME, EXPECTED_PROVIDER_URL);
@@ -80,7 +91,39 @@ public class EmailChannelMessagingServiceTest {
             assertFalse(messageResult.hasErrors());
             assertEquals("Successfully sent 4 email(s)", messageResult.getStatusMessage());
         } catch (Exception e) {
-            fail("Unexpected exception occurred when gathering email addresses", e);
+            fail("Unexpected exception occurred when sending emails", e);
+        }
+    }
+
+    @Test
+    public void testSendMessagesInvalidEmails() {
+        EmailJobDetailsModel emailJobDetailsModel = createSimpleEmailJobDetailsModel(List.of());
+
+        EmailChannelMessageModel emailChannelMessageModel = EmailChannelMessageModel.simple(EXPECTED_SUBJECT_LINE, EXPECTED_CONTENT, EXPECTED_PROVIDER_NAME, EXPECTED_PROVIDER_URL);
+        EmailChannelMessageModel emailChannelMessageModel2 = EmailChannelMessageModel.simple(EXPECTED_SUBJECT_LINE, EXPECTED_CONTENT, EXPECTED_PROVIDER_NAME, EXPECTED_PROVIDER_URL);
+
+        try {
+            emailChannelMessagingService.sendMessages(SmtpConfig.builder().build(), emailJobDetailsModel, List.of(emailChannelMessageModel, emailChannelMessageModel2), Set.of(INVALID_EMAIL_ADDRESS));
+
+            fail("Even though no valid email addresses were provided, the expected exception was not thrown");
+        } catch (AlertException e) {
+            assertEquals("No valid email addresses to send this content to. The following email addresses were invalid: " + INVALID_EMAIL_ADDRESS, e.getMessage());
+        }
+    }
+
+    @Test
+    public void testSendMessagesNoEmails() {
+        EmailJobDetailsModel emailJobDetailsModel = createSimpleEmailJobDetailsModel(List.of());
+
+        EmailChannelMessageModel emailChannelMessageModel = EmailChannelMessageModel.simple(EXPECTED_SUBJECT_LINE, EXPECTED_CONTENT, EXPECTED_PROVIDER_NAME, EXPECTED_PROVIDER_URL);
+        EmailChannelMessageModel emailChannelMessageModel2 = EmailChannelMessageModel.simple(EXPECTED_SUBJECT_LINE, EXPECTED_CONTENT, EXPECTED_PROVIDER_NAME, EXPECTED_PROVIDER_URL);
+
+        try {
+            emailChannelMessagingService.sendMessages(SmtpConfig.builder().build(), emailJobDetailsModel, List.of(emailChannelMessageModel, emailChannelMessageModel2), Set.of());
+
+            fail("Even though no email addresses were provided, the expected exception was not thrown");
+        } catch (AlertException e) {
+            assertEquals("Could not determine what email addresses to send this content to", e.getMessage());
         }
     }
 
@@ -107,4 +150,16 @@ public class EmailChannelMessagingServiceTest {
             fail("Unexpected exception occurred when creating the EmailTarget", e);
         }
     }
+
+    private EmailJobDetailsModel createSimpleEmailJobDetailsModel(List<String> emailAddresses) {
+        return new EmailJobDetailsModel(
+            new UUID(0L,0L),
+            EXPECTED_SUBJECT_LINE,
+            false,
+            true,
+            EmailAttachmentFormat.NONE.toString(),
+            emailAddresses
+        );
+    }
+
 }
