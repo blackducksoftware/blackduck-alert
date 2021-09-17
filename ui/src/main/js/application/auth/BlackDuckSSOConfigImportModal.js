@@ -14,10 +14,6 @@ import { createReadRequest } from 'common/util/configurationRequestBuilder';
 import * as PropTypes from 'prop-types';
 import StatusMessage from 'common/StatusMessage';
 import { AUTHENTICATION_SAML_FIELD_KEYS } from './AuthenticationModel';
-import {
-    getFieldModelSingleValue,
-    getFieldModelSingleValueOrDefault
-} from "common/util/fieldModelUtilities";
 
 const BlackDuckSSOConfigImportModal = ({
     csrfToken, readOnly, label, show, onHide, initialSSOFieldData, updateSSOFieldData
@@ -47,7 +43,6 @@ const BlackDuckSSOConfigImportModal = ({
                 response.json().then((data) => {
                     if (data) {
                         let updatedFieldData = FieldModelUtilities.updateFieldModelSingleValue(initialSSOFieldData, AUTHENTICATION_SAML_FIELD_KEYS.enabled, data.ssoEnabled);
-                        updatedFieldData = FieldModelUtilities.updateFieldModelSingleValue(updatedFieldData, AUTHENTICATION_SAML_FIELD_KEYS.entityId, data.spEntityId || '');
                         updatedFieldData = FieldModelUtilities.updateFieldModelSingleValue(updatedFieldData, AUTHENTICATION_SAML_FIELD_KEYS.metadataUrl, data.idpMetadataUrl || '');
                         updateSSOFieldData(updatedFieldData);
                     }
@@ -88,7 +83,7 @@ const BlackDuckSSOConfigImportModal = ({
                 endpoint={DISTRIBUTION_URLS.endpointSelectPath}
                 fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId}
                 label="Black Duck Configuration"
-                description="The Black Duck configuration from which to retrieve the SAML configuration."
+                description="The Black Duck configuration from which to retrieve the SAML configuration. Does not import Entity ID as that will usually not match the Entity ID used for Alert."
                 clearable={false}
                 readOnly={readOnly}
                 required

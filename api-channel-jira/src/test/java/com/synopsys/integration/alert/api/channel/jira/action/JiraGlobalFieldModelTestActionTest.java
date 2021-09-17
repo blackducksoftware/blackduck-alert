@@ -11,7 +11,7 @@ import org.mockito.Mockito;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.exception.IntegrationException;
 
-public class JiraGlobalTestActionTest {
+public class JiraGlobalFieldModelTestActionTest {
     private static final String EXPECTED_EXCEPTION = "Expected an exception to be thrown";
 
     private JiraGlobalFieldModelTestAction testAction;
