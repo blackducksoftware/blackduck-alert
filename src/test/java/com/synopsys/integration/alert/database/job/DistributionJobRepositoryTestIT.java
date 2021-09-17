@@ -68,14 +68,17 @@ public class DistributionJobRepositoryTestIT {
     public void findAndSortEnabledJobsMatchingFilters_ValidateFilteringTest() {
         int page = 0;
 
-        String testProjectName = "integration-common";
+        String testProjectName1 = "integration-common";
+        BlackDuckProjectDetailsModel project1Details = new BlackDuckProjectDetailsModel(testProjectName1, "https://project-1");
+        String testProjectName2 = "int-jira-common";
+        BlackDuckProjectDetailsModel project2Details = new BlackDuckProjectDetailsModel(testProjectName2, "https://project-2");
 
-        DistributionJobModel job1 = initJob("Job 1", false, null, List.of());
-        DistributionJobModel job2 = initJob("Job 2", true, "int[A-Za-z0-9\\-]?-common", List.of());
+        DistributionJobModel job1 = initJob("Job 1", false, null, List.of(project1Details, project2Details));
+        DistributionJobModel job2 = initJob("Job 2", true, "int[A-Za-z0-9\\-]{0,}-common", List.of());
 
         Set<String> frequencyFilterSet = Set.of(job1.getDistributionFrequency().name());
         Set<String> notificationTypesFilterSet = new HashSet<>(job1.getNotificationTypes());
-        Set<String> projectFilter = Set.of(testProjectName);
+        Set<String> projectFilter = Set.of(testProjectName1, testProjectName2);
 
         PageRequest firstPageRequest = PageRequest.of(page, 1);
         Page<DistributionJobEntity> firstPageOfJobs = distributionJobRepository.findAndSortEnabledJobsMatchingFilters(blackDuckConfigId, frequencyFilterSet, notificationTypesFilterSet, projectFilter, Set.of(), Set.of(), firstPageRequest);

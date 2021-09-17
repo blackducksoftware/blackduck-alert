@@ -85,7 +85,17 @@ public interface DistributionJobRepository extends JpaRepository<DistributionJob
             + "    AND bd_details.global_config_id = :blackDuckConfigId"
             + "    AND notif_type.notification_type IN (:notificationTypeSet)"
             + "    AND job_entity.distribution_frequency IN (:frequencies)"
-            + "    AND (bd_details.filter_by_project = false OR bd_details.project_name_pattern IS NOT NULL OR projects.project_name IN (:projectNames))"
+            + "    AND ("
+            + "            bd_details.filter_by_project = false "
+            + "            OR projects.project_name IN (:projectNames)"
+            + "            OR (bd_details.project_name_pattern IS NOT NULL AND EXISTS ("
+            // FIXME it is still unclear why unnest(:projectNames) treats :projectNames as a VARCHAR and not an ARRAY
+            //  unnest(array[:projectNames]) is legal, but it may not behave as expected
+            + "                    SELECT unnest FROM unnest(array[:projectNames]) AS (id text, unnest text) "
+            + "                    WHERE unnest ~ bd_details.project_name_pattern"
+            + "                )"
+            + "            )"
+            + "    )"
             + "    AND ("
             + "          ("
             + "            coalesce(:vulnerabilitySeverities, NULL) IS NULL"
