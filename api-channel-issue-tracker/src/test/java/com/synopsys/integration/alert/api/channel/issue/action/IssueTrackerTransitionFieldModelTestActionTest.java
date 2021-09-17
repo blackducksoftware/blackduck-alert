@@ -19,7 +19,7 @@ import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.Is
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueMissingTransitionException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 
-public class IssueTrackerTransitionTestActionFieldModelTest {
+public class IssueTrackerTransitionFieldModelTestActionTest {
     private static final IssueTrackerTestActionFieldStatusCreator FIELD_STATUS_CREATOR = new IssueTrackerTestActionFieldStatusCreator();
     private static final ExistingIssueDetails<String> EXISTING_ISSUE_DETAILS = new ExistingIssueDetails<>("test-id", "test-key", "a test summary", "https://a-link", IssueStatus.UNKNOWN, IssueCategory.BOM);
     private static final ProjectIssueModel PROJECT_ISSUE_MODEL = ProjectIssueModel.bom(null, null, null, null);
