@@ -10,6 +10,7 @@ package com.synopsys.integration.alert.channel.email.distribution;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -20,18 +21,23 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.channel.ChannelMessageSender;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFormat;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
+import com.synopsys.integration.alert.channel.email.distribution.address.EmailAddressGatherer;
 import com.synopsys.integration.alert.channel.email.distribution.address.JobEmailAddressValidator;
 import com.synopsys.integration.alert.channel.email.distribution.address.ValidatedEmailAddresses;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.FieldStatusSeverity;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
+import com.synopsys.integration.alert.service.email.EmailTarget;
 import com.synopsys.integration.alert.service.email.JavamailPropertiesFactory;
 import com.synopsys.integration.alert.service.email.SmtpConfig;
 import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
@@ -41,6 +47,7 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
     public static final String FILE_NAME_MESSAGE_TEMPLATE = "message_content.ftl";
 
     private final ConfigurationAccessor configurationAccessor;
+    private final EmailAddressGatherer emailAddressGatherer;
     private final EmailChannelKey emailChannelKey;
     private final EmailChannelMessagingService emailChannelMessagingService;
     private final JavamailPropertiesFactory javamailPropertiesFactory;
@@ -49,12 +56,14 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
     @Autowired
     public EmailChannelMessageSender(
         ConfigurationAccessor configurationAccessor,
+        EmailAddressGatherer emailAddressGatherer,
         EmailChannelKey emailChannelKey,
         EmailChannelMessagingService emailChannelMessagingService,
         JobEmailAddressValidator emailAddressValidator,
         JavamailPropertiesFactory javamailPropertiesFactory
     ) {
         this.configurationAccessor = configurationAccessor;
+        this.emailAddressGatherer = emailAddressGatherer;
         this.emailChannelKey = emailChannelKey;
         this.emailChannelMessagingService = emailChannelMessagingService;
         this.emailAddressValidator = emailAddressValidator;
@@ -102,7 +111,38 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
             .setSmtpPassword(globalConfiguration.getString(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey()).orElse(null))
             .build();
 
-        MessageResult emailsSentSuccessfully = emailChannelMessagingService.sendMessages(smtpConfig, emailJobDetails, emailMessages, invalidEmailAddresses);
+        int totalEmailsSent = 0;
+
+        for (EmailChannelMessageModel message : emailMessages) {
+            Set<String> projectHrefs = message.getSource()
+                .map(ProjectMessage::getProject)
+                .flatMap(LinkableItem::getUrl)
+                .map(Set::of)
+                .orElse(Set.of());
+
+            Set<String> gatheredEmailAddresses = emailAddressGatherer.gatherEmailAddresses(emailJobDetails, projectHrefs);
+
+            if (gatheredEmailAddresses.isEmpty()) {
+                if (invalidEmailAddresses.isEmpty()) {
+                    throw new AlertException("Could not determine what email addresses to send this content to");
+                } else {
+                    String invalidEmailAddressesString = StringUtils.join(invalidEmailAddresses, ", ");
+                    throw new AlertException(String.format("No valid email addresses to send this content to. The following email addresses were invalid: %s", invalidEmailAddressesString));
+                }
+            }
+
+            EmailTarget emailTarget = emailChannelMessagingService.createTarget(message, gatheredEmailAddresses);
+
+            Optional<ProjectMessage> optionalProjectMessage = message.getSource();
+            if (optionalProjectMessage.isPresent()) {
+                EmailAttachmentFormat attachmentFormat = EmailAttachmentFormat.getValueSafely(emailJobDetails.getAttachmentFileType());
+                emailChannelMessagingService.sendMessageWithAttachedProjectMessage(smtpConfig, emailTarget, optionalProjectMessage.get(), attachmentFormat);
+            } else {
+                emailChannelMessagingService.sendMessage(smtpConfig, emailTarget);
+            }
+
+            totalEmailsSent += emailTarget.getEmailAddresses().size();
+        }
 
         // Reporting
         if (!invalidEmailAddresses.isEmpty()) {
@@ -111,7 +151,7 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
             AlertFieldStatus errorStatus = new AlertFieldStatus(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES, FieldStatusSeverity.ERROR, errorMessage);
             return new MessageResult(errorMessage, List.of(errorStatus));
         }
-        return emailsSentSuccessfully;
+        return new MessageResult(String.format("Successfully sent %d email(s)", totalEmailsSent));
     }
 
 }

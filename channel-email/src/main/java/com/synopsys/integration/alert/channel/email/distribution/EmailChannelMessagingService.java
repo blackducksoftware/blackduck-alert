@@ -11,23 +11,18 @@ import static com.synopsys.integration.alert.channel.email.distribution.EmailCha
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFileCreator;
 import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFormat;
-import com.synopsys.integration.alert.channel.email.distribution.address.EmailAddressGatherer;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.service.email.EmailMessagingService;
 import com.synopsys.integration.alert.service.email.EmailTarget;
@@ -37,14 +32,12 @@ import com.synopsys.integration.alert.service.email.template.FreemarkerTemplatin
 
 @Component
 public class EmailChannelMessagingService {
-    private final EmailAddressGatherer emailAddressGatherer;
     private final AlertProperties alertProperties;
     private final EmailMessagingService emailMessagingService;
     private final EmailAttachmentFileCreator emailAttachmentFileCreator;
 
     @Autowired
-    public EmailChannelMessagingService(EmailAddressGatherer emailAddressGatherer, AlertProperties alertProperties, EmailMessagingService emailMessagingService, EmailAttachmentFileCreator emailAttachmentFileCreator) {
-        this.emailAddressGatherer = emailAddressGatherer;
+    public EmailChannelMessagingService(AlertProperties alertProperties, EmailMessagingService emailMessagingService, EmailAttachmentFileCreator emailAttachmentFileCreator) {
         this.alertProperties = alertProperties;
         this.emailMessagingService = emailMessagingService;
         this.emailAttachmentFileCreator = emailAttachmentFileCreator;
@@ -58,39 +51,6 @@ public class EmailChannelMessagingService {
         sendMessageWithAttachmentAndCleanUp(smtpConfig, emailTarget, message, attachmentFormat);
 
         return new MessageResult(String.format("Successfully sent %d email(s)", emailTarget.getEmailAddresses().size()));
-    }
-
-
-    public MessageResult sendMessages(SmtpConfig smtpConfig, EmailJobDetailsModel emailJobDetails, List<EmailChannelMessageModel> emailMessages, Set<String> invalidAdditionalEmailAddresses) throws AlertException {
-        EmailAttachmentFormat attachmentFormat = EmailAttachmentFormat.getValueSafely(emailJobDetails.getAttachmentFileType());
-        int totalEmailsSent = 0;
-
-        for (EmailChannelMessageModel message : emailMessages) {
-            Set<String> projectHrefs = message.getSource()
-                .map(ProjectMessage::getProject)
-                .flatMap(LinkableItem::getUrl)
-                .map(Set::of)
-                .orElse(Set.of());
-
-            Set<String> gatheredEmailAddresses = emailAddressGatherer.gatherEmailAddresses(emailJobDetails, projectHrefs);
-
-            if (gatheredEmailAddresses.isEmpty()) {
-                if (invalidAdditionalEmailAddresses.isEmpty()) {
-                    throw new AlertException("Could not determine what email addresses to send this content to");
-                } else {
-                    String invalidEmailAddressesString = StringUtils.join(invalidAdditionalEmailAddresses, ", ");
-                    throw new AlertException(String.format("No valid email addresses to send this content to. The following email addresses were invalid: %s", invalidEmailAddressesString));
-                }
-            }
-
-            EmailTarget emailTarget = createTarget(message, gatheredEmailAddresses);
-
-            sendMessageWithAttachmentAndCleanUp(smtpConfig, emailTarget,  message.getSource().orElse(null), attachmentFormat);
-
-            totalEmailsSent += emailTarget.getEmailAddresses().size();
-        }
-
-        return new MessageResult(String.format("Successfully sent %d email(s)", totalEmailsSent));
     }
 
     public EmailTarget createTarget(EmailChannelMessageModel message, String... validatedEmailAddresses) throws AlertException {

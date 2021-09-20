@@ -65,7 +65,7 @@ public class EmailGlobalTestActionTest {
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService();
         EmailMessagingService emailMessagingService = new EmailMessagingService(freemarkerTemplatingService);
 
-        EmailChannelMessagingService emailChannelMessagingService = new EmailChannelMessagingService(emailAddressGatherer, testAlertProperties, emailMessagingService, emailAttachmentFileCreator);
+        EmailChannelMessagingService emailChannelMessagingService = new EmailChannelMessagingService(testAlertProperties, emailMessagingService, emailAttachmentFileCreator);
 
         JavamailPropertiesFactory javamailPropertiesFactory = new JavamailPropertiesFactory();
 
@@ -130,7 +130,7 @@ public class EmailGlobalTestActionTest {
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService();
         EmailMessagingService emailMessagingService = new EmailMessagingService(freemarkerTemplatingService);
 
-        return new EmailChannelMessagingService(emailAddressGatherer, testAlertProperties, emailMessagingService, emailAttachmentFileCreator);
+        return new EmailChannelMessagingService(testAlertProperties, emailMessagingService, emailAttachmentFileCreator);
     }
 
     private EmailGlobalConfigModel createValidEmailGlobalConfigModel(TestProperties testProperties) {

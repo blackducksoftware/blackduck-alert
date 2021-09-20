@@ -53,12 +53,11 @@ public class EmailChannelTestIT {
         String testEmailRecipient = testProperties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT);
 
         EmailChannelKey emailChannelKey = ChannelKeys.EMAIL;
-        EmailAddressGatherer emailAddressGatherer = new EmailAddressGatherer(null, null);
         EmailAttachmentFileCreator emailAttachmentFileCreator = new EmailAttachmentFileCreator(testAlertProperties, new MessageContentGroupCsvCreator(), gson);
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService();
         EmailMessagingService emailMessagingService = new EmailMessagingService(freemarkerTemplatingService);
         JavamailPropertiesFactory javamailPropertiesFactory = new JavamailPropertiesFactory();
-        EmailChannelMessagingService emailChannelMessagingService = new EmailChannelMessagingService(emailAddressGatherer, testAlertProperties, emailMessagingService, emailAttachmentFileCreator);
+        EmailChannelMessagingService emailChannelMessagingService = new EmailChannelMessagingService(testAlertProperties, emailMessagingService, emailAttachmentFileCreator);
 
         ConfigurationModel emailGlobalConfig = createEmailGlobalConfig();
         ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
@@ -67,9 +66,10 @@ public class EmailChannelTestIT {
         JobEmailAddressValidator emailAddressValidator = Mockito.mock(JobEmailAddressValidator.class);
         Mockito.when(emailAddressValidator.validate(Mockito.any(), Mockito.anyCollection())).thenReturn(new ValidatedEmailAddresses(Set.of(testEmailRecipient), Set.of()));
 
+        EmailAddressGatherer emailAddressGatherer = new EmailAddressGatherer(null, null);
         EmailChannelMessageConverter emailChannelMessageConverter = new EmailChannelMessageConverter(new EmailChannelMessageFormatter());
 
-        EmailChannelMessageSender emailChannelMessageSender = new EmailChannelMessageSender(configurationAccessor, ChannelKeys.EMAIL, emailChannelMessagingService, emailAddressValidator, javamailPropertiesFactory);
+        EmailChannelMessageSender emailChannelMessageSender = new EmailChannelMessageSender(configurationAccessor, emailAddressGatherer, ChannelKeys.EMAIL, emailChannelMessagingService, emailAddressValidator, javamailPropertiesFactory);
         EmailChannel emailChannel = new EmailChannel(emailChannelMessageConverter, emailChannelMessageSender);
 
         List<String> emailAddresses = List.of(testEmailRecipient);
@@ -96,8 +96,9 @@ public class EmailChannelTestIT {
         JobEmailAddressValidator emailAddressValidator = Mockito.mock(JobEmailAddressValidator.class);
         Mockito.when(emailAddressValidator.validate(Mockito.any(), Mockito.anyCollection())).thenReturn(new ValidatedEmailAddresses(Set.of(testEmailRecipient), Set.of()));
 
+        EmailAddressGatherer emailAddressGatherer = new EmailAddressGatherer(null, null);
         EmailChannelMessageConverter emailChannelMessageConverter = new EmailChannelMessageConverter(new EmailChannelMessageFormatter());
-        EmailChannelMessageSender emailChannelMessageSender = new EmailChannelMessageSender(configurationAccessor, emailChannelKey, null, emailAddressValidator, null);
+        EmailChannelMessageSender emailChannelMessageSender = new EmailChannelMessageSender(configurationAccessor, emailAddressGatherer, emailChannelKey, null, emailAddressValidator, null);
 
         EmailChannel emailChannel = new EmailChannel(emailChannelMessageConverter, emailChannelMessageSender);
 

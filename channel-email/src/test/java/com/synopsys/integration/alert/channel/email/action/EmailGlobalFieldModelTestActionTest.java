@@ -17,7 +17,6 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFileCreator;
 import com.synopsys.integration.alert.channel.email.attachment.MessageContentGroupCsvCreator;
 import com.synopsys.integration.alert.channel.email.distribution.EmailChannelMessagingService;
-import com.synopsys.integration.alert.channel.email.distribution.address.EmailAddressGatherer;
 import com.synopsys.integration.alert.channel.email.distribution.address.JobEmailAddressValidator;
 import com.synopsys.integration.alert.channel.email.distribution.address.ValidatedEmailAddresses;
 import com.synopsys.integration.alert.common.action.FieldModelTestAction;
@@ -57,9 +56,6 @@ public class EmailGlobalFieldModelTestActionTest {
 
     @Test
     public void testConfigMissingDestinationTest() {
-        EmailAddressGatherer emailAddressGatherer = Mockito.mock(EmailAddressGatherer.class);
-        Mockito.when(emailAddressGatherer.gatherEmailAddresses(Mockito.any(), Mockito.any())).thenReturn(Set.of());
-
         JobEmailAddressValidator emailAddressValidator = Mockito.mock(JobEmailAddressValidator.class);
         Mockito.when(emailAddressValidator.validate(Mockito.any(), Mockito.anyCollection())).thenReturn(new ValidatedEmailAddresses(Set.of(), Set.of()));
 
@@ -71,7 +67,7 @@ public class EmailGlobalFieldModelTestActionTest {
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService();
         EmailMessagingService emailMessagingService = new EmailMessagingService(freemarkerTemplatingService);
 
-        EmailChannelMessagingService emailChannelMessagingService = new EmailChannelMessagingService(emailAddressGatherer, testAlertProperties, emailMessagingService, emailAttachmentFileCreator);
+        EmailChannelMessagingService emailChannelMessagingService = new EmailChannelMessagingService(testAlertProperties, emailMessagingService, emailAttachmentFileCreator);
 
         JavamailPropertiesFactory javamailPropertiesFactory = new JavamailPropertiesFactory();
 
@@ -140,9 +136,6 @@ public class EmailGlobalFieldModelTestActionTest {
     private EmailChannelMessagingService createValidEmailChannelMessagingService(String emailAddress) {
         MockAlertProperties testAlertProperties = new MockAlertProperties();
 
-        EmailAddressGatherer emailAddressGatherer = Mockito.mock(EmailAddressGatherer.class);
-        Mockito.when(emailAddressGatherer.gatherEmailAddresses(Mockito.any(), Mockito.any())).thenReturn(Set.of(emailAddress));
-
         JobEmailAddressValidator emailAddressValidator = Mockito.mock(JobEmailAddressValidator.class);
         Mockito.when(emailAddressValidator.validate(Mockito.any(), Mockito.anyCollection())).thenReturn(new ValidatedEmailAddresses(Set.of(emailAddress), Set.of()));
 
@@ -152,7 +145,7 @@ public class EmailGlobalFieldModelTestActionTest {
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService();
         EmailMessagingService emailMessagingService = new EmailMessagingService(freemarkerTemplatingService);
 
-        return new EmailChannelMessagingService(emailAddressGatherer, testAlertProperties, emailMessagingService, emailAttachmentFileCreator);
+        return new EmailChannelMessagingService(testAlertProperties, emailMessagingService, emailAttachmentFileCreator);
     }
 
     private FieldUtility createValidEmailGlobalFieldUtility(TestProperties testProperties) {
