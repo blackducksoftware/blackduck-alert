@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
@@ -48,6 +49,18 @@ public class ProjectMessageSummarizerTest {
         assertTrue(simpleMessage.getSummary().contains(ProjectMessageSummarizer.OP_PARTICIPLE_CREATED));
     }
 
+    @Disabled
+    @Test
+    public void summarizeProjectStatusPreview() {
+        ProjectOperation commonOperation = ProjectOperation.CREATE;
+        ProjectMessage projectMessage = ProjectMessage.projectStatusInfo(providerDetails, commonProject, commonOperation);
+        ProcessedProviderMessage<ProjectMessage> processedProviderMessage = new ProcessedProviderMessage<>(Set.of(1L), projectMessage);
+
+        ProcessedProviderMessage<SimpleMessage> summarizedSimpleMessage = projectMessageSummarizer.summarize(processedProviderMessage);
+        SimpleMessage simpleMessage = summarizedSimpleMessage.getProviderMessage();
+        printSimpleMessage(simpleMessage);
+    }
+
     @Test
     public void summarizeProjectStatusDeletedTest() {
         ProjectOperation commonOperation = ProjectOperation.DELETE;
@@ -61,6 +74,18 @@ public class ProjectMessageSummarizerTest {
         assertEquals(1, simpleMessage.getDetails().size());
         assertTrue(simpleMessage.getDetails().contains(commonProject));
         assertTrue(simpleMessage.getSummary().contains(ProjectMessageSummarizer.OP_PARTICIPLE_DELETED));
+    }
+
+    @Disabled
+    @Test
+    public void summarizeProjectStatusDeletedPreview() {
+        ProjectOperation commonOperation = ProjectOperation.DELETE;
+        ProjectMessage projectMessage = ProjectMessage.projectStatusInfo(providerDetails, commonProject, commonOperation);
+        ProcessedProviderMessage<ProjectMessage> processedProviderMessage = new ProcessedProviderMessage<>(Set.of(1L), projectMessage);
+
+        ProcessedProviderMessage<SimpleMessage> summarizedSimpleMessage = projectMessageSummarizer.summarize(processedProviderMessage);
+        SimpleMessage simpleMessage = summarizedSimpleMessage.getProviderMessage();
+        printSimpleMessage(simpleMessage);
     }
 
     @Test
@@ -80,6 +105,18 @@ public class ProjectMessageSummarizerTest {
         assertTrue(simpleMessage.getSummary().contains(commonProjectVersion.getValue()));
         assertTrue(simpleMessage.getSummary().contains(ProjectMessageSummarizer.OP_PARTICIPLE_CREATED));
         assertTrue(simpleMessage.getDescription().contains(commonProjectVersion.getValue()));
+    }
+
+    @Disabled
+    @Test
+    public void summarizeProjectVersionStatusPreview() {
+        ProjectOperation commonOperation = ProjectOperation.CREATE;
+        ProjectMessage projectMessage = ProjectMessage.projectVersionStatusInfo(providerDetails, commonProject, commonProjectVersion, commonOperation);
+        ProcessedProviderMessage<ProjectMessage> processedProviderMessage = new ProcessedProviderMessage<>(Set.of(1L), projectMessage);
+
+        ProcessedProviderMessage<SimpleMessage> summarizedSimpleMessage = projectMessageSummarizer.summarize(processedProviderMessage);
+        SimpleMessage simpleMessage = summarizedSimpleMessage.getProviderMessage();
+        printSimpleMessage(simpleMessage);
     }
 
     @Test
@@ -109,6 +146,24 @@ public class ProjectMessageSummarizerTest {
         assertTrue(simpleMessage.getDescription().contains("updates"));
     }
 
+    @Disabled
+    @Test
+    public void summarizeComponentUpdatePreview() {
+        ComponentConcern policyConcern = ComponentConcern.severePolicy(ItemOperation.ADD, "A severe policy", ComponentConcernSeverity.TRIVIAL_LOW, "https://severe-policy");
+        ComponentConcern vulnerabilityConcern1 = ComponentConcern.vulnerability(ItemOperation.ADD, "CVE-123", ComponentConcernSeverity.CRITICAL, "https://vuln-rul");
+        ComponentConcern vulnerabilityConcern2 = ComponentConcern.vulnerability(ItemOperation.UPDATE, "CVE-135", ComponentConcernSeverity.TRIVIAL_LOW, "https://vuln-rul");
+        ComponentConcern vulnerabilityConcern3 = ComponentConcern.vulnerability(ItemOperation.DELETE, "CVE-246", ComponentConcernSeverity.MINOR_MEDIUM, "https://vuln-rul");
+
+        BomComponentDetails bomComponentDetails = createBomComponentDetails(List.of(policyConcern, vulnerabilityConcern1, vulnerabilityConcern2, vulnerabilityConcern3));
+
+        ProjectMessage projectMessage = ProjectMessage.componentUpdate(providerDetails, commonProject, commonProjectVersion, List.of(bomComponentDetails));
+        ProcessedProviderMessage<ProjectMessage> processedProviderMessage = new ProcessedProviderMessage<>(Set.of(1L), projectMessage);
+
+        ProcessedProviderMessage<SimpleMessage> summarizedSimpleMessage = projectMessageSummarizer.summarize(processedProviderMessage);
+        SimpleMessage simpleMessage = summarizedSimpleMessage.getProviderMessage();
+        printSimpleMessage(simpleMessage);
+    }
+
     @Test
     public void summarizeComponentConcernTest() {
         ComponentConcern policyConcern = ComponentConcern.severePolicy(ItemOperation.ADD, "A severe policy", ComponentConcernSeverity.TRIVIAL_LOW, "https://severe-policy");
@@ -136,6 +191,24 @@ public class ProjectMessageSummarizerTest {
         assertTrue(simpleMessage.getDescription().contains("problems"));
     }
 
+    @Disabled
+    @Test
+    public void summarizeComponentConcernPreview() {
+        ComponentConcern policyConcern = ComponentConcern.severePolicy(ItemOperation.ADD, "A severe policy", ComponentConcernSeverity.TRIVIAL_LOW, "https://severe-policy");
+        ComponentConcern vulnerabilityConcern1 = ComponentConcern.vulnerability(ItemOperation.ADD, "CVE-123", ComponentConcernSeverity.CRITICAL, "https://vuln-rul");
+        ComponentConcern vulnerabilityConcern2 = ComponentConcern.vulnerability(ItemOperation.UPDATE, "CVE-135", ComponentConcernSeverity.TRIVIAL_LOW, "https://vuln-rul");
+        ComponentConcern vulnerabilityConcern3 = ComponentConcern.vulnerability(ItemOperation.DELETE, "CVE-246", ComponentConcernSeverity.MINOR_MEDIUM, "https://vuln-rul");
+
+        BomComponentDetails bomComponentDetails = createBomComponentDetails(List.of(policyConcern, vulnerabilityConcern1, vulnerabilityConcern2, vulnerabilityConcern3));
+
+        ProjectMessage projectMessage = ProjectMessage.componentConcern(providerDetails, commonProject, commonProjectVersion, List.of(bomComponentDetails));
+        ProcessedProviderMessage<ProjectMessage> processedProviderMessage = new ProcessedProviderMessage<>(Set.of(1L), projectMessage);
+
+        ProcessedProviderMessage<SimpleMessage> summarizedSimpleMessage = projectMessageSummarizer.summarize(processedProviderMessage);
+        SimpleMessage simpleMessage = summarizedSimpleMessage.getProviderMessage();
+        printSimpleMessage(simpleMessage);
+    }
+
     @Test
     public void groupedConcernCountTest() {
         ComponentConcern vulnerabilityConcern1 = ComponentConcern.vulnerability(ItemOperation.ADD, "CVE-123", ComponentConcernSeverity.CRITICAL, "https://vuln-rul");
@@ -157,6 +230,24 @@ public class ProjectMessageSummarizerTest {
         assertEquals(4, simpleMessage.getDetails().size());
         assertEquals(3, Integer.valueOf(getDetailValue(simpleMessage.getDetails(), vulnerabilityConcern1.getSeverity().getVulnerabilityLabel(), "Vulnerabilities", ProjectMessageSummarizer.OP_PARTICIPLE_ADDED)));
         assertEquals(1, Integer.valueOf(getDetailValue(simpleMessage.getDetails(), vulnerabilityConcern4.getSeverity().getVulnerabilityLabel(), "Vulnerabilities", ProjectMessageSummarizer.OP_PARTICIPLE_DELETED)));
+    }
+
+    @Disabled
+    @Test
+    public void groupedConcernCountPreview() {
+        ComponentConcern vulnerabilityConcern1 = ComponentConcern.vulnerability(ItemOperation.ADD, "CVE-123", ComponentConcernSeverity.CRITICAL, "https://vuln-rul");
+        ComponentConcern vulnerabilityConcern2 = ComponentConcern.vulnerability(ItemOperation.ADD, "CVE-456", ComponentConcernSeverity.CRITICAL, "https://vuln-rul");
+        ComponentConcern vulnerabilityConcern3 = ComponentConcern.vulnerability(ItemOperation.ADD, "CVE-789", ComponentConcernSeverity.CRITICAL, "https://vuln-rul");
+        ComponentConcern vulnerabilityConcern4 = ComponentConcern.vulnerability(ItemOperation.DELETE, "CVE-246", ComponentConcernSeverity.MINOR_MEDIUM, "https://vuln-rul");
+
+        BomComponentDetails bomComponentDetails = createBomComponentDetails(List.of(vulnerabilityConcern1, vulnerabilityConcern2, vulnerabilityConcern3, vulnerabilityConcern4));
+
+        ProjectMessage projectMessage = ProjectMessage.componentConcern(providerDetails, commonProject, commonProjectVersion, List.of(bomComponentDetails));
+        ProcessedProviderMessage<ProjectMessage> processedProviderMessage = new ProcessedProviderMessage<>(Set.of(1L), projectMessage);
+
+        ProcessedProviderMessage<SimpleMessage> summarizedSimpleMessage = projectMessageSummarizer.summarize(processedProviderMessage);
+        SimpleMessage simpleMessage = summarizedSimpleMessage.getProviderMessage();
+        printSimpleMessage(simpleMessage);
     }
 
     private void testProjectStatus(SimpleMessage simpleMessage) {
@@ -219,5 +310,14 @@ public class ProjectMessageSummarizerTest {
             List.of(),
             "https://blackduck-issues-url"
         );
+    }
+
+    private void printSimpleMessage(SimpleMessage simpleMessage) {
+        System.out.println("Summary: " + simpleMessage.getSummary());
+        System.out.println("Description: " + simpleMessage.getDescription());
+        System.out.println("Details: ");
+        for (LinkableItem linkableItem : simpleMessage.getDetails()) {
+            System.out.println("Label: " + linkableItem.getLabel() + " | Value: " + linkableItem.getValue());
+        }
     }
 }
