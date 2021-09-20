@@ -11,14 +11,14 @@ import org.mockito.Mockito;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.exception.IntegrationException;
 
-public class JiraGlobalTestActionTest {
+public class JiraGlobalFieldModelTestActionTest {
     private static final String EXPECTED_EXCEPTION = "Expected an exception to be thrown";
 
-    private JiraGlobalTestAction testAction;
+    private JiraGlobalFieldModelTestAction testAction;
 
     @BeforeEach
     public void init() throws IntegrationException {
-        testAction = Mockito.mock(JiraGlobalTestAction.class);
+        testAction = Mockito.mock(JiraGlobalFieldModelTestAction.class);
         Mockito.when(testAction.testConfig(Mockito.anyString(), Mockito.any(), Mockito.any())).thenCallRealMethod();
     }
 

@@ -1,15 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import {
-    BootstrapTable,
-    ButtonGroup,
-    TableHeaderColumn
-} from 'react-bootstrap-table';
-import {
-    getAuditData,
-    resendNotification
-} from 'store/actions/audit';
+import { BootstrapTable, ButtonGroup, TableHeaderColumn } from 'react-bootstrap-table';
+import { getAuditData, resendNotification } from 'store/actions/audit';
 import AutoRefresh from 'common/table/AutoRefresh';
 import DescriptorLabel from 'common/DescriptorLabel';
 import RefreshTableCellFormatter from 'common/table/RefreshTableCellFormatter';

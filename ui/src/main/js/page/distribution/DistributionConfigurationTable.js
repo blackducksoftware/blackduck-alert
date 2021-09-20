@@ -1,20 +1,8 @@
 import * as PropTypes from 'prop-types';
-import React, {
-    useEffect,
-    useRef,
-    useState
-} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import {
-    DISTRIBUTION_COMMON_FIELD_KEYS,
-    DISTRIBUTION_URLS
-} from 'page/distribution/DistributionModel';
-import {
-    BootstrapTable,
-    DeleteButton,
-    InsertButton,
-    TableHeaderColumn
-} from 'react-bootstrap-table';
+import { DISTRIBUTION_COMMON_FIELD_KEYS, DISTRIBUTION_URLS } from 'page/distribution/DistributionModel';
+import { BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn } from 'react-bootstrap-table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import DescriptorLabel from 'common/DescriptorLabel';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
@@ -23,10 +11,7 @@ import ConfirmModal from 'common/ConfirmModal';
 import AutoRefresh from 'common/table/AutoRefresh';
 import IconTableCellFormatter from 'common/table/IconTableCellFormatter';
 import * as DistributionRequestUtility from 'page/distribution/DistributionTableRequestUtility';
-import {
-    EXISTING_CHANNELS,
-    EXISTING_PROVIDERS
-} from 'common/DescriptorInfo';
+import { EXISTING_CHANNELS, EXISTING_PROVIDERS } from 'common/DescriptorInfo';
 
 const DistributionConfigurationTable = ({
     csrfToken, errorHandler, readonly, showRefreshButton, descriptors

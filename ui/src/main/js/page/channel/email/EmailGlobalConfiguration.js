@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import * as PropTypes from 'prop-types';
 import CommonGlobalConfiguration from 'common/global/CommonGlobalConfiguration';
-import {
-    EMAIL_GLOBAL_ADVANCED_FIELD_KEYS, EMAIL_GLOBAL_FIELD_KEYS, EMAIL_INFO, EMAIL_TEST_FIELD
-} from 'page/channel/email/EmailModels';
+import { EMAIL_GLOBAL_ADVANCED_FIELD_KEYS, EMAIL_GLOBAL_FIELD_KEYS, EMAIL_INFO, EMAIL_TEST_FIELD } from 'page/channel/email/EmailModels';
 import CommonGlobalConfigurationForm from 'common/global/CommonGlobalConfigurationForm';
 import TextInput from 'common/input/TextInput';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';

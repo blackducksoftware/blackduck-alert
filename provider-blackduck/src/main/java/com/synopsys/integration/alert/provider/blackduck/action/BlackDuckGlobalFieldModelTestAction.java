@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.provider.state.ProviderProperties;
-import com.synopsys.integration.alert.common.action.TestAction;
+import com.synopsys.integration.alert.common.action.FieldModelTestAction;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
@@ -37,12 +37,12 @@ import com.synopsys.integration.rest.client.ConnectionResult;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 @Component
-public class BlackDuckGlobalTestAction extends TestAction {
+public class BlackDuckGlobalFieldModelTestAction extends FieldModelTestAction {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final BlackDuckPropertiesFactory blackDuckPropertiesFactory;
 
     @Autowired
-    public BlackDuckGlobalTestAction(BlackDuckPropertiesFactory blackDuckPropertiesFactory) {
+    public BlackDuckGlobalFieldModelTestAction(BlackDuckPropertiesFactory blackDuckPropertiesFactory) {
         this.blackDuckPropertiesFactory = blackDuckPropertiesFactory;
     }
 

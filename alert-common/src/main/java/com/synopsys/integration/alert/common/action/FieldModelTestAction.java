@@ -12,7 +12,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.exception.IntegrationException;
 
-public abstract class TestAction {
+public abstract class FieldModelTestAction {
     public static final String KEY_CUSTOM_TOPIC = "channel.common.custom.message.topic";
     public static final String KEY_CUSTOM_MESSAGE = "channel.common.custom.message.content";
     public static final String KEY_DESTINATION_NAME = "test.field.destination.name";

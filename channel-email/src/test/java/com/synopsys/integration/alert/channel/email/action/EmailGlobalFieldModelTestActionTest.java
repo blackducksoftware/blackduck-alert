@@ -14,15 +14,15 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFileCreator;
 import com.synopsys.integration.alert.channel.email.attachment.MessageContentGroupCsvCreator;
 import com.synopsys.integration.alert.channel.email.distribution.EmailChannelMessageSender;
 import com.synopsys.integration.alert.channel.email.distribution.address.EmailAddressGatherer;
 import com.synopsys.integration.alert.channel.email.distribution.address.JobEmailAddressValidator;
 import com.synopsys.integration.alert.channel.email.distribution.address.ValidatedEmailAddresses;
-import com.synopsys.integration.alert.common.action.TestAction;
+import com.synopsys.integration.alert.common.action.FieldModelTestAction;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
@@ -38,13 +38,13 @@ import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.test.common.TestTags;
 
-public class EmailGlobalTestActionTest {
+public class EmailGlobalFieldModelTestActionTest {
     @Test
     public void testConfigValidTest() throws AlertException {
         EmailChannelMessageSender emailChannelMessageSender = Mockito.mock(EmailChannelMessageSender.class);
         Mockito.when(emailChannelMessageSender.sendMessages(Mockito.any(), Mockito.any(), Mockito.anyList())).thenReturn(new MessageResult("PASS"));
 
-        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(emailChannelMessageSender);
+        EmailGlobalFieldModelTestAction emailGlobalTestAction = new EmailGlobalFieldModelTestAction(emailChannelMessageSender);
 
         FieldModel validFieldModel = createFieldModelToTest("noreply@synopsys.com");
 
@@ -72,7 +72,7 @@ public class EmailGlobalTestActionTest {
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService();
         EmailChannelMessageSender emailChannelMessageSender = new EmailChannelMessageSender(ChannelKeys.EMAIL, null, emailAddressValidator, emailAddressGatherer, null, freemarkerTemplatingService, configurationAccessor);
 
-        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(emailChannelMessageSender);
+        EmailGlobalFieldModelTestAction emailGlobalTestAction = new EmailGlobalFieldModelTestAction(emailChannelMessageSender);
 
         FieldModel validFieldModel = createFieldModelToTest("");
 
@@ -86,7 +86,7 @@ public class EmailGlobalTestActionTest {
 
     @Test
     public void testConfigInvalidDestinationTest() {
-        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(null);
+        EmailGlobalFieldModelTestAction emailGlobalTestAction = new EmailGlobalFieldModelTestAction(null);
 
         FieldModel validFieldModel = createFieldModelToTest("not a valid email address");
 
@@ -109,7 +109,7 @@ public class EmailGlobalTestActionTest {
 
         EmailChannelMessageSender emailChannelMessageSender = createValidEmailChannelMessageSender(emailAddress);
 
-        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(emailChannelMessageSender);
+        EmailGlobalFieldModelTestAction emailGlobalTestAction = new EmailGlobalFieldModelTestAction(emailChannelMessageSender);
 
         FieldModel validFieldModel = createFieldModelToTest(emailAddress);
         FieldUtility validFieldUtility = createValidEmailGlobalFieldUtility(testProperties);
@@ -129,7 +129,7 @@ public class EmailGlobalTestActionTest {
         Set<String> values = null != destinationValue ? Set.of(destinationValue) : Set.of();
 
         FieldValueModel destinationFieldValueModel = new FieldValueModel(values, false);
-        keyToValues.put(TestAction.KEY_DESTINATION_NAME, destinationFieldValueModel);
+        keyToValues.put(FieldModelTestAction.KEY_DESTINATION_NAME, destinationFieldValueModel);
 
         return new FieldModel(null, null, keyToValues);
     }

@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.jira.JiraConstants;
-import com.synopsys.integration.alert.api.channel.jira.action.JiraGlobalTestAction;
+import com.synopsys.integration.alert.api.channel.jira.action.JiraGlobalFieldModelTestAction;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
@@ -29,13 +29,13 @@ import com.synopsys.integration.jira.common.server.service.JiraServerServiceFact
 import com.synopsys.integration.jira.common.server.service.MyPermissionsService;
 
 @Component
-public class JiraServerGlobalTestAction extends JiraGlobalTestAction {
-    public static final Logger logger = LoggerFactory.getLogger(JiraServerGlobalTestAction.class);
+public class JiraServerGlobalFieldModelTestAction extends JiraGlobalFieldModelTestAction {
+    public static final Logger logger = LoggerFactory.getLogger(JiraServerGlobalFieldModelTestAction.class);
     private final JiraServerPropertiesFactory jiraServerPropertiesFactory;
     private final Gson gson;
 
     @Autowired
-    public JiraServerGlobalTestAction(JiraServerPropertiesFactory jiraServerPropertiesFactory, Gson gson) {
+    public JiraServerGlobalFieldModelTestAction(JiraServerPropertiesFactory jiraServerPropertiesFactory, Gson gson) {
         this.jiraServerPropertiesFactory = jiraServerPropertiesFactory;
         this.gson = gson;
     }
@@ -69,7 +69,7 @@ public class JiraServerGlobalTestAction extends JiraGlobalTestAction {
         JiraServerServiceFactory jiraServerServiceFactory = jiraProperties.createJiraServicesServerFactory(logger, gson);
         MyPermissionsService myPermissionsService = jiraServerServiceFactory.createMyPermissionsService();
         MultiPermissionResponseModel myPermissions = myPermissionsService.getMyPermissions();
-        PermissionModel adminPermission = myPermissions.extractPermission(JiraGlobalTestAction.JIRA_ADMIN_PERMISSION_NAME);
+        PermissionModel adminPermission = myPermissions.extractPermission(JiraGlobalFieldModelTestAction.JIRA_ADMIN_PERMISSION_NAME);
         return null != adminPermission && adminPermission.getHavePermission();
     }
 

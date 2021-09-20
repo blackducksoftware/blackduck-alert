@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import {
-    clearCertificateFieldErrors, deleteCertificate, fetchCertificates, saveCertificate, validateCertificate
-} from 'store/actions/certificates';
+import { clearCertificateFieldErrors, deleteCertificate, fetchCertificates, saveCertificate, validateCertificate } from 'store/actions/certificates';
 import ConfigurationLabel from 'common/ConfigurationLabel';
 import TableDisplay from 'common/table/TableDisplay';
 import TextInput from 'common/input/TextInput';

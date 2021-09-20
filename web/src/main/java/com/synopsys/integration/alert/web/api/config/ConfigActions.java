@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.action.TestAction;
+import com.synopsys.integration.alert.common.action.FieldModelTestAction;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.action.api.AbstractConfigResourceActions;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
@@ -218,16 +218,16 @@ public class ConfigActions extends AbstractConfigResourceActions {
 
     @Override
     protected ValidationActionResponse testWithoutChecks(FieldModel resource) {
-        Optional<TestAction> testActionOptional = descriptorProcessor.retrieveTestAction(resource);
+        Optional<FieldModelTestAction> testActionOptional = descriptorProcessor.retrieveTestAction(resource);
         ValidationResponseModel responseModel;
         if (testActionOptional.isPresent()) {
             try {
                 FieldModel upToDateFieldModel = fieldModelProcessor.createCustomMessageFieldModel(resource);
                 FieldUtility fieldUtility = modelConverter.convertToFieldAccessor(upToDateFieldModel);
-                TestAction testAction = testActionOptional.get();
+                FieldModelTestAction fieldModelTestAction = testActionOptional.get();
 
                 // TODO return the message from the result of testAction.testConfig(...)
-                testAction.testConfig(upToDateFieldModel.getId(), upToDateFieldModel, fieldUtility);
+                fieldModelTestAction.testConfig(upToDateFieldModel.getId(), upToDateFieldModel, fieldUtility);
                 responseModel = ValidationResponseModel.success("Successfully sent test message.");
                 return new ValidationActionResponse(HttpStatus.OK, responseModel);
             } catch (IntegrationRestException e) {

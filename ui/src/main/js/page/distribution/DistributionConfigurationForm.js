@@ -9,6 +9,7 @@ import {
     DISTRIBUTION_FREQUENCY_OPTIONS,
     DISTRIBUTION_NOTIFICATION_TYPE_OPTIONS,
     DISTRIBUTION_POLICY_SELECT_COLUMNS,
+    DISTRIBUTION_PROCESSING_DESCRIPTIONS,
     DISTRIBUTION_PROCESSING_TYPES,
     DISTRIBUTION_PROJECT_SELECT_COLUMNS,
     DISTRIBUTION_TEST_FIELD_KEYS,
@@ -21,9 +22,7 @@ import CollapsiblePane from 'common/CollapsiblePane';
 import TableSelectInput from 'common/input/TableSelectInput';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
-import {
-    CONTEXT_TYPE, isOneOperationAssigned, isOperationAssigned, OPERATIONS
-} from 'common/util/descriptorUtilities';
+import { CONTEXT_TYPE, isOneOperationAssigned, isOperationAssigned, OPERATIONS } from 'common/util/descriptorUtilities';
 import CommonDistributionConfigurationForm from 'page/distribution/CommonDistributionConfigurationForm';
 import * as DistributionRequestUtility from 'page/distribution/DistributionRequestUtility';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
@@ -155,6 +154,8 @@ const DistributionConfigurationForm = ({
         }
     };
 
+    const getProcessingDescription = (processingType) => DISTRIBUTION_PROCESSING_DESCRIPTIONS[processingType] || '';
+
     useEffect(() => {
         switch (selectedChannel.toString()) {
             case AZURE_INFO.key:
@@ -277,6 +278,8 @@ const DistributionConfigurationForm = ({
             />
         </div>
     );
+
+    const processingFieldDescription = `Select the way messages will be processed: ${getProcessingDescription(FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.processingType))}`;
 
     // TODO need to provide finer grain control with permissions.
     return (
@@ -403,7 +406,7 @@ const DistributionConfigurationForm = ({
                         <SelectInput
                             id={DISTRIBUTION_COMMON_FIELD_KEYS.processingType}
                             label="Processing"
-                            description="Select the way messages will be processed: <TODO create the dynamic description>"
+                            description={processingFieldDescription}
                             options={processingTypes}
                             readOnly={readonly}
                             required

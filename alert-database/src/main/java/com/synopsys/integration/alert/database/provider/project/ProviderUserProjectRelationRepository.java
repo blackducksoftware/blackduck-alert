@@ -7,9 +7,9 @@
  */
 package com.synopsys.integration.alert.database.provider.project;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProviderUserProjectRelationRepository extends JpaRepository<ProviderUserProjectRelation, ProviderUserProjectRelationPK> {
     List<ProviderUserProjectRelation> findByProviderProjectId(Long providerProjectId);

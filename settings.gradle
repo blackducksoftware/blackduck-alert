@@ -25,4 +25,5 @@ include 'ui'
 include 'web'
 include 'test-common'
 include 'test-common-channel'
+include 'test-common-blackduck'
 
