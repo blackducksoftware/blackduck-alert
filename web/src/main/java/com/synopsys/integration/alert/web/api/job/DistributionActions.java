@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.persistence.accessor.DistributionAccessor;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.DistributionWithAuditInfo;
 
 @Component
@@ -24,8 +25,8 @@ public class DistributionActions {
         this.distributionAccessor = distributionAccessor;
     }
 
-    public ActionResponse<DistributionWithAuditInfo> retrieveJobWithAuditInfo() {
-        DistributionWithAuditInfo distributionWithAuditInfo = distributionAccessor.getDistributionWithAuditInfo();
+    public ActionResponse<AlertPagedModel<DistributionWithAuditInfo>> retrieveJobWithAuditInfo(int pageStart, int pageSize, String sortName) {
+        AlertPagedModel<DistributionWithAuditInfo> distributionWithAuditInfo = distributionAccessor.getDistributionWithAuditInfo(pageStart, pageSize, sortName);
         return new ActionResponse<>(HttpStatus.ACCEPTED, distributionWithAuditInfo);
     }
 }

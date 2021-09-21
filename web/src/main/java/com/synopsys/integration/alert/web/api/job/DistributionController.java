@@ -10,10 +10,12 @@ package com.synopsys.integration.alert.web.api.job;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.DistributionWithAuditInfo;
 
 @RestController
@@ -29,8 +31,12 @@ public class DistributionController {
     }
 
     @GetMapping("/audit-statuses")
-    public DistributionWithAuditInfo getDistributionWithAuditInfo() {
-        return ResponseFactory.createContentResponseFromAction(distributionActions.retrieveJobWithAuditInfo());
+    public AlertPagedModel<DistributionWithAuditInfo> getDistributionWithAuditInfo(
+        @RequestParam String sortBy,
+        @RequestParam int pageSize,
+        @RequestParam int pageStart
+    ) {
+        return ResponseFactory.createContentResponseFromAction(distributionActions.retrieveJobWithAuditInfo(pageStart, pageSize, sortBy));
     }
 
 }
