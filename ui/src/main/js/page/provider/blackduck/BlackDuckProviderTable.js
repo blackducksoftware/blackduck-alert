@@ -18,6 +18,7 @@ const BlackDuckProviderTable = ({
     const [tableData, setTableData] = useState([]);
     const [showDelete, setShowDelete] = useState(false);
     const [allSelectedRows, setAllSelectedRows] = useState([]);
+    const [progress, setProgress] = useState(false);
     const tableRef = useRef();
     const history = useHistory();
 
@@ -25,6 +26,7 @@ const BlackDuckProviderTable = ({
     const deleteRequest = (id) => ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, id);
 
     const retrieveTableData = async () => {
+        setProgress(true);
         const response = await readRequest();
         const data = await response.json();
 
@@ -38,9 +40,11 @@ const BlackDuckProviderTable = ({
             createdAt: fieldModel.createdAt
         }));
         setTableData(convertedTableData);
+        setProgress(false);
     };
 
     const deleteTableData = async () => {
+        setProgress(true);
         if (allSelectedRows) {
             allSelectedRows.forEach((configId) => {
                 deleteRequest(configId);
@@ -48,6 +52,7 @@ const BlackDuckProviderTable = ({
         }
         await retrieveTableData();
         setShowDelete(false);
+        setProgress(false);
     };
 
     useEffect(() => {
@@ -252,6 +257,13 @@ const BlackDuckProviderTable = ({
                 {createIconTableHeader(editColumnFormatter(), 'Edit')}
                 {createIconTableHeader(copyColumnFormatter(), 'Copy')}
             </BootstrapTable>
+            {progress && (
+                <div className="progressIcon">
+                    <span className="fa-layers fa-fw">
+                        <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
+                    </span>
+                </div>
+            )}
         </div>
     );
 };
