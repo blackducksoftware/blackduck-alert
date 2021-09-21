@@ -41,6 +41,7 @@ public class ProjectMessageSummarizerTest {
 
         ProcessedProviderMessage<SimpleMessage> summarizedSimpleMessage = projectMessageSummarizer.summarize(processedProviderMessage);
         SimpleMessage simpleMessage = summarizedSimpleMessage.getProviderMessage();
+        printSimpleMessage(simpleMessage);
 
         testProjectStatus(simpleMessage);
         assertEquals(1, simpleMessage.getDetails().size());
@@ -56,6 +57,7 @@ public class ProjectMessageSummarizerTest {
 
         ProcessedProviderMessage<SimpleMessage> summarizedSimpleMessage = projectMessageSummarizer.summarize(processedProviderMessage);
         SimpleMessage simpleMessage = summarizedSimpleMessage.getProviderMessage();
+        printSimpleMessage(simpleMessage);
 
         testProjectStatus(simpleMessage);
         assertEquals(1, simpleMessage.getDetails().size());
@@ -71,6 +73,7 @@ public class ProjectMessageSummarizerTest {
 
         ProcessedProviderMessage<SimpleMessage> summarizedSimpleMessage = projectMessageSummarizer.summarize(processedProviderMessage);
         SimpleMessage simpleMessage = summarizedSimpleMessage.getProviderMessage();
+        printSimpleMessage(simpleMessage);
 
         testProjectStatus(simpleMessage);
         assertEquals(2, simpleMessage.getDetails().size(), "Expected 2 LinkableItems. One for project the other for project-version.");
@@ -96,6 +99,7 @@ public class ProjectMessageSummarizerTest {
 
         ProcessedProviderMessage<SimpleMessage> summarizedSimpleMessage = projectMessageSummarizer.summarize(processedProviderMessage);
         SimpleMessage simpleMessage = summarizedSimpleMessage.getProviderMessage();
+        printSimpleMessage(simpleMessage);
 
         testProjectStatus(simpleMessage);
         testComponentStatus(simpleMessage);
@@ -123,6 +127,7 @@ public class ProjectMessageSummarizerTest {
 
         ProcessedProviderMessage<SimpleMessage> summarizedSimpleMessage = projectMessageSummarizer.summarize(processedProviderMessage);
         SimpleMessage simpleMessage = summarizedSimpleMessage.getProviderMessage();
+        printSimpleMessage(simpleMessage);
 
         testProjectStatus(simpleMessage);
         testComponentStatus(simpleMessage);
@@ -150,6 +155,7 @@ public class ProjectMessageSummarizerTest {
 
         ProcessedProviderMessage<SimpleMessage> summarizedSimpleMessage = projectMessageSummarizer.summarize(processedProviderMessage);
         SimpleMessage simpleMessage = summarizedSimpleMessage.getProviderMessage();
+        printSimpleMessage(simpleMessage);
 
         testProjectStatus(simpleMessage);
         testComponentStatus(simpleMessage);
