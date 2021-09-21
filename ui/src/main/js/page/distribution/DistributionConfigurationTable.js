@@ -27,6 +27,7 @@ import {
     EXISTING_CHANNELS,
     EXISTING_PROVIDERS
 } from 'common/DescriptorInfo';
+import { ProgressIcon } from 'common/table/ProgressIcon';
 
 const DistributionConfigurationTable = ({
     csrfToken, errorHandler, readonly, showRefreshButton, descriptors
@@ -460,6 +461,7 @@ const DistributionConfigurationTable = ({
                 {createIconColumn('pencil-alt', 'Edit', editButtonClicked)}
                 {createIconColumn('copy', 'Copy', copyButtonClicked)}
             </BootstrapTable>
+            <ProgressIcon inProgress={progress} />
         </div>
     );
 };
