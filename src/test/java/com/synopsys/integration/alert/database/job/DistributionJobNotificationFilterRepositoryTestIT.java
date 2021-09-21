@@ -29,10 +29,12 @@ import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @AlertIntegrationTest
-public class DistributionJobRepositoryTestIT {
+public class DistributionJobNotificationFilterRepositoryTestIT {
     private static final BlackDuckProviderKey BLACK_DUCK_PROVIDER_KEY = new BlackDuckProviderKey();
     private static final MsTeamsKey MS_TEAMS_KEY = new MsTeamsKey();
 
+    @Autowired
+    private DistributionJobNotificationFilterRepository jobNotificationFilterRepository;
     @Autowired
     private DistributionJobRepository distributionJobRepository;
     @Autowired
@@ -60,7 +62,7 @@ public class DistributionJobRepositoryTestIT {
     @Test
     public void findAndSortEnabledJobsMatchingFilters_ValidateSyntaxTest() {
         PageRequest pageRequest = PageRequest.of(0, 1);
-        Page<DistributionJobEntity> foundJobs = distributionJobRepository.findAndSortEnabledJobsMatchingFilters(blackDuckConfigId, Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), pageRequest);
+        Page<DistributionJobEntity> foundJobs = jobNotificationFilterRepository.findAndSortEnabledJobsMatchingFilters(blackDuckConfigId, Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), pageRequest);
         assertEquals(0, foundJobs.getContent().size());
     }
 
@@ -81,13 +83,15 @@ public class DistributionJobRepositoryTestIT {
         Set<String> projectFilter = Set.of(testProjectName1, testProjectName2);
 
         PageRequest firstPageRequest = PageRequest.of(page, 1);
-        Page<DistributionJobEntity> firstPageOfJobs = distributionJobRepository.findAndSortEnabledJobsMatchingFilters(blackDuckConfigId, frequencyFilterSet, notificationTypesFilterSet, projectFilter, Set.of(), Set.of(), firstPageRequest);
+        Page<DistributionJobEntity> firstPageOfJobs = jobNotificationFilterRepository.findAndSortEnabledJobsMatchingFilters(blackDuckConfigId, frequencyFilterSet, notificationTypesFilterSet, projectFilter, Set.of(), Set.of(),
+            firstPageRequest);
         assertEquals(1, firstPageOfJobs.getContent().size());
         DistributionJobEntity firstJob = firstPageOfJobs.stream().findFirst().orElseThrow();
         assertEquals(job1.getName(), firstJob.getName());
 
         PageRequest secondPageRequest = PageRequest.of(++page, 1);
-        Page<DistributionJobEntity> secondPageOfJobs = distributionJobRepository.findAndSortEnabledJobsMatchingFilters(blackDuckConfigId, frequencyFilterSet, notificationTypesFilterSet, projectFilter, Set.of(), Set.of(), secondPageRequest);
+        Page<DistributionJobEntity> secondPageOfJobs = jobNotificationFilterRepository.findAndSortEnabledJobsMatchingFilters(blackDuckConfigId, frequencyFilterSet, notificationTypesFilterSet, projectFilter, Set.of(), Set.of(),
+            secondPageRequest);
         assertEquals(1, secondPageOfJobs.getContent().size());
         DistributionJobEntity secondJob = secondPageOfJobs.stream().findFirst().orElseThrow();
         assertEquals(job2.getName(), secondJob.getName());
