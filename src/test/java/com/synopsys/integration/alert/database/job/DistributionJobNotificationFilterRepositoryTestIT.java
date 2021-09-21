@@ -33,6 +33,12 @@ public class DistributionJobNotificationFilterRepositoryTestIT {
     private static final BlackDuckProviderKey BLACK_DUCK_PROVIDER_KEY = new BlackDuckProviderKey();
     private static final MsTeamsKey MS_TEAMS_KEY = new MsTeamsKey();
 
+    private static final String PROJECT_MATCHING_PATTERN_1 = "integration-common";
+    private static final String PROJECT_MATCHING_PATTERN_2 = "int-jira-common";
+    private static final String PROJECT_MATCHING_PATTERN_3 = "int-azureboards-common";
+    private static final String PROJECT_NOT_MATCHING_PATTERN = "_0123456789 x non matching project abc";
+    private static final String PATTERN_FOR_TEST_PROJECT_NAMES = "int[A-Za-z0-9\\-]{0,}-common";
+
     @Autowired
     private DistributionJobNotificationFilterRepository jobNotificationFilterRepository;
     @Autowired
@@ -70,31 +76,67 @@ public class DistributionJobNotificationFilterRepositoryTestIT {
     public void findAndSortEnabledJobsMatchingFilters_ValidateFilteringTest() {
         int page = 0;
 
-        String testProjectName1 = "integration-common";
-        BlackDuckProjectDetailsModel project1Details = new BlackDuckProjectDetailsModel(testProjectName1, "https://project-1");
-        String testProjectName2 = "int-jira-common";
-        BlackDuckProjectDetailsModel project2Details = new BlackDuckProjectDetailsModel(testProjectName2, "https://project-2");
+        BlackDuckProjectDetailsModel project1Details = new BlackDuckProjectDetailsModel(PROJECT_MATCHING_PATTERN_1, "https://project-1");
+        BlackDuckProjectDetailsModel project2Details = new BlackDuckProjectDetailsModel(PROJECT_MATCHING_PATTERN_2, "https://project-2");
 
-        DistributionJobModel job1 = initJob("Job 1", false, null, List.of(project1Details, project2Details));
-        DistributionJobModel job2 = initJob("Job 2", true, "int[A-Za-z0-9\\-]{0,}-common", List.of());
+        DistributionJobModel job1 = initJob("Job 1", true, null, List.of(project1Details, project2Details));
+        DistributionJobModel job2 = initJob("Job 2", true, PATTERN_FOR_TEST_PROJECT_NAMES, List.of());
 
-        Set<String> frequencyFilterSet = Set.of(job1.getDistributionFrequency().name());
-        Set<String> notificationTypesFilterSet = new HashSet<>(job1.getNotificationTypes());
-        Set<String> projectFilter = Set.of(testProjectName1, testProjectName2);
+        Set<String> frequencyFilter = Set.of(job1.getDistributionFrequency().name());
+        Set<String> notificationTypesFilter = new HashSet<>(job1.getNotificationTypes());
+        Set<String> projectFilter = Set.of(PROJECT_MATCHING_PATTERN_1, PROJECT_MATCHING_PATTERN_2);
 
         PageRequest firstPageRequest = PageRequest.of(page, 1);
-        Page<DistributionJobEntity> firstPageOfJobs = jobNotificationFilterRepository.findAndSortEnabledJobsMatchingFilters(blackDuckConfigId, frequencyFilterSet, notificationTypesFilterSet, projectFilter, Set.of(), Set.of(),
-            firstPageRequest);
-        assertEquals(1, firstPageOfJobs.getContent().size());
-        DistributionJobEntity firstJob = firstPageOfJobs.stream().findFirst().orElseThrow();
-        assertEquals(job1.getName(), firstJob.getName());
+        Page<DistributionJobEntity> firstPageOfJobs = jobNotificationFilterRepository.findAndSortEnabledJobsMatchingFilters(blackDuckConfigId, frequencyFilter, notificationTypesFilter, projectFilter, Set.of(), Set.of(), firstPageRequest);
+        assertFilteredPage(firstPageOfJobs, job1);
 
         PageRequest secondPageRequest = PageRequest.of(++page, 1);
-        Page<DistributionJobEntity> secondPageOfJobs = jobNotificationFilterRepository.findAndSortEnabledJobsMatchingFilters(blackDuckConfigId, frequencyFilterSet, notificationTypesFilterSet, projectFilter, Set.of(), Set.of(),
-            secondPageRequest);
-        assertEquals(1, secondPageOfJobs.getContent().size());
-        DistributionJobEntity secondJob = secondPageOfJobs.stream().findFirst().orElseThrow();
-        assertEquals(job2.getName(), secondJob.getName());
+        Page<DistributionJobEntity> secondPageOfJobs = jobNotificationFilterRepository.findAndSortEnabledJobsMatchingFilters(blackDuckConfigId, frequencyFilter, notificationTypesFilter, projectFilter, Set.of(), Set.of(), secondPageRequest);
+        assertFilteredPage(secondPageOfJobs, job2);
+    }
+
+    @Test
+    public void findAndSortEnabledJobsMatchingFilters_ValidateProjectNameParamManipulationTest() {
+        BlackDuckProjectDetailsModel project1Details = new BlackDuckProjectDetailsModel(PROJECT_MATCHING_PATTERN_1, "https://project-1");
+        BlackDuckProjectDetailsModel project2Details = new BlackDuckProjectDetailsModel(PROJECT_MATCHING_PATTERN_2, "https://project-2");
+        BlackDuckProjectDetailsModel project3Details = new BlackDuckProjectDetailsModel(PROJECT_NOT_MATCHING_PATTERN, "https://project-3");
+
+        DistributionJobModel job1 = initJob("Job 1", false, null, List.of());
+        DistributionJobModel job2 = initJob("Job 2", true, null, List.of(project1Details, project2Details));
+        DistributionJobModel job3 = initJob("Job 3", true, PATTERN_FOR_TEST_PROJECT_NAMES, List.of());
+        DistributionJobModel job4 = initJob("Job 4", true, null, List.of(project3Details));
+
+        Set<String> frequencyFilter = Set.of(job1.getDistributionFrequency().name());
+        Set<String> notifTypesFilter = new HashSet<>(job1.getNotificationTypes());
+
+        PageRequest pageRequest = PageRequest.of(0, 10);
+
+        // Should match Job 1 (no filter-by-project)
+        Set<String> noProjectsFilter = Set.of();
+        Page<DistributionJobEntity> noProjectsPage = jobNotificationFilterRepository.findAndSortEnabledJobsMatchingFilters(blackDuckConfigId, frequencyFilter, notifTypesFilter, noProjectsFilter, Set.of(), Set.of(), pageRequest);
+        assertFilteredPage(noProjectsPage, job1);
+
+        // Should match Job 3 (pattern)
+        Set<String> oneProjectFilter = Set.of(PROJECT_MATCHING_PATTERN_3);
+        Page<DistributionJobEntity> oneProjectPage = jobNotificationFilterRepository.findAndSortEnabledJobsMatchingFilters(blackDuckConfigId, frequencyFilter, notifTypesFilter, oneProjectFilter, Set.of(), Set.of(), pageRequest);
+        assertFilteredPage(oneProjectPage, job3);
+
+        // Should match Job 2 (exact), Job 3 (pattern), and Job 4 (exact)
+        Set<String> twoProjectsFilter = Set.of(PROJECT_MATCHING_PATTERN_1, PROJECT_NOT_MATCHING_PATTERN);
+        Page<DistributionJobEntity> twoProjectsPage = jobNotificationFilterRepository.findAndSortEnabledJobsMatchingFilters(blackDuckConfigId, frequencyFilter, notifTypesFilter, twoProjectsFilter, Set.of(), Set.of(), pageRequest);
+        assertEquals(3, twoProjectsPage.getContent().size());
+
+        // Should match Job 4 (exact)
+        Set<String> nonMatchingProjectFilter = Set.of(PROJECT_NOT_MATCHING_PATTERN);
+        Page<DistributionJobEntity> nonMatchingProjectsPage =
+            jobNotificationFilterRepository.findAndSortEnabledJobsMatchingFilters(blackDuckConfigId, frequencyFilter, notifTypesFilter, nonMatchingProjectFilter, Set.of(), Set.of(), pageRequest);
+        assertFilteredPage(nonMatchingProjectsPage, job4);
+    }
+
+    private static void assertFilteredPage(Page<DistributionJobEntity> page, DistributionJobModel expectedJob) {
+        assertEquals(1, page.getContent().size());
+        DistributionJobEntity job = page.stream().findFirst().orElseThrow();
+        assertEquals(expectedJob.getName(), job.getName());
     }
 
     private ConfigurationModel createBlackDuckConfig() {
