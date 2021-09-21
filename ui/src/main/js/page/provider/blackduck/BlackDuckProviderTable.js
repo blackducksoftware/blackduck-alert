@@ -11,6 +11,7 @@ import { BLACKDUCK_GLOBAL_FIELD_KEYS, BLACKDUCK_INFO, BLACKDUCK_URLS } from 'pag
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import ConfirmModal from 'common/ConfirmModal';
 import IconTableCellFormatter from 'common/table/IconTableCellFormatter';
+import { ProgressIcon } from 'common/table/ProgressIcon';
 
 const BlackDuckProviderTable = ({
     csrfToken, readonly, showRefreshButton, displayDelete
@@ -257,13 +258,7 @@ const BlackDuckProviderTable = ({
                 {createIconTableHeader(editColumnFormatter(), 'Edit')}
                 {createIconTableHeader(copyColumnFormatter(), 'Copy')}
             </BootstrapTable>
-            {progress && (
-                <div className="progressIcon">
-                    <span className="fa-layers fa-fw">
-                        <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
-                    </span>
-                </div>
-            )}
+            <ProgressIcon inProgress={progress} />
         </div>
     );
 };
