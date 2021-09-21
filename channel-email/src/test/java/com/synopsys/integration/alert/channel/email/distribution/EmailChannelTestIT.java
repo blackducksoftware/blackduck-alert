@@ -27,6 +27,8 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import com.synopsys.integration.alert.service.email.EmailMessagingService;
+import com.synopsys.integration.alert.service.email.JavamailPropertiesFactory;
 import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.service.email.template.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
@@ -36,24 +38,26 @@ import com.synopsys.integration.alert.test.common.TestTags;
 
 public class EmailChannelTestIT {
     protected Gson gson;
-    protected TestProperties properties;
+    protected TestProperties testProperties;
 
     @BeforeEach
     public void init() {
         gson = new Gson();
-        properties = new TestProperties();
+        testProperties = new TestProperties();
     }
 
     @Test
     @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     public void sendEmailTest() {
         MockAlertProperties testAlertProperties = new MockAlertProperties();
-        String testEmailRecipient = properties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT);
+        String testEmailRecipient = testProperties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT);
 
         EmailChannelKey emailChannelKey = ChannelKeys.EMAIL;
-        EmailAddressGatherer emailAddressGatherer = new EmailAddressGatherer(null, null);
         EmailAttachmentFileCreator emailAttachmentFileCreator = new EmailAttachmentFileCreator(testAlertProperties, new MessageContentGroupCsvCreator(), gson);
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService();
+        EmailMessagingService emailMessagingService = new EmailMessagingService(freemarkerTemplatingService);
+        JavamailPropertiesFactory javamailPropertiesFactory = new JavamailPropertiesFactory();
+        EmailChannelMessagingService emailChannelMessagingService = new EmailChannelMessagingService(testAlertProperties, emailMessagingService, emailAttachmentFileCreator);
 
         ConfigurationModel emailGlobalConfig = createEmailGlobalConfig();
         ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
@@ -62,14 +66,21 @@ public class EmailChannelTestIT {
         JobEmailAddressValidator emailAddressValidator = Mockito.mock(JobEmailAddressValidator.class);
         Mockito.when(emailAddressValidator.validate(Mockito.any(), Mockito.anyCollection())).thenReturn(new ValidatedEmailAddresses(Set.of(testEmailRecipient), Set.of()));
 
+        EmailAddressGatherer emailAddressGatherer = new EmailAddressGatherer(null, null);
         EmailChannelMessageConverter emailChannelMessageConverter = new EmailChannelMessageConverter(new EmailChannelMessageFormatter());
-        EmailChannelMessageSender emailChannelMessageSender = new EmailChannelMessageSender(emailChannelKey, testAlertProperties, emailAddressValidator, emailAddressGatherer, emailAttachmentFileCreator, freemarkerTemplatingService,
-            configurationAccessor);
 
+        EmailChannelMessageSender emailChannelMessageSender = new EmailChannelMessageSender(configurationAccessor, emailAddressGatherer, ChannelKeys.EMAIL, emailChannelMessagingService, emailAddressValidator, javamailPropertiesFactory);
         EmailChannel emailChannel = new EmailChannel(emailChannelMessageConverter, emailChannelMessageSender);
 
         List<String> emailAddresses = List.of(testEmailRecipient);
-        EmailJobDetailsModel emailJobDetails = new EmailJobDetailsModel(null, EmailChannelTestIT.class.getSimpleName(), false, true, EmailAttachmentFormat.NONE.name(), emailAddresses);
+        EmailJobDetailsModel emailJobDetails = new EmailJobDetailsModel(
+            null,
+            EmailChannelTestIT.class.getSimpleName(),
+            false,
+            true,
+            EmailAttachmentFormat.NONE.name(),
+            emailAddresses
+        );
 
         EmailITTestAssertions.assertSendSimpleMessageSuccess(emailChannel, emailJobDetails);
     }
@@ -77,7 +88,7 @@ public class EmailChannelTestIT {
     @Test
     public void sendEmailNullGlobalTest() {
         EmailChannelKey emailChannelKey = ChannelKeys.EMAIL;
-        String testEmailRecipient = properties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT);
+        String testEmailRecipient = testProperties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT);
 
         ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorKeyAndContext(Mockito.eq(emailChannelKey), Mockito.eq(ConfigContextEnum.GLOBAL))).thenReturn(List.of());
@@ -85,8 +96,9 @@ public class EmailChannelTestIT {
         JobEmailAddressValidator emailAddressValidator = Mockito.mock(JobEmailAddressValidator.class);
         Mockito.when(emailAddressValidator.validate(Mockito.any(), Mockito.anyCollection())).thenReturn(new ValidatedEmailAddresses(Set.of(testEmailRecipient), Set.of()));
 
+        EmailAddressGatherer emailAddressGatherer = new EmailAddressGatherer(null, null);
         EmailChannelMessageConverter emailChannelMessageConverter = new EmailChannelMessageConverter(new EmailChannelMessageFormatter());
-        EmailChannelMessageSender emailChannelMessageSender = new EmailChannelMessageSender(emailChannelKey, null, emailAddressValidator, null, null, null, configurationAccessor);
+        EmailChannelMessageSender emailChannelMessageSender = new EmailChannelMessageSender(configurationAccessor, emailAddressGatherer, emailChannelKey, null, emailAddressValidator, null);
 
         EmailChannel emailChannel = new EmailChannel(emailChannelMessageConverter, emailChannelMessageSender);
 
@@ -98,13 +110,13 @@ public class EmailChannelTestIT {
 
     private ConfigurationModel createEmailGlobalConfig() {
         Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
-        addConfigurationFieldToMap(fieldModels, EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey(), properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST));
-        addConfigurationFieldToMap(fieldModels, EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey(), properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM));
-        addConfigurationFieldToMap(fieldModels, EmailPropertyKeys.JAVAMAIL_USER_KEY.getPropertyKey(), properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_USER));
-        addConfigurationFieldToMap(fieldModels, EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey(), properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PASSWORD));
-        addConfigurationFieldToMap(fieldModels, EmailPropertyKeys.JAVAMAIL_EHLO_KEY.getPropertyKey(), properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_EHLO));
-        addConfigurationFieldToMap(fieldModels, EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey(), properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_AUTH));
-        addConfigurationFieldToMap(fieldModels, EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PORT));
+        addConfigurationFieldToMap(fieldModels, EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey(), testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST));
+        addConfigurationFieldToMap(fieldModels, EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey(), testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM));
+        addConfigurationFieldToMap(fieldModels, EmailPropertyKeys.JAVAMAIL_USER_KEY.getPropertyKey(), testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_USER));
+        addConfigurationFieldToMap(fieldModels, EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey(), testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PASSWORD));
+        addConfigurationFieldToMap(fieldModels, EmailPropertyKeys.JAVAMAIL_EHLO_KEY.getPropertyKey(), testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_EHLO));
+        addConfigurationFieldToMap(fieldModels, EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey(), testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_AUTH));
+        addConfigurationFieldToMap(fieldModels, EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PORT));
         return new ConfigurationModel(-1L, -1L, null, null, ConfigContextEnum.DISTRIBUTION, fieldModels);
     }
 

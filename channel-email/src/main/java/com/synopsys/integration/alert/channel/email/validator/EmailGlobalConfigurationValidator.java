@@ -13,9 +13,9 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.email.web.EmailGlobalConfigModel;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatusMessages;
+import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
 @Component
 public class EmailGlobalConfigurationValidator {
@@ -23,18 +23,18 @@ public class EmailGlobalConfigurationValidator {
 
     public Set<AlertFieldStatus> validate(EmailGlobalConfigModel model) {
         Set<AlertFieldStatus> statuses = new HashSet<>();
-        if (StringUtils.isBlank(model.host)) {
+        if (model.getHost().filter(StringUtils::isNotBlank).isEmpty()) {
             statuses.add(AlertFieldStatus.error("host", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
         }
-        if (StringUtils.isBlank(model.from)) {
+        if (model.getFrom().filter(StringUtils::isNotBlank).isEmpty()) {
             statuses.add(AlertFieldStatus.error("from", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
         }
 
-        if (Boolean.TRUE.equals(model.auth)) {
-            if (StringUtils.isBlank(model.user)) {
+        if (model.getAuth().filter(Boolean.TRUE::equals).isPresent()) {
+            if (model.getUsername().filter(StringUtils::isNotBlank).isEmpty()) {
                 statuses.add(AlertFieldStatus.error("user", REQUIRED_BECAUSE_AUTH));
             }
-            if (StringUtils.isBlank(model.password)) {
+            if (model.getPassword().filter(StringUtils::isNotBlank).isEmpty()) {
                 statuses.add(AlertFieldStatus.error("password", REQUIRED_BECAUSE_AUTH));
             }
         }

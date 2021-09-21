@@ -6,9 +6,9 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.channel.email.web.EmailGlobalConfigModel;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
+import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
 public class EmailGlobalConfigurationValidatorTest {
 
@@ -24,11 +24,11 @@ public class EmailGlobalConfigurationValidatorTest {
     public void verifyValidConfig() {
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailGlobalConfigModel model = new EmailGlobalConfigModel();
-        model.host = "host";
-        model.from = "from";
-        model.auth = true;
-        model.user = "user";
-        model.password = "password";
+        model.setHost("host");
+        model.setFrom("from");
+        model.setAuth(true);
+        model.setUsername("user");
+        model.setPassword("password");
 
         Set<AlertFieldStatus> alertFieldStatuses = validator.validate(model);
         assertEquals(0, alertFieldStatuses.size(), "There were errors in the configuration when none were expected.");
@@ -50,9 +50,9 @@ public class EmailGlobalConfigurationValidatorTest {
     public void verifyMissingAuth() {
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailGlobalConfigModel model = new EmailGlobalConfigModel();
-        model.host = "host";
-        model.from = "from";
-        model.auth = true;
+        model.setHost("host");
+        model.setFrom("from");
+        model.setAuth(true);
 
         Set<AlertFieldStatus> alertFieldStatuses = validator.validate(model);
         assertEquals(2, alertFieldStatuses.size(), "Validation found more or fewer errors than expected.");
@@ -65,10 +65,10 @@ public class EmailGlobalConfigurationValidatorTest {
     public void verifyAuthNotProvided() {
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailGlobalConfigModel model = new EmailGlobalConfigModel();
-        model.host = "host";
-        model.from = "from";
-        model.user = "user";
-        model.password = "user";
+        model.setHost("host");
+        model.setFrom("from");
+        model.setUsername("user");
+        model.setPassword("password");
 
         Set<AlertFieldStatus> alertFieldStatuses = validator.validate(model);
         assertEquals(0, alertFieldStatuses.size(), "There were errors in the configuration when none were expected.");
@@ -78,10 +78,10 @@ public class EmailGlobalConfigurationValidatorTest {
     public void verifyMissingAuthPassword() {
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailGlobalConfigModel model = new EmailGlobalConfigModel();
-        model.host = "host";
-        model.from = "from";
-        model.auth = true;
-        model.user = "user";
+        model.setHost("host");
+        model.setFrom("from");
+        model.setAuth(true);
+        model.setUsername("user");
 
         Set<AlertFieldStatus> alertFieldStatuses = validator.validate(model);
         assertEquals(1, alertFieldStatuses.size(), "Validation found more or fewer errors than expected.");
