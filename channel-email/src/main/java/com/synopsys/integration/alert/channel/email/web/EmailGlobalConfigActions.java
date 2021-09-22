@@ -52,18 +52,20 @@ public class EmailGlobalConfigActions {
     }
 
     public ActionResponse<EmailGlobalConfigModel> getOne(Long id) {
-        // TODO: Implement with persistence changes
-//        Optional<EmailGlobalConfigModel> optionalResponse = getEmailGlobalConfigResponse(id);
-//
-//        if (optionalResponse.isEmpty()) {
-//            return new ActionResponse<>(HttpStatus.NOT_FOUND);
-//        }
-//
-//        if (!authorizationManager.hasReadPermission(ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL)) {
-//            return ActionResponse.createForbiddenResponse();
-//        }
-//
-//        return new ActionResponse<>(HttpStatus.OK, optionalResponse.get());
+        Optional<EmailGlobalConfigModel> optionalResponse = getEmailGlobalConfigResponse(id);
+
+        if (optionalResponse.isEmpty()) {
+            return new ActionResponse<>(HttpStatus.NOT_FOUND);
+        }
+
+        if (!authorizationManager.hasReadPermission(ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL)) {
+            return ActionResponse.createForbiddenResponse();
+        }
+
+        return new ActionResponse<>(HttpStatus.OK, optionalResponse.get());
+    }
+
+    private Optional<EmailGlobalConfigModel> getEmailGlobalConfigResponse(Long id) {
         return null;
     }
 
@@ -84,7 +86,7 @@ public class EmailGlobalConfigActions {
         // TODO: Implement with persistence changes
 //        FieldModel requestAsFieldModel = null; // concreteModelTransformer.toFieldModel(requestResource);
 //        Map<String, ConfigurationFieldModel> configurationFieldModelMap = modelConverter.convertToConfigurationFieldModelMap(requestAsFieldModel);
-//        ConfigurationModel configuration = configurationAccessor.createConfiguration(ChannelKeys.EMAIL, ConfigContextEnum.GLOBAL, configurationFieldModelMap.values());
+//        ConfigurationModel configuration = fieldModelConfigurationAccessor.createConfiguration(ChannelKeys.EMAIL, ConfigContextEnum.GLOBAL, configurationFieldModelMap.values());
 //        EmailGlobalConfigModel responseResource = concreteModelTransformer.fromConfigurationModel(configuration);
 //        return new ActionResponse<>(HttpStatus.OK, responseResource);
         return null;
@@ -112,12 +114,12 @@ public class EmailGlobalConfigActions {
 //        try {
 //            FieldModel resourceAsFieldModel = concreteModelTransformer.toFieldModel(requestResource);
 //
-//            configurationAccessor.getConfigurationById(id)
+//            fieldModelConfigurationAccessor.getConfigurationById(id)
 //                .map(modelConverter::convertToFieldModel)
 //                .ifPresent(resourceAsFieldModel::fill);
 //
 //            Collection<ConfigurationFieldModel> updatedFields = modelConverter.convertToConfigurationFieldModelMap(resourceAsFieldModel).values();
-//            ConfigurationModel configurationModel = configurationAccessor.updateConfiguration(id, updatedFields);
+//            ConfigurationModel configurationModel = fieldModelConfigurationAccessor.updateConfiguration(id, updatedFields);
 //            EmailGlobalConfigModel updatedResponse = concreteModelTransformer.fromConfigurationModel(configurationModel);
 //            return new ActionResponse<>(HttpStatus.OK, updatedResponse);
 //        } catch (AlertException ex) {

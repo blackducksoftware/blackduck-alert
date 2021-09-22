@@ -13,8 +13,9 @@ import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.deser.std.MapDeserializer;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
-public class EmailGlobalConfigModel {
+public class EmailGlobalConfigModel extends AlertSerializableModel {
     @JsonProperty("smtpFrom")
     private String from;
     @JsonProperty("smtpHost")
