@@ -38,6 +38,7 @@ const readAuditDataAndBuildTableData = (csrfToken, errorHandler, stateUpdateFunc
         setProgress, setTableData
     } = stateUpdateFunctions;
 
+    setProgress(true);
     const jobIds = [];
     jobs.forEach((jobConfig) => {
         jobIds.push(jobConfig.jobId);
@@ -86,7 +87,7 @@ export const fetchDistributions = ({
     const {
         setProgress, setError, setTotalPages, setTableData
     } = stateUpdateFunctions;
-    setProgress(false);
+    setProgress(true);
     const pageNumber = currentPage ? currentPage - 1 : 0;
     const searchPageSize = pageSize || 10;
     const encodedSearchTerm = encodeURIComponent(searchTerm);
