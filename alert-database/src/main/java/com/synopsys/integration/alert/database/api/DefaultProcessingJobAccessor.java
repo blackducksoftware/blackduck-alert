@@ -24,6 +24,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistr
 import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.database.job.DistributionJobEntity;
+import com.synopsys.integration.alert.database.job.DistributionJobNotificationFilterRepository;
 import com.synopsys.integration.alert.database.job.DistributionJobRepository;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
@@ -31,11 +32,14 @@ import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetails
 @Component
 public class DefaultProcessingJobAccessor implements ProcessingJobAccessor {
     private final DistributionJobRepository distributionJobRepository;
+    private final DistributionJobNotificationFilterRepository distributionJobNotificationFilterRepository;
     private final BlackDuckJobDetailsAccessor blackDuckJobDetailsAccessor;
 
     @Autowired
-    public DefaultProcessingJobAccessor(DistributionJobRepository distributionJobRepository, BlackDuckJobDetailsAccessor blackDuckJobDetailsAccessor) {
+    public DefaultProcessingJobAccessor(DistributionJobRepository distributionJobRepository, DistributionJobNotificationFilterRepository distributionJobNotificationFilterRepository,
+        BlackDuckJobDetailsAccessor blackDuckJobDetailsAccessor) {
         this.distributionJobRepository = distributionJobRepository;
+        this.distributionJobNotificationFilterRepository = distributionJobNotificationFilterRepository;
         this.blackDuckJobDetailsAccessor = blackDuckJobDetailsAccessor;
     }
 
@@ -54,7 +58,7 @@ public class DefaultProcessingJobAccessor implements ProcessingJobAccessor {
         Set<String> vulnerabilitySeverities = filteredDistributionJobRequestModel.getVulnerabilitySeverities().isEmpty() ? null : filteredDistributionJobRequestModel.getVulnerabilitySeverities();
 
         PageRequest pageRequest = PageRequest.of(pageNumber, pageLimit);
-        Page<DistributionJobEntity> pageOfDistributionJobEntities = distributionJobRepository.findAndSortMatchingEnabledJobsByFilteredNotifications(
+        Page<DistributionJobEntity> pageOfDistributionJobEntities = distributionJobNotificationFilterRepository.findAndSortEnabledJobsMatchingFilters(
             filteredDistributionJobRequestModel.getProviderConfigId(),
             frequencyTypes,
             notificationTypes,
