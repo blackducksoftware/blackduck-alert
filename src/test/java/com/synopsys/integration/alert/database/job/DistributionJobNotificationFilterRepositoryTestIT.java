@@ -116,21 +116,21 @@ public class DistributionJobNotificationFilterRepositoryTestIT {
         Page<DistributionJobEntity> noProjectsPage = jobNotificationFilterRepository.findAndSortEnabledJobsMatchingFilters(blackDuckConfigId, frequencyFilter, notifTypesFilter, noProjectsFilter, Set.of(), Set.of(), pageRequest);
         assertFilteredPage(noProjectsPage, job1);
 
-        // Should match Job 3 (pattern)
+        // Should match Job 1 and Job 3 (pattern)
         Set<String> oneProjectFilter = Set.of(PROJECT_MATCHING_PATTERN_3);
         Page<DistributionJobEntity> oneProjectPage = jobNotificationFilterRepository.findAndSortEnabledJobsMatchingFilters(blackDuckConfigId, frequencyFilter, notifTypesFilter, oneProjectFilter, Set.of(), Set.of(), pageRequest);
-        assertFilteredPage(oneProjectPage, job3);
+        assertEquals(2, oneProjectPage.getContent().size());
 
-        // Should match Job 2 (exact), Job 3 (pattern), and Job 4 (exact)
+        // Should match Job 1, Job 2 (exact), Job 3 (pattern), and Job 4 (exact)
         Set<String> twoProjectsFilter = Set.of(PROJECT_MATCHING_PATTERN_1, PROJECT_NOT_MATCHING_PATTERN);
         Page<DistributionJobEntity> twoProjectsPage = jobNotificationFilterRepository.findAndSortEnabledJobsMatchingFilters(blackDuckConfigId, frequencyFilter, notifTypesFilter, twoProjectsFilter, Set.of(), Set.of(), pageRequest);
-        assertEquals(3, twoProjectsPage.getContent().size());
+        assertEquals(4, twoProjectsPage.getContent().size());
 
-        // Should match Job 4 (exact)
+        // Should match Job 1 and Job 4 (exact)
         Set<String> nonMatchingProjectFilter = Set.of(PROJECT_NOT_MATCHING_PATTERN);
         Page<DistributionJobEntity> nonMatchingProjectsPage =
             jobNotificationFilterRepository.findAndSortEnabledJobsMatchingFilters(blackDuckConfigId, frequencyFilter, notifTypesFilter, nonMatchingProjectFilter, Set.of(), Set.of(), pageRequest);
-        assertFilteredPage(nonMatchingProjectsPage, job4);
+        assertEquals(2, nonMatchingProjectsPage.getContent().size());
     }
 
     private static void assertFilteredPage(Page<DistributionJobEntity> page, DistributionJobModel expectedJob) {

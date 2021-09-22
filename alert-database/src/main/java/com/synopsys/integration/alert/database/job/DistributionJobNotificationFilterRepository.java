@@ -15,7 +15,6 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import org.hibernate.jpa.TypedParameterValue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -38,7 +37,7 @@ public class DistributionJobNotificationFilterRepository {
             + "    AND notif_type.notification_type IN (:notificationTypes)"
             + "    AND job_entity.distribution_frequency IN (:frequencies)"
             + "    AND ("
-            + "        (bd_details.filter_by_project = false AND coalesce(:projectNames, NULL) IS NULL)"
+            + "        bd_details.filter_by_project = false"
             + "        OR ("
             + "            coalesce(:projectNames, NULL) IS NOT NULL"
             + "            AND ("
@@ -123,7 +122,7 @@ public class DistributionJobNotificationFilterRepository {
             projectNamesArray = new String[projectNames.size()];
             projectNames.toArray(projectNamesArray);
         }
-        query.setParameter("projectNamesArray", new TypedParameterValue(StringArrayType.INSTANCE, projectNamesArray));
+        query.unwrap(org.hibernate.query.Query.class).setParameter("projectNamesArray", projectNamesArray, StringArrayType.INSTANCE);
         query.setParameter("policyNames", policyNames);
         query.setParameter("vulnerabilitySeverities", vulnerabilitySeverities);
     }
