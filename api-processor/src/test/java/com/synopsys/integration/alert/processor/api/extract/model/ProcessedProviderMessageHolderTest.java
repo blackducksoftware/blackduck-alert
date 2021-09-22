@@ -14,25 +14,24 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Projec
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectOperation;
 
 public class ProcessedProviderMessageHolderTest {
-    //TODO: Make these private or put them into init
-    LinkableItem commonProject = new LinkableItem("Project", "Common Project");
-    ProjectOperation commonOperation = ProjectOperation.CREATE;
+    private final LinkableItem commonProject = new LinkableItem("Project", "Common Project");
+    private final ProjectOperation commonOperation = ProjectOperation.CREATE;
 
-    LinkableItem provider1 = new LinkableItem("Provider", "Provider 1");
-    ProviderDetails providerDetails1 = new ProviderDetails(1L, provider1);
-    ProjectMessage projectMessage1 = ProjectMessage.projectStatusInfo(providerDetails1, commonProject, commonOperation);
+    private final LinkableItem provider1 = new LinkableItem("Provider", "Provider 1");
+    private final ProviderDetails providerDetails1 = new ProviderDetails(1L, provider1);
+    private final ProjectMessage projectMessage1 = ProjectMessage.projectStatusInfo(providerDetails1, commonProject, commonOperation);
 
-    LinkableItem provider2 = new LinkableItem("Provider", "Provider 2");
-    ProviderDetails providerDetails2 = new ProviderDetails(2L, provider2);
-    ProjectMessage projectMessage2 = ProjectMessage.projectStatusInfo(providerDetails2, commonProject, commonOperation);
+    private final LinkableItem provider2 = new LinkableItem("Provider", "Provider 2");
+    private final ProviderDetails providerDetails2 = new ProviderDetails(2L, provider2);
+    private final ProjectMessage projectMessage2 = ProjectMessage.projectStatusInfo(providerDetails2, commonProject, commonOperation);
 
-    SimpleMessage simpleMessage1 = SimpleMessage.original(providerDetails1, "summary", "description", List.of());
-    SimpleMessage simpleMessage2 = SimpleMessage.original(providerDetails2, "summary2", "description2", List.of());
+    private final SimpleMessage simpleMessage1 = SimpleMessage.original(providerDetails1, "summary", "description", List.of());
+    private final SimpleMessage simpleMessage2 = SimpleMessage.original(providerDetails2, "summary2", "description2", List.of());
 
-    ProcessedProviderMessage<ProjectMessage> processedProviderMessage1 = ProcessedProviderMessage.singleSource(10L, projectMessage1);
-    ProcessedProviderMessage<ProjectMessage> processedProviderMessage2 = ProcessedProviderMessage.singleSource(20L, projectMessage2);
-    ProcessedProviderMessage<SimpleMessage> processedSimpleMessage1 = ProcessedProviderMessage.singleSource(11L, simpleMessage1);
-    ProcessedProviderMessage<SimpleMessage> processedSimpleMessage2 = ProcessedProviderMessage.singleSource(22L, simpleMessage2);
+    private final ProcessedProviderMessage<ProjectMessage> processedProviderMessage1 = ProcessedProviderMessage.singleSource(10L, projectMessage1);
+    private final ProcessedProviderMessage<ProjectMessage> processedProviderMessage2 = ProcessedProviderMessage.singleSource(20L, projectMessage2);
+    private final ProcessedProviderMessage<SimpleMessage> processedSimpleMessage1 = ProcessedProviderMessage.singleSource(11L, simpleMessage1);
+    private final ProcessedProviderMessage<SimpleMessage> processedSimpleMessage2 = ProcessedProviderMessage.singleSource(22L, simpleMessage2);
 
     @Test
     public void reducePopulatedTest() {
