@@ -207,7 +207,7 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
     }
 
     private FieldValueEntity toValidFieldValueEntity(Long configId, String key, String value, boolean isSensitve) {
-        // TODO: How to store arbitrary data?
+        // FIXME: This will not support any JavaMail properties we do not currently populate in the definedFieldRepository-- see IALERT-2616 --rotte SEPT 2021
         DefinedFieldEntity associatedField = definedFieldRepository.findFirstByKey(key)
             .orElseThrow(() -> new AlertRuntimeException(String.format("FATAL: Field with key '%s' did not exist", key)));
         return new FieldValueEntity(configId, associatedField.getId(), encrypt(value, isSensitve));
