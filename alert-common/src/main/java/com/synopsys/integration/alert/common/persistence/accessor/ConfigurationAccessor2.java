@@ -8,15 +8,13 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurat
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel2;
 
 public interface ConfigurationAccessor2<T extends AlertSerializableModel> {
-    Optional<ConfigurationModel2<T>> getConfigurationById(Long id);
+    Optional<ConfigurationModel2<T>> getConfiguration(Long id);
 
     List<ConfigurationModel2<T>> getAllConfigurations();
 
     ConfigurationModel2<T> createConfiguration(T configuration);
 
     ConfigurationModel2<T> updateConfiguration(Long configurationId, T configuration) throws AlertConfigurationException;
-
-    void deleteConfiguration(T configuration);
 
     void deleteConfiguration(Long configurationId);
 

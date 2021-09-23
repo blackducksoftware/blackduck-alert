@@ -24,10 +24,7 @@ import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel2;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
@@ -37,22 +34,20 @@ import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel
 public class EmailGlobalConfigActions {
     private final Logger logger = LoggerFactory.getLogger(EmailGlobalConfigActions.class);
     private final AuthorizationManager authorizationManager;
-    private final ConfigurationAccessor configurationAccessor;
-    private final ConfigurationFieldModelConverter modelConverter;
+    private final EmailGlobalConfigAccessor2 configurationAccessor;
     private final EmailGlobalConfigurationValidator validator;
     private final EmailGlobalTestAction testAction;
 
     @Autowired
-    public EmailGlobalConfigActions(AuthorizationManager authorizationManager, ConfigurationAccessor configurationAccessor, ConfigurationFieldModelConverter modelConverter, EmailGlobalConfigurationValidator validator, EmailGlobalTestAction testAction) {
+    public EmailGlobalConfigActions(AuthorizationManager authorizationManager, EmailGlobalConfigAccessor2 configurationAccessor, EmailGlobalConfigurationValidator validator, EmailGlobalTestAction testAction) {
         this.authorizationManager = authorizationManager;
         this.configurationAccessor = configurationAccessor;
-        this.modelConverter = modelConverter;
         this.validator = validator;
         this.testAction = testAction;
     }
 
     public ActionResponse<EmailGlobalConfigModel> getOne(Long id) {
-        Optional<EmailGlobalConfigModel> optionalResponse = getEmailGlobalConfigResponse(id);
+        Optional<EmailGlobalConfigModel> optionalResponse = getOneWithoutChecks(id);
 
         if (optionalResponse.isEmpty()) {
             return new ActionResponse<>(HttpStatus.NOT_FOUND);
@@ -65,11 +60,11 @@ public class EmailGlobalConfigActions {
         return new ActionResponse<>(HttpStatus.OK, optionalResponse.get());
     }
 
-    private Optional<EmailGlobalConfigModel> getEmailGlobalConfigResponse(Long id) {
-        return null;
+    private Optional<EmailGlobalConfigModel> getOneWithoutChecks(Long id) {
+        return configurationAccessor.getConfiguration(id).map(ConfigurationModel2::getConfiguredFields);
     }
 
-    public ActionResponse<EmailGlobalConfigModel> create(EmailGlobalConfigModel resource) {
+    public ActionResponse<ConfigurationModel2<EmailGlobalConfigModel>> create(EmailGlobalConfigModel resource) {
         if (!authorizationManager.hasCreatePermission(ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL)) {
             return ActionResponse.createForbiddenResponse();
         }
@@ -82,14 +77,8 @@ public class EmailGlobalConfigActions {
         return createWithoutChecks(resource);
     }
 
-    public ActionResponse<EmailGlobalConfigModel> createWithoutChecks(EmailGlobalConfigModel requestResource) {
-        // TODO: Implement with persistence changes
-//        FieldModel requestAsFieldModel = null; // concreteModelTransformer.toFieldModel(requestResource);
-//        Map<String, ConfigurationFieldModel> configurationFieldModelMap = modelConverter.convertToConfigurationFieldModelMap(requestAsFieldModel);
-//        ConfigurationModel configuration = fieldModelConfigurationAccessor.createConfiguration(ChannelKeys.EMAIL, ConfigContextEnum.GLOBAL, configurationFieldModelMap.values());
-//        EmailGlobalConfigModel responseResource = concreteModelTransformer.fromConfigurationModel(configuration);
-//        return new ActionResponse<>(HttpStatus.OK, responseResource);
-        return null;
+    public ActionResponse<ConfigurationModel2<EmailGlobalConfigModel>> createWithoutChecks(EmailGlobalConfigModel requestResource) {
+        return new ActionResponse<>(HttpStatus.OK, configurationAccessor.createConfiguration(requestResource));
     }
 
     public ActionResponse<EmailGlobalConfigModel> update(Long id, EmailGlobalConfigModel requestResource) {
@@ -97,7 +86,7 @@ public class EmailGlobalConfigActions {
             return ActionResponse.createForbiddenResponse();
         }
 
-        Optional<ConfigurationModel> existingModel = configurationAccessor.getConfigurationById(id);
+        Optional<ConfigurationModel2<EmailGlobalConfigModel>> existingModel = configurationAccessor.getConfiguration(id);
         if (existingModel.isEmpty()) {
             return new ActionResponse<>(HttpStatus.NOT_FOUND);
         }
@@ -110,23 +99,13 @@ public class EmailGlobalConfigActions {
     }
 
     public ActionResponse<EmailGlobalConfigModel> updateWithoutChecks(Long id, EmailGlobalConfigModel requestResource) {
-        // TODO: implement with persistence changes
-//        try {
-//            FieldModel resourceAsFieldModel = concreteModelTransformer.toFieldModel(requestResource);
-//
-//            fieldModelConfigurationAccessor.getConfigurationById(id)
-//                .map(modelConverter::convertToFieldModel)
-//                .ifPresent(resourceAsFieldModel::fill);
-//
-//            Collection<ConfigurationFieldModel> updatedFields = modelConverter.convertToConfigurationFieldModelMap(resourceAsFieldModel).values();
-//            ConfigurationModel configurationModel = fieldModelConfigurationAccessor.updateConfiguration(id, updatedFields);
-//            EmailGlobalConfigModel updatedResponse = concreteModelTransformer.fromConfigurationModel(configurationModel);
-//            return new ActionResponse<>(HttpStatus.OK, updatedResponse);
-//        } catch (AlertException ex) {
-//            logger.error("Error creating configuration", ex);
-//            return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Error creating config: %s", ex.getMessage()));
-//        }
-        return null;
+        try {
+            ConfigurationModel2<EmailGlobalConfigModel> updatedResponse = configurationAccessor.updateConfiguration(id, requestResource);
+            return new ActionResponse<>(HttpStatus.OK, updatedResponse.getConfiguredFields());
+        } catch (AlertException ex) {
+            logger.error("Error creating configuration", ex);
+            return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Error creating config: %s", ex.getMessage()));
+        }
     }
 
     public ActionResponse<ValidationResponseModel> validate(EmailGlobalConfigModel requestResource) {
@@ -152,7 +131,7 @@ public class EmailGlobalConfigActions {
             return ActionResponse.createForbiddenResponse();
         }
 
-        Optional<ConfigurationModel> existingModel = configurationAccessor.getConfigurationById(id);
+        Optional<ConfigurationModel2<EmailGlobalConfigModel>> existingModel = configurationAccessor.getConfiguration(id);
         if (existingModel.isEmpty()) {
             return new ActionResponse<>(HttpStatus.NOT_FOUND);
         }
@@ -161,10 +140,8 @@ public class EmailGlobalConfigActions {
     }
 
     public ActionResponse<EmailGlobalConfigModel> deleteWithoutChecks(Long id) {
-        configurationAccessor.getConfigurationById(id)
-                         .map(modelConverter::convertToFieldModel)
-                         .map(FieldModel::getId)
-                         .map(Long::parseLong)
+        configurationAccessor.getConfiguration(id)
+                         .map(ConfigurationModel2::getConfigurationId)
                          .ifPresent(configurationAccessor::deleteConfiguration);
 
         return new ActionResponse<>(HttpStatus.NO_CONTENT);
