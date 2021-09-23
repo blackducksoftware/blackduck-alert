@@ -3,6 +3,7 @@ package com.synopsys.integration.alert.build;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +15,14 @@ public class RunServerTask extends Exec {
     private boolean suspend = false;
     private String postgresVersion;
     private boolean reuseContainer = false;
+    private String encryptionPassword = "changeme";
+    private String encryptionSalt = "changeme";
+    private boolean externalDb = false;
+    private String externalDbHost = "localhost";
+    private String externalDbPort = "5432";
+    private String externalDBName = "alertdb";
+    private String externalDbUser = "sa";
+    private String externalDbPassword = "blackduck";
 
     @Option(option = "suspend", description = "Suspends the server until a debug connection is made")
     public void setSuspend(boolean suspend) {
@@ -29,6 +38,46 @@ public class RunServerTask extends Exec {
         this.postgresVersion = postgresVersion;
     }
 
+    @Option(option = "encryption-password", description = "The encryption password to use.")
+    public void setEncryptionPassword(String encryptionPassword) {
+        this.encryptionPassword = encryptionPassword;
+    }
+
+    @Option(option = "encryption-salt", description = "The encryption salt to use.")
+    public void setEncryptionSalt(String encryptionSalt) {
+        this.encryptionSalt = encryptionSalt;
+    }
+
+    @Option(option = "externaldb", description = "Flag to indicate an external database is used")
+    public void setExternalDb(boolean externalDb) {
+        this.externalDb = externalDb;
+    }
+
+    @Option(option = "externaldb-host", description = "Hostname of the external database")
+    public void setExternalDbHost(String externalDbHost) {
+        this.externalDbHost = externalDbHost;
+    }
+
+    @Option(option = "externaldb-port", description = "Port of the external database")
+    public void setExternalDbPort(String externalDbPort) {
+        this.externalDbPort = externalDbPort;
+    }
+
+    @Option(option = "externaldb-name", description = "Database name of the external database")
+    public void setExternalDBName(String externalDBName) {
+        this.externalDBName = externalDBName;
+    }
+
+    @Option(option = "externaldb-user", description = "Name of the user with access to the external database")
+    public void setExternalDbUser(String externalDbUser) {
+        this.externalDbUser = externalDbUser;
+    }
+
+    @Option(option = "externaldb-password", description = "Password of the user with access to the external database")
+    public void setExternalDbPassword(String externalDbPassword) {
+        this.externalDbPassword = externalDbPassword;
+    }
+
     @Override
     protected void exec() {
         if (null == postgresVersion || postgresVersion.trim().length() == 0) {
@@ -36,8 +85,8 @@ public class RunServerTask extends Exec {
         }
 
         Map<String, String> envVars = new HashMap<>();
-        envVars.put("ALERT_ENCRYPTION_PASSWORD", "changeme");
-        envVars.put("ALERT_ENCRYPTION_GLOBAL_SALT", "changeme");
+        envVars.put("ALERT_ENCRYPTION_PASSWORD", encryptionPassword);
+        envVars.put("ALERT_ENCRYPTION_GLOBAL_SALT", encryptionSalt);
         envVars.put("ALERT_TRUST_CERT", "true");
         envVars.put("ALERT_LOG_FILE_PATH", "log");
         getEnvironment().putAll(envVars);
@@ -77,11 +126,35 @@ public class RunServerTask extends Exec {
 
     public List<String> getApplicationVariables(String buildDirectory) {
         // change the --server.ssl.key-store parameter to the keystore file to use for running over ssl
-        return List.of(
+        List<String> variables = new LinkedList<>();
+        List<String> commonVariables = List.of(
             String.format("--server.ssl.key-store=%s/certs/blackduck-alert.keystore", buildDirectory),
             String.format("--server.ssl.trust-store=%s/certs/blackduck-alert.truststore", buildDirectory),
             "--server.port=8443",
 
+            "--hibernate.default_schema=alert",
+            "--spring.test.database.replace=none",
+
+            String.format("--alert.images.dir=%s/resources/main/images", buildDirectory),
+            String.format("--alert.email.attachments.dir=%s/email/attachments", buildDirectory));
+        List<String> databaseVariables = getDatabaseVariables();
+        variables.addAll(commonVariables);
+        variables.addAll(databaseVariables);
+
+        return variables;
+    }
+
+    public List<String> getDatabaseVariables() {
+        if (externalDb) {
+            return List.of(
+                String.format("--spring.datasource.username=%s", externalDbUser),
+                String.format("--spring.datasource.password=%s", externalDbPassword),
+                String.format("--spring.datasource.url=jdbc:postgresql://%s:%s/%s", externalDbHost, externalDbPort, externalDBName),
+                String.format("--spring.datasource.hikari.jdbc-url=jdbc:postgresql://%s:%s/%s", externalDbHost, externalDbPort, externalDBName)
+            );
+        }
+        // Using embedded Test Containers database
+        return List.of(
             // Spring Boot Test Containers https://github.com/testcontainers/testcontainers-spring-boot
             "--embedded.postgresql.enabled=true",
             "--embedded.postgresql.dockerImage=postgres:" + postgresVersion,
@@ -98,13 +171,7 @@ public class RunServerTask extends Exec {
             "--spring.datasource.username=sa",
             "--spring.datasource.password=blackduck",
             "--spring.datasource.url=jdbc:postgresql://${embedded.postgresql.host}:${embedded.postgresql.port}/${embedded.postgresql.database}",
-            "--spring.datasource.hikari.jdbc-url=jdbc:postgresql://${embedded.postgresql.host}:${embedded.postgresql.port}/${embedded.postgresql.database}",
-
-            "--hibernate.default_schema=alert",
-            "--spring.test.database.replace=none",
-
-            String.format("--alert.images.dir=%s/resources/main/images", buildDirectory),
-            String.format("--alert.email.attachments.dir=%s/email/attachments", buildDirectory));
+            "--spring.datasource.hikari.jdbc-url=jdbc:postgresql://${embedded.postgresql.host}:${embedded.postgresql.port}/${embedded.postgresql.database}"
+        );
     }
-
 }
