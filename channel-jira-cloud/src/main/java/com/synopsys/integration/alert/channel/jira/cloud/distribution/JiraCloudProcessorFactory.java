@@ -34,7 +34,7 @@ import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudProperties;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
@@ -56,7 +56,7 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
     private final Gson gson;
     private final JiraMessageFormatter jiraMessageFormatter;
     private final JiraCloudChannelKey jiraCloudChannelKey;
-    private final ConfigurationAccessor configurationAccessor;
+    private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     private final ProxyManager proxyManager;
     private final JiraCloudMessageSenderFactory messageSenderFactory;
     private final ProjectMessageToIssueModelTransformer modelTransformer;
@@ -67,7 +67,7 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
         Gson gson,
         JiraMessageFormatter jiraMessageFormatter,
         JiraCloudChannelKey jiraCloudChannelKey,
-        ConfigurationAccessor configurationAccessor,
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor,
         ProxyManager proxyManager,
         JiraCloudMessageSenderFactory messageSenderFactory,
         ProjectMessageToIssueModelTransformer modelTransformer,
@@ -76,7 +76,7 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
         this.gson = gson;
         this.jiraMessageFormatter = jiraMessageFormatter;
         this.jiraCloudChannelKey = jiraCloudChannelKey;
-        this.configurationAccessor = configurationAccessor;
+        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
         this.proxyManager = proxyManager;
         this.messageSenderFactory = messageSenderFactory;
         this.modelTransformer = modelTransformer;
@@ -121,7 +121,7 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
     }
 
     private JiraCloudProperties createJiraCloudProperties() throws AlertConfigurationException {
-        ConfigurationModel jiraCloudGlobalConfig = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(jiraCloudChannelKey, ConfigContextEnum.GLOBAL)
+        ConfigurationModel jiraCloudGlobalConfig = configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(jiraCloudChannelKey, ConfigContextEnum.GLOBAL)
                                                        .stream()
                                                        .findAny()
                                                        .orElseThrow(() -> new AlertConfigurationException("Missing Jira Cloud global configuration"));

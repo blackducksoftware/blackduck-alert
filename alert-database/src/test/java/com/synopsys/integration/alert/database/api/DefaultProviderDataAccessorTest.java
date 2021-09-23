@@ -14,7 +14,7 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
@@ -43,13 +43,13 @@ public class DefaultProviderDataAccessorTest {
         ConfigurationModel configurationModel = createConfigurationModel();
         ProviderProjectEntity providerProjectEntity = new ProviderProjectEntity(name, description, href, projectOwnerEmail, 1L);
 
-        ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
         ProviderProjectRepository providerProjectRepository = Mockito.mock(ProviderProjectRepository.class);
 
-        Mockito.when(configurationAccessor.getProviderConfigurationByName(Mockito.any())).thenReturn(Optional.of(configurationModel));
+        Mockito.when(configurationModelConfigurationAccessor.getProviderConfigurationByName(Mockito.any())).thenReturn(Optional.of(configurationModel));
         Mockito.when(providerProjectRepository.findByProviderConfigId(Mockito.any())).thenReturn(List.of(providerProjectEntity));
 
-        DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, null, null, configurationAccessor);
+        DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, null, null, configurationModelConfigurationAccessor);
         List<ProviderProject> providerProjectList = providerDataAccessor.getProjectsByProviderConfigName("test-providerConfigName");
 
         assertEquals(1, providerProjectList.size());
@@ -59,12 +59,12 @@ public class DefaultProviderDataAccessorTest {
 
     @Test
     public void getProjectsByProviderConfigNameEmptyTest() {
-        ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
         ProviderProjectRepository providerProjectRepository = Mockito.mock(ProviderProjectRepository.class);
 
-        Mockito.when(configurationAccessor.getProviderConfigurationByName(Mockito.any())).thenReturn(Optional.empty());
+        Mockito.when(configurationModelConfigurationAccessor.getProviderConfigurationByName(Mockito.any())).thenReturn(Optional.empty());
 
-        DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, null, null, configurationAccessor);
+        DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, null, null, configurationModelConfigurationAccessor);
         List<ProviderProject> providerProjectList = providerDataAccessor.getProjectsByProviderConfigName("test-providerConfigName");
 
         assertTrue(providerProjectList.isEmpty());
@@ -74,12 +74,12 @@ public class DefaultProviderDataAccessorTest {
     public void getProjectsByProviderConfigIdTest() {
         ProviderProjectEntity providerProjectEntity = new ProviderProjectEntity(name, description, href, projectOwnerEmail, 1L);
 
-        ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
         ProviderProjectRepository providerProjectRepository = Mockito.mock(ProviderProjectRepository.class);
 
         Mockito.when(providerProjectRepository.findByProviderConfigId(Mockito.any())).thenReturn(List.of(providerProjectEntity));
 
-        DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, null, null, configurationAccessor);
+        DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, null, null, configurationModelConfigurationAccessor);
         List<ProviderProject> providerProjectList = providerDataAccessor.getProjectsByProviderConfigId(1L);
 
         assertEquals(1, providerProjectList.size());
@@ -166,12 +166,12 @@ public class DefaultProviderDataAccessorTest {
 
         ProviderProjectRepository providerProjectRepository = Mockito.mock(ProviderProjectRepository.class);
         ProviderUserRepository providerUserRepository = Mockito.mock(ProviderUserRepository.class);
-        ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
 
-        Mockito.when(configurationAccessor.getProviderConfigurationByName(Mockito.any())).thenReturn(Optional.of(configurationModel));
+        Mockito.when(configurationModelConfigurationAccessor.getProviderConfigurationByName(Mockito.any())).thenReturn(Optional.of(configurationModel));
         Mockito.when(providerUserRepository.findByProviderConfigId(Mockito.any())).thenReturn(List.of(providerUserEntity));
 
-        DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, null, providerUserRepository, configurationAccessor);
+        DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, null, providerUserRepository, configurationModelConfigurationAccessor);
         List<ProviderUserModel> providerUserModelList = providerDataAccessor.getUsersByProviderConfigName("providerConfigName-test");
 
         assertEquals(1, providerUserModelList.size());
@@ -190,11 +190,11 @@ public class DefaultProviderDataAccessorTest {
 
     @Test
     public void getUsersByProviderConfigNameOptionalEmptyTest() {
-        ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
 
-        Mockito.when(configurationAccessor.getProviderConfigurationByName(Mockito.any())).thenReturn(Optional.empty());
+        Mockito.when(configurationModelConfigurationAccessor.getProviderConfigurationByName(Mockito.any())).thenReturn(Optional.empty());
 
-        DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(null, null, null, configurationAccessor);
+        DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(null, null, null, configurationModelConfigurationAccessor);
         List<ProviderUserModel> providerUserModelList = providerDataAccessor.getUsersByProviderConfigName("providerConfigName-test");
 
         assertTrue(providerUserModelList.isEmpty());
@@ -215,7 +215,7 @@ public class DefaultProviderDataAccessorTest {
 
         ProviderProjectRepository providerProjectRepository = Mockito.mock(ProviderProjectRepository.class);
         ProviderUserRepository providerUserRepository = Mockito.mock(ProviderUserRepository.class);
-        ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
         ProviderUserProjectRelationRepository providerUserProjectRelationRepository = Mockito.mock(ProviderUserProjectRelationRepository.class);
 
         Mockito.when(providerProjectRepository.findByProviderConfigId(Mockito.any())).thenReturn(List.of(storedProviderProjectEntity));
@@ -225,7 +225,7 @@ public class DefaultProviderDataAccessorTest {
         Mockito.when(providerProjectRepository.findFirstByHref(Mockito.any())).thenReturn(Optional.of(providerProjectEntity));
         Mockito.when(providerUserRepository.findByEmailAddressAndProviderConfigId(Mockito.any(), Mockito.any())).thenReturn(List.of(providerUserEntity));
 
-        DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository, configurationAccessor);
+        DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository, configurationModelConfigurationAccessor);
         providerDataAccessor.updateProjectAndUserData(1L, projectToUserData, Set.of(additionalRelevantUsers));
 
         Mockito.verify(providerProjectRepository).deleteByHref(Mockito.any());

@@ -18,7 +18,8 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
-public interface ConfigurationAccessor {
+@Deprecated(forRemoval = true)
+public interface ConfigurationModelConfigurationAccessor {
     Optional<ConfigurationModel> getProviderConfigurationByName(String providerConfigName);
 
     Optional<ConfigurationModel> getConfigurationById(Long id);

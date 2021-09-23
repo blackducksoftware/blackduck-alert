@@ -41,7 +41,7 @@ import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
@@ -83,7 +83,7 @@ public class JobConfigActionsTest {
 
     private AuthorizationManager mockedAuthorizationManager;
     private DescriptorAccessor mockedDescriptorAccessor;
-    private ConfigurationAccessor mockedConfigurationAccessor;
+    private ConfigurationModelConfigurationAccessor mockedConfigurationModelConfigurationAccessor;
     private JobAccessor mockedJobAccessor;
     private FieldModelProcessor mockedFieldModelProcessor;
     private DescriptorProcessor mockedDescriptorProcessor;
@@ -108,7 +108,7 @@ public class JobConfigActionsTest {
 
         mockedAuthorizationManager = Mockito.mock(AuthorizationManager.class);
         mockedDescriptorAccessor = Mockito.mock(DescriptorAccessor.class);
-        mockedConfigurationAccessor = Mockito.mock(ConfigurationAccessor.class);
+        mockedConfigurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
         mockedJobAccessor = Mockito.mock(JobAccessor.class);
         mockedFieldModelProcessor = Mockito.mock(FieldModelProcessor.class);
         mockedDescriptorProcessor = Mockito.mock(DescriptorProcessor.class);
@@ -261,7 +261,7 @@ public class JobConfigActionsTest {
         JobConfigActions jobConfigActionsForTest = new JobConfigActions(
             mockedAuthorizationManager,
             mockedDescriptorAccessor,
-            mockedConfigurationAccessor,
+            mockedConfigurationModelConfigurationAccessor,
             mockedJobAccessor,
             mockedFieldModelProcessor,
             mockedDescriptorProcessor,
@@ -602,7 +602,7 @@ public class JobConfigActionsTest {
         return new JobConfigActions(
             mockedAuthorizationManager,
             mockedDescriptorAccessor,
-            mockedConfigurationAccessor,
+            mockedConfigurationModelConfigurationAccessor,
             mockedJobAccessor,
             mockedFieldModelProcessor,
             mockedDescriptorProcessor,

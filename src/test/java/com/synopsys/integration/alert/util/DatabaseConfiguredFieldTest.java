@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -33,7 +33,7 @@ public abstract class DatabaseConfiguredFieldTest {
     @Autowired
     private JobAccessor jobAccessor;
     @Autowired
-    private ConfigurationAccessor configurationAccessor;
+    private ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
 
     @Autowired
     private DescriptorConfigRepository descriptorConfigRepository;
@@ -66,7 +66,7 @@ public abstract class DatabaseConfiguredFieldTest {
                                                        .map(entry -> createConfigurationFieldModel(entry.getKey(), entry.getValue()))
                                                        .collect(Collectors.toSet());
 
-        return configurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.GLOBAL, fieldModels);
+        return configurationModelConfigurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.GLOBAL, fieldModels);
     }
 
     public ConfigurationFieldModel createConfigurationFieldModel(String key, Collection<String> values) {
@@ -75,8 +75,8 @@ public abstract class DatabaseConfiguredFieldTest {
         return configurationFieldModel;
     }
 
-    public ConfigurationAccessor getConfigurationAccessor() {
-        return configurationAccessor;
+    public ConfigurationModelConfigurationAccessor getConfigurationAccessor() {
+        return configurationModelConfigurationAccessor;
     }
 
     private DistributionJobRequestModel createDistributionJobRequestModel(Long blackDuckGlobalConfigId) {
