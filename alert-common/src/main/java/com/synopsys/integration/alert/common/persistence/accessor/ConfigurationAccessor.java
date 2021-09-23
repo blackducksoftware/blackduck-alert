@@ -12,16 +12,16 @@ import java.util.Optional;
 
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel2;
+import com.synopsys.integration.alert.common.persistence.model.DatabaseModelWrapper;
 
-public interface ConfigurationAccessor2<T extends AlertSerializableModel> {
-    Optional<ConfigurationModel2<T>> getConfiguration(Long id);
+public interface ConfigurationAccessor<T extends AlertSerializableModel> {
+    Optional<DatabaseModelWrapper<T>> getConfiguration(Long id);
 
-    List<ConfigurationModel2<T>> getAllConfigurations();
+    List<DatabaseModelWrapper<T>> getAllConfigurations();
 
-    ConfigurationModel2<T> createConfiguration(T configuration);
+    DatabaseModelWrapper<T> createConfiguration(T configuration);
 
-    ConfigurationModel2<T> updateConfiguration(Long configurationId, T configuration) throws AlertConfigurationException;
+    DatabaseModelWrapper<T> updateConfiguration(Long configurationId, T configuration) throws AlertConfigurationException;
 
     void deleteConfiguration(Long configurationId);
 

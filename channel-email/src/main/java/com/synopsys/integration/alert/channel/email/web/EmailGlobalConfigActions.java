@@ -24,7 +24,7 @@ import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel2;
+import com.synopsys.integration.alert.common.persistence.model.DatabaseModelWrapper;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
@@ -34,12 +34,12 @@ import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel
 public class EmailGlobalConfigActions {
     private final Logger logger = LoggerFactory.getLogger(EmailGlobalConfigActions.class);
     private final AuthorizationManager authorizationManager;
-    private final EmailGlobalConfigAccessor2 configurationAccessor;
+    private final EmailGlobalConfigAccessor configurationAccessor;
     private final EmailGlobalConfigurationValidator validator;
     private final EmailGlobalTestAction testAction;
 
     @Autowired
-    public EmailGlobalConfigActions(AuthorizationManager authorizationManager, EmailGlobalConfigAccessor2 configurationAccessor, EmailGlobalConfigurationValidator validator, EmailGlobalTestAction testAction) {
+    public EmailGlobalConfigActions(AuthorizationManager authorizationManager, EmailGlobalConfigAccessor configurationAccessor, EmailGlobalConfigurationValidator validator, EmailGlobalTestAction testAction) {
         this.authorizationManager = authorizationManager;
         this.configurationAccessor = configurationAccessor;
         this.validator = validator;
@@ -51,7 +51,7 @@ public class EmailGlobalConfigActions {
             return ActionResponse.createForbiddenResponse();
         }
 
-        Optional<EmailGlobalConfigModel> optionalResponse = configurationAccessor.getConfiguration(id).map(ConfigurationModel2::getConfiguredFields);
+        Optional<EmailGlobalConfigModel> optionalResponse = configurationAccessor.getConfiguration(id).map(DatabaseModelWrapper::getModel);
 
         if (optionalResponse.isEmpty()) {
             return new ActionResponse<>(HttpStatus.NOT_FOUND);
@@ -70,7 +70,7 @@ public class EmailGlobalConfigActions {
             return new ActionResponse<>(validationResponse.getHttpStatus(), validationResponse.getMessage().orElse(null));
         }
 
-        return new ActionResponse<>(HttpStatus.OK, configurationAccessor.createConfiguration(resource).getConfiguredFields());
+        return new ActionResponse<>(HttpStatus.OK, configurationAccessor.createConfiguration(resource).getModel());
     }
 
     public ActionResponse<EmailGlobalConfigModel> update(Long id, EmailGlobalConfigModel requestResource) {
@@ -78,7 +78,7 @@ public class EmailGlobalConfigActions {
             return ActionResponse.createForbiddenResponse();
         }
 
-        Optional<ConfigurationModel2<EmailGlobalConfigModel>> existingModel = configurationAccessor.getConfiguration(id);
+        Optional<DatabaseModelWrapper<EmailGlobalConfigModel>> existingModel = configurationAccessor.getConfiguration(id);
         if (existingModel.isEmpty()) {
             return new ActionResponse<>(HttpStatus.NOT_FOUND);
         }
@@ -89,8 +89,8 @@ public class EmailGlobalConfigActions {
         }
 
         try {
-            ConfigurationModel2<EmailGlobalConfigModel> updatedResponse = configurationAccessor.updateConfiguration(id, requestResource);
-            return new ActionResponse<>(HttpStatus.OK, updatedResponse.getConfiguredFields());
+            DatabaseModelWrapper<EmailGlobalConfigModel> updatedResponse = configurationAccessor.updateConfiguration(id, requestResource);
+            return new ActionResponse<>(HttpStatus.OK, updatedResponse.getModel());
         } catch (AlertException ex) {
             logger.error("Error creating configuration", ex);
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Error creating config: %s", ex.getMessage()));
@@ -120,13 +120,13 @@ public class EmailGlobalConfigActions {
             return ActionResponse.createForbiddenResponse();
         }
 
-        Optional<ConfigurationModel2<EmailGlobalConfigModel>> existingModel = configurationAccessor.getConfiguration(id);
+        Optional<DatabaseModelWrapper<EmailGlobalConfigModel>> existingModel = configurationAccessor.getConfiguration(id);
         if (existingModel.isEmpty()) {
             return new ActionResponse<>(HttpStatus.NOT_FOUND);
         }
 
         configurationAccessor.getConfiguration(id)
-            .map(ConfigurationModel2::getConfigurationId)
+            .map(DatabaseModelWrapper::getConfigurationId)
             .ifPresent(configurationAccessor::deleteConfiguration);
 
         return new ActionResponse<>(HttpStatus.NO_CONTENT);

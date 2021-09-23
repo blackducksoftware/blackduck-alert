@@ -9,23 +9,23 @@ package com.synopsys.integration.alert.common.persistence.model;
 
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
-public class ConfigurationModel2<T extends AlertSerializableModel> extends AlertSerializableModel {
+public class DatabaseModelWrapper<T extends AlertSerializableModel> extends AlertSerializableModel {
     private final Long descriptorId;
     private final Long configurationId;
     private final String createdAt;
     private final String lastUpdated;
-    private final T configuredFields;
+    private final T model;
 
-    public ConfigurationModel2(Long registeredDescriptorId, Long descriptorConfigId, String createdAt, String lastUpdated, T configuredFields) {
+    public DatabaseModelWrapper(Long registeredDescriptorId, Long descriptorConfigId, String createdAt, String lastUpdated, T model) {
         descriptorId = registeredDescriptorId;
         configurationId = descriptorConfigId;
         this.createdAt = createdAt;
         this.lastUpdated = lastUpdated;
-        this.configuredFields = configuredFields;
+        this.model = model;
     }
 
-    public T getConfiguredFields() {
-        return configuredFields;
+    public T getModel() {
+        return model;
     }
 
     public Long getDescriptorId() {

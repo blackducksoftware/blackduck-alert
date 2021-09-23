@@ -16,8 +16,8 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor2;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel2;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.model.DatabaseModelWrapper;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.configuration.ConfigContextEntity;
@@ -35,7 +35,7 @@ import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKey
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
 @Component
-public class EmailGlobalConfigAccessor2 implements ConfigurationAccessor2<EmailGlobalConfigModel> {
+public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlobalConfigModel> {
     private final RegisteredDescriptorRepository registeredDescriptorRepository;
     private final DefinedFieldRepository definedFieldRepository;
     private final DescriptorConfigRepository descriptorConfigsRepository;
@@ -44,7 +44,7 @@ public class EmailGlobalConfigAccessor2 implements ConfigurationAccessor2<EmailG
     private final EncryptionUtility encryptionUtility;
 
     @Autowired
-    public EmailGlobalConfigAccessor2(
+    public EmailGlobalConfigAccessor(
         RegisteredDescriptorRepository registeredDescriptorRepository,
         DefinedFieldRepository definedFieldRepository,
         DescriptorConfigRepository descriptorConfigsRepository,
@@ -61,12 +61,12 @@ public class EmailGlobalConfigAccessor2 implements ConfigurationAccessor2<EmailG
     }
 
     @Override
-    public Optional<ConfigurationModel2<EmailGlobalConfigModel>> getConfiguration(Long id) {
+    public Optional<DatabaseModelWrapper<EmailGlobalConfigModel>> getConfiguration(Long id) {
         return descriptorConfigsRepository.findById(id).map(this::createConfigModel);
     }
 
     @Override
-    public List<ConfigurationModel2<EmailGlobalConfigModel>> getAllConfigurations() {
+    public List<DatabaseModelWrapper<EmailGlobalConfigModel>> getAllConfigurations() {
         Long contextId = getConfigContextIdOrThrowException(ConfigContextEnum.GLOBAL);
         Long descriptorId = getDescriptorIdOrThrowException(ChannelKeys.EMAIL.getUniversalKey());
 
@@ -77,7 +77,7 @@ public class EmailGlobalConfigAccessor2 implements ConfigurationAccessor2<EmailG
     }
 
     @Override
-    public ConfigurationModel2<EmailGlobalConfigModel> createConfiguration(EmailGlobalConfigModel configuration) {
+    public DatabaseModelWrapper<EmailGlobalConfigModel> createConfiguration(EmailGlobalConfigModel configuration) {
         Long contextId = getConfigContextIdOrThrowException(ConfigContextEnum.GLOBAL);
         Long descriptorId = getDescriptorIdOrThrowException(ChannelKeys.EMAIL.getUniversalKey());
         OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
@@ -93,7 +93,7 @@ public class EmailGlobalConfigAccessor2 implements ConfigurationAccessor2<EmailG
     }
 
     @Override
-    public ConfigurationModel2<EmailGlobalConfigModel> updateConfiguration(Long configurationId, EmailGlobalConfigModel configuration) throws AlertConfigurationException {
+    public DatabaseModelWrapper<EmailGlobalConfigModel> updateConfiguration(Long configurationId, EmailGlobalConfigModel configuration) throws AlertConfigurationException {
         DescriptorConfigEntity descriptorConfigEntity = descriptorConfigsRepository.findById(configurationId)
             .orElseThrow(() -> new AlertConfigurationException(String.format("Config with id '%d' did not exist", configurationId)));
         List<FieldValueEntity> oldValues = fieldValueRepository.findByConfigId(configurationId);
@@ -118,7 +118,7 @@ public class EmailGlobalConfigAccessor2 implements ConfigurationAccessor2<EmailG
         }
     }
 
-    private ConfigurationModel2<EmailGlobalConfigModel> createConfigModel(DescriptorConfigEntity descriptorConfigEntity) {
+    private DatabaseModelWrapper<EmailGlobalConfigModel> createConfigModel(DescriptorConfigEntity descriptorConfigEntity) {
         return createConfigModel(
             descriptorConfigEntity.getDescriptorId(),
             descriptorConfigEntity.getId(),
@@ -128,7 +128,7 @@ public class EmailGlobalConfigAccessor2 implements ConfigurationAccessor2<EmailG
     }
 
 
-    private ConfigurationModel2<EmailGlobalConfigModel> createConfigModel(Long descriptorId, Long configId, OffsetDateTime createdAt, OffsetDateTime lastUpdated) {
+    private DatabaseModelWrapper<EmailGlobalConfigModel> createConfigModel(Long descriptorId, Long configId, OffsetDateTime createdAt, OffsetDateTime lastUpdated) {
         String createdAtFormatted = DateUtils.formatDate(createdAt, DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
         String lastUpdatedFormatted = DateUtils.formatDate(lastUpdated, DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
 
@@ -160,7 +160,7 @@ public class EmailGlobalConfigAccessor2 implements ConfigurationAccessor2<EmailG
         newModel.setAdditionalJavaMailProperties(additionalJavamailProperties);
         newModel.setId(String.valueOf(configId));
 
-        return new ConfigurationModel2<>(descriptorId, configId, createdAtFormatted, lastUpdatedFormatted, newModel);
+        return new DatabaseModelWrapper<>(descriptorId, configId, createdAtFormatted, lastUpdatedFormatted, newModel);
     }
 
     private Long getDescriptorIdOrThrowException(String descriptorName) {
