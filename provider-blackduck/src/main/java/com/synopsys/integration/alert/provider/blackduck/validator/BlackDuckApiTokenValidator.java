@@ -41,7 +41,8 @@ public class BlackDuckApiTokenValidator {
             NotificationService notificationService = blackDuckServicesFactory.createNotificationService();
             notificationService.getLatestNotificationDate();
         } catch (BlackDuckApiException ex) {
-            if (RestConstants.FORBIDDEN_403 == ex.getOriginalIntegrationRestException().getHttpStatusCode()) {
+            int httpStatusCode = ex.getOriginalIntegrationRestException().getHttpStatusCode();
+            if (RestConstants.UNAUTHORIZED_401 == httpStatusCode || RestConstants.FORBIDDEN_403 == httpStatusCode) {
                 valid = false;
             }
             logger.error("Error reading notifications", ex);
