@@ -34,7 +34,7 @@ import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -68,7 +68,7 @@ public class NotificationContentRepositoryIT {
     @Autowired
     private JobAccessor jobAccessor;
     @Autowired
-    private ConfigurationAccessor configurationAccessor;
+    private ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
 
     private ConfigurationModel providerConfigModel = null;
 
@@ -92,12 +92,12 @@ public class NotificationContentRepositoryIT {
         blackduckTimeout.setFieldValue("300");
 
         List<ConfigurationFieldModel> providerConfigFields = List.of(providerConfigEnabled, providerConfigName, blackduckUrl, blackduckApiKey, blackduckTimeout);
-        providerConfigModel = configurationAccessor.createConfiguration(new BlackDuckProviderKey(), ConfigContextEnum.GLOBAL, providerConfigFields);
+        providerConfigModel = configurationModelConfigurationAccessor.createConfiguration(new BlackDuckProviderKey(), ConfigContextEnum.GLOBAL, providerConfigFields);
     }
 
     @AfterEach
     public void cleanup() {
-        configurationAccessor.deleteConfiguration(providerConfigModel.getConfigurationId());
+        configurationModelConfigurationAccessor.deleteConfiguration(providerConfigModel.getConfigurationId());
 
         notificationContentRepository.deleteAllInBatch();
         auditEntryRepository.deleteAllInBatch();

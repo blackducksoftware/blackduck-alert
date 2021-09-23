@@ -29,7 +29,7 @@ import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.api.task.TaskManager;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageAccessor;
@@ -81,7 +81,7 @@ public class NotificationRemovalTest {
     @Autowired
     private TaskManager taskManager;
     @Autowired
-    private ConfigurationAccessor configurationAccessor;
+    private ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     @Autowired
     private EventManager eventManager;
 
@@ -97,7 +97,7 @@ public class NotificationRemovalTest {
         notificationAccessor.deleteNotificationsCreatedBefore(OffsetDateTime.now());
 
         if (providerConfig != null) {
-            configurationAccessor.deleteConfiguration(providerConfig.getConfigurationId());
+            configurationModelConfigurationAccessor.deleteConfiguration(providerConfig.getConfigurationId());
         }
     }
 
@@ -118,7 +118,7 @@ public class NotificationRemovalTest {
             createABatchOfNotifications(providerConfig, notificationCreatedAtTime, processed);
         }
         OffsetDateTime oldestNotificationCreationTime = notificationCreatedAtTime;
-        purgeTask = new PurgeTask(schedulingDescriptorKey, taskScheduler, notificationAccessor, systemMessageAccessor, taskManager, configurationAccessor);
+        purgeTask = new PurgeTask(schedulingDescriptorKey, taskScheduler, notificationAccessor, systemMessageAccessor, taskManager, configurationModelConfigurationAccessor);
         LocalDateTime startTime = LocalDateTime.now();
         WaitJob<Boolean> waitJob = createWaitJob(startTime, () -> {
             List<AlertNotificationModel> notificationsInDatabase = notificationAccessor.findByCreatedAtBetween(oldestNotificationCreationTime, testStartTime);
@@ -177,7 +177,7 @@ public class NotificationRemovalTest {
         blackDuckTimeoutField.setFieldValue("300");
 
         BlackDuckProviderKey blackDuckProviderKey = new BlackDuckProviderKey();
-        return configurationAccessor.createConfiguration(blackDuckProviderKey, ConfigContextEnum.GLOBAL, List.of(blackDuckURLField, blackDuckAPITokenField, blackDuckTimeoutField));
+        return configurationModelConfigurationAccessor.createConfiguration(blackDuckProviderKey, ConfigContextEnum.GLOBAL, List.of(blackDuckURLField, blackDuckAPITokenField, blackDuckTimeoutField));
     }
 
     private void createAuditEntries(List<AlertNotificationModel> notifications) {

@@ -26,7 +26,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
@@ -41,17 +41,17 @@ import com.synopsys.integration.alert.database.notification.NotificationEntity;
 public class DefaultNotificationAccessor implements NotificationAccessor {
     private final NotificationContentRepository notificationContentRepository;
     private final AuditEntryRepository auditEntryRepository;
-    private final ConfigurationAccessor configurationAccessor;
+    private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
 
     @Autowired
     public DefaultNotificationAccessor(
         NotificationContentRepository notificationContentRepository,
         AuditEntryRepository auditEntryRepository,
-        ConfigurationAccessor configurationAccessor
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor
     ) {
         this.notificationContentRepository = notificationContentRepository;
         this.auditEntryRepository = auditEntryRepository;
-        this.configurationAccessor = configurationAccessor;
+        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
     }
 
     @Override
@@ -195,7 +195,7 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
         Long providerConfigId = entity.getProviderConfigId();
         String providerConfigName = "DELETED CONFIGURATION";
         if (null != providerConfigId) {
-            providerConfigName = configurationAccessor.getConfigurationById(providerConfigId)
+            providerConfigName = configurationModelConfigurationAccessor.getConfigurationById(providerConfigId)
                 .flatMap(field -> field.getField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME))
                 .flatMap(ConfigurationFieldModel::getFieldValue)
                 .orElse(providerConfigName);

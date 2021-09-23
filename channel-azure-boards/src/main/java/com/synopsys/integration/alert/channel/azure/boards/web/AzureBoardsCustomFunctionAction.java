@@ -35,7 +35,7 @@ import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.action.api.ConfigResourceActions;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthEndpointResponse;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -53,7 +53,7 @@ import com.synopsys.integration.rest.proxy.ProxyInfo;
 public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthEndpointResponse> {
     private final Logger logger = LoggerFactory.getLogger(AzureBoardsCustomFunctionAction.class);
 
-    private final ConfigurationAccessor configurationAccessor;
+    private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     private final ConfigurationFieldModelConverter modelConverter;
     private final AzureBoardsGlobalConfigurationFieldModelValidator globalConfigurationValidator;
     private final AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory;
@@ -65,7 +65,7 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
 
     @Autowired
     public AzureBoardsCustomFunctionAction(
-        ConfigurationAccessor configurationAccessor,
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor,
         ConfigurationFieldModelConverter modelConverter,
         AzureBoardsGlobalConfigurationFieldModelValidator globalConfigurationValidator,
         AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory,
@@ -76,7 +76,7 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
         AlertWebServerUrlManager alertWebServerUrlManager
     ) {
         super(authorizationManager);
-        this.configurationAccessor = configurationAccessor;
+        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
         this.modelConverter = modelConverter;
         this.globalConfigurationValidator = globalConfigurationValidator;
         this.azureBoardsCredentialDataStoreFactory = azureBoardsCredentialDataStoreFactory;
@@ -153,7 +153,7 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
         Map<String, ConfigurationFieldModel> fields = new HashMap<>(modelConverter.convertToConfigurationFieldModelMap(fieldModel));
         // check if a configuration exists because the client id is a sensitive field and won't have a value in the field model if updating.
         if (StringUtils.isNotBlank(fieldModel.getId())) {
-            configurationAccessor.getConfigurationById(Long.valueOf(fieldModel.getId()))
+            configurationModelConfigurationAccessor.getConfigurationById(Long.valueOf(fieldModel.getId()))
                 .map(ConfigurationModel::getCopyOfKeyToFieldMap)
                 .ifPresent(fields::putAll);
         }

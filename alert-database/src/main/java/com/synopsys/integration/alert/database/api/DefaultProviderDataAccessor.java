@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
@@ -46,20 +46,20 @@ public class DefaultProviderDataAccessor {
     private final ProviderProjectRepository providerProjectRepository;
     private final ProviderUserProjectRelationRepository providerUserProjectRelationRepository;
     private final ProviderUserRepository providerUserRepository;
-    private final ConfigurationAccessor configurationAccessor;
+    private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
 
     @Autowired
     public DefaultProviderDataAccessor(ProviderProjectRepository providerProjectRepository, ProviderUserProjectRelationRepository providerUserProjectRelationRepository, ProviderUserRepository providerUserRepository,
-        ConfigurationAccessor configurationAccessor) {
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor) {
         this.providerProjectRepository = providerProjectRepository;
         this.providerUserProjectRelationRepository = providerUserProjectRelationRepository;
         this.providerUserRepository = providerUserRepository;
-        this.configurationAccessor = configurationAccessor;
+        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
     }
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<ProviderProject> getProjectsByProviderConfigName(String providerConfigName) {
-        return configurationAccessor.getProviderConfigurationByName(providerConfigName)
+        return configurationModelConfigurationAccessor.getProviderConfigurationByName(providerConfigName)
                    .map(ConfigurationModel::getConfigurationId)
                    .map(providerProjectRepository::findByProviderConfigId)
                    .stream()
@@ -112,7 +112,7 @@ public class DefaultProviderDataAccessor {
             return List.of();
         }
 
-        Optional<Long> optionalProviderConfigId = configurationAccessor.getProviderConfigurationByName(providerConfigName)
+        Optional<Long> optionalProviderConfigId = configurationModelConfigurationAccessor.getProviderConfigurationByName(providerConfigName)
                                                       .map(ConfigurationModel::getConfigurationId);
         if (optionalProviderConfigId.isPresent()) {
             return getUsersByProviderConfigId(optionalProviderConfigId.get());

@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.processor.api.extract.model.project;
+package com.synopsys.integration.alert.processor.api.extract.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -9,8 +9,8 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.processor.api.extract.model.ProcessedProviderMessage;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectOperation;
 
 public class ProcessedProviderMessageTest {
     @Test

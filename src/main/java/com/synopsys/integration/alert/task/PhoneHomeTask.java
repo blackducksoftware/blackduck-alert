@@ -31,7 +31,7 @@ import com.synopsys.integration.alert.api.task.StartupScheduledTask;
 import com.synopsys.integration.alert.api.task.TaskManager;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.RestApiAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
@@ -65,7 +65,7 @@ public class PhoneHomeTask extends StartupScheduledTask {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final AboutReader aboutReader;
     private final JobAccessor jobAccessor;
-    private final ConfigurationAccessor configurationAccessor;
+    private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     private final ProxyManager proxyManager;
     private final Gson gson;
     private final RestApiAuditAccessor auditAccessor;
@@ -80,7 +80,7 @@ public class PhoneHomeTask extends StartupScheduledTask {
         TaskScheduler taskScheduler,
         AboutReader aboutReader,
         JobAccessor jobAccessor,
-        ConfigurationAccessor configurationAccessor,
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor,
         TaskManager taskManager,
         ProxyManager proxyManager,
         Gson gson,
@@ -90,7 +90,7 @@ public class PhoneHomeTask extends StartupScheduledTask {
         super(taskScheduler, taskManager);
         this.aboutReader = aboutReader;
         this.jobAccessor = jobAccessor;
-        this.configurationAccessor = configurationAccessor;
+        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
         this.proxyManager = proxyManager;
         this.gson = gson;
         this.auditAccessor = auditAccessor;
@@ -120,7 +120,7 @@ public class PhoneHomeTask extends StartupScheduledTask {
             String[] channelMetaData = retrieveChannelMetadataForAllJobs();
 
             for (ProviderPhoneHomeHandler handler : providerHandlers) {
-                List<ConfigurationModel> configurations = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(handler.getProviderKey(), ConfigContextEnum.GLOBAL);
+                List<ConfigurationModel> configurations = configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(handler.getProviderKey(), ConfigContextEnum.GLOBAL);
                 for (ConfigurationModel configuration : configurations) {
                     PhoneHomeService phoneHomeService = createPhoneHomeService(phoneHomeExecutor);
                     NameVersion alertArtifactInfo = new NameVersion(ARTIFACT_ID, productVersion);

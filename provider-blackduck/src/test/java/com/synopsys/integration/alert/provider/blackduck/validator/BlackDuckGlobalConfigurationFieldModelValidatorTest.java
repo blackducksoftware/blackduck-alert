@@ -16,7 +16,7 @@ import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.FieldStatusSeverity;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -60,9 +60,9 @@ public class BlackDuckGlobalConfigurationFieldModelValidatorTest {
         Mockito.when(configurationModel.getDescriptorContext()).thenReturn(ConfigContextEnum.GLOBAL);
         Mockito.when(configurationModel.getField(Mockito.any())).thenReturn(Optional.of(configurationFieldModel));
 
-        ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
-        Mockito.when(configurationAccessor.getConfigurationsByDescriptorType(Mockito.any())).thenReturn(List.of(configurationModel));
-        BlackDuckGlobalConfigurationFieldModelValidator blackDuckGlobalConfigurationValidator = new BlackDuckGlobalConfigurationFieldModelValidator(configurationAccessor);
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
+        Mockito.when(configurationModelConfigurationAccessor.getConfigurationsByDescriptorType(Mockito.any())).thenReturn(List.of(configurationModel));
+        BlackDuckGlobalConfigurationFieldModelValidator blackDuckGlobalConfigurationValidator = new BlackDuckGlobalConfigurationFieldModelValidator(configurationModelConfigurationAccessor);
         Set<AlertFieldStatus> alertFieldStatuses = blackDuckGlobalConfigurationValidator.validate(fieldModel);
 
         assertEquals(1, alertFieldStatuses.size());
@@ -100,10 +100,10 @@ public class BlackDuckGlobalConfigurationFieldModelValidatorTest {
         globalConfigurationValidatorAsserter.assertInvalidValue(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, "too short");
     }
 
-    private ConfigurationAccessor createDefaultConfigurationAccessor() {
-        ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
-        Mockito.when(configurationAccessor.getConfigurationsByDescriptorType(Mockito.any())).thenReturn(List.of());
-        return configurationAccessor;
+    private ConfigurationModelConfigurationAccessor createDefaultConfigurationAccessor() {
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
+        Mockito.when(configurationModelConfigurationAccessor.getConfigurationsByDescriptorType(Mockito.any())).thenReturn(List.of());
+        return configurationModelConfigurationAccessor;
     }
 
     private Map<String, FieldValueModel> createDefaultKeyToValues() {

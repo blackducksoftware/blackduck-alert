@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.descriptor.accessor.DefaultDescriptorGlobalConfigUtility;
 import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -28,9 +28,9 @@ public class DefaultSettingsUtility implements SettingsUtility {
     private final DefaultDescriptorGlobalConfigUtility configUtility;
 
     @Autowired
-    public DefaultSettingsUtility(SettingsDescriptorKey settingsDescriptorKey, ConfigurationAccessor configurationAccessor, SettingsGlobalApiAction settingsGlobalApiAction,
+    public DefaultSettingsUtility(SettingsDescriptorKey settingsDescriptorKey, ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor, SettingsGlobalApiAction settingsGlobalApiAction,
         ConfigurationFieldModelConverter configurationFieldModelConverter) {
-        this.configUtility = new DefaultDescriptorGlobalConfigUtility(settingsDescriptorKey, configurationAccessor, settingsGlobalApiAction, configurationFieldModelConverter);
+        this.configUtility = new DefaultDescriptorGlobalConfigUtility(settingsDescriptorKey, configurationModelConfigurationAccessor, settingsGlobalApiAction, configurationFieldModelConverter);
     }
 
     @Override

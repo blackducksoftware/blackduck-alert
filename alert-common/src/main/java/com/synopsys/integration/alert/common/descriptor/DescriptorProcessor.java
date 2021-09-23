@@ -19,7 +19,7 @@ import com.synopsys.integration.alert.common.action.ApiAction;
 import com.synopsys.integration.alert.common.action.ConfigurationAction;
 import com.synopsys.integration.alert.common.action.FieldModelTestAction;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
@@ -28,13 +28,13 @@ import com.synopsys.integration.alert.common.util.DataStructureUtils;
 @Component
 public class DescriptorProcessor {
     private final DescriptorMap descriptorMap;
-    private final ConfigurationAccessor configurationAccessor;
+    private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     private final Map<String, ConfigurationAction> allConfigurationActions;
 
     @Autowired
-    public DescriptorProcessor(DescriptorMap descriptorMap, ConfigurationAccessor configurationAccessor, List<ConfigurationAction> configurationActions) {
+    public DescriptorProcessor(DescriptorMap descriptorMap, ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor, List<ConfigurationAction> configurationActions) {
         this.descriptorMap = descriptorMap;
-        this.configurationAccessor = configurationAccessor;
+        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
         this.allConfigurationActions = DataStructureUtils.mapToValues(configurationActions, action -> action.getDescriptorKey().getUniversalKey());
     }
 
@@ -53,7 +53,7 @@ public class DescriptorProcessor {
 
     public Optional<ConfigurationModel> getSavedEntity(Long id) {
         if (null != id) {
-            return configurationAccessor.getConfigurationById(id);
+            return configurationModelConfigurationAccessor.getConfigurationById(id);
         }
         return Optional.empty();
     }

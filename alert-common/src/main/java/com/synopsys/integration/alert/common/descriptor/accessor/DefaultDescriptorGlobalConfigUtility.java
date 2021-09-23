@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.action.ApiAction;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
@@ -23,17 +23,17 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 public class DefaultDescriptorGlobalConfigUtility {
-    private final ConfigurationAccessor configurationAccessor;
+    private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     private final ApiAction apiAction;
     private final ConfigurationFieldModelConverter configurationFieldModelConverter;
     private final DescriptorKey key;
     private final ConfigContextEnum context;
 
-    public DefaultDescriptorGlobalConfigUtility(DescriptorKey descriptorKey, ConfigurationAccessor configurationAccessor, ApiAction apiAction,
+    public DefaultDescriptorGlobalConfigUtility(DescriptorKey descriptorKey, ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor, ApiAction apiAction,
         ConfigurationFieldModelConverter configurationFieldModelConverter) {
         this.key = descriptorKey;
         this.context = ConfigContextEnum.GLOBAL;
-        this.configurationAccessor = configurationAccessor;
+        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
         this.apiAction = apiAction;
         this.configurationFieldModelConverter = configurationFieldModelConverter;
     }
@@ -43,11 +43,11 @@ public class DefaultDescriptorGlobalConfigUtility {
     }
 
     public boolean doesConfigurationExist() {
-        return !configurationAccessor.getConfigurationsByDescriptorKeyAndContext(key, context).isEmpty();
+        return !configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(key, context).isEmpty();
     }
 
     public Optional<ConfigurationModel> getConfiguration() {
-        return configurationAccessor.getConfigurationsByDescriptorKeyAndContext(key, context)
+        return configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(key, context)
                    .stream()
                    .findFirst();
     }
@@ -67,7 +67,7 @@ public class DefaultDescriptorGlobalConfigUtility {
     public FieldModel save(FieldModel fieldModel) throws AlertException {
         FieldModel beforeAction = apiAction.beforeSaveAction(fieldModel);
         Collection<ConfigurationFieldModel> values = configurationFieldModelConverter.convertToConfigurationFieldModelMap(beforeAction).values();
-        ConfigurationModel configuration = configurationAccessor.createConfiguration(key, context, values);
+        ConfigurationModel configuration = configurationModelConfigurationAccessor.createConfiguration(key, context, values);
         FieldModel convertedFieldModel = configurationFieldModelConverter.convertToFieldModel(configuration);
         return apiAction.afterSaveAction(convertedFieldModel);
     }
@@ -75,13 +75,13 @@ public class DefaultDescriptorGlobalConfigUtility {
     public FieldModel update(Long id, FieldModel fieldModel) throws AlertException {
         FieldModel beforeUpdateActionFieldModel = apiAction.beforeUpdateAction(fieldModel);
         Map<String, ConfigurationFieldModel> valueMap = configurationFieldModelConverter.convertToConfigurationFieldModelMap(beforeUpdateActionFieldModel);
-        Optional<ConfigurationModel> existingConfig = configurationAccessor.getConfigurationById(id);
+        Optional<ConfigurationModel> existingConfig = configurationModelConfigurationAccessor.getConfigurationById(id);
         ConfigurationModel configurationModel;
         if (existingConfig.isPresent()) {
             Map<String, ConfigurationFieldModel> updatedValues = updateSensitiveFields(valueMap, existingConfig.get());
-            configurationModel = configurationAccessor.updateConfiguration(id, updatedValues.values());
+            configurationModel = configurationModelConfigurationAccessor.updateConfiguration(id, updatedValues.values());
         } else {
-            configurationModel = configurationAccessor.createConfiguration(key, context, valueMap.values());
+            configurationModel = configurationModelConfigurationAccessor.createConfiguration(key, context, valueMap.values());
         }
         FieldModel convertedFieldModel = configurationFieldModelConverter.convertToFieldModel(configurationModel);
         return apiAction.afterUpdateAction(beforeUpdateActionFieldModel, convertedFieldModel);
