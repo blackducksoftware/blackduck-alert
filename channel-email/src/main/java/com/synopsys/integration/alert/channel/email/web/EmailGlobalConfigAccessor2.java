@@ -158,6 +158,7 @@ public class EmailGlobalConfigAccessor2 implements ConfigurationAccessor2<EmailG
             }
         }
         newModel.setAdditionalJavaMailProperties(additionalJavamailProperties);
+        newModel.setId(String.valueOf(configId));
 
         return new ConfigurationModel2<>(descriptorId, configId, createdAtFormatted, lastUpdatedFormatted, newModel);
     }

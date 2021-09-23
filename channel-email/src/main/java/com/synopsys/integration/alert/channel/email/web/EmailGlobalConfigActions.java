@@ -47,24 +47,20 @@ public class EmailGlobalConfigActions {
     }
 
     public ActionResponse<EmailGlobalConfigModel> getOne(Long id) {
-        Optional<EmailGlobalConfigModel> optionalResponse = getOneWithoutChecks(id);
+        if (!authorizationManager.hasReadPermission(ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL)) {
+            return ActionResponse.createForbiddenResponse();
+        }
+
+        Optional<EmailGlobalConfigModel> optionalResponse = configurationAccessor.getConfiguration(id).map(ConfigurationModel2::getConfiguredFields);
 
         if (optionalResponse.isEmpty()) {
             return new ActionResponse<>(HttpStatus.NOT_FOUND);
         }
 
-        if (!authorizationManager.hasReadPermission(ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL)) {
-            return ActionResponse.createForbiddenResponse();
-        }
-
         return new ActionResponse<>(HttpStatus.OK, optionalResponse.get());
     }
 
-    private Optional<EmailGlobalConfigModel> getOneWithoutChecks(Long id) {
-        return configurationAccessor.getConfiguration(id).map(ConfigurationModel2::getConfiguredFields);
-    }
-
-    public ActionResponse<ConfigurationModel2<EmailGlobalConfigModel>> create(EmailGlobalConfigModel resource) {
+    public ActionResponse<EmailGlobalConfigModel> create(EmailGlobalConfigModel resource) {
         if (!authorizationManager.hasCreatePermission(ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL)) {
             return ActionResponse.createForbiddenResponse();
         }
@@ -74,11 +70,7 @@ public class EmailGlobalConfigActions {
             return new ActionResponse<>(validationResponse.getHttpStatus(), validationResponse.getMessage().orElse(null));
         }
 
-        return createWithoutChecks(resource);
-    }
-
-    public ActionResponse<ConfigurationModel2<EmailGlobalConfigModel>> createWithoutChecks(EmailGlobalConfigModel requestResource) {
-        return new ActionResponse<>(HttpStatus.OK, configurationAccessor.createConfiguration(requestResource));
+        return new ActionResponse<>(HttpStatus.OK, configurationAccessor.createConfiguration(resource).getConfiguredFields());
     }
 
     public ActionResponse<EmailGlobalConfigModel> update(Long id, EmailGlobalConfigModel requestResource) {
@@ -95,10 +87,7 @@ public class EmailGlobalConfigActions {
         if (validationResponse.isError()) {
             return new ActionResponse<>(validationResponse.getHttpStatus(), validationResponse.getMessage().orElse(null));
         }
-        return updateWithoutChecks(id, requestResource);
-    }
 
-    public ActionResponse<EmailGlobalConfigModel> updateWithoutChecks(Long id, EmailGlobalConfigModel requestResource) {
         try {
             ConfigurationModel2<EmailGlobalConfigModel> updatedResponse = configurationAccessor.updateConfiguration(id, requestResource);
             return new ActionResponse<>(HttpStatus.OK, updatedResponse.getConfiguredFields());
@@ -136,13 +125,9 @@ public class EmailGlobalConfigActions {
             return new ActionResponse<>(HttpStatus.NOT_FOUND);
         }
 
-        return deleteWithoutChecks(id);
-    }
-
-    public ActionResponse<EmailGlobalConfigModel> deleteWithoutChecks(Long id) {
         configurationAccessor.getConfiguration(id)
-                         .map(ConfigurationModel2::getConfigurationId)
-                         .ifPresent(configurationAccessor::deleteConfiguration);
+            .map(ConfigurationModel2::getConfigurationId)
+            .ifPresent(configurationAccessor::deleteConfiguration);
 
         return new ActionResponse<>(HttpStatus.NO_CONTENT);
     }
@@ -156,10 +141,7 @@ public class EmailGlobalConfigActions {
         if (validationResponse.isError()) {
             return ValidationActionResponse.createOKResponseWithContent(validationResponse);
         }
-        return testWithoutChecks(testAddress, requestResource);
-    }
 
-    public ActionResponse<ValidationResponseModel> testWithoutChecks(String testAddress, EmailGlobalConfigModel requestResource) {
         try {
             MessageResult messageResult = testAction.testConfig(testAddress, requestResource);
             return new ValidationActionResponse(HttpStatus.OK, ValidationResponseModel.success(messageResult.getStatusMessage()));
