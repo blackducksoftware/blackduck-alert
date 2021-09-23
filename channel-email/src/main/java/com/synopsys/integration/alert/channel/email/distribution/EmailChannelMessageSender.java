@@ -31,7 +31,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.errors.Fiel
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
@@ -46,7 +46,7 @@ import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKey
 public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobDetailsModel, EmailChannelMessageModel, MessageResult> {
     public static final String FILE_NAME_MESSAGE_TEMPLATE = "message_content.ftl";
 
-    private final ConfigurationAccessor configurationAccessor;
+    private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     private final EmailAddressGatherer emailAddressGatherer;
     private final EmailChannelKey emailChannelKey;
     private final EmailChannelMessagingService emailChannelMessagingService;
@@ -55,14 +55,14 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
 
     @Autowired
     public EmailChannelMessageSender(
-        ConfigurationAccessor configurationAccessor,
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor,
         EmailAddressGatherer emailAddressGatherer,
         EmailChannelKey emailChannelKey,
         EmailChannelMessagingService emailChannelMessagingService,
         JobEmailAddressValidator emailAddressValidator,
         JavamailPropertiesFactory javamailPropertiesFactory
     ) {
-        this.configurationAccessor = configurationAccessor;
+        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
         this.emailAddressGatherer = emailAddressGatherer;
         this.emailChannelKey = emailChannelKey;
         this.emailChannelMessagingService = emailChannelMessagingService;
@@ -94,7 +94,7 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
         }
 
         // Distribution
-        FieldUtility globalConfiguration = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(emailChannelKey, ConfigContextEnum.GLOBAL)
+        FieldUtility globalConfiguration = configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(emailChannelKey, ConfigContextEnum.GLOBAL)
             .stream()
             .findAny()
             .map(ConfigurationModel::getCopyOfKeyToFieldMap)

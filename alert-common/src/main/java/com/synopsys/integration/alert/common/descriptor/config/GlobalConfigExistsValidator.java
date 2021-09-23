@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
@@ -24,12 +24,12 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 public class GlobalConfigExistsValidator {
     public static final String GLOBAL_CONFIG_MISSING = "%s global configuration missing.";
 
-    private final ConfigurationAccessor configurationAccessor;
+    private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     private final List<Descriptor> descriptors;
 
     @Autowired
-    public GlobalConfigExistsValidator(ConfigurationAccessor configurationAccessor, List<Descriptor> descriptors) {
-        this.configurationAccessor = configurationAccessor;
+    public GlobalConfigExistsValidator(ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor, List<Descriptor> descriptors) {
+        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
         this.descriptors = descriptors;
     }
 
@@ -54,7 +54,7 @@ public class GlobalConfigExistsValidator {
         String descriptorDisplayName = optionalDescriptorKey
             .map(DescriptorKey::getDisplayName)
             .orElse(descriptorName);
-        List<ConfigurationModel> configurations = configurationAccessor.getConfigurationsByDescriptorNameAndContext(descriptorName, ConfigContextEnum.GLOBAL);
+        List<ConfigurationModel> configurations = configurationModelConfigurationAccessor.getConfigurationsByDescriptorNameAndContext(descriptorName, ConfigContextEnum.GLOBAL);
         boolean configurationsAreEmpty = configurations
             .stream()
             .allMatch(ConfigurationModel::isConfiguredFieldsEmpty);

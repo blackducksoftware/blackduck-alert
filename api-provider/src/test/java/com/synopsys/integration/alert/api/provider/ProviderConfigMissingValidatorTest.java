@@ -8,7 +8,7 @@ import org.mockito.Mockito;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -18,9 +18,9 @@ public class ProviderConfigMissingValidatorTest {
     @Test
     public void testMissingProviders() {
         SystemMessageAccessor systemMessageAccessor = Mockito.mock(SystemMessageAccessor.class);
-        ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
         List<Provider> providers = List.of();
-        ProviderConfigMissingValidator validator = new ProviderConfigMissingValidator(systemMessageAccessor, providers, configurationAccessor);
+        ProviderConfigMissingValidator validator = new ProviderConfigMissingValidator(systemMessageAccessor, providers, configurationModelConfigurationAccessor);
         validator.validate();
         Mockito.verify(systemMessageAccessor, Mockito.never())
             .addSystemMessage(Mockito.anyString(), Mockito.any(SystemMessageSeverity.class), Mockito.any(SystemMessageType.class));
@@ -30,12 +30,12 @@ public class ProviderConfigMissingValidatorTest {
     @Test
     public void testEmptyConfigurationsList() {
         SystemMessageAccessor systemMessageAccessor = Mockito.mock(SystemMessageAccessor.class);
-        ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
         List<Provider> providers = List.of(Mockito.mock(Provider.class));
-        Mockito.when(configurationAccessor.getConfigurationsByDescriptorKeyAndContext(Mockito.any(ProviderKey.class), Mockito.any(ConfigContextEnum.class)))
+        Mockito.when(configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(Mockito.any(ProviderKey.class), Mockito.any(ConfigContextEnum.class)))
             .thenReturn(List.of());
 
-        ProviderConfigMissingValidator validator = new ProviderConfigMissingValidator(systemMessageAccessor, providers, configurationAccessor);
+        ProviderConfigMissingValidator validator = new ProviderConfigMissingValidator(systemMessageAccessor, providers, configurationModelConfigurationAccessor);
         validator.validate();
         Mockito.verify(systemMessageAccessor)
             .addSystemMessage(Mockito.anyString(), Mockito.any(SystemMessageSeverity.class), Mockito.anyString());
@@ -45,14 +45,14 @@ public class ProviderConfigMissingValidatorTest {
     @Test
     public void testEmptyConfigurations() {
         SystemMessageAccessor systemMessageAccessor = Mockito.mock(SystemMessageAccessor.class);
-        ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
         List<Provider> providers = List.of(Mockito.mock(Provider.class));
         ConfigurationModel model = Mockito.mock(ConfigurationModel.class);
         Mockito.when(model.getCopyOfFieldList()).thenReturn(List.of());
-        Mockito.when(configurationAccessor.getConfigurationsByDescriptorKeyAndContext(Mockito.any(ProviderKey.class), Mockito.any(ConfigContextEnum.class)))
+        Mockito.when(configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(Mockito.any(ProviderKey.class), Mockito.any(ConfigContextEnum.class)))
             .thenReturn(List.of(model));
 
-        ProviderConfigMissingValidator validator = new ProviderConfigMissingValidator(systemMessageAccessor, providers, configurationAccessor);
+        ProviderConfigMissingValidator validator = new ProviderConfigMissingValidator(systemMessageAccessor, providers, configurationModelConfigurationAccessor);
         validator.validate();
         Mockito.verify(systemMessageAccessor)
             .addSystemMessage(Mockito.anyString(), Mockito.any(SystemMessageSeverity.class), Mockito.anyString());
@@ -62,14 +62,14 @@ public class ProviderConfigMissingValidatorTest {
     @Test
     public void testValidConfigurations() {
         SystemMessageAccessor systemMessageAccessor = Mockito.mock(SystemMessageAccessor.class);
-        ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
         List<Provider> providers = List.of(Mockito.mock(Provider.class));
         ConfigurationModel model = Mockito.mock(ConfigurationModel.class);
         Mockito.when(model.getCopyOfFieldList()).thenReturn(List.of(Mockito.mock(ConfigurationFieldModel.class)));
-        Mockito.when(configurationAccessor.getConfigurationsByDescriptorKeyAndContext(Mockito.any(), Mockito.any()))
+        Mockito.when(configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(Mockito.any(), Mockito.any()))
             .thenReturn(List.of(model));
 
-        ProviderConfigMissingValidator validator = new ProviderConfigMissingValidator(systemMessageAccessor, providers, configurationAccessor);
+        ProviderConfigMissingValidator validator = new ProviderConfigMissingValidator(systemMessageAccessor, providers, configurationModelConfigurationAccessor);
         validator.validate();
         Mockito.verify(systemMessageAccessor, Mockito.never())
             .addSystemMessage(Mockito.anyString(), Mockito.any(SystemMessageSeverity.class), Mockito.anyString());

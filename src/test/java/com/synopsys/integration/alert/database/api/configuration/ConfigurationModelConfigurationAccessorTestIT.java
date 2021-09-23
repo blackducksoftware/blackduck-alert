@@ -23,7 +23,7 @@ import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
-import com.synopsys.integration.alert.database.api.DefaultConfigurationAccessor;
+import com.synopsys.integration.alert.database.api.DefaultConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.database.configuration.DescriptorConfigEntity;
 import com.synopsys.integration.alert.database.configuration.FieldValueEntity;
 import com.synopsys.integration.alert.database.configuration.repository.ConfigContextRepository;
@@ -37,7 +37,7 @@ import com.synopsys.integration.alert.util.DescriptorMocker;
 
 @Transactional
 @AlertIntegrationTest
-public class ConfigurationAccessorTestIT {
+public class ConfigurationModelConfigurationAccessorTestIT {
     public static final String DESCRIPTOR_NAME = "Test Descriptor";
     public static final String FIELD_KEY_INSENSITIVE = "testInsensitiveField";
     public static final String FIELD_KEY_SENSITIVE = "testSensitiveField";
@@ -57,13 +57,13 @@ public class ConfigurationAccessorTestIT {
     @Autowired
     private DescriptorMocker descriptorMocker;
 
-    private DefaultConfigurationAccessor configurationAccessor;
+    private DefaultConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
 
     @BeforeEach
     public void init() {
         descriptorConfigsRepository.flush();
         descriptorConfigsRepository.deleteAllInBatch();
-        configurationAccessor = new DefaultConfigurationAccessor(
+        configurationModelConfigurationAccessor = new DefaultConfigurationModelConfigurationAccessor(
             registeredDescriptorRepository, definedFieldRepository, descriptorConfigsRepository, configContextRepository, fieldValueRepository, encryptionUtility);
         descriptorMocker.registerDescriptor(DESCRIPTOR_NAME, DescriptorType.PROVIDER);
         descriptorMocker.addFieldToDescriptor(DESCRIPTOR_NAME, FIELD_KEY_INSENSITIVE, Set.of(ConfigContextEnum.GLOBAL, ConfigContextEnum.DISTRIBUTION), Boolean.FALSE);
@@ -85,7 +85,7 @@ public class ConfigurationAccessorTestIT {
         ConfigurationFieldModel configField1 = ConfigurationFieldModel.create(FIELD_KEY_INSENSITIVE);
         ConfigurationFieldModel configField2 = ConfigurationFieldModel.createSensitive(FIELD_KEY_SENSITIVE);
         DescriptorKey descriptorKey = createDescriptorKey(DESCRIPTOR_NAME);
-        ConfigurationModel createdConfig = configurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, List.of(configField1, configField2));
+        ConfigurationModel createdConfig = configurationModelConfigurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, List.of(configField1, configField2));
         assertTrue(createdConfig.getCopyOfFieldList().contains(configField1));
         assertTrue(createdConfig.getCopyOfFieldList().contains(configField2));
 
@@ -98,10 +98,10 @@ public class ConfigurationAccessorTestIT {
         ConfigurationFieldModel configField1 = ConfigurationFieldModel.create(FIELD_KEY_INSENSITIVE);
         ConfigurationFieldModel configField2 = ConfigurationFieldModel.createSensitive(FIELD_KEY_SENSITIVE);
         DescriptorKey descriptorKey = createDescriptorKey(DESCRIPTOR_NAME);
-        configurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, Arrays.asList(configField1));
-        configurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, Arrays.asList(configField2));
+        configurationModelConfigurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, Arrays.asList(configField1));
+        configurationModelConfigurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, Arrays.asList(configField2));
 
-        List<ConfigurationModel> configurationsForDescriptor = configurationAccessor.getConfigurationsByDescriptorKey(descriptorKey);
+        List<ConfigurationModel> configurationsForDescriptor = configurationModelConfigurationAccessor.getConfigurationsByDescriptorKey(descriptorKey);
         assertEquals(2, configurationsForDescriptor.size());
     }
 
@@ -110,16 +110,16 @@ public class ConfigurationAccessorTestIT {
         ConfigurationFieldModel configField1 = ConfigurationFieldModel.create(FIELD_KEY_INSENSITIVE);
         ConfigurationFieldModel configField2 = ConfigurationFieldModel.createSensitive(FIELD_KEY_SENSITIVE);
         DescriptorKey descriptorKey = createDescriptorKey(DESCRIPTOR_NAME);
-        ConfigurationModel configurationModel1 = configurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, Arrays.asList(configField1));
-        ConfigurationModel configurationModel2 = configurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, Arrays.asList(configField2));
+        ConfigurationModel configurationModel1 = configurationModelConfigurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, Arrays.asList(configField1));
+        ConfigurationModel configurationModel2 = configurationModelConfigurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, Arrays.asList(configField2));
 
-        Optional<ConfigurationModel> optionalFoundConfig1 = configurationAccessor.getConfigurationById(configurationModel1.getConfigurationId());
+        Optional<ConfigurationModel> optionalFoundConfig1 = configurationModelConfigurationAccessor.getConfigurationById(configurationModel1.getConfigurationId());
         assertTrue(optionalFoundConfig1.isPresent());
         ConfigurationModel foundConfig1 = optionalFoundConfig1.get();
         assertEquals(configurationModel1.getDescriptorId(), foundConfig1.getDescriptorId());
         assertEquals(configurationModel1.getConfigurationId(), foundConfig1.getConfigurationId());
 
-        Optional<ConfigurationModel> optionalFoundConfig2 = configurationAccessor.getConfigurationById(configurationModel2.getConfigurationId());
+        Optional<ConfigurationModel> optionalFoundConfig2 = configurationModelConfigurationAccessor.getConfigurationById(configurationModel2.getConfigurationId());
         assertTrue(optionalFoundConfig2.isPresent());
         ConfigurationModel foundConfig2 = optionalFoundConfig2.get();
         assertEquals(configurationModel2.getDescriptorId(), foundConfig2.getDescriptorId());
@@ -128,14 +128,14 @@ public class ConfigurationAccessorTestIT {
 
     @Test
     public void getConfigurationsByDescriptorTypeTest() {
-        List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationsByDescriptorType(DescriptorType.CHANNEL);
+        List<ConfigurationModel> configurationModels = configurationModelConfigurationAccessor.getConfigurationsByDescriptorType(DescriptorType.CHANNEL);
         assertTrue(configurationModels.isEmpty());
         ConfigurationFieldModel configField1 = ConfigurationFieldModel.create(FIELD_KEY_INSENSITIVE);
         ConfigurationFieldModel configField2 = ConfigurationFieldModel.createSensitive(FIELD_KEY_SENSITIVE);
         DescriptorKey descriptorKey = createDescriptorKey(DESCRIPTOR_NAME);
-        configurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, Arrays.asList(configField1));
-        configurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, Arrays.asList(configField2));
-        configurationModels = configurationAccessor.getConfigurationsByDescriptorType(DescriptorType.PROVIDER);
+        configurationModelConfigurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, Arrays.asList(configField1));
+        configurationModelConfigurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, Arrays.asList(configField2));
+        configurationModels = configurationModelConfigurationAccessor.getConfigurationsByDescriptorType(DescriptorType.PROVIDER);
         assertFalse(configurationModels.isEmpty());
     }
 
@@ -145,7 +145,7 @@ public class ConfigurationAccessorTestIT {
         ConfigurationFieldModel originalField = ConfigurationFieldModel.create(FIELD_KEY_INSENSITIVE);
         originalField.setFieldValue(initialValue);
         DescriptorKey descriptorKey = createDescriptorKey(DESCRIPTOR_NAME);
-        ConfigurationModel createdModel = configurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, Arrays.asList(originalField));
+        ConfigurationModel createdModel = configurationModelConfigurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, Arrays.asList(originalField));
         List<ConfigurationFieldModel> copyOfFieldList = createdModel.getCopyOfFieldList();
         assertEquals(1, copyOfFieldList.size());
         Optional<String> optionalValue = copyOfFieldList.get(0).getFieldValue();
@@ -156,7 +156,7 @@ public class ConfigurationAccessorTestIT {
         ConfigurationFieldModel newFieldWithSameKey = ConfigurationFieldModel.create(FIELD_KEY_INSENSITIVE);
         newFieldWithSameKey.setFieldValue(additionalValue);
 
-        ConfigurationModel updatedModel = configurationAccessor.updateConfiguration(createdModel.getConfigurationId(), Arrays.asList(originalField, newFieldWithSameKey));
+        ConfigurationModel updatedModel = configurationModelConfigurationAccessor.updateConfiguration(createdModel.getConfigurationId(), Arrays.asList(originalField, newFieldWithSameKey));
         List<ConfigurationFieldModel> configuredFields = updatedModel.getCopyOfFieldList();
         assertEquals(1, configuredFields.size());
         ConfigurationFieldModel configuredField = configuredFields.get(0);
@@ -176,7 +176,7 @@ public class ConfigurationAccessorTestIT {
         originalField.setFieldValue(initialValue);
 
         DescriptorKey descriptorKey = createDescriptorKey(DESCRIPTOR_NAME);
-        ConfigurationModel createdModel = configurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, Arrays.asList(originalField));
+        ConfigurationModel createdModel = configurationModelConfigurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, Arrays.asList(originalField));
         List<ConfigurationFieldModel> copyOfFieldList = createdModel.getCopyOfFieldList();
         assertEquals(1, copyOfFieldList.size());
         Optional<String> optionalValue = copyOfFieldList.get(0).getFieldValue();
@@ -187,7 +187,7 @@ public class ConfigurationAccessorTestIT {
         ConfigurationFieldModel newFieldWithSameKey = ConfigurationFieldModel.create(FIELD_KEY_INSENSITIVE);
         newFieldWithSameKey.setFieldValue(additionalValue);
 
-        ConfigurationModel updatedModel = configurationAccessor.updateConfiguration(createdModel.getConfigurationId(), Arrays.asList(newFieldWithSameKey));
+        ConfigurationModel updatedModel = configurationModelConfigurationAccessor.updateConfiguration(createdModel.getConfigurationId(), Arrays.asList(newFieldWithSameKey));
         List<ConfigurationFieldModel> configuredFields = updatedModel.getCopyOfFieldList();
         assertEquals(1, configuredFields.size());
         ConfigurationFieldModel configuredField = configuredFields.get(0);
@@ -202,7 +202,7 @@ public class ConfigurationAccessorTestIT {
     public void updateConfigurationWithInvalidIdTest() {
         final Long invalidId = Long.MAX_VALUE;
         try {
-            configurationAccessor.updateConfiguration(invalidId, null);
+            configurationModelConfigurationAccessor.updateConfiguration(invalidId, null);
             fail("Expected exception to be thrown");
         } catch (AlertConfigurationException e) {
             // Success
@@ -212,24 +212,24 @@ public class ConfigurationAccessorTestIT {
     @Test
     public void deleteConfigurationTest() {
         DescriptorKey descriptorKey = createDescriptorKey(DESCRIPTOR_NAME);
-        ConfigurationModel createdModel1 = configurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, List.of());
-        ConfigurationModel createdModel2 = configurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, List.of());
-        List<ConfigurationModel> foundModels = configurationAccessor.getConfigurationsByDescriptorKey(descriptorKey);
+        ConfigurationModel createdModel1 = configurationModelConfigurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, List.of());
+        ConfigurationModel createdModel2 = configurationModelConfigurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, List.of());
+        List<ConfigurationModel> foundModels = configurationModelConfigurationAccessor.getConfigurationsByDescriptorKey(descriptorKey);
         assertEquals(2, foundModels.size());
 
-        configurationAccessor.deleteConfiguration(createdModel1);
-        List<ConfigurationModel> afterFirstDeletion = configurationAccessor.getConfigurationsByDescriptorKey(descriptorKey);
+        configurationModelConfigurationAccessor.deleteConfiguration(createdModel1);
+        List<ConfigurationModel> afterFirstDeletion = configurationModelConfigurationAccessor.getConfigurationsByDescriptorKey(descriptorKey);
         assertEquals(foundModels.size() - 1, afterFirstDeletion.size());
 
-        configurationAccessor.deleteConfiguration(createdModel2);
-        List<ConfigurationModel> afterSecondDeletion = configurationAccessor.getConfigurationsByDescriptorKey(descriptorKey);
+        configurationModelConfigurationAccessor.deleteConfiguration(createdModel2);
+        List<ConfigurationModel> afterSecondDeletion = configurationModelConfigurationAccessor.getConfigurationsByDescriptorKey(descriptorKey);
         assertEquals(foundModels.size() - 2, afterSecondDeletion.size());
     }
 
     @Test
     public void configurationModelTest() {
         DescriptorKey descriptorKey = createDescriptorKey(DESCRIPTOR_NAME);
-        ConfigurationModel configurationModel = configurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, List.of());
+        ConfigurationModel configurationModel = configurationModelConfigurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, List.of());
         assertNotNull(configurationModel.getConfigurationId());
         assertNotNull(configurationModel.getDescriptorId());
         assertNotNull(configurationModel.getCopyOfFieldList());

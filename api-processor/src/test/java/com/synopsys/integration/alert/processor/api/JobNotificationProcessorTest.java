@@ -17,7 +17,7 @@ import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
@@ -124,10 +124,10 @@ public class JobNotificationProcessorTest {
     }
 
     private NotificationExtractorBlackDuckServicesFactoryCache createNotificationExtractorBlackDuckServicesFactoryCache() {
-        ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
         AlertProperties properties = new AlertProperties();
         ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
-        BlackDuckPropertiesFactory blackDuckPropertiesFactory = new BlackDuckPropertiesFactory(configurationAccessor, GSON, properties, proxyManager);
+        BlackDuckPropertiesFactory blackDuckPropertiesFactory = new BlackDuckPropertiesFactory(configurationModelConfigurationAccessor, GSON, properties, proxyManager);
 
         return new NotificationExtractorBlackDuckServicesFactoryCache(blackDuckPropertiesFactory);
     }

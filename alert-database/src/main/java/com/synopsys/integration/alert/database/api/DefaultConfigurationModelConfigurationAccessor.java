@@ -26,7 +26,7 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeExc
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.mutable.ConfigurationModelMutable;
@@ -46,7 +46,7 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 @Component
 @Transactional
-public class DefaultConfigurationAccessor implements ConfigurationAccessor {
+public class DefaultConfigurationModelConfigurationAccessor implements ConfigurationModelConfigurationAccessor {
     private final RegisteredDescriptorRepository registeredDescriptorRepository;
     private final DefinedFieldRepository definedFieldRepository;
     private final DescriptorConfigRepository descriptorConfigsRepository;
@@ -55,7 +55,7 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
     private final EncryptionUtility encryptionUtility;
 
     @Autowired
-    public DefaultConfigurationAccessor(
+    public DefaultConfigurationModelConfigurationAccessor(
         RegisteredDescriptorRepository registeredDescriptorRepository,
         DefinedFieldRepository definedFieldRepository,
         DescriptorConfigRepository descriptorConfigsRepository,
