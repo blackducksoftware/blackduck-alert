@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.common;
+package com.synopsys.integration.alert.common.rest.api;
 
 import java.util.Optional;
 import java.util.function.Supplier;

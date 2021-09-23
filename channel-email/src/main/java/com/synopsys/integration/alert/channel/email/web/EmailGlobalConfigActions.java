@@ -25,6 +25,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.errors.Aler
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.DatabaseModelWrapper;
+import com.synopsys.integration.alert.common.rest.api.ConfigurationHelper;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
@@ -34,30 +35,22 @@ import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel
 public class EmailGlobalConfigActions {
     private final Logger logger = LoggerFactory.getLogger(EmailGlobalConfigActions.class);
     private final AuthorizationManager authorizationManager;
+    private final ConfigurationHelper configurationHelper;
     private final EmailGlobalConfigAccessor configurationAccessor;
     private final EmailGlobalConfigurationValidator validator;
     private final EmailGlobalTestAction testAction;
 
     @Autowired
-    public EmailGlobalConfigActions(AuthorizationManager authorizationManager, EmailGlobalConfigAccessor configurationAccessor, EmailGlobalConfigurationValidator validator, EmailGlobalTestAction testAction) {
+    public EmailGlobalConfigActions(AuthorizationManager authorizationManager, ConfigurationHelper configurationHelper, EmailGlobalConfigAccessor configurationAccessor, EmailGlobalConfigurationValidator validator, EmailGlobalTestAction testAction) {
         this.authorizationManager = authorizationManager;
+        this.configurationHelper = configurationHelper;
         this.configurationAccessor = configurationAccessor;
         this.validator = validator;
         this.testAction = testAction;
     }
 
     public ActionResponse<EmailGlobalConfigModel> getOne(Long id) {
-        if (!authorizationManager.hasReadPermission(ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL)) {
-            return ActionResponse.createForbiddenResponse();
-        }
-
-        Optional<EmailGlobalConfigModel> optionalResponse = configurationAccessor.getConfiguration(id).map(DatabaseModelWrapper::getModel);
-
-        if (optionalResponse.isEmpty()) {
-            return new ActionResponse<>(HttpStatus.NOT_FOUND);
-        }
-
-        return new ActionResponse<>(HttpStatus.OK, optionalResponse.get());
+        return configurationHelper.getOne(() -> configurationAccessor.getConfiguration(id).map(DatabaseModelWrapper::getModel), ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL);
     }
 
     public ActionResponse<EmailGlobalConfigModel> create(EmailGlobalConfigModel resource) {
