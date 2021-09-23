@@ -7,8 +7,6 @@
  */
 package com.synopsys.integration.alert.channel.email.action;
 
-import java.util.Set;
-
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
@@ -58,7 +56,7 @@ public class EmailGlobalTestAction {
         smtpConfigBuilder.setJavamailProperties(javamailPropertiesFactory.createJavaMailProperties(emailGlobalConfigModel));
 
         emailGlobalConfigModel.getFrom().ifPresent(smtpConfigBuilder::setSmtpFrom);
-        emailGlobalConfigModel.getHost().ifPresent(smtpConfigBuilder::setSmtpFrom);
+        emailGlobalConfigModel.getHost().ifPresent(smtpConfigBuilder::setSmtpHost);
         emailGlobalConfigModel.getPort().ifPresent(smtpConfigBuilder::setSmtpPort);
         emailGlobalConfigModel.getAuth().ifPresent(smtpConfigBuilder::setSmtpAuth);
         emailGlobalConfigModel.getUsername().ifPresent(smtpConfigBuilder::setSmtpUsername);
