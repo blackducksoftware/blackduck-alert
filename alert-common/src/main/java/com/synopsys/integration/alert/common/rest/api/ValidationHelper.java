@@ -32,7 +32,7 @@ public class ValidationHelper {
         this.authorizationManager = authorizationManager;
     }
 
-    public ActionResponse<ValidationResponseModel> validate(Supplier<ValidationResponseModel> validator, ConfigContextEnum context, DescriptorKey descriptorKey) {
+    public ValidationActionResponse validate(Supplier<ValidationResponseModel> validator, ConfigContextEnum context, DescriptorKey descriptorKey) {
         if (!authorizationManager.hasExecutePermission(context, descriptorKey)) {
             ValidationResponseModel responseModel = ValidationResponseModel.generalError(ActionResponse.FORBIDDEN_MESSAGE);
             return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
