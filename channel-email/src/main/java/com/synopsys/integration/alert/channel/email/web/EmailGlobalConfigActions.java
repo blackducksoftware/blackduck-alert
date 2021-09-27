@@ -7,9 +7,6 @@
  */
 package com.synopsys.integration.alert.channel.email.web;
 
-import java.util.Optional;
-import java.util.Set;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +18,6 @@ import com.synopsys.integration.alert.channel.email.action.EmailGlobalTestAction
 import com.synopsys.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
-import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.DatabaseModelWrapper;
@@ -54,40 +50,15 @@ public class EmailGlobalConfigActions {
     }
 
     public ActionResponse<EmailGlobalConfigModel> create(EmailGlobalConfigModel resource) {
-        if (!authorizationManager.hasCreatePermission(ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL)) {
-            return ActionResponse.createForbiddenResponse();
-        }
-
-        ValidationActionResponse validationResponse = validateWithoutChecks(resource);
-        if (validationResponse.isError()) {
-            return new ActionResponse<>(validationResponse.getHttpStatus(), validationResponse.getMessage().orElse(null));
-        }
-
-        return new ActionResponse<>(HttpStatus.OK, configurationAccessor.createConfiguration(resource).getModel());
+        return configurationHelper.create(() -> validator.validate(resource), () -> configurationAccessor.createConfiguration(resource).getModel(), ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL);
     }
 
     public ActionResponse<EmailGlobalConfigModel> update(Long id, EmailGlobalConfigModel requestResource) {
-        if (!authorizationManager.hasWritePermission(ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL)) {
-            return ActionResponse.createForbiddenResponse();
-        }
-
-        Optional<DatabaseModelWrapper<EmailGlobalConfigModel>> existingModel = configurationAccessor.getConfiguration(id);
-        if (existingModel.isEmpty()) {
-            return new ActionResponse<>(HttpStatus.NOT_FOUND);
-        }
-
-        ValidationActionResponse validationResponse = validateWithoutChecks(requestResource);
-        if (validationResponse.isError()) {
-            return new ActionResponse<>(validationResponse.getHttpStatus(), validationResponse.getMessage().orElse(null));
-        }
-
-        try {
-            DatabaseModelWrapper<EmailGlobalConfigModel> updatedResponse = configurationAccessor.updateConfiguration(id, requestResource);
-            return new ActionResponse<>(HttpStatus.OK, updatedResponse.getModel());
-        } catch (AlertException ex) {
-            logger.error("Error creating configuration", ex);
-            return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Error creating config: %s", ex.getMessage()));
-        }
+        return configurationHelper.update(() -> validator.validate(requestResource),
+            () -> configurationAccessor.getConfiguration(id).isPresent(),
+            () -> configurationAccessor.updateConfiguration(id, requestResource).getModel(),
+            ConfigContextEnum.GLOBAL,
+            ChannelKeys.EMAIL);
     }
 
     public ActionResponse<ValidationResponseModel> validate(EmailGlobalConfigModel requestResource) {
@@ -100,29 +71,13 @@ public class EmailGlobalConfigActions {
     }
 
     public ValidationActionResponse validateWithoutChecks(EmailGlobalConfigModel requestResource) {
-        Set<AlertFieldStatus> fieldStatuses = validator.validate(requestResource);
-        if (fieldStatuses.isEmpty()) {
-            return new ValidationActionResponse(HttpStatus.OK, ValidationResponseModel.success());
-        } else {
-            return new ValidationActionResponse(HttpStatus.BAD_REQUEST, ValidationResponseModel.fromStatusCollection(fieldStatuses));
-        }
+        ValidationResponseModel validationResponse = validator.validate(requestResource);
+        HttpStatus statusCode = validationResponse.hasErrors() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+        return new ValidationActionResponse(statusCode, validationResponse);
     }
 
     public ActionResponse<EmailGlobalConfigModel> delete(Long id) {
-        if (!authorizationManager.hasDeletePermission(ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL)) {
-            return ActionResponse.createForbiddenResponse();
-        }
-
-        Optional<DatabaseModelWrapper<EmailGlobalConfigModel>> existingModel = configurationAccessor.getConfiguration(id);
-        if (existingModel.isEmpty()) {
-            return new ActionResponse<>(HttpStatus.NOT_FOUND);
-        }
-
-        configurationAccessor.getConfiguration(id)
-            .map(DatabaseModelWrapper::getConfigurationId)
-            .ifPresent(configurationAccessor::deleteConfiguration);
-
-        return new ActionResponse<>(HttpStatus.NO_CONTENT);
+        return configurationHelper.delete(() -> configurationAccessor.getConfiguration(id).isPresent(), () -> configurationAccessor.deleteConfiguration(id), ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL);
     }
 
     public ActionResponse<ValidationResponseModel> test(String testAddress, EmailGlobalConfigModel requestResource) {
