@@ -22,6 +22,7 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.DatabaseModelWrapper;
 import com.synopsys.integration.alert.common.rest.api.ConfigurationHelper;
+import com.synopsys.integration.alert.common.rest.api.ValidationHelper;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
@@ -32,14 +33,17 @@ public class EmailGlobalConfigActions {
     private final Logger logger = LoggerFactory.getLogger(EmailGlobalConfigActions.class);
     private final AuthorizationManager authorizationManager;
     private final ConfigurationHelper configurationHelper;
+    private final ValidationHelper validationHelper;
     private final EmailGlobalConfigAccessor configurationAccessor;
     private final EmailGlobalConfigurationValidator validator;
     private final EmailGlobalTestAction testAction;
 
     @Autowired
-    public EmailGlobalConfigActions(AuthorizationManager authorizationManager, ConfigurationHelper configurationHelper, EmailGlobalConfigAccessor configurationAccessor, EmailGlobalConfigurationValidator validator, EmailGlobalTestAction testAction) {
+    public EmailGlobalConfigActions(AuthorizationManager authorizationManager, ConfigurationHelper configurationHelper, ValidationHelper validationHelper, EmailGlobalConfigAccessor configurationAccessor,
+        EmailGlobalConfigurationValidator validator, EmailGlobalTestAction testAction) {
         this.authorizationManager = authorizationManager;
         this.configurationHelper = configurationHelper;
+        this.validationHelper = validationHelper;
         this.configurationAccessor = configurationAccessor;
         this.validator = validator;
         this.testAction = testAction;
@@ -62,12 +66,7 @@ public class EmailGlobalConfigActions {
     }
 
     public ActionResponse<ValidationResponseModel> validate(EmailGlobalConfigModel requestResource) {
-        if (!authorizationManager.hasExecutePermission(ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL)) {
-            ValidationResponseModel responseModel = ValidationResponseModel.generalError(ActionResponse.FORBIDDEN_MESSAGE);
-            return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
-        }
-
-        return ValidationActionResponse.createOKResponseWithContent(validateWithoutChecks(requestResource));
+        return validationHelper.validate(() -> validator.validate(requestResource), ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL);
     }
 
     public ValidationActionResponse validateWithoutChecks(EmailGlobalConfigModel requestResource) {
