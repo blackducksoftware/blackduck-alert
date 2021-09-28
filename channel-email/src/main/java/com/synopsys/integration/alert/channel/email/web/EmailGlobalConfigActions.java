@@ -7,42 +7,28 @@
  */
 package com.synopsys.integration.alert.channel.email.web;
 
-import java.util.function.Supplier;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.email.action.EmailGlobalTestAction;
 import com.synopsys.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.model.DatabaseModelWrapper;
 import com.synopsys.integration.alert.common.rest.api.ConfigurationHelper;
-import com.synopsys.integration.alert.common.rest.api.TestHelper;
-import com.synopsys.integration.alert.common.rest.api.ValidationHelper;
-import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
 @Component
 public class EmailGlobalConfigActions {
     private final ConfigurationHelper configurationHelper;
-    private final ValidationHelper validationHelper;
-    private final TestHelper testHelper;
     private final EmailGlobalConfigAccessor configurationAccessor;
     private final EmailGlobalConfigurationValidator validator;
-    private final EmailGlobalTestAction testAction;
 
     @Autowired
-    public EmailGlobalConfigActions(ConfigurationHelper configurationHelper, ValidationHelper validationHelper, TestHelper testHelper, EmailGlobalConfigAccessor configurationAccessor,
-        EmailGlobalConfigurationValidator validator, EmailGlobalTestAction testAction) {
+    public EmailGlobalConfigActions(ConfigurationHelper configurationHelper, EmailGlobalConfigAccessor configurationAccessor, EmailGlobalConfigurationValidator validator) {
         this.configurationHelper = configurationHelper;
-        this.validationHelper = validationHelper;
-        this.testHelper = testHelper;
         this.configurationAccessor = configurationAccessor;
         this.validator = validator;
-        this.testAction = testAction;
     }
 
     public ActionResponse<EmailGlobalConfigModel> getOne(Long id) {
@@ -58,16 +44,7 @@ public class EmailGlobalConfigActions {
             ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL);
     }
 
-    public ActionResponse<ValidationResponseModel> validate(EmailGlobalConfigModel requestResource) {
-        return validationHelper.validate(() -> validator.validate(requestResource), ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL);
-    }
-
     public ActionResponse<EmailGlobalConfigModel> delete(Long id) {
         return configurationHelper.delete(() -> configurationAccessor.getConfiguration(id).isPresent(), () -> configurationAccessor.deleteConfiguration(id), ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL);
-    }
-
-    public ActionResponse<ValidationResponseModel> test(String testAddress, EmailGlobalConfigModel requestResource) {
-        Supplier<ValidationActionResponse> validationSupplier = () -> validationHelper.validate(() -> validator.validate(requestResource), ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL);
-        return testHelper.test(validationSupplier, () -> testAction.testConfig(testAddress, requestResource), ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL);
     }
 }

@@ -7,6 +7,8 @@
  */
 package com.synopsys.integration.alert.channel.email.action;
 
+import java.util.function.Supplier;
+
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
@@ -17,7 +19,15 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.email.distribution.EmailChannelMessageModel;
 import com.synopsys.integration.alert.channel.email.distribution.EmailChannelMessagingService;
+import com.synopsys.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
+import com.synopsys.integration.alert.common.action.ActionResponse;
+import com.synopsys.integration.alert.common.action.ValidationActionResponse;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
+import com.synopsys.integration.alert.common.rest.api.TestHelper;
+import com.synopsys.integration.alert.common.rest.api.ValidationHelper;
+import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.service.email.EmailTarget;
 import com.synopsys.integration.alert.service.email.JavamailPropertiesFactory;
 import com.synopsys.integration.alert.service.email.SmtpConfig;
@@ -29,13 +39,26 @@ public class EmailGlobalTestAction {
     private static final String TEST_SUBJECT_LINE = "Email Global Configuration Test";
     private static final String TEST_MESSAGE_CONTENT = "This is a test message from Alert to confirm your Global Email Configuration is valid.";
 
+    private final ValidationHelper validationHelper;
+    private final TestHelper testHelper;
+    private final EmailGlobalConfigurationValidator validator;
+
     private final EmailChannelMessagingService emailChannelMessagingService;
     private final JavamailPropertiesFactory javamailPropertiesFactory;
 
     @Autowired
-    public EmailGlobalTestAction(EmailChannelMessagingService emailChannelMessagingService, JavamailPropertiesFactory javamailPropertiesFactory) {
+    public EmailGlobalTestAction(TestHelper testHelper, ValidationHelper validationHelper, EmailGlobalConfigurationValidator validator,
+        EmailChannelMessagingService emailChannelMessagingService, JavamailPropertiesFactory javamailPropertiesFactory) {
+        this.testHelper = testHelper;
+        this.validationHelper = validationHelper;
+        this.validator = validator;
         this.emailChannelMessagingService = emailChannelMessagingService;
         this.javamailPropertiesFactory = javamailPropertiesFactory;
+    }
+
+    public ActionResponse<ValidationResponseModel> test(String testAddress, EmailGlobalConfigModel requestResource) {
+        Supplier<ValidationActionResponse> validationSupplier = () -> validationHelper.validate(() -> validator.validate(requestResource), ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL);
+        return testHelper.test(validationSupplier, () -> testConfig(testAddress, requestResource), ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL);
     }
 
     public MessageResult testConfig(String testAddress, EmailGlobalConfigModel emailGlobalConfigModel) throws AlertException {

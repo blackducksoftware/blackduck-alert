@@ -9,8 +9,6 @@ package com.synopsys.integration.alert.common.rest.api;
 
 import java.util.function.Supplier;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -24,7 +22,6 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 @Component
 public class ValidationHelper {
-    private final Logger logger = LoggerFactory.getLogger(ValidationHelper.class);
     private final AuthorizationManager authorizationManager;
 
     @Autowired
