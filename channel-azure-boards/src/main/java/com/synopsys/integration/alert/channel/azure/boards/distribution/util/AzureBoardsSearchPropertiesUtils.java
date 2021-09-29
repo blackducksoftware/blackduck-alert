@@ -43,7 +43,7 @@ public final class AzureBoardsSearchPropertiesUtils {
                 linkableItemBuilder.append(url);
             });
 
-        // Per this issue https://github.com/MicrosoftDocs/azure-devops-docs/issues/5890, it appears that we want to limit field content size to 256.
+        // Truncating to a valid amount listed here https://github.com/MicrosoftDocs/azure-devops-docs/issues/5890.
         return StringUtils.truncate(linkableItemBuilder.toString(), MAX_KEY_LENGTH);
     }
 
