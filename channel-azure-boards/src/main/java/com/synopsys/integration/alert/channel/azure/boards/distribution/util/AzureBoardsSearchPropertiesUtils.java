@@ -31,10 +31,8 @@ public final class AzureBoardsSearchPropertiesUtils {
             return null;
         }
 
-        String truncatedLabel = StringUtils.truncate(linkableItem.getLabel(), MAX_KEY_LENGTH - LINKABLE_ITEM_DELIMITER.length());
-
         StringBuilder linkableItemBuilder = new StringBuilder();
-        linkableItemBuilder.append(truncatedLabel);
+        linkableItemBuilder.append(linkableItem.getLabel());
         linkableItemBuilder.append(LINKABLE_ITEM_DELIMITER);
         linkableItemBuilder.append(linkableItem.getValue());
         linkableItem.getUrl()
