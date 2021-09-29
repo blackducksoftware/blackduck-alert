@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.component.authentication.security.database;
+package com.synopsys.integration.alert.common.security;
 
 import java.util.Collection;
 
@@ -18,7 +18,7 @@ import com.synopsys.integration.util.Stringable;
 public class UserPrincipal extends Stringable implements UserDetails {
     private final UserModel userModel;
 
-    public UserPrincipal(final UserModel userModel) {
+    public UserPrincipal(UserModel userModel) {
         this.userModel = userModel;
     }
 
