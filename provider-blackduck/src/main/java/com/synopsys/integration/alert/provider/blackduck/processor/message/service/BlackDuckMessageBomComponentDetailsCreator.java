@@ -62,6 +62,7 @@ public class BlackDuckMessageBomComponentDetailsCreator {
         LinkableItem component;
         LinkableItem componentVersion = null;
 
+        // FIXME using this query link only in a successful result and not in an unsuccessful result leads to inconsistent values in our custom fields which leads to inconsistent search results (bug).
         String componentQueryLink = BlackDuckMessageLinkUtils.createComponentQueryLink(bomComponent);
 
         String componentVersionUrl = bomComponent.getComponentVersion();
