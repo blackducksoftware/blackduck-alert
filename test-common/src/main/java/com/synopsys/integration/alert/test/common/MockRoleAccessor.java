@@ -1,3 +1,10 @@
+/*
+ * test-common
+ *
+ * Copyright (c) 2021 Synopsys, Inc.
+ *
+ * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.synopsys.integration.alert.test.common;
 
 import java.util.Collection;
@@ -69,7 +76,7 @@ public class MockRoleAccessor implements RoleAccessor {
 
     @Override
     public PermissionMatrixModel mergePermissionsForRoles(Collection<String> roleNames) {
-        return null;
+        throw new UnsupportedOperationException("This method is not implemented by this class");
     }
 
     @Override
@@ -79,6 +86,6 @@ public class MockRoleAccessor implements RoleAccessor {
 
     @Override
     public void updateUserRoles(Long userId, Collection<UserRoleModel> roles) {
-
+        throw new UnsupportedOperationException("This method is not implemented by this class");
     }
 }
