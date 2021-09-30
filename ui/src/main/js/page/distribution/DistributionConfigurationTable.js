@@ -281,7 +281,7 @@ const DistributionConfigurationTable = ({
     };
 
     const nameColumnFormatter = (cell, row) => {
-        const defaultValue = <div className="inline" title={cell}>{cell}</div>;
+        const defaultValue = <div className="tableCell" title={cell}>{cell}</div>;
         if (jobsValidationResults && jobsValidationResults.length > 0) {
             const jobErrors = jobsValidationResults.filter((item) => item.id === row.id);
             if (jobErrors && jobErrors.length > 0) {
