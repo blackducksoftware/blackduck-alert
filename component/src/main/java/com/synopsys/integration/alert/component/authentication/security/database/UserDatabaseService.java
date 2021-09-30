@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
+import com.synopsys.integration.alert.common.security.UserPrincipal;
 
 @Service
 public class UserDatabaseService implements UserDetailsService {
