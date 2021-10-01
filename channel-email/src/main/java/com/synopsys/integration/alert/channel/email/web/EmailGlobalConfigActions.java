@@ -14,18 +14,18 @@ import com.synopsys.integration.alert.channel.email.validator.EmailGlobalConfigu
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.model.DatabaseModelWrapper;
-import com.synopsys.integration.alert.common.rest.api.ConfigurationHelper;
+import com.synopsys.integration.alert.common.rest.api.ConfigurationCRUDHelper;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
 @Component
 public class EmailGlobalConfigActions {
-    private final ConfigurationHelper configurationHelper;
+    private final ConfigurationCRUDHelper configurationHelper;
     private final EmailGlobalConfigAccessor configurationAccessor;
     private final EmailGlobalConfigurationValidator validator;
 
     @Autowired
-    public EmailGlobalConfigActions(ConfigurationHelper configurationHelper, EmailGlobalConfigAccessor configurationAccessor, EmailGlobalConfigurationValidator validator) {
+    public EmailGlobalConfigActions(ConfigurationCRUDHelper configurationHelper, EmailGlobalConfigAccessor configurationAccessor, EmailGlobalConfigurationValidator validator) {
         this.configurationHelper = configurationHelper;
         this.configurationAccessor = configurationAccessor;
         this.validator = validator;

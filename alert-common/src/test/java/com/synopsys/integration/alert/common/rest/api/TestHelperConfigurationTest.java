@@ -24,7 +24,7 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
 import com.synopsys.integration.function.ThrowingSupplier;
 
-public class TestHelperTest {
+public class TestHelperConfigurationTest {
     @Test
     public void testForbidden() {
         AuthenticationTestUtils authenticationTestUtils = new AuthenticationTestUtils();
@@ -32,7 +32,7 @@ public class TestHelperTest {
         PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
         Map<PermissionKey, Integer> permissions = Map.of(permissionKey, 0);
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
-        TestHelper testHelper = new TestHelper(authorizationManager);
+        ConfigurationTestHelper testHelper = new ConfigurationTestHelper(authorizationManager);
         ValidationActionResponse response = testHelper.test(() -> new ValidationActionResponse(HttpStatus.OK, ValidationResponseModel.success()), MessageResult::success, ConfigContextEnum.GLOBAL, descriptorKey);
         assertEquals(HttpStatus.FORBIDDEN, response.getHttpStatus());
     }
@@ -44,7 +44,7 @@ public class TestHelperTest {
         PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
         Map<PermissionKey, Integer> permissions = Map.of(permissionKey, 255);
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
-        TestHelper testHelper = new TestHelper(authorizationManager);
+        ConfigurationTestHelper testHelper = new ConfigurationTestHelper(authorizationManager);
         ValidationActionResponse response = testHelper.test(() -> new ValidationActionResponse(HttpStatus.OK, ValidationResponseModel.success()), MessageResult::success, ConfigContextEnum.GLOBAL, descriptorKey);
         assertEquals(HttpStatus.OK, response.getHttpStatus());
 
@@ -57,7 +57,7 @@ public class TestHelperTest {
         PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
         Map<PermissionKey, Integer> permissions = Map.of(permissionKey, 255);
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
-        TestHelper testHelper = new TestHelper(authorizationManager);
+        ConfigurationTestHelper testHelper = new ConfigurationTestHelper(authorizationManager);
         ValidationActionResponse response = testHelper.test(() -> new ValidationActionResponse(HttpStatus.BAD_REQUEST, ValidationResponseModel.generalError("generalError")), MessageResult::success, ConfigContextEnum.GLOBAL, descriptorKey);
         ValidationResponseModel validationResponseModel = response.getContent().orElseThrow(() -> new IllegalStateException("Validation content missing"));
         assertEquals(HttpStatus.BAD_REQUEST, response.getHttpStatus());
@@ -71,7 +71,7 @@ public class TestHelperTest {
         PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
         Map<PermissionKey, Integer> permissions = Map.of(permissionKey, 255);
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
-        TestHelper testHelper = new TestHelper(authorizationManager);
+        ConfigurationTestHelper testHelper = new ConfigurationTestHelper(authorizationManager);
         ValidationActionResponse response = testHelper.test(() -> new ValidationActionResponse(HttpStatus.OK, ValidationResponseModel.success()), MessageResult::success, ConfigContextEnum.GLOBAL, descriptorKey);
         ValidationResponseModel validationResponseModel = response.getContent().orElseThrow(() -> new IllegalStateException("Validation content missing"));
         assertEquals(HttpStatus.OK, response.getHttpStatus());
@@ -86,7 +86,7 @@ public class TestHelperTest {
         Map<PermissionKey, Integer> permissions = Map.of(permissionKey, 255);
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
         MessageResult errorMessage = new MessageResult("generalError", List.of(AlertFieldStatus.error("field-name", "this field has an error")));
-        TestHelper testHelper = new TestHelper(authorizationManager);
+        ConfigurationTestHelper testHelper = new ConfigurationTestHelper(authorizationManager);
         ValidationActionResponse response = testHelper.test(() -> new ValidationActionResponse(HttpStatus.OK, ValidationResponseModel.success()), () -> errorMessage, ConfigContextEnum.GLOBAL, descriptorKey);
         ValidationResponseModel validationResponseModel = response.getContent().orElseThrow(() -> new IllegalStateException("Validation content missing"));
         assertEquals(HttpStatus.OK, response.getHttpStatus());
@@ -103,7 +103,7 @@ public class TestHelperTest {
         ThrowingSupplier<MessageResult, AlertException> messageSupplier = () -> {
             throw new AlertException("error getting test message");
         };
-        TestHelper testHelper = new TestHelper(authorizationManager);
+        ConfigurationTestHelper testHelper = new ConfigurationTestHelper(authorizationManager);
         ValidationActionResponse response = testHelper.test(() -> new ValidationActionResponse(HttpStatus.OK, ValidationResponseModel.success()), messageSupplier, ConfigContextEnum.GLOBAL, descriptorKey);
         ValidationResponseModel validationResponseModel = response.getContent().orElseThrow(() -> new IllegalStateException("Validation content missing"));
         assertEquals(HttpStatus.OK, response.getHttpStatus());

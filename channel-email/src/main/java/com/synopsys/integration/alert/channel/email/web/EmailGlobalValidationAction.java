@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.rest.api.ValidationHelper;
+import com.synopsys.integration.alert.common.rest.api.ConfigurationValidationHelper;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
@@ -21,10 +21,10 @@ import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel
 @Component
 public class EmailGlobalValidationAction {
     private final EmailGlobalConfigurationValidator validator;
-    private final ValidationHelper validationHelper;
+    private final ConfigurationValidationHelper validationHelper;
 
     @Autowired
-    public EmailGlobalValidationAction(EmailGlobalConfigurationValidator validator, ValidationHelper validationHelper) {
+    public EmailGlobalValidationAction(EmailGlobalConfigurationValidator validator, ConfigurationValidationHelper validationHelper) {
         this.validator = validator;
         this.validationHelper = validationHelper;
     }

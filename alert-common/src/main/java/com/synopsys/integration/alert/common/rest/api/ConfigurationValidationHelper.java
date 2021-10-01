@@ -21,11 +21,11 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 @Component
-public class ValidationHelper {
+public class ConfigurationValidationHelper {
     private final AuthorizationManager authorizationManager;
 
     @Autowired
-    public ValidationHelper(AuthorizationManager authorizationManager) {
+    public ConfigurationValidationHelper(AuthorizationManager authorizationManager) {
         this.authorizationManager = authorizationManager;
     }
 

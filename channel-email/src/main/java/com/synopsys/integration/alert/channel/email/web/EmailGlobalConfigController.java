@@ -60,7 +60,7 @@ public class EmailGlobalConfigController implements BaseResourceController<Email
 
     @PostMapping("/test")
     public ValidationResponseModel test(@RequestParam String sendTo, @RequestBody EmailGlobalConfigModel resource) {
-        return ResponseFactory.createContentResponseFromAction(testAction.test(sendTo, resource));
+        return ResponseFactory.createContentResponseFromAction(testAction.testWithPermissionCheck(sendTo, resource));
     }
 
 }

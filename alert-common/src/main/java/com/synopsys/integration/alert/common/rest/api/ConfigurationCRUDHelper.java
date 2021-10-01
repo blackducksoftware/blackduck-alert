@@ -25,12 +25,12 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 @Component
-public class ConfigurationHelper {
-    private final Logger logger = LoggerFactory.getLogger(ConfigurationHelper.class);
+public class ConfigurationCRUDHelper {
+    private final Logger logger = LoggerFactory.getLogger(ConfigurationCRUDHelper.class);
     private final AuthorizationManager authorizationManager;
 
     @Autowired
-    public ConfigurationHelper(AuthorizationManager authorizationManager) {
+    public ConfigurationCRUDHelper(AuthorizationManager authorizationManager) {
         this.authorizationManager = authorizationManager;
     }
 

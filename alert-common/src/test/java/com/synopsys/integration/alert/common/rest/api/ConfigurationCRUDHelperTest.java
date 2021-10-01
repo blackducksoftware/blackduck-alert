@@ -21,7 +21,7 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
 
-public class ConfigurationHelperTest {
+public class ConfigurationCRUDHelperTest {
     @Test
     public void testGetOneForbidden() {
         AuthenticationTestUtils authenticationTestUtils = new AuthenticationTestUtils();
@@ -29,7 +29,7 @@ public class ConfigurationHelperTest {
         PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
         Map<PermissionKey, Integer> permissions = Map.of(permissionKey, 0);
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
-        ConfigurationHelper configurationHelper = new ConfigurationHelper(authorizationManager);
+        ConfigurationCRUDHelper configurationHelper = new ConfigurationCRUDHelper(authorizationManager);
 
         ActionResponse response = configurationHelper.getOne(() -> Optional.of("Model String"), ConfigContextEnum.GLOBAL, descriptorKey);
         assertEquals(HttpStatus.FORBIDDEN, response.getHttpStatus());
@@ -42,7 +42,7 @@ public class ConfigurationHelperTest {
         PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
         Map<PermissionKey, Integer> permissions = Map.of(permissionKey, 255);
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
-        ConfigurationHelper configurationHelper = new ConfigurationHelper(authorizationManager);
+        ConfigurationCRUDHelper configurationHelper = new ConfigurationCRUDHelper(authorizationManager);
 
         ActionResponse response = configurationHelper.getOne(() -> Optional.empty(), ConfigContextEnum.GLOBAL, descriptorKey);
         assertEquals(HttpStatus.NOT_FOUND, response.getHttpStatus());
@@ -55,7 +55,7 @@ public class ConfigurationHelperTest {
         PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
         Map<PermissionKey, Integer> permissions = Map.of(permissionKey, 255);
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
-        ConfigurationHelper configurationHelper = new ConfigurationHelper(authorizationManager);
+        ConfigurationCRUDHelper configurationHelper = new ConfigurationCRUDHelper(authorizationManager);
 
         ActionResponse response = configurationHelper.getOne(() -> Optional.of("Model String"), ConfigContextEnum.GLOBAL, descriptorKey);
         assertEquals(HttpStatus.OK, response.getHttpStatus());
@@ -69,7 +69,7 @@ public class ConfigurationHelperTest {
         PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
         Map<PermissionKey, Integer> permissions = Map.of(permissionKey, 0);
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
-        ConfigurationHelper configurationHelper = new ConfigurationHelper(authorizationManager);
+        ConfigurationCRUDHelper configurationHelper = new ConfigurationCRUDHelper(authorizationManager);
 
         ActionResponse response = configurationHelper.create(() -> ValidationResponseModel.success(), () -> "Model String", ConfigContextEnum.GLOBAL, descriptorKey);
         assertEquals(HttpStatus.FORBIDDEN, response.getHttpStatus());
@@ -82,7 +82,7 @@ public class ConfigurationHelperTest {
         PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
         Map<PermissionKey, Integer> permissions = Map.of(permissionKey, 255);
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
-        ConfigurationHelper configurationHelper = new ConfigurationHelper(authorizationManager);
+        ConfigurationCRUDHelper configurationHelper = new ConfigurationCRUDHelper(authorizationManager);
 
         ActionResponse response = configurationHelper.create(() -> ValidationResponseModel.generalError("Validation Error"), () -> "Model String", ConfigContextEnum.GLOBAL, descriptorKey);
         assertEquals(HttpStatus.BAD_REQUEST, response.getHttpStatus());
@@ -98,7 +98,7 @@ public class ConfigurationHelperTest {
         Callable<String> createdModelSupplier = () -> {
             throw new AlertException("error getting test message");
         };
-        ConfigurationHelper configurationHelper = new ConfigurationHelper(authorizationManager);
+        ConfigurationCRUDHelper configurationHelper = new ConfigurationCRUDHelper(authorizationManager);
 
         ActionResponse response = configurationHelper.create(() -> ValidationResponseModel.success(), createdModelSupplier, ConfigContextEnum.GLOBAL, descriptorKey);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getHttpStatus());
@@ -111,7 +111,7 @@ public class ConfigurationHelperTest {
         PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
         Map<PermissionKey, Integer> permissions = Map.of(permissionKey, 255);
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
-        ConfigurationHelper configurationHelper = new ConfigurationHelper(authorizationManager);
+        ConfigurationCRUDHelper configurationHelper = new ConfigurationCRUDHelper(authorizationManager);
 
         ActionResponse response = configurationHelper.create(() -> ValidationResponseModel.success(), () -> "Model String", ConfigContextEnum.GLOBAL, descriptorKey);
         assertEquals(HttpStatus.OK, response.getHttpStatus());
@@ -124,7 +124,7 @@ public class ConfigurationHelperTest {
         PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
         Map<PermissionKey, Integer> permissions = Map.of(permissionKey, 0);
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
-        ConfigurationHelper configurationHelper = new ConfigurationHelper(authorizationManager);
+        ConfigurationCRUDHelper configurationHelper = new ConfigurationCRUDHelper(authorizationManager);
 
         ActionResponse response = configurationHelper.update(() -> ValidationResponseModel.success(), () -> true, () -> "Model String", ConfigContextEnum.GLOBAL, descriptorKey);
         assertEquals(HttpStatus.FORBIDDEN, response.getHttpStatus());
@@ -137,7 +137,7 @@ public class ConfigurationHelperTest {
         PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
         Map<PermissionKey, Integer> permissions = Map.of(permissionKey, 255);
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
-        ConfigurationHelper configurationHelper = new ConfigurationHelper(authorizationManager);
+        ConfigurationCRUDHelper configurationHelper = new ConfigurationCRUDHelper(authorizationManager);
 
         ActionResponse response = configurationHelper.update(() -> ValidationResponseModel.success(), () -> false, () -> "Model String", ConfigContextEnum.GLOBAL, descriptorKey);
         assertEquals(HttpStatus.NOT_FOUND, response.getHttpStatus());
@@ -150,7 +150,7 @@ public class ConfigurationHelperTest {
         PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
         Map<PermissionKey, Integer> permissions = Map.of(permissionKey, 255);
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
-        ConfigurationHelper configurationHelper = new ConfigurationHelper(authorizationManager);
+        ConfigurationCRUDHelper configurationHelper = new ConfigurationCRUDHelper(authorizationManager);
 
         ActionResponse response = configurationHelper.update(() -> ValidationResponseModel.generalError("Validation Error"), () -> true, () -> "Model String", ConfigContextEnum.GLOBAL, descriptorKey);
         assertEquals(HttpStatus.BAD_REQUEST, response.getHttpStatus());
@@ -166,7 +166,7 @@ public class ConfigurationHelperTest {
         Callable<String> createdModelSupplier = () -> {
             throw new AlertException("error getting test message");
         };
-        ConfigurationHelper configurationHelper = new ConfigurationHelper(authorizationManager);
+        ConfigurationCRUDHelper configurationHelper = new ConfigurationCRUDHelper(authorizationManager);
 
         ActionResponse response = configurationHelper.update(() -> ValidationResponseModel.success(), () -> true, createdModelSupplier, ConfigContextEnum.GLOBAL, descriptorKey);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getHttpStatus());
@@ -179,7 +179,7 @@ public class ConfigurationHelperTest {
         PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
         Map<PermissionKey, Integer> permissions = Map.of(permissionKey, 255);
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
-        ConfigurationHelper configurationHelper = new ConfigurationHelper(authorizationManager);
+        ConfigurationCRUDHelper configurationHelper = new ConfigurationCRUDHelper(authorizationManager);
 
         ActionResponse response = configurationHelper.update(() -> ValidationResponseModel.success(), () -> true, () -> "Model String", ConfigContextEnum.GLOBAL, descriptorKey);
         assertEquals(HttpStatus.OK, response.getHttpStatus());
@@ -192,7 +192,7 @@ public class ConfigurationHelperTest {
         PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
         Map<PermissionKey, Integer> permissions = Map.of(permissionKey, 0);
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
-        ConfigurationHelper configurationHelper = new ConfigurationHelper(authorizationManager);
+        ConfigurationCRUDHelper configurationHelper = new ConfigurationCRUDHelper(authorizationManager);
 
         ActionResponse response = configurationHelper.delete(() -> true, () -> {}, ConfigContextEnum.GLOBAL, descriptorKey);
         assertEquals(HttpStatus.FORBIDDEN, response.getHttpStatus());
@@ -205,7 +205,7 @@ public class ConfigurationHelperTest {
         PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
         Map<PermissionKey, Integer> permissions = Map.of(permissionKey, 255);
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
-        ConfigurationHelper configurationHelper = new ConfigurationHelper(authorizationManager);
+        ConfigurationCRUDHelper configurationHelper = new ConfigurationCRUDHelper(authorizationManager);
 
         ActionResponse response = configurationHelper.delete(() -> false, () -> {}, ConfigContextEnum.GLOBAL, descriptorKey);
         assertEquals(HttpStatus.NOT_FOUND, response.getHttpStatus());
@@ -218,7 +218,7 @@ public class ConfigurationHelperTest {
         PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
         Map<PermissionKey, Integer> permissions = Map.of(permissionKey, 255);
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
-        ConfigurationHelper configurationHelper = new ConfigurationHelper(authorizationManager);
+        ConfigurationCRUDHelper configurationHelper = new ConfigurationCRUDHelper(authorizationManager);
 
         ActionResponse response = configurationHelper.delete(() -> true, () -> {}, ConfigContextEnum.GLOBAL, descriptorKey);
         assertEquals(HttpStatus.NO_CONTENT, response.getHttpStatus());

@@ -18,7 +18,7 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
 
-public class ValidationHelperTest {
+public class ConfigurationValidationHelperTest {
 
     @Test
     public void testValidationForbidden() {
@@ -27,7 +27,7 @@ public class ValidationHelperTest {
         PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
         Map<PermissionKey, Integer> permissions = Map.of(permissionKey, 0);
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
-        ValidationHelper validationHelper = new ValidationHelper(authorizationManager);
+        ConfigurationValidationHelper validationHelper = new ConfigurationValidationHelper(authorizationManager);
         ValidationActionResponse response = validationHelper.validate(() -> ValidationResponseModel.success(), ConfigContextEnum.GLOBAL, descriptorKey);
         assertEquals(HttpStatus.FORBIDDEN, response.getHttpStatus());
     }
@@ -39,7 +39,7 @@ public class ValidationHelperTest {
         PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
         Map<PermissionKey, Integer> permissions = Map.of(permissionKey, 255);
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
-        ValidationHelper validationHelper = new ValidationHelper(authorizationManager);
+        ConfigurationValidationHelper validationHelper = new ConfigurationValidationHelper(authorizationManager);
         ValidationActionResponse response = validationHelper.validate(() -> ValidationResponseModel.success(), ConfigContextEnum.GLOBAL, descriptorKey);
         assertEquals(HttpStatus.OK, response.getHttpStatus());
     }
@@ -51,7 +51,7 @@ public class ValidationHelperTest {
         PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
         Map<PermissionKey, Integer> permissions = Map.of(permissionKey, 255);
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
-        ValidationHelper validationHelper = new ValidationHelper(authorizationManager);
+        ConfigurationValidationHelper validationHelper = new ConfigurationValidationHelper(authorizationManager);
         ValidationActionResponse response = validationHelper.validate(() -> ValidationResponseModel.generalError("generalError"), ConfigContextEnum.GLOBAL, descriptorKey);
         ValidationResponseModel validationResponseModel = response.getContent().orElseThrow(() -> new IllegalStateException("Validation content missing"));
         assertEquals(HttpStatus.OK, response.getHttpStatus());

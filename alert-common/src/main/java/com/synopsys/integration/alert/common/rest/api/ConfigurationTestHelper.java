@@ -24,12 +24,12 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.function.ThrowingSupplier;
 
 @Component
-public class TestHelper {
+public class ConfigurationTestHelper {
 
     private AuthorizationManager authorizationManager;
 
     @Autowired
-    public TestHelper(AuthorizationManager authorizationManager) {
+    public ConfigurationTestHelper(AuthorizationManager authorizationManager) {
         this.authorizationManager = authorizationManager;
     }
 

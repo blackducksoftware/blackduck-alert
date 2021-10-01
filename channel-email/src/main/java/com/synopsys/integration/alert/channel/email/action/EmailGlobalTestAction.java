@@ -24,8 +24,8 @@ import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.rest.api.TestHelper;
-import com.synopsys.integration.alert.common.rest.api.ValidationHelper;
+import com.synopsys.integration.alert.common.rest.api.ConfigurationTestHelper;
+import com.synopsys.integration.alert.common.rest.api.ConfigurationValidationHelper;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.service.email.EmailTarget;
@@ -39,15 +39,15 @@ public class EmailGlobalTestAction {
     private static final String TEST_SUBJECT_LINE = "Email Global Configuration Test";
     private static final String TEST_MESSAGE_CONTENT = "This is a test message from Alert to confirm your Global Email Configuration is valid.";
 
-    private final ValidationHelper validationHelper;
-    private final TestHelper testHelper;
+    private final ConfigurationValidationHelper validationHelper;
+    private final ConfigurationTestHelper testHelper;
     private final EmailGlobalConfigurationValidator validator;
 
     private final EmailChannelMessagingService emailChannelMessagingService;
     private final JavamailPropertiesFactory javamailPropertiesFactory;
 
     @Autowired
-    public EmailGlobalTestAction(TestHelper testHelper, ValidationHelper validationHelper, EmailGlobalConfigurationValidator validator,
+    public EmailGlobalTestAction(ConfigurationTestHelper testHelper, ConfigurationValidationHelper validationHelper, EmailGlobalConfigurationValidator validator,
         EmailChannelMessagingService emailChannelMessagingService, JavamailPropertiesFactory javamailPropertiesFactory) {
         this.testHelper = testHelper;
         this.validationHelper = validationHelper;
@@ -56,12 +56,12 @@ public class EmailGlobalTestAction {
         this.javamailPropertiesFactory = javamailPropertiesFactory;
     }
 
-    public ActionResponse<ValidationResponseModel> test(String testAddress, EmailGlobalConfigModel requestResource) {
+    public ActionResponse<ValidationResponseModel> testWithPermissionCheck(String testAddress, EmailGlobalConfigModel requestResource) {
         Supplier<ValidationActionResponse> validationSupplier = () -> validationHelper.validate(() -> validator.validate(requestResource), ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL);
-        return testHelper.test(validationSupplier, () -> testConfig(testAddress, requestResource), ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL);
+        return testHelper.test(validationSupplier, () -> testConfigModelContent(testAddress, requestResource), ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL);
     }
 
-    public MessageResult testConfig(String testAddress, EmailGlobalConfigModel emailGlobalConfigModel) throws AlertException {
+    public MessageResult testConfigModelContent(String testAddress, EmailGlobalConfigModel emailGlobalConfigModel) throws AlertException {
         if (StringUtils.isBlank(testAddress)) {
             throw new AlertException("Could not determine what email address to send this content to. testAddress was not provided or was blank. Please provide a valid email address to test the configuration.");
         }
