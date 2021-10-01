@@ -9,6 +9,7 @@ import TextArea from 'common/input/TextArea';
 import RefreshTableCellFormatter from 'common/table/RefreshTableCellFormatter';
 import * as DescriptorUtilities from 'common/util/descriptorUtilities';
 import StatusMessage from 'common/StatusMessage';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class Details extends Component {
     constructor(props) {
@@ -18,6 +19,7 @@ class Details extends Component {
         this.onResendClick = this.onResendClick.bind(this);
         this.getEventType = this.getEventType.bind(this);
         this.flattenJobsForTable = this.flattenJobsForTable.bind(this);
+        this.isResendAllowed = this.isResendAllowed.bind(this);
     }
 
     onResendClick(currentRowSelected) {
@@ -82,14 +84,29 @@ class Details extends Component {
     }
 
     resendButton(cell, row) {
-        return (
-            <RefreshTableCellFormatter
-                id="audit-detail-refresh-cell"
-                handleButtonClicked={this.onResendClick}
-                currentRowSelected={row}
-                buttonText="Re-send"
-            />
-        );
+        if (this.isResendAllowed()) {
+            return (
+                <RefreshTableCellFormatter
+                    id="audit-detail-refresh-cell"
+                    handleButtonClicked={this.onResendClick}
+                    currentRowSelected={row}
+                    buttonText="Re-send"
+                />
+            );
+        }
+        return (<div className="jobIconButtonDisabled"><FontAwesomeIcon icon="sync" className="alert-icon" size="lg" /></div>);
+    }
+
+    isResendAllowed() {
+        const { descriptors } = this.props;
+        if (descriptors) {
+            const descriptorList = DescriptorUtilities.findDescriptorByNameAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_NAME.COMPONENT_AUDIT, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
+            if (descriptorList) {
+                return descriptorList.some((descriptor) => DescriptorUtilities.isOperationAssigned(descriptor, DescriptorUtilities.OPERATIONS.EXECUTE));
+            }
+        }
+
+        return false;
     }
 
     flattenJobsForTable(jsonArray = []) {
