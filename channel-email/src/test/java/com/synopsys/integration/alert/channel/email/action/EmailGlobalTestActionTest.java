@@ -20,7 +20,12 @@ import com.synopsys.integration.alert.channel.email.distribution.EmailChannelMes
 import com.synopsys.integration.alert.channel.email.distribution.address.EmailAddressGatherer;
 import com.synopsys.integration.alert.channel.email.distribution.address.JobEmailAddressValidator;
 import com.synopsys.integration.alert.channel.email.distribution.address.ValidatedEmailAddresses;
+import com.synopsys.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
+import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
+import com.synopsys.integration.alert.common.rest.api.ConfigurationTestHelper;
+import com.synopsys.integration.alert.common.rest.api.ConfigurationValidationHelper;
+import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.service.email.EmailMessagingService;
 import com.synopsys.integration.alert.service.email.JavamailPropertiesFactory;
 import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
@@ -34,14 +39,20 @@ import com.synopsys.integration.alert.test.common.TestTags;
 public class EmailGlobalTestActionTest {
     @Test
     public void testConfigValidTest() throws AlertException {
+        RoleAccessor roleAccessor = Mockito.mock(RoleAccessor.class);
+        Mockito.when(roleAccessor.getRoles()).thenReturn(Set.of());
+        AuthorizationManager authorizationManager = new AuthorizationManager(roleAccessor);
+        ConfigurationValidationHelper validationHelper = new ConfigurationValidationHelper(authorizationManager);
+        ConfigurationTestHelper testHelper = new ConfigurationTestHelper(authorizationManager);
+        EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailChannelMessagingService emailChannelMessagingService = Mockito.mock(EmailChannelMessagingService.class);
         Mockito.when(emailChannelMessagingService.sendMessage(Mockito.any(), Mockito.any())).thenReturn(new MessageResult("PASS"));
 
         JavamailPropertiesFactory javamailPropertiesFactory = new JavamailPropertiesFactory();
-        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(emailChannelMessagingService, javamailPropertiesFactory);
+        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(testHelper, validationHelper, validator, emailChannelMessagingService, javamailPropertiesFactory);
 
         try {
-            MessageResult messageResult = emailGlobalTestAction.testConfig("noreply@synopsys.com", new EmailGlobalConfigModel());
+            MessageResult messageResult = emailGlobalTestAction.testConfigModelContent("noreply@synopsys.com", new EmailGlobalConfigModel());
             assertFalse(messageResult.hasErrors(), "Expected the message result to not have errors");
             assertFalse(messageResult.hasWarnings(), "Expected the message result to not have warnings");
         } catch (AlertException e) {
@@ -51,6 +62,12 @@ public class EmailGlobalTestActionTest {
 
     @Test
     public void testConfigMissingDestinationTest() {
+        RoleAccessor roleAccessor = Mockito.mock(RoleAccessor.class);
+        Mockito.when(roleAccessor.getRoles()).thenReturn(Set.of());
+        AuthorizationManager authorizationManager = new AuthorizationManager(roleAccessor);
+        ConfigurationValidationHelper validationHelper = new ConfigurationValidationHelper(authorizationManager);
+        ConfigurationTestHelper testHelper = new ConfigurationTestHelper(authorizationManager);
+        EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailAddressGatherer emailAddressGatherer = Mockito.mock(EmailAddressGatherer.class);
         Mockito.when(emailAddressGatherer.gatherEmailAddresses(Mockito.any(), Mockito.any())).thenReturn(Set.of());
 
@@ -69,10 +86,10 @@ public class EmailGlobalTestActionTest {
 
         JavamailPropertiesFactory javamailPropertiesFactory = new JavamailPropertiesFactory();
 
-        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(emailChannelMessagingService, javamailPropertiesFactory);
+        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(testHelper, validationHelper, validator, emailChannelMessagingService, javamailPropertiesFactory);
 
         try {
-            emailGlobalTestAction.testConfig("", new EmailGlobalConfigModel());
+            emailGlobalTestAction.testConfigModelContent("", new EmailGlobalConfigModel());
             fail("Expected an exception to be thrown");
         } catch (AlertException e) {
             // Pass
@@ -81,10 +98,16 @@ public class EmailGlobalTestActionTest {
 
     @Test
     public void testConfigInvalidDestinationTest() {
-        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(null, null);
+        RoleAccessor roleAccessor = Mockito.mock(RoleAccessor.class);
+        Mockito.when(roleAccessor.getRoles()).thenReturn(Set.of());
+        AuthorizationManager authorizationManager = new AuthorizationManager(roleAccessor);
+        ConfigurationValidationHelper validationHelper = new ConfigurationValidationHelper(authorizationManager);
+        ConfigurationTestHelper testHelper = new ConfigurationTestHelper(authorizationManager);
+        EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
+        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(testHelper, validationHelper, validator, null, null);
 
         try {
-            emailGlobalTestAction.testConfig("not a valid email address", new EmailGlobalConfigModel());
+            emailGlobalTestAction.testConfigModelContent("not a valid email address", new EmailGlobalConfigModel());
             fail("Expected an exception to be thrown");
         } catch (AlertException e) {
             // Pass
@@ -97,17 +120,23 @@ public class EmailGlobalTestActionTest {
         @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     })
     public void testConfigITTest() {
+        RoleAccessor roleAccessor = Mockito.mock(RoleAccessor.class);
+        Mockito.when(roleAccessor.getRoles()).thenReturn(Set.of());
+        AuthorizationManager authorizationManager = new AuthorizationManager(roleAccessor);
+        ConfigurationValidationHelper validationHelper = new ConfigurationValidationHelper(authorizationManager);
+        ConfigurationTestHelper testHelper = new ConfigurationTestHelper(authorizationManager);
+        EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         TestProperties testProperties = new TestProperties();
         String emailAddress = testProperties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT);
 
         JavamailPropertiesFactory javamailPropertiesFactory = new JavamailPropertiesFactory();
         EmailChannelMessagingService validEmailChannelMessagingService = createValidEmailChannelMessagingService(emailAddress);
-        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(validEmailChannelMessagingService, javamailPropertiesFactory);
+        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(testHelper, validationHelper, validator, validEmailChannelMessagingService, javamailPropertiesFactory);
 
         EmailGlobalConfigModel globalConfigModel = createValidEmailGlobalConfigModel(testProperties);
 
         try {
-            MessageResult messageResult = emailGlobalTestAction.testConfig(emailAddress, globalConfigModel);
+            MessageResult messageResult = emailGlobalTestAction.testConfigModelContent(emailAddress, globalConfigModel);
             assertFalse(messageResult.hasErrors(), "Expected the message result to not have errors");
             assertFalse(messageResult.hasWarnings(), "Expected the message result to not have warnings");
         } catch (AlertException e) {
