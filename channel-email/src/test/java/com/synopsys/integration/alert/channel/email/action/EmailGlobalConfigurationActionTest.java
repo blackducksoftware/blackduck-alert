@@ -124,4 +124,115 @@ public class EmailGlobalConfigurationActionTest {
         assertEquals(HttpStatus.NO_CONTENT, response.getHttpStatus());
     }
 
+    @Test
+    public void testGetOneForbidden() {
+        AuthenticationTestUtils authenticationTestUtils = new AuthenticationTestUtils();
+        DescriptorKey descriptorKey = ChannelKeys.EMAIL;
+        PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
+        Map<PermissionKey, Integer> permissions = Map.of(permissionKey, AuthenticationTestUtils.NO_PERMISSIONS);
+        AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
+        EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
+        EmailGlobalConfigAccessor emailGlobalConfigAccessor = Mockito.mock(EmailGlobalConfigAccessor.class);
+
+        EmailGlobalConfigActions configActions = new EmailGlobalConfigActions(authorizationManager, emailGlobalConfigAccessor, validator);
+        ActionResponse<EmailGlobalConfigModel> response = configActions.getOne(1L);
+        assertEquals(HttpStatus.FORBIDDEN, response.getHttpStatus());
+    }
+
+    @Test
+    public void testCreateForbidden() {
+        AuthenticationTestUtils authenticationTestUtils = new AuthenticationTestUtils();
+        DescriptorKey descriptorKey = ChannelKeys.EMAIL;
+        PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
+        Map<PermissionKey, Integer> permissions = Map.of(permissionKey, AuthenticationTestUtils.NO_PERMISSIONS);
+        AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
+        EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
+        EmailGlobalConfigAccessor emailGlobalConfigAccessor = Mockito.mock(EmailGlobalConfigAccessor.class);
+        EmailGlobalConfigModel model = new EmailGlobalConfigModel();
+        model.setHost("host");
+        model.setFrom("from");
+        model.setAuth(true);
+        model.setUsername("user");
+        model.setPassword("password");
+
+        EmailGlobalConfigActions configActions = new EmailGlobalConfigActions(authorizationManager, emailGlobalConfigAccessor, validator);
+        ActionResponse<EmailGlobalConfigModel> response = configActions.create(model);
+        assertEquals(HttpStatus.FORBIDDEN, response.getHttpStatus());
+    }
+
+    @Test
+    public void testUpdateForbidden() throws AlertConfigurationException {
+        AuthenticationTestUtils authenticationTestUtils = new AuthenticationTestUtils();
+        DescriptorKey descriptorKey = ChannelKeys.EMAIL;
+        PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
+        Map<PermissionKey, Integer> permissions = Map.of(permissionKey, AuthenticationTestUtils.NO_PERMISSIONS);
+        AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
+        EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
+        EmailGlobalConfigAccessor emailGlobalConfigAccessor = Mockito.mock(EmailGlobalConfigAccessor.class);
+        EmailGlobalConfigModel model = new EmailGlobalConfigModel();
+        model.setHost("host");
+        model.setFrom("from");
+        model.setAuth(true);
+        model.setUsername("user");
+        model.setPassword("password");
+
+        EmailGlobalConfigActions configActions = new EmailGlobalConfigActions(authorizationManager, emailGlobalConfigAccessor, validator);
+        ActionResponse<EmailGlobalConfigModel> response = configActions.update(1L, model);
+        assertEquals(HttpStatus.FORBIDDEN, response.getHttpStatus());
+    }
+
+    @Test
+    public void testUpdateNotFound() throws AlertConfigurationException {
+        AuthenticationTestUtils authenticationTestUtils = new AuthenticationTestUtils();
+        DescriptorKey descriptorKey = ChannelKeys.EMAIL;
+        PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
+        Map<PermissionKey, Integer> permissions = Map.of(permissionKey, AuthenticationTestUtils.FULL_PERMISSIONS);
+        AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
+        EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
+        EmailGlobalConfigAccessor emailGlobalConfigAccessor = Mockito.mock(EmailGlobalConfigAccessor.class);
+        Mockito.when(emailGlobalConfigAccessor.getConfiguration(Mockito.anyLong())).thenReturn(Optional.empty());
+        
+        EmailGlobalConfigModel model = new EmailGlobalConfigModel();
+        model.setHost("host");
+        model.setFrom("from");
+        model.setAuth(true);
+        model.setUsername("user");
+        model.setPassword("password");
+
+        EmailGlobalConfigActions configActions = new EmailGlobalConfigActions(authorizationManager, emailGlobalConfigAccessor, validator);
+        ActionResponse<EmailGlobalConfigModel> response = configActions.update(1L, model);
+        assertEquals(HttpStatus.NOT_FOUND, response.getHttpStatus());
+    }
+
+    @Test
+    public void testDeleteForbidden() {
+        AuthenticationTestUtils authenticationTestUtils = new AuthenticationTestUtils();
+        DescriptorKey descriptorKey = ChannelKeys.EMAIL;
+        PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
+        Map<PermissionKey, Integer> permissions = Map.of(permissionKey, AuthenticationTestUtils.NO_PERMISSIONS);
+        AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
+        EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
+        EmailGlobalConfigAccessor emailGlobalConfigAccessor = Mockito.mock(EmailGlobalConfigAccessor.class);
+
+        EmailGlobalConfigActions configActions = new EmailGlobalConfigActions(authorizationManager, emailGlobalConfigAccessor, validator);
+        ActionResponse<EmailGlobalConfigModel> response = configActions.delete(1L);
+        assertEquals(HttpStatus.FORBIDDEN, response.getHttpStatus());
+    }
+
+    @Test
+    public void testDeleteNotFound() {
+        AuthenticationTestUtils authenticationTestUtils = new AuthenticationTestUtils();
+        DescriptorKey descriptorKey = ChannelKeys.EMAIL;
+        PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
+        Map<PermissionKey, Integer> permissions = Map.of(permissionKey, AuthenticationTestUtils.FULL_PERMISSIONS);
+        AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
+        EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
+        EmailGlobalConfigAccessor emailGlobalConfigAccessor = Mockito.mock(EmailGlobalConfigAccessor.class);
+        Mockito.when(emailGlobalConfigAccessor.getConfiguration(Mockito.anyLong())).thenReturn(Optional.empty());
+
+        EmailGlobalConfigActions configActions = new EmailGlobalConfigActions(authorizationManager, emailGlobalConfigAccessor, validator);
+        ActionResponse<EmailGlobalConfigModel> response = configActions.delete(1L);
+        assertEquals(HttpStatus.NOT_FOUND, response.getHttpStatus());
+    }
+
 }

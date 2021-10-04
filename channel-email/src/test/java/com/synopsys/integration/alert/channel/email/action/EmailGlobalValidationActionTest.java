@@ -40,4 +40,25 @@ public class EmailGlobalValidationActionTest {
         ActionResponse<ValidationResponseModel> response = validationAction.validate(model);
         assertEquals(HttpStatus.OK, response.getHttpStatus());
     }
+
+    @Test
+    public void testValidationForbidden() {
+        AuthenticationTestUtils authenticationTestUtils = new AuthenticationTestUtils();
+        DescriptorKey descriptorKey = ChannelKeys.EMAIL;
+        PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
+        Map<PermissionKey, Integer> permissions = Map.of(permissionKey, AuthenticationTestUtils.NO_PERMISSIONS);
+        AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
+        EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
+        EmailGlobalValidationAction validationAction = new EmailGlobalValidationAction(validator, authorizationManager);
+
+        EmailGlobalConfigModel model = new EmailGlobalConfigModel();
+        model.setHost("host");
+        model.setFrom("from");
+        model.setAuth(true);
+        model.setUsername("user");
+        model.setPassword("password");
+
+        ActionResponse<ValidationResponseModel> response = validationAction.validate(model);
+        assertEquals(HttpStatus.FORBIDDEN, response.getHttpStatus());
+    }
 }
