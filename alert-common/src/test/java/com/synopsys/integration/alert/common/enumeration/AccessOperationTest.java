@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.util.BitwiseUtil;
+import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
 
 public class AccessOperationTest {
 
@@ -57,7 +58,7 @@ public class AccessOperationTest {
 
     @Test
     public void verifyRemovingOperationsTest() {
-        int allPermissions = 255;
+        int allPermissions = AuthenticationTestUtils.FULL_PERMISSIONS;
         for (AccessOperation accessOperation : AccessOperation.values()) {
             assertTrue(accessOperation.isPermitted(allPermissions));
         }

@@ -41,6 +41,9 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
  * @see SecurityContextHolder
  */
 public class AuthenticationTestUtils {
+    public static final int FULL_PERMISSIONS = 255;
+    public static final int NO_PERMISSIONS = 0;
+
     private AtomicLong userIdGenerator = new AtomicLong(0);
     private Map<String, Set<String>> userToRoleNamesMap = new HashMap<>();
     private Map<String, Authentication> userAuthMap = new HashMap<>();

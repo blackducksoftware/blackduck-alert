@@ -9,9 +9,7 @@ package com.synopsys.integration.alert.common.rest.api;
 
 import java.util.function.Supplier;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
@@ -20,16 +18,18 @@ import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
-@Component
 public class ConfigurationValidationHelper {
     private final AuthorizationManager authorizationManager;
+    private final ConfigContextEnum context;
+    private final DescriptorKey descriptorKey;
 
-    @Autowired
-    public ConfigurationValidationHelper(AuthorizationManager authorizationManager) {
+    public ConfigurationValidationHelper(AuthorizationManager authorizationManager, ConfigContextEnum context, DescriptorKey descriptorKey) {
         this.authorizationManager = authorizationManager;
+        this.context = context;
+        this.descriptorKey = descriptorKey;
     }
 
-    public ValidationActionResponse validate(Supplier<ValidationResponseModel> validator, ConfigContextEnum context, DescriptorKey descriptorKey) {
+    public ValidationActionResponse validate(Supplier<ValidationResponseModel> validator) {
         if (!authorizationManager.hasExecutePermission(context, descriptorKey)) {
             ValidationResponseModel responseModel = ValidationResponseModel.generalError(ActionResponse.FORBIDDEN_MESSAGE);
             return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
