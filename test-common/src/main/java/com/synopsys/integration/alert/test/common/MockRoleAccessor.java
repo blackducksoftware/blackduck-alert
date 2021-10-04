@@ -63,7 +63,7 @@ public class MockRoleAccessor implements RoleAccessor {
             .filter(entry -> entry.getValue().getName().equals(roleName))
             .map(Map.Entry::getKey)
             .findFirst()
-            .orElseThrow(() -> new AlertConfigurationException(String.format("role with name %s not found")));
+            .orElseThrow(() -> new AlertConfigurationException(String.format("role with name %s not found", roleName)));
 
         roleMap.computeIfPresent(roleId, (ignored, role) -> new UserRoleModel(role.getId(), role.getName(), role.isCustom(), permissionMatrix));
         return permissionMatrix;

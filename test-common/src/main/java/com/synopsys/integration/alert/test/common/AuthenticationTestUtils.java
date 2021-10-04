@@ -73,7 +73,7 @@ public class AuthenticationTestUtils {
 
     public AuthorizationManager createAuthorizationManagerWithCurrentUserSet(String currentUserName) {
         AuthorizationManager authorizationManager = createAuthorizationManager();
-        Authentication newCurrentUser = getUserAuthentication(currentUserName).orElseThrow(() -> new IllegalStateException(String.format("User: %s was never added. Cannot assign as the currrent user.")));
+        Authentication newCurrentUser = getUserAuthentication(currentUserName).orElseThrow(() -> new IllegalStateException(String.format("User: %s was never added. Cannot assign as the currrent user.", currentUserName)));
         updateCurrentUser(newCurrentUser);
         return authorizationManager;
     }
