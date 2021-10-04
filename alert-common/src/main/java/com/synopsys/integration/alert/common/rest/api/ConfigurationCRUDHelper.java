@@ -14,9 +14,7 @@ import java.util.function.Supplier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -24,17 +22,19 @@ import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
-@Component
 public class ConfigurationCRUDHelper {
     private final Logger logger = LoggerFactory.getLogger(ConfigurationCRUDHelper.class);
     private final AuthorizationManager authorizationManager;
+    private final ConfigContextEnum context;
+    private final DescriptorKey descriptorKey;
 
-    @Autowired
-    public ConfigurationCRUDHelper(AuthorizationManager authorizationManager) {
+    public ConfigurationCRUDHelper(AuthorizationManager authorizationManager, ConfigContextEnum context, DescriptorKey descriptorKey) {
         this.authorizationManager = authorizationManager;
+        this.context = context;
+        this.descriptorKey = descriptorKey;
     }
 
-    public <T> ActionResponse<T> getOne(Supplier<Optional<T>> modelSupplier, ConfigContextEnum context, DescriptorKey descriptorKey) {
+    public <T> ActionResponse<T> getOne(Supplier<Optional<T>> modelSupplier) {
         if (!authorizationManager.hasReadPermission(context, descriptorKey)) {
             return ActionResponse.createForbiddenResponse();
         }
@@ -48,7 +48,7 @@ public class ConfigurationCRUDHelper {
         return new ActionResponse<>(HttpStatus.OK, optionalResponse.get());
     }
 
-    public <T> ActionResponse<T> create(Supplier<ValidationResponseModel> validator, Callable<T> createdModelSupplier, ConfigContextEnum context, DescriptorKey descriptorKey) {
+    public <T> ActionResponse<T> create(Supplier<ValidationResponseModel> validator, Callable<T> createdModelSupplier) {
         if (!authorizationManager.hasCreatePermission(context, descriptorKey)) {
             return ActionResponse.createForbiddenResponse();
         }
@@ -65,7 +65,7 @@ public class ConfigurationCRUDHelper {
         }
     }
 
-    public <T> ActionResponse<T> update(Supplier<ValidationResponseModel> validator, BooleanSupplier existingModelSupplier, Callable<T> updateFunction, ConfigContextEnum context, DescriptorKey descriptorKey) {
+    public <T> ActionResponse<T> update(Supplier<ValidationResponseModel> validator, BooleanSupplier existingModelSupplier, Callable<T> updateFunction) {
         if (!authorizationManager.hasWritePermission(context, descriptorKey)) {
             return ActionResponse.createForbiddenResponse();
         }
@@ -87,7 +87,7 @@ public class ConfigurationCRUDHelper {
         }
     }
 
-    public <T> ActionResponse<T> delete(BooleanSupplier existingModelSupplier, Runnable deleteFunction, ConfigContextEnum context, DescriptorKey descriptorKey) {
+    public <T> ActionResponse<T> delete(BooleanSupplier existingModelSupplier, Runnable deleteFunction) {
         if (!authorizationManager.hasDeletePermission(context, descriptorKey)) {
             return ActionResponse.createForbiddenResponse();
         }

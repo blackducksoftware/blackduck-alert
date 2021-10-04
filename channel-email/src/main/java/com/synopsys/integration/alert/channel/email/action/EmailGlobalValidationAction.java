@@ -15,6 +15,7 @@ import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.rest.api.ConfigurationValidationHelper;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
+import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
@@ -24,13 +25,13 @@ public class EmailGlobalValidationAction {
     private final ConfigurationValidationHelper validationHelper;
 
     @Autowired
-    public EmailGlobalValidationAction(EmailGlobalConfigurationValidator validator, ConfigurationValidationHelper validationHelper) {
+    public EmailGlobalValidationAction(EmailGlobalConfigurationValidator validator, AuthorizationManager authorizationManager) {
         this.validator = validator;
-        this.validationHelper = validationHelper;
+        this.validationHelper = new ConfigurationValidationHelper(authorizationManager, ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL);
     }
 
     public ActionResponse<ValidationResponseModel> validate(EmailGlobalConfigModel requestResource) {
-        return validationHelper.validate(() -> validator.validate(requestResource), ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL);
+        return validationHelper.validate(() -> validator.validate(requestResource));
     }
 
 }

@@ -25,10 +25,10 @@ public class ConfigurationValidationHelperTest {
         AuthenticationTestUtils authenticationTestUtils = new AuthenticationTestUtils();
         DescriptorKey descriptorKey = new ChannelKey("channel_key", "channel-display-name");
         PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
-        Map<PermissionKey, Integer> permissions = Map.of(permissionKey, 0);
+        Map<PermissionKey, Integer> permissions = Map.of(permissionKey, AuthenticationTestUtils.NO_PERMISSIONS);
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
-        ConfigurationValidationHelper validationHelper = new ConfigurationValidationHelper(authorizationManager);
-        ValidationActionResponse response = validationHelper.validate(() -> ValidationResponseModel.success(), ConfigContextEnum.GLOBAL, descriptorKey);
+        ConfigurationValidationHelper validationHelper = new ConfigurationValidationHelper(authorizationManager, ConfigContextEnum.GLOBAL, descriptorKey);
+        ValidationActionResponse response = validationHelper.validate(() -> ValidationResponseModel.success());
         assertEquals(HttpStatus.FORBIDDEN, response.getHttpStatus());
     }
 
@@ -37,10 +37,10 @@ public class ConfigurationValidationHelperTest {
         AuthenticationTestUtils authenticationTestUtils = new AuthenticationTestUtils();
         DescriptorKey descriptorKey = new ChannelKey("channel_key", "channel-display-name");
         PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
-        Map<PermissionKey, Integer> permissions = Map.of(permissionKey, 255);
+        Map<PermissionKey, Integer> permissions = Map.of(permissionKey, AuthenticationTestUtils.FULL_PERMISSIONS);
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
-        ConfigurationValidationHelper validationHelper = new ConfigurationValidationHelper(authorizationManager);
-        ValidationActionResponse response = validationHelper.validate(() -> ValidationResponseModel.success(), ConfigContextEnum.GLOBAL, descriptorKey);
+        ConfigurationValidationHelper validationHelper = new ConfigurationValidationHelper(authorizationManager, ConfigContextEnum.GLOBAL, descriptorKey);
+        ValidationActionResponse response = validationHelper.validate(() -> ValidationResponseModel.success());
         assertEquals(HttpStatus.OK, response.getHttpStatus());
     }
 
@@ -49,10 +49,10 @@ public class ConfigurationValidationHelperTest {
         AuthenticationTestUtils authenticationTestUtils = new AuthenticationTestUtils();
         DescriptorKey descriptorKey = new ChannelKey("channel_key", "channel-display-name");
         PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
-        Map<PermissionKey, Integer> permissions = Map.of(permissionKey, 255);
+        Map<PermissionKey, Integer> permissions = Map.of(permissionKey, AuthenticationTestUtils.FULL_PERMISSIONS);
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
-        ConfigurationValidationHelper validationHelper = new ConfigurationValidationHelper(authorizationManager);
-        ValidationActionResponse response = validationHelper.validate(() -> ValidationResponseModel.generalError("generalError"), ConfigContextEnum.GLOBAL, descriptorKey);
+        ConfigurationValidationHelper validationHelper = new ConfigurationValidationHelper(authorizationManager, ConfigContextEnum.GLOBAL, descriptorKey);
+        ValidationActionResponse response = validationHelper.validate(() -> ValidationResponseModel.generalError("generalError"));
         ValidationResponseModel validationResponseModel = response.getContent().orElseThrow(() -> new IllegalStateException("Validation content missing"));
         assertEquals(HttpStatus.OK, response.getHttpStatus());
         assertTrue(validationResponseModel.hasErrors());

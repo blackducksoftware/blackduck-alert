@@ -27,6 +27,7 @@ import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.rest.api.ConfigurationTestHelper;
 import com.synopsys.integration.alert.common.rest.api.ConfigurationValidationHelper;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
+import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.service.email.EmailTarget;
 import com.synopsys.integration.alert.service.email.JavamailPropertiesFactory;
@@ -47,18 +48,18 @@ public class EmailGlobalTestAction {
     private final JavamailPropertiesFactory javamailPropertiesFactory;
 
     @Autowired
-    public EmailGlobalTestAction(ConfigurationTestHelper testHelper, ConfigurationValidationHelper validationHelper, EmailGlobalConfigurationValidator validator,
+    public EmailGlobalTestAction(AuthorizationManager authorizationManager, EmailGlobalConfigurationValidator validator,
         EmailChannelMessagingService emailChannelMessagingService, JavamailPropertiesFactory javamailPropertiesFactory) {
-        this.testHelper = testHelper;
-        this.validationHelper = validationHelper;
+        this.testHelper = new ConfigurationTestHelper(authorizationManager, ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL);
+        this.validationHelper = new ConfigurationValidationHelper(authorizationManager, ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL);
         this.validator = validator;
         this.emailChannelMessagingService = emailChannelMessagingService;
         this.javamailPropertiesFactory = javamailPropertiesFactory;
     }
 
     public ActionResponse<ValidationResponseModel> testWithPermissionCheck(String testAddress, EmailGlobalConfigModel requestResource) {
-        Supplier<ValidationActionResponse> validationSupplier = () -> validationHelper.validate(() -> validator.validate(requestResource), ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL);
-        return testHelper.test(validationSupplier, () -> testConfigModelContent(testAddress, requestResource), ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL);
+        Supplier<ValidationActionResponse> validationSupplier = () -> validationHelper.validate(() -> validator.validate(requestResource));
+        return testHelper.test(validationSupplier, () -> testConfigModelContent(testAddress, requestResource));
     }
 
     public MessageResult testConfigModelContent(String testAddress, EmailGlobalConfigModel emailGlobalConfigModel) throws AlertException {

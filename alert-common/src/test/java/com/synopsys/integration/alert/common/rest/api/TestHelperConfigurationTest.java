@@ -30,10 +30,10 @@ public class TestHelperConfigurationTest {
         AuthenticationTestUtils authenticationTestUtils = new AuthenticationTestUtils();
         DescriptorKey descriptorKey = new ChannelKey("channel_key", "channel-display-name");
         PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
-        Map<PermissionKey, Integer> permissions = Map.of(permissionKey, 0);
+        Map<PermissionKey, Integer> permissions = Map.of(permissionKey, AuthenticationTestUtils.NO_PERMISSIONS);
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
-        ConfigurationTestHelper testHelper = new ConfigurationTestHelper(authorizationManager);
-        ValidationActionResponse response = testHelper.test(() -> new ValidationActionResponse(HttpStatus.OK, ValidationResponseModel.success()), MessageResult::success, ConfigContextEnum.GLOBAL, descriptorKey);
+        ConfigurationTestHelper testHelper = new ConfigurationTestHelper(authorizationManager, ConfigContextEnum.GLOBAL, descriptorKey);
+        ValidationActionResponse response = testHelper.test(() -> new ValidationActionResponse(HttpStatus.OK, ValidationResponseModel.success()), MessageResult::success);
         assertEquals(HttpStatus.FORBIDDEN, response.getHttpStatus());
     }
 
@@ -42,10 +42,10 @@ public class TestHelperConfigurationTest {
         AuthenticationTestUtils authenticationTestUtils = new AuthenticationTestUtils();
         DescriptorKey descriptorKey = new ChannelKey("channel_key", "channel-display-name");
         PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
-        Map<PermissionKey, Integer> permissions = Map.of(permissionKey, 255);
+        Map<PermissionKey, Integer> permissions = Map.of(permissionKey, AuthenticationTestUtils.FULL_PERMISSIONS);
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
-        ConfigurationTestHelper testHelper = new ConfigurationTestHelper(authorizationManager);
-        ValidationActionResponse response = testHelper.test(() -> new ValidationActionResponse(HttpStatus.OK, ValidationResponseModel.success()), MessageResult::success, ConfigContextEnum.GLOBAL, descriptorKey);
+        ConfigurationTestHelper testHelper = new ConfigurationTestHelper(authorizationManager, ConfigContextEnum.GLOBAL, descriptorKey);
+        ValidationActionResponse response = testHelper.test(() -> new ValidationActionResponse(HttpStatus.OK, ValidationResponseModel.success()), MessageResult::success);
         assertEquals(HttpStatus.OK, response.getHttpStatus());
 
     }
@@ -55,10 +55,10 @@ public class TestHelperConfigurationTest {
         AuthenticationTestUtils authenticationTestUtils = new AuthenticationTestUtils();
         DescriptorKey descriptorKey = new ChannelKey("channel_key", "channel-display-name");
         PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
-        Map<PermissionKey, Integer> permissions = Map.of(permissionKey, 255);
+        Map<PermissionKey, Integer> permissions = Map.of(permissionKey, AuthenticationTestUtils.FULL_PERMISSIONS);
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
-        ConfigurationTestHelper testHelper = new ConfigurationTestHelper(authorizationManager);
-        ValidationActionResponse response = testHelper.test(() -> new ValidationActionResponse(HttpStatus.BAD_REQUEST, ValidationResponseModel.generalError("generalError")), MessageResult::success, ConfigContextEnum.GLOBAL, descriptorKey);
+        ConfigurationTestHelper testHelper = new ConfigurationTestHelper(authorizationManager, ConfigContextEnum.GLOBAL, descriptorKey);
+        ValidationActionResponse response = testHelper.test(() -> new ValidationActionResponse(HttpStatus.BAD_REQUEST, ValidationResponseModel.generalError("generalError")), MessageResult::success);
         ValidationResponseModel validationResponseModel = response.getContent().orElseThrow(() -> new IllegalStateException("Validation content missing"));
         assertEquals(HttpStatus.BAD_REQUEST, response.getHttpStatus());
         assertTrue(validationResponseModel.hasErrors());
@@ -69,10 +69,10 @@ public class TestHelperConfigurationTest {
         AuthenticationTestUtils authenticationTestUtils = new AuthenticationTestUtils();
         DescriptorKey descriptorKey = new ChannelKey("channel_key", "channel-display-name");
         PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
-        Map<PermissionKey, Integer> permissions = Map.of(permissionKey, 255);
+        Map<PermissionKey, Integer> permissions = Map.of(permissionKey, AuthenticationTestUtils.FULL_PERMISSIONS);
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
-        ConfigurationTestHelper testHelper = new ConfigurationTestHelper(authorizationManager);
-        ValidationActionResponse response = testHelper.test(() -> new ValidationActionResponse(HttpStatus.OK, ValidationResponseModel.success()), MessageResult::success, ConfigContextEnum.GLOBAL, descriptorKey);
+        ConfigurationTestHelper testHelper = new ConfigurationTestHelper(authorizationManager, ConfigContextEnum.GLOBAL, descriptorKey);
+        ValidationActionResponse response = testHelper.test(() -> new ValidationActionResponse(HttpStatus.OK, ValidationResponseModel.success()), MessageResult::success);
         ValidationResponseModel validationResponseModel = response.getContent().orElseThrow(() -> new IllegalStateException("Validation content missing"));
         assertEquals(HttpStatus.OK, response.getHttpStatus());
         assertFalse(validationResponseModel.hasErrors());
@@ -83,11 +83,11 @@ public class TestHelperConfigurationTest {
         AuthenticationTestUtils authenticationTestUtils = new AuthenticationTestUtils();
         DescriptorKey descriptorKey = new ChannelKey("channel_key", "channel-display-name");
         PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
-        Map<PermissionKey, Integer> permissions = Map.of(permissionKey, 255);
+        Map<PermissionKey, Integer> permissions = Map.of(permissionKey, AuthenticationTestUtils.FULL_PERMISSIONS);
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
         MessageResult errorMessage = new MessageResult("generalError", List.of(AlertFieldStatus.error("field-name", "this field has an error")));
-        ConfigurationTestHelper testHelper = new ConfigurationTestHelper(authorizationManager);
-        ValidationActionResponse response = testHelper.test(() -> new ValidationActionResponse(HttpStatus.OK, ValidationResponseModel.success()), () -> errorMessage, ConfigContextEnum.GLOBAL, descriptorKey);
+        ConfigurationTestHelper testHelper = new ConfigurationTestHelper(authorizationManager, ConfigContextEnum.GLOBAL, descriptorKey);
+        ValidationActionResponse response = testHelper.test(() -> new ValidationActionResponse(HttpStatus.OK, ValidationResponseModel.success()), () -> errorMessage);
         ValidationResponseModel validationResponseModel = response.getContent().orElseThrow(() -> new IllegalStateException("Validation content missing"));
         assertEquals(HttpStatus.OK, response.getHttpStatus());
         assertFalse(validationResponseModel.hasErrors());
@@ -98,13 +98,13 @@ public class TestHelperConfigurationTest {
         AuthenticationTestUtils authenticationTestUtils = new AuthenticationTestUtils();
         DescriptorKey descriptorKey = new ChannelKey("channel_key", "channel-display-name");
         PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
-        Map<PermissionKey, Integer> permissions = Map.of(permissionKey, 255);
+        Map<PermissionKey, Integer> permissions = Map.of(permissionKey, AuthenticationTestUtils.FULL_PERMISSIONS);
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
         ThrowingSupplier<MessageResult, AlertException> messageSupplier = () -> {
             throw new AlertException("error getting test message");
         };
-        ConfigurationTestHelper testHelper = new ConfigurationTestHelper(authorizationManager);
-        ValidationActionResponse response = testHelper.test(() -> new ValidationActionResponse(HttpStatus.OK, ValidationResponseModel.success()), messageSupplier, ConfigContextEnum.GLOBAL, descriptorKey);
+        ConfigurationTestHelper testHelper = new ConfigurationTestHelper(authorizationManager, ConfigContextEnum.GLOBAL, descriptorKey);
+        ValidationActionResponse response = testHelper.test(() -> new ValidationActionResponse(HttpStatus.OK, ValidationResponseModel.success()), messageSupplier);
         ValidationResponseModel validationResponseModel = response.getContent().orElseThrow(() -> new IllegalStateException("Validation content missing"));
         assertEquals(HttpStatus.OK, response.getHttpStatus());
         assertTrue(validationResponseModel.hasErrors());

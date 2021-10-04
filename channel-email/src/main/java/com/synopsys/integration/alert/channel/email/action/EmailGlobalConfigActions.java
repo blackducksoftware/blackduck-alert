@@ -16,6 +16,7 @@ import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.model.DatabaseModelWrapper;
 import com.synopsys.integration.alert.common.rest.api.ConfigurationCRUDHelper;
+import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
@@ -26,26 +27,25 @@ public class EmailGlobalConfigActions {
     private final EmailGlobalConfigurationValidator validator;
 
     @Autowired
-    public EmailGlobalConfigActions(ConfigurationCRUDHelper configurationHelper, EmailGlobalConfigAccessor configurationAccessor, EmailGlobalConfigurationValidator validator) {
-        this.configurationHelper = configurationHelper;
+    public EmailGlobalConfigActions(AuthorizationManager authorizationManager, EmailGlobalConfigAccessor configurationAccessor, EmailGlobalConfigurationValidator validator) {
+        this.configurationHelper = new ConfigurationCRUDHelper(authorizationManager, ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL);
         this.configurationAccessor = configurationAccessor;
         this.validator = validator;
     }
 
     public ActionResponse<EmailGlobalConfigModel> getOne(Long id) {
-        return configurationHelper.getOne(() -> configurationAccessor.getConfiguration(id).map(DatabaseModelWrapper::getModel), ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL);
+        return configurationHelper.getOne(() -> configurationAccessor.getConfiguration(id).map(DatabaseModelWrapper::getModel));
     }
 
     public ActionResponse<EmailGlobalConfigModel> create(EmailGlobalConfigModel resource) {
-        return configurationHelper.create(() -> validator.validate(resource), () -> configurationAccessor.createConfiguration(resource).getModel(), ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL);
+        return configurationHelper.create(() -> validator.validate(resource), () -> configurationAccessor.createConfiguration(resource).getModel());
     }
 
     public ActionResponse<EmailGlobalConfigModel> update(Long id, EmailGlobalConfigModel requestResource) {
-        return configurationHelper.update(() -> validator.validate(requestResource), () -> configurationAccessor.getConfiguration(id).isPresent(), () -> configurationAccessor.updateConfiguration(id, requestResource).getModel(),
-            ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL);
+        return configurationHelper.update(() -> validator.validate(requestResource), () -> configurationAccessor.getConfiguration(id).isPresent(), () -> configurationAccessor.updateConfiguration(id, requestResource).getModel());
     }
 
     public ActionResponse<EmailGlobalConfigModel> delete(Long id) {
-        return configurationHelper.delete(() -> configurationAccessor.getConfiguration(id).isPresent(), () -> configurationAccessor.deleteConfiguration(id), ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL);
+        return configurationHelper.delete(() -> configurationAccessor.getConfiguration(id).isPresent(), () -> configurationAccessor.deleteConfiguration(id));
     }
 }
