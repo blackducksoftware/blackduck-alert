@@ -15,13 +15,14 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatusMessages;
+import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
 @Component
 public class EmailGlobalConfigurationValidator {
     public static final String REQUIRED_BECAUSE_AUTH = "Field is required to be set because 'auth' is set to 'true'.";
 
-    public Set<AlertFieldStatus> validate(EmailGlobalConfigModel model) {
+    public ValidationResponseModel validate(EmailGlobalConfigModel model) {
         Set<AlertFieldStatus> statuses = new HashSet<>();
         if (model.getHost().filter(StringUtils::isNotBlank).isEmpty()) {
             statuses.add(AlertFieldStatus.error("host", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
@@ -39,6 +40,10 @@ public class EmailGlobalConfigurationValidator {
             }
         }
 
-        return statuses;
+        if (!statuses.isEmpty()) {
+            return ValidationResponseModel.fromStatusCollection(statuses);
+        }
+
+        return ValidationResponseModel.success();
     }
 }
