@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.synopsys.integration.alert.channel.email.action.EmailGlobalConfigActions;
 import com.synopsys.integration.alert.channel.email.action.EmailGlobalTestAction;
+import com.synopsys.integration.alert.channel.email.action.EmailGlobalValidationAction;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.api.BaseResourceController;
 import com.synopsys.integration.alert.common.rest.api.ValidateController;
