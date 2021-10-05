@@ -8,9 +8,7 @@
 package com.synopsys.integration.alert.channel.azure.boards.distribution.search;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -44,7 +42,7 @@ public class AzureBoardsComponentIssueFinder implements ProjectVersionComponentI
 
     @Override
     public List<ProjectIssueSearchResult<Integer>> findIssuesByComponent(ProviderDetails providerDetails, LinkableItem project, LinkableItem projectVersion, BomComponentDetails bomComponent) throws AlertException {
-        Map<String, String> fieldRefNameToValue = createBomFieldReferenceToValueMap(projectVersion, bomComponent);
+        AzureSearchFieldMappingBuilder fieldRefNameToValue = createBomFieldReferenceToValueMap(projectVersion, bomComponent);
         List<WorkItemResponseModel> workItems = workItemFinder.findWorkItems(providerDetails.getProvider(), project, fieldRefNameToValue);
 
         List<ProjectIssueSearchResult<Integer>> searchResults = new ArrayList<>(workItems.size());
@@ -62,10 +60,10 @@ public class AzureBoardsComponentIssueFinder implements ProjectVersionComponentI
     @Override
     public List<ExistingIssueDetails<Integer>> findExistingIssuesByProjectIssueModel(ProjectIssueModel projectIssueModel) throws AlertException {
         LinkableItem projectVersion = projectIssueModel.getProjectVersion()
-                                          .orElseThrow(() -> new AlertRuntimeException("Missing project-version"));
+            .orElseThrow(() -> new AlertRuntimeException("Missing project-version"));
 
         String categoryKey = AzureBoardsAlertIssuePropertiesManager.CATEGORY_TYPE_VULNERABILITY_COMPATIBILITY_LABEL;
-        Map<String, String> fieldRefNameToValue = createBomFieldReferenceToValueMap(projectVersion, projectIssueModel.getBomComponentDetails());
+        AzureSearchFieldMappingBuilder fieldRefNameToValue = createBomFieldReferenceToValueMap(projectVersion, projectIssueModel.getBomComponentDetails());
 
         Optional<IssuePolicyDetails> policyDetails = projectIssueModel.getPolicyDetails();
         Optional<String> optionalPolicyName = policyDetails.map(IssuePolicyDetails::getName);
@@ -73,27 +71,27 @@ public class AzureBoardsComponentIssueFinder implements ProjectVersionComponentI
             categoryKey = AzureBoardsAlertIssuePropertiesManager.CATEGORY_TYPE_POLICY_COMPATIBILITY_LABEL;
 
             String additionalInfoKey = AzureBoardsAlertIssuePropertiesManager.POLICY_ADDITIONAL_KEY_COMPATIBILITY_LABEL + optionalPolicyName.get();
-            fieldRefNameToValue.put(AzureCustomFieldManager.ALERT_ADDITIONAL_INFO_KEY_FIELD_REFERENCE_NAME, additionalInfoKey);
+            fieldRefNameToValue.addAdditionInfoKey(additionalInfoKey);
         }
 
-        fieldRefNameToValue.put(AzureCustomFieldManager.ALERT_CATEGORY_KEY_FIELD_REFERENCE_NAME, categoryKey);
+        fieldRefNameToValue.addCategoryKey(categoryKey);
 
         return workItemFinder.findWorkItems(projectIssueModel.getProvider(), projectIssueModel.getProject(), fieldRefNameToValue)
-                   .stream()
-                   .map(workItemResponseModel -> createIssueDetails(workItemResponseModel, projectIssueModel))
-                   .collect(Collectors.toList());
+            .stream()
+            .map(workItemResponseModel -> createIssueDetails(workItemResponseModel, projectIssueModel))
+            .collect(Collectors.toList());
     }
 
-    private Map<String, String> createBomFieldReferenceToValueMap(LinkableItem projectVersion, AbstractBomComponentDetails bomComponent) {
+    private AzureSearchFieldMappingBuilder createBomFieldReferenceToValueMap(LinkableItem projectVersion, AbstractBomComponentDetails bomComponent) {
         String projectVersionItemKey = AzureBoardsSearchPropertiesUtils.createNullableLinkableItemKey(projectVersion);
         String componentItemKey = AzureBoardsSearchPropertiesUtils.createNullableLinkableItemKey(bomComponent.getComponent());
         Optional<String> optionalComponentVersionItemKey = bomComponent.getComponentVersion().map(AzureBoardsSearchPropertiesUtils::createNullableLinkableItemKey);
 
-        Map<String, String> fieldRefNameToValue = new HashMap<>();
-        fieldRefNameToValue.put(AzureCustomFieldManager.ALERT_SUB_TOPIC_KEY_FIELD_REFERENCE_NAME, projectVersionItemKey);
-        fieldRefNameToValue.put(AzureCustomFieldManager.ALERT_COMPONENT_KEY_FIELD_REFERENCE_NAME, componentItemKey);
-        optionalComponentVersionItemKey.ifPresent(componentVersionItemKey -> fieldRefNameToValue.put(AzureCustomFieldManager.ALERT_SUB_COMPONENT_KEY_FIELD_REFERENCE_NAME, componentVersionItemKey));
-        return fieldRefNameToValue;
+        AzureSearchFieldMappingBuilder azureSearchFieldMappingBuilder = AzureSearchFieldMappingBuilder.create()
+            .addSubTopic(projectVersionItemKey)
+            .addComponentKey(componentItemKey);
+        optionalComponentVersionItemKey.ifPresent(azureSearchFieldMappingBuilder::addSubComponentKey);
+        return azureSearchFieldMappingBuilder;
     }
 
     private ExistingIssueDetails<Integer> createIssueDetails(WorkItemResponseModel workItem, ProjectIssueModel projectIssueModel) {
