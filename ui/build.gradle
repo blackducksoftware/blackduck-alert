@@ -12,62 +12,77 @@ task cleanBundles(type: Delete) {
 }
 
 task updateNpmVersion(type: Task) {
-    final def packageJsonFile = new File("${project.projectDir}/package.json")
-    def packageSlurper = new JsonSlurper()
-    def packageJson = packageSlurper.parse file("${project.projectDir}/package.json")
-    if (packageJson.version != version) {
-        packageJson.version = version
+    inputs.file('package.json')
+    outputs.file('package.json')
+    outputs.cacheIf { true }
 
-        final def updatedPackageJson = JsonOutput.toJson(packageJson)
+    doLast {
+        def packageJsonFile = inputs.files.singleFile
+        def packageSlurper = new JsonSlurper()
+        def packageJson = packageSlurper.parse(packageJsonFile)
+        if (packageJson.version != version) {
+            packageJson.version = version
 
-        packageJsonFile.delete()
-        packageJsonFile << JsonOutput.prettyPrint(updatedPackageJson)
+            final def updatedPackageJson = JsonOutput.toJson(packageJson)
+
+            outputs.files.singleFile.text = JsonOutput.prettyPrint(updatedPackageJson)
+        }
     }
 }
 
-task npmInstall(type: Exec) {
-    inputs.file('package.json')
-    inputs.file('package-lock.json')
+
+task npmInstallFromCache(type: Exec) {
+    inputs.files('package.json', 'package-lock.json')
     outputs.dir('node_modules')
+    outputs.cacheIf { true }
     ignoreExitValue = true
+
     commandLine 'npm', 'install', '--cache', "${project.buildDir}/npm_cache"
 }
 
-task npmCacheClean(type: Exec, dependsOn: [npmInstall]) {
+task npmCacheClean(type: Exec, dependsOn: [npmInstallFromCache]) {
     inputs.file('package.json')
     inputs.file('package-lock.json')
     outputs.dir('node_modules')
+    outputs.cacheIf { true }
     onlyIf {
-        // don't run this if the npmInstall succeeded
-        tasks.npmInstall?.getExecResult()?.exitValue ?: 0 != 0
+        // don't run this if the npmInstallFromCache succeeded
+        tasks.npmInstallFromCache?.getExecResult()?.exitValue ?: 0 != 0
     }
+
     commandLine 'npm', 'cache', 'clean', '--force', '--cache', "${project.buildDir}/npm_cache"
 }
 
-task npmInstallRetry(type: Exec, dependsOn: [npmCacheClean]) {
+task npmInstallFromCacheRetry(type: Exec, dependsOn: [npmCacheClean]) {
     inputs.file('package.json')
     inputs.file('package-lock.json')
     outputs.dir('node_modules')
+    outputs.cacheIf { true }
     onlyIf {
         // don't run this if the npmInstall succeeded
-        tasks.npmInstall?.getExecResult()?.exitValue ?: 0 != 0
+        tasks.npmInstallFromCache?.getExecResult()?.exitValue ?: 0 != 0
     }
     doFirst {
         logger.error('The initial npm install failed. Trying to run the npm install again.')
     }
+
     commandLine 'npm', 'install', '--cache', "${project.buildDir}/npm_cache"
 }
 
-task npmBuild(type: Exec, dependsOn: [npmInstallRetry]) {
+task npmBuild(type: Exec, dependsOn: [npmInstallFromCacheRetry]) {
     inputs.file('package-lock.json')
     inputs.dir('src/main/js')
     inputs.dir('src/main/css')
     inputs.dir('src/main/img')
     outputs.dir("${project.buildDir}/resources/main/static")
+    outputs.cacheIf { true }
+
     commandLine 'npm', 'run', 'build', '--cache', "${project.buildDir}/npm_cache"
 }
 
 task copyStaticWebContent(type: Copy) {
+    outputs.cacheIf { true }
+
     from("${project.projectDir}/src/main/css") {
         into 'css'
     }
