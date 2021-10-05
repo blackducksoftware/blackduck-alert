@@ -35,6 +35,10 @@ public class ComponentConcern extends AlertSerializableModel implements Combinab
         return new ComponentConcern(ComponentConcernType.VULNERABILITY, operation, vulnerabilityId, severity, vulnerabilityUrl);
     }
 
+    public static ComponentConcern unknownComponentVersion(ItemOperation operation, String componentName, String url) {
+        return new ComponentConcern(ComponentConcernType.UNKNOWN_VERSION, operation, componentName, ComponentConcernSeverity.UNSPECIFIED_UNKNOWN, url);
+    }
+
     private ComponentConcern(ComponentConcernType type, ItemOperation operation, String name, ComponentConcernSeverity severity, @Nullable String url) {
         this.operation = operation;
         this.type = type;

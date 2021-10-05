@@ -13,11 +13,11 @@ import java.util.Optional;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.BlackDuckMessageLabels;
 import com.synopsys.integration.blackduck.api.generated.enumeration.UsageType;
-import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentVersionView;
 import com.synopsys.integration.rest.HttpUrl;
 
 public final class BlackDuckMessageAttributesUtils {
-    public static LinkableItem extractLicense(ProjectVersionComponentView projectVersionComponentView) {
+    public static LinkableItem extractLicense(ProjectVersionComponentVersionView projectVersionComponentView) {
         return projectVersionComponentView.getLicenses()
             .stream()
             .filter(Objects::nonNull)
@@ -26,7 +26,7 @@ public final class BlackDuckMessageAttributesUtils {
             .orElse(new LinkableItem(BlackDuckMessageLabels.LABEL_LICENSE, BlackDuckMessageLabels.VALUE_UNKNOWN_LICENSE));
     }
 
-    public static String extractUsage(ProjectVersionComponentView projectVersionComponentView) {
+    public static String extractUsage(ProjectVersionComponentVersionView projectVersionComponentView) {
         return projectVersionComponentView.getUsages()
             .stream()
             .filter(Objects::nonNull)
@@ -35,8 +35,8 @@ public final class BlackDuckMessageAttributesUtils {
             .orElse(BlackDuckMessageLabels.VALUE_UNKNOWN_USAGE);
     }
 
-    public static Optional<String> extractIssuesUrl(ProjectVersionComponentView bomComponent) {
-        return bomComponent.getFirstLinkSafely(ProjectVersionComponentView.COMPONENT_ISSUES_LINK).map(HttpUrl::toString);
+    public static Optional<String> extractIssuesUrl(ProjectVersionComponentVersionView bomComponent) {
+        return bomComponent.getFirstLinkSafely(ProjectVersionComponentVersionView.COMPONENT_ISSUES_LINK).map(HttpUrl::toString);
     }
 
     private BlackDuckMessageAttributesUtils() {

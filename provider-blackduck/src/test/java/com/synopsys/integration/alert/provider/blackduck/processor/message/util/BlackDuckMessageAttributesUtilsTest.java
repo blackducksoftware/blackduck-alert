@@ -8,15 +8,15 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.blackduck.api.generated.component.ProjectVersionComponentLicensesView;
+import com.synopsys.integration.blackduck.api.generated.component.ProjectVersionComponentVersionLicensesView;
 import com.synopsys.integration.blackduck.api.generated.enumeration.UsageType;
-import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentVersionView;
 
 public class BlackDuckMessageAttributesUtilsTest {
 
     @Test
     public void testGetUsageLinkableItemsNullUsageIncluded() {
-        ProjectVersionComponentView projectVersionComponentView = new ProjectVersionComponentView();
+        ProjectVersionComponentVersionView projectVersionComponentView = new ProjectVersionComponentVersionView();
         List<UsageType> listWithNull = new ArrayList();
         listWithNull.add(UsageType.PREREQUISITE);
         listWithNull.add(null);
@@ -27,7 +27,7 @@ public class BlackDuckMessageAttributesUtilsTest {
 
     @Test
     public void testGetUsageLinkableItems() {
-        ProjectVersionComponentView projectVersionComponentView = new ProjectVersionComponentView();
+        ProjectVersionComponentVersionView projectVersionComponentView = new ProjectVersionComponentVersionView();
         projectVersionComponentView.setUsages(List.of(UsageType.PREREQUISITE, UsageType.SOURCE_CODE));
         String usage = BlackDuckMessageAttributesUtils.extractUsage(projectVersionComponentView);
         assertEquals(UsageType.PREREQUISITE.prettyPrint(), usage);
@@ -36,9 +36,9 @@ public class BlackDuckMessageAttributesUtilsTest {
     @Test
     public void testGetLicenseLinkableItemsNullIncluded() {
         String licenseValue = "License Display";
-        ProjectVersionComponentView projectVersionComponentView = new ProjectVersionComponentView();
-        List<ProjectVersionComponentLicensesView> projectVersionComponentLicensesViews = new ArrayList();
-        ProjectVersionComponentLicensesView projectVersionComponentLicensesView = new ProjectVersionComponentLicensesView();
+        ProjectVersionComponentVersionView projectVersionComponentView = new ProjectVersionComponentVersionView();
+        List<ProjectVersionComponentVersionLicensesView> projectVersionComponentLicensesViews = new ArrayList<>();
+        ProjectVersionComponentVersionLicensesView projectVersionComponentLicensesView = new ProjectVersionComponentVersionLicensesView();
         projectVersionComponentLicensesView.setLicenseDisplay(licenseValue);
         projectVersionComponentLicensesViews.add(projectVersionComponentLicensesView);
         projectVersionComponentLicensesViews.add(null);
@@ -50,13 +50,13 @@ public class BlackDuckMessageAttributesUtilsTest {
     @Test
     public void testGetLicenseLinkableItems() {
         String licenseValue = "License Display 1";
-        ProjectVersionComponentView projectVersionComponentView = new ProjectVersionComponentView();
-        List<ProjectVersionComponentLicensesView> projectVersionComponentLicensesViews = new ArrayList();
-        ProjectVersionComponentLicensesView projectVersionComponentLicensesView1 = new ProjectVersionComponentLicensesView();
+        ProjectVersionComponentVersionView projectVersionComponentView = new ProjectVersionComponentVersionView();
+        List<ProjectVersionComponentVersionLicensesView> projectVersionComponentLicensesViews = new ArrayList<>();
+        ProjectVersionComponentVersionLicensesView projectVersionComponentLicensesView1 = new ProjectVersionComponentVersionLicensesView();
         projectVersionComponentLicensesView1.setLicenseDisplay(licenseValue);
         projectVersionComponentLicensesViews.add(projectVersionComponentLicensesView1);
 
-        ProjectVersionComponentLicensesView projectVersionComponentLicensesView2 = new ProjectVersionComponentLicensesView();
+        ProjectVersionComponentVersionLicensesView projectVersionComponentLicensesView2 = new ProjectVersionComponentVersionLicensesView();
         projectVersionComponentLicensesView2.setLicenseDisplay("License Display 2");
         projectVersionComponentLicensesViews.add(projectVersionComponentLicensesView2);
 
