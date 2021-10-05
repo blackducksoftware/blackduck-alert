@@ -10,6 +10,7 @@ package com.synopsys.integration.alert.common.email;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -167,21 +168,11 @@ public class EmailMessagingService {
 
     public void sendMessages(EmailProperties emailProperties, Session session, List<Message> messages) throws AlertException {
         Set<String> errorMessages = new HashSet<>();
-        Set<String> invalidRecipients = new HashSet<>();
 
-        try (Transport transport = getTransport(emailProperties, session)) {
+        try (Transport transport = getAndConnectTransport(emailProperties, session)) {
             for (Message message : messages) {
-                Address[] recipients = null;
-                try {
-                    recipients = message.getAllRecipients();
-                    transport.sendMessage(message, recipients);
-                } catch (MessagingException e) {
-                    if (recipients != null) {
-                        Stream.of(recipients).map(Address::toString).forEach(invalidRecipients::add);
-                    }
-                    errorMessages.add(e.getMessage());
-                    logger.error("Could not send this email to the following recipients: {}. Reason: {}", recipients, e.getMessage(), e);
-                }
+                Set<String> errors = sendMessage(transport, message);
+                errorMessages.addAll(errors);
             }
         } catch (MessagingException e) {
             String errorMessage = "Could not setup the email transport: " + e.getMessage();
@@ -189,18 +180,13 @@ public class EmailMessagingService {
             throw new AlertException(errorMessage, e);
         }
         if (!errorMessages.isEmpty()) {
-            String joinedErrorMessages = StringUtils.join(errorMessages, ", ");
-            String errorMessage;
-            if (invalidRecipients.isEmpty()) {
-                errorMessage = "Errors sending emails. " + joinedErrorMessages;
-            } else {
-                errorMessage = String.format("Error sending emails to the following recipients: %s. %s.", invalidRecipients, joinedErrorMessages);
-            }
-            throw new AlertException(errorMessage);
+            String joinedErrorMessages = StringUtils.join(errorMessages, System.lineSeparator());
+            logger.error(joinedErrorMessages);
+            throw new AlertException(joinedErrorMessages);
         }
     }
 
-    private Transport getTransport(EmailProperties emailProperties, Session session) throws MessagingException {
+    private Transport getAndConnectTransport(EmailProperties emailProperties, Session session) throws MessagingException {
         String host = emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_HOST_KEY);
         int port = NumberUtils.toInt(emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_PORT_KEY));
         String username = emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_USER_KEY);
@@ -213,6 +199,23 @@ public class EmailMessagingService {
             transport.connect();
         }
         return transport;
+    }
+
+    private Set<String> sendMessage(Transport transport, Message message) {
+        Set<String> errorMessages = new HashSet<>();
+        Address[] recipients = null;
+        try {
+            recipients = message.getAllRecipients();
+            transport.sendMessage(message, recipients);
+        } catch (MessagingException e) {
+            Set<String> recipientAddresses = Collections.emptySet();
+            if (recipients != null) {
+                recipientAddresses = Stream.of(recipients).map(Address::toString).collect(Collectors.toSet());
+            }
+            String error = String.format("Could not send this email to the following recipients: %s. Reason: %s", recipientAddresses, e.getMessage());
+            errorMessages.add(error);
+        }
+        return errorMessages;
     }
 
     private String generateContentId(String value) {
