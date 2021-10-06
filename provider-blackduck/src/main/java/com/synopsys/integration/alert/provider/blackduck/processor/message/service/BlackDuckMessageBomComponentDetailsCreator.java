@@ -94,6 +94,36 @@ public class BlackDuckMessageBomComponentDetailsCreator {
         );
     }
 
+    public BomComponentDetails createBomComponentUnknownVersionDetails(ProjectVersionComponentVersionView bomComponent, List<ComponentConcern> componentConcerns, List<LinkableItem> additionalAttributes) throws IntegrationException {
+        LinkableItem component;
+        LinkableItem componentVersion = null;
+
+        // FIXME using this query link only in a successful result and not in an unsuccessful result leads to inconsistent values in our custom fields which leads to inconsistent search results (bug).
+        String componentQueryLink = BlackDuckMessageLinkUtils.createComponentQueryLink(bomComponent);
+
+        component = new LinkableItem(BlackDuckMessageLabels.LABEL_COMPONENT, bomComponent.getComponentName(), componentQueryLink);
+        componentVersion = new LinkableItem(BlackDuckMessageLabels.LABEL_COMPONENT_VERSION, "Unknown Version");
+
+        ComponentVulnerabilities componentVulnerabilities = ComponentVulnerabilities.none();
+        List<ComponentPolicy> componentPolicies = retrieveComponentPolicies(bomComponent);
+
+        LinkableItem licenseInfo = BlackDuckMessageAttributesUtils.extractLicense(bomComponent);
+        String usageInfo = BlackDuckMessageAttributesUtils.extractUsage(bomComponent);
+        String issuesUrl = BlackDuckMessageAttributesUtils.extractIssuesUrl(bomComponent).orElse(null);
+
+        return new BomComponentDetails(
+            component,
+            componentVersion,
+            componentVulnerabilities,
+            componentPolicies,
+            componentConcerns,
+            licenseInfo,
+            usageInfo,
+            additionalAttributes,
+            issuesUrl
+        );
+    }
+
     // This exists due to an issue with searching for the wrong URL in an Azure search property. More info here IALERT-2654
     public BomComponentDetails createMissingBomComponentDetailsForVulnerability(
         String componentName,

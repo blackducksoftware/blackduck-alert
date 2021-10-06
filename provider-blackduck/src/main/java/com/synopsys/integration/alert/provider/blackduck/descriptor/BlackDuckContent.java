@@ -30,7 +30,8 @@ public class BlackDuckContent extends ProviderContent {
         NotificationType.VULNERABILITY,
         NotificationType.BOM_EDIT,
         NotificationType.PROJECT,
-        NotificationType.PROJECT_VERSION
+        NotificationType.PROJECT_VERSION,
+        NotificationType.COMPONENT_UNKNOWN_VERSION
     );
 
     private static final EnumSet<ProcessingType> SUPPORTED_PROCESSING_TYPES = EnumSet.of(ProcessingType.DEFAULT, ProcessingType.DIGEST, ProcessingType.SUMMARY);
