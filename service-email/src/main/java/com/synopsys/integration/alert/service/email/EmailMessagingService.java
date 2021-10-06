@@ -10,9 +10,11 @@ package com.synopsys.integration.alert.service.email;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -37,7 +39,6 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
-import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 import com.synopsys.integration.alert.service.email.template.FreemarkerTemplatingService;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -61,10 +62,10 @@ public class EmailMessagingService {
         try {
             String templateName = StringUtils.trimToEmpty(emailTarget.getTemplateName());
             Set<String> emailAddresses = emailTarget.getEmailAddresses()
-                                             .stream()
-                                             .map(String::trim)
-                                             .filter(StringUtils::isNotBlank)
-                                             .collect(Collectors.toSet());
+                .stream()
+                .map(String::trim)
+                .filter(StringUtils::isNotBlank)
+                .collect(Collectors.toSet());
             if (emailAddresses.isEmpty() || StringUtils.isBlank(templateName)) {
                 // Nothing to send
                 logger.debug("No non-blank email addresses were provided");
@@ -161,44 +162,48 @@ public class EmailMessagingService {
 
     public void sendMessages(boolean auth, String host, int port, String username, String password, Session session, List<Message> messages) throws AlertException {
         Set<String> errorMessages = new HashSet<>();
-        Set<String> invalidRecipients = new HashSet<>();
-        for (Message message : messages) {
-            Address[] recipients = null;
-            try {
-                recipients = message.getAllRecipients();
-                if (auth) {
-                    sendAuthenticated(host, port, username, password, message, session);
-                } else {
-                    Transport.send(message);
-                }
-            } catch (MessagingException e) {
-                if (recipients != null) {
-                    Stream.of(recipients).map(Address::toString).forEach(invalidRecipients::add);
-                }
-                errorMessages.add(e.getMessage());
-                logger.error("Could not send this email to the following recipients: {}. Reason: {}", recipients, e.getMessage());
+
+        try (Transport transport = getAndConnectTransport(auth, host, port, username, password, session)) {
+            for (Message message : messages) {
+                Optional<String> errors = sendMessage(transport, message);
+                errors.ifPresent(errorMessages::add);
             }
+        } catch (MessagingException e) {
+            String errorMessage = "Could not setup the email transport: " + e.getMessage();
+            logger.error(errorMessage);
+            throw new AlertException(errorMessage, e);
         }
         if (!errorMessages.isEmpty()) {
-            String joinedErrorMessages = StringUtils.join(errorMessages, ", ");
-            String errorMessage;
-            if (invalidRecipients.isEmpty()) {
-                errorMessage = "Errors sending emails. " + joinedErrorMessages;
-            } else {
-                errorMessage = String.format("Error sending emails to the following recipients: %s. %s.", invalidRecipients, joinedErrorMessages);
-            }
-            throw new AlertException(errorMessage);
+            String joinedErrorMessages = StringUtils.join(errorMessages, System.lineSeparator());
+            logger.error(joinedErrorMessages);
+            throw new AlertException(joinedErrorMessages);
         }
     }
 
-    private void sendAuthenticated(String host, int port, String username, String password, Message message, Session session) throws MessagingException {
-        Transport transport = session.getTransport("smtp");
-        try {
+    private Transport getAndConnectTransport(boolean auth, String host, int port, String username, String password, Session session) throws MessagingException {
+        Transport transport = session.getTransport();
+        if (auth) {
             transport.connect(host, port, username, password);
-            transport.sendMessage(message, message.getAllRecipients());
-        } finally {
-            transport.close();
+        } else {
+            transport.connect();
         }
+        return transport;
+    }
+
+    private Optional<String> sendMessage(Transport transport, Message message) {
+        Address[] recipients = null;
+        try {
+            recipients = message.getAllRecipients();
+            transport.sendMessage(message, recipients);
+        } catch (MessagingException e) {
+            Set<String> recipientAddresses = Collections.emptySet();
+            if (recipients != null) {
+                recipientAddresses = Stream.of(recipients).map(Address::toString).collect(Collectors.toSet());
+            }
+            String error = String.format("Could not send this email to the following recipients: %s. Reason: %s", recipientAddresses, e.getMessage());
+            return Optional.of(error);
+        }
+        return Optional.empty();
     }
 
     private String generateContentId(String value) {
