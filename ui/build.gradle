@@ -12,12 +12,15 @@ task cleanBundles(type: Delete) {
 }
 
 task updateNpmVersion(type: Task) {
-    inputs.file('package.json')
-    outputs.file('package.json')
+    def packageJsonFile = file('package.json')
+    def rootBuildDotGradle = file('../build.gradle')
+
+    inputs.file(packageJsonFile)
+    inputs.file(rootBuildDotGradle)
+    outputs.file(packageJsonFile)
     outputs.cacheIf { true }
 
     doLast {
-        def packageJsonFile = inputs.files.singleFile
         def packageSlurper = new JsonSlurper()
         def packageJson = packageSlurper.parse(packageJsonFile)
         if (packageJson.version != version) {
@@ -25,7 +28,7 @@ task updateNpmVersion(type: Task) {
 
             final def updatedPackageJson = JsonOutput.toJson(packageJson)
 
-            outputs.files.singleFile.text = JsonOutput.prettyPrint(updatedPackageJson)
+            packageJsonFile.text = JsonOutput.prettyPrint(updatedPackageJson)
         }
     }
 }
@@ -91,6 +94,7 @@ task copyStaticWebContent(type: Copy) {
     }
     into "${project.buildDir}/resources/main/static"
 }
+tasks.build.finalizedBy(updateNpmVersion)
 tasks.copyStaticWebContent.finalizedBy(npmBuild)
 tasks.npmBuild.mustRunAfter(updateNpmVersion)
 tasks.npmBuild.mustRunAfter(copyStaticWebContent)
