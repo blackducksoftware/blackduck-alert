@@ -35,7 +35,7 @@ public class EmailMessagingServiceTest {
 
         Mockito.doNothing().when(mockTransport).connect();
         Mockito.doNothing().when(mockTransport).close();
-        Mockito.when(mockSession.getTransport(Mockito.anyString())).thenReturn(mockTransport);
+        Mockito.when(mockSession.getTransport()).thenReturn(mockTransport);
         Mockito.when(mockSession.getProperties()).thenReturn(testProperties.getProperties());
 
         Message message = new MimeMessage(mockSession);
