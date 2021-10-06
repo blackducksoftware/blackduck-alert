@@ -7,14 +7,12 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.processor.message;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
@@ -52,11 +50,10 @@ public class ComponentUnknownVersionExtractor extends AbstractBlackDuckComponent
         BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
         BlackDuckMessageBomComponentDetailsCreator bomComponentDetailsCreator = detailsCreatorFactory.createBomComponentDetailsCreator(blackDuckApiClient);
         List<ComponentConcern> componentConcerns = createComponentConcerns(notificationContent);
-        List<LinkableItem> additionAttributes = createAdditionalAttributes(notificationContent);
         BomComponentDetails bomComponentDetails;
         try {
             ProjectVersionComponentVersionView bomComponent = blackDuckApiClient.getResponse(new HttpUrl(notificationContent.getBomComponent()), ProjectVersionComponentVersionView.class);
-            bomComponentDetails = bomComponentDetailsCreator.createBomComponentUnknownVersionDetails(bomComponent, componentConcerns, additionAttributes);
+            bomComponentDetails = bomComponentDetailsCreator.createBomComponentUnknownVersionDetails(bomComponent, componentConcerns, List.of());
         } catch (IntegrationRestException e) {
             bomComponent404Handler.logIf404OrThrow(e, notificationContent.getComponentName(), null);
             bomComponentDetails = bomComponentDetailsCreator.createMissingBomComponentDetails(
@@ -65,7 +62,7 @@ public class ComponentUnknownVersionExtractor extends AbstractBlackDuckComponent
                 null,
                 null,
                 componentConcerns,
-                additionAttributes
+                List.of()
             );
         }
         return List.of(bomComponentDetails);
@@ -73,37 +70,30 @@ public class ComponentUnknownVersionExtractor extends AbstractBlackDuckComponent
 
     private List<ComponentConcern> createComponentConcerns(ComponentUnknownVersionNotificationContent notificationContent) {
         ComponentUnknownVersionStatus status = notificationContent.getStatus();
-        ItemOperation itemOperation = ComponentUnknownVersionStatus.REMOVED == status ? ItemOperation.DELETE : ItemOperation.ADD;
-        return List.of(ComponentConcern.unknownComponentVersion(itemOperation, notificationContent.getComponentName(), notificationContent.getComponent()));
-    }
-
-    private List<LinkableItem> createAdditionalAttributes(ComponentUnknownVersionNotificationContent notificationContent) {
-        List<LinkableItem> additionalAttributes = new ArrayList<>(5);
         String componentName = notificationContent.getComponentName();
-        LinkableItem vulnerabilityCountsSection = new LinkableItem("Vulnerability Counts", "");
-        LinkableItem criticalCounts = createCountLinkableItem(ComponentConcernSeverity.CRITICAL, notificationContent.getCriticalVulnerabilityCount(), componentName, notificationContent.getCriticalVulnerabilityName(),
+        ItemOperation itemOperation = ComponentUnknownVersionStatus.REMOVED == status ? ItemOperation.DELETE : ItemOperation.ADD;
+        ComponentConcern criticalCount = createComponentConcernWithCount(itemOperation, ComponentConcernSeverity.CRITICAL, notificationContent.getCriticalVulnerabilityCount(), componentName,
+            notificationContent.getCriticalVulnerabilityName(),
             notificationContent.getCriticalVulnerabilityVersion());
-        LinkableItem highCounts = createCountLinkableItem(ComponentConcernSeverity.MAJOR_HIGH, notificationContent.getHighVulnerabilityCount(), componentName, notificationContent.getHighVulnerabilityVersionName(),
+
+        ComponentConcern highCount = createComponentConcernWithCount(itemOperation, ComponentConcernSeverity.MAJOR_HIGH, notificationContent.getHighVulnerabilityCount(), componentName, notificationContent.getHighVulnerabilityVersionName(),
             notificationContent.getHighVulnerabilityVersion());
-        LinkableItem mediumCounts = createCountLinkableItem(ComponentConcernSeverity.MINOR_MEDIUM, notificationContent.getMediumVulnerabilityCount(), componentName, notificationContent.getMediumVulnerabilityVersionName(),
+
+        ComponentConcern mediumCount = createComponentConcernWithCount(itemOperation, ComponentConcernSeverity.MINOR_MEDIUM, notificationContent.getMediumVulnerabilityCount(), componentName,
+            notificationContent.getMediumVulnerabilityVersionName(),
             notificationContent.getMediumVulnerabilityVersion());
-        LinkableItem lowCounts = createCountLinkableItem(ComponentConcernSeverity.TRIVIAL_LOW, notificationContent.getLowVulnerabilityCount(), componentName, notificationContent.getLowVulnerabilityVersionName(),
+
+        ComponentConcern lowCount = createComponentConcernWithCount(itemOperation, ComponentConcernSeverity.TRIVIAL_LOW, notificationContent.getLowVulnerabilityCount(), componentName, notificationContent.getLowVulnerabilityVersionName(),
             notificationContent.getLowVulnerabilityVersion());
 
-        additionalAttributes.add(vulnerabilityCountsSection);
-        additionalAttributes.add(criticalCounts);
-        additionalAttributes.add(highCounts);
-        additionalAttributes.add(mediumCounts);
-        additionalAttributes.add(lowCounts);
-
-        return additionalAttributes;
+        return List.of(criticalCount, highCount, mediumCount, lowCount);
     }
 
-    private LinkableItem createCountLinkableItem(ComponentConcernSeverity componentConcernSeverity, int count, String componentName, String componentVersion, String componentUrl) {
-        String value = "";
+    private ComponentConcern createComponentConcernWithCount(ItemOperation operation, ComponentConcernSeverity componentConcernSeverity, int count, String componentName, String componentVersion, String componentUrl) {
+        String componentVersionName = "";
         if (count > 0) {
-            value = String.format("%s %s", componentName, componentVersion);
+            componentVersionName = String.format("%s %s", componentName, componentVersion);
         }
-        return new LinkableItem(String.format("    %s (%d)", componentConcernSeverity.getVulnerabilityLabel(), count), value, componentUrl);
+        return ComponentConcern.unknownComponentVersion(operation, componentVersionName, componentConcernSeverity, Integer.valueOf(count), componentUrl);
     }
 }

@@ -142,6 +142,8 @@ public class ProjectMessageSummarizer {
                 return "Policies";
             case VULNERABILITY:
                 return "Vulnerabilities";
+            case UNKNOWN_VERSION:
+                return "Vulnerability Counts";
             default:
                 return "Concerns";
         }

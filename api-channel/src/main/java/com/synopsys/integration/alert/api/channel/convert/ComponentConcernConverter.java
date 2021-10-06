@@ -28,6 +28,7 @@ public class ComponentConcernConverter {
     private static final String SPACE_OPEN_PAREN = " (";
     private static final String SPACE_CLOSE_PAREN = ")";
     private static final String VULNERABILITIES_STRING = "Vulnerabilities";
+    private static final String VULNERABILITY_COUNT_STRING = "Vulnerability counts";
     private static final String SPACE_DASH_SPACE = "-";
     private static final String BRACKET_LEFT = "[";
     private static final String BRACKET_RIGHT = "]";
@@ -41,6 +42,7 @@ public class ComponentConcernConverter {
     private final String formattedOpenParen;
     private final String formattedCloseParen;
     private final String formattedVulnerabilitiesString;
+    private final String formattedVulnerabilityCountsString;
     private final String formattedDash;
     private final String formattedBracketLeft;
     private final String formattedBracketRight;
@@ -55,6 +57,7 @@ public class ComponentConcernConverter {
         this.formattedOpenParen = formatter.encode(SPACE_OPEN_PAREN);
         this.formattedCloseParen = formatter.encode(SPACE_CLOSE_PAREN);
         this.formattedVulnerabilitiesString = formatter.encode(VULNERABILITIES_STRING);
+        this.formattedVulnerabilityCountsString = formatter.encode(VULNERABILITY_COUNT_STRING);
         this.formattedDash = formatter.encode(SPACE_DASH_SPACE);
         this.formattedBracketLeft = formatter.encode(BRACKET_LEFT);
         this.formattedBracketRight = formatter.encode(BRACKET_RIGHT);
@@ -63,19 +66,23 @@ public class ComponentConcernConverter {
     public List<String> gatherComponentConcernSectionPieces(List<ComponentConcern> componentConcerns) {
         List<String> componentConcernSectionPieces = new LinkedList<>();
         List<ComponentConcern> vulnerabilityConcerns = new LinkedList<>();
+        List<ComponentConcern> estimatedRiskConcerns = new LinkedList<>();
 
         Set<ComponentConcern> sortedConcerns = new TreeSet<>(componentConcerns);
         for (ComponentConcern componentConcern : sortedConcerns) {
-            if (ComponentConcernType.POLICY.equals(componentConcern.getType())) {
+            if (ComponentConcernType.POLICY == componentConcern.getType()) {
                 String policySectionPiece = createPolicySectionPiece(componentConcern);
                 componentConcernSectionPieces.add(policySectionPiece);
                 componentConcernSectionPieces.add(formatter.getLineSeparator());
+            } else if (ComponentConcernType.UNKNOWN_VERSION == componentConcern.getType()) {
+                estimatedRiskConcerns.add(componentConcern);
             } else {
                 vulnerabilityConcerns.add(componentConcern);
             }
         }
 
         List<String> vulnerabilitySectionPieces = createVulnerabilitySectionPieces(vulnerabilityConcerns);
+        List<String> estimatedRiskSectionPieces = createEstimatedRiskSectionPieces(estimatedRiskConcerns);
         componentConcernSectionPieces.addAll(vulnerabilitySectionPieces);
 
         return componentConcernSectionPieces;
@@ -162,15 +169,46 @@ public class ComponentConcernConverter {
     }
 
     private String createVulnerabilityConcernString(ComponentConcern vulnerabilityConcern) {
-        String encodedName = formatter.encode(vulnerabilityConcern.getName());
-        String vulnerabilityConcernString = encodedName;
+        String vulnerabilityConcernString = createComponentNameLinkIfPresent(vulnerabilityConcern);
+        return String.format(TRIPLE_STRING_REPLACEMENT, formattedBracketLeft, vulnerabilityConcernString, formattedBracketRight);
+    }
 
-        Optional<String> optionalUrl = vulnerabilityConcern.getUrl();
+    private List<String> createEstimatedRiskSectionPieces(List<ComponentConcern> estimatedRiskConcerns) {
+        if (estimatedRiskConcerns.isEmpty()) {
+            return List.of();
+        }
+
+        List<String> estimatedRiskForOperationSectionPieces = new LinkedList<>();
+        estimatedRiskForOperationSectionPieces.add(formatter.getSectionSeparator());
+        estimatedRiskForOperationSectionPieces.add(formatter.getLineSeparator());
+
+        estimatedRiskForOperationSectionPieces.add(String.format("%s%s", formattedVulnerabilityCountsString, formattedColonSpace));
+
+        for (ComponentConcern componentConcern : estimatedRiskConcerns) {
+            estimatedRiskForOperationSectionPieces.add(createEstimatedRiskConcernString(componentConcern));
+        }
+
+        return estimatedRiskForOperationSectionPieces;
+    }
+
+    private String createEstimatedRiskConcernString(ComponentConcern estimatedRiskConcern) {
+        String severity = formatter.encode(estimatedRiskConcern.getSeverity().getVulnerabilityLabel());
+        String countString = String.format(TRIPLE_STRING_REPLACEMENT, formattedOpenParen, estimatedRiskConcern.getNumericValue(), formattedCloseParen);
+        String componentName = createComponentNameLinkIfPresent(estimatedRiskConcern);
+        return String.format("    %s: %s %s", severity, countString, componentName);
+    }
+
+    private String createComponentNameLinkIfPresent(ComponentConcern componentConcern) {
+        String encodedName = formatter.encode(componentConcern.getName());
+        String componentNameString = encodedName;
+
+        Optional<String> optionalUrl = componentConcern.getUrl();
         if (optionalUrl.isPresent()) {
             String encodedUrl = formatter.encode(optionalUrl.get());
-            vulnerabilityConcernString = formatter.createLink(encodedName, encodedUrl);
+            componentNameString = formatter.createLink(encodedName, encodedUrl);
         }
-        return String.format(TRIPLE_STRING_REPLACEMENT, formattedBracketLeft, vulnerabilityConcernString, formattedBracketRight);
+
+        return componentNameString;
     }
 
     private String createItemOperationVerb(ItemOperation itemOperation) {
