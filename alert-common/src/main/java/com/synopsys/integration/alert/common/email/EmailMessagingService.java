@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -171,8 +172,8 @@ public class EmailMessagingService {
 
         try (Transport transport = getAndConnectTransport(emailProperties, session)) {
             for (Message message : messages) {
-                Set<String> errors = sendMessage(transport, message);
-                errorMessages.addAll(errors);
+                Optional<String> errors = sendMessage(transport, message);
+                errors.ifPresent(errorMessages::add);
             }
         } catch (MessagingException e) {
             String errorMessage = "Could not setup the email transport: " + e.getMessage();
@@ -201,8 +202,7 @@ public class EmailMessagingService {
         return transport;
     }
 
-    private Set<String> sendMessage(Transport transport, Message message) {
-        Set<String> errorMessages = new HashSet<>();
+    private Optional<String> sendMessage(Transport transport, Message message) {
         Address[] recipients = null;
         try {
             recipients = message.getAllRecipients();
@@ -213,9 +213,9 @@ public class EmailMessagingService {
                 recipientAddresses = Stream.of(recipients).map(Address::toString).collect(Collectors.toSet());
             }
             String error = String.format("Could not send this email to the following recipients: %s. Reason: %s", recipientAddresses, e.getMessage());
-            errorMessages.add(error);
+            return Optional.of(error);
         }
-        return errorMessages;
+        return Optional.empty();
     }
 
     private String generateContentId(String value) {
