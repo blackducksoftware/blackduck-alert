@@ -13,6 +13,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentDetails;
+import com.synopsys.integration.alert.api.channel.issue.model.IssueComponentUnknownVersionDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.IssuePolicyDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueVulnerabilityDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueVulnerabilityModel;
@@ -39,10 +40,13 @@ public class ProjectMessageToIssueModelTransformer {
     private List<ProjectIssueModel> convertToIssueModels(ProjectMessage projectMessage, IssueBomComponentDetails issueBomComponent, List<ComponentConcern> componentConcerns) {
         List<ComponentConcern> policyConcerns = new LinkedList<>();
         List<ComponentConcern> vulnerabilityConcerns = new LinkedList<>();
+        List<ComponentConcern> estimatedRiskConcerns = new LinkedList<>();
 
         for (ComponentConcern componentConcern : componentConcerns) {
             if (ComponentConcernType.POLICY.equals(componentConcern.getType())) {
                 policyConcerns.add(componentConcern);
+            } else if (ComponentConcernType.UNKNOWN_VERSION.equals(componentConcern.getType())) {
+                estimatedRiskConcerns.add(componentConcern);
             } else {
                 vulnerabilityConcerns.add(componentConcern);
             }
@@ -58,6 +62,11 @@ public class ProjectMessageToIssueModelTransformer {
         if (!vulnerabilityConcerns.isEmpty()) {
             ProjectIssueModel vulnerabilityProjectIssueModel = createVulnerabilityProjectIssueModel(projectMessage, issueBomComponent, vulnerabilityConcerns);
             projectIssueModels.add(vulnerabilityProjectIssueModel);
+        }
+
+        if (!estimatedRiskConcerns.isEmpty()) {
+            ProjectIssueModel estimatedRiskProjectIssueModel = createEstimatedRiskProjectIssueModel(projectMessage, issueBomComponent, estimatedRiskConcerns);
+            projectIssueModels.add(estimatedRiskProjectIssueModel);
         }
 
         return projectIssueModels;
@@ -105,6 +114,18 @@ public class ProjectMessageToIssueModelTransformer {
             projectMessage.getProjectVersion().orElse(null),
             issueBomComponent,
             vulnerabilityDetails
+        );
+    }
+
+    private ProjectIssueModel createEstimatedRiskProjectIssueModel(ProjectMessage projectMessage, IssueBomComponentDetails issueBomComponent, List<ComponentConcern> estimatedRiskConcerns) {
+        IssueComponentUnknownVersionDetails unknownVersionDetails = new IssueComponentUnknownVersionDetails(List.of());
+
+        return ProjectIssueModel.componentUnknownVersion(
+            projectMessage.getProviderDetails(),
+            projectMessage.getProject(),
+            projectMessage.getProjectVersion().orElse(null),
+            issueBomComponent,
+            unknownVersionDetails
         );
     }
 
