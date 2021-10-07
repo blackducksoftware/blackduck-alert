@@ -70,11 +70,11 @@ public class ComponentConcernConverter {
 
         Set<ComponentConcern> sortedConcerns = new TreeSet<>(componentConcerns);
         for (ComponentConcern componentConcern : sortedConcerns) {
-            if (ComponentConcernType.POLICY == componentConcern.getType()) {
+            if (ComponentConcernType.POLICY.equals(componentConcern.getType())) {
                 String policySectionPiece = createPolicySectionPiece(componentConcern);
                 componentConcernSectionPieces.add(policySectionPiece);
                 componentConcernSectionPieces.add(formatter.getLineSeparator());
-            } else if (ComponentConcernType.UNKNOWN_VERSION == componentConcern.getType()) {
+            } else if (ComponentConcernType.UNKNOWN_VERSION.equals(componentConcern.getType())) {
                 estimatedRiskConcerns.add(componentConcern);
             } else {
                 vulnerabilityConcerns.add(componentConcern);
@@ -84,6 +84,7 @@ public class ComponentConcernConverter {
         List<String> vulnerabilitySectionPieces = createVulnerabilitySectionPieces(vulnerabilityConcerns);
         List<String> estimatedRiskSectionPieces = createEstimatedRiskSectionPieces(estimatedRiskConcerns);
         componentConcernSectionPieces.addAll(vulnerabilitySectionPieces);
+        componentConcernSectionPieces.addAll(estimatedRiskSectionPieces);
 
         return componentConcernSectionPieces;
     }
@@ -183,9 +184,11 @@ public class ComponentConcernConverter {
         estimatedRiskForOperationSectionPieces.add(formatter.getLineSeparator());
 
         estimatedRiskForOperationSectionPieces.add(String.format("%s%s", formattedVulnerabilityCountsString, formattedColonSpace));
-
+        estimatedRiskForOperationSectionPieces.add(formatter.getLineSeparator());
+        
         for (ComponentConcern componentConcern : estimatedRiskConcerns) {
             estimatedRiskForOperationSectionPieces.add(createEstimatedRiskConcernString(componentConcern));
+            estimatedRiskForOperationSectionPieces.add(formatter.getLineSeparator());
         }
 
         return estimatedRiskForOperationSectionPieces;
