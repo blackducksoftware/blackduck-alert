@@ -84,26 +84,13 @@ task npmBuild(type: Exec, dependsOn: [npmInstallFromCacheRetry]) {
 }
 
 task copyStaticWebContent(type: Copy) {
-    outputs.cacheIf { true }
-    def rootBuildCssDir = "${project.projectDir}/src/main/css"
-    def rootBuildImgDir = "${project.projectDir}/src/main/img"
-    def rootStaticResourcesDir = "${project.buildDir}/resources/main/static"
-    def relativeCssDir = 'css'
-    def relativeImgDir = 'img'
-
-    inputs.dir(rootBuildCssDir)
-    inputs.dir(rootBuildImgDir)
-    outputs.dir(relativeCssDir)
-    outputs.dir(relativeImgDir)
-    outputs.dir(rootStaticResourcesDir)
-
-    from(rootBuildCssDir) {
-        into relativeCssDir
+    from("${project.projectDir}/src/main/css") {
+        into 'css'
     }
-    from(rootBuildImgDir) {
-        into relativeImgDir
+    from("${project.projectDir}/src/main/img") {
+        into 'img'
     }
-    into rootStaticResourcesDir
+    into "${project.buildDir}/resources/main/static"
 }
 tasks.build.finalizedBy(updateNpmVersion)
 tasks.copyStaticWebContent.finalizedBy(npmBuild)
