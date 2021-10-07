@@ -71,7 +71,7 @@ public class AzureBoardsComponentIssueFinder implements ProjectVersionComponentI
             categoryKey = AzureBoardsAlertIssuePropertiesManager.CATEGORY_TYPE_POLICY_COMPATIBILITY_LABEL;
 
             String additionalInfoKey = AzureBoardsAlertIssuePropertiesManager.POLICY_ADDITIONAL_KEY_COMPATIBILITY_LABEL + optionalPolicyName.get();
-            fieldRefNameToValue.addAdditionInfoKey(additionalInfoKey);
+            fieldRefNameToValue.addAdditionalInfoKey(additionalInfoKey);
         }
 
         fieldRefNameToValue.addCategoryKey(categoryKey);

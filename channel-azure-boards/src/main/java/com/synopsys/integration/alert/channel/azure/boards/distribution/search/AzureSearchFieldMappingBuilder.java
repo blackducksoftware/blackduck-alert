@@ -44,7 +44,7 @@ public class AzureSearchFieldMappingBuilder {
         return this;
     }
 
-    public AzureSearchFieldMappingBuilder addAdditionInfoKey(String additionalInfo) {
+    public AzureSearchFieldMappingBuilder addAdditionalInfoKey(String additionalInfo) {
         addMapping(AzureCustomFieldManager.ALERT_ADDITIONAL_INFO_KEY_FIELD_REFERENCE_NAME, additionalInfo);
         return this;
     }
