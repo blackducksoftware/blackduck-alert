@@ -180,6 +180,7 @@ public class EmailMessagingService {
             logger.error(errorMessage);
             throw new AlertException(errorMessage, e);
         }
+        logger.trace("Transport session closed.");
         if (!errorMessages.isEmpty()) {
             String joinedErrorMessages = StringUtils.join(errorMessages, System.lineSeparator());
             logger.error(joinedErrorMessages);
@@ -199,6 +200,7 @@ public class EmailMessagingService {
         } else {
             transport.connect();
         }
+        logger.trace("Transport session established.");
         return transport;
     }
 
