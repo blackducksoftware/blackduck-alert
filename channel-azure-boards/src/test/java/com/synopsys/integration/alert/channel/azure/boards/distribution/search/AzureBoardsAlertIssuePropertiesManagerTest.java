@@ -136,7 +136,7 @@ public class AzureBoardsAlertIssuePropertiesManagerTest {
         Object workItemValue = workItem.getValue();
         assertEquals(subTopicKey, workItemValue);
         // Ensures that we don't push values that are larger than azure allows for custom fields
-        assertEquals(256, workItemValue);
+        assertEquals(256, workItemValue.toString().length());
     }
 
     private void assertValidContents(List<WorkItemElementOperationModel> workItems, String searchKey, String expectedValue) {
