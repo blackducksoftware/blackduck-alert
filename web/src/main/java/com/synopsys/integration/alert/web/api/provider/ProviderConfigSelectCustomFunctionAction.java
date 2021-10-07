@@ -25,7 +25,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueS
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOptions;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
@@ -35,13 +35,13 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 @Component
 public class ProviderConfigSelectCustomFunctionAction extends CustomFunctionAction<LabelValueSelectOptions> {
-    private final ConfigurationAccessor configurationAccessor;
+    private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     private final DescriptorMap descriptorMap;
 
     @Autowired
-    public ProviderConfigSelectCustomFunctionAction(AuthorizationManager authorizationManager, ConfigurationAccessor configurationAccessor, DescriptorMap descriptorMap) {
+    public ProviderConfigSelectCustomFunctionAction(AuthorizationManager authorizationManager, ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor, DescriptorMap descriptorMap) {
         super(authorizationManager);
-        this.configurationAccessor = configurationAccessor;
+        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
         this.descriptorMap = descriptorMap;
     }
 
@@ -51,7 +51,7 @@ public class ProviderConfigSelectCustomFunctionAction extends CustomFunctionActi
         Optional<DescriptorKey> descriptorKey = descriptorMap.getDescriptorKey(providerName);
         List<LabelValueSelectOption> options = List.of();
         if (descriptorKey.isPresent()) {
-            List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey.get(), ConfigContextEnum.GLOBAL);
+            List<ConfigurationModel> configurationModels = configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey.get(), ConfigContextEnum.GLOBAL);
             options = configurationModels.stream()
                 .map(this::createNameToIdOption)
                 .flatMap(Optional::stream)

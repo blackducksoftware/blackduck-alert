@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
@@ -34,21 +34,21 @@ public class SAMLContext implements Serializable {
     private final transient Logger logger = LoggerFactory.getLogger(SAMLContext.class);
 
     private final AuthenticationDescriptorKey descriptorKey;
-    private final transient ConfigurationAccessor configurationAccessor;
+    private final transient ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
 
-    public SAMLContext(AuthenticationDescriptorKey descriptorKey, ConfigurationAccessor configurationAccessor) {
+    public SAMLContext(AuthenticationDescriptorKey descriptorKey, ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor) {
         this.descriptorKey = descriptorKey;
-        this.configurationAccessor = configurationAccessor;
+        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
     }
 
     public ConfigurationModel getCurrentConfiguration() throws AlertException {
-        return configurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey, ConfigContextEnum.GLOBAL).stream()
+        return configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey, ConfigContextEnum.GLOBAL).stream()
                    .findFirst()
                    .orElseThrow(() -> new AlertConfigurationException("Settings configuration missing"));
     }
 
     public boolean isSAMLEnabled() {
-        Optional<ConfigurationModel> samlConfig = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey, ConfigContextEnum.GLOBAL)
+        Optional<ConfigurationModel> samlConfig = configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey, ConfigContextEnum.GLOBAL)
                                                       .stream()
                                                       .findFirst();
         return isSAMLEnabled(samlConfig);
@@ -69,7 +69,7 @@ public class SAMLContext implements Serializable {
                 fields.put(AuthenticationDescriptor.KEY_SAML_ENABLED, enabledField);
             }
             enabledField.setFieldValue(String.valueOf(false));
-            configurationAccessor.updateConfiguration(configurationModel.getConfigurationId(), fields.values());
+            configurationModelConfigurationAccessor.updateConfiguration(configurationModel.getConfigurationId(), fields.values());
         } catch (AlertException ex) {
             logger.error("Error disabling SAML configuration.");
         }

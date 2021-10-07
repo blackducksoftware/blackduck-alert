@@ -34,7 +34,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.errors.Aler
 import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -55,7 +55,7 @@ import com.synopsys.integration.rest.exception.IntegrationRestException;
 @Component
 public class ConfigActions extends AbstractConfigResourceActions {
     private final Logger logger = LoggerFactory.getLogger(ConfigActions.class);
-    private final ConfigurationAccessor configurationAccessor;
+    private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     private final FieldModelProcessor fieldModelProcessor;
     private final DescriptorProcessor descriptorProcessor;
     private final ConfigurationFieldModelConverter modelConverter;
@@ -65,11 +65,11 @@ public class ConfigActions extends AbstractConfigResourceActions {
     private final SettingsDescriptorKey settingsDescriptorKey;
 
     @Autowired
-    public ConfigActions(AuthorizationManager authorizationManager, DescriptorAccessor descriptorAccessor, ConfigurationAccessor configurationAccessor,
+    public ConfigActions(AuthorizationManager authorizationManager, DescriptorAccessor descriptorAccessor, ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor,
         FieldModelProcessor fieldModelProcessor, DescriptorProcessor descriptorProcessor, ConfigurationFieldModelConverter modelConverter,
         DescriptorMap descriptorMap, PKIXErrorResponseFactory pkixErrorResponseFactory, EncryptionUtility encryptionUtility, SettingsDescriptorKey settingsDescriptorKey) {
         super(authorizationManager, descriptorAccessor);
-        this.configurationAccessor = configurationAccessor;
+        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
         this.fieldModelProcessor = fieldModelProcessor;
         this.descriptorProcessor = descriptorProcessor;
         this.modelConverter = modelConverter;
@@ -92,7 +92,7 @@ public class ConfigActions extends AbstractConfigResourceActions {
             return new ActionResponse<>(HttpStatus.BAD_REQUEST, String.format("Unknown descriptor: %s", descriptorName));
         }
 
-        List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey.get(), configContext);
+        List<ConfigurationModel> configurationModels = configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey.get(), configContext);
         List<FieldModel> fieldModels = convertConfigurationModelList(descriptorName, context, configurationModels);
         return new ActionResponse<>(HttpStatus.OK, new MultiFieldModel(fieldModels));
     }
@@ -123,7 +123,7 @@ public class ConfigActions extends AbstractConfigResourceActions {
     @Override
     protected Optional<FieldModel> findFieldModel(Long id) {
         Optional<FieldModel> optionalModel = Optional.empty();
-        Optional<ConfigurationModel> configurationModel = configurationAccessor.getConfigurationById(id);
+        Optional<ConfigurationModel> configurationModel = configurationModelConfigurationAccessor.getConfigurationById(id);
         if (configurationModel.isPresent()) {
             try {
                 FieldModel configurationFieldModel = modelConverter.convertToFieldModel(configurationModel.get());
@@ -138,13 +138,13 @@ public class ConfigActions extends AbstractConfigResourceActions {
 
     @Override
     protected ActionResponse<FieldModel> deleteWithoutChecks(Long id) {
-        Optional<ConfigurationModel> configuration = configurationAccessor.getConfigurationById(id);
+        Optional<ConfigurationModel> configuration = configurationModelConfigurationAccessor.getConfigurationById(id);
         if (configuration.isPresent()) {
             try {
                 ConfigurationModel configurationModel = configuration.get();
                 FieldModel convertedFieldModel = modelConverter.convertToFieldModel(configurationModel);
                 FieldModel fieldModel = fieldModelProcessor.performBeforeDeleteAction(convertedFieldModel);
-                configurationAccessor.deleteConfiguration(Long.parseLong(fieldModel.getId()));
+                configurationModelConfigurationAccessor.deleteConfiguration(Long.parseLong(fieldModel.getId()));
                 fieldModelProcessor.performAfterDeleteAction(fieldModel);
             } catch (AlertException ex) {
                 logger.error(String.format("Error deleting config id: %d", id), ex);
@@ -162,7 +162,7 @@ public class ConfigActions extends AbstractConfigResourceActions {
                 FieldModel modifiedFieldModel = fieldModelProcessor.performBeforeSaveAction(resource);
                 String context = modifiedFieldModel.getContext();
                 Map<String, ConfigurationFieldModel> configurationFieldModelMap = modelConverter.convertToConfigurationFieldModelMap(modifiedFieldModel);
-                ConfigurationModel configuration = configurationAccessor.createConfiguration(descriptorKey.get(), EnumUtils.getEnum(ConfigContextEnum.class, context), configurationFieldModelMap.values());
+                ConfigurationModel configuration = configurationModelConfigurationAccessor.createConfiguration(descriptorKey.get(), EnumUtils.getEnum(ConfigContextEnum.class, context), configurationFieldModelMap.values());
                 FieldModel dbSavedModel = modelConverter.convertToFieldModel(configuration);
                 FieldModel afterSaveAction = fieldModelProcessor.performAfterSaveAction(dbSavedModel);
                 FieldModel responseModel = dbSavedModel.fill(afterSaveAction);
@@ -177,12 +177,12 @@ public class ConfigActions extends AbstractConfigResourceActions {
 
     @Override
     protected ActionResponse<FieldModel> updateWithoutChecks(Long id, FieldModel resource) {
-        Optional<ConfigurationModel> optionalPreviousConfig = configurationAccessor.getConfigurationById(id);
+        Optional<ConfigurationModel> optionalPreviousConfig = configurationModelConfigurationAccessor.getConfigurationById(id);
         FieldModel previousFieldModel = optionalPreviousConfig.isPresent() ? modelConverter.convertToFieldModel(optionalPreviousConfig.get()) : null;
         try {
             FieldModel updatedFieldModel = fieldModelProcessor.performBeforeUpdateAction(resource);
             Collection<ConfigurationFieldModel> updatedFields = fieldModelProcessor.fillFieldModelWithExistingData(id, updatedFieldModel);
-            ConfigurationModel configurationModel = configurationAccessor.updateConfiguration(id, updatedFields);
+            ConfigurationModel configurationModel = configurationModelConfigurationAccessor.updateConfiguration(id, updatedFields);
             FieldModel dbSavedModel = modelConverter.convertToFieldModel(configurationModel);
             FieldModel afterUpdateAction = fieldModelProcessor.performAfterUpdateAction(previousFieldModel, dbSavedModel);
             FieldModel responseModel = dbSavedModel.fill(afterUpdateAction);

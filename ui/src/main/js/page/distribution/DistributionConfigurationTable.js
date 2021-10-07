@@ -12,6 +12,7 @@ import AutoRefresh from 'common/table/AutoRefresh';
 import IconTableCellFormatter from 'common/table/IconTableCellFormatter';
 import * as DistributionRequestUtility from 'page/distribution/DistributionTableRequestUtility';
 import { EXISTING_CHANNELS, EXISTING_PROVIDERS } from 'common/DescriptorInfo';
+import { ProgressIcon } from 'common/table/ProgressIcon';
 
 const DistributionConfigurationTable = ({
     csrfToken, errorHandler, readonly, showRefreshButton, descriptors
@@ -280,7 +281,7 @@ const DistributionConfigurationTable = ({
     };
 
     const nameColumnFormatter = (cell, row) => {
-        const defaultValue = <div className="inline" title={cell}>{cell}</div>;
+        const defaultValue = <div className="tableCell" title={cell}>{cell}</div>;
         if (jobsValidationResults && jobsValidationResults.length > 0) {
             const jobErrors = jobsValidationResults.filter((item) => item.id === row.id);
             if (jobErrors && jobErrors.length > 0) {
@@ -445,6 +446,7 @@ const DistributionConfigurationTable = ({
                 {createIconColumn('pencil-alt', 'Edit', editButtonClicked)}
                 {createIconColumn('copy', 'Copy', copyButtonClicked)}
             </BootstrapTable>
+            <ProgressIcon inProgress={progress} />
         </div>
     );
 };

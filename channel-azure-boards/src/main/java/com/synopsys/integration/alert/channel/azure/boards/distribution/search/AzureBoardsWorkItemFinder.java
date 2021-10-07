@@ -8,7 +8,6 @@
 package com.synopsys.integration.alert.channel.azure.boards.distribution.search;
 
 import java.util.List;
-import java.util.Map;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.AzureBoardsIssueTrackerQueryManager;
@@ -29,7 +28,7 @@ public class AzureBoardsWorkItemFinder {
         this.teamProjectName = teamProjectName;
     }
 
-    public List<WorkItemResponseModel> findWorkItems(LinkableItem provider, LinkableItem project, Map<String, String> fieldReferenceNameToExpectedValue) throws AlertException {
+    public List<WorkItemResponseModel> findWorkItems(LinkableItem provider, LinkableItem project, AzureSearchFieldMappingBuilder fieldReferenceNameToExpectedValue) throws AlertException {
         String providerKey = AzureBoardsSearchPropertiesUtils.createProviderKey(provider.getLabel(), provider.getUrl().orElse(null));
         String topicKey = AzureBoardsSearchPropertiesUtils.createNullableLinkableItemKey(project);
 
@@ -42,8 +41,8 @@ public class AzureBoardsWorkItemFinder {
             .and(AzureCustomFieldManager.ALERT_PROVIDER_KEY_FIELD_REFERENCE_NAME, WorkItemQueryWhereOperator.EQ, providerKey)
             .and(AzureCustomFieldManager.ALERT_TOPIC_KEY_FIELD_REFERENCE_NAME, WorkItemQueryWhereOperator.EQ, topicKey);
 
-        for (Map.Entry<String, String> refToValue : fieldReferenceNameToExpectedValue.entrySet()) {
-            queryBuilder = queryBuilder.and(refToValue.getKey(), WorkItemQueryWhereOperator.EQ, refToValue.getValue());
+        for (AzureSearchFieldMappingBuilder.ReferenceToValue refToValue : fieldReferenceNameToExpectedValue.buildAsList()) {
+            queryBuilder = queryBuilder.and(refToValue.getReferenceKey(), WorkItemQueryWhereOperator.EQ, refToValue.getFieldValue());
         }
 
         WorkItemQuery query = queryBuilder.orderBy(systemIdFieldName).build();

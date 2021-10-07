@@ -21,7 +21,7 @@ import com.synopsys.integration.alert.common.action.FieldModelTestAction;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.FieldStatusSeverity;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -36,13 +36,13 @@ import com.synopsys.integration.exception.IntegrationException;
 public class BlackDuckDistributionFieldModelTestAction extends FieldModelTestAction {
     private final ProviderDataAccessor blackDuckDataAccessor;
     private final BlackDuckProvider blackDuckProvider;
-    private final ConfigurationAccessor configurationAccessor;
+    private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
 
     @Autowired
-    public BlackDuckDistributionFieldModelTestAction(ProviderDataAccessor blackDuckDataAccessor, BlackDuckProvider blackDuckProvider, ConfigurationAccessor configurationAccessor) {
+    public BlackDuckDistributionFieldModelTestAction(ProviderDataAccessor blackDuckDataAccessor, BlackDuckProvider blackDuckProvider, ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor) {
         this.blackDuckDataAccessor = blackDuckDataAccessor;
         this.blackDuckProvider = blackDuckProvider;
-        this.configurationAccessor = configurationAccessor;
+        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
     }
 
     @Override
@@ -59,7 +59,7 @@ public class BlackDuckDistributionFieldModelTestAction extends FieldModelTestAct
             }
 
             BlackDuckProperties blackDuckProperties = null;
-            Optional<ConfigurationModel> providerConfigurationOptional = configurationAccessor.getConfigurationById(providerConfigId);
+            Optional<ConfigurationModel> providerConfigurationOptional = configurationModelConfigurationAccessor.getConfigurationById(providerConfigId);
             if (providerConfigurationOptional.isPresent()) {
                 ConfigurationModel providerConfiguration = providerConfigurationOptional.get();
                 StatefulProvider statefulProvider = blackDuckProvider.createStatefulProvider(providerConfiguration);

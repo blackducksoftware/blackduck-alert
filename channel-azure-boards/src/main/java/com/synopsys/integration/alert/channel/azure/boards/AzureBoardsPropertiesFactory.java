@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
 
@@ -22,19 +22,19 @@ public class AzureBoardsPropertiesFactory {
     private final AzureBoardsChannelKey channelKey;
     private final AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory;
     private final AzureRedirectUrlCreator azureRedirectUrlCreator;
-    private final ConfigurationAccessor configurationAccessor;
+    private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
 
     @Autowired
     public AzureBoardsPropertiesFactory(AzureBoardsChannelKey channelKey, AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory,
-        AzureRedirectUrlCreator azureRedirectUrlCreator, ConfigurationAccessor configurationAccessor) {
+        AzureRedirectUrlCreator azureRedirectUrlCreator, ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor) {
         this.channelKey = channelKey;
         this.credentialDataStoreFactory = credentialDataStoreFactory;
         this.azureRedirectUrlCreator = azureRedirectUrlCreator;
-        this.configurationAccessor = configurationAccessor;
+        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
     }
 
     public AzureBoardsProperties createAzureBoardsProperties() throws AlertConfigurationException {
-        ConfigurationModel azureBoardsGlobalConfiguration = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(channelKey, ConfigContextEnum.GLOBAL)
+        ConfigurationModel azureBoardsGlobalConfiguration = configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(channelKey, ConfigContextEnum.GLOBAL)
                                                                 .stream()
                                                                 .findAny()
                                                                 .orElseThrow(() -> new AlertConfigurationException("Missing Azure Boards global configuration"));

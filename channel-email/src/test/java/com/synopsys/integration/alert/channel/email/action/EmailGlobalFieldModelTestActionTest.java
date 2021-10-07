@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -17,20 +16,17 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFileCreator;
 import com.synopsys.integration.alert.channel.email.attachment.MessageContentGroupCsvCreator;
-import com.synopsys.integration.alert.channel.email.distribution.EmailChannelMessageSender;
-import com.synopsys.integration.alert.channel.email.distribution.address.EmailAddressGatherer;
+import com.synopsys.integration.alert.channel.email.distribution.EmailChannelMessagingService;
 import com.synopsys.integration.alert.channel.email.distribution.address.JobEmailAddressValidator;
 import com.synopsys.integration.alert.channel.email.distribution.address.ValidatedEmailAddresses;
 import com.synopsys.integration.alert.common.action.FieldModelTestAction;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import com.synopsys.integration.alert.service.email.EmailMessagingService;
+import com.synopsys.integration.alert.service.email.JavamailPropertiesFactory;
 import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.service.email.template.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
@@ -41,15 +37,16 @@ import com.synopsys.integration.alert.test.common.TestTags;
 public class EmailGlobalFieldModelTestActionTest {
     @Test
     public void testConfigValidTest() throws AlertException {
-        EmailChannelMessageSender emailChannelMessageSender = Mockito.mock(EmailChannelMessageSender.class);
-        Mockito.when(emailChannelMessageSender.sendMessages(Mockito.any(), Mockito.any(), Mockito.anyList())).thenReturn(new MessageResult("PASS"));
+        EmailChannelMessagingService emailChannelMessagingService = Mockito.mock(EmailChannelMessagingService.class);
+        Mockito.when(emailChannelMessagingService.sendMessage(Mockito.any(), Mockito.any())).thenReturn(new MessageResult("PASS"));
 
-        EmailGlobalFieldModelTestAction emailGlobalTestAction = new EmailGlobalFieldModelTestAction(emailChannelMessageSender);
+        JavamailPropertiesFactory javamailPropertiesFactory = new JavamailPropertiesFactory();
+        EmailGlobalFieldModelTestAction emailGlobalFieldModelTestAction = new EmailGlobalFieldModelTestAction(emailChannelMessagingService, javamailPropertiesFactory);
 
         FieldModel validFieldModel = createFieldModelToTest("noreply@synopsys.com");
 
         try {
-            MessageResult messageResult = emailGlobalTestAction.testConfig("0", validFieldModel, new FieldUtility(Map.of()));
+            MessageResult messageResult = emailGlobalFieldModelTestAction.testConfig("0", validFieldModel, new FieldUtility(Map.of()));
             assertFalse(messageResult.hasErrors(), "Expected the message result to not have errors");
             assertFalse(messageResult.hasWarnings(), "Expected the message result to not have warnings");
         } catch (AlertException e) {
@@ -59,25 +56,26 @@ public class EmailGlobalFieldModelTestActionTest {
 
     @Test
     public void testConfigMissingDestinationTest() {
-        ConfigurationModel globalConfig = new ConfigurationModel(0L, 0L, null, null, ConfigContextEnum.GLOBAL);
-        ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
-        Mockito.when(configurationAccessor.getConfigurationsByDescriptorKeyAndContext(Mockito.eq(ChannelKeys.EMAIL), Mockito.eq(ConfigContextEnum.GLOBAL))).thenReturn(List.of(globalConfig));
-
-        EmailAddressGatherer emailAddressGatherer = Mockito.mock(EmailAddressGatherer.class);
-        Mockito.when(emailAddressGatherer.gatherEmailAddresses(Mockito.any(), Mockito.any())).thenReturn(Set.of());
-
         JobEmailAddressValidator emailAddressValidator = Mockito.mock(JobEmailAddressValidator.class);
         Mockito.when(emailAddressValidator.validate(Mockito.any(), Mockito.anyCollection())).thenReturn(new ValidatedEmailAddresses(Set.of(), Set.of()));
 
+        MockAlertProperties testAlertProperties = new MockAlertProperties();
+        MessageContentGroupCsvCreator messageContentGroupCsvCreator = new MessageContentGroupCsvCreator();
+        Gson gson = new Gson();
+        EmailAttachmentFileCreator emailAttachmentFileCreator = new EmailAttachmentFileCreator(testAlertProperties, messageContentGroupCsvCreator, gson);
+
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService();
-        EmailChannelMessageSender emailChannelMessageSender = new EmailChannelMessageSender(ChannelKeys.EMAIL, null, emailAddressValidator, emailAddressGatherer, null, freemarkerTemplatingService, configurationAccessor);
+        EmailMessagingService emailMessagingService = new EmailMessagingService(freemarkerTemplatingService);
 
-        EmailGlobalFieldModelTestAction emailGlobalTestAction = new EmailGlobalFieldModelTestAction(emailChannelMessageSender);
+        EmailChannelMessagingService emailChannelMessagingService = new EmailChannelMessagingService(testAlertProperties, emailMessagingService, emailAttachmentFileCreator);
 
+        JavamailPropertiesFactory javamailPropertiesFactory = new JavamailPropertiesFactory();
+
+        EmailGlobalFieldModelTestAction emailGlobalFieldModelTestAction = new EmailGlobalFieldModelTestAction(emailChannelMessagingService, javamailPropertiesFactory);
         FieldModel validFieldModel = createFieldModelToTest("");
 
         try {
-            emailGlobalTestAction.testConfig("0", validFieldModel, new FieldUtility(Map.of()));
+            emailGlobalFieldModelTestAction.testConfig("0", validFieldModel, new FieldUtility(Map.of()));
             fail("Expected an exception to be thrown");
         } catch (AlertException e) {
             // Pass
@@ -86,12 +84,12 @@ public class EmailGlobalFieldModelTestActionTest {
 
     @Test
     public void testConfigInvalidDestinationTest() {
-        EmailGlobalFieldModelTestAction emailGlobalTestAction = new EmailGlobalFieldModelTestAction(null);
+        EmailGlobalFieldModelTestAction emailGlobalFieldModelTestAction = new EmailGlobalFieldModelTestAction(null, null);
 
         FieldModel validFieldModel = createFieldModelToTest("not a valid email address");
 
         try {
-            emailGlobalTestAction.testConfig("0", validFieldModel, new FieldUtility(Map.of()));
+            emailGlobalFieldModelTestAction.testConfig("0", validFieldModel, new FieldUtility(Map.of()));
             fail("Expected an exception to be thrown");
         } catch (AlertException e) {
             // Pass
@@ -107,15 +105,16 @@ public class EmailGlobalFieldModelTestActionTest {
         TestProperties testProperties = new TestProperties();
         String emailAddress = testProperties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT);
 
-        EmailChannelMessageSender emailChannelMessageSender = createValidEmailChannelMessageSender(emailAddress);
-
-        EmailGlobalFieldModelTestAction emailGlobalTestAction = new EmailGlobalFieldModelTestAction(emailChannelMessageSender);
-
         FieldModel validFieldModel = createFieldModelToTest(emailAddress);
+
+        JavamailPropertiesFactory javamailPropertiesFactory = new JavamailPropertiesFactory();
+        EmailChannelMessagingService validEmailChannelMessagingService = createValidEmailChannelMessagingService(emailAddress);
+        EmailGlobalFieldModelTestAction emailGlobalFieldModelTestAction = new EmailGlobalFieldModelTestAction(validEmailChannelMessagingService, javamailPropertiesFactory);
+
         FieldUtility validFieldUtility = createValidEmailGlobalFieldUtility(testProperties);
 
         try {
-            MessageResult messageResult = emailGlobalTestAction.testConfig("0", validFieldModel, validFieldUtility);
+            MessageResult messageResult = emailGlobalFieldModelTestAction.testConfig("0", validFieldModel, validFieldUtility);
             assertFalse(messageResult.hasErrors(), "Expected the message result to not have errors");
             assertFalse(messageResult.hasWarnings(), "Expected the message result to not have warnings");
         } catch (AlertException e) {
@@ -134,11 +133,8 @@ public class EmailGlobalFieldModelTestActionTest {
         return new FieldModel(null, null, keyToValues);
     }
 
-    private EmailChannelMessageSender createValidEmailChannelMessageSender(String emailAddress) {
+    private EmailChannelMessagingService createValidEmailChannelMessagingService(String emailAddress) {
         MockAlertProperties testAlertProperties = new MockAlertProperties();
-
-        EmailAddressGatherer emailAddressGatherer = Mockito.mock(EmailAddressGatherer.class);
-        Mockito.when(emailAddressGatherer.gatherEmailAddresses(Mockito.any(), Mockito.any())).thenReturn(Set.of(emailAddress));
 
         JobEmailAddressValidator emailAddressValidator = Mockito.mock(JobEmailAddressValidator.class);
         Mockito.when(emailAddressValidator.validate(Mockito.any(), Mockito.anyCollection())).thenReturn(new ValidatedEmailAddresses(Set.of(emailAddress), Set.of()));
@@ -147,8 +143,9 @@ public class EmailGlobalFieldModelTestActionTest {
         MessageContentGroupCsvCreator messageContentGroupCsvCreator = new MessageContentGroupCsvCreator();
         EmailAttachmentFileCreator emailAttachmentFileCreator = new EmailAttachmentFileCreator(testAlertProperties, messageContentGroupCsvCreator, gson);
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService();
+        EmailMessagingService emailMessagingService = new EmailMessagingService(freemarkerTemplatingService);
 
-        return new EmailChannelMessageSender(ChannelKeys.EMAIL, testAlertProperties, emailAddressValidator, emailAddressGatherer, emailAttachmentFileCreator, freemarkerTemplatingService, null);
+        return new EmailChannelMessagingService(testAlertProperties, emailMessagingService, emailAttachmentFileCreator);
     }
 
     private FieldUtility createValidEmailGlobalFieldUtility(TestProperties testProperties) {
