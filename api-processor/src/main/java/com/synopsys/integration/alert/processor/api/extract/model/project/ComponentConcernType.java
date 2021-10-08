@@ -9,7 +9,7 @@ package com.synopsys.integration.alert.processor.api.extract.model.project;
 
 public enum ComponentConcernType {
     POLICY("Policy"),
-    UNKNOWN_VERSION("Vulnerability Counts"),
+    UNKNOWN_VERSION("Estimated Security Risk"),
     VULNERABILITY("Vulnerability");
 
     private final String displayName;

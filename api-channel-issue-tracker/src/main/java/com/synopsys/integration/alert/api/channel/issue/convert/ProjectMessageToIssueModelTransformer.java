@@ -14,10 +14,12 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueComponentUnknownVersionDetails;
+import com.synopsys.integration.alert.api.channel.issue.model.IssueEstimatedRiskModel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssuePolicyDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueVulnerabilityDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueVulnerabilityModel;
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
+import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
@@ -118,7 +120,18 @@ public class ProjectMessageToIssueModelTransformer {
     }
 
     private ProjectIssueModel createEstimatedRiskProjectIssueModel(ProjectMessage projectMessage, IssueBomComponentDetails issueBomComponent, List<ComponentConcern> estimatedRiskConcerns) {
-        IssueComponentUnknownVersionDetails unknownVersionDetails = new IssueComponentUnknownVersionDetails(List.of());
+        List<IssueEstimatedRiskModel> estimatedRiskModels = new LinkedList<>();
+
+        ItemOperation itemOperation = estimatedRiskConcerns.stream()
+            .map(ComponentConcern::getOperation)
+            .findFirst()
+            .orElseThrow(() -> new AlertRuntimeException("Unknown component version concerns missing ItemOperation."));
+        // all component concerns for this type have the same operation.
+        for (ComponentConcern componentConcern : estimatedRiskConcerns) {
+            estimatedRiskModels.add(IssueEstimatedRiskModel.fromComponentConcern(componentConcern));
+        }
+
+        IssueComponentUnknownVersionDetails unknownVersionDetails = new IssueComponentUnknownVersionDetails(itemOperation, estimatedRiskModels);
 
         return ProjectIssueModel.componentUnknownVersion(
             projectMessage.getProviderDetails(),

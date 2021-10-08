@@ -23,7 +23,7 @@ public class ProjectIssueModel extends ProviderMessage<ProjectIssueModel> {
 
     private final IssuePolicyDetails policyDetails;
     private final IssueVulnerabilityDetails vulnerabilityDetails;
-    private final IssueComponentUnknownVersionDetails unknownVersionDetails;
+    private final IssueComponentUnknownVersionDetails componentUnknownVersionDetails;
 
     public static ProjectIssueModel bom(
         ProviderDetails providerDetails,
@@ -71,7 +71,7 @@ public class ProjectIssueModel extends ProviderMessage<ProjectIssueModel> {
         IssueBomComponentDetails bomComponentDetails,
         @Nullable IssuePolicyDetails policyDetails,
         @Nullable IssueVulnerabilityDetails vulnerabilityDetails,
-        @Nullable IssueComponentUnknownVersionDetails unknownVersionDetails
+        @Nullable IssueComponentUnknownVersionDetails componentUnknownVersionDetails
     ) {
         super(providerDetails);
         this.project = project;
@@ -79,7 +79,7 @@ public class ProjectIssueModel extends ProviderMessage<ProjectIssueModel> {
         this.bomComponentDetails = bomComponentDetails;
         this.policyDetails = policyDetails;
         this.vulnerabilityDetails = vulnerabilityDetails;
-        this.unknownVersionDetails = unknownVersionDetails;
+        this.componentUnknownVersionDetails = componentUnknownVersionDetails;
     }
 
     public LinkableItem getProject() {
@@ -102,8 +102,8 @@ public class ProjectIssueModel extends ProviderMessage<ProjectIssueModel> {
         return Optional.ofNullable(vulnerabilityDetails);
     }
 
-    public Optional<IssueComponentUnknownVersionDetails> getUnknownVersionDetails() {
-        return Optional.ofNullable(unknownVersionDetails);
+    public Optional<IssueComponentUnknownVersionDetails> getComponentUnknownVersionDetails() {
+        return Optional.ofNullable(componentUnknownVersionDetails);
     }
 
     @Override
@@ -130,7 +130,7 @@ public class ProjectIssueModel extends ProviderMessage<ProjectIssueModel> {
             return uncombinedModels;
         }
 
-        if (null != unknownVersionDetails && !unknownVersionDetails.equals(otherModel.unknownVersionDetails)) {
+        if (null != componentUnknownVersionDetails && !componentUnknownVersionDetails.equals(otherModel.componentUnknownVersionDetails)) {
             return uncombinedModels;
         }
 
