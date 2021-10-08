@@ -8,7 +8,6 @@
 package com.synopsys.integration.alert.common.rest.api;
 
 import java.util.Optional;
-import java.util.concurrent.Callable;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -16,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 
+import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
@@ -23,13 +23,13 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.function.ThrowingSupplier;
 
-public class ConfigurationCRUDHelper {
-    private final Logger logger = LoggerFactory.getLogger(ConfigurationCRUDHelper.class);
+public class ConfigurationCrudHelper {
+    private final Logger logger = LoggerFactory.getLogger(ConfigurationCrudHelper.class);
     private final AuthorizationManager authorizationManager;
     private final ConfigContextEnum context;
     private final DescriptorKey descriptorKey;
 
-    public ConfigurationCRUDHelper(AuthorizationManager authorizationManager, ConfigContextEnum context, DescriptorKey descriptorKey) {
+    public ConfigurationCrudHelper(AuthorizationManager authorizationManager, ConfigContextEnum context, DescriptorKey descriptorKey) {
         this.authorizationManager = authorizationManager;
         this.context = context;
         this.descriptorKey = descriptorKey;
@@ -61,12 +61,12 @@ public class ConfigurationCRUDHelper {
         try {
             return new ActionResponse<>(HttpStatus.OK, modelCreator.get());
         } catch (Exception ex) {
-            logger.error("Error creating config: {}", ex);
+            logger.error("Error creating config:", ex);
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Error creating config: %s", ex.getMessage()));
         }
     }
 
-    public <T> ActionResponse<T> update(Supplier<ValidationResponseModel> validator, BooleanSupplier existingModelSupplier, Callable<T> updateFunction) {
+    public <T> ActionResponse<T> update(Supplier<ValidationResponseModel> validator, BooleanSupplier existingModelSupplier, ThrowingSupplier<T, AlertConfigurationException> updateFunction) {
         if (!authorizationManager.hasWritePermission(context, descriptorKey)) {
             return ActionResponse.createForbiddenResponse();
         }
@@ -81,9 +81,9 @@ public class ConfigurationCRUDHelper {
             return new ActionResponse<>(HttpStatus.BAD_REQUEST, validationResponse.getMessage());
         }
         try {
-            return new ActionResponse<>(HttpStatus.OK, updateFunction.call());
+            return new ActionResponse<>(HttpStatus.OK, updateFunction.get());
         } catch (Exception ex) {
-            logger.error("Error updating config: {}", ex);
+            logger.error("Error updating config:", ex);
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Error updating config: %s", ex.getMessage()));
         }
     }
