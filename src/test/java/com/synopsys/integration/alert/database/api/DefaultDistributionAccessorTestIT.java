@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.OffsetDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,8 +13,6 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -63,7 +60,7 @@ public class DefaultDistributionAccessorTestIT {
     @Transactional
     public void verifyQueryBuilds() {
         AlertPagedModel<DistributionWithAuditInfo> distributionWithAuditInfo = distributionAccessor.getDistributionWithAuditInfo(0, 100, "name");
-        AlertPagedModel<DistributionWithAuditInfo> distributionWithAuditInfoGavin = distributionAccessor.getDistributionWithAuditInfoGavin(0, 100, "name");
+        AlertPagedModel<DistributionWithAuditInfo> distributionWithAuditInfoGavin = distributionAccessor.getDistributionWithAuditInfo(0, 100, "name");
 
         assertNotNull(distributionWithAuditInfo);
         assertNotNull(distributionWithAuditInfoGavin);
@@ -73,32 +70,6 @@ public class DefaultDistributionAccessorTestIT {
     @Transactional
     public void verifyValidityOfQuery() {
         assertValidQueryFunctionality(() -> distributionAccessor.getDistributionWithAuditInfo(0, 100, "name"));
-    }
-
-    @Test
-    @Transactional
-    public void verifyValidityOfGavinQuery() {
-        assertValidQueryFunctionality(() -> distributionAccessor.getDistributionWithAuditInfoGavin(0, 100, "name"));
-    }
-
-    @Test
-    @Transactional
-    public void verifyValidityOfSimpleQuery() {
-        assertValidQueryFunctionality(() -> distributionAccessor.getDistributionJobModel(0, 100, "name"));
-    }
-
-    @Test
-    @Transactional
-    public void gavinQueryFaster() {
-        List<UUID> manyItems = createManyItems();
-        createdJobs.addAll(manyItems);
-
-        long longerRun = runningTime(() -> distributionAccessor.getDistributionWithAuditInfo(0, 100, "name"));
-        long quickerRun = runningTime(() -> distributionAccessor.getDistributionWithAuditInfoGavin(0, 100, "name"));
-
-        System.out.println("Normal: " + longerRun);
-        System.out.println("Gavin: " + quickerRun);
-        assertTrue(quickerRun < longerRun, String.format("normal run: %s, gavin run %s", longerRun, quickerRun));
     }
 
     private void assertValidQueryFunctionality(Supplier<AlertPagedModel<DistributionWithAuditInfo>> dBQuery) {
@@ -115,6 +86,8 @@ public class DefaultDistributionAccessorTestIT {
 
         List<DistributionWithAuditInfo> distributionWithAuditInfos = queryResult.getModels();
         assertEquals(3, distributionWithAuditInfos.size());
+
+        distributionWithAuditInfos.forEach(it -> System.out.println(it.getAuditStatus()));
 
         for (Map.Entry<DistributionJobEntity, List<AuditEntryEntity>> jobAndAudits : jobAndAuditData.entrySet()) {
             DistributionJobEntity distributionJobEntity = jobAndAudits.getKey();
@@ -134,14 +107,7 @@ public class DefaultDistributionAccessorTestIT {
     }
 
     private Optional<DistributionWithAuditInfo> getDistributionInfo(UUID jobId, List<DistributionWithAuditInfo> items) {
-        return items.stream().filter(item -> item.getJobId() == jobId).findFirst();
-    }
-
-    private long runningTime(Supplier<AlertPagedModel<DistributionWithAuditInfo>> dBQuery) {
-        long startTimer = System.nanoTime();
-        dBQuery.get();
-        long stopTimer = System.nanoTime();
-        return stopTimer - startTimer;
+        return items.stream().filter(item -> item.getJobId().equals(jobId)).findFirst();
     }
 
     private DistributionJobEntity createJobEntity() {
@@ -149,7 +115,7 @@ public class DefaultDistributionAccessorTestIT {
         String slackKey = new SlackChannelKey().getUniversalKey();
         String jobName = slackKey + randomLong;
         return new DistributionJobEntity(
-            UUID.randomUUID(),
+            null,
             jobName,
             true,
             FrequencyType.REAL_TIME.name(),
@@ -195,47 +161,6 @@ public class DefaultDistributionAccessorTestIT {
             secondJobSaved, List.of(thirdAudit),
             thirdJobSaved, List.of()
         );
-    }
-
-    private List<UUID> createManyItems() {
-        List<DistributionJobEntity> jobs = new LinkedList<>();
-        List<AuditEntryEntity> audits = new LinkedList<>();
-
-        IntStream.range(0, 1000).forEach((x) -> {
-            DistributionJobEntity jobEntity = createJobEntity();
-            jobs.add(jobEntity);
-        });
-
-        List<UUID> allCreatedUUIDs = saveAllJobs(jobs).stream().map(DistributionJobEntity::getJobId).collect(Collectors.toList());
-
-        for (int i = 0; i < allCreatedUUIDs.size(); i++) {
-            UUID uuid = allCreatedUUIDs.get(i);
-            AuditEntryEntity defaultAudit = createAuditEntryEntity(uuid, OffsetDateTime.now().minus(Long.valueOf(i), ChronoUnit.HOURS));
-            audits.add(defaultAudit);
-            if (i % 2 == 0) {
-                AuditEntryEntity evenAudits = createAuditEntryEntity(uuid, OffsetDateTime.now().minus(Long.valueOf(i * 2), ChronoUnit.HOURS));
-                audits.add(evenAudits);
-            }
-            if (i % 3 == 0) {
-                AuditEntryEntity thirdsysAudit = createAuditEntryEntity(uuid, OffsetDateTime.now().minus(Long.valueOf(i * 3), ChronoUnit.HOURS));
-                audits.add(thirdsysAudit);
-            }
-            if (i % 7 == 0) {
-                AuditEntryEntity sevensysAudit = createAuditEntryEntity(uuid, OffsetDateTime.now().minus(Long.valueOf(i * 7), ChronoUnit.HOURS));
-                audits.add(sevensysAudit);
-            }
-        }
-
-        List<AuditEntryEntity> auditEntryEntities = saveAllAudits(audits);
-
-        System.out.println("Job count: " + allCreatedUUIDs.size());
-        System.out.println("Audit count: " + auditEntryEntities.size());
-
-        return allCreatedUUIDs;
-    }
-
-    private List<DistributionJobEntity> saveAllJobs(List<DistributionJobEntity> jobs) {
-        return distributionJobRepository.saveAll(jobs);
     }
 
     private List<AuditEntryEntity> saveAllAudits(List<AuditEntryEntity> audits) {

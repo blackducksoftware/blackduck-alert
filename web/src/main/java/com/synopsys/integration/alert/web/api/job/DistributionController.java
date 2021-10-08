@@ -39,13 +39,4 @@ public class DistributionController {
         return ResponseFactory.createContentResponseFromAction(distributionActions.retrieveJobWithAuditInfo(pageStart, pageSize, sortBy));
     }
 
-    @GetMapping("/audit-statuses/gavin")
-    public AlertPagedModel<DistributionWithAuditInfo> getDistributionWithAuditInfoGavin(
-        @RequestParam String sortBy,
-        @RequestParam int pageSize,
-        @RequestParam int pageStart
-    ) {
-        return ResponseFactory.createContentResponseFromAction(distributionActions.retrieveJobWithAuditInfoGavin(pageStart, pageSize, sortBy));
-    }
-
 }

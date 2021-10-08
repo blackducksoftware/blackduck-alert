@@ -13,6 +13,7 @@ import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
 
@@ -20,7 +21,7 @@ import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
 @Entity
 @Table(schema = "alert", name = "distribution_jobs")
-@SecondaryTable(schema = "alert", name = "audit_entries")
+@SecondaryTable(schema = "alert", name = "audit_entries", pkJoinColumns = @PrimaryKeyJoinColumn(name = "common_config_id"))
 public class DistributionWithAuditEntity extends AlertSerializableModel {
 
     @Id
@@ -39,10 +40,10 @@ public class DistributionWithAuditEntity extends AlertSerializableModel {
     @Column(name = "frequency_type")
     private String frequencyType;
 
-    @Column(name = "time_last_sent")
+    @Column(name = "time_last_sent", table = "audit_entries")
     private OffsetDateTime auditTimeLastSent;
 
-    @Column(name = "status")
+    @Column(name = "status", table = "audit_entries")
     private String auditStatus;
 
     public DistributionWithAuditEntity() {
@@ -113,4 +114,5 @@ public class DistributionWithAuditEntity extends AlertSerializableModel {
     public void setAuditStatus(String auditStatus) {
         this.auditStatus = auditStatus;
     }
+
 }

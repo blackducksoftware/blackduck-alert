@@ -29,9 +29,4 @@ public class DistributionActions {
         AlertPagedModel<DistributionWithAuditInfo> distributionWithAuditInfo = distributionAccessor.getDistributionWithAuditInfo(pageStart, pageSize, sortName);
         return new ActionResponse<>(HttpStatus.ACCEPTED, distributionWithAuditInfo);
     }
-
-    public ActionResponse<AlertPagedModel<DistributionWithAuditInfo>> retrieveJobWithAuditInfoGavin(int pageStart, int pageSize, String sortName) {
-        AlertPagedModel<DistributionWithAuditInfo> distributionWithAuditInfo = distributionAccessor.getDistributionWithAuditInfoGavin(pageStart, pageSize, sortName);
-        return new ActionResponse<>(HttpStatus.ACCEPTED, distributionWithAuditInfo);
-    }
 }
