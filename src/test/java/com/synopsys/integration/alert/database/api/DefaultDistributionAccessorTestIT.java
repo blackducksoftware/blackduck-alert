@@ -60,10 +60,8 @@ public class DefaultDistributionAccessorTestIT {
     @Transactional
     public void verifyQueryBuilds() {
         AlertPagedModel<DistributionWithAuditInfo> distributionWithAuditInfo = distributionAccessor.getDistributionWithAuditInfo(0, 100, "name");
-        AlertPagedModel<DistributionWithAuditInfo> distributionWithAuditInfoGavin = distributionAccessor.getDistributionWithAuditInfo(0, 100, "name");
 
         assertNotNull(distributionWithAuditInfo);
-        assertNotNull(distributionWithAuditInfoGavin);
     }
 
     @Test
