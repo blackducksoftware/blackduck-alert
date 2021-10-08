@@ -34,7 +34,7 @@ public class BlackDuckProviderTest {
         expectedNotificationTypes.add(NotificationType.BOM_EDIT.name());
         expectedNotificationTypes.add(NotificationType.PROJECT.name());
         expectedNotificationTypes.add(NotificationType.PROJECT_VERSION.name());
-        expectedNotificationTypes.add(NotificationType.RULE_VIOLATION.name());
+        expectedNotificationTypes.add(NotificationType.COMPONENT_UNKNOWN_VERSION.name());
         Set<String> providerNotificationTypes = provider.getProviderContent().getContentTypes().stream().map(ProviderNotificationType::getNotificationType).collect(Collectors.toSet());
         assertEquals(expectedNotificationTypes, providerNotificationTypes);
     }
