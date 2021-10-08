@@ -14,7 +14,6 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.BlackDuckMessageLabels;
 import com.synopsys.integration.blackduck.api.generated.enumeration.UsageType;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentVersionView;
-import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
 import com.synopsys.integration.rest.HttpUrl;
 
 public final class BlackDuckMessageAttributesUtils {
@@ -37,7 +36,7 @@ public final class BlackDuckMessageAttributesUtils {
     }
 
     public static Optional<String> extractIssuesUrl(ProjectVersionComponentVersionView bomComponent) {
-        return bomComponent.getFirstLinkSafely(ProjectVersionComponentView.COMPONENT_ISSUES_LINK).map(HttpUrl::toString);
+        return bomComponent.getFirstLinkSafely(ProjectVersionComponentVersionView.COMPONENT_ISSUES_LINK).map(HttpUrl::toString);
     }
 
     private BlackDuckMessageAttributesUtils() {
