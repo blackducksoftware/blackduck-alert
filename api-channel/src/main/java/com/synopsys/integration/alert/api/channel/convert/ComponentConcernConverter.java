@@ -185,7 +185,8 @@ public class ComponentConcernConverter {
 
         estimatedRiskForOperationSectionPieces.add(String.format("%s%s", formattedVulnerabilityCountsString, formattedColonSpace));
         estimatedRiskForOperationSectionPieces.add(formatter.getLineSeparator());
-        
+        estimatedRiskForOperationSectionPieces.add(formatter.getLineSeparator());
+
         for (ComponentConcern componentConcern : estimatedRiskConcerns) {
             estimatedRiskForOperationSectionPieces.add(createEstimatedRiskConcernString(componentConcern));
             estimatedRiskForOperationSectionPieces.add(formatter.getLineSeparator());
