@@ -37,7 +37,7 @@ public class BlackDuckMessageAttributesUtilsTest {
     public void testGetLicenseLinkableItemsNullIncluded() {
         String licenseValue = "License Display";
         ProjectVersionComponentVersionView projectVersionComponentView = new ProjectVersionComponentVersionView();
-        List<ProjectVersionComponentVersionLicensesView> projectVersionComponentLicensesViews = new ArrayList<>();
+        List<ProjectVersionComponentVersionLicensesView> projectVersionComponentLicensesViews = new ArrayList();
         ProjectVersionComponentVersionLicensesView projectVersionComponentLicensesView = new ProjectVersionComponentVersionLicensesView();
         projectVersionComponentLicensesView.setLicenseDisplay(licenseValue);
         projectVersionComponentLicensesViews.add(projectVersionComponentLicensesView);
@@ -51,7 +51,7 @@ public class BlackDuckMessageAttributesUtilsTest {
     public void testGetLicenseLinkableItems() {
         String licenseValue = "License Display 1";
         ProjectVersionComponentVersionView projectVersionComponentView = new ProjectVersionComponentVersionView();
-        List<ProjectVersionComponentVersionLicensesView> projectVersionComponentLicensesViews = new ArrayList<>();
+        List<ProjectVersionComponentVersionLicensesView> projectVersionComponentLicensesViews = new ArrayList();
         ProjectVersionComponentVersionLicensesView projectVersionComponentLicensesView1 = new ProjectVersionComponentVersionLicensesView();
         projectVersionComponentLicensesView1.setLicenseDisplay(licenseValue);
         projectVersionComponentLicensesViews.add(projectVersionComponentLicensesView1);
