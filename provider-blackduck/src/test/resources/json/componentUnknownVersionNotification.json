@@ -29,7 +29,6 @@
       "PUT"
     ],
     "href": "https://a-hub-server.blackduck.com/api/users/00000000-0000-0000-0001-000000000001/notifications/d2e2436d-1307-443b-918f-1adaac2cc6bd",
-    "links": [
-    ]
+    "links": []
   }
 }
