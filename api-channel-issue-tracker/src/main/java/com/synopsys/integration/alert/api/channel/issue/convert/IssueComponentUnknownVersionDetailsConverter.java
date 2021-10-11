@@ -30,7 +30,7 @@ public class IssueComponentUnknownVersionDetailsConverter {
         estimatedRiskSectionPieces.add(formatter.encode(SECTION_LABEL_VULNERABILITY_COUNTS));
         estimatedRiskSectionPieces.add(formatter.getLineSeparator());
         estimatedRiskSectionPieces.add(formatter.getLineSeparator());
-        
+
         for (IssueEstimatedRiskModel estimatedRiskModel : unknownVersionDetails.getEstimatedRiskModelList()) {
             estimatedRiskSectionPieces.add(createEstimatedRiskString(estimatedRiskModel));
             estimatedRiskSectionPieces.add(formatter.getLineSeparator());
@@ -40,9 +40,21 @@ public class IssueComponentUnknownVersionDetailsConverter {
 
     private String createEstimatedRiskString(IssueEstimatedRiskModel estimatedRiskModel) {
         String severity = formatter.encode(estimatedRiskModel.getSeverity().getVulnerabilityLabel());
-        String countString = formatter.encode(String.format(" (%s)", estimatedRiskModel.getCount()));
+        String countString = formatter.encode(String.format("(%s)", formatter.getNonBreakingSpace(), estimatedRiskModel.getCount()));
         String componentName = createComponentNameLinkIfPresent(estimatedRiskModel);
-        return String.format("    %s: %s %s", severity, countString, componentName);
+        // "    <SEVERITY>: (<COUNT>) <COMPONENT_NAME>"
+        StringBuilder builder = new StringBuilder(100);
+        builder.append(formatter.getNonBreakingSpace());
+        builder.append(formatter.getNonBreakingSpace());
+        builder.append(formatter.getNonBreakingSpace());
+        builder.append(formatter.getNonBreakingSpace());
+        builder.append(severity);
+        builder.append(formatter.getNonBreakingSpace());
+        builder.append(countString);
+        builder.append(formatter.getNonBreakingSpace());
+        builder.append(componentName);
+
+        return builder.toString();
     }
 
     private String createComponentNameLinkIfPresent(IssueEstimatedRiskModel estimatedRiskModel) {
