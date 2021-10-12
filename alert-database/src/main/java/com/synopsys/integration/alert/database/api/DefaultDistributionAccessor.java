@@ -7,17 +7,26 @@
  */
 package com.synopsys.integration.alert.database.api;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.persistence.accessor.DistributionAccessor;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.DistributionWithAuditInfo;
 import com.synopsys.integration.alert.database.distribution.DistributionRepository;
 import com.synopsys.integration.alert.database.distribution.DistributionWithAuditEntity;
 
 @Component
 public class DefaultDistributionAccessor implements DistributionAccessor {
+
     private final DistributionRepository distributionRepository;
 
     @Autowired
@@ -26,9 +35,21 @@ public class DefaultDistributionAccessor implements DistributionAccessor {
     }
 
     @Override
-    public DistributionWithAuditInfo getDistributionWithAuditInfo() {
-        DistributionWithAuditEntity distributionWithAuditInfo = distributionRepository.getDistributionWithAuditInfo();
+    @Transactional(readOnly = true)
+    public AlertPagedModel<DistributionWithAuditInfo> getDistributionWithAuditInfo(int pageStart, int pageSize, String sortName) {
+        PageRequest pageRequest = PageRequest.of(pageStart, pageSize, Sort.by(sortName));
+        Page<DistributionWithAuditEntity> distributionWithAuditInfo = distributionRepository.getDistributionWithAuditInfo(pageRequest);
         return convert(distributionWithAuditInfo);
+    }
+
+    private AlertPagedModel<DistributionWithAuditInfo> convert(Page<DistributionWithAuditEntity> pageOfDistributionWithAuditEntity) {
+        List<DistributionWithAuditInfo> results = pageOfDistributionWithAuditEntity.get().map(this::convert).collect(Collectors.toList());
+        return new AlertPagedModel<>(
+            pageOfDistributionWithAuditEntity.getTotalPages(),
+            pageOfDistributionWithAuditEntity.getNumber(),
+            pageOfDistributionWithAuditEntity.getSize(),
+            results
+        );
     }
 
     private DistributionWithAuditInfo convert(DistributionWithAuditEntity distributionWithAuditEntity) {
