@@ -7,10 +7,12 @@
  */
 package com.synopsys.integration.alert.common.persistence.accessor;
 
+import java.util.Set;
+
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.DistributionWithAuditInfo;
 
 public interface DistributionAccessor {
 
-    AlertPagedModel<DistributionWithAuditInfo> getDistributionWithAuditInfo(int pageStart, int pageSize, String sortName);
+    AlertPagedModel<DistributionWithAuditInfo> getDistributionWithAuditInfo(int pageStart, int pageSize, String sortName, Set<String> allowedDescriptorNames);
 }
