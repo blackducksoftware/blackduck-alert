@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
@@ -36,14 +37,20 @@ public class DistributionActions {
         this.descriptorMap = descriptorMap;
     }
 
-    public ActionResponse<AlertPagedModel<DistributionWithAuditInfo>> retrieveJobWithAuditInfo(int pageStart, int pageSize, String sortName) {
+    public ActionResponse<AlertPagedModel<DistributionWithAuditInfo>> retrieveJobWithAuditInfo(int pageStart, int pageSize, String sortName, @Nullable String searchTerm) {
         Set<String> authorizedChannelDescriptorNames = findAuthorizedChannelDescriptorNames();
 
         if (authorizedChannelDescriptorNames.isEmpty()) {
             return ActionResponse.createForbiddenResponse();
         }
 
-        AlertPagedModel<DistributionWithAuditInfo> distributionWithAuditInfo = distributionAccessor.getDistributionWithAuditInfo(pageStart, pageSize, sortName, authorizedChannelDescriptorNames);
+        AlertPagedModel<DistributionWithAuditInfo> distributionWithAuditInfo;
+        if (searchTerm != null) {
+            distributionWithAuditInfo = distributionAccessor.getDistributionWithAuditInfoWithSearch(pageStart, pageSize, sortName, authorizedChannelDescriptorNames, searchTerm);
+        } else {
+            distributionWithAuditInfo = distributionAccessor.getDistributionWithAuditInfo(pageStart, pageSize, sortName, authorizedChannelDescriptorNames);
+        }
+
         return new ActionResponse(HttpStatus.OK, distributionWithAuditInfo);
     }
 

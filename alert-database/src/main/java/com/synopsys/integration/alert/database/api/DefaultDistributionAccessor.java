@@ -43,6 +43,14 @@ public class DefaultDistributionAccessor implements DistributionAccessor {
         return convert(distributionWithAuditInfo);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public AlertPagedModel<DistributionWithAuditInfo> getDistributionWithAuditInfoWithSearch(int pageStart, int pageSize, String sortName, Set<String> allowedDescriptorNames, String searchTerm) {
+        PageRequest pageRequest = PageRequest.of(pageStart, pageSize, Sort.by(sortName));
+        Page<DistributionWithAuditEntity> distributionWithAuditInfo = distributionRepository.getDistributionWithAuditInfoWithSearch(pageRequest, allowedDescriptorNames, searchTerm);
+        return convert(distributionWithAuditInfo);
+    }
+
     private AlertPagedModel<DistributionWithAuditInfo> convert(Page<DistributionWithAuditEntity> pageOfDistributionWithAuditEntity) {
         List<DistributionWithAuditInfo> results = pageOfDistributionWithAuditEntity.get().map(this::convert).collect(Collectors.toList());
         return new AlertPagedModel<>(

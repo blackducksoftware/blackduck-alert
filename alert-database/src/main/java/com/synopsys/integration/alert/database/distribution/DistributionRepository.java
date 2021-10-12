@@ -28,4 +28,14 @@ public interface DistributionRepository extends JpaRepository<DistributionJobEnt
                + " ORDER BY job.name"
     )
     Page<DistributionWithAuditEntity> getDistributionWithAuditInfo(Pageable pageable, @Param("channelDescriptorNames") Collection<String> channelDescriptorNames);
+
+    @Query("SELECT NEW com.synopsys.integration.alert.database.distribution.DistributionWithAuditEntity(job.jobId, job.enabled, job.name, job.channelDescriptorName, job.distributionFrequency, MAX(audit.timeLastSent), audit.status)"
+               + " FROM DistributionJobEntity job"
+               + " LEFT OUTER JOIN com.synopsys.integration.alert.database.audit.AuditEntryEntity audit ON audit.commonConfigId = job.jobId"
+               + " WHERE job.channelDescriptorName IN (:channelDescriptorNames) AND job.name LIKE %:searchTerm%"
+               + " GROUP BY job.jobId, audit.status"
+               + " ORDER BY job.name"
+    )
+    Page<DistributionWithAuditEntity> getDistributionWithAuditInfoWithSearch(Pageable pageable, @Param("channelDescriptorNames") Collection<String> channelDescriptorNames, @Param("searchTerm") String searchTerm);
+    
 }
