@@ -8,6 +8,7 @@
 package com.synopsys.integration.alert.database.api;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +37,17 @@ public class DefaultDistributionAccessor implements DistributionAccessor {
 
     @Override
     @Transactional(readOnly = true)
-    public AlertPagedModel<DistributionWithAuditInfo> getDistributionWithAuditInfo(int pageStart, int pageSize, String sortName) {
+    public AlertPagedModel<DistributionWithAuditInfo> getDistributionWithAuditInfo(int pageStart, int pageSize, String sortName, Set<String> allowedDescriptorNames) {
         PageRequest pageRequest = PageRequest.of(pageStart, pageSize, Sort.by(sortName));
-        Page<DistributionWithAuditEntity> distributionWithAuditInfo = distributionRepository.getDistributionWithAuditInfo(pageRequest);
+        Page<DistributionWithAuditEntity> distributionWithAuditInfo = distributionRepository.getDistributionWithAuditInfo(pageRequest, allowedDescriptorNames);
+        return convert(distributionWithAuditInfo);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public AlertPagedModel<DistributionWithAuditInfo> getDistributionWithAuditInfoWithSearch(int pageStart, int pageSize, String sortName, Set<String> allowedDescriptorNames, String searchTerm) {
+        PageRequest pageRequest = PageRequest.of(pageStart, pageSize, Sort.by(sortName));
+        Page<DistributionWithAuditEntity> distributionWithAuditInfo = distributionRepository.getDistributionWithAuditInfoWithSearch(pageRequest, allowedDescriptorNames, searchTerm);
         return convert(distributionWithAuditInfo);
     }
 

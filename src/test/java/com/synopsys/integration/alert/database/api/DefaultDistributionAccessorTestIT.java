@@ -11,14 +11,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
@@ -30,6 +33,7 @@ import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.job.DistributionJobEntity;
 import com.synopsys.integration.alert.database.job.DistributionJobRepository;
 import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @AlertIntegrationTest
@@ -43,6 +47,9 @@ public class DefaultDistributionAccessorTestIT {
 
     @Autowired
     private AuditEntryRepository auditEntryRepository;
+
+    @Autowired
+    private DescriptorMap descriptorMap;
 
     private final List<UUID> createdJobs = new LinkedList<>();
 
@@ -59,7 +66,7 @@ public class DefaultDistributionAccessorTestIT {
     @Test
     @Transactional
     public void verifyQueryBuilds() {
-        AlertPagedModel<DistributionWithAuditInfo> distributionWithAuditInfo = distributionAccessor.getDistributionWithAuditInfo(0, 100, "name");
+        AlertPagedModel<DistributionWithAuditInfo> distributionWithAuditInfo = distributionAccessor.getDistributionWithAuditInfo(0, 100, "name", getAllDescriptorNames());
 
         assertNotNull(distributionWithAuditInfo);
     }
@@ -67,7 +74,11 @@ public class DefaultDistributionAccessorTestIT {
     @Test
     @Transactional
     public void verifyValidityOfQuery() {
-        assertValidQueryFunctionality(() -> distributionAccessor.getDistributionWithAuditInfo(0, 100, "name"));
+        assertValidQueryFunctionality(() -> distributionAccessor.getDistributionWithAuditInfo(0, 100, "name", getAllDescriptorNames()));
+    }
+
+    private Set<String> getAllDescriptorNames() {
+        return descriptorMap.getDescriptorKeys().stream().map(DescriptorKey::getUniversalKey).collect(Collectors.toSet());
     }
 
     private void assertValidQueryFunctionality(Supplier<AlertPagedModel<DistributionWithAuditInfo>> dBQuery) {
