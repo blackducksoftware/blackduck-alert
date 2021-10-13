@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.database.api;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -22,6 +23,7 @@ import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.persistence.accessor.DistributionAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.DistributionWithAuditInfo;
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.distribution.DistributionRepository;
 import com.synopsys.integration.alert.database.distribution.DistributionWithAuditEntity;
 
@@ -37,16 +39,16 @@ public class DefaultDistributionAccessor implements DistributionAccessor {
 
     @Override
     @Transactional(readOnly = true)
-    public AlertPagedModel<DistributionWithAuditInfo> getDistributionWithAuditInfo(int pageStart, int pageSize, String sortName, Set<String> allowedDescriptorNames) {
-        PageRequest pageRequest = PageRequest.of(pageStart, pageSize, Sort.by(sortName));
+    public AlertPagedModel<DistributionWithAuditInfo> getDistributionWithAuditInfo(int page, int pageSize, String sortName, Set<String> allowedDescriptorNames) {
+        PageRequest pageRequest = PageRequest.of(page, pageSize, Sort.by(sortName));
         Page<DistributionWithAuditEntity> distributionWithAuditInfo = distributionRepository.getDistributionWithAuditInfo(pageRequest, allowedDescriptorNames);
         return convert(distributionWithAuditInfo);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public AlertPagedModel<DistributionWithAuditInfo> getDistributionWithAuditInfoWithSearch(int pageStart, int pageSize, String sortName, Set<String> allowedDescriptorNames, String searchTerm) {
-        PageRequest pageRequest = PageRequest.of(pageStart, pageSize, Sort.by(sortName));
+    public AlertPagedModel<DistributionWithAuditInfo> getDistributionWithAuditInfoWithSearch(int page, int pageSize, String sortName, Set<String> allowedDescriptorNames, String searchTerm) {
+        PageRequest pageRequest = PageRequest.of(page, pageSize, Sort.by(sortName));
         Page<DistributionWithAuditEntity> distributionWithAuditInfo = distributionRepository.getDistributionWithAuditInfoWithSearch(pageRequest, allowedDescriptorNames, searchTerm);
         return convert(distributionWithAuditInfo);
     }
@@ -68,8 +70,15 @@ public class DefaultDistributionAccessor implements DistributionAccessor {
             distributionWithAuditEntity.getJobName(),
             distributionWithAuditEntity.getChannelName(),
             FrequencyType.valueOf(distributionWithAuditEntity.getFrequencyType()),
-            distributionWithAuditEntity.getAuditTimeLastSent(),
+            formatAuditDate(distributionWithAuditEntity.getAuditTimeLastSent()),
             distributionWithAuditEntity.getAuditStatus()
         );
+    }
+
+    private String formatAuditDate(OffsetDateTime dateTime) {
+        if (null != dateTime) {
+            return DateUtils.formatDate(dateTime, DateUtils.AUDIT_DATE_FORMAT);
+        }
+        return null;
     }
 }

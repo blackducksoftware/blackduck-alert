@@ -37,7 +37,7 @@ public class DistributionActions {
         this.descriptorMap = descriptorMap;
     }
 
-    public ActionResponse<AlertPagedModel<DistributionWithAuditInfo>> retrieveJobWithAuditInfo(int pageStart, int pageSize, String sortName, @Nullable String searchTerm) {
+    public ActionResponse<AlertPagedModel<DistributionWithAuditInfo>> retrieveJobWithAuditInfo(int page, int pageSize, String sortName, @Nullable String searchTerm) {
         Set<String> authorizedChannelDescriptorNames = findAuthorizedChannelDescriptorNames();
 
         if (authorizedChannelDescriptorNames.isEmpty()) {
@@ -46,9 +46,9 @@ public class DistributionActions {
 
         AlertPagedModel<DistributionWithAuditInfo> distributionWithAuditInfo;
         if (searchTerm != null) {
-            distributionWithAuditInfo = distributionAccessor.getDistributionWithAuditInfoWithSearch(pageStart, pageSize, sortName, authorizedChannelDescriptorNames, searchTerm);
+            distributionWithAuditInfo = distributionAccessor.getDistributionWithAuditInfoWithSearch(page, pageSize, sortName, authorizedChannelDescriptorNames, searchTerm);
         } else {
-            distributionWithAuditInfo = distributionAccessor.getDistributionWithAuditInfo(pageStart, pageSize, sortName, authorizedChannelDescriptorNames);
+            distributionWithAuditInfo = distributionAccessor.getDistributionWithAuditInfo(page, pageSize, sortName, authorizedChannelDescriptorNames);
         }
 
         return new ActionResponse(HttpStatus.OK, distributionWithAuditInfo);
