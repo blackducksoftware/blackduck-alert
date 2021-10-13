@@ -103,6 +103,10 @@ public class AzureBoardsSearcher extends IssueTrackerSearcher<Integer> {
             fieldRefNameToValue.addAdditionInfoKey(additionalInfoKey);
         }
 
+        if (projectIssueModel.getComponentUnknownVersionDetails().isPresent()) {
+            categoryKey = AzureBoardsAlertIssuePropertiesManager.CATEGORY_TYPE_COMPONENT_UNKNOWN_VERSION_COMPATIBILITY_LABEL;
+        }
+
         fieldRefNameToValue.addCategoryKey(categoryKey);
 
         return findWorkItems(projectIssueModel.getProvider(), projectIssueModel.getProject(), fieldRefNameToValue)

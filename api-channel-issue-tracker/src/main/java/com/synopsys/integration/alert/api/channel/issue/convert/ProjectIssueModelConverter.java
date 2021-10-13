@@ -19,6 +19,7 @@ import com.synopsys.integration.alert.api.channel.convert.BomComponentDetailConv
 import com.synopsys.integration.alert.api.channel.convert.LinkableItemConverter;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCommentModel;
+import com.synopsys.integration.alert.api.channel.issue.model.IssueComponentUnknownVersionDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssuePolicyDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTransitionModel;
@@ -46,6 +47,7 @@ public class ProjectIssueModelConverter {
     private final BomComponentDetailConverter bomComponentDetailConverter;
     private final IssuePolicyDetailsConverter issuePolicyDetailsConverter;
     private final IssueVulnerabilityDetailsConverter issueVulnerabilityDetailsConverter;
+    private final IssueComponentUnknownVersionDetailsConverter issueComponentUnknownVersionDetailsConverter;
     private final ComponentVulnerabilitiesConverter componentVulnerabilitiesConverter;
     private final LinkableItemConverter linkableItemConverter;
 
@@ -54,6 +56,7 @@ public class ProjectIssueModelConverter {
         this.bomComponentDetailConverter = new BomComponentDetailConverter(formatter);
         this.issuePolicyDetailsConverter = new IssuePolicyDetailsConverter(formatter);
         this.issueVulnerabilityDetailsConverter = new IssueVulnerabilityDetailsConverter(formatter);
+        this.issueComponentUnknownVersionDetailsConverter = new IssueComponentUnknownVersionDetailsConverter(formatter);
         this.componentVulnerabilitiesConverter = new ComponentVulnerabilitiesConverter(formatter);
         this.linkableItemConverter = new LinkableItemConverter(formatter);
     }
@@ -152,11 +155,11 @@ public class ProjectIssueModelConverter {
         IssueBomComponentDetails bomComponent = projectIssueModel.getBomComponentDetails();
         LinkableItem component = bomComponent.getComponent();
         Optional<String> optionalComponentVersionValue = bomComponent.getComponentVersion().map(LinkableItem::getValue);
-
+        boolean isComponentVersionUnknown = projectIssueModel.getComponentUnknownVersionDetails().isPresent();
         StringBuilder componentPieceBuilder = new StringBuilder();
         componentPieceBuilder.append(component.getValue());
 
-        if (optionalComponentVersionValue.isPresent()) {
+        if (optionalComponentVersionValue.isPresent() && !isComponentVersionUnknown) {
             componentPieceBuilder.append('[');
             componentPieceBuilder.append(optionalComponentVersionValue.get());
             componentPieceBuilder.append(']');
@@ -171,6 +174,9 @@ public class ProjectIssueModelConverter {
             componentConcernPieceBuilder.append('[');
             componentConcernPieceBuilder.append(optionalPolicyName.get());
             componentConcernPieceBuilder.append(']');
+        } else if (isComponentVersionUnknown) {
+            componentConcernPieceBuilder.append(COMMA_SPACE);
+            componentConcernPieceBuilder.append(ComponentConcernType.UNKNOWN_VERSION.getDisplayName());
         } else {
             componentConcernPieceBuilder.append(COMMA_SPACE);
             componentConcernPieceBuilder.append(ComponentConcernType.VULNERABILITY.getDisplayName());
@@ -216,6 +222,18 @@ public class ProjectIssueModelConverter {
                 vulnDetailsSectionPieces = componentVulnerabilitiesConverter.createComponentVulnerabilitiesSectionPieces(projectIssueModel.getBomComponentDetails().getComponentVulnerabilities());
             }
             concernSectionPieces.addAll(vulnDetailsSectionPieces);
+            concernSectionPieces.add(formatter.getLineSeparator());
+            concernSectionPieces.add(formatter.getSectionSeparator());
+            concernSectionPieces.add(formatter.getLineSeparator());
+        }
+
+        Optional<IssueComponentUnknownVersionDetails> optionalUnknownVersionDetails = projectIssueModel.getComponentUnknownVersionDetails();
+        if (optionalUnknownVersionDetails.isPresent()) {
+            List<String> componentUnknownVersionDetailsSectionPieces;
+
+            componentUnknownVersionDetailsSectionPieces = issueComponentUnknownVersionDetailsConverter.createEstimatedRiskDetailsSectionPieces(optionalUnknownVersionDetails.get());
+
+            concernSectionPieces.addAll(componentUnknownVersionDetailsSectionPieces);
             concernSectionPieces.add(formatter.getLineSeparator());
             concernSectionPieces.add(formatter.getSectionSeparator());
             concernSectionPieces.add(formatter.getLineSeparator());
