@@ -3,6 +3,7 @@ import HeaderUtilities from 'common/util/HeaderUtilities';
 export const ALERT_API_URL = '/alert/api';
 export const CONFIG_API_URL = `${ALERT_API_URL}/configuration`;
 export const JOB_API_URL = `${ALERT_API_URL}/configuration/job`;
+export const JOB_AUDIT_API_URL = `${ALERT_API_URL}/distribution/audit-statuses`;
 export const ROLE_API_URL = `${ALERT_API_URL}/configuration/role`;
 export const USER_API_URL = `${ALERT_API_URL}/configuration/user`;
 

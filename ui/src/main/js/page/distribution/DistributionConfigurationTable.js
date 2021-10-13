@@ -1,11 +1,12 @@
 import * as PropTypes from 'prop-types';
 import React, { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { DISTRIBUTION_COMMON_FIELD_KEYS, DISTRIBUTION_URLS } from 'page/distribution/DistributionModel';
-import { BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn } from 'react-bootstrap-table';
+import { DISTRIBUTION_URLS } from 'page/distribution/DistributionModel';
+import {
+    BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn
+} from 'react-bootstrap-table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import DescriptorLabel from 'common/DescriptorLabel';
-import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 import ConfirmModal from 'common/ConfirmModal';
 import AutoRefresh from 'common/table/AutoRefresh';
@@ -13,6 +14,7 @@ import IconTableCellFormatter from 'common/table/IconTableCellFormatter';
 import * as DistributionRequestUtility from 'page/distribution/DistributionTableRequestUtility';
 import { EXISTING_CHANNELS, EXISTING_PROVIDERS } from 'common/DescriptorInfo';
 import { ProgressIcon } from 'common/table/ProgressIcon';
+import { BLACKDUCK_INFO } from 'page/provider/blackduck/BlackDuckModel';
 
 const DistributionConfigurationTable = ({
     csrfToken, errorHandler, readonly, showRefreshButton, descriptors
@@ -32,25 +34,26 @@ const DistributionConfigurationTable = ({
     const tableRef = useRef();
     const history = useHistory();
 
-    const createTableEntry = (jobConfig, lastRan, currentStatus) => {
-        if (!jobConfig.fieldModels) {
+    const createTableEntry = (jobWithAuditData) => {
+        if (!jobWithAuditData) {
             return null;
         }
-        const channelModel = jobConfig.fieldModels.find((model) => FieldModelUtilities.hasKey(model, DISTRIBUTION_COMMON_FIELD_KEYS.channelName));
-        const providerName = FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName);
-        const id = jobConfig.jobId;
-        const name = FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.name);
-        const distributionType = channelModel.descriptorName;
-        const frequency = FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.frequency);
-        const enabled = FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.enabled);
+
+        const {
+            jobId, enabled, jobName, channelName, frequencyType, auditTimeLastSent, auditStatus
+        } = jobWithAuditData;
+
+        const modifiedAuditSent = auditTimeLastSent ?? 'Unknown';
+        const modifiedAuditStatus = auditStatus ?? 'Unknown';
+
         return {
-            id,
-            name,
-            distributionType,
-            providerName,
-            frequency,
-            lastRan,
-            status: currentStatus,
+            id: jobId,
+            name: jobName,
+            distributionType: channelName,
+            providerName: BLACKDUCK_INFO.key,
+            frequency: frequencyType,
+            lastRan: modifiedAuditSent,
+            status: modifiedAuditStatus,
             enabled
         };
     };
@@ -68,7 +71,7 @@ const DistributionConfigurationTable = ({
             setTotalPages,
             setJobsValidationResults
         };
-        DistributionRequestUtility.fetchDistributions({
+        DistributionRequestUtility.fetchDistributionsWithAudit({
             csrfToken, errorHandler, pagingData, stateUpdateFunctions, createTableEntry
         });
     };
@@ -269,13 +272,13 @@ const DistributionConfigurationTable = ({
     };
 
     const enabledColumnFormatter = (cell) => {
-        const icon = (cell === 'true') ? 'check' : 'times';
-        const color = (cell === 'true') ? 'synopsysGreen' : 'synopsysRed';
+        const icon = (cell) ? 'check' : 'times';
+        const color = (cell) ? 'synopsysGreen' : 'synopsysRed';
         const className = `alert-icon ${color}`;
 
         return (
-            <div className="btn btn-link jobIconButton" title={cell}>
-                <FontAwesomeIcon icon={icon} className={className} size="lg" title={cell} />
+            <div className="btn btn-link jobIconButton" title="Enabled">
+                <FontAwesomeIcon icon={icon} className={className} size="lg" title="Enabled" />
             </div>
         );
     };

@@ -7,7 +7,6 @@
  */
 package com.synopsys.integration.alert.common.rest.model;
 
-import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
@@ -19,14 +18,14 @@ public class DistributionWithAuditInfo extends AlertSerializableModel {
     private String jobName;
     private String channelName;
     private FrequencyType frequencyType;
-    private OffsetDateTime auditTimeLastSent;
+    private String auditTimeLastSent;
     private String auditStatus;
 
     public DistributionWithAuditInfo() {
     }
 
     public DistributionWithAuditInfo(
-        UUID jobId, boolean enabled, String jobName, String channelName, FrequencyType frequencyType, OffsetDateTime auditTimeLastSent, String auditStatus
+        UUID jobId, boolean enabled, String jobName, String channelName, FrequencyType frequencyType, String auditTimeLastSent, String auditStatus
     ) {
         this.jobId = jobId;
         this.enabled = enabled;
@@ -57,7 +56,7 @@ public class DistributionWithAuditInfo extends AlertSerializableModel {
         return frequencyType;
     }
 
-    public OffsetDateTime getAuditTimeLastSent() {
+    public String getAuditTimeLastSent() {
         return auditTimeLastSent;
     }
 

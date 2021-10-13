@@ -34,10 +34,10 @@ public class DistributionController {
     public AlertPagedModel<DistributionWithAuditInfo> getDistributionWithAuditInfo(
         @RequestParam String sortBy,
         @RequestParam int pageSize,
-        @RequestParam int pageStart,
+        @RequestParam int pageNumber,
         @RequestParam(required = false) String searchTerm
     ) {
-        return ResponseFactory.createContentResponseFromAction(distributionActions.retrieveJobWithAuditInfo(pageStart, pageSize, sortBy, searchTerm));
+        return ResponseFactory.createContentResponseFromAction(distributionActions.retrieveJobWithAuditInfo(pageNumber, pageSize, sortBy, searchTerm));
     }
 
 }
