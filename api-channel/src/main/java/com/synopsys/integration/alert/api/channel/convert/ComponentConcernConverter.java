@@ -32,6 +32,7 @@ public class ComponentConcernConverter {
     private static final String SPACE_DASH_SPACE = "-";
     private static final String BRACKET_LEFT = "[";
     private static final String BRACKET_RIGHT = "]";
+    private static final String TEXT_COMPONENT_DELETE = "Component was removed or the version was set.";
 
     private final ChannelMessageFormatter formatter;
 
@@ -178,18 +179,23 @@ public class ComponentConcernConverter {
         if (estimatedRiskConcerns.isEmpty()) {
             return List.of();
         }
-
+        boolean isDelete = estimatedRiskConcerns.stream()
+            .allMatch(componentConcern -> ItemOperation.DELETE.equals(componentConcern.getOperation()));
         List<String> estimatedRiskForOperationSectionPieces = new LinkedList<>();
         estimatedRiskForOperationSectionPieces.add(formatter.getSectionSeparator());
         estimatedRiskForOperationSectionPieces.add(formatter.getLineSeparator());
 
-        estimatedRiskForOperationSectionPieces.add(String.format("%s%s", formattedVulnerabilityCountsString, formattedColonSpace));
-        estimatedRiskForOperationSectionPieces.add(formatter.getLineSeparator());
-        estimatedRiskForOperationSectionPieces.add(formatter.getLineSeparator());
-
-        for (ComponentConcern componentConcern : estimatedRiskConcerns) {
-            estimatedRiskForOperationSectionPieces.add(createEstimatedRiskConcernString(componentConcern));
+        if (isDelete) {
+            estimatedRiskForOperationSectionPieces.add(formatter.encode(TEXT_COMPONENT_DELETE));
+        } else {
+            estimatedRiskForOperationSectionPieces.add(String.format("%s%s", formattedVulnerabilityCountsString, formattedColonSpace));
             estimatedRiskForOperationSectionPieces.add(formatter.getLineSeparator());
+            estimatedRiskForOperationSectionPieces.add(formatter.getLineSeparator());
+
+            for (ComponentConcern componentConcern : estimatedRiskConcerns) {
+                estimatedRiskForOperationSectionPieces.add(createEstimatedRiskConcernString(componentConcern));
+                estimatedRiskForOperationSectionPieces.add(formatter.getLineSeparator());
+            }
         }
 
         return estimatedRiskForOperationSectionPieces;
@@ -199,6 +205,7 @@ public class ComponentConcernConverter {
         String severity = formatter.encode(estimatedRiskConcern.getSeverity().getVulnerabilityLabel());
         String countString = String.format(TRIPLE_STRING_REPLACEMENT, formattedOpenParen, estimatedRiskConcern.getNumericValue(), formattedCloseParen);
         String componentName = createComponentNameLinkIfPresent(estimatedRiskConcern);
+        //TODO use the message formatter to encode like issue tracker.
         return String.format("    %s: %s %s", severity, countString, componentName);
     }
 
