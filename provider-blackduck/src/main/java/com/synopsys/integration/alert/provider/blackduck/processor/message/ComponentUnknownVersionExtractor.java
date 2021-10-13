@@ -56,11 +56,10 @@ public class ComponentUnknownVersionExtractor extends AbstractBlackDuckComponent
             bomComponentDetails = bomComponentDetailsCreator.createBomComponentUnknownVersionDetails(bomComponent, componentConcerns, List.of());
         } catch (IntegrationRestException e) {
             bomComponent404Handler.logIf404OrThrow(e, notificationContent.getComponentName(), null);
-            bomComponentDetails = bomComponentDetailsCreator.createMissingBomComponentDetails(
+            bomComponentDetails = bomComponentDetailsCreator.createMissingBomComponentDetailsForUnknownVersion(
                 notificationContent.getComponentName(),
                 notificationContent.getBomComponent(),
-                null,
-                null,
+                BlackDuckMessageBomComponentDetailsCreator.COMPONENT_VERSION_UNKNOWN,
                 componentConcerns,
                 List.of()
             );
