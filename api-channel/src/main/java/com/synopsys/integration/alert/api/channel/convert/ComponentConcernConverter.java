@@ -187,6 +187,7 @@ public class ComponentConcernConverter {
 
         if (isDelete) {
             estimatedRiskForOperationSectionPieces.add(formatter.encode(TEXT_COMPONENT_DELETE));
+            estimatedRiskForOperationSectionPieces.add(formatter.getLineSeparator());
         } else {
             estimatedRiskForOperationSectionPieces.add(String.format("%s%s", formattedVulnerabilityCountsString, formattedColonSpace));
             estimatedRiskForOperationSectionPieces.add(formatter.getLineSeparator());
