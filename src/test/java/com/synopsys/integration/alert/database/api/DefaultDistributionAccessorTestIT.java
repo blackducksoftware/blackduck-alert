@@ -28,6 +28,7 @@ import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.persistence.accessor.DistributionAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.DistributionWithAuditInfo;
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.job.DistributionJobEntity;
@@ -110,7 +111,13 @@ public class DefaultDistributionAccessorTestIT {
             List<AuditEntryEntity> audits = jobAndAudits.getValue();
             if (!audits.isEmpty()) {
                 OffsetDateTime mostRecentAuditEntryTime = audits.stream().max(Comparator.comparing(AuditEntryEntity::getTimeLastSent)).map(AuditEntryEntity::getTimeLastSent).orElse(null);
-                assertEquals(mostRecentAuditEntryTime, distributionWithAuditInfo.getAuditTimeLastSent());
+
+                String formattedTime = null;
+                if (null != mostRecentAuditEntryTime) {
+                    formattedTime = DateUtils.formatDate(mostRecentAuditEntryTime, DateUtils.AUDIT_DATE_FORMAT);
+                }
+
+                assertEquals(formattedTime, distributionWithAuditInfo.getAuditTimeLastSent());
             }
         }
     }
