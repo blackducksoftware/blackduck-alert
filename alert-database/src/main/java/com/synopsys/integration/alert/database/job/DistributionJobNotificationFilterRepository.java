@@ -15,6 +15,7 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.hibernate.jpa.TypedParameterValue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -39,7 +40,7 @@ public class DistributionJobNotificationFilterRepository {
             + "    AND ("
             + "        bd_details.filter_by_project = false"
             + "        OR ("
-            + "            coalesce(:projectNames, NULL) IS NOT NULL"
+            + "            coalesce(:projectNames) IS NOT NULL"
             + "            AND ("
             + "                projects.project_name IN (:projectNames)"
             + "                OR ("
@@ -52,11 +53,11 @@ public class DistributionJobNotificationFilterRepository {
             + "        )"
             + "    ) AND ("
             + "        ("
-            + "            coalesce(:vulnerabilitySeverities, NULL) IS NULL"
+            + "            coalesce(:vulnerabilitySeverities) IS NULL"
             + "            OR vuln_filter.severity_name IS NULL"
             + "            OR vuln_filter.severity_name IN (:vulnerabilitySeverities)"
             + "        ) OR ("
-            + "            coalesce(:policyNames, NULL) IS NULL"
+            + "            coalesce(:policyNames) IS NULL"
             + "            OR policy_filter.policy_name IS NULL"
             + "            OR policy_filter.policy_name IN (:policyNames)"
             + "        )"
@@ -111,9 +112,9 @@ public class DistributionJobNotificationFilterRepository {
         Set<String> vulnerabilitySeverities
     ) {
         query.setParameter("blackDuckConfigId", blackDuckConfigId);
-        query.setParameter("frequencies", frequencies);
-        query.setParameter("notificationTypes", notificationTypes);
-        query.setParameter("projectNames", projectNames);
+        query.unwrap(org.hibernate.query.Query.class).setParameterList("frequencies", frequencies);
+        query.unwrap(org.hibernate.query.Query.class).setParameterList("notificationTypes", notificationTypes);
+        query.unwrap(org.hibernate.query.Query.class).setParameterList("projectNames", projectNames);
 
         String[] projectNamesArray;
         if (projectNames.isEmpty()) {
@@ -122,9 +123,10 @@ public class DistributionJobNotificationFilterRepository {
             projectNamesArray = new String[projectNames.size()];
             projectNames.toArray(projectNamesArray);
         }
-        query.unwrap(org.hibernate.query.Query.class).setParameter("projectNamesArray", projectNamesArray, StringArrayType.INSTANCE);
-        query.setParameter("policyNames", policyNames);
-        query.setParameter("vulnerabilitySeverities", vulnerabilitySeverities);
+        query.setParameter("projectNamesArray", new TypedParameterValue(StringArrayType.INSTANCE, projectNamesArray));
+        // query.unwrap(org.hibernate.query.Query.class).setParameter("projectNamesArray", projectNamesArray, StringArrayType.INSTANCE);
+        query.unwrap(org.hibernate.query.Query.class).setParameterList("policyNames", policyNames);
+        query.unwrap(org.hibernate.query.Query.class).setParameterList("vulnerabilitySeverities", vulnerabilitySeverities);
     }
 
 }
