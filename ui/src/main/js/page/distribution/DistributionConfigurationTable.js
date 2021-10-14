@@ -28,6 +28,7 @@ const DistributionConfigurationTable = ({
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [totalPages, setTotalPages] = useState(1);
+    const [sortName, setSortName] = useState('name');
     const [searchTerm, setSearchTerm] = useState('');
     const [jobsValidationResults, setJobsValidationResults] = useState(null);
     const [entriesToDelete, setEntriesToDelete] = useState(null);
@@ -71,8 +72,11 @@ const DistributionConfigurationTable = ({
             setTotalPages,
             setJobsValidationResults
         };
+        const sortData = {
+            sortName
+        };
         DistributionRequestUtility.fetchDistributionsWithAudit({
-            csrfToken, errorHandler, pagingData, stateUpdateFunctions, createTableEntry
+            csrfToken, errorHandler, pagingData, sortData, stateUpdateFunctions, createTableEntry
         });
     };
 
@@ -351,6 +355,9 @@ const DistributionConfigurationTable = ({
         handleConfirmDeleteRow: (next, rows) => setSelectedRows(rows),
         defaultSortName: 'name',
         defaultSortOrder: 'asc',
+        onSortChange: (newSortName) => {
+            setSortName(newSortName);
+        },
         onRowDoubleClick: (id) => {
             editButtonClicked(id);
         },
@@ -364,6 +371,14 @@ const DistributionConfigurationTable = ({
 
     const tableFetchInfo = {
         dataTotalSize: totalPages * pageSize
+    };
+
+    const remote = (remoteObj) => {
+        // Must copy old object instead of modifying current as it's against ESLint but required by component
+        const newRemoteObj = JSON.parse(JSON.stringify(remoteObj));
+        newRemoteObj.pagination = true;
+        newRemoteObj.sort = true;
+        return newRemoteObj;
     };
 
     return (
@@ -427,7 +442,7 @@ const DistributionConfigurationTable = ({
                 fetchInfo={tableFetchInfo}
                 search
                 pagination
-                remote
+                remote={remote}
             >
                 <TableHeaderColumn dataField="id" hidden isKey>Id</TableHeaderColumn>
                 {column('name', 'Name', nameColumnFormatter)}
