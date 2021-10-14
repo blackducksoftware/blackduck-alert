@@ -94,7 +94,10 @@ task copyStaticWebContent(type: Copy) {
     }
     into "${project.buildDir}/resources/main/static"
 }
-tasks.build.finalizedBy(updateNpmVersion)
+
+// FIXME This is excluded right now as it makes the HomeControllerTestIT test fail
+//tasks.build.finalizedBy(updateNpmVersion)
+
 tasks.copyStaticWebContent.finalizedBy(npmBuild)
 tasks.npmBuild.mustRunAfter(updateNpmVersion)
 tasks.npmBuild.mustRunAfter(copyStaticWebContent)
