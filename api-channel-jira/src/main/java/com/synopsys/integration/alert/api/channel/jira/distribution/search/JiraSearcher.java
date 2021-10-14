@@ -88,6 +88,10 @@ public abstract class JiraSearcher extends IssueTrackerSearcher<String> {
             policyName = optionalPolicyName.get();
         }
 
+        if (projectIssueModel.getComponentUnknownVersionDetails().isPresent()) {
+            concernType = ComponentConcernType.UNKNOWN_VERSION;
+        }
+
         String jqlString = JqlStringCreator.createBlackDuckComponentConcernIssuesSearchString(
             jiraProjectKey,
             provider,

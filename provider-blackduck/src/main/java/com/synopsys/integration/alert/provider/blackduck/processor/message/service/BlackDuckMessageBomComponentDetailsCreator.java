@@ -67,10 +67,10 @@ public class BlackDuckMessageBomComponentDetailsCreator {
         // FIXME using this query link only in a successful result and not in an unsuccessful result leads to inconsistent values in our custom fields which leads to inconsistent search results (bug).
         String componentQueryLink = BlackDuckMessageLinkUtils.createComponentQueryLink(bomComponent);
 
-        String componentVersionUrl = bomComponent.getComponent();
+        String componentVersionUrl = bomComponent.getComponentVersion();
         if (StringUtils.isNotBlank(componentVersionUrl)) {
             component = new LinkableItem(BlackDuckMessageLabels.LABEL_COMPONENT, bomComponent.getComponentName());
-            componentVersion = new LinkableItem(BlackDuckMessageLabels.LABEL_COMPONENT_VERSION, bomComponent.getComponentName(), componentQueryLink);
+            componentVersion = new LinkableItem(BlackDuckMessageLabels.LABEL_COMPONENT_VERSION, bomComponent.getComponentVersionName(), componentQueryLink);
         } else {
             component = new LinkableItem(BlackDuckMessageLabels.LABEL_COMPONENT, bomComponent.getComponentName(), componentQueryLink);
         }
