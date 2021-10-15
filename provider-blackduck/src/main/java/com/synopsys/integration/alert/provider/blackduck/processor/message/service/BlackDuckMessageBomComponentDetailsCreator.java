@@ -102,7 +102,8 @@ public class BlackDuckMessageBomComponentDetailsCreator {
         );
     }
 
-    public BomComponentDetails createBomComponentUnknownVersionDetails(ProjectVersionComponentVersionView bomComponent, List<ComponentConcern> componentConcerns, List<LinkableItem> additionalAttributes) throws IntegrationException {
+    public BomComponentDetails createBomComponentUnknownVersionDetails(ProjectVersionComponentVersionView bomComponent, List<ComponentConcern> componentConcerns, ComponentUpgradeGuidance componentUpgradeGuidance,
+        List<LinkableItem> additionalAttributes) throws IntegrationException {
         // FIXME using this query link only in a successful result and not in an unsuccessful result leads to inconsistent values in our custom fields which leads to inconsistent search results (bug).
         String componentQueryLink = BlackDuckMessageLinkUtils.createComponentQueryLink(bomComponent);
 
@@ -110,7 +111,7 @@ public class BlackDuckMessageBomComponentDetailsCreator {
         LinkableItem componentVersion = new LinkableItem(BlackDuckMessageLabels.LABEL_COMPONENT_VERSION, COMPONENT_VERSION_UNKNOWN);
 
         ComponentVulnerabilities componentVulnerabilities = ComponentVulnerabilities.none();
-        List<ComponentPolicy> componentPolicies = retrieveComponentPolicies(bomComponent);
+        List<ComponentPolicy> componentPolicies = retrieveComponentPolicies(bomComponent, componentConcerns);
 
         LinkableItem licenseInfo = BlackDuckMessageAttributesUtils.extractLicense(bomComponent);
         String usageInfo = BlackDuckMessageAttributesUtils.extractUsage(bomComponent);
@@ -158,6 +159,7 @@ public class BlackDuckMessageBomComponentDetailsCreator {
         @Nullable String componentUrl,
         @Nullable String componentVersionName,
         List<ComponentConcern> componentConcerns,
+        ComponentUpgradeGuidance componentUpgradeGuidance,
         List<LinkableItem> additionalAttributes
     ) {
         String componentQueryLink = BlackDuckMessageLinkUtils.createComponentQueryLink(componentUrl, componentName);
@@ -168,6 +170,7 @@ public class BlackDuckMessageBomComponentDetailsCreator {
             componentVersionName,
             () -> null,
             componentConcerns,
+            componentUpgradeGuidance,
             additionalAttributes
         );
     }

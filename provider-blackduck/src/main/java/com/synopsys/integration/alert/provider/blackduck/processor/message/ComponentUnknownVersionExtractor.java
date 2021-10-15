@@ -17,6 +17,7 @@ import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernSeverity;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentUpgradeGuidance;
 import com.synopsys.integration.alert.provider.blackduck.processor.NotificationExtractorBlackDuckServicesFactoryCache;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.BlackDuckMessageBomComponentDetailsCreator;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.BlackDuckMessageBomComponentDetailsCreatorFactory;
@@ -48,12 +49,12 @@ public class ComponentUnknownVersionExtractor extends AbstractBlackDuckComponent
     @Override
     protected List<BomComponentDetails> createBomComponentDetails(ComponentUnknownVersionNotificationContent notificationContent, BlackDuckServicesFactory blackDuckServicesFactory) throws IntegrationException {
         BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
-        BlackDuckMessageBomComponentDetailsCreator bomComponentDetailsCreator = detailsCreatorFactory.createBomComponentDetailsCreator(blackDuckApiClient);
+        BlackDuckMessageBomComponentDetailsCreator bomComponentDetailsCreator = detailsCreatorFactory.createBomComponentDetailsCreator(blackDuckServicesFactory);
         List<ComponentConcern> componentConcerns = createComponentConcerns(notificationContent);
         BomComponentDetails bomComponentDetails;
         try {
             ProjectVersionComponentVersionView bomComponent = blackDuckApiClient.getResponse(new HttpUrl(notificationContent.getBomComponent()), ProjectVersionComponentVersionView.class);
-            bomComponentDetails = bomComponentDetailsCreator.createBomComponentUnknownVersionDetails(bomComponent, componentConcerns, List.of());
+            bomComponentDetails = bomComponentDetailsCreator.createBomComponentUnknownVersionDetails(bomComponent, componentConcerns, ComponentUpgradeGuidance.none(), List.of());
         } catch (IntegrationRestException e) {
             bomComponent404Handler.logIf404OrThrow(e, notificationContent.getComponentName(), null);
             bomComponentDetails = bomComponentDetailsCreator.createMissingBomComponentDetailsForUnknownVersion(
@@ -61,6 +62,7 @@ public class ComponentUnknownVersionExtractor extends AbstractBlackDuckComponent
                 notificationContent.getBomComponent(),
                 BlackDuckMessageBomComponentDetailsCreator.COMPONENT_VERSION_UNKNOWN,
                 componentConcerns,
+                ComponentUpgradeGuidance.none(),
                 List.of()
             );
         }
