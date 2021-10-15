@@ -221,7 +221,10 @@ public class BlackDuckMessageBomComponentDetailsCreator {
         if (!vulnerabilityDetailsCreator.hasSecurityRisk(bomComponent)) {
             return ComponentVulnerabilities.none();
         }
-
+        if (StringUtils.isBlank(bomComponent.getComponentVersion())) {
+            return ComponentVulnerabilities.none();
+        }
+        
         HttpUrl vulnerabilitiesUrl = createVulnerabilitiesLink(bomComponent);
         UrlMultipleResponses<BlackDuckProjectVersionComponentVulnerabilitiesView> urlMultipleResponses = new UrlMultipleResponses<>(vulnerabilitiesUrl, VULNERABILITIES_LINK.getResponseClass());
         BlackDuckMultipleRequest<BlackDuckProjectVersionComponentVulnerabilitiesView> spec = new BlackDuckRequestBuilder()
