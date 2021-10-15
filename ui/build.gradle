@@ -4,10 +4,12 @@ import groovy.json.JsonSlurper
 ext.moduleName = 'com.synopsys.integration.alert.ui'
 
 task cleanBundles(type: Delete) {
-    File staticResourcesDirectory = new File('src/main/static')
-    if (staticResourcesDirectory.exists()) {
-        println "Deleting ${staticResourcesDirectory.canonicalPath}"
-        staticResourcesDirectory.deleteDir()
+    doLast {
+        File staticResourcesDirectory = new File('src/main/static')
+        if (staticResourcesDirectory.exists()) {
+            println "Deleting ${staticResourcesDirectory.canonicalPath}"
+            staticResourcesDirectory.deleteDir()
+        }
     }
 }
 
