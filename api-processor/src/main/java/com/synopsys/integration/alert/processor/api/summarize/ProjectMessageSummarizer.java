@@ -140,6 +140,8 @@ public class ProjectMessageSummarizer {
         switch (type) {
             case POLICY:
                 return "Policies";
+            case UNKNOWN_VERSION:
+                return "Estimated Security Risks";
             case VULNERABILITY:
                 return "Vulnerabilities";
             default:

@@ -141,6 +141,10 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
             additionalKey = JiraIssueSearchPropertyStringCompatibilityUtils.createPolicyAdditionalKey(optionalPolicyName.get());
         }
 
+        if (alertIssueSource.getComponentUnknownVersionDetails().isPresent()) {
+            concernType = ComponentConcernType.UNKNOWN_VERSION;
+        }
+
         String category = JiraIssueSearchPropertyStringCompatibilityUtils.createCategory(concernType);
         return new JiraIssueSearchProperties(
             provider.getLabel(),

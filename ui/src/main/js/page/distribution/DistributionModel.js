@@ -56,7 +56,8 @@ export const DISTRIBUTION_NOTIFICATION_TYPE_OPTIONS = [
     { label: 'VULNERABILITY', value: 'VULNERABILITY' },
     { label: 'BOM_EDIT', value: 'BOM_EDIT' },
     { label: 'PROJECT', value: 'PROJECT' },
-    { label: 'PROJECT_VERSION', value: 'PROJECT_VERSION' }
+    { label: 'PROJECT_VERSION', value: 'PROJECT_VERSION' },
+    { label: 'COMPONENT_UNKNOWN_VERSION', value: 'COMPONENT_UNKNOWN_VERSION' }
 ];
 
 export const DISTRIBUTION_CHANNEL_OPTIONS = [

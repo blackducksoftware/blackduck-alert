@@ -27,7 +27,7 @@ import com.synopsys.integration.alert.provider.blackduck.processor.message.util.
 import com.synopsys.integration.blackduck.api.core.response.LinkMultipleResponses;
 import com.synopsys.integration.blackduck.api.core.response.UrlMultipleResponses;
 import com.synopsys.integration.blackduck.api.generated.enumeration.ProjectVersionComponentPolicyStatusType;
-import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentVersionView;
 import com.synopsys.integration.blackduck.api.manual.temporary.component.VersionBomOriginView;
 import com.synopsys.integration.blackduck.http.BlackDuckRequestBuilder;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
@@ -40,6 +40,7 @@ public class BlackDuckMessageBomComponentDetailsCreator {
     private static final LinkMultipleResponses<BlackDuckProjectVersionComponentVulnerabilitiesView> VULNERABILITIES_LINK =
         new LinkMultipleResponses<>("vulnerabilities", BlackDuckProjectVersionComponentVulnerabilitiesView.class);
     private static final String VULNERABILITIES_MEDIA_TYPE = "application/vnd.blackducksoftware.internal-1+json";
+    public static final String COMPONENT_VERSION_UNKNOWN = "Unknown Version";
 
     private final BlackDuckApiClient blackDuckApiClient;
     private final BlackDuckComponentVulnerabilityDetailsCreator vulnerabilityDetailsCreator;
@@ -55,11 +56,11 @@ public class BlackDuckMessageBomComponentDetailsCreator {
         this.policyDetailsCreator = policyDetailsCreator;
     }
 
-    public BomComponentDetails createBomComponentDetails(ProjectVersionComponentView bomComponent, ComponentConcern componentConcern, List<LinkableItem> additionalAttributes) throws IntegrationException {
+    public BomComponentDetails createBomComponentDetails(ProjectVersionComponentVersionView bomComponent, ComponentConcern componentConcern, List<LinkableItem> additionalAttributes) throws IntegrationException {
         return createBomComponentDetails(bomComponent, List.of(componentConcern), additionalAttributes);
     }
 
-    public BomComponentDetails createBomComponentDetails(ProjectVersionComponentView bomComponent, List<ComponentConcern> componentConcerns, List<LinkableItem> additionalAttributes) throws IntegrationException {
+    public BomComponentDetails createBomComponentDetails(ProjectVersionComponentVersionView bomComponent, List<ComponentConcern> componentConcerns, List<LinkableItem> additionalAttributes) throws IntegrationException {
         LinkableItem component;
         LinkableItem componentVersion = null;
 
@@ -94,6 +95,33 @@ public class BlackDuckMessageBomComponentDetailsCreator {
         );
     }
 
+    public BomComponentDetails createBomComponentUnknownVersionDetails(ProjectVersionComponentVersionView bomComponent, List<ComponentConcern> componentConcerns, List<LinkableItem> additionalAttributes) throws IntegrationException {
+        // FIXME using this query link only in a successful result and not in an unsuccessful result leads to inconsistent values in our custom fields which leads to inconsistent search results (bug).
+        String componentQueryLink = BlackDuckMessageLinkUtils.createComponentQueryLink(bomComponent);
+
+        LinkableItem component = new LinkableItem(BlackDuckMessageLabels.LABEL_COMPONENT, bomComponent.getComponentName(), componentQueryLink);
+        LinkableItem componentVersion = new LinkableItem(BlackDuckMessageLabels.LABEL_COMPONENT_VERSION, COMPONENT_VERSION_UNKNOWN);
+
+        ComponentVulnerabilities componentVulnerabilities = ComponentVulnerabilities.none();
+        List<ComponentPolicy> componentPolicies = retrieveComponentPolicies(bomComponent);
+
+        LinkableItem licenseInfo = BlackDuckMessageAttributesUtils.extractLicense(bomComponent);
+        String usageInfo = BlackDuckMessageAttributesUtils.extractUsage(bomComponent);
+        String issuesUrl = BlackDuckMessageAttributesUtils.extractIssuesUrl(bomComponent).orElse(null);
+
+        return new BomComponentDetails(
+            component,
+            componentVersion,
+            componentVulnerabilities,
+            componentPolicies,
+            componentConcerns,
+            licenseInfo,
+            usageInfo,
+            additionalAttributes,
+            issuesUrl
+        );
+    }
+
     // This exists due to an issue with searching for the wrong URL in an Azure search property. More info here IALERT-2654
     public BomComponentDetails createMissingBomComponentDetailsForVulnerability(
         String componentName,
@@ -109,6 +137,26 @@ public class BlackDuckMessageBomComponentDetailsCreator {
             () -> componentQueryLink,
             componentVersionName,
             () -> componentQueryLink,
+            componentConcerns,
+            additionalAttributes
+        );
+    }
+
+    // This exists due to an issue with searching for the wrong URL in an Azure search property. More info here IALERT-2654
+    public BomComponentDetails createMissingBomComponentDetailsForUnknownVersion(
+        String componentName,
+        @Nullable String componentUrl,
+        @Nullable String componentVersionName,
+        List<ComponentConcern> componentConcerns,
+        List<LinkableItem> additionalAttributes
+    ) {
+        String componentQueryLink = BlackDuckMessageLinkUtils.createComponentQueryLink(componentUrl, componentName);
+
+        return createMissingDetails(
+            componentName,
+            () -> componentQueryLink,
+            componentVersionName,
+            () -> null,
             componentConcerns,
             additionalAttributes
         );
@@ -169,7 +217,7 @@ public class BlackDuckMessageBomComponentDetailsCreator {
         );
     }
 
-    private ComponentVulnerabilities retrieveComponentVulnerabilities(ProjectVersionComponentView bomComponent) throws IntegrationException {
+    private ComponentVulnerabilities retrieveComponentVulnerabilities(ProjectVersionComponentVersionView bomComponent) throws IntegrationException {
         if (!vulnerabilityDetailsCreator.hasSecurityRisk(bomComponent)) {
             return ComponentVulnerabilities.none();
         }
@@ -177,25 +225,25 @@ public class BlackDuckMessageBomComponentDetailsCreator {
         HttpUrl vulnerabilitiesUrl = createVulnerabilitiesLink(bomComponent);
         UrlMultipleResponses<BlackDuckProjectVersionComponentVulnerabilitiesView> urlMultipleResponses = new UrlMultipleResponses<>(vulnerabilitiesUrl, VULNERABILITIES_LINK.getResponseClass());
         BlackDuckMultipleRequest<BlackDuckProjectVersionComponentVulnerabilitiesView> spec = new BlackDuckRequestBuilder()
-                                                                                                 .commonGet()
-                                                                                                 .addHeader(HttpHeaders.ACCEPT, VULNERABILITIES_MEDIA_TYPE)
-                                                                                                 .buildBlackDuckRequest(urlMultipleResponses);
+            .commonGet()
+            .addHeader(HttpHeaders.ACCEPT, VULNERABILITIES_MEDIA_TYPE)
+            .buildBlackDuckRequest(urlMultipleResponses);
 
         List<BlackDuckProjectVersionComponentVulnerabilitiesView> vulnerabilities = blackDuckApiClient.getAllResponses(spec);
         return vulnerabilityDetailsCreator.toComponentVulnerabilities(vulnerabilities);
     }
 
-    private List<ComponentPolicy> retrieveComponentPolicies(ProjectVersionComponentView bomComponent) throws IntegrationException {
+    private List<ComponentPolicy> retrieveComponentPolicies(ProjectVersionComponentVersionView bomComponent) throws IntegrationException {
         if (ProjectVersionComponentPolicyStatusType.NOT_IN_VIOLATION.equals(bomComponent.getPolicyStatus())) {
             return List.of();
         }
         return blackDuckApiClient.getAllResponses(bomComponent.metaPolicyRulesLink())
-                   .stream()
-                   .map(policyDetailsCreator::toComponentPolicy)
-                   .collect(Collectors.toList());
+            .stream()
+            .map(policyDetailsCreator::toComponentPolicy)
+            .collect(Collectors.toList());
     }
 
-    private HttpUrl createVulnerabilitiesLink(ProjectVersionComponentView bomComponent) throws IntegrationException {
+    private HttpUrl createVulnerabilitiesLink(ProjectVersionComponentVersionView bomComponent) throws IntegrationException {
         HttpUrl vulnerabilitiesUrl = bomComponent.getHref();
 
         List<VersionBomOriginView> origins = bomComponent.getOrigins();
