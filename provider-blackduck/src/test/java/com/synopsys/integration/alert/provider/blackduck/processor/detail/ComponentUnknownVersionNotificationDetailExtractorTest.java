@@ -13,8 +13,8 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.processor.api.detail.DetailedNotificationContent;
 import com.synopsys.integration.alert.test.common.TestResourceUtils;
-import com.synopsys.integration.blackduck.api.manual.component.ComponentUnknownVersionContent;
-import com.synopsys.integration.blackduck.api.manual.view.ComponentUnknownVersionView;
+import com.synopsys.integration.blackduck.api.manual.component.ComponentUnknownVersionNotificationContent;
+import com.synopsys.integration.blackduck.api.manual.view.ComponentUnknownVersionNotificationView;
 
 public class ComponentUnknownVersionNotificationDetailExtractorTest {
     public static final String NOTIFICATION_JSON_PATH = "json/componentUnknownVersionNotification.json";
@@ -24,8 +24,8 @@ public class ComponentUnknownVersionNotificationDetailExtractorTest {
     @Test
     public void extractDetailedContentTest() throws IOException {
         String jsonContent = TestResourceUtils.readFileToString(NOTIFICATION_JSON_PATH);
-        ComponentUnknownVersionView notificationView = gson.fromJson(jsonContent, ComponentUnknownVersionView.class);
-        ComponentUnknownVersionContent notificationContent = notificationView.getContent();
+        ComponentUnknownVersionNotificationView notificationView = gson.fromJson(jsonContent, ComponentUnknownVersionNotificationView.class);
+        ComponentUnknownVersionNotificationContent notificationContent = notificationView.getContent();
 
         AlertNotificationModel notification = new AlertNotificationModel(0L, 0L, "BlackDuck", "Config 1", null, null, null, null, false);
 

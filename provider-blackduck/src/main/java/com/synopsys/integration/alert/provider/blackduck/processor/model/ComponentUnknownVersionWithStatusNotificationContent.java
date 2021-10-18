@@ -9,7 +9,7 @@ package com.synopsys.integration.alert.provider.blackduck.processor.model;
 
 import com.synopsys.integration.blackduck.api.manual.enumeration.ComponentUnknownVersionStatus;
 
-public class ComponentUnknownVersionNotificationContent extends AbstractProjectVersionNotificationContent {
+public class ComponentUnknownVersionWithStatusNotificationContent extends AbstractProjectVersionNotificationContent {
     private String componentName;
     private String bomComponent;
     private String component;
@@ -27,7 +27,7 @@ public class ComponentUnknownVersionNotificationContent extends AbstractProjectV
     private String lowVulnerabilityVersionName;
     private ComponentUnknownVersionStatus status;
 
-    public ComponentUnknownVersionNotificationContent(String projectName, String projectVersionName, String projectVersionUrl, String componentName, String bomComponent, String component,
+    public ComponentUnknownVersionWithStatusNotificationContent(String projectName, String projectVersionName, String projectVersionUrl, String componentName, String bomComponent, String component,
         int criticalVulnerabilityCount,
         String criticalVulnerabilityVersion, String criticalVulnerabilityName, int highVulnerabilityCount, String highVulnerabilityVersion, String highVulnerabilityVersionName,
         int mediumVulnerabilityCount,

@@ -15,27 +15,27 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.processor.api.detail.DetailedNotificationContent;
 import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExtractor;
-import com.synopsys.integration.alert.provider.blackduck.processor.model.ComponentUnknownVersionNotificationContent;
-import com.synopsys.integration.blackduck.api.manual.component.ComponentUnknownVersionContent;
-import com.synopsys.integration.blackduck.api.manual.view.ComponentUnknownVersionView;
+import com.synopsys.integration.alert.provider.blackduck.processor.model.ComponentUnknownVersionWithStatusNotificationContent;
+import com.synopsys.integration.blackduck.api.manual.component.ComponentUnknownVersionNotificationContent;
+import com.synopsys.integration.blackduck.api.manual.view.ComponentUnknownVersionNotificationView;
 
 @Component
-public class ComponentUnknownVersionNotificationDetailExtractor extends NotificationDetailExtractor<ComponentUnknownVersionView> {
+public class ComponentUnknownVersionNotificationDetailExtractor extends NotificationDetailExtractor<ComponentUnknownVersionNotificationView> {
 
     @Autowired
     public ComponentUnknownVersionNotificationDetailExtractor() {
-        super(ComponentUnknownVersionView.class);
+        super(ComponentUnknownVersionNotificationView.class);
     }
 
     @Override
-    public List<DetailedNotificationContent> extractDetailedContent(AlertNotificationModel alertNotificationModel, ComponentUnknownVersionView notificationView) {
-        ComponentUnknownVersionContent notificationContent = notificationView.getContent();
-        ComponentUnknownVersionNotificationContent componentUnknownVersionNotificationContent = extractContents(notificationContent);
+    public List<DetailedNotificationContent> extractDetailedContent(AlertNotificationModel alertNotificationModel, ComponentUnknownVersionNotificationView notificationView) {
+        ComponentUnknownVersionNotificationContent notificationContent = notificationView.getContent();
+        ComponentUnknownVersionWithStatusNotificationContent componentUnknownVersionNotificationContent = extractContents(notificationContent);
         return List.of(DetailedNotificationContent.project(alertNotificationModel, componentUnknownVersionNotificationContent, notificationContent.getProjectName()));
     }
 
-    private ComponentUnknownVersionNotificationContent extractContents(ComponentUnknownVersionContent notificationContent) {
-        return new ComponentUnknownVersionNotificationContent(notificationContent.getProjectName(),
+    private ComponentUnknownVersionWithStatusNotificationContent extractContents(ComponentUnknownVersionNotificationContent notificationContent) {
+        return new ComponentUnknownVersionWithStatusNotificationContent(notificationContent.getProjectName(),
             notificationContent.getProjectVersionName(),
             notificationContent.getProjectVersion(),
             notificationContent.getComponentName(),
