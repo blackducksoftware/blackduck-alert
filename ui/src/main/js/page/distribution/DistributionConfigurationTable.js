@@ -106,7 +106,7 @@ const DistributionConfigurationTable = ({
      * Acceptable sort values (Force specific values the user can sort by to avoid leaking DB data):
      *  channel
      *  frequency
-     *  timeLastSent
+     *  lastSent
      *  name
      *  status
      */
