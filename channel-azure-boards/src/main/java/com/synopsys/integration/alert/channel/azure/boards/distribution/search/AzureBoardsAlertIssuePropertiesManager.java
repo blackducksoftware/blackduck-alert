@@ -21,6 +21,7 @@ public class AzureBoardsAlertIssuePropertiesManager {
     public static final String POLICY_ADDITIONAL_KEY_COMPATIBILITY_LABEL = "Policy Violated";
     public static final String CATEGORY_TYPE_POLICY_COMPATIBILITY_LABEL = "Policy";
     public static final String CATEGORY_TYPE_VULNERABILITY_COMPATIBILITY_LABEL = "Vulnerability";
+    public static final String CATEGORY_TYPE_COMPONENT_UNKNOWN_VERSION_COMPATIBILITY_LABEL = "Component Unknown Version";
 
     public List<WorkItemElementOperationModel> createWorkItemRequestCustomFieldOperations(ProjectIssueModel alertIssueSource) {
         LinkableItem provider = alertIssueSource.getProvider();
@@ -46,6 +47,11 @@ public class AzureBoardsAlertIssuePropertiesManager {
             String additionalInfoKey = POLICY_ADDITIONAL_KEY_COMPATIBILITY_LABEL + optionalPolicyName.get();
             azureSearchFieldBuilder.addAdditionalInfoKey(additionalInfoKey);
             categoryKey = CATEGORY_TYPE_POLICY_COMPATIBILITY_LABEL;
+        }
+
+        boolean unknownVersionCategory = alertIssueSource.getComponentUnknownVersionDetails().isPresent();
+        if (unknownVersionCategory) {
+            categoryKey = CATEGORY_TYPE_COMPONENT_UNKNOWN_VERSION_COMPATIBILITY_LABEL;
         }
 
         azureSearchFieldBuilder.addCategoryKey(categoryKey);

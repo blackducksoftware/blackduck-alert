@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.api.channel.issue.convert.ProjectMessageToIssueModelTransformer;
+import com.synopsys.integration.alert.api.channel.issue.model.IssueComponentUnknownVersionDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.IssuePolicyDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueVulnerabilityDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
@@ -116,6 +117,7 @@ public class IssueTrackerSearcher<T extends Serializable> {
 
             Optional<ItemOperation> policyOperation = projectIssueModel.getPolicyDetails().map(IssuePolicyDetails::getOperation);
             Optional<IssueVulnerabilityDetails> optionalVulnerabilityDetails = projectIssueModel.getVulnerabilityDetails();
+            Optional<ItemOperation> componentUnknownOperation = projectIssueModel.getComponentUnknownVersionDetails().map(IssueComponentUnknownVersionDetails::getItemOperation);
             if (policyOperation.isPresent()) {
                 searchResultOperation = policyOperation.get();
             } else if (optionalVulnerabilityDetails.isPresent()) {
@@ -129,6 +131,8 @@ public class IssueTrackerSearcher<T extends Serializable> {
                 } else {
                     searchResultOperation = ItemOperation.UPDATE;
                 }
+            } else if (componentUnknownOperation.isPresent()) {
+                searchResultOperation = componentUnknownOperation.get();
             }
         } else if (foundIssuesCount > 1) {
             throw new AlertException("Expect to find a unique issue, but more than one was found");
@@ -163,9 +167,14 @@ public class IssueTrackerSearcher<T extends Serializable> {
 
     private boolean isOnlyDeleteOperation(ProjectIssueModel projectIssueModel) {
         boolean isPolicyDelete = projectIssueModel.getPolicyDetails()
-                                     .map(IssuePolicyDetails::getOperation)
-                                     .filter(ItemOperation.DELETE::equals)
-                                     .isPresent();
+            .map(IssuePolicyDetails::getOperation)
+            .filter(ItemOperation.DELETE::equals)
+            .isPresent();
+
+        boolean isEstimatedRiskDelete = projectIssueModel.getComponentUnknownVersionDetails()
+            .map(IssueComponentUnknownVersionDetails::getItemOperation)
+            .filter(ItemOperation.DELETE::equals)
+            .isPresent();
 
         boolean isVulnerabilityDelete = false;
         Optional<IssueVulnerabilityDetails> optionalVulnDetails = projectIssueModel.getVulnerabilityDetails();
@@ -178,7 +187,7 @@ public class IssueTrackerSearcher<T extends Serializable> {
             isVulnerabilityDelete = allVulnsRemediated || (hasDeletions && doesNotHaveAdditions && doesNotHaveUpdates);
         }
 
-        return isPolicyDelete || isVulnerabilityDelete;
+        return isPolicyDelete || isVulnerabilityDelete || isEstimatedRiskDelete;
     }
 
 }
