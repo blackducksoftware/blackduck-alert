@@ -30,14 +30,23 @@ public class DistributionController {
         this.distributionActions = distributionActions;
     }
 
+    /*
+     * Acceptable sort values (Force specific values the user can sort by to avoid leaking DB data):
+     *  channel
+     *  frequency
+     *  lastSent
+     *  name
+     *  status
+     */
     @GetMapping("/audit-statuses")
     public AlertPagedModel<DistributionWithAuditInfo> getDistributionWithAuditInfo(
-        @RequestParam String sortBy,
+        @RequestParam(required = false) String sortBy,
+        @RequestParam(required = false) String sortOrder,
         @RequestParam int pageSize,
         @RequestParam int pageNumber,
         @RequestParam(required = false) String searchTerm
     ) {
-        return ResponseFactory.createContentResponseFromAction(distributionActions.retrieveJobWithAuditInfo(pageNumber, pageSize, sortBy, searchTerm));
+        return ResponseFactory.createContentResponseFromAction(distributionActions.retrieveJobWithAuditInfo(pageNumber, pageSize, sortBy, sortOrder, searchTerm));
     }
 
 }

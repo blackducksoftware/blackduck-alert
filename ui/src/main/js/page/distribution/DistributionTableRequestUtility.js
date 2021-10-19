@@ -120,12 +120,12 @@ export const fetchDistributionsWithAudit = ({
     const {
         setProgress, setError, setTotalPages, setTableData
     } = stateUpdateFunctions;
-    const { sortName } = sortData;
+    const { sortName, sortOrder } = sortData;
     setProgress(true);
     const pageNumber = currentPage ? currentPage - 1 : 0;
     const searchPageSize = pageSize || 10;
     const encodedSearchTerm = encodeURIComponent(searchTerm);
-    const requestUrl = `${ConfigRequestBuilder.JOB_AUDIT_API_URL}?pageNumber=${pageNumber}&pageSize=${searchPageSize}&searchTerm=${encodedSearchTerm}&sortBy=${sortName}`;
+    const requestUrl = `${ConfigRequestBuilder.JOB_AUDIT_API_URL}?pageNumber=${pageNumber}&pageSize=${searchPageSize}&searchTerm=${encodedSearchTerm}&sortBy=${sortName}&sortOrder=${sortOrder}`;
     createReadRequest(requestUrl, csrfToken)
         .then((response) => {
             response.json()

@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
@@ -37,18 +38,23 @@ public class DistributionActions {
         this.descriptorMap = descriptorMap;
     }
 
-    public ActionResponse<AlertPagedModel<DistributionWithAuditInfo>> retrieveJobWithAuditInfo(int page, int pageSize, String sortName, @Nullable String searchTerm) {
+    public ActionResponse<AlertPagedModel<DistributionWithAuditInfo>> retrieveJobWithAuditInfo(int page, int pageSize, String sortName, @Nullable String sortOrder, @Nullable String searchTerm) {
         Set<String> authorizedChannelDescriptorNames = findAuthorizedChannelDescriptorNames();
 
         if (authorizedChannelDescriptorNames.isEmpty()) {
             return ActionResponse.createForbiddenResponse();
         }
 
+        String applicableSortName = convertSortName(sortName);
+        Sort.Direction validSortOrder = Sort.Direction.ASC;
+        if (Sort.Direction.DESC.name().equalsIgnoreCase(sortOrder)) {
+            validSortOrder = Sort.Direction.DESC;
+        }
         AlertPagedModel<DistributionWithAuditInfo> distributionWithAuditInfo;
         if (searchTerm != null) {
-            distributionWithAuditInfo = distributionAccessor.getDistributionWithAuditInfoWithSearch(page, pageSize, sortName, authorizedChannelDescriptorNames, searchTerm);
+            distributionWithAuditInfo = distributionAccessor.getDistributionWithAuditInfoWithSearch(page, pageSize, applicableSortName, validSortOrder, authorizedChannelDescriptorNames, searchTerm);
         } else {
-            distributionWithAuditInfo = distributionAccessor.getDistributionWithAuditInfo(page, pageSize, sortName, authorizedChannelDescriptorNames);
+            distributionWithAuditInfo = distributionAccessor.getDistributionWithAuditInfo(page, pageSize, applicableSortName, validSortOrder, authorizedChannelDescriptorNames);
         }
 
         return new ActionResponse(HttpStatus.OK, distributionWithAuditInfo);
@@ -60,6 +66,21 @@ public class DistributionActions {
             .filter(key -> authorizationManager.hasReadPermission(ConfigContextEnum.DISTRIBUTION, key))
             .map(DescriptorKey::getUniversalKey)
             .collect(Collectors.toSet());
+    }
+
+    private String convertSortName(String sortName) {
+        switch (sortName) {
+            case "channel":
+                return "channelDescriptorName";
+            case "frequency":
+                return "distributionFrequency";
+            case "lastSent":
+                return "lastSent";
+            case "status":
+                return "audit.status";
+            default:
+                return "name";
+        }
     }
 
 }
