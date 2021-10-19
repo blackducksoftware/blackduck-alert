@@ -9,9 +9,11 @@ package com.synopsys.integration.alert.api.channel.issue.model;
 
 import java.util.List;
 
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 
-public class IssueComponentUnknownVersionDetails {
+public class IssueComponentUnknownVersionDetails extends AlertSerializableModel {
+    private static final long serialVersionUID = 1732500677842103827L;
     private ItemOperation itemOperation;
     private List<IssueEstimatedRiskModel> estimatedRiskModelList;
 
