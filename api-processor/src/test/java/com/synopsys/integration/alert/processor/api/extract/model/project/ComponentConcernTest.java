@@ -133,7 +133,7 @@ public class ComponentConcernTest {
         ComponentConcern policyConcern1 = ComponentConcern.policy(ItemOperation.ADD, POLICY_NAME, "http://policyUrl");
         ComponentConcern vulnerabilityConcern1 = ComponentConcern.vulnerability(ItemOperation.ADD, VULNERABILITY_NAME, ComponentConcernSeverity.CRITICAL, "https://vulnUr");
 
-        assertEquals(-1, policyConcern1.compareTo(vulnerabilityConcern1));
+        assertEquals(ComponentConcernType.POLICY.compareTo(ComponentConcernType.VULNERABILITY), policyConcern1.compareTo(vulnerabilityConcern1));
     }
 
     @Test

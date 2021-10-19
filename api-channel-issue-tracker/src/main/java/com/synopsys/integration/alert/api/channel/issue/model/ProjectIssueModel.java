@@ -23,6 +23,7 @@ public class ProjectIssueModel extends ProviderMessage<ProjectIssueModel> {
 
     private final IssuePolicyDetails policyDetails;
     private final IssueVulnerabilityDetails vulnerabilityDetails;
+    private final IssueComponentUnknownVersionDetails componentUnknownVersionDetails;
 
     public static ProjectIssueModel bom(
         ProviderDetails providerDetails,
@@ -30,7 +31,7 @@ public class ProjectIssueModel extends ProviderMessage<ProjectIssueModel> {
         LinkableItem projectVersion,
         IssueBomComponentDetails bomComponentDetails
     ) {
-        return new ProjectIssueModel(providerDetails, project, projectVersion, bomComponentDetails, null, null);
+        return new ProjectIssueModel(providerDetails, project, projectVersion, bomComponentDetails, null, null, null);
     }
 
     public static ProjectIssueModel policy(
@@ -40,7 +41,7 @@ public class ProjectIssueModel extends ProviderMessage<ProjectIssueModel> {
         IssueBomComponentDetails bomComponentDetails,
         IssuePolicyDetails policyDetails
     ) {
-        return new ProjectIssueModel(providerDetails, project, projectVersion, bomComponentDetails, policyDetails, null);
+        return new ProjectIssueModel(providerDetails, project, projectVersion, bomComponentDetails, policyDetails, null, null);
     }
 
     public static ProjectIssueModel vulnerability(
@@ -50,7 +51,17 @@ public class ProjectIssueModel extends ProviderMessage<ProjectIssueModel> {
         IssueBomComponentDetails bomComponentDetails,
         IssueVulnerabilityDetails vulnerabilityDetails
     ) {
-        return new ProjectIssueModel(providerDetails, project, projectVersion, bomComponentDetails, null, vulnerabilityDetails);
+        return new ProjectIssueModel(providerDetails, project, projectVersion, bomComponentDetails, null, vulnerabilityDetails, null);
+    }
+
+    public static ProjectIssueModel componentUnknownVersion(
+        ProviderDetails providerDetails,
+        LinkableItem project,
+        LinkableItem projectVersion,
+        IssueBomComponentDetails bomComponentDetails,
+        IssueComponentUnknownVersionDetails unknownVersionDetails
+    ) {
+        return new ProjectIssueModel(providerDetails, project, projectVersion, bomComponentDetails, null, null, unknownVersionDetails);
     }
 
     private ProjectIssueModel(
@@ -59,7 +70,8 @@ public class ProjectIssueModel extends ProviderMessage<ProjectIssueModel> {
         LinkableItem projectVersion,
         IssueBomComponentDetails bomComponentDetails,
         @Nullable IssuePolicyDetails policyDetails,
-        @Nullable IssueVulnerabilityDetails vulnerabilityDetails
+        @Nullable IssueVulnerabilityDetails vulnerabilityDetails,
+        @Nullable IssueComponentUnknownVersionDetails componentUnknownVersionDetails
     ) {
         super(providerDetails);
         this.project = project;
@@ -67,6 +79,7 @@ public class ProjectIssueModel extends ProviderMessage<ProjectIssueModel> {
         this.bomComponentDetails = bomComponentDetails;
         this.policyDetails = policyDetails;
         this.vulnerabilityDetails = vulnerabilityDetails;
+        this.componentUnknownVersionDetails = componentUnknownVersionDetails;
     }
 
     public LinkableItem getProject() {
@@ -87,6 +100,10 @@ public class ProjectIssueModel extends ProviderMessage<ProjectIssueModel> {
 
     public Optional<IssueVulnerabilityDetails> getVulnerabilityDetails() {
         return Optional.ofNullable(vulnerabilityDetails);
+    }
+
+    public Optional<IssueComponentUnknownVersionDetails> getComponentUnknownVersionDetails() {
+        return Optional.ofNullable(componentUnknownVersionDetails);
     }
 
     @Override
@@ -110,6 +127,10 @@ public class ProjectIssueModel extends ProviderMessage<ProjectIssueModel> {
         }
 
         if (null != vulnerabilityDetails && !vulnerabilityDetails.equals(otherModel.vulnerabilityDetails)) {
+            return uncombinedModels;
+        }
+
+        if (null != componentUnknownVersionDetails && !componentUnknownVersionDetails.equals(otherModel.componentUnknownVersionDetails)) {
             return uncombinedModels;
         }
 

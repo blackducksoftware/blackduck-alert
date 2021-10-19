@@ -2,6 +2,7 @@ package com.synopsys.integration.alert.channel.azure.boards.distribution.search;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -10,6 +11,8 @@ import org.mockito.Mockito;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentDetails;
+import com.synopsys.integration.alert.api.channel.issue.model.IssueComponentUnknownVersionDetails;
+import com.synopsys.integration.alert.api.channel.issue.model.IssueEstimatedRiskModel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssuePolicyDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
@@ -69,6 +72,32 @@ public class AzureBoardsComponentIssueFinderTest {
         assertEquals(IssueCategory.POLICY, existingIssueDetails.getIssueCategory());
     }
 
+    @Test
+    public void findExistingIssuesByProjectIssueModelForUnknownVersionTest() throws AlertException {
+        Gson gson = new Gson();
+        String organizationName = "orgName";
+        AzureBoardsIssueTrackerQueryManager queryManager = Mockito.mock(AzureBoardsIssueTrackerQueryManager.class);
+        IssueCategoryRetriever issueCategoryRetriever = new IssueCategoryRetriever();
+
+        AzureBoardsExistingIssueDetailsCreator issueDetailsCreator = new AzureBoardsExistingIssueDetailsCreator(organizationName, issueCategoryRetriever, azureBoardsIssueStatusResolver);
+        AzureBoardsWorkItemFinder workItemFinder = new AzureBoardsWorkItemFinder(queryManager, "test proj");
+        AzureBoardsComponentIssueFinder componentIssueFinder = new AzureBoardsComponentIssueFinder(gson, workItemFinder, issueDetailsCreator);
+
+        IssueComponentUnknownVersionDetails componentUnknownVersionDetails = new IssueComponentUnknownVersionDetails(ItemOperation.ADD, createRiskModels());
+        IssuePolicyDetails testPolicy = new IssuePolicyDetails("Test Policy", ItemOperation.ADD, ComponentConcernSeverity.UNSPECIFIED_UNKNOWN);
+        ProjectIssueModel projectIssueModel = ProjectIssueModel.componentUnknownVersion(PROVIDER_DETAILS, PROJECT_ITEM, PROJECT_VERSION_ITEM, ISSUE_BOM_COMPONENT_DETAILS, componentUnknownVersionDetails);
+
+        WorkItemResponseModel workItemResponseModel = createWorkItemResponseModel(workItemReopenState);
+        Mockito.when(queryManager.executeQueryAndRetrieveWorkItems(Mockito.any())).thenReturn(List.of(workItemResponseModel));
+
+        List<ExistingIssueDetails<Integer>> existingIssueDetailsList = componentIssueFinder.findExistingIssuesByProjectIssueModel(projectIssueModel);
+
+        assertEquals(1, existingIssueDetailsList.size());
+        ExistingIssueDetails<Integer> existingIssueDetails = existingIssueDetailsList.get(0);
+        assertEquals(IssueStatus.RESOLVABLE, existingIssueDetails.getIssueStatus());
+        assertEquals(IssueCategory.BOM, existingIssueDetails.getIssueCategory());
+    }
+
     private WorkItemResponseModel createWorkItemResponseModel(String workItemState) {
         JsonObject workItemFields = new JsonObject();
         workItemFields.addProperty(WorkItemResponseFields.System_State.getFieldName(), workItemState);
@@ -91,4 +120,14 @@ public class AzureBoardsComponentIssueFinderTest {
         ) {};
     }
 
+    private List<IssueEstimatedRiskModel> createRiskModels() {
+        List<IssueEstimatedRiskModel> riskModels = new ArrayList<>(ComponentConcernSeverity.values().length);
+        for (ComponentConcernSeverity severity : ComponentConcernSeverity.values()) {
+            if (!ComponentConcernSeverity.UNSPECIFIED_UNKNOWN.equals(severity)) {
+                riskModels.add(new IssueEstimatedRiskModel(severity, severity.ordinal(), "Component 1.0.0", "https://www.example.com/api/component/1-0-0"));
+            }
+        }
+
+        return riskModels;
+    }
 }
