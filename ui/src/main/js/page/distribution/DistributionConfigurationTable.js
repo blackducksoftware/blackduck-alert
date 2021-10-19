@@ -28,6 +28,8 @@ const DistributionConfigurationTable = ({
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [totalPages, setTotalPages] = useState(1);
+    const [sortName, setSortName] = useState('name');
+    const [sortOrder, setSortOrder] = useState('asc');
     const [searchTerm, setSearchTerm] = useState('');
     const [jobsValidationResults, setJobsValidationResults] = useState(null);
     const [entriesToDelete, setEntriesToDelete] = useState(null);
@@ -71,8 +73,12 @@ const DistributionConfigurationTable = ({
             setTotalPages,
             setJobsValidationResults
         };
+        const sortData = {
+            sortName,
+            sortOrder
+        };
         DistributionRequestUtility.fetchDistributionsWithAudit({
-            csrfToken, errorHandler, pagingData, stateUpdateFunctions, createTableEntry
+            csrfToken, errorHandler, pagingData, sortData, stateUpdateFunctions, createTableEntry
         });
     };
 
@@ -96,6 +102,30 @@ const DistributionConfigurationTable = ({
         setShowDelete(false);
     };
 
+    /*
+     * Acceptable sort values (Force specific values the user can sort by to avoid leaking DB data):
+     *  channel
+     *  frequency
+     *  lastSent
+     *  name
+     *  status
+     */
+    const findAppropriateSortTerm = (newSortName) => {
+        switch (newSortName) {
+            case 'distributionType':
+                return 'channel';
+            case 'lastRan':
+                return 'lastSent';
+            default:
+                return newSortName;
+        }
+    };
+
+    const onSortChange = (newSortName, newSortOrder) => {
+        setSortName(findAppropriateSortTerm(newSortName));
+        setSortOrder(newSortOrder);
+    };
+
     const onPageChange = (page, sizePerPage) => {
         setCurrentPage(page);
         setPageSize(sizePerPage);
@@ -112,7 +142,7 @@ const DistributionConfigurationTable = ({
 
     useEffect(() => {
         retrieveTableData();
-    }, [currentPage, pageSize, searchTerm]);
+    }, [currentPage, pageSize, searchTerm, sortName, sortOrder]);
 
     useEffect(() => {
         setEntriesToDelete(selectedRowsWithData);
@@ -223,6 +253,20 @@ const DistributionConfigurationTable = ({
             dataField={header}
             searchable
             dataSort
+            columnClassName={columnClassName}
+            tdStyle={{ whiteSpace: 'normal' }}
+            dataFormat={dataFormat}
+        >
+            {value}
+        </TableHeaderColumn>
+    );
+
+    const unsortableColumn = (header, value, dataFormat = assignedDataFormat, columnClassName = 'tableCell') => (
+        <TableHeaderColumn
+            key={header}
+            dataField={header}
+            searchable
+            dataSort={false}
             columnClassName={columnClassName}
             tdStyle={{ whiteSpace: 'normal' }}
             dataFormat={dataFormat}
@@ -351,6 +395,7 @@ const DistributionConfigurationTable = ({
         handleConfirmDeleteRow: (next, rows) => setSelectedRows(rows),
         defaultSortName: 'name',
         defaultSortOrder: 'asc',
+        onSortChange,
         onRowDoubleClick: (id) => {
             editButtonClicked(id);
         },
@@ -402,7 +447,7 @@ const DistributionConfigurationTable = ({
                         </TableHeaderColumn>
                         {column('name', 'Distribution Job', nameColumnFormatter)}
                         {column('distributionType', 'Channel', descriptorColumnFormatter)}
-                        {column('providerName', 'Provider', descriptorColumnFormatter)}
+                        {unsortableColumn('providerName', 'Provider', descriptorColumnFormatter)}
                         {column('frequency', 'Frequency Type', frequencyColumnFormatter)}
                         {column('lastRan', 'Last Run')}
                         {column('status', 'Status', assignedDataFormat, statusColumnClassName)}
@@ -432,7 +477,7 @@ const DistributionConfigurationTable = ({
                 <TableHeaderColumn dataField="id" hidden isKey>Id</TableHeaderColumn>
                 {column('name', 'Name', nameColumnFormatter)}
                 {column('distributionType', 'Channel', descriptorColumnFormatter)}
-                {column('providerName', 'Provider', descriptorColumnFormatter)}
+                {unsortableColumn('providerName', 'Provider', descriptorColumnFormatter)}
                 {column('frequency', 'Frequency Type', frequencyColumnFormatter)}
                 {column('lastRan', 'Last Run')}
                 {column('status', 'Status', assignedDataFormat, statusColumnClassName)}

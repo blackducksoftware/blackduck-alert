@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
@@ -67,7 +68,7 @@ public class DefaultDistributionAccessorTestIT {
     @Test
     @Transactional
     public void verifyQueryBuilds() {
-        AlertPagedModel<DistributionWithAuditInfo> distributionWithAuditInfo = distributionAccessor.getDistributionWithAuditInfo(0, 100, "name", getAllDescriptorNames());
+        AlertPagedModel<DistributionWithAuditInfo> distributionWithAuditInfo = distributionAccessor.getDistributionWithAuditInfo(0, 100, "name", Direction.ASC, getAllDescriptorNames());
 
         assertNotNull(distributionWithAuditInfo);
     }
@@ -75,7 +76,13 @@ public class DefaultDistributionAccessorTestIT {
     @Test
     @Transactional
     public void verifyValidityOfQuery() {
-        assertValidQueryFunctionality(() -> distributionAccessor.getDistributionWithAuditInfo(0, 100, "name", getAllDescriptorNames()));
+        assertValidQueryFunctionality(() -> distributionAccessor.getDistributionWithAuditInfo(0, 100, "name", Direction.ASC, getAllDescriptorNames()));
+    }
+
+    @Test
+    @Transactional
+    public void sortByAuditLastTimeSent() {
+        assertValidQueryFunctionality(() -> distributionAccessor.getDistributionWithAuditInfo(0, 100, "lastSent", Direction.ASC, getAllDescriptorNames()));
     }
 
     private Set<String> getAllDescriptorNames() {
