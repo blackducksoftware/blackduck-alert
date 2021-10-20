@@ -21,7 +21,7 @@ import com.synopsys.integration.alert.provider.blackduck.processor.NotificationE
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.BlackDuckMessageBomComponentDetailsCreator;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.BlackDuckMessageBomComponentDetailsCreatorFactory;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.BomComponent404Handler;
-import com.synopsys.integration.alert.provider.blackduck.processor.model.ComponentUnknownVersionNotificationContent;
+import com.synopsys.integration.alert.provider.blackduck.processor.model.ComponentUnknownVersionWithStatusNotificationContent;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentVersionView;
 import com.synopsys.integration.blackduck.api.manual.enumeration.ComponentUnknownVersionStatus;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
@@ -32,7 +32,7 @@ import com.synopsys.integration.rest.HttpUrl;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 @Component
-public class ComponentUnknownVersionExtractor extends AbstractBlackDuckComponentConcernMessageExtractor<ComponentUnknownVersionNotificationContent> {
+public class ComponentUnknownVersionExtractor extends AbstractBlackDuckComponentConcernMessageExtractor<ComponentUnknownVersionWithStatusNotificationContent> {
     private final BlackDuckMessageBomComponentDetailsCreatorFactory detailsCreatorFactory;
     private final BomComponent404Handler bomComponent404Handler;
 
@@ -40,13 +40,13 @@ public class ComponentUnknownVersionExtractor extends AbstractBlackDuckComponent
     public ComponentUnknownVersionExtractor(BlackDuckProviderKey blackDuckProviderKey,
         NotificationExtractorBlackDuckServicesFactoryCache servicesFactoryCache,
         BlackDuckMessageBomComponentDetailsCreatorFactory detailsCreatorFactory, BomComponent404Handler bomComponent404Handler) {
-        super(NotificationType.COMPONENT_UNKNOWN_VERSION, ComponentUnknownVersionNotificationContent.class, blackDuckProviderKey, servicesFactoryCache);
+        super(NotificationType.COMPONENT_UNKNOWN_VERSION, ComponentUnknownVersionWithStatusNotificationContent.class, blackDuckProviderKey, servicesFactoryCache);
         this.detailsCreatorFactory = detailsCreatorFactory;
         this.bomComponent404Handler = bomComponent404Handler;
     }
 
     @Override
-    protected List<BomComponentDetails> createBomComponentDetails(ComponentUnknownVersionNotificationContent notificationContent, BlackDuckServicesFactory blackDuckServicesFactory) throws IntegrationException {
+    protected List<BomComponentDetails> createBomComponentDetails(ComponentUnknownVersionWithStatusNotificationContent notificationContent, BlackDuckServicesFactory blackDuckServicesFactory) throws IntegrationException {
         BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
         BlackDuckMessageBomComponentDetailsCreator bomComponentDetailsCreator = detailsCreatorFactory.createBomComponentDetailsCreator(blackDuckApiClient);
         List<ComponentConcern> componentConcerns = createComponentConcerns(notificationContent);
@@ -67,12 +67,12 @@ public class ComponentUnknownVersionExtractor extends AbstractBlackDuckComponent
         return List.of(bomComponentDetails);
     }
 
-    private List<ComponentConcern> createComponentConcerns(ComponentUnknownVersionNotificationContent notificationContent) {
+    private List<ComponentConcern> createComponentConcerns(ComponentUnknownVersionWithStatusNotificationContent notificationContent) {
         ComponentUnknownVersionStatus status = notificationContent.getStatus();
         String componentName = notificationContent.getComponentName();
         ItemOperation itemOperation = ComponentUnknownVersionStatus.REMOVED == status ? ItemOperation.DELETE : ItemOperation.ADD;
         ComponentConcern criticalCount = createComponentConcernWithCount(itemOperation, ComponentConcernSeverity.CRITICAL, notificationContent.getCriticalVulnerabilityCount(), componentName,
-            notificationContent.getCriticalVulnerabilityName(),
+            notificationContent.getCriticalVulnerabilityVersionName(),
             notificationContent.getCriticalVulnerabilityVersion());
 
         ComponentConcern highCount = createComponentConcernWithCount(itemOperation, ComponentConcernSeverity.MAJOR_HIGH, notificationContent.getHighVulnerabilityCount(), componentName, notificationContent.getHighVulnerabilityVersionName(),
