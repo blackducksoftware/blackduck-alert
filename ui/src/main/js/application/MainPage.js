@@ -43,6 +43,8 @@ import DistributionConfigurationForm from 'page/distribution/DistributionConfigu
 import { unauthorized } from 'store/actions/session';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 import DescriptorRoute from 'common/DescriptorRoute';
+import BetaPage from 'common/BetaPage';
+import EmailGlobalConfigurationStandalone from 'page/channel/email/standalone/EmailGlobalConfigurationStandalone';
 
 const MainPage = ({
     descriptors, fetching, getDescriptorsRedux, csrfToken, autoRefresh, unauthorizedFunction
@@ -139,14 +141,24 @@ const MainPage = ({
                 urlName={EMAIL_INFO.url}
                 descriptor={globalDescriptorMap[EMAIL_INFO.key]}
                 render={(readOnly, showTest, showSave, showDelete) => (
-                    <EmailGlobalConfiguration
-                        csrfToken={csrfToken}
-                        errorHandler={errorHandler}
-                        readonly={readOnly}
-                        displayTest={showTest}
-                        displaySave={showSave}
-                        displayDelete={showDelete}
-                    />
+                    <BetaPage>
+                        <EmailGlobalConfigurationStandalone
+                            csrfToken={csrfToken}
+                            errorHandler={errorHandler}
+                            readonly={readOnly}
+                            displayTest={showTest}
+                            displaySave={showSave}
+                            displayDelete={showDelete}
+                        />
+                        <EmailGlobalConfiguration
+                            csrfToken={csrfToken}
+                            errorHandler={errorHandler}
+                            readonly={readOnly}
+                            displayTest={showTest}
+                            displaySave={showSave}
+                            displayDelete={showDelete}
+                        />
+                    </BetaPage>
                 )}
             />
             <DescriptorRoute
