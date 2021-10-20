@@ -1,12 +1,14 @@
 {
   "content": {
-    "projectName": "oct",
+    "projectName": "project",
     "projectVersionName": "1",
     "projectVersion": "https://a-hub-server.blackduck.com/api/projects/1c9d26d3-c787-46b9-92fe-f992f9b3195e/versions/322eb8f6-b5c2-4378-ac40-df66b685cdfb",
     "componentName": "Apache Tomcat",
     "bomComponent": "https://a-hub-server.blackduck.com/api/projects/1c9d26d3-c787-46b9-92fe-f992f9b3195e/versions/322eb8f6-b5c2-4378-ac40-df66b685cdfb/components/5a7e1c49-9a98-4393-b4e0-8011122bbe2f",
     "component": "https://a-hub-server.blackduck.com/api/components/5a7e1c49-9a98-4393-b4e0-8011122bbe2f",
-    "criticalVulnerabilityCount": 0,
+    "criticalVulnerabilityCount": 1,
+    "criticalVulnerabilityVersion": "https://a-hub-server.blackduck.com/api/components/5a7e1c49-9a98-4393-b4e0-8011122bbe2f/versions/1c6ca2b5-04de-41a3-81ba-1f97746414d5/vulnerabilities",
+    "criticalVulnerabilityVersionName": "0.0.1",
     "highVulnerabilityCount": 8,
     "highVulnerabilityVersion": "https://a-hub-server.blackduck.com/api/components/5a7e1c49-9a98-4393-b4e0-8011122bbe2f/versions/1c6ca2b5-04de-41a3-81ba-1f97746414d5/vulnerabilities",
     "highVulnerabilityVersionName": "6.0.0",
