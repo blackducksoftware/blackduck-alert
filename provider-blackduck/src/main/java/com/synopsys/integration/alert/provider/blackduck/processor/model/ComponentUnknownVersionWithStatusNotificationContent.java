@@ -28,10 +28,10 @@ public class ComponentUnknownVersionWithStatusNotificationContent extends Abstra
     private ComponentUnknownVersionStatus status;
 
     public ComponentUnknownVersionWithStatusNotificationContent(String projectName, String projectVersionName, String projectVersionUrl, String componentName, String bomComponent, String component,
-        int criticalVulnerabilityCount,
-        String criticalVulnerabilityVersion, String criticalVulnerabilityName, int highVulnerabilityCount, String highVulnerabilityVersion, String highVulnerabilityVersionName,
-        int mediumVulnerabilityCount,
-        String mediumVulnerabilityVersion, String mediumVulnerabilityVersionName, int lowVulnerabilityCount, String lowVulnerabilityVersion, String lowVulnerabilityVersionName,
+        int criticalVulnerabilityCount, String criticalVulnerabilityVersion, String criticalVulnerabilityName,
+        int highVulnerabilityCount, String highVulnerabilityVersion, String highVulnerabilityVersionName,
+        int mediumVulnerabilityCount, String mediumVulnerabilityVersion, String mediumVulnerabilityVersionName,
+        int lowVulnerabilityCount, String lowVulnerabilityVersion, String lowVulnerabilityVersionName,
         ComponentUnknownVersionStatus status) {
         super(projectName, projectVersionName, projectVersionUrl);
         this.componentName = componentName;
