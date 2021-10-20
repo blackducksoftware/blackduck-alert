@@ -74,7 +74,7 @@ public class ComponentUnknownVersionExtractor extends AbstractBlackDuckComponent
         String componentName = notificationContent.getComponentName();
         ItemOperation itemOperation = ComponentUnknownVersionStatus.REMOVED == status ? ItemOperation.DELETE : ItemOperation.ADD;
         ComponentConcern criticalCount = createComponentConcernWithCount(itemOperation, ComponentConcernSeverity.CRITICAL, notificationContent.getCriticalVulnerabilityCount(), componentName,
-            notificationContent.getCriticalVulnerabilityName(),
+            notificationContent.getCriticalVulnerabilityVersionName(),
             notificationContent.getCriticalVulnerabilityVersion());
 
         ComponentConcern highCount = createComponentConcernWithCount(itemOperation, ComponentConcernSeverity.MAJOR_HIGH, notificationContent.getHighVulnerabilityCount(), componentName, notificationContent.getHighVulnerabilityVersionName(),
