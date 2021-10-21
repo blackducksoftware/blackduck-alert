@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import * as PropTypes from 'prop-types';
+import CheckboxInput from 'common/input/CheckboxInput';
 
 const BetaPage = ({ disableBeta, children }) => {
     const [showBeta, setShowBeta] = useState(false);
@@ -11,12 +12,15 @@ const BetaPage = ({ disableBeta, children }) => {
 
     return !disableBeta && (
         <>
-            Use Beta version
-            <input
-                type="checkbox"
-                isChecked={showBeta}
-                onChange={() => setShowBeta(!showBeta)}
-            />
+            <div className="topRight">
+                <CheckboxInput
+                    label="Use Beta Version"
+                    labelClass="text-right"
+                    id="beta-check-id"
+                    isChecked={showBeta}
+                    onChange={() => setShowBeta(!showBeta)}
+                />
+            </div>
             {pageContent}
         </>
     );

@@ -5,7 +5,7 @@ import ConfigurationLabel from 'common/ConfigurationLabel';
 const CommonGlobalConfiguration = ({
     label, description, children, lastUpdated
 }) => (
-    <div>
+    <div className="mainBody">
         <ConfigurationLabel
             configurationName={label}
             description={description}

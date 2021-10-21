@@ -31,8 +31,6 @@ const EmailGlobalConfigurationStandalone = ({
         />
     );
 
-    const hasAdvancedConfig = Object.keys(EMAIL_GLOBAL_ADVANCED_FIELD_KEYS).some((key) => FieldModelUtilities.hasValue(fieldModel, EMAIL_GLOBAL_ADVANCED_FIELD_KEYS[key]));
-
     const retrieveData = async () => {
         const data = await GlobalRequestHelper.getDataFindFirst(EMAIL_INFO.key, csrfToken);
         if (data) {
@@ -42,8 +40,8 @@ const EmailGlobalConfigurationStandalone = ({
 
     return (
         <CommonGlobalConfiguration
-            label={`${EMAIL_INFO.label} Beta`}
-            description="Configure the email server that Alert will send emails to."
+            label={`${EMAIL_INFO.label} Beta (WIP)`}
+            description="Configure the email server that Alert will send emails to. (WIP: Everything on this page is currently in development)"
             lastUpdated={fieldModel.lastUpdated}
         >
             <CommonGlobalConfigurationForm
