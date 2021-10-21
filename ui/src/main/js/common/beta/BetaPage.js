@@ -1,14 +1,20 @@
 import React, { useState } from 'react';
 import * as PropTypes from 'prop-types';
 import CheckboxInput from 'common/input/CheckboxInput';
+import BetaComponent from 'common/beta/BetaComponent';
+import CurrentComponent from 'common/beta/CurrentComponent';
 
 const BetaPage = ({ disableBeta, children }) => {
     const [showBeta, setShowBeta] = useState(false);
 
-    let pageContent = <div>Beta Page incorrectly set, need Array of 2 children</div>;
-    if (Array.isArray(children) && children.length === 2) {
-        pageContent = (showBeta) ? children[0] : children[1];
+    const foundBetaComponent = children.find((child) => child.type === BetaComponent);
+    const foundCurrentComponent = children.find((child) => child.type === CurrentComponent);
+
+    if (!foundBetaComponent || !foundCurrentComponent) {
+        throw Error('Missing BetaComponent or CurrentComponent. Please ensure both are set as BetaPage children.');
     }
+
+    const pageContent = (showBeta) ? foundBetaComponent : foundCurrentComponent;
 
     return !disableBeta && (
         <>
