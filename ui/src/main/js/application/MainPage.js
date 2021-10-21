@@ -43,6 +43,10 @@ import DistributionConfigurationForm from 'page/distribution/DistributionConfigu
 import { unauthorized } from 'store/actions/session';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 import DescriptorRoute from 'common/DescriptorRoute';
+import BetaPage from 'common/beta/BetaPage';
+import EmailGlobalConfigurationStandalone from 'page/channel/email/standalone/EmailGlobalConfigurationStandalone';
+import CurrentComponent from 'common/beta/CurrentComponent';
+import BetaComponent from 'common/beta/BetaComponent';
 
 const MainPage = ({
     descriptors, fetching, getDescriptorsRedux, csrfToken, autoRefresh, unauthorizedFunction
@@ -139,14 +143,28 @@ const MainPage = ({
                 urlName={EMAIL_INFO.url}
                 descriptor={globalDescriptorMap[EMAIL_INFO.key]}
                 render={(readOnly, showTest, showSave, showDelete) => (
-                    <EmailGlobalConfiguration
-                        csrfToken={csrfToken}
-                        errorHandler={errorHandler}
-                        readonly={readOnly}
-                        displayTest={showTest}
-                        displaySave={showSave}
-                        displayDelete={showDelete}
-                    />
+                    <BetaPage>
+                        <CurrentComponent>
+                            <EmailGlobalConfiguration
+                                csrfToken={csrfToken}
+                                errorHandler={errorHandler}
+                                readonly={readOnly}
+                                displayTest={showTest}
+                                displaySave={showSave}
+                                displayDelete={showDelete}
+                            />
+                        </CurrentComponent>
+                        <BetaComponent>
+                            <EmailGlobalConfigurationStandalone
+                                csrfToken={csrfToken}
+                                errorHandler={errorHandler}
+                                readonly={readOnly}
+                                displayTest={showTest}
+                                displaySave={showSave}
+                                displayDelete={showDelete}
+                            />
+                        </BetaComponent>
+                    </BetaPage>
                 )}
             />
             <DescriptorRoute
