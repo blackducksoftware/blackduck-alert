@@ -43,7 +43,7 @@ public class ComponentUnknownVersionNotificationDetailExtractor extends Notifica
             notificationContent.getComponent(),
             notificationContent.getCriticalVulnerabilityCount(),
             notificationContent.getCriticalVulnerabilityVersion(),
-            notificationContent.getCriticalVulnerabilityName(),
+            notificationContent.getCriticalVulnerabilityVersionName(),
             notificationContent.getHighVulnerabilityCount(),
             notificationContent.getHighVulnerabilityVersion(),
             notificationContent.getHighVulnerabilityVersionName(),

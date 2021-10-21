@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.synopsys.integration.alert.channel.email.action.EmailGlobalConfigActions;
+import com.synopsys.integration.alert.channel.email.action.EmailGlobalCrudActions;
 import com.synopsys.integration.alert.channel.email.action.EmailGlobalTestAction;
 import com.synopsys.integration.alert.channel.email.action.EmailGlobalValidationAction;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
@@ -27,12 +27,12 @@ import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel
 @RestController
 @RequestMapping(AlertRestConstants.EMAIL_CONFIGURATION_PATH)
 public class EmailGlobalConfigController implements BaseResourceController<EmailGlobalConfigModel>, ValidateController<EmailGlobalConfigModel> {
-    private final EmailGlobalConfigActions configActions;
+    private final EmailGlobalCrudActions configActions;
     private final EmailGlobalValidationAction validationAction;
     private final EmailGlobalTestAction testAction;
 
     @Autowired
-    public EmailGlobalConfigController(EmailGlobalConfigActions configActions, EmailGlobalValidationAction validationAction, EmailGlobalTestAction testAction) {
+    public EmailGlobalConfigController(EmailGlobalCrudActions configActions, EmailGlobalValidationAction validationAction, EmailGlobalTestAction testAction) {
         this.configActions = configActions;
         this.validationAction = validationAction;
         this.testAction = testAction;
