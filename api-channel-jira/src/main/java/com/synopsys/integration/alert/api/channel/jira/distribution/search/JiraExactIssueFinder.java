@@ -51,6 +51,10 @@ public class JiraExactIssueFinder implements ExactIssueFinder<String> {
             policyName = optionalPolicyName.get();
         }
 
+        if (projectIssueModel.getComponentUnknownVersionDetails().isPresent()) {
+            concernType = ComponentConcernType.UNKNOWN_VERSION;
+        }
+
         String jqlString = JqlStringCreator.createBlackDuckComponentConcernIssuesSearchString(
             jiraProjectKey,
             provider,

@@ -48,7 +48,11 @@ public class ComponentConcernConverterTest {
             ComponentConcern.severePolicy(ItemOperation.DELETE, "Removed Another Policy", ComponentConcernSeverity.MAJOR_HIGH, "https://policy"),
             ComponentConcern.policy(ItemOperation.DELETE, "Removed Severe Policy", "https://policy"),
             ComponentConcern.vulnerability(ItemOperation.DELETE, "Removed-Vuln01", ComponentConcernSeverity.MINOR_MEDIUM, "https://synopsys.com"),
-            ComponentConcern.vulnerability(ItemOperation.DELETE, "Removed-Vuln02", ComponentConcernSeverity.MINOR_MEDIUM, "https://synopsys.com")
+            ComponentConcern.vulnerability(ItemOperation.DELETE, "Removed-Vuln02", ComponentConcernSeverity.MINOR_MEDIUM, "https://synopsys.com"),
+            ComponentConcern.unknownComponentVersion(ItemOperation.ADD, "Added-Component01", ComponentConcernSeverity.MAJOR_HIGH, 5, "https://synopsys.com"),
+            ComponentConcern.unknownComponentVersion(ItemOperation.DELETE, "Removed-Component01", ComponentConcernSeverity.MAJOR_HIGH, 0, "https://synopsys.com"),
+            ComponentConcern.unknownComponentVersion(ItemOperation.ADD, "Added-Component02", ComponentConcernSeverity.MINOR_MEDIUM, 3, "https://synopsys.com"),
+            ComponentConcern.unknownComponentVersion(ItemOperation.DELETE, "Removed-Component02", ComponentConcernSeverity.MINOR_MEDIUM, 0, "https://synopsys.com")
         );
     }
 

@@ -1,11 +1,12 @@
 import * as PropTypes from 'prop-types';
 import React, { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { DISTRIBUTION_COMMON_FIELD_KEYS, DISTRIBUTION_URLS } from 'page/distribution/DistributionModel';
-import { BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn } from 'react-bootstrap-table';
+import { DISTRIBUTION_URLS } from 'page/distribution/DistributionModel';
+import {
+    BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn
+} from 'react-bootstrap-table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import DescriptorLabel from 'common/DescriptorLabel';
-import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 import ConfirmModal from 'common/ConfirmModal';
 import AutoRefresh from 'common/table/AutoRefresh';
@@ -13,6 +14,7 @@ import IconTableCellFormatter from 'common/table/IconTableCellFormatter';
 import * as DistributionRequestUtility from 'page/distribution/DistributionTableRequestUtility';
 import { EXISTING_CHANNELS, EXISTING_PROVIDERS } from 'common/DescriptorInfo';
 import { ProgressIcon } from 'common/table/ProgressIcon';
+import { BLACKDUCK_INFO } from 'page/provider/blackduck/BlackDuckModel';
 
 const DistributionConfigurationTable = ({
     csrfToken, errorHandler, readonly, showRefreshButton, descriptors
@@ -26,31 +28,34 @@ const DistributionConfigurationTable = ({
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [totalPages, setTotalPages] = useState(1);
+    const [sortName, setSortName] = useState('name');
+    const [sortOrder, setSortOrder] = useState('asc');
     const [searchTerm, setSearchTerm] = useState('');
     const [jobsValidationResults, setJobsValidationResults] = useState(null);
     const [entriesToDelete, setEntriesToDelete] = useState(null);
     const tableRef = useRef();
     const history = useHistory();
 
-    const createTableEntry = (jobConfig, lastRan, currentStatus) => {
-        if (!jobConfig.fieldModels) {
+    const createTableEntry = (jobWithAuditData) => {
+        if (!jobWithAuditData) {
             return null;
         }
-        const channelModel = jobConfig.fieldModels.find((model) => FieldModelUtilities.hasKey(model, DISTRIBUTION_COMMON_FIELD_KEYS.channelName));
-        const providerName = FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName);
-        const id = jobConfig.jobId;
-        const name = FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.name);
-        const distributionType = channelModel.descriptorName;
-        const frequency = FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.frequency);
-        const enabled = FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.enabled);
+
+        const {
+            jobId, enabled, jobName, channelName, frequencyType, auditTimeLastSent, auditStatus
+        } = jobWithAuditData;
+
+        const modifiedAuditSent = auditTimeLastSent ?? 'Unknown';
+        const modifiedAuditStatus = auditStatus ?? 'Unknown';
+
         return {
-            id,
-            name,
-            distributionType,
-            providerName,
-            frequency,
-            lastRan,
-            status: currentStatus,
+            id: jobId,
+            name: jobName,
+            distributionType: channelName,
+            providerName: BLACKDUCK_INFO.key,
+            frequency: frequencyType,
+            lastRan: modifiedAuditSent,
+            status: modifiedAuditStatus,
             enabled
         };
     };
@@ -68,8 +73,12 @@ const DistributionConfigurationTable = ({
             setTotalPages,
             setJobsValidationResults
         };
-        DistributionRequestUtility.fetchDistributions({
-            csrfToken, errorHandler, pagingData, stateUpdateFunctions, createTableEntry
+        const sortData = {
+            sortName,
+            sortOrder
+        };
+        DistributionRequestUtility.fetchDistributionsWithAudit({
+            csrfToken, errorHandler, pagingData, sortData, stateUpdateFunctions, createTableEntry
         });
     };
 
@@ -93,6 +102,30 @@ const DistributionConfigurationTable = ({
         setShowDelete(false);
     };
 
+    /*
+     * Acceptable sort values (Force specific values the user can sort by to avoid leaking DB data):
+     *  channel
+     *  frequency
+     *  lastSent
+     *  name
+     *  status
+     */
+    const findAppropriateSortTerm = (newSortName) => {
+        switch (newSortName) {
+            case 'distributionType':
+                return 'channel';
+            case 'lastRan':
+                return 'lastSent';
+            default:
+                return newSortName;
+        }
+    };
+
+    const onSortChange = (newSortName, newSortOrder) => {
+        setSortName(findAppropriateSortTerm(newSortName));
+        setSortOrder(newSortOrder);
+    };
+
     const onPageChange = (page, sizePerPage) => {
         setCurrentPage(page);
         setPageSize(sizePerPage);
@@ -109,7 +142,7 @@ const DistributionConfigurationTable = ({
 
     useEffect(() => {
         retrieveTableData();
-    }, [currentPage, pageSize, searchTerm]);
+    }, [currentPage, pageSize, searchTerm, sortName, sortOrder]);
 
     useEffect(() => {
         setEntriesToDelete(selectedRowsWithData);
@@ -228,6 +261,20 @@ const DistributionConfigurationTable = ({
         </TableHeaderColumn>
     );
 
+    const unsortableColumn = (header, value, dataFormat = assignedDataFormat, columnClassName = 'tableCell') => (
+        <TableHeaderColumn
+            key={header}
+            dataField={header}
+            searchable
+            dataSort={false}
+            columnClassName={columnClassName}
+            tdStyle={{ whiteSpace: 'normal' }}
+            dataFormat={dataFormat}
+        >
+            {value}
+        </TableHeaderColumn>
+    );
+
     const createIconTableCellFormatter = (iconName, buttonText, clickFunction) => {
         const buttonId = buttonText.toLowerCase();
         return (cell, row) => (
@@ -269,13 +316,13 @@ const DistributionConfigurationTable = ({
     };
 
     const enabledColumnFormatter = (cell) => {
-        const icon = (cell === 'true') ? 'check' : 'times';
-        const color = (cell === 'true') ? 'synopsysGreen' : 'synopsysRed';
+        const icon = (cell) ? 'check' : 'times';
+        const color = (cell) ? 'synopsysGreen' : 'synopsysRed';
         const className = `alert-icon ${color}`;
 
         return (
-            <div className="btn btn-link jobIconButton" title={cell}>
-                <FontAwesomeIcon icon={icon} className={className} size="lg" title={cell} />
+            <div className="btn btn-link jobIconButton" title="Enabled">
+                <FontAwesomeIcon icon={icon} className={className} size="lg" title="Enabled" />
             </div>
         );
     };
@@ -348,6 +395,7 @@ const DistributionConfigurationTable = ({
         handleConfirmDeleteRow: (next, rows) => setSelectedRows(rows),
         defaultSortName: 'name',
         defaultSortOrder: 'asc',
+        onSortChange,
         onRowDoubleClick: (id) => {
             editButtonClicked(id);
         },
@@ -399,7 +447,7 @@ const DistributionConfigurationTable = ({
                         </TableHeaderColumn>
                         {column('name', 'Distribution Job', nameColumnFormatter)}
                         {column('distributionType', 'Channel', descriptorColumnFormatter)}
-                        {column('providerName', 'Provider', descriptorColumnFormatter)}
+                        {unsortableColumn('providerName', 'Provider', descriptorColumnFormatter)}
                         {column('frequency', 'Frequency Type', frequencyColumnFormatter)}
                         {column('lastRan', 'Last Run')}
                         {column('status', 'Status', assignedDataFormat, statusColumnClassName)}
@@ -429,7 +477,7 @@ const DistributionConfigurationTable = ({
                 <TableHeaderColumn dataField="id" hidden isKey>Id</TableHeaderColumn>
                 {column('name', 'Name', nameColumnFormatter)}
                 {column('distributionType', 'Channel', descriptorColumnFormatter)}
-                {column('providerName', 'Provider', descriptorColumnFormatter)}
+                {unsortableColumn('providerName', 'Provider', descriptorColumnFormatter)}
                 {column('frequency', 'Frequency Type', frequencyColumnFormatter)}
                 {column('lastRan', 'Last Run')}
                 {column('status', 'Status', assignedDataFormat, statusColumnClassName)}

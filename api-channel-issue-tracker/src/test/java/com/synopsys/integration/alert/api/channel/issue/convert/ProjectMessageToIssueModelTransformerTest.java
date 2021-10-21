@@ -9,6 +9,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentDetails;
+import com.synopsys.integration.alert.api.channel.issue.model.IssueComponentUnknownVersionDetails;
+import com.synopsys.integration.alert.api.channel.issue.model.IssueEstimatedRiskModel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssuePolicyDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueVulnerabilityDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
@@ -119,6 +121,37 @@ public class ProjectMessageToIssueModelTransformerTest {
         assertEquals(1, issueVulnerabilityDetails.getVulnerabilitiesAdded().size());
         assertEquals(1, issueVulnerabilityDetails.getVulnerabilitiesUpdated().size());
         assertEquals(1, issueVulnerabilityDetails.getVulnerabilitiesDeleted().size());
+    }
+
+    @Test
+    public void convertToIssueModelsForComponentUnknownVersionTest() {
+        ComponentConcern unknownComponentConcern = ComponentConcern.unknownComponentVersion(ItemOperation.ADD, "Component01", ComponentConcernSeverity.MAJOR_HIGH, 2, "https://synopsys.com");
+        BomComponentDetails bomComponentDetails = createBomComponentDetails(unknownComponentConcern);
+        ProjectMessage projectMessage = ProjectMessage.componentConcern(
+            PROVIDER_DETAILS,
+            PROJECT,
+            PROJECT_VERSION,
+            List.of(bomComponentDetails)
+        );
+
+        ProjectMessageToIssueModelTransformer modelTransformer = new ProjectMessageToIssueModelTransformer();
+        List<ProjectIssueModel> policyIssueModels = modelTransformer.convertToIssueModels(projectMessage);
+        assertEquals(1, policyIssueModels.size());
+
+        ProjectIssueModel unknownVersionIssueModel = policyIssueModels.get(0);
+        assertRequiredDetails(unknownVersionIssueModel);
+
+        Optional<IssueComponentUnknownVersionDetails> optionalDetails = unknownVersionIssueModel.getComponentUnknownVersionDetails();
+        assertTrue(optionalDetails.isPresent(), "Expected unknown component details to be present");
+
+        IssueComponentUnknownVersionDetails details = optionalDetails.get();
+        assertEquals(ItemOperation.ADD, details.getItemOperation());
+        assertEquals(1, details.getEstimatedRiskModelList().size());
+        IssueEstimatedRiskModel estimatedRiskModel = details.getEstimatedRiskModelList().get(0);
+        assertEquals(ComponentConcernSeverity.MAJOR_HIGH, estimatedRiskModel.getSeverity());
+        assertEquals("Component01", estimatedRiskModel.getName());
+        assertEquals(2, estimatedRiskModel.getCount());
+        assertTrue(estimatedRiskModel.getComponentVersionUrl().isPresent());
     }
 
     private static void assertRequiredDetails(ProjectIssueModel projectIssueModel) {

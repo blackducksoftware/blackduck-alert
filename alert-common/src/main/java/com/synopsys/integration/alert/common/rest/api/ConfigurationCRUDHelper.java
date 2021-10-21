@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
@@ -47,6 +48,20 @@ public class ConfigurationCrudHelper {
         }
 
         return new ActionResponse<>(HttpStatus.OK, optionalResponse.get());
+    }
+
+    public <T extends AlertSerializableModel> ActionResponse<AlertPagedModel<T>> getPage(Supplier<AlertPagedModel<T>> modelSupplier) {
+        if (!authorizationManager.hasReadPermission(context, descriptorKey)) {
+            return ActionResponse.createForbiddenResponse();
+        }
+
+        AlertPagedModel<T> pagedResponse = modelSupplier.get();
+
+        if (pagedResponse.getCurrentPage() > pagedResponse.getTotalPages()) {
+            return new ActionResponse<>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ActionResponse<>(HttpStatus.OK, pagedResponse);
     }
 
     public <T> ActionResponse<T> create(Supplier<ValidationResponseModel> validator, ThrowingSupplier<T, Exception> modelCreator) {
