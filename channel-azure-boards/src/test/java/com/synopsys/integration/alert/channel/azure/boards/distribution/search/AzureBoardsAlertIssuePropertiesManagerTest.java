@@ -54,7 +54,7 @@ public class AzureBoardsAlertIssuePropertiesManagerTest {
         List<WorkItemElementOperationModel> workItemRequestCustomFieldOperations = azureBoardsAlertIssuePropertiesManager.createWorkItemRequestCustomFieldOperations(vulnerability);
 
         LinkableItem provider = providerDetails.getProvider();
-        String providerKey = AzureBoardsSearchPropertiesUtils.createProviderKey(provider.getLabel(), provider.getUrl().orElse(null));
+        String providerKey = AzureBoardsSearchPropertiesUtils.createProviderKeyWithUrl(provider.getLabel(), provider.getUrl().orElse(null));
         assertValidContents(workItemRequestCustomFieldOperations, AzureCustomFieldManager.ALERT_PROVIDER_KEY_FIELD_REFERENCE_NAME, providerKey);
 
         assertValidContents(workItemRequestCustomFieldOperations, AzureCustomFieldManager.ALERT_CATEGORY_KEY_FIELD_REFERENCE_NAME, AzureBoardsAlertIssuePropertiesManager.CATEGORY_TYPE_VULNERABILITY_COMPATIBILITY_LABEL);
@@ -84,7 +84,7 @@ public class AzureBoardsAlertIssuePropertiesManagerTest {
         List<WorkItemElementOperationModel> workItemRequestCustomFieldOperations = azureBoardsAlertIssuePropertiesManager.createWorkItemRequestCustomFieldOperations(policy);
 
         LinkableItem provider = providerDetails.getProvider();
-        String providerKey = AzureBoardsSearchPropertiesUtils.createProviderKey(provider.getLabel(), provider.getUrl().orElse(null));
+        String providerKey = AzureBoardsSearchPropertiesUtils.createProviderKeyWithUrl(provider.getLabel(), provider.getUrl().orElse(null));
         assertValidContents(workItemRequestCustomFieldOperations, AzureCustomFieldManager.ALERT_PROVIDER_KEY_FIELD_REFERENCE_NAME, providerKey);
 
         String additionalInfo = AzureBoardsAlertIssuePropertiesManager.POLICY_ADDITIONAL_KEY_COMPATIBILITY_LABEL + issuePolicyDetails.getName();
@@ -117,7 +117,7 @@ public class AzureBoardsAlertIssuePropertiesManagerTest {
         List<WorkItemElementOperationModel> workItemRequestCustomFieldOperations = azureBoardsAlertIssuePropertiesManager.createWorkItemRequestCustomFieldOperations(policy);
 
         LinkableItem provider = providerDetails.getProvider();
-        String providerKey = AzureBoardsSearchPropertiesUtils.createProviderKey(provider.getLabel(), provider.getUrl().orElse(null));
+        String providerKey = AzureBoardsSearchPropertiesUtils.createProviderKeyWithUrl(provider.getLabel(), provider.getUrl().orElse(null));
         assertValidContents(workItemRequestCustomFieldOperations, AzureCustomFieldManager.ALERT_PROVIDER_KEY_FIELD_REFERENCE_NAME, providerKey);
 
         String additionalInfo = AzureBoardsAlertIssuePropertiesManager.POLICY_ADDITIONAL_KEY_COMPATIBILITY_LABEL + issuePolicyDetails.getName();

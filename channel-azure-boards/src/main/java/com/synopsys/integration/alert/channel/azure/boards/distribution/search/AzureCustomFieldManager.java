@@ -38,6 +38,10 @@ public class AzureCustomFieldManager {
     public static final String ALERT_PROVIDER_KEY_FIELD_REFERENCE_NAME = "Custom.AlertProviderKey";
     public static final String ALERT_PROVIDER_KEY_FIELD_DESCRIPTION = "A provider tracking key for Alert";
 
+    public static final String ALERT_PROVIDER_URL_KEY_FIELD_NAME = "Alert Provider URL";
+    public static final String ALERT_PROVIDER_URL_KEY_FIELD_REFERENCE_NAME = "Custom.AlertProviderUrl";
+    public static final String ALERT_PROVIDER_URL_KEY_FIELD_DESCRIPTION = "A provider url tracking key for Alert";
+
     public static final String ALERT_TOPIC_KEY_FIELD_NAME = "Alert Topic Key";
     public static final String ALERT_TOPIC_KEY_FIELD_REFERENCE_NAME = "Custom.AlertTopicKey";
     public static final String ALERT_TOPIC_KEY_FIELD_DESCRIPTION = "A topic tracking key for Alert";
@@ -64,6 +68,7 @@ public class AzureCustomFieldManager {
 
     private static final List<AzureCustomFieldDescriptor> AZURE_CUSTOM_FIELDS = List.of(
         new AzureCustomFieldDescriptor(ALERT_PROVIDER_KEY_FIELD_NAME, ALERT_PROVIDER_KEY_FIELD_REFERENCE_NAME, ALERT_PROVIDER_KEY_FIELD_DESCRIPTION),
+        new AzureCustomFieldDescriptor(ALERT_PROVIDER_URL_KEY_FIELD_NAME, ALERT_PROVIDER_URL_KEY_FIELD_REFERENCE_NAME, ALERT_PROVIDER_URL_KEY_FIELD_DESCRIPTION),
         new AzureCustomFieldDescriptor(ALERT_TOPIC_KEY_FIELD_NAME, ALERT_TOPIC_KEY_FIELD_REFERENCE_NAME, ALERT_TOPIC_KEY_FIELD_DESCRIPTION),
         new AzureCustomFieldDescriptor(ALERT_SUB_TOPIC_KEY_FIELD_NAME, ALERT_SUB_TOPIC_KEY_FIELD_REFERENCE_NAME, ALERT_SUB_TOPIC_KEY_FIELD_DESCRIPTION),
         new AzureCustomFieldDescriptor(ALERT_CATEGORY_KEY_FIELD_NAME, ALERT_CATEGORY_KEY_FIELD_REFERENCE_NAME, ALERT_CATEGORY_KEY_FIELD_DESCRIPTION),

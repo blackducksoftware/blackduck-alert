@@ -18,7 +18,7 @@ public final class AzureBoardsSearchPropertiesUtils {
 
     private static final int MAX_KEY_LENGTH = 256;
 
-    public static String createProviderKey(String providerName, String providerUrl) {
+    public static String createProviderKeyWithUrl(String providerName, String providerUrl) {
         StringBuilder providerKeyBuilder = new StringBuilder();
         providerKeyBuilder.append(providerName);
         providerKeyBuilder.append(URL_DELIMITER);

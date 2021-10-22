@@ -25,7 +25,8 @@ public class AzureBoardsAlertIssuePropertiesManager {
 
     public List<WorkItemElementOperationModel> createWorkItemRequestCustomFieldOperations(ProjectIssueModel alertIssueSource) {
         LinkableItem provider = alertIssueSource.getProvider();
-        String providerKey = AzureBoardsSearchPropertiesUtils.createProviderKey(provider.getLabel(), provider.getUrl().orElse(null));
+        String providerKey = provider.getLabel();
+        Optional<String> providerUrl = provider.getUrl();
         String topicKey = AzureBoardsSearchPropertiesUtils.createNullableLinkableItemKey(alertIssueSource.getProject());
         String subTopicKey = AzureBoardsSearchPropertiesUtils.createNullableLinkableItemKey(alertIssueSource.getProjectVersion().orElse(null));
 
@@ -39,6 +40,10 @@ public class AzureBoardsAlertIssuePropertiesManager {
             .addSubTopicKey(subTopicKey)
             .addComponentKey(componentKey)
             .addSubComponentKey(subComponentKey);
+
+        if (providerUrl.isPresent()) {
+            azureSearchFieldBuilder = azureSearchFieldBuilder.addProviderUrl(providerUrl.get());
+        }
 
         String categoryKey = CATEGORY_TYPE_VULNERABILITY_COMPATIBILITY_LABEL;
 

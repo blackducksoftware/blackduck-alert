@@ -37,6 +37,11 @@ public class AzureSearchFieldBuilder {
         return this;
     }
 
+    public AzureSearchFieldBuilder addProviderUrl(String providerUrl) {
+        addStringField(AzureCustomFieldManager.ALERT_PROVIDER_URL_KEY_FIELD_REFERENCE_NAME, providerUrl);
+        return this;
+    }
+
     public AzureSearchFieldBuilder addTopicKey(String topicKey) {
         addStringField(AzureCustomFieldManager.ALERT_TOPIC_KEY_FIELD_REFERENCE_NAME, topicKey);
         return this;
