@@ -164,7 +164,7 @@ public class ConfigurationCrudHelperTest {
         PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
         Map<PermissionKey, Integer> permissions = Map.of(permissionKey, AuthenticationTestUtils.FULL_PERMISSIONS);
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
-        Callable<String> createdModelSupplier = () -> {
+        ThrowingSupplier createdModelSupplier = () -> {
             throw new AlertException("error getting test message");
         };
         ConfigurationCrudHelper configurationHelper = new ConfigurationCrudHelper(authorizationManager, ConfigContextEnum.GLOBAL, descriptorKey);
