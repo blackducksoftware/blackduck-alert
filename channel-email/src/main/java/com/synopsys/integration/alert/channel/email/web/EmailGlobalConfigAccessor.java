@@ -78,9 +78,9 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
         Long descriptorId = getDescriptorIdOrThrowException();
 
         return descriptorConfigsRepository.findByDescriptorIdAndContextId(descriptorId, contextId)
-                   .stream()
-                   .map(this::createConfigModel)
-                   .collect(Collectors.toList());
+            .stream()
+            .map(this::createConfigModel)
+            .collect(Collectors.toList());
     }
 
     @Override
@@ -134,7 +134,6 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
         );
     }
 
-
     private DatabaseModelWrapper<EmailGlobalConfigModel> createConfigModel(Long descriptorId, Long configId, OffsetDateTime createdAt, OffsetDateTime lastUpdated) {
         String createdAtFormatted = DateUtils.formatDate(createdAt, DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
         String lastUpdatedFormatted = DateUtils.formatDate(lastUpdated, DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
@@ -166,6 +165,8 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
         }
         newModel.setAdditionalJavaMailProperties(additionalJavamailProperties);
         newModel.setId(String.valueOf(configId));
+        newModel.setCreatedAt(createdAtFormatted);
+        newModel.setLastUpdated(lastUpdatedFormatted);
 
         return new DatabaseModelWrapper<>(descriptorId, configId, createdAtFormatted, lastUpdatedFormatted, newModel);
     }
