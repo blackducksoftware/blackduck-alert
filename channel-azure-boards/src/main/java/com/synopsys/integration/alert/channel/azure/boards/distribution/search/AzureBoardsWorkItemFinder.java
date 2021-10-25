@@ -64,6 +64,7 @@ public class AzureBoardsWorkItemFinder {
             .and(AzureCustomFieldManager.ALERT_PROVIDER_URL_KEY_FIELD_REFERENCE_NAME, WorkItemQueryWhereOperator.EQ, providerUrl)
             .endGroup()
             .or(AzureCustomFieldManager.ALERT_PROVIDER_KEY_FIELD_REFERENCE_NAME, WorkItemQueryWhereOperator.EQ, oldProviderKey)
+            .or(AzureCustomFieldManager.ALERT_PROVIDER_KEY_FIELD_REFERENCE_NAME, WorkItemQueryWhereOperator.CONTAINS, providerKey)
             .endGroup()
             .and(AzureCustomFieldManager.ALERT_TOPIC_KEY_FIELD_REFERENCE_NAME, WorkItemQueryWhereOperator.EQ, topicKey)
             .endGroupToWhereClause();
@@ -84,6 +85,7 @@ public class AzureBoardsWorkItemFinder {
             .beginAndGroup()
             .condition(AzureCustomFieldManager.ALERT_PROVIDER_KEY_FIELD_REFERENCE_NAME, WorkItemQueryWhereOperator.EQ, providerKey)
             .or(AzureCustomFieldManager.ALERT_PROVIDER_KEY_FIELD_REFERENCE_NAME, WorkItemQueryWhereOperator.EQ, oldProviderKey)
+            .or(AzureCustomFieldManager.ALERT_PROVIDER_KEY_FIELD_REFERENCE_NAME, WorkItemQueryWhereOperator.CONTAINS, providerKey)
             .endGroup()
             .and(AzureCustomFieldManager.ALERT_TOPIC_KEY_FIELD_REFERENCE_NAME, WorkItemQueryWhereOperator.EQ, topicKey)
             .endGroupToWhereClause();
