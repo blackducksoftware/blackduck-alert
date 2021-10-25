@@ -111,7 +111,7 @@ public class AzureBoardsWorkItemFinderTest {
     // Expects ANDs in the WHERE clause each using the = operator
     private Map<String, String> extractValuesFromWhereClause(String query) {
         String whereClause = StringUtils.substringAfter(query, "WHERE (");
-        String cleanedWhereClause = StringUtils.substringBefore(whereClause, ") ORDER");
+        String cleanedWhereClause = StringUtils.substringBefore(whereClause, " ORDER");
         String[] andsInWhereClause = StringUtils.splitByWholeSeparator(cleanedWhereClause, " " + WorkItemQueryWhereJunctionType.AND.name() + " ");
         return Arrays.stream(andsInWhereClause)
             .map(StringUtils::trim)
