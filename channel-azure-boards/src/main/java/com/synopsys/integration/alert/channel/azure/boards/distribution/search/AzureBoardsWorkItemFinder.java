@@ -7,13 +7,8 @@
  */
 package com.synopsys.integration.alert.channel.azure.boards.distribution.search;
 
-import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.AzureBoardsIssueTrackerQueryManager;
@@ -35,72 +30,62 @@ public class AzureBoardsWorkItemFinder {
     }
 
     public List<WorkItemResponseModel> findWorkItems(LinkableItem provider, LinkableItem project, AzureSearchFieldMappingBuilder fieldReferenceNameToExpectedValue) throws AlertException {
-        String providerKey = provider.getLabel();
+        WorkItemQueryWhere queryBuilder;
         Optional<String> providerUrl = provider.getUrl();
-        String topicKey = AzureBoardsSearchPropertiesUtils.createNullableLinkableItemKey(project);
-
-        WorkItemQueryWhere oldProviderQueryBuilder = createOldProviderQuery(provider, topicKey);
-        WorkItemQueryWhere newProviderQueryBuilder = createNewProviderQuery(provider, topicKey);
-
-        String systemIdFieldName = WorkItemResponseFields.System_Id.getFieldName();
-        //        String teamProjectFieldName = WorkItemResponseFields.System_TeamProject.getFieldName();
-        //        WorkItemQueryWhere queryBuilder = WorkItemQuery
-        //            .select(systemIdFieldName)
-        //            .fromWorkItems()
-        //            .whereGroup(teamProjectFieldName, WorkItemQueryWhereOperator.EQ, teamProjectName)
-        //            .and(AzureCustomFieldManager.ALERT_PROVIDER_KEY_FIELD_REFERENCE_NAME, WorkItemQueryWhereOperator.EQ, providerKey)
-        //            .and(AzureCustomFieldManager.ALERT_TOPIC_KEY_FIELD_REFERENCE_NAME, WorkItemQueryWhereOperator.EQ, topicKey);
+        if (providerUrl.isPresent()) {
+            queryBuilder = createQueryWithProviderUrl(provider, project, providerUrl.get());
+        } else {
+            queryBuilder = createQueryWithoutProviderUrl(provider, project);
+        }
 
         for (AzureSearchFieldMappingBuilder.ReferenceToValue refToValue : fieldReferenceNameToExpectedValue.buildAsList()) {
-            oldProviderQueryBuilder = oldProviderQueryBuilder.and(refToValue.getReferenceKey(), WorkItemQueryWhereOperator.EQ, refToValue.getFieldValue());
-            newProviderQueryBuilder = newProviderQueryBuilder.and(refToValue.getReferenceKey(), WorkItemQueryWhereOperator.EQ, refToValue.getFieldValue());
+            queryBuilder = queryBuilder.and(refToValue.getReferenceKey(), WorkItemQueryWhereOperator.EQ, refToValue.getFieldValue());
         }
 
-        WorkItemQuery oldProviderQuery = oldProviderQueryBuilder.orderBy(systemIdFieldName).build();
-        WorkItemQuery newProviderQuery = newProviderQueryBuilder.orderBy(systemIdFieldName).build();
-        List<WorkItemResponseModel> responses = new LinkedList<>();
-        List<WorkItemResponseModel> oldProviderResponses = queryManager.executeQueryAndRetrieveWorkItems(oldProviderQuery);
-        List<WorkItemResponseModel> newProviderResponses = queryManager.executeQueryAndRetrieveWorkItems(newProviderQuery);
-        Stream.concat(oldProviderResponses.stream(), newProviderResponses.stream())
-            .collect(Collectors.toMap(WorkItemResponseModel::getId, Function.identity()))
-            .values().stream()
-            .sorted(Comparator.comparing(WorkItemResponseModel::getId))
-            .collect(Collectors.toList());
-
-        return responses;
+        WorkItemQuery query = queryBuilder.orderBy(WorkItemResponseFields.System_Id.getFieldName()).build();
+        return queryManager.executeQueryAndRetrieveWorkItems(query);
     }
 
-    @Deprecated(since = "6.8.0", forRemoval = true)
-    //TODO remove this method in 8.0.0
-    private WorkItemQueryWhere createOldProviderQuery(LinkableItem provider, String topicKey) {
-        String providerKey = AzureBoardsSearchPropertiesUtils.createProviderKeyWithUrl(provider.getLabel(), provider.getUrl().orElse(null));
-        String systemIdFieldName = WorkItemResponseFields.System_Id.getFieldName();
-        String teamProjectFieldName = WorkItemResponseFields.System_TeamProject.getFieldName();
-        WorkItemQueryWhere queryBuilder = WorkItemQuery
-            .select(systemIdFieldName)
-            .fromWorkItems()
-            .whereGroup(teamProjectFieldName, WorkItemQueryWhereOperator.EQ, teamProjectName)
-            .and(AzureCustomFieldManager.ALERT_PROVIDER_KEY_FIELD_REFERENCE_NAME, WorkItemQueryWhereOperator.EQ, providerKey)
-            .and(AzureCustomFieldManager.ALERT_TOPIC_KEY_FIELD_REFERENCE_NAME, WorkItemQueryWhereOperator.EQ, topicKey);
-        return queryBuilder;
-    }
-
-    private WorkItemQueryWhere createNewProviderQuery(LinkableItem provider, String topicKey) {
+    private WorkItemQueryWhere createQueryWithProviderUrl(LinkableItem provider, LinkableItem project, String providerUrl) {
         String providerKey = provider.getLabel();
-        Optional<String> providerUrl = provider.getUrl();
+        String topicKey = AzureBoardsSearchPropertiesUtils.createNullableLinkableItemKey(project);
+        String oldProviderKey = AzureBoardsSearchPropertiesUtils.createProviderKeyWithUrl(providerKey, providerUrl);
+
         String systemIdFieldName = WorkItemResponseFields.System_Id.getFieldName();
         String teamProjectFieldName = WorkItemResponseFields.System_TeamProject.getFieldName();
-        WorkItemQueryWhere queryBuilder = WorkItemQuery
+
+        return WorkItemQuery
             .select(systemIdFieldName)
             .fromWorkItems()
             .whereGroup(teamProjectFieldName, WorkItemQueryWhereOperator.EQ, teamProjectName)
-            .and(AzureCustomFieldManager.ALERT_PROVIDER_KEY_FIELD_REFERENCE_NAME, WorkItemQueryWhereOperator.EQ, providerKey);
-
-        if (providerUrl.isPresent()) {
-            queryBuilder = queryBuilder.and(AzureCustomFieldManager.ALERT_PROVIDER_URL_KEY_FIELD_REFERENCE_NAME, WorkItemQueryWhereOperator.EQ, providerUrl.get());
-        }
-        queryBuilder = queryBuilder.and(AzureCustomFieldManager.ALERT_TOPIC_KEY_FIELD_REFERENCE_NAME, WorkItemQueryWhereOperator.EQ, topicKey);
-        return queryBuilder;
+            .beginAndGroup()
+            .beginGroup()
+            .condition(AzureCustomFieldManager.ALERT_PROVIDER_KEY_FIELD_REFERENCE_NAME, WorkItemQueryWhereOperator.EQ, providerKey)
+            .and(AzureCustomFieldManager.ALERT_PROVIDER_URL_KEY_FIELD_REFERENCE_NAME, WorkItemQueryWhereOperator.EQ, providerUrl)
+            .endGroup()
+            .or(AzureCustomFieldManager.ALERT_PROVIDER_KEY_FIELD_REFERENCE_NAME, WorkItemQueryWhereOperator.EQ, oldProviderKey)
+            .endGroup()
+            .and(AzureCustomFieldManager.ALERT_TOPIC_KEY_FIELD_REFERENCE_NAME, WorkItemQueryWhereOperator.EQ, topicKey)
+            .endGroupToWhereClause();
     }
 
+    private WorkItemQueryWhere createQueryWithoutProviderUrl(LinkableItem provider, LinkableItem project) {
+        String providerKey = provider.getLabel();
+        String topicKey = AzureBoardsSearchPropertiesUtils.createNullableLinkableItemKey(project);
+        String oldProviderKey = AzureBoardsSearchPropertiesUtils.createProviderKeyWithUrl(providerKey, null);
+
+        String systemIdFieldName = WorkItemResponseFields.System_Id.getFieldName();
+        String teamProjectFieldName = WorkItemResponseFields.System_TeamProject.getFieldName();
+
+        return WorkItemQuery
+            .select(systemIdFieldName)
+            .fromWorkItems()
+            .whereGroup(teamProjectFieldName, WorkItemQueryWhereOperator.EQ, teamProjectName)
+            .beginAndGroup()
+            .condition(AzureCustomFieldManager.ALERT_PROVIDER_KEY_FIELD_REFERENCE_NAME, WorkItemQueryWhereOperator.EQ, providerKey)
+            .or(AzureCustomFieldManager.ALERT_PROVIDER_KEY_FIELD_REFERENCE_NAME, WorkItemQueryWhereOperator.EQ, oldProviderKey)
+            .endGroup()
+            .and(AzureCustomFieldManager.ALERT_TOPIC_KEY_FIELD_REFERENCE_NAME, WorkItemQueryWhereOperator.EQ, topicKey)
+            .endGroupToWhereClause();
+    }
 }
