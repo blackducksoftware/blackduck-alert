@@ -7,6 +7,9 @@
  */
 package com.synopsys.integration.azure.boards.common.service.query.fluent;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class WorkItemQueryFrom {
     /* package-private */ static final String FROM_WORK_ITEMS = "WorkItems";
     /* package-private */ static final String FROM_WORK_ITEM_LINKS = "WorkItemLinks";
@@ -24,17 +27,22 @@ public class WorkItemQueryFrom {
     }
 
     public WorkItemQueryWhere where(String lhs, WorkItemQueryWhereOperator operator, String rhs, WorkItemQueryWhereConditionRHSType rhsType) {
-        WorkItemQueryWhereCondition condition = new WorkItemQueryWhereCondition(lhs, operator, rhs, rhsType, null, false);
-        return new WorkItemQueryWhere(false, this, condition);
+        WorkItemQueryWhereCondition condition = new WorkItemQueryWhereCondition(lhs, operator, rhs, rhsType, null);
+        return new WorkItemQueryWhere(this, condition);
     }
 
-    public WorkItemQueryWhere whereGroup(String lhs, WorkItemQueryWhereOperator operator, String rhs) {
+    public WorkItemQueryWhereGroup whereGroup(String lhs, WorkItemQueryWhereOperator operator, String rhs) {
         return whereGroup(lhs, operator, rhs, WorkItemQueryWhereConditionRHSType.LITERAL);
     }
 
-    public WorkItemQueryWhere whereGroup(String lhs, WorkItemQueryWhereOperator operator, String rhs, WorkItemQueryWhereConditionRHSType rhsType) {
-        WorkItemQueryWhereCondition condition = new WorkItemQueryWhereCondition(lhs, operator, rhs, rhsType, null, true);
-        return new WorkItemQueryWhere(true, this, condition);
+    public WorkItemQueryWhereGroup whereGroup(String lhs, WorkItemQueryWhereOperator operator, String rhs, WorkItemQueryWhereConditionRHSType rhsType) {
+        WorkItemQueryWhereCondition condition = new WorkItemQueryWhereCondition(lhs, operator, rhs, rhsType, null);
+        WorkItemQueryWhere workItemQueryWhere = new WorkItemQueryWhere(this, new LinkedList<>());
+        List<WorkItemQueryWhereItem> conditions = new LinkedList<>();
+        conditions.add(condition);
+        WorkItemQueryWhereGroup group = new WorkItemQueryWhereGroup(workItemQueryWhere, null, null, conditions);
+        workItemQueryWhere.getConditions().add(group);
+        return group;
     }
 
     /* package-private */ WorkItemQuerySelect getWorkItemQuerySelect() {

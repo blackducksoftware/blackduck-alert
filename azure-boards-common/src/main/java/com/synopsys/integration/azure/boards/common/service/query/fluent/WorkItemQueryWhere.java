@@ -8,24 +8,23 @@
 package com.synopsys.integration.azure.boards.common.service.query.fluent;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
 public class WorkItemQueryWhere {
-    private final boolean grouped;
     private final WorkItemQueryFrom workItemQueryFrom;
-    private final List<WorkItemQueryWhereCondition> conditions;
+    private final List<WorkItemQueryWhereItem> conditions;
 
-    /* package-private */ WorkItemQueryWhere(boolean grouped, WorkItemQueryFrom workItemQueryFrom, WorkItemQueryWhereCondition condition) {
+    /* package-private */ WorkItemQueryWhere(WorkItemQueryFrom workItemQueryFrom, WorkItemQueryWhereCondition condition) {
         this.workItemQueryFrom = workItemQueryFrom;
-        this.grouped = grouped;
         this.conditions = new ArrayList<>();
         this.conditions.add(condition);
     }
 
-    /* package-private */ WorkItemQueryWhere(boolean grouped, WorkItemQueryFrom workItemQueryFrom, List<WorkItemQueryWhereCondition> conditions) {
-        this.grouped = grouped;
+    /* package-private */ WorkItemQueryWhere(WorkItemQueryFrom workItemQueryFrom, List<WorkItemQueryWhereItem> conditions) {
         this.workItemQueryFrom = workItemQueryFrom;
         this.conditions = conditions;
     }
@@ -50,7 +49,7 @@ public class WorkItemQueryWhere {
     }
 
     public WorkItemQueryWhere and(String lhs, WorkItemQueryWhereOperator operator, String rhs, WorkItemQueryWhereConditionRHSType rhsType) {
-        WorkItemQueryWhereCondition condition = new WorkItemQueryWhereCondition(lhs, operator, rhs, rhsType, WorkItemQueryWhereJunctionType.AND, grouped);
+        WorkItemQueryWhereCondition condition = new WorkItemQueryWhereCondition(lhs, operator, rhs, rhsType, WorkItemQueryWhereJunctionType.AND);
         conditions.add(condition);
         return this;
     }
@@ -60,80 +59,53 @@ public class WorkItemQueryWhere {
     }
 
     public WorkItemQueryWhere or(String lhs, WorkItemQueryWhereOperator operator, String rhs, WorkItemQueryWhereConditionRHSType rhsType) {
-        WorkItemQueryWhereCondition condition = new WorkItemQueryWhereCondition(lhs, operator, rhs, rhsType, WorkItemQueryWhereJunctionType.OR, grouped);
+        WorkItemQueryWhereCondition condition = new WorkItemQueryWhereCondition(lhs, operator, rhs, rhsType, WorkItemQueryWhereJunctionType.OR);
         conditions.add(condition);
         return this;
     }
 
-    public WorkItemQueryWhere beginGroup() {
-        return new WorkItemQueryWhere(true, workItemQueryFrom, conditions);
+    public WorkItemQueryWhereGroup beginGroup() {
+        return beginGroup(null);
     }
 
-    public WorkItemQueryWhere endGroup() {
-        return new WorkItemQueryWhere(false, workItemQueryFrom, conditions);
+    public WorkItemQueryWhereGroup beginAndGroup() {
+        return beginGroup(WorkItemQueryWhereJunctionType.AND);
+    }
+
+    public WorkItemQueryWhereGroup beginOrGroup() {
+        return beginGroup(WorkItemQueryWhereJunctionType.OR);
+    }
+
+    private WorkItemQueryWhereGroup beginGroup(@Nullable WorkItemQueryWhereJunctionType junctionType) {
+        WorkItemQueryWhereGroup newGroup = new WorkItemQueryWhereGroup(this, null, junctionType, new LinkedList<>());
+        this.conditions.add(newGroup);
+        return newGroup;
     }
 
     /* package-private */ WorkItemQueryFrom getWorkItemQueryFrom() {
         return workItemQueryFrom;
     }
 
-    /* package-private */ List<WorkItemQueryWhereCondition> getConditions() {
+    /* package-private */ List<WorkItemQueryWhereItem> getConditions() {
         return conditions;
     }
 
     @Override
     public String toString() {
         StringBuilder whereBuilder = new StringBuilder();
-        whereBuilder.append("WHERE");
+        whereBuilder.append("WHERE ");
 
-        boolean inGroup = false;
-        for (WorkItemQueryWhereCondition condition : conditions) {
-            if (inGroup && !condition.isInGroup()) {
-                whereBuilder.append(" )");
-            }
+        for (WorkItemQueryWhereItem condition : conditions) {
+            Optional<WorkItemQueryWhereJunctionType> junctionType = condition.getJunction();
 
-            if (null != condition.getJunction()) {
+            if (junctionType.isPresent()) {
                 whereBuilder.append(' ');
-                whereBuilder.append(condition.getJunction().name());
+                whereBuilder.append(junctionType.get());
+                whereBuilder.append(' ');
             }
-
-            if (!inGroup && condition.isInGroup()) {
-                whereBuilder.append(" (");
-            }
-
-            whereBuilder.append(' ');
-            whereBuilder.append(formatCondition(condition));
-
-            inGroup = condition.isInGroup();
+            whereBuilder.append(condition);
         }
 
-        // If the last condition was part of a group, close the group
-        if (inGroup) {
-            whereBuilder.append(" )");
-        }
         return whereBuilder.toString();
     }
-
-    private String formatCondition(WorkItemQueryWhereCondition condition) {
-        String rhs;
-        if (WorkItemQueryWhereOperator.NOT_EQUALS.equals(condition.getOperator())) {
-            rhs = "''";
-        } else {
-            rhs = formatRhs(condition.getRhs(), condition.getRhsType());
-        }
-        return String.format("[%s] %s %s", condition.getLhs(), condition.getOperator().getComparator(), rhs);
-    }
-
-    private String formatRhs(String rhs, WorkItemQueryWhereConditionRHSType rhsType) {
-        switch (rhsType) {
-            case FIELD:
-                return String.format("[%s]", rhs);
-            case MACRO:
-                return StringUtils.startsWith(rhs, "@") ? rhs : String.format("@%s", rhs);
-            case LITERAL:
-            default:
-                return String.format("'%s'", rhs);
-        }
-    }
-
 }
