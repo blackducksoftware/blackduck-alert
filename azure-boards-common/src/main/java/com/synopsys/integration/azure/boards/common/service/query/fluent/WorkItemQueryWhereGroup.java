@@ -83,7 +83,7 @@ public class WorkItemQueryWhereGroup implements WorkItemQueryWhereItem {
         return newGroup;
     }
 
-    protected Optional<WorkItemQueryWhereGroup> getParentGroup() {
+    /* package private */ Optional<WorkItemQueryWhereGroup> getParentGroup() {
         return Optional.ofNullable(parentGroup);
     }
 

@@ -17,8 +17,10 @@ public final class AzureBoardsSearchPropertiesUtils {
     public static final String LINKABLE_ITEM_DELIMITER = ":";
 
     private static final int MAX_KEY_LENGTH = 256;
-
-    public static String createProviderKeyWithUrl(String providerName, String providerUrl) {
+    
+    public static String createProviderKeyWithUrl(String providerName, @Nullable String providerUrl) {
+        // provider url can be null. Just append 'null' after the delimiter.
+        // This is the old way of creating a provider key appending the url to the end.
         StringBuilder providerKeyBuilder = new StringBuilder();
         providerKeyBuilder.append(providerName);
         providerKeyBuilder.append(URL_DELIMITER);
