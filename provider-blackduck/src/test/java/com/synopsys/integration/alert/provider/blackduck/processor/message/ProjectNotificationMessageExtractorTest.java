@@ -19,6 +19,10 @@ import com.synopsys.integration.alert.provider.blackduck.processor.NotificationE
 import com.synopsys.integration.blackduck.api.manual.component.LicenseLimitNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.component.ProjectNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.OperationType;
+import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.rest.HttpUrl;
 
 public class ProjectNotificationMessageExtractorTest {
     private static final String PROJECT_URL = "https://projectUrl";
@@ -27,8 +31,14 @@ public class ProjectNotificationMessageExtractorTest {
     private final BlackDuckProviderKey providerKey = new BlackDuckProviderKey();
 
     @Test
-    public void extractTest() {
+    public void extractTest() throws IntegrationException {
         NotificationExtractorBlackDuckServicesFactoryCache servicesFactoryCache = Mockito.mock(NotificationExtractorBlackDuckServicesFactoryCache.class);
+        BlackDuckServicesFactory blackDuckServicesFactory = Mockito.mock(BlackDuckServicesFactory.class);
+        BlackDuckHttpClient blackDuckHttpClient = Mockito.mock(BlackDuckHttpClient.class);
+        Mockito.when(blackDuckHttpClient.getBlackDuckUrl()).thenReturn(new HttpUrl("https://a.blackduck.server.example.com"));
+        Mockito.when(blackDuckServicesFactory.getBlackDuckHttpClient()).thenReturn(blackDuckHttpClient);
+        Mockito.when(servicesFactoryCache.retrieveBlackDuckServicesFactory(Mockito.anyLong())).thenReturn(blackDuckServicesFactory);
+
         ProjectNotificationContent projectNotificationContent = createProjectNotificationContent();
         NotificationContentWrapper notificationContentWrapper = createNotificationContentWrapper(projectNotificationContent);
 
