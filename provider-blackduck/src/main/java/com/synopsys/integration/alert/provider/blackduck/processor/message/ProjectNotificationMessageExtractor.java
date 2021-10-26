@@ -9,9 +9,12 @@ package com.synopsys.integration.alert.provider.blackduck.processor.message;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
@@ -21,24 +24,38 @@ import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessag
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectOperation;
 import com.synopsys.integration.alert.processor.api.filter.NotificationContentWrapper;
+import com.synopsys.integration.alert.provider.blackduck.processor.NotificationExtractorBlackDuckServicesFactoryCache;
 import com.synopsys.integration.blackduck.api.manual.component.ProjectNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 @Component
 public class ProjectNotificationMessageExtractor extends ProviderMessageExtractor<ProjectNotificationContent> {
+    private final Logger logger = LoggerFactory.getLogger(ProjectNotificationMessageExtractor.class);
     private final BlackDuckProviderKey blackDuckProviderKey;
+    private final NotificationExtractorBlackDuckServicesFactoryCache servicesFactoryCache;
 
     @Autowired
-    public ProjectNotificationMessageExtractor(BlackDuckProviderKey blackDuckProviderKey) {
+    public ProjectNotificationMessageExtractor(BlackDuckProviderKey blackDuckProviderKey, NotificationExtractorBlackDuckServicesFactoryCache servicesFactoryCache) {
         super(NotificationType.PROJECT, ProjectNotificationContent.class);
         this.blackDuckProviderKey = blackDuckProviderKey;
+        this.servicesFactoryCache = servicesFactoryCache;
     }
 
     @Override
     protected ProviderMessageHolder extract(NotificationContentWrapper notificationContentWrapper, ProjectNotificationContent notificationContent) {
         AlertNotificationModel alertNotificationModel = notificationContentWrapper.getAlertNotificationModel();
+        Long providerConfigId = alertNotificationModel.getProviderConfigId();
+        String providerUrl;
 
-        LinkableItem providerItem = new LinkableItem(blackDuckProviderKey.getDisplayName(), alertNotificationModel.getProviderConfigName());
+        try {
+            BlackDuckServicesFactory blackDuckServicesFactory = servicesFactoryCache.retrieveBlackDuckServicesFactory(providerConfigId);
+            providerUrl = blackDuckServicesFactory.getBlackDuckHttpClient().getBlackDuckUrl().string();
+        } catch (AlertConfigurationException e) {
+            logger.warn("Invalid BlackDuck configuration for notification. ID: {}. Name: {}", providerConfigId, alertNotificationModel.getProviderConfigName(), e);
+            return ProviderMessageHolder.empty();
+        }
+        LinkableItem providerItem = new LinkableItem(blackDuckProviderKey.getDisplayName(), alertNotificationModel.getProviderConfigName(), providerUrl);
         ProviderDetails providerDetails = new ProviderDetails(alertNotificationModel.getProviderConfigId(), providerItem);
 
         LinkableItem project = new LinkableItem(BlackDuckMessageLabels.LABEL_PROJECT, notificationContent.getProjectName(), notificationContent.getProject());
