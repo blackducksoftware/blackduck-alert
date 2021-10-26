@@ -24,7 +24,7 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.action.TestAction;
+import com.synopsys.integration.alert.common.action.FieldModelTestAction;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.channel.DistributionChannelTestAction;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
@@ -34,14 +34,14 @@ import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
 import com.synopsys.integration.alert.common.descriptor.config.GlobalConfigExistsValidator;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
-import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
@@ -83,7 +83,7 @@ public class JobConfigActionsTest {
 
     private AuthorizationManager mockedAuthorizationManager;
     private DescriptorAccessor mockedDescriptorAccessor;
-    private ConfigurationAccessor mockedConfigurationAccessor;
+    private ConfigurationModelConfigurationAccessor mockedConfigurationModelConfigurationAccessor;
     private JobAccessor mockedJobAccessor;
     private FieldModelProcessor mockedFieldModelProcessor;
     private DescriptorProcessor mockedDescriptorProcessor;
@@ -108,7 +108,7 @@ public class JobConfigActionsTest {
 
         mockedAuthorizationManager = Mockito.mock(AuthorizationManager.class);
         mockedDescriptorAccessor = Mockito.mock(DescriptorAccessor.class);
-        mockedConfigurationAccessor = Mockito.mock(ConfigurationAccessor.class);
+        mockedConfigurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
         mockedJobAccessor = Mockito.mock(JobAccessor.class);
         mockedFieldModelProcessor = Mockito.mock(FieldModelProcessor.class);
         mockedDescriptorProcessor = Mockito.mock(DescriptorProcessor.class);
@@ -261,7 +261,7 @@ public class JobConfigActionsTest {
         JobConfigActions jobConfigActionsForTest = new JobConfigActions(
             mockedAuthorizationManager,
             mockedDescriptorAccessor,
-            mockedConfigurationAccessor,
+            mockedConfigurationModelConfigurationAccessor,
             mockedJobAccessor,
             mockedFieldModelProcessor,
             mockedDescriptorProcessor,
@@ -526,10 +526,10 @@ public class JobConfigActionsTest {
         assertFalse(actionResponse.hasContent());
     }
 
-    private Descriptor createDescriptor(Supplier<Optional<GlobalConfigurationValidator>> globalValidator, Supplier<Optional<DistributionConfigurationValidator>> distributionValidator) {
+    private Descriptor createDescriptor(Supplier<Optional<GlobalConfigurationFieldModelValidator>> globalValidator, Supplier<Optional<DistributionConfigurationValidator>> distributionValidator) {
         Descriptor descriptor = new Descriptor(descriptorKey, DESCRIPTOR_TYPE, Set.of(ConfigContextEnum.GLOBAL, ConfigContextEnum.DISTRIBUTION)) {
             @Override
-            public Optional<GlobalConfigurationValidator> getGlobalValidator() {
+            public Optional<GlobalConfigurationFieldModelValidator> getGlobalValidator() {
                 return globalValidator.get();
             }
 
@@ -562,7 +562,7 @@ public class JobConfigActionsTest {
     private FieldModel createFieldModel() {
         String value = "testValue";
         Map<String, FieldValueModel> keyToValues = new HashMap<>();
-        keyToValues.put(TestAction.KEY_CUSTOM_TOPIC, new FieldValueModel(List.of(value), false));
+        keyToValues.put(FieldModelTestAction.KEY_CUSTOM_TOPIC, new FieldValueModel(List.of(value), false));
         keyToValues.put(ChannelDescriptor.KEY_NAME, new FieldValueModel(List.of(value), false));
         return new FieldModel(descriptorKey.getUniversalKey(), ConfigContextEnum.DISTRIBUTION.name(), keyToValues);
     }
@@ -576,33 +576,33 @@ public class JobConfigActionsTest {
         };
     }
 
-    private TestAction createTestActionWithErrors() {
-        TestAction testAction = new TestAction() {
+    private FieldModelTestAction createTestActionWithErrors() {
+        FieldModelTestAction fieldModelTestAction = new FieldModelTestAction() {
             @Override
             public MessageResult testConfig(String configId, FieldModel fieldModel, FieldUtility registeredFieldValues) throws IntegrationException {
                 AlertFieldStatus alertFieldStatus = AlertFieldStatus.error("fieldNameTest", "Alert Error Message");
                 return new MessageResult("Test Status Message", List.of(alertFieldStatus));
             }
         };
-        return testAction;
+        return fieldModelTestAction;
     }
 
     //Mockito can't throw an IntegrationRestException through a mock, we will need to create a mock instance that throws the specific exception
-    private TestAction createTestActionWithIntegrationRestException() {
-        TestAction testAction = new TestAction() {
+    private FieldModelTestAction createTestActionWithIntegrationRestException() {
+        FieldModelTestAction fieldModelTestAction = new FieldModelTestAction() {
             @Override
             public MessageResult testConfig(String configId, FieldModel fieldModel, FieldUtility registeredFieldValues) throws IntegrationException {
                 throw new IntegrationRestException(HttpMethod.GET, new HttpUrl("https://google.com"), HttpStatus.OK.value(), "httpStatusMessageTest", "httpResponseContentTest", "IntegrationRestExceptionForAlertTest");
             }
         };
-        return testAction;
+        return fieldModelTestAction;
     }
 
     private JobConfigActions createJobConfigActions(DescriptorMap customDescriptorMap, List<DistributionChannelTestAction> customDistributionChannelTestActions) {
         return new JobConfigActions(
             mockedAuthorizationManager,
             mockedDescriptorAccessor,
-            mockedConfigurationAccessor,
+            mockedConfigurationModelConfigurationAccessor,
             mockedJobAccessor,
             mockedFieldModelProcessor,
             mockedDescriptorProcessor,

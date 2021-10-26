@@ -8,21 +8,34 @@
 package com.synopsys.integration.alert.channel.email.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
+import com.synopsys.integration.alert.channel.email.action.EmailGlobalCrudActions;
+import com.synopsys.integration.alert.channel.email.action.EmailGlobalTestAction;
+import com.synopsys.integration.alert.channel.email.action.EmailGlobalValidationAction;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.api.BaseResourceController;
-import com.synopsys.integration.alert.common.rest.api.TestController;
 import com.synopsys.integration.alert.common.rest.api.ValidateController;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
+import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
-//@RestController
-//@RequestMapping(AlertRestConstants.EMAIL_CONFIGURATION_PATH)
-public class EmailGlobalConfigController implements BaseResourceController<EmailGlobalConfigModel>, TestController<EmailGlobalConfigModel>, ValidateController<EmailGlobalConfigModel> {
-    private final EmailGlobalConfigActions configActions;
+@RestController
+@RequestMapping(AlertRestConstants.EMAIL_CONFIGURATION_PATH)
+public class EmailGlobalConfigController implements BaseResourceController<EmailGlobalConfigModel>, ValidateController<EmailGlobalConfigModel> {
+    private final EmailGlobalCrudActions configActions;
+    private final EmailGlobalValidationAction validationAction;
+    private final EmailGlobalTestAction testAction;
 
     @Autowired
-    public EmailGlobalConfigController(EmailGlobalConfigActions configActions) {
+    public EmailGlobalConfigController(EmailGlobalCrudActions configActions, EmailGlobalValidationAction validationAction, EmailGlobalTestAction testAction) {
         this.configActions = configActions;
+        this.validationAction = validationAction;
+        this.testAction = testAction;
     }
 
     @Override
@@ -42,7 +55,7 @@ public class EmailGlobalConfigController implements BaseResourceController<Email
 
     @Override
     public ValidationResponseModel validate(EmailGlobalConfigModel requestBody) {
-        return ResponseFactory.createContentResponseFromAction(configActions.validate(requestBody));
+        return ResponseFactory.createContentResponseFromAction(validationAction.validate(requestBody));
     }
 
     @Override
@@ -50,9 +63,9 @@ public class EmailGlobalConfigController implements BaseResourceController<Email
         ResponseFactory.createContentResponseFromAction(configActions.delete(id));
     }
 
-    @Override
-    public ValidationResponseModel test(EmailGlobalConfigModel resource) {
-        return ResponseFactory.createContentResponseFromAction(configActions.test(resource));
+    @PostMapping("/test")
+    public ValidationResponseModel test(@RequestParam String sendTo, @RequestBody EmailGlobalConfigModel resource) {
+        return ResponseFactory.createContentResponseFromAction(testAction.testWithPermissionCheck(sendTo, resource));
     }
 
 }

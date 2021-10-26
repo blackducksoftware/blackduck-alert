@@ -17,6 +17,7 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Compon
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
 
 public class IssueEstimatedRiskModel extends AlertSerializableModel {
+    private static final long serialVersionUID = -8833421886887540364L;
     private final ComponentConcernSeverity severity;
     private final Number count;
     private final String name;

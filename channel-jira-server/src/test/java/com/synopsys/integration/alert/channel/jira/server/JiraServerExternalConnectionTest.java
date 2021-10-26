@@ -25,7 +25,7 @@ import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerD
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerMessageSenderFactory;
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerProcessorFactory;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraJobCustomFieldModel;
@@ -52,11 +52,11 @@ public class JiraServerExternalConnectionTest {
         JiraMessageFormatter jiraMessageFormatter = new JiraMessageFormatter();
 
         JiraServerChannelKey jiraServerChannelKey = new JiraServerChannelKey();
-        ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
-        Mockito.when(configurationAccessor.getConfigurationsByDescriptorKeyAndContext(Mockito.any(), Mockito.any())).thenReturn(List.of(createConfigurationModelForJiraServer()));
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
+        Mockito.when(configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(Mockito.any(), Mockito.any())).thenReturn(List.of(createConfigurationModelForJiraServer()));
         ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfoForHost(Mockito.anyString())).thenReturn(null);
-        JiraServerPropertiesFactory jiraServerPropertiesFactory = new JiraServerPropertiesFactory(jiraServerChannelKey, proxyManager, configurationAccessor);
+        JiraServerPropertiesFactory jiraServerPropertiesFactory = new JiraServerPropertiesFactory(jiraServerChannelKey, proxyManager, configurationModelConfigurationAccessor);
 
         IssueTrackerCallbackInfoCreator issueTrackerCallbackInfoCreator = new IssueTrackerCallbackInfoCreator();
         IssueCategoryRetriever issueCategoryRetriever = new IssueCategoryRetriever();

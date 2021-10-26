@@ -165,6 +165,51 @@ public class ProjectMessageSummarizerTest {
         assertEquals(1, Integer.valueOf(getDetailValue(simpleMessage.getDetails(), vulnerabilityConcern4.getSeverity().getVulnerabilityLabel(), "Vulnerabilities", ProjectMessageSummarizer.OP_PARTICIPLE_DELETED)));
     }
 
+    @Test
+    public void sortedConcernsTest() {
+        ComponentConcern policyConcern1 = ComponentConcern.severePolicy(ItemOperation.ADD, "A severe policy", ComponentConcernSeverity.TRIVIAL_LOW, "https://severe-policy");
+        ComponentConcern policyConcern2 = ComponentConcern.severePolicy(ItemOperation.ADD, "A severe policy", ComponentConcernSeverity.BLOCKER, "https://severe-policy");
+        ComponentConcern policyConcern3 = ComponentConcern.severePolicy(ItemOperation.ADD, "A severe policy", ComponentConcernSeverity.MINOR_MEDIUM, "https://severe-policy");
+        ComponentConcern vulnerabilityConcern1 = ComponentConcern.vulnerability(ItemOperation.ADD, "CVE-123", ComponentConcernSeverity.CRITICAL, "https://vuln-rul");
+        ComponentConcern vulnerabilityConcern2 = ComponentConcern.vulnerability(ItemOperation.ADD, "CVE-135", ComponentConcernSeverity.TRIVIAL_LOW, "https://vuln-rul");
+        ComponentConcern vulnerabilityConcern3 = ComponentConcern.vulnerability(ItemOperation.ADD, "CVE-246", ComponentConcernSeverity.MINOR_MEDIUM, "https://vuln-rul");
+        ComponentConcern policyConcern4 = ComponentConcern.severePolicy(ItemOperation.ADD, "A severe policy", ComponentConcernSeverity.BLOCKER, "https://severe-policy");
+        ComponentConcern policyConcern5 = ComponentConcern.severePolicy(ItemOperation.ADD, "A severe policy", ComponentConcernSeverity.MAJOR_HIGH, "https://severe-policy");
+        ComponentConcern policyConcern6 = ComponentConcern.severePolicy(ItemOperation.ADD, "A severe policy", ComponentConcernSeverity.CRITICAL, "https://severe-policy");
+        ComponentConcern policyConcern7 = ComponentConcern.severePolicy(ItemOperation.ADD, "A severe policy", ComponentConcernSeverity.UNSPECIFIED_UNKNOWN, "https://severe-policy");
+        ComponentConcern vulnerabilityConcern4 = ComponentConcern.vulnerability(ItemOperation.ADD, "CVE-123", ComponentConcernSeverity.BLOCKER, "https://vuln-rul");
+        ComponentConcern vulnerabilityConcern5 = ComponentConcern.vulnerability(ItemOperation.ADD, "CVE-123", ComponentConcernSeverity.UNSPECIFIED_UNKNOWN, "https://vuln-rul");
+        ComponentConcern vulnerabilityConcern6 = ComponentConcern.vulnerability(ItemOperation.ADD, "CVE-123", ComponentConcernSeverity.MAJOR_HIGH, "https://vuln-rul");
+
+        BomComponentDetails bomComponentDetails = createBomComponentDetails(
+            List.of(policyConcern1, policyConcern2, policyConcern3, policyConcern4, policyConcern5, policyConcern6, policyConcern7,
+                vulnerabilityConcern1, vulnerabilityConcern2, vulnerabilityConcern3, vulnerabilityConcern4, vulnerabilityConcern5, vulnerabilityConcern6)
+        );
+        ProjectMessage projectMessage = ProjectMessage.componentConcern(providerDetails, commonProject, commonProjectVersion, List.of(bomComponentDetails));
+        ProcessedProviderMessage<ProjectMessage> processedProviderMessage = new ProcessedProviderMessage<>(Set.of(1L), projectMessage);
+
+        ProcessedProviderMessage<SimpleMessage> summarizedSimpleMessage = projectMessageSummarizer.summarize(processedProviderMessage);
+        SimpleMessage simpleMessage = summarizedSimpleMessage.getProviderMessage();
+        printSimpleMessage(simpleMessage);
+
+        //There are a total of 14 details, the latter 12 being policies and vulnerabilities sorted by type then severity
+        assertEquals(14, simpleMessage.getDetails().size());
+        List<LinkableItem> details = simpleMessage.getDetails();
+        assertTrue(details.get(2).getLabel().contains(ComponentConcernSeverity.BLOCKER.getPolicyLabel()));
+        assertTrue(details.get(3).getLabel().contains(ComponentConcernSeverity.CRITICAL.getPolicyLabel()));
+        assertTrue(details.get(4).getLabel().contains(ComponentConcernSeverity.MAJOR_HIGH.getPolicyLabel()));
+        assertTrue(details.get(5).getLabel().contains(ComponentConcernSeverity.MINOR_MEDIUM.getPolicyLabel()));
+        assertTrue(details.get(6).getLabel().contains(ComponentConcernSeverity.TRIVIAL_LOW.getPolicyLabel()));
+        assertTrue(details.get(7).getLabel().contains(ComponentConcernSeverity.UNSPECIFIED_UNKNOWN.getPolicyLabel()));
+
+        assertTrue(details.get(8).getLabel().contains(ComponentConcernSeverity.BLOCKER.getVulnerabilityLabel()));
+        assertTrue(details.get(9).getLabel().contains(ComponentConcernSeverity.CRITICAL.getVulnerabilityLabel()));
+        assertTrue(details.get(10).getLabel().contains(ComponentConcernSeverity.MAJOR_HIGH.getVulnerabilityLabel()));
+        assertTrue(details.get(11).getLabel().contains(ComponentConcernSeverity.MINOR_MEDIUM.getVulnerabilityLabel()));
+        assertTrue(details.get(12).getLabel().contains(ComponentConcernSeverity.TRIVIAL_LOW.getVulnerabilityLabel()));
+        assertTrue(details.get(13).getLabel().contains(ComponentConcernSeverity.UNSPECIFIED_UNKNOWN.getVulnerabilityLabel()));
+    }
+
     private void testProjectStatus(SimpleMessage simpleMessage) {
         String summary = simpleMessage.getSummary();
         assertTrue(summary.contains(provider.getLabel()));

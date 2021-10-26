@@ -4,11 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
 
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.email.attachment.compatibility.ComponentItem;
 import com.synopsys.integration.alert.channel.email.attachment.compatibility.MessageContentGroup;
 import com.synopsys.integration.alert.channel.email.attachment.compatibility.ProviderMessageContent;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 
 public class MessageContentGroupCsvCreatorTest {
     @Test

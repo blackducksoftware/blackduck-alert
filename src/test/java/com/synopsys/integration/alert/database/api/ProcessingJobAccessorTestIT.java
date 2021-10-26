@@ -21,7 +21,7 @@ import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingJobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -57,7 +57,7 @@ public class ProcessingJobAccessorTestIT {
     @Autowired
     public ProcessingJobAccessor processingJobAccessor;
     @Autowired
-    public ConfigurationAccessor configurationAccessor;
+    public ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     @Autowired
     public DistributionJobRepository distributionJobRepository;
 
@@ -76,14 +76,14 @@ public class ProcessingJobAccessorTestIT {
         blackduckTimeout.setFieldValue("300");
 
         List<ConfigurationFieldModel> providerConfigFields = List.of(providerConfigEnabled, providerConfigName, blackduckUrl, blackduckApiKey, blackduckTimeout);
-        providerConfigId = configurationAccessor.createConfiguration(new BlackDuckProviderKey(), ConfigContextEnum.GLOBAL, providerConfigFields).getConfigurationId();
+        providerConfigId = configurationModelConfigurationAccessor.createConfiguration(new BlackDuckProviderKey(), ConfigContextEnum.GLOBAL, providerConfigFields).getConfigurationId();
     }
 
     @AfterEach
     public void removeCreatedJobsIfExist() {
         CREATED_JOBS.forEach(jobAccessor::deleteJob);
         CREATED_JOBS.clear();
-        configurationAccessor.deleteConfiguration(providerConfigId);
+        configurationModelConfigurationAccessor.deleteConfiguration(providerConfigId);
     }
 
     @Test

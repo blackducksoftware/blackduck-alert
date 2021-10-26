@@ -1,7 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import {
-    BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn
-} from 'react-bootstrap-table';
+import { BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn } from 'react-bootstrap-table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useHistory } from 'react-router-dom';
 import * as PropTypes from 'prop-types';

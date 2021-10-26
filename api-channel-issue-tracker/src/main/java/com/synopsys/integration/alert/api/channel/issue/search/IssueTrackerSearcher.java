@@ -122,15 +122,7 @@ public class IssueTrackerSearcher<T extends Serializable> {
                 searchResultOperation = policyOperation.get();
             } else if (optionalVulnerabilityDetails.isPresent()) {
                 IssueVulnerabilityDetails issueVulnerabilityDetails = optionalVulnerabilityDetails.get();
-                boolean isResolvableOrUnknown = IssueStatus.RESOLVABLE.equals(existingIssue.getIssueStatus()) || IssueStatus.UNKNOWN.equals(existingIssue.getIssueStatus());
-                boolean isReopenableOrUnknown = IssueStatus.REOPENABLE.equals(existingIssue.getIssueStatus()) || IssueStatus.UNKNOWN.equals(existingIssue.getIssueStatus());
-                if (issueVulnerabilityDetails.areAllComponentVulnerabilitiesRemediated() && isResolvableOrUnknown) {
-                    searchResultOperation = ItemOperation.DELETE;
-                } else if (!issueVulnerabilityDetails.areAllComponentVulnerabilitiesRemediated() && isReopenableOrUnknown) {
-                    searchResultOperation = ItemOperation.ADD;
-                } else {
-                    searchResultOperation = ItemOperation.UPDATE;
-                }
+                searchResultOperation = findVulnerabilitySearchResultOperation(existingIssue, issueVulnerabilityDetails);
             } else if (componentUnknownOperation.isPresent()) {
                 searchResultOperation = componentUnknownOperation.get();
             }
@@ -142,12 +134,26 @@ public class IssueTrackerSearcher<T extends Serializable> {
         return new ActionableIssueSearchResult<>(existingIssue, projectIssueModel, searchResultOperation);
     }
 
+    private ItemOperation findVulnerabilitySearchResultOperation(ExistingIssueDetails<T> existingIssue, IssueVulnerabilityDetails issueVulnerabilityDetails) {
+        ItemOperation searchResultOperation;
+        boolean isResolvableOrUnknown = IssueStatus.RESOLVABLE.equals(existingIssue.getIssueStatus()) || IssueStatus.UNKNOWN.equals(existingIssue.getIssueStatus());
+        boolean isReopenableOrUnknown = IssueStatus.REOPENABLE.equals(existingIssue.getIssueStatus()) || IssueStatus.UNKNOWN.equals(existingIssue.getIssueStatus());
+        if (issueVulnerabilityDetails.areAllComponentVulnerabilitiesRemediated() && isResolvableOrUnknown) {
+            searchResultOperation = ItemOperation.DELETE;
+        } else if (!issueVulnerabilityDetails.areAllComponentVulnerabilitiesRemediated() && isReopenableOrUnknown) {
+            searchResultOperation = ItemOperation.ADD;
+        } else {
+            searchResultOperation = ItemOperation.UPDATE;
+        }
+        return searchResultOperation;
+    }
+
     private List<ActionableIssueSearchResult<T>> findProjectIssues(boolean isEntireBomDeleted, ThrowingSupplier<List<ProjectIssueSearchResult<T>>, AlertException> find) throws AlertException {
         if (isEntireBomDeleted) {
             return find.get()
-                       .stream()
-                       .map(this::convertToDeleteResult)
-                       .collect(Collectors.toList());
+                .stream()
+                .map(this::convertToDeleteResult)
+                .collect(Collectors.toList());
         }
         logger.debug("Ignoring project-level notification for issue-tracker because no action would be taken");
         return List.of();

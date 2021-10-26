@@ -14,10 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.jira.cloud.validator.JiraCloudDistributionConfigurationValidator;
-import com.synopsys.integration.alert.channel.jira.cloud.validator.JiraCloudGlobalConfigurationValidator;
+import com.synopsys.integration.alert.channel.jira.cloud.validator.JiraCloudGlobalConfigurationFieldModelValidator;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
-import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
@@ -53,18 +53,18 @@ public class JiraCloudDescriptor extends ChannelDescriptor {
     public static final String LABEL_OPEN_WORKFLOW_TRANSITION = "Re-open Transition";
     public static final String LABEL_FIELD_MAPPING = "Field Mapping";
 
-    private final JiraCloudGlobalConfigurationValidator jiraCloudGlobalValidator;
+    private final JiraCloudGlobalConfigurationFieldModelValidator jiraCloudGlobalValidator;
     private final JiraCloudDistributionConfigurationValidator jiraCloudDistributionConfigurationValidator;
 
     @Autowired
-    public JiraCloudDescriptor(JiraCloudGlobalConfigurationValidator jiraCloudGlobalValidator, JiraCloudDistributionConfigurationValidator jiraCloudDistributionConfigurationValidator) {
+    public JiraCloudDescriptor(JiraCloudGlobalConfigurationFieldModelValidator jiraCloudGlobalValidator, JiraCloudDistributionConfigurationValidator jiraCloudDistributionConfigurationValidator) {
         super(ChannelKeys.JIRA_CLOUD, Set.of(ConfigContextEnum.GLOBAL, ConfigContextEnum.DISTRIBUTION));
         this.jiraCloudGlobalValidator = jiraCloudGlobalValidator;
         this.jiraCloudDistributionConfigurationValidator = jiraCloudDistributionConfigurationValidator;
     }
 
     @Override
-    public Optional<GlobalConfigurationValidator> getGlobalValidator() {
+    public Optional<GlobalConfigurationFieldModelValidator> getGlobalValidator() {
         return Optional.of(jiraCloudGlobalValidator);
     }
 

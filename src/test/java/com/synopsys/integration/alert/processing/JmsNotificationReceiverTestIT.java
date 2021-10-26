@@ -40,7 +40,7 @@ import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.configuration.ApplicationConfiguration;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
-import com.synopsys.integration.alert.database.api.DefaultConfigurationAccessor;
+import com.synopsys.integration.alert.database.api.DefaultConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.database.api.DefaultNotificationAccessor;
 import com.synopsys.integration.alert.database.api.StaticJobAccessor;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
@@ -81,7 +81,7 @@ public class JmsNotificationReceiverTestIT {
     @Autowired
     private StaticJobAccessor staticJobAccessor;
     @Autowired
-    private DefaultConfigurationAccessor defaultConfigurationAccessor;
+    private DefaultConfigurationModelConfigurationAccessor defaultConfigurationAccessor;
     @Autowired
     private BlackDuckProviderKey blackDuckProviderKey;
 

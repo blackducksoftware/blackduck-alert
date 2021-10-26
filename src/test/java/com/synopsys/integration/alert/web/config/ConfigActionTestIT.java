@@ -15,7 +15,7 @@ import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -38,7 +38,7 @@ import junit.framework.AssertionFailedError;
 @AlertIntegrationTest
 public class ConfigActionTestIT {
     @Autowired
-    private ConfigurationAccessor configurationAccessor;
+    private ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     @Autowired
     private FieldModelProcessor fieldModelProcessor;
     @Autowired
@@ -61,7 +61,7 @@ public class ConfigActionTestIT {
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
         Mockito.when(authorizationManager.hasDeletePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
         Mockito.when(authorizationManager.hasWritePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
-        ConfigActions configActions = new ConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter, descriptorMap,
+        ConfigActions configActions = new ConfigActions(authorizationManager, descriptorAccessor, configurationModelConfigurationAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter, descriptorMap,
             pkixErrorResponseFactory, encryptionUtility, settingsDescriptorKey);
         ConfigurationFieldModel proxyHost = ConfigurationFieldModel.create(ProxyManager.KEY_PROXY_HOST);
         proxyHost.setFieldValue("proxyHost");
@@ -75,7 +75,7 @@ public class ConfigActionTestIT {
         encryptionPassword.setFieldValue("pants");
         ConfigurationFieldModel encryptionSalt = ConfigurationFieldModel.createSensitive(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT);
         encryptionSalt.setFieldValue("salty pants");
-        ConfigurationModel configurationModel = configurationAccessor.createConfiguration(settingsDescriptorKey, ConfigContextEnum.GLOBAL, Set.of(proxyHost, proxyPort, proxyUsername, proxyPassword, encryptionPassword, encryptionSalt));
+        ConfigurationModel configurationModel = configurationModelConfigurationAccessor.createConfiguration(settingsDescriptorKey, ConfigContextEnum.GLOBAL, Set.of(proxyHost, proxyPort, proxyUsername, proxyPassword, encryptionPassword, encryptionSalt));
 
         FieldValueModel proxyHostFieldValue = new FieldValueModel(Set.of("proxyHost"), true);
         FieldValueModel proxyPortFieldValue = new FieldValueModel(Set.of("80"), true);

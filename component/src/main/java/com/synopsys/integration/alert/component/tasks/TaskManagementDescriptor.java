@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.ComponentDescriptor;
-import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
 
 @Component
 public class TaskManagementDescriptor extends ComponentDescriptor {
@@ -28,7 +28,7 @@ public class TaskManagementDescriptor extends ComponentDescriptor {
     }
 
     @Override
-    public Optional<GlobalConfigurationValidator> getGlobalValidator() {
+    public Optional<GlobalConfigurationFieldModelValidator> getGlobalValidator() {
         return Optional.empty();
     }
 

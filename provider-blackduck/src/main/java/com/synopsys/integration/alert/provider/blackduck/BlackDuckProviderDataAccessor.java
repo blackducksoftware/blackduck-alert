@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
@@ -60,13 +60,13 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
     private static final int PROJECT_DESCRIPTION_MAX_CHARS = 256;
 
     private final IntLogger logger = new Slf4jIntLogger(LoggerFactory.getLogger(getClass()));
-    private final ConfigurationAccessor configurationAccessor;
+    private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     private final BlackDuckPropertiesFactory blackDuckPropertiesFactory;
     private final BlackDuckJsonTransformer blackDuckJsonTransformer;
 
     @Autowired
-    public BlackDuckProviderDataAccessor(ConfigurationAccessor configurationAccessor, BlackDuckPropertiesFactory blackDuckPropertiesFactory, BlackDuckJsonTransformer blackDuckJsonTransformer) {
-        this.configurationAccessor = configurationAccessor;
+    public BlackDuckProviderDataAccessor(ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor, BlackDuckPropertiesFactory blackDuckPropertiesFactory, BlackDuckJsonTransformer blackDuckJsonTransformer) {
+        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
         this.blackDuckPropertiesFactory = blackDuckPropertiesFactory;
         this.blackDuckJsonTransformer = blackDuckJsonTransformer;
     }
@@ -74,7 +74,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
     @Override
     public Optional<ProviderProject> getProjectByHref(Long providerConfigId, String projectHref) {
         try {
-            Optional<ConfigurationModel> providerConfigOptional = configurationAccessor.getConfigurationById(providerConfigId);
+            Optional<ConfigurationModel> providerConfigOptional = configurationModelConfigurationAccessor.getConfigurationById(providerConfigId);
             if (providerConfigOptional.isPresent()) {
                 BlackDuckServicesFactory blackDuckServicesFactory = createBlackDuckServicesFactory(providerConfigOptional.get());
                 BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
@@ -91,7 +91,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
     @Override
     public List<ProviderProject> getProjectsByProviderConfigName(String providerConfigName) {
         try {
-            Optional<ConfigurationModel> providerConfigOptional = configurationAccessor.getProviderConfigurationByName(providerConfigName);
+            Optional<ConfigurationModel> providerConfigOptional = configurationModelConfigurationAccessor.getProviderConfigurationByName(providerConfigName);
             if (providerConfigOptional.isPresent()) {
                 return getProjectsForProvider(providerConfigOptional.get());
             }
@@ -103,14 +103,14 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
 
     @Override
     public List<ProviderProject> getProjectsByProviderConfigId(Long providerConfigId) {
-        return configurationAccessor.getConfigurationById(providerConfigId)
+        return configurationModelConfigurationAccessor.getConfigurationById(providerConfigId)
             .flatMap(providerConfig -> retrieveOptionalProjectData(() -> getProjectsForProvider(providerConfig)))
             .orElse(List.of());
     }
 
     @Override
     public AlertPagedModel<ProviderProject> getProjectsByProviderConfigId(Long providerConfigId, int pageNumber, int pageSize, String searchTerm) {
-        return configurationAccessor.getConfigurationById(providerConfigId)
+        return configurationModelConfigurationAccessor.getConfigurationById(providerConfigId)
             .flatMap(providerConfig -> retrieveOptionalProjectData(() -> retrieveProjectsForProvider(providerConfig, pageNumber, pageSize, searchTerm)))
             .orElse(new AlertPagedModel<>(0, pageNumber, pageSize, List.of()));
     }
@@ -122,7 +122,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
 
     @Override
     public Set<String> getEmailAddressesForProjectHref(Long providerConfigId, String projectHref) {
-        Optional<ConfigurationModel> providerConfigOptional = configurationAccessor.getConfigurationById(providerConfigId);
+        Optional<ConfigurationModel> providerConfigOptional = configurationModelConfigurationAccessor.getConfigurationById(providerConfigId);
         if (providerConfigOptional.isPresent()) {
             try {
                 BlackDuckServicesFactory blackDuckServicesFactory = createBlackDuckServicesFactory(providerConfigOptional.get());
@@ -139,7 +139,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
     @Override
     public ProviderUserModel getProviderConfigUserById(Long providerConfigId) throws AlertConfigurationException {
         try {
-            Optional<ConfigurationModel> providerConfigOptional = configurationAccessor.getConfigurationById(providerConfigId);
+            Optional<ConfigurationModel> providerConfigOptional = configurationModelConfigurationAccessor.getConfigurationById(providerConfigId);
             if (providerConfigOptional.isPresent()) {
                 BlackDuckServicesFactory blackDuckServicesFactory = createBlackDuckServicesFactory(providerConfigOptional.get());
                 UserService userService = blackDuckServicesFactory.createUserService();
@@ -159,7 +159,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
             return List.of();
         }
 
-        Optional<ConfigurationModel> providerConfigOptional = configurationAccessor.getConfigurationById(providerConfigId);
+        Optional<ConfigurationModel> providerConfigOptional = configurationModelConfigurationAccessor.getConfigurationById(providerConfigId);
         if (providerConfigOptional.isPresent()) {
             try {
                 return getEmailAddressesByProvider(providerConfigOptional.get());
@@ -172,7 +172,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
 
     @Override
     public AlertPagedModel<ProviderUserModel> getUsersByProviderConfigId(Long providerConfigId, int pageNumber, int pageSize, String searchTerm) {
-        return configurationAccessor.getConfigurationById(providerConfigId)
+        return configurationModelConfigurationAccessor.getConfigurationById(providerConfigId)
             .flatMap(providerConfig -> retrieveOptionalProjectData(() -> retrieveUsersForProvider(providerConfig, pageNumber, pageSize, searchTerm)))
             .orElse(new AlertPagedModel<>(0, pageNumber, pageSize, List.of()));
     }
@@ -183,7 +183,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
             return List.of();
         }
         try {
-            Optional<ConfigurationModel> providerConfigOptional = configurationAccessor.getProviderConfigurationByName(providerConfigName);
+            Optional<ConfigurationModel> providerConfigOptional = configurationModelConfigurationAccessor.getProviderConfigurationByName(providerConfigName);
             if (providerConfigOptional.isPresent()) {
                 return getEmailAddressesByProvider(providerConfigOptional.get());
             }
@@ -195,7 +195,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
 
     @Override
     public Optional<ProviderUserModel> findFirstUserByEmailAddress(Long providerConfigId, String emailAddress) {
-        Optional<ConfigurationModel> providerConfigOptional = configurationAccessor.getConfigurationById(providerConfigId);
+        Optional<ConfigurationModel> providerConfigOptional = configurationModelConfigurationAccessor.getConfigurationById(providerConfigId);
         if (providerConfigOptional.isPresent()) {
             try {
                 BlackDuckServicesFactory blackDuckServicesFactory = createBlackDuckServicesFactory(providerConfigOptional.get());

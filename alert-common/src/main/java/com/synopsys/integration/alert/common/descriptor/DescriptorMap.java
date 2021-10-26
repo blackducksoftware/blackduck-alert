@@ -42,6 +42,10 @@ public class DescriptorMap {
         return Optional.ofNullable(keyToDescriptor.get(key));
     }
 
+    public Set<DescriptorKey> getDescriptorKeys() {
+        return keyToDescriptor.keySet();
+    }
+
     public Set<Descriptor> getDescriptorByType(DescriptorType descriptorType) {
         return typeToDescriptor.get(descriptorType);
     }

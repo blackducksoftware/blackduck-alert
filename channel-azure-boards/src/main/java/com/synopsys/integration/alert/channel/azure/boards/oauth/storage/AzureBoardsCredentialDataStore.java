@@ -18,10 +18,10 @@ import com.google.api.client.auth.oauth2.StoredCredential;
 import com.google.api.client.util.store.AbstractDataStore;
 import com.google.api.client.util.store.DataStore;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
@@ -33,16 +33,16 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
  * this implementation will have to be updated to not be specific to Azure Boards.
  */
 public class AzureBoardsCredentialDataStore extends AbstractDataStore<StoredCredential> {
-    private final ConfigurationAccessor configurationAccessor;
+    private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
 
     /**
      * @param dataStoreFactory      data store factory
      * @param id                    data store ID
-     * @param configurationAccessor Alert interface to read/write to descriptor configurations
+     * @param configurationModelConfigurationAccessor Alert interface to read/write to descriptor configurations
      */
-    protected AzureBoardsCredentialDataStore(AzureBoardsCredentialDataStoreFactory dataStoreFactory, String id, ConfigurationAccessor configurationAccessor) {
+    protected AzureBoardsCredentialDataStore(AzureBoardsCredentialDataStoreFactory dataStoreFactory, String id, ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor) {
         super(dataStoreFactory, id);
-        this.configurationAccessor = configurationAccessor;
+        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
     }
 
     @Override
@@ -83,7 +83,7 @@ public class AzureBoardsCredentialDataStore extends AbstractDataStore<StoredCred
             setFieldValue(keyToFieldMap, AzureBoardsDescriptor.KEY_TOKEN_EXPIRATION_MILLIS, expTimeMillisString);
 
             try {
-                configurationAccessor.updateConfiguration(defaultConfig.getConfigurationId(), keyToFieldMap.values());
+                configurationModelConfigurationAccessor.updateConfiguration(defaultConfig.getConfigurationId(), keyToFieldMap.values());
             } catch (AlertConfigurationException e) {
                 throw new IOException("Cannot update the Azure Boards global configuration", e);
             }
@@ -109,7 +109,7 @@ public class AzureBoardsCredentialDataStore extends AbstractDataStore<StoredCred
         if (null != key) {
             ConfigurationModel defaultConfig = retrieveConfiguration();
             if (isConfiguredWithUserEmail(defaultConfig, key)) {
-                configurationAccessor.deleteConfiguration(defaultConfig.getConfigurationId());
+                configurationModelConfigurationAccessor.deleteConfiguration(defaultConfig.getConfigurationId());
             }
         }
         return this;
@@ -124,7 +124,7 @@ public class AzureBoardsCredentialDataStore extends AbstractDataStore<StoredCred
     }
 
     private ConfigurationModel retrieveConfiguration() {
-        return configurationAccessor.getConfigurationsByDescriptorKeyAndContext(ChannelKeys.AZURE_BOARDS, ConfigContextEnum.GLOBAL)
+        return configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(ChannelKeys.AZURE_BOARDS, ConfigContextEnum.GLOBAL)
                    .stream()
                    .findFirst()
                    .orElseThrow(() -> new AlertRuntimeException("No Azure Boards global configuration exists. Cannot read data store."));

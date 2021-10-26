@@ -14,10 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.jira.server.validator.JiraServerDistributionConfigurationValidator;
-import com.synopsys.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationValidator;
+import com.synopsys.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationFieldModelValidator;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
-import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
@@ -53,18 +53,18 @@ public class JiraServerDescriptor extends ChannelDescriptor {
     public static final String LABEL_RESOLVE_WORKFLOW_TRANSITION = "Resolve Transition";
     public static final String LABEL_OPEN_WORKFLOW_TRANSITION = "Re-open Transition";
 
-    private final JiraServerGlobalConfigurationValidator jiraServerGlobalValidator;
+    private final JiraServerGlobalConfigurationFieldModelValidator jiraServerGlobalValidator;
     private final JiraServerDistributionConfigurationValidator jiraServerDistributionConfigurationValidator;
 
     @Autowired
-    public JiraServerDescriptor(JiraServerGlobalConfigurationValidator jiraServerGlobalValidator, JiraServerDistributionConfigurationValidator jiraServerDistributionConfigurationValidator) {
+    public JiraServerDescriptor(JiraServerGlobalConfigurationFieldModelValidator jiraServerGlobalValidator, JiraServerDistributionConfigurationValidator jiraServerDistributionConfigurationValidator) {
         super(ChannelKeys.JIRA_SERVER, Set.of(ConfigContextEnum.GLOBAL, ConfigContextEnum.DISTRIBUTION));
         this.jiraServerGlobalValidator = jiraServerGlobalValidator;
         this.jiraServerDistributionConfigurationValidator = jiraServerDistributionConfigurationValidator;
     }
 
     @Override
-    public Optional<GlobalConfigurationValidator> getGlobalValidator() {
+    public Optional<GlobalConfigurationFieldModelValidator> getGlobalValidator() {
         return Optional.of(jiraServerGlobalValidator);
     }
 

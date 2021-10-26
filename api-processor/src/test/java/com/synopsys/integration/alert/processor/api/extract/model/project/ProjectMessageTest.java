@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.processor.api.extract.model.project;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
@@ -138,6 +139,30 @@ public class ProjectMessageTest {
         ProjectMessage projectMessage2 = ProjectMessage.projectVersionStatusInfo(providerDetails, commonProject, commonProjectVersion, commonOperation);
 
         assertCombined(projectMessage1, projectMessage2);
+    }
+
+    @Test
+    public void hasBomComponentsTest() {
+        LinkableItem provider = new LinkableItem("Provider", "Provider Config Name");
+        ProviderDetails providerDetails = new ProviderDetails(1L, provider);
+        LinkableItem commonProject = new LinkableItem("Project", "Project 1");
+        LinkableItem commonProjectVersion = new LinkableItem("Project Version", "Project Version 1");
+        BomComponentDetails bomComponentDetails = new BomComponentDetails(
+            new LinkableItem("Component", "The component"),
+            commonProjectVersion,
+            ComponentVulnerabilities.none(),
+            List.of(),
+            List.of(),
+            new LinkableItem("License", "The software license name", "https://license-url"),
+            "The usage of the component",
+            ComponentUpgradeGuidance.none(),
+            List.of(),
+            "https://blackduck-issues-url"
+        );
+        ProjectMessage projectMessage = ProjectMessage.componentConcern(providerDetails, commonProject, commonProjectVersion, List.of(bomComponentDetails));
+        assertTrue(projectMessage.hasBomComponents());
+        assertEquals(1, projectMessage.getBomComponents().size());
+        assertEquals(bomComponentDetails, projectMessage.getBomComponents().get(0));
     }
 
     // Assertions

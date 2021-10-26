@@ -7,47 +7,43 @@
  */
 package com.synopsys.integration.alert.channel.email.validator;
 
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
-import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatusMessages;
+import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
+import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
 @Component
-public class EmailGlobalConfigurationValidator implements GlobalConfigurationValidator {
-    @Override
-    public Set<AlertFieldStatus> validate(FieldModel fieldModel) {
-        ConfigurationFieldValidator configurationFieldValidator = ConfigurationFieldValidator.fromFieldModel(fieldModel);
-        configurationFieldValidator.validateRequiredFieldIsNotBlank(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey());
-        configurationFieldValidator.validateRequiredFieldIsNotBlank(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey());
+public class EmailGlobalConfigurationValidator {
+    public static final String REQUIRED_BECAUSE_AUTH = "Field is required to be set because 'auth' is set to 'true'.";
 
-        configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey());
-        configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_CONNECTION_TIMEOUT_KEY.getPropertyKey());
-        configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_TIMEOUT_KEY.getPropertyKey());
-        configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_WRITETIMEOUT_KEY.getPropertyKey());
-        configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_LOCALHOST_PORT_KEY.getPropertyKey());
-        configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_AUTH_NTLM_FLAGS_KEY.getPropertyKey());
-        configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_PROXY_PORT_KEY.getPropertyKey());
-        configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_SOCKS_PORT_KEY.getPropertyKey());
-
-        boolean useAuth = fieldModel.getFieldValueModel(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey())
-                              .flatMap(FieldValueModel::getValue)
-                              .map(Boolean::valueOf)
-                              .orElse(false);
-
-        if (useAuth) {
-            configurationFieldValidator.validateRequiredFieldsAreNotBlank(List.of(
-                EmailPropertyKeys.JAVAMAIL_USER_KEY.getPropertyKey(),
-                EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey()
-            ));
+    public ValidationResponseModel validate(EmailGlobalConfigModel model) {
+        Set<AlertFieldStatus> statuses = new HashSet<>();
+        if (model.getHost().filter(StringUtils::isNotBlank).isEmpty()) {
+            statuses.add(AlertFieldStatus.error("host", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
+        }
+        if (model.getFrom().filter(StringUtils::isNotBlank).isEmpty()) {
+            statuses.add(AlertFieldStatus.error("from", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
         }
 
-        return configurationFieldValidator.getValidationResults();
+        if (model.getAuth().filter(Boolean.TRUE::equals).isPresent()) {
+            if (model.getUsername().filter(StringUtils::isNotBlank).isEmpty()) {
+                statuses.add(AlertFieldStatus.error("user", REQUIRED_BECAUSE_AUTH));
+            }
+            if (model.getPassword().filter(StringUtils::isNotBlank).isEmpty()) {
+                statuses.add(AlertFieldStatus.error("password", REQUIRED_BECAUSE_AUTH));
+            }
+        }
+
+        if (!statuses.isEmpty()) {
+            return ValidationResponseModel.fromStatusCollection(statuses);
+        }
+
+        return ValidationResponseModel.success();
     }
 }

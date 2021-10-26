@@ -7,11 +7,13 @@
  */
 package com.synopsys.integration.alert.processor.api.summarize;
 
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
@@ -109,8 +111,17 @@ public class ProjectMessageSummarizer {
                 groupedConcernCounts.put(concernKey, currentCount + 1);
             }
         }
+        Map<ComponentConcernSummaryGrouping, Integer> sortedGroupedConcernCountsBySeverity = groupedConcernCounts
+                                                                                                 .entrySet()
+                                                                                                 .stream()
+                                                                                                 .sorted(Map.Entry.comparingByKey(ComponentConcernSummaryGrouping.getComparator()))
+                                                                                                 .collect(Collectors.toMap(
+                                                                                                     Map.Entry::getKey,
+                                                                                                     Map.Entry::getValue,
+                                                                                                     (old, newIgnored) -> old, // Merge operation is equivalent to Map::putIfAbsent
+                                                                                                     LinkedHashMap::new));
 
-        for (Map.Entry<ComponentConcernSummaryGrouping, Integer> groupedConcernCount : groupedConcernCounts.entrySet()) {
+        for (Map.Entry<ComponentConcernSummaryGrouping, Integer> groupedConcernCount : sortedGroupedConcernCountsBySeverity.entrySet()) {
             ComponentConcernSummaryGrouping concernGrouping = groupedConcernCount.getKey();
 
             String severityLabel = ComponentConcernType.POLICY.equals(concernGrouping.type) ? concernGrouping.severity.getPolicyLabel() : concernGrouping.severity.getVulnerabilityLabel();
@@ -174,6 +185,11 @@ public class ProjectMessageSummarizer {
             this.severity = severity;
         }
 
+        public static Comparator<ComponentConcernSummaryGrouping> getComparator() {
+            Comparator<ComponentConcernSummaryGrouping> comparatorType = Comparator.comparing(grouping -> grouping.type);
+            Comparator<ComponentConcernSummaryGrouping> comparatorSeverity = Comparator.comparing(grouping -> grouping.severity);
+            return comparatorType.thenComparing(comparatorSeverity);
+        }
     }
 
 }

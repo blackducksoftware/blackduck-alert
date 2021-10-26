@@ -20,7 +20,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.Application;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
-import com.synopsys.integration.alert.common.action.TestAction;
+import com.synopsys.integration.alert.common.action.FieldModelTestAction;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
@@ -81,7 +81,7 @@ public class EmailPerformanceTest {
         Map<String, FieldValueModel> emailGlobalConfigFields = new HashMap<>();
         emailGlobalConfigFields.put(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey(), new FieldValueModel(List.of(EMAIL_SMTP_HOST), true));
         emailGlobalConfigFields.put(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey(), new FieldValueModel(List.of(EMAIL_SMTP_FROM), true));
-        emailGlobalConfigFields.put(TestAction.KEY_DESTINATION_NAME, new FieldValueModel(List.of(EMAIL_RECIPIENT), true));
+        emailGlobalConfigFields.put(FieldModelTestAction.KEY_DESTINATION_NAME, new FieldValueModel(List.of(EMAIL_RECIPIENT), true));
 
         FieldModel emailGlobalConfig = new FieldModel(EMAIL_CHANNEL_KEY, ConfigContextEnum.GLOBAL.name(), emailGlobalConfigFields);
 

@@ -24,11 +24,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -48,18 +48,18 @@ public class AlertStartupInitializer extends StartupComponent {
     private final EnvironmentVariableUtility environmentUtility;
     private final DescriptorMap descriptorMap;
     private final DescriptorAccessor descriptorAccessor;
-    private final ConfigurationAccessor fieldConfigurationAccessor;
+    private final ConfigurationModelConfigurationAccessor fieldConfigurationModelConfigurationAccessor;
     private final ConfigurationFieldModelConverter modelConverter;
     private final FieldModelProcessor fieldModelProcessor;
     private final SettingsUtility settingsUtility;
 
     @Autowired
-    public AlertStartupInitializer(DescriptorMap descriptorMap, EnvironmentVariableUtility environmentUtility, DescriptorAccessor descriptorAccessor, ConfigurationAccessor fieldConfigurationAccessor,
+    public AlertStartupInitializer(DescriptorMap descriptorMap, EnvironmentVariableUtility environmentUtility, DescriptorAccessor descriptorAccessor, ConfigurationModelConfigurationAccessor fieldConfigurationModelConfigurationAccessor,
         ConfigurationFieldModelConverter modelConverter, FieldModelProcessor fieldModelProcessor, SettingsUtility settingsUtility) {
         this.descriptorMap = descriptorMap;
         this.environmentUtility = environmentUtility;
         this.descriptorAccessor = descriptorAccessor;
-        this.fieldConfigurationAccessor = fieldConfigurationAccessor;
+        this.fieldConfigurationModelConfigurationAccessor = fieldConfigurationModelConfigurationAccessor;
         this.modelConverter = modelConverter;
         this.fieldModelProcessor = fieldModelProcessor;
         this.settingsUtility = settingsUtility;
@@ -93,7 +93,7 @@ public class AlertStartupInitializer extends StartupComponent {
                 List<DefinedFieldModel> fieldsForDescriptor = descriptorAccessor.getFieldsForDescriptor(descriptorKey, ConfigContextEnum.GLOBAL).stream()
                                                                   .sorted(Comparator.comparing(DefinedFieldModel::getKey))
                                                                   .collect(Collectors.toList());
-                List<ConfigurationModel> foundConfigurationModels = fieldConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey, ConfigContextEnum.GLOBAL);
+                List<ConfigurationModel> foundConfigurationModels = fieldConfigurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey, ConfigContextEnum.GLOBAL);
 
                 Map<String, ConfigurationFieldModel> existingConfiguredFields = new HashMap<>();
                 foundConfigurationModels.forEach(config -> existingConfiguredFields.putAll(config.getCopyOfKeyToFieldMap()));
@@ -143,7 +143,7 @@ public class AlertStartupInitializer extends StartupComponent {
         if (!optionalFoundModel.isPresent()) {
             logger.info("    Writing initial values from environment.");
             Collection<ConfigurationFieldModel> savedFields = saveAction(descriptorKey, configurationModels);
-            fieldConfigurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.GLOBAL, savedFields);
+            fieldConfigurationModelConfigurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.GLOBAL, savedFields);
         }
     }
 

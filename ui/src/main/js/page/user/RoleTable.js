@@ -4,9 +4,7 @@ import TableDisplay from 'common/table/TableDisplay';
 import TextInput from 'common/input/TextInput';
 import { connect } from 'react-redux';
 import PermissionTable, { PERMISSIONS_TABLE } from 'page/user/PermissionTable';
-import {
-    clearRoleFieldErrors, deleteRole, fetchRoles, saveRole, validateRole
-} from 'store/actions/roles';
+import { clearRoleFieldErrors, deleteRole, fetchRoles, saveRole, validateRole } from 'store/actions/roles';
 
 class RoleTable extends Component {
     constructor(props) {
