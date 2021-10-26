@@ -18,6 +18,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
@@ -25,6 +27,7 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeExc
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.DatabaseModelWrapper;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.configuration.ConfigContextEntity;
@@ -73,14 +76,17 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
     }
 
     @Override
-    public List<DatabaseModelWrapper<EmailGlobalConfigModel>> getAllConfigurations() {
+    public AlertPagedModel<DatabaseModelWrapper<EmailGlobalConfigModel>> getConfigurationPage(int page, int size) {
         Long contextId = getConfigContextIdOrThrowException();
         Long descriptorId = getDescriptorIdOrThrowException();
 
-        return descriptorConfigsRepository.findByDescriptorIdAndContextId(descriptorId, contextId)
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<DescriptorConfigEntity> resultPage = descriptorConfigsRepository.findByDescriptorIdAndContextId(descriptorId, contextId, pageRequest);
+        List<DatabaseModelWrapper<EmailGlobalConfigModel>> pageContent = resultPage.getContent()
             .stream()
             .map(this::createConfigModel)
             .collect(Collectors.toList());
+        return new AlertPagedModel<>(resultPage.getTotalPages(), resultPage.getNumber(), resultPage.getSize(), pageContent);
     }
 
     @Override
