@@ -9,6 +9,8 @@ package com.synopsys.integration.alert.database.configuration.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,6 +23,8 @@ public interface DescriptorConfigRepository extends JpaRepository<DescriptorConf
     List<DescriptorConfigEntity> findByDescriptorId(Long descriptorId);
 
     List<DescriptorConfigEntity> findByDescriptorIdAndContextId(Long descriptorId, Long contextId);
+
+    Page<DescriptorConfigEntity> findByDescriptorIdAndContextId(Long descriptorId, Long contextId, PageRequest pageRequest);
 
     @Query("SELECT config FROM DescriptorConfigEntity config"
                + " LEFT JOIN config.registeredDescriptorEntity descriptor"

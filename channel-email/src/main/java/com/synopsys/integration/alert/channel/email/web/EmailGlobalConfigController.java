@@ -20,13 +20,16 @@ import com.synopsys.integration.alert.channel.email.action.EmailGlobalValidation
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.api.BaseResourceController;
+import com.synopsys.integration.alert.common.rest.api.ReadAllController;
+import com.synopsys.integration.alert.common.rest.api.ReadPageController;
 import com.synopsys.integration.alert.common.rest.api.ValidateController;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
 @RestController
 @RequestMapping(AlertRestConstants.EMAIL_CONFIGURATION_PATH)
-public class EmailGlobalConfigController implements BaseResourceController<EmailGlobalConfigModel>, ValidateController<EmailGlobalConfigModel> {
+public class EmailGlobalConfigController implements BaseResourceController<EmailGlobalConfigModel>, ValidateController<EmailGlobalConfigModel>, ReadPageController<AlertPagedModel<EmailGlobalConfigModel>> {
     private final EmailGlobalCrudActions configActions;
     private final EmailGlobalValidationAction validationAction;
     private final EmailGlobalTestAction testAction;
@@ -41,6 +44,11 @@ public class EmailGlobalConfigController implements BaseResourceController<Email
     @Override
     public EmailGlobalConfigModel getOne(Long id) {
         return ResponseFactory.createContentResponseFromAction(configActions.getOne(id));
+    }
+
+    @Override
+    public AlertPagedModel<EmailGlobalConfigModel> getPage(final Integer pageNumber, final Integer pageSize, final String searchTerm) {
+        return ResponseFactory.createContentResponseFromAction(configActions.getPaged(pageNumber, pageSize));
     }
 
     @Override
