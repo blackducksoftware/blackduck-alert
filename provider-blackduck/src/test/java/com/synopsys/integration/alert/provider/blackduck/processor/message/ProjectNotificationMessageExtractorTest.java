@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
@@ -14,6 +15,7 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Messag
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectOperation;
 import com.synopsys.integration.alert.processor.api.filter.NotificationContentWrapper;
+import com.synopsys.integration.alert.provider.blackduck.processor.NotificationExtractorBlackDuckServicesFactoryCache;
 import com.synopsys.integration.blackduck.api.manual.component.LicenseLimitNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.component.ProjectNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.OperationType;
@@ -26,10 +28,11 @@ public class ProjectNotificationMessageExtractorTest {
 
     @Test
     public void extractTest() {
+        NotificationExtractorBlackDuckServicesFactoryCache servicesFactoryCache = Mockito.mock(NotificationExtractorBlackDuckServicesFactoryCache.class);
         ProjectNotificationContent projectNotificationContent = createProjectNotificationContent();
         NotificationContentWrapper notificationContentWrapper = createNotificationContentWrapper(projectNotificationContent);
 
-        ProjectNotificationMessageExtractor extractor = new ProjectNotificationMessageExtractor(providerKey);
+        ProjectNotificationMessageExtractor extractor = new ProjectNotificationMessageExtractor(providerKey, servicesFactoryCache);
         ProviderMessageHolder providerMessageHolder = extractor.extract(notificationContentWrapper, projectNotificationContent);
 
         assertEquals(1, providerMessageHolder.getProjectMessages().size());

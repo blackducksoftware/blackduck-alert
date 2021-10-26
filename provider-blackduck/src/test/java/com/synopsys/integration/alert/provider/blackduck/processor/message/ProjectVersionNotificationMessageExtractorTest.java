@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
@@ -14,6 +15,7 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Messag
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectOperation;
 import com.synopsys.integration.alert.processor.api.filter.NotificationContentWrapper;
+import com.synopsys.integration.alert.provider.blackduck.processor.NotificationExtractorBlackDuckServicesFactoryCache;
 import com.synopsys.integration.blackduck.api.manual.component.LicenseLimitNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.component.ProjectVersionNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.OperationType;
@@ -28,10 +30,11 @@ public class ProjectVersionNotificationMessageExtractorTest {
 
     @Test
     public void extractTest() {
+        NotificationExtractorBlackDuckServicesFactoryCache servicesFactoryCache = Mockito.mock(NotificationExtractorBlackDuckServicesFactoryCache.class);
         ProjectVersionNotificationContent projectVersionNotificationContent = createProjectVersionNotificationContent();
         NotificationContentWrapper notificationContentWrapper = createNotificationContentWrapper(projectVersionNotificationContent);
 
-        ProjectVersionNotificationMessageExtractor extractor = new ProjectVersionNotificationMessageExtractor(providerKey);
+        ProjectVersionNotificationMessageExtractor extractor = new ProjectVersionNotificationMessageExtractor(providerKey, servicesFactoryCache);
         ProviderMessageHolder providerMessageHolder = extractor.extract(notificationContentWrapper, projectVersionNotificationContent);
 
         assertEquals(1, providerMessageHolder.getProjectMessages().size());
