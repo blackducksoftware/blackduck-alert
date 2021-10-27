@@ -125,7 +125,7 @@ public class ComponentUnknownVersionExtractorTest {
         content.setProjectVersionName(projectVersionName);
         content.setProjectVersion(projectVersion);
         content.setCriticalVulnerabilityCount(1);
-        content.setCriticalVulnerabilityName("critical vulnerability name");
+        content.setCriticalVulnerabilityVersionName("critical vulnerability name");
         content.setCriticalVulnerabilityVersion("http://criticalVulnVersionURL");
         content.setHighVulnerabilityCount(2);
         content.setHighVulnerabilityVersionName("critical vulnerability name");

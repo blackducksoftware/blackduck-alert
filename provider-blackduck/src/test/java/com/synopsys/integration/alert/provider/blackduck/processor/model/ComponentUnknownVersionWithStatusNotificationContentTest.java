@@ -20,13 +20,13 @@ public class ComponentUnknownVersionWithStatusNotificationContentTest {
         String criticalVersionName = "Critical Version Name";
         String criticalVersionUrl = "http://criticalUrl";
         int highCount = 2;
-        String highVersionName = "Critical Version Name";
+        String highVersionName = "High Version Name";
         String hightVersionUrl = "http://highUrl";
         int mediumCount = 3;
-        String mediumVersionName = "Critical Version Name";
+        String mediumVersionName = "Medium Version Name";
         String mediumVersionUrl = "http://mediumUrl";
         int lowCount = 4;
-        String lowVersionName = "Critical Version Name";
+        String lowVersionName = "Low Version Name";
         String lowVersionUrl = "http://lowUrl";
 
         ComponentUnknownVersionWithStatusNotificationContent model = new ComponentUnknownVersionWithStatusNotificationContent(PROJECT_NAME,
@@ -36,17 +36,17 @@ public class ComponentUnknownVersionWithStatusNotificationContentTest {
             bomComponent,
             componentUrl,
             criticalCount,
-            criticalVersionName,
             criticalVersionUrl,
+            criticalVersionName,
             highCount,
-            highVersionName,
             hightVersionUrl,
+            highVersionName,
             mediumCount,
-            mediumVersionName,
             mediumVersionUrl,
+            mediumVersionName,
             lowCount,
-            lowVersionName,
             lowVersionUrl,
+            lowVersionName,
             ComponentUnknownVersionStatus.FOUND);
 
         assertEquals(PROJECT_NAME, model.getProjectName());
@@ -56,7 +56,7 @@ public class ComponentUnknownVersionWithStatusNotificationContentTest {
         assertEquals(componentUrl, model.getComponent());
         assertEquals(bomComponent, model.getBomComponent());
         assertEquals(criticalCount, model.getCriticalVulnerabilityCount());
-        assertEquals(criticalVersionName, model.getCriticalVulnerabilityName());
+        assertEquals(criticalVersionName, model.getCriticalVulnerabilityVersionName());
         assertEquals(criticalVersionUrl, model.getCriticalVulnerabilityVersion());
         assertEquals(highCount, model.getHighVulnerabilityCount());
         assertEquals(highVersionName, model.getHighVulnerabilityVersionName());
@@ -67,7 +67,7 @@ public class ComponentUnknownVersionWithStatusNotificationContentTest {
         assertEquals(lowCount, model.getLowVulnerabilityCount());
         assertEquals(lowVersionName, model.getLowVulnerabilityVersionName());
         assertEquals(lowVersionUrl, model.getLowVulnerabilityVersion());
-        assertEquals(ComponentUnknownVersionStatus.FOUND, model.getProjectName());
+        assertEquals(ComponentUnknownVersionStatus.FOUND, model.getStatus());
     }
 
 }
