@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import org.slf4j.LoggerFactory;
 
@@ -64,31 +66,45 @@ public class BlackDuckProviderService {
         this.blackDuckServicesFactory = setupBlackDuckServicesFactory();
     }
 
+    public static final Supplier<ExternalId> getDefaultExternalIdSupplier() {
+        return () -> {
+            ExternalId commonsFileUploadExternalId = new ExternalId(Forge.MAVEN);
+            commonsFileUploadExternalId.setGroup("commons-fileupload");
+            commonsFileUploadExternalId.setName("commons-fileupload");
+            commonsFileUploadExternalId.setVersion("1.2.1");
+            return commonsFileUploadExternalId;
+        };
+    }
+
+    public static final Predicate<ProjectVersionComponentVersionView> getDefaultBomComponentFilter() {
+        return (component) -> component.getComponentName().equals("Apache Commons FileUpload") && component.getComponentVersionName().equals("1.2.1");
+    }
+
     public void triggerBlackDuckNotification() throws IntegrationException {
+        triggerBlackDuckNotification(getDefaultExternalIdSupplier(), getDefaultBomComponentFilter());
+    }
+
+    public void triggerBlackDuckNotification(Supplier<ExternalId> externalIdSupplier, Predicate<ProjectVersionComponentVersionView> componentFilter) throws IntegrationException {
         setupBlackDuckServicesFactory();
         BlackDuckApiClient blackDuckService = blackDuckServicesFactory.getBlackDuckApiClient();
         ProjectService projectService = blackDuckServicesFactory.createProjectService();
         ProjectVersionWrapper projectVersion = projectService.getProjectVersion(blackDuckProjectName, blackDuckProjectVersion)
-                                                   .orElseThrow(() -> new IntegrationException(String.format("Could not find the Black Duck project '%s' version '%s'", blackDuckProjectName, blackDuckProjectVersion)));
+            .orElseThrow(() -> new IntegrationException(String.format("Could not find the Black Duck project '%s' version '%s'", blackDuckProjectName, blackDuckProjectVersion)));
 
         ProjectVersionView projectVersionView = projectVersion.getProjectVersionView();
         List<ProjectVersionComponentVersionView> bomComponents = blackDuckService.getAllResponses(projectVersionView.metaComponentsLink());
         Optional<ProjectVersionComponentVersionView> apacheCommonsFileUpload = bomComponents.stream()
-                                                                                   .filter(component -> component.getComponentName().equals("Apache Commons FileUpload"))
-                                                                                   .filter(component -> component.getComponentVersionName().equals("1.2.1"))
-                                                                                   .findFirst();
+            .filter(componentFilter)
+            .findFirst();
         if (apacheCommonsFileUpload.isPresent()) {
             blackDuckService.delete(apacheCommonsFileUpload.get());
             //Thread.currentThread().wait(1000);
         }
 
-        ExternalId commonsFileUploadExternalId = new ExternalId(Forge.MAVEN);
-        commonsFileUploadExternalId.setGroup("commons-fileupload");
-        commonsFileUploadExternalId.setName("commons-fileupload");
-        commonsFileUploadExternalId.setVersion("1.2.1");
+        ExternalId externalId = externalIdSupplier.get();
 
         ProjectBomService projectBomService = blackDuckServicesFactory.createProjectBomService();
-        projectBomService.addComponentToProjectVersion(commonsFileUploadExternalId, projectVersionView);
+        projectBomService.addComponentToProjectVersion(externalId, projectVersionView);
     }
 
     public String setupBlackDuck() {
