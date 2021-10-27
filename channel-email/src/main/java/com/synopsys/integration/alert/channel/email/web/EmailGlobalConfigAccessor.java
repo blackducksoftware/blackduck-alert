@@ -18,6 +18,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
@@ -25,6 +27,7 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeExc
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.DatabaseModelWrapper;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.configuration.ConfigContextEntity;
@@ -73,20 +76,23 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
     }
 
     @Override
-    public List<DatabaseModelWrapper<EmailGlobalConfigModel>> getAllConfigurations() {
-        Long contextId = getConfigContextIdOrThrowException(ConfigContextEnum.GLOBAL);
-        Long descriptorId = getDescriptorIdOrThrowException(ChannelKeys.EMAIL.getUniversalKey());
+    public AlertPagedModel<DatabaseModelWrapper<EmailGlobalConfigModel>> getConfigurationPage(int page, int size) {
+        Long contextId = getConfigContextIdOrThrowException();
+        Long descriptorId = getDescriptorIdOrThrowException();
 
-        return descriptorConfigsRepository.findByDescriptorIdAndContextId(descriptorId, contextId)
-                   .stream()
-                   .map(this::createConfigModel)
-                   .collect(Collectors.toList());
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<DescriptorConfigEntity> resultPage = descriptorConfigsRepository.findByDescriptorIdAndContextId(descriptorId, contextId, pageRequest);
+        List<DatabaseModelWrapper<EmailGlobalConfigModel>> pageContent = resultPage.getContent()
+            .stream()
+            .map(this::createConfigModel)
+            .collect(Collectors.toList());
+        return new AlertPagedModel<>(resultPage.getTotalPages(), resultPage.getNumber(), resultPage.getSize(), pageContent);
     }
 
     @Override
     public DatabaseModelWrapper<EmailGlobalConfigModel> createConfiguration(EmailGlobalConfigModel configuration) {
-        Long contextId = getConfigContextIdOrThrowException(ConfigContextEnum.GLOBAL);
-        Long descriptorId = getDescriptorIdOrThrowException(ChannelKeys.EMAIL.getUniversalKey());
+        Long contextId = getConfigContextIdOrThrowException();
+        Long descriptorId = getDescriptorIdOrThrowException();
         OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
         DescriptorConfigEntity descriptorConfigToSave = new DescriptorConfigEntity(descriptorId, contextId, currentTime, currentTime);
         DescriptorConfigEntity savedDescriptorConfig = descriptorConfigsRepository.save(descriptorConfigToSave);
@@ -134,7 +140,6 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
         );
     }
 
-
     private DatabaseModelWrapper<EmailGlobalConfigModel> createConfigModel(Long descriptorId, Long configId, OffsetDateTime createdAt, OffsetDateTime lastUpdated) {
         String createdAtFormatted = DateUtils.formatDate(createdAt, DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
         String lastUpdatedFormatted = DateUtils.formatDate(lastUpdated, DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
@@ -166,18 +171,21 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
         }
         newModel.setAdditionalJavaMailProperties(additionalJavamailProperties);
         newModel.setId(String.valueOf(configId));
+        newModel.setCreatedAt(createdAtFormatted);
+        newModel.setLastUpdated(lastUpdatedFormatted);
 
         return new DatabaseModelWrapper<>(descriptorId, configId, createdAtFormatted, lastUpdatedFormatted, newModel);
     }
 
-    private Long getDescriptorIdOrThrowException(String descriptorName) {
+    private Long getDescriptorIdOrThrowException() {
+        String descriptorName = ChannelKeys.EMAIL.getUniversalKey();
         return registeredDescriptorRepository.findFirstByName(descriptorName)
             .map(RegisteredDescriptorEntity::getId)
             .orElseThrow(() -> new AlertRuntimeException(String.format("No descriptor with name '%s' exists", descriptorName)));
     }
 
-    private Long getConfigContextIdOrThrowException(ConfigContextEnum context) {
-        String contextName = context.name();
+    private Long getConfigContextIdOrThrowException() {
+        String contextName = ConfigContextEnum.GLOBAL.name();
         return configContextRepository.findFirstByContext(contextName)
             .map(ConfigContextEntity::getId)
             .orElseThrow(() -> new AlertRuntimeException(String.format("No context with name '%s' exists", contextName)));

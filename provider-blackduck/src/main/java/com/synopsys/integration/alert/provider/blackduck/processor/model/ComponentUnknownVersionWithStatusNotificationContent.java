@@ -15,7 +15,7 @@ public class ComponentUnknownVersionWithStatusNotificationContent extends Abstra
     private String component;
     private int criticalVulnerabilityCount;
     private String criticalVulnerabilityVersion;
-    private String criticalVulnerabilityName;
+    private String criticalVulnerabilityVersionName;
     private int highVulnerabilityCount;
     private String highVulnerabilityVersion;
     private String highVulnerabilityVersionName;
@@ -28,10 +28,10 @@ public class ComponentUnknownVersionWithStatusNotificationContent extends Abstra
     private ComponentUnknownVersionStatus status;
 
     public ComponentUnknownVersionWithStatusNotificationContent(String projectName, String projectVersionName, String projectVersionUrl, String componentName, String bomComponent, String component,
-        int criticalVulnerabilityCount, String criticalVulnerabilityVersion, String criticalVulnerabilityName,
-        int highVulnerabilityCount, String highVulnerabilityVersion, String highVulnerabilityVersionName,
-        int mediumVulnerabilityCount, String mediumVulnerabilityVersion, String mediumVulnerabilityVersionName,
-        int lowVulnerabilityCount, String lowVulnerabilityVersion, String lowVulnerabilityVersionName,
+        int criticalVulnerabilityCount,
+        String criticalVulnerabilityVersion, String criticalVulnerabilityVersionName, int highVulnerabilityCount, String highVulnerabilityVersion, String highVulnerabilityVersionName,
+        int mediumVulnerabilityCount,
+        String mediumVulnerabilityVersion, String mediumVulnerabilityVersionName, int lowVulnerabilityCount, String lowVulnerabilityVersion, String lowVulnerabilityVersionName,
         ComponentUnknownVersionStatus status) {
         super(projectName, projectVersionName, projectVersionUrl);
         this.componentName = componentName;
@@ -39,7 +39,7 @@ public class ComponentUnknownVersionWithStatusNotificationContent extends Abstra
         this.component = component;
         this.criticalVulnerabilityCount = criticalVulnerabilityCount;
         this.criticalVulnerabilityVersion = criticalVulnerabilityVersion;
-        this.criticalVulnerabilityName = criticalVulnerabilityName;
+        this.criticalVulnerabilityVersionName = criticalVulnerabilityVersionName;
         this.highVulnerabilityCount = highVulnerabilityCount;
         this.highVulnerabilityVersion = highVulnerabilityVersion;
         this.highVulnerabilityVersionName = highVulnerabilityVersionName;
@@ -72,8 +72,8 @@ public class ComponentUnknownVersionWithStatusNotificationContent extends Abstra
         return criticalVulnerabilityVersion;
     }
 
-    public String getCriticalVulnerabilityName() {
-        return criticalVulnerabilityName;
+    public String getCriticalVulnerabilityVersionName() {
+        return criticalVulnerabilityVersionName;
     }
 
     public int getHighVulnerabilityCount() {

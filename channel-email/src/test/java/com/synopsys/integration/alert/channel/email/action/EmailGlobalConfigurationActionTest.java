@@ -43,7 +43,7 @@ public class EmailGlobalConfigurationActionTest {
         DatabaseModelWrapper<EmailGlobalConfigModel> modelWrapper = new DatabaseModelWrapper<>(1L, 1L, "now", "then", model);
         Mockito.when(emailGlobalConfigAccessor.getConfiguration(Mockito.anyLong())).thenReturn(Optional.of(modelWrapper));
 
-        EmailGlobalConfigActions configActions = new EmailGlobalConfigActions(authorizationManager, emailGlobalConfigAccessor, validator);
+        EmailGlobalCrudActions configActions = new EmailGlobalCrudActions(authorizationManager, emailGlobalConfigAccessor, validator);
         ActionResponse<EmailGlobalConfigModel> response = configActions.getOne(1L);
         assertEquals(HttpStatus.OK, response.getHttpStatus());
         assertTrue(response.hasContent());
@@ -68,7 +68,7 @@ public class EmailGlobalConfigurationActionTest {
         DatabaseModelWrapper<EmailGlobalConfigModel> modelWrapper = new DatabaseModelWrapper<>(1L, 1L, "now", "then", model);
         Mockito.when(emailGlobalConfigAccessor.createConfiguration(Mockito.eq(model))).thenReturn(modelWrapper);
 
-        EmailGlobalConfigActions configActions = new EmailGlobalConfigActions(authorizationManager, emailGlobalConfigAccessor, validator);
+        EmailGlobalCrudActions configActions = new EmailGlobalCrudActions(authorizationManager, emailGlobalConfigAccessor, validator);
         ActionResponse<EmailGlobalConfigModel> response = configActions.create(model);
         assertEquals(HttpStatus.OK, response.getHttpStatus());
         assertTrue(response.hasContent());
@@ -94,7 +94,7 @@ public class EmailGlobalConfigurationActionTest {
         Mockito.when(emailGlobalConfigAccessor.getConfiguration(Mockito.anyLong())).thenReturn(Optional.of(modelWrapper));
         Mockito.when(emailGlobalConfigAccessor.updateConfiguration(Mockito.anyLong(), Mockito.eq(model))).thenReturn(modelWrapper);
 
-        EmailGlobalConfigActions configActions = new EmailGlobalConfigActions(authorizationManager, emailGlobalConfigAccessor, validator);
+        EmailGlobalCrudActions configActions = new EmailGlobalCrudActions(authorizationManager, emailGlobalConfigAccessor, validator);
         ActionResponse<EmailGlobalConfigModel> response = configActions.update(1L, model);
         assertEquals(HttpStatus.OK, response.getHttpStatus());
         assertTrue(response.hasContent());
@@ -119,7 +119,7 @@ public class EmailGlobalConfigurationActionTest {
         DatabaseModelWrapper<EmailGlobalConfigModel> modelWrapper = new DatabaseModelWrapper<>(1L, 1L, "now", "then", model);
         Mockito.when(emailGlobalConfigAccessor.getConfiguration(Mockito.anyLong())).thenReturn(Optional.of(modelWrapper));
 
-        EmailGlobalConfigActions configActions = new EmailGlobalConfigActions(authorizationManager, emailGlobalConfigAccessor, validator);
+        EmailGlobalCrudActions configActions = new EmailGlobalCrudActions(authorizationManager, emailGlobalConfigAccessor, validator);
         ActionResponse<EmailGlobalConfigModel> response = configActions.delete(1L);
         assertEquals(HttpStatus.NO_CONTENT, response.getHttpStatus());
     }
@@ -134,7 +134,7 @@ public class EmailGlobalConfigurationActionTest {
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailGlobalConfigAccessor emailGlobalConfigAccessor = Mockito.mock(EmailGlobalConfigAccessor.class);
 
-        EmailGlobalConfigActions configActions = new EmailGlobalConfigActions(authorizationManager, emailGlobalConfigAccessor, validator);
+        EmailGlobalCrudActions configActions = new EmailGlobalCrudActions(authorizationManager, emailGlobalConfigAccessor, validator);
         ActionResponse<EmailGlobalConfigModel> response = configActions.getOne(1L);
         assertEquals(HttpStatus.FORBIDDEN, response.getHttpStatus());
     }
@@ -155,7 +155,7 @@ public class EmailGlobalConfigurationActionTest {
         model.setUsername("user");
         model.setPassword("password");
 
-        EmailGlobalConfigActions configActions = new EmailGlobalConfigActions(authorizationManager, emailGlobalConfigAccessor, validator);
+        EmailGlobalCrudActions configActions = new EmailGlobalCrudActions(authorizationManager, emailGlobalConfigAccessor, validator);
         ActionResponse<EmailGlobalConfigModel> response = configActions.create(model);
         assertEquals(HttpStatus.FORBIDDEN, response.getHttpStatus());
     }
@@ -176,7 +176,7 @@ public class EmailGlobalConfigurationActionTest {
         model.setUsername("user");
         model.setPassword("password");
 
-        EmailGlobalConfigActions configActions = new EmailGlobalConfigActions(authorizationManager, emailGlobalConfigAccessor, validator);
+        EmailGlobalCrudActions configActions = new EmailGlobalCrudActions(authorizationManager, emailGlobalConfigAccessor, validator);
         ActionResponse<EmailGlobalConfigModel> response = configActions.update(1L, model);
         assertEquals(HttpStatus.FORBIDDEN, response.getHttpStatus());
     }
@@ -199,7 +199,7 @@ public class EmailGlobalConfigurationActionTest {
         model.setUsername("user");
         model.setPassword("password");
 
-        EmailGlobalConfigActions configActions = new EmailGlobalConfigActions(authorizationManager, emailGlobalConfigAccessor, validator);
+        EmailGlobalCrudActions configActions = new EmailGlobalCrudActions(authorizationManager, emailGlobalConfigAccessor, validator);
         ActionResponse<EmailGlobalConfigModel> response = configActions.update(1L, model);
         assertEquals(HttpStatus.NOT_FOUND, response.getHttpStatus());
     }
@@ -214,7 +214,7 @@ public class EmailGlobalConfigurationActionTest {
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailGlobalConfigAccessor emailGlobalConfigAccessor = Mockito.mock(EmailGlobalConfigAccessor.class);
 
-        EmailGlobalConfigActions configActions = new EmailGlobalConfigActions(authorizationManager, emailGlobalConfigAccessor, validator);
+        EmailGlobalCrudActions configActions = new EmailGlobalCrudActions(authorizationManager, emailGlobalConfigAccessor, validator);
         ActionResponse<EmailGlobalConfigModel> response = configActions.delete(1L);
         assertEquals(HttpStatus.FORBIDDEN, response.getHttpStatus());
     }
@@ -230,7 +230,7 @@ public class EmailGlobalConfigurationActionTest {
         EmailGlobalConfigAccessor emailGlobalConfigAccessor = Mockito.mock(EmailGlobalConfigAccessor.class);
         Mockito.when(emailGlobalConfigAccessor.getConfiguration(Mockito.anyLong())).thenReturn(Optional.empty());
 
-        EmailGlobalConfigActions configActions = new EmailGlobalConfigActions(authorizationManager, emailGlobalConfigAccessor, validator);
+        EmailGlobalCrudActions configActions = new EmailGlobalCrudActions(authorizationManager, emailGlobalConfigAccessor, validator);
         ActionResponse<EmailGlobalConfigModel> response = configActions.delete(1L);
         assertEquals(HttpStatus.NOT_FOUND, response.getHttpStatus());
     }

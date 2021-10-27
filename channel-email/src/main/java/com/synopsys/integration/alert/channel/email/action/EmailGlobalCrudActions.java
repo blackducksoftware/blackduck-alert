@@ -15,37 +15,56 @@ import com.synopsys.integration.alert.channel.email.web.EmailGlobalConfigAccesso
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.model.DatabaseModelWrapper;
-import com.synopsys.integration.alert.common.rest.api.ConfigurationCRUDHelper;
+import com.synopsys.integration.alert.common.rest.api.ConfigurationCrudHelper;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
 @Component
-public class EmailGlobalConfigActions {
-    private final ConfigurationCRUDHelper configurationHelper;
+public class EmailGlobalCrudActions {
+    private final ConfigurationCrudHelper configurationHelper;
     private final EmailGlobalConfigAccessor configurationAccessor;
     private final EmailGlobalConfigurationValidator validator;
 
     @Autowired
-    public EmailGlobalConfigActions(AuthorizationManager authorizationManager, EmailGlobalConfigAccessor configurationAccessor, EmailGlobalConfigurationValidator validator) {
-        this.configurationHelper = new ConfigurationCRUDHelper(authorizationManager, ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL);
+    public EmailGlobalCrudActions(AuthorizationManager authorizationManager, EmailGlobalConfigAccessor configurationAccessor, EmailGlobalConfigurationValidator validator) {
+        this.configurationHelper = new ConfigurationCrudHelper(authorizationManager, ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL);
         this.configurationAccessor = configurationAccessor;
         this.validator = validator;
     }
 
     public ActionResponse<EmailGlobalConfigModel> getOne(Long id) {
-        return configurationHelper.getOne(() -> configurationAccessor.getConfiguration(id).map(DatabaseModelWrapper::getModel));
+        return configurationHelper.getOne(
+            () -> configurationAccessor.getConfiguration(id).map(DatabaseModelWrapper::getModel)
+        );
+    }
+
+    public ActionResponse<AlertPagedModel<EmailGlobalConfigModel>> getPaged(int page, int size) {
+        return configurationHelper.getPage(
+            () -> configurationAccessor.getConfigurationPage(page, size).transformContent(DatabaseModelWrapper::getModel)
+        );
     }
 
     public ActionResponse<EmailGlobalConfigModel> create(EmailGlobalConfigModel resource) {
-        return configurationHelper.create(() -> validator.validate(resource), () -> configurationAccessor.createConfiguration(resource).getModel());
+        return configurationHelper.create(
+            () -> validator.validate(resource),
+            () -> configurationAccessor.createConfiguration(resource).getModel()
+        );
     }
 
     public ActionResponse<EmailGlobalConfigModel> update(Long id, EmailGlobalConfigModel requestResource) {
-        return configurationHelper.update(() -> validator.validate(requestResource), () -> configurationAccessor.getConfiguration(id).isPresent(), () -> configurationAccessor.updateConfiguration(id, requestResource).getModel());
+        return configurationHelper.update(
+            () -> validator.validate(requestResource),
+            () -> configurationAccessor.getConfiguration(id).isPresent(),
+            () -> configurationAccessor.updateConfiguration(id, requestResource).getModel()
+        );
     }
 
     public ActionResponse<EmailGlobalConfigModel> delete(Long id) {
-        return configurationHelper.delete(() -> configurationAccessor.getConfiguration(id).isPresent(), () -> configurationAccessor.deleteConfiguration(id));
+        return configurationHelper.delete(
+            () -> configurationAccessor.getConfiguration(id).isPresent(),
+            () -> configurationAccessor.deleteConfiguration(id)
+        );
     }
 }

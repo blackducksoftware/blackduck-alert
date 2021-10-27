@@ -9,6 +9,8 @@ package com.synopsys.integration.alert.common.rest.model;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.rest.api.ReadPageController;
@@ -27,6 +29,12 @@ public class AlertPagedModel<M extends AlertSerializableModel> extends AlertPage
     @JsonIgnore
     public List<M> getModels() {
         return super.getModels();
+    }
+
+    @JsonIgnore
+    public <T extends AlertSerializableModel> AlertPagedModel<T> transformContent(Function<M, T> transformation) {
+        List<T> transformedContent = getModels().stream().map(transformation).collect(Collectors.toList());
+        return new AlertPagedModel<>(getTotalPages(), getCurrentPage(), getPageSize(), transformedContent);
     }
 
 }
