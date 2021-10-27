@@ -2,23 +2,23 @@ import React, { useState } from 'react';
 import * as PropTypes from 'prop-types';
 import CommonGlobalConfiguration from 'common/global/CommonGlobalConfiguration';
 import {
-    EMAIL_GLOBAL_ADVANCED_FIELD_KEYS, EMAIL_GLOBAL_FIELD_KEYS, EMAIL_INFO, EMAIL_TEST_FIELD
+    EMAIL_GLOBAL_FIELD_KEYS, EMAIL_INFO, EMAIL_TEST_FIELD
 } from 'page/channel/email/EmailModels';
-import CommonGlobalConfigurationForm from 'common/global/CommonGlobalConfigurationForm';
 import TextInput from 'common/input/TextInput';
-import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
 import CheckboxInput from 'common/input/CheckboxInput';
-import { CONTEXT_TYPE } from 'common/util/descriptorUtilities';
-import * as GlobalRequestHelper from 'common/global/GlobalRequestHelper';
 import PasswordInput from 'common/input/PasswordInput';
+import ConfigurationForm from 'page/channel/email/standalone/ConfigurationForm';
+import * as ConfigurationRequestBuilder from 'common/util/configurationRequestBuilder';
+import * as fieldModelUtilities from 'common/util/fieldModelUtilities';
 
 const EmailGlobalConfigurationStandalone = ({
     csrfToken, errorHandler, readonly, displayTest, displaySave, displayDelete
 }) => {
-    const [fieldModel, setFieldModel] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, EMAIL_INFO.key));
+    const [emailConfig, setEmailConfig] = useState({});
     const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
-    const [testFieldData, setTestFieldData] = useState({});
+    const [testEmailAddress, setTestEmailAddress] = useState(undefined);
+    const emailRequestUrl = `${ConfigurationRequestBuilder.CONFIG_API_URL}/email`;
 
     const testField = (
         <TextInput
@@ -26,15 +26,20 @@ const EmailGlobalConfigurationStandalone = ({
             name={EMAIL_TEST_FIELD.key}
             label={EMAIL_TEST_FIELD.label}
             description={EMAIL_TEST_FIELD.description}
-            onChange={FieldModelUtilities.handleTestChange(testFieldData, setTestFieldData)}
-            value={testFieldData[EMAIL_TEST_FIELD.key]}
+            onChange={(value) => setTestEmailAddress(value)}
+            value={testEmailAddress}
         />
     );
 
-    const retrieveData = async () => {
-        const data = await GlobalRequestHelper.getDataFindFirst(EMAIL_INFO.key, csrfToken);
-        if (data) {
-            setFieldModel(data);
+    const fetchData = async () => {
+        const response = await ConfigurationRequestBuilder.createReadRequest(emailRequestUrl, csrfToken);
+        const data = await response.json();
+
+        const { models } = data;
+        if (models && models.length > 0) {
+            setEmailConfig(models[0]);
+        } else {
+            setEmailConfig({});
         }
     };
 
@@ -42,18 +47,21 @@ const EmailGlobalConfigurationStandalone = ({
         <CommonGlobalConfiguration
             label={`${EMAIL_INFO.label} Beta (WIP)`}
             description="Configure the email server that Alert will send emails to. (WIP: Everything on this page is currently in development)"
-            lastUpdated={fieldModel.lastUpdated}
+            lastUpdated={emailConfig.lastUpdated}
         >
-            <CommonGlobalConfigurationForm
+            <ConfigurationForm
                 csrfToken={csrfToken}
-                formData={fieldModel}
-                setErrors={(errors) => setErrors(errors)}
-                setFormData={(content) => setFieldModel(content)}
+                formDataId={emailConfig.id}
+                setErrors={(formErrors) => setErrors(formErrors)}
                 testFields={testField}
-                testFormData={testFieldData}
-                setTestFormData={(values) => setTestFieldData(values)}
+                clearTestForm={() => setTestEmailAddress(undefined)}
                 buttonIdPrefix={EMAIL_INFO.key}
-                retrieveData={retrieveData}
+                getRequest={fetchData}
+                deleteRequest={() => ConfigurationRequestBuilder.createDeleteRequest(emailRequestUrl, csrfToken, emailConfig.id)}
+                updateRequest={() => ConfigurationRequestBuilder.createUpdateRequest(emailRequestUrl, csrfToken, emailConfig.id, emailConfig)}
+                createRequest={() => ConfigurationRequestBuilder.createNewConfigurationRequest(emailRequestUrl, csrfToken, emailConfig)}
+                validateRequest={() => ConfigurationRequestBuilder.createValidateRequest(emailRequestUrl, csrfToken, emailConfig)}
+                testRequest={() => ConfigurationRequestBuilder.createTestRequest(emailRequestUrl, csrfToken, emailConfig)}
                 readonly={readonly}
                 displayTest={displayTest}
                 displaySave={displaySave}
@@ -62,63 +70,64 @@ const EmailGlobalConfigurationStandalone = ({
             >
                 <TextInput
                     id={EMAIL_GLOBAL_FIELD_KEYS.host}
-                    name={EMAIL_GLOBAL_FIELD_KEYS.host}
+                    name="smtpHost"
                     label="SMTP Host"
                     description="The host name of the SMTP email server."
                     required
                     readOnly={readonly}
-                    onChange={FieldModelUtilities.handleChange(fieldModel, setFieldModel)}
-                    value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.host)}
-                    errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.host)}
-                    errorValue={errors.fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.host]}
+                    onChange={fieldModelUtilities.handleTestChange(emailConfig, setEmailConfig)}
+                    value={emailConfig.smtpHost || undefined}
+                    errorName="smtpHost"
+                    errorValue={errors.fieldErrors.host}
                 />
                 <TextInput
                     id={EMAIL_GLOBAL_FIELD_KEYS.from}
-                    name={EMAIL_GLOBAL_FIELD_KEYS.from}
+                    name="smtpFrom"
                     label="SMTP From"
                     description="The email address to use as the return address."
                     required
                     readOnly={readonly}
-                    onChange={FieldModelUtilities.handleChange(fieldModel, setFieldModel)}
-                    value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.from)}
-                    errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.from)}
-                    errorValue={errors.fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.from]}
+                    onChange={fieldModelUtilities.handleTestChange(emailConfig, setEmailConfig)}
+                    value={emailConfig.smtpFrom || undefined}
+                    errorName="smtpFrom"
+                    errorValue={errors.fieldErrors.from}
                 />
                 <CheckboxInput
                     id={EMAIL_GLOBAL_FIELD_KEYS.auth}
-                    name={EMAIL_GLOBAL_FIELD_KEYS.auth}
+                    name="smtpAuth"
                     label="SMTP Auth"
                     description="Select this if your SMTP server requires authentication, then fill in the SMTP User and SMTP Password."
                     readOnly={readonly}
-                    onChange={FieldModelUtilities.handleChange(fieldModel, setFieldModel)}
-                    isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.auth)}
-                    errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.auth)}
-                    errorValue={errors.fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.auth]}
+                    onChange={fieldModelUtilities.handleTestChange(emailConfig, setEmailConfig)}
+                    isChecked={(emailConfig.smtpAuth || 'false').toString().toLowerCase() === 'true'}
+                    errorName="smtpAuth"
+                    errorValue={errors.fieldErrors.smtpAuth}
                 />
                 <TextInput
                     id={EMAIL_GLOBAL_FIELD_KEYS.user}
-                    name={EMAIL_GLOBAL_FIELD_KEYS.user}
+                    name="smtpUsername"
                     label="SMTP User"
                     description="The username to authenticate with the SMTP server."
                     readOnly={readonly}
-                    onChange={FieldModelUtilities.handleChange(fieldModel, setFieldModel)}
-                    value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.user)}
-                    errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.user)}
-                    errorValue={errors.fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.user]}
+                    onChange={fieldModelUtilities.handleTestChange(emailConfig, setEmailConfig)}
+                    value={emailConfig.smtpUsername || undefined}
+                    errorName="smtpUsername"
+                    errorValue={errors.fieldErrors.user}
                 />
                 <PasswordInput
                     id={EMAIL_GLOBAL_FIELD_KEYS.password}
-                    name={EMAIL_GLOBAL_FIELD_KEYS.password}
+                    name="smtpPassword"
                     label="SMTP Password"
                     description="The password to authenticate with the SMTP server."
                     readOnly={readonly}
-                    onChange={FieldModelUtilities.handleChange(fieldModel, setFieldModel)}
-                    value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.password)}
-                    isSet={FieldModelUtilities.isFieldModelValueSet(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.password)}
-                    errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.password)}
-                    errorValue={errors.fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.password]}
+                    onChange={fieldModelUtilities.handleTestChange(emailConfig, setEmailConfig)}
+                    value={emailConfig.smtpPassword || undefined}
+                    isSet={emailConfig.smtpPassword}
+                    errorName="smtpPassword"
+                    errorValue={errors.fieldErrors.password}
                 />
-            </CommonGlobalConfigurationForm>
+                TODO: Add new custom properties field
+            </ConfigurationForm>
         </CommonGlobalConfiguration>
     );
 };
