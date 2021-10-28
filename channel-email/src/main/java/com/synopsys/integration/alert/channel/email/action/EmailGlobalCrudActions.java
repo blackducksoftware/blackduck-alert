@@ -16,6 +16,7 @@ import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.model.DatabaseModelWrapper;
 import com.synopsys.integration.alert.common.rest.api.ConfigurationCrudHelper;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
@@ -36,6 +37,12 @@ public class EmailGlobalCrudActions {
     public ActionResponse<EmailGlobalConfigModel> getOne(Long id) {
         return configurationHelper.getOne(
             () -> configurationAccessor.getConfiguration(id).map(DatabaseModelWrapper::getModel)
+        );
+    }
+
+    public ActionResponse<AlertPagedModel<EmailGlobalConfigModel>> getPaged(int page, int size) {
+        return configurationHelper.getPage(
+            () -> configurationAccessor.getConfigurationPage(page, size).transformContent(DatabaseModelWrapper::getModel)
         );
     }
 
