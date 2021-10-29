@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -16,6 +17,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.common.rest.model.JobProviderProjectFieldModel;
+import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.exception.IntegrationException;
 
 public class ConfigurationManager {
@@ -57,9 +59,17 @@ public class ConfigurationManager {
     }
 
     public String createJob(Map<String, FieldValueModel> channelFields, String jobName, String blackDuckProviderId, String blackDuckProjectName) throws IntegrationException {
+        return createJob(channelFields, jobName, blackDuckProviderId, blackDuckProjectName,
+            List.of(NotificationType.BOM_EDIT, NotificationType.POLICY_OVERRIDE, NotificationType.RULE_VIOLATION, NotificationType.RULE_VIOLATION_CLEARED, NotificationType.VULNERABILITY));
+    }
+
+    public String createJob(Map<String, FieldValueModel> channelFields, String jobName, String blackDuckProviderId, String blackDuckProjectName, List<NotificationType> notificationTypes) throws IntegrationException {
+        List<String> notificationTypeNames = notificationTypes.stream()
+            .map(Enum::name)
+            .collect(Collectors.toList());
         Map<String, FieldValueModel> providerKeyToValues = new HashMap<>();
         providerKeyToValues.put(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID, new FieldValueModel(List.of(blackDuckProviderId), true));
-        providerKeyToValues.put(ProviderDescriptor.KEY_NOTIFICATION_TYPES, new FieldValueModel(List.of("BOM_EDIT", "POLICY_OVERRIDE", "RULE_VIOLATION", "RULE_VIOLATION_CLEARED", "VULNERABILITY"), true));
+        providerKeyToValues.put(ProviderDescriptor.KEY_NOTIFICATION_TYPES, new FieldValueModel(notificationTypeNames, true));
         providerKeyToValues.put(ProviderDescriptor.KEY_PROCESSING_TYPE, new FieldValueModel(List.of(ProcessingType.DEFAULT.name()), true));
         providerKeyToValues.put(ProviderDescriptor.KEY_FILTER_BY_PROJECT, new FieldValueModel(List.of("true"), true));
         providerKeyToValues.put(ProviderDescriptor.KEY_CONFIGURED_PROJECT, new FieldValueModel(List.of(blackDuckProjectName), true));

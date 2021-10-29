@@ -196,4 +196,7 @@ public class BlackDuckProviderService {
         return blackDuckProjectVersion;
     }
 
+    public BlackDuckServicesFactory getBlackDuckServicesFactory() {
+        return blackDuckServicesFactory;
+    }
 }
