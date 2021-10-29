@@ -26,11 +26,12 @@ const FluidFieldMappingField = ({
     }, []);
 
     useEffect(() => {
-        setValue(Object.fromEntries(fieldMappings));
+        const formData = Object.fromEntries(fieldMappings.filter((mapping) => Object.keys(mapping).length === 1));
+        setValue(formData);
     }, [fieldMappings]);
 
     const deleteMappingRow = (index) => {
-        const removedPiece = fieldMappings.splice(index, 1);
+        fieldMappings.splice(index, 1);
         setFieldMappings([...fieldMappings]);
     };
 
@@ -39,15 +40,13 @@ const FluidFieldMappingField = ({
         setFieldMappings([...fieldMappings]);
     };
 
-    const getKey = (mapping) => Object.keys(mapping)[0];
-
     const addRow = () => {
         fieldMappings.push({});
         setFieldMappings([...fieldMappings]);
     };
 
     const renderExistingRows = fieldMappings.map((mapping, index) => {
-        const key = getKey(mapping);
+        const key = Object.keys(mapping)[0];
         return (
             <FieldMappingRow
                 index={index}
@@ -55,6 +54,7 @@ const FluidFieldMappingField = ({
                 rightSide={mapping[key]}
                 leftSide={key}
                 deleteRow={deleteMappingRow}
+                readonly={readonly}
             />
         );
     });
