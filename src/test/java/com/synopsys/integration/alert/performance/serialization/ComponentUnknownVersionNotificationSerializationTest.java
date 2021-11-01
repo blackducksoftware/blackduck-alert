@@ -8,6 +8,7 @@ import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import org.apache.commons.lang3.StringUtils;
@@ -48,13 +49,15 @@ import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionCompo
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.view.ComponentUnknownVersionNotificationView;
 import com.synopsys.integration.blackduck.http.transform.subclass.BlackDuckResponseResolver;
+import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
+import com.synopsys.integration.rest.HttpUrl;
 import com.synopsys.integration.wait.WaitJob;
 import com.synopsys.integration.wait.WaitJobConfig;
 
-@Tag(TestTags.DEFAULT_PERFORMANCE)
+@Tag(TestTags.DEFAULT_INTEGRATION)
 @SpringBootTest
 @ContextConfiguration(classes = { Application.class, ApplicationConfiguration.class, DatabaseDataSource.class, DescriptorMocker.class })
 @TestPropertySource(locations = "classpath:spring-test.properties")
@@ -108,6 +111,12 @@ public class ComponentUnknownVersionNotificationSerializationTest {
                 ComponentUnknownVersionNotificationView notificationView = resolver.resolve(notificationContent, ComponentUnknownVersionNotificationView.class);
                 assertNotNull(notificationView.getContent());
                 assertTrue(StringUtils.isNotBlank(notificationView.getContent().getComponentName()));
+
+                BlackDuckApiClient apiClient = blackDuckProviderService.getBlackDuckServicesFactory().getBlackDuckApiClient();
+                Optional<HttpUrl> componentUrl = HttpUrl.createSafely(notificationView.getContent().getBomComponent());
+                if (componentUrl.isPresent()) {
+                    apiClient.delete(componentUrl.get());
+                }
             }
         } catch (InterruptedException ex) {
             // if a timeout happens that's ok we are trying to ensure deserialization is correct.
