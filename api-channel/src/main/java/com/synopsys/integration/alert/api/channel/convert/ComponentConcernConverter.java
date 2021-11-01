@@ -204,10 +204,9 @@ public class ComponentConcernConverter {
 
     private String createEstimatedRiskConcernString(ComponentConcern estimatedRiskConcern) {
         String severity = formatter.encode(estimatedRiskConcern.getSeverity().getVulnerabilityLabel());
-        String countString = String.format(TRIPLE_STRING_REPLACEMENT, formattedOpenParen, estimatedRiskConcern.getNumericValue(), formattedCloseParen);
+        String countString = String.format(TRIPLE_STRING_REPLACEMENT, formattedOpenParen, formatter.encode(estimatedRiskConcern.getNumericValue().toString()), formattedCloseParen);
         String componentName = createComponentNameLinkIfPresent(estimatedRiskConcern);
-        //TODO use the message formatter to encode like issue tracker.
-        return String.format("    %s: %s %s", severity, countString, componentName);
+        return String.format("%s%s%s %s", severity, formattedColonSpace, countString, componentName);
     }
 
     private String createComponentNameLinkIfPresent(ComponentConcern componentConcern) {
