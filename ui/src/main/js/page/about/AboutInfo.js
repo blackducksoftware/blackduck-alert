@@ -78,7 +78,7 @@ const AboutInfo = ({
         });
 
     const providerDescriptorData = addGlobalConfigurationCheck(globalDescriptorMap, globalDescriptorMap);
-    const channelDescriptorData = addGlobalConfigurationCheck(globalDescriptorMap, globalDescriptorMap);
+    const channelDescriptorData = addGlobalConfigurationCheck(globalDescriptorMap, distributionDescriptorMap);
     const providerData = createTableData(providerDescriptorData, EXISTING_PROVIDERS);
     const channelData = createTableData(channelDescriptorData, EXISTING_CHANNELS);
     const providerTable = createDescriptorTable('about-providers', providerData, '/alert/providers/', 'Providers');
