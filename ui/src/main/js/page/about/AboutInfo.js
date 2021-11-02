@@ -60,7 +60,7 @@ const AboutInfo = ({
         .filter((descriptor) => existingData[descriptor.name])
         .map((descriptor) => {
             const descriptorModel = existingData[descriptor.name];
-            const url = descriptor.navigate ? descriptorModel.url : null;
+            const url = descriptor.navigation ? descriptorModel.url : null;
             return {
                 name: descriptorModel.label,
                 urlName: url
@@ -70,10 +70,10 @@ const AboutInfo = ({
     const addGlobalConfigurationCheck = (globalDescriptorMapping, descriptorMapping) => Object.values(descriptorMapping)
         .map((descriptor) => {
             const globalConfig = globalDescriptorMapping[descriptor.name];
-            const navigate = Boolean(globalConfig);
+            const navigation = Boolean(globalConfig);
             return {
                 ...descriptor,
-                navigate
+                navigation
             };
         });
 
