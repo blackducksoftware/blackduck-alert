@@ -23,7 +23,9 @@ const EmailGlobalConfigurationStandalone = ({
 
     const [emailConfig, setEmailConfig] = useState({});
     const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
-    const [testEmailAddress, setTestEmailAddress] = useState(undefined);
+    const [testEmailAddress, setTestEmailAddress] = useState('');
+
+    console.log(testEmailAddress);
 
     const testField = (
         <TextInput
@@ -31,7 +33,7 @@ const EmailGlobalConfigurationStandalone = ({
             name={EMAIL_TEST_FIELD.key}
             label={EMAIL_TEST_FIELD.label}
             description={EMAIL_TEST_FIELD.description}
-            onChange={(value) => setTestEmailAddress(value)}
+            onChange={({ target }) => setTestEmailAddress(target.value)}
             value={testEmailAddress}
         />
     );
@@ -63,14 +65,14 @@ const EmailGlobalConfigurationStandalone = ({
                 formDataId={emailConfig.id}
                 setErrors={(formErrors) => setErrors(formErrors)}
                 testFields={testField}
-                clearTestForm={() => setTestEmailAddress(undefined)}
+                clearTestForm={() => setTestEmailAddress('')}
                 buttonIdPrefix={EMAIL_INFO.key}
                 getRequest={fetchData}
                 deleteRequest={() => ConfigurationRequestBuilder.createDeleteRequest(emailRequestUrl, csrfToken, emailConfig.id)}
                 updateRequest={() => ConfigurationRequestBuilder.createUpdateRequest(emailRequestUrl, csrfToken, emailConfig.id, emailConfig)}
                 createRequest={() => ConfigurationRequestBuilder.createNewConfigurationRequest(emailRequestUrl, csrfToken, emailConfig)}
                 validateRequest={() => ConfigurationRequestBuilder.createValidateRequest(emailRequestUrl, csrfToken, emailConfig)}
-                testRequest={() => ConfigurationRequestBuilder.createTestRequest(emailRequestUrl, csrfToken, emailConfig)}
+                testRequest={() => ConfigurationRequestBuilder.createTestRequest(emailRequestUrl, csrfToken, emailConfig, `sendTo=${testEmailAddress}`)}
                 readonly={readonly}
                 displayTest={displayTest}
                 displaySave={displaySave}
