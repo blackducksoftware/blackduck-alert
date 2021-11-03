@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="psantos" id="delete-provider-user-project-relation-table">
+        <preConditions onFail="MARK_RAN">
+            <tableExists schemaName="alert" tableName="provider_user_project_relation"/>
+        </preConditions>
+        <dropTable schemaName="alert" tableName="provider_user_project_relation"/>
+    </changeSet>
+    <changeSet author="psantos" id="delete-provider-projects-table">
+        <preConditions onFail="MARK_RAN">
+            <tableExists schemaName="alert" tableName="provider_projects"/>
+        </preConditions>
+        <dropTable schemaName="alert" tableName="provider_projects"/>
+    </changeSet>
+    <changeSet author="psantos" id="delete-provider-users-table">
+        <preConditions onFail="MARK_RAN">
+            <tableExists schemaName="alert" tableName="provider_users"/>
+        </preConditions>
+        <dropTable schemaName="alert" tableName="provider_users"/>
+    </changeSet>
+</databaseChangeLog>
