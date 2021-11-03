@@ -110,8 +110,12 @@ export function createValidateRequest(apiUrl, csrfToken, fieldModel) {
     });
 }
 
-export function createTestRequest(apiUrl, csrfToken, fieldModel) {
-    const url = `${apiUrl}/test`;
+export function createTestRequest(apiUrl, csrfToken, fieldModel, queryParam) {
+    let url = `${apiUrl}/test`;
+    if (queryParam) {
+        url = url.concat(`?${queryParam}`);
+    }
+
     const headersUtil = new HeaderUtilities();
     headersUtil.addDefaultHeaders(csrfToken);
     return fetch(url, {

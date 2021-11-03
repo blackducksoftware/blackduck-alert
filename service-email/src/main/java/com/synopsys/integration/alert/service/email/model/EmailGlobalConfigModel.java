@@ -30,9 +30,10 @@ public class EmailGlobalConfigModel extends ConfigWithMetadata {
     @JsonProperty("smtpPassword")
     private String password;
 
-    @JsonDeserialize(using = MapDeserializer.class)
     @JsonProperty("additionalJavaMailProperties")
     private Map<String, String> additionalJavaMailProperties;
+
+    public EmailGlobalConfigModel() {}
 
     public Optional<String> getFrom() {
         return Optional.ofNullable(from);

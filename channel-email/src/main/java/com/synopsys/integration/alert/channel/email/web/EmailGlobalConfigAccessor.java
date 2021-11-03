@@ -80,8 +80,7 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
         Long contextId = getConfigContextIdOrThrowException();
         Long descriptorId = getDescriptorIdOrThrowException();
 
-        PageRequest pageRequest = PageRequest.of(page, size);
-        Page<DescriptorConfigEntity> resultPage = descriptorConfigsRepository.findByDescriptorIdAndContextId(descriptorId, contextId, pageRequest);
+        Page<DescriptorConfigEntity> resultPage = descriptorConfigsRepository.findByDescriptorIdAndContextId(descriptorId, contextId, PageRequest.of(page, size));
         List<DatabaseModelWrapper<EmailGlobalConfigModel>> pageContent = resultPage.getContent()
             .stream()
             .map(this::createConfigModel)
@@ -98,7 +97,7 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
         DescriptorConfigEntity savedDescriptorConfig = descriptorConfigsRepository.save(descriptorConfigToSave);
 
         if (configuration != null) {
-            List<FieldValueEntity> fieldValuesToSave = toFieldValueEntitites(descriptorId, configuration);
+            List<FieldValueEntity> fieldValuesToSave = toFieldValueEntitites(savedDescriptorConfig.getId(), configuration);
             fieldValueRepository.saveAll(fieldValuesToSave);
             fieldValueRepository.flush();
         }
