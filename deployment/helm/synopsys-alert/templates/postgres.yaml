@@ -178,15 +178,15 @@ spec:
       {{- include "alert.imagePullSecrets" . | nindent 6 -}}
       {{- with .Values.postgres.nodeSelector }}
       nodeSelector:
-      {{ toYaml . | indent 2 }}
+      {{ toYaml . | indent 8 }}
       {{- end }}
       {{- with .Values.postgres.affinity }}
       affinity:
-      {{ toYaml . | indent 2 }}
+      {{ toYaml . | indent 8 }}
       {{- end }}
       {{- with .Values.postgres.tolerations }}
       tolerations:
-      {{ toYaml . | indent 2 }}
+      {{ toYaml . | indent 6 }}
       {{- end }}
       {{- with .Values.postgres.podSecurityContext }}
       securityContext:
@@ -208,4 +208,3 @@ spec:
   name: alert-postgres-data-volume
 {{- end -}}
 {{- end -}}
-

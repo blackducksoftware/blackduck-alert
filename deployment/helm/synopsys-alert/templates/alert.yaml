@@ -141,15 +141,15 @@ spec:
       {{- include "alert.imagePullSecrets" . | nindent 6 -}}
       {{- with .Values.alert.nodeSelector }}
       nodeSelector:
-      {{ toYaml . | indent 2 }}
+      {{ toYaml . | indent 8 }}
       {{- end }}
       {{- with .Values.alert.affinity }}
       affinity:
-      {{ toYaml . | indent 2 }}
+      {{ toYaml . | indent 8 }}
       {{- end }}
       {{- with .Values.alert.tolerations }}
       tolerations:
-      {{ toYaml . | indent 2 }}
+      {{ toYaml . | indent 6 }}
       {{- end }}
       {{- with .Values.alert.podSecurityContext }}
       securityContext:
