@@ -1,9 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Select, {
-    components,
-    Creatable
-} from 'react-select';
+import Select, { components } from 'react-select';
+import Creatable from 'react-select/creatable';
 import LabeledField, { LabelFieldPropertyDefaults } from 'common/input/field/LabeledField';
 import DescriptorOption from 'common/DescriptorOption';
 
