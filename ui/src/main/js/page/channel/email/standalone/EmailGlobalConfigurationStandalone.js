@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as PropTypes from 'prop-types';
 import CommonGlobalConfiguration from 'common/global/CommonGlobalConfiguration';
 import {
+    EMAIL_GLOBAL_ADVANCED_FIELD_KEYS,
     EMAIL_GLOBAL_FIELD_KEYS, EMAIL_INFO, EMAIL_TEST_FIELD
 } from 'page/channel/email/EmailModels';
 import TextInput from 'common/input/TextInput';
@@ -11,14 +12,18 @@ import PasswordInput from 'common/input/PasswordInput';
 import ConfigurationForm from 'page/channel/email/standalone/ConfigurationForm';
 import * as ConfigurationRequestBuilder from 'common/util/configurationRequestBuilder';
 import * as fieldModelUtilities from 'common/util/fieldModelUtilities';
+import FluidFieldMappingField from 'common/input/mapping/FluidFieldMappingField';
+import NumberInput from 'common/input/NumberInput';
 
 const EmailGlobalConfigurationStandalone = ({
     csrfToken, errorHandler, readonly, displayTest, displaySave, displayDelete
 }) => {
+    const emailRequestUrl = `${ConfigurationRequestBuilder.CONFIG_API_URL}/email`;
+    const additionalPropertiesName = 'additionalJavaMailProperties';
+
     const [emailConfig, setEmailConfig] = useState({});
     const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
     const [testEmailAddress, setTestEmailAddress] = useState(undefined);
-    const emailRequestUrl = `${ConfigurationRequestBuilder.CONFIG_API_URL}/email`;
 
     const testField = (
         <TextInput
@@ -30,6 +35,10 @@ const EmailGlobalConfigurationStandalone = ({
             value={testEmailAddress}
         />
     );
+
+    const updateAdditionalProperties = (additionalProperties) => {
+        setEmailConfig({ ...emailConfig, [additionalPropertiesName]: additionalProperties });
+    };
 
     const fetchData = async () => {
         const response = await ConfigurationRequestBuilder.createReadRequest(emailRequestUrl, csrfToken);
@@ -92,6 +101,17 @@ const EmailGlobalConfigurationStandalone = ({
                     errorName="smtpFrom"
                     errorValue={errors.fieldErrors.from}
                 />
+                <NumberInput
+                    id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.port}
+                    name="smtpPort"
+                    label="SMTP Port"
+                    description="The SMTP server port to connect to."
+                    readOnly={readonly}
+                    onChange={fieldModelUtilities.handleTestChange(emailConfig, setEmailConfig)}
+                    value={emailConfig.smtpPort || undefined}
+                    errorName="smtpPort"
+                    errorValue={errors.fieldErrors.smtpPort}
+                />
                 <CheckboxInput
                     id={EMAIL_GLOBAL_FIELD_KEYS.auth}
                     name="smtpAuth"
@@ -126,7 +146,17 @@ const EmailGlobalConfigurationStandalone = ({
                     errorName="smtpPassword"
                     errorValue={errors.fieldErrors.password}
                 />
-                TODO: Add new custom properties field
+                <FluidFieldMappingField
+                    id="additional.email.properties"
+                    name={additionalPropertiesName}
+                    label="Additional Email Properties"
+                    description="Mapping of additional properties that can be used to appropriately configure your email connection."
+                    readonly={readonly}
+                    value={emailConfig[additionalPropertiesName] || {}}
+                    setValue={updateAdditionalProperties}
+                    errorName="additionalJavaMailProperties"
+                    errorValue={errors.fieldErrors[additionalPropertiesName]}
+                />
             </ConfigurationForm>
         </CommonGlobalConfiguration>
     );
