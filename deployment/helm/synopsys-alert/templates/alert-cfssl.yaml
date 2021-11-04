@@ -66,15 +66,15 @@ spec:
       {{- include "alert.imagePullSecrets" . | nindent 6 -}}
       {{- with .Values.cfssl.nodeSelector }}
       nodeSelector:
-      {{ toYaml . | indent 8 }}
+{{ toYaml . | indent 8 }}
       {{- end }}
       {{- with .Values.cfssl.affinity }}
       affinity:
-      {{ toYaml . | indent 8 }}
+{{ toYaml . | indent 8 }}
       {{- end }}
       {{- with .Values.cfssl.tolerations }}
       tolerations:
-      {{ toYaml . | indent 6 }}
+{{ toYaml . | indent 6 }}
       {{- end }}
       {{- with .Values.cfssl.podSecurityContext }}
       securityContext:
