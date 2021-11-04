@@ -15,6 +15,7 @@ import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
+import com.synopsys.integration.alert.common.rest.model.Obfuscated;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
@@ -32,7 +33,7 @@ public class ConfigurationCrudHelperTest {
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
         ConfigurationCrudHelper configurationHelper = new ConfigurationCrudHelper(authorizationManager, ConfigContextEnum.GLOBAL, descriptorKey);
 
-        ActionResponse response = configurationHelper.getOne(() -> Optional.of("Model String"));
+        ActionResponse response = configurationHelper.getOne(() -> createOptionalDefault());
         assertEquals(HttpStatus.FORBIDDEN, response.getHttpStatus());
     }
 
@@ -45,7 +46,7 @@ public class ConfigurationCrudHelperTest {
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
         ConfigurationCrudHelper configurationHelper = new ConfigurationCrudHelper(authorizationManager, ConfigContextEnum.GLOBAL, descriptorKey);
 
-        ActionResponse response = configurationHelper.getOne(() -> Optional.empty());
+        ActionResponse response = configurationHelper.getOne(() -> createEmptyOptional());
         assertEquals(HttpStatus.NOT_FOUND, response.getHttpStatus());
     }
 
@@ -58,7 +59,7 @@ public class ConfigurationCrudHelperTest {
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
         ConfigurationCrudHelper configurationHelper = new ConfigurationCrudHelper(authorizationManager, ConfigContextEnum.GLOBAL, descriptorKey);
 
-        ActionResponse response = configurationHelper.getOne(() -> Optional.of("Model String"));
+        ActionResponse response = configurationHelper.getOne(() -> createOptionalDefault());
         assertEquals(HttpStatus.OK, response.getHttpStatus());
         assertTrue(response.hasContent());
     }
@@ -72,7 +73,7 @@ public class ConfigurationCrudHelperTest {
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
         ConfigurationCrudHelper configurationHelper = new ConfigurationCrudHelper(authorizationManager, ConfigContextEnum.GLOBAL, descriptorKey);
 
-        ActionResponse response = configurationHelper.create(() -> ValidationResponseModel.success(), () -> "Model String");
+        ActionResponse response = configurationHelper.create(() -> ValidationResponseModel.success(), () -> createDefault());
         assertEquals(HttpStatus.FORBIDDEN, response.getHttpStatus());
     }
 
@@ -85,7 +86,7 @@ public class ConfigurationCrudHelperTest {
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
         ConfigurationCrudHelper configurationHelper = new ConfigurationCrudHelper(authorizationManager, ConfigContextEnum.GLOBAL, descriptorKey);
 
-        ActionResponse response = configurationHelper.create(() -> ValidationResponseModel.generalError("Validation Error"), () -> "Model String");
+        ActionResponse response = configurationHelper.create(() -> ValidationResponseModel.generalError("Validation Error"), () -> createDefault());
         assertEquals(HttpStatus.BAD_REQUEST, response.getHttpStatus());
     }
 
@@ -96,7 +97,7 @@ public class ConfigurationCrudHelperTest {
         PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
         Map<PermissionKey, Integer> permissions = Map.of(permissionKey, AuthenticationTestUtils.FULL_PERMISSIONS);
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
-        ThrowingSupplier<String, Exception> modelCreator = () -> {
+        ThrowingSupplier<TestObfuscatedVariable, Exception> modelCreator = () -> {
             throw new AlertException("error getting test message");
         };
         ConfigurationCrudHelper configurationHelper = new ConfigurationCrudHelper(authorizationManager, ConfigContextEnum.GLOBAL, descriptorKey);
@@ -114,7 +115,7 @@ public class ConfigurationCrudHelperTest {
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
         ConfigurationCrudHelper configurationHelper = new ConfigurationCrudHelper(authorizationManager, ConfigContextEnum.GLOBAL, descriptorKey);
 
-        ActionResponse response = configurationHelper.create(() -> ValidationResponseModel.success(), () -> "Model String");
+        ActionResponse response = configurationHelper.create(() -> ValidationResponseModel.success(), () -> createDefault());
         assertEquals(HttpStatus.OK, response.getHttpStatus());
     }
 
@@ -127,7 +128,7 @@ public class ConfigurationCrudHelperTest {
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
         ConfigurationCrudHelper configurationHelper = new ConfigurationCrudHelper(authorizationManager, ConfigContextEnum.GLOBAL, descriptorKey);
 
-        ActionResponse response = configurationHelper.update(() -> ValidationResponseModel.success(), () -> true, () -> "Model String");
+        ActionResponse response = configurationHelper.update(() -> ValidationResponseModel.success(), () -> true, () -> createDefault());
         assertEquals(HttpStatus.FORBIDDEN, response.getHttpStatus());
     }
 
@@ -140,7 +141,7 @@ public class ConfigurationCrudHelperTest {
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
         ConfigurationCrudHelper configurationHelper = new ConfigurationCrudHelper(authorizationManager, ConfigContextEnum.GLOBAL, descriptorKey);
 
-        ActionResponse response = configurationHelper.update(() -> ValidationResponseModel.success(), () -> false, () -> "Model String");
+        ActionResponse response = configurationHelper.update(() -> ValidationResponseModel.success(), () -> false, () -> createDefault());
         assertEquals(HttpStatus.NOT_FOUND, response.getHttpStatus());
     }
 
@@ -153,7 +154,7 @@ public class ConfigurationCrudHelperTest {
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
         ConfigurationCrudHelper configurationHelper = new ConfigurationCrudHelper(authorizationManager, ConfigContextEnum.GLOBAL, descriptorKey);
 
-        ActionResponse response = configurationHelper.update(() -> ValidationResponseModel.generalError("Validation Error"), () -> true, () -> "Model String");
+        ActionResponse response = configurationHelper.update(() -> ValidationResponseModel.generalError("Validation Error"), () -> true, () -> createDefault());
         assertEquals(HttpStatus.BAD_REQUEST, response.getHttpStatus());
     }
 
@@ -182,7 +183,7 @@ public class ConfigurationCrudHelperTest {
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
         ConfigurationCrudHelper configurationHelper = new ConfigurationCrudHelper(authorizationManager, ConfigContextEnum.GLOBAL, descriptorKey);
 
-        ActionResponse response = configurationHelper.update(() -> ValidationResponseModel.success(), () -> true, () -> "Model String");
+        ActionResponse response = configurationHelper.update(() -> ValidationResponseModel.success(), () -> true, () -> createDefault());
         assertEquals(HttpStatus.OK, response.getHttpStatus());
     }
 
@@ -222,5 +223,38 @@ public class ConfigurationCrudHelperTest {
 
         ActionResponse response = configurationHelper.delete(() -> true, () -> {});
         assertEquals(HttpStatus.NO_CONTENT, response.getHttpStatus());
+    }
+
+    private Optional<TestObfuscatedVariable> createOptionalDefault() {
+        return Optional.of(new TestObfuscatedVariable("Model String"));
+    }
+
+    private Optional<TestObfuscatedVariable> createEmptyOptional() {
+        return Optional.empty();
+    }
+
+    private TestObfuscatedVariable createDefault() {
+        return new TestObfuscatedVariable("Model String");
+    }
+
+    class TestObfuscatedVariable implements Obfuscated<TestObfuscatedVariable> {
+        private String variable;
+
+        TestObfuscatedVariable(final String variable) {
+            this.variable = variable;
+        }
+
+        public String getVariable() {
+            return variable;
+        }
+
+        public void setVariable(final String variable) {
+            this.variable = variable;
+        }
+
+        @Override
+        public TestObfuscatedVariable obfuscate() {
+            return null;
+        }
     }
 }

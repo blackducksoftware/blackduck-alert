@@ -11,11 +11,11 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.deser.std.MapDeserializer;
+import com.synopsys.integration.alert.common.rest.api.ConfigurationCrudHelper;
 import com.synopsys.integration.alert.common.rest.model.ConfigWithMetadata;
+import com.synopsys.integration.alert.common.rest.model.Obfuscated;
 
-public class EmailGlobalConfigModel extends ConfigWithMetadata {
+public class EmailGlobalConfigModel extends ConfigWithMetadata implements Obfuscated<EmailGlobalConfigModel> {
     @JsonProperty("smtpFrom")
     private String from;
     @JsonProperty("smtpHost")
@@ -34,6 +34,27 @@ public class EmailGlobalConfigModel extends ConfigWithMetadata {
     private Map<String, String> additionalJavaMailProperties;
 
     public EmailGlobalConfigModel() {}
+
+    @Override
+    public EmailGlobalConfigModel obfuscate() {
+        EmailGlobalConfigModel emailGlobalConfigModel = new EmailGlobalConfigModel();
+
+        emailGlobalConfigModel.setId(getId());
+        emailGlobalConfigModel.setLastUpdated(getLastUpdated());
+        emailGlobalConfigModel.setCreatedAt(getCreatedAt());
+
+        emailGlobalConfigModel.setFrom(from);
+        emailGlobalConfigModel.setHost(host);
+        emailGlobalConfigModel.setPort(port);
+        emailGlobalConfigModel.setAuth(auth);
+        emailGlobalConfigModel.setUsername(username);
+        emailGlobalConfigModel.setAdditionalJavaMailProperties(additionalJavaMailProperties);
+
+        String maskedPassword = (password != null) ? ConfigurationCrudHelper.MASKED_VALUE : null;
+        emailGlobalConfigModel.setPassword(maskedPassword);
+
+        return emailGlobalConfigModel;
+    }
 
     public Optional<String> getFrom() {
         return Optional.ofNullable(from);

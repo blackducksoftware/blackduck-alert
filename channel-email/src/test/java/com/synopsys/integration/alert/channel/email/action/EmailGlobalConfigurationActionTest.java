@@ -47,7 +47,7 @@ public class EmailGlobalConfigurationActionTest {
         ActionResponse<EmailGlobalConfigModel> response = configActions.getOne(1L);
         assertEquals(HttpStatus.OK, response.getHttpStatus());
         assertTrue(response.hasContent());
-        assertEquals(model, response.getContent().get());
+        assertEquals(model.obfuscate(), response.getContent().get());
     }
 
     @Test
@@ -72,7 +72,7 @@ public class EmailGlobalConfigurationActionTest {
         ActionResponse<EmailGlobalConfigModel> response = configActions.create(model);
         assertEquals(HttpStatus.OK, response.getHttpStatus());
         assertTrue(response.hasContent());
-        assertEquals(model, response.getContent().get());
+        assertEquals(model.obfuscate(), response.getContent().get());
     }
 
     @Test
@@ -98,7 +98,7 @@ public class EmailGlobalConfigurationActionTest {
         ActionResponse<EmailGlobalConfigModel> response = configActions.update(1L, model);
         assertEquals(HttpStatus.OK, response.getHttpStatus());
         assertTrue(response.hasContent());
-        assertEquals(model, response.getContent().get());
+        assertEquals(model.obfuscate(), response.getContent().get());
     }
 
     @Test
@@ -191,7 +191,7 @@ public class EmailGlobalConfigurationActionTest {
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailGlobalConfigAccessor emailGlobalConfigAccessor = Mockito.mock(EmailGlobalConfigAccessor.class);
         Mockito.when(emailGlobalConfigAccessor.getConfiguration(Mockito.anyLong())).thenReturn(Optional.empty());
-        
+
         EmailGlobalConfigModel model = new EmailGlobalConfigModel();
         model.setHost("host");
         model.setFrom("from");

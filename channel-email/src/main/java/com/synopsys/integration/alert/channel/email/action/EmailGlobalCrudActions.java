@@ -7,6 +7,9 @@
  */
 package com.synopsys.integration.alert.channel.email.action;
 
+import java.util.Optional;
+import java.util.function.Supplier;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -36,13 +39,15 @@ public class EmailGlobalCrudActions {
 
     public ActionResponse<EmailGlobalConfigModel> getOne(Long id) {
         return configurationHelper.getOne(
-            () -> configurationAccessor.getConfiguration(id).map(DatabaseModelWrapper::getModel)
+            // Compiler wants this cast as it does not understand the types being used
+            (Supplier<Optional<EmailGlobalConfigModel>>) () -> configurationAccessor.getConfiguration(id).map(DatabaseModelWrapper::getModel)
         );
     }
 
     public ActionResponse<AlertPagedModel<EmailGlobalConfigModel>> getPaged(int page, int size) {
         return configurationHelper.getPage(
-            () -> configurationAccessor.getConfigurationPage(page, size).transformContent(DatabaseModelWrapper::getModel)
+            // Compiler wants this cast as it does not understand the types being used
+            (Supplier<AlertPagedModel<EmailGlobalConfigModel>>) () -> configurationAccessor.getConfigurationPage(page, size).transformContent(DatabaseModelWrapper::getModel)
         );
     }
 
