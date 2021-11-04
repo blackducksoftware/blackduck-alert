@@ -20,12 +20,15 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurat
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
+import com.synopsys.integration.alert.common.rest.model.Obfuscated;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.function.ThrowingSupplier;
 
 public class ConfigurationCrudHelper {
+    public static final String MASKED_VALUE = "*****";
+
     private final Logger logger = LoggerFactory.getLogger(ConfigurationCrudHelper.class);
     private final AuthorizationManager authorizationManager;
     private final ConfigContextEnum context;
@@ -37,7 +40,7 @@ public class ConfigurationCrudHelper {
         this.descriptorKey = descriptorKey;
     }
 
-    public <T> ActionResponse<T> getOne(Supplier<Optional<T>> modelSupplier) {
+    public <T extends Obfuscated<T>> ActionResponse<T> getOne(Supplier<Optional<T>> modelSupplier) {
         if (!authorizationManager.hasReadPermission(context, descriptorKey)) {
             return ActionResponse.createForbiddenResponse();
         }
@@ -51,7 +54,7 @@ public class ConfigurationCrudHelper {
         return new ActionResponse<>(HttpStatus.OK, optionalResponse.get());
     }
 
-    public <T extends AlertSerializableModel> ActionResponse<AlertPagedModel<T>> getPage(Supplier<AlertPagedModel<T>> modelSupplier) {
+    public <T extends AlertSerializableModel & Obfuscated<T>> ActionResponse<AlertPagedModel<T>> getPage(Supplier<AlertPagedModel<T>> modelSupplier) {
         if (!authorizationManager.hasReadPermission(context, descriptorKey)) {
             return ActionResponse.createForbiddenResponse();
         }
@@ -65,7 +68,7 @@ public class ConfigurationCrudHelper {
         return new ActionResponse<>(HttpStatus.OK, pagedResponse);
     }
 
-    public <T> ActionResponse<T> create(Supplier<ValidationResponseModel> validator, ThrowingSupplier<T, Exception> modelCreator) {
+    public <T extends Obfuscated<T>> ActionResponse<T> create(Supplier<ValidationResponseModel> validator, ThrowingSupplier<T, Exception> modelCreator) {
         if (!authorizationManager.hasCreatePermission(context, descriptorKey)) {
             return ActionResponse.createForbiddenResponse();
         }
@@ -82,7 +85,7 @@ public class ConfigurationCrudHelper {
         }
     }
 
-    public <T> ActionResponse<T> update(Supplier<ValidationResponseModel> validator, BooleanSupplier existingModelSupplier, ThrowingSupplier<T, AlertConfigurationException> updateFunction) {
+    public <T extends Obfuscated<T>> ActionResponse<T> update(Supplier<ValidationResponseModel> validator, BooleanSupplier existingModelSupplier, ThrowingSupplier<T, AlertConfigurationException> updateFunction) {
         if (!authorizationManager.hasWritePermission(context, descriptorKey)) {
             return ActionResponse.createForbiddenResponse();
         }
