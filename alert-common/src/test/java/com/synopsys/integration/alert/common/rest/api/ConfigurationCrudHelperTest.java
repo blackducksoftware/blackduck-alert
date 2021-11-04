@@ -254,7 +254,7 @@ public class ConfigurationCrudHelperTest {
 
         @Override
         public TestObfuscatedVariable obfuscate() {
-            return null;
+            return this;
         }
     }
 }
