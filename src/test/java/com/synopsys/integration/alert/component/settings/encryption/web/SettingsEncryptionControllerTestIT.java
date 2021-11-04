@@ -61,7 +61,6 @@ public class SettingsEncryptionControllerTestIT {
     @Test
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void testGetOne() throws Exception {
-        //TODO: look into changing the id to a public field
         String url = AlertRestConstants.SETTINGS_ENCRYPTION_PATH + String.format("/%s", 1L);
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(new URI(url))
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
@@ -76,13 +75,13 @@ public class SettingsEncryptionControllerTestIT {
         settingsEncryptionModel.setPassword("password");
         settingsEncryptionModel.setGlobalSalt("globalSalt");
 
-        String url = AlertRestConstants.SETTINGS_ENCRYPTION_PATH;
+        String url = AlertRestConstants.SETTINGS_ENCRYPTION_PATH + String.format("/%s", 1L);
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(new URI(url))
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf())
                                                     .content(gson.toJson(settingsEncryptionModel))
                                                     .contentType(contentType);
-        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isCreated());
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNoContent());
     }
 
     @Test
@@ -108,6 +107,6 @@ public class SettingsEncryptionControllerTestIT {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete(new URI(url))
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
-        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNoContent());
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isMethodNotAllowed());
     }
 }
