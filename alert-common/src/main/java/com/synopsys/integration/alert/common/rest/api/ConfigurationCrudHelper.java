@@ -45,7 +45,7 @@ public class ConfigurationCrudHelper {
             return ActionResponse.createForbiddenResponse();
         }
 
-        Optional<T> optionalResponse = modelSupplier.get();
+        Optional<T> optionalResponse = modelSupplier.get().map(Obfuscated::obfuscate);
 
         if (optionalResponse.isEmpty()) {
             return new ActionResponse<>(HttpStatus.NOT_FOUND);
@@ -59,7 +59,7 @@ public class ConfigurationCrudHelper {
             return ActionResponse.createForbiddenResponse();
         }
 
-        AlertPagedModel<T> pagedResponse = modelSupplier.get();
+        AlertPagedModel<T> pagedResponse = modelSupplier.get().transformContent(Obfuscated::obfuscate);
 
         if (pagedResponse.getCurrentPage() > pagedResponse.getTotalPages()) {
             return new ActionResponse<>(HttpStatus.NOT_FOUND);
@@ -78,7 +78,7 @@ public class ConfigurationCrudHelper {
             return new ActionResponse<>(HttpStatus.BAD_REQUEST, validationResponse.getMessage());
         }
         try {
-            return new ActionResponse<>(HttpStatus.OK, modelCreator.get());
+            return new ActionResponse<>(HttpStatus.OK, modelCreator.get().obfuscate());
         } catch (Exception ex) {
             logger.error("Error creating config:", ex);
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Error creating config: %s", ex.getMessage()));
@@ -100,7 +100,7 @@ public class ConfigurationCrudHelper {
             return new ActionResponse<>(HttpStatus.BAD_REQUEST, validationResponse.getMessage());
         }
         try {
-            return new ActionResponse<>(HttpStatus.OK, updateFunction.get());
+            return new ActionResponse<>(HttpStatus.OK, updateFunction.get().obfuscate());
         } catch (Exception ex) {
             logger.error("Error updating config:", ex);
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Error updating config: %s", ex.getMessage()));

@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.channel.email.action;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,24 +39,22 @@ public class EmailGlobalCrudActions {
 
     public ActionResponse<EmailGlobalConfigModel> getOne(Long id) {
         return configurationHelper.getOne(
-            () -> configurationAccessor.getConfiguration(id).map(DatabaseModelWrapper::getModel).map(EmailGlobalConfigModel::obfuscate)
+            // Compiler wants this cast as it does not understand the types being used
+            (Supplier<Optional<EmailGlobalConfigModel>>) () -> configurationAccessor.getConfiguration(id).map(DatabaseModelWrapper::getModel)
         );
     }
 
     public ActionResponse<AlertPagedModel<EmailGlobalConfigModel>> getPaged(int page, int size) {
         return configurationHelper.getPage(
             // Compiler wants this cast as it does not understand the types being used
-            (Supplier<AlertPagedModel<EmailGlobalConfigModel>>) () -> configurationAccessor.getConfigurationPage(page, size).transformContent(databaseWrapper -> {
-                EmailGlobalConfigModel model = databaseWrapper.getModel();
-                return model.obfuscate();
-            })
+            (Supplier<AlertPagedModel<EmailGlobalConfigModel>>) () -> configurationAccessor.getConfigurationPage(page, size).transformContent(DatabaseModelWrapper::getModel)
         );
     }
 
     public ActionResponse<EmailGlobalConfigModel> create(EmailGlobalConfigModel resource) {
         return configurationHelper.create(
             () -> validator.validate(resource),
-            () -> configurationAccessor.createConfiguration(resource).getModel().obfuscate()
+            () -> configurationAccessor.createConfiguration(resource).getModel()
         );
     }
 
@@ -63,7 +62,7 @@ public class EmailGlobalCrudActions {
         return configurationHelper.update(
             () -> validator.validate(requestResource),
             () -> configurationAccessor.getConfiguration(id).isPresent(),
-            () -> configurationAccessor.updateConfiguration(id, requestResource).getModel().obfuscate()
+            () -> configurationAccessor.updateConfiguration(id, requestResource).getModel()
         );
     }
 
