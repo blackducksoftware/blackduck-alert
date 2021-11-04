@@ -21,13 +21,19 @@ const FluidFieldMappingField = ({
 
     useEffect(() => {
         const valueList = Object.keys(value).map((key) => ({ [key]: value[key] }));
-        valueList.push({});
-        setFieldMappings(valueList);
-    }, []);
+        if (JSON.stringify(valueList) !== JSON.stringify(fieldMappings)) {
+            setFieldMappings(valueList);
+        }
+    }, [value]);
 
     useEffect(() => {
-        const formData = Object.fromEntries(fieldMappings.filter((mapping) => Object.keys(mapping).length === 1));
-        setValue(formData);
+        const updatedMappings = {};
+        fieldMappings.filter((mapping) => Object.keys(mapping).length === 1).forEach((mapping) => {
+            Object.assign(updatedMappings, mapping);
+        });
+        if (JSON.stringify(updatedMappings) !== JSON.stringify(value)) {
+            setValue(updatedMappings);
+        }
     }, [fieldMappings]);
 
     const deleteMappingRow = (index) => {

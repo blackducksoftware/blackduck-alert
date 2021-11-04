@@ -9,10 +9,10 @@ metadata:
   name: {{ .Release.Name }}-cfssl
   namespace: {{ .Release.Namespace }}
 spec:
-  {{- if eq .Values.status "Running" }} 
-  replicas: 1 
-  {{- else }} 
-  replicas: 0 
+  {{- if eq .Values.status "Running" }}
+  replicas: 1
+  {{- else }}
+  replicas: 0
   {{- end }}
   selector:
     matchLabels:
@@ -38,7 +38,7 @@ spec:
           {{- if .Values.cfssl.registry }}
           image: {{ .Values.cfssl.registry }}/blackduck-cfssl:{{ .Values.cfssl.imageTag }}
           {{- else }}
-          image: {{ .Values.registry }}/blackduck-cfssl:{{ .Values.cfssl.imageTag }} 
+          image: {{ .Values.registry }}/blackduck-cfssl:{{ .Values.cfssl.imageTag }}
           {{- end }}
           livenessProbe:
             exec:
@@ -66,15 +66,15 @@ spec:
       {{- include "alert.imagePullSecrets" . | nindent 6 -}}
       {{- with .Values.cfssl.nodeSelector }}
       nodeSelector:
-      {{ toYaml . | indent 2 }}
+{{ toYaml . | indent 8 }}
       {{- end }}
       {{- with .Values.cfssl.affinity }}
       affinity:
-      {{ toYaml . | indent 2 }}
+{{ toYaml . | indent 8 }}
       {{- end }}
       {{- with .Values.cfssl.tolerations }}
       tolerations:
-      {{ toYaml . | indent 2 }}
+{{ toYaml . | indent 6 }}
       {{- end }}
       {{- with .Values.cfssl.podSecurityContext }}
       securityContext:
