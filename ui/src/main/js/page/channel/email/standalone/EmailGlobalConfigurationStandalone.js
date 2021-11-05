@@ -27,8 +27,6 @@ const EmailGlobalConfigurationStandalone = ({
     const [testEmailAddress, setTestEmailAddress] = useState('');
     const [passwordFromApiExists, setPasswordFromApiExists] = useState(false);
 
-    console.log(testEmailAddress);
-
     const testField = (
         <TextInput
             id={EMAIL_TEST_FIELD.key}
