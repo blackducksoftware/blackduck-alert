@@ -19,9 +19,7 @@ public final class AlertRestConstants {
     public static final String SETTINGS_PATH = AlertRestConstants.BASE_PATH + "/settings";
     public static final String SETTINGS_ENCRYPTION_PATH = AlertRestConstants.SETTINGS_PATH + "/encryption";
     public static final String SETTINGS_PROXY_PATH = AlertRestConstants.SETTINGS_PATH + "/proxy";
-
-    public static final String PASSWORD_FIELD_MASK = "******";
-
+    
     private AlertRestConstants() {
         // This class should not be instantiated
     }

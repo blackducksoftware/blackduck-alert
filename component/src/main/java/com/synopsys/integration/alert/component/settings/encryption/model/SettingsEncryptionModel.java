@@ -10,9 +10,11 @@ package com.synopsys.integration.alert.component.settings.encryption.model;
 import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.synopsys.integration.alert.common.rest.api.ConfigurationCrudHelper;
 import com.synopsys.integration.alert.common.rest.model.ConfigWithMetadata;
+import com.synopsys.integration.alert.common.rest.model.Obfuscated;
 
-public class SettingsEncryptionModel extends ConfigWithMetadata {
+public class SettingsEncryptionModel extends ConfigWithMetadata implements Obfuscated<SettingsEncryptionModel> {
     @JsonProperty("encryptionPassword")
     private String password;
     @JsonProperty("encryptionGlobalSalt")
@@ -34,4 +36,15 @@ public class SettingsEncryptionModel extends ConfigWithMetadata {
         this.globalSalt = globalSalt;
     }
 
+    @Override
+    public SettingsEncryptionModel obfuscate() {
+        SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel();
+
+        String maskedPassword = (password != null) ? ConfigurationCrudHelper.MASKED_VALUE : null;
+        settingsEncryptionModel.setPassword(maskedPassword);
+        String maskedGlobalSalt = (globalSalt != null) ? ConfigurationCrudHelper.MASKED_VALUE : null;
+        settingsEncryptionModel.setGlobalSalt(maskedGlobalSalt);
+
+        return settingsEncryptionModel;
+    }
 }
