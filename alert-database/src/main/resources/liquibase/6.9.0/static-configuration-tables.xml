@@ -27,7 +27,7 @@
             </not>
         </preConditions>
         <createTable schemaName="alert" tableName="configuration_email">
-            <column name="configuration_id" type="UUID">
+            <column name="configuration_id" type="UUID" defaultValueComputed="uuid_generate_v4()">
                 <constraints primaryKey="true"/>
             </column>
             <column name="smtp_from" type="VARCHAR">

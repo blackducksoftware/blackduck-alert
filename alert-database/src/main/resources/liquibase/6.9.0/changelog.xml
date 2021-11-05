@@ -4,4 +4,5 @@
     <include file="primary-key-update.xml" relativeToChangelogFile="true"/>
     <include file="delete-provider-tables.xml" relativeToChangelogFile="true"/>
     <include file="static-configuration-tables.xml" relativeToChangelogFile="true"/>
+    <include file="migrate-helper-functions.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
