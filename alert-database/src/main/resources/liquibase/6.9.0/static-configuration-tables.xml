@@ -30,6 +30,9 @@
             <column name="configuration_id" type="UUID" defaultValueComputed="uuid_generate_v4()">
                 <constraints primaryKey="true"/>
             </column>
+            <column name="smtp_host" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
             <column name="smtp_from" type="VARCHAR">
                 <constraints nullable="false"/>
             </column>
@@ -43,9 +46,6 @@
                 <constraints nullable="true"/>
             </column>
             <column name="auth_password" type="VARCHAR">
-                <constraints nullable="true"/>
-            </column>
-            <column name="additional_email_config_properties_id" type="UUID">
                 <constraints nullable="true"/>
             </column>
         </createTable>

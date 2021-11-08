@@ -5,4 +5,5 @@
     <include file="delete-provider-tables.xml" relativeToChangelogFile="true"/>
     <include file="static-configuration-tables.xml" relativeToChangelogFile="true"/>
     <include file="migrate-helper-functions.xml" relativeToChangelogFile="true"/>
+    <include file="migrate-email-global-config.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
