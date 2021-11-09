@@ -32,9 +32,7 @@ public class EmailGlobalConfigModel extends ConfigWithMetadata implements Obfusc
 
     @JsonProperty("additionalJavaMailProperties")
     private Map<String, String> additionalJavaMailProperties;
-
-    public EmailGlobalConfigModel() {}
-
+    
     @Override
     public EmailGlobalConfigModel obfuscate() {
         EmailGlobalConfigModel emailGlobalConfigModel = new EmailGlobalConfigModel();
