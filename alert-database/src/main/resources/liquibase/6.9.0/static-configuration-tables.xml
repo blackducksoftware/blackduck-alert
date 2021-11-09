@@ -98,10 +98,10 @@
         <addForeignKeyConstraint
                 constraintName="configuration_email_properties_configuration_id_fk"
                 baseTableSchemaName="alert"
-                baseTableName="configuration_email"
+                baseTableName="configuration_email_properties"
                 baseColumnNames="configuration_id"
                 referencedTableSchemaName="alert"
-                referencedTableName="configuration_email_properties"
+                referencedTableName="configuration_email"
                 referencedColumnNames="configuration_id"
                 onDelete="CASCADE"
                 onUpdate="CASCADE"
