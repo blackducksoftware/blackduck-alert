@@ -20,7 +20,7 @@
         </createProcedure>
         <createProcedure schemaName="ALERT" dbms="postgresql">
             CREATE OR REPLACE FUNCTION GET_GLOBAL_CONFIG_TIMESTAMPS(text)
-                RETURNS table (created_at TIMESTAMP, last_updated TIMESTAMP) AS $$
+                RETURNS table (created_at TIMESTAMP WITH TIME ZONE, last_updated TIMESTAMP WITH TIME ZONE) AS $$
                     BEGIN
                      RETURN QUERY
                       SELECT config.created_at, config.last_updated

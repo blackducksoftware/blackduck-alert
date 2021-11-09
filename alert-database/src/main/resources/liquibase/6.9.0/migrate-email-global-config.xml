@@ -7,8 +7,15 @@
             <rowCount schemaName="alert" tableName="configuration_email" expectedRows="0"/>
         </preConditions>
         <sql dbms="postgresql" stripComments="true">
-            INSERT INTO alert.configuration_email (smtp_host, smtp_from, port, auth_required, auth_username, auth_password)
-            SELECT 'initial-email-config', '', null, false, null, null
+            INSERT INTO alert.configuration_email (created_at, last_updated, smtp_host, smtp_from, port, auth_required, auth_username, auth_password)
+            SELECT now(),
+                   null,
+                   'initial-email-config',
+                   '',
+                   null,
+                   false,
+                   null,
+                   null
             FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_email') configFields
             WHERE configFields.source_key IS NOT NULL LIMIT 1;
         </sql>
@@ -16,6 +23,14 @@
 
     <!-- Update common job fields one at a time -->
     <changeSet author="psantos" id="update-initial-email-config-entries">
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_email config
+            SET created_at = configTimestamps.created_at FROM GET_GLOBAL_CONFIG_TIMESTAMPS('channel_email') configTimestamps;
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_email config
+            SET last_updated = configTimestamps.last_updated FROM GET_GLOBAL_CONFIG_TIMESTAMPS('channel_email') configTimestamps;
+        </sql>
         <sql dbms="postgresql" stripComments="true">
             UPDATE alert.configuration_email config
             SET smtp_from = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_email') configFields
