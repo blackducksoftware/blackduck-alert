@@ -9,11 +9,8 @@ package com.synopsys.integration.alert.component.settings.encryption.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
 
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.api.BaseResourceController;
 import com.synopsys.integration.alert.common.rest.api.ValidateController;
@@ -23,8 +20,8 @@ import com.synopsys.integration.alert.component.settings.encryption.action.Setti
 import com.synopsys.integration.alert.component.settings.encryption.model.SettingsEncryptionModel;
 
 //TODO: Disabled until new UI component is complete
-@RestController
-@RequestMapping(AlertRestConstants.SETTINGS_ENCRYPTION_PATH)
+//@RestController
+//@RequestMapping(AlertRestConstants.SETTINGS_ENCRYPTION_PATH)
 public class SettingsEncryptionController implements BaseResourceController<SettingsEncryptionModel>, ValidateController<SettingsEncryptionModel> {
     private final SettingsEncryptionCrudActions configActions;
     private final SettingsEncryptionValidationAction validationAction;
