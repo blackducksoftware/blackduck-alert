@@ -25,9 +25,9 @@ public class SettingsEncryptionValidationAction {
     private final ConfigurationValidationHelper validationHelper;
 
     @Autowired
-    public SettingsEncryptionValidationAction(SettingsEncryptionValidator validator, AuthorizationManager authorizationManager) {
+    public SettingsEncryptionValidationAction(SettingsEncryptionValidator validator, AuthorizationManager authorizationManager, SettingsDescriptorKey settingsDescriptorKey) {
         this.validator = validator;
-        this.validationHelper = new ConfigurationValidationHelper(authorizationManager, ConfigContextEnum.GLOBAL, new SettingsDescriptorKey());
+        this.validationHelper = new ConfigurationValidationHelper(authorizationManager, ConfigContextEnum.GLOBAL, settingsDescriptorKey);
     }
 
     public ActionResponse<ValidationResponseModel> validate(SettingsEncryptionModel requestResource) {

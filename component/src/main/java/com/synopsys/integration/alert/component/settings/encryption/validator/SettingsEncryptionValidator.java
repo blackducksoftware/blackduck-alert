@@ -9,6 +9,7 @@ package com.synopsys.integration.alert.component.settings.encryption.validator;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.BooleanSupplier;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -37,36 +38,32 @@ public class SettingsEncryptionValidator extends BaseSystemValidator {
         super(systemMessageAccessor);
         this.encryptionUtility = encryptionUtility;
     }
-    
+
     public ValidationResponseModel validate(SettingsEncryptionModel model) {
         Set<AlertFieldStatus> statuses = new HashSet<>();
         getSystemMessageAccessor().removeSystemMessagesByType(SystemMessageType.ENCRYPTION_CONFIGURATION_ERROR);
 
-        boolean encryptionInitialized = encryptionUtility.isInitialized();
         boolean isPasswordMissing = model.getPassword().filter(StringUtils::isNotBlank).isEmpty();
         boolean isGlobalSaltMissing = model.getGlobalSalt().filter(StringUtils::isNotBlank).isEmpty();
-        if (isPasswordMissing && !encryptionInitialized) {
-            boolean encryptionError = addSystemMessageForError(SettingsDescriptor.FIELD_ERROR_ENCRYPTION_PWD, SystemMessageSeverity.ERROR, SystemMessageType.ENCRYPTION_CONFIGURATION_ERROR,
-                encryptionUtility.isPasswordMissing());
-            if (encryptionError) {
-                logger.error(SettingsDescriptor.FIELD_ERROR_ENCRYPTION_PWD);
-                statuses.add(AlertFieldStatus.error("encryptionPassword", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
-            }
-        }
-
-        if (isGlobalSaltMissing && !encryptionInitialized) {
-            boolean saltError = addSystemMessageForError(SettingsDescriptor.FIELD_ERROR_ENCRYPTION_GLOBAL_SALT, SystemMessageSeverity.ERROR, SystemMessageType.ENCRYPTION_CONFIGURATION_ERROR,
-                encryptionUtility.isGlobalSaltMissing());
-            if (saltError) {
-                logger.error(SettingsDescriptor.FIELD_ERROR_ENCRYPTION_GLOBAL_SALT);
-                statuses.add(AlertFieldStatus.error("encryptionGlobalSalt", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
-            }
-        }
+        checkFieldInitialized(statuses, "encryptionPassword", SettingsDescriptor.FIELD_ERROR_ENCRYPTION_PWD, isPasswordMissing, encryptionUtility::isPasswordMissing);
+        checkFieldInitialized(statuses, "encryptionGlobalSalt", SettingsDescriptor.FIELD_ERROR_ENCRYPTION_GLOBAL_SALT, isGlobalSaltMissing, encryptionUtility::isGlobalSaltMissing);
 
         if (!statuses.isEmpty()) {
             return ValidationResponseModel.fromStatusCollection(statuses);
         }
 
         return ValidationResponseModel.success();
+    }
+
+    private void checkFieldInitialized(Set<AlertFieldStatus> statuses, String fieldName, String fieldErrorMessage, boolean isFieldMissingFromModel, BooleanSupplier isFieldMissing) {
+        boolean encryptionInitialized = encryptionUtility.isInitialized();
+        if (isFieldMissingFromModel && !encryptionInitialized) {
+            boolean encryptionError = addSystemMessageForError(fieldErrorMessage, SystemMessageSeverity.ERROR, SystemMessageType.ENCRYPTION_CONFIGURATION_ERROR,
+                isFieldMissing.getAsBoolean());
+            if (encryptionError) {
+                logger.error(fieldErrorMessage);
+                statuses.add(AlertFieldStatus.error(fieldName, AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
+            }
+        }
     }
 }

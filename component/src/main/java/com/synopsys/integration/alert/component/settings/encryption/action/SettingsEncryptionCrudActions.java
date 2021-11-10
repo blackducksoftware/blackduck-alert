@@ -34,8 +34,8 @@ public class SettingsEncryptionCrudActions {
     private final SettingsEncryptionValidator validator;
 
     @Autowired
-    public SettingsEncryptionCrudActions(AuthorizationManager authorizationManager, EncryptionUtility encryptionUtility, SettingsEncryptionValidator validator) {
-        this.configurationHelper = new ConfigurationCrudHelper(authorizationManager, ConfigContextEnum.GLOBAL, new SettingsDescriptorKey());
+    public SettingsEncryptionCrudActions(AuthorizationManager authorizationManager, EncryptionUtility encryptionUtility, SettingsEncryptionValidator validator, SettingsDescriptorKey settingsDescriptorKey) {
+        this.configurationHelper = new ConfigurationCrudHelper(authorizationManager, ConfigContextEnum.GLOBAL, settingsDescriptorKey);
         this.encryptionUtility = encryptionUtility;
         this.validator = validator;
     }

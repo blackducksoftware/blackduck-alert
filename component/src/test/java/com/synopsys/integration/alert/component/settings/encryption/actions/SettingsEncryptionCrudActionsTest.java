@@ -35,7 +35,7 @@ public class SettingsEncryptionCrudActionsTest {
     private final AlertProperties alertProperties = new MockAlertProperties();
     private final FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, gson);
     private final EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, filePersistenceUtil);
-    
+
     private final AuthenticationTestUtils authenticationTestUtils = new AuthenticationTestUtils();
     private final DescriptorKey descriptorKey = new SettingsDescriptorKey();
     private final PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
@@ -45,9 +45,11 @@ public class SettingsEncryptionCrudActionsTest {
     private final SystemMessageAccessor systemMessageAccessor = Mockito.mock(SystemMessageAccessor.class);
     private final SettingsEncryptionValidator validator = new SettingsEncryptionValidator(encryptionUtility, systemMessageAccessor);
 
+    private final SettingsDescriptorKey settingsDescriptorKey = new SettingsDescriptorKey();
+
     @Test
     public void getOneTest() {
-        SettingsEncryptionCrudActions configActions = new SettingsEncryptionCrudActions(authorizationManager, encryptionUtility, validator);
+        SettingsEncryptionCrudActions configActions = new SettingsEncryptionCrudActions(authorizationManager, encryptionUtility, validator, settingsDescriptorKey);
         ActionResponse<SettingsEncryptionModel> actionResponse = configActions.getOne();
 
         assertTrue(actionResponse.isSuccessful());
@@ -64,7 +66,7 @@ public class SettingsEncryptionCrudActionsTest {
         FilePersistenceUtil filePersistenceUtilWithoutProperties = new FilePersistenceUtil(alertPropertiesNoEncryption, gson);
         EncryptionUtility encryptionUtilityWithoutProperties = new EncryptionUtility(alertPropertiesNoEncryption, filePersistenceUtilWithoutProperties);
 
-        SettingsEncryptionCrudActions configActions = new SettingsEncryptionCrudActions(authorizationManager, encryptionUtilityWithoutProperties, validator);
+        SettingsEncryptionCrudActions configActions = new SettingsEncryptionCrudActions(authorizationManager, encryptionUtilityWithoutProperties, validator, settingsDescriptorKey);
         ActionResponse<SettingsEncryptionModel> actionResponse = configActions.getOne();
 
         assertTrue(actionResponse.isError());
@@ -78,7 +80,7 @@ public class SettingsEncryptionCrudActionsTest {
         settingsEncryptionModel.setPassword("password");
         settingsEncryptionModel.setGlobalSalt("globalSalt");
 
-        SettingsEncryptionCrudActions configActions = new SettingsEncryptionCrudActions(authorizationManager, encryptionUtility, validator);
+        SettingsEncryptionCrudActions configActions = new SettingsEncryptionCrudActions(authorizationManager, encryptionUtility, validator, settingsDescriptorKey);
         ActionResponse<SettingsEncryptionModel> actionResponse = configActions.update(settingsEncryptionModel);
 
         assertTrue(actionResponse.isSuccessful());
