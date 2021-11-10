@@ -50,24 +50,18 @@ public class SettingsEncryptionControllerTestIT {
     @Test
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void testCreate() throws Exception {
-        SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel();
-        settingsEncryptionModel.setPassword("password");
-        settingsEncryptionModel.setGlobalSalt("globalSalt");
-
         String url = AlertRestConstants.SETTINGS_ENCRYPTION_PATH;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(new URI(url))
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
-                                                    .with(SecurityMockMvcRequestPostProcessors.csrf())
-                                                    .content(gson.toJson(settingsEncryptionModel))
-                                                    .contentType(contentType);
-        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isCreated());
+                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isMethodNotAllowed());
     }
 
     @Disabled
     @Test
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void testGetOne() throws Exception {
-        String url = AlertRestConstants.SETTINGS_ENCRYPTION_PATH + String.format("/%s", 1L);
+        String url = AlertRestConstants.SETTINGS_ENCRYPTION_PATH;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(new URI(url))
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
@@ -82,7 +76,7 @@ public class SettingsEncryptionControllerTestIT {
         settingsEncryptionModel.setPassword("password");
         settingsEncryptionModel.setGlobalSalt("globalSalt");
 
-        String url = AlertRestConstants.SETTINGS_ENCRYPTION_PATH + String.format("/%s", 1L);
+        String url = AlertRestConstants.SETTINGS_ENCRYPTION_PATH;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(new URI(url))
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf())
@@ -112,7 +106,7 @@ public class SettingsEncryptionControllerTestIT {
     @Test
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void testDelete() throws Exception {
-        String url = AlertRestConstants.SETTINGS_ENCRYPTION_PATH + String.format("/%s", 1L);
+        String url = AlertRestConstants.SETTINGS_ENCRYPTION_PATH;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete(new URI(url))
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());

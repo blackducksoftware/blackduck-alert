@@ -35,9 +35,7 @@ public class SettingsEncryptionCrudActionsTest {
     private final AlertProperties alertProperties = new MockAlertProperties();
     private final FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, gson);
     private final EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, filePersistenceUtil);
-
-    private final Long encryptionId = 1L;
-
+    
     private final AuthenticationTestUtils authenticationTestUtils = new AuthenticationTestUtils();
     private final DescriptorKey descriptorKey = new SettingsDescriptorKey();
     private final PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
@@ -50,23 +48,12 @@ public class SettingsEncryptionCrudActionsTest {
     @Test
     public void getOneTest() {
         SettingsEncryptionCrudActions configActions = new SettingsEncryptionCrudActions(authorizationManager, encryptionUtility, validator);
-        ActionResponse<SettingsEncryptionModel> actionResponse = configActions.getOne(encryptionId);
+        ActionResponse<SettingsEncryptionModel> actionResponse = configActions.getOne();
 
         assertTrue(actionResponse.isSuccessful());
         assertTrue(actionResponse.hasContent());
         assertEquals(HttpStatus.OK, actionResponse.getHttpStatus());
         assertModelObfuscated(actionResponse);
-    }
-
-    @Test
-    public void getOneBadIdTest() {
-        Long invalidEncryptionId = 99L;
-        SettingsEncryptionCrudActions configActions = new SettingsEncryptionCrudActions(authorizationManager, encryptionUtility, validator);
-        ActionResponse<SettingsEncryptionModel> actionResponse = configActions.getOne(invalidEncryptionId);
-
-        assertTrue(actionResponse.isError());
-        assertFalse(actionResponse.hasContent());
-        assertEquals(HttpStatus.NOT_FOUND, actionResponse.getHttpStatus());
     }
 
     @Test
@@ -78,26 +65,11 @@ public class SettingsEncryptionCrudActionsTest {
         EncryptionUtility encryptionUtilityWithoutProperties = new EncryptionUtility(alertPropertiesNoEncryption, filePersistenceUtilWithoutProperties);
 
         SettingsEncryptionCrudActions configActions = new SettingsEncryptionCrudActions(authorizationManager, encryptionUtilityWithoutProperties, validator);
-        ActionResponse<SettingsEncryptionModel> actionResponse = configActions.getOne(encryptionId);
+        ActionResponse<SettingsEncryptionModel> actionResponse = configActions.getOne();
 
         assertTrue(actionResponse.isError());
         assertFalse(actionResponse.hasContent());
         assertEquals(HttpStatus.NOT_FOUND, actionResponse.getHttpStatus());
-    }
-
-    @Test
-    public void createTest() {
-        SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel();
-        settingsEncryptionModel.setPassword("password");
-        settingsEncryptionModel.setGlobalSalt("globalSalt");
-
-        SettingsEncryptionCrudActions configActions = new SettingsEncryptionCrudActions(authorizationManager, encryptionUtility, validator);
-        ActionResponse<SettingsEncryptionModel> actionResponse = configActions.create(settingsEncryptionModel);
-
-        assertTrue(actionResponse.isSuccessful());
-        assertTrue(actionResponse.hasContent());
-        assertEquals(HttpStatus.OK, actionResponse.getHttpStatus());
-        assertModelObfuscated(actionResponse);
     }
 
     @Test
@@ -107,7 +79,7 @@ public class SettingsEncryptionCrudActionsTest {
         settingsEncryptionModel.setGlobalSalt("globalSalt");
 
         SettingsEncryptionCrudActions configActions = new SettingsEncryptionCrudActions(authorizationManager, encryptionUtility, validator);
-        ActionResponse<SettingsEncryptionModel> actionResponse = configActions.update(encryptionId, settingsEncryptionModel);
+        ActionResponse<SettingsEncryptionModel> actionResponse = configActions.update(settingsEncryptionModel);
 
         assertTrue(actionResponse.isSuccessful());
         assertTrue(actionResponse.hasContent());

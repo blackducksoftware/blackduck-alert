@@ -29,9 +29,6 @@ import com.synopsys.integration.alert.component.settings.encryption.validator.Se
 public class SettingsEncryptionCrudActions {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    //Encryption is not stored in the database and there will ever only be one ID associated with it.
-    private static final Long DEFAULT_ENCRYPTION_ID = 1L;
-
     private final ConfigurationCrudHelper configurationHelper;
     private final EncryptionUtility encryptionUtility;
     private final SettingsEncryptionValidator validator;
@@ -43,41 +40,28 @@ public class SettingsEncryptionCrudActions {
         this.validator = validator;
     }
 
-    public ActionResponse<SettingsEncryptionModel> getOne(Long id) {
+    public ActionResponse<SettingsEncryptionModel> getOne() {
         return configurationHelper.getOne(
-            () -> getSettingsEncryptionModel(id)
+            this::getSettingsEncryptionModel
         );
     }
 
-    public ActionResponse<SettingsEncryptionModel> create(SettingsEncryptionModel resource) {
-        return configurationHelper.create(
-            () -> validator.validate(resource),
-            () -> createSettingsEncryptionModel(resource)
-        );
-    }
-
-    public ActionResponse<SettingsEncryptionModel> update(Long id, SettingsEncryptionModel requestResource) {
+    public ActionResponse<SettingsEncryptionModel> update(SettingsEncryptionModel requestResource) {
         return configurationHelper.update(
             () -> validator.validate(requestResource),
-            () -> getSettingsEncryptionModel(id).isPresent(),
+            () -> getSettingsEncryptionModel().isPresent(),
             () -> updateSettingsEncryptionModel(requestResource)
         );
     }
 
-    private Optional<SettingsEncryptionModel> getSettingsEncryptionModel(Long id) {
-        if (!id.equals(DEFAULT_ENCRYPTION_ID)) {
-            return Optional.empty();
-        }
-
+    private Optional<SettingsEncryptionModel> getSettingsEncryptionModel() {
         if (encryptionUtility.isInitialized()) {
             return Optional.of(createMaskedSettingsEncryptionModel());
         }
         return Optional.empty();
     }
 
-    private SettingsEncryptionModel createSettingsEncryptionModel(SettingsEncryptionModel model) {
-        //  We always want encryption settings to be set in the environment. The only time they could be empty is when the system is initialized.
-        //  Since we do not store encryption settings in the database, create and update are the same.
+    private SettingsEncryptionModel updateSettingsEncryptionModel(SettingsEncryptionModel model) {
         try {
             Optional<String> optionalEncryptionPassword = model.getPassword();
             Optional<String> optionalEncryptionSalt = model.getGlobalSalt();
@@ -101,11 +85,8 @@ public class SettingsEncryptionCrudActions {
         return createMaskedSettingsEncryptionModel();
     }
 
-    private SettingsEncryptionModel updateSettingsEncryptionModel(SettingsEncryptionModel model) {
-        return createSettingsEncryptionModel(model);
-    }
-
     private SettingsEncryptionModel createMaskedSettingsEncryptionModel() {
+        // EncryptionUtility does not return a model. A SettingsEncryptionModel with values must be created in order to obfuscate in the ConfigurationCrudHelper later.
         SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel();
         settingsEncryptionModel.setPassword(ConfigurationCrudHelper.MASKED_VALUE);
         settingsEncryptionModel.setGlobalSalt(ConfigurationCrudHelper.MASKED_VALUE);

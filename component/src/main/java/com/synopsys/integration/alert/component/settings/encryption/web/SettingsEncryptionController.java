@@ -9,10 +9,13 @@ package com.synopsys.integration.alert.component.settings.encryption.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
-import com.synopsys.integration.alert.common.rest.api.BaseResourceController;
 import com.synopsys.integration.alert.common.rest.api.ValidateController;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.component.settings.encryption.action.SettingsEncryptionCrudActions;
@@ -22,7 +25,7 @@ import com.synopsys.integration.alert.component.settings.encryption.model.Settin
 //TODO: Disabled until new UI component is complete
 //@RestController
 //@RequestMapping(AlertRestConstants.SETTINGS_ENCRYPTION_PATH)
-public class SettingsEncryptionController implements BaseResourceController<SettingsEncryptionModel>, ValidateController<SettingsEncryptionModel> {
+public class SettingsEncryptionController implements ValidateController<SettingsEncryptionModel> {
     private final SettingsEncryptionCrudActions configActions;
     private final SettingsEncryptionValidationAction validationAction;
 
@@ -32,24 +35,26 @@ public class SettingsEncryptionController implements BaseResourceController<Sett
         this.validationAction = validationAction;
     }
 
-    @Override
-    public SettingsEncryptionModel create(SettingsEncryptionModel resource) {
-        return ResponseFactory.createContentResponseFromAction(configActions.create(resource));
-    }
-
-    @Override
-    public SettingsEncryptionModel getOne(Long id) {
-        return ResponseFactory.createContentResponseFromAction(configActions.getOne(id));
-    }
-
-    @Override
-    public void update(Long id, SettingsEncryptionModel resource) {
-        ResponseFactory.createContentResponseFromAction(configActions.update(id, resource));
-    }
-
+    @PostMapping
     @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
-    @Override
-    public void delete(Long id) {
+    public void create() {
+        // Create is not supported for encryption
+    }
+
+    @GetMapping
+    public SettingsEncryptionModel getOne() {
+        return ResponseFactory.createContentResponseFromAction(configActions.getOne());
+    }
+
+    @PutMapping
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void update(SettingsEncryptionModel resource) {
+        ResponseFactory.createContentResponseFromAction(configActions.update(resource));
+    }
+
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+    public void delete() {
         // Delete is not supported for encryption
     }
 
