@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
+    <!-- Create functions for repeated queries -->
+    <changeSet author="psantos" id="create-configuration-migration-helper-functions">
+        <createProcedure schemaName="ALERT" dbms="postgresql">
+            CREATE OR REPLACE FUNCTION GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE(text)
+                RETURNS table (source_key VARCHAR, field_value VARCHAR) AS $$
+                    BEGIN
+                     RETURN QUERY
+                      SELECT field.source_key, fv.field_value
+                            FROM alert.descriptor_configs config
+                            LEFT JOIN alert.field_values fv ON fv.config_id = config.id
+                            INNER JOIN alert.defined_fields field on field.id = fv.field_id
+                            WHERE config.descriptor_id = GET_DESCRIPTOR_ID($1)
+                            and config.context_id = GET_CONTEXT_ID('GLOBAL');
+                    END;
+                $$ LANGUAGE plpgsql;
+        </createProcedure>
+        <createProcedure schemaName="ALERT" dbms="postgresql">
+            CREATE OR REPLACE FUNCTION GET_GLOBAL_CONFIG_TIMESTAMPS(text)
+                RETURNS table (created_at TIMESTAMP WITH TIME ZONE, last_updated TIMESTAMP WITH TIME ZONE) AS $$
+                    BEGIN
+                     RETURN QUERY
+                      SELECT config.created_at, config.last_updated
+                            FROM alert.descriptor_configs config
+                            WHERE config.descriptor_id = GET_DESCRIPTOR_ID($1)
+                            and config.context_id = GET_CONTEXT_ID('GLOBAL');
+                    END;
+                $$ LANGUAGE plpgsql;
+        </createProcedure>
+    </changeSet>
+</databaseChangeLog>
