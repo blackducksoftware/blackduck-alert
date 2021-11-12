@@ -13,7 +13,7 @@ alertDatabaseUser="${ALERT_DB_USERNAME:-sa}"
 alertDatabasePassword="${ALERT_DB_PASSWORD:-blackduck}"
 alertDatabaseAdminUser="${ALERT_DB_ADMIN_USERNAME:-$alertDatabaseUser}"
 alertDatabaseAdminPassword="${ALERT_DB_ADMIN_PASSWORD:-$alertDatabasePassword}"
-alertDatabaseSslMode="${ALERT_DB_SSL_MODE:allow}"
+alertDatabaseSslMode="${ALERT_DB_SSL_MODE:-allow}"
 alertDatabaseSslKey=${ALERT_DB_SSL_KEY}
 alertDatabaseSslCert=${ALERT_DB_SSL_CERT}
 alertDatabaseSslRootCert=${ALERT_DB_SSL_ROOT_CERT}
@@ -39,19 +39,19 @@ targetWebAppHost="${HUB_WEBAPP_HOST:-alert}"
 if [ -e $dockerSecretDir/ALERT_TRUST_STORE_PASSWORD ];
 then
   echo "Trust Store secret set; using value from secret."
-  truststorePassword=$(cat $dockerSecretDir/ALERT_TRUST_STORE_PASSWORD)
+  truststorePassword=$(cat $dockerSecretDir/ALERT_TRUST_STORE_PASSWORD | xargs echo)
 fi
 
 if [ -e $dockerSecretDir/ALERT_KEY_STORE_PASSWORD ];
 then
   echo "Key Store secret set; using value from secret."
-  keystorePassword=$(cat $dockerSecretDir/ALERT_KEY_STORE_PASSWORD)
+  keystorePassword=$(cat $dockerSecretDir/ALERT_KEY_STORE_PASSWORD | xargs echo)
 fi
 
 if [ -e $dockerSecretDir/ALERT_DB_USERNAME ];
 then
   echo "Alert Database user secret set; using value from secret."
-  alertDatabaseUser=$(cat $dockerSecretDir/ALERT_DB_USERNAME)
+  alertDatabaseUser=$(cat $dockerSecretDir/ALERT_DB_USERNAME | xargs echo)
   export ALERT_DB_USERNAME=$alertDatabaseUser;
 
   alertDatabaseAdminUser=$alertDatabaseUser;
@@ -62,7 +62,7 @@ fi
 if [ -e $dockerSecretDir/ALERT_DB_PASSWORD ];
 then
   echo "Alert Database password secret set; using value from secret."
-  alertDatabasePassword=$(cat $dockerSecretDir/ALERT_DB_PASSWORD)
+  alertDatabasePassword=$(cat $dockerSecretDir/ALERT_DB_PASSWORD | xargs echo)
   export ALERT_DB_PASSWORD=$alertDatabasePassword;
 
   alertDatabaseAdminPassword=$alertDatabasePassword;
@@ -73,7 +73,7 @@ fi
 if [ -e $dockerSecretDir/ALERT_DB_ADMIN_USERNAME ];
 then
   echo "Alert Database admin user secret set; using value from secret."
-  alertDatabaseAdminUser=$(cat $dockerSecretDir/ALERT_DB_ADMIN_USERNAME)
+  alertDatabaseAdminUser=$(cat $dockerSecretDir/ALERT_DB_ADMIN_USERNAME | xargs echo)
   export ALERT_DB_ADMIN_USERNAME=$alertDatabaseAdminUser;
   echo "Alert Database admin user variable set to secret value."
 fi
@@ -81,7 +81,7 @@ fi
 if [ -e $dockerSecretDir/ALERT_DB_ADMIN_PASSWORD ];
 then
   echo "Alert Database admin password secret set; using value from secret."
-  alertDatabaseAdminPassword=$(cat $dockerSecretDir/ALERT_DB_ADMIN_PASSWORD)
+  alertDatabaseAdminPassword=$(cat $dockerSecretDir/ALERT_DB_ADMIN_PASSWORD | xargs echo)
   export ALERT_DB_ADMIN_PASSWORD=$alertDatabaseAdminPassword;
   echo "Alert Database admin password variable set to secret value."
 fi
