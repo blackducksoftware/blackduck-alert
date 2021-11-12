@@ -11,10 +11,9 @@ import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.synopsys.integration.alert.common.rest.api.ConfigurationCrudHelper;
-import com.synopsys.integration.alert.common.rest.model.ConfigWithMetadata;
 import com.synopsys.integration.alert.common.rest.model.Obfuscated;
 
-public class SettingsEncryptionModel extends ConfigWithMetadata implements Obfuscated<SettingsEncryptionModel> {
+public class SettingsEncryptionModel implements Obfuscated<SettingsEncryptionModel> {
     @JsonProperty("encryptionPassword")
     private String password;
     @JsonProperty("encryptionGlobalSalt")
