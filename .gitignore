@@ -35,3 +35,4 @@ ui/node_modules
 sonar-project.properties
 .scannerwork/
 /coverage/
+**/data
