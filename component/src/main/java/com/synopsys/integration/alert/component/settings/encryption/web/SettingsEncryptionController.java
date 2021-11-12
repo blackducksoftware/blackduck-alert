@@ -25,7 +25,6 @@ import com.synopsys.integration.alert.component.settings.encryption.action.Setti
 import com.synopsys.integration.alert.component.settings.encryption.action.SettingsEncryptionValidationAction;
 import com.synopsys.integration.alert.component.settings.encryption.model.SettingsEncryptionModel;
 
-//TODO: Disabled until new UI component is complete
 @RestController
 @RequestMapping(AlertRestConstants.SETTINGS_ENCRYPTION_PATH)
 public class SettingsEncryptionController implements ValidateController<SettingsEncryptionModel> {
