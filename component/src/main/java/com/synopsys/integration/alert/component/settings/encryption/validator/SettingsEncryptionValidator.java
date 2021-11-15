@@ -8,8 +8,10 @@
 package com.synopsys.integration.alert.component.settings.encryption.validator;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -30,6 +32,9 @@ import com.synopsys.integration.alert.component.settings.encryption.model.Settin
 
 @Component
 public class SettingsEncryptionValidator extends BaseSystemValidator {
+    private static final String ENCRYPTION_PASSWORD_FIELD_NAME = "encryptionPassword";
+    private static final String ENCRYPTION_GLOBAL_SALT_FIELD_NAME = "encryptionGlobalSalt";
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final EncryptionUtility encryptionUtility;
 
@@ -43,10 +48,19 @@ public class SettingsEncryptionValidator extends BaseSystemValidator {
         Set<AlertFieldStatus> statuses = new HashSet<>();
         getSystemMessageAccessor().removeSystemMessagesByType(SystemMessageType.ENCRYPTION_CONFIGURATION_ERROR);
 
-        boolean isPasswordMissing = model.getPassword().filter(StringUtils::isNotBlank).isEmpty();
-        boolean isGlobalSaltMissing = model.getGlobalSalt().filter(StringUtils::isNotBlank).isEmpty();
-        checkFieldInitialized(statuses, "encryptionPassword", SettingsDescriptor.FIELD_ERROR_ENCRYPTION_PWD, isPasswordMissing, encryptionUtility::isPasswordMissing);
-        checkFieldInitialized(statuses, "encryptionGlobalSalt", SettingsDescriptor.FIELD_ERROR_ENCRYPTION_GLOBAL_SALT, isGlobalSaltMissing, encryptionUtility::isGlobalSaltMissing);
+        Optional<String> encryptionPassword = model.getPassword();
+        Optional<String> encryptionGlobalSalt = model.getGlobalSalt();
+
+        boolean passwordExists = encryptionPassword.filter(StringUtils::isNotBlank).isPresent();
+        boolean globalSaltExists = encryptionGlobalSalt.filter(StringUtils::isNotBlank).isPresent();
+
+        // Verify the length of the model if the user passed in a value.
+        minimumEncryptionFieldLength(statuses, ENCRYPTION_PASSWORD_FIELD_NAME, passwordExists, encryptionPassword::get);
+        minimumEncryptionFieldLength(statuses, ENCRYPTION_GLOBAL_SALT_FIELD_NAME, globalSaltExists, encryptionGlobalSalt::get);
+
+        // Check if the model was not provided to determine if it is set in the environment.
+        checkFieldInitialized(statuses, ENCRYPTION_PASSWORD_FIELD_NAME, SettingsDescriptor.FIELD_ERROR_ENCRYPTION_PWD, passwordExists, encryptionUtility::isPasswordMissing);
+        checkFieldInitialized(statuses, ENCRYPTION_GLOBAL_SALT_FIELD_NAME, SettingsDescriptor.FIELD_ERROR_ENCRYPTION_GLOBAL_SALT, globalSaltExists, encryptionUtility::isGlobalSaltMissing);
 
         if (!statuses.isEmpty()) {
             return ValidationResponseModel.fromStatusCollection(statuses);
@@ -55,15 +69,21 @@ public class SettingsEncryptionValidator extends BaseSystemValidator {
         return ValidationResponseModel.success();
     }
 
-    private void checkFieldInitialized(Set<AlertFieldStatus> statuses, String fieldName, String fieldErrorMessage, boolean isFieldMissingFromModel, BooleanSupplier isFieldMissing) {
+    private void checkFieldInitialized(Set<AlertFieldStatus> statuses, String fieldName, String fieldErrorMessage, boolean doesFieldExistInModel, BooleanSupplier isFieldMissing) {
         boolean encryptionInitialized = encryptionUtility.isInitialized();
-        if (isFieldMissingFromModel && !encryptionInitialized) {
+        if (!doesFieldExistInModel && !encryptionInitialized) {
             boolean encryptionError = addSystemMessageForError(fieldErrorMessage, SystemMessageSeverity.ERROR, SystemMessageType.ENCRYPTION_CONFIGURATION_ERROR,
                 isFieldMissing.getAsBoolean());
             if (encryptionError) {
                 logger.error(fieldErrorMessage);
                 statuses.add(AlertFieldStatus.error(fieldName, AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
             }
+        }
+    }
+
+    private void minimumEncryptionFieldLength(Set<AlertFieldStatus> statuses, String fieldName, boolean doesFieldExistInModel, Supplier<String> fieldValueSupplier) {
+        if (doesFieldExistInModel && fieldValueSupplier.get().length() < 8) {
+            statuses.add(AlertFieldStatus.error(fieldName, SettingsDescriptor.FIELD_ERROR_ENCRYPTION_FIELD_TOO_SHORT));
         }
     }
 }

@@ -89,4 +89,17 @@ public class SettingsEncryptionValidatorTest {
         assertTrue(validationResponseModel.hasErrors());
         assertEquals(1, validationResponseModel.getErrors().size());
     }
+
+    @Test
+    public void fieldNameTooShortTest() {
+        SettingsEncryptionValidator validator = new SettingsEncryptionValidator(encryptionUtility, systemMessageAccessor);
+
+        SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel();
+        settingsEncryptionModel.setPassword("too");
+        settingsEncryptionModel.setGlobalSalt("short");
+
+        ValidationResponseModel validationResponseModel = validator.validate(settingsEncryptionModel);
+        assertTrue(validationResponseModel.hasErrors());
+        assertEquals(2, validationResponseModel.getErrors().size());
+    }
 }
