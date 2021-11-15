@@ -1,3 +1,10 @@
+/*
+ * alert-database
+ *
+ * Copyright (c) 2021 Synopsys, Inc.
+ *
+ * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.synopsys.integration.alert.database.email;
 
 import java.time.OffsetDateTime;
@@ -17,6 +24,7 @@ import com.synopsys.integration.alert.database.email.properties.EmailConfigurati
 @Entity
 @Table(schema = "alert", name = "configuration_email")
 public class EmailConfigurationEntity extends BaseEntity {
+    private static final long serialVersionUID = -7390754753617711596L;
     @Id
     @Column(name = "configuration_id")
     private UUID configurationId;

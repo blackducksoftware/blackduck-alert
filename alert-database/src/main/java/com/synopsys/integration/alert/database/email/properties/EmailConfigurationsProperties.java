@@ -1,3 +1,10 @@
+/*
+ * alert-database
+ *
+ * Copyright (c) 2021 Synopsys, Inc.
+ *
+ * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.synopsys.integration.alert.database.email.properties;
 
 import java.util.UUID;
@@ -14,6 +21,7 @@ import com.synopsys.integration.alert.database.BaseEntity;
 @IdClass(EmailConfigurationPropertiesPK.class)
 @Table(schema = "alert", name = "configuration_email_properties")
 public class EmailConfigurationsProperties extends BaseEntity {
+    private static final long serialVersionUID = 1999396035336143585L;
     @Id
     @Column(name = "configuration_id")
     private final UUID configurationId;
