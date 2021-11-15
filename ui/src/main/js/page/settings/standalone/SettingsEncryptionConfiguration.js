@@ -16,17 +16,22 @@ const SettingsEncryptionConfiguration = ({
     const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
 
     const [passwordFromApiExists, setPasswordFromApiExists] = useState(false);
+    const [globalSaltFromApiExists, setGlobalSaltFromApiExists] = useState(false);
 
     const fetchData = async () => {
         const response = await ConfigurationRequestBuilder.createReadRequest(encryptionRequestUrl, csrfToken);
         const data = await response.json();
 
         if (data) {
-            setSettingsEncryptionConfig(data);
             setPasswordFromApiExists(true);
+            setGlobalSaltFromApiExists(true);
+            delete data.encryptionPassword;
+            delete data.encryptionGlobalSalt;
+            setSettingsEncryptionConfig(data);
         } else {
-            setSettingsEncryptionConfig({});
             setPasswordFromApiExists(false);
+            setGlobalSaltFromApiExists(false);
+            setSettingsEncryptionConfig({});
         }
     };
 
@@ -69,7 +74,7 @@ const SettingsEncryptionConfiguration = ({
                 readOnly={readonly}
                 onChange={fieldModelUtilities.handleTestChange(settingsEncryptionConfig, setSettingsEncryptionConfig)}
                 value={settingsEncryptionConfig.encryptionGlobalSalt || undefined}
-                isSet={passwordFromApiExists}
+                isSet={globalSaltFromApiExists}
                 errorName="encryptionGlobalSalt"
                 errorValue={errors.fieldErrors.encryptionGlobalSalt}
             />
