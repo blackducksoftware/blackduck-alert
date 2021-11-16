@@ -16,7 +16,6 @@ import com.synopsys.integration.alert.channel.email.database.accessor.EmailGloba
 import com.synopsys.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.model.DatabaseModelWrapper;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
@@ -42,8 +41,7 @@ public class EmailGlobalConfigurationActionTest {
         model.setAuth(true);
         model.setUsername("user");
         model.setPassword("password");
-        DatabaseModelWrapper<EmailGlobalConfigModel> modelWrapper = new DatabaseModelWrapper<>(1L, configId, "now", "then", model);
-        Mockito.when(emailGlobalConfigAccessor.getConfiguration(Mockito.any(UUID.class))).thenReturn(Optional.of(modelWrapper));
+        Mockito.when(emailGlobalConfigAccessor.getConfiguration(Mockito.any(UUID.class))).thenReturn(Optional.of(model));
 
         EmailGlobalCrudActions configActions = new EmailGlobalCrudActions(authorizationManager, emailGlobalConfigAccessor, validator);
         ActionResponse<EmailGlobalConfigModel> response = configActions.getOne(configId);
@@ -67,8 +65,7 @@ public class EmailGlobalConfigurationActionTest {
         model.setAuth(true);
         model.setUsername("user");
         model.setPassword("password");
-        DatabaseModelWrapper<EmailGlobalConfigModel> modelWrapper = new DatabaseModelWrapper<>(1L, null, "now", "then", model);
-        Mockito.when(emailGlobalConfigAccessor.createConfiguration(Mockito.eq(model))).thenReturn(modelWrapper);
+        Mockito.when(emailGlobalConfigAccessor.createConfiguration(Mockito.eq(model))).thenReturn(model);
 
         EmailGlobalCrudActions configActions = new EmailGlobalCrudActions(authorizationManager, emailGlobalConfigAccessor, validator);
         ActionResponse<EmailGlobalConfigModel> response = configActions.create(model);
@@ -93,9 +90,8 @@ public class EmailGlobalConfigurationActionTest {
         model.setAuth(true);
         model.setUsername("user");
         model.setPassword("password");
-        DatabaseModelWrapper<EmailGlobalConfigModel> modelWrapper = new DatabaseModelWrapper<>(1L, configId, "now", "then", model);
-        Mockito.when(emailGlobalConfigAccessor.getConfiguration(Mockito.any(UUID.class))).thenReturn(Optional.of(modelWrapper));
-        Mockito.when(emailGlobalConfigAccessor.updateConfiguration(Mockito.any(UUID.class), Mockito.eq(model))).thenReturn(modelWrapper);
+        Mockito.when(emailGlobalConfigAccessor.getConfiguration(Mockito.any(UUID.class))).thenReturn(Optional.of(model));
+        Mockito.when(emailGlobalConfigAccessor.updateConfiguration(Mockito.any(UUID.class), Mockito.eq(model))).thenReturn(model);
 
         EmailGlobalCrudActions configActions = new EmailGlobalCrudActions(authorizationManager, emailGlobalConfigAccessor, validator);
         ActionResponse<EmailGlobalConfigModel> response = configActions.update(configId, model);
@@ -120,8 +116,7 @@ public class EmailGlobalConfigurationActionTest {
         model.setAuth(true);
         model.setUsername("user");
         model.setPassword("password");
-        DatabaseModelWrapper<EmailGlobalConfigModel> modelWrapper = new DatabaseModelWrapper<>(1L, configId, "now", "then", model);
-        Mockito.when(emailGlobalConfigAccessor.getConfiguration(Mockito.any(UUID.class))).thenReturn(Optional.of(modelWrapper));
+        Mockito.when(emailGlobalConfigAccessor.getConfiguration(Mockito.any(UUID.class))).thenReturn(Optional.of(model));
 
         EmailGlobalCrudActions configActions = new EmailGlobalCrudActions(authorizationManager, emailGlobalConfigAccessor, validator);
         ActionResponse<EmailGlobalConfigModel> response = configActions.delete(configId);
