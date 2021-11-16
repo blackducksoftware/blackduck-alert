@@ -8,13 +8,14 @@
 package com.synopsys.integration.alert.channel.email.action;
 
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Supplier;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
-import com.synopsys.integration.alert.channel.email.web.EmailGlobalConfigAccessor;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.model.DatabaseModelWrapper;
@@ -37,7 +38,7 @@ public class EmailGlobalCrudActions {
         this.validator = validator;
     }
 
-    public ActionResponse<EmailGlobalConfigModel> getOne(Long id) {
+    public ActionResponse<EmailGlobalConfigModel> getOne(UUID id) {
         return configurationHelper.getOne(
             // Compiler wants this cast as it does not understand the types being used
             (Supplier<Optional<EmailGlobalConfigModel>>) () -> configurationAccessor.getConfiguration(id).map(DatabaseModelWrapper::getModel)
@@ -58,7 +59,7 @@ public class EmailGlobalCrudActions {
         );
     }
 
-    public ActionResponse<EmailGlobalConfigModel> update(Long id, EmailGlobalConfigModel requestResource) {
+    public ActionResponse<EmailGlobalConfigModel> update(UUID id, EmailGlobalConfigModel requestResource) {
         return configurationHelper.update(
             () -> validator.validate(requestResource),
             () -> configurationAccessor.getConfiguration(id).isPresent(),
@@ -66,7 +67,7 @@ public class EmailGlobalCrudActions {
         );
     }
 
-    public ActionResponse<EmailGlobalConfigModel> delete(Long id) {
+    public ActionResponse<EmailGlobalConfigModel> delete(UUID id) {
         return configurationHelper.delete(
             () -> configurationAccessor.getConfiguration(id).isPresent(),
             () -> configurationAccessor.deleteConfiguration(id)

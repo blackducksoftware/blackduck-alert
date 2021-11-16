@@ -18,9 +18,9 @@ import javax.persistence.Table;
 import com.synopsys.integration.alert.database.BaseEntity;
 
 @Entity
-@IdClass(EmailConfigurationPropertiesPK.class)
+@IdClass(EmailConfigurationPropertyPK.class)
 @Table(schema = "alert", name = "configuration_email_properties")
-public class EmailConfigurationsProperties extends BaseEntity {
+public class EmailConfigurationsPropertyEntity extends BaseEntity {
     private static final long serialVersionUID = 1999396035336143585L;
     @Id
     @Column(name = "configuration_id")
@@ -30,7 +30,7 @@ public class EmailConfigurationsProperties extends BaseEntity {
     @Column(name = "property_value")
     private final String propertyValue;
 
-    public EmailConfigurationsProperties(UUID configurationId, String propertyKey, String propertyValue) {
+    public EmailConfigurationsPropertyEntity(UUID configurationId, String propertyKey, String propertyValue) {
         this.configurationId = configurationId;
         this.propertyKey = propertyKey;
         this.propertyValue = propertyValue;

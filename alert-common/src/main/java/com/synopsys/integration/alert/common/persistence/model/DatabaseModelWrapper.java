@@ -7,18 +7,20 @@
  */
 package com.synopsys.integration.alert.common.persistence.model;
 
+import java.util.UUID;
+
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
 public class DatabaseModelWrapper<T extends AlertSerializableModel> extends AlertSerializableModel {
     private final Long descriptorId;
-    private final Long configurationId;
+    private final UUID configurationId;
     private final String createdAt;
     private final String lastUpdated;
     private final T model;
 
-    public DatabaseModelWrapper(Long registeredDescriptorId, Long descriptorConfigId, String createdAt, String lastUpdated, T model) {
+    public DatabaseModelWrapper(Long registeredDescriptorId, UUID configurationId, String createdAt, String lastUpdated, T model) {
         descriptorId = registeredDescriptorId;
-        configurationId = descriptorConfigId;
+        this.configurationId = configurationId;
         this.createdAt = createdAt;
         this.lastUpdated = lastUpdated;
         this.model = model;
@@ -32,7 +34,7 @@ public class DatabaseModelWrapper<T extends AlertSerializableModel> extends Aler
         return descriptorId;
     }
 
-    public Long getConfigurationId() {
+    public UUID getConfigurationId() {
         return configurationId;
     }
 
