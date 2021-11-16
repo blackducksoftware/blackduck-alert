@@ -8,6 +8,7 @@
 package com.synopsys.integration.alert.channel.email.database.accessor;
 
 import java.time.OffsetDateTime;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -19,33 +20,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.database.configuration.RegisteredDescriptorEntity;
-import com.synopsys.integration.alert.database.configuration.repository.ConfigContextRepository;
-import com.synopsys.integration.alert.database.configuration.repository.DefinedFieldRepository;
-import com.synopsys.integration.alert.database.configuration.repository.DescriptorConfigRepository;
-import com.synopsys.integration.alert.database.configuration.repository.FieldValueRepository;
 import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
 import com.synopsys.integration.alert.database.email.EmailConfigurationEntity;
 import com.synopsys.integration.alert.database.email.EmailConfigurationRepository;
 import com.synopsys.integration.alert.database.email.properties.EmailConfigurationPropertiesRepository;
 import com.synopsys.integration.alert.database.email.properties.EmailConfigurationsPropertyEntity;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
 @Component
 public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlobalConfigModel> {
     private final RegisteredDescriptorRepository registeredDescriptorRepository;
-    private final DefinedFieldRepository definedFieldRepository;
-    private final DescriptorConfigRepository descriptorConfigsRepository;
-    private final ConfigContextRepository configContextRepository;
-    private final FieldValueRepository fieldValueRepository;
     private final EncryptionUtility encryptionUtility;
     private final EmailConfigurationRepository emailConfigurationRepository;
     private final EmailConfigurationPropertiesRepository emailConfigurationPropertiesRepository;
@@ -53,30 +45,24 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
     @Autowired
     public EmailGlobalConfigAccessor(
         RegisteredDescriptorRepository registeredDescriptorRepository,
-        DefinedFieldRepository definedFieldRepository,
-        DescriptorConfigRepository descriptorConfigsRepository,
-        ConfigContextRepository configContextRepository,
-        FieldValueRepository fieldValueRepository,
         EncryptionUtility encryptionUtility,
         EmailConfigurationRepository emailConfigurationRepository,
         EmailConfigurationPropertiesRepository emailConfigurationPropertiesRepository
     ) {
         this.registeredDescriptorRepository = registeredDescriptorRepository;
-        this.definedFieldRepository = definedFieldRepository;
-        this.descriptorConfigsRepository = descriptorConfigsRepository;
-        this.configContextRepository = configContextRepository;
-        this.fieldValueRepository = fieldValueRepository;
         this.encryptionUtility = encryptionUtility;
         this.emailConfigurationRepository = emailConfigurationRepository;
         this.emailConfigurationPropertiesRepository = emailConfigurationPropertiesRepository;
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<EmailGlobalConfigModel> getConfiguration(UUID id) {
         return emailConfigurationRepository.findById(id).map(this::createConfigModel);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public AlertPagedModel<EmailGlobalConfigModel> getConfigurationPage(int page, int size) {
         Page<EmailConfigurationEntity> resultPage = emailConfigurationRepository.findAll(PageRequest.of(page, size));
         List<EmailGlobalConfigModel> pageContent = resultPage.getContent()
@@ -87,6 +73,7 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public EmailGlobalConfigModel createConfiguration(EmailGlobalConfigModel configuration) {
         OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
         UUID configurationId = UUID.randomUUID();
@@ -101,6 +88,7 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public EmailGlobalConfigModel updateConfiguration(UUID configurationId, EmailGlobalConfigModel configuration) throws AlertConfigurationException {
         EmailConfigurationEntity configurationEntity = emailConfigurationRepository.findById(configurationId)
             .orElseThrow(() -> new AlertConfigurationException(String.format("Config with id '%d' did not exist", configurationId)));
@@ -115,6 +103,7 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void deleteConfiguration(UUID configurationId) {
         if (null != configurationId) {
             emailConfigurationRepository.deleteById(configurationId);
@@ -135,11 +124,11 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
             newModel.setFrom(emailConfiguration.getSmtpFrom());
             newModel.setAuth(emailConfiguration.getAuthRequired());
             newModel.setUsername(emailConfiguration.getAuthUsername());
-            newModel.setPassword(encryptionUtility.decrypt(emailConfiguration.getAuthPassword()));
+            if (StringUtils.isNotBlank(emailConfiguration.getAuthPassword())) {
+                newModel.setPassword(encryptionUtility.decrypt(emailConfiguration.getAuthPassword()));
+            }
             newModel.setAdditionalJavaMailProperties(getAdditionalProperties(emailConfiguration.getEmailConfigurationProperties()));
         }
-
-        Long descriptorId = getDescriptorIdOrThrowException();
 
         newModel.setId(String.valueOf(emailConfiguration.getConfigurationId()));
         newModel.setCreatedAt(createdAtFormatted);
@@ -166,24 +155,21 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
         String password = configuration.getPassword().map(encryptionUtility::encrypt).orElse(null);
 
         return new EmailConfigurationEntity(configurationId, createdTime, lastUpdated,
-            host, from, port, auth, username, password, toPropertyEntityList(configuration));
+            host, from, port, auth, username, password, List.of());
     }
 
     private List<EmailConfigurationsPropertyEntity> toPropertyEntityList(EmailGlobalConfigModel configuration) {
-        if (StringUtils.isBlank(configuration.getId())) {
-            return List.of();
-        }
         UUID configurationId = UUID.fromString(configuration.getId());
         Map<String, String> emailProperties = configuration.getAdditionalJavaMailProperties().orElse(Map.of());
-        return emailProperties.entrySet().stream()
-            .map(entry -> new EmailConfigurationsPropertyEntity(configurationId, entry.getKey(), entry.getValue()))
-            .collect(Collectors.toList());
-    }
+        List<EmailConfigurationsPropertyEntity> propertyList = new LinkedList<>();
+        for (Map.Entry<String, String> entry : emailProperties.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            if (StringUtils.isNotBlank(key)) {
+                propertyList.add(new EmailConfigurationsPropertyEntity(configurationId, key.trim(), value.trim()));
+            }
+        }
 
-    private Long getDescriptorIdOrThrowException() {
-        String descriptorName = ChannelKeys.EMAIL.getUniversalKey();
-        return registeredDescriptorRepository.findFirstByName(descriptorName)
-            .map(RegisteredDescriptorEntity::getId)
-            .orElseThrow(() -> new AlertRuntimeException(String.format("No descriptor with name '%s' exists", descriptorName)));
+        return propertyList;
     }
 }
