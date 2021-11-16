@@ -70,7 +70,7 @@ public class EncryptionUtility {
         if (StringUtils.isBlank(password)) {
             throw new IllegalArgumentException("Encryption password cannot be blank");
         }
-
+        //TODO: This will overwrite the global salt with values from the environment. Update this to use readGlobalSaltFromVolumeDataFile
         EncryptionFileData encryptionFileData = new EncryptionFileData(password, getGlobalSalt());
         filePersistenceUtil.writeJsonToFile(DATA_FILE_NAME, encryptionFileData);
     }
@@ -79,6 +79,7 @@ public class EncryptionUtility {
         if (StringUtils.isBlank(globalSalt)) {
             throw new IllegalArgumentException("Encryption global salt cannot be blank");
         }
+        //TODO: This will overwrite the password with values from the environment. Update this to use readPasswordFromVolumeDataFile
         EncryptionFileData encryptionFileData = new EncryptionFileData(getPassword(), globalSalt);
         filePersistenceUtil.writeJsonToFile(DATA_FILE_NAME, encryptionFileData);
     }

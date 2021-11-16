@@ -10,14 +10,18 @@ package com.synopsys.integration.alert.component.settings.encryption.model;
 import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.rest.api.ConfigurationCrudHelper;
 import com.synopsys.integration.alert.common.rest.model.Obfuscated;
 
-public class SettingsEncryptionModel implements Obfuscated<SettingsEncryptionModel> {
+public class SettingsEncryptionModel extends AlertSerializableModel implements Obfuscated<SettingsEncryptionModel> {
     @JsonProperty("encryptionPassword")
     private String password;
     @JsonProperty("encryptionGlobalSalt")
     private String globalSalt;
+
+    public SettingsEncryptionModel() {
+    }
 
     public Optional<String> getPassword() {
         return Optional.ofNullable(password);
