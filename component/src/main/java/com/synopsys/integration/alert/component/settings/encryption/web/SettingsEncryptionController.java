@@ -13,8 +13,12 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.api.ValidateController;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
@@ -22,9 +26,8 @@ import com.synopsys.integration.alert.component.settings.encryption.action.Setti
 import com.synopsys.integration.alert.component.settings.encryption.action.SettingsEncryptionValidationAction;
 import com.synopsys.integration.alert.component.settings.encryption.model.SettingsEncryptionModel;
 
-//TODO: Disabled until new UI component is complete
-//@RestController
-//@RequestMapping(AlertRestConstants.SETTINGS_ENCRYPTION_PATH)
+@RestController
+@RequestMapping(AlertRestConstants.SETTINGS_ENCRYPTION_PATH)
 public class SettingsEncryptionController implements ValidateController<SettingsEncryptionModel> {
     private final SettingsEncryptionCrudActions configActions;
     private final SettingsEncryptionValidationAction validationAction;
@@ -48,7 +51,7 @@ public class SettingsEncryptionController implements ValidateController<Settings
 
     @PutMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(SettingsEncryptionModel resource) {
+    public void update(@RequestBody SettingsEncryptionModel resource) {
         ResponseFactory.createContentResponseFromAction(configActions.update(resource));
     }
 

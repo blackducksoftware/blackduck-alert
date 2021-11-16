@@ -78,6 +78,8 @@ const ConfigurationForm = ({
         }
     };
 
+    // TODO: Some models do not have IDs and we only allow updates, not creates for some endpoints. Need to find a better way to perform saving without IDs.
+    //  The workaround is to make the createRequest and updateRequest the same (Ex. SettingsEncryptionConfiguration).
     const performSaveRequest = async (event) => {
         event.preventDefault();
         event.stopPropagation();
