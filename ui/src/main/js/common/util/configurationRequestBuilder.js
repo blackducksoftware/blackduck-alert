@@ -6,6 +6,9 @@ export const JOB_API_URL = `${ALERT_API_URL}/configuration/job`;
 export const JOB_AUDIT_API_URL = `${ALERT_API_URL}/distribution/audit-statuses`;
 export const ROLE_API_URL = `${ALERT_API_URL}/configuration/role`;
 export const USER_API_URL = `${ALERT_API_URL}/configuration/user`;
+export const SETTINGS_API_URL = `${ALERT_API_URL}/settings`;
+export const ENCRYPTION_API_URL = `${SETTINGS_API_URL}/encryption`;
+export const PROXY_API_URL = `${SETTINGS_API_URL}/proxy`;
 
 export function createReadAllRequest(apiUrl, csrfToken, context, descriptorName) {
     const queryParams = {

@@ -22,6 +22,7 @@ import { SCHEDULING_INFO } from 'page/scheduling/SchedulingModel';
 import SchedulingConfiguration from 'page/scheduling/SchedulingConfiguration';
 import { SETTINGS_INFO } from 'page/settings/SettingsModel';
 import SettingsConfiguration from 'page/settings/SettingsConfiguration';
+import SettingsConfigurationStandalone from 'page/settings/standalone/SettingsConfigurationStandalone';
 import { AUTHENTICATION_INFO } from 'application/auth/AuthenticationModel';
 import AuthenticationConfiguration from 'application/auth/AuthenticationConfiguration';
 import { BLACKDUCK_INFO, BLACKDUCK_URLS } from 'page/provider/blackduck/BlackDuckModel';
@@ -259,12 +260,24 @@ const MainPage = ({
                 urlName={SETTINGS_INFO.url}
                 descriptor={globalDescriptorMap[SETTINGS_INFO.key]}
                 render={(readOnly, showTest, showSave) => (
-                    <SettingsConfiguration
-                        csrfToken={csrfToken}
-                        errorHandler={errorHandler}
-                        readonly={readOnly}
-                        displaySave={showSave}
-                    />
+                    <BetaPage>
+                        <CurrentComponent>
+                            <SettingsConfiguration
+                                csrfToken={csrfToken}
+                                errorHandler={errorHandler}
+                                readonly={readOnly}
+                                displaySave={showSave}
+                            />
+                        </CurrentComponent>
+                        <BetaComponent>
+                            <SettingsConfigurationStandalone
+                                csrfToken={csrfToken}
+                                errorHandler={errorHandler}
+                                readonly={readOnly}
+                                displaySave={showSave}
+                            />
+                        </BetaComponent>
+                    </BetaPage>
                 )}
             />
             <DescriptorRoute

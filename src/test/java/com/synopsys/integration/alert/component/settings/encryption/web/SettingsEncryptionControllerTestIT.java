@@ -3,9 +3,7 @@ package com.synopsys.integration.alert.component.settings.encryption.web;
 import java.net.URI;
 import java.nio.charset.Charset;
 
-import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -26,8 +24,6 @@ import com.synopsys.integration.alert.component.settings.encryption.model.Settin
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 
-//TODO: These tests are disabled while the RestController for SettingsEncryptionController is disabled
-@Ignore
 @AlertIntegrationTest
 public class SettingsEncryptionControllerTestIT {
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
@@ -46,7 +42,6 @@ public class SettingsEncryptionControllerTestIT {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).apply(SecurityMockMvcConfigurers.springSecurity()).build();
     }
 
-    @Disabled
     @Test
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void testCreate() throws Exception {
@@ -57,7 +52,6 @@ public class SettingsEncryptionControllerTestIT {
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isMethodNotAllowed());
     }
 
-    @Disabled
     @Test
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void testGetOne() throws Exception {
@@ -68,7 +62,6 @@ public class SettingsEncryptionControllerTestIT {
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
-    @Disabled
     @Test
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void testUpdate() throws Exception {
@@ -85,7 +78,6 @@ public class SettingsEncryptionControllerTestIT {
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNoContent());
     }
 
-    @Disabled
     @Test
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void testValidate() throws Exception {
@@ -102,7 +94,6 @@ public class SettingsEncryptionControllerTestIT {
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
-    @Disabled
     @Test
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void testDelete() throws Exception {
