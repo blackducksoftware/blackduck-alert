@@ -24,11 +24,14 @@ public class EmailConfigurationsPropertyEntity extends BaseEntity {
     private static final long serialVersionUID = 1999396035336143585L;
     @Id
     @Column(name = "configuration_id")
-    private final UUID configurationId;
+    private UUID configurationId;
     @Column(name = "property_key")
-    private final String propertyKey;
+    private String propertyKey;
     @Column(name = "property_value")
-    private final String propertyValue;
+    private String propertyValue;
+
+    public EmailConfigurationsPropertyEntity() {
+    }
 
     public EmailConfigurationsPropertyEntity(UUID configurationId, String propertyKey, String propertyValue) {
         this.configurationId = configurationId;

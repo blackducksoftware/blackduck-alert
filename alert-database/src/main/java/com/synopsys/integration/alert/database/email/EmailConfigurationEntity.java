@@ -37,7 +37,7 @@ public class EmailConfigurationEntity extends BaseEntity {
     @Column(name = "smtp_from")
     private String smtpFrom;
     @Column(name = "port")
-    private Long smtpPort;
+    private Integer smtpPort;
     @Column(name = "auth_required")
     private Boolean authRequired;
     @Column(name = "auth_username")
@@ -49,7 +49,10 @@ public class EmailConfigurationEntity extends BaseEntity {
     @JoinColumn(name = "configuration_id", referencedColumnName = "configuration_id", insertable = false, updatable = false)
     private List<EmailConfigurationsPropertyEntity> emailConfigurationProperties;
 
-    public EmailConfigurationEntity(UUID configurationId, OffsetDateTime createdAt, OffsetDateTime lastUpdated, String smtpHost, String smtpFrom, Long smtpPort, Boolean authRequired,
+    public EmailConfigurationEntity() {
+    }
+
+    public EmailConfigurationEntity(UUID configurationId, OffsetDateTime createdAt, OffsetDateTime lastUpdated, String smtpHost, String smtpFrom, Integer smtpPort, Boolean authRequired,
         String authUsername, String authPassword,
         List<EmailConfigurationsPropertyEntity> emailConfigurationProperties) {
         this.configurationId = configurationId;
@@ -104,11 +107,11 @@ public class EmailConfigurationEntity extends BaseEntity {
         this.smtpFrom = smtpFrom;
     }
 
-    public Long getSmtpPort() {
+    public Integer getSmtpPort() {
         return smtpPort;
     }
 
-    public void setSmtpPort(Long smtpPort) {
+    public void setSmtpPort(Integer smtpPort) {
         this.smtpPort = smtpPort;
     }
 
