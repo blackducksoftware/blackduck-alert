@@ -8,11 +8,13 @@
 package com.synopsys.integration.alert.common.security;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Optional;
 
 import org.apache.commons.codec.Charsets;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,27 +68,25 @@ public class EncryptionUtility {
         return isPasswordSet() && isGlobalSaltSet();
     }
 
-    public void updatePasswordField(String password) throws IOException {
+    public void updatePasswordFieldInVolumeDataFile(String password) throws IOException {
         if (StringUtils.isBlank(password)) {
             throw new IllegalArgumentException("Encryption password cannot be blank");
         }
-        //TODO: This will overwrite the global salt with values from the environment. Update this to use readGlobalSaltFromVolumeDataFile
-        EncryptionFileData encryptionFileData = new EncryptionFileData(password, getGlobalSalt());
+        EncryptionFileData encryptionFileData = new EncryptionFileData(password, readGlobalSaltFromVolumeDataFile());
         filePersistenceUtil.writeJsonToFile(DATA_FILE_NAME, encryptionFileData);
     }
 
-    public void updateSaltField(String globalSalt) throws IOException {
+    public void updateSaltFieldInVolumeDataFile(String globalSalt) throws IOException {
         if (StringUtils.isBlank(globalSalt)) {
             throw new IllegalArgumentException("Encryption global salt cannot be blank");
         }
-        //TODO: This will overwrite the password with values from the environment. Update this to use readPasswordFromVolumeDataFile
-        EncryptionFileData encryptionFileData = new EncryptionFileData(getPassword(), globalSalt);
+        EncryptionFileData encryptionFileData = new EncryptionFileData(readPasswordFromVolumeDataFile(), globalSalt);
         filePersistenceUtil.writeJsonToFile(DATA_FILE_NAME, encryptionFileData);
     }
 
-    public void updateEncryptionFields(String password, String globalSalt) throws IOException {
-        updatePasswordField(password);
-        updateSaltField(globalSalt);
+    public void updateEncryptionFieldsInVolumeDataFile(String password, String globalSalt) throws IOException {
+        updatePasswordFieldInVolumeDataFile(password);
+        updateSaltFieldInVolumeDataFile(globalSalt);
     }
 
     private String getEncodedSalt() {
@@ -171,20 +171,23 @@ public class EncryptionUtility {
         }
     }
 
-    private class EncryptionFileData {
+    private static class EncryptionFileData implements Serializable {
+        private static final long serialVersionUID = -2810887223126346010L;
+        @Nullable
         private final String password;
+        @Nullable
         private final String globalSalt;
 
-        private EncryptionFileData(String password, String globalSalt) {
+        private EncryptionFileData(@Nullable String password, @Nullable String globalSalt) {
             this.password = password;
             this.globalSalt = globalSalt;
         }
 
-        public String getPassword() {
+        public @Nullable String getPassword() {
             return password;
         }
 
-        public String getGlobalSalt() {
+        public @Nullable String getGlobalSalt() {
             return globalSalt;
         }
 
