@@ -15,6 +15,9 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurat
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 
 public interface ConfigurationAccessor<T extends AlertSerializableModel> {
+    int FIRST_PAGE_NUMBER = 0;
+    int DEFAULT_PAGE_SIZE = 10;
+
     Optional<T> getConfiguration(UUID id);
 
     AlertPagedModel<T> getConfigurationPage(int page, int size);
