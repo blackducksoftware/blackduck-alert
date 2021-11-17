@@ -144,9 +144,9 @@ const MainPage = ({
                 urlName={EMAIL_INFO.url}
                 descriptor={globalDescriptorMap[EMAIL_INFO.key]}
                 render={(readOnly, showTest, showSave, showDelete) => (
-                    <BetaPage>
+                    <BetaPage betaSelected>
                         <CurrentComponent>
-                            <EmailGlobalConfiguration
+                            <EmailGlobalConfigurationUsingOldApi
                                 csrfToken={csrfToken}
                                 errorHandler={errorHandler}
                                 readonly={readOnly}
@@ -156,7 +156,7 @@ const MainPage = ({
                             />
                         </CurrentComponent>
                         <BetaComponent>
-                            <EmailGlobalConfigurationUsingOldApi
+                            <EmailGlobalConfiguration
                                 csrfToken={csrfToken}
                                 errorHandler={errorHandler}
                                 readonly={readOnly}

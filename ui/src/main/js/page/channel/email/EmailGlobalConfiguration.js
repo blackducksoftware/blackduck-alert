@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import * as PropTypes from 'prop-types';
-import CommonGlobalConfiguration from 'js/common/global/CommonGlobalConfiguration';
+import CommonGlobalConfiguration from 'common/global/CommonGlobalConfiguration';
 import {
     EMAIL_GLOBAL_ADVANCED_FIELD_KEYS, EMAIL_GLOBAL_FIELD_KEYS, EMAIL_INFO, EMAIL_TEST_FIELD
-} from 'js/page/channel/email/EmailModels';
-import TextInput from 'js/common/input/TextInput';
-import * as HttpErrorUtilities from 'js/common/util/httpErrorUtilities';
-import CheckboxInput from 'js/common/input/CheckboxInput';
-import PasswordInput from 'js/common/input/PasswordInput';
-import ConfigurationForm from 'js/page/channel/email/standalone/ConfigurationForm';
-import * as ConfigurationRequestBuilder from 'js/common/util/configurationRequestBuilder';
-import * as fieldModelUtilities from 'js/common/util/fieldModelUtilities';
-import FluidFieldMappingField from 'js/common/input/mapping/FluidFieldMappingField';
-import NumberInput from 'js/common/input/NumberInput';
+} from 'page/channel/email/EmailModels';
+import TextInput from 'common/input/TextInput';
+import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
+import CheckboxInput from 'common/input/CheckboxInput';
+import PasswordInput from 'common/input/PasswordInput';
+import ConfigurationForm from 'page/channel/email/standalone/ConfigurationForm';
+import * as ConfigurationRequestBuilder from 'common/util/configurationRequestBuilder';
+import * as fieldModelUtilities from 'common/util/fieldModelUtilities';
+import FluidFieldMappingField from 'common/input/mapping/FluidFieldMappingField';
+import NumberInput from 'common/input/NumberInput';
 
 const EmailGlobalConfiguration = ({
     csrfToken, errorHandler, readonly, displayTest, displaySave, displayDelete
