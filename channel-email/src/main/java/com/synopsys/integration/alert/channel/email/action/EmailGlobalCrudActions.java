@@ -7,17 +7,15 @@
  */
 package com.synopsys.integration.alert.channel.email.action;
 
-import java.util.Optional;
-import java.util.function.Supplier;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
-import com.synopsys.integration.alert.channel.email.web.EmailGlobalConfigAccessor;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.model.DatabaseModelWrapper;
 import com.synopsys.integration.alert.common.rest.api.ConfigurationCrudHelper;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
@@ -37,36 +35,30 @@ public class EmailGlobalCrudActions {
         this.validator = validator;
     }
 
-    public ActionResponse<EmailGlobalConfigModel> getOne(Long id) {
-        return configurationHelper.getOne(
-            // Compiler wants this cast as it does not understand the types being used
-            (Supplier<Optional<EmailGlobalConfigModel>>) () -> configurationAccessor.getConfiguration(id).map(DatabaseModelWrapper::getModel)
-        );
+    public ActionResponse<EmailGlobalConfigModel> getOne(UUID id) {
+        return configurationHelper.getOne(() -> configurationAccessor.getConfiguration(id));
     }
 
     public ActionResponse<AlertPagedModel<EmailGlobalConfigModel>> getPaged(int page, int size) {
-        return configurationHelper.getPage(
-            // Compiler wants this cast as it does not understand the types being used
-            (Supplier<AlertPagedModel<EmailGlobalConfigModel>>) () -> configurationAccessor.getConfigurationPage(page, size).transformContent(DatabaseModelWrapper::getModel)
-        );
+        return configurationHelper.getPage(() -> configurationAccessor.getConfigurationPage(page, size));
     }
 
     public ActionResponse<EmailGlobalConfigModel> create(EmailGlobalConfigModel resource) {
         return configurationHelper.create(
             () -> validator.validate(resource),
-            () -> configurationAccessor.createConfiguration(resource).getModel()
+            () -> configurationAccessor.createConfiguration(resource)
         );
     }
 
-    public ActionResponse<EmailGlobalConfigModel> update(Long id, EmailGlobalConfigModel requestResource) {
+    public ActionResponse<EmailGlobalConfigModel> update(UUID id, EmailGlobalConfigModel requestResource) {
         return configurationHelper.update(
             () -> validator.validate(requestResource),
             () -> configurationAccessor.getConfiguration(id).isPresent(),
-            () -> configurationAccessor.updateConfiguration(id, requestResource).getModel()
+            () -> configurationAccessor.updateConfiguration(id, requestResource)
         );
     }
 
-    public ActionResponse<EmailGlobalConfigModel> delete(Long id) {
+    public ActionResponse<EmailGlobalConfigModel> delete(UUID id) {
         return configurationHelper.delete(
             () -> configurationAccessor.getConfiguration(id).isPresent(),
             () -> configurationAccessor.deleteConfiguration(id)

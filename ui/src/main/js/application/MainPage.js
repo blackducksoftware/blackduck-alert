@@ -8,7 +8,7 @@ import LogoutConfirmation from 'common/LogoutConfirmation';
 import { getDescriptors } from 'store/actions/descriptors';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import SlackGlobalConfiguration from 'page/channel/slack/SlackGlobalConfiguration';
-import EmailGlobalConfiguration from 'page/channel/email/EmailGlobalConfiguration';
+import EmailGlobalConfigurationUsingOldApi from 'page/channel/email/EmailGlobalConfigurationUsingOldApi';
 import JiraCloudGlobalConfiguration from 'page/channel/jira/cloud/JiraCloudGlobalConfiguration';
 import { JIRA_CLOUD_INFO } from 'page/channel/jira/cloud/JiraCloudModel';
 import { SLACK_INFO } from 'page/channel/slack/SlackModels';
@@ -45,7 +45,7 @@ import { unauthorized } from 'store/actions/session';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 import DescriptorRoute from 'common/DescriptorRoute';
 import BetaPage from 'common/beta/BetaPage';
-import EmailGlobalConfigurationStandalone from 'page/channel/email/standalone/EmailGlobalConfigurationStandalone';
+import EmailGlobalConfiguration from 'page/channel/email/EmailGlobalConfiguration';
 import CurrentComponent from 'common/beta/CurrentComponent';
 import BetaComponent from 'common/beta/BetaComponent';
 
@@ -144,9 +144,9 @@ const MainPage = ({
                 urlName={EMAIL_INFO.url}
                 descriptor={globalDescriptorMap[EMAIL_INFO.key]}
                 render={(readOnly, showTest, showSave, showDelete) => (
-                    <BetaPage>
+                    <BetaPage betaSelected>
                         <CurrentComponent>
-                            <EmailGlobalConfiguration
+                            <EmailGlobalConfigurationUsingOldApi
                                 csrfToken={csrfToken}
                                 errorHandler={errorHandler}
                                 readonly={readOnly}
@@ -156,7 +156,7 @@ const MainPage = ({
                             />
                         </CurrentComponent>
                         <BetaComponent>
-                            <EmailGlobalConfigurationStandalone
+                            <EmailGlobalConfiguration
                                 csrfToken={csrfToken}
                                 errorHandler={errorHandler}
                                 readonly={readOnly}
