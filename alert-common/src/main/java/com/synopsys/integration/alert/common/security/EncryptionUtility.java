@@ -111,7 +111,7 @@ public class EncryptionUtility {
     }
 
     public boolean isPasswordFromEnvironment() {
-        return alertProperties.getAlertEncryptionGlobalSalt().or(this::readPasswordFromSecretsFile).isPresent();
+        return alertProperties.getAlertEncryptionPassword().or(this::readPasswordFromSecretsFile).isPresent();
     }
 
     private String getPassword() {
