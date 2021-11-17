@@ -21,7 +21,6 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.SettingsKeyAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.SettingsKeyModel;
@@ -73,7 +72,7 @@ public class UpdateEmailService {
                                                     .filter(StringUtils::isNotBlank);
         if (optionalEmailAddress.isPresent()) {
             try {
-                AlertPagedModel<EmailGlobalConfigModel> configurations = emailGlobalConfigAccessor.getConfigurationPage(ConfigurationAccessor.FIRST_PAGE_NUMBER, ConfigurationAccessor.DEFAULT_PAGE_SIZE);
+                AlertPagedModel<EmailGlobalConfigModel> configurations = emailGlobalConfigAccessor.getConfigurationPage(AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE);
                 EmailGlobalConfigModel emailServerConfiguration = configurations.getModels().stream()
                     .findFirst()
                     .orElseThrow(() -> new AlertException("No global email configuration found"));

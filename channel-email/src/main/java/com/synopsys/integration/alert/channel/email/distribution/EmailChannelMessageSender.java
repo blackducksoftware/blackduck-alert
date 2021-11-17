@@ -31,7 +31,6 @@ import com.synopsys.integration.alert.common.descriptor.config.field.errors.Aler
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.FieldStatusSeverity;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
@@ -89,17 +88,10 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
         }
 
         // Distribution
-        AlertPagedModel<EmailGlobalConfigModel> configurations = emailGlobalConfigAccessor.getConfigurationPage(ConfigurationAccessor.FIRST_PAGE_NUMBER, ConfigurationAccessor.DEFAULT_PAGE_SIZE);
+        AlertPagedModel<EmailGlobalConfigModel> configurations = emailGlobalConfigAccessor.getConfigurationPage(AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE);
         EmailGlobalConfigModel emailServerConfiguration = configurations.getModels().stream()
             .findFirst()
             .orElseThrow(() -> new AlertConfigurationException("ERROR: Missing Email global config."));
-
-        //        FieldUtility globalConfiguration = configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(emailChannelKey, ConfigContextEnum.GLOBAL)
-        //            .stream()
-        //            .findAny()
-        //            .map(ConfigurationModel::getCopyOfKeyToFieldMap)
-        //            .map(FieldUtility::new)
-        //            .orElseThrow(() -> new AlertConfigurationException("ERROR: Missing Email global config."));
 
         SmtpConfig smtpConfig = SmtpConfig.builder()
             .setJavamailProperties(javamailPropertiesFactory.createJavaMailProperties(emailServerConfiguration))
