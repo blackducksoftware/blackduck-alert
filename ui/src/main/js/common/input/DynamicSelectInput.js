@@ -76,6 +76,14 @@ const DynamicSelectInput = ({
         MultiValue: multiTypeLabel
     };
 
+    // moves the dropdown in front of our fixed buttons
+    const selectStyles = {
+        menu: (base, state) => ({
+            ...base,
+            zIndex: '101'
+        })
+    };
+
     const createStandardSelect = () => (
         <Select
             id={id}
@@ -95,6 +103,7 @@ const DynamicSelectInput = ({
             onFocus={onFocus}
             menuPlacement="auto"
             maxMenuHeight={250}
+            styles={selectStyles}
         />
     );
 
@@ -117,6 +126,7 @@ const DynamicSelectInput = ({
             onFocus={onFocus}
             menuPlacement="auto"
             maxMenuHeight={250}
+            styles={selectStyles}
         />
     );
 
