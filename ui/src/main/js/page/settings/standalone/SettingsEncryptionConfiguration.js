@@ -6,6 +6,7 @@ import PasswordInput from 'common/input/PasswordInput';
 import ConfigurationForm from 'page/channel/email/standalone/ConfigurationForm';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
 import { SETTINGS_FIELD_KEYS, SETTINGS_INFO } from 'page/settings/SettingsModel';
+import ReadOnlyField from 'common/input/field/ReadOnlyField';
 
 const SettingsEncryptionConfiguration = ({
     csrfToken, errorHandler, readonly, displaySave
@@ -14,6 +15,7 @@ const SettingsEncryptionConfiguration = ({
 
     const [settingsEncryptionConfig, setSettingsEncryptionConfig] = useState({});
     const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
+    const [encryptionReadOnly, setEncryptionReadOnly] = useState(readonly);
 
     const [passwordFromApiExists, setPasswordFromApiExists] = useState(false);
     const [globalSaltFromApiExists, setGlobalSaltFromApiExists] = useState(false);
@@ -25,15 +27,19 @@ const SettingsEncryptionConfiguration = ({
         if (data) {
             setPasswordFromApiExists(true);
             setGlobalSaltFromApiExists(true);
+            setEncryptionReadOnly(readonly || data.readOnly);
             delete data.encryptionPassword;
             delete data.encryptionGlobalSalt;
             setSettingsEncryptionConfig(data);
         } else {
             setPasswordFromApiExists(false);
             setGlobalSaltFromApiExists(false);
+            setEncryptionReadOnly(readonly);
             setSettingsEncryptionConfig({});
         }
     };
+
+    const configSourceValue = encryptionReadOnly ? 'Encryption values were set during installation. Please contact your system administrator to change.' : '';
 
     return (
         <ConfigurationForm
@@ -45,20 +51,26 @@ const SettingsEncryptionConfiguration = ({
             createRequest={() => ConfigurationRequestBuilder.createUpdateWithoutIdRequest(encryptionRequestUrl, csrfToken, settingsEncryptionConfig, settingsEncryptionConfig)}
             updateRequest={() => ConfigurationRequestBuilder.createUpdateWithoutIdRequest(encryptionRequestUrl, csrfToken, settingsEncryptionConfig, settingsEncryptionConfig)}
             validateRequest={() => ConfigurationRequestBuilder.createValidateRequest(encryptionRequestUrl, csrfToken, settingsEncryptionConfig)}
-            readonly={readonly}
+            readonly={encryptionReadOnly}
             displaySave={displaySave}
             displayTest={false}
             displayDelete={false}
             errorHandler={errorHandler}
         >
             <h2 key="settings-header">Encryption Configuration</h2>
+            <ReadOnlyField
+                label=""
+                description={null}
+                showDescriptionPlaceHolder
+                value={configSourceValue}
+            />
             <PasswordInput
                 id={SETTINGS_FIELD_KEYS.encryptionPassword}
                 name="encryptionPassword"
                 label="Encryption Password"
                 description="The password used when encrypting sensitive fields. Must be at least 8 characters long."
                 required
-                readOnly={readonly}
+                readOnly={encryptionReadOnly}
                 onChange={fieldModelUtilities.handleTestChange(settingsEncryptionConfig, setSettingsEncryptionConfig)}
                 value={settingsEncryptionConfig.encryptionPassword || undefined}
                 isSet={passwordFromApiExists}
@@ -71,7 +83,7 @@ const SettingsEncryptionConfiguration = ({
                 label="Encryption Global Salt"
                 description="The salt used when encrypting sensitive fields. Must be at least 8 characters long."
                 required
-                readOnly={readonly}
+                readOnly={encryptionReadOnly}
                 onChange={fieldModelUtilities.handleTestChange(settingsEncryptionConfig, setSettingsEncryptionConfig)}
                 value={settingsEncryptionConfig.encryptionGlobalSalt || undefined}
                 isSet={globalSaltFromApiExists}

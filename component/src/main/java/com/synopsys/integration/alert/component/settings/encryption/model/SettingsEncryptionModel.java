@@ -19,6 +19,8 @@ public class SettingsEncryptionModel extends AlertSerializableModel implements O
     private String password;
     @JsonProperty("encryptionGlobalSalt")
     private String globalSalt;
+    @JsonProperty("readOnly")
+    private boolean readOnly;
 
     public SettingsEncryptionModel() {
     }
@@ -39,6 +41,14 @@ public class SettingsEncryptionModel extends AlertSerializableModel implements O
         this.globalSalt = globalSalt;
     }
 
+    public boolean isReadOnly() {
+        return readOnly;
+    }
+
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
+    }
+
     @Override
     public SettingsEncryptionModel obfuscate() {
         SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel();
@@ -47,6 +57,7 @@ public class SettingsEncryptionModel extends AlertSerializableModel implements O
         settingsEncryptionModel.setPassword(maskedPassword);
         String maskedGlobalSalt = (globalSalt != null) ? ConfigurationCrudHelper.MASKED_VALUE : null;
         settingsEncryptionModel.setGlobalSalt(maskedGlobalSalt);
+        settingsEncryptionModel.setReadOnly(readOnly);
 
         return settingsEncryptionModel;
     }
