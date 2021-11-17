@@ -103,14 +103,14 @@ public class SettingsGlobalApiAction extends ApiAction {
             if (optionalEncryptionPassword.isPresent()) {
                 String passwordToSave = optionalEncryptionPassword.get().getValue().orElse("");
                 if (StringUtils.isNotBlank(passwordToSave)) {
-                    encryptionUtility.updatePasswordField(passwordToSave);
+                    encryptionUtility.updatePasswordFieldInVolumeDataFile(passwordToSave);
                 }
             }
 
             if (optionalEncryptionSalt.isPresent()) {
                 String saltToSave = optionalEncryptionSalt.get().getValue().orElse("");
                 if (StringUtils.isNotBlank(saltToSave)) {
-                    encryptionUtility.updateSaltField(saltToSave);
+                    encryptionUtility.updateSaltFieldInVolumeDataFile(saltToSave);
                 }
             }
         } catch (IllegalArgumentException | IOException ex) {

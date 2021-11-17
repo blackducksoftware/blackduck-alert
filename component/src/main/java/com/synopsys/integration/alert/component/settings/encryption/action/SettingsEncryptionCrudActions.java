@@ -69,14 +69,14 @@ public class SettingsEncryptionCrudActions {
             if (optionalEncryptionPassword.isPresent()) {
                 String passwordToSave = optionalEncryptionPassword.get();
                 if (StringUtils.isNotBlank(passwordToSave)) {
-                    encryptionUtility.updatePasswordField(passwordToSave);
+                    encryptionUtility.updatePasswordFieldInVolumeDataFile(passwordToSave);
                 }
             }
 
             if (optionalEncryptionSalt.isPresent()) {
                 String saltToSave = optionalEncryptionSalt.get();
                 if (StringUtils.isNotBlank(saltToSave)) {
-                    encryptionUtility.updateSaltField(saltToSave);
+                    encryptionUtility.updateSaltFieldInVolumeDataFile(saltToSave);
                 }
             }
         } catch (IllegalArgumentException | IOException ex) {

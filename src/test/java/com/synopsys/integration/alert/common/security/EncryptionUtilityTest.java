@@ -128,7 +128,7 @@ public class EncryptionUtilityTest {
         Mockito.when(alertProperties.getAlertEncryptionPassword()).thenReturn(Optional.empty());
         Mockito.when(alertProperties.getAlertEncryptionGlobalSalt()).thenReturn(Optional.empty());
         assertFalse(encryptionUtility.isInitialized());
-        encryptionUtility.updateEncryptionFields(expectedPassword, expectedSalt);
+        encryptionUtility.updateEncryptionFieldsInVolumeDataFile(expectedPassword, expectedSalt);
         assertTrue(encryptionUtility.isInitialized());
         assertTrue(filePersistenceUtil.exists(FILE_NAME));
         String content = filePersistenceUtil.readFromFile(FILE_NAME);
