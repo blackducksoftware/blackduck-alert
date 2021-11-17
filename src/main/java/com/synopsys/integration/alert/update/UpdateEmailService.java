@@ -19,20 +19,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.SettingsKeyAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.SettingsKeyModel;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.service.email.EmailMessagingService;
 import com.synopsys.integration.alert.service.email.EmailTarget;
 import com.synopsys.integration.alert.service.email.JavamailPropertiesFactory;
 import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
+import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 import com.synopsys.integration.alert.service.email.template.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.update.model.UpdateModel;
 
@@ -47,16 +45,17 @@ public class UpdateEmailService {
     private final AlertProperties alertProperties;
     private final SettingsKeyAccessor settingsKeyAccessor;
     private final UserAccessor userAccessor;
-    private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
+    private final EmailGlobalConfigAccessor emailGlobalConfigAccessor;
     private final EmailMessagingService emailMessagingService;
     private final JavamailPropertiesFactory javamailPropertiesFactory;
 
     @Autowired
-    public UpdateEmailService(AlertProperties alertProperties, SettingsKeyAccessor settingsKeyAccessor, UserAccessor userAccessor, ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor, EmailMessagingService emailMessagingService, JavamailPropertiesFactory javamailPropertiesFactory) {
+    public UpdateEmailService(AlertProperties alertProperties, SettingsKeyAccessor settingsKeyAccessor, UserAccessor userAccessor, EmailGlobalConfigAccessor emailGlobalConfigAccessor, EmailMessagingService emailMessagingService,
+        JavamailPropertiesFactory javamailPropertiesFactory) {
         this.alertProperties = alertProperties;
         this.settingsKeyAccessor = settingsKeyAccessor;
         this.userAccessor = userAccessor;
-        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
+        this.emailGlobalConfigAccessor = emailGlobalConfigAccessor;
         this.emailMessagingService = emailMessagingService;
         this.javamailPropertiesFactory = javamailPropertiesFactory;
     }
@@ -73,12 +72,10 @@ public class UpdateEmailService {
                                                     .filter(StringUtils::isNotBlank);
         if (optionalEmailAddress.isPresent()) {
             try {
-                FieldUtility emailConfig = configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(ChannelKeys.EMAIL, ConfigContextEnum.GLOBAL)
-                                                     .stream()
-                                                     .findFirst()
-                                                     .map(ConfigurationModel::getCopyOfKeyToFieldMap)
-                                                     .map(FieldUtility::new)
-                                                     .orElseThrow(() -> new AlertException("No global email configuration found"));
+                AlertPagedModel<EmailGlobalConfigModel> configurations = emailGlobalConfigAccessor.getConfigurationPage(1, 1);
+                EmailGlobalConfigModel emailServerConfiguration = configurations.getModels().stream()
+                    .findFirst()
+                    .orElseThrow(() -> new AlertException("No global email configuration found"));
 
                 String alertServerUrl = alertProperties.getServerURL();
                 Map<String, Object> templateFields = new HashMap<>();
@@ -88,13 +85,13 @@ public class UpdateEmailService {
                 templateFields.put(FreemarkerTemplatingService.KEY_ALERT_SERVER_URL, alertServerUrl);
 
                 handleSend(
-                    javamailPropertiesFactory.createJavaMailProperties(emailConfig),
-                    emailConfig.getStringOrEmpty(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey()),
-                    emailConfig.getStringOrEmpty(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey()),
-                    emailConfig.getInteger(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey()).orElse(0),
-                    emailConfig.getBooleanOrFalse(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey()),
-                    emailConfig.getStringOrEmpty(EmailPropertyKeys.JAVAMAIL_USER_KEY.getPropertyKey()),
-                    emailConfig.getStringOrEmpty(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey()),
+                    javamailPropertiesFactory.createJavaMailProperties(emailServerConfiguration),
+                    emailServerConfiguration.getFrom().orElse(StringUtils.EMPTY),
+                    emailServerConfiguration.getHost().orElse(StringUtils.EMPTY),
+                    emailServerConfiguration.getPort().orElse(0),
+                    emailServerConfiguration.getAuth().orElse(false),
+                    emailServerConfiguration.getUsername().orElse(StringUtils.EMPTY),
+                    emailServerConfiguration.getPassword().orElse(StringUtils.EMPTY),
                     templateFields,
                     optionalEmailAddress.get()
                 );
