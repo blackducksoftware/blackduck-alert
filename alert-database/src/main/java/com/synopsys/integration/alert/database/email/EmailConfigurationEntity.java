@@ -19,7 +19,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.synopsys.integration.alert.database.BaseEntity;
-import com.synopsys.integration.alert.database.email.properties.EmailConfigurationsProperties;
+import com.synopsys.integration.alert.database.email.properties.EmailConfigurationsPropertyEntity;
 
 @Entity
 @Table(schema = "alert", name = "configuration_email")
@@ -37,7 +37,7 @@ public class EmailConfigurationEntity extends BaseEntity {
     @Column(name = "smtp_from")
     private String smtpFrom;
     @Column(name = "port")
-    private Long smtpPort;
+    private Integer smtpPort;
     @Column(name = "auth_required")
     private Boolean authRequired;
     @Column(name = "auth_username")
@@ -47,11 +47,14 @@ public class EmailConfigurationEntity extends BaseEntity {
 
     @OneToMany
     @JoinColumn(name = "configuration_id", referencedColumnName = "configuration_id", insertable = false, updatable = false)
-    private List<EmailConfigurationsProperties> emailConfigurationsProperties;
+    private List<EmailConfigurationsPropertyEntity> emailConfigurationProperties;
 
-    public EmailConfigurationEntity(UUID configurationId, OffsetDateTime createdAt, OffsetDateTime lastUpdated, String smtpHost, String smtpFrom, Long smtpPort, Boolean authRequired,
+    public EmailConfigurationEntity() {
+    }
+
+    public EmailConfigurationEntity(UUID configurationId, OffsetDateTime createdAt, OffsetDateTime lastUpdated, String smtpHost, String smtpFrom, Integer smtpPort, Boolean authRequired,
         String authUsername, String authPassword,
-        List<EmailConfigurationsProperties> emailConfigurationsProperties) {
+        List<EmailConfigurationsPropertyEntity> emailConfigurationProperties) {
         this.configurationId = configurationId;
         this.createdAt = createdAt;
         this.lastUpdated = lastUpdated;
@@ -61,7 +64,7 @@ public class EmailConfigurationEntity extends BaseEntity {
         this.authRequired = authRequired;
         this.authUsername = authUsername;
         this.authPassword = authPassword;
-        this.emailConfigurationsProperties = emailConfigurationsProperties;
+        this.emailConfigurationProperties = emailConfigurationProperties;
     }
 
     public UUID getConfigurationId() {
@@ -104,11 +107,11 @@ public class EmailConfigurationEntity extends BaseEntity {
         this.smtpFrom = smtpFrom;
     }
 
-    public Long getSmtpPort() {
+    public Integer getSmtpPort() {
         return smtpPort;
     }
 
-    public void setSmtpPort(Long smtpPort) {
+    public void setSmtpPort(Integer smtpPort) {
         this.smtpPort = smtpPort;
     }
 
@@ -136,11 +139,11 @@ public class EmailConfigurationEntity extends BaseEntity {
         this.authPassword = authPassword;
     }
 
-    public List<EmailConfigurationsProperties> getEmailConfigurationsProperties() {
-        return emailConfigurationsProperties;
+    public List<EmailConfigurationsPropertyEntity> getEmailConfigurationProperties() {
+        return emailConfigurationProperties;
     }
 
-    public void setEmailConfigurationsProperties(List<EmailConfigurationsProperties> emailConfigurationsProperties) {
-        this.emailConfigurationsProperties = emailConfigurationsProperties;
+    public void setEmailConfigurationProperties(List<EmailConfigurationsPropertyEntity> emailConfigurationProperties) {
+        this.emailConfigurationProperties = emailConfigurationProperties;
     }
 }

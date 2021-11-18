@@ -22,49 +22,43 @@ import com.synopsys.integration.alert.api.channel.ChannelMessageSender;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFormat;
+import com.synopsys.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.channel.email.distribution.address.EmailAddressGatherer;
 import com.synopsys.integration.alert.channel.email.distribution.address.JobEmailAddressValidator;
 import com.synopsys.integration.alert.channel.email.distribution.address.ValidatedEmailAddresses;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.FieldStatusSeverity;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
-import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.service.email.EmailTarget;
 import com.synopsys.integration.alert.service.email.JavamailPropertiesFactory;
 import com.synopsys.integration.alert.service.email.SmtpConfig;
-import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
+import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
 @Component
 public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobDetailsModel, EmailChannelMessageModel, MessageResult> {
     public static final String FILE_NAME_MESSAGE_TEMPLATE = "message_content.ftl";
 
-    private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
+    private final EmailGlobalConfigAccessor emailGlobalConfigAccessor;
     private final EmailAddressGatherer emailAddressGatherer;
-    private final EmailChannelKey emailChannelKey;
     private final EmailChannelMessagingService emailChannelMessagingService;
     private final JavamailPropertiesFactory javamailPropertiesFactory;
     private final JobEmailAddressValidator emailAddressValidator;
 
     @Autowired
     public EmailChannelMessageSender(
-        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor,
+        EmailGlobalConfigAccessor emailGlobalConfigAccessor,
         EmailAddressGatherer emailAddressGatherer,
-        EmailChannelKey emailChannelKey,
         EmailChannelMessagingService emailChannelMessagingService,
         JobEmailAddressValidator emailAddressValidator,
         JavamailPropertiesFactory javamailPropertiesFactory
     ) {
-        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
+        this.emailGlobalConfigAccessor = emailGlobalConfigAccessor;
         this.emailAddressGatherer = emailAddressGatherer;
-        this.emailChannelKey = emailChannelKey;
         this.emailChannelMessagingService = emailChannelMessagingService;
         this.emailAddressValidator = emailAddressValidator;
         this.javamailPropertiesFactory = javamailPropertiesFactory;
@@ -94,21 +88,19 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
         }
 
         // Distribution
-        FieldUtility globalConfiguration = configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(emailChannelKey, ConfigContextEnum.GLOBAL)
-            .stream()
-            .findAny()
-            .map(ConfigurationModel::getCopyOfKeyToFieldMap)
-            .map(FieldUtility::new)
+        AlertPagedModel<EmailGlobalConfigModel> configurations = emailGlobalConfigAccessor.getConfigurationPage(AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE);
+        EmailGlobalConfigModel emailServerConfiguration = configurations.getModels().stream()
+            .findFirst()
             .orElseThrow(() -> new AlertConfigurationException("ERROR: Missing Email global config."));
 
         SmtpConfig smtpConfig = SmtpConfig.builder()
-            .setJavamailProperties(javamailPropertiesFactory.createJavaMailProperties(globalConfiguration))
-            .setSmtpFrom(globalConfiguration.getString(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey()).orElse(null))
-            .setSmtpHost(globalConfiguration.getString(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey()).orElse(null))
-            .setSmtpPort(globalConfiguration.getInteger(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey()).orElse(-1))
-            .setSmtpAuth(globalConfiguration.getBooleanOrFalse(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey()))
-            .setSmtpUsername(globalConfiguration.getString(EmailPropertyKeys.JAVAMAIL_USER_KEY.name()).orElse(null))
-            .setSmtpPassword(globalConfiguration.getString(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey()).orElse(null))
+            .setJavamailProperties(javamailPropertiesFactory.createJavaMailProperties(emailServerConfiguration))
+            .setSmtpFrom(emailServerConfiguration.getFrom().orElse(null))
+            .setSmtpHost(emailServerConfiguration.getHost().orElse(null))
+            .setSmtpPort(emailServerConfiguration.getPort().orElse(-1))
+            .setSmtpAuth(emailServerConfiguration.getAuth().orElse(false))
+            .setSmtpUsername(emailServerConfiguration.getUsername().orElse(null))
+            .setSmtpPassword(emailServerConfiguration.getPassword().orElse(null))
             .build();
 
         int totalEmailsSent = 0;

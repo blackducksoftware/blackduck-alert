@@ -10,15 +10,15 @@ package com.synopsys.integration.alert.database.email.properties;
 import java.io.Serializable;
 import java.util.UUID;
 
-public class EmailConfigurationPropertiesPK implements Serializable {
+public class EmailConfigurationPropertyPK implements Serializable {
     private static final long serialVersionUID = -6305320156508472382L;
     private UUID configurationId;
     private String propertyKey;
 
-    public EmailConfigurationPropertiesPK() {
+    public EmailConfigurationPropertyPK() {
     }
 
-    public EmailConfigurationPropertiesPK(UUID configurationId, String propertyKey) {
+    public EmailConfigurationPropertyPK(UUID configurationId, String propertyKey) {
         this.configurationId = configurationId;
         this.propertyKey = propertyKey;
     }
