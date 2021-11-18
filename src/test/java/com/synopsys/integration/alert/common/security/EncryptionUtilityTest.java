@@ -122,6 +122,40 @@ public class EncryptionUtilityTest {
     }
 
     @Test
+    public void testEncryptionFromEnvironment() {
+        assertTrue(encryptionUtility.isInitialized());
+        assertTrue(encryptionUtility.isEncryptionFromEnvironment());
+    }
+
+    @Test
+    public void testEncryptionFromEnvironmentFalse() throws Exception {
+        Mockito.when(alertProperties.getAlertEncryptionPassword()).thenReturn(Optional.empty());
+        Mockito.when(alertProperties.getAlertEncryptionGlobalSalt()).thenReturn(Optional.empty());
+        filePersistenceUtil.writeToFile(FILE_NAME, "{password: \"savedPassword\", globalSalt: \"savedSalt\"}");
+        assertTrue(encryptionUtility.isInitialized());
+        assertTrue(filePersistenceUtil.exists(FILE_NAME));
+        assertFalse(encryptionUtility.isEncryptionFromEnvironment());
+    }
+
+    @Test
+    public void testEncryptionFromEnvironmentNoSalt() throws Exception {
+        Mockito.when(alertProperties.getAlertEncryptionPassword()).thenReturn(Optional.empty());
+        filePersistenceUtil.writeToFile(FILE_NAME, "{password: \"savedPassword\", globalSalt: \"savedSalt\"}");
+        assertTrue(encryptionUtility.isInitialized());
+        assertTrue(filePersistenceUtil.exists(FILE_NAME));
+        assertTrue(encryptionUtility.isEncryptionFromEnvironment());
+    }
+
+    @Test
+    public void testEncryptionFromEnvironmentNoPassword() throws Exception {
+        Mockito.when(alertProperties.getAlertEncryptionGlobalSalt()).thenReturn(Optional.empty());
+        filePersistenceUtil.writeToFile(FILE_NAME, "{password: \"savedPassword\", globalSalt: \"savedSalt\"}");
+        assertTrue(encryptionUtility.isInitialized());
+        assertTrue(filePersistenceUtil.exists(FILE_NAME));
+        assertTrue(encryptionUtility.isEncryptionFromEnvironment());
+    }
+
+    @Test
     public void testCreateEncryptionFileData() throws Exception {
         final String expectedPassword = "expectedPassword";
         final String expectedSalt = "expectedSalt";

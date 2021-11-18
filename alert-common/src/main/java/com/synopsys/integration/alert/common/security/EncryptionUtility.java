@@ -68,6 +68,10 @@ public class EncryptionUtility {
         return isPasswordSet() && isGlobalSaltSet();
     }
 
+    public boolean isEncryptionFromEnvironment() {
+        return isPasswordFromEnvironment() || isGlobalSaltFromEnvironment();
+    }
+
     public void updatePasswordFieldInVolumeDataFile(String password) throws IOException {
         if (StringUtils.isBlank(password)) {
             throw new IllegalArgumentException("Encryption password cannot be blank");
@@ -106,6 +110,10 @@ public class EncryptionUtility {
         return StringUtils.isBlank(getPassword());
     }
 
+    public boolean isPasswordFromEnvironment() {
+        return alertProperties.getAlertEncryptionPassword().or(this::readPasswordFromSecretsFile).isPresent();
+    }
+
     private String getPassword() {
         Optional<String> passwordFromEnvironment = alertProperties.getAlertEncryptionPassword();
         return passwordFromEnvironment.orElseGet(this::getPasswordFromFile);
@@ -140,6 +148,10 @@ public class EncryptionUtility {
 
     public boolean isGlobalSaltMissing() {
         return StringUtils.isBlank(getGlobalSalt());
+    }
+
+    public boolean isGlobalSaltFromEnvironment() {
+        return alertProperties.getAlertEncryptionGlobalSalt().or(this::readGlobalSaltFromSecretsFile).isPresent();
     }
 
     private String getGlobalSalt() {

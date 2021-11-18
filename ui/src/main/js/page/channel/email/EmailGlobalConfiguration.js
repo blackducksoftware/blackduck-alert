@@ -8,7 +8,7 @@ import TextInput from 'common/input/TextInput';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
 import CheckboxInput from 'common/input/CheckboxInput';
 import PasswordInput from 'common/input/PasswordInput';
-import ConfigurationForm from 'page/channel/email/standalone/ConfigurationForm';
+import ConfigurationForm from 'common/ConfigurationForm';
 import * as ConfigurationRequestBuilder from 'common/util/configurationRequestBuilder';
 import * as fieldModelUtilities from 'common/util/fieldModelUtilities';
 import FluidFieldMappingField from 'common/input/mapping/FluidFieldMappingField';

@@ -90,6 +90,7 @@ public class SettingsEncryptionCrudActions {
         SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel();
         settingsEncryptionModel.setPassword(ConfigurationCrudHelper.MASKED_VALUE);
         settingsEncryptionModel.setGlobalSalt(ConfigurationCrudHelper.MASKED_VALUE);
+        settingsEncryptionModel.setReadOnly(encryptionUtility.isEncryptionFromEnvironment());
         return settingsEncryptionModel;
     }
 }
