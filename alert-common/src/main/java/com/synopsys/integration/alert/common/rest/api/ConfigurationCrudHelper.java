@@ -27,7 +27,6 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.function.ThrowingSupplier;
 
 public class ConfigurationCrudHelper {
-    public static final String MASKED_VALUE = "*****";
 
     private final Logger logger = LoggerFactory.getLogger(ConfigurationCrudHelper.class);
     private final AuthorizationManager authorizationManager;
