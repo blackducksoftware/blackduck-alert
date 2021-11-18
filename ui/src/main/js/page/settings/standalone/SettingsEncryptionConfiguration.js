@@ -3,7 +3,7 @@ import * as PropTypes from 'prop-types';
 import * as ConfigurationRequestBuilder from 'common/util/configurationRequestBuilder';
 import * as fieldModelUtilities from 'common/util/fieldModelUtilities';
 import PasswordInput from 'common/input/PasswordInput';
-import ConfigurationForm from 'page/channel/email/standalone/ConfigurationForm';
+import ConfigurationForm from 'common/ConfigurationForm';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
 import { SETTINGS_FIELD_KEYS, SETTINGS_INFO } from 'page/settings/SettingsModel';
 import ReadOnlyField from 'common/input/field/ReadOnlyField';
