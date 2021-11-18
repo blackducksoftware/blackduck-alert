@@ -99,5 +99,6 @@ public class SettingsEncryptionCrudActionsTest {
 
         assertEquals(ConfigurationCrudHelper.MASKED_VALUE, settingsEncryptionModel.getPassword().get());
         assertEquals(ConfigurationCrudHelper.MASKED_VALUE, settingsEncryptionModel.getGlobalSalt().get());
+        assertTrue(settingsEncryptionModel.isReadOnly());
     }
 }
