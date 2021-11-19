@@ -26,7 +26,7 @@ public class EnvironmentVariableProcessorTest {
         EnvironmentVariableProcessor processor = new EnvironmentVariableProcessor(List.of(handler));
         processor.updateConfigurations();
         assertTrue(handler.hasUpdateOccurred());
-        Properties updatedProperties = handler.getUpdatedProperties().orElseThrow(() -> new AssertionError("Properties should not be empty"));
+        Properties updatedProperties = handler.getUpdatedProperties().orElseThrow(() -> new AssertionError("Properties should exist"));
 
         assertFalse(updatedProperties.isEmpty());
         assertTrue(EnvironmentTestHandler.VARIABLE_NAMES.containsAll(updatedProperties.stringPropertyNames()));
@@ -40,9 +40,8 @@ public class EnvironmentVariableProcessorTest {
         EnvironmentVariableProcessor processor = new EnvironmentVariableProcessor(List.of(handler));
         processor.updateConfigurations();
         assertFalse(handler.hasUpdateOccurred());
-        Properties updatedProperties = handler.getUpdatedProperties().orElseThrow(() -> new AssertionError("Properties should not be empty"));
-
-        assertTrue(updatedProperties.isEmpty());
+        assertTrue(handler.getUpdatedProperties().stream()
+            .allMatch(Properties::isEmpty));
     }
 
     private static class EnvironmentTestHandler implements EnvironmentVariableHandler {
