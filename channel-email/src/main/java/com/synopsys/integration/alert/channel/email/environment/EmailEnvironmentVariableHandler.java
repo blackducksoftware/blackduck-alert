@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandler;
 import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
@@ -107,23 +106,54 @@ public class EmailEnvironmentVariableHandler implements EnvironmentVariableHandl
     @Override
     public Properties updateFromEnvironment() {
         Properties properties = new Properties();
-        EmailGlobalConfigModel configModel = configAccessor.getConfigurationPage(AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE).getModels().stream()
-            .findFirst()
-            .orElse(new EmailGlobalConfigModel());
-        configureEmailSettings(properties, configModel);
-        configureAdditionalProperties(properties, configModel);
+        boolean anyEmailConfigsExist = configAccessor.getConfigurationCount() > 0;
+        if (anyEmailConfigsExist) {
+            EmailGlobalConfigModel configModel = new EmailGlobalConfigModel();
+            configureEmailSettings(properties, configModel);
+            configureAdditionalProperties(properties, configModel);
 
-        configAccessor.createConfiguration(configModel);
+            configAccessor.createConfiguration(configModel);
+        }
         return properties;
     }
 
     private void configureEmailSettings(Properties properties, EmailGlobalConfigModel configuration) {
+        environmentVariableUtility.getEnvironmentValue(SMTP_HOST_KEY)
+            .ifPresent(configuration::setHost);
+
+        environmentVariableUtility.getEnvironmentValue(SMTP_PORT_KEY)
+            .map(Integer::valueOf)
+            .ifPresent(configuration::setPort);
+
+        environmentVariableUtility.getEnvironmentValue(SMTP_FROM_KEY)
+            .ifPresent(configuration::setFrom);
+
+        environmentVariableUtility.getEnvironmentValue(AUTH_REQUIRED_KEY)
+            .map(Boolean::valueOf)
+            .ifPresent(configuration::setAuth);
+
+        environmentVariableUtility.getEnvironmentValue(AUTH_USER_KEY)
+            .ifPresent(configuration::setUsername);
+
+        environmentVariableUtility.getEnvironmentValue(AUTH_PASSWORD_KEY)
+            .ifPresent(configuration::setPassword);
 
     }
 
     private void configureAdditionalProperties(Properties properties, EmailGlobalConfigModel configuration) {
         Map<String, String> additionalProperties = new HashMap<>();
+        for (String additionalPropertyName : ADDITIONAL_PROPERTY_KEYSET) {
+            if (environmentVariableUtility.hasEnvironmentValue(additionalPropertyName)) {
+                String javamailPropertyName = convertVariableNameToJavamailPropertyKey(additionalPropertyName);
+                additionalProperties.put(javamailPropertyName, environmentVariableUtility.getEnvironmentValue(additionalPropertyName).orElse(null));
+            }
+        }
         configuration.setAdditionalJavaMailProperties(additionalProperties);
     }
 
+    private String convertVariableNameToJavamailPropertyKey(String environmentVariableName) {
+        String propertyKey = environmentVariableName.substring(ENVIRONMENT_VARIABLE_PREFIX.length());
+        propertyKey = propertyKey.replace(".", "_").toLowerCase();
+        return propertyKey;
+    }
 }

@@ -57,6 +57,12 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
 
     @Override
     @Transactional(readOnly = true)
+    public long getConfigurationCount() {
+        return emailConfigurationRepository.count();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Optional<EmailGlobalConfigModel> getConfiguration(UUID id) {
         return emailConfigurationRepository.findById(id).map(this::createConfigModel);
     }
