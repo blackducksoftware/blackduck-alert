@@ -8,6 +8,7 @@
 package com.synopsys.integration.alert.environment;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -55,19 +56,17 @@ public class EnvironmentVariableProcessor {
 
     private void logConfiguration(Properties configurationProperties) {
         if (!configurationProperties.isEmpty()) {
-            List<String> sortedPropertyNames = configurationProperties.stringPropertyNames().stream()
+            List<String> sortedPropertyNames = configurationProperties.entrySet().stream()
+                .map(Map.Entry::getKey)
+                .map(Object::toString)
                 .sorted()
                 .collect(Collectors.toList());
             logger.info("  ");
             logger.info("  ### Environment Variables Used to Configure System ### ");
             for (String propertyName : sortedPropertyNames) {
-                logField(propertyName, configurationProperties.getProperty(propertyName));
+                logger.info("    {} = {}", propertyName, configurationProperties.getProperty(propertyName));
             }
             logger.info("  ");
         }
-    }
-
-    private void logField(String key, String value) {
-        logger.info("    {} = {}", key.trim(), value);
     }
 }
