@@ -50,7 +50,7 @@ public class DefaultEmailJobDetailsAccessor implements EmailJobDetailsAccessor {
         );
         EmailJobDetailsEntity savedJobDetails = emailJobDetailsRepository.save(jobDetailsToSave);
 
-        additionalEmailAddressRepository.deleteByJobId(jobId);
+        additionalEmailAddressRepository.bulkDeleteByJobId(jobId);
         List<EmailJobAdditionalEmailAddressEntity> additionalEmailAddressEntitiesToSave = emailJobDetails.getAdditionalEmailAddresses()
                                                                                               .stream()
                                                                                               .map(emailAddress -> new EmailJobAdditionalEmailAddressEntity(jobId, emailAddress))
