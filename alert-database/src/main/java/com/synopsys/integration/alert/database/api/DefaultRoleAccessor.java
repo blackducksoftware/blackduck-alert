@@ -130,7 +130,7 @@ public class DefaultRoleAccessor implements RoleAccessor {
     @Override
     public void updateUserRoles(Long userId, Collection<UserRoleModel> roles) {
         if (null != userId) {
-            userRoleRepository.deleteAllByUserId(userId);
+            userRoleRepository.bulkDeleteAllByUserId(userId);
 
             if (null != roles && !roles.isEmpty()) {
                 Collection<String> roleNames = roles.stream().map(UserRoleModel::getName).collect(Collectors.toSet());
