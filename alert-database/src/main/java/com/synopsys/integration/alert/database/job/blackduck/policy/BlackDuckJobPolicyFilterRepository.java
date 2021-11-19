@@ -19,7 +19,7 @@ public interface BlackDuckJobPolicyFilterRepository extends JpaRepository<BlackD
                + " WHERE entity.jobId = :jobId"
     )
     @Modifying
-    void deleteAllByJobId(UUID jobId);
+    void bulkDeleteAllByJobId(UUID jobId);
 
     List<BlackDuckJobPolicyFilterEntity> findByJobId(UUID jobId);
 

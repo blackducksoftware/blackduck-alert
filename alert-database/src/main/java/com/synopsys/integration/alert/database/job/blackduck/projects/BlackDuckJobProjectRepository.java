@@ -19,7 +19,7 @@ public interface BlackDuckJobProjectRepository extends JpaRepository<BlackDuckJo
                + " WHERE entity.jobId = :jobId"
     )
     @Modifying
-    void deleteAllByJobId(UUID jobId);
+    void bulkDeleteAllByJobId(UUID jobId);
 
     List<BlackDuckJobProjectEntity> findByJobId(UUID jobId);
 

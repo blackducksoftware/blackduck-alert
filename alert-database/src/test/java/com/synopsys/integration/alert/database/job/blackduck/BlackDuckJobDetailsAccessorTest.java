@@ -88,10 +88,10 @@ public class BlackDuckJobDetailsAccessorTest {
 
         BlackDuckJobDetailsEntity createdBlackDuckJobDetailsEntity = blackDuckJobDetailsAccessor.saveBlackDuckJobDetails(jobId, distributionJobRequestModel);
 
-        Mockito.verify(blackDuckJobNotificationTypeRepository).deleteAllByJobId(Mockito.eq(jobId));
-        Mockito.verify(blackDuckJobProjectRepository).deleteAllByJobId(Mockito.eq(jobId));
-        Mockito.verify(blackDuckJobPolicyFilterRepository).deleteAllByJobId(Mockito.eq(jobId));
-        Mockito.verify(blackDuckJobVulnerabilitySeverityFilterRepository).deleteAllByJobId(Mockito.eq(jobId));
+        Mockito.verify(blackDuckJobNotificationTypeRepository).bulkDeleteAllByJobId(Mockito.eq(jobId));
+        Mockito.verify(blackDuckJobProjectRepository).bulkDeleteAllByJobId(Mockito.eq(jobId));
+        Mockito.verify(blackDuckJobPolicyFilterRepository).bulkDeleteAllByJobId(Mockito.eq(jobId));
+        Mockito.verify(blackDuckJobVulnerabilitySeverityFilterRepository).bulkDeleteAllByJobId(Mockito.eq(jobId));
 
         assertEquals(jobId, createdBlackDuckJobDetailsEntity.getJobId());
         assertEquals(1, createdBlackDuckJobDetailsEntity.getBlackDuckJobNotificationTypes().size());

@@ -21,6 +21,6 @@ public interface EmailJobAdditionalEmailAddressRepository extends JpaRepository<
                + " WHERE entity.jobId = :jobId"
     )
     @Modifying
-    void deleteByJobId(UUID jobId);
+    void bulkDeleteByJobId(UUID jobId);
 
 }

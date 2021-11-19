@@ -21,6 +21,6 @@ public interface JiraCloudJobCustomFieldRepository extends JpaRepository<JiraClo
                + " WHERE entity.jobId = :jobId"
     )
     @Modifying
-    void deleteByJobId(UUID jobId);
+    void bulkDeleteByJobId(UUID jobId);
 
 }
