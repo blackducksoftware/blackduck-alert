@@ -25,71 +25,71 @@ import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
 @Component
-public class EmailEnvironmentVariableHandler implements EnvironmentVariableHandlerFactory {
-    public static final String ENVIRONMENT_VARIABLE_PREFIX = "ALERT_CHANNEL_EMAIL_MAIL_";
-    public static final String ADDITIONAL_VARIABLE_PREFIX = "ALERT_CHANNEL_EMAIL_ADDITIONAL_";
+public class EmailEnvironmentVariableHandlerFactory implements EnvironmentVariableHandlerFactory {
+    public static final String ENVIRONMENT_VARIABLE_PREFIX = "ALERT_CHANNEL_EMAIL_";
+    public static final String ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX = ENVIRONMENT_VARIABLE_PREFIX + "MAIL_";
 
     // fields in model
-    public static final String AUTH_REQUIRED_KEY = ENVIRONMENT_VARIABLE_PREFIX + "SMTP_AUTH";
-    public static final String SMTP_FROM_KEY = ENVIRONMENT_VARIABLE_PREFIX + "SMTP_FROM";
-    public static final String SMTP_HOST_KEY = ENVIRONMENT_VARIABLE_PREFIX + "SMTP_HOST";
-    public static final String AUTH_PASSWORD_KEY = ENVIRONMENT_VARIABLE_PREFIX + "SMTP_PASSWORD";
-    public static final String SMTP_PORT_KEY = ENVIRONMENT_VARIABLE_PREFIX + "SMTP_PORT";
-    public static final String AUTH_USER_KEY = ENVIRONMENT_VARIABLE_PREFIX + "SMTP_USER";
+    public static final String AUTH_REQUIRED_KEY = ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_AUTH";
+    public static final String EMAIL_FROM_KEY = ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_FROM";
+    public static final String EMAIL_HOST_KEY = ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_HOST";
+    public static final String AUTH_PASSWORD_KEY = ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_PASSWORD";
+    public static final String EMAIL_PORT_KEY = ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_PORT";
+    public static final String AUTH_USER_KEY = ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_USER";
 
     public static final Set<String> EMAIL_CONFIGURATION_KEYSET = Set.of(
-        AUTH_REQUIRED_KEY, SMTP_FROM_KEY, SMTP_HOST_KEY, AUTH_PASSWORD_KEY, SMTP_PORT_KEY, AUTH_USER_KEY);
+        AUTH_REQUIRED_KEY, EMAIL_FROM_KEY, EMAIL_HOST_KEY, AUTH_PASSWORD_KEY, EMAIL_PORT_KEY, AUTH_USER_KEY);
 
     // additional property keys
-    public static final Set<String> OLD_ADDITIONAL_PROPERTY_KEYSET = Set.of(ENVIRONMENT_VARIABLE_PREFIX + "SMTP_ALLOW8BITMIME",
-        ENVIRONMENT_VARIABLE_PREFIX + "SMTP_AUTH_DIGEST-MD5_DISABLE",
-        ENVIRONMENT_VARIABLE_PREFIX + "SMTP_AUTH_LOGIN_DISABLE",
-        ENVIRONMENT_VARIABLE_PREFIX + "SMTP_AUTH_MECHANISMS",
-        ENVIRONMENT_VARIABLE_PREFIX + "SMTP_AUTH_NTLM_DISABLE",
-        ENVIRONMENT_VARIABLE_PREFIX + "SMTP_AUTH_NTLM_DOMAIN",
-        ENVIRONMENT_VARIABLE_PREFIX + "SMTP_AUTH_NTLM_FLAGS",
-        ENVIRONMENT_VARIABLE_PREFIX + "SMTP_AUTH_PLAIN_DISABLE",
-        ENVIRONMENT_VARIABLE_PREFIX + "SMTP_AUTH_XOAUTH2_DISABLE",
-        ENVIRONMENT_VARIABLE_PREFIX + "SMTP_CONNECTIONTIMEOUT",
-        ENVIRONMENT_VARIABLE_PREFIX + "SMTP_DSN_NOTIFY",
-        ENVIRONMENT_VARIABLE_PREFIX + "SMTP_DSN_RET",
-        ENVIRONMENT_VARIABLE_PREFIX + "SMTP_EHLO",
+    public static final Set<String> OLD_ADDITIONAL_PROPERTY_KEYSET = Set.of(ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_ALLOW8BITMIME",
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_AUTH_DIGEST-MD5_DISABLE",
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_AUTH_LOGIN_DISABLE",
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_AUTH_MECHANISMS",
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_AUTH_NTLM_DISABLE",
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_AUTH_NTLM_DOMAIN",
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_AUTH_NTLM_FLAGS",
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_AUTH_PLAIN_DISABLE",
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_AUTH_XOAUTH2_DISABLE",
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_CONNECTIONTIMEOUT",
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_DSN_NOTIFY",
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_DSN_RET",
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_EHLO",
 
-        ENVIRONMENT_VARIABLE_PREFIX + "SMTP_LOCALADDRESS",
-        ENVIRONMENT_VARIABLE_PREFIX + "SMTP_LOCALHOST",
-        ENVIRONMENT_VARIABLE_PREFIX + "SMTP_LOCALPORT",
-        ENVIRONMENT_VARIABLE_PREFIX + "SMTP_MAILEXTENSION",
-        ENVIRONMENT_VARIABLE_PREFIX + "SMTP_NOOP_STRICT",
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_LOCALADDRESS",
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_LOCALHOST",
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_LOCALPORT",
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_MAILEXTENSION",
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_NOOP_STRICT",
 
-        ENVIRONMENT_VARIABLE_PREFIX + "SMTP_PROXY_HOST",
-        ENVIRONMENT_VARIABLE_PREFIX + "SMTP_PROXY_PORT",
-        ENVIRONMENT_VARIABLE_PREFIX + "SMTP_QUITWAIT",
-        ENVIRONMENT_VARIABLE_PREFIX + "SMTP_REPORTSUCCESS",
-        ENVIRONMENT_VARIABLE_PREFIX + "SMTP_SASL_AUTHORIZATIONID",
-        ENVIRONMENT_VARIABLE_PREFIX + "SMTP_SASL_ENABLE",
-        ENVIRONMENT_VARIABLE_PREFIX + "SMTP_SASL_MECHANISMS",
-        ENVIRONMENT_VARIABLE_PREFIX + "SMTP_SASL_REALM",
-        ENVIRONMENT_VARIABLE_PREFIX + "SMTP_SASL_USECANONICALHOSTNAME",
-        ENVIRONMENT_VARIABLE_PREFIX + "SMTP_SENDPARTIAL",
-        ENVIRONMENT_VARIABLE_PREFIX + "SMTP_SOCKS_HOST",
-        ENVIRONMENT_VARIABLE_PREFIX + "SMTP_SOCKS_PORT",
-        ENVIRONMENT_VARIABLE_PREFIX + "SMTP_SSL_CHECKSERVERIDENTITY",
-        ENVIRONMENT_VARIABLE_PREFIX + "SMTP_SSL_CIPHERSUITES",
-        ENVIRONMENT_VARIABLE_PREFIX + "SMTP_SSL_ENABLE",
-        ENVIRONMENT_VARIABLE_PREFIX + "SMTP_SSL_PROTOCOLS",
-        ENVIRONMENT_VARIABLE_PREFIX + "SMTP_SSL_TRUST",
-        ENVIRONMENT_VARIABLE_PREFIX + "SMTP_STARTTLS_ENABLE",
-        ENVIRONMENT_VARIABLE_PREFIX + "SMTP_STARTTLS_REQUIRED",
-        ENVIRONMENT_VARIABLE_PREFIX + "SMTP_SUBMITTER",
-        ENVIRONMENT_VARIABLE_PREFIX + "SMTP_TIMEOUT",
-        ENVIRONMENT_VARIABLE_PREFIX + "SMTP_USERSET",
-        ENVIRONMENT_VARIABLE_PREFIX + "SMTP_WRITETIMEOUT");
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_PROXY_HOST",
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_PROXY_PORT",
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_QUITWAIT",
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_REPORTSUCCESS",
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_SASL_AUTHORIZATIONID",
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_SASL_ENABLE",
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_SASL_MECHANISMS",
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_SASL_REALM",
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_SASL_USECANONICALHOSTNAME",
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_SENDPARTIAL",
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_SOCKS_HOST",
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_SOCKS_PORT",
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_SSL_CHECKSERVERIDENTITY",
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_SSL_CIPHERSUITES",
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_SSL_ENABLE",
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_SSL_PROTOCOLS",
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_SSL_TRUST",
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_STARTTLS_ENABLE",
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_STARTTLS_REQUIRED",
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_SUBMITTER",
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_TIMEOUT",
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_USERSET",
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_WRITETIMEOUT");
 
     private EmailGlobalConfigAccessor configAccessor;
     private EnvironmentVariableUtility environmentVariableUtility;
 
     @Autowired
-    public EmailEnvironmentVariableHandler(EmailGlobalConfigAccessor configAccessor, EnvironmentVariableUtility environmentVariableUtility) {
+    public EmailEnvironmentVariableHandlerFactory(EmailGlobalConfigAccessor configAccessor, EnvironmentVariableUtility environmentVariableUtility) {
         this.configAccessor = configAccessor;
         this.environmentVariableUtility = environmentVariableUtility;
     }
@@ -111,22 +111,32 @@ public class EmailEnvironmentVariableHandler implements EnvironmentVariableHandl
     private Properties updateConfiguration() {
         Properties properties = new Properties();
         EmailGlobalConfigModel configModel = new EmailGlobalConfigModel();
-        configureEmailSettings(properties, configModel);
+        configureEmailSettings(configModel);
         configureAdditionalProperties(properties, configModel);
 
+        EmailGlobalConfigModel obfuscatedModel = configModel.obfuscate();
+
+        obfuscatedModel.getHost().map(String::valueOf).ifPresent(value -> properties.put(EMAIL_HOST_KEY, value));
+        obfuscatedModel.getPort().map(String::valueOf).ifPresent(value -> properties.put(EMAIL_PORT_KEY, value));
+        obfuscatedModel.getFrom().map(String::valueOf).ifPresent(value -> properties.put(EMAIL_FROM_KEY, value));
+        obfuscatedModel.getAuth().map(String::valueOf).ifPresent(value -> properties.put(AUTH_REQUIRED_KEY, value));
+        obfuscatedModel.getPassword().map(String::valueOf).ifPresent(value -> properties.put(AUTH_PASSWORD_KEY, value));
+        obfuscatedModel.getUsername().map(String::valueOf).ifPresent(value -> properties.put(AUTH_USER_KEY, value));
+
         configAccessor.createConfiguration(configModel);
+
         return properties;
     }
 
-    private void configureEmailSettings(Properties properties, EmailGlobalConfigModel configuration) {
-        environmentVariableUtility.getEnvironmentValue(SMTP_HOST_KEY)
+    private void configureEmailSettings(EmailGlobalConfigModel configuration) {
+        environmentVariableUtility.getEnvironmentValue(EMAIL_HOST_KEY)
             .ifPresent(configuration::setHost);
 
-        environmentVariableUtility.getEnvironmentValue(SMTP_PORT_KEY)
+        environmentVariableUtility.getEnvironmentValue(EMAIL_PORT_KEY)
             .map(Integer::valueOf)
             .ifPresent(configuration::setPort);
 
-        environmentVariableUtility.getEnvironmentValue(SMTP_FROM_KEY)
+        environmentVariableUtility.getEnvironmentValue(EMAIL_FROM_KEY)
             .ifPresent(configuration::setFrom);
 
         environmentVariableUtility.getEnvironmentValue(AUTH_REQUIRED_KEY)
@@ -143,19 +153,20 @@ public class EmailEnvironmentVariableHandler implements EnvironmentVariableHandl
 
     private void configureAdditionalProperties(Properties properties, EmailGlobalConfigModel configuration) {
         Map<String, String> additionalProperties = new HashMap<>();
-        //TODO: Get all environment variables with the new prefix.
         for (String additionalPropertyName : OLD_ADDITIONAL_PROPERTY_KEYSET) {
             if (environmentVariableUtility.hasEnvironmentValue(additionalPropertyName)) {
-                String javamailPropertyName = convertVariableNameToJavamailPropertyKey(additionalPropertyName);
-                additionalProperties.put(javamailPropertyName, environmentVariableUtility.getEnvironmentValue(additionalPropertyName).orElse(null));
+                String javamailPropertyName = EmailEnvironmentVariableHandlerFactory.convertVariableNameToJavamailPropertyKey(additionalPropertyName);
+                String value = environmentVariableUtility.getEnvironmentValue(additionalPropertyName).orElse(null);
+                additionalProperties.put(javamailPropertyName, value);
+                properties.put(additionalPropertyName, value);
             }
         }
         configuration.setAdditionalJavaMailProperties(additionalProperties);
     }
 
-    private String convertVariableNameToJavamailPropertyKey(String environmentVariableName) {
+    public static String convertVariableNameToJavamailPropertyKey(String environmentVariableName) {
         String propertyKey = environmentVariableName.substring(ENVIRONMENT_VARIABLE_PREFIX.length());
-        propertyKey = propertyKey.replace(".", "_").toLowerCase();
+        propertyKey = propertyKey.replace("_", ".").toLowerCase();
         return propertyKey;
     }
 }

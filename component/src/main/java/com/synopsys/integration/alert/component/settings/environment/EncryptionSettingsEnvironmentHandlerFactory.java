@@ -12,17 +12,15 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandler;
+import com.synopsys.integration.alert.environment.EnvironmentVariableHandlerFactory;
 import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
 
-// Encryption settings need to be handled first.  This is to log the encryption environment variables.
 @Component
-@Order(1)
-public class EncryptionSettingsEnvironmentHandler extends EnvironmentVariableHandler {
+public class EncryptionSettingsEnvironmentHandlerFactory implements EnvironmentVariableHandlerFactory {
     public static final String HANDLER_NAME = "Encryption Settings";
     public static final String ENCRYPTION_PASSWORD_KEY = "ALERT_COMPONENT_SETTINGS_SETTINGS_ENCRYPTION_PASSWORD";
     public static final String ENCRYPTION_SALT_KEY = "ALERT_COMPONENT_SETTINGS_SETTINGS_ENCRYPTION_GLOBAL_SALT";
@@ -30,9 +28,13 @@ public class EncryptionSettingsEnvironmentHandler extends EnvironmentVariableHan
     private final EnvironmentVariableUtility environmentVariableUtility;
 
     @Autowired
-    public EncryptionSettingsEnvironmentHandler(EnvironmentVariableUtility environmentVariableUtility) {
-        super(HANDLER_NAME, () -> createVariableNameSet(), this::isConfigurationMissing, this::updateFunction);
+    public EncryptionSettingsEnvironmentHandlerFactory(EnvironmentVariableUtility environmentVariableUtility) {
         this.environmentVariableUtility = environmentVariableUtility;
+    }
+
+    @Override
+    public EnvironmentVariableHandler build() {
+        return new EnvironmentVariableHandler(HANDLER_NAME, this::createVariableNameSet, this::isConfigurationMissing, this::updateFunction);
     }
 
     private Set<String> createVariableNameSet() {
@@ -40,9 +42,8 @@ public class EncryptionSettingsEnvironmentHandler extends EnvironmentVariableHan
     }
 
     private Boolean isConfigurationMissing() {
-        Optional<String> password = environmentVariableUtility.getEnvironmentValue(ENCRYPTION_PASSWORD_KEY);
-        Optional<String> salt = environmentVariableUtility.getEnvironmentValue(ENCRYPTION_SALT_KEY);
-        return password.isEmpty() && salt.isEmpty();
+        // we always pull the values from the environment variables for encryption.
+        return true;
     }
 
     private Properties updateFunction() {
