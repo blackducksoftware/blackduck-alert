@@ -11,7 +11,7 @@ import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
-import com.synopsys.integration.alert.common.rest.api.ConfigurationCrudHelper;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.model.Obfuscated;
 
 public class SettingsEncryptionModel extends AlertSerializableModel implements Obfuscated<SettingsEncryptionModel> {
@@ -53,9 +53,9 @@ public class SettingsEncryptionModel extends AlertSerializableModel implements O
     public SettingsEncryptionModel obfuscate() {
         SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel();
 
-        String maskedPassword = (password != null) ? ConfigurationCrudHelper.MASKED_VALUE : null;
+        String maskedPassword = (password != null) ? AlertRestConstants.MASKED_VALUE : null;
         settingsEncryptionModel.setPassword(maskedPassword);
-        String maskedGlobalSalt = (globalSalt != null) ? ConfigurationCrudHelper.MASKED_VALUE : null;
+        String maskedGlobalSalt = (globalSalt != null) ? AlertRestConstants.MASKED_VALUE : null;
         settingsEncryptionModel.setGlobalSalt(maskedGlobalSalt);
         settingsEncryptionModel.setReadOnly(readOnly);
 

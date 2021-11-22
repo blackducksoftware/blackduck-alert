@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.api.ConfigurationCrudHelper;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
@@ -88,8 +89,8 @@ public class SettingsEncryptionCrudActions {
     private SettingsEncryptionModel createMaskedSettingsEncryptionModel() {
         // EncryptionUtility does not return a model. A SettingsEncryptionModel with values must be created in order to obfuscate in the ConfigurationCrudHelper later.
         SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel();
-        settingsEncryptionModel.setPassword(ConfigurationCrudHelper.MASKED_VALUE);
-        settingsEncryptionModel.setGlobalSalt(ConfigurationCrudHelper.MASKED_VALUE);
+        settingsEncryptionModel.setPassword(AlertRestConstants.MASKED_VALUE);
+        settingsEncryptionModel.setGlobalSalt(AlertRestConstants.MASKED_VALUE);
         settingsEncryptionModel.setReadOnly(encryptionUtility.isEncryptionFromEnvironment());
         return settingsEncryptionModel;
     }

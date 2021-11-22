@@ -28,7 +28,6 @@ import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationA
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
 import com.synopsys.integration.alert.database.email.EmailConfigurationEntity;
 import com.synopsys.integration.alert.database.email.EmailConfigurationRepository;
 import com.synopsys.integration.alert.database.email.properties.EmailConfigurationPropertiesRepository;
@@ -37,22 +36,24 @@ import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel
 
 @Component
 public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlobalConfigModel> {
-    private final RegisteredDescriptorRepository registeredDescriptorRepository;
     private final EncryptionUtility encryptionUtility;
     private final EmailConfigurationRepository emailConfigurationRepository;
     private final EmailConfigurationPropertiesRepository emailConfigurationPropertiesRepository;
 
     @Autowired
-    public EmailGlobalConfigAccessor(
-        RegisteredDescriptorRepository registeredDescriptorRepository,
-        EncryptionUtility encryptionUtility,
+    public EmailGlobalConfigAccessor(EncryptionUtility encryptionUtility,
         EmailConfigurationRepository emailConfigurationRepository,
         EmailConfigurationPropertiesRepository emailConfigurationPropertiesRepository
     ) {
-        this.registeredDescriptorRepository = registeredDescriptorRepository;
         this.encryptionUtility = encryptionUtility;
         this.emailConfigurationRepository = emailConfigurationRepository;
         this.emailConfigurationPropertiesRepository = emailConfigurationPropertiesRepository;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public long getConfigurationCount() {
+        return emailConfigurationRepository.count();
     }
 
     @Override
@@ -147,7 +148,7 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
         if (StringUtils.isNotBlank(configuration.getId())) {
             configurationId = UUID.fromString(configuration.getId());
         }
-        String host = configuration.getHost().orElseThrow(null);
+        String host = configuration.getHost().orElse(null);
         String from = configuration.getFrom().orElse(null);
         Integer port = configuration.getPort().orElse(null);
         Boolean auth = configuration.getAuth().orElse(Boolean.FALSE);
