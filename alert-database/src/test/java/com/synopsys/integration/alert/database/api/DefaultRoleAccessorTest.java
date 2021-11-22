@@ -213,7 +213,7 @@ public class DefaultRoleAccessorTest {
         DefaultRoleAccessor authorizationUtility = new DefaultRoleAccessor(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
         authorizationUtility.updateUserRoles(userId, userRoleModelCollection);
 
-        Mockito.verify(userRoleRepository).deleteAllByUserId(Mockito.any());
+        Mockito.verify(userRoleRepository).bulkDeleteAllByUserId(Mockito.any());
         Mockito.verify(userRoleRepository).saveAll(Mockito.any());
     }
 

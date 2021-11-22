@@ -55,7 +55,7 @@ public class DefaultJiraServerJobDetailsAccessor implements JiraServerJobDetails
         );
         JiraServerJobDetailsEntity savedJobDetails = jiraServerJobDetailsRepository.save(jiraServerJobDetailsToSave);
 
-        jiraServerJobCustomFieldRepository.deleteByJobId(jobId);
+        jiraServerJobCustomFieldRepository.bulkDeleteByJobId(jobId);
         List<JiraServerJobCustomFieldEntity> customFieldsToSave = jiraServerJobDetails.getCustomFields()
                                                                       .stream()
                                                                       .map(model -> new JiraServerJobCustomFieldEntity(savedJobDetails.getJobId(), model.getFieldName(), model.getFieldValue()))

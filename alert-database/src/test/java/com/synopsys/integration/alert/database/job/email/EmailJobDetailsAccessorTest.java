@@ -41,7 +41,7 @@ public class EmailJobDetailsAccessorTest {
 
         EmailJobDetailsEntity newEmailJobDetailsEntity = emailJobDetailsAccessor.saveEmailJobDetails(jobId, emailJobDetailsModel);
 
-        Mockito.verify(additionalEmailAddressRepository).deleteByJobId(Mockito.any());
+        Mockito.verify(additionalEmailAddressRepository).bulkDeleteByJobId(Mockito.any());
         assertEquals(jobId, newEmailJobDetailsEntity.getJobId());
         assertEquals(1, newEmailJobDetailsEntity.getEmailJobAdditionalEmailAddresses().size());
         assertEquals(additionalEmailAddress, newEmailJobDetailsEntity.getEmailJobAdditionalEmailAddresses().get(0).getEmailAddress());
