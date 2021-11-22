@@ -17,26 +17,26 @@ public class EnvironmentVariableProcessorTest {
     @Test
     public void testUpdatingHandler() {
         Environment environment = Mockito.mock(Environment.class);
-        for (String variableName : EnvironmentTestHandler.VARIABLE_NAMES) {
+        for (String variableName : EnvironmentTestHandlerFactory.VARIABLE_NAMES) {
             Mockito.when(environment.containsProperty(Mockito.eq(variableName))).thenReturn(Boolean.TRUE);
-            Mockito.when(environment.getProperty(Mockito.eq(variableName))).thenReturn(EnvironmentTestHandler.DEFAULT_VALUE);
+            Mockito.when(environment.getProperty(Mockito.eq(variableName))).thenReturn(EnvironmentTestHandlerFactory.DEFAULT_VALUE);
         }
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
-        EnvironmentTestHandler handler = new EnvironmentTestHandler(environmentVariableUtility);
+        EnvironmentTestHandlerFactory handler = new EnvironmentTestHandlerFactory(environmentVariableUtility);
         EnvironmentVariableProcessor processor = new EnvironmentVariableProcessor(List.of(handler));
         processor.updateConfigurations();
         assertTrue(handler.hasUpdateOccurred());
         Properties updatedProperties = handler.getUpdatedProperties().orElseThrow(() -> new AssertionError("Properties should exist"));
 
         assertFalse(updatedProperties.isEmpty());
-        assertTrue(EnvironmentTestHandler.VARIABLE_NAMES.containsAll(updatedProperties.stringPropertyNames()));
+        assertTrue(EnvironmentTestHandlerFactory.VARIABLE_NAMES.containsAll(updatedProperties.stringPropertyNames()));
     }
 
     @Test
     public void testMissingEnvironmentVariablesHandler() {
         Environment environment = Mockito.mock(Environment.class);
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
-        EnvironmentTestHandler handler = new EnvironmentTestHandler(environmentVariableUtility);
+        EnvironmentTestHandlerFactory handler = new EnvironmentTestHandlerFactory(environmentVariableUtility);
         EnvironmentVariableProcessor processor = new EnvironmentVariableProcessor(List.of(handler));
         processor.updateConfigurations();
         assertFalse(handler.hasUpdateOccurred());
@@ -44,7 +44,7 @@ public class EnvironmentVariableProcessorTest {
             .allMatch(Properties::isEmpty));
     }
 
-    private static class EnvironmentTestHandler implements EnvironmentVariableHandler {
+    private static class EnvironmentTestHandlerFactory implements EnvironmentVariableHandlerFactory {
         public static final String HANDLER_NAME = "Updating Handler";
         protected static final String ENVIRONMENT_VARIABLE_PREFIX = "ALERT_DESCRIPTORTYPE_DESCRIPTORNAME_";
         public static final Set<String> VARIABLE_NAMES = Set.of(
@@ -56,8 +56,13 @@ public class EnvironmentVariableProcessorTest {
         private EnvironmentVariableUtility environmentVariableUtility;
         private Properties updatedProperties;
 
-        public EnvironmentTestHandler(EnvironmentVariableUtility environmentVariableUtility) {
+        public EnvironmentTestHandlerFactory(EnvironmentVariableUtility environmentVariableUtility) {
             this.environmentVariableUtility = environmentVariableUtility;
+        }
+
+        @Override
+        public EnvironmentVariableHandler build() {
+            return new EnvironmentVariableHandler(HANDLER_NAME, this::getVariableNames, () -> Boolean.TRUE, this::updateFromEnvironment);
         }
 
         public boolean hasUpdateOccurred() {
@@ -68,18 +73,11 @@ public class EnvironmentVariableProcessorTest {
             return Optional.ofNullable(updatedProperties);
         }
 
-        @Override
-        public String getName() {
-            return HANDLER_NAME;
-        }
-
-        @Override
-        public Set<String> getVariableNames() {
+        private Set<String> getVariableNames() {
             return VARIABLE_NAMES;
         }
 
-        @Override
-        public Properties updateFromEnvironment() {
+        private Properties updateFromEnvironment() {
             Properties properties = new Properties();
             for (String variableName : VARIABLE_NAMES) {
                 if (environmentVariableUtility.hasEnvironmentValue(variableName)) {

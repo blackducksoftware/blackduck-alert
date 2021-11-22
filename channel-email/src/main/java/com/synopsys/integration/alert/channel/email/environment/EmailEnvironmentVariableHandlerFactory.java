@@ -20,12 +20,14 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandler;
+import com.synopsys.integration.alert.environment.EnvironmentVariableHandlerFactory;
 import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
 @Component
-public class EmailEnvironmentVariableHandler implements EnvironmentVariableHandler {
+public class EmailEnvironmentVariableHandler implements EnvironmentVariableHandlerFactory {
     public static final String ENVIRONMENT_VARIABLE_PREFIX = "ALERT_CHANNEL_EMAIL_MAIL_";
+    public static final String ADDITIONAL_VARIABLE_PREFIX = "ALERT_CHANNEL_EMAIL_ADDITIONAL_";
 
     // fields in model
     public static final String AUTH_REQUIRED_KEY = ENVIRONMENT_VARIABLE_PREFIX + "SMTP_AUTH";
@@ -39,7 +41,7 @@ public class EmailEnvironmentVariableHandler implements EnvironmentVariableHandl
         AUTH_REQUIRED_KEY, SMTP_FROM_KEY, SMTP_HOST_KEY, AUTH_PASSWORD_KEY, SMTP_PORT_KEY, AUTH_USER_KEY);
 
     // additional property keys
-    public static final Set<String> ADDITIONAL_PROPERTY_KEYSET = Set.of(ENVIRONMENT_VARIABLE_PREFIX + "SMTP_ALLOW8BITMIME",
+    public static final Set<String> OLD_ADDITIONAL_PROPERTY_KEYSET = Set.of(ENVIRONMENT_VARIABLE_PREFIX + "SMTP_ALLOW8BITMIME",
         ENVIRONMENT_VARIABLE_PREFIX + "SMTP_AUTH_DIGEST-MD5_DISABLE",
         ENVIRONMENT_VARIABLE_PREFIX + "SMTP_AUTH_LOGIN_DISABLE",
         ENVIRONMENT_VARIABLE_PREFIX + "SMTP_AUTH_MECHANISMS",
@@ -93,27 +95,26 @@ public class EmailEnvironmentVariableHandler implements EnvironmentVariableHandl
     }
 
     @Override
-    public String getName() {
-        return ChannelKeys.EMAIL.getDisplayName();
+    public EnvironmentVariableHandler build() {
+        return new EnvironmentVariableHandler(ChannelKeys.EMAIL.getDisplayName(), this::getVariableNames, this::isConfigurationMissing, this::updateConfiguration);
     }
 
-    @Override
-    public Set<String> getVariableNames() {
-        return Stream.concat(EMAIL_CONFIGURATION_KEYSET.stream(), ADDITIONAL_PROPERTY_KEYSET.stream())
+    private Set<String> getVariableNames() {
+        return Stream.concat(EMAIL_CONFIGURATION_KEYSET.stream(), OLD_ADDITIONAL_PROPERTY_KEYSET.stream())
             .collect(Collectors.toSet());
     }
 
-    @Override
-    public Properties updateFromEnvironment() {
-        Properties properties = new Properties();
-        boolean anyEmailConfigsExist = configAccessor.getConfigurationCount() > 0;
-        if (anyEmailConfigsExist) {
-            EmailGlobalConfigModel configModel = new EmailGlobalConfigModel();
-            configureEmailSettings(properties, configModel);
-            configureAdditionalProperties(properties, configModel);
+    private Boolean isConfigurationMissing() {
+        return configAccessor.getConfigurationCount() <= 0;
+    }
 
-            configAccessor.createConfiguration(configModel);
-        }
+    private Properties updateConfiguration() {
+        Properties properties = new Properties();
+        EmailGlobalConfigModel configModel = new EmailGlobalConfigModel();
+        configureEmailSettings(properties, configModel);
+        configureAdditionalProperties(properties, configModel);
+
+        configAccessor.createConfiguration(configModel);
         return properties;
     }
 
@@ -142,7 +143,8 @@ public class EmailEnvironmentVariableHandler implements EnvironmentVariableHandl
 
     private void configureAdditionalProperties(Properties properties, EmailGlobalConfigModel configuration) {
         Map<String, String> additionalProperties = new HashMap<>();
-        for (String additionalPropertyName : ADDITIONAL_PROPERTY_KEYSET) {
+        //TODO: Get all environment variables with the new prefix.
+        for (String additionalPropertyName : OLD_ADDITIONAL_PROPERTY_KEYSET) {
             if (environmentVariableUtility.hasEnvironmentValue(additionalPropertyName)) {
                 String javamailPropertyName = convertVariableNameToJavamailPropertyKey(additionalPropertyName);
                 additionalProperties.put(javamailPropertyName, environmentVariableUtility.getEnvironmentValue(additionalPropertyName).orElse(null));

@@ -21,12 +21,16 @@ import org.springframework.stereotype.Component;
 @Component
 public class EnvironmentVariableProcessor {
     private static final String LINE_DIVIDER = "---------------------------------";
+    private static final String TWO_SPACE_INDENT = "  ";
+    private static final String FOUR_SPACE_INDENT = "    ";
     private Logger logger = LoggerFactory.getLogger(getClass());
     private final List<EnvironmentVariableHandler> handlerList;
 
     @Autowired
-    public EnvironmentVariableProcessor(List<EnvironmentVariableHandler> handlerList) {
-        this.handlerList = handlerList;
+    public EnvironmentVariableProcessor(List<EnvironmentVariableHandlerFactory> factoryList) {
+        this.handlerList = factoryList.stream()
+            .map(EnvironmentVariableHandlerFactory::build)
+            .collect(Collectors.toList());
     }
 
     public void updateConfigurations() {
@@ -43,14 +47,14 @@ public class EnvironmentVariableProcessor {
     }
 
     private void logVariableNames(Set<String> names) {
-        logger.info("  ### Environment Variables ### ");
+        logger.info("{}### Environment Variables ### ", TWO_SPACE_INDENT);
         List<String> sortedNames = names.stream()
             .map(String::trim)
             .sorted()
             .collect(Collectors.toList());
 
         for (String name : sortedNames) {
-            logger.info("    {}", name);
+            logger.info("{}{}", FOUR_SPACE_INDENT, name);
         }
     }
 
@@ -61,12 +65,12 @@ public class EnvironmentVariableProcessor {
                 .map(Object::toString)
                 .sorted()
                 .collect(Collectors.toList());
-            logger.info("  ");
-            logger.info("  ### Environment Variables Used to Configure System ### ");
+            logger.info(TWO_SPACE_INDENT);
+            logger.info("{}### Environment Variables Used to Configure System ### ", TWO_SPACE_INDENT);
             for (String propertyName : sortedPropertyNames) {
-                logger.info("    {} = {}", propertyName, configurationProperties.getProperty(propertyName));
+                logger.info("{}{} = {}", FOUR_SPACE_INDENT, propertyName, configurationProperties.get(propertyName));
             }
-            logger.info("  ");
+            logger.info(TWO_SPACE_INDENT);
         }
     }
 }

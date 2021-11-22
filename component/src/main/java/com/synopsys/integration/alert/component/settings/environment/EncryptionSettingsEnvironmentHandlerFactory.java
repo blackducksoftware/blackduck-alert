@@ -22,7 +22,7 @@ import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
 // Encryption settings need to be handled first.  This is to log the encryption environment variables.
 @Component
 @Order(1)
-public class EncryptionSettingsEnvironmentHandler implements EnvironmentVariableHandler {
+public class EncryptionSettingsEnvironmentHandler extends EnvironmentVariableHandler {
     public static final String HANDLER_NAME = "Encryption Settings";
     public static final String ENCRYPTION_PASSWORD_KEY = "ALERT_COMPONENT_SETTINGS_SETTINGS_ENCRYPTION_PASSWORD";
     public static final String ENCRYPTION_SALT_KEY = "ALERT_COMPONENT_SETTINGS_SETTINGS_ENCRYPTION_GLOBAL_SALT";
@@ -31,21 +31,21 @@ public class EncryptionSettingsEnvironmentHandler implements EnvironmentVariable
 
     @Autowired
     public EncryptionSettingsEnvironmentHandler(EnvironmentVariableUtility environmentVariableUtility) {
+        super(HANDLER_NAME, () -> createVariableNameSet(), this::isConfigurationMissing, this::updateFunction);
         this.environmentVariableUtility = environmentVariableUtility;
     }
 
-    @Override
-    public String getName() {
-        return HANDLER_NAME;
-    }
-
-    @Override
-    public Set<String> getVariableNames() {
+    private Set<String> createVariableNameSet() {
         return Set.of(ENCRYPTION_PASSWORD_KEY, ENCRYPTION_SALT_KEY);
     }
 
-    @Override
-    public Properties updateFromEnvironment() {
+    private Boolean isConfigurationMissing() {
+        Optional<String> password = environmentVariableUtility.getEnvironmentValue(ENCRYPTION_PASSWORD_KEY);
+        Optional<String> salt = environmentVariableUtility.getEnvironmentValue(ENCRYPTION_SALT_KEY);
+        return password.isEmpty() && salt.isEmpty();
+    }
+
+    private Properties updateFunction() {
         Properties properties = new Properties();
         Optional<String> password = environmentVariableUtility.getEnvironmentValue(ENCRYPTION_PASSWORD_KEY);
         Optional<String> salt = environmentVariableUtility.getEnvironmentValue(ENCRYPTION_SALT_KEY);

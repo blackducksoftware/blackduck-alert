@@ -1,5 +1,0 @@
-dependencies {
-    api project(':api-environment')
-    implementation platform(project(':alert-platform'))
-
-}
