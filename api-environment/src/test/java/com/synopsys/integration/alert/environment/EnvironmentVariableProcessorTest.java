@@ -62,7 +62,7 @@ public class EnvironmentVariableProcessorTest {
 
         @Override
         public EnvironmentVariableHandler build() {
-            return new EnvironmentVariableHandler(HANDLER_NAME, this::getVariableNames, () -> Boolean.TRUE, this::updateFromEnvironment);
+            return new EnvironmentVariableHandler(HANDLER_NAME, VARIABLE_NAMES, Boolean.TRUE::booleanValue, this::updateFromEnvironment);
         }
 
         public boolean hasUpdateOccurred() {
@@ -71,10 +71,6 @@ public class EnvironmentVariableProcessorTest {
 
         public Optional<Properties> getUpdatedProperties() {
             return Optional.ofNullable(updatedProperties);
-        }
-
-        private Set<String> getVariableNames() {
-            return VARIABLE_NAMES;
         }
 
         private Properties updateFromEnvironment() {

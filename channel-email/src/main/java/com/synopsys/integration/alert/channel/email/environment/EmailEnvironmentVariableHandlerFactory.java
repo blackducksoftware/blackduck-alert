@@ -96,12 +96,9 @@ public class EmailEnvironmentVariableHandlerFactory implements EnvironmentVariab
 
     @Override
     public EnvironmentVariableHandler build() {
-        return new EnvironmentVariableHandler(ChannelKeys.EMAIL.getDisplayName(), this::getVariableNames, this::isConfigurationMissing, this::updateConfiguration);
-    }
-
-    private Set<String> getVariableNames() {
-        return Stream.concat(EMAIL_CONFIGURATION_KEYSET.stream(), OLD_ADDITIONAL_PROPERTY_KEYSET.stream())
+        Set<String> variableNames = Stream.concat(EMAIL_CONFIGURATION_KEYSET.stream(), OLD_ADDITIONAL_PROPERTY_KEYSET.stream())
             .collect(Collectors.toSet());
+        return new EnvironmentVariableHandler(ChannelKeys.EMAIL.getDisplayName(), variableNames, this::isConfigurationMissing, this::updateConfiguration);
     }
 
     private Boolean isConfigurationMissing() {

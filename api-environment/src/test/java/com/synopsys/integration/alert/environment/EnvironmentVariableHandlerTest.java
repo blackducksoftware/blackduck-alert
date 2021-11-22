@@ -18,7 +18,7 @@ public class EnvironmentVariableHandlerTest {
         String name = "name";
         Set<String> variableNames = Set.of("VARIABLE_1, VARIABLE_2", "VARIABLE_3");
 
-        EnvironmentVariableHandler handler = new EnvironmentVariableHandler(name, () -> variableNames, () -> Boolean.FALSE, Properties::new);
+        EnvironmentVariableHandler handler = new EnvironmentVariableHandler(name, variableNames, () -> Boolean.FALSE, Properties::new);
         Properties updatedProperties = handler.updateFromEnvironment();
         assertFalse(handler.isConfigurationMissing());
         assertTrue(updatedProperties.isEmpty());
@@ -31,7 +31,7 @@ public class EnvironmentVariableHandlerTest {
         String name = "name";
         Set<String> variableNames = Set.of("VARIABLE_1, VARIABLE_2", "VARIABLE_3");
 
-        EnvironmentVariableHandler handler = new EnvironmentVariableHandler(name, () -> variableNames, () -> Boolean.TRUE, Properties::new);
+        EnvironmentVariableHandler handler = new EnvironmentVariableHandler(name, variableNames, () -> Boolean.TRUE, Properties::new);
         Properties updatedProperties = handler.updateFromEnvironment();
         assertTrue(handler.isConfigurationMissing());
         assertTrue(updatedProperties.isEmpty());
@@ -50,7 +50,7 @@ public class EnvironmentVariableHandlerTest {
             return properties;
         };
 
-        EnvironmentVariableHandler handler = new EnvironmentVariableHandler(name, () -> variableNames, () -> Boolean.TRUE, updateFunction);
+        EnvironmentVariableHandler handler = new EnvironmentVariableHandler(name, variableNames, () -> Boolean.TRUE, updateFunction);
         Properties updatedProperties = handler.updateFromEnvironment();
         assertTrue(handler.isConfigurationMissing());
         assertEquals(variableNames, handler.getVariableNames());

@@ -34,11 +34,7 @@ public class EncryptionSettingsEnvironmentHandlerFactory implements EnvironmentV
 
     @Override
     public EnvironmentVariableHandler build() {
-        return new EnvironmentVariableHandler(HANDLER_NAME, this::createVariableNameSet, this::isConfigurationMissing, this::updateFunction);
-    }
-
-    private Set<String> createVariableNameSet() {
-        return Set.of(ENCRYPTION_PASSWORD_KEY, ENCRYPTION_SALT_KEY);
+        return new EnvironmentVariableHandler(HANDLER_NAME, Set.of(ENCRYPTION_PASSWORD_KEY, ENCRYPTION_SALT_KEY), this::isConfigurationMissing, this::updateFunction);
     }
 
     private Boolean isConfigurationMissing() {

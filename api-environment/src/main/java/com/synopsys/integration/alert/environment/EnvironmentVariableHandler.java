@@ -15,13 +15,13 @@ import java.util.function.Supplier;
 public class EnvironmentVariableHandler {
 
     private final String name;
-    private final Supplier<Set<String>> environmentVariableSupplier;
+    private final Set<String> environmentVariableNames;
     private final BooleanSupplier configurationMissingCheck;
     private final Supplier<Properties> updateFunction;
 
-    public EnvironmentVariableHandler(String name, Supplier<Set<String>> environmentVariableSupplier, BooleanSupplier configurationMissingCheck, Supplier<Properties> updateFunction) {
+    public EnvironmentVariableHandler(String name, Set<String> environmentVariableNames, BooleanSupplier configurationMissingCheck, Supplier<Properties> updateFunction) {
         this.name = name;
-        this.environmentVariableSupplier = environmentVariableSupplier;
+        this.environmentVariableNames = environmentVariableNames;
         this.configurationMissingCheck = configurationMissingCheck;
         this.updateFunction = updateFunction;
     }
@@ -31,7 +31,7 @@ public class EnvironmentVariableHandler {
     }
 
     public Set<String> getVariableNames() {
-        return environmentVariableSupplier.get();
+        return environmentVariableNames;
     }
 
     public boolean isConfigurationMissing() {
