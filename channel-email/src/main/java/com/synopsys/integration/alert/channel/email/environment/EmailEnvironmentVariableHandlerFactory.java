@@ -123,7 +123,9 @@ public class EmailEnvironmentVariableHandlerFactory implements EnvironmentVariab
         obfuscatedModel.getPassword().map(String::valueOf).ifPresent(value -> properties.put(AUTH_PASSWORD_KEY, value));
         obfuscatedModel.getUsername().map(String::valueOf).ifPresent(value -> properties.put(AUTH_USER_KEY, value));
 
-        configAccessor.createConfiguration(configModel);
+        if (!properties.isEmpty()) {
+            configAccessor.createConfiguration(configModel);
+        }
 
         return properties;
     }

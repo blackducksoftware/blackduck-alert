@@ -148,7 +148,7 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
         if (StringUtils.isNotBlank(configuration.getId())) {
             configurationId = UUID.fromString(configuration.getId());
         }
-        String host = configuration.getHost().orElseThrow(null);
+        String host = configuration.getHost().orElse(null);
         String from = configuration.getFrom().orElse(null);
         Integer port = configuration.getPort().orElse(null);
         Boolean auth = configuration.getAuth().orElse(Boolean.FALSE);
