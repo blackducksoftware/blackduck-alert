@@ -252,7 +252,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
             blackDuckGlobalConfigId,
             false,
             null,
-            List.of("vulnerability"),
+            List.of("VULNERABILITY"),
             List.of(),
             List.of(),
             List.of(),
