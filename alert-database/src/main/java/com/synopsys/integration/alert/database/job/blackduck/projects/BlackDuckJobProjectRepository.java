@@ -13,13 +13,14 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface BlackDuckJobProjectRepository extends JpaRepository<BlackDuckJobProjectEntity, BlackDuckJobProjectPK> {
     @Query("DELETE FROM BlackDuckJobProjectEntity entity"
                + " WHERE entity.jobId = :jobId"
     )
     @Modifying
-    void bulkDeleteAllByJobId(UUID jobId);
+    void bulkDeleteAllByJobId(@Param("jobId") UUID jobId);
 
     List<BlackDuckJobProjectEntity> findByJobId(UUID jobId);
 
