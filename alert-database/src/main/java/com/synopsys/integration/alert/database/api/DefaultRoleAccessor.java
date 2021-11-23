@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
@@ -42,7 +43,6 @@ import com.synopsys.integration.alert.database.user.UserRoleRelation;
 import com.synopsys.integration.alert.database.user.UserRoleRepository;
 
 @Component
-@Transactional
 public class DefaultRoleAccessor implements RoleAccessor {
     private final RoleRepository roleRepository;
     private final UserRoleRepository userRoleRepository;
@@ -61,6 +61,7 @@ public class DefaultRoleAccessor implements RoleAccessor {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Set<UserRoleModel> getRoles() {
         List<RoleEntity> roleList = roleRepository.findAll();
         Set<UserRoleModel> userRoles = new LinkedHashSet<>();
@@ -71,6 +72,7 @@ public class DefaultRoleAccessor implements RoleAccessor {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Set<UserRoleModel> getRoles(Collection<Long> roleIds) {
         Set<UserRoleModel> userRoles = new LinkedHashSet<>();
         for (Long roleId : roleIds) {
@@ -81,11 +83,13 @@ public class DefaultRoleAccessor implements RoleAccessor {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean doesRoleNameExist(String name) {
         return roleRepository.existsRoleEntityByRoleName(name);
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public UserRoleModel createRoleWithPermissions(String roleName, PermissionMatrixModel permissionMatrix) {
         RoleEntity roleEntity = createRole(roleName, true);
         List<PermissionMatrixRelation> permissions = updateRoleOperations(roleEntity, permissionMatrix);
@@ -93,6 +97,7 @@ public class DefaultRoleAccessor implements RoleAccessor {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void updateRoleName(Long roleId, String roleName) throws AlertForbiddenOperationException {
         Optional<RoleEntity> foundRole = roleRepository.findById(roleId);
         if (foundRole.isPresent()) {
@@ -107,6 +112,7 @@ public class DefaultRoleAccessor implements RoleAccessor {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public PermissionMatrixModel updatePermissionsForRole(String roleName, PermissionMatrixModel permissionMatrix) throws AlertConfigurationException {
         RoleEntity roleEntity = roleRepository.findByRoleName(roleName)
                                     .orElseThrow(() -> new AlertConfigurationException("No role exists with name: " + roleName));
@@ -115,6 +121,7 @@ public class DefaultRoleAccessor implements RoleAccessor {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void deleteRole(Long roleId) throws AlertForbiddenOperationException {
         Optional<RoleEntity> foundRole = roleRepository.findById(roleId);
         if (foundRole.isPresent()) {
@@ -128,6 +135,7 @@ public class DefaultRoleAccessor implements RoleAccessor {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void updateUserRoles(Long userId, Collection<UserRoleModel> roles) {
         if (null != userId) {
             userRoleRepository.bulkDeleteAllByUserId(userId);
@@ -145,12 +153,14 @@ public class DefaultRoleAccessor implements RoleAccessor {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public PermissionMatrixModel mergePermissionsForRoles(Collection<String> roleNames) {
         List<RoleEntity> roles = roleRepository.findRoleEntitiesByRoleNames(roleNames);
         return readPermissionsForRole(roles);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PermissionMatrixModel readPermissionsForRole(Long roleId) {
         List<PermissionMatrixRelation> permissions = permissionMatrixRepository.findAllByRoleId(roleId);
         return this.createModelFromPermission(permissions);
