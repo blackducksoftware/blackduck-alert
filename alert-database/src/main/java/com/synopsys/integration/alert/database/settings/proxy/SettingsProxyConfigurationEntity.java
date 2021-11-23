@@ -1,11 +1,14 @@
 package com.synopsys.integration.alert.database.settings.proxy;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.synopsys.integration.alert.database.BaseEntity;
@@ -29,15 +32,15 @@ public class SettingsProxyConfigurationEntity extends BaseEntity {
     private String username;
     @Column(name = "password")
     private String password;
-    @Column(name = "non_proxy_hosts")
-    private String nonProxyHosts;
-    //TODO: If nonProxyHosts is a list, we may want to create a table. Name it configuration_non_proxy_hosts
-    //  give it a one to many relation
+
+    @OneToMany
+    @JoinColumn(name = "configuration_id", referencedColumnName = "configuration_id", insertable = false, updatable = false)
+    private List<NonProxyHostConfigurationEntity> nonProxyHosts;
 
     public SettingsProxyConfigurationEntity() {
     }
 
-    public SettingsProxyConfigurationEntity(UUID configurationId, OffsetDateTime createdAt, OffsetDateTime lastUpdated, String host, Integer port, String username, String password, String nonProxyHosts) {
+    public SettingsProxyConfigurationEntity(UUID configurationId, OffsetDateTime createdAt, OffsetDateTime lastUpdated, String host, Integer port, String username, String password, List<NonProxyHostConfigurationEntity> nonProxyHosts) {
         this.configurationId = configurationId;
         this.createdAt = createdAt;
         this.lastUpdated = lastUpdated;
@@ -104,11 +107,11 @@ public class SettingsProxyConfigurationEntity extends BaseEntity {
         this.password = password;
     }
 
-    public String getNonProxyHosts() {
+    public List<NonProxyHostConfigurationEntity> getNonProxyHosts() {
         return nonProxyHosts;
     }
 
-    public void setNonProxyHosts(String nonProxyHosts) {
+    public void setNonProxyHosts(List<NonProxyHostConfigurationEntity> nonProxyHosts) {
         this.nonProxyHosts = nonProxyHosts;
     }
 }

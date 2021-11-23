@@ -1,5 +1,6 @@
 package com.synopsys.integration.alert.component.settings.proxy.model;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -16,8 +17,9 @@ public class SettingsProxyModel extends ConfigWithMetadata implements Obfuscated
     private String username;
     @JsonProperty("proxyPassword")
     private String password;
+
     @JsonProperty("nonProxyHosts")
-    private String nonProxyHosts;
+    private List<String> nonProxyHosts;
 
     public Optional<String> getHost() {
         return Optional.ofNullable(host);
@@ -51,11 +53,11 @@ public class SettingsProxyModel extends ConfigWithMetadata implements Obfuscated
         this.password = password;
     }
 
-    public Optional<String> getNonProxyHosts() {
+    public Optional<List<String>> getNonProxyHosts() {
         return Optional.ofNullable(nonProxyHosts);
     }
 
-    public void setNonProxyHosts(String nonProxyHosts) {
+    public void setNonProxyHosts(List<String> nonProxyHosts) {
         this.nonProxyHosts = nonProxyHosts;
     }
 

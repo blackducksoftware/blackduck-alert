@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.component.settings.proxy.database.accessor;
 
 import java.time.OffsetDateTime;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -19,6 +20,8 @@ import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.component.settings.proxy.model.SettingsProxyModel;
+import com.synopsys.integration.alert.database.settings.proxy.NonProxyHostConfigurationEntity;
+import com.synopsys.integration.alert.database.settings.proxy.NonProxyHostsConfigurationRepository;
 import com.synopsys.integration.alert.database.settings.proxy.SettingsProxyConfigurationEntity;
 import com.synopsys.integration.alert.database.settings.proxy.SettingsProxyConfigurationRepository;
 
@@ -26,13 +29,16 @@ import com.synopsys.integration.alert.database.settings.proxy.SettingsProxyConfi
 public class SettingsProxyConfigAccessor implements ConfigurationAccessor<SettingsProxyModel> {
     private final EncryptionUtility encryptionUtility;
     private final SettingsProxyConfigurationRepository settingsProxyConfigurationRepository;
+    private final NonProxyHostsConfigurationRepository nonProxyHostsConfigurationRepository;
 
     public SettingsProxyConfigAccessor(
         EncryptionUtility encryptionUtility,
-        SettingsProxyConfigurationRepository settingsProxyConfigurationRepository
+        SettingsProxyConfigurationRepository settingsProxyConfigurationRepository,
+        NonProxyHostsConfigurationRepository nonProxyHostsConfigurationRepository
     ) {
         this.encryptionUtility = encryptionUtility;
         this.settingsProxyConfigurationRepository = settingsProxyConfigurationRepository;
+        this.nonProxyHostsConfigurationRepository = nonProxyHostsConfigurationRepository;
     }
 
     @Override
@@ -60,6 +66,9 @@ public class SettingsProxyConfigAccessor implements ConfigurationAccessor<Settin
         configuration.setId(configurationId.toString());
         SettingsProxyConfigurationEntity configurationToSave = toEntity(configuration, currentTime, currentTime);
         SettingsProxyConfigurationEntity savedProxyConfig = settingsProxyConfigurationRepository.save(configurationToSave);
+        List<NonProxyHostConfigurationEntity> nonProxyHosts = toNonProxyHostEntityList(configuration);
+        nonProxyHostsConfigurationRepository.saveAll(nonProxyHosts);
+        savedProxyConfig = settingsProxyConfigurationRepository.getOne(savedProxyConfig.getConfigurationId());
 
         return createConfigModel(savedProxyConfig);
     }
@@ -72,6 +81,9 @@ public class SettingsProxyConfigAccessor implements ConfigurationAccessor<Settin
         OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
         SettingsProxyConfigurationEntity configurationToSave = toEntity(configuration, configurationEntity.getCreatedAt(), currentTime);
         SettingsProxyConfigurationEntity savedProxyConfig = settingsProxyConfigurationRepository.save(configurationToSave);
+        List<NonProxyHostConfigurationEntity> nonProxyHosts = toNonProxyHostEntityList(configuration);
+        nonProxyHostsConfigurationRepository.saveAll(nonProxyHosts);
+        savedProxyConfig = settingsProxyConfigurationRepository.getOne(savedProxyConfig.getConfigurationId());
 
         return createConfigModel(savedProxyConfig);
     }
@@ -96,16 +108,23 @@ public class SettingsProxyConfigAccessor implements ConfigurationAccessor<Settin
             newModel.setHost(proxyConfiguration.getHost());
             newModel.setPort(proxyConfiguration.getPort());
             newModel.setUsername(proxyConfiguration.getUsername());
-            newModel.setNonProxyHosts(proxyConfiguration.getNonProxyHosts());
             if (StringUtils.isNotBlank(proxyConfiguration.getPassword())) {
                 newModel.setPassword(encryptionUtility.decrypt(proxyConfiguration.getPassword()));
             }
+            newModel.setNonProxyHosts(getNonProxyHosts(proxyConfiguration.getNonProxyHosts()));
         }
         newModel.setId(String.valueOf(proxyConfiguration.getConfigurationId()));
         newModel.setCreatedAt(createdAtFormatted);
         newModel.setLastUpdated(lastUpdatedFormatted);
 
         return newModel;
+    }
+
+    private List<String> getNonProxyHosts(List<NonProxyHostConfigurationEntity> nonProxyHosts) {
+        return nonProxyHosts
+                   .stream()
+                   .map(NonProxyHostConfigurationEntity::getHostnamePattern)
+                   .collect(Collectors.toList());
     }
 
     private SettingsProxyConfigurationEntity toEntity(SettingsProxyModel configuration, OffsetDateTime createdTime, OffsetDateTime lastUpdated) {
@@ -117,8 +136,18 @@ public class SettingsProxyConfigAccessor implements ConfigurationAccessor<Settin
         Integer port = configuration.getPort().orElse(null);
         String username = configuration.getUsername().orElse(null);
         String password = configuration.getPassword().map(encryptionUtility::encrypt).orElse(null);
-        String nonProxyHosts = configuration.getNonProxyHosts().orElse(null);
 
-        return new SettingsProxyConfigurationEntity(configurationId, createdTime, lastUpdated, host, port, username, password, nonProxyHosts);
+        return new SettingsProxyConfigurationEntity(configurationId, createdTime, lastUpdated, host, port, username, password, List.of());
+    }
+
+    private List<NonProxyHostConfigurationEntity> toNonProxyHostEntityList(SettingsProxyModel configuration) {
+        UUID configurationId = UUID.fromString(configuration.getId());
+        List<String> hostnamePatterns = configuration.getNonProxyHosts().orElse(List.of());
+        List<NonProxyHostConfigurationEntity> nonProxyHostsList = new LinkedList<>();
+        for (String hostnamePattern : hostnamePatterns) {
+            nonProxyHostsList.add(new NonProxyHostConfigurationEntity(configurationId, hostnamePattern));
+        }
+
+        return nonProxyHostsList;
     }
 }
