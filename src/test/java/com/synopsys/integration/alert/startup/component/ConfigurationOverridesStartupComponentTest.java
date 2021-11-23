@@ -56,8 +56,8 @@ public class ConfigurationOverridesStartupComponentTest {
         Optional<UserModel> sysadminOptional = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER_ID);
         assertTrue(sysadminOptional.isPresent());
         UserModel sysadmin = sysadminOptional.get();
-        UserModel updatedSysadmin = changeUserPassword(sysadmin, DEFAULT_PASSWORD);
-        userAccessor.updateUser(updatedSysadmin, false);
+        UserModel updatedSysadmin = changeUserPassword(sysadmin, DEFAULT_PASSWORD_ENCODED);
+        userAccessor.updateUser(updatedSysadmin, true);
     }
 
     @Test
@@ -67,11 +67,11 @@ public class ConfigurationOverridesStartupComponentTest {
 
         ConfigurationOverridesStartupComponent configurationOverridesStartupComponent = new ConfigurationOverridesStartupComponent(environmentVariableUtility, userAccessor, descriptorKey, configurationModelConfigurationAccessor,
             apiAction, configurationFieldModelConverter);
-
         // Update the sysadmin password
         Optional<UserModel> sysadminOptional = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER_ID);
         assertTrue(sysadminOptional.isPresent());
         UserModel sysadmin = sysadminOptional.get();
+        assertEquals(DEFAULT_PASSWORD_ENCODED, sysadmin.getPassword());
         UserModel updatedSysadmin = changeUserPassword(sysadmin, UPDATED_PASSWORD);
         userAccessor.updateUser(updatedSysadmin, false);
 
@@ -113,6 +113,7 @@ public class ConfigurationOverridesStartupComponentTest {
         Optional<UserModel> sysadminOptional = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER_ID);
         assertTrue(sysadminOptional.isPresent());
         UserModel sysadmin = sysadminOptional.get();
+        assertEquals(DEFAULT_PASSWORD_ENCODED, sysadmin.getPassword());
         UserModel updatedSysadmin = changeUserPassword(sysadmin, UPDATED_PASSWORD);
         userAccessor.updateUser(updatedSysadmin, false);
 
@@ -149,7 +150,7 @@ public class ConfigurationOverridesStartupComponentTest {
 
         ConfigurationOverridesStartupComponent configurationOverridesStartupComponent = new ConfigurationOverridesStartupComponent(environmentVariableUtility, userAccessor, descriptorKey, configurationModelConfigurationAccessor,
             apiAction, configurationFieldModelConverter);
-
+        
         String newUsername = "UpdatedAdmin";
 
         // Update the sysadmin username and password
