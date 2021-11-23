@@ -23,6 +23,7 @@ public class SettingsEncryptionModel extends AlertSerializableModel implements O
     private boolean readOnly;
 
     public SettingsEncryptionModel() {
+        // For serialization
     }
 
     public Optional<String> getPassword() {
