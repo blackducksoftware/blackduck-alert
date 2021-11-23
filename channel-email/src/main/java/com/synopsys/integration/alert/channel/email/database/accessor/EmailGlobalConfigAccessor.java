@@ -92,7 +92,7 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
     @Transactional(propagation = Propagation.REQUIRED)
     public EmailGlobalConfigModel updateConfiguration(UUID configurationId, EmailGlobalConfigModel configuration) throws AlertConfigurationException {
         EmailConfigurationEntity configurationEntity = emailConfigurationRepository.findById(configurationId)
-            .orElseThrow(() -> new AlertConfigurationException(String.format("Config with id '%d' did not exist", configurationId)));
+            .orElseThrow(() -> new AlertConfigurationException(String.format("Config with id '%s' did not exist", configurationId.toString())));
         OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
         EmailConfigurationEntity configurationToSave = toEntity(configuration, configurationEntity.getCreatedAt(), currentTime);
         EmailConfigurationEntity savedEmailConfig = emailConfigurationRepository.save(configurationToSave);
@@ -120,6 +120,7 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
             if (null != emailConfiguration.getLastUpdated()) {
                 lastUpdatedFormatted = DateUtils.formatDate(emailConfiguration.getLastUpdated(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
             }
+            newModel.setId(String.valueOf(emailConfiguration.getConfigurationId()));
             newModel.setHost(emailConfiguration.getSmtpHost());
             newModel.setPort(emailConfiguration.getSmtpPort());
             newModel.setFrom(emailConfiguration.getSmtpFrom());
@@ -130,8 +131,6 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
             }
             newModel.setAdditionalJavaMailProperties(getAdditionalProperties(emailConfiguration.getEmailConfigurationProperties()));
         }
-
-        newModel.setId(String.valueOf(emailConfiguration.getConfigurationId()));
         newModel.setCreatedAt(createdAtFormatted);
         newModel.setLastUpdated(lastUpdatedFormatted);
 
