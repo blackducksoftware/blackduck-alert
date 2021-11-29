@@ -46,6 +46,7 @@ public class AuthenticationUIConfig extends UIConfig {
     private static final String LABEL_LDAP_GROUP_SEARCH_FILTER = "LDAP Group Search Filter";
     private static final String LABEL_LDAP_GROUP_ROLE_ATTRIBUTE = "LDAP Group Role Attribute";
     private static final String LABEL_SAML_ENABLED = "SAML Enabled";
+    private static final String LABEL_SAML_WANT_ASSERTIONS_SIGNED = "Sign Assertions";
     private static final String LABEL_SAML_FORCE_AUTH = "Force Auth";
     private static final String LABEL_SAML_METADATA_URL = "Identity Provider Metadata URL";
     private static final String LABEL_SAML_ENTITY_ID = "Entity ID";
@@ -68,6 +69,7 @@ public class AuthenticationUIConfig extends UIConfig {
     private static final String AUTHENTICATION_LDAP_GROUP_SEARCH_FILTER_DESCRIPTION = "The filter used to search for group membership.";
     private static final String AUTHENTICATION_LDAP_GROUP_ROLE_ATTRIBUTE_DESCRIPTION = "The ID of the attribute which contains the role name for a group.";
     private static final String AUTHENTICATION_SAML_ENABLED_DESCRIPTION = "If true, Alert will attempt to authenticate using the SAML configuration.";
+    private static final String AUTHENTICATION_SAML_WANT_ASSERTIONS_SIGNED = "If true, signature verification will be performed in SAML when communicating with server.";
     private static final String AUTHENTICATION_SAML_FORCE_AUTH_DESCRIPTION = "If true, the forceAuthn flag is set to true in the SAML request to the IDP. Please check the IDP if this is supported.";
     private static final String AUTHENTICATION_SAML_METADATA_URL_DESCRIPTION = "The Metadata URL from the external Identity Provider.";
     private static final String AUTHENTICATION_SAML_ENTITY_ID_DESCRIPTION = "The Entity ID of the Service Provider. EX: This should be the Audience defined in Okta.";
@@ -147,6 +149,7 @@ public class AuthenticationUIConfig extends UIConfig {
     }
 
     private List<ConfigField> createSAMLPanel() {
+        CheckboxConfigField samlWantAssertionsSigned = new CheckboxConfigField(AuthenticationDescriptor.KEY_SAML_WANT_ASSERTIONS_SIGNED, LABEL_SAML_WANT_ASSERTIONS_SIGNED, AUTHENTICATION_SAML_WANT_ASSERTIONS_SIGNED);
         ConfigField samlForceAuth = new CheckboxConfigField(AuthenticationDescriptor.KEY_SAML_FORCE_AUTH, LABEL_SAML_FORCE_AUTH, AUTHENTICATION_SAML_FORCE_AUTH_DESCRIPTION).applyHeader(AUTHENTICATION_HEADER_SAML);
         ConfigField samlMetaDataURL = new TextInputConfigField(AuthenticationDescriptor.KEY_SAML_METADATA_URL, LABEL_SAML_METADATA_URL, AUTHENTICATION_SAML_METADATA_URL_DESCRIPTION)
                                           .applyValidationFunctions(this::validateMetaDataUrl);
@@ -167,7 +170,7 @@ public class AuthenticationUIConfig extends UIConfig {
 
         ConfigField samlAttributeMapping = new TextInputConfigField(AuthenticationDescriptor.KEY_SAML_ROLE_ATTRIBUTE_MAPPING, LABEL_USER_MANAGEMENT_SAML_ATTRIBUTE_MAPPING, AUTHENTICATION_USER_MANAGEMENT_SAML_ATTRIBUTE_MAPPING_DESCRIPTION)
                                                .applyHeader(AUTHENTICATION_HEADER_USER_MANAGEMENT_SAML);
-        return List.of(samlEnabled, samlForceAuth, samlMetaDataURL, samlMetaDataFile, samlEntityId, samlEntityBaseURL, samlAttributeMapping);
+        return List.of(samlEnabled, samlWantAssertionsSigned, samlForceAuth, samlMetaDataURL, samlMetaDataFile, samlEntityId, samlEntityBaseURL, samlAttributeMapping);
     }
 
     @Override

@@ -4,13 +4,12 @@ import TableDisplay from 'common/table/TableDisplay';
 import TextInput from 'common/input/TextInput';
 import PasswordInput from 'common/input/PasswordInput';
 import { connect } from 'react-redux';
-import {
-    clearUserFieldErrors, deleteUser, fetchUsers, saveUser, validateUser
-} from 'store/actions/users';
+import { clearUserFieldErrors, deleteUser, fetchUsers, saveUser, validateUser } from 'store/actions/users';
 import DynamicSelectInput from 'common/input/DynamicSelectInput';
 import { fetchRoles } from 'store/actions/roles';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
+import StatusMessage from 'common/StatusMessage';
 
 const KEY_CONFIRM_PASSWORD_ERROR = 'confirmPasswordError';
 
@@ -34,13 +33,15 @@ class UserTable extends Component {
         this.state = {
             user: {},
             validateCallback: () => null,
-            saveCallback: () => null
+            saveCallback: () => null,
+            errorMessageState: null
         };
     }
 
     componentDidUpdate(prevProps) {
-        const { saveStatus } = this.props;
+        const { saveStatus, errorMessage, deleteStatus } = this.props;
         const { validateCallback, saveCallback } = this.state;
+
         if (prevProps.saveStatus === 'VALIDATING' && saveStatus === 'VALIDATED') {
             validateCallback(true);
         }
@@ -48,6 +49,11 @@ class UserTable extends Component {
             saveCallback(true);
         } else if (prevProps.saveStatus === 'SAVING' && saveStatus === 'ERROR') {
             saveCallback(false);
+        }
+        if (prevProps.deleteStatus === 'DELETING' && deleteStatus === 'ERROR') {
+            this.setState({
+                errorMessageState: errorMessage
+            });
         }
     }
 
@@ -91,6 +97,8 @@ class UserTable extends Component {
             user: selectedRow
         });
         callback();
+        const { clearFieldErrors } = this.props;
+        clearFieldErrors();
     }
 
     onCopy(selectedRow, callback) {
@@ -106,8 +114,11 @@ class UserTable extends Component {
         const { user } = this.state;
         if (user && Object.keys(user).length > 0) {
             this.setState({
-                user: {}
+                user: {},
+                errorMessageState: null
             });
+            const { clearFieldErrors } = this.props;
+            clearFieldErrors();
         }
     }
 
@@ -289,6 +300,8 @@ class UserTable extends Component {
                     options={this.retrieveRoles()}
                     value={user[roleNames]}
                     onFocus={getRoles}
+                    errorName={roleNames}
+                    errorValue={fieldErrors[roleNames]}
                 />
             </div>
         );
@@ -296,15 +309,19 @@ class UserTable extends Component {
 
     render() {
         const {
-            canCreate, canDelete, fieldErrors, errorMessage, inProgress, fetching, users, autoRefresh
+            canCreate, canDelete, fieldErrors, errorMessage, inProgress, users, autoRefresh
         } = this.props;
-        const { user } = this.state;
+        const { user, errorMessageState } = this.state;
         const fieldErrorKeys = Object.keys(fieldErrors);
         const hasErrors = (fieldErrorKeys && fieldErrorKeys.length > 0)
             || (user[KEY_CONFIRM_PASSWORD_ERROR] && user[KEY_CONFIRM_PASSWORD_ERROR].length > 0);
         return (
             <div>
                 <div>
+                    <StatusMessage
+                        id="$user-status-message"
+                        errorMessage={errorMessageState}
+                    />
                     <TableDisplay
                         id="users"
                         autoRefresh={autoRefresh}
@@ -324,7 +341,6 @@ class UserTable extends Component {
                         hasFieldErrors={hasErrors}
                         errorDialogMessage={errorMessage}
                         inProgress={inProgress}
-                        fetching={fetching}
                     />
                 </div>
             </div>
@@ -338,8 +354,8 @@ UserTable.defaultProps = {
     errorMessage: null,
     fieldErrors: {},
     inProgress: false,
-    fetching: false,
     saveStatus: null,
+    deleteStatus: null,
     users: [],
     roles: [],
     autoRefresh: true
@@ -357,8 +373,8 @@ UserTable.propTypes = {
     errorMessage: PropTypes.string,
     fieldErrors: PropTypes.object,
     inProgress: PropTypes.bool,
-    fetching: PropTypes.bool,
     saveStatus: PropTypes.string,
+    deleteStatus: PropTypes.string,
     users: PropTypes.array,
     roles: PropTypes.array,
     autoRefresh: PropTypes.bool
@@ -370,8 +386,8 @@ const mapStateToProps = (state) => ({
     errorMessage: state.users.error.message,
     fieldErrors: state.users.error.fieldErrors,
     inProgress: state.users.inProgress,
-    fetching: state.users.fetching,
     saveStatus: state.users.saveStatus,
+    deleteStatus: state.users.deleteStatus,
     autoRefresh: state.refresh.autoRefresh
 });
 

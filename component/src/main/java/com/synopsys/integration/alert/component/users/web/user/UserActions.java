@@ -22,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.action.api.AbstractResourceActions;
@@ -29,7 +30,7 @@ import com.synopsys.integration.alert.common.action.api.ActionMessageCreator;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.enumeration.DefaultUserRole;
 import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
 import com.synopsys.integration.alert.common.persistence.accessor.AuthenticationTypeAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
@@ -47,6 +48,8 @@ public class UserActions extends AbstractResourceActions<UserConfig, UserModel, 
     public static final String FIELD_KEY_USER_MGMT_USERNAME = "username";
     public static final String FIELD_KEY_USER_MGMT_PASSWORD = "password";
     public static final String FIELD_KEY_USER_MGMT_EMAILADDRESS = "emailAddress";
+    public static final String FIELD_KEY_USER_MGMT_ROLES = "roleNames";
+
     private static final int DEFAULT_PASSWORD_LENGTH = 8;
     private final UserAccessor userAccessor;
     private final RoleAccessor roleAccessor;
@@ -81,7 +84,7 @@ public class UserActions extends AbstractResourceActions<UserConfig, UserModel, 
     }
 
     @Override
-    protected MultiUserConfigResponseModel createMultiResponseModel(final List<UserConfig> users) {
+    protected MultiUserConfigResponseModel createMultiResponseModel(List<UserConfig> users) {
         return new MultiUserConfigResponseModel(users);
     }
 
@@ -121,6 +124,7 @@ public class UserActions extends AbstractResourceActions<UserConfig, UserModel, 
             return new ValidationActionResponse(HttpStatus.BAD_REQUEST, responseModel);
         }
         List<AlertFieldStatus> fieldErrors = validateCreationRequiredFields(resource);
+        validateUserRole(resource).ifPresent(fieldErrors::add);
         if (fieldErrors.isEmpty()) {
             responseModel = ValidationResponseModel.success("The user is valid");
             return new ValidationActionResponse(HttpStatus.OK, responseModel);
@@ -239,6 +243,27 @@ public class UserActions extends AbstractResourceActions<UserConfig, UserModel, 
         return fieldErrors;
     }
 
+    private Optional<AlertFieldStatus> validateUserRole(UserConfig userConfig) {
+        String id = userConfig.getId();
+        if (StringUtils.isBlank(id)) {
+            return Optional.empty();
+        }
+
+        long userId = Long.parseLong(id);
+        if (UserAccessor.DEFAULT_ADMIN_USER_ID == userId) {
+            return ensureUserHasRole(userConfig.getRoleNames(), DefaultUserRole.ALERT_ADMIN);
+        }
+        return Optional.empty();
+    }
+
+    private Optional<AlertFieldStatus> ensureUserHasRole(Set<String> roleNames, DefaultUserRole defaultUserRole) {
+        String roleName = defaultUserRole.name();
+        if (!roleNames.contains(roleName)) {
+            return Optional.of(AlertFieldStatus.error(FIELD_KEY_USER_MGMT_ROLES, "User must have role: " + roleName));
+        }
+        return Optional.empty();
+    }
+
     private void validateRequiredField(String fieldKey, List<AlertFieldStatus> fieldErrors, String fieldValue) {
         if (StringUtils.isBlank(fieldValue)) {
             fieldErrors.add(AlertFieldStatus.error(fieldKey, "This field is required."));
@@ -263,4 +288,5 @@ public class UserActions extends AbstractResourceActions<UserConfig, UserModel, 
             fieldErrors.add(AlertFieldStatus.error(FIELD_KEY_USER_MGMT_PASSWORD, "The password needs to be at least 8 characters long."));
         }
     }
+
 }

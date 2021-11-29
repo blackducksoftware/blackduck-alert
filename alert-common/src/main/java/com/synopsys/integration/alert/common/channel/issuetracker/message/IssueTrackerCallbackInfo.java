@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.common.channel.issuetracker.message;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
 public class IssueTrackerCallbackInfo extends AlertSerializableModel {
     private final Long providerConfigId;

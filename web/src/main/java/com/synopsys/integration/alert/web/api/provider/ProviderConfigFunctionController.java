@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
+import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOptions;
 import com.synopsys.integration.alert.common.rest.api.AbstractFunctionController;
 
@@ -24,4 +24,5 @@ public class ProviderConfigFunctionController extends AbstractFunctionController
     public ProviderConfigFunctionController(ProviderConfigSelectCustomFunctionAction functionAction) {
         super(functionAction);
     }
+
 }

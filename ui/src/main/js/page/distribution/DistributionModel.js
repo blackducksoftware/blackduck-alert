@@ -56,7 +56,8 @@ export const DISTRIBUTION_NOTIFICATION_TYPE_OPTIONS = [
     { label: 'VULNERABILITY', value: 'VULNERABILITY' },
     { label: 'BOM_EDIT', value: 'BOM_EDIT' },
     { label: 'PROJECT', value: 'PROJECT' },
-    { label: 'PROJECT_VERSION', value: 'PROJECT_VERSION' }
+    { label: 'PROJECT_VERSION', value: 'PROJECT_VERSION' },
+    { label: 'COMPONENT_UNKNOWN_VERSION', value: 'COMPONENT_UNKNOWN_VERSION' }
 ];
 
 export const DISTRIBUTION_CHANNEL_OPTIONS = [
@@ -73,6 +74,12 @@ export const DISTRIBUTION_PROCESSING_TYPES = [
     { label: 'Digest', value: 'DIGEST' },
     { label: 'Summary', value: 'SUMMARY' }
 ];
+
+export const DISTRIBUTION_PROCESSING_DESCRIPTIONS = {
+    DEFAULT: 'The message will contain all the relevant data found in your selected provider.',
+    DIGEST: 'The message will contain a delta of the content found in your selected provider since it was last queried."\n Add and Delete operations will cancel each other out depending on the order they occurred.',
+    SUMMARY: 'The message contains only a summarized form of the Digest data'
+};
 
 export const DISTRIBUTION_VULNERABILITY_SEVERITY_OPTIONS = [
     { label: 'CRITICAL', value: 'CRITICAL' },

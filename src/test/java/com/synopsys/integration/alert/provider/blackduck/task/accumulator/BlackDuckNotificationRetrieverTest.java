@@ -10,13 +10,14 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
 import com.synopsys.integration.alert.processor.api.filter.StatefulAlertPage;
+import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.manual.view.NotificationView;
 import com.synopsys.integration.blackduck.api.manual.view.ProjectNotificationView;
 import com.synopsys.integration.blackduck.http.BlackDuckPageResponse;
-import com.synopsys.integration.blackduck.http.BlackDuckRequestBuilder;
-import com.synopsys.integration.blackduck.http.BlackDuckRequestFactory;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
+import com.synopsys.integration.blackduck.service.request.BlackDuckMultipleRequest;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.rest.HttpUrl;
 
 public class BlackDuckNotificationRetrieverTest {
     @Test
@@ -26,11 +27,11 @@ public class BlackDuckNotificationRetrieverTest {
         BlackDuckApiClient blackDuckApiClient = Mockito.mock(BlackDuckApiClient.class);
         Mockito.doReturn(pageResponse)
             .when(blackDuckApiClient)
-            .getPageResponse(Mockito.any(BlackDuckRequestBuilder.class), Mockito.eq(NotificationView.class), Mockito.any());
+            .getPageResponse(Mockito.any(BlackDuckMultipleRequest.class));
 
         BlackDuckAccumulatorSearchDateManager dateRangeCreator = createDateRangeCreator();
 
-        BlackDuckNotificationRetriever notificationRetriever = new BlackDuckNotificationRetriever(new BlackDuckRequestFactory(), blackDuckApiClient);
+        BlackDuckNotificationRetriever notificationRetriever = new BlackDuckNotificationRetriever(blackDuckApiClient, new ApiDiscovery(new HttpUrl("https://someblackduckserver")));
         StatefulAlertPage<NotificationView, IntegrationException> notificationPage = notificationRetriever.retrievePageOfFilteredNotifications(dateRangeCreator.retrieveNextSearchDateRange(), List.of());
         assertEquals(pageResponse.getItems(), notificationPage.getCurrentModels());
     }

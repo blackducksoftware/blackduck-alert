@@ -15,6 +15,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueS
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.rest.api.AbstractFunctionController;
 
+@Deprecated
 @RestController
 @RequestMapping(ProviderNameFunctionController.PROVIDER_NAME_FUNCTION_URL)
 public class ProviderNameFunctionController extends AbstractFunctionController<LabelValueSelectOptions> {

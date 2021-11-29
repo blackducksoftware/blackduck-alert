@@ -1,0 +1,15 @@
+ext.moduleName = 'com.synopsys.integration.alert.api-channel-jira'
+
+dependencies {
+    api 'com.synopsys.integration:int-jira-common'
+
+    implementation platform(project(':alert-platform'))
+
+    implementation project(':alert-common')
+    implementation project(':api-common-model')
+    implementation project(':api-channel-issue-tracker')
+    implementation project(':api-processor')
+    implementation project(':api-descriptor')
+
+    testImplementation project(':test-common')
+}

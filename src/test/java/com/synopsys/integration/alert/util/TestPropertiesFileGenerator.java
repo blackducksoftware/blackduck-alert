@@ -3,6 +3,7 @@ package com.synopsys.integration.alert.util;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Disabled;
@@ -15,14 +16,14 @@ public class TestPropertiesFileGenerator {
     @Test
     @Disabled("This test is to generate the test.properties for new developers.")
     public void generatePropertiesFile() throws IOException {
-        String propertiesFileName = TestResourceUtils.BASE_TEST_RESOURCE_DIR + "/" + TestResourceUtils.DEFAULT_PROPERTIES_FILE_LOCATION;
-        System.out.println("Generating file: " + propertiesFileName + "..");
+        Path propertiesFilePath = TestResourceUtils.createTestPropertiesCanonicalFilePath();
+        System.out.println("Generating file: " + propertiesFilePath + "..");
 
-        File testPropertiesFile = new File(propertiesFileName);
+        File testPropertiesFile = propertiesFilePath.toFile();
         if (!testPropertiesFile.exists()) {
             boolean successfullyCreated = testPropertiesFile.createNewFile();
             if (!successfullyCreated) {
-                System.out.println("There was a problem creating the file '" + propertiesFileName + "'.");
+                System.out.println("There was a problem creating the file '" + propertiesFilePath + "'.");
                 return;
             }
 
@@ -34,7 +35,7 @@ public class TestPropertiesFileGenerator {
             }
             FileUtils.write(testPropertiesFile, dataBuilder.toString(), Charset.defaultCharset(), false);
         } else {
-            System.out.println("The file '" + propertiesFileName + "' already exists, please rename or back it up.");
+            System.out.println("The file '" + propertiesFilePath + "' already exists, please rename or back it up.");
         }
     }
 

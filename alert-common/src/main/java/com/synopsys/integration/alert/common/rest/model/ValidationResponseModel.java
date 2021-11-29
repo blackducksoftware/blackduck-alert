@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.FieldStatusSeverity;
 
@@ -56,10 +57,11 @@ public class ValidationResponseModel extends AlertSerializableModel {
         this.hasErrors = hasErrors;
     }
 
-    public ValidationResponseModel(String message, Map<String, AlertFieldStatus> errors) {
+    public ValidationResponseModel(String message, Map<String, AlertFieldStatus> statuses) {
         this.message = message;
-        this.errors = errors;
+        this.errors = statuses;
         this.hasErrors = !errors.isEmpty();
+//    statuses.values().stream().map(AlertFieldStatus::getSeverity).anyMatch(FieldStatusSeverity.ERROR::equals);
     }
 
     public String getMessage() {

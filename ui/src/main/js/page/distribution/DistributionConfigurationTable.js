@@ -1,12 +1,21 @@
 import * as PropTypes from 'prop-types';
-import React, { useEffect, useRef, useState } from 'react';
+import React, {
+    useEffect,
+    useRef,
+    useState
+} from 'react';
 import { useHistory } from 'react-router-dom';
-import { DISTRIBUTION_COMMON_FIELD_KEYS, DISTRIBUTION_URLS } from 'page/distribution/DistributionModel';
 import {
-    BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn
+    DISTRIBUTION_COMMON_FIELD_KEYS,
+    DISTRIBUTION_URLS
+} from 'page/distribution/DistributionModel';
+import {
+    BootstrapTable,
+    DeleteButton,
+    InsertButton,
+    TableHeaderColumn
 } from 'react-bootstrap-table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import * as DescriptorUtilities from 'common/util/descriptorUtilities';
 import DescriptorLabel from 'common/DescriptorLabel';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
@@ -14,6 +23,11 @@ import ConfirmModal from 'common/ConfirmModal';
 import AutoRefresh from 'common/table/AutoRefresh';
 import IconTableCellFormatter from 'common/table/IconTableCellFormatter';
 import * as DistributionRequestUtility from 'page/distribution/DistributionTableRequestUtility';
+import {
+    EXISTING_CHANNELS,
+    EXISTING_PROVIDERS
+} from 'common/DescriptorInfo';
+import { ProgressIcon } from 'common/table/ProgressIcon';
 
 const DistributionConfigurationTable = ({
     csrfToken, errorHandler, readonly, showRefreshButton, descriptors
@@ -23,6 +37,7 @@ const DistributionConfigurationTable = ({
     const [tableData, setTableData] = useState([]);
     const [showDelete, setShowDelete] = useState(false);
     const [selectedRows, setSelectedRows] = useState([]);
+    const [selectedRowsWithData, setSelectedRowsWithData] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [totalPages, setTotalPages] = useState(1);
@@ -89,7 +104,7 @@ const DistributionConfigurationTable = ({
             const newTableData = tableData.filter((distribution) => !ids.includes(distribution.id));
             setTableData(newTableData);
         }
-        setSelectedRows([]);
+        setSelectedRowsWithData([]);
         setShowDelete(false);
     };
 
@@ -112,16 +127,8 @@ const DistributionConfigurationTable = ({
     }, [currentPage, pageSize, searchTerm]);
 
     useEffect(() => {
-        let possibleDeleteEntries = [];
-        selectedRows.forEach((id) => {
-            possibleDeleteEntries = possibleDeleteEntries.concat(tableData.filter((distribution) => distribution.id === id));
-        });
-        if (possibleDeleteEntries && possibleDeleteEntries.length === 0) {
-            setEntriesToDelete(null);
-        } else {
-            setEntriesToDelete(possibleDeleteEntries);
-        }
-    }, [selectedRows]);
+        setEntriesToDelete(selectedRowsWithData);
+    }, [selectedRowsWithData]);
 
     const navigateToConfigPage = (id, copy) => {
         const url = (copy) ? DISTRIBUTION_URLS.distributionConfigCopyUrl : DISTRIBUTION_URLS.distributionConfigUrl;
@@ -186,12 +193,40 @@ const DistributionConfigurationTable = ({
         </div>
     );
 
+    const selectRowOnSelectAction = (row, isSelect) => {
+        const inSelectedRows = selectedRowsWithData.some((selectedRow) => selectedRow.id === row.id);
+        if (isSelect && !inSelectedRows) {
+            const newSelectedRows = [];
+            newSelectedRows.push(...selectedRowsWithData);
+            newSelectedRows.push(row);
+            setSelectedRowsWithData(newSelectedRows);
+        } else if (!isSelect && inSelectedRows) {
+            const newSelectedRows = selectedRowsWithData.filter((selectedRow) => selectedRow.id !== row.id);
+            setSelectedRowsWithData(newSelectedRows);
+        }
+    };
+
+    const selectRowOnSelectAllAction = (isSelect, allSelectedRows) => {
+        if (isSelect) {
+            const newSelectedRows = [];
+            newSelectedRows.push(...allSelectedRows);
+            newSelectedRows.push(...selectedRowsWithData.filter((row) => !allSelectedRows.some((selectedRow) => selectedRow.id === row.id)));
+            setSelectedRowsWithData(newSelectedRows);
+        } else {
+            const newSelectedRows = selectedRowsWithData.filter((row) => !allSelectedRows.some((selectedRow) => selectedRow.id === row.id));
+            setSelectedRowsWithData(newSelectedRows);
+        }
+    };
+
     const selectRow = {
         mode: 'checkbox',
         clickToSelect: true,
         bgColor(row, isSelect) {
             return isSelect && '#e8e8e8';
-        }
+        },
+        onSelect: selectRowOnSelectAction,
+        onSelectAll: selectRowOnSelectAllAction,
+        selected: selectedRowsWithData.map((selectedRowData) => selectedRowData.id)
     };
 
     const column = (header, value, dataFormat = assignedDataFormat, columnClassName = 'tableCell') => (
@@ -231,6 +266,7 @@ const DistributionConfigurationTable = ({
                 columnClassName="tableCell"
                 dataFormat={dataFormat}
                 thStyle={{ textAlign: 'center' }}
+                tdStyle={{ textAlign: 'center' }}
             >
                 {text}
             </TableHeaderColumn>
@@ -238,13 +274,11 @@ const DistributionConfigurationTable = ({
     };
 
     const editButtonClicked = ({ id }) => {
-        setSelectedRows(id);
         // Navigate to config page
         navigateToConfigPage(id);
     };
 
     const copyButtonClicked = ({ id }) => {
-        setSelectedRows(id);
         // Navigate to config page
         navigateToConfigPage(id, true);
     };
@@ -262,7 +296,7 @@ const DistributionConfigurationTable = ({
     };
 
     const nameColumnFormatter = (cell, row) => {
-        const defaultValue = <div className="inline" title={cell}>{cell}</div>;
+        const defaultValue = <div className="tableCell" title={cell}>{cell}</div>;
         if (jobsValidationResults && jobsValidationResults.length > 0) {
             const jobErrors = jobsValidationResults.filter((item) => item.id === row.id);
             if (jobErrors && jobErrors.length > 0) {
@@ -280,8 +314,13 @@ const DistributionConfigurationTable = ({
 
     const descriptorColumnFormatter = (cell) => {
         const defaultValue = <div className="inline" title={cell}>{cell}</div>;
+
         if (descriptors) {
-            const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors, cell, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
+            const descriptorOptions = {
+                ...EXISTING_PROVIDERS,
+                ...EXISTING_CHANNELS
+            };
+            const descriptor = descriptorOptions[cell];
             if (descriptor) {
                 return (<DescriptorLabel keyPrefix="distribution-channel-icon" descriptor={descriptor} />);
             }
@@ -409,10 +448,20 @@ const DistributionConfigurationTable = ({
                 {column('frequency', 'Frequency Type', frequencyColumnFormatter)}
                 {column('lastRan', 'Last Run')}
                 {column('status', 'Status', assignedDataFormat, statusColumnClassName)}
-                {column('enabled', 'Enabled', enabledColumnFormatter)}
+                <TableHeaderColumn
+                    dataField="enabled"
+                    width="70"
+                    columnClassName="tableCell"
+                    dataFormat={enabledColumnFormatter}
+                    thStyle={{ textAlign: 'center' }}
+                    tdStyle={{ textAlign: 'center' }}
+                >
+                    Enabled
+                </TableHeaderColumn>
                 {createIconColumn('pencil-alt', 'Edit', editButtonClicked)}
                 {createIconColumn('copy', 'Copy', copyButtonClicked)}
             </BootstrapTable>
+            <ProgressIcon inProgress={progress} />
         </div>
     );
 };

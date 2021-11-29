@@ -19,12 +19,12 @@ import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 
+import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -38,9 +38,9 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 public abstract class AbstractJobResourceActions {
     private static final EnumSet<DescriptorType> ALLOWED_JOB_DESCRIPTOR_TYPES = EnumSet.of(DescriptorType.PROVIDER, DescriptorType.CHANNEL);
-    private final AuthorizationManager authorizationManager;
-    private final DescriptorAccessor descriptorAccessor;
-    private final DescriptorMap descriptorMap;
+    protected final AuthorizationManager authorizationManager;
+    protected final DescriptorAccessor descriptorAccessor;
+    protected final DescriptorMap descriptorMap;
 
     public AbstractJobResourceActions(AuthorizationManager authorizationManager, DescriptorAccessor descriptorAccessor, DescriptorMap descriptorMap) {
         this.authorizationManager = authorizationManager;

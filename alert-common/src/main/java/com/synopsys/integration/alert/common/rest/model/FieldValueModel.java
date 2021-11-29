@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
 public class FieldValueModel extends AlertSerializableModel {
     private static final long serialVersionUID = -4163785381973494922L;
@@ -79,4 +80,5 @@ public class FieldValueModel extends AlertSerializableModel {
     private void cleanValues() {
         values = getValues().stream().filter(StringUtils::isNotBlank).collect(Collectors.toSet());
     }
+
 }

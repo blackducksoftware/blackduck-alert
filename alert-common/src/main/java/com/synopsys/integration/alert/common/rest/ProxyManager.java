@@ -16,8 +16,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.rest.credentials.CredentialsBuilder;
@@ -33,7 +33,7 @@ public class ProxyManager {
 
     private final Logger logger = LoggerFactory.getLogger(ProxyManager.class);
 
-    private SettingsUtility settingsUtility;
+    private final SettingsUtility settingsUtility;
 
     @Autowired
     public ProxyManager(SettingsUtility settingsUtility) {
@@ -104,4 +104,5 @@ public class ProxyManager {
                    .getProxy()
                    .orElse(Proxy.NO_PROXY);
     }
+
 }

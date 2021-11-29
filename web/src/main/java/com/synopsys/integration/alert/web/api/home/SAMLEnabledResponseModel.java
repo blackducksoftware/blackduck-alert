@@ -9,7 +9,7 @@ package com.synopsys.integration.alert.web.api.home;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
 public class SAMLEnabledResponseModel extends AlertSerializableModel {
     @JsonAlias("saml_enabled")

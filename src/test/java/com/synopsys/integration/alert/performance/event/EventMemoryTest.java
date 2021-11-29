@@ -16,8 +16,8 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.synopsys.integration.alert.Application;
-import com.synopsys.integration.alert.ApplicationConfiguration;
-import com.synopsys.integration.alert.common.event.EventManager;
+import com.synopsys.integration.alert.api.event.EventManager;
+import com.synopsys.integration.alert.configuration.ApplicationConfiguration;
 import com.synopsys.integration.alert.configuration.BrokerServiceDependentTask;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.test.common.TestTags;
@@ -32,7 +32,7 @@ public class EventMemoryTest {
     @Autowired
     private EventManager eventManager;
     @Autowired
-    private List<TestEventListener> eventListeners;
+    private List<TestAlertEventListener> eventListeners;
 
     @Test
     @Ignore
@@ -51,7 +51,7 @@ public class EventMemoryTest {
     private void executeTest() {
         int count = 1000000;
         for (int index = 0; index < count; index++) {
-            for (TestEventListener listener : eventListeners) {
+            for (TestAlertEventListener listener : eventListeners) {
                 eventManager.sendEvent(new TestAlertEvent(listener.getDestinationName(), createEventContent()));
             }
         }
@@ -59,7 +59,7 @@ public class EventMemoryTest {
             boolean notDone = true;
             while (notDone) {
                 notDone = eventListeners.stream()
-                    .anyMatch(listener -> count != listener.getMessageCount());
+                    .anyMatch(listener -> count != listener.getHandler().getMessageCount());
                 if (notDone) {
                     // 1 minute between polls
                     Thread.sleep(60000);
@@ -68,8 +68,8 @@ public class EventMemoryTest {
         } catch (InterruptedException ex) {
             Thread.interrupted();
         }
-        for (TestEventListener eventListener : eventListeners) {
-            assertEquals(count, eventListener.getMessageCount());
+        for (TestAlertEventListener eventListener : eventListeners) {
+            assertEquals(count, eventListener.getHandler().getMessageCount());
         }
     }
 

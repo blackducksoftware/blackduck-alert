@@ -7,14 +7,14 @@
  */
 package com.synopsys.integration.alert.common.persistence.model;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
 public class SettingsKeyModel extends AlertSerializableModel {
     private final Long id;
     private final String key;
     private final String value;
 
-    public SettingsKeyModel(final Long id, final String key, final String value) {
+    public SettingsKeyModel(Long id, String key, String value) {
         this.id = id;
         this.key = key;
         this.value = value;
@@ -31,4 +31,5 @@ public class SettingsKeyModel extends AlertSerializableModel {
     public String getValue() {
         return value;
     }
+
 }

@@ -10,8 +10,8 @@ package com.synopsys.integration.alert.common.persistence.model.job;
 import java.util.List;
 import java.util.UUID;
 
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class FilteredDistributionJobResponseModel extends AlertSerializableModel {
     private final UUID id;
@@ -81,4 +81,5 @@ public class FilteredDistributionJobResponseModel extends AlertSerializableModel
     public String getProjectNamePattern() {
         return projectNamePattern;
     }
+
 }

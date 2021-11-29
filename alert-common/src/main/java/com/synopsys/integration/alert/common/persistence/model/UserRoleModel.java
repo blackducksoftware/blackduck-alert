@@ -10,7 +10,7 @@ package com.synopsys.integration.alert.common.persistence.model;
 import java.util.Map;
 import java.util.Objects;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
 public class UserRoleModel extends AlertSerializableModel {
     private final Long id;

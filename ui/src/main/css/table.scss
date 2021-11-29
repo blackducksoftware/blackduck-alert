@@ -80,6 +80,7 @@
 
 .table {
   width: 100%;
+  clear: right;
 }
 
 .tableRow {
@@ -93,6 +94,7 @@
 
 .tableCell {
   vertical-align: middle !important;
+  word-wrap: break-word;
 }
 
 .scrollable {

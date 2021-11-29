@@ -19,6 +19,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +36,7 @@ import com.synopsys.integration.alert.database.audit.AuditNotificationRepository
 
 @Component
 public class DefaultProcessingAuditAccessor implements ProcessingAuditAccessor {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final AuditEntryRepository auditEntryRepository;
     private final AuditNotificationRepository auditNotificationRepository;
 
@@ -65,6 +68,7 @@ public class DefaultProcessingAuditAccessor implements ProcessingAuditAccessor {
             }
 
             AuditEntryEntity savedAuditEntry = auditEntryRepository.save(auditEntryToSave);
+            logger.trace("Created audit entry: {}. For notification: {}", savedAuditEntry.getId(), notificationId);
 
             AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntry.getId(), notificationId);
             relationsToUpdate.add(auditNotificationRelation);
@@ -75,7 +79,11 @@ public class DefaultProcessingAuditAccessor implements ProcessingAuditAccessor {
     @Override
     @Transactional
     public void setAuditEntrySuccess(UUID jobId, Set<Long> notificationIds) {
-        updateAuditEntries(jobId, notificationIds, auditEntry -> auditEntry.setStatus(AuditEntryStatus.SUCCESS.name()));
+        updateAuditEntries(jobId, notificationIds, auditEntry -> {
+            auditEntry.setStatus(AuditEntryStatus.SUCCESS.name());
+            auditEntry.setErrorMessage(null);
+            auditEntry.setErrorStackTrace(null);
+        });
     }
 
     @Override
@@ -104,6 +112,7 @@ public class DefaultProcessingAuditAccessor implements ProcessingAuditAccessor {
             auditEntryToSave.setTimeLastSent(DateUtils.createCurrentDateTimestamp());
             auditFieldSetter.accept(auditEntryToSave);
             updatedAuditEntries.add(auditEntryToSave);
+            logger.trace("Updated audit entry: {}.", auditEntryToSave.getId());
         }
         auditEntryRepository.saveAll(updatedAuditEntries);
     }

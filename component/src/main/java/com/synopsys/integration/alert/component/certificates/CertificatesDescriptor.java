@@ -7,10 +7,13 @@
  */
 package com.synopsys.integration.alert.component.certificates;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.ComponentDescriptor;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
 
 @Component
 public class CertificatesDescriptor extends ComponentDescriptor {
@@ -28,4 +31,8 @@ public class CertificatesDescriptor extends ComponentDescriptor {
         super(descriptorKey, componentUIConfig);
     }
 
+    @Override
+    public Optional<GlobalConfigurationValidator> getGlobalValidator() {
+        return Optional.empty();
+    }
 }

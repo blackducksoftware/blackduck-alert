@@ -94,6 +94,8 @@ const DynamicSelectInput = ({
                     isDisabled={readOnly}
                     noOptionsMessage={() => 'No options available'}
                     onFocus={onFocus}
+                    menuPlacement="auto"
+                    maxMenuHeight={250}
                 />
             </div>
         </LabeledField>

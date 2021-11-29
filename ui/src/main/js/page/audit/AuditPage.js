@@ -22,6 +22,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import StatusMessage from 'common/StatusMessage';
 import '../../../css/audit.scss';
 import { AUDIT_INFO } from 'page/audit/AuditModel';
+import { EXISTING_CHANNELS, EXISTING_PROVIDERS } from 'common/DescriptorInfo';
+import { ProgressIcon } from 'common/table/ProgressIcon';
 
 class AuditPage extends Component {
     constructor(props) {
@@ -273,19 +275,12 @@ class AuditPage extends Component {
     }
 
     providerColumnDataFormat(cell) {
-        const defaultValue = <div className="inline" aria-hidden="true">{cell}</div>;
-        const { descriptors } = this.props;
-        if (descriptors) {
-            const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
-            if (descriptorList) {
-                const filteredList = descriptorList.filter((descriptor) => descriptor.name === cell);
-                if (filteredList && filteredList.length > 0) {
-                    const foundDescriptor = filteredList[0];
-                    return (<DescriptorLabel keyPrefix="audit-provider-icon" descriptor={foundDescriptor} />);
-                }
-            }
-        }
-        return defaultValue;
+        const descriptorOptions = {
+            ...EXISTING_PROVIDERS,
+            ...EXISTING_CHANNELS
+        };
+        const descriptor = descriptorOptions[cell];
+        return (<DescriptorLabel keyPrefix="audit-provider-icon" descriptor={descriptor} />);
     }
 
     handleCloseDetails() {
@@ -426,14 +421,7 @@ class AuditPage extends Component {
                         <TableHeaderColumn width="48" columnClassName="tableCell" dataFormat={this.resendButton} />
                         <TableHeaderColumn dataField="id" isKey hidden>Notification Id</TableHeaderColumn>
                     </BootstrapTable>
-
-                    {inProgress && (
-                        <div className="progressIcon">
-                            <span className="fa-layers fa-fw">
-                                <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
-                            </span>
-                        </div>
-                    )}
+                    <ProgressIcon inProgress={inProgress} />
                 </div>
             </div>
         );

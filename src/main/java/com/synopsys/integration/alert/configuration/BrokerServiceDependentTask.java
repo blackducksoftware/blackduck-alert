@@ -15,7 +15,8 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.wait.WaitJob;
-import com.synopsys.integration.wait.WaitJobTask;
+import com.synopsys.integration.wait.WaitJobCondition;
+import com.synopsys.integration.wait.WaitJobConfig;
 
 public class BrokerServiceDependentTask {
     private Logger logger = LoggerFactory.getLogger(getClass());
@@ -37,7 +38,8 @@ public class BrokerServiceDependentTask {
         try {
             IntLogger intLogger = new Slf4jIntLogger(logger);
             long startTimestamp = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-            WaitJob waitJob = WaitJob.create(intLogger, 600, startTimestamp, 10, "Active MQ Broker Service Lookup", new BrokerWaitTask());
+            WaitJobConfig waitJobConfig = new WaitJobConfig(intLogger, "Active MQ Broker Service Lookup", 600, startTimestamp, 10);
+            WaitJob<Boolean> waitJob = WaitJob.createSimpleWait(waitJobConfig, new BrokerWaitTask());
             boolean isComplete = waitJob.waitFor();
             if (isComplete) {
                 logger.info("Active MQ Broker Service found.  Executing task: {}", taskToExecuteName);
@@ -56,7 +58,7 @@ public class BrokerServiceDependentTask {
         }
     }
 
-    private class BrokerWaitTask implements WaitJobTask {
+    private class BrokerWaitTask implements WaitJobCondition {
         @Override
         public boolean isComplete() {
             return BrokerRegistry.getInstance().lookup(BrokerService.DEFAULT_BROKER_NAME) != null;

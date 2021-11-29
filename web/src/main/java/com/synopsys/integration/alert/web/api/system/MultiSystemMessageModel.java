@@ -9,11 +9,11 @@ package com.synopsys.integration.alert.web.api.system;
 
 import java.util.List;
 
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class MultiSystemMessageModel extends AlertSerializableModel {
-    private List<SystemMessageModel> systemMessages;
+    private final List<SystemMessageModel> systemMessages;
 
     public MultiSystemMessageModel(List<SystemMessageModel> systemMessages) {
         this.systemMessages = systemMessages;
@@ -22,4 +22,5 @@ public class MultiSystemMessageModel extends AlertSerializableModel {
     public List<SystemMessageModel> getSystemMessages() {
         return systemMessages;
     }
+
 }

@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.common.persistence.model.job;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
 public class BlackDuckProjectDetailsModel extends AlertSerializableModel {
     private final String name;

@@ -31,19 +31,19 @@ public class AlertSAMLEntryPoint extends SAMLEntryPoint {
 
     @Override
     protected boolean processFilter(HttpServletRequest request) {
-        return samlContext.isSAMLEnabled() && super.processFilter(request);
+        return samlContext.isSAMLEnabledForRequest(request) && super.processFilter(request);
     }
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) throws IOException, ServletException {
-        if (samlContext.isSAMLEnabled()) {
+        if (samlContext.isSAMLEnabledForRequest(request)) {
             alertLogger.debug("SAML Enabled commencing SAML entry point.");
             super.commence(request, response, e);
-            return;
-        }
-        alertLogger.debug("AuthenticationException", e);
-        if (e instanceof InsufficientAuthenticationException) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+        } else {
+            alertLogger.debug("AuthenticationException", e);
+            if (e instanceof InsufficientAuthenticationException) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+            }
         }
     }
 

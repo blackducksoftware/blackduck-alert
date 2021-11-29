@@ -7,10 +7,13 @@
  */
 package com.synopsys.integration.alert.component.users;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.ComponentDescriptor;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
 
 @Component
 public class UserManagementDescriptor extends ComponentDescriptor {
@@ -22,5 +25,10 @@ public class UserManagementDescriptor extends ComponentDescriptor {
     @Autowired
     public UserManagementDescriptor(UserManagementDescriptorKey descriptorKey, UserManagementUIConfig componentUIConfig) {
         super(descriptorKey, componentUIConfig);
+    }
+
+    @Override
+    public Optional<GlobalConfigurationValidator> getGlobalValidator() {
+        return Optional.empty();
     }
 }
