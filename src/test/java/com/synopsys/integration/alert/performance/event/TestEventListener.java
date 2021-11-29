@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import com.synopsys.integration.alert.common.event.AlertEventListener;
 
 public class TestEventListener implements AlertEventListener {
+    public static final int LOGGING_COUNT_THRESHOLD = 100000;
     public static final String DESTINATION_NAME = "alert_memory_test_destination";
     private Logger logger = LoggerFactory.getLogger(getClass());
     private AtomicLong messageCount;
@@ -32,7 +33,9 @@ public class TestEventListener implements AlertEventListener {
     @Override
     public void onMessage(Message message) {
         long count = messageCount.incrementAndGet();
-        logger.info("Consumer called {}", count);
+        if (count % LOGGING_COUNT_THRESHOLD == 0) {
+            logger.info("Consumer called {}", count);
+        }
         try {
             Thread.sleep(5);
         } catch (InterruptedException e) {
