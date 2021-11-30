@@ -16,7 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 public class MessageReplacementValues {
     public final static String DEFAULT_NOTIFICATION_REPLACEMENT_VALUE = "None";
 
-    private final String providerName;
+    private final String providerType;
     private final String projectName;
     private final String projectVersionName;
     private final String componentName;
@@ -29,7 +29,7 @@ public class MessageReplacementValues {
     private final String longTermUpgradeGuidance;
 
     private MessageReplacementValues(
-        String providerName,
+        String providerType,
         String projectName,
         @Nullable String projectVersionName,
         @Nullable String componentName,
@@ -41,7 +41,7 @@ public class MessageReplacementValues {
         @Nullable String shortTermUpgradeGuidance,
         @Nullable String longTermUpgradeGuidance
     ) {
-        this.providerName = providerName;
+        this.providerType = providerType;
         this.projectName = projectName;
         this.projectVersionName = StringUtils.trimToNull(projectVersionName);
         this.componentName = StringUtils.trimToNull(componentName);
@@ -54,8 +54,8 @@ public class MessageReplacementValues {
         this.longTermUpgradeGuidance = StringUtils.trimToNull(longTermUpgradeGuidance);
     }
 
-    public String getProviderName() {
-        return providerName;
+    public String getProviderType() {
+        return providerType;
     }
 
     public String getProjectName() {
@@ -99,7 +99,7 @@ public class MessageReplacementValues {
     }
 
     public static class Builder {
-        private String providerName;
+        private String providerType;
         private String projectName;
         private String projectVersionName;
         private String componentName;
@@ -111,14 +111,14 @@ public class MessageReplacementValues {
         private String shortTermUpgradeGuidance;
         private String longTermUpgradeGuidance;
 
-        public Builder(String providerName, String projectName) {
-            this.providerName = providerName;
+        public Builder(String providerType, String projectName) {
+            this.providerType = providerType;
             this.projectName = projectName;
         }
 
         public MessageReplacementValues build() {
             return new MessageReplacementValues(
-                providerName,
+                providerType,
                 projectName,
                 defaultIfBlank(projectVersionName),
                 defaultIfBlank(componentName),

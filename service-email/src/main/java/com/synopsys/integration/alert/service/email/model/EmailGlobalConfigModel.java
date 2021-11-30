@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.synopsys.integration.alert.common.rest.api.ConfigurationCrudHelper;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.model.ConfigWithMetadata;
 import com.synopsys.integration.alert.common.rest.model.Obfuscated;
 
@@ -32,7 +32,7 @@ public class EmailGlobalConfigModel extends ConfigWithMetadata implements Obfusc
 
     @JsonProperty("additionalJavaMailProperties")
     private Map<String, String> additionalJavaMailProperties;
-    
+
     @Override
     public EmailGlobalConfigModel obfuscate() {
         EmailGlobalConfigModel emailGlobalConfigModel = new EmailGlobalConfigModel();
@@ -48,7 +48,7 @@ public class EmailGlobalConfigModel extends ConfigWithMetadata implements Obfusc
         emailGlobalConfigModel.setUsername(username);
         emailGlobalConfigModel.setAdditionalJavaMailProperties(additionalJavaMailProperties);
 
-        String maskedPassword = (password != null) ? ConfigurationCrudHelper.MASKED_VALUE : null;
+        String maskedPassword = (password != null) ? AlertRestConstants.MASKED_VALUE : null;
         emailGlobalConfigModel.setPassword(maskedPassword);
 
         return emailGlobalConfigModel;

@@ -16,7 +16,6 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.action.ActionResponse;
@@ -28,10 +27,9 @@ import com.synopsys.integration.alert.component.authentication.actions.Authentic
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.component.authentication.web.AuthenticationActions;
 import com.synopsys.integration.alert.component.authentication.web.LoginConfig;
-import com.synopsys.integration.alert.startup.EnvironmentVariableUtility;
+import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
-@Transactional
 @AlertIntegrationTest
 public class ConfigurationOverridesStartupComponentTest {
     private static final String DEFAULT_ADMIN_USER = "sysadmin";
@@ -58,8 +56,8 @@ public class ConfigurationOverridesStartupComponentTest {
         Optional<UserModel> sysadminOptional = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER_ID);
         assertTrue(sysadminOptional.isPresent());
         UserModel sysadmin = sysadminOptional.get();
-        UserModel updatedSysadmin = changeUserPassword(sysadmin, DEFAULT_PASSWORD);
-        userAccessor.updateUser(updatedSysadmin, false);
+        UserModel updatedSysadmin = changeUserPassword(sysadmin, DEFAULT_PASSWORD_ENCODED);
+        userAccessor.updateUser(updatedSysadmin, true);
     }
 
     @Test
@@ -69,7 +67,6 @@ public class ConfigurationOverridesStartupComponentTest {
 
         ConfigurationOverridesStartupComponent configurationOverridesStartupComponent = new ConfigurationOverridesStartupComponent(environmentVariableUtility, userAccessor, descriptorKey, configurationModelConfigurationAccessor,
             apiAction, configurationFieldModelConverter);
-
         // Update the sysadmin password
         Optional<UserModel> sysadminOptional = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER_ID);
         assertTrue(sysadminOptional.isPresent());
@@ -153,7 +150,7 @@ public class ConfigurationOverridesStartupComponentTest {
 
         ConfigurationOverridesStartupComponent configurationOverridesStartupComponent = new ConfigurationOverridesStartupComponent(environmentVariableUtility, userAccessor, descriptorKey, configurationModelConfigurationAccessor,
             apiAction, configurationFieldModelConverter);
-
+        
         String newUsername = "UpdatedAdmin";
 
         // Update the sysadmin username and password

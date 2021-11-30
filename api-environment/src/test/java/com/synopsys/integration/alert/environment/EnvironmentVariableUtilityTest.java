@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.startup;
+package com.synopsys.integration.alert.environment;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -10,18 +10,24 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
-import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
-import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 public class EnvironmentVariableUtilityTest {
-    private static final String WORKING_PROPERTY_KEY = "ALERT_COMPONENT_SETTINGS_SETTINGS_ENCRYPTION_GLOBAL_SALT";
+    private static final String WORKING_PROPERTY_KEY = "ALERT_DESCRIPTORTYPE_NAME_SPECIFIC_PROPERTY_KEY";
+
+    private static class TestDescriptorKey extends DescriptorKey {
+        public TestDescriptorKey(String universalKey, String displayName) {
+            super(universalKey, displayName);
+        }
+    }
+
+    private static final TestDescriptorKey DESCRIPTOR_KEY = new TestDescriptorKey("descriptortype_name", "Test Descriptor");
 
     @Test
     public void testKeyConversion() {
         Environment environment = Mockito.mock(Environment.class);
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
-        SettingsDescriptorKey settingsDescriptorKey = new SettingsDescriptorKey();
-        String actualPropertyKey = environmentVariableUtility.convertKeyToProperty(settingsDescriptorKey, SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT);
+        String actualPropertyKey = environmentVariableUtility.convertKeyToProperty(DESCRIPTOR_KEY, "specific.property.key");
         String expectedPropertyKey = WORKING_PROPERTY_KEY;
         assertEquals(expectedPropertyKey, actualPropertyKey);
     }

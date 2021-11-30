@@ -19,7 +19,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageA
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
-import com.synopsys.integration.alert.common.rest.api.ConfigurationCrudHelper;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
@@ -97,8 +97,8 @@ public class SettingsEncryptionCrudActionsTest {
         assertTrue(settingsEncryptionModel.getPassword().isPresent());
         assertTrue(settingsEncryptionModel.getGlobalSalt().isPresent());
 
-        assertEquals(ConfigurationCrudHelper.MASKED_VALUE, settingsEncryptionModel.getPassword().get());
-        assertEquals(ConfigurationCrudHelper.MASKED_VALUE, settingsEncryptionModel.getGlobalSalt().get());
+        assertEquals(AlertRestConstants.MASKED_VALUE, settingsEncryptionModel.getPassword().get());
+        assertEquals(AlertRestConstants.MASKED_VALUE, settingsEncryptionModel.getGlobalSalt().get());
         assertTrue(settingsEncryptionModel.isReadOnly());
     }
 }

@@ -38,7 +38,8 @@ import com.synopsys.integration.alert.common.rest.FieldModelProcessor;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
-import com.synopsys.integration.alert.startup.EnvironmentVariableUtility;
+import com.synopsys.integration.alert.environment.EnvironmentVariableProcessor;
+import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
 
 @Component
 @Order(10)
@@ -52,10 +53,11 @@ public class AlertStartupInitializer extends StartupComponent {
     private final ConfigurationFieldModelConverter modelConverter;
     private final FieldModelProcessor fieldModelProcessor;
     private final SettingsUtility settingsUtility;
+    private final EnvironmentVariableProcessor environmentVariableProcessor;
 
     @Autowired
     public AlertStartupInitializer(DescriptorMap descriptorMap, EnvironmentVariableUtility environmentUtility, DescriptorAccessor descriptorAccessor, ConfigurationModelConfigurationAccessor fieldConfigurationModelConfigurationAccessor,
-        ConfigurationFieldModelConverter modelConverter, FieldModelProcessor fieldModelProcessor, SettingsUtility settingsUtility) {
+        ConfigurationFieldModelConverter modelConverter, FieldModelProcessor fieldModelProcessor, SettingsUtility settingsUtility, EnvironmentVariableProcessor environmentVariableProcessor) {
         this.descriptorMap = descriptorMap;
         this.environmentUtility = environmentUtility;
         this.descriptorAccessor = descriptorAccessor;
@@ -63,17 +65,20 @@ public class AlertStartupInitializer extends StartupComponent {
         this.modelConverter = modelConverter;
         this.fieldModelProcessor = fieldModelProcessor;
         this.settingsUtility = settingsUtility;
+        this.environmentVariableProcessor = environmentVariableProcessor;
     }
 
     @Override
     protected void initialize() {
         try {
             initializeConfigs();
+            environmentVariableProcessor.updateConfigurations();
         } catch (Exception e) {
             logger.error("Error inserting startup values", e);
         }
     }
 
+    @Deprecated(forRemoval = true, since = "6.9.0")
     private void initializeConfigs() throws IllegalArgumentException, SecurityException {
         logger.info(String.format("** %s **", LINE_DIVIDER));
         logger.info("Initializing descriptors with environment variables...");
