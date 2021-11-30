@@ -29,6 +29,10 @@ public class BrokerServiceDependentTask {
         this.taskToExecuteOnceFound = taskToExecuteOnceFound;
     }
 
+    public String getTaskToExecuteName() {
+        return taskToExecuteName;
+    }
+
     public void waitForServiceAndExecute() {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.submit(this::waitForBrokerServiceAndExecute);
@@ -42,7 +46,7 @@ public class BrokerServiceDependentTask {
             WaitJob<Boolean> waitJob = WaitJob.createSimpleWait(waitJobConfig, new BrokerWaitTask());
             boolean isComplete = waitJob.waitFor();
             if (isComplete) {
-                logger.info("Active MQ Broker Service found.  Executing task: {}", taskToExecuteName);
+                logger.info("Active MQ Broker Service found.  Executing task: {}", getTaskToExecuteName());
                 BrokerService brokerService = BrokerRegistry.getInstance().lookup(BrokerService.DEFAULT_BROKER_NAME);
                 if (null != brokerService) {
                     taskToExecuteOnceFound.accept(brokerService);
