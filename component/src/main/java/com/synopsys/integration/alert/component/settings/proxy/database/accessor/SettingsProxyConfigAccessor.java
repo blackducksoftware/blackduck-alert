@@ -43,6 +43,12 @@ public class SettingsProxyConfigAccessor implements ConfigurationAccessor<Settin
 
     @Override
     @Transactional(readOnly = true)
+    public long getConfigurationCount() {
+        return settingsProxyConfigurationRepository.count();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Optional<SettingsProxyModel> getConfiguration(UUID id) {
         return settingsProxyConfigurationRepository.findById(id).map(this::createConfigModel);
     }

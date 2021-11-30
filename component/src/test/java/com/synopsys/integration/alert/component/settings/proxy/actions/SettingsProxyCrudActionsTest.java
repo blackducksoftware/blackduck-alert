@@ -23,7 +23,7 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
-import com.synopsys.integration.alert.common.rest.api.ConfigurationCrudHelper;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
@@ -141,7 +141,6 @@ public class SettingsProxyCrudActionsTest {
 
         SettingsProxyCrudActions configActions = new SettingsProxyCrudActions(authorizationManager, settingsProxyConfigAccessor, settingsProxyValidator, settingsDescriptorKey);
         SettingsProxyModel settingsProxyModel = createSettingsProxyModel();
-        settingsProxyModel.setId(uuid.toString());
         ActionResponse<SettingsProxyModel> actionResponse = configActions.update(uuid, settingsProxyModel);
 
         Mockito.verify(nonProxyHostsConfigurationRepository).saveAll(Mockito.any());
@@ -208,6 +207,6 @@ public class SettingsProxyCrudActionsTest {
         assertEquals(HOST, settingsProxyModel.getProxyHost().get());
         assertEquals(PORT, settingsProxyModel.getProxyPort().get());
         assertEquals(USERNAME, settingsProxyModel.getProxyUsername().get());
-        assertEquals(ConfigurationCrudHelper.MASKED_VALUE, settingsProxyModel.getProxyPassword().get());
+        assertEquals(AlertRestConstants.MASKED_VALUE, settingsProxyModel.getProxyPassword().get());
     }
 }

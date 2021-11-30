@@ -3,7 +3,7 @@ package com.synopsys.integration.alert.component.settings.proxy.model;
 import java.util.List;
 import java.util.Optional;
 
-import com.synopsys.integration.alert.common.rest.api.ConfigurationCrudHelper;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.model.ConfigWithMetadata;
 import com.synopsys.integration.alert.common.rest.model.Obfuscated;
 
@@ -68,7 +68,7 @@ public class SettingsProxyModel extends ConfigWithMetadata implements Obfuscated
         settingsProxyModel.setProxyUsername(proxyUsername);
         settingsProxyModel.setNonProxyHosts(nonProxyHosts);
 
-        String maskedPassword = (proxyPassword != null) ? ConfigurationCrudHelper.MASKED_VALUE : null;
+        String maskedPassword = (proxyPassword != null) ? AlertRestConstants.MASKED_VALUE : null;
         settingsProxyModel.setProxyPassword(maskedPassword);
 
         return settingsProxyModel;
