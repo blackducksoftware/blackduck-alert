@@ -26,6 +26,8 @@ public final class MessageValueReplacementResolver {
     public static final String REPLACEMENT_SHORT_TERM_UPGRADE_GUIDANCE = "{{shortTermUpgradeGuidance}}";
     public static final String REPLACEMENT_LONG_TERM_UPGRADE_GUIDANCE = "{{longTermUpgradeGuidance}}";
 
+    public static final int JIRA_CUSTOM_FIELD_LENGTH = 255;
+
     private final MessageReplacementValues replacementValues;
 
     public MessageValueReplacementResolver(MessageReplacementValues replacementValues) {
@@ -48,7 +50,7 @@ public final class MessageValueReplacementResolver {
         modifiedFieldValue = replaceFieldValue(modifiedFieldValue, REPLACEMENT_SHORT_TERM_UPGRADE_GUIDANCE, replacementValues::getShortTermUpgradeGuidance);
         modifiedFieldValue = replaceFieldValue(modifiedFieldValue, REPLACEMENT_LONG_TERM_UPGRADE_GUIDANCE, replacementValues::getLongTermUpgradeGuidance);
 
-        return modifiedFieldValue;
+        return StringUtils.truncate(modifiedFieldValue, JIRA_CUSTOM_FIELD_LENGTH);
     }
 
     private String replaceFieldValue(String originalValue, String replacementString, Supplier<Optional<String>> foundReplacementValue) {
