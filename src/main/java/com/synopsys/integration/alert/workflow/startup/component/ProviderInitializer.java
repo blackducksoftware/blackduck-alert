@@ -12,6 +12,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.provider.lifecycle.ProviderSchedulingManager;
+import com.synopsys.integration.alert.configuration.BrokerServiceDependentTask;
 
 @Component
 @Order(60)
@@ -25,6 +26,10 @@ public class ProviderInitializer extends StartupComponent {
 
     @Override
     protected void initialize() {
-        providerLifecycleManager.initializeConfiguredProviders();
+        BrokerServiceDependentTask task = new BrokerServiceDependentTask("Provider initialization", (brokerService) -> {
+            brokerService.waitUntilStarted();
+            providerLifecycleManager.initializeConfiguredProviders();
+        });
+        task.waitForServiceAndExecute();
     }
 }
