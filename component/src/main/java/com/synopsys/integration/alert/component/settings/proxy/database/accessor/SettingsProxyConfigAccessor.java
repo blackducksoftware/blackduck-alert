@@ -64,9 +64,9 @@ public class SettingsProxyConfigAccessor implements ConfigurationAccessor<Settin
         OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
         UUID configurationId = UUID.randomUUID();
         configuration.setId(configurationId.toString());
-        SettingsProxyConfigurationEntity configurationToSave = toEntity(configuration, currentTime, currentTime);
+        SettingsProxyConfigurationEntity configurationToSave = toEntity(configurationId, configuration, currentTime, currentTime);
         SettingsProxyConfigurationEntity savedProxyConfig = settingsProxyConfigurationRepository.save(configurationToSave);
-        List<NonProxyHostConfigurationEntity> nonProxyHosts = toNonProxyHostEntityList(configuration);
+        List<NonProxyHostConfigurationEntity> nonProxyHosts = toNonProxyHostEntityList(configurationId, configuration);
         nonProxyHostsConfigurationRepository.saveAll(nonProxyHosts);
         savedProxyConfig = settingsProxyConfigurationRepository.getOne(savedProxyConfig.getConfigurationId());
 
@@ -79,9 +79,9 @@ public class SettingsProxyConfigAccessor implements ConfigurationAccessor<Settin
         SettingsProxyConfigurationEntity configurationEntity = settingsProxyConfigurationRepository.findById(configurationId)
                                                                    .orElseThrow(() -> new AlertConfigurationException(String.format("Config with id '%d' did not exist", configurationId)));
         OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
-        SettingsProxyConfigurationEntity configurationToSave = toEntity(configuration, configurationEntity.getCreatedAt(), currentTime);
+        SettingsProxyConfigurationEntity configurationToSave = toEntity(configurationId, configuration, configurationEntity.getCreatedAt(), currentTime);
         SettingsProxyConfigurationEntity savedProxyConfig = settingsProxyConfigurationRepository.save(configurationToSave);
-        List<NonProxyHostConfigurationEntity> nonProxyHosts = toNonProxyHostEntityList(configuration);
+        List<NonProxyHostConfigurationEntity> nonProxyHosts = toNonProxyHostEntityList(configurationId, configuration);
         nonProxyHostsConfigurationRepository.saveAll(nonProxyHosts);
         savedProxyConfig = settingsProxyConfigurationRepository.getOne(savedProxyConfig.getConfigurationId());
 
@@ -127,11 +127,7 @@ public class SettingsProxyConfigAccessor implements ConfigurationAccessor<Settin
                    .collect(Collectors.toList());
     }
 
-    private SettingsProxyConfigurationEntity toEntity(SettingsProxyModel configuration, OffsetDateTime createdTime, OffsetDateTime lastUpdated) {
-        UUID configurationId = null;
-        if (StringUtils.isNotBlank(configuration.getId())) {
-            configurationId = UUID.fromString(configuration.getId());
-        }
+    private SettingsProxyConfigurationEntity toEntity(UUID configurationId, SettingsProxyModel configuration, OffsetDateTime createdTime, OffsetDateTime lastUpdated) {
         String host = configuration.getProxyHost().orElseThrow(null);
         Integer port = configuration.getProxyPort().orElse(null);
         String username = configuration.getProxyUsername().orElse(null);
@@ -140,8 +136,7 @@ public class SettingsProxyConfigAccessor implements ConfigurationAccessor<Settin
         return new SettingsProxyConfigurationEntity(configurationId, createdTime, lastUpdated, host, port, username, password, List.of());
     }
 
-    private List<NonProxyHostConfigurationEntity> toNonProxyHostEntityList(SettingsProxyModel configuration) {
-        UUID configurationId = UUID.fromString(configuration.getId());
+    private List<NonProxyHostConfigurationEntity> toNonProxyHostEntityList(UUID configurationId, SettingsProxyModel configuration) {
         List<String> hostnamePatterns = configuration.getNonProxyHosts().orElse(List.of());
         List<NonProxyHostConfigurationEntity> nonProxyHostsList = new LinkedList<>();
         for (String hostnamePattern : hostnamePatterns) {
