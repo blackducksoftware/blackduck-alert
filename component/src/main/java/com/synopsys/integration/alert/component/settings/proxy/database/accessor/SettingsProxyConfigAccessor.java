@@ -105,11 +105,11 @@ public class SettingsProxyConfigAccessor implements ConfigurationAccessor<Settin
             if (null != proxyConfiguration.getLastUpdated()) {
                 lastUpdatedFormatted = DateUtils.formatDate(proxyConfiguration.getLastUpdated(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
             }
-            newModel.setHost(proxyConfiguration.getHost());
-            newModel.setPort(proxyConfiguration.getPort());
-            newModel.setUsername(proxyConfiguration.getUsername());
+            newModel.setProxyHost(proxyConfiguration.getHost());
+            newModel.setProxyPort(proxyConfiguration.getPort());
+            newModel.setProxyUsername(proxyConfiguration.getUsername());
             if (StringUtils.isNotBlank(proxyConfiguration.getPassword())) {
-                newModel.setPassword(encryptionUtility.decrypt(proxyConfiguration.getPassword()));
+                newModel.setProxyPassword(encryptionUtility.decrypt(proxyConfiguration.getPassword()));
             }
             newModel.setNonProxyHosts(getNonProxyHosts(proxyConfiguration.getNonProxyHosts()));
         }
@@ -132,10 +132,10 @@ public class SettingsProxyConfigAccessor implements ConfigurationAccessor<Settin
         if (StringUtils.isNotBlank(configuration.getId())) {
             configurationId = UUID.fromString(configuration.getId());
         }
-        String host = configuration.getHost().orElseThrow(null);
-        Integer port = configuration.getPort().orElse(null);
-        String username = configuration.getUsername().orElse(null);
-        String password = configuration.getPassword().map(encryptionUtility::encrypt).orElse(null);
+        String host = configuration.getProxyHost().orElseThrow(null);
+        Integer port = configuration.getProxyPort().orElse(null);
+        String username = configuration.getProxyUsername().orElse(null);
+        String password = configuration.getProxyPassword().map(encryptionUtility::encrypt).orElse(null);
 
         return new SettingsProxyConfigurationEntity(configurationId, createdTime, lastUpdated, host, port, username, password, List.of());
     }

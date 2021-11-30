@@ -3,54 +3,48 @@ package com.synopsys.integration.alert.component.settings.proxy.model;
 import java.util.List;
 import java.util.Optional;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.synopsys.integration.alert.common.rest.api.ConfigurationCrudHelper;
 import com.synopsys.integration.alert.common.rest.model.ConfigWithMetadata;
 import com.synopsys.integration.alert.common.rest.model.Obfuscated;
 
 public class SettingsProxyModel extends ConfigWithMetadata implements Obfuscated<SettingsProxyModel> {
-    @JsonProperty("proxyHost")
-    private String host;
-    @JsonProperty("proxyPort")
-    private Integer port;
-    @JsonProperty("proxyUsername")
-    private String username;
-    @JsonProperty("proxyPassword")
-    private String password;
+    private String proxyHost;
+    private Integer proxyPort;
+    private String proxyUsername;
+    private String proxyPassword;
 
-    @JsonProperty("nonProxyHosts")
     private List<String> nonProxyHosts;
 
-    public Optional<String> getHost() {
-        return Optional.ofNullable(host);
+    public Optional<String> getProxyHost() {
+        return Optional.ofNullable(proxyHost);
     }
 
-    public void setHost(String host) {
-        this.host = host;
+    public void setProxyHost(String proxyHost) {
+        this.proxyHost = proxyHost;
     }
 
-    public Optional<Integer> getPort() {
-        return Optional.ofNullable(port);
+    public Optional<Integer> getProxyPort() {
+        return Optional.ofNullable(proxyPort);
     }
 
-    public void setPort(Integer port) {
-        this.port = port;
+    public void setProxyPort(Integer proxyPort) {
+        this.proxyPort = proxyPort;
     }
 
-    public Optional<String> getUsername() {
-        return Optional.ofNullable(username);
+    public Optional<String> getProxyUsername() {
+        return Optional.ofNullable(proxyUsername);
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setProxyUsername(String proxyUsername) {
+        this.proxyUsername = proxyUsername;
     }
 
-    public Optional<String> getPassword() {
-        return Optional.ofNullable(password);
+    public Optional<String> getProxyPassword() {
+        return Optional.ofNullable(proxyPassword);
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setProxyPassword(String proxyPassword) {
+        this.proxyPassword = proxyPassword;
     }
 
     public Optional<List<String>> getNonProxyHosts() {
@@ -69,13 +63,13 @@ public class SettingsProxyModel extends ConfigWithMetadata implements Obfuscated
         settingsProxyModel.setLastUpdated(getLastUpdated());
         settingsProxyModel.setCreatedAt(getCreatedAt());
 
-        settingsProxyModel.setHost(host);
-        settingsProxyModel.setPort(port);
-        settingsProxyModel.setUsername(username);
+        settingsProxyModel.setProxyHost(proxyHost);
+        settingsProxyModel.setProxyPort(proxyPort);
+        settingsProxyModel.setProxyUsername(proxyUsername);
         settingsProxyModel.setNonProxyHosts(nonProxyHosts);
 
-        String maskedPassword = (password != null) ? ConfigurationCrudHelper.MASKED_VALUE : null;
-        settingsProxyModel.setPassword(maskedPassword);
+        String maskedPassword = (proxyPassword != null) ? ConfigurationCrudHelper.MASKED_VALUE : null;
+        settingsProxyModel.setProxyPassword(maskedPassword);
 
         return settingsProxyModel;
     }
