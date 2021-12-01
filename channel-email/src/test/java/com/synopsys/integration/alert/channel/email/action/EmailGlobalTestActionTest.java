@@ -261,13 +261,13 @@ public class EmailGlobalTestActionTest {
 
     private EmailGlobalConfigModel createValidEmailGlobalConfigModel(TestProperties testProperties) {
         EmailGlobalConfigModel emailGlobalConfigModel = new EmailGlobalConfigModel();
-        emailGlobalConfigModel.setFrom(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM));
-        emailGlobalConfigModel.setHost(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST));
-        testProperties.getOptionalProperty(TestPropertyKey.TEST_EMAIL_SMTP_PORT).map(Integer::valueOf).ifPresent(emailGlobalConfigModel::setPort);
+        emailGlobalConfigModel.setSmtpFrom(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM));
+        emailGlobalConfigModel.setSmtpHost(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST));
+        testProperties.getOptionalProperty(TestPropertyKey.TEST_EMAIL_SMTP_PORT).map(Integer::valueOf).ifPresent(emailGlobalConfigModel::setSmtpPort);
 
-        testProperties.getOptionalProperty(TestPropertyKey.TEST_EMAIL_SMTP_AUTH).map(Boolean::valueOf).ifPresent(emailGlobalConfigModel::setAuth);
-        testProperties.getOptionalProperty(TestPropertyKey.TEST_EMAIL_SMTP_USER).ifPresent(emailGlobalConfigModel::setUsername);
-        testProperties.getOptionalProperty(TestPropertyKey.TEST_EMAIL_SMTP_PASSWORD).ifPresent(emailGlobalConfigModel::setPassword);
+        testProperties.getOptionalProperty(TestPropertyKey.TEST_EMAIL_SMTP_AUTH).map(Boolean::valueOf).ifPresent(emailGlobalConfigModel::setSmtpAuth);
+        testProperties.getOptionalProperty(TestPropertyKey.TEST_EMAIL_SMTP_USER).ifPresent(emailGlobalConfigModel::setSmtpUsername);
+        testProperties.getOptionalProperty(TestPropertyKey.TEST_EMAIL_SMTP_PASSWORD).ifPresent(emailGlobalConfigModel::setSmtpPassword);
 
         Map<String, String> additionalPropertiesMap = new HashMap<>();
         testProperties.getOptionalProperty(TestPropertyKey.TEST_EMAIL_SMTP_EHLO).ifPresent(prop -> additionalPropertiesMap.put(EmailPropertyKeys.JAVAMAIL_EHLO_KEY.getPropertyKey(), prop));

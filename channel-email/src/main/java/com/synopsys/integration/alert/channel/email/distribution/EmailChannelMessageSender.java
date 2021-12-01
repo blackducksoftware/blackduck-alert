@@ -95,12 +95,12 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
 
         SmtpConfig smtpConfig = SmtpConfig.builder()
             .setJavamailProperties(javamailPropertiesFactory.createJavaMailProperties(emailServerConfiguration))
-            .setSmtpFrom(emailServerConfiguration.getFrom().orElse(null))
-            .setSmtpHost(emailServerConfiguration.getHost().orElse(null))
-            .setSmtpPort(emailServerConfiguration.getPort().orElse(-1))
-            .setSmtpAuth(emailServerConfiguration.getAuth().orElse(false))
-            .setSmtpUsername(emailServerConfiguration.getUsername().orElse(null))
-            .setSmtpPassword(emailServerConfiguration.getPassword().orElse(null))
+            .setSmtpFrom(emailServerConfiguration.getSmtpFrom().orElse(null))
+            .setSmtpHost(emailServerConfiguration.getSmtpHost().orElse(null))
+            .setSmtpPort(emailServerConfiguration.getSmtpPort().orElse(-1))
+            .setSmtpAuth(emailServerConfiguration.getSmtpAuth().orElse(false))
+            .setSmtpUsername(emailServerConfiguration.getSmtpUsername().orElse(null))
+            .setSmtpPassword(emailServerConfiguration.getSmtpPassword().orElse(null))
             .build();
 
         int totalEmailsSent = 0;

@@ -121,13 +121,13 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
                 lastUpdatedFormatted = DateUtils.formatDate(emailConfiguration.getLastUpdated(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
             }
             newModel.setId(String.valueOf(emailConfiguration.getConfigurationId()));
-            newModel.setHost(emailConfiguration.getSmtpHost());
-            newModel.setPort(emailConfiguration.getSmtpPort());
-            newModel.setFrom(emailConfiguration.getSmtpFrom());
-            newModel.setAuth(emailConfiguration.getAuthRequired());
-            newModel.setUsername(emailConfiguration.getAuthUsername());
+            newModel.setSmtpHost(emailConfiguration.getSmtpHost());
+            newModel.setSmtpPort(emailConfiguration.getSmtpPort());
+            newModel.setSmtpFrom(emailConfiguration.getSmtpFrom());
+            newModel.setSmtpAuth(emailConfiguration.getAuthRequired());
+            newModel.setSmtpUsername(emailConfiguration.getAuthUsername());
             if (StringUtils.isNotBlank(emailConfiguration.getAuthPassword())) {
-                newModel.setPassword(encryptionUtility.decrypt(emailConfiguration.getAuthPassword()));
+                newModel.setSmtpPassword(encryptionUtility.decrypt(emailConfiguration.getAuthPassword()));
             }
             newModel.setAdditionalJavaMailProperties(getAdditionalProperties(emailConfiguration.getEmailConfigurationProperties()));
         }
@@ -147,12 +147,12 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
         if (StringUtils.isNotBlank(configuration.getId())) {
             configurationId = UUID.fromString(configuration.getId());
         }
-        String host = configuration.getHost().orElse(null);
-        String from = configuration.getFrom().orElse(null);
-        Integer port = configuration.getPort().orElse(null);
-        Boolean auth = configuration.getAuth().orElse(Boolean.FALSE);
-        String username = configuration.getUsername().orElse(null);
-        String password = configuration.getPassword().map(encryptionUtility::encrypt).orElse(null);
+        String host = configuration.getSmtpHost().orElse(null);
+        String from = configuration.getSmtpFrom().orElse(null);
+        Integer port = configuration.getSmtpPort().orElse(null);
+        Boolean auth = configuration.getSmtpAuth().orElse(Boolean.FALSE);
+        String username = configuration.getSmtpUsername().orElse(null);
+        String password = configuration.getSmtpPassword().map(encryptionUtility::encrypt).orElse(null);
 
         return new EmailConfigurationEntity(configurationId, createdTime, lastUpdated,
             host, from, port, auth, username, password, List.of());

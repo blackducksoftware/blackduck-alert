@@ -26,11 +26,11 @@ public class EmailGlobalConfigurationValidatorTest {
     public void verifyValidConfig() {
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailGlobalConfigModel model = new EmailGlobalConfigModel();
-        model.setHost("host");
-        model.setFrom("from");
-        model.setAuth(true);
-        model.setUsername("user");
-        model.setPassword("password");
+        model.setSmtpHost("host");
+        model.setSmtpFrom("from");
+        model.setSmtpAuth(true);
+        model.setSmtpUsername("user");
+        model.setSmtpPassword("password");
 
         ValidationResponseModel validationResponseModel = validator.validate(model);
         Collection<AlertFieldStatus> alertFieldStatuses = validationResponseModel.getErrors().values();
@@ -54,9 +54,9 @@ public class EmailGlobalConfigurationValidatorTest {
     public void verifyMissingAuth() {
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailGlobalConfigModel model = new EmailGlobalConfigModel();
-        model.setHost("host");
-        model.setFrom("from");
-        model.setAuth(true);
+        model.setSmtpHost("host");
+        model.setSmtpFrom("from");
+        model.setSmtpAuth(true);
 
         ValidationResponseModel validationResponseModel = validator.validate(model);
         Collection<AlertFieldStatus> alertFieldStatuses = validationResponseModel.getErrors().values();
@@ -70,10 +70,10 @@ public class EmailGlobalConfigurationValidatorTest {
     public void verifyAuthNotProvided() {
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailGlobalConfigModel model = new EmailGlobalConfigModel();
-        model.setHost("host");
-        model.setFrom("from");
-        model.setUsername("user");
-        model.setPassword("password");
+        model.setSmtpHost("host");
+        model.setSmtpFrom("from");
+        model.setSmtpUsername("user");
+        model.setSmtpPassword("password");
 
         ValidationResponseModel validationResponseModel = validator.validate(model);
         assertFalse(validationResponseModel.hasErrors(), "There were errors in the configuration when none were expected.");
@@ -83,10 +83,10 @@ public class EmailGlobalConfigurationValidatorTest {
     public void verifyMissingAuthPassword() {
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailGlobalConfigModel model = new EmailGlobalConfigModel();
-        model.setHost("host");
-        model.setFrom("from");
-        model.setAuth(true);
-        model.setUsername("user");
+        model.setSmtpHost("host");
+        model.setSmtpFrom("from");
+        model.setSmtpAuth(true);
+        model.setSmtpUsername("user");
 
         ValidationResponseModel validationResponseModel = validator.validate(model);
         Collection<AlertFieldStatus> alertFieldStatuses = validationResponseModel.getErrors().values();

@@ -24,18 +24,18 @@ public class EmailGlobalConfigurationValidator {
 
     public ValidationResponseModel validate(EmailGlobalConfigModel model) {
         Set<AlertFieldStatus> statuses = new HashSet<>();
-        if (model.getHost().filter(StringUtils::isNotBlank).isEmpty()) {
+        if (model.getSmtpHost().filter(StringUtils::isNotBlank).isEmpty()) {
             statuses.add(AlertFieldStatus.error("host", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
         }
-        if (model.getFrom().filter(StringUtils::isNotBlank).isEmpty()) {
+        if (model.getSmtpFrom().filter(StringUtils::isNotBlank).isEmpty()) {
             statuses.add(AlertFieldStatus.error("from", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
         }
 
-        if (model.getAuth().filter(Boolean.TRUE::equals).isPresent()) {
-            if (model.getUsername().filter(StringUtils::isNotBlank).isEmpty()) {
+        if (model.getSmtpAuth().filter(Boolean.TRUE::equals).isPresent()) {
+            if (model.getSmtpUsername().filter(StringUtils::isNotBlank).isEmpty()) {
                 statuses.add(AlertFieldStatus.error("user", REQUIRED_BECAUSE_AUTH));
             }
-            if (model.getPassword().filter(StringUtils::isNotBlank).isEmpty()) {
+            if (model.getSmtpPassword().filter(StringUtils::isNotBlank).isEmpty()) {
                 statuses.add(AlertFieldStatus.error("password", REQUIRED_BECAUSE_AUTH));
             }
         }

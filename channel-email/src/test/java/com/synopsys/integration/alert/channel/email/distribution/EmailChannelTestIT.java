@@ -102,13 +102,13 @@ public class EmailChannelTestIT {
 
     private EmailGlobalConfigModel createEmailGlobalConfig() {
         EmailGlobalConfigModel emailGlobalConfigModel = new EmailGlobalConfigModel();
-        emailGlobalConfigModel.setHost(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST));
-        emailGlobalConfigModel.setFrom(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM));
-        emailGlobalConfigModel.setUsername(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_USER));
-        emailGlobalConfigModel.setPassword(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PASSWORD));
+        emailGlobalConfigModel.setSmtpHost(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST));
+        emailGlobalConfigModel.setSmtpFrom(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM));
+        emailGlobalConfigModel.setSmtpUsername(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_USER));
+        emailGlobalConfigModel.setSmtpPassword(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PASSWORD));
 
-        emailGlobalConfigModel.setAuth(Boolean.parseBoolean(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_AUTH)));
-        emailGlobalConfigModel.setPort(Integer.parseInt(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PORT)));
+        emailGlobalConfigModel.setSmtpAuth(Boolean.parseBoolean(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_AUTH)));
+        emailGlobalConfigModel.setSmtpPort(Integer.parseInt(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PORT)));
         Map<String, String> properties = Map.of(TestPropertyKey.TEST_EMAIL_SMTP_EHLO.getPropertyKey(), testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_EHLO));
         emailGlobalConfigModel.setAdditionalJavaMailProperties(properties);
         return emailGlobalConfigModel;
