@@ -17,8 +17,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.synopsys.integration.alert.Application;
 import com.synopsys.integration.alert.ApplicationConfiguration;
+import com.synopsys.integration.alert.common.event.BrokerServiceDependentTask;
+import com.synopsys.integration.alert.common.event.BrokerServiceTaskFactory;
 import com.synopsys.integration.alert.common.event.EventManager;
-import com.synopsys.integration.alert.configuration.BrokerServiceDependentTask;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.test.common.TestTags;
 import com.synopsys.integration.alert.util.DescriptorMocker;
@@ -33,13 +34,15 @@ public class EventMemoryTest {
     private EventManager eventManager;
     @Autowired
     private List<TestAlertEventListener> eventListeners;
+    @Autowired
+    private BrokerServiceTaskFactory brokerServiceTaskFactory;
 
     @Test
     @Ignore
     @Disabled
     public void testEventLoadTest() throws InterruptedException {
         CountDownLatch initializationDone = new CountDownLatch(1);
-        BrokerServiceDependentTask task = new BrokerServiceDependentTask("EventMemoryTest initialization", brokerService -> {
+        BrokerServiceDependentTask task = brokerServiceTaskFactory.createTask("EventMemoryTest initialization", brokerService -> {
             brokerService.waitUntilStarted();
             initializationDone.countDown();
         });

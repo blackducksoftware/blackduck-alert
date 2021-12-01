@@ -19,11 +19,13 @@ import com.synopsys.integration.alert.common.ContentConverter;
 public class EventManager {
     private final JmsTemplate jmsTemplate;
     private final ContentConverter contentConverter;
+    private final BrokerServiceTaskFactory brokerServiceTaskFactory;
 
     @Autowired
-    public EventManager(ContentConverter contentConverter, JmsTemplate jmsTemplate) {
+    public EventManager(ContentConverter contentConverter, JmsTemplate jmsTemplate, BrokerServiceTaskFactory brokerServiceTaskFactory) {
         this.contentConverter = contentConverter;
         this.jmsTemplate = jmsTemplate;
+        this.brokerServiceTaskFactory = brokerServiceTaskFactory;
     }
 
     public void sendEvents(List<? extends AlertEvent> eventList) {
@@ -33,9 +35,12 @@ public class EventManager {
     }
 
     public void sendEvent(AlertEvent event) {
-        String destination = event.getDestination();
-        String jsonMessage = contentConverter.getJsonString(event);
-        jmsTemplate.convertAndSend(destination, jsonMessage);
+        BrokerServiceDependentTask task = brokerServiceTaskFactory.createTask("Event Manager send event,", ignored -> {
+            String destination = event.getDestination();
+            String jsonMessage = contentConverter.getJsonString(event);
+            jmsTemplate.convertAndSend(destination, jsonMessage);
+        });
+        task.waitForServiceAndExecute();
     }
 
 }

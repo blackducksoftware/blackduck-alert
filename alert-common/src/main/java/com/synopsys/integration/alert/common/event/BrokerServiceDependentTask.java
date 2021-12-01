@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.configuration;
+package com.synopsys.integration.alert.common.event;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -30,7 +30,7 @@ public class BrokerServiceDependentTask {
     private String taskToExecuteName;
     private Consumer<BrokerService> taskToExecuteOnceFound;
 
-    public BrokerServiceDependentTask(String taskToExecuteName, Consumer<BrokerService> taskToExecuteOnceFound) {
+    public BrokerServiceDependentTask(String taskToExecuteName, WaitJobTask waitCondition, Consumer<BrokerService> taskToExecuteOnceFound) {
         this.taskToExecuteName = taskToExecuteName;
         this.taskToExecuteOnceFound = taskToExecuteOnceFound;
     }
@@ -48,7 +48,7 @@ public class BrokerServiceDependentTask {
         try {
             IntLogger intLogger = new Slf4jIntLogger(logger);
             long startTimestamp = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-            WaitJob waitJob = WaitJob.create(intLogger, 600, startTimestamp, 10, new BrokerWaitTask());
+            WaitJob waitJob = WaitJob.create(intLogger, 600, startTimestamp, 10, new BrokerServiceWaitTask());
             boolean isComplete = waitJob.waitFor();
             if (isComplete) {
                 logger.info("Active MQ Broker Service found.  Executing task: {}", getTaskToExecuteName());
@@ -64,13 +64,6 @@ public class BrokerServiceDependentTask {
         } catch (InterruptedException ex) {
             Thread.interrupted();
             logger.error("Error waiting for Active MQ broker service.", ex);
-        }
-    }
-
-    private static class BrokerWaitTask implements WaitJobTask {
-        @Override
-        public boolean isComplete() {
-            return BrokerRegistry.getInstance().lookup(BrokerService.DEFAULT_BROKER_NAME) != null;
         }
     }
 

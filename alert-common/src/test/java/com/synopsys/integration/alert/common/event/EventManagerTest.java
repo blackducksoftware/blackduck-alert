@@ -1,7 +1,9 @@
 package com.synopsys.integration.alert.common.event;
 
 import java.util.List;
+import java.util.function.Consumer;
 
+import org.apache.activemq.broker.BrokerService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.jms.core.JmsTemplate;
@@ -23,8 +25,19 @@ public class EventManagerTest {
 
         ContentConverter contentConverter = Mockito.mock(ContentConverter.class);
         Mockito.when(contentConverter.getJsonString(Mockito.any(AlertEvent.class))).thenReturn(testEventJson);
-
-        EventManager eventManager = new EventManager(contentConverter, jmsTemplate);
+        BrokerServiceTaskFactory taskFactory = new BrokerServiceTaskFactory() {
+            @Override
+            public BrokerServiceDependentTask createTask(String taskName, BrokerServiceWaitTask brokerServiceWaitTask, Consumer<BrokerService> task) {
+                return super.createTask(taskName, new BrokerServiceWaitTask() {
+                    @Override
+                    public boolean isComplete() {
+                        return true;
+                    }
+                }, task);
+            }
+        };
+        
+        EventManager eventManager = new EventManager(contentConverter, jmsTemplate, taskFactory);
 
         eventManager.sendEvents(List.of(testEvent));
 

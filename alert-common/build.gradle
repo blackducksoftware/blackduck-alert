@@ -14,6 +14,9 @@ dependencies {
     implementation 'org.springframework.security:spring-security-config'
     implementation 'jakarta.activation:jakarta.activation-api'
 
+    // Message Queue
+    implementation 'org.apache.activemq:activemq-broker'
+
     // Templates
     implementation 'org.jsoup:jsoup'
     implementation 'org.freemarker:freemarker'

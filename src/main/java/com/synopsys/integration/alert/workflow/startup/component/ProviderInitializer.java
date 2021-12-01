@@ -11,22 +11,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.event.BrokerServiceDependentTask;
+import com.synopsys.integration.alert.common.event.BrokerServiceTaskFactory;
 import com.synopsys.integration.alert.common.provider.lifecycle.ProviderSchedulingManager;
-import com.synopsys.integration.alert.configuration.BrokerServiceDependentTask;
 
 @Component
 @Order(60)
 public class ProviderInitializer extends StartupComponent {
     private final ProviderSchedulingManager providerLifecycleManager;
+    private final BrokerServiceTaskFactory brokerServiceTaskFactory;
 
     @Autowired
-    public ProviderInitializer(ProviderSchedulingManager providerLifecycleManager) {
+    public ProviderInitializer(ProviderSchedulingManager providerLifecycleManager, BrokerServiceTaskFactory brokerServiceTaskFactory) {
         this.providerLifecycleManager = providerLifecycleManager;
+        this.brokerServiceTaskFactory = brokerServiceTaskFactory;
     }
+
 
     @Override
     protected void initialize() {
-        BrokerServiceDependentTask task = new BrokerServiceDependentTask("Provider initialization", (brokerService) -> {
+        BrokerServiceDependentTask task = brokerServiceTaskFactory.createTask("Provider initialization", (brokerService) -> {
             brokerService.waitUntilStarted();
             providerLifecycleManager.initializeConfiguredProviders();
         });
