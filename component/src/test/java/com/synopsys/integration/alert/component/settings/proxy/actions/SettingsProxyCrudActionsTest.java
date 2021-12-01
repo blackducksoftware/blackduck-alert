@@ -66,7 +66,7 @@ public class SettingsProxyCrudActionsTest {
         SettingsProxyConfigurationRepository settingsProxyConfigurationRepository = Mockito.mock(SettingsProxyConfigurationRepository.class);
         NonProxyHostsConfigurationRepository nonProxyHostsConfigurationRepository = Mockito.mock(NonProxyHostsConfigurationRepository.class);
 
-        Mockito.when(settingsProxyConfigurationRepository.findById(Mockito.any())).thenReturn(Optional.of(createSettingsProxyConfigurationEntity(uuid)));
+        Mockito.when(settingsProxyConfigurationRepository.findById(Mockito.eq(uuid))).thenReturn(Optional.of(createSettingsProxyConfigurationEntity(uuid)));
 
         SettingsProxyConfigAccessor settingsProxyConfigAccessor = new SettingsProxyConfigAccessor(encryptionUtility, settingsProxyConfigurationRepository, nonProxyHostsConfigurationRepository);
 
@@ -112,7 +112,7 @@ public class SettingsProxyCrudActionsTest {
 
         SettingsProxyConfigurationEntity entity = createSettingsProxyConfigurationEntity(uuid);
         Mockito.when(settingsProxyConfigurationRepository.save(Mockito.any())).thenReturn(entity);
-        Mockito.when(settingsProxyConfigurationRepository.getOne(Mockito.any())).thenReturn(entity);
+        Mockito.when(settingsProxyConfigurationRepository.getOne(Mockito.eq(uuid))).thenReturn(entity);
 
         SettingsProxyConfigAccessor settingsProxyConfigAccessor = new SettingsProxyConfigAccessor(encryptionUtility, settingsProxyConfigurationRepository, nonProxyHostsConfigurationRepository);
 
@@ -133,9 +133,9 @@ public class SettingsProxyCrudActionsTest {
         NonProxyHostsConfigurationRepository nonProxyHostsConfigurationRepository = Mockito.mock(NonProxyHostsConfigurationRepository.class);
 
         SettingsProxyConfigurationEntity entity = createSettingsProxyConfigurationEntity(uuid);
-        Mockito.when(settingsProxyConfigurationRepository.findById(Mockito.any())).thenReturn(Optional.of(entity));
+        Mockito.when(settingsProxyConfigurationRepository.findById(Mockito.eq(uuid))).thenReturn(Optional.of(entity));
         Mockito.when(settingsProxyConfigurationRepository.save(Mockito.any())).thenReturn(entity);
-        Mockito.when(settingsProxyConfigurationRepository.getOne(Mockito.any())).thenReturn(entity);
+        Mockito.when(settingsProxyConfigurationRepository.getOne(Mockito.eq(uuid))).thenReturn(entity);
 
         SettingsProxyConfigAccessor settingsProxyConfigAccessor = new SettingsProxyConfigAccessor(encryptionUtility, settingsProxyConfigurationRepository, nonProxyHostsConfigurationRepository);
 
@@ -157,7 +157,7 @@ public class SettingsProxyCrudActionsTest {
         NonProxyHostsConfigurationRepository nonProxyHostsConfigurationRepository = Mockito.mock(NonProxyHostsConfigurationRepository.class);
 
         SettingsProxyConfigurationEntity entity = createSettingsProxyConfigurationEntity(uuid);
-        Mockito.when(settingsProxyConfigurationRepository.findById(Mockito.any())).thenReturn(Optional.of(entity));
+        Mockito.when(settingsProxyConfigurationRepository.findById(Mockito.eq(uuid))).thenReturn(Optional.of(entity));
 
         SettingsProxyConfigAccessor settingsProxyConfigAccessor = new SettingsProxyConfigAccessor(encryptionUtility, settingsProxyConfigurationRepository, nonProxyHostsConfigurationRepository);
 
