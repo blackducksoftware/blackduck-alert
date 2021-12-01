@@ -76,7 +76,7 @@ const FluidFieldMappingField = ({
             required={required}
             showDescriptionPlaceHolder={showDescriptionPlaceHolder}
         >
-            <>
+            <div className="container">
                 {renderExistingRows}
                 <button
                     id={id}
@@ -86,7 +86,7 @@ const FluidFieldMappingField = ({
                 >
                     <FontAwesomeIcon icon="plus" className="alert-icon" size="lg" />
                 </button>
-            </>
+            </div>
         </LabeledField>
     );
 };
