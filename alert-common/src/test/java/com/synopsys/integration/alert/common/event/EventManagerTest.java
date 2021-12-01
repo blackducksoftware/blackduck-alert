@@ -33,15 +33,18 @@ public class EventManagerTest {
                     public boolean isComplete() {
                         return true;
                     }
-                }, task);
+                }, (brokerService) -> {
+                    // call the original task from the factory
+                    task.accept(brokerService);
+                    // verify the event was sent
+                    Mockito.verify(jmsTemplate, Mockito.times(1)).convertAndSend(Mockito.eq(testDestination), Mockito.eq(testEventJson));
+                });
             }
         };
-        
+
         EventManager eventManager = new EventManager(contentConverter, jmsTemplate, taskFactory);
 
         eventManager.sendEvents(List.of(testEvent));
-
-        Mockito.verify(jmsTemplate, Mockito.times(1)).convertAndSend(Mockito.eq(testDestination), Mockito.eq(testEventJson));
     }
 
 }

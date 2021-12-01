@@ -22,17 +22,18 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.wait.WaitJob;
-import com.synopsys.integration.wait.WaitJobTask;
 
 public class BrokerServiceDependentTask {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     private String taskToExecuteName;
     private Consumer<BrokerService> taskToExecuteOnceFound;
+    private BrokerServiceWaitTask brokerServiceWaitTask;
 
-    public BrokerServiceDependentTask(String taskToExecuteName, WaitJobTask waitCondition, Consumer<BrokerService> taskToExecuteOnceFound) {
+    public BrokerServiceDependentTask(String taskToExecuteName, BrokerServiceWaitTask brokerServiceWaitTask, Consumer<BrokerService> taskToExecuteOnceFound) {
         this.taskToExecuteName = taskToExecuteName;
         this.taskToExecuteOnceFound = taskToExecuteOnceFound;
+        this.brokerServiceWaitTask = brokerServiceWaitTask;
     }
 
     public String getTaskToExecuteName() {
@@ -48,7 +49,7 @@ public class BrokerServiceDependentTask {
         try {
             IntLogger intLogger = new Slf4jIntLogger(logger);
             long startTimestamp = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-            WaitJob waitJob = WaitJob.create(intLogger, 600, startTimestamp, 10, new BrokerServiceWaitTask());
+            WaitJob waitJob = WaitJob.create(intLogger, 600, startTimestamp, 10, brokerServiceWaitTask);
             boolean isComplete = waitJob.waitFor();
             if (isComplete) {
                 logger.info("Active MQ Broker Service found.  Executing task: {}", getTaskToExecuteName());
