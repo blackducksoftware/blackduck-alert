@@ -1,7 +1,6 @@
 package com.synopsys.integration.alert.component.settings.proxy.database.accessor;
 
 import java.time.OffsetDateTime;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -104,8 +103,8 @@ public class SettingsProxyConfigAccessor implements ConfigurationAccessor<Settin
 
     private SettingsProxyModel createConfigModel(SettingsProxyConfigurationEntity proxyConfiguration) {
         SettingsProxyModel newModel = new SettingsProxyModel();
-        String createdAtFormatted = "";
-        String lastUpdatedFormatted = "";
+        String createdAtFormatted = null;
+        String lastUpdatedFormatted = null;
         if (null != proxyConfiguration) {
             createdAtFormatted = DateUtils.formatDate(proxyConfiguration.getCreatedAt(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
             if (null != proxyConfiguration.getLastUpdated()) {
@@ -143,12 +142,9 @@ public class SettingsProxyConfigAccessor implements ConfigurationAccessor<Settin
     }
 
     private List<NonProxyHostConfigurationEntity> toNonProxyHostEntityList(UUID configurationId, SettingsProxyModel configuration) {
-        List<String> hostnamePatterns = configuration.getNonProxyHosts().orElse(List.of());
-        List<NonProxyHostConfigurationEntity> nonProxyHostsList = new LinkedList<>();
-        for (String hostnamePattern : hostnamePatterns) {
-            nonProxyHostsList.add(new NonProxyHostConfigurationEntity(configurationId, hostnamePattern));
-        }
-
-        return nonProxyHostsList;
+        return configuration.getNonProxyHosts().orElse(List.of())
+            .stream()
+            .map(hostnamePattern -> new NonProxyHostConfigurationEntity(configurationId, hostnamePattern))
+            .collect(Collectors.toList());
     }
 }

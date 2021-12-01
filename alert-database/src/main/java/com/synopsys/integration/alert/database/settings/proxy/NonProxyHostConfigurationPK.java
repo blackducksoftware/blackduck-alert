@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.UUID;
 
 public class NonProxyHostConfigurationPK implements Serializable {
+    private static final long serialVersionUID = 1066613909027338545L;
     private UUID configurationId;
     private String hostnamePattern;
 
