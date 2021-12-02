@@ -3,7 +3,6 @@ package com.synopsys.integration.alert.performance.event;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 
 import org.junit.Ignore;
 import org.junit.jupiter.api.Disabled;
@@ -18,7 +17,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import com.synopsys.integration.alert.Application;
 import com.synopsys.integration.alert.ApplicationConfiguration;
 import com.synopsys.integration.alert.common.event.EventManager;
-import com.synopsys.integration.alert.configuration.BrokerServiceDependentTask;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.test.common.TestTags;
 import com.synopsys.integration.alert.util.DescriptorMocker;
@@ -37,14 +35,7 @@ public class EventMemoryTest {
     @Test
     @Ignore
     @Disabled
-    public void testEventLoadTest() throws InterruptedException {
-        CountDownLatch initializationDone = new CountDownLatch(1);
-        BrokerServiceDependentTask task = new BrokerServiceDependentTask("EventMemoryTest initialization", brokerService -> {
-            brokerService.waitUntilStarted();
-            initializationDone.countDown();
-        });
-        task.waitForServiceAndExecute();
-        initializationDone.await();
+    public void testEventLoadTest() {
         executeTest();
     }
 

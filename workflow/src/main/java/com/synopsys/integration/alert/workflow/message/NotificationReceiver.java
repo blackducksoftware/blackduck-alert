@@ -8,6 +8,10 @@
 package com.synopsys.integration.alert.workflow.message;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +50,18 @@ public class NotificationReceiver extends MessageReceiver<NotificationReceivedEv
     public void handleEvent(NotificationReceivedEvent event) {
         logger.debug("Event {}", event);
         logger.info("Processing event for notifications.");
+        ExecutorService processingThread = Executors.newSingleThreadExecutor();
+        Future<?> processingTask = processingThread.submit(this::processNotifications);
+        try {
+            processingTask.get();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (ExecutionException e) {
+            logger.error("Error Processing notifications", e);
+        }
+    }
 
+    private void processNotifications() {
         int numPagesProcessed = 0;
 
         AlertPagedModel<AlertNotificationModel> pageOfAlertNotificationModels = notificationAccessor.getFirstPageOfNotificationsNotProcessed(PAGE_SIZE);
