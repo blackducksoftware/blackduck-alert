@@ -8,6 +8,10 @@
 package com.synopsys.integration.alert.processing;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +46,20 @@ public class NotificationReceivedEventHandler implements AlertEventHandler<Notif
     public void handle(NotificationReceivedEvent event) {
         logger.debug("Event {}", event);
         logger.info("Processing event {} for notifications.", event.getEventId());
+        logger.info("Processing event for notifications.");
+        ExecutorService processingThread = Executors.newSingleThreadExecutor();
+        Future<?> processingTask = processingThread.submit(this::processNotifications);
+        try {
+            processingTask.get();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (ExecutionException e) {
+            logger.error("Error Processing notifications", e);
+        }
+        logger.info("Finished processing event {} for notifications.", event.getEventId());
+    }
 
+    private void processNotifications() {
         int numPagesProcessed = 0;
 
         AlertPagedModel<AlertNotificationModel> pageOfAlertNotificationModels = notificationAccessor.getFirstPageOfNotificationsNotProcessed(PAGE_SIZE);
@@ -56,7 +73,6 @@ public class NotificationReceivedEventHandler implements AlertEventHandler<Notif
                 numPagesProcessed,
                 pageOfAlertNotificationModels.getTotalPages());
         }
-        logger.info("Finished processing event {} for notifications.", event.getEventId());
     }
 
 }
