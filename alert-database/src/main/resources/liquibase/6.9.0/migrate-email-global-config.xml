@@ -66,6 +66,7 @@
             WHERE config.smtp_host = 'initial-email-config'
               AND configFields.source_key = 'mail.smtp.password';
         </sql>
+        <!-- host must be last because we will key off the host for the other fields -->
         <sql dbms="postgresql" stripComments="true">
             UPDATE alert.configuration_email config
             SET smtp_host = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_email') configFields
