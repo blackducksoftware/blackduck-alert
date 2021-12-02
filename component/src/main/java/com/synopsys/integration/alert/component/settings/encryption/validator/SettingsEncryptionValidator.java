@@ -48,8 +48,8 @@ public class SettingsEncryptionValidator extends BaseSystemValidator {
         Set<AlertFieldStatus> statuses = new HashSet<>();
         getSystemMessageAccessor().removeSystemMessagesByType(SystemMessageType.ENCRYPTION_CONFIGURATION_ERROR);
 
-        Optional<String> encryptionPassword = model.getPassword();
-        Optional<String> encryptionGlobalSalt = model.getGlobalSalt();
+        Optional<String> encryptionPassword = model.getEncryptionPassword();
+        Optional<String> encryptionGlobalSalt = model.getEncryptionGlobalSalt();
 
         boolean passwordExists = encryptionPassword.filter(StringUtils::isNotBlank).isPresent();
         boolean globalSaltExists = encryptionGlobalSalt.filter(StringUtils::isNotBlank).isPresent();

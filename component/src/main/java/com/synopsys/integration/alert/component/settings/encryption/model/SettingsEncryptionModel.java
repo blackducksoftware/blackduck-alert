@@ -9,37 +9,33 @@ package com.synopsys.integration.alert.component.settings.encryption.model;
 
 import java.util.Optional;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.model.Obfuscated;
 
 public class SettingsEncryptionModel extends AlertSerializableModel implements Obfuscated<SettingsEncryptionModel> {
-    @JsonProperty("encryptionPassword")
-    private String password;
-    @JsonProperty("encryptionGlobalSalt")
-    private String globalSalt;
-    @JsonProperty("readOnly")
+    private String encryptionPassword;
+    private String encryptionGlobalSalt;
     private boolean readOnly;
 
     public SettingsEncryptionModel() {
         // For serialization
     }
 
-    public Optional<String> getPassword() {
-        return Optional.ofNullable(password);
+    public Optional<String> getEncryptionPassword() {
+        return Optional.ofNullable(encryptionPassword);
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setEncryptionPassword(String encryptionPassword) {
+        this.encryptionPassword = encryptionPassword;
     }
 
-    public Optional<String> getGlobalSalt() {
-        return Optional.ofNullable(globalSalt);
+    public Optional<String> getEncryptionGlobalSalt() {
+        return Optional.ofNullable(encryptionGlobalSalt);
     }
 
-    public void setGlobalSalt(String globalSalt) {
-        this.globalSalt = globalSalt;
+    public void setEncryptionGlobalSalt(String encryptionGlobalSalt) {
+        this.encryptionGlobalSalt = encryptionGlobalSalt;
     }
 
     public boolean isReadOnly() {
@@ -54,10 +50,10 @@ public class SettingsEncryptionModel extends AlertSerializableModel implements O
     public SettingsEncryptionModel obfuscate() {
         SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel();
 
-        String maskedPassword = (password != null) ? AlertRestConstants.MASKED_VALUE : null;
-        settingsEncryptionModel.setPassword(maskedPassword);
-        String maskedGlobalSalt = (globalSalt != null) ? AlertRestConstants.MASKED_VALUE : null;
-        settingsEncryptionModel.setGlobalSalt(maskedGlobalSalt);
+        String maskedPassword = (encryptionPassword != null) ? AlertRestConstants.MASKED_VALUE : null;
+        settingsEncryptionModel.setEncryptionPassword(maskedPassword);
+        String maskedGlobalSalt = (encryptionGlobalSalt != null) ? AlertRestConstants.MASKED_VALUE : null;
+        settingsEncryptionModel.setEncryptionGlobalSalt(maskedGlobalSalt);
         settingsEncryptionModel.setReadOnly(readOnly);
 
         return settingsEncryptionModel;
