@@ -64,8 +64,8 @@ public class SettingsEncryptionCrudActions {
 
     private SettingsEncryptionModel updateSettingsEncryptionModel(SettingsEncryptionModel model) {
         try {
-            Optional<String> optionalEncryptionPassword = model.getPassword();
-            Optional<String> optionalEncryptionSalt = model.getGlobalSalt();
+            Optional<String> optionalEncryptionPassword = model.getEncryptionPassword();
+            Optional<String> optionalEncryptionSalt = model.getEncryptionGlobalSalt();
 
             if (optionalEncryptionPassword.isPresent()) {
                 String passwordToSave = optionalEncryptionPassword.get();
@@ -89,8 +89,8 @@ public class SettingsEncryptionCrudActions {
     private SettingsEncryptionModel createMaskedSettingsEncryptionModel() {
         // EncryptionUtility does not return a model. A SettingsEncryptionModel with values must be created in order to obfuscate in the ConfigurationCrudHelper later.
         SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel();
-        settingsEncryptionModel.setPassword(AlertRestConstants.MASKED_VALUE);
-        settingsEncryptionModel.setGlobalSalt(AlertRestConstants.MASKED_VALUE);
+        settingsEncryptionModel.setEncryptionPassword(AlertRestConstants.MASKED_VALUE);
+        settingsEncryptionModel.setEncryptionGlobalSalt(AlertRestConstants.MASKED_VALUE);
         settingsEncryptionModel.setReadOnly(encryptionUtility.isEncryptionFromEnvironment());
         return settingsEncryptionModel;
     }

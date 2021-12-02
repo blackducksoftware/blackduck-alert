@@ -77,8 +77,8 @@ public class SettingsEncryptionCrudActionsTest {
     @Test
     public void updateTest() {
         SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel();
-        settingsEncryptionModel.setPassword("password");
-        settingsEncryptionModel.setGlobalSalt("globalSalt");
+        settingsEncryptionModel.setEncryptionPassword("password");
+        settingsEncryptionModel.setEncryptionGlobalSalt("globalSalt");
 
         SettingsEncryptionCrudActions configActions = new SettingsEncryptionCrudActions(authorizationManager, encryptionUtility, validator, settingsDescriptorKey);
         ActionResponse<SettingsEncryptionModel> actionResponse = configActions.update(settingsEncryptionModel);
@@ -94,11 +94,11 @@ public class SettingsEncryptionCrudActionsTest {
         assertTrue(optionalSettingsEncryptionModel.isPresent());
 
         SettingsEncryptionModel settingsEncryptionModel = optionalSettingsEncryptionModel.get();
-        assertTrue(settingsEncryptionModel.getPassword().isPresent());
-        assertTrue(settingsEncryptionModel.getGlobalSalt().isPresent());
+        assertTrue(settingsEncryptionModel.getEncryptionPassword().isPresent());
+        assertTrue(settingsEncryptionModel.getEncryptionGlobalSalt().isPresent());
 
-        assertEquals(AlertRestConstants.MASKED_VALUE, settingsEncryptionModel.getPassword().get());
-        assertEquals(AlertRestConstants.MASKED_VALUE, settingsEncryptionModel.getGlobalSalt().get());
+        assertEquals(AlertRestConstants.MASKED_VALUE, settingsEncryptionModel.getEncryptionPassword().get());
+        assertEquals(AlertRestConstants.MASKED_VALUE, settingsEncryptionModel.getEncryptionGlobalSalt().get());
         assertTrue(settingsEncryptionModel.isReadOnly());
     }
 }

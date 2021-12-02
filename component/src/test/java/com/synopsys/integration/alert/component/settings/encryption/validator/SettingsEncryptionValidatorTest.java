@@ -29,8 +29,8 @@ public class SettingsEncryptionValidatorTest {
         SettingsEncryptionValidator validator = new SettingsEncryptionValidator(encryptionUtility, systemMessageAccessor);
 
         SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel();
-        settingsEncryptionModel.setPassword("password");
-        settingsEncryptionModel.setGlobalSalt("globalSalt");
+        settingsEncryptionModel.setEncryptionPassword("password");
+        settingsEncryptionModel.setEncryptionGlobalSalt("globalSalt");
 
         ValidationResponseModel validationResponseModel = validator.validate(settingsEncryptionModel);
         assertFalse(validationResponseModel.hasErrors());
@@ -45,8 +45,8 @@ public class SettingsEncryptionValidatorTest {
         EncryptionUtility encryptionUtilityWithoutProperties = new EncryptionUtility(alertPropertiesNoEncryption, filePersistenceUtilWithoutProperties);
 
         SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel();
-        settingsEncryptionModel.setPassword("password");
-        settingsEncryptionModel.setGlobalSalt("globalSalt");
+        settingsEncryptionModel.setEncryptionPassword("password");
+        settingsEncryptionModel.setEncryptionGlobalSalt("globalSalt");
 
         SettingsEncryptionValidator validator = new SettingsEncryptionValidator(encryptionUtilityWithoutProperties, systemMessageAccessor);
 
@@ -63,7 +63,7 @@ public class SettingsEncryptionValidatorTest {
         EncryptionUtility encryptionUtilityWithoutProperties = new EncryptionUtility(alertPropertiesNoEncryption, filePersistenceUtilWithoutProperties);
 
         SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel();
-        settingsEncryptionModel.setGlobalSalt("globalSalt");
+        settingsEncryptionModel.setEncryptionGlobalSalt("globalSalt");
 
         SettingsEncryptionValidator validator = new SettingsEncryptionValidator(encryptionUtilityWithoutProperties, systemMessageAccessor);
 
@@ -81,7 +81,7 @@ public class SettingsEncryptionValidatorTest {
         EncryptionUtility encryptionUtilityWithoutProperties = new EncryptionUtility(alertPropertiesNoEncryption, filePersistenceUtilWithoutProperties);
 
         SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel();
-        settingsEncryptionModel.setPassword("password");
+        settingsEncryptionModel.setEncryptionPassword("password");
 
         SettingsEncryptionValidator validator = new SettingsEncryptionValidator(encryptionUtilityWithoutProperties, systemMessageAccessor);
 
@@ -95,8 +95,8 @@ public class SettingsEncryptionValidatorTest {
         SettingsEncryptionValidator validator = new SettingsEncryptionValidator(encryptionUtility, systemMessageAccessor);
 
         SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel();
-        settingsEncryptionModel.setPassword("too");
-        settingsEncryptionModel.setGlobalSalt("short");
+        settingsEncryptionModel.setEncryptionPassword("too");
+        settingsEncryptionModel.setEncryptionGlobalSalt("short");
 
         ValidationResponseModel validationResponseModel = validator.validate(settingsEncryptionModel);
         assertTrue(validationResponseModel.hasErrors());

@@ -66,15 +66,15 @@ public class SettingsEncryptionControllerTestIT {
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void testUpdate() throws Exception {
         SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel();
-        settingsEncryptionModel.setPassword("password");
-        settingsEncryptionModel.setGlobalSalt("globalSalt");
+        settingsEncryptionModel.setEncryptionPassword("password");
+        settingsEncryptionModel.setEncryptionGlobalSalt("globalSalt");
 
         String url = AlertRestConstants.SETTINGS_ENCRYPTION_PATH;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(new URI(url))
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
-                                                    .with(SecurityMockMvcRequestPostProcessors.csrf())
-                                                    .content(gson.toJson(settingsEncryptionModel))
-                                                    .contentType(contentType);
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf())
+            .content(gson.toJson(settingsEncryptionModel))
+            .contentType(contentType);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNoContent());
     }
 
@@ -82,15 +82,15 @@ public class SettingsEncryptionControllerTestIT {
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void testValidate() throws Exception {
         SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel();
-        settingsEncryptionModel.setPassword("password");
-        settingsEncryptionModel.setGlobalSalt("globalSalt");
+        settingsEncryptionModel.setEncryptionPassword("password");
+        settingsEncryptionModel.setEncryptionGlobalSalt("globalSalt");
 
         String url = AlertRestConstants.SETTINGS_ENCRYPTION_PATH + "/validate";
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(new URI(url))
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
-                                                    .with(SecurityMockMvcRequestPostProcessors.csrf())
-                                                    .content(gson.toJson(settingsEncryptionModel))
-                                                    .contentType(contentType);
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf())
+            .content(gson.toJson(settingsEncryptionModel))
+            .contentType(contentType);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
