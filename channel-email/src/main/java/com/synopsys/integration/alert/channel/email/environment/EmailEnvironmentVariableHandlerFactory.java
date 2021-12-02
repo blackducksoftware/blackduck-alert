@@ -113,12 +113,12 @@ public class EmailEnvironmentVariableHandlerFactory implements EnvironmentVariab
 
         EmailGlobalConfigModel obfuscatedModel = configModel.obfuscate();
 
-        obfuscatedModel.getHost().map(String::valueOf).ifPresent(value -> properties.put(EMAIL_HOST_KEY, value));
-        obfuscatedModel.getPort().map(String::valueOf).ifPresent(value -> properties.put(EMAIL_PORT_KEY, value));
-        obfuscatedModel.getFrom().map(String::valueOf).ifPresent(value -> properties.put(EMAIL_FROM_KEY, value));
-        obfuscatedModel.getAuth().map(String::valueOf).ifPresent(value -> properties.put(AUTH_REQUIRED_KEY, value));
-        obfuscatedModel.getPassword().map(String::valueOf).ifPresent(value -> properties.put(AUTH_PASSWORD_KEY, value));
-        obfuscatedModel.getUsername().map(String::valueOf).ifPresent(value -> properties.put(AUTH_USER_KEY, value));
+        obfuscatedModel.getSmtpHost().map(String::valueOf).ifPresent(value -> properties.put(EMAIL_HOST_KEY, value));
+        obfuscatedModel.getSmtpPort().map(String::valueOf).ifPresent(value -> properties.put(EMAIL_PORT_KEY, value));
+        obfuscatedModel.getSmtpFrom().map(String::valueOf).ifPresent(value -> properties.put(EMAIL_FROM_KEY, value));
+        obfuscatedModel.getSmtpAuth().map(String::valueOf).ifPresent(value -> properties.put(AUTH_REQUIRED_KEY, value));
+        obfuscatedModel.getSmtpPassword().map(String::valueOf).ifPresent(value -> properties.put(AUTH_PASSWORD_KEY, value));
+        obfuscatedModel.getSmtpUsername().map(String::valueOf).ifPresent(value -> properties.put(AUTH_USER_KEY, value));
 
         if (!properties.isEmpty()) {
             configAccessor.createConfiguration(configModel);
@@ -129,24 +129,24 @@ public class EmailEnvironmentVariableHandlerFactory implements EnvironmentVariab
 
     private void configureEmailSettings(EmailGlobalConfigModel configuration) {
         environmentVariableUtility.getEnvironmentValue(EMAIL_HOST_KEY)
-            .ifPresent(configuration::setHost);
+            .ifPresent(configuration::setSmtpHost);
 
         environmentVariableUtility.getEnvironmentValue(EMAIL_PORT_KEY)
             .map(Integer::valueOf)
-            .ifPresent(configuration::setPort);
+            .ifPresent(configuration::setSmtpPort);
 
         environmentVariableUtility.getEnvironmentValue(EMAIL_FROM_KEY)
-            .ifPresent(configuration::setFrom);
+            .ifPresent(configuration::setSmtpFrom);
 
         environmentVariableUtility.getEnvironmentValue(AUTH_REQUIRED_KEY)
             .map(Boolean::valueOf)
-            .ifPresent(configuration::setAuth);
+            .ifPresent(configuration::setSmtpAuth);
 
         environmentVariableUtility.getEnvironmentValue(AUTH_USER_KEY)
-            .ifPresent(configuration::setUsername);
+            .ifPresent(configuration::setSmtpUsername);
 
         environmentVariableUtility.getEnvironmentValue(AUTH_PASSWORD_KEY)
-            .ifPresent(configuration::setPassword);
+            .ifPresent(configuration::setSmtpPassword);
 
     }
 

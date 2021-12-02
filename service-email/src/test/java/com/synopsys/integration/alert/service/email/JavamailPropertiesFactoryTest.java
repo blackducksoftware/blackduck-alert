@@ -26,12 +26,12 @@ public class JavamailPropertiesFactoryTest {
     @Test
     public void testCreateFromEmailGlobalConfigModel() {
         EmailGlobalConfigModel emailGlobalConfigModel = new EmailGlobalConfigModel();
-        emailGlobalConfigModel.setFrom(EXPECTED_FROM_VALUE);
-        emailGlobalConfigModel.setHost(EXPECTED_HOST_VALUE);
-        emailGlobalConfigModel.setPort(EXPECTED_PORT_VALUE);
-        emailGlobalConfigModel.setAuth(EXPECTED_AUTH_VALUE);
-        emailGlobalConfigModel.setUsername(EXPECTED_USERNAME_VALUE);
-        emailGlobalConfigModel.setPassword(EXPECTED_PASSWORD_VALUE);
+        emailGlobalConfigModel.setSmtpFrom(EXPECTED_FROM_VALUE);
+        emailGlobalConfigModel.setSmtpHost(EXPECTED_HOST_VALUE);
+        emailGlobalConfigModel.setSmtpPort(EXPECTED_PORT_VALUE);
+        emailGlobalConfigModel.setSmtpAuth(EXPECTED_AUTH_VALUE);
+        emailGlobalConfigModel.setSmtpUsername(EXPECTED_USERNAME_VALUE);
+        emailGlobalConfigModel.setSmtpPassword(EXPECTED_PASSWORD_VALUE);
         emailGlobalConfigModel.setAdditionalJavaMailProperties(Map.of(
             EmailPropertyKeys.JAVAMAIL_EHLO_KEY.getPropertyKey(), EXPECTED_EHLO_VALUE
         ));

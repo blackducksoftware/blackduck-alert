@@ -10,27 +10,19 @@ package com.synopsys.integration.alert.service.email.model;
 import java.util.Map;
 import java.util.Optional;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.model.ConfigWithMetadata;
 import com.synopsys.integration.alert.common.rest.model.Obfuscated;
 
 public class EmailGlobalConfigModel extends ConfigWithMetadata implements Obfuscated<EmailGlobalConfigModel> {
-    @JsonProperty("smtpFrom")
-    private String from;
-    @JsonProperty("smtpHost")
-    private String host;
-    @JsonProperty("smtpPort")
-    private Integer port;
+    private String smtpFrom;
+    private String smtpHost;
+    private Integer smtpPort;
 
-    @JsonProperty("smtpAuth")
-    private Boolean auth;
-    @JsonProperty("smtpUsername")
-    private String username;
-    @JsonProperty("smtpPassword")
-    private String password;
+    private Boolean smtpAuth;
+    private String smtpUsername;
+    private String smtpPassword;
 
-    @JsonProperty("additionalJavaMailProperties")
     private Map<String, String> additionalJavaMailProperties;
 
     @Override
@@ -41,65 +33,65 @@ public class EmailGlobalConfigModel extends ConfigWithMetadata implements Obfusc
         emailGlobalConfigModel.setLastUpdated(getLastUpdated());
         emailGlobalConfigModel.setCreatedAt(getCreatedAt());
 
-        emailGlobalConfigModel.setFrom(from);
-        emailGlobalConfigModel.setHost(host);
-        emailGlobalConfigModel.setPort(port);
-        emailGlobalConfigModel.setAuth(auth);
-        emailGlobalConfigModel.setUsername(username);
+        emailGlobalConfigModel.setSmtpFrom(smtpFrom);
+        emailGlobalConfigModel.setSmtpHost(smtpHost);
+        emailGlobalConfigModel.setSmtpPort(smtpPort);
+        emailGlobalConfigModel.setSmtpAuth(smtpAuth);
+        emailGlobalConfigModel.setSmtpUsername(smtpUsername);
         emailGlobalConfigModel.setAdditionalJavaMailProperties(additionalJavaMailProperties);
 
-        String maskedPassword = (password != null) ? AlertRestConstants.MASKED_VALUE : null;
-        emailGlobalConfigModel.setPassword(maskedPassword);
+        String maskedPassword = (smtpPassword != null) ? AlertRestConstants.MASKED_VALUE : null;
+        emailGlobalConfigModel.setSmtpPassword(maskedPassword);
 
         return emailGlobalConfigModel;
     }
 
-    public Optional<String> getFrom() {
-        return Optional.ofNullable(from);
+    public Optional<String> getSmtpFrom() {
+        return Optional.ofNullable(smtpFrom);
     }
 
-    public void setFrom(String from) {
-        this.from = from;
+    public void setSmtpFrom(String smtpFrom) {
+        this.smtpFrom = smtpFrom;
     }
 
-    public Optional<String> getHost() {
-        return Optional.ofNullable(host);
+    public Optional<String> getSmtpHost() {
+        return Optional.ofNullable(smtpHost);
     }
 
-    public void setHost(String host) {
-        this.host = host;
+    public void setSmtpHost(String smtpHost) {
+        this.smtpHost = smtpHost;
     }
 
-    public Optional<Integer> getPort() {
-        return Optional.ofNullable(port);
+    public Optional<Integer> getSmtpPort() {
+        return Optional.ofNullable(smtpPort);
     }
 
-    public void setPort(Integer port) {
-        this.port = port;
+    public void setSmtpPort(Integer smtpPort) {
+        this.smtpPort = smtpPort;
     }
 
-    public Optional<Boolean> getAuth() {
-        return Optional.ofNullable(auth);
+    public Optional<Boolean> getSmtpAuth() {
+        return Optional.ofNullable(smtpAuth);
     }
 
-    public void setAuth(Boolean auth) {
-        this.auth = auth;
+    public void setSmtpAuth(Boolean smtpAuth) {
+        this.smtpAuth = smtpAuth;
     }
 
-    public Optional<String> getUsername() {
-        return Optional.ofNullable(username);
+    public Optional<String> getSmtpUsername() {
+        return Optional.ofNullable(smtpUsername);
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setSmtpUsername(String smtpUsername) {
+        this.smtpUsername = smtpUsername;
     }
 
-    public Optional<String> getPassword() {
-        return Optional.ofNullable(password);
+    public Optional<String> getSmtpPassword() {
+        return Optional.ofNullable(smtpPassword);
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setSmtpPassword(String smtpPassword) {
+        this.smtpPassword = smtpPassword;
     }
 
     public Optional<Map<String, String>> getAdditionalJavaMailProperties() {

@@ -86,12 +86,12 @@ public class UpdateEmailService {
 
                 handleSend(
                     javamailPropertiesFactory.createJavaMailProperties(emailServerConfiguration),
-                    emailServerConfiguration.getFrom().orElse(StringUtils.EMPTY),
-                    emailServerConfiguration.getHost().orElse(StringUtils.EMPTY),
-                    emailServerConfiguration.getPort().orElse(0),
-                    emailServerConfiguration.getAuth().orElse(false),
-                    emailServerConfiguration.getUsername().orElse(StringUtils.EMPTY),
-                    emailServerConfiguration.getPassword().orElse(StringUtils.EMPTY),
+                    emailServerConfiguration.getSmtpFrom().orElse(StringUtils.EMPTY),
+                    emailServerConfiguration.getSmtpHost().orElse(StringUtils.EMPTY),
+                    emailServerConfiguration.getSmtpPort().orElse(0),
+                    emailServerConfiguration.getSmtpAuth().orElse(false),
+                    emailServerConfiguration.getSmtpUsername().orElse(StringUtils.EMPTY),
+                    emailServerConfiguration.getSmtpPassword().orElse(StringUtils.EMPTY),
                     templateFields,
                     optionalEmailAddress.get()
                 );

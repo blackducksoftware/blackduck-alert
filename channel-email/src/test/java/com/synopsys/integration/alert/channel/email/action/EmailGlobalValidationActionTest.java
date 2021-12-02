@@ -31,11 +31,11 @@ public class EmailGlobalValidationActionTest {
         EmailGlobalValidationAction validationAction = new EmailGlobalValidationAction(validator, authorizationManager);
 
         EmailGlobalConfigModel model = new EmailGlobalConfigModel();
-        model.setHost("host");
-        model.setFrom("from");
-        model.setAuth(true);
-        model.setUsername("user");
-        model.setPassword("password");
+        model.setSmtpHost("host");
+        model.setSmtpFrom("from");
+        model.setSmtpAuth(true);
+        model.setSmtpUsername("user");
+        model.setSmtpPassword("password");
 
         ActionResponse<ValidationResponseModel> response = validationAction.validate(model);
         assertEquals(HttpStatus.OK, response.getHttpStatus());
@@ -52,11 +52,11 @@ public class EmailGlobalValidationActionTest {
         EmailGlobalValidationAction validationAction = new EmailGlobalValidationAction(validator, authorizationManager);
 
         EmailGlobalConfigModel model = new EmailGlobalConfigModel();
-        model.setHost("host");
-        model.setFrom("from");
-        model.setAuth(true);
-        model.setUsername("user");
-        model.setPassword("password");
+        model.setSmtpHost("host");
+        model.setSmtpFrom("from");
+        model.setSmtpAuth(true);
+        model.setSmtpUsername("user");
+        model.setSmtpPassword("password");
 
         ActionResponse<ValidationResponseModel> response = validationAction.validate(model);
         assertEquals(HttpStatus.FORBIDDEN, response.getHttpStatus());

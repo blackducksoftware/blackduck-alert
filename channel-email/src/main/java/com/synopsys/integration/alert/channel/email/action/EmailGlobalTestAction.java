@@ -79,12 +79,12 @@ public class EmailGlobalTestAction {
         SmtpConfigBuilder smtpConfigBuilder = SmtpConfig.builder();
         smtpConfigBuilder.setJavamailProperties(javamailPropertiesFactory.createJavaMailProperties(emailGlobalConfigModel));
 
-        emailGlobalConfigModel.getFrom().ifPresent(smtpConfigBuilder::setSmtpFrom);
-        emailGlobalConfigModel.getHost().ifPresent(smtpConfigBuilder::setSmtpHost);
-        emailGlobalConfigModel.getPort().ifPresent(smtpConfigBuilder::setSmtpPort);
-        emailGlobalConfigModel.getAuth().ifPresent(smtpConfigBuilder::setSmtpAuth);
-        emailGlobalConfigModel.getUsername().ifPresent(smtpConfigBuilder::setSmtpUsername);
-        emailGlobalConfigModel.getPassword().ifPresent(smtpConfigBuilder::setSmtpPassword);
+        emailGlobalConfigModel.getSmtpFrom().ifPresent(smtpConfigBuilder::setSmtpFrom);
+        emailGlobalConfigModel.getSmtpHost().ifPresent(smtpConfigBuilder::setSmtpHost);
+        emailGlobalConfigModel.getSmtpPort().ifPresent(smtpConfigBuilder::setSmtpPort);
+        emailGlobalConfigModel.getSmtpAuth().ifPresent(smtpConfigBuilder::setSmtpAuth);
+        emailGlobalConfigModel.getSmtpUsername().ifPresent(smtpConfigBuilder::setSmtpUsername);
+        emailGlobalConfigModel.getSmtpPassword().ifPresent(smtpConfigBuilder::setSmtpPassword);
 
         SmtpConfig smtpConfig = smtpConfigBuilder.build();
 

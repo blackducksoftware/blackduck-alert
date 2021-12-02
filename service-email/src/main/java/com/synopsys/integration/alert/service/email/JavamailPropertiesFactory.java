@@ -14,7 +14,6 @@ import static com.synopsys.integration.alert.service.email.enumeration.EmailProp
 import static com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys.JAVAMAIL_USER_KEY;
 
 import java.util.Properties;
-import java.util.function.BiConsumer;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -31,25 +30,25 @@ public class JavamailPropertiesFactory {
         }
 
         Properties javaMailProperties = new Properties();
-        globalConfiguration.getFrom()
+        globalConfiguration.getSmtpFrom()
             .filter(StringUtils::isNotBlank)
             .ifPresent(value -> javaMailProperties.setProperty(JAVAMAIL_FROM_KEY.getPropertyKey(), value));
 
-        globalConfiguration.getHost()
+        globalConfiguration.getSmtpHost()
             .filter(StringUtils::isNotBlank)
             .ifPresent(value -> javaMailProperties.setProperty(JAVAMAIL_HOST_KEY.getPropertyKey(), value));
 
-        globalConfiguration.getPort()
+        globalConfiguration.getSmtpPort()
             .map(String::valueOf)
             .filter(StringUtils::isNotBlank)
             .ifPresent(value -> javaMailProperties.setProperty(JAVAMAIL_PORT_KEY.getPropertyKey(), value));
 
-        globalConfiguration.getAuth()
+        globalConfiguration.getSmtpAuth()
             .map(String::valueOf)
             .filter(StringUtils::isNotBlank)
             .ifPresent(value -> javaMailProperties.setProperty(JAVAMAIL_AUTH_KEY.getPropertyKey(), value));
 
-        globalConfiguration.getUsername()
+        globalConfiguration.getSmtpUsername()
             .filter(StringUtils::isNotBlank)
             .ifPresent(value -> javaMailProperties.setProperty(JAVAMAIL_USER_KEY.getPropertyKey(), value));
 

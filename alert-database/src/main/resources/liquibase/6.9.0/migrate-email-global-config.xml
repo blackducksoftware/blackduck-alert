@@ -23,6 +23,11 @@
 
     <!-- Update common job fields one at a time -->
     <changeSet author="psantos" id="update-initial-email-config-entries">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(smtp_host) FROM alert.configuration_email WHERE smtp_host = 'initial-email-config';
+            </sqlCheck>
+        </preConditions>
         <sql dbms="postgresql" stripComments="true">
             UPDATE alert.configuration_email config
             SET created_at = configTimestamps.created_at FROM GET_GLOBAL_CONFIG_TIMESTAMPS('channel_email') configTimestamps;
@@ -70,6 +75,9 @@
     </changeSet>
 
     <changeSet author="psantos" id="updated-initial-email-additional-properties">
+        <preConditions onFail="MARK_RAN">
+            <rowCount schemaName="alert" tableName="configuration_email" expectedRows="1"/>
+        </preConditions>
         <sql dbms="postgresql" stripComments="true">
             INSERT INTO alert.configuration_email_properties (configuration_id, property_key, property_value)
             SELECT config.configuration_id, configFields.source_key, configFields.field_value

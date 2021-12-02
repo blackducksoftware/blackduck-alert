@@ -79,9 +79,9 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
         OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
         UUID configurationId = UUID.randomUUID();
         configuration.setId(configurationId.toString());
-        EmailConfigurationEntity configurationToSave = toEntity(configuration, currentTime, currentTime);
+        EmailConfigurationEntity configurationToSave = toEntity(configurationId, configuration, currentTime, currentTime);
         EmailConfigurationEntity savedEmailConfig = emailConfigurationRepository.save(configurationToSave);
-        List<EmailConfigurationsPropertyEntity> emailProperties = toPropertyEntityList(configuration);
+        List<EmailConfigurationsPropertyEntity> emailProperties = toPropertyEntityList(configurationId, configuration);
         emailConfigurationPropertiesRepository.saveAll(emailProperties);
         savedEmailConfig = emailConfigurationRepository.getOne(savedEmailConfig.getConfigurationId());
 
@@ -94,9 +94,9 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
         EmailConfigurationEntity configurationEntity = emailConfigurationRepository.findById(configurationId)
             .orElseThrow(() -> new AlertConfigurationException(String.format("Config with id '%s' did not exist", configurationId.toString())));
         OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
-        EmailConfigurationEntity configurationToSave = toEntity(configuration, configurationEntity.getCreatedAt(), currentTime);
+        EmailConfigurationEntity configurationToSave = toEntity(configurationId, configuration, configurationEntity.getCreatedAt(), currentTime);
         EmailConfigurationEntity savedEmailConfig = emailConfigurationRepository.save(configurationToSave);
-        List<EmailConfigurationsPropertyEntity> emailProperties = toPropertyEntityList(configuration);
+        List<EmailConfigurationsPropertyEntity> emailProperties = toPropertyEntityList(configurationId, configuration);
         emailConfigurationPropertiesRepository.saveAll(emailProperties);
         savedEmailConfig = emailConfigurationRepository.getOne(savedEmailConfig.getConfigurationId());
 
@@ -121,13 +121,13 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
                 lastUpdatedFormatted = DateUtils.formatDate(emailConfiguration.getLastUpdated(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
             }
             newModel.setId(String.valueOf(emailConfiguration.getConfigurationId()));
-            newModel.setHost(emailConfiguration.getSmtpHost());
-            newModel.setPort(emailConfiguration.getSmtpPort());
-            newModel.setFrom(emailConfiguration.getSmtpFrom());
-            newModel.setAuth(emailConfiguration.getAuthRequired());
-            newModel.setUsername(emailConfiguration.getAuthUsername());
+            newModel.setSmtpHost(emailConfiguration.getSmtpHost());
+            newModel.setSmtpPort(emailConfiguration.getSmtpPort());
+            newModel.setSmtpFrom(emailConfiguration.getSmtpFrom());
+            newModel.setSmtpAuth(emailConfiguration.getAuthRequired());
+            newModel.setSmtpUsername(emailConfiguration.getAuthUsername());
             if (StringUtils.isNotBlank(emailConfiguration.getAuthPassword())) {
-                newModel.setPassword(encryptionUtility.decrypt(emailConfiguration.getAuthPassword()));
+                newModel.setSmtpPassword(encryptionUtility.decrypt(emailConfiguration.getAuthPassword()));
             }
             newModel.setAdditionalJavaMailProperties(getAdditionalProperties(emailConfiguration.getEmailConfigurationProperties()));
         }
@@ -142,24 +142,19 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
             .collect(Collectors.toMap(EmailConfigurationsPropertyEntity::getPropertyKey, EmailConfigurationsPropertyEntity::getPropertyValue));
     }
 
-    private EmailConfigurationEntity toEntity(EmailGlobalConfigModel configuration, OffsetDateTime createdTime, OffsetDateTime lastUpdated) {
-        UUID configurationId = null;
-        if (StringUtils.isNotBlank(configuration.getId())) {
-            configurationId = UUID.fromString(configuration.getId());
-        }
-        String host = configuration.getHost().orElse(null);
-        String from = configuration.getFrom().orElse(null);
-        Integer port = configuration.getPort().orElse(null);
-        Boolean auth = configuration.getAuth().orElse(Boolean.FALSE);
-        String username = configuration.getUsername().orElse(null);
-        String password = configuration.getPassword().map(encryptionUtility::encrypt).orElse(null);
+    private EmailConfigurationEntity toEntity(UUID configurationId, EmailGlobalConfigModel configuration, OffsetDateTime createdTime, OffsetDateTime lastUpdated) {
+        String host = configuration.getSmtpHost().orElse(null);
+        String from = configuration.getSmtpFrom().orElse(null);
+        Integer port = configuration.getSmtpPort().orElse(null);
+        Boolean auth = configuration.getSmtpAuth().orElse(Boolean.FALSE);
+        String username = configuration.getSmtpUsername().orElse(null);
+        String password = configuration.getSmtpPassword().map(encryptionUtility::encrypt).orElse(null);
 
         return new EmailConfigurationEntity(configurationId, createdTime, lastUpdated,
             host, from, port, auth, username, password, List.of());
     }
 
-    private List<EmailConfigurationsPropertyEntity> toPropertyEntityList(EmailGlobalConfigModel configuration) {
-        UUID configurationId = UUID.fromString(configuration.getId());
+    private List<EmailConfigurationsPropertyEntity> toPropertyEntityList(UUID configurationId, EmailGlobalConfigModel configuration) {
         Map<String, String> emailProperties = configuration.getAdditionalJavaMailProperties().orElse(Map.of());
         List<EmailConfigurationsPropertyEntity> propertyList = new LinkedList<>();
         for (Map.Entry<String, String> entry : emailProperties.entrySet()) {
