@@ -63,11 +63,13 @@ public class ConfigActions extends AbstractConfigResourceActions {
     private final PKIXErrorResponseFactory pkixErrorResponseFactory;
     private final EncryptionUtility encryptionUtility;
     private final SettingsDescriptorKey settingsDescriptorKey;
+    private final GlobalFieldModelToConcreteConversionService globalFieldModelToConcreteConversionService;
 
     @Autowired
     public ConfigActions(AuthorizationManager authorizationManager, DescriptorAccessor descriptorAccessor, ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor,
         FieldModelProcessor fieldModelProcessor, DescriptorProcessor descriptorProcessor, ConfigurationFieldModelConverter modelConverter,
-        DescriptorMap descriptorMap, PKIXErrorResponseFactory pkixErrorResponseFactory, EncryptionUtility encryptionUtility, SettingsDescriptorKey settingsDescriptorKey) {
+        DescriptorMap descriptorMap, PKIXErrorResponseFactory pkixErrorResponseFactory, EncryptionUtility encryptionUtility, SettingsDescriptorKey settingsDescriptorKey,
+        GlobalFieldModelToConcreteConversionService globalFieldModelToConcreteConversionService) {
         super(authorizationManager, descriptorAccessor);
         this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
         this.fieldModelProcessor = fieldModelProcessor;
@@ -77,6 +79,7 @@ public class ConfigActions extends AbstractConfigResourceActions {
         this.pkixErrorResponseFactory = pkixErrorResponseFactory;
         this.encryptionUtility = encryptionUtility;
         this.settingsDescriptorKey = settingsDescriptorKey;
+        this.globalFieldModelToConcreteConversionService = globalFieldModelToConcreteConversionService;
     }
 
     @Override
@@ -166,6 +169,7 @@ public class ConfigActions extends AbstractConfigResourceActions {
                 FieldModel dbSavedModel = modelConverter.convertToFieldModel(configuration);
                 FieldModel afterSaveAction = fieldModelProcessor.performAfterSaveAction(dbSavedModel);
                 FieldModel responseModel = dbSavedModel.fill(afterSaveAction);
+                globalFieldModelToConcreteConversionService.createConcreteModel(resource);
                 return new ActionResponse<>(HttpStatus.OK, responseModel);
             } catch (AlertException ex) {
                 logger.error("Error creating configuration", ex);
@@ -186,6 +190,7 @@ public class ConfigActions extends AbstractConfigResourceActions {
             FieldModel dbSavedModel = modelConverter.convertToFieldModel(configurationModel);
             FieldModel afterUpdateAction = fieldModelProcessor.performAfterUpdateAction(previousFieldModel, dbSavedModel);
             FieldModel responseModel = dbSavedModel.fill(afterUpdateAction);
+            globalFieldModelToConcreteConversionService.updateConcreteModel(resource);
             return new ActionResponse<>(HttpStatus.OK, responseModel);
         } catch (AlertException ex) {
             logger.error("Error creating configuration", ex);
