@@ -34,7 +34,7 @@ public class NotificationReceivedEventHandlerTest {
         AlertNotificationModel alertNotificationModel = createAlertNotificationModel(1L, false);
         List<AlertNotificationModel> alertNotificationModels = List.of(alertNotificationModel);
         NotificationAccessor notificationAccessor = new MockNotificationAccessor(alertNotificationModels);
-        NotificationProcessor notificationProcessor = mockNotificationProcessor(alertNotificationModels, notificationAccessor);
+        NotificationProcessor notificationProcessor = mockNotificationProcessor(notificationAccessor);
         NotificationReceivedEventHandler eventHandler = new NotificationReceivedEventHandler(notificationAccessor, notificationProcessor);
 
         try {
@@ -46,14 +46,11 @@ public class NotificationReceivedEventHandlerTest {
 
     @Test
     public void handleEventProcessingInterruptedTest() throws IOException {
-        AlertNotificationModel alertNotificationModel = createAlertNotificationModel(1L, false);
-        List<AlertNotificationModel> alertNotificationModels = List.of(alertNotificationModel);
-
         NotificationAccessor notificationAccessor = Mockito.mock(NotificationAccessor.class);
         Mockito.doAnswer(invocation -> {
             throw new InterruptedException("Test: exception for thread");
         }).when(notificationAccessor).getFirstPageOfNotificationsNotProcessed(Mockito.anyInt());
-        NotificationProcessor notificationProcessor = mockNotificationProcessor(alertNotificationModels, notificationAccessor);
+        NotificationProcessor notificationProcessor = mockNotificationProcessor(notificationAccessor);
         NotificationReceivedEventHandler eventHandler = new NotificationReceivedEventHandler(notificationAccessor, notificationProcessor);
 
         try {
@@ -65,14 +62,11 @@ public class NotificationReceivedEventHandlerTest {
 
     @Test
     public void handleEventProcessingExceptionTest() throws IOException {
-        AlertNotificationModel alertNotificationModel = createAlertNotificationModel(1L, false);
-        List<AlertNotificationModel> alertNotificationModels = List.of(alertNotificationModel);
-
         NotificationAccessor notificationAccessor = Mockito.mock(NotificationAccessor.class);
         Mockito.doAnswer((invocation) -> {
             throw new ExecutionException(new RuntimeException("Test: exception for thread"));
         }).when(notificationAccessor).getFirstPageOfNotificationsNotProcessed(Mockito.anyInt());
-        NotificationProcessor notificationProcessor = mockNotificationProcessor(alertNotificationModels, notificationAccessor);
+        NotificationProcessor notificationProcessor = mockNotificationProcessor(notificationAccessor);
         NotificationReceivedEventHandler eventHandler = new NotificationReceivedEventHandler(notificationAccessor, notificationProcessor);
 
         try {
@@ -93,7 +87,7 @@ public class NotificationReceivedEventHandlerTest {
             DateUtils.createCurrentDateTimestamp(), processed);
     }
 
-    private NotificationProcessor mockNotificationProcessor(List<AlertNotificationModel> alertNotificationModels, NotificationAccessor notificationAccessor) {
+    private NotificationProcessor mockNotificationProcessor(NotificationAccessor notificationAccessor) {
         NotificationDetailExtractionDelegator detailExtractionDelegator = new NotificationDetailExtractionDelegator(blackDuckResponseResolver, List.of());
         JobNotificationMapper jobNotificationMapper = Mockito.mock(JobNotificationMapper.class);
         Predicate<AlertPagedDetails> hasNextPage = page -> page.getCurrentPage() < (page.getTotalPages() - 1);
