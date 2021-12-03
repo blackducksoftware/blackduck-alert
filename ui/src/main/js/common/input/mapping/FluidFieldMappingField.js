@@ -76,17 +76,19 @@ const FluidFieldMappingField = ({
             required={required}
             showDescriptionPlaceHolder={showDescriptionPlaceHolder}
         >
-            <>
-                {renderExistingRows}
-                <button
-                    id={id}
-                    className="btn btn-sm btn-primary"
-                    type="button"
-                    onClick={addRow}
-                >
-                    <FontAwesomeIcon icon="plus" className="alert-icon" size="lg" />
-                </button>
-            </>
+            <div className="d-inline-flex">
+                <div className="container">
+                    {renderExistingRows}
+                    <button
+                        id={id}
+                        className="btn btn-sm btn-primary"
+                        type="button"
+                        onClick={addRow}
+                    >
+                        <FontAwesomeIcon icon="plus" className="alert-icon" size="lg" />
+                    </button>
+                </div>
+            </div>
         </LabeledField>
     );
 };
