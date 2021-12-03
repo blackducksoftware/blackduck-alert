@@ -25,29 +25,33 @@ const FieldMappingRow = ({
     }, [leftSide, rightSide]);
 
     return (
-        <div>
-            <input
-                id="left-side"
-                type="text"
-                readOnly={readonly}
-                className={LabelFieldPropertyDefaults.LABEL_CLASS_DEFAULT}
-                name="left-side"
-                value={currentLeftSide}
-                onChange={({ target }) => setCurrentLeftSide(target.value)}
-            />
+        <div className="row align-items-start form-group">
+            <div className="col-sm">
+                <input
+                    id="left-side"
+                    type="text"
+                    readOnly={readonly}
+                    className="form-control"
+                    name="left-side"
+                    value={currentLeftSide}
+                    onChange={({ target }) => setCurrentLeftSide(target.value)}
+                />
+            </div>
             {mappingSymbol}
-            <input
-                id="right-side"
-                type="text"
-                readOnly={readonly}
-                className={LabelFieldPropertyDefaults.LABEL_CLASS_DEFAULT}
-                name="right-side"
-                value={currentRightSide}
-                onChange={({ target }) => setCurrentRightSide(target.value)}
-            />
+            <div className="col-sm">
+                <input
+                    id="right-side"
+                    type="text"
+                    readOnly={readonly}
+                    className="form-control"
+                    name="right-side"
+                    value={currentRightSide}
+                    onChange={({ target }) => setCurrentRightSide(target.value)}
+                />
+            </div>
             <button
                 id="delete-mapping"
-                className="btn btn-sm btn-primary"
+                className="btn btn-sm btn-primary p-2"
                 type="button"
                 onClick={() => deleteRow(index)}
             >
