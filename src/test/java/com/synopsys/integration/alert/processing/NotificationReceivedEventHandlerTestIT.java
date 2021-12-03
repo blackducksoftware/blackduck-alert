@@ -22,7 +22,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.database.api.DefaultConfigurationAccessor;
+import com.synopsys.integration.alert.database.api.DefaultConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.database.api.DefaultNotificationAccessor;
 import com.synopsys.integration.alert.database.notification.NotificationEntity;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
@@ -37,13 +37,13 @@ import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationTyp
 //  Move this class into the workflow subproject once the dependencies are resolved
 @AlertIntegrationTest
 public class NotificationReceivedEventHandlerTestIT {
-    
+
     @Autowired
     private DefaultNotificationAccessor defaultNotificationAccessor;
     @Autowired
     private NotificationReceivedEventHandler notificationReceivedEventHandler;
     @Autowired
-    private DefaultConfigurationAccessor defaultConfigurationAccessor;
+    private DefaultConfigurationModelConfigurationAccessor defaultConfigurationAccessor;
     @Autowired
     private BlackDuckProviderKey blackDuckProviderKey;
     private Long blackDuckGlobalConfigId;
