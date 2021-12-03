@@ -74,6 +74,7 @@ public class DefaultUserAccessor implements UserAccessor {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public UserModel addUser(String userName, String password, String emailAddress) throws AlertConfigurationException {
         return addUser(UserModel.newUser(userName, password, emailAddress, AuthenticationType.DATABASE, Collections.emptySet(), true), false);
     }
