@@ -17,4 +17,5 @@ dependencies {
     implementation 'org.springframework.data:spring-data-jpa'
 
     testImplementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
+    testImplementation 'org.springframework:spring-jms'
 }

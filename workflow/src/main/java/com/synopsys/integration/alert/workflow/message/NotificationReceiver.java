@@ -8,10 +8,6 @@
 package com.synopsys.integration.alert.workflow.message;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +18,7 @@ import org.springframework.util.CollectionUtils;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.event.AlertDefaultEventListener;
+import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.event.NotificationReceivedEvent;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
@@ -38,42 +35,30 @@ public class NotificationReceiver extends MessageReceiver<NotificationReceivedEv
 
     private final NotificationAccessor notificationAccessor;
     private final NotificationProcessor notificationProcessor;
+    private final EventManager eventManager;
 
     @Autowired
-    public NotificationReceiver(Gson gson, NotificationAccessor notificationAccessor, NotificationProcessor notificationProcessor) {
+    public NotificationReceiver(Gson gson, NotificationAccessor notificationAccessor, NotificationProcessor notificationProcessor, EventManager eventManager) {
         super(gson, NotificationReceivedEvent.class);
         this.notificationAccessor = notificationAccessor;
         this.notificationProcessor = notificationProcessor;
+        this.eventManager = eventManager;
     }
 
     @Override
     public void handleEvent(NotificationReceivedEvent event) {
         logger.debug("Event {}", event);
         logger.info("Processing event for notifications.");
-        ExecutorService processingThread = Executors.newSingleThreadExecutor();
-        Future<?> processingTask = processingThread.submit(this::processNotifications);
-        try {
-            processingTask.get();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        } catch (ExecutionException e) {
-            logger.error("Error Processing notifications", e);
-        }
-    }
-
-    private void processNotifications() {
-        int numPagesProcessed = 0;
 
         AlertPagedModel<AlertNotificationModel> pageOfAlertNotificationModels = notificationAccessor.getFirstPageOfNotificationsNotProcessed(PAGE_SIZE);
-        while (!CollectionUtils.isEmpty(pageOfAlertNotificationModels.getModels())) {
+        if (!CollectionUtils.isEmpty(pageOfAlertNotificationModels.getModels())) {
             List<AlertNotificationModel> notifications = pageOfAlertNotificationModels.getModels();
             logger.info("Starting to process {} notifications.", notifications.size());
             notificationProcessor.processNotifications(notifications, List.of(FrequencyType.REAL_TIME));
-            numPagesProcessed++;
             pageOfAlertNotificationModels = notificationAccessor.getFirstPageOfNotificationsNotProcessed(PAGE_SIZE);
-            logger.trace("Processing Page: {}. New pages found: {}",
-                numPagesProcessed,
-                pageOfAlertNotificationModels.getTotalPages());
+            if (!CollectionUtils.isEmpty(pageOfAlertNotificationModels.getModels())) {
+                eventManager.sendEvent(new NotificationReceivedEvent());
+            }
         }
         logger.info("Finished processing event for notifications.");
     }
