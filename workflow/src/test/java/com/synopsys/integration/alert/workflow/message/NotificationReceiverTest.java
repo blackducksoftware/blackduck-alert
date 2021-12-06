@@ -9,8 +9,12 @@ import java.util.function.Predicate;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.jms.core.JmsTemplate;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.common.event.AlertEvent;
+import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.event.NotificationReceivedEvent;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
@@ -37,7 +41,8 @@ public class NotificationReceiverTest {
         List<AlertNotificationModel> alertNotificationModels = List.of(alertNotificationModel);
 
         NotificationProcessor notificationProcessor = mockNotificationProcessor(alertNotificationModels);
-        NotificationReceiver notificationReceiver = new NotificationReceiver(gson, notificationAccessor, notificationProcessor);
+        EventManager eventManager = mockEventManager();
+        NotificationReceiver notificationReceiver = new NotificationReceiver(gson, notificationAccessor, notificationProcessor, eventManager);
 
         try {
             notificationReceiver.handleEvent(new NotificationReceivedEvent());
@@ -48,7 +53,7 @@ public class NotificationReceiverTest {
 
     @Test
     public void getDestinationNameTest() {
-        NotificationReceiver notificationReceiver = new NotificationReceiver(gson, null, null);
+        NotificationReceiver notificationReceiver = new NotificationReceiver(gson, null, null, null);
 
         assertEquals(NotificationReceivedEvent.NOTIFICATION_RECEIVED_EVENT_TYPE, notificationReceiver.getDestinationName());
     }
@@ -72,6 +77,19 @@ public class NotificationReceiverTest {
         Mockito.when(jobNotificationMapper.mapJobsToNotifications(Mockito.anyList(), Mockito.anyList())).thenReturn(statefulAlertPage);
         notificationAccessor = new MockNotificationAccessor(alertNotificationModels);
         return new NotificationProcessor(detailExtractionDelegator, jobNotificationMapper, null, null, List.of(), notificationAccessor);
+    }
+
+    private EventManager mockEventManager() {
+        JmsTemplate jmsTemplate = Mockito.mock(JmsTemplate.class);
+        Mockito.doNothing().when(jmsTemplate).convertAndSend(Mockito.anyString(), Mockito.any(Object.class));
+
+        Gson gson = new Gson();
+        String testEventJson = gson.toJson(new NotificationReceivedEvent());
+
+        ContentConverter contentConverter = Mockito.mock(ContentConverter.class);
+        Mockito.when(contentConverter.getJsonString(Mockito.any(AlertEvent.class))).thenReturn(testEventJson);
+
+        return new EventManager(contentConverter, jmsTemplate);
     }
 
 }
