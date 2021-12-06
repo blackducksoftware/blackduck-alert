@@ -8,8 +8,6 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
-import com.synopsys.integration.alert.common.action.api.GlobalFieldModelToConcreteConverter;
 import com.synopsys.integration.alert.common.action.api.GlobalFieldModelToConcreteSaveActions;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -25,7 +23,7 @@ public class GlobalFieldModelToConcreteConversionServiceTest {
 
     @Test
     public void createdDescriptorFoundTest() {
-        TestSaveActions saveActions = new TestSaveActions(testDescriptorKey, new TestConverter());
+        TestSaveActions saveActions = new TestSaveActions(testDescriptorKey);
         DescriptorMap descriptorMap = new DescriptorMap(List.of(testDescriptorKey), List.of());
         List<TestSaveActions> fieldModelSaveActions = List.of(saveActions);
         FieldModel fieldModel = new FieldModel(TEST_DESCRIPTOR_KEY, ConfigContextEnum.GLOBAL.name(), Map.of());
@@ -37,7 +35,7 @@ public class GlobalFieldModelToConcreteConversionServiceTest {
 
     @Test
     public void updatedDescriptorFoundTest() {
-        TestSaveActions saveActions = new TestSaveActions(testDescriptorKey, new TestConverter());
+        TestSaveActions saveActions = new TestSaveActions(testDescriptorKey);
         DescriptorMap descriptorMap = new DescriptorMap(List.of(testDescriptorKey), List.of());
         List<TestSaveActions> fieldModelSaveActions = List.of(saveActions);
         FieldModel fieldModel = new FieldModel(TEST_DESCRIPTOR_KEY, ConfigContextEnum.GLOBAL.name(), Map.of());
@@ -49,7 +47,7 @@ public class GlobalFieldModelToConcreteConversionServiceTest {
 
     @Test
     public void createdDescriptorMissingTest() {
-        TestSaveActions saveActions = new TestSaveActions(testDescriptorKey, new TestConverter());
+        TestSaveActions saveActions = new TestSaveActions(testDescriptorKey);
         DescriptorMap descriptorMap = new DescriptorMap(List.of(), List.of());
         List<TestSaveActions> fieldModelSaveActions = List.of(saveActions);
         FieldModel fieldModel = new FieldModel(TEST_DESCRIPTOR_KEY, ConfigContextEnum.GLOBAL.name(), Map.of());
@@ -61,7 +59,7 @@ public class GlobalFieldModelToConcreteConversionServiceTest {
 
     @Test
     public void updatedDescriptorMissingTest() {
-        TestSaveActions saveActions = new TestSaveActions(testDescriptorKey, new TestConverter());
+        TestSaveActions saveActions = new TestSaveActions(testDescriptorKey);
         DescriptorMap descriptorMap = new DescriptorMap(List.of(), List.of());
         List<TestSaveActions> fieldModelSaveActions = List.of(saveActions);
         FieldModel fieldModel = new FieldModel(TEST_DESCRIPTOR_KEY, ConfigContextEnum.GLOBAL.name(), Map.of());
@@ -73,7 +71,7 @@ public class GlobalFieldModelToConcreteConversionServiceTest {
 
     @Test
     public void createdDescriptorFoundNotGlobalTest() {
-        TestSaveActions saveActions = new TestSaveActions(testDescriptorKey, new TestConverter());
+        TestSaveActions saveActions = new TestSaveActions(testDescriptorKey);
         DescriptorMap descriptorMap = new DescriptorMap(List.of(testDescriptorKey), List.of());
         List<TestSaveActions> fieldModelSaveActions = List.of(saveActions);
         FieldModel fieldModel = new FieldModel(TEST_DESCRIPTOR_KEY, ConfigContextEnum.DISTRIBUTION.name(), Map.of());
@@ -85,7 +83,7 @@ public class GlobalFieldModelToConcreteConversionServiceTest {
 
     @Test
     public void updateDescriptorFoundNotGlobalTest() {
-        TestSaveActions saveActions = new TestSaveActions(testDescriptorKey, new TestConverter());
+        TestSaveActions saveActions = new TestSaveActions(testDescriptorKey);
         DescriptorMap descriptorMap = new DescriptorMap(List.of(testDescriptorKey), List.of());
         List<TestSaveActions> fieldModelSaveActions = List.of(saveActions);
         FieldModel fieldModel = new FieldModel(TEST_DESCRIPTOR_KEY, ConfigContextEnum.DISTRIBUTION.name(), Map.of());
@@ -95,23 +93,14 @@ public class GlobalFieldModelToConcreteConversionServiceTest {
         assertFalse(saveActions.wasUpdateCalled());
     }
 
-    private static class TestConverter implements GlobalFieldModelToConcreteConverter<TestConversionModel> {
-        @Override
-        public TestConversionModel convert(FieldModel globalFieldModel) {
-            return new TestConversionModel();
-        }
-    }
-
-    private static class TestSaveActions implements GlobalFieldModelToConcreteSaveActions<TestConverter> {
+    private static class TestSaveActions implements GlobalFieldModelToConcreteSaveActions {
         private boolean createdCalled = false;
         private boolean updateCalled = false;
 
         private DescriptorKey descriptorKey;
-        private TestConverter converter;
 
-        public TestSaveActions(DescriptorKey descriptorKey, TestConverter converter) {
+        public TestSaveActions(DescriptorKey descriptorKey) {
             this.descriptorKey = descriptorKey;
-            this.converter = converter;
         }
 
         public boolean wasCreatedCalled() {
@@ -128,11 +117,6 @@ public class GlobalFieldModelToConcreteConversionServiceTest {
         }
 
         @Override
-        public TestConverter getFieldModelConverter() {
-            return converter;
-        }
-
-        @Override
         public void updateConcreteModel(FieldModel fieldModel) {
             this.updateCalled = true;
         }
@@ -141,9 +125,5 @@ public class GlobalFieldModelToConcreteConversionServiceTest {
         public void createConcreteModel(FieldModel fieldModel) {
             this.createdCalled = true;
         }
-    }
-
-    private static class TestConversionModel extends AlertSerializableModel {
-        private static final long serialVersionUID = -2353869204122660583L;
     }
 }
