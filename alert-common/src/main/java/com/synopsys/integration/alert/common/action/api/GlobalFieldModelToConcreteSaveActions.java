@@ -1,14 +1,13 @@
 package com.synopsys.integration.alert.common.action.api;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
-public interface GlobalFieldModelToConcreteSaveActions {
+public interface GlobalFieldModelToConcreteSaveActions<T extends GlobalFieldModelToConcreteConverter<?>> {
 
     DescriptorKey getDescriptorKey();
 
-    <T extends AlertSerializableModel> GlobalFieldModelToConcreteConverter<T> getFieldModelConverter();
+    T getFieldModelConverter();
 
     void updateConcreteModel(FieldModel fieldModel);
 

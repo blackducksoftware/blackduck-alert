@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.action.api.GlobalFieldModelToConcreteConverter;
 import com.synopsys.integration.alert.common.action.api.GlobalFieldModelToConcreteSaveActions;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -18,10 +19,10 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 @Component
 public class GlobalFieldModelToConcreteConversionService {
     private final DescriptorMap descriptorMap;
-    private final Map<DescriptorKey, GlobalFieldModelToConcreteSaveActions> conversionActionMap;
+    private final Map<DescriptorKey, GlobalFieldModelToConcreteSaveActions<? extends GlobalFieldModelToConcreteConverter<?>>> conversionActionMap;
 
     @Autowired
-    public GlobalFieldModelToConcreteConversionService(List<GlobalFieldModelToConcreteSaveActions> conversionActions, DescriptorMap descriptorMap) {
+    public <T extends GlobalFieldModelToConcreteSaveActions<? extends GlobalFieldModelToConcreteConverter<?>>> GlobalFieldModelToConcreteConversionService(List<T> conversionActions, DescriptorMap descriptorMap) {
         this.descriptorMap = descriptorMap;
         this.conversionActionMap = conversionActions.stream()
             .collect(Collectors.toMap(GlobalFieldModelToConcreteSaveActions::getDescriptorKey, Function.identity()));
@@ -34,7 +35,7 @@ public class GlobalFieldModelToConcreteConversionService {
             return;
         }
 
-        GlobalFieldModelToConcreteSaveActions conversionAction = conversionActionMap.get(descriptor.get());
+        GlobalFieldModelToConcreteSaveActions<? extends GlobalFieldModelToConcreteConverter<?>> conversionAction = conversionActionMap.get(descriptor.get());
         if (null != conversionAction) {
             conversionAction.createConcreteModel(fieldModel);
         }
@@ -47,7 +48,7 @@ public class GlobalFieldModelToConcreteConversionService {
             // not a field model that can be converted.
             return;
         }
-        GlobalFieldModelToConcreteSaveActions conversionAction = conversionActionMap.get(descriptor.get());
+        GlobalFieldModelToConcreteSaveActions<? extends GlobalFieldModelToConcreteConverter<?>> conversionAction = conversionActionMap.get(descriptor.get());
         if (null != conversionAction) {
             conversionAction.updateConcreteModel(fieldModel);
         }
