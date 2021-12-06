@@ -49,19 +49,16 @@ public class NotificationReceiver extends MessageReceiver<NotificationReceivedEv
     public void handleEvent(NotificationReceivedEvent event) {
         logger.debug("Event {}", event);
         logger.info("Processing event for notifications.");
-        int numPagesProcessed = 0;
 
         AlertPagedModel<AlertNotificationModel> pageOfAlertNotificationModels = notificationAccessor.getFirstPageOfNotificationsNotProcessed(PAGE_SIZE);
         if (!CollectionUtils.isEmpty(pageOfAlertNotificationModels.getModels())) {
             List<AlertNotificationModel> notifications = pageOfAlertNotificationModels.getModels();
             logger.info("Starting to process {} notifications.", notifications.size());
             notificationProcessor.processNotifications(notifications, List.of(FrequencyType.REAL_TIME));
-            numPagesProcessed++;
             pageOfAlertNotificationModels = notificationAccessor.getFirstPageOfNotificationsNotProcessed(PAGE_SIZE);
-            logger.trace("Processing Page: {}. New pages found: {}",
-                numPagesProcessed,
-                pageOfAlertNotificationModels.getTotalPages());
-            eventManager.sendEvent(new NotificationReceivedEvent());
+            if (!CollectionUtils.isEmpty(pageOfAlertNotificationModels.getModels())) {
+                eventManager.sendEvent(new NotificationReceivedEvent());
+            }
         }
         logger.info("Finished processing event for notifications.");
     }
