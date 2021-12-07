@@ -22,7 +22,9 @@ import CollapsiblePane from 'common/CollapsiblePane';
 import TableSelectInput from 'common/input/TableSelectInput';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
-import { CONTEXT_TYPE, isOneOperationAssigned, isOperationAssigned, OPERATIONS } from 'common/util/descriptorUtilities';
+import {
+    CONTEXT_TYPE, isOneOperationAssigned, isOperationAssigned, OPERATIONS
+} from 'common/util/descriptorUtilities';
 import CommonDistributionConfigurationForm from 'page/distribution/CommonDistributionConfigurationForm';
 import * as DistributionRequestUtility from 'page/distribution/DistributionRequestUtility';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
@@ -344,6 +346,7 @@ const DistributionConfigurationForm = ({
                 />
                 <SelectInput
                     id={DISTRIBUTION_COMMON_FIELD_KEYS.frequency}
+                    name={DISTRIBUTION_COMMON_FIELD_KEYS.frequency}
                     label="Frequency"
                     description="Select how frequently this job should check for notifications to send."
                     options={DISTRIBUTION_FREQUENCY_OPTIONS}
@@ -391,6 +394,7 @@ const DistributionConfigurationForm = ({
                     <div>
                         <SelectInput
                             id={DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes}
+                            name={DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes}
                             label="Notification Types"
                             description="Select one or more of the notification types. Only these notification types will be included for this distribution job."
                             options={DISTRIBUTION_NOTIFICATION_TYPE_OPTIONS}
@@ -405,6 +409,7 @@ const DistributionConfigurationForm = ({
                         />
                         <SelectInput
                             id={DISTRIBUTION_COMMON_FIELD_KEYS.processingType}
+                            name={DISTRIBUTION_COMMON_FIELD_KEYS.processingType}
                             label="Processing"
                             description={processingFieldDescription}
                             options={processingTypes}
@@ -488,6 +493,7 @@ const DistributionConfigurationForm = ({
                         />
                         <SelectInput
                             id={DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter}
+                            name={DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter}
                             label="Vulnerability Notification Contains Severities"
                             description="Filters out the notifications that do not contain any of the relevant severities (You must have the vulnerability notification type selected for this filter to apply)."
                             options={DISTRIBUTION_VULNERABILITY_SEVERITY_OPTIONS}

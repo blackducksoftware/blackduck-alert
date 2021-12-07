@@ -74,6 +74,7 @@ const EndpointSelectField = ({
                 onFocus={onSendClick}
                 options={options}
                 id={id || fieldKey}
+                name={id || fieldKey}
                 inputClass={inputClass}
                 searchable={searchable}
                 placeholder={placeholder}
