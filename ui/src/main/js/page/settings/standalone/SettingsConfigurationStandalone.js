@@ -4,7 +4,7 @@ import { Tab, Tabs } from 'react-bootstrap';
 import CommonGlobalConfiguration from 'common/global/CommonGlobalConfiguration';
 import { SETTINGS_INFO } from 'page/settings/SettingsModel';
 import SettingsEncryptionConfiguration from 'page/settings/standalone/SettingsEncryptionConfiguration.js';
-import SettingsProxyConfiguration from './SettingsProxyConfiguration';
+import SettingsProxyConfiguration from 'page/settings/standalone/SettingsProxyConfiguration';
 
 const SettingsConfigurationStandalone = ({
     csrfToken, errorHandler, readOnly, displaySave, displayDelete

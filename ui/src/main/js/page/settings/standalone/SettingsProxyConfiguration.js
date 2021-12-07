@@ -108,7 +108,7 @@ const SettingsProxyConfiguration = ({
                 value={settingsProxyConfig[passwordName] || undefined}
                 isSet={passwordFromApiExists}
                 errorName={passwordName}
-                errorValue={errors.fieldErrors.proxyPassword}
+                errorValue={errors.fieldErrors[passwordName]}
             />
             <DynamicSelectInput
                 id={SETTINGS_FIELD_KEYS.proxyNonProxyHosts}
