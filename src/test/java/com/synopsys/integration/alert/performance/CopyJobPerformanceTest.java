@@ -3,6 +3,8 @@ package com.synopsys.integration.alert.performance;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 
+import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
@@ -45,6 +47,8 @@ public class CopyJobPerformanceTest {
     private final String alertURL = "https://localhost:8443/alert";
 
     @Test
+    @Ignore
+    @Disabled
     public void copyJobTest() throws IntegrationException {
         ExternalAlertRequestUtility alertRequestUtility = new ExternalAlertRequestUtility(intLogger, client, alertURL);
         // Create an authenticated connection to Alert
@@ -53,7 +57,7 @@ public class CopyJobPerformanceTest {
         ConfigurationManager configurationManager = new ConfigurationManager(gson, alertRequestUtility, blackDuckProviderService.getBlackDuckProviderKey(), ChannelKeys.SLACK.getUniversalKey());
         int count = 1000;
         String jobName = URLEncoder.encode("Jira Server", Charset.defaultCharset());
-        for (int index = 301; index <= count; index++) {
+        for (int index = 1; index <= count; index++) {
             String newJobName = String.format("%s_%d", jobName, index);
             configurationManager.copyJob(jobName, newJobName);
         }
