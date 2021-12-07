@@ -4,9 +4,10 @@ import { Tab, Tabs } from 'react-bootstrap';
 import CommonGlobalConfiguration from 'common/global/CommonGlobalConfiguration';
 import { SETTINGS_INFO } from 'page/settings/SettingsModel';
 import SettingsEncryptionConfiguration from 'page/settings/standalone/SettingsEncryptionConfiguration.js';
+import SettingsProxyConfiguration from './SettingsProxyConfiguration';
 
 const SettingsConfigurationStandalone = ({
-    csrfToken, errorHandler, readOnly, displaySave
+    csrfToken, errorHandler, readOnly, displaySave, displayDelete
 }) => (
     <CommonGlobalConfiguration
         label={`${SETTINGS_INFO.label} BETA (WIP)`}
@@ -21,6 +22,15 @@ const SettingsConfigurationStandalone = ({
                     displaySave={displaySave}
                 />
             </Tab>
+            <Tab eventKey={2} title="SettingsProxy">
+                <SettingsProxyConfiguration
+                    csrfToken={csrfToken}
+                    errorHandler={errorHandler}
+                    readOnly={readOnly}
+                    displaySave={displaySave}
+                    displayDelete={displayDelete}
+                />
+            </Tab>
         </Tabs>
     </CommonGlobalConfiguration>
 );
@@ -30,12 +40,14 @@ SettingsConfigurationStandalone.propTypes = {
     errorHandler: PropTypes.object.isRequired,
     // Pass this in for now while we have all descriptors in global state, otherwise retrieve this in this component
     readOnly: PropTypes.bool,
-    displaySave: PropTypes.bool
+    displaySave: PropTypes.bool,
+    displayDelete: PropTypes.bool
 };
 
 SettingsConfigurationStandalone.defaultProps = {
     readOnly: false,
-    displaySave: true
+    displaySave: true,
+    displayDelete: true
 };
 
 export default SettingsConfigurationStandalone;
