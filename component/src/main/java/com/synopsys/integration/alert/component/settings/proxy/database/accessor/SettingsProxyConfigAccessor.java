@@ -117,6 +117,7 @@ public class SettingsProxyConfigAccessor implements ConfigurationAccessor<Settin
             if (null != proxyConfiguration.getLastUpdated()) {
                 lastUpdatedFormatted = DateUtils.formatDate(proxyConfiguration.getLastUpdated(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
             }
+            newModel.setId(String.valueOf(proxyConfiguration.getConfigurationId()));
             newModel.setProxyHost(proxyConfiguration.getHost());
             newModel.setProxyPort(proxyConfiguration.getPort());
             newModel.setProxyUsername(proxyConfiguration.getUsername());
@@ -125,7 +126,6 @@ public class SettingsProxyConfigAccessor implements ConfigurationAccessor<Settin
             }
             newModel.setNonProxyHosts(getNonProxyHosts(proxyConfiguration.getNonProxyHosts()));
         }
-        newModel.setId(String.valueOf(proxyConfiguration.getConfigurationId()));
         newModel.setCreatedAt(createdAtFormatted);
         newModel.setLastUpdated(lastUpdatedFormatted);
 
