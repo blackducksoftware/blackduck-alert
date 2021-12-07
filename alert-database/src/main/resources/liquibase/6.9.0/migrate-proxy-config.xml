@@ -7,10 +7,11 @@
             <rowCount schemaName="alert" tableName="configuration_proxy" expectedRows="0"/>
         </preConditions>
         <sql dbms="postgresql" stripComments="true">
-            INSERT INTO alert.configuration_proxy (created_at, last_updated, host, port, username, password)
+            INSERT INTO alert.configuration_proxy (created_at, last_updated, name, host, port, username, password)
             SELECT now(),
                    null,
-                   'initial-proxy-config',
+                   'default-configuration',
+                   null,
                    null,
                    null,
                    null
@@ -22,7 +23,7 @@
     <changeSet author="martinch" id="update-initial-proxy-config-entries">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="1">
-                SELECT COUNT(host) FROM alert.configuration_proxy WHERE host = 'initial-proxy-config';
+                SELECT COUNT(host) FROM alert.configuration_proxy WHERE name = 'default-configuration';
             </sqlCheck>
         </preConditions>
         <sql dbms="postgresql" stripComments="true">
@@ -36,26 +37,26 @@
         <sql dbms="postgresql" stripComments="true">
             UPDATE alert.configuration_proxy config
             SET port = cast(configFields.field_value as BIGINT) FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('component_settings') configFields
-            WHERE config.host = 'initial-proxy-config'
+            WHERE config.name = 'default-configuration'
               AND configFields.source_key = 'settings.proxy.port';
         </sql>
         <sql dbms="postgresql" stripComments="true">
             UPDATE alert.configuration_proxy config
             SET username = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('component_settings') configFields
-            WHERE config.host = 'initial-proxy-config'
+            WHERE config.name = 'default-configuration'
               AND configFields.source_key = 'settings.proxy.username';
         </sql>
         <sql dbms="postgresql" stripComments="true">
             UPDATE alert.configuration_proxy config
             SET password = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('component_settings') configFields
-            WHERE config.host = 'initial-proxy-config'
+            WHERE config.name = 'default-configuration'
               AND configFields.source_key = 'settings.proxy.password';
         </sql>
         <!-- host must be last because we will key off the host for the other fields -->
         <sql dbms="postgresql" stripComments="true">
             UPDATE alert.configuration_proxy config
             SET host = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('component_settings') configFields
-            WHERE config.host = 'initial-proxy-config'
+            WHERE config.name = 'default-configuration'
               AND configFields.source_key = 'settings.proxy.host';
         </sql>
     </changeSet>

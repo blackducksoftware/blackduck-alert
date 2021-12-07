@@ -145,7 +145,7 @@ public class SettingsProxyConfigAccessor implements ConfigurationAccessor<Settin
         String username = configuration.getProxyUsername().orElse(null);
         String password = configuration.getProxyPassword().map(encryptionUtility::encrypt).orElse(null);
 
-        return new SettingsProxyConfigurationEntity(configurationId, createdTime, lastUpdated, host, port, username, password, List.of());
+        return new SettingsProxyConfigurationEntity(configurationId, configuration.getName(), createdTime, lastUpdated, host, port, username, password, List.of());
     }
 
     private List<NonProxyHostConfigurationEntity> toNonProxyHostEntityList(UUID configurationId, SettingsProxyModel configuration) {

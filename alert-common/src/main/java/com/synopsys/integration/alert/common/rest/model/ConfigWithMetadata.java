@@ -10,6 +10,8 @@ package com.synopsys.integration.alert.common.rest.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ConfigWithMetadata extends Config {
+    @JsonProperty("name")
+    private String name;
     @JsonProperty("createdAt")
     private String createdAt;
 
@@ -19,14 +21,23 @@ public class ConfigWithMetadata extends Config {
     public ConfigWithMetadata() {
     }
 
-    public ConfigWithMetadata(String id) {
-        this(id, null, null);
+    public ConfigWithMetadata(String id, String name) {
+        this(id, name, null, null);
     }
 
-    public ConfigWithMetadata(String id, String createdAt, String lastUpdated) {
+    public ConfigWithMetadata(String id, String name, String createdAt, String lastUpdated) {
         super(id);
+        this.name = name;
         this.createdAt = createdAt;
         this.lastUpdated = lastUpdated;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getCreatedAt() {

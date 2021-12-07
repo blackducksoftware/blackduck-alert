@@ -11,6 +11,9 @@
             <column name="configuration_id" type="UUID" defaultValueComputed="uuid_generate_v4()">
                 <constraints primaryKey="true"/>
             </column>
+            <column name="name" type="VARCHAR">
+                <constraints nullable="false" unique="true"/>
+            </column>
             <column name="created_at" type="TIMESTAMP WITH TIMEZONE" defaultValueComputed="now()">
                 <constraints nullable="false"/>
             </column>

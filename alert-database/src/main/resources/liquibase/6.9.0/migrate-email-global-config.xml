@@ -7,10 +7,11 @@
             <rowCount schemaName="alert" tableName="configuration_email" expectedRows="0"/>
         </preConditions>
         <sql dbms="postgresql" stripComments="true">
-            INSERT INTO alert.configuration_email (created_at, last_updated, smtp_host, smtp_from, port, auth_required, auth_username, auth_password)
+            INSERT INTO alert.configuration_email (created_at, last_updated, name, smtp_host, smtp_from, port, auth_required, auth_username, auth_password)
             SELECT now(),
                    null,
-                   'initial-email-config',
+                   'default-configuration',
+                   '',
                    '',
                    null,
                    false,
@@ -25,7 +26,7 @@
     <changeSet author="psantos" id="update-initial-email-config-entries">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="1">
-                SELECT COUNT(smtp_host) FROM alert.configuration_email WHERE smtp_host = 'initial-email-config';
+                SELECT COUNT(smtp_host) FROM alert.configuration_email WHERE name = 'default-configuration';
             </sqlCheck>
         </preConditions>
         <sql dbms="postgresql" stripComments="true">
@@ -39,38 +40,37 @@
         <sql dbms="postgresql" stripComments="true">
             UPDATE alert.configuration_email config
             SET smtp_from = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_email') configFields
-            WHERE config.smtp_host = 'initial-email-config'
+            WHERE config.name = 'default-configuration'
               AND configFields.source_key = 'mail.smtp.from';
         </sql>
         <sql dbms="postgresql" stripComments="true">
             UPDATE alert.configuration_email config
             SET port = cast(coalesce(configFields.field_value, '25') as BIGINT) FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_email') configFields
-            WHERE config.smtp_host = 'initial-email-config'
+            WHERE config.name = 'default-configuration'
               AND configFields.source_key = 'mail.smtp.port';
         </sql>
         <sql dbms="postgresql" stripComments="true">
             UPDATE alert.configuration_email config
             SET auth_required = cast(coalesce(configFields.field_value, 'false') as BOOLEAN) FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_email') configFields
-            WHERE config.smtp_host = 'initial-email-config'
+            WHERE config.name = 'default-configuration'
               AND configFields.source_key = 'mail.smtp.auth';
         </sql>
         <sql dbms="postgresql" stripComments="true">
             UPDATE alert.configuration_email config
             SET auth_username = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_email') configFields
-            WHERE config.smtp_host = 'initial-email-config'
+            WHERE config.name = 'default-configuration'
               AND configFields.source_key = 'mail.smtp.user';
         </sql>
         <sql dbms="postgresql" stripComments="true">
             UPDATE alert.configuration_email config
             SET auth_password = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_email') configFields
-            WHERE config.smtp_host = 'initial-email-config'
+            WHERE config.name = 'default-configuration'
               AND configFields.source_key = 'mail.smtp.password';
         </sql>
-        <!-- host must be last because we will key off the host for the other fields -->
         <sql dbms="postgresql" stripComments="true">
             UPDATE alert.configuration_email config
             SET smtp_host = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_email') configFields
-            WHERE config.smtp_host = 'initial-email-config'
+            WHERE config.name = 'default-configuration'
               AND configFields.source_key = 'mail.smtp.host';
         </sql>
     </changeSet>

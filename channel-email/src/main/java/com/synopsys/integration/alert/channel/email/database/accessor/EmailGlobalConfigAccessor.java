@@ -150,7 +150,7 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
         String username = configuration.getSmtpUsername().orElse(null);
         String password = configuration.getSmtpPassword().map(encryptionUtility::encrypt).orElse(null);
 
-        return new EmailConfigurationEntity(configurationId, createdTime, lastUpdated,
+        return new EmailConfigurationEntity(configurationId, configuration.getName(), createdTime, lastUpdated,
             host, from, port, auth, username, password, List.of());
     }
 
