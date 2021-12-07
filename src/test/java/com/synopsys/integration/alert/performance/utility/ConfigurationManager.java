@@ -10,13 +10,17 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
+import com.synopsys.integration.alert.common.exception.AlertJobMissingException;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
+import com.synopsys.integration.alert.common.rest.model.JobPagedModel;
 import com.synopsys.integration.alert.common.rest.model.JobProviderProjectFieldModel;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.exception.IntegrationException;
 
 public class ConfigurationManager {
@@ -78,6 +82,27 @@ public class ConfigurationManager {
 
         JsonObject jsonObject = gson.fromJson(creationResponse, JsonObject.class);
         return jsonObject.get("jobId").getAsString();
+    }
+
+    public void copyJob(String jobToCopy, String newJobName) throws IntegrationException {
+        String response = alertRequestUtility.executeGetRequest(String.format("/api/configuration/job?searchTerm=%s", jobToCopy), String.format("Could not copy the Job %s.", jobToCopy));
+        JobPagedModel jobModel = gson.fromJson(response, JobPagedModel.class);
+        JobFieldModel jobFieldModel = jobModel.getJobs().stream()
+            .findFirst()
+            .orElseThrow(() -> new AlertJobMissingException(String.format("Cannot find job %s", jobToCopy), null));
+
+        jobFieldModel.setJobId(null);
+        FieldModel channelFieldModel = jobFieldModel.getFieldModels().stream()
+            .filter(model -> ChannelKeys.getChannelKey(model.getDescriptorName()) != null)
+            .findFirst()
+            .orElseThrow(() -> new AlertJobMissingException("Cannot find channel field model", null));
+        Map<String, FieldValueModel> channelKeyToValues = new HashMap<>();
+        channelKeyToValues.putAll(channelFieldModel.getKeyToValues());
+        channelKeyToValues.put(ChannelDistributionUIConfig.KEY_NAME, new FieldValueModel(List.of(newJobName), true));
+        channelFieldModel.setKeyToValues(channelKeyToValues);
+
+        String jobConfigBody = gson.toJson(jobFieldModel);
+        alertRequestUtility.executePostRequest("/api/configuration/job", jobConfigBody, String.format("Could not create the Job %s.", newJobName));
     }
 
 }
