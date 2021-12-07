@@ -19,12 +19,16 @@ const FluidFieldMappingField = ({
 }) => {
     const [fieldMappings, setFieldMappings] = useState([]);
 
+    // We need this instead of useEffect with empty dependencies because we render initially without data
+    const [startupFlag, setStartupFlag] = useState(true);
+
     useEffect(() => {
-        const valueList = Object.keys(value).map((key) => ({ [key]: value[key] }));
-        if (JSON.stringify(valueList) !== JSON.stringify(fieldMappings)) {
+        if (startupFlag && Object.keys(value).length >= 1) {
+            const valueList = Object.keys(value).map((key) => ({ [key]: value[key] }));
             setFieldMappings(valueList);
+            setStartupFlag(false);
         }
-    }, [value]);
+    });
 
     useEffect(() => {
         const updatedMappings = {};
@@ -76,17 +80,19 @@ const FluidFieldMappingField = ({
             required={required}
             showDescriptionPlaceHolder={showDescriptionPlaceHolder}
         >
-            <>
-                {renderExistingRows}
-                <button
-                    id={id}
-                    className="btn btn-sm btn-primary"
-                    type="button"
-                    onClick={addRow}
-                >
-                    <FontAwesomeIcon icon="plus" className="alert-icon" size="lg" />
-                </button>
-            </>
+            <div className="d-inline-flex">
+                <div className="container">
+                    {renderExistingRows}
+                    <button
+                        id={id}
+                        className="btn btn-sm btn-primary"
+                        type="button"
+                        onClick={addRow}
+                    >
+                        <FontAwesomeIcon icon="plus" className="alert-icon" size="lg" />
+                    </button>
+                </div>
+            </div>
         </LabeledField>
     );
 };

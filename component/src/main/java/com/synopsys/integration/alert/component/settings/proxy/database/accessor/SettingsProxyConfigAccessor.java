@@ -1,3 +1,10 @@
+/*
+ * component
+ *
+ * Copyright (c) 2021 Synopsys, Inc.
+ *
+ * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.synopsys.integration.alert.component.settings.proxy.database.accessor;
 
 import java.time.OffsetDateTime;
@@ -82,7 +89,7 @@ public class SettingsProxyConfigAccessor implements ConfigurationAccessor<Settin
     @Transactional(propagation = Propagation.REQUIRED)
     public SettingsProxyModel updateConfiguration(UUID configurationId, SettingsProxyModel configuration) throws AlertConfigurationException {
         SettingsProxyConfigurationEntity configurationEntity = settingsProxyConfigurationRepository.findById(configurationId)
-                                                                   .orElseThrow(() -> new AlertConfigurationException(String.format("Config with id '%d' did not exist", configurationId)));
+                                                                   .orElseThrow(() -> new AlertConfigurationException(String.format("Config with id '%s' did not exist", configurationId.toString())));
         OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
         SettingsProxyConfigurationEntity configurationToSave = toEntity(configurationId, configuration, configurationEntity.getCreatedAt(), currentTime);
         SettingsProxyConfigurationEntity savedProxyConfig = settingsProxyConfigurationRepository.save(configurationToSave);
@@ -110,6 +117,7 @@ public class SettingsProxyConfigAccessor implements ConfigurationAccessor<Settin
             if (null != proxyConfiguration.getLastUpdated()) {
                 lastUpdatedFormatted = DateUtils.formatDate(proxyConfiguration.getLastUpdated(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
             }
+            newModel.setId(String.valueOf(proxyConfiguration.getConfigurationId()));
             newModel.setProxyHost(proxyConfiguration.getHost());
             newModel.setProxyPort(proxyConfiguration.getPort());
             newModel.setProxyUsername(proxyConfiguration.getUsername());
@@ -118,7 +126,6 @@ public class SettingsProxyConfigAccessor implements ConfigurationAccessor<Settin
             }
             newModel.setNonProxyHosts(getNonProxyHosts(proxyConfiguration.getNonProxyHosts()));
         }
-        newModel.setId(String.valueOf(proxyConfiguration.getConfigurationId()));
         newModel.setCreatedAt(createdAtFormatted);
         newModel.setLastUpdated(lastUpdatedFormatted);
 
