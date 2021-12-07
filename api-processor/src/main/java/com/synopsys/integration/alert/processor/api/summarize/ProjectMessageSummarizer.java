@@ -67,8 +67,8 @@ public class ProjectMessageSummarizer {
 
     private Pair<String, String> constructProjectVersionStatusSummaryAndDescription(String providerName, String projectName, ProjectMessage projectMessage) {
         String operationString = projectMessage.getOperation()
-                                     .map(this::convertToParticiple)
-                                     .orElse(OP_PARTICIPLE_UPDATED);
+            .map(this::convertToParticiple)
+            .orElse(OP_PARTICIPLE_UPDATED);
 
         Optional<String> optionalProjectVersionName = projectMessage.getProjectVersion().map(LinkableItem::getValue);
         if (optionalProjectVersionName.isPresent()) {
@@ -87,8 +87,8 @@ public class ProjectMessageSummarizer {
 
     private Pair<String, String> constructComponentStatusAndDescription(String providerName, String projectName, MessageReason messageReason, ProjectMessage projectMessage) {
         String projectVersionName = projectMessage.getProjectVersion()
-                                        .map(LinkableItem::getValue)
-                                        .orElse("Unknown Version");
+            .map(LinkableItem::getValue)
+            .orElse("Unknown Version");
         String operationString = MessageReason.COMPONENT_CONCERN.equals(messageReason) ? "problems" : "updates";
         return Pair.of(
             String.format("[%s] %s > %s component %s", providerName, projectName, projectVersionName, operationString),
@@ -106,7 +106,9 @@ public class ProjectMessageSummarizer {
             for (ComponentConcern concern : bomComponent.getComponentConcerns()) {
                 ComponentConcernSummaryGrouping concernKey = new ComponentConcernSummaryGrouping(concern.getType(), concern.getOperation(), concern.getSeverity());
                 int currentCount = groupedConcernCounts.getOrDefault(concernKey, 0);
-                groupedConcernCounts.put(concernKey, currentCount + 1);
+                Number concernNumericValue = concern.getNumericValue();
+                int concernCount = (concernNumericValue != null) ? concernNumericValue.intValue() : 1;
+                groupedConcernCounts.put(concernKey, currentCount + concernCount);
             }
         }
 
