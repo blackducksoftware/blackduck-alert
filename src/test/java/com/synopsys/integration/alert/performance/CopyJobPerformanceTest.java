@@ -4,6 +4,7 @@ import java.net.URLEncoder;
 import java.nio.charset.Charset;
 
 import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
@@ -42,6 +43,7 @@ public class CopyJobPerformanceTest {
 
     @Test
     @Ignore
+    @Disabled
     public void copyJobTest() throws IntegrationException {
         ExternalAlertRequestUtility alertRequestUtility = new ExternalAlertRequestUtility(intLogger, client, alertURL);
         // Create an authenticated connection to Alert
