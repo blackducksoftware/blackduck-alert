@@ -275,6 +275,7 @@ const MainPage = ({
                                 errorHandler={errorHandler}
                                 readonly={readOnly}
                                 displaySave={showSave}
+                                displayDelete={isOperationAssigned(globalDescriptorMap[SETTINGS_INFO.key], OPERATIONS.DELETE)}
                             />
                         </BetaComponent>
                     </BetaPage>
