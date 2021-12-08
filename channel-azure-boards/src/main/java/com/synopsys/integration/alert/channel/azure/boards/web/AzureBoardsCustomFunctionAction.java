@@ -9,7 +9,6 @@ package com.synopsys.integration.alert.channel.azure.boards.web;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -70,7 +69,8 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
         AzureBoardsGlobalConfigurationFieldModelValidator globalConfigurationValidator,
         AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory,
         AzureRedirectUrlCreator azureRedirectUrlCreator,
-        ProxyManager proxyManager, OAuthRequestValidator oAuthRequestValidator,
+        ProxyManager proxyManager,
+        OAuthRequestValidator oAuthRequestValidator,
         ConfigResourceActions configActions,
         AuthorizationManager authorizationManager,
         AlertWebServerUrlManager alertWebServerUrlManager
@@ -109,8 +109,7 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
             // since we have only one OAuth channel now remove any other requests.
             // if we have more OAuth clients then the "remove requests" will have to be removed from here.
             // beginning authentication process create the request id at the start.
-            Instant fiveMinutesAgo = Instant.now().minusSeconds(300);
-            oAuthRequestValidator.removeRequestsOlderThanInstant(fiveMinutesAgo);
+            oAuthRequestValidator.removeRequestsOlderThan5MinutesAgo();
             oAuthRequestValidator.addAuthorizationRequest(requestKey);
 
             logger.info("OAuth authorization request created: {}", requestKey);
