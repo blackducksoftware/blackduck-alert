@@ -121,6 +121,7 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
                 lastUpdatedFormatted = DateUtils.formatDate(emailConfiguration.getLastUpdated(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
             }
             newModel.setId(String.valueOf(emailConfiguration.getConfigurationId()));
+            newModel.setName(emailConfiguration.getName());
             newModel.setSmtpHost(emailConfiguration.getSmtpHost());
             newModel.setSmtpPort(emailConfiguration.getSmtpPort());
             newModel.setSmtpFrom(emailConfiguration.getSmtpFrom());
@@ -150,7 +151,7 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
         String username = configuration.getSmtpUsername().orElse(null);
         String password = configuration.getSmtpPassword().map(encryptionUtility::encrypt).orElse(null);
 
-        return new EmailConfigurationEntity(configurationId, createdTime, lastUpdated,
+        return new EmailConfigurationEntity(configurationId, configuration.getName(), createdTime, lastUpdated,
             host, from, port, auth, username, password, List.of());
     }
 

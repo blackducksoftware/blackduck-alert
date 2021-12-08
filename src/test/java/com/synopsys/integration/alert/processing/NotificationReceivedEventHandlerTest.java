@@ -9,8 +9,10 @@ import java.util.function.Predicate;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.jms.core.JmsTemplate;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.api.event.NotificationReceivedEvent;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
@@ -35,7 +37,8 @@ public class NotificationReceivedEventHandlerTest {
         List<AlertNotificationModel> alertNotificationModels = List.of(alertNotificationModel);
         NotificationAccessor notificationAccessor = new MockNotificationAccessor(alertNotificationModels);
         NotificationProcessor notificationProcessor = mockNotificationProcessor(notificationAccessor);
-        NotificationReceivedEventHandler eventHandler = new NotificationReceivedEventHandler(notificationAccessor, notificationProcessor);
+        EventManager eventManager = mockEventManager();
+        NotificationReceivedEventHandler eventHandler = new NotificationReceivedEventHandler(notificationAccessor, notificationProcessor, eventManager);
 
         try {
             eventHandler.handle(new NotificationReceivedEvent());
@@ -51,7 +54,8 @@ public class NotificationReceivedEventHandlerTest {
             throw new InterruptedException("Test: exception for thread");
         }).when(notificationAccessor).getFirstPageOfNotificationsNotProcessed(Mockito.anyInt());
         NotificationProcessor notificationProcessor = mockNotificationProcessor(notificationAccessor);
-        NotificationReceivedEventHandler eventHandler = new NotificationReceivedEventHandler(notificationAccessor, notificationProcessor);
+        EventManager eventManager = mockEventManager();
+        NotificationReceivedEventHandler eventHandler = new NotificationReceivedEventHandler(notificationAccessor, notificationProcessor, eventManager);
 
         try {
             eventHandler.handle(new NotificationReceivedEvent());
@@ -67,7 +71,8 @@ public class NotificationReceivedEventHandlerTest {
             throw new ExecutionException(new RuntimeException("Test: exception for thread"));
         }).when(notificationAccessor).getFirstPageOfNotificationsNotProcessed(Mockito.anyInt());
         NotificationProcessor notificationProcessor = mockNotificationProcessor(notificationAccessor);
-        NotificationReceivedEventHandler eventHandler = new NotificationReceivedEventHandler(notificationAccessor, notificationProcessor);
+        EventManager eventManager = mockEventManager();
+        NotificationReceivedEventHandler eventHandler = new NotificationReceivedEventHandler(notificationAccessor, notificationProcessor, eventManager);
 
         try {
             eventHandler.handle(new NotificationReceivedEvent());
@@ -94,6 +99,14 @@ public class NotificationReceivedEventHandlerTest {
         StatefulAlertPage<FilteredJobNotificationWrapper, RuntimeException> statefulAlertPage = new StatefulAlertPage(AlertPagedDetails.emptyPage(), Mockito.mock(PageRetriever.class), hasNextPage);
         Mockito.when(jobNotificationMapper.mapJobsToNotifications(Mockito.anyList(), Mockito.anyList())).thenReturn(statefulAlertPage);
         return new NotificationProcessor(detailExtractionDelegator, jobNotificationMapper, null, null, List.of(), notificationAccessor);
+    }
+
+    private EventManager mockEventManager() {
+        JmsTemplate jmsTemplate = Mockito.mock(JmsTemplate.class);
+        Mockito.doNothing().when(jmsTemplate).convertAndSend(Mockito.anyString(), Mockito.any(Object.class));
+        Gson gson = new Gson();
+
+        return new EventManager(gson, jmsTemplate);
     }
 
 }

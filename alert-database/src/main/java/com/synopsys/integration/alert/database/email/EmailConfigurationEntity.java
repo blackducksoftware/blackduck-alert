@@ -28,6 +28,8 @@ public class EmailConfigurationEntity extends BaseEntity {
     @Id
     @Column(name = "configuration_id")
     private UUID configurationId;
+    @Column(name = "name")
+    private String name;
     @Column(name = "created_at")
     private OffsetDateTime createdAt;
     @Column(name = "last_updated")
@@ -52,10 +54,11 @@ public class EmailConfigurationEntity extends BaseEntity {
     public EmailConfigurationEntity() {
     }
 
-    public EmailConfigurationEntity(UUID configurationId, OffsetDateTime createdAt, OffsetDateTime lastUpdated, String smtpHost, String smtpFrom, Integer smtpPort, Boolean authRequired,
-        String authUsername, String authPassword,
-        List<EmailConfigurationsPropertyEntity> emailConfigurationProperties) {
+    public EmailConfigurationEntity(UUID configurationId, String name, OffsetDateTime createdAt, OffsetDateTime lastUpdated, String smtpHost, String smtpFrom, Integer smtpPort,
+        Boolean authRequired, String authUsername,
+        String authPassword, List<EmailConfigurationsPropertyEntity> emailConfigurationProperties) {
         this.configurationId = configurationId;
+        this.name = name;
         this.createdAt = createdAt;
         this.lastUpdated = lastUpdated;
         this.smtpHost = smtpHost;
@@ -73,6 +76,14 @@ public class EmailConfigurationEntity extends BaseEntity {
 
     public void setConfigurationId(UUID configurationId) {
         this.configurationId = configurationId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public OffsetDateTime getCreatedAt() {
