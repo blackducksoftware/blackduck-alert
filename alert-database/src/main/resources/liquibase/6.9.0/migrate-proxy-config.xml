@@ -11,7 +11,7 @@
             SELECT now(),
                    null,
                    'default-configuration',
-                   null,
+                   '',
                    null,
                    null,
                    null

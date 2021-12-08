@@ -2,7 +2,7 @@
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
     <!-- create an initial row -->
-    <changeSet author="gavink" id="create-initial-email-config-entries">
+    <changeSet author="psantos" id="create-initial-email-config-entries">
         <preConditions onFail="MARK_RAN">
             <rowCount schemaName="alert" tableName="configuration_email" expectedRows="0"/>
         </preConditions>
