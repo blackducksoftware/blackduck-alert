@@ -10,6 +10,7 @@ const { Option, SingleValue, MultiValue } = components;
 const DynamicSelectInput = ({
     onChange,
     id,
+    name,
     inputClass,
     options,
     searchable,
@@ -46,7 +47,7 @@ const DynamicSelectInput = ({
         const parsedArray = (Array.isArray(option) && option.length > 0) ? option.map((mappedOption) => mappedOption.value) : [singleSelectOptionValue];
         onChange({
             target: {
-                name: id,
+                name,
                 value: parsedArray
             }
         });
@@ -151,6 +152,7 @@ const DynamicSelectInput = ({
 
 DynamicSelectInput.propTypes = {
     id: PropTypes.string,
+    name: PropTypes.string,
     inputClass: PropTypes.string,
     selectSpacingClass: PropTypes.string,
     options: PropTypes.array,
@@ -175,6 +177,7 @@ DynamicSelectInput.propTypes = {
 
 DynamicSelectInput.defaultProps = {
     id: 'dynamicSelectInputId',
+    name: 'dynamicSelectInputId',
     value: [],
     placeholder: 'Choose a value',
     options: [],

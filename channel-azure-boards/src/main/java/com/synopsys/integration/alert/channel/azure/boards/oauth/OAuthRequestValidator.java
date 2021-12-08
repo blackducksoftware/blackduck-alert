@@ -49,6 +49,7 @@ public class OAuthRequestValidator {
         return !requestMap.isEmpty();
     }
 
+    //TODO Currently being used by AzureBoards to clear all requests when the user deletes a config. Will need to update this when new OAuth user is introduced
     public void removeAllRequests() {
         // NOTE: If there are multiple OAuth clients make sure removeAllRequests is used correctly.
         // Do not want to remove requests for other OAuth clients inadvertently.
@@ -61,5 +62,10 @@ public class OAuthRequestValidator {
             .map(Map.Entry::getKey)
             .forEach(this::removeAuthorizationRequest);
 
+    }
+
+    public void removeRequestsOlderThan5MinutesAgo() {
+        Instant fiveMinutesAgo = Instant.now().minusSeconds(300);
+        removeRequestsOlderThanInstant(fiveMinutesAgo);
     }
 }
