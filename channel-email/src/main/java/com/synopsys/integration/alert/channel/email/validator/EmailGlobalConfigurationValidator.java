@@ -24,6 +24,9 @@ public class EmailGlobalConfigurationValidator {
 
     public ValidationResponseModel validate(EmailGlobalConfigModel model) {
         Set<AlertFieldStatus> statuses = new HashSet<>();
+        if (StringUtils.isBlank(model.getName())) {
+            statuses.add(AlertFieldStatus.error("name", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
+        }
         if (model.getSmtpHost().filter(StringUtils::isNotBlank).isEmpty()) {
             statuses.add(AlertFieldStatus.error("host", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
         }

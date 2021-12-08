@@ -15,6 +15,8 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurat
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 
 public interface ConfigurationAccessor<T extends AlertSerializableModel> {
+    String DEFAULT_CONFIGURATION_NAME = "default-configuration";
+
     long getConfigurationCount();
 
     Optional<T> getConfiguration(UUID id);
