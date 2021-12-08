@@ -187,6 +187,7 @@ public class SettingsProxyCrudActionsTest {
 
     private SettingsProxyModel createSettingsProxyModel() {
         SettingsProxyModel settingsProxyModel = new SettingsProxyModel();
+        settingsProxyModel.setName(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME);
         settingsProxyModel.setProxyHost(HOST);
         settingsProxyModel.setProxyPort(PORT);
         settingsProxyModel.setProxyUsername(USERNAME);

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,7 @@ import com.synopsys.integration.alert.channel.email.database.accessor.EmailGloba
 import com.synopsys.integration.alert.channel.email.distribution.address.EmailAddressGatherer;
 import com.synopsys.integration.alert.channel.email.distribution.address.JobEmailAddressValidator;
 import com.synopsys.integration.alert.channel.email.distribution.address.ValidatedEmailAddresses;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.service.email.EmailMessagingService;
@@ -102,13 +104,17 @@ public class EmailChannelTestIT {
 
     private EmailGlobalConfigModel createEmailGlobalConfig() {
         EmailGlobalConfigModel emailGlobalConfigModel = new EmailGlobalConfigModel();
+        emailGlobalConfigModel.setName(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME);
         emailGlobalConfigModel.setSmtpHost(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST));
         emailGlobalConfigModel.setSmtpFrom(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM));
         emailGlobalConfigModel.setSmtpUsername(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_USER));
         emailGlobalConfigModel.setSmtpPassword(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PASSWORD));
 
         emailGlobalConfigModel.setSmtpAuth(Boolean.parseBoolean(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_AUTH)));
-        emailGlobalConfigModel.setSmtpPort(Integer.parseInt(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PORT)));
+        String port = testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PORT);
+        if (StringUtils.isNotBlank(port)) {
+            emailGlobalConfigModel.setSmtpPort(Integer.parseInt(port));
+        }
         Map<String, String> properties = Map.of(TestPropertyKey.TEST_EMAIL_SMTP_EHLO.getPropertyKey(), testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_EHLO));
         emailGlobalConfigModel.setAdditionalJavaMailProperties(properties);
         return emailGlobalConfigModel;
