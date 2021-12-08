@@ -118,6 +118,7 @@ public class SettingsProxyConfigAccessor implements ConfigurationAccessor<Settin
                 lastUpdatedFormatted = DateUtils.formatDate(proxyConfiguration.getLastUpdated(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
             }
             newModel.setId(String.valueOf(proxyConfiguration.getConfigurationId()));
+            newModel.setName(proxyConfiguration.getName());
             newModel.setProxyHost(proxyConfiguration.getHost());
             newModel.setProxyPort(proxyConfiguration.getPort());
             newModel.setProxyUsername(proxyConfiguration.getUsername());

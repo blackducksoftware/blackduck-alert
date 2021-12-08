@@ -121,6 +121,7 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
                 lastUpdatedFormatted = DateUtils.formatDate(emailConfiguration.getLastUpdated(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
             }
             newModel.setId(String.valueOf(emailConfiguration.getConfigurationId()));
+            newModel.setName(emailConfiguration.getName());
             newModel.setSmtpHost(emailConfiguration.getSmtpHost());
             newModel.setSmtpPort(emailConfiguration.getSmtpPort());
             newModel.setSmtpFrom(emailConfiguration.getSmtpFrom());

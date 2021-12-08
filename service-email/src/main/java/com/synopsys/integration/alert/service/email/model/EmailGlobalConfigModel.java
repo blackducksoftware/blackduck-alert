@@ -30,6 +30,7 @@ public class EmailGlobalConfigModel extends ConfigWithMetadata implements Obfusc
         EmailGlobalConfigModel emailGlobalConfigModel = new EmailGlobalConfigModel();
 
         emailGlobalConfigModel.setId(getId());
+        emailGlobalConfigModel.setName(getName());
         emailGlobalConfigModel.setLastUpdated(getLastUpdated());
         emailGlobalConfigModel.setCreatedAt(getCreatedAt());
 
