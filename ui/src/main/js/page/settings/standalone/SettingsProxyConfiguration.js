@@ -54,9 +54,9 @@ const SettingsProxyConfiguration = ({
             setErrors={(formErrors) => setErrors(formErrors)}
             buttonIdPrefix={SETTINGS_INFO.key}
             getRequest={fetchData}
-            deleteRequest={() => ConfigurationRequestBuilder.createDeleteRequest(proxyRequestUrl, csrfToken, settingsProxyConfig.id)}
+            deleteRequest={() => ConfigurationRequestBuilder.createDeleteRequest(proxyRequestUrl, csrfToken)}
             createRequest={() => ConfigurationRequestBuilder.createNewConfigurationRequest(proxyRequestUrl, csrfToken, settingsProxyConfig)}
-            updateRequest={() => ConfigurationRequestBuilder.createUpdateRequest(proxyRequestUrl, csrfToken, settingsProxyConfig.id, settingsProxyConfig)}
+            updateRequest={() => ConfigurationRequestBuilder.createUpdateWithoutIdRequest(proxyRequestUrl, csrfToken, settingsProxyConfig)}
             validateRequest={() => ConfigurationRequestBuilder.createValidateRequest(proxyRequestUrl, csrfToken, settingsProxyConfig)}
             readonly={readOnly}
             displaySave={displaySave}
