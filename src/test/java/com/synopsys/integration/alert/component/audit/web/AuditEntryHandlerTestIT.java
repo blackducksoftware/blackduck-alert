@@ -17,6 +17,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.nio.charset.StandardCharsets;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -186,7 +188,7 @@ public class AuditEntryHandlerTestIT {
         assertEquals(1, auditEntry.getJobs().size());
 
         NotificationConfig notification = auditEntry.getNotification();
-        String createdAtStringValue = DateUtils.formatDate(savedNotificationEntity.getCreatedAt(), DateUtils.AUDIT_DATE_FORMAT);
+        String createdAtStringValue = DateUtils.formatDate(OffsetDateTime.ofInstant(savedNotificationEntity.getCreatedAt().toInstant(), ZoneOffset.systemDefault()), DateUtils.AUDIT_DATE_FORMAT);
         assertEquals(createdAtStringValue, notification.getCreatedAt());
         assertEquals(savedNotificationEntity.getNotificationType(), notification.getNotificationType());
         assertNotNull(notification.getContent());
