@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.UniqueConfigurationAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.util.DateUtils;
@@ -32,10 +32,12 @@ import com.synopsys.integration.alert.database.settings.proxy.SettingsProxyConfi
 import com.synopsys.integration.alert.database.settings.proxy.SettingsProxyConfigurationRepository;
 
 @Component
-public class SettingsProxyConfigAccessor implements ConfigurationAccessor<SettingsProxyModel> {
+public class SettingsProxyConfigAccessor implements UniqueConfigurationAccessor<SettingsProxyModel> {
     private final EncryptionUtility encryptionUtility;
     private final SettingsProxyConfigurationRepository settingsProxyConfigurationRepository;
     private final NonProxyHostsConfigurationRepository nonProxyHostsConfigurationRepository;
+
+    private final PageRequest pageRequest = PageRequest.of(AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE);
 
     public SettingsProxyConfigAccessor(
         EncryptionUtility encryptionUtility,
@@ -49,30 +51,22 @@ public class SettingsProxyConfigAccessor implements ConfigurationAccessor<Settin
 
     @Override
     @Transactional(readOnly = true)
-    public long getConfigurationCount() {
-        return settingsProxyConfigurationRepository.count();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Optional<SettingsProxyModel> getConfiguration(UUID id) {
-        return settingsProxyConfigurationRepository.findById(id).map(this::createConfigModel);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public AlertPagedModel<SettingsProxyModel> getConfigurationPage(int page, int size) {
-        Page<SettingsProxyConfigurationEntity> resultPage = settingsProxyConfigurationRepository.findAll(PageRequest.of(page, size));
-        List<SettingsProxyModel> pageContent = resultPage.getContent()
-                                                   .stream()
-                                                   .map(this::createConfigModel)
-                                                   .collect(Collectors.toList());
-        return new AlertPagedModel<>(resultPage.getTotalPages(), resultPage.getNumber(), resultPage.getSize(), pageContent);
+    public Optional<SettingsProxyModel> getConfiguration() {
+        Page<SettingsProxyConfigurationEntity> proxyConfigPage = settingsProxyConfigurationRepository.findAll(pageRequest);
+        return proxyConfigPage.getContent()
+                   .stream()
+                   .map(this::createConfigModel)
+                   .findFirst();
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public SettingsProxyModel createConfiguration(SettingsProxyModel configuration) {
+    public SettingsProxyModel createConfiguration(SettingsProxyModel configuration) throws AlertConfigurationException {
+        Optional<SettingsProxyModel> existingConfiguration = getConfiguration();
+        if (existingConfiguration.isPresent()) {
+            throw new AlertConfigurationException("A proxy config already exists.");
+        }
+
         OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
         UUID configurationId = UUID.randomUUID();
         configuration.setId(configurationId.toString());
@@ -87,9 +81,12 @@ public class SettingsProxyConfigAccessor implements ConfigurationAccessor<Settin
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public SettingsProxyModel updateConfiguration(UUID configurationId, SettingsProxyModel configuration) throws AlertConfigurationException {
-        SettingsProxyConfigurationEntity configurationEntity = settingsProxyConfigurationRepository.findById(configurationId)
-                                                                   .orElseThrow(() -> new AlertConfigurationException(String.format("Config with id '%s' did not exist", configurationId.toString())));
+    public SettingsProxyModel updateConfiguration(SettingsProxyModel configuration) throws AlertConfigurationException {
+        SettingsProxyConfigurationEntity configurationEntity = settingsProxyConfigurationRepository.findAll(pageRequest)
+                                                                   .stream()
+                                                                   .findFirst()
+                                                                   .orElseThrow(() -> new AlertConfigurationException("Proxy config does not exist"));
+        UUID configurationId = configurationEntity.getConfigurationId();
         OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
         SettingsProxyConfigurationEntity configurationToSave = toEntity(configurationId, configuration, configurationEntity.getCreatedAt(), currentTime);
         SettingsProxyConfigurationEntity savedProxyConfig = settingsProxyConfigurationRepository.save(configurationToSave);
@@ -102,10 +99,11 @@ public class SettingsProxyConfigAccessor implements ConfigurationAccessor<Settin
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public void deleteConfiguration(UUID configurationId) {
-        if (null != configurationId) {
-            settingsProxyConfigurationRepository.deleteById(configurationId);
-        }
+    public void deleteConfiguration() {
+        settingsProxyConfigurationRepository.findAll(pageRequest)
+            .stream()
+            .findFirst()
+            .ifPresent(settingsProxyConfigurationEntity -> settingsProxyConfigurationRepository.deleteById(settingsProxyConfigurationEntity.getConfigurationId()));
     }
 
     private SettingsProxyModel createConfigModel(SettingsProxyConfigurationEntity proxyConfiguration) {
