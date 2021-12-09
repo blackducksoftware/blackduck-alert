@@ -9,10 +9,10 @@ export const EMAIL_DISTRIBUTION_FIELD_KEYS = {
 };
 
 export const EMAIL_DISTRIBUTION_ATTACHMENT_OPTIONS = [
-    { label: 'NONE', value: 'NONE' },
-    { label: 'JSON', value: 'JSON' },
-    { label: 'XML', value: 'XML' },
-    { label: 'CSV', value: 'CSV' }
+    { label: 'None', value: 'NONE' },
+    { label: 'Json', value: 'JSON' },
+    { label: 'Xml', value: 'XML' },
+    { label: 'Csv', value: 'CSV' }
 ];
 
 export const EMAIL_DISTRIBUTION_ADDITIONAL_EMAIL_COLUMNS = [
