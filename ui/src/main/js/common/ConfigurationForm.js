@@ -95,7 +95,6 @@ const ConfigurationForm = ({
                 setErrorMessage(validateJson.message);
                 setErrors(HttpErrorUtilities.createErrorObject(validateJson));
             } else {
-                console.log(`Form data id: ${formDataId}`);
                 const request = (formDataId) ? () => updateRequest() : () => createRequest();
                 const saveResponse = await request();
                 if (saveResponse.ok) {
