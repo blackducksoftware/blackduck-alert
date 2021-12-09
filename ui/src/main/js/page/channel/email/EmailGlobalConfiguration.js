@@ -56,7 +56,7 @@ const EmailGlobalConfiguration = ({
             }
             setEmailConfig(firstResult);
         } else {
-            setEmailConfig({});
+            setEmailConfig({ name: 'default-configuration' });
         }
     };
 
