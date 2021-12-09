@@ -66,7 +66,7 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
     @Override
     @Transactional(readOnly = true)
     public Optional<EmailGlobalConfigModel> getConfigurationByName(String configurationName) {
-        return Optional.empty();
+        return emailConfigurationRepository.findByName(configurationName).map(this::createConfigModel);
     }
 
     @Override

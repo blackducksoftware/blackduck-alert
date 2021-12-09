@@ -62,7 +62,7 @@ public class SettingsProxyConfigAccessor implements ConfigurationAccessor<Settin
     @Override
     @Transactional(readOnly = true)
     public Optional<SettingsProxyModel> getConfigurationByName(String configurationName) {
-        return Optional.empty();
+        return settingsProxyConfigurationRepository.findByName(configurationName).map(this::createConfigModel);
     }
 
     @Override
