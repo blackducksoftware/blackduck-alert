@@ -19,7 +19,7 @@ public interface BlackDuckJobNotificationTypeRepository extends JpaRepository<Bl
     @Query("DELETE FROM BlackDuckJobNotificationTypeEntity entity"
                + " WHERE entity.jobId = :jobId"
     )
-    @Modifying
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     void bulkDeleteAllByJobId(@Param("jobId") UUID jobId);
 
     List<BlackDuckJobNotificationTypeEntity> findByJobId(UUID jobId);

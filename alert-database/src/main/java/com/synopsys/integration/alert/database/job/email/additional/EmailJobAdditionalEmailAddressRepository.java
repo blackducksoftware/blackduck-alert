@@ -21,7 +21,7 @@ public interface EmailJobAdditionalEmailAddressRepository extends JpaRepository<
     @Query("DELETE FROM EmailJobAdditionalEmailAddressEntity entity"
                + " WHERE entity.jobId = :jobId"
     )
-    @Modifying
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     void bulkDeleteByJobId(@Param("jobId") UUID jobId);
 
 }
