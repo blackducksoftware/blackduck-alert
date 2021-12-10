@@ -65,6 +65,12 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
 
     @Override
     @Transactional(readOnly = true)
+    public Optional<EmailGlobalConfigModel> getConfigurationByName(String configurationName) {
+        return emailConfigurationRepository.findByName(configurationName).map(this::createConfigModel);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public AlertPagedModel<EmailGlobalConfigModel> getConfigurationPage(int page, int size) {
         Page<EmailConfigurationEntity> resultPage = emailConfigurationRepository.findAll(PageRequest.of(page, size));
         List<EmailGlobalConfigModel> pageContent = resultPage.getContent()

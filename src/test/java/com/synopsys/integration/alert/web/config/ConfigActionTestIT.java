@@ -3,6 +3,7 @@ package com.synopsys.integration.alert.web.config;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -31,6 +32,7 @@ import com.synopsys.integration.alert.component.settings.descriptor.SettingsDesc
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.web.api.config.ConfigActions;
+import com.synopsys.integration.alert.web.api.config.GlobalFieldModelToConcreteConversionService;
 
 import junit.framework.AssertionFailedError;
 
@@ -61,8 +63,9 @@ public class ConfigActionTestIT {
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
         Mockito.when(authorizationManager.hasDeletePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
         Mockito.when(authorizationManager.hasWritePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
+        GlobalFieldModelToConcreteConversionService concreteConversionService = new GlobalFieldModelToConcreteConversionService(List.of(), descriptorMap);
         ConfigActions configActions = new ConfigActions(authorizationManager, descriptorAccessor, configurationModelConfigurationAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter, descriptorMap,
-            pkixErrorResponseFactory, encryptionUtility, settingsDescriptorKey);
+            pkixErrorResponseFactory, encryptionUtility, settingsDescriptorKey, concreteConversionService);
         ConfigurationFieldModel proxyHost = ConfigurationFieldModel.create(ProxyManager.KEY_PROXY_HOST);
         proxyHost.setFieldValue("proxyHost");
         ConfigurationFieldModel proxyPort = ConfigurationFieldModel.create(ProxyManager.KEY_PROXY_PORT);

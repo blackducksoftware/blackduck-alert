@@ -61,12 +61,18 @@ public class SettingsProxyConfigAccessor implements ConfigurationAccessor<Settin
 
     @Override
     @Transactional(readOnly = true)
+    public Optional<SettingsProxyModel> getConfigurationByName(String configurationName) {
+        return settingsProxyConfigurationRepository.findByName(configurationName).map(this::createConfigModel);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public AlertPagedModel<SettingsProxyModel> getConfigurationPage(int page, int size) {
         Page<SettingsProxyConfigurationEntity> resultPage = settingsProxyConfigurationRepository.findAll(PageRequest.of(page, size));
         List<SettingsProxyModel> pageContent = resultPage.getContent()
-                                                   .stream()
-                                                   .map(this::createConfigModel)
-                                                   .collect(Collectors.toList());
+            .stream()
+            .map(this::createConfigModel)
+            .collect(Collectors.toList());
         return new AlertPagedModel<>(resultPage.getTotalPages(), resultPage.getNumber(), resultPage.getSize(), pageContent);
     }
 
