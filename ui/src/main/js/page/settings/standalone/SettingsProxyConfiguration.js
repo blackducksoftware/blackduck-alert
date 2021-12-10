@@ -35,7 +35,7 @@ const SettingsProxyConfiguration = ({
             }
             setSettingsProxyConfig(firstResult);
         } else {
-            setSettingsProxyConfig({});
+            setSettingsProxyConfig({ name: 'default-configuration' });
         }
     };
 

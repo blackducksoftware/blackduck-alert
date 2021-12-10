@@ -30,6 +30,11 @@ public class SettingsProxyValidator {
         Set<AlertFieldStatus> statuses = new HashSet<>();
         validateRequiredFieldIsNotBlank(statuses, StringUtils.isNotBlank(model.getName()), PROXY_CONFIGURATION_NAME);
 
+        if (model.getProxyPort().isEmpty() && model.getProxyHost().isEmpty()) {
+            validateRequiredFieldIsNotBlank(statuses, model.getProxyHost().isPresent(), PROXY_HOST_FIELD_NAME);
+            validateRequiredFieldIsNotBlank(statuses, model.getProxyPort().isPresent(), PROXY_PORT_FIELD_NAME);
+        }
+
         if (model.getProxyHost().isPresent() && model.getProxyPort().isEmpty()) {
             validateRequiredFieldIsNotBlank(statuses, model.getProxyPort().isPresent(), PROXY_PORT_FIELD_NAME);
         }
