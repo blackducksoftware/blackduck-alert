@@ -115,6 +115,7 @@ public class SettingsProxyValidatorTest {
     public void validateNonProxyHostsTest() {
         SettingsProxyModel settingsProxyModel = new SettingsProxyModel();
         settingsProxyModel.setName(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME);
+        settingsProxyModel.setProxyPort(PORT);
         settingsProxyModel.setNonProxyHosts(List.of("nonProxyHost"));
 
         ValidationResponseModel validationResponseModel = settingsProxyValidator.validate(settingsProxyModel);
