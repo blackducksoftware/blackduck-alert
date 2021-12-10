@@ -147,7 +147,7 @@ public class SettingsProxyConfigAccessor implements ConfigurationAccessor<Settin
     }
 
     private SettingsProxyConfigurationEntity toEntity(UUID configurationId, SettingsProxyModel configuration, OffsetDateTime createdTime, OffsetDateTime lastUpdated) {
-        String host = configuration.getProxyHost().orElseThrow(null);
+        String host = configuration.getProxyHost().orElse(null);
         Integer port = configuration.getProxyPort().orElse(null);
         String username = configuration.getProxyUsername().orElse(null);
         String password = configuration.getProxyPassword().map(encryptionUtility::encrypt).orElse(null);
