@@ -35,7 +35,7 @@ public class GlobalFieldModelToConcreteConversionService {
             .collect(Collectors.toMap(GlobalFieldModelToConcreteSaveActions::getDescriptorKey, Function.identity()));
     }
 
-    public void createConcreteModel(FieldModel fieldModel) {
+    public void createDefaultConcreteModel(FieldModel fieldModel) {
         descriptorMap.getDescriptorKey(fieldModel.getDescriptorName())
             .filter(conversionActionMap::containsKey)
             .map(conversionActionMap::get)
@@ -43,11 +43,18 @@ public class GlobalFieldModelToConcreteConversionService {
 
     }
 
-    public void updateConcreteModel(FieldModel fieldModel) {
+    public void updateDefaultConcreteModel(FieldModel fieldModel) {
         descriptorMap.getDescriptorKey(fieldModel.getDescriptorName())
             .filter(conversionActionMap::containsKey)
             .map(conversionActionMap::get)
             .ifPresent(conversionAction -> convertToConcrete(fieldModel, conversionAction::updateConcreteModel));
+    }
+
+    public void deleteDefaultConcreteModel(FieldModel fieldModel) {
+        descriptorMap.getDescriptorKey(fieldModel.getDescriptorName())
+            .filter(conversionActionMap::containsKey)
+            .map(conversionActionMap::get)
+            .ifPresent(conversionAction -> convertToConcrete(fieldModel, conversionAction::deleteConcreteModel));
     }
 
     private void convertToConcrete(FieldModel fieldModel, Consumer<FieldModel> conversionAction) {

@@ -17,4 +17,6 @@ public interface GlobalFieldModelToConcreteSaveActions {
     void updateConcreteModel(FieldModel fieldModel);
 
     void createConcreteModel(FieldModel fieldModel);
+
+    void deleteConcreteModel(FieldModel fieldModel);
 }

@@ -29,7 +29,7 @@ public class GlobalFieldModelToConcreteConversionServiceTest {
         FieldModel fieldModel = new FieldModel(TEST_DESCRIPTOR_KEY, ConfigContextEnum.GLOBAL.name(), Map.of());
 
         GlobalFieldModelToConcreteConversionService conversionService = new GlobalFieldModelToConcreteConversionService(fieldModelSaveActions, descriptorMap);
-        conversionService.createConcreteModel(fieldModel);
+        conversionService.createDefaultConcreteModel(fieldModel);
         assertTrue(saveActions.wasCreatedCalled());
     }
 
@@ -41,8 +41,20 @@ public class GlobalFieldModelToConcreteConversionServiceTest {
         FieldModel fieldModel = new FieldModel(TEST_DESCRIPTOR_KEY, ConfigContextEnum.GLOBAL.name(), Map.of());
 
         GlobalFieldModelToConcreteConversionService conversionService = new GlobalFieldModelToConcreteConversionService(fieldModelSaveActions, descriptorMap);
-        conversionService.updateConcreteModel(fieldModel);
+        conversionService.updateDefaultConcreteModel(fieldModel);
         assertTrue(saveActions.wasUpdateCalled());
+    }
+
+    @Test
+    public void deleteDescriptorFoundTest() {
+        TestSaveActions saveActions = new TestSaveActions(testDescriptorKey);
+        DescriptorMap descriptorMap = new DescriptorMap(List.of(testDescriptorKey), List.of());
+        List<TestSaveActions> fieldModelSaveActions = List.of(saveActions);
+        FieldModel fieldModel = new FieldModel(TEST_DESCRIPTOR_KEY, ConfigContextEnum.GLOBAL.name(), Map.of());
+
+        GlobalFieldModelToConcreteConversionService conversionService = new GlobalFieldModelToConcreteConversionService(fieldModelSaveActions, descriptorMap);
+        conversionService.deleteDefaultConcreteModel(fieldModel);
+        assertTrue(saveActions.wasDeleteCalled());
     }
 
     @Test
@@ -53,7 +65,7 @@ public class GlobalFieldModelToConcreteConversionServiceTest {
         FieldModel fieldModel = new FieldModel(TEST_DESCRIPTOR_KEY, ConfigContextEnum.GLOBAL.name(), Map.of());
 
         GlobalFieldModelToConcreteConversionService conversionService = new GlobalFieldModelToConcreteConversionService(fieldModelSaveActions, descriptorMap);
-        conversionService.createConcreteModel(fieldModel);
+        conversionService.createDefaultConcreteModel(fieldModel);
         assertFalse(saveActions.wasCreatedCalled());
     }
 
@@ -65,8 +77,20 @@ public class GlobalFieldModelToConcreteConversionServiceTest {
         FieldModel fieldModel = new FieldModel(TEST_DESCRIPTOR_KEY, ConfigContextEnum.GLOBAL.name(), Map.of());
 
         GlobalFieldModelToConcreteConversionService conversionService = new GlobalFieldModelToConcreteConversionService(fieldModelSaveActions, descriptorMap);
-        conversionService.updateConcreteModel(fieldModel);
+        conversionService.updateDefaultConcreteModel(fieldModel);
         assertFalse(saveActions.wasUpdateCalled());
+    }
+
+    @Test
+    public void deletedDescriptorMissingTest() {
+        TestSaveActions saveActions = new TestSaveActions(testDescriptorKey);
+        DescriptorMap descriptorMap = new DescriptorMap(List.of(), List.of());
+        List<TestSaveActions> fieldModelSaveActions = List.of(saveActions);
+        FieldModel fieldModel = new FieldModel(TEST_DESCRIPTOR_KEY, ConfigContextEnum.GLOBAL.name(), Map.of());
+
+        GlobalFieldModelToConcreteConversionService conversionService = new GlobalFieldModelToConcreteConversionService(fieldModelSaveActions, descriptorMap);
+        conversionService.deleteDefaultConcreteModel(fieldModel);
+        assertFalse(saveActions.wasDeleteCalled());
     }
 
     @Test
@@ -77,7 +101,7 @@ public class GlobalFieldModelToConcreteConversionServiceTest {
         FieldModel fieldModel = new FieldModel(TEST_DESCRIPTOR_KEY, ConfigContextEnum.DISTRIBUTION.name(), Map.of());
 
         GlobalFieldModelToConcreteConversionService conversionService = new GlobalFieldModelToConcreteConversionService(fieldModelSaveActions, descriptorMap);
-        conversionService.createConcreteModel(fieldModel);
+        conversionService.createDefaultConcreteModel(fieldModel);
         assertFalse(saveActions.wasCreatedCalled());
     }
 
@@ -89,13 +113,26 @@ public class GlobalFieldModelToConcreteConversionServiceTest {
         FieldModel fieldModel = new FieldModel(TEST_DESCRIPTOR_KEY, ConfigContextEnum.DISTRIBUTION.name(), Map.of());
 
         GlobalFieldModelToConcreteConversionService conversionService = new GlobalFieldModelToConcreteConversionService(fieldModelSaveActions, descriptorMap);
-        conversionService.updateConcreteModel(fieldModel);
+        conversionService.updateDefaultConcreteModel(fieldModel);
         assertFalse(saveActions.wasUpdateCalled());
+    }
+
+    @Test
+    public void deletedDescriptorFoundNotGlobalTest() {
+        TestSaveActions saveActions = new TestSaveActions(testDescriptorKey);
+        DescriptorMap descriptorMap = new DescriptorMap(List.of(testDescriptorKey), List.of());
+        List<TestSaveActions> fieldModelSaveActions = List.of(saveActions);
+        FieldModel fieldModel = new FieldModel(TEST_DESCRIPTOR_KEY, ConfigContextEnum.DISTRIBUTION.name(), Map.of());
+
+        GlobalFieldModelToConcreteConversionService conversionService = new GlobalFieldModelToConcreteConversionService(fieldModelSaveActions, descriptorMap);
+        conversionService.deleteDefaultConcreteModel(fieldModel);
+        assertFalse(saveActions.wasDeleteCalled());
     }
 
     private static class TestSaveActions implements GlobalFieldModelToConcreteSaveActions {
         private boolean createdCalled = false;
         private boolean updateCalled = false;
+        private boolean deleteCalled = false;
 
         private DescriptorKey descriptorKey;
 
@@ -111,6 +148,8 @@ public class GlobalFieldModelToConcreteConversionServiceTest {
             return updateCalled;
         }
 
+        public boolean wasDeleteCalled() {return deleteCalled;}
+
         @Override
         public DescriptorKey getDescriptorKey() {
             return descriptorKey;
@@ -124,6 +163,11 @@ public class GlobalFieldModelToConcreteConversionServiceTest {
         @Override
         public void createConcreteModel(FieldModel fieldModel) {
             this.createdCalled = true;
+        }
+
+        @Override
+        public void deleteConcreteModel(FieldModel fieldModel) {
+            this.deleteCalled = true;
         }
     }
 }

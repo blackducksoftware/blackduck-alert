@@ -66,4 +66,12 @@ public class EmailGlobalFieldModelSaveActions implements GlobalFieldModelToConcr
             configurationAccessor.createConfiguration(model);
         }
     }
+
+    @Override
+    public void deleteConcreteModel(FieldModel fieldModel) {
+        Optional<UUID> defaultConfigurationId = configurationAccessor.getConfigurationByName(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME)
+            .map(EmailGlobalConfigModel::getId)
+            .map(UUID::fromString);
+        defaultConfigurationId.ifPresent(configurationAccessor::deleteConfiguration);
+    }
 }
