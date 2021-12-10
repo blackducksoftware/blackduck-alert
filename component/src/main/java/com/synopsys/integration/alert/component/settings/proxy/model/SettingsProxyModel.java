@@ -67,6 +67,7 @@ public class SettingsProxyModel extends ConfigWithMetadata implements Obfuscated
         SettingsProxyModel settingsProxyModel = new SettingsProxyModel();
 
         settingsProxyModel.setId(getId());
+        settingsProxyModel.setName(getName());
         settingsProxyModel.setLastUpdated(getLastUpdated());
         settingsProxyModel.setCreatedAt(getCreatedAt());
 

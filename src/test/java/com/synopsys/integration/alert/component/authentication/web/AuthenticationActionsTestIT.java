@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -107,7 +108,7 @@ public class AuthenticationActionsTestIT {
         HttpServletRequest servletRequest = new MockHttpServletRequest();
         HttpServletResponse servletResponse = new MockHttpServletResponse();
         // add a user test then delete a user.
-        String userName = properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_ACTIVE_USER);
+        String userName = String.format("testuser_%s", UUID.randomUUID());
         mockLoginRestModel.setAlertUsername(userName);
         AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, csrfTokenRepository);
         userAccessor.addUser(userName, mockLoginRestModel.getAlertPassword(), "");

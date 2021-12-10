@@ -10,6 +10,7 @@ package com.synopsys.integration.alert.component.settings.proxy.validator;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
@@ -19,6 +20,7 @@ import com.synopsys.integration.alert.component.settings.proxy.model.SettingsPro
 
 @Component
 public class SettingsProxyValidator {
+    public static final String PROXY_CONFIGURATION_NAME = "name";
     public static final String PROXY_HOST_FIELD_NAME = "proxyHost";
     public static final String PROXY_PORT_FIELD_NAME = "proxyPort";
     public static final String PROXY_USERNAME_FIELD_NAME = "proxyUsername";
@@ -26,6 +28,13 @@ public class SettingsProxyValidator {
 
     public ValidationResponseModel validate(SettingsProxyModel model) {
         Set<AlertFieldStatus> statuses = new HashSet<>();
+        validateRequiredFieldIsNotBlank(statuses, StringUtils.isNotBlank(model.getName()), PROXY_CONFIGURATION_NAME);
+
+        if (model.getProxyPort().isEmpty() && model.getProxyHost().isEmpty()) {
+            validateRequiredFieldIsNotBlank(statuses, model.getProxyHost().isPresent(), PROXY_HOST_FIELD_NAME);
+            validateRequiredFieldIsNotBlank(statuses, model.getProxyPort().isPresent(), PROXY_PORT_FIELD_NAME);
+        }
+
         if (model.getProxyHost().isPresent() && model.getProxyPort().isEmpty()) {
             validateRequiredFieldIsNotBlank(statuses, model.getProxyPort().isPresent(), PROXY_PORT_FIELD_NAME);
         }

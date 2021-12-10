@@ -61,12 +61,18 @@ public class SettingsProxyConfigAccessor implements ConfigurationAccessor<Settin
 
     @Override
     @Transactional(readOnly = true)
+    public Optional<SettingsProxyModel> getConfigurationByName(String configurationName) {
+        return settingsProxyConfigurationRepository.findByName(configurationName).map(this::createConfigModel);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public AlertPagedModel<SettingsProxyModel> getConfigurationPage(int page, int size) {
         Page<SettingsProxyConfigurationEntity> resultPage = settingsProxyConfigurationRepository.findAll(PageRequest.of(page, size));
         List<SettingsProxyModel> pageContent = resultPage.getContent()
-                                                   .stream()
-                                                   .map(this::createConfigModel)
-                                                   .collect(Collectors.toList());
+            .stream()
+            .map(this::createConfigModel)
+            .collect(Collectors.toList());
         return new AlertPagedModel<>(resultPage.getTotalPages(), resultPage.getNumber(), resultPage.getSize(), pageContent);
     }
 
@@ -117,6 +123,8 @@ public class SettingsProxyConfigAccessor implements ConfigurationAccessor<Settin
             if (null != proxyConfiguration.getLastUpdated()) {
                 lastUpdatedFormatted = DateUtils.formatDate(proxyConfiguration.getLastUpdated(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
             }
+            newModel.setId(String.valueOf(proxyConfiguration.getConfigurationId()));
+            newModel.setName(proxyConfiguration.getName());
             newModel.setProxyHost(proxyConfiguration.getHost());
             newModel.setProxyPort(proxyConfiguration.getPort());
             newModel.setProxyUsername(proxyConfiguration.getUsername());
@@ -125,7 +133,6 @@ public class SettingsProxyConfigAccessor implements ConfigurationAccessor<Settin
             }
             newModel.setNonProxyHosts(getNonProxyHosts(proxyConfiguration.getNonProxyHosts()));
         }
-        newModel.setId(String.valueOf(proxyConfiguration.getConfigurationId()));
         newModel.setCreatedAt(createdAtFormatted);
         newModel.setLastUpdated(lastUpdatedFormatted);
 
@@ -140,12 +147,12 @@ public class SettingsProxyConfigAccessor implements ConfigurationAccessor<Settin
     }
 
     private SettingsProxyConfigurationEntity toEntity(UUID configurationId, SettingsProxyModel configuration, OffsetDateTime createdTime, OffsetDateTime lastUpdated) {
-        String host = configuration.getProxyHost().orElseThrow(null);
+        String host = configuration.getProxyHost().orElse(null);
         Integer port = configuration.getProxyPort().orElse(null);
         String username = configuration.getProxyUsername().orElse(null);
         String password = configuration.getProxyPassword().map(encryptionUtility::encrypt).orElse(null);
 
-        return new SettingsProxyConfigurationEntity(configurationId, createdTime, lastUpdated, host, port, username, password, List.of());
+        return new SettingsProxyConfigurationEntity(configurationId, configuration.getName(), createdTime, lastUpdated, host, port, username, password, List.of());
     }
 
     private List<NonProxyHostConfigurationEntity> toNonProxyHostEntityList(UUID configurationId, SettingsProxyModel configuration) {

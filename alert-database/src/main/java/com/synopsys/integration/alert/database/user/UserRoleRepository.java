@@ -26,6 +26,6 @@ public interface UserRoleRepository extends JpaRepository<UserRoleRelation, User
     @Query("DELETE FROM UserRoleRelation userRoleRelation"
                + " WHERE userRoleRelation.userId = :userId"
     )
-    @Modifying
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     void bulkDeleteAllByUserId(@Param("userId") Long userId);
 }

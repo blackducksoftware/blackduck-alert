@@ -31,8 +31,8 @@ import com.synopsys.integration.alert.common.descriptor.config.field.errors.Aler
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.FieldStatusSeverity;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.service.email.EmailTarget;
 import com.synopsys.integration.alert.service.email.JavamailPropertiesFactory;
@@ -88,9 +88,7 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
         }
 
         // Distribution
-        AlertPagedModel<EmailGlobalConfigModel> configurations = emailGlobalConfigAccessor.getConfigurationPage(AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE);
-        EmailGlobalConfigModel emailServerConfiguration = configurations.getModels().stream()
-            .findFirst()
+        EmailGlobalConfigModel emailServerConfiguration = emailGlobalConfigAccessor.getConfigurationByName(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME)
             .orElseThrow(() -> new AlertConfigurationException("ERROR: Missing Email global config."));
 
         SmtpConfig smtpConfig = SmtpConfig.builder()

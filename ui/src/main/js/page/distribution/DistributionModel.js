@@ -49,15 +49,15 @@ export const DISTRIBUTION_FREQUENCY_OPTIONS = [
 ];
 
 export const DISTRIBUTION_NOTIFICATION_TYPE_OPTIONS = [
-    { label: 'LICENSE_LIMIT', value: 'LICENSE_LIMIT' },
-    { label: 'POLICY_OVERRIDE', value: 'POLICY_OVERRIDE' },
-    { label: 'RULE_VIOLATION', value: 'RULE_VIOLATION' },
-    { label: 'RULE_VIOLATION_CLEARED', value: 'RULE_VIOLATION_CLEARED' },
-    { label: 'VULNERABILITY', value: 'VULNERABILITY' },
-    { label: 'BOM_EDIT', value: 'BOM_EDIT' },
-    { label: 'PROJECT', value: 'PROJECT' },
-    { label: 'PROJECT_VERSION', value: 'PROJECT_VERSION' },
-    { label: 'COMPONENT_UNKNOWN_VERSION', value: 'COMPONENT_UNKNOWN_VERSION' }
+    { label: 'License Limit', value: 'LICENSE_LIMIT' },
+    { label: 'Policy Override', value: 'POLICY_OVERRIDE' },
+    { label: 'Rule Violation', value: 'RULE_VIOLATION' },
+    { label: 'Rule Violation Cleared', value: 'RULE_VIOLATION_CLEARED' },
+    { label: 'Vulnerability', value: 'VULNERABILITY' },
+    { label: 'Bom Edit', value: 'BOM_EDIT' },
+    { label: 'Project', value: 'PROJECT' },
+    { label: 'Project Version', value: 'PROJECT_VERSION' },
+    { label: 'Component Unknown Version', value: 'COMPONENT_UNKNOWN_VERSION' }
 ];
 
 export const DISTRIBUTION_CHANNEL_OPTIONS = [
@@ -82,10 +82,10 @@ export const DISTRIBUTION_PROCESSING_DESCRIPTIONS = {
 };
 
 export const DISTRIBUTION_VULNERABILITY_SEVERITY_OPTIONS = [
-    { label: 'CRITICAL', value: 'CRITICAL' },
-    { label: 'HIGH', value: 'HIGH' },
-    { label: 'LOW', value: 'LOW' },
-    { label: 'MEDIUM', value: 'MEDIUM' }
+    { label: 'Critical', value: 'CRITICAL' },
+    { label: 'High', value: 'HIGH' },
+    { label: 'Low', value: 'LOW' },
+    { label: 'Medium', value: 'MEDIUM' }
 ];
 
 export const DISTRIBUTION_PROJECT_SELECT_COLUMNS = [

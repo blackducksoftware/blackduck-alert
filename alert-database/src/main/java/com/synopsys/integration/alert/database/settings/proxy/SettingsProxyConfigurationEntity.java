@@ -27,6 +27,8 @@ public class SettingsProxyConfigurationEntity extends BaseEntity {
     @Id
     @Column(name = "configuration_id")
     private UUID configurationId;
+    @Column(name = "name")
+    private String name;
     @Column(name = "created_at")
     private OffsetDateTime createdAt;
     @Column(name = "last_updated")
@@ -47,8 +49,11 @@ public class SettingsProxyConfigurationEntity extends BaseEntity {
     public SettingsProxyConfigurationEntity() {
     }
 
-    public SettingsProxyConfigurationEntity(UUID configurationId, OffsetDateTime createdAt, OffsetDateTime lastUpdated, String host, Integer port, String username, String password, List<NonProxyHostConfigurationEntity> nonProxyHosts) {
+    public SettingsProxyConfigurationEntity(UUID configurationId, String name, OffsetDateTime createdAt, OffsetDateTime lastUpdated, String host, Integer port, String username,
+        String password,
+        List<NonProxyHostConfigurationEntity> nonProxyHosts) {
         this.configurationId = configurationId;
+        this.name = name;
         this.createdAt = createdAt;
         this.lastUpdated = lastUpdated;
         this.host = host;
@@ -64,6 +69,14 @@ public class SettingsProxyConfigurationEntity extends BaseEntity {
 
     public void setConfigurationId(UUID configurationId) {
         this.configurationId = configurationId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public OffsetDateTime getCreatedAt() {

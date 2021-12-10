@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import com.synopsys.integration.alert.api.event.AlertEventHandler;
+import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.api.event.NotificationReceivedEvent;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
@@ -35,11 +36,13 @@ public class NotificationReceivedEventHandler implements AlertEventHandler<Notif
 
     private final NotificationAccessor notificationAccessor;
     private final NotificationProcessor notificationProcessor;
+    private final EventManager eventManager;
 
     @Autowired
-    public NotificationReceivedEventHandler(NotificationAccessor notificationAccessor, NotificationProcessor notificationProcessor) {
+    public NotificationReceivedEventHandler(NotificationAccessor notificationAccessor, NotificationProcessor notificationProcessor, EventManager eventManager) {
         this.notificationAccessor = notificationAccessor;
         this.notificationProcessor = notificationProcessor;
+        this.eventManager = eventManager;
     }
 
     @Override
@@ -60,19 +63,16 @@ public class NotificationReceivedEventHandler implements AlertEventHandler<Notif
     }
 
     private void processNotifications() {
-        int numPagesProcessed = 0;
-
         AlertPagedModel<AlertNotificationModel> pageOfAlertNotificationModels = notificationAccessor.getFirstPageOfNotificationsNotProcessed(PAGE_SIZE);
-        while (!CollectionUtils.isEmpty(pageOfAlertNotificationModels.getModels())) {
+        if (!CollectionUtils.isEmpty(pageOfAlertNotificationModels.getModels())) {
             List<AlertNotificationModel> notifications = pageOfAlertNotificationModels.getModels();
             logger.info("Starting to process {} notifications.", notifications.size());
             notificationProcessor.processNotifications(notifications, List.of(FrequencyType.REAL_TIME));
-            numPagesProcessed++;
             pageOfAlertNotificationModels = notificationAccessor.getFirstPageOfNotificationsNotProcessed(PAGE_SIZE);
-            logger.trace("Processing Page: {}. New pages found: {}",
-                numPagesProcessed,
-                pageOfAlertNotificationModels.getTotalPages());
+            if (!CollectionUtils.isEmpty(pageOfAlertNotificationModels.getModels())) {
+                eventManager.sendEvent(new NotificationReceivedEvent());
+            }
         }
+        logger.info("Finished processing event for notifications.");
     }
-
 }

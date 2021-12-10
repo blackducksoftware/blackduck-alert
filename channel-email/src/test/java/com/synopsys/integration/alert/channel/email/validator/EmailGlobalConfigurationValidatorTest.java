@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
@@ -26,6 +27,7 @@ public class EmailGlobalConfigurationValidatorTest {
     public void verifyValidConfig() {
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailGlobalConfigModel model = new EmailGlobalConfigModel();
+        model.setName(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME);
         model.setSmtpHost("host");
         model.setSmtpFrom("from");
         model.setSmtpAuth(true);
@@ -38,13 +40,28 @@ public class EmailGlobalConfigurationValidatorTest {
     }
 
     @Test
+    public void verifyNameMissingConfig() {
+        EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
+        EmailGlobalConfigModel model = new EmailGlobalConfigModel();
+        model.setSmtpHost("host");
+        model.setSmtpFrom("from");
+        model.setSmtpAuth(true);
+        model.setSmtpUsername("user");
+        model.setSmtpPassword("password");
+
+        ValidationResponseModel validationResponseModel = validator.validate(model);
+        Collection<AlertFieldStatus> alertFieldStatuses = validationResponseModel.getErrors().values();
+        assertEquals(1, alertFieldStatuses.size(), "There were errors no errors when 1 for the name was expected.");
+    }
+
+    @Test
     public void verifyEmptyConfig() {
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailGlobalConfigModel model = new EmailGlobalConfigModel();
 
         ValidationResponseModel validationResponseModel = validator.validate(model);
         Collection<AlertFieldStatus> alertFieldStatuses = validationResponseModel.getErrors().values();
-        assertEquals(2, alertFieldStatuses.size(), "Validation found more or fewer errors than expected.");
+        assertEquals(3, alertFieldStatuses.size(), "Validation found more or fewer errors than expected.");
         for (AlertFieldStatus status : alertFieldStatuses) {
             assertEquals(ConfigurationFieldValidator.REQUIRED_FIELD_MISSING_MESSAGE, status.getFieldMessage(), "Validation had unexpected field message.");
         }
@@ -54,6 +71,7 @@ public class EmailGlobalConfigurationValidatorTest {
     public void verifyMissingAuth() {
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailGlobalConfigModel model = new EmailGlobalConfigModel();
+        model.setName(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME);
         model.setSmtpHost("host");
         model.setSmtpFrom("from");
         model.setSmtpAuth(true);
@@ -70,6 +88,7 @@ public class EmailGlobalConfigurationValidatorTest {
     public void verifyAuthNotProvided() {
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailGlobalConfigModel model = new EmailGlobalConfigModel();
+        model.setName(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME);
         model.setSmtpHost("host");
         model.setSmtpFrom("from");
         model.setSmtpUsername("user");
@@ -83,6 +102,7 @@ public class EmailGlobalConfigurationValidatorTest {
     public void verifyMissingAuthPassword() {
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailGlobalConfigModel model = new EmailGlobalConfigModel();
+        model.setName(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME);
         model.setSmtpHost("host");
         model.setSmtpFrom("from");
         model.setSmtpAuth(true);

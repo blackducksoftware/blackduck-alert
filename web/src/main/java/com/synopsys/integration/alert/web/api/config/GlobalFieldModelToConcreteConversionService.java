@@ -1,8 +1,16 @@
+/*
+ * web
+ *
+ * Copyright (c) 2021 Synopsys, Inc.
+ *
+ * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.synopsys.integration.alert.web.api.config;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -28,29 +36,27 @@ public class GlobalFieldModelToConcreteConversionService {
     }
 
     public void createConcreteModel(FieldModel fieldModel) {
-        Optional<DescriptorKey> descriptor = descriptorMap.getDescriptorKey(fieldModel.getDescriptorName());
-        if (descriptor.isEmpty() || !isGlobalConfig(fieldModel)) {
-            // not a field model that can be converted.
-            return;
-        }
-
-        GlobalFieldModelToConcreteSaveActions conversionAction = conversionActionMap.get(descriptor.get());
-        if (null != conversionAction) {
-            conversionAction.createConcreteModel(fieldModel);
-        }
+        descriptorMap.getDescriptorKey(fieldModel.getDescriptorName())
+            .filter(conversionActionMap::containsKey)
+            .map(conversionActionMap::get)
+            .ifPresent(conversionAction -> convertToConcrete(fieldModel, conversionAction::createConcreteModel));
 
     }
 
     public void updateConcreteModel(FieldModel fieldModel) {
+        descriptorMap.getDescriptorKey(fieldModel.getDescriptorName())
+            .filter(conversionActionMap::containsKey)
+            .map(conversionActionMap::get)
+            .ifPresent(conversionAction -> convertToConcrete(fieldModel, conversionAction::updateConcreteModel));
+    }
+
+    private void convertToConcrete(FieldModel fieldModel, Consumer<FieldModel> conversionAction) {
         Optional<DescriptorKey> descriptor = descriptorMap.getDescriptorKey(fieldModel.getDescriptorName());
         if (descriptor.isEmpty() || !isGlobalConfig(fieldModel)) {
             // not a field model that can be converted.
             return;
         }
-        GlobalFieldModelToConcreteSaveActions conversionAction = conversionActionMap.get(descriptor.get());
-        if (null != conversionAction) {
-            conversionAction.updateConcreteModel(fieldModel);
-        }
+        conversionAction.accept(fieldModel);
     }
 
     private boolean isGlobalConfig(FieldModel fieldModel) {

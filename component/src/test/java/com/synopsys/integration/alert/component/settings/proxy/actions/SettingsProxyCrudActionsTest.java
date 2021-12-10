@@ -20,6 +20,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
@@ -173,6 +174,7 @@ public class SettingsProxyCrudActionsTest {
     private SettingsProxyConfigurationEntity createSettingsProxyConfigurationEntity(UUID id) {
         return new SettingsProxyConfigurationEntity(
             id,
+            ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME,
             DateUtils.createCurrentDateTimestamp(),
             DateUtils.createCurrentDateTimestamp(),
             HOST,
@@ -185,6 +187,7 @@ public class SettingsProxyCrudActionsTest {
 
     private SettingsProxyModel createSettingsProxyModel() {
         SettingsProxyModel settingsProxyModel = new SettingsProxyModel();
+        settingsProxyModel.setName(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME);
         settingsProxyModel.setProxyHost(HOST);
         settingsProxyModel.setProxyPort(PORT);
         settingsProxyModel.setProxyUsername(USERNAME);
