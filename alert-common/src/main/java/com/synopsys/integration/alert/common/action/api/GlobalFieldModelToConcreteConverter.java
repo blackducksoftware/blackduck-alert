@@ -7,10 +7,11 @@
  */
 package com.synopsys.integration.alert.common.action.api;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import java.util.Optional;
+
 import com.synopsys.integration.alert.common.rest.model.ConfigWithMetadata;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
-public interface GlobalFieldModelToConcreteConverter<E extends ConfigWithMetadata> {
-    <T extends AlertSerializableModel> T convert(FieldModel globalFieldModel);
+public interface GlobalFieldModelToConcreteConverter<T extends ConfigWithMetadata> {
+    Optional<T> convert(FieldModel globalFieldModel);
 }
