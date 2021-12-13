@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.channel.email.action;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import com.synopsys.integration.alert.channel.email.database.accessor.EmailGloba
 import com.synopsys.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.api.ConfigurationCrudHelper;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
@@ -51,6 +53,10 @@ public class EmailGlobalCrudActions {
     }
 
     public ActionResponse<EmailGlobalConfigModel> update(UUID id, EmailGlobalConfigModel requestResource) {
+        if (AlertRestConstants.EXISTING_SECURE_VALUE.equals(requestResource.getSmtpPassword())) {
+            String originalSmtpPassword = getOriginalSmtpPassword(id);
+            requestResource.setSmtpPassword(originalSmtpPassword);
+        }
         return configurationHelper.update(
             () -> validator.validate(requestResource),
             () -> configurationAccessor.getConfiguration(id).isPresent(),
@@ -63,5 +69,9 @@ public class EmailGlobalCrudActions {
             () -> configurationAccessor.getConfiguration(id).isPresent(),
             () -> configurationAccessor.deleteConfiguration(id)
         );
+    }
+
+    private String getOriginalSmtpPassword(UUID id) {
+        return configurationAccessor.getConfiguration(id).flatMap(EmailGlobalConfigModel::getSmtpPassword).orElse(null);
     }
 }

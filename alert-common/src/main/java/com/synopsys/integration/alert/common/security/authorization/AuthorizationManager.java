@@ -54,28 +54,28 @@ public class AuthorizationManager {
         PermissionKey permissionKey = new PermissionKey(context.name(), descriptorKey.getUniversalKey());
         Collection<String> roleNames = getCurrentUserRoleNames();
         return roleNames.stream()
-                   .filter(permissionCache::containsKey)
-                   .map(permissionCache::get)
-                   .map(object -> object.getOperations(permissionKey))
-                   .collect(Collectors.toSet());
+            .filter(permissionCache::containsKey)
+            .map(permissionCache::get)
+            .map(object -> object.getOperations(permissionKey))
+            .collect(Collectors.toSet());
     }
 
     public final boolean hasPermissions(ConfigContextEnum context, DescriptorKey descriptorKey) {
         PermissionKey permissionKey = new PermissionKey(context.name(), descriptorKey.getUniversalKey());
         Collection<String> roleNames = getCurrentUserRoleNames();
         return roleNames.stream()
-                   .filter(this::isAlertRole)
-                   .anyMatch(name -> permissionCache.containsKey(name) && permissionCache.get(name).hasPermissions(permissionKey));
+            .filter(this::isAlertRole)
+            .anyMatch(name -> permissionCache.containsKey(name) && permissionCache.get(name).hasPermissions(permissionKey));
     }
 
     public final boolean isReadOnly(ConfigContextEnum context, DescriptorKey descriptorKey) {
         PermissionKey permissionKey = new PermissionKey(context.name(), descriptorKey.getUniversalKey());
         Collection<String> roleNames = getCurrentUserRoleNames();
         return roleNames.stream()
-                   .filter(this::isAlertRole)
-                   .filter(permissionCache::containsKey)
-                   .map(permissionCache::get)
-                   .allMatch(permissions -> permissions.isReadOnly(permissionKey));
+            .filter(this::isAlertRole)
+            .filter(permissionCache::containsKey)
+            .map(permissionCache::get)
+            .allMatch(permissions -> permissions.isReadOnly(permissionKey));
     }
 
     public final boolean anyReadPermission(Collection<ConfigContextEnum> contexts, Collection<String> descriptorKeys) {
@@ -153,8 +153,8 @@ public class AuthorizationManager {
         PermissionKey permissionKey = new PermissionKey(context.name(), descriptorKey.getUniversalKey());
         Collection<String> roleNames = getCurrentUserRoleNames();
         return roleNames.stream()
-                   .filter(this::isAlertRole)
-                   .anyMatch(name -> permissionCache.containsKey(name) && permissionCache.get(name).hasPermissions(permissionKey, operations));
+            .filter(this::isAlertRole)
+            .anyMatch(name -> permissionCache.containsKey(name) && permissionCache.get(name).hasPermissions(permissionKey, operations));
     }
 
     public void updateRoleName(Long roleId, String roleName) throws AlertForbiddenOperationException {
@@ -192,18 +192,20 @@ public class AuthorizationManager {
     private boolean currentUserAnyPermission(AccessOperation operation, Collection<PermissionKey> permissionKeys) {
         Collection<String> roleNames = getCurrentUserRoleNames();
         return roleNames.stream()
-                   .anyMatch(name -> permissionCache.containsKey(name) && permissionCache.get(name).anyPermissionMatch(operation, permissionKeys));
+            .anyMatch(name -> permissionCache.containsKey(name) && permissionCache.get(name).anyPermissionMatch(operation, permissionKeys));
     }
 
     private boolean currentUserHasPermission(AccessOperation operation, ConfigContextEnum context, DescriptorKey descriptorKey) {
-        return currentUserHasPermission(operation, context.name(), descriptorKey.getUniversalKey());
+        return currentUserHasPermission(operation,
+            context.name(),
+            descriptorKey.getUniversalKey());
     }
 
     private boolean currentUserHasPermission(AccessOperation operation, String context, String descriptorKey) {
         PermissionKey permissionKey = new PermissionKey(context, descriptorKey);
         Collection<String> roleNames = getCurrentUserRoleNames();
         boolean hasPermission = roleNames.stream()
-                                    .anyMatch(name -> permissionCache.containsKey(name) && permissionCache.get(name).hasPermission(permissionKey, operation));
+            .anyMatch(name -> permissionCache.containsKey(name) && permissionCache.get(name).hasPermission(permissionKey, operation));
         if (!hasPermission) {
             logger.debug(String.format("User %s does not have permission: %s", getCurrentUserName().orElse("UNKNOWN"), operation.name()));
         }
@@ -216,9 +218,9 @@ public class AuthorizationManager {
             return Set.of();
         }
         return authentication.getAuthorities().stream()
-                   .map(GrantedAuthority::getAuthority)
-                   .filter(role -> role.startsWith(UserModel.ROLE_PREFIX))
-                   .map(role -> StringUtils.substringAfter(role, UserModel.ROLE_PREFIX)).collect(Collectors.toSet());
+            .map(GrantedAuthority::getAuthority)
+            .filter(role -> role.startsWith(UserModel.ROLE_PREFIX))
+            .map(role -> StringUtils.substringAfter(role, UserModel.ROLE_PREFIX)).collect(Collectors.toSet());
     }
 
     private Optional<String> getCurrentUserName() {

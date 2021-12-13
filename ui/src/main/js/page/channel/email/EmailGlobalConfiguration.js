@@ -13,6 +13,7 @@ import * as ConfigurationRequestBuilder from 'common/util/configurationRequestBu
 import * as fieldModelUtilities from 'common/util/fieldModelUtilities';
 import FluidFieldMappingField from 'common/input/mapping/FluidFieldMappingField';
 import NumberInput from 'common/input/NumberInput';
+import { EXISTING_SECURE_VALUE } from 'common/util/RestConstants';
 
 const EmailGlobalConfiguration = ({
     csrfToken, errorHandler, readonly, displayTest, displaySave, displayDelete
@@ -60,6 +61,16 @@ const EmailGlobalConfiguration = ({
         }
     };
 
+    const updateData = () => {
+        emailConfig[passwordName] = EXISTING_SECURE_VALUE;
+        return ConfigurationRequestBuilder.createUpdateRequest(emailRequestUrl, csrfToken, emailConfig.id, emailConfig);
+    };
+
+    const deleteData = () => {
+        setPasswordFromApiExists(false);
+        return ConfigurationRequestBuilder.createDeleteRequest(emailRequestUrl, csrfToken, emailConfig.id);
+    };
+
     return (
         <CommonGlobalConfiguration
             label={`${EMAIL_INFO.label} Beta (WIP)`}
@@ -74,8 +85,8 @@ const EmailGlobalConfiguration = ({
                 clearTestForm={() => setTestEmailAddress('')}
                 buttonIdPrefix={EMAIL_INFO.key}
                 getRequest={fetchData}
-                deleteRequest={() => ConfigurationRequestBuilder.createDeleteRequest(emailRequestUrl, csrfToken, emailConfig.id)}
-                updateRequest={() => ConfigurationRequestBuilder.createUpdateRequest(emailRequestUrl, csrfToken, emailConfig.id, emailConfig)}
+                deleteRequest={deleteData}
+                updateRequest={updateData}
                 createRequest={() => ConfigurationRequestBuilder.createNewConfigurationRequest(emailRequestUrl, csrfToken, emailConfig)}
                 validateRequest={() => ConfigurationRequestBuilder.createValidateRequest(emailRequestUrl, csrfToken, emailConfig)}
                 testRequest={() => ConfigurationRequestBuilder.createTestRequest(emailRequestUrl, csrfToken, emailConfig, `sendTo=${testEmailAddress}`)}
