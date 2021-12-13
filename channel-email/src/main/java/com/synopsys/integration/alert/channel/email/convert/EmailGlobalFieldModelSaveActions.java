@@ -10,12 +10,10 @@ package com.synopsys.integration.alert.channel.email.convert;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.synopsys.integration.alert.channel.email.action.EmailGlobalCrudActions;
 import com.synopsys.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
 import com.synopsys.integration.alert.common.action.api.GlobalFieldModelToConcreteSaveActions;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
@@ -26,13 +24,15 @@ import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel
 
 @Component
 public class EmailGlobalFieldModelSaveActions implements GlobalFieldModelToConcreteSaveActions {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final EmailGlobalFieldModelConverter emailFieldModelConverter;
+    private final EmailGlobalCrudActions configurationActions;
     private final EmailGlobalConfigAccessor configurationAccessor;
 
     @Autowired
-    public EmailGlobalFieldModelSaveActions(EmailGlobalFieldModelConverter emailFieldModelConverter, EmailGlobalConfigAccessor configurationAccessor) {
+    public EmailGlobalFieldModelSaveActions(EmailGlobalFieldModelConverter emailFieldModelConverter, EmailGlobalCrudActions configurationActions,
+        EmailGlobalConfigAccessor configurationAccessor) {
         this.emailFieldModelConverter = emailFieldModelConverter;
+        this.configurationActions = configurationActions;
         this.configurationAccessor = configurationAccessor;
     }
 
@@ -49,11 +49,7 @@ public class EmailGlobalFieldModelSaveActions implements GlobalFieldModelToConcr
         Optional<EmailGlobalConfigModel> emailGlobalConfigModel = emailFieldModelConverter.convert(fieldModel);
         if (defaultConfigurationId.isPresent() && emailGlobalConfigModel.isPresent()) {
             EmailGlobalConfigModel model = emailGlobalConfigModel.get();
-            try {
-                configurationAccessor.updateConfiguration(defaultConfigurationId.get(), model);
-            } catch (AlertConfigurationException ex) {
-                logger.error("Error updating default email configuration from field model", ex);
-            }
+            configurationActions.update(defaultConfigurationId.get(), model);
         }
     }
 
@@ -63,7 +59,7 @@ public class EmailGlobalFieldModelSaveActions implements GlobalFieldModelToConcr
         if (emailGlobalConfigModel.isPresent()) {
             EmailGlobalConfigModel model = emailGlobalConfigModel.get();
             model.setName(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME);
-            configurationAccessor.createConfiguration(model);
+            configurationActions.create(model);
         }
     }
 
@@ -72,6 +68,6 @@ public class EmailGlobalFieldModelSaveActions implements GlobalFieldModelToConcr
         Optional<UUID> defaultConfigurationId = configurationAccessor.getConfigurationByName(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME)
             .map(EmailGlobalConfigModel::getId)
             .map(UUID::fromString);
-        defaultConfigurationId.ifPresent(configurationAccessor::deleteConfiguration);
+        defaultConfigurationId.ifPresent(configurationActions::delete);
     }
 }
