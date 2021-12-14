@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -37,8 +38,24 @@ public class MockNotificationAccessor implements NotificationAccessor {
     }
 
     @Override
-    public List<AlertNotificationModel> findByCreatedAtBetween(OffsetDateTime startDate, OffsetDateTime endDate) {
-        return null;
+    public AlertPagedModel<AlertNotificationModel> findByCreatedAtBetween(OffsetDateTime startDate, OffsetDateTime endDate, int pageNumber, int pageSize) {
+        ArrayList<AlertNotificationModel> notifications = new ArrayList<>();
+        Predicate<AlertNotificationModel> beforePredicate = notification -> notification.getCreatedAt().isBefore(endDate) || notification.getCreatedAt().isEqual(endDate);
+        Predicate<AlertNotificationModel> afterPredicate = notification -> notification.getCreatedAt().isAfter(startDate) || notification.getCreatedAt().isEqual(startDate);
+        Predicate<AlertNotificationModel> withinRange = beforePredicate.and(afterPredicate);
+        for (AlertNotificationModel notification : alertNotificationModels) {
+            if (withinRange.test(notification)) {
+                notifications.add(notification);
+            }
+        }
+        Page<AlertNotificationModel> pageOfNotifications;
+        if (notifications.size() > 0) {
+            pageOfNotifications = new PageImpl<>(notifications);
+        } else {
+            pageOfNotifications = Page.empty();
+        }
+        return new AlertPagedModel<>(pageOfNotifications.getTotalPages(), pageOfNotifications.getNumber(), pageOfNotifications.getSize(), pageOfNotifications.getContent());
+
     }
 
     @Override

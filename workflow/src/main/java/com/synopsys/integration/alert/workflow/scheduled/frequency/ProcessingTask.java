@@ -19,6 +19,7 @@ import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.common.workflow.task.StartupScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
@@ -58,30 +59,35 @@ public abstract class ProcessingTask extends StartupScheduledTask {
     public void runTask() {
         int jobCountByFrequency = jobAccessor.countJobsByFrequency(frequencyType.name());
         if (jobCountByFrequency > 0) {
-            DateRange dateRange = getDateRange();
-            List<AlertNotificationModel> notificationList = read(dateRange);
-            logger.info("Processing {} notifications.", notificationList.size());
-            notificationProcessor.processNotifications(notificationList, List.of(frequencyType));
+            process();
             lastRunTime = DateUtils.createCurrentDateTimestamp();
         }
     }
 
-    public List<AlertNotificationModel> read(DateRange dateRange) {
+    private void process() {
+        int pageNumber = AlertPagedModel.DEFAULT_PAGE_NUMBER;
+        int pageSize = AlertPagedModel.DEFAULT_PAGE_SIZE;
+        DateRange dateRange = getDateRange();
+        AlertPagedModel<AlertNotificationModel> firstPage = read(dateRange, pageNumber, pageSize);
+
+        for (int currentPage = 0; currentPage < firstPage.getTotalPages(); currentPage++) {
+            List<AlertNotificationModel> notificationList = firstPage.getModels();
+            logger.info("Processing page {} of {}. {} notifications to process.", currentPage, firstPage.getTotalPages(), notificationList.size());
+            notificationProcessor.processNotifications(notificationList, List.of(frequencyType));
+        }
+    }
+
+    public AlertPagedModel<AlertNotificationModel> read(DateRange dateRange, int pageNumber, int pageSize) {
         try {
             String taskName = getTaskName();
             OffsetDateTime startDate = dateRange.getStart();
             OffsetDateTime endDate = dateRange.getEnd();
             logger.info("{} Reading Notifications Between {} and {} ", taskName, DateUtils.formatDateAsJsonString(startDate), DateUtils.formatDateAsJsonString(endDate));
-            List<AlertNotificationModel> entityList = notificationAccessor.findByCreatedAtBetween(startDate, endDate);
-            if (entityList.isEmpty()) {
-                return List.of();
-            } else {
-                return entityList;
-            }
+            return notificationAccessor.findByCreatedAtBetween(startDate, endDate, pageNumber, pageSize);
         } catch (Exception ex) {
             logger.error("Error reading Digest Notification Data", ex);
         }
-        return List.of();
+        return new AlertPagedModel<>(0, pageNumber, pageSize, List.of());
     }
 
 }

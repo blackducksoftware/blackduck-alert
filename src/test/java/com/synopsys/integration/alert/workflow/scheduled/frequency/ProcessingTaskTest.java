@@ -22,6 +22,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedDetails;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.database.api.DefaultNotificationAccessor;
@@ -74,7 +75,8 @@ class ProcessingTaskTest {
         TaskScheduler taskScheduler = Mockito.mock(TaskScheduler.class);
 
         DefaultNotificationAccessor notificationManager = Mockito.mock(DefaultNotificationAccessor.class);
-        Mockito.when(notificationManager.findByCreatedAtBetween(Mockito.any(OffsetDateTime.class), Mockito.any(OffsetDateTime.class))).thenReturn(modelList);
+        AlertPagedModel<AlertNotificationModel> page = new AlertPagedModel<>(1, AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE, modelList);
+        Mockito.when(notificationManager.findByCreatedAtBetween(Mockito.any(OffsetDateTime.class), Mockito.any(OffsetDateTime.class), Mockito.anyInt(), Mockito.anyInt())).thenReturn(page);
 
         StaticJobAccessor jobAccessor = Mockito.mock(StaticJobAccessor.class);
         Mockito.when(jobAccessor.countJobsByFrequency(Mockito.any())).thenReturn(1);
@@ -92,7 +94,7 @@ class ProcessingTaskTest {
 
         processingTask.run();
         Mockito.verify(processingTask).getDateRange();
-        Mockito.verify(processingTask).read(Mockito.any());
+        Mockito.verify(processingTask).read(Mockito.any(), Mockito.anyInt(), Mockito.anyInt());
     }
 
     @Test
@@ -108,10 +110,10 @@ class ProcessingTaskTest {
 
         ProcessingTask task = createTask(taskScheduler, notificationManager, notificationProcessor, taskManager, jobAccessor);
         DateRange dateRange = task.getDateRange();
-        Mockito.when(notificationManager.findByCreatedAtBetween(dateRange.getStart(), dateRange.getEnd())).thenReturn(modelList);
+        AlertPagedModel<AlertNotificationModel> page = new AlertPagedModel<>(1, AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE, modelList);
+        Mockito.when(notificationManager.findByCreatedAtBetween(dateRange.getStart(), dateRange.getEnd(), AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE)).thenReturn(page);
         ProcessingTask processingTask = Mockito.spy(task);
-        List<AlertNotificationModel> actualModelList = processingTask.read(dateRange);
-        Mockito.verify(notificationManager).findByCreatedAtBetween(dateRange.getStart(), dateRange.getEnd());
+        List<AlertNotificationModel> actualModelList = processingTask.read(dateRange, AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE).getModels();
         assertEquals(modelList, actualModelList);
     }
 
@@ -128,10 +130,10 @@ class ProcessingTaskTest {
 
         ProcessingTask task = createTask(taskScheduler, notificationManager, notificationProcessor, taskManager, jobAccessor);
         DateRange dateRange = task.getDateRange();
-        Mockito.when(notificationManager.findByCreatedAtBetween(dateRange.getStart(), dateRange.getEnd())).thenReturn(Collections.emptyList());
+        AlertPagedModel<AlertNotificationModel> emptyPage = new AlertPagedModel<>(0, AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE, List.of());
+        Mockito.when(notificationManager.findByCreatedAtBetween(dateRange.getStart(), dateRange.getEnd(), AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE)).thenReturn(emptyPage);
         ProcessingTask processingTask = Mockito.spy(task);
-        List<AlertNotificationModel> actualModelList = processingTask.read(dateRange);
-        Mockito.verify(notificationManager).findByCreatedAtBetween(dateRange.getStart(), dateRange.getEnd());
+        List<AlertNotificationModel> actualModelList = processingTask.read(dateRange, AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE).getModels();
         assertEquals(Collections.emptyList(), actualModelList);
     }
 
@@ -148,10 +150,12 @@ class ProcessingTaskTest {
 
         ProcessingTask task = createTask(taskScheduler, notificationManager, notificationProcessor, taskManager, jobAccessor);
         DateRange dateRange = task.getDateRange();
-        Mockito.when(notificationManager.findByCreatedAtBetween(dateRange.getStart(), dateRange.getEnd())).thenReturn(Collections.emptyList());
+        AlertPagedModel<AlertNotificationModel> emptyPage = new AlertPagedModel<>(0, AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE, List.of());
+        Mockito.when(notificationManager.findByCreatedAtBetween(dateRange.getStart(), dateRange.getEnd(), AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE))
+            .thenReturn(emptyPage);
         ProcessingTask processingTask = Mockito.spy(task);
         processingTask.runTask();
-        Mockito.verify(notificationManager, Mockito.times(0)).findByCreatedAtBetween(dateRange.getStart(), dateRange.getEnd());
+        Mockito.verify(notificationManager, Mockito.times(0)).findByCreatedAtBetween(dateRange.getStart(), dateRange.getEnd(), AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE);
     }
 
     @Test
@@ -166,10 +170,9 @@ class ProcessingTaskTest {
 
         ProcessingTask task = createTask(taskScheduler, notificationManager, notificationProcessor, taskManager, jobAccessor);
         DateRange dateRange = task.getDateRange();
-        Mockito.doThrow(new RuntimeException("Exception reading data")).when(notificationManager).findByCreatedAtBetween(dateRange.getStart(), dateRange.getEnd());
+        Mockito.doThrow(new RuntimeException("Exception reading data")).when(notificationManager).findByCreatedAtBetween(dateRange.getStart(), dateRange.getEnd(), AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE);
         ProcessingTask processingTask = Mockito.spy(task);
-        List<AlertNotificationModel> actualModelList = processingTask.read(dateRange);
-        Mockito.verify(notificationManager).findByCreatedAtBetween(dateRange.getStart(), dateRange.getEnd());
+        List<AlertNotificationModel> actualModelList = processingTask.read(dateRange, AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE).getModels();
         assertEquals(Collections.emptyList(), actualModelList);
     }
 
