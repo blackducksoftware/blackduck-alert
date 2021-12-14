@@ -22,19 +22,13 @@ const SettingsProxyConfiguration = ({
 
     const fetchData = async () => {
         const response = await ConfigurationRequestBuilder.createReadRequest(proxyRequestUrl, csrfToken);
-        const data = await response.json();
-
-        const { models } = data;
-        if (models && models.length > 0) {
-            const firstResult = models[0];
-            if (firstResult[passwordName]) {
-                setPasswordFromApiExists(true);
-                delete firstResult[passwordName];
-            } else {
-                setPasswordFromApiExists(false);
-            }
-            setSettingsProxyConfig(firstResult);
+        if (response.ok) {
+            const data = await response.json();
+            setPasswordFromApiExists(true);
+            delete data.proxyPassword;
+            setSettingsProxyConfig(data);
         } else {
+            setPasswordFromApiExists(false);
             setSettingsProxyConfig({ name: 'default-configuration' });
         }
     };
