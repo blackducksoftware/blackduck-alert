@@ -48,6 +48,18 @@ public class SettingsProxyValidatorTest {
     }
 
     @Test
+    public void validateWithoutHostAndPortTest() {
+        SettingsProxyModel settingsProxyModel = new SettingsProxyModel();
+        settingsProxyModel.setName(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME);
+
+        ValidationResponseModel validationResponseModel = settingsProxyValidator.validate(settingsProxyModel);
+        assertTrue(validationResponseModel.hasErrors());
+        assertEquals(2, validationResponseModel.getErrors().size());
+        assertTrue(validationResponseModel.getErrors().containsKey(SettingsProxyValidator.PROXY_HOST_FIELD_NAME));
+        assertTrue(validationResponseModel.getErrors().containsKey(SettingsProxyValidator.PROXY_PORT_FIELD_NAME));
+    }
+
+    @Test
     public void validateHostWithoutPortTest() {
         SettingsProxyModel settingsProxyModel = new SettingsProxyModel();
         settingsProxyModel.setName(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME);
@@ -103,6 +115,7 @@ public class SettingsProxyValidatorTest {
     public void validateNonProxyHostsTest() {
         SettingsProxyModel settingsProxyModel = new SettingsProxyModel();
         settingsProxyModel.setName(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME);
+        settingsProxyModel.setProxyPort(PORT);
         settingsProxyModel.setNonProxyHosts(List.of("nonProxyHost"));
 
         ValidationResponseModel validationResponseModel = settingsProxyValidator.validate(settingsProxyModel);

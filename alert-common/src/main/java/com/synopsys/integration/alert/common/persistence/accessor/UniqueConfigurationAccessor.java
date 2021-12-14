@@ -17,6 +17,8 @@ public interface UniqueConfigurationAccessor<T extends AlertSerializableModel> {
 
     Optional<T> getConfiguration();
 
+    Optional<T> getConfigurationByName(String configurationName);
+
     T createConfiguration(T configuration) throws AlertConfigurationException;
 
     T updateConfiguration(T configuration) throws AlertConfigurationException;

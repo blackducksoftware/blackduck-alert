@@ -49,6 +49,7 @@ public class SettingsProxyConfigAccessor implements UniqueConfigurationAccessor<
         this.nonProxyHostsConfigurationRepository = nonProxyHostsConfigurationRepository;
     }
 
+
     @Override
     @Transactional(readOnly = true)
     public Optional<SettingsProxyModel> getConfiguration() {
@@ -57,6 +58,12 @@ public class SettingsProxyConfigAccessor implements UniqueConfigurationAccessor<
                    .stream()
                    .map(this::createConfigModel)
                    .findFirst();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<SettingsProxyModel> getConfigurationByName(String configurationName) {
+        return settingsProxyConfigurationRepository.findByName(configurationName).map(this::createConfigModel);
     }
 
     @Override
@@ -139,7 +146,7 @@ public class SettingsProxyConfigAccessor implements UniqueConfigurationAccessor<
     }
 
     private SettingsProxyConfigurationEntity toEntity(UUID configurationId, SettingsProxyModel configuration, OffsetDateTime createdTime, OffsetDateTime lastUpdated) {
-        String host = configuration.getProxyHost().orElseThrow(null);
+        String host = configuration.getProxyHost().orElse(null);
         Integer port = configuration.getProxyPort().orElse(null);
         String username = configuration.getProxyUsername().orElse(null);
         String password = configuration.getProxyPassword().map(encryptionUtility::encrypt).orElse(null);

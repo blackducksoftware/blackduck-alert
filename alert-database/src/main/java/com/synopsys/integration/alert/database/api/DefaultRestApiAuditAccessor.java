@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.database.api;
 
+import java.sql.Date;
 import java.text.ParseException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -239,7 +240,8 @@ public class DefaultRestApiAuditAccessor implements RestApiAuditAccessor {
     @Nullable
     private String formatAuditDate(OffsetDateTime dateTime) {
         if (null != dateTime) {
-            return DateUtils.formatDate(dateTime, DateUtils.AUDIT_DATE_FORMAT);
+            OffsetDateTime utcDateTime = DateUtils.fromDateUTC(Date.from(dateTime.toInstant()));
+            return DateUtils.formatDate(utcDateTime, DateUtils.AUDIT_DATE_FORMAT);
         }
         return null;
     }
