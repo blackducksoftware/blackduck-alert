@@ -94,7 +94,7 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
     public EmailGlobalConfigModel updateConfiguration(UUID configurationId, EmailGlobalConfigModel configuration) throws AlertConfigurationException {
         EmailConfigurationEntity configurationEntity = emailConfigurationRepository.findById(configurationId)
             .orElseThrow(() -> new AlertConfigurationException(String.format("Config with id '%s' did not exist", configurationId.toString())));
-        if (BooleanUtils.toBoolean(configuration.getIsSmtpPasswordSet())) {
+        if (BooleanUtils.toBoolean(configuration.getIsSmtpPasswordSet()) && configuration.getSmtpPassword() != null) {
             configuration.setSmtpPassword(configurationEntity.getAuthPassword());
         }
         return populateConfiguration(configurationId, configuration, configurationEntity.getCreatedAt());
