@@ -1,18 +1,22 @@
 package com.synopsys.integration.alert.workflow.scheduled.frequency;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.mockito.stubbing.Answer;
 import org.springframework.scheduling.TaskScheduler;
 
 import com.google.gson.Gson;
@@ -174,6 +178,73 @@ class ProcessingTaskTest {
         ProcessingTask processingTask = Mockito.spy(task);
         List<AlertNotificationModel> actualModelList = processingTask.read(dateRange, AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE).getModels();
         assertEquals(Collections.emptyList(), actualModelList);
+    }
+
+    @Test
+    void testPagedRead() throws IOException {
+
+        TaskManager taskManager = Mockito.mock(TaskManager.class);
+        TaskScheduler taskScheduler = Mockito.mock(TaskScheduler.class);
+        DefaultNotificationAccessor notificationManager = Mockito.mock(DefaultNotificationAccessor.class);
+        StaticJobAccessor jobAccessor = Mockito.mock(StaticJobAccessor.class);
+        Mockito.when(jobAccessor.countJobsByFrequency(Mockito.any())).thenReturn(1);
+
+        NotificationDetailExtractionDelegator extractionDelegator = new NotificationDetailExtractionDelegator(blackDuckResponseResolver, List.of());
+        NotificationProcessor notificationProcessor = new NotificationProcessor(extractionDelegator, null, null, null, null, null);
+
+        ProcessingTask task = createTask(taskScheduler, notificationManager, notificationProcessor, taskManager, jobAccessor);
+
+        int count = 20;
+        List<AlertNotificationModel> allModels = new ArrayList<>(count);
+        for (int index = 0; index < count; index++) {
+            String notificationJson = TestResourceUtils.readFileToString("json/projectVersionNotification.json");
+            AlertNotificationModel model = new AlertNotificationModel(
+                Integer.valueOf(index).longValue(), 1L,
+                "BlackDuck",
+                "BlackDuck_1",
+                "PROJECT_VERSION",
+                notificationJson,
+                DateUtils.createCurrentDateTimestamp(),
+                DateUtils.createCurrentDateTimestamp(),
+                false);
+            allModels.add(model);
+        }
+        DateRange dateRange = task.getDateRange();
+        Answer<AlertPagedModel<AlertNotificationModel>> pagedQueryAnswer = createPagedQuery(allModels);
+        Mockito.doAnswer(pagedQueryAnswer).when(notificationManager).findByCreatedAtBetween(Mockito.any(), Mockito.any(), Mockito.anyInt(), Mockito.anyInt());
+        int pageSize = 5;
+        int totalPages = count / pageSize;
+
+        List<AlertNotificationModel> testModels = new ArrayList<>(count);
+        for (int currentPage = 0; currentPage < totalPages; currentPage++) {
+            AlertPagedModel<AlertNotificationModel> pagedModel = task.read(dateRange, currentPage, pageSize);
+            assertEquals(totalPages, pagedModel.getTotalPages());
+            assertEquals(currentPage, pagedModel.getCurrentPage());
+            assertEquals(pageSize, pagedModel.getPageSize());
+            testModels.addAll(pagedModel.getModels());
+        }
+        assertEquals(allModels.size(), testModels.size());
+        assertTrue(allModels.containsAll(testModels));
+    }
+
+    private Answer<AlertPagedModel<AlertNotificationModel>> createPagedQuery(List<AlertNotificationModel> allModels) {
+        return (invocation) -> {
+            OffsetDateTime startTime = invocation.getArgument(0);
+            OffsetDateTime endTime = invocation.getArgument(1);
+            int pageNumber = invocation.getArgument(2);
+            int pageSize = invocation.getArgument(3);
+            int startIndex = pageSize * pageNumber;
+            int endIndex = startIndex + pageSize;
+            int totalPages = allModels.size() / pageSize;
+            List<AlertNotificationModel> modelsInPage = new LinkedList<>();
+            for (int index = startIndex; index < endIndex; index++) {
+                AlertNotificationModel model = allModels.get(index);
+                if (model.getCreatedAt().isBefore(endTime) && model.getCreatedAt().isAfter(startTime)) {
+                    modelsInPage.add(model);
+                }
+            }
+            return new AlertPagedModel<>(totalPages, pageNumber, pageSize, modelsInPage);
+        };
     }
 
     private void assertDateIsEqual(OffsetDateTime expected, ZonedDateTime actual) {
