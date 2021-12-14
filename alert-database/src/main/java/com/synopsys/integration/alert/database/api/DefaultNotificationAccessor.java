@@ -104,13 +104,12 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public AlertPagedModel<AlertNotificationModel> findByCreatedAtBetween(OffsetDateTime startDate, OffsetDateTime endDate, int pageNumber, int pageSize) {
-        int currentPage = 0;
         Sort.Order sortingOrder = Sort.Order.asc("providerCreationTime");
-        PageRequest pageRequest = PageRequest.of(currentPage, pageSize, Sort.by(sortingOrder));
+        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, Sort.by(sortingOrder));
         Page<AlertNotificationModel> pageOfNotifications = notificationContentRepository.findByCreatedAtBetween(startDate, endDate, pageRequest)
             .map(this::toModel);
         List<AlertNotificationModel> alertNotificationModels = pageOfNotifications.getContent();
-        return new AlertPagedModel<>(pageOfNotifications.getTotalPages(), currentPage, pageSize, alertNotificationModels);
+        return new AlertPagedModel<>(pageOfNotifications.getTotalPages(), pageNumber, pageSize, alertNotificationModels);
 
     }
 

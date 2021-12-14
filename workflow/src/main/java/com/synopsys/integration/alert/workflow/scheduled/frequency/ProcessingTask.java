@@ -26,6 +26,7 @@ import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.processor.api.NotificationProcessor;
 
 public abstract class ProcessingTask extends StartupScheduledTask {
+    public static final int PAGE_SIZE = 100;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final NotificationAccessor notificationAccessor;
@@ -65,15 +66,17 @@ public abstract class ProcessingTask extends StartupScheduledTask {
     }
 
     private void process() {
-        int pageNumber = AlertPagedModel.DEFAULT_PAGE_NUMBER;
-        int pageSize = AlertPagedModel.DEFAULT_PAGE_SIZE;
         DateRange dateRange = getDateRange();
-        AlertPagedModel<AlertNotificationModel> firstPage = read(dateRange, pageNumber, pageSize);
-
-        for (int currentPage = 0; currentPage < firstPage.getTotalPages(); currentPage++) {
-            List<AlertNotificationModel> notificationList = firstPage.getModels();
-            logger.info("Processing page {} of {}. {} notifications to process.", currentPage, firstPage.getTotalPages(), notificationList.size());
+        AlertPagedModel<AlertNotificationModel> page = read(dateRange, AlertPagedModel.DEFAULT_PAGE_NUMBER, PAGE_SIZE);
+        int currentPage = page.getCurrentPage();
+        int totalPages = page.getTotalPages();
+        while (!page.getModels().isEmpty() || currentPage < totalPages) {
+            List<AlertNotificationModel> notificationList = page.getModels();
+            logger.info("Processing page {} of {}. {} notifications to process.", currentPage, totalPages, notificationList.size());
             notificationProcessor.processNotifications(notificationList, List.of(frequencyType));
+            page = read(dateRange, currentPage + 1, PAGE_SIZE);
+            currentPage = page.getCurrentPage();
+            totalPages = page.getTotalPages();
         }
     }
 

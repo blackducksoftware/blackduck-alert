@@ -74,14 +74,11 @@ class ProcessingTaskTest {
     }
 
     @Test
-    void testRun() {
+    void testRun() throws IOException {
         TaskManager taskManager = Mockito.mock(TaskManager.class);
         TaskScheduler taskScheduler = Mockito.mock(TaskScheduler.class);
 
-        DefaultNotificationAccessor notificationManager = Mockito.mock(DefaultNotificationAccessor.class);
-        AlertPagedModel<AlertNotificationModel> page = new AlertPagedModel<>(1, AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE, modelList);
-        Mockito.when(notificationManager.findByCreatedAtBetween(Mockito.any(OffsetDateTime.class), Mockito.any(OffsetDateTime.class), Mockito.anyInt(), Mockito.anyInt())).thenReturn(page);
-
+        NotificationAccessor notificationManager = new MockProcessingNotificationAccessor(List.of());
         StaticJobAccessor jobAccessor = Mockito.mock(StaticJobAccessor.class);
         Mockito.when(jobAccessor.countJobsByFrequency(Mockito.any())).thenReturn(1);
 
@@ -89,43 +86,39 @@ class ProcessingTaskTest {
         JobNotificationMapper jobNotificationMapper = Mockito.mock(JobNotificationMapper.class);
         StatefulAlertPage<FilteredJobNotificationWrapper, RuntimeException> statefulAlertPage = new StatefulAlertPage(AlertPagedDetails.emptyPage(), Mockito.mock(PageRetriever.class), BlackDuckNotificationRetriever.HAS_NEXT_PAGE);
         Mockito.when(jobNotificationMapper.mapJobsToNotifications(Mockito.anyList(), Mockito.anyList())).thenReturn(statefulAlertPage);
-        NotificationAccessor notificationAccessor = Mockito.mock(NotificationAccessor.class);
-        Mockito.doNothing().when(notificationAccessor).setNotificationsProcessed(Mockito.anyList());
-        NotificationProcessor notificationProcessor = new NotificationProcessor(extractionDelegator, jobNotificationMapper, null, null, List.of(), notificationAccessor);
+        NotificationProcessor notificationProcessor = Mockito.mock(NotificationProcessor.class);
 
         ProcessingTask task = createTask(taskScheduler, notificationManager, notificationProcessor, taskManager, jobAccessor);
+        int expectedPages = 5;
+        int count = ProcessingTask.PAGE_SIZE * expectedPages;
+
+        List<AlertNotificationModel> allModels = new ArrayList<>(count);
+        for (int index = 0; index < count; index++) {
+            String notificationJson = TestResourceUtils.readFileToString("json/projectVersionNotification.json");
+            AlertNotificationModel model = new AlertNotificationModel(
+                Integer.valueOf(index).longValue(), 1L,
+                "BlackDuck",
+                "BlackDuck_1",
+                "PROJECT_VERSION",
+                notificationJson,
+                DateUtils.createCurrentDateTimestamp(),
+                DateUtils.createCurrentDateTimestamp(),
+                false);
+            allModels.add(model);
+        }
+        notificationManager.saveAllNotifications(allModels);
         ProcessingTask processingTask = Mockito.spy(task);
 
         processingTask.run();
         Mockito.verify(processingTask).getDateRange();
-        Mockito.verify(processingTask).read(Mockito.any(), Mockito.anyInt(), Mockito.anyInt());
-    }
-
-    @Test
-    void testRead() {
-        TaskManager taskManager = Mockito.mock(TaskManager.class);
-        TaskScheduler taskScheduler = Mockito.mock(TaskScheduler.class);
-        DefaultNotificationAccessor notificationManager = Mockito.mock(DefaultNotificationAccessor.class);
-        StaticJobAccessor jobAccessor = Mockito.mock(StaticJobAccessor.class);
-        Mockito.when(jobAccessor.countJobsByFrequency(Mockito.any())).thenReturn(1);
-
-        NotificationDetailExtractionDelegator extractionDelegator = new NotificationDetailExtractionDelegator(blackDuckResponseResolver, List.of());
-        NotificationProcessor notificationProcessor = new NotificationProcessor(extractionDelegator, null, null, null, null, null);
-
-        ProcessingTask task = createTask(taskScheduler, notificationManager, notificationProcessor, taskManager, jobAccessor);
-        DateRange dateRange = task.getDateRange();
-        AlertPagedModel<AlertNotificationModel> page = new AlertPagedModel<>(1, AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE, modelList);
-        Mockito.when(notificationManager.findByCreatedAtBetween(dateRange.getStart(), dateRange.getEnd(), AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE)).thenReturn(page);
-        ProcessingTask processingTask = Mockito.spy(task);
-        List<AlertNotificationModel> actualModelList = processingTask.read(dateRange, AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE).getModels();
-        assertEquals(modelList, actualModelList);
+        Mockito.verify(processingTask, Mockito.times(expectedPages + 1)).read(Mockito.any(), Mockito.anyInt(), Mockito.anyInt());
     }
 
     @Test
     void testReadEmptyList() {
         TaskManager taskManager = Mockito.mock(TaskManager.class);
         TaskScheduler taskScheduler = Mockito.mock(TaskScheduler.class);
-        DefaultNotificationAccessor notificationManager = Mockito.mock(DefaultNotificationAccessor.class);
+        NotificationAccessor notificationManager = new MockProcessingNotificationAccessor(List.of());
         StaticJobAccessor jobAccessor = Mockito.mock(StaticJobAccessor.class);
         Mockito.when(jobAccessor.countJobsByFrequency(Mockito.any())).thenReturn(1);
 
@@ -134,8 +127,7 @@ class ProcessingTaskTest {
 
         ProcessingTask task = createTask(taskScheduler, notificationManager, notificationProcessor, taskManager, jobAccessor);
         DateRange dateRange = task.getDateRange();
-        AlertPagedModel<AlertNotificationModel> emptyPage = new AlertPagedModel<>(0, AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE, List.of());
-        Mockito.when(notificationManager.findByCreatedAtBetween(dateRange.getStart(), dateRange.getEnd(), AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE)).thenReturn(emptyPage);
+
         ProcessingTask processingTask = Mockito.spy(task);
         List<AlertNotificationModel> actualModelList = processingTask.read(dateRange, AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE).getModels();
         assertEquals(Collections.emptyList(), actualModelList);
@@ -145,7 +137,7 @@ class ProcessingTaskTest {
     void testJobCountZero() {
         TaskManager taskManager = Mockito.mock(TaskManager.class);
         TaskScheduler taskScheduler = Mockito.mock(TaskScheduler.class);
-        DefaultNotificationAccessor notificationManager = Mockito.mock(DefaultNotificationAccessor.class);
+        NotificationAccessor notificationManager = new MockProcessingNotificationAccessor(List.of());
         StaticJobAccessor jobAccessor = Mockito.mock(StaticJobAccessor.class);
         Mockito.when(jobAccessor.countJobsByFrequency(Mockito.any())).thenReturn(0);
 
@@ -154,12 +146,9 @@ class ProcessingTaskTest {
 
         ProcessingTask task = createTask(taskScheduler, notificationManager, notificationProcessor, taskManager, jobAccessor);
         DateRange dateRange = task.getDateRange();
-        AlertPagedModel<AlertNotificationModel> emptyPage = new AlertPagedModel<>(0, AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE, List.of());
-        Mockito.when(notificationManager.findByCreatedAtBetween(dateRange.getStart(), dateRange.getEnd(), AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE))
-            .thenReturn(emptyPage);
         ProcessingTask processingTask = Mockito.spy(task);
         processingTask.runTask();
-        Mockito.verify(notificationManager, Mockito.times(0)).findByCreatedAtBetween(dateRange.getStart(), dateRange.getEnd(), AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE);
+        Mockito.verify(processingTask, Mockito.times(0)).getDateRange();
     }
 
     @Test
@@ -185,7 +174,7 @@ class ProcessingTaskTest {
 
         TaskManager taskManager = Mockito.mock(TaskManager.class);
         TaskScheduler taskScheduler = Mockito.mock(TaskScheduler.class);
-        DefaultNotificationAccessor notificationManager = Mockito.mock(DefaultNotificationAccessor.class);
+        NotificationAccessor notificationManager = new MockProcessingNotificationAccessor(List.of());
         StaticJobAccessor jobAccessor = Mockito.mock(StaticJobAccessor.class);
         Mockito.when(jobAccessor.countJobsByFrequency(Mockito.any())).thenReturn(1);
 
@@ -193,7 +182,6 @@ class ProcessingTaskTest {
         NotificationProcessor notificationProcessor = new NotificationProcessor(extractionDelegator, null, null, null, null, null);
 
         ProcessingTask task = createTask(taskScheduler, notificationManager, notificationProcessor, taskManager, jobAccessor);
-
         int count = 20;
         List<AlertNotificationModel> allModels = new ArrayList<>(count);
         for (int index = 0; index < count; index++) {
@@ -209,9 +197,8 @@ class ProcessingTaskTest {
                 false);
             allModels.add(model);
         }
+        notificationManager.saveAllNotifications(allModels);
         DateRange dateRange = task.getDateRange();
-        Answer<AlertPagedModel<AlertNotificationModel>> pagedQueryAnswer = createPagedQuery(allModels);
-        Mockito.doAnswer(pagedQueryAnswer).when(notificationManager).findByCreatedAtBetween(Mockito.any(), Mockito.any(), Mockito.anyInt(), Mockito.anyInt());
         int pageSize = 5;
         int totalPages = count / pageSize;
 
@@ -237,10 +224,12 @@ class ProcessingTaskTest {
             int endIndex = startIndex + pageSize;
             int totalPages = allModels.size() / pageSize;
             List<AlertNotificationModel> modelsInPage = new LinkedList<>();
-            for (int index = startIndex; index < endIndex; index++) {
-                AlertNotificationModel model = allModels.get(index);
-                if (model.getCreatedAt().isBefore(endTime) && model.getCreatedAt().isAfter(startTime)) {
-                    modelsInPage.add(model);
+            if (startIndex < allModels.size()) {
+                for (int index = startIndex; index < endIndex; index++) {
+                    AlertNotificationModel model = allModels.get(index);
+                    if (model.getCreatedAt().isBefore(endTime) && model.getCreatedAt().isAfter(startTime)) {
+                        modelsInPage.add(model);
+                    }
                 }
             }
             return new AlertPagedModel<>(totalPages, pageNumber, pageSize, modelsInPage);
@@ -253,7 +242,7 @@ class ProcessingTaskTest {
         assertEquals(expected.getDayOfMonth(), actual.getDayOfMonth());
     }
 
-    private ProcessingTask createTask(TaskScheduler taskScheduler, DefaultNotificationAccessor notificationManager, NotificationProcessor notificationProcessor, TaskManager taskManager, JobAccessor jobAccessor) {
+    private ProcessingTask createTask(TaskScheduler taskScheduler, NotificationAccessor notificationManager, NotificationProcessor notificationProcessor, TaskManager taskManager, JobAccessor jobAccessor) {
         return new ProcessingTask(taskScheduler, taskManager, notificationManager, notificationProcessor, jobAccessor, FrequencyType.DAILY) {
             @Override
             public String scheduleCronExpression() {
@@ -262,5 +251,4 @@ class ProcessingTaskTest {
 
         };
     }
-
 }
