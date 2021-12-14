@@ -8,8 +8,11 @@
 package com.synopsys.integration.alert.provider.blackduck.action;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +56,8 @@ public class BlackDuckDistributionFieldModelTestAction extends FieldModelTestAct
             Long providerConfigId = optionalProviderConfigId.get();
             boolean filterByProjects = registeredFieldValues.getBoolean(ProviderDescriptor.KEY_FILTER_BY_PROJECT).orElse(false);
             if (filterByProjects) {
+                Collection<String> configuredProjects = registeredFieldValues.getAllStrings(ProviderDescriptor.KEY_CONFIGURED_PROJECT);
+                validateSelectedProjectExists(providerConfigId, configuredProjects).ifPresent(fieldStatuses::add);
                 registeredFieldValues.getString(ProviderDescriptor.KEY_PROJECT_NAME_PATTERN)
                     .flatMap(projectNamePattern -> validatePatternMatchesProject(providerConfigId, projectNamePattern))
                     .ifPresent(fieldStatuses::add);
@@ -87,6 +92,15 @@ public class BlackDuckDistributionFieldModelTestAction extends FieldModelTestAct
         boolean noProjectsMatchPattern = blackDuckProjects.stream().noneMatch(databaseEntity -> databaseEntity.getName().matches(projectNamePattern));
         if (noProjectsMatchPattern && StringUtils.isNotBlank(projectNamePattern)) {
             return Optional.of(AlertFieldStatus.warning(ProviderDescriptor.KEY_PROJECT_NAME_PATTERN, "Does not match any of the Projects."));
+        }
+        return Optional.empty();
+    }
+
+    private Optional<AlertFieldStatus> validateSelectedProjectExists(Long providerConfigId, Collection<String> selectedProjects) {
+        Set<String> providerProjects = blackDuckDataAccessor.getProjectsByProviderConfigId(providerConfigId).stream().map(ProviderProject::getName).collect(Collectors.toSet());
+        boolean allSelectedProjectsValid = selectedProjects.stream().allMatch(providerProjects::contains);
+        if (!allSelectedProjectsValid) {
+            return Optional.of(AlertFieldStatus.warning(ProviderDescriptor.KEY_CONFIGURED_PROJECT, "Some selected projects could not be found."));
         }
         return Optional.empty();
     }
