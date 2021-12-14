@@ -16,6 +16,7 @@ import org.springframework.scheduling.TaskScheduler;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.message.model.DateRange;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
@@ -28,20 +29,17 @@ public abstract class ProcessingTask extends StartupScheduledTask {
 
     private final NotificationAccessor notificationAccessor;
     private final NotificationProcessor notificationProcessor;
+    private final JobAccessor jobAccessor;
     private final FrequencyType frequencyType;
 
     private OffsetDateTime lastRunTime;
 
-    public ProcessingTask(
-        TaskScheduler taskScheduler,
-        NotificationAccessor notificationAccessor,
-        TaskManager taskManager,
-        NotificationProcessor notificationProcessor,
-        FrequencyType frequencyType
-    ) {
+    public ProcessingTask(TaskScheduler taskScheduler, TaskManager taskManager, NotificationAccessor notificationAccessor, NotificationProcessor notificationProcessor,
+        JobAccessor jobAccessor, FrequencyType frequencyType) {
         super(taskScheduler, taskManager);
         this.notificationAccessor = notificationAccessor;
         this.notificationProcessor = notificationProcessor;
+        this.jobAccessor = jobAccessor;
         this.frequencyType = frequencyType;
         lastRunTime = DateUtils.createCurrentDateTimestamp();
     }
@@ -58,11 +56,14 @@ public abstract class ProcessingTask extends StartupScheduledTask {
 
     @Override
     public void runTask() {
-        DateRange dateRange = getDateRange();
-        List<AlertNotificationModel> notificationList = read(dateRange);
-        logger.info("Processing {} notifications.", notificationList.size());
-        notificationProcessor.processNotifications(notificationList, List.of(frequencyType));
-        lastRunTime = DateUtils.createCurrentDateTimestamp();
+        int jobCountByFrequency = jobAccessor.countJobsByFrequency(frequencyType.name());
+        if (jobCountByFrequency > 0) {
+            DateRange dateRange = getDateRange();
+            List<AlertNotificationModel> notificationList = read(dateRange);
+            logger.info("Processing {} notifications.", notificationList.size());
+            notificationProcessor.processNotifications(notificationList, List.of(frequencyType));
+            lastRunTime = DateUtils.createCurrentDateTimestamp();
+        }
     }
 
     public List<AlertNotificationModel> read(DateRange dateRange) {
