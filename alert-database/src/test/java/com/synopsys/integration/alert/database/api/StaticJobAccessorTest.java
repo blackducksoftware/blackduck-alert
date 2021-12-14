@@ -92,6 +92,15 @@ class StaticJobAccessorTest {
     }
 
     @Test
+    void countJobsByFrequencyTest() {
+        int expectedCount = 10;
+        Mockito.when(distributionJobRepository.countByDistributionFrequency(Mockito.eq(FrequencyType.DAILY.name()))).thenReturn(expectedCount);
+        int count = jobAccessor.countJobsByFrequency(FrequencyType.DAILY.name());
+
+        assertEquals(expectedCount, count);
+    }
+
+    @Test
     void getJobByIdTest() {
         UUID jobId = UUID.randomUUID();
 
