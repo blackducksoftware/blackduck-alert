@@ -9,6 +9,7 @@ package com.synopsys.integration.alert.provider.blackduck.processor.message.serv
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -43,6 +44,7 @@ public class BlackDuckMessageBomComponentDetailsCreator {
     private static final LinkMultipleResponses<BlackDuckProjectVersionComponentVulnerabilitiesView> VULNERABILITIES_LINK =
         new LinkMultipleResponses<>("vulnerabilities", BlackDuckProjectVersionComponentVulnerabilitiesView.class);
     private static final String VULNERABILITIES_MEDIA_TYPE = "application/vnd.blackducksoftware.internal-1+json";
+    public static final String COMPONENT_VERSION_UNKNOWN = "Unknown Version";
 
     private final BlackDuckApiClient blackDuckApiClient;
     private final BlackDuckComponentVulnerabilityDetailsCreator vulnerabilityDetailsCreator;
@@ -68,6 +70,7 @@ public class BlackDuckMessageBomComponentDetailsCreator {
         LinkableItem component;
         LinkableItem componentVersion = null;
 
+        // FIXME using this query link only in a successful result and not in an unsuccessful result leads to inconsistent values in our custom fields which leads to inconsistent search results (bug).
         String componentQueryLink = BlackDuckMessageLinkUtils.createComponentQueryLink(bomComponent);
 
         String componentVersionUrl = bomComponent.getComponentVersion();
@@ -99,6 +102,79 @@ public class BlackDuckMessageBomComponentDetailsCreator {
         );
     }
 
+    public BomComponentDetails createBomComponentUnknownVersionDetails(ProjectVersionComponentVersionView bomComponent, List<ComponentConcern> componentConcerns, ComponentUpgradeGuidance componentUpgradeGuidance,
+        List<LinkableItem> additionalAttributes) throws IntegrationException {
+        // FIXME using this query link only in a successful result and not in an unsuccessful result leads to inconsistent values in our custom fields which leads to inconsistent search results (bug).
+        String componentQueryLink = BlackDuckMessageLinkUtils.createComponentQueryLink(bomComponent);
+
+        LinkableItem component = new LinkableItem(BlackDuckMessageLabels.LABEL_COMPONENT, bomComponent.getComponentName(), componentQueryLink);
+        LinkableItem componentVersion = new LinkableItem(BlackDuckMessageLabels.LABEL_COMPONENT_VERSION, COMPONENT_VERSION_UNKNOWN);
+
+        ComponentVulnerabilities componentVulnerabilities = ComponentVulnerabilities.none();
+        List<ComponentPolicy> componentPolicies = retrieveComponentPolicies(bomComponent, componentConcerns);
+
+        LinkableItem licenseInfo = BlackDuckMessageAttributesUtils.extractLicense(bomComponent);
+        String usageInfo = BlackDuckMessageAttributesUtils.extractUsage(bomComponent);
+        String issuesUrl = BlackDuckMessageAttributesUtils.extractIssuesUrl(bomComponent).orElse(null);
+
+        return new BomComponentDetails(
+            component,
+            componentVersion,
+            componentVulnerabilities,
+            componentPolicies,
+            componentConcerns,
+            licenseInfo,
+            usageInfo,
+            componentUpgradeGuidance,
+            additionalAttributes,
+            issuesUrl
+        );
+    }
+
+    // This exists due to an issue with searching for the wrong URL in an Azure search property. More info here IALERT-2654
+    public BomComponentDetails createMissingBomComponentDetailsForVulnerability(
+        String componentName,
+        @Nullable String componentUrl,
+        @Nullable String componentVersionName,
+        List<ComponentConcern> componentConcerns,
+        ComponentUpgradeGuidance componentUpgradeGuidance,
+        List<LinkableItem> additionalAttributes
+    ) {
+        String componentQueryLink = BlackDuckMessageLinkUtils.createComponentQueryLink(componentUrl, componentName);
+
+        return createMissingDetails(
+            componentName,
+            () -> componentQueryLink,
+            componentVersionName,
+            () -> componentQueryLink,
+            componentConcerns,
+            componentUpgradeGuidance,
+            additionalAttributes
+        );
+    }
+
+    // This exists due to an issue with searching for the wrong URL in an Azure search property. More info here IALERT-2654
+    public BomComponentDetails createMissingBomComponentDetailsForUnknownVersion(
+        String componentName,
+        @Nullable String componentUrl,
+        @Nullable String componentVersionName,
+        List<ComponentConcern> componentConcerns,
+        ComponentUpgradeGuidance componentUpgradeGuidance,
+        List<LinkableItem> additionalAttributes
+    ) {
+        String componentQueryLink = BlackDuckMessageLinkUtils.createComponentQueryLink(componentUrl, componentName);
+
+        return createMissingDetails(
+            componentName,
+            () -> componentQueryLink,
+            componentVersionName,
+            () -> null,
+            componentConcerns,
+            componentUpgradeGuidance,
+            additionalAttributes
+        );
+    }
+
     public BomComponentDetails createMissingBomComponentDetails(
         String componentName,
         @Nullable String componentUrl,
@@ -108,14 +184,37 @@ public class BlackDuckMessageBomComponentDetailsCreator {
         ComponentUpgradeGuidance componentUpgradeGuidance,
         List<LinkableItem> additionalAttributes
     ) {
+
+        return createMissingDetails(
+            componentName,
+            () -> componentUrl,
+            componentVersionName,
+            () -> componentVersionUrl,
+            componentConcerns,
+            componentUpgradeGuidance,
+            additionalAttributes
+        );
+    }
+
+    private BomComponentDetails createMissingDetails(
+        String componentName,
+        Supplier<String> componentUrlRetriever,
+        @Nullable String componentVersionName,
+        Supplier<String> componentVersionUrlRetriever,
+        List<ComponentConcern> componentConcerns,
+        ComponentUpgradeGuidance componentUpgradeGuidance,
+        List<LinkableItem> additionalAttributes
+    ) {
         LinkableItem component;
         LinkableItem componentVersion = null;
+
+        String componentVersionUrl = componentVersionUrlRetriever.get();
 
         if (StringUtils.isNotBlank(componentVersionUrl)) {
             component = new LinkableItem(BlackDuckMessageLabels.LABEL_COMPONENT, componentName);
             componentVersion = new LinkableItem(BlackDuckMessageLabels.LABEL_COMPONENT_VERSION, componentVersionName, componentVersionUrl);
         } else {
-            component = new LinkableItem(BlackDuckMessageLabels.LABEL_COMPONENT, componentName, componentUrl);
+            component = new LinkableItem(BlackDuckMessageLabels.LABEL_COMPONENT, componentName, componentUrlRetriever.get());
         }
 
         LinkableItem licenseInfo = new LinkableItem(BlackDuckMessageLabels.LABEL_LICENSE, BlackDuckMessageLabels.VALUE_UNKNOWN_LICENSE);
@@ -137,6 +236,9 @@ public class BlackDuckMessageBomComponentDetailsCreator {
 
     private ComponentVulnerabilities retrieveComponentVulnerabilities(ProjectVersionComponentVersionView bomComponent) throws IntegrationException {
         if (!vulnerabilityDetailsCreator.hasSecurityRisk(bomComponent)) {
+            return ComponentVulnerabilities.none();
+        }
+        if (StringUtils.isBlank(bomComponent.getComponentVersion())) {
             return ComponentVulnerabilities.none();
         }
 

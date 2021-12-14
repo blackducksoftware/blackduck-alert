@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet id="create-proxy-configuration-table" author="martinch">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="configuration_proxy"/>
+            </not>
+        </preConditions>
+        <createTable schemaName="alert" tableName="configuration_proxy">
+            <column name="configuration_id" type="UUID" defaultValueComputed="uuid_generate_v4()">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP WITH TIMEZONE" defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_updated" type="TIMESTAMP WITH TIMEZONE">
+                <constraints nullable="true"/>
+            </column>
+            <column name="host" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="port" type="BIGINT">
+                <constraints nullable="true"/>
+            </column>
+            <column name="username" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+            <column name="password" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create-non-proxy-hosts-table" author="martinch">
+        <preConditions>
+            <not>
+                <tableExists schemaName="alert" tableName="configuration_non_proxy_hosts"/>
+            </not>
+        </preConditions>
+        <createTable schemaName="alert" tableName="configuration_non_proxy_hosts">
+            <column name="configuration_id" type="UUID">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="hostname_pattern" type="VARCHAR">
+                <constraints primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="martinch" id="create-non-proxy-hosts-table-fk">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="configuration_non_proxy_hosts_id_fk"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint
+                constraintName="configuration_non_proxy_hosts_id_fk"
+                baseTableSchemaName="alert"
+                baseTableName="configuration_non_proxy_hosts"
+                baseColumnNames="configuration_id"
+                referencedTableSchemaName="alert"
+                referencedTableName="configuration_proxy"
+                referencedColumnNames="configuration_id"
+                onDelete="CASCADE"
+                onUpdate="CASCADE"
+        />
+    </changeSet>
+
+</databaseChangeLog>

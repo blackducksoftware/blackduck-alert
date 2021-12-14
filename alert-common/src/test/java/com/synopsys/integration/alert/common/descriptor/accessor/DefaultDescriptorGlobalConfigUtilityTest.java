@@ -13,7 +13,7 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.action.ApiAction;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
@@ -36,11 +36,11 @@ public class DefaultDescriptorGlobalConfigUtilityTest {
     @Test
     public void testConfigurationExists() throws Exception {
         DescriptorKey descriptorKey = createDescriptorKey();
-        ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
-        DefaultDescriptorGlobalConfigUtility configUtility = new DefaultDescriptorGlobalConfigUtility(descriptorKey, configurationAccessor, null, null);
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
+        DefaultDescriptorGlobalConfigUtility configUtility = new DefaultDescriptorGlobalConfigUtility(descriptorKey, configurationModelConfigurationAccessor, null, null);
         assertFalse(configUtility.doesConfigurationExist());
         ConfigurationModel configurationModel = Mockito.mock(ConfigurationModel.class);
-        Mockito.when(configurationAccessor.getConfigurationsByDescriptorKeyAndContext(Mockito.any(DescriptorKey.class), Mockito.any(ConfigContextEnum.class))).thenReturn(List.of(configurationModel));
+        Mockito.when(configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(Mockito.any(DescriptorKey.class), Mockito.any(ConfigContextEnum.class))).thenReturn(List.of(configurationModel));
 
         assertTrue(configUtility.doesConfigurationExist());
     }
@@ -48,11 +48,11 @@ public class DefaultDescriptorGlobalConfigUtilityTest {
     @Test
     public void testGetConfiguration() throws Exception {
         DescriptorKey descriptorKey = createDescriptorKey();
-        ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
-        DefaultDescriptorGlobalConfigUtility configUtility = new DefaultDescriptorGlobalConfigUtility(descriptorKey, configurationAccessor, null, null);
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
+        DefaultDescriptorGlobalConfigUtility configUtility = new DefaultDescriptorGlobalConfigUtility(descriptorKey, configurationModelConfigurationAccessor, null, null);
         assertFalse(configUtility.getConfiguration().isPresent());
         ConfigurationModel configurationModel = Mockito.mock(ConfigurationModel.class);
-        Mockito.when(configurationAccessor.getConfigurationsByDescriptorKeyAndContext(Mockito.any(DescriptorKey.class), Mockito.any(ConfigContextEnum.class))).thenReturn(List.of(configurationModel));
+        Mockito.when(configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(Mockito.any(DescriptorKey.class), Mockito.any(ConfigContextEnum.class))).thenReturn(List.of(configurationModel));
 
         assertTrue(configUtility.getConfiguration().isPresent());
     }
@@ -60,9 +60,9 @@ public class DefaultDescriptorGlobalConfigUtilityTest {
     @Test
     public void testGetFieldModelEmptyConfiguration() throws Exception {
         DescriptorKey descriptorKey = createDescriptorKey();
-        ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
         ConfigurationFieldModelConverter converter = Mockito.mock(ConfigurationFieldModelConverter.class);
-        DefaultDescriptorGlobalConfigUtility configUtility = new DefaultDescriptorGlobalConfigUtility(descriptorKey, configurationAccessor, null, converter);
+        DefaultDescriptorGlobalConfigUtility configUtility = new DefaultDescriptorGlobalConfigUtility(descriptorKey, configurationModelConfigurationAccessor, null, converter);
         assertFalse(configUtility.getFieldModel().isPresent());
     }
 
@@ -70,15 +70,15 @@ public class DefaultDescriptorGlobalConfigUtilityTest {
     public void testGetFieldModel() throws Exception {
         DescriptorKey descriptorKey = createDescriptorKey();
         FieldModel fieldModel = new FieldModel(descriptorKey.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), Map.of());
-        ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
         ConfigurationFieldModelConverter converter = Mockito.mock(ConfigurationFieldModelConverter.class);
         ConfigurationModel configurationModel = Mockito.mock(ConfigurationModel.class);
         ApiAction apiAction = Mockito.mock(ApiAction.class);
-        Mockito.when(configurationAccessor.getConfigurationsByDescriptorKeyAndContext(Mockito.any(DescriptorKey.class), Mockito.any(ConfigContextEnum.class))).thenReturn(List.of(configurationModel));
+        Mockito.when(configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(Mockito.any(DescriptorKey.class), Mockito.any(ConfigContextEnum.class))).thenReturn(List.of(configurationModel));
         Mockito.when(converter.convertToFieldModel(Mockito.any())).thenReturn(fieldModel);
         Mockito.when(apiAction.afterGetAction(Mockito.eq(fieldModel))).thenReturn(fieldModel);
 
-        DefaultDescriptorGlobalConfigUtility configUtility = new DefaultDescriptorGlobalConfigUtility(descriptorKey, configurationAccessor, apiAction, converter);
+        DefaultDescriptorGlobalConfigUtility configUtility = new DefaultDescriptorGlobalConfigUtility(descriptorKey, configurationModelConfigurationAccessor, apiAction, converter);
         FieldModel actualFieldModel = configUtility.getFieldModel().orElse(null);
         assertEquals(fieldModel, actualFieldModel);
     }
@@ -87,15 +87,15 @@ public class DefaultDescriptorGlobalConfigUtilityTest {
     public void testGetFieldModelActionNull() throws Exception {
         DescriptorKey descriptorKey = createDescriptorKey();
         FieldModel fieldModel = new FieldModel(descriptorKey.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), Map.of());
-        ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
         ConfigurationFieldModelConverter converter = Mockito.mock(ConfigurationFieldModelConverter.class);
         ConfigurationModel configurationModel = Mockito.mock(ConfigurationModel.class);
         ApiAction apiAction = Mockito.mock(ApiAction.class);
-        Mockito.when(configurationAccessor.getConfigurationsByDescriptorKeyAndContext(Mockito.any(DescriptorKey.class), Mockito.any(ConfigContextEnum.class))).thenReturn(List.of(configurationModel));
+        Mockito.when(configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(Mockito.any(DescriptorKey.class), Mockito.any(ConfigContextEnum.class))).thenReturn(List.of(configurationModel));
         Mockito.when(converter.convertToFieldModel(Mockito.any())).thenReturn(fieldModel);
         Mockito.when(apiAction.afterGetAction(Mockito.eq(fieldModel))).thenReturn(null);
 
-        DefaultDescriptorGlobalConfigUtility configUtility = new DefaultDescriptorGlobalConfigUtility(descriptorKey, configurationAccessor, apiAction, converter);
+        DefaultDescriptorGlobalConfigUtility configUtility = new DefaultDescriptorGlobalConfigUtility(descriptorKey, configurationModelConfigurationAccessor, apiAction, converter);
         Optional<FieldModel> actualFieldModel = configUtility.getFieldModel();
         assertFalse(actualFieldModel.isPresent());
     }
@@ -105,21 +105,21 @@ public class DefaultDescriptorGlobalConfigUtilityTest {
         DescriptorKey descriptorKey = createDescriptorKey();
         FieldModel fieldModel = new FieldModel(descriptorKey.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), Map.of());
         Map<String, ConfigurationFieldModel> configurationFieldModelCollection = Map.of();
-        ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
         ConfigurationFieldModelConverter converter = Mockito.mock(ConfigurationFieldModelConverter.class);
         ConfigurationModel configurationModel = Mockito.mock(ConfigurationModel.class);
         ApiAction apiAction = Mockito.mock(ApiAction.class);
-        Mockito.when(configurationAccessor.createConfiguration(Mockito.eq(descriptorKey), Mockito.any(ConfigContextEnum.class), Mockito.anyCollection())).thenReturn(configurationModel);
+        Mockito.when(configurationModelConfigurationAccessor.createConfiguration(Mockito.eq(descriptorKey), Mockito.any(ConfigContextEnum.class), Mockito.anyCollection())).thenReturn(configurationModel);
         Mockito.when(converter.convertToConfigurationFieldModelMap(Mockito.eq(fieldModel))).thenReturn(configurationFieldModelCollection);
         Mockito.when(converter.convertToFieldModel(Mockito.any())).thenReturn(fieldModel);
         Mockito.when(apiAction.beforeSaveAction(Mockito.eq(fieldModel))).thenReturn(fieldModel);
         Mockito.when(apiAction.afterSaveAction(Mockito.eq(fieldModel))).thenReturn(fieldModel);
 
-        DefaultDescriptorGlobalConfigUtility configUtility = new DefaultDescriptorGlobalConfigUtility(descriptorKey, configurationAccessor, apiAction, converter);
+        DefaultDescriptorGlobalConfigUtility configUtility = new DefaultDescriptorGlobalConfigUtility(descriptorKey, configurationModelConfigurationAccessor, apiAction, converter);
         FieldModel savedModel = configUtility.save(fieldModel);
 
         assertEquals(fieldModel, savedModel);
-        Mockito.verify(configurationAccessor).createConfiguration(Mockito.eq(descriptorKey), Mockito.eq(ConfigContextEnum.GLOBAL), Mockito.anyCollection());
+        Mockito.verify(configurationModelConfigurationAccessor).createConfiguration(Mockito.eq(descriptorKey), Mockito.eq(ConfigContextEnum.GLOBAL), Mockito.anyCollection());
     }
 
     @Test
@@ -127,17 +127,17 @@ public class DefaultDescriptorGlobalConfigUtilityTest {
         DescriptorKey descriptorKey = createDescriptorKey();
         FieldModel fieldModel = new FieldModel(descriptorKey.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), Map.of());
         Map<String, ConfigurationFieldModel> configurationFieldModelCollection = Map.of();
-        ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
         ConfigurationFieldModelConverter converter = Mockito.mock(ConfigurationFieldModelConverter.class);
         ConfigurationModel configurationModel = Mockito.mock(ConfigurationModel.class);
         ApiAction apiAction = Mockito.mock(ApiAction.class);
-        Mockito.when(configurationAccessor.createConfiguration(Mockito.eq(descriptorKey), Mockito.any(ConfigContextEnum.class), Mockito.anyCollection())).thenReturn(configurationModel);
+        Mockito.when(configurationModelConfigurationAccessor.createConfiguration(Mockito.eq(descriptorKey), Mockito.any(ConfigContextEnum.class), Mockito.anyCollection())).thenReturn(configurationModel);
         Mockito.when(converter.convertToConfigurationFieldModelMap(Mockito.eq(fieldModel))).thenReturn(configurationFieldModelCollection);
         Mockito.when(converter.convertToFieldModel(Mockito.any())).thenReturn(fieldModel);
         Mockito.when(apiAction.beforeUpdateAction(Mockito.eq(fieldModel))).thenReturn(fieldModel);
         Mockito.when(apiAction.afterUpdateAction(Mockito.eq(fieldModel), Mockito.eq(fieldModel))).thenReturn(fieldModel);
 
-        DefaultDescriptorGlobalConfigUtility configUtility = new DefaultDescriptorGlobalConfigUtility(descriptorKey, configurationAccessor, apiAction, converter);
+        DefaultDescriptorGlobalConfigUtility configUtility = new DefaultDescriptorGlobalConfigUtility(descriptorKey, configurationModelConfigurationAccessor, apiAction, converter);
         FieldModel savedModel = configUtility.update(1L, fieldModel);
 
         assertEquals(fieldModel, savedModel);
@@ -148,22 +148,22 @@ public class DefaultDescriptorGlobalConfigUtilityTest {
         DescriptorKey descriptorKey = createDescriptorKey();
         FieldModel fieldModel = new FieldModel(descriptorKey.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), Map.of());
         Map<String, ConfigurationFieldModel> configurationFieldModelCollection = Map.of();
-        ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
         ConfigurationFieldModelConverter converter = Mockito.mock(ConfigurationFieldModelConverter.class);
         ConfigurationModel configurationModel = Mockito.mock(ConfigurationModel.class);
         ApiAction apiAction = Mockito.mock(ApiAction.class);
-        Mockito.when(configurationAccessor.getConfigurationById(Mockito.anyLong())).thenReturn(Optional.of(configurationModel));
-        Mockito.when(configurationAccessor.createConfiguration(Mockito.eq(descriptorKey), Mockito.any(ConfigContextEnum.class), Mockito.anyCollection())).thenReturn(configurationModel);
+        Mockito.when(configurationModelConfigurationAccessor.getConfigurationById(Mockito.anyLong())).thenReturn(Optional.of(configurationModel));
+        Mockito.when(configurationModelConfigurationAccessor.createConfiguration(Mockito.eq(descriptorKey), Mockito.any(ConfigContextEnum.class), Mockito.anyCollection())).thenReturn(configurationModel);
         Mockito.when(converter.convertToConfigurationFieldModelMap(Mockito.eq(fieldModel))).thenReturn(configurationFieldModelCollection);
         Mockito.when(converter.convertToFieldModel(Mockito.any())).thenReturn(fieldModel);
         Mockito.when(apiAction.beforeUpdateAction(Mockito.eq(fieldModel))).thenReturn(fieldModel);
         Mockito.when(apiAction.afterUpdateAction(Mockito.eq(fieldModel), Mockito.eq(fieldModel))).thenReturn(fieldModel);
 
-        DefaultDescriptorGlobalConfigUtility configUtility = new DefaultDescriptorGlobalConfigUtility(descriptorKey, configurationAccessor, apiAction, converter);
+        DefaultDescriptorGlobalConfigUtility configUtility = new DefaultDescriptorGlobalConfigUtility(descriptorKey, configurationModelConfigurationAccessor, apiAction, converter);
         FieldModel savedModel = configUtility.update(1L, fieldModel);
 
         assertEquals(fieldModel, savedModel);
-        Mockito.verify(configurationAccessor).updateConfiguration(Mockito.anyLong(), Mockito.anyCollection());
+        Mockito.verify(configurationModelConfigurationAccessor).updateConfiguration(Mockito.anyLong(), Mockito.anyCollection());
     }
 
 }

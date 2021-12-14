@@ -1,0 +1,36 @@
+{
+  "content": {
+    "projectName": "project",
+    "projectVersionName": "1",
+    "projectVersion": "https://a-hub-server.blackduck.com/api/projects/1c9d26d3-c787-46b9-92fe-f992f9b3195e/versions/322eb8f6-b5c2-4378-ac40-df66b685cdfb",
+    "componentName": "Apache Tomcat",
+    "bomComponent": "https://a-hub-server.blackduck.com/api/projects/1c9d26d3-c787-46b9-92fe-f992f9b3195e/versions/322eb8f6-b5c2-4378-ac40-df66b685cdfb/components/5a7e1c49-9a98-4393-b4e0-8011122bbe2f",
+    "component": "https://a-hub-server.blackduck.com/api/components/5a7e1c49-9a98-4393-b4e0-8011122bbe2f",
+    "criticalVulnerabilityCount": 1,
+    "criticalVulnerabilityVersion": "https://a-hub-server.blackduck.com/api/components/5a7e1c49-9a98-4393-b4e0-8011122bbe2f/versions/1c6ca2b5-04de-41a3-81ba-1f97746414d5/vulnerabilities",
+    "criticalVulnerabilityVersionName": "0.0.1",
+    "highVulnerabilityCount": 8,
+    "highVulnerabilityVersion": "https://a-hub-server.blackduck.com/api/components/5a7e1c49-9a98-4393-b4e0-8011122bbe2f/versions/1c6ca2b5-04de-41a3-81ba-1f97746414d5/vulnerabilities",
+    "highVulnerabilityVersionName": "6.0.0",
+    "mediumVulnerabilityCount": 58,
+    "mediumVulnerabilityVersion": "https://a-hub-server.blackduck.com/api/components/5a7e1c49-9a98-4393-b4e0-8011122bbe2f/versions/1c6ca2b5-04de-41a3-81ba-1f97746414d5/vulnerabilities",
+    "mediumVulnerabilityVersionName": "6.0.0",
+    "lowVulnerabilityCount": 29,
+    "lowVulnerabilityVersion": "https://a-hub-server.blackduck.com/api/components/5a7e1c49-9a98-4393-b4e0-8011122bbe2f/versions/b5cf54cd-1f89-4373-9eb4-456adda6cfe6/vulnerabilities",
+    "lowVulnerabilityVersionName": "TOMCAT_9_0_0_M7",
+    "status": "FOUND",
+    "eventSource": "USER_ACTION_ADJUSTMENT"
+  },
+  "contentType": "application/json",
+  "type": "COMPONENT_UNKNOWN_VERSION",
+  "createdAt": "2021-10-01T13:26:46.920Z",
+  "notificationState": "SEEN",
+  "_meta": {
+    "allow": [
+      "GET",
+      "PUT"
+    ],
+    "href": "https://a-hub-server.blackduck.com/api/users/00000000-0000-0000-0001-000000000001/notifications/d2e2436d-1307-443b-918f-1adaac2cc6bd",
+    "links": []
+  }
+}

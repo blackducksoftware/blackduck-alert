@@ -21,7 +21,7 @@ import com.synopsys.integration.alert.api.provider.Provider;
 import com.synopsys.integration.alert.api.provider.state.StatefulProvider;
 import com.synopsys.integration.alert.api.task.TaskManager;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 
 @Component
@@ -30,19 +30,19 @@ public class ProviderSchedulingManager {
 
     private final List<Provider> providers;
     private final TaskManager taskManager;
-    private final ConfigurationAccessor configurationAccessor;
+    private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
 
     @Autowired
-    public ProviderSchedulingManager(List<Provider> providers, TaskManager taskManager, ConfigurationAccessor configurationAccessor) {
+    public ProviderSchedulingManager(List<Provider> providers, TaskManager taskManager, ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor) {
         this.providers = providers;
         this.taskManager = taskManager;
-        this.configurationAccessor = configurationAccessor;
+        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
     }
 
     public List<ProviderTask> initializeConfiguredProviders() {
         List<ProviderTask> initializedTasks = new ArrayList<>();
         for (Provider provider : providers) {
-            List<ConfigurationModel> providerConfigurations = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(provider.getKey(), ConfigContextEnum.GLOBAL);
+            List<ConfigurationModel> providerConfigurations = configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(provider.getKey(), ConfigContextEnum.GLOBAL);
             List<ProviderTask> initializedTasksForProvider = initializeConfiguredProviders(provider, providerConfigurations);
             initializedTasks.addAll(initializedTasksForProvider);
         }

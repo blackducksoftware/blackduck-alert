@@ -9,7 +9,6 @@ package com.synopsys.integration.alert.channel.azure.boards.distribution.search;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
@@ -43,20 +42,22 @@ public class AzureBoardsProjectAndVersionIssueFinder implements ProjectIssueFind
 
     @Override
     public List<ProjectIssueSearchResult<Integer>> findProjectIssues(ProviderDetails providerDetails, LinkableItem project) throws AlertException {
-        return findWorkItemsAndConvertToSearchResults(providerDetails, project, null, Map.of());
+        return findWorkItemsAndConvertToSearchResults(providerDetails, project, null, AzureSearchFieldMappingBuilder.create());
     }
 
     @Override
     public List<ProjectIssueSearchResult<Integer>> findProjectVersionIssues(ProviderDetails providerDetails, LinkableItem project, LinkableItem projectVersion) throws AlertException {
         String projectVersionItemKey = AzureBoardsSearchPropertiesUtils.createNullableLinkableItemKey(projectVersion);
-        return findWorkItemsAndConvertToSearchResults(providerDetails, project, projectVersion, Map.of(AzureCustomFieldManager.ALERT_SUB_TOPIC_KEY_FIELD_REFERENCE_NAME, projectVersionItemKey));
+        AzureSearchFieldMappingBuilder azureSearchFieldMappingBuilder = AzureSearchFieldMappingBuilder.create();
+        azureSearchFieldMappingBuilder.addSubTopic(projectVersionItemKey);
+        return findWorkItemsAndConvertToSearchResults(providerDetails, project, projectVersion, azureSearchFieldMappingBuilder);
     }
 
     private List<ProjectIssueSearchResult<Integer>> findWorkItemsAndConvertToSearchResults(
         ProviderDetails providerDetails,
         LinkableItem project,
         @Nullable LinkableItem projectVersion,
-        Map<String, String> fieldReferenceNameToExpectedValue
+        AzureSearchFieldMappingBuilder fieldReferenceNameToExpectedValue
     ) throws AlertException {
         List<WorkItemResponseModel> workItems = workItemFinder.findWorkItems(providerDetails.getProvider(), project, fieldReferenceNameToExpectedValue);
 
@@ -77,7 +78,7 @@ public class AzureBoardsProjectAndVersionIssueFinder implements ProjectIssueFind
         AzureFieldDefinition<String> subComponentFieldDef = AzureFieldDefinition.stringField(AzureCustomFieldManager.ALERT_SUB_COMPONENT_KEY_FIELD_REFERENCE_NAME);
 
         LinkableItem projectVersion = Optional.ofNullable(nullableProjectVersion)
-                                          .orElse(AzureBoardsWorkItemExtractionUtils.extractLinkableItem(workItemFields, projectVersionFieldDef));
+            .orElse(AzureBoardsWorkItemExtractionUtils.extractLinkableItem(workItemFields, projectVersionFieldDef));
         LinkableItem component = AzureBoardsWorkItemExtractionUtils.extractLinkableItem(workItemFields, componentFieldDef);
 
         LinkableItem componentVersion = null;

@@ -1,6 +1,4 @@
-import {
-    SERIALIZE, TASKS_FETCH_ERROR_ALL, TASKS_FETCHED_ALL, TASKS_FETCHING_ALL
-} from 'store/actions/types';
+import { SERIALIZE, TASKS_FETCH_ERROR_ALL, TASKS_FETCHED_ALL, TASKS_FETCHING_ALL } from 'store/actions/types';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 
 const initialState = {

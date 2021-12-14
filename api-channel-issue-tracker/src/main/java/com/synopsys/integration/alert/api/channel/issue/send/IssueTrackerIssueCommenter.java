@@ -18,8 +18,8 @@ import com.synopsys.integration.alert.api.channel.issue.model.IssueCommentModel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
-import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 
 public abstract class IssueTrackerIssueCommenter<T extends Serializable> {
     public static final String COMMENTING_DISABLED_MESSAGE = "Commenting on issues is disabled. Skipping.";

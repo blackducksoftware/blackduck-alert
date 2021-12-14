@@ -16,11 +16,10 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
-import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.action.ActionResponse;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
@@ -28,10 +27,9 @@ import com.synopsys.integration.alert.component.authentication.actions.Authentic
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.component.authentication.web.AuthenticationActions;
 import com.synopsys.integration.alert.component.authentication.web.LoginConfig;
-import com.synopsys.integration.alert.startup.EnvironmentVariableUtility;
+import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
-@Transactional
 @AlertIntegrationTest
 public class ConfigurationOverridesStartupComponentTest {
     private static final String DEFAULT_ADMIN_USER = "sysadmin";
@@ -42,7 +40,7 @@ public class ConfigurationOverridesStartupComponentTest {
     @Autowired
     private AuthenticationDescriptorKey descriptorKey;
     @Autowired
-    private ConfigurationAccessor configurationAccessor;
+    private ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     @Autowired
     private AuthenticationApiAction apiAction;
     @Autowired
@@ -58,8 +56,8 @@ public class ConfigurationOverridesStartupComponentTest {
         Optional<UserModel> sysadminOptional = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER_ID);
         assertTrue(sysadminOptional.isPresent());
         UserModel sysadmin = sysadminOptional.get();
-        UserModel updatedSysadmin = changeUserPassword(sysadmin, DEFAULT_PASSWORD);
-        userAccessor.updateUser(updatedSysadmin, false);
+        UserModel updatedSysadmin = changeUserPassword(sysadmin, DEFAULT_PASSWORD_ENCODED);
+        userAccessor.updateUser(updatedSysadmin, true);
     }
 
     @Test
@@ -67,9 +65,8 @@ public class ConfigurationOverridesStartupComponentTest {
         Environment environment = Mockito.mock(Environment.class);
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
 
-        ConfigurationOverridesStartupComponent configurationOverridesStartupComponent = new ConfigurationOverridesStartupComponent(environmentVariableUtility, userAccessor, descriptorKey, configurationAccessor,
+        ConfigurationOverridesStartupComponent configurationOverridesStartupComponent = new ConfigurationOverridesStartupComponent(environmentVariableUtility, userAccessor, descriptorKey, configurationModelConfigurationAccessor,
             apiAction, configurationFieldModelConverter);
-
         // Update the sysadmin password
         Optional<UserModel> sysadminOptional = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER_ID);
         assertTrue(sysadminOptional.isPresent());
@@ -109,7 +106,7 @@ public class ConfigurationOverridesStartupComponentTest {
         Mockito.when(environment.getProperty(ConfigurationOverridesStartupComponent.ENV_VAR_ADMIN_USER_PASSWORD_RESET)).thenReturn("true");
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
 
-        ConfigurationOverridesStartupComponent configurationOverridesStartupComponent = new ConfigurationOverridesStartupComponent(environmentVariableUtility, userAccessor, descriptorKey, configurationAccessor,
+        ConfigurationOverridesStartupComponent configurationOverridesStartupComponent = new ConfigurationOverridesStartupComponent(environmentVariableUtility, userAccessor, descriptorKey, configurationModelConfigurationAccessor,
             apiAction, configurationFieldModelConverter);
 
         // Update the sysadmin password
@@ -151,9 +148,9 @@ public class ConfigurationOverridesStartupComponentTest {
         Mockito.when(environment.getProperty(ConfigurationOverridesStartupComponent.ENV_VAR_ADMIN_USER_PASSWORD_RESET)).thenReturn("true");
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
 
-        ConfigurationOverridesStartupComponent configurationOverridesStartupComponent = new ConfigurationOverridesStartupComponent(environmentVariableUtility, userAccessor, descriptorKey, configurationAccessor,
+        ConfigurationOverridesStartupComponent configurationOverridesStartupComponent = new ConfigurationOverridesStartupComponent(environmentVariableUtility, userAccessor, descriptorKey, configurationModelConfigurationAccessor,
             apiAction, configurationFieldModelConverter);
-
+        
         String newUsername = "UpdatedAdmin";
 
         // Update the sysadmin username and password

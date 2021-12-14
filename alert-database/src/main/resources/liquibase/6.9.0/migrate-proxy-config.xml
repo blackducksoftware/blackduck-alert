@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <!-- create an initial row -->
+    <changeSet author="martinch" id="create-initial-proxy-config-entries">
+        <preConditions onFail="MARK_RAN">
+            <rowCount schemaName="alert" tableName="configuration_proxy" expectedRows="0"/>
+        </preConditions>
+        <sql dbms="postgresql" stripComments="true">
+            INSERT INTO alert.configuration_proxy (created_at, last_updated, name, host, port, username, password)
+            SELECT now(),
+                   null,
+                   'default-configuration',
+                   '',
+                   null,
+                   null,
+                   null
+            FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('component_settings') configFields
+            WHERE configFields.source_key IS NOT NULL LIMIT 1;
+        </sql>
+    </changeSet>
+
+    <changeSet author="martinch" id="update-initial-proxy-config-entries">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(host) FROM alert.configuration_proxy WHERE name = 'default-configuration';
+            </sqlCheck>
+        </preConditions>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_proxy config
+            SET created_at = configTimestamps.created_at FROM GET_GLOBAL_CONFIG_TIMESTAMPS('component_settings') configTimestamps;
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_proxy config
+            SET last_updated = configTimestamps.last_updated FROM GET_GLOBAL_CONFIG_TIMESTAMPS('component_settings') configTimestamps;
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_proxy config
+            SET port = cast(configFields.field_value as BIGINT) FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('component_settings') configFields
+            WHERE config.name = 'default-configuration'
+              AND configFields.source_key = 'settings.proxy.port';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_proxy config
+            SET username = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('component_settings') configFields
+            WHERE config.name = 'default-configuration'
+              AND configFields.source_key = 'settings.proxy.username';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_proxy config
+            SET password = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('component_settings') configFields
+            WHERE config.name = 'default-configuration'
+              AND configFields.source_key = 'settings.proxy.password';
+        </sql>
+        <!-- host must be last because we will key off the host for the other fields -->
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_proxy config
+            SET host = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('component_settings') configFields
+            WHERE config.name = 'default-configuration'
+              AND configFields.source_key = 'settings.proxy.host';
+        </sql>
+    </changeSet>
+
+    <changeSet author="martinch" id="update-initial-proxy-non-proxy-hosts">
+        <preConditions onFail="MARK_RAN">
+            <rowCount schemaName="alert" tableName="configuration_proxy" expectedRows="1"/>
+        </preConditions>
+        <sql dbms="postgresql" stripComments="true">
+            INSERT INTO alert.configuration_non_proxy_hosts (configuration_id, hostname_pattern)
+            SELECT config.configuration_id, configFields.field_value
+            FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('component_settings') configFields,
+                alert.configuration_proxy config
+            WHERE configFields.source_key = 'settings.proxy.non.proxy.hosts';
+        </sql>
+    </changeSet>
+</databaseChangeLog>

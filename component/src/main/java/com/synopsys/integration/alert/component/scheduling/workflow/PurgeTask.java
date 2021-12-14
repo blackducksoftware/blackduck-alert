@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.task.StartupScheduledTask;
 import com.synopsys.integration.alert.api.task.TaskManager;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -41,17 +41,17 @@ public class PurgeTask extends StartupScheduledTask {
     private final SchedulingDescriptorKey schedulingDescriptorKey;
     private final NotificationAccessor notificationAccessor;
     private final SystemMessageAccessor systemMessageAccessor;
-    private final ConfigurationAccessor configurationAccessor;
+    private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     private int dayOffset;
 
     @Autowired
     public PurgeTask(SchedulingDescriptorKey schedulingDescriptorKey, TaskScheduler taskScheduler, NotificationAccessor notificationAccessor, SystemMessageAccessor systemMessageAccessor, TaskManager taskManager,
-        ConfigurationAccessor configurationAccessor) {
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor) {
         super(taskScheduler, taskManager);
         this.schedulingDescriptorKey = schedulingDescriptorKey;
         this.notificationAccessor = notificationAccessor;
         this.systemMessageAccessor = systemMessageAccessor;
-        this.configurationAccessor = configurationAccessor;
+        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
         this.dayOffset = 1;
     }
 
@@ -64,7 +64,7 @@ public class PurgeTask extends StartupScheduledTask {
 
     @Override
     public String scheduleCronExpression() {
-        String purgeSavedCronValue = configurationAccessor.getConfigurationsByDescriptorKey(schedulingDescriptorKey)
+        String purgeSavedCronValue = configurationModelConfigurationAccessor.getConfigurationsByDescriptorKey(schedulingDescriptorKey)
             .stream()
             .findFirst()
             .flatMap(configurationModel -> configurationModel.getField(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS))
@@ -114,7 +114,7 @@ public class PurgeTask extends StartupScheduledTask {
     private Boolean purgeOldData() {
         try {
             logger.info("Begin startup purge of old data");
-            Optional<ConfigurationModel> configurationModel = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(schedulingDescriptorKey, ConfigContextEnum.GLOBAL).stream().findFirst();
+            Optional<ConfigurationModel> configurationModel = configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(schedulingDescriptorKey, ConfigContextEnum.GLOBAL).stream().findFirst();
             if (configurationModel.isPresent()) {
                 Integer purgeDataFrequencyDays = configurationModel.map(SchedulingConfiguration::new)
                     .map(SchedulingConfiguration::getDataFrequencyDays)

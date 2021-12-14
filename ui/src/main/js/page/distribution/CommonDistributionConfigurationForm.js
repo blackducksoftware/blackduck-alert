@@ -26,6 +26,7 @@ const CommonDistributionConfigurationForm = ({
 }) => {
     const [showTest, setShowTest] = useState(false);
     const [errorMessage, setErrorMessage] = useState(null);
+    const [errorIsDetailed, setErrorIsDetailed] = useState(false);
     const [actionMessage, setActionMessage] = useState(null);
     const [inProgress, setInProgress] = useState(false);
 
@@ -58,6 +59,7 @@ const CommonDistributionConfigurationForm = ({
         if (response.ok) {
             const errors = Object.values(json.errors);
             if (json.hasErrors) {
+                setErrorIsDetailed(json.detailed);
                 if (errors.length !== 0 && errors.every((status) => status.severity === 'WARNING')) {
                     setActionMessage('Test Successful (With Warnings)');
                     setErrors(HttpErrorUtilities.createErrorObject(json));
@@ -157,6 +159,7 @@ const CommonDistributionConfigurationForm = ({
                 id="global-config-status-message"
                 errorMessage={errorMessage}
                 actionMessage={actionMessage}
+                errorIsDetailed={errorIsDetailed}
             />
             <form className="form-horizontal" onSubmit={performSaveRequest} noValidate>
                 <div>

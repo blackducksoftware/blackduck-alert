@@ -33,7 +33,7 @@ ext {
 }
 
 mainClassName = 'com.synopsys.integration.alert.Application'
-version = '6.8.0-SNAPSHOT'
+version = '6.9.0-SNAPSHOT'
 
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
@@ -92,6 +92,7 @@ dependencies {
     implementation project(':api-common-model')
     implementation project(':api-channel')
     implementation project(':api-descriptor')
+    implementation project(':api-environment')
     implementation project(':api-event')
     implementation project(':api-processor')
     implementation project(':api-provider')
@@ -139,7 +140,7 @@ dependencies {
     // Test and Dev
     // =============
     testImplementation 'org.testcontainers:postgresql'
-    if (getGradle().getStartParameter().taskNames.contains('runServer')) {
+    if (getGradle().getStartParameter().taskNames.contains('runServer') && !getGradle().getStartParameter().taskNames.contains("--externaldb")) {
         runtimeClasspath 'com.playtika.testcontainers:embedded-postgresql:2.0.5'
         runtimeClasspath 'org.springframework.cloud:spring-cloud-starter-bootstrap:3.0.1'
         runtimeClasspath 'org.springframework.boot:spring-boot-devtools'

@@ -20,14 +20,14 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.saml.SAMLCredential;
 
 import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
+import com.synopsys.integration.alert.common.security.UserPrincipal;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.component.authentication.security.UserManagementAuthoritiesPopulator;
-import com.synopsys.integration.alert.component.authentication.security.database.UserPrincipal;
 
 public class UserDetailsServiceTest {
 
@@ -44,13 +44,13 @@ public class UserDetailsServiceTest {
                                        .collect(Collectors.toSet());
         UserModel userModel = UserModel.newUser(USER_NAME, "password", EMAIL, AuthenticationType.SAML, roles, true);
         AuthenticationDescriptorKey key = new AuthenticationDescriptorKey();
-        ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
         ConfigurationModel configuration = Mockito.mock(ConfigurationModel.class);
         UserAccessor userAccessor = Mockito.mock(UserAccessor.class);
         Mockito.when(configuration.getField(Mockito.anyString())).thenReturn(Optional.empty());
-        Mockito.when(configurationAccessor.getConfigurationsByDescriptorKey(Mockito.eq(key))).thenReturn(List.of(configuration));
+        Mockito.when(configurationModelConfigurationAccessor.getConfigurationsByDescriptorKey(Mockito.eq(key))).thenReturn(List.of(configuration));
         Mockito.when(userAccessor.getUser(Mockito.anyString())).thenReturn(Optional.of(userModel));
-        authoritiesPopulator = new UserManagementAuthoritiesPopulator(key, configurationAccessor, userAccessor);
+        authoritiesPopulator = new UserManagementAuthoritiesPopulator(key, configurationModelConfigurationAccessor, userAccessor);
     }
 
     @Test

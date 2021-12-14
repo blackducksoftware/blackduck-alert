@@ -29,7 +29,7 @@ import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUrlCreat
 import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidator;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -57,19 +57,19 @@ public class AzureOAuthCallbackController {
     private final Gson gson;
     private final AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory;
     private final ProxyManager proxyManager;
-    private final ConfigurationAccessor configurationAccessor;
+    private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     private final AzureRedirectUrlCreator azureRedirectUrlCreator;
     private final OAuthRequestValidator oAuthRequestValidator;
     private final AuthorizationManager authorizationManager;
 
     @Autowired
-    public AzureOAuthCallbackController(ResponseFactory responseFactory, Gson gson, AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory, ProxyManager proxyManager, ConfigurationAccessor configurationAccessor,
+    public AzureOAuthCallbackController(ResponseFactory responseFactory, Gson gson, AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory, ProxyManager proxyManager, ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor,
         AzureRedirectUrlCreator azureRedirectUrlCreator, OAuthRequestValidator oAuthRequestValidator, AuthorizationManager authorizationManager) {
         this.responseFactory = responseFactory;
         this.gson = gson;
         this.azureBoardsCredentialDataStoreFactory = azureBoardsCredentialDataStoreFactory;
         this.proxyManager = proxyManager;
-        this.configurationAccessor = configurationAccessor;
+        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
         this.azureRedirectUrlCreator = azureRedirectUrlCreator;
         this.oAuthRequestValidator = oAuthRequestValidator;
         this.authorizationManager = authorizationManager;
@@ -151,7 +151,7 @@ public class AzureOAuthCallbackController {
 
     private FieldUtility createFieldAccessor() {
         Map<String, ConfigurationFieldModel> fields = new HashMap<>();
-        List<ConfigurationModel> azureChannelConfigs = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(ChannelKeys.AZURE_BOARDS, ConfigContextEnum.GLOBAL);
+        List<ConfigurationModel> azureChannelConfigs = configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(ChannelKeys.AZURE_BOARDS, ConfigContextEnum.GLOBAL);
         azureChannelConfigs.stream()
             .findFirst()
             .map(ConfigurationModel::getCopyOfKeyToFieldMap)

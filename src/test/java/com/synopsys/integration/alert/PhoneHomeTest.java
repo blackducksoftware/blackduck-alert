@@ -18,7 +18,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.RestApiAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
-import com.synopsys.integration.alert.database.api.DefaultConfigurationAccessor;
+import com.synopsys.integration.alert.database.api.DefaultConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
@@ -44,9 +44,9 @@ public class PhoneHomeTest {
         JobAccessor jobAccessor = Mockito.mock(JobAccessor.class);
         // FIXME implement mocks
 
-        DefaultConfigurationAccessor configurationAccessor = Mockito.mock(DefaultConfigurationAccessor.class);
+        DefaultConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(DefaultConfigurationModelConfigurationAccessor.class);
         ConfigurationModel config = Mockito.mock(ConfigurationModel.class);
-        Mockito.when(configurationAccessor.getConfigurationsByDescriptorKey(Mockito.any(DescriptorKey.class))).thenReturn(List.of(config));
+        Mockito.when(configurationModelConfigurationAccessor.getConfigurationsByDescriptorKey(Mockito.any(DescriptorKey.class))).thenReturn(List.of(config));
 
         DescriptorMap descriptorMap = Mockito.mock(DescriptorMap.class);
         Descriptor descriptor = Mockito.mock(Descriptor.class);
@@ -58,7 +58,7 @@ public class PhoneHomeTest {
 
         ProviderKey providerKey = new BlackDuckProviderKey();
 
-        PhoneHomeTask phoneHomeTask = new PhoneHomeTask(taskScheduler, aboutReader, jobAccessor, configurationAccessor, null, proxyManager, new Gson(), auditAccessor, providerHandlers, providerKey);
+        PhoneHomeTask phoneHomeTask = new PhoneHomeTask(taskScheduler, aboutReader, jobAccessor, configurationModelConfigurationAccessor, null, proxyManager, new Gson(), auditAccessor, providerHandlers, providerKey);
 
         try {
             phoneHomeTask.run();

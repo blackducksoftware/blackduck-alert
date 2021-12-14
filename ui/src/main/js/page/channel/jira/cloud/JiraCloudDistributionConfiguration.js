@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import CheckboxInput from 'common/input/CheckboxInput';
 import { JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS } from 'page/channel/jira/cloud/JiraCloudModel';

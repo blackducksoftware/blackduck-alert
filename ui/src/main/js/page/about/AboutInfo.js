@@ -21,7 +21,8 @@ const AboutInfo = ({
         const nameRenderer = (cell, row) => {
             const nameId = `aboutNameKey-${cell}`;
             const url = `${uriPrefix}${row.urlName}`;
-            return <NavLink to={url} id={nameId}>{cell}</NavLink>;
+            const renderedItem = row.urlName ? <NavLink to={url} id={nameId}>{cell}</NavLink> : <div id={nameId}>{cell}</div>;
+            return renderedItem;
         };
         const tableOptions = {
             defaultSortName: 'name',
@@ -59,14 +60,27 @@ const AboutInfo = ({
         .filter((descriptor) => existingData[descriptor.name])
         .map((descriptor) => {
             const descriptorModel = existingData[descriptor.name];
+            const url = descriptor.navigation ? descriptorModel.url : null;
             return {
                 name: descriptorModel.label,
-                urlName: descriptorModel.url
+                urlName: url
             };
         });
 
-    const providerData = createTableData(globalDescriptorMap, EXISTING_PROVIDERS);
-    const channelData = createTableData(distributionDescriptorMap, EXISTING_CHANNELS);
+    const addGlobalConfigurationCheck = (globalDescriptorMapping, descriptorMapping) => Object.values(descriptorMapping)
+        .map((descriptor) => {
+            const globalConfig = globalDescriptorMapping[descriptor.name];
+            const navigation = Boolean(globalConfig);
+            return {
+                ...descriptor,
+                navigation
+            };
+        });
+
+    const providerDescriptorData = addGlobalConfigurationCheck(globalDescriptorMap, globalDescriptorMap);
+    const channelDescriptorData = addGlobalConfigurationCheck(globalDescriptorMap, distributionDescriptorMap);
+    const providerData = createTableData(providerDescriptorData, EXISTING_PROVIDERS);
+    const channelData = createTableData(channelDescriptorData, EXISTING_CHANNELS);
     const providerTable = createDescriptorTable('about-providers', providerData, '/alert/providers/', 'Providers');
     const channelTable = createDescriptorTable('about-channels', channelData, '/alert/channels/', 'Distribution Channels');
     const providersMissing = !providerData || providerData.length <= 0;

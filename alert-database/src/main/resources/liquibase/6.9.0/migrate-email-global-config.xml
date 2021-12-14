@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <!-- create an initial row -->
+    <changeSet author="psantos" id="create-initial-email-config-entries">
+        <preConditions onFail="MARK_RAN">
+            <rowCount schemaName="alert" tableName="configuration_email" expectedRows="0"/>
+        </preConditions>
+        <sql dbms="postgresql" stripComments="true">
+            INSERT INTO alert.configuration_email (created_at, last_updated, name, smtp_host, smtp_from, port, auth_required, auth_username, auth_password)
+            SELECT now(),
+                   null,
+                   'default-configuration',
+                   '',
+                   '',
+                   null,
+                   false,
+                   null,
+                   null
+            FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_email') configFields
+            WHERE configFields.source_key IS NOT NULL LIMIT 1;
+        </sql>
+    </changeSet>
+
+    <!-- Update common job fields one at a time -->
+    <changeSet author="psantos" id="update-initial-email-config-entries">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(smtp_host) FROM alert.configuration_email WHERE name = 'default-configuration';
+            </sqlCheck>
+        </preConditions>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_email config
+            SET created_at = configTimestamps.created_at FROM GET_GLOBAL_CONFIG_TIMESTAMPS('channel_email') configTimestamps;
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_email config
+            SET last_updated = configTimestamps.last_updated FROM GET_GLOBAL_CONFIG_TIMESTAMPS('channel_email') configTimestamps;
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_email config
+            SET smtp_from = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_email') configFields
+            WHERE config.name = 'default-configuration'
+              AND configFields.source_key = 'mail.smtp.from';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_email config
+            SET port = cast(coalesce(configFields.field_value, '25') as BIGINT) FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_email') configFields
+            WHERE config.name = 'default-configuration'
+              AND configFields.source_key = 'mail.smtp.port';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_email config
+            SET auth_required = cast(coalesce(configFields.field_value, 'false') as BOOLEAN) FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_email') configFields
+            WHERE config.name = 'default-configuration'
+              AND configFields.source_key = 'mail.smtp.auth';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_email config
+            SET auth_username = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_email') configFields
+            WHERE config.name = 'default-configuration'
+              AND configFields.source_key = 'mail.smtp.user';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_email config
+            SET auth_password = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_email') configFields
+            WHERE config.name = 'default-configuration'
+              AND configFields.source_key = 'mail.smtp.password';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_email config
+            SET smtp_host = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_email') configFields
+            WHERE config.name = 'default-configuration'
+              AND configFields.source_key = 'mail.smtp.host';
+        </sql>
+    </changeSet>
+
+    <changeSet author="psantos" id="updated-initial-email-additional-properties">
+        <preConditions onFail="MARK_RAN">
+            <rowCount schemaName="alert" tableName="configuration_email" expectedRows="1"/>
+        </preConditions>
+        <sql dbms="postgresql" stripComments="true">
+            INSERT INTO alert.configuration_email_properties (configuration_id, property_key, property_value)
+            SELECT config.configuration_id, configFields.source_key, configFields.field_value
+            FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_email') configFields,
+                 alert.configuration_email config
+            WHERE configFields.source_key
+                      NOT IN (
+                              'mail.smtp.host',
+                              'mail.smtp.port',
+                              'mail.smtp.from',
+                              'mail.smtp.auth',
+                              'mail.smtp.user',
+                              'mail.smtp.password'
+                      );
+        </sql>
+    </changeSet>
+</databaseChangeLog>

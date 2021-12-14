@@ -7,25 +7,21 @@
  */
 package com.synopsys.integration.alert.channel.azure.boards.distribution.search;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.IssuePolicyDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.util.AzureBoardsSearchPropertiesUtils;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.azure.boards.common.service.workitem.request.WorkItemElementOperation;
 import com.synopsys.integration.azure.boards.common.service.workitem.request.WorkItemElementOperationModel;
-import com.synopsys.integration.azure.boards.common.util.AzureFieldDefinition;
 
 public class AzureBoardsAlertIssuePropertiesManager {
     public static final String POLICY_ADDITIONAL_KEY_COMPATIBILITY_LABEL = "Policy Violated";
     public static final String CATEGORY_TYPE_POLICY_COMPATIBILITY_LABEL = "Policy";
     public static final String CATEGORY_TYPE_VULNERABILITY_COMPATIBILITY_LABEL = "Vulnerability";
+    public static final String CATEGORY_TYPE_COMPONENT_UNKNOWN_VERSION_COMPATIBILITY_LABEL = "Component Unknown Version";
 
     public List<WorkItemElementOperationModel> createWorkItemRequestCustomFieldOperations(ProjectIssueModel alertIssueSource) {
         LinkableItem provider = alertIssueSource.getProvider();
@@ -37,33 +33,30 @@ public class AzureBoardsAlertIssuePropertiesManager {
         String componentKey = AzureBoardsSearchPropertiesUtils.createNullableLinkableItemKey(bomComponentDetails.getComponent());
         String subComponentKey = AzureBoardsSearchPropertiesUtils.createNullableLinkableItemKey(bomComponentDetails.getComponentVersion().orElse(null));
 
-        List<WorkItemElementOperationModel> customFields = new ArrayList<>(7);
-        addStringField(customFields, AzureCustomFieldManager.ALERT_PROVIDER_KEY_FIELD_REFERENCE_NAME, providerKey);
-        addStringField(customFields, AzureCustomFieldManager.ALERT_TOPIC_KEY_FIELD_REFERENCE_NAME, topicKey);
-        addStringField(customFields, AzureCustomFieldManager.ALERT_SUB_TOPIC_KEY_FIELD_REFERENCE_NAME, subTopicKey);
-        addStringField(customFields, AzureCustomFieldManager.ALERT_COMPONENT_KEY_FIELD_REFERENCE_NAME, componentKey);
-        addStringField(customFields, AzureCustomFieldManager.ALERT_SUB_COMPONENT_KEY_FIELD_REFERENCE_NAME, subComponentKey);
+        AzureSearchFieldBuilder azureSearchFieldBuilder = AzureSearchFieldBuilder.create()
+            .addProviderKey(providerKey)
+            .addTopicKey(topicKey)
+            .addSubTopicKey(subTopicKey)
+            .addComponentKey(componentKey)
+            .addSubComponentKey(subComponentKey);
 
         String categoryKey = CATEGORY_TYPE_VULNERABILITY_COMPATIBILITY_LABEL;
 
         Optional<String> optionalPolicyName = alertIssueSource.getPolicyDetails().map(IssuePolicyDetails::getName);
         if (optionalPolicyName.isPresent()) {
             String additionalInfoKey = POLICY_ADDITIONAL_KEY_COMPATIBILITY_LABEL + optionalPolicyName.get();
-            addStringField(customFields, AzureCustomFieldManager.ALERT_ADDITIONAL_INFO_KEY_FIELD_REFERENCE_NAME, additionalInfoKey);
+            azureSearchFieldBuilder.addAdditionalInfoKey(additionalInfoKey);
             categoryKey = CATEGORY_TYPE_POLICY_COMPATIBILITY_LABEL;
         }
 
-        addStringField(customFields, AzureCustomFieldManager.ALERT_CATEGORY_KEY_FIELD_REFERENCE_NAME, categoryKey);
-
-        return customFields;
-    }
-
-    private void addStringField(List<WorkItemElementOperationModel> customFields, String fieldReferenceName, @Nullable String fieldValue) {
-        if (null != fieldValue) {
-            AzureFieldDefinition<String> alertProviderKeyFieldDefinition = AzureFieldDefinition.stringField(fieldReferenceName);
-            WorkItemElementOperationModel alertProviderKeyField = WorkItemElementOperationModel.fieldElement(WorkItemElementOperation.ADD, alertProviderKeyFieldDefinition, fieldValue);
-            customFields.add(alertProviderKeyField);
+        boolean unknownVersionCategory = alertIssueSource.getComponentUnknownVersionDetails().isPresent();
+        if (unknownVersionCategory) {
+            categoryKey = CATEGORY_TYPE_COMPONENT_UNKNOWN_VERSION_COMPATIBILITY_LABEL;
         }
+
+        azureSearchFieldBuilder.addCategoryKey(categoryKey);
+
+        return azureSearchFieldBuilder.build();
     }
 
 }

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="psantos" id="create-email-configuration-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="configuration_email"/>
+            </not>
+        </preConditions>
+        <createTable schemaName="alert" tableName="configuration_email">
+            <column name="configuration_id" type="UUID" defaultValueComputed="uuid_generate_v4()">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP WITH TIMEZONE" defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_updated" type="TIMESTAMP WITH TIMEZONE">
+                <constraints nullable="true"/>
+            </column>
+            <column name="smtp_host" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="smtp_from" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="port" type="BIGINT">
+                <constraints nullable="true"/>
+            </column>
+            <column name="auth_required" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="auth_username" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+            <column name="auth_password" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="psantos" id="create-email-properties-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="configuration_email_properties"/>
+            </not>
+        </preConditions>
+        <createTable schemaName="alert" tableName="configuration_email_properties">
+            <column name="configuration_id" type="UUID">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="property_key" type="VARCHAR">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="property_value" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="psantos" id="create-email-configuration-properties-table-fk">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="configuration_email_properties_configuration_id_fk"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint
+                constraintName="configuration_email_properties_configuration_id_fk"
+                baseTableSchemaName="alert"
+                baseTableName="configuration_email_properties"
+                baseColumnNames="configuration_id"
+                referencedTableSchemaName="alert"
+                referencedTableName="configuration_email"
+                referencedColumnNames="configuration_id"
+                onDelete="CASCADE"
+                onUpdate="CASCADE"
+        />
+    </changeSet>
+
+</databaseChangeLog>
+

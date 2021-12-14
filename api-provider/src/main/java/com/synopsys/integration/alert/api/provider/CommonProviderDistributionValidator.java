@@ -24,16 +24,16 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 
 @Component
 public class CommonProviderDistributionValidator {
-    private final ConfigurationAccessor configurationAccessor;
+    private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
 
     @Autowired
-    public CommonProviderDistributionValidator(ConfigurationAccessor configurationAccessor) {
-        this.configurationAccessor = configurationAccessor;
+    public CommonProviderDistributionValidator(ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor) {
+        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
     }
 
     public void validate(ConfigurationFieldValidator configurationFieldValidator) {
@@ -56,7 +56,7 @@ public class CommonProviderDistributionValidator {
 
     private void validateConfigExists(ConfigurationFieldValidator configurationFieldValidator) {
         Optional<ConfigurationModel> configModel = configurationFieldValidator.getLongValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID)
-            .flatMap(configurationAccessor::getConfigurationById);
+            .flatMap(configurationModelConfigurationAccessor::getConfigurationById);
         if (configModel.isEmpty()) {
             configurationFieldValidator.addValidationResults(AlertFieldStatus.error(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID, "Provider configuration missing."));
         }

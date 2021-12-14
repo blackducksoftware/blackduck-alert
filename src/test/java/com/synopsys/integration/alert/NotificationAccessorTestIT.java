@@ -26,7 +26,7 @@ import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
@@ -69,7 +69,7 @@ public class NotificationAccessorTestIT {
     private FieldValueRepository fieldValueRepository;
 
     @Autowired
-    private ConfigurationAccessor configurationAccessor;
+    private ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     @Autowired
     private DefaultNotificationAccessor notificationManager;
 
@@ -99,12 +99,12 @@ public class NotificationAccessorTestIT {
         blackduckTimeout.setFieldValue("300");
 
         List<ConfigurationFieldModel> providerConfigFields = List.of(providerConfigEnabled, providerConfigName, blackduckUrl, blackduckApiKey, blackduckTimeout);
-        providerConfigModel = configurationAccessor.createConfiguration(new BlackDuckProviderKey(), ConfigContextEnum.GLOBAL, providerConfigFields);
+        providerConfigModel = configurationModelConfigurationAccessor.createConfiguration(new BlackDuckProviderKey(), ConfigContextEnum.GLOBAL, providerConfigFields);
     }
 
     @AfterEach
     public void cleanUpDB() {
-        configurationAccessor.deleteConfiguration(providerConfigModel.getConfigurationId());
+        configurationModelConfigurationAccessor.deleteConfiguration(providerConfigModel.getConfigurationId());
         cleanDB();
     }
 

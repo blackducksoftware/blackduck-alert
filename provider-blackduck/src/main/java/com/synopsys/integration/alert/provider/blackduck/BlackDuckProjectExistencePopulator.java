@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.provider.ProviderProjectExistencePopulator;
 import com.synopsys.integration.alert.api.provider.state.StatefulProvider;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.model.JobProviderProjectFieldModel;
 import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
@@ -31,17 +31,17 @@ import com.synopsys.integration.rest.response.Response;
 public class BlackDuckProjectExistencePopulator implements ProviderProjectExistencePopulator {
     public final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final ConfigurationAccessor configurationAccessor;
+    private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     private final BlackDuckProvider blackDuckProvider;
 
-    public BlackDuckProjectExistencePopulator(ConfigurationAccessor configurationAccessor, BlackDuckProvider blackDuckProvider) {
-        this.configurationAccessor = configurationAccessor;
+    public BlackDuckProjectExistencePopulator(ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor, BlackDuckProvider blackDuckProvider) {
+        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
         this.blackDuckProvider = blackDuckProvider;
     }
 
     @Override
     public void populateJobProviderProjects(Long providerGlobalConfigId, List<JobProviderProjectFieldModel> configuredProviderProjects) {
-        configurationAccessor.getConfigurationById(providerGlobalConfigId).ifPresent(providerGlobalConfig -> populateJobProviderProjects(providerGlobalConfig, configuredProviderProjects));
+        configurationModelConfigurationAccessor.getConfigurationById(providerGlobalConfigId).ifPresent(providerGlobalConfig -> populateJobProviderProjects(providerGlobalConfig, configuredProviderProjects));
     }
 
     private void populateJobProviderProjects(ConfigurationModel providerGlobalConfig, List<JobProviderProjectFieldModel> configuredProviderProjects) {

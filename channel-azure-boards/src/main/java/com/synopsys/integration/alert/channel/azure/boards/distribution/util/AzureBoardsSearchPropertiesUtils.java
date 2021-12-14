@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.channel.azure.boards.distribution.util;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
@@ -14,6 +15,8 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 public final class AzureBoardsSearchPropertiesUtils {
     public static final String URL_DELIMITER = "|";
     public static final String LINKABLE_ITEM_DELIMITER = ":";
+
+    private static final int MAX_KEY_LENGTH = 256;
 
     public static String createProviderKey(String providerName, String providerUrl) {
         StringBuilder providerKeyBuilder = new StringBuilder();
@@ -37,7 +40,9 @@ public final class AzureBoardsSearchPropertiesUtils {
                 linkableItemBuilder.append(URL_DELIMITER);
                 linkableItemBuilder.append(url);
             });
-        return linkableItemBuilder.toString();
+
+        // Truncating to a valid amount listed here https://github.com/MicrosoftDocs/azure-devops-docs/issues/5890.
+        return StringUtils.truncate(linkableItemBuilder.toString(), MAX_KEY_LENGTH);
     }
 
     private AzureBoardsSearchPropertiesUtils() {
