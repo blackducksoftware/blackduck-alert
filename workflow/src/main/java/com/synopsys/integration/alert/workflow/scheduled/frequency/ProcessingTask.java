@@ -58,8 +58,8 @@ public abstract class ProcessingTask extends StartupScheduledTask {
 
     @Override
     public void runTask() {
-        int jobCountByFrequency = jobAccessor.countJobsByFrequency(frequencyType.name());
-        if (jobCountByFrequency > 0) {
+        boolean hasJobsByFrequency = jobAccessor.hasJobsByFrequency(frequencyType.name());
+        if (hasJobsByFrequency) {
             process();
             lastRunTime = DateUtils.createCurrentDateTimestamp();
         }

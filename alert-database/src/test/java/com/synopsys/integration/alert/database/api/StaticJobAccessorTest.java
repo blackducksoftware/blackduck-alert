@@ -93,11 +93,9 @@ class StaticJobAccessorTest {
 
     @Test
     void countJobsByFrequencyTest() {
-        int expectedCount = 10;
-        Mockito.when(distributionJobRepository.countByDistributionFrequency(Mockito.eq(FrequencyType.DAILY.name()))).thenReturn(expectedCount);
-        int count = jobAccessor.countJobsByFrequency(FrequencyType.DAILY.name());
+        Mockito.when(distributionJobRepository.existsByDistributionFrequency(Mockito.eq(FrequencyType.DAILY.name()))).thenReturn(true);
+        assertTrue(jobAccessor.hasJobsByFrequency(FrequencyType.DAILY.name()));
 
-        assertEquals(expectedCount, count);
     }
 
     @Test

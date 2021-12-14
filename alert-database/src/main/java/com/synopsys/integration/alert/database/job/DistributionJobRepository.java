@@ -20,7 +20,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface DistributionJobRepository extends JpaRepository<DistributionJobEntity, UUID> {
-    int countByDistributionFrequency(String distributionFrequency);
+    boolean existsByDistributionFrequency(String distributionFrequency);
 
     Optional<DistributionJobEntity> findByName(String name);
 

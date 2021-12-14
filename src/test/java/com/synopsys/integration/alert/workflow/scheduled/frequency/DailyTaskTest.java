@@ -37,7 +37,7 @@ class DailyTaskTest {
         configurationModel.put(configurationFieldModel);
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorKey(Mockito.any(DescriptorKey.class))).thenReturn(List.of(configurationModel));
         StaticJobAccessor jobAccessor = Mockito.mock(StaticJobAccessor.class);
-        Mockito.when(jobAccessor.countJobsByFrequency(Mockito.any())).thenReturn(1);
+        Mockito.when(jobAccessor.hasJobsByFrequency(Mockito.any())).thenReturn(true);
 
         DailyTask task = new DailyTask(SCHEDULING_DESCRIPTOR_KEY, null, null, null, null, configurationAccessor, jobAccessor);
         String cronWithNotDefault = task.scheduleCronExpression();

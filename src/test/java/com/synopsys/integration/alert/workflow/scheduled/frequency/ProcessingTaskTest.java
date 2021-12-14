@@ -80,7 +80,7 @@ class ProcessingTaskTest {
 
         NotificationAccessor notificationManager = new MockProcessingNotificationAccessor(List.of());
         StaticJobAccessor jobAccessor = Mockito.mock(StaticJobAccessor.class);
-        Mockito.when(jobAccessor.countJobsByFrequency(Mockito.any())).thenReturn(1);
+        Mockito.when(jobAccessor.hasJobsByFrequency(Mockito.any())).thenReturn(true);
 
         NotificationDetailExtractionDelegator extractionDelegator = new NotificationDetailExtractionDelegator(blackDuckResponseResolver, List.of());
         JobNotificationMapper jobNotificationMapper = Mockito.mock(JobNotificationMapper.class);
@@ -120,7 +120,7 @@ class ProcessingTaskTest {
         TaskScheduler taskScheduler = Mockito.mock(TaskScheduler.class);
         NotificationAccessor notificationManager = new MockProcessingNotificationAccessor(List.of());
         StaticJobAccessor jobAccessor = Mockito.mock(StaticJobAccessor.class);
-        Mockito.when(jobAccessor.countJobsByFrequency(Mockito.any())).thenReturn(1);
+        Mockito.when(jobAccessor.hasJobsByFrequency(Mockito.any())).thenReturn(true);
 
         NotificationDetailExtractionDelegator extractionDelegator = new NotificationDetailExtractionDelegator(blackDuckResponseResolver, List.of());
         NotificationProcessor notificationProcessor = new NotificationProcessor(extractionDelegator, null, null, null, null, null);
@@ -139,7 +139,7 @@ class ProcessingTaskTest {
         TaskScheduler taskScheduler = Mockito.mock(TaskScheduler.class);
         NotificationAccessor notificationManager = new MockProcessingNotificationAccessor(List.of());
         StaticJobAccessor jobAccessor = Mockito.mock(StaticJobAccessor.class);
-        Mockito.when(jobAccessor.countJobsByFrequency(Mockito.any())).thenReturn(0);
+        Mockito.when(jobAccessor.hasJobsByFrequency(Mockito.any())).thenReturn(false);
 
         NotificationDetailExtractionDelegator extractionDelegator = new NotificationDetailExtractionDelegator(blackDuckResponseResolver, List.of());
         NotificationProcessor notificationProcessor = new NotificationProcessor(extractionDelegator, null, null, null, null, null);
@@ -176,7 +176,7 @@ class ProcessingTaskTest {
         TaskScheduler taskScheduler = Mockito.mock(TaskScheduler.class);
         NotificationAccessor notificationManager = new MockProcessingNotificationAccessor(List.of());
         StaticJobAccessor jobAccessor = Mockito.mock(StaticJobAccessor.class);
-        Mockito.when(jobAccessor.countJobsByFrequency(Mockito.any())).thenReturn(1);
+        Mockito.when(jobAccessor.hasJobsByFrequency(Mockito.any())).thenReturn(true);
 
         NotificationDetailExtractionDelegator extractionDelegator = new NotificationDetailExtractionDelegator(blackDuckResponseResolver, List.of());
         NotificationProcessor notificationProcessor = new NotificationProcessor(extractionDelegator, null, null, null, null, null);

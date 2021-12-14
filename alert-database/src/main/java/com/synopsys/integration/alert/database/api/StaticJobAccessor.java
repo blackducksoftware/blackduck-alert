@@ -99,8 +99,8 @@ public class StaticJobAccessor implements JobAccessor {
 
     @Override
     @Transactional(readOnly = true)
-    public int countJobsByFrequency(String frequency) {
-        return distributionJobRepository.countByDistributionFrequency(frequency);
+    public boolean hasJobsByFrequency(String frequency) {
+        return distributionJobRepository.existsByDistributionFrequency(frequency);
     }
 
     @Override
