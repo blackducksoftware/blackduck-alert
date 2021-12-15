@@ -46,14 +46,14 @@ public class SettingsProxyConfigAccessor implements UniqueConfigurationAccessor<
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<SettingsProxyModel> getConfigurationByName() {
+    public Optional<SettingsProxyModel> getConfiguration() {
         return settingsProxyConfigurationRepository.findByName(DEFAULT_CONFIGURATION_NAME).map(this::createConfigModel);
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public SettingsProxyModel createConfiguration(SettingsProxyModel configuration) throws AlertConfigurationException {
-        Optional<SettingsProxyModel> existingConfiguration = getConfigurationByName();
+        Optional<SettingsProxyModel> existingConfiguration = getConfiguration();
         if (existingConfiguration.isPresent()) {
             throw new AlertConfigurationException("A proxy config already exists.");
         }

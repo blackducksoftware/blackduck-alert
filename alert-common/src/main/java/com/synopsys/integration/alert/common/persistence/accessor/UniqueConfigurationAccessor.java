@@ -15,7 +15,7 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurat
 public interface UniqueConfigurationAccessor<T extends AlertSerializableModel> {
     String DEFAULT_CONFIGURATION_NAME = "default-configuration";
 
-    Optional<T> getConfigurationByName();
+    Optional<T> getConfiguration();
 
     T createConfiguration(T configuration) throws AlertConfigurationException;
 
