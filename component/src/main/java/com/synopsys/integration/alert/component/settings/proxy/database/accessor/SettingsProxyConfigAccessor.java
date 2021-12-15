@@ -14,16 +14,12 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.persistence.accessor.UniqueConfigurationAccessor;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.component.settings.proxy.model.SettingsProxyModel;
@@ -34,12 +30,9 @@ import com.synopsys.integration.alert.database.settings.proxy.SettingsProxyConfi
 
 @Component
 public class SettingsProxyConfigAccessor implements UniqueConfigurationAccessor<SettingsProxyModel> {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final EncryptionUtility encryptionUtility;
     private final SettingsProxyConfigurationRepository settingsProxyConfigurationRepository;
     private final NonProxyHostsConfigurationRepository nonProxyHostsConfigurationRepository;
-
-    private final PageRequest pageRequest = PageRequest.of(AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE);
 
     public SettingsProxyConfigAccessor(
         EncryptionUtility encryptionUtility,
