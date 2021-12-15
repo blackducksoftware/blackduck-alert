@@ -16,8 +16,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
-public class EmailGlobalFieldModelConverterTest {
-
+class EmailGlobalFieldModelConverterTest {
     public static final String TEST_AUTH_REQUIRED = "true";
     public static final String TEST_FROM = "test.user@some.company.example.com";
     public static final String TEST_SMTP_HOST = "stmp.server.example.com";
@@ -27,7 +26,7 @@ public class EmailGlobalFieldModelConverterTest {
     public static final String TEST_ADDITIONAL_PROPERTY = "mail.smtp.ehlo";
 
     @Test
-    public void validConversionTest() {
+    void validConversionTest() {
         FieldModel fieldModel = createDefaultFieldModel();
         EmailGlobalFieldModelConverter converter = new EmailGlobalFieldModelConverter();
         Optional<EmailGlobalConfigModel> model = converter.convert(fieldModel);
@@ -47,7 +46,7 @@ public class EmailGlobalFieldModelConverterTest {
     }
 
     @Test
-    public void invalidPortTest() {
+    void invalidPortTest() {
         FieldModel fieldModel = createDefaultFieldModel();
         fieldModel.putField(EmailGlobalFieldModelConverter.EMAIL_PORT_KEY, new FieldValueModel(List.of("twenty-five"), false));
         EmailGlobalFieldModelConverter converter = new EmailGlobalFieldModelConverter();
@@ -56,7 +55,7 @@ public class EmailGlobalFieldModelConverterTest {
     }
 
     @Test
-    public void emptyFieldsTest() {
+    void emptyFieldsTest() {
         FieldModel emptyModel = new FieldModel(ChannelKeys.EMAIL.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), Map.of());
         EmailGlobalFieldModelConverter converter = new EmailGlobalFieldModelConverter();
         Optional<EmailGlobalConfigModel> model = converter.convert(emptyModel);
@@ -73,7 +72,7 @@ public class EmailGlobalFieldModelConverterTest {
     }
 
     @Test
-    public void invalidEmailPropertyKeysTest() {
+    void invalidEmailPropertyKeysTest() {
         FieldModel fieldModel = createDefaultFieldModel();
         fieldModel.removeField(TEST_ADDITIONAL_PROPERTY);
         fieldModel.putField("invalid.email.field", new FieldValueModel(List.of(), false));

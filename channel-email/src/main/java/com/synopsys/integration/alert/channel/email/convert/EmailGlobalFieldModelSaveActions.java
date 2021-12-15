@@ -49,6 +49,7 @@ public class EmailGlobalFieldModelSaveActions implements GlobalFieldModelToConcr
         Optional<EmailGlobalConfigModel> emailGlobalConfigModel = emailFieldModelConverter.convert(fieldModel);
         if (defaultConfigurationId.isPresent() && emailGlobalConfigModel.isPresent()) {
             EmailGlobalConfigModel model = emailGlobalConfigModel.get();
+            model.setName(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME);
             configurationActions.update(defaultConfigurationId.get(), model);
         }
     }
