@@ -23,6 +23,5 @@ public interface UniqueConfigurationAccessor<T extends AlertSerializableModel> {
 
     T updateConfiguration(T configuration) throws AlertConfigurationException;
 
-    void deleteConfiguration();
-
+    void deleteConfiguration(String configurationName);
 }

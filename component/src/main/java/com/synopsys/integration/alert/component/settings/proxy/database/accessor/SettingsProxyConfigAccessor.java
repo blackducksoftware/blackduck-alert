@@ -49,7 +49,6 @@ public class SettingsProxyConfigAccessor implements UniqueConfigurationAccessor<
         this.nonProxyHostsConfigurationRepository = nonProxyHostsConfigurationRepository;
     }
 
-
     @Override
     @Transactional(readOnly = true)
     public Optional<SettingsProxyModel> getConfiguration() {
@@ -69,7 +68,7 @@ public class SettingsProxyConfigAccessor implements UniqueConfigurationAccessor<
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public SettingsProxyModel createConfiguration(SettingsProxyModel configuration) throws AlertConfigurationException {
-        Optional<SettingsProxyModel> existingConfiguration = getConfiguration();
+        Optional<SettingsProxyModel> existingConfiguration = getConfigurationByName(DEFAULT_CONFIGURATION_NAME);
         if (existingConfiguration.isPresent()) {
             throw new AlertConfigurationException("A proxy config already exists.");
         }
@@ -89,7 +88,7 @@ public class SettingsProxyConfigAccessor implements UniqueConfigurationAccessor<
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public SettingsProxyModel updateConfiguration(SettingsProxyModel configuration) throws AlertConfigurationException {
-        SettingsProxyConfigurationEntity configurationEntity = settingsProxyConfigurationRepository.findAll(pageRequest)
+        SettingsProxyConfigurationEntity configurationEntity = settingsProxyConfigurationRepository.findByName(configuration.getName())
                                                                    .stream()
                                                                    .findFirst()
                                                                    .orElseThrow(() -> new AlertConfigurationException("Proxy config does not exist"));
@@ -106,8 +105,8 @@ public class SettingsProxyConfigAccessor implements UniqueConfigurationAccessor<
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public void deleteConfiguration() {
-        settingsProxyConfigurationRepository.findAll(pageRequest)
+    public void deleteConfiguration(String configurationName) {
+        settingsProxyConfigurationRepository.findByName(configurationName)
             .stream()
             .findFirst()
             .ifPresent(settingsProxyConfigurationEntity -> settingsProxyConfigurationRepository.deleteById(settingsProxyConfigurationEntity.getConfigurationId()));

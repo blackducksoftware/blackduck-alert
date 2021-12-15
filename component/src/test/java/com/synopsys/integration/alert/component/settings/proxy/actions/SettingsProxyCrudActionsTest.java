@@ -11,9 +11,6 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 
 import com.google.gson.Gson;
@@ -21,6 +18,7 @@ import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.UniqueConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
@@ -66,8 +64,7 @@ public class SettingsProxyCrudActionsTest {
         SettingsProxyConfigurationRepository settingsProxyConfigurationRepository = Mockito.mock(SettingsProxyConfigurationRepository.class);
         NonProxyHostsConfigurationRepository nonProxyHostsConfigurationRepository = Mockito.mock(NonProxyHostsConfigurationRepository.class);
 
-        Page<SettingsProxyConfigurationEntity> proxyConfigPage = new PageImpl<>(List.of(createSettingsProxyConfigurationEntity(uuid)));
-        Mockito.when(settingsProxyConfigurationRepository.findAll(Mockito.any(PageRequest.class))).thenReturn(proxyConfigPage);
+        Mockito.when(settingsProxyConfigurationRepository.findByName(UniqueConfigurationAccessor.DEFAULT_CONFIGURATION_NAME)).thenReturn(Optional.of(createSettingsProxyConfigurationEntity(uuid)));
 
         SettingsProxyConfigAccessor settingsProxyConfigAccessor = new SettingsProxyConfigAccessor(encryptionUtility, settingsProxyConfigurationRepository, nonProxyHostsConfigurationRepository);
 
@@ -87,8 +84,8 @@ public class SettingsProxyCrudActionsTest {
         NonProxyHostsConfigurationRepository nonProxyHostsConfigurationRepository = Mockito.mock(NonProxyHostsConfigurationRepository.class);
 
         SettingsProxyConfigurationEntity entity = createSettingsProxyConfigurationEntity(uuid);
-        Page<SettingsProxyConfigurationEntity> proxyConfigPage = new PageImpl<>(List.of());
-        Mockito.when(settingsProxyConfigurationRepository.findAll(Mockito.any(PageRequest.class))).thenReturn(proxyConfigPage);
+        Mockito.when(settingsProxyConfigurationRepository.findByName(UniqueConfigurationAccessor.DEFAULT_CONFIGURATION_NAME)).thenReturn(Optional.empty());
+
         Mockito.when(settingsProxyConfigurationRepository.save(Mockito.any())).thenReturn(entity);
         Mockito.when(settingsProxyConfigurationRepository.getOne(uuid)).thenReturn(entity);
 
@@ -110,9 +107,7 @@ public class SettingsProxyCrudActionsTest {
         SettingsProxyConfigurationRepository settingsProxyConfigurationRepository = Mockito.mock(SettingsProxyConfigurationRepository.class);
         NonProxyHostsConfigurationRepository nonProxyHostsConfigurationRepository = Mockito.mock(NonProxyHostsConfigurationRepository.class);
 
-        SettingsProxyConfigurationEntity entity = createSettingsProxyConfigurationEntity(uuid);
-        Page<SettingsProxyConfigurationEntity> proxyConfigPage = new PageImpl<>(List.of(entity));
-        Mockito.when(settingsProxyConfigurationRepository.findAll(Mockito.any(PageRequest.class))).thenReturn(proxyConfigPage);
+        Mockito.when(settingsProxyConfigurationRepository.findByName(UniqueConfigurationAccessor.DEFAULT_CONFIGURATION_NAME)).thenReturn(Optional.of(createSettingsProxyConfigurationEntity(uuid)));
 
         SettingsProxyConfigAccessor settingsProxyConfigAccessor = new SettingsProxyConfigAccessor(encryptionUtility, settingsProxyConfigurationRepository, nonProxyHostsConfigurationRepository);
 
@@ -131,9 +126,7 @@ public class SettingsProxyCrudActionsTest {
         NonProxyHostsConfigurationRepository nonProxyHostsConfigurationRepository = Mockito.mock(NonProxyHostsConfigurationRepository.class);
 
         SettingsProxyConfigurationEntity entity = createSettingsProxyConfigurationEntity(uuid);
-
-        Page<SettingsProxyConfigurationEntity> proxyConfigPage = new PageImpl<>(List.of(entity));
-        Mockito.when(settingsProxyConfigurationRepository.findAll(Mockito.any(PageRequest.class))).thenReturn(proxyConfigPage);
+        Mockito.when(settingsProxyConfigurationRepository.findByName(UniqueConfigurationAccessor.DEFAULT_CONFIGURATION_NAME)).thenReturn(Optional.of(entity));
         Mockito.when(settingsProxyConfigurationRepository.save(Mockito.any())).thenReturn(entity);
         Mockito.when(settingsProxyConfigurationRepository.getOne(uuid)).thenReturn(entity);
 
@@ -156,9 +149,7 @@ public class SettingsProxyCrudActionsTest {
         SettingsProxyConfigurationRepository settingsProxyConfigurationRepository = Mockito.mock(SettingsProxyConfigurationRepository.class);
         NonProxyHostsConfigurationRepository nonProxyHostsConfigurationRepository = Mockito.mock(NonProxyHostsConfigurationRepository.class);
 
-        SettingsProxyConfigurationEntity entity = createSettingsProxyConfigurationEntity(uuid);
-        Page<SettingsProxyConfigurationEntity> proxyConfigPage = new PageImpl<>(List.of(entity));
-        Mockito.when(settingsProxyConfigurationRepository.findAll(Mockito.any(PageRequest.class))).thenReturn(proxyConfigPage);
+        Mockito.when(settingsProxyConfigurationRepository.findByName(UniqueConfigurationAccessor.DEFAULT_CONFIGURATION_NAME)).thenReturn(Optional.of(createSettingsProxyConfigurationEntity(uuid)));
 
         SettingsProxyConfigAccessor settingsProxyConfigAccessor = new SettingsProxyConfigAccessor(encryptionUtility, settingsProxyConfigurationRepository, nonProxyHostsConfigurationRepository);
 
