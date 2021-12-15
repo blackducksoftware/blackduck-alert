@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,6 +26,7 @@ import org.junit.jupiter.api.Tags;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,6 +43,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
@@ -141,7 +144,9 @@ public class NotificationContentRepositoryIT {
         assertEquals(10, count);
         OffsetDateTime startDate = DateUtils.parseDate("2017-10-12T01:30:59.000Z", RestConstants.JSON_DATE_FORMAT);
         OffsetDateTime endDate = DateUtils.parseDate("2017-10-30T16:59:59.000Z", RestConstants.JSON_DATE_FORMAT);
-        List<NotificationEntity> foundEntityList = notificationContentRepository.findByCreatedAtBetween(startDate, endDate);
+        PageRequest pageRequest = PageRequest.of(AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE);
+        List<NotificationEntity> foundEntityList = notificationContentRepository.findByCreatedAtBetween(startDate, endDate, pageRequest).stream()
+            .collect(Collectors.toList());
         assertEquals(5, foundEntityList.size());
 
         foundEntityList.forEach(entity -> {

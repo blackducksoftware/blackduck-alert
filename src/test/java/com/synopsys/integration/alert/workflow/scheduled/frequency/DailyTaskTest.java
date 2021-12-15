@@ -15,19 +15,20 @@ import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptorKey;
 import com.synopsys.integration.alert.component.scheduling.workflow.DailyTask;
+import com.synopsys.integration.alert.database.api.StaticJobAccessor;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
-public class DailyTaskTest {
+class DailyTaskTest {
     private static final SchedulingDescriptorKey SCHEDULING_DESCRIPTOR_KEY = new SchedulingDescriptorKey();
 
     @Test
-    public void testGetTaskName() {
-        DailyTask task = new DailyTask(SCHEDULING_DESCRIPTOR_KEY, null, null, null, null, null);
+    void testGetTaskName() {
+        DailyTask task = new DailyTask(SCHEDULING_DESCRIPTOR_KEY, null, null, null, null, null, null);
         assertEquals(ScheduledTask.computeTaskName(task.getClass()), task.getTaskName());
     }
 
     @Test
-    public void cronExpressionNotDefault() {
+    void cronExpressionNotDefault() {
         final String notDefaultValue = "44";
         ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         ConfigurationModelMutable configurationModel = new ConfigurationModelMutable(1L, 1L, null, null, ConfigContextEnum.GLOBAL);
@@ -35,8 +36,10 @@ public class DailyTaskTest {
         configurationFieldModel.setFieldValue(notDefaultValue);
         configurationModel.put(configurationFieldModel);
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorKey(Mockito.any(DescriptorKey.class))).thenReturn(List.of(configurationModel));
+        StaticJobAccessor jobAccessor = Mockito.mock(StaticJobAccessor.class);
+        Mockito.when(jobAccessor.hasJobsByFrequency(Mockito.any())).thenReturn(true);
 
-        DailyTask task = new DailyTask(SCHEDULING_DESCRIPTOR_KEY, null, null, null, null, configurationAccessor);
+        DailyTask task = new DailyTask(SCHEDULING_DESCRIPTOR_KEY, null, null, null, null, configurationAccessor, jobAccessor);
         String cronWithNotDefault = task.scheduleCronExpression();
         String expectedCron = String.format(DailyTask.CRON_FORMAT, notDefaultValue);
 

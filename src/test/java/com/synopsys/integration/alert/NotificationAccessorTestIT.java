@@ -30,6 +30,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationA
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.api.DefaultNotificationAccessor;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
@@ -267,7 +268,7 @@ public class NotificationAccessorTestIT {
         notificationManager.saveAllNotifications(List.of(entityToFind1));
         notificationManager.saveAllNotifications(List.of(entityToFind2));
 
-        List<AlertNotificationModel> foundList = notificationManager.findByCreatedAtBetween(startDate, endDate);
+        List<AlertNotificationModel> foundList = notificationManager.findByCreatedAtBetween(startDate, endDate, AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE).getModels();
 
         assertEquals(2, foundList.size());
         assertNotificationModel(entityToFind1, foundList.get(0));
@@ -287,7 +288,7 @@ public class NotificationAccessorTestIT {
         entity = createNotificationModel(createdAtLater);
         notificationManager.saveAllNotifications(List.of(entity));
 
-        List<AlertNotificationModel> foundList = notificationManager.findByCreatedAtBetween(startDate, endDate);
+        List<AlertNotificationModel> foundList = notificationManager.findByCreatedAtBetween(startDate, endDate, AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE).getModels();
 
         assertTrue(foundList.isEmpty());
     }

@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.workflow.message.mocks;
+package com.synopsys.integration.alert.workflow.scheduled.frequency;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -18,16 +18,17 @@ import com.synopsys.integration.alert.common.persistence.accessor.NotificationAc
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 
-public class MockNotificationAccessor implements NotificationAccessor {
+public class MockProcessingNotificationAccessor implements NotificationAccessor {
     ArrayList<AlertNotificationModel> alertNotificationModels;
 
-    public MockNotificationAccessor(List<AlertNotificationModel> alertNotificationModels) {
+    public MockProcessingNotificationAccessor(List<AlertNotificationModel> alertNotificationModels) {
         this.alertNotificationModels = new ArrayList<>(alertNotificationModels);
     }
 
     @Override
     public List<AlertNotificationModel> saveAllNotifications(Collection<AlertNotificationModel> notifications) {
-        return null;
+        alertNotificationModels.addAll(notifications);
+        return alertNotificationModels;
     }
 
     @Override
@@ -121,5 +122,4 @@ public class MockNotificationAccessor implements NotificationAccessor {
             alertNotificationModel.getProviderCreationTime(),
             true);
     }
-
 }

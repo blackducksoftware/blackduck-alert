@@ -18,6 +18,9 @@ import com.synopsys.integration.alert.common.persistence.model.job.DistributionJ
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 
 public interface JobAccessor {
+
+    boolean hasJobsByFrequency(String frequency);
+
     List<DistributionJobModel> getJobsById(Collection<UUID> jobIds);
 
     AlertPagedModel<DistributionJobModel> getPageOfJobs(int pageOffset, int pageLimit);
