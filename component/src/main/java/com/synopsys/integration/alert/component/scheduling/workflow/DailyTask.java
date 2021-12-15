@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.task.TaskManager;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
@@ -36,9 +37,10 @@ public class DailyTask extends ProcessingTask {
         NotificationAccessor notificationAccessor,
         NotificationProcessor notificationProcessor,
         TaskManager taskManager,
-        ConfigurationAccessor configurationAccessor
+        ConfigurationAccessor configurationAccessor,
+        JobAccessor jobAccessor
     ) {
-        super(taskScheduler, notificationAccessor, taskManager, notificationProcessor, FrequencyType.DAILY);
+        super(taskScheduler, taskManager, notificationAccessor, notificationProcessor, jobAccessor, FrequencyType.DAILY);
         this.schedulingDescriptorKey = schedulingDescriptorKey;
         this.configurationAccessor = configurationAccessor;
     }

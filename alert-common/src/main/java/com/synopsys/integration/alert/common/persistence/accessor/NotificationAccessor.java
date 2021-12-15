@@ -23,7 +23,7 @@ public interface NotificationAccessor {
 
     Optional<AlertNotificationModel> findById(Long notificationId);
 
-    List<AlertNotificationModel> findByCreatedAtBetween(OffsetDateTime startDate, OffsetDateTime endDate);
+    AlertPagedModel<AlertNotificationModel> findByCreatedAtBetween(OffsetDateTime startDate, OffsetDateTime endDate, int pageNumber, int pageSize);
 
     List<AlertNotificationModel> findByCreatedAtBefore(OffsetDateTime date);
 

@@ -30,6 +30,7 @@ dependencies {
 
     implementation 'org.springframework.security.extensions:spring-security-saml2-core'
 
+    testImplementation 'org.springframework.data:spring-data-commons'
     testImplementation project(':test-common-channel')
     testImplementation project(':provider-blackduck')
     testImplementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
