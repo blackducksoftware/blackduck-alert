@@ -15,13 +15,11 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurat
 public interface UniqueConfigurationAccessor<T extends AlertSerializableModel> {
     String DEFAULT_CONFIGURATION_NAME = "default-configuration";
 
-    Optional<T> getConfiguration();
-
-    Optional<T> getConfigurationByName(String configurationName);
+    Optional<T> getConfigurationByName();
 
     T createConfiguration(T configuration) throws AlertConfigurationException;
 
     T updateConfiguration(T configuration) throws AlertConfigurationException;
 
-    void deleteConfiguration(String configurationName);
+    void deleteConfiguration();
 }

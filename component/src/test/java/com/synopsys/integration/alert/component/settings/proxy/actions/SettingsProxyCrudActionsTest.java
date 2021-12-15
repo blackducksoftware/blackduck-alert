@@ -156,7 +156,7 @@ public class SettingsProxyCrudActionsTest {
         SettingsProxyCrudActions configActions = new SettingsProxyCrudActions(authorizationManager, settingsProxyConfigAccessor, settingsProxyValidator, settingsDescriptorKey);
         ActionResponse<SettingsProxyModel> actionResponse = configActions.delete();
 
-        Mockito.verify(settingsProxyConfigurationRepository).deleteById(uuid);
+        Mockito.verify(settingsProxyConfigurationRepository).deleteByName(UniqueConfigurationAccessor.DEFAULT_CONFIGURATION_NAME);
         assertTrue(actionResponse.isSuccessful());
         assertFalse(actionResponse.hasContent());
         assertEquals(HttpStatus.NO_CONTENT, actionResponse.getHttpStatus());

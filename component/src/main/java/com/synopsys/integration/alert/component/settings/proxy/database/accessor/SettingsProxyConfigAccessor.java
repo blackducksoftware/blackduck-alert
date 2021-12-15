@@ -14,7 +14,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Page;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -33,6 +34,7 @@ import com.synopsys.integration.alert.database.settings.proxy.SettingsProxyConfi
 
 @Component
 public class SettingsProxyConfigAccessor implements UniqueConfigurationAccessor<SettingsProxyModel> {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final EncryptionUtility encryptionUtility;
     private final SettingsProxyConfigurationRepository settingsProxyConfigurationRepository;
     private final NonProxyHostsConfigurationRepository nonProxyHostsConfigurationRepository;
@@ -51,24 +53,14 @@ public class SettingsProxyConfigAccessor implements UniqueConfigurationAccessor<
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<SettingsProxyModel> getConfiguration() {
-        Page<SettingsProxyConfigurationEntity> proxyConfigPage = settingsProxyConfigurationRepository.findAll(pageRequest);
-        return proxyConfigPage.getContent()
-                   .stream()
-                   .map(this::createConfigModel)
-                   .findFirst();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Optional<SettingsProxyModel> getConfigurationByName(String configurationName) {
-        return settingsProxyConfigurationRepository.findByName(configurationName).map(this::createConfigModel);
+    public Optional<SettingsProxyModel> getConfigurationByName() {
+        return settingsProxyConfigurationRepository.findByName(DEFAULT_CONFIGURATION_NAME).map(this::createConfigModel);
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public SettingsProxyModel createConfiguration(SettingsProxyModel configuration) throws AlertConfigurationException {
-        Optional<SettingsProxyModel> existingConfiguration = getConfigurationByName(DEFAULT_CONFIGURATION_NAME);
+        Optional<SettingsProxyModel> existingConfiguration = getConfigurationByName();
         if (existingConfiguration.isPresent()) {
             throw new AlertConfigurationException("A proxy config already exists.");
         }
@@ -88,9 +80,7 @@ public class SettingsProxyConfigAccessor implements UniqueConfigurationAccessor<
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public SettingsProxyModel updateConfiguration(SettingsProxyModel configuration) throws AlertConfigurationException {
-        SettingsProxyConfigurationEntity configurationEntity = settingsProxyConfigurationRepository.findByName(configuration.getName())
-                                                                   .stream()
-                                                                   .findFirst()
+        SettingsProxyConfigurationEntity configurationEntity = settingsProxyConfigurationRepository.findByName(DEFAULT_CONFIGURATION_NAME)
                                                                    .orElseThrow(() -> new AlertConfigurationException("Proxy config does not exist"));
         UUID configurationId = configurationEntity.getConfigurationId();
         OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
@@ -105,11 +95,8 @@ public class SettingsProxyConfigAccessor implements UniqueConfigurationAccessor<
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public void deleteConfiguration(String configurationName) {
-        settingsProxyConfigurationRepository.findByName(configurationName)
-            .stream()
-            .findFirst()
-            .ifPresent(settingsProxyConfigurationEntity -> settingsProxyConfigurationRepository.deleteById(settingsProxyConfigurationEntity.getConfigurationId()));
+    public void deleteConfiguration() {
+        settingsProxyConfigurationRepository.deleteByName(DEFAULT_CONFIGURATION_NAME);
     }
 
     private SettingsProxyModel createConfigModel(SettingsProxyConfigurationEntity proxyConfiguration) {

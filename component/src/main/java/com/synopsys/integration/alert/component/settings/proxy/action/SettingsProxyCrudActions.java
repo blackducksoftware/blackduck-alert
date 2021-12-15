@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.accessor.UniqueConfigurationAccessor;
 import com.synopsys.integration.alert.common.rest.api.ConfigurationCrudHelper;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
@@ -35,7 +34,7 @@ public class SettingsProxyCrudActions {
 
     public ActionResponse<SettingsProxyModel> getOne() {
         return configurationHelper.getOne(
-            () -> configurationAccessor.getConfigurationByName(UniqueConfigurationAccessor.DEFAULT_CONFIGURATION_NAME));
+            configurationAccessor::getConfigurationByName);
     }
 
     public ActionResponse<SettingsProxyModel> create(SettingsProxyModel resource) {
@@ -48,15 +47,15 @@ public class SettingsProxyCrudActions {
     public ActionResponse<SettingsProxyModel> update(SettingsProxyModel requestResource) {
         return configurationHelper.update(
             () -> validator.validate(requestResource),
-            () -> configurationAccessor.getConfigurationByName(UniqueConfigurationAccessor.DEFAULT_CONFIGURATION_NAME).isPresent(),
+            () -> configurationAccessor.getConfigurationByName().isPresent(),
             () -> configurationAccessor.updateConfiguration(requestResource)
         );
     }
 
     public ActionResponse<SettingsProxyModel> delete() {
         return configurationHelper.delete(
-            () -> configurationAccessor.getConfigurationByName(UniqueConfigurationAccessor.DEFAULT_CONFIGURATION_NAME).isPresent(),
-            () -> configurationAccessor.deleteConfiguration(UniqueConfigurationAccessor.DEFAULT_CONFIGURATION_NAME)
+            () -> configurationAccessor.getConfigurationByName().isPresent(),
+            configurationAccessor::deleteConfiguration
         );
     }
 }
