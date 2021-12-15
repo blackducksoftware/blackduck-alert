@@ -94,8 +94,9 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
     public EmailGlobalConfigModel updateConfiguration(UUID configurationId, EmailGlobalConfigModel configuration) throws AlertConfigurationException {
         EmailConfigurationEntity configurationEntity = emailConfigurationRepository.findById(configurationId)
             .orElseThrow(() -> new AlertConfigurationException(String.format("Config with id '%s' did not exist", configurationId.toString())));
-        if (BooleanUtils.toBoolean(configuration.getIsSmtpPasswordSet()) && configuration.getSmtpPassword() != null) {
-            configuration.setSmtpPassword(configurationEntity.getAuthPassword());
+        if (BooleanUtils.toBoolean(configuration.getIsSmtpPasswordSet()) && configuration.getSmtpPassword().isEmpty()) {
+            String decryptedPassword = encryptionUtility.decrypt(configurationEntity.getAuthPassword());
+            configuration.setSmtpPassword(decryptedPassword);
         }
         return populateConfiguration(configurationId, configuration, configurationEntity.getCreatedAt());
     }
@@ -137,8 +138,9 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
             newModel.setSmtpAuth(emailConfiguration.getAuthRequired());
             newModel.setSmtpUsername(emailConfiguration.getAuthUsername());
             String authPassword = emailConfiguration.getAuthPassword();
-            newModel.setIsSmtpPasswordSet(StringUtils.isNotBlank(authPassword));
-            if (StringUtils.isNotBlank(authPassword)) {
+            boolean doesPasswordExist = StringUtils.isNotBlank(authPassword);
+            newModel.setIsSmtpPasswordSet(doesPasswordExist);
+            if (doesPasswordExist) {
                 newModel.setSmtpPassword(encryptionUtility.decrypt(authPassword));
             }
             newModel.setAdditionalJavaMailProperties(getAdditionalProperties(emailConfiguration.getEmailConfigurationProperties()));
