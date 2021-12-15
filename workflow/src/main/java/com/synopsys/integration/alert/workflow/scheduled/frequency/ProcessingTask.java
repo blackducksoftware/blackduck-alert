@@ -59,9 +59,13 @@ public abstract class ProcessingTask extends StartupScheduledTask {
     @Override
     public void runTask() {
         boolean hasJobsByFrequency = jobAccessor.hasJobsByFrequency(frequencyType.name());
+        String taskName = getTaskName();
         if (hasJobsByFrequency) {
+            logger.info("{} Jobs with Daily Frequency found.  Begin processing notifications", taskName);
             process();
             lastRunTime = DateUtils.createCurrentDateTimestamp();
+        } else {
+            logger.info("{} Jobs with Daily Frequency not found.", taskName);
         }
     }
 
