@@ -20,7 +20,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface NotificationContentRepository extends JpaRepository<NotificationEntity, Long> {
     @Query("SELECT entity FROM NotificationEntity entity WHERE entity.createdAt BETWEEN ?1 AND ?2 ORDER BY created_at, provider_creation_time asc")
-    List<NotificationEntity> findByCreatedAtBetween(OffsetDateTime startDate, OffsetDateTime endDate);
+    Page<NotificationEntity> findByCreatedAtBetween(OffsetDateTime startDate, OffsetDateTime endDate, Pageable pageable);
 
     @Query("SELECT entity FROM NotificationEntity entity WHERE entity.createdAt < ?1 ORDER BY created_at, provider_creation_time asc")
     List<NotificationEntity> findByCreatedAtBefore(OffsetDateTime date);
@@ -29,18 +29,18 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
     Page<NotificationEntity> findAllSentNotifications(Pageable pageable);
 
     @Query(value = "SELECT DISTINCT notificationRow "
-                       + "FROM NotificationEntity notificationRow "
-                       + "LEFT JOIN notificationRow.auditNotificationRelations relation ON notificationRow.id = relation.notificationId "
-                       + "LEFT JOIN relation.auditEntryEntity auditEntry ON auditEntry.id = relation.auditEntryId "
-                       + "LEFT JOIN DistributionJobEntity jobEntity ON auditEntry.commonConfigId = jobEntity.jobId "
-                       + "WHERE LOWER(notificationRow.provider) LIKE %:searchTerm% OR "
-                       + "LOWER(notificationRow.notificationType) LIKE %:searchTerm% OR "
-                       + "LOWER(notificationRow.content) LIKE %:searchTerm% OR "
-                       + "COALESCE(to_char(notificationRow.createdAt, 'MM/DD/YYYY, HH24:MI:SS'), '') LIKE %:searchTerm% OR "
-                       + "COALESCE(to_char(auditEntry.timeLastSent, 'MM/DD/YYYY, HH24:MI:SS'), '') LIKE %:searchTerm% OR "
-                       + "LOWER(auditEntry.status) LIKE %:searchTerm% OR "
-                       + "LOWER(jobEntity.name) LIKE %:searchTerm% OR "
-                       + "LOWER(jobEntity.channelDescriptorName) LIKE %:searchTerm%"
+        + "FROM NotificationEntity notificationRow "
+        + "LEFT JOIN notificationRow.auditNotificationRelations relation ON notificationRow.id = relation.notificationId "
+        + "LEFT JOIN relation.auditEntryEntity auditEntry ON auditEntry.id = relation.auditEntryId "
+        + "LEFT JOIN DistributionJobEntity jobEntity ON auditEntry.commonConfigId = jobEntity.jobId "
+        + "WHERE LOWER(notificationRow.provider) LIKE %:searchTerm% OR "
+        + "LOWER(notificationRow.notificationType) LIKE %:searchTerm% OR "
+        + "LOWER(notificationRow.content) LIKE %:searchTerm% OR "
+        + "COALESCE(to_char(notificationRow.createdAt, 'MM/DD/YYYY, HH24:MI:SS'), '') LIKE %:searchTerm% OR "
+        + "COALESCE(to_char(auditEntry.timeLastSent, 'MM/DD/YYYY, HH24:MI:SS'), '') LIKE %:searchTerm% OR "
+        + "LOWER(auditEntry.status) LIKE %:searchTerm% OR "
+        + "LOWER(jobEntity.name) LIKE %:searchTerm% OR "
+        + "LOWER(jobEntity.channelDescriptorName) LIKE %:searchTerm%"
     )
     Page<NotificationEntity> findMatchingNotification(@Param("searchTerm") String searchTerm, Pageable pageable);
 
