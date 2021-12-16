@@ -10,7 +10,8 @@ package com.synopsys.integration.alert.service.email.model;
 import java.util.Map;
 import java.util.Optional;
 
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
+import org.apache.commons.lang3.StringUtils;
+
 import com.synopsys.integration.alert.common.rest.model.ConfigWithMetadata;
 import com.synopsys.integration.alert.common.rest.model.Obfuscated;
 
@@ -21,6 +22,7 @@ public class EmailGlobalConfigModel extends ConfigWithMetadata implements Obfusc
 
     private Boolean smtpAuth;
     private String smtpUsername;
+    private Boolean isSmtpPasswordSet;
     private String smtpPassword;
 
     private Map<String, String> additionalJavaMailProperties;
@@ -41,8 +43,8 @@ public class EmailGlobalConfigModel extends ConfigWithMetadata implements Obfusc
         emailGlobalConfigModel.setSmtpUsername(smtpUsername);
         emailGlobalConfigModel.setAdditionalJavaMailProperties(additionalJavaMailProperties);
 
-        String maskedPassword = (smtpPassword != null) ? AlertRestConstants.MASKED_VALUE : null;
-        emailGlobalConfigModel.setSmtpPassword(maskedPassword);
+        emailGlobalConfigModel.setIsSmtpPasswordSet(StringUtils.isNotBlank(smtpPassword));
+        emailGlobalConfigModel.setSmtpPassword(null);
 
         return emailGlobalConfigModel;
     }
@@ -85,6 +87,14 @@ public class EmailGlobalConfigModel extends ConfigWithMetadata implements Obfusc
 
     public void setSmtpUsername(String smtpUsername) {
         this.smtpUsername = smtpUsername;
+    }
+
+    public Boolean getIsSmtpPasswordSet() {
+        return isSmtpPasswordSet;
+    }
+
+    public void setIsSmtpPasswordSet(Boolean smtpPasswordSet) {
+        isSmtpPasswordSet = smtpPasswordSet;
     }
 
     public Optional<String> getSmtpPassword() {
