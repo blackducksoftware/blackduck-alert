@@ -13,8 +13,6 @@ import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 
 public interface UniqueConfigurationAccessor<T extends AlertSerializableModel> {
-    String DEFAULT_CONFIGURATION_NAME = "default-configuration";
-
     Optional<T> getConfiguration();
 
     T createConfiguration(T configuration) throws AlertConfigurationException;

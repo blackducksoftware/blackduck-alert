@@ -20,8 +20,8 @@ import com.synopsys.integration.alert.channel.email.database.accessor.EmailGloba
 import com.synopsys.integration.alert.channel.email.distribution.address.EmailAddressGatherer;
 import com.synopsys.integration.alert.channel.email.distribution.address.JobEmailAddressValidator;
 import com.synopsys.integration.alert.channel.email.distribution.address.ValidatedEmailAddresses;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.service.email.EmailMessagingService;
 import com.synopsys.integration.alert.service.email.JavamailPropertiesFactory;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
@@ -55,7 +55,7 @@ public class EmailChannelTestIT {
 
         EmailGlobalConfigModel emailGlobalConfig = createEmailGlobalConfig();
         EmailGlobalConfigAccessor emailConfigurationAccessor = Mockito.mock(EmailGlobalConfigAccessor.class);
-        Mockito.when(emailConfigurationAccessor.getConfigurationByName(Mockito.eq(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME))).thenReturn(Optional.of(emailGlobalConfig));
+        Mockito.when(emailConfigurationAccessor.getConfigurationByName(Mockito.eq(AlertRestConstants.DEFAULT_CONFIGURATION_NAME))).thenReturn(Optional.of(emailGlobalConfig));
 
         JobEmailAddressValidator emailAddressValidator = Mockito.mock(JobEmailAddressValidator.class);
         Mockito.when(emailAddressValidator.validate(Mockito.any(), Mockito.anyCollection())).thenReturn(new ValidatedEmailAddresses(Set.of(testEmailRecipient), Set.of()));
@@ -85,7 +85,7 @@ public class EmailChannelTestIT {
         String testEmailRecipient = testProperties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT);
 
         EmailGlobalConfigAccessor emailConfigurationAccessor = Mockito.mock(EmailGlobalConfigAccessor.class);
-        Mockito.when(emailConfigurationAccessor.getConfigurationByName(Mockito.eq(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME))).thenReturn(Optional.empty());
+        Mockito.when(emailConfigurationAccessor.getConfigurationByName(Mockito.eq(AlertRestConstants.DEFAULT_CONFIGURATION_NAME))).thenReturn(Optional.empty());
 
         JobEmailAddressValidator emailAddressValidator = Mockito.mock(JobEmailAddressValidator.class);
         Mockito.when(emailAddressValidator.validate(Mockito.any(), Mockito.anyCollection())).thenReturn(new ValidatedEmailAddresses(Set.of(testEmailRecipient), Set.of()));
@@ -104,7 +104,7 @@ public class EmailChannelTestIT {
 
     private EmailGlobalConfigModel createEmailGlobalConfig() {
         EmailGlobalConfigModel emailGlobalConfigModel = new EmailGlobalConfigModel();
-        emailGlobalConfigModel.setName(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME);
+        emailGlobalConfigModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
         emailGlobalConfigModel.setSmtpHost(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST));
         emailGlobalConfigModel.setSmtpFrom(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM));
         emailGlobalConfigModel.setSmtpUsername(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_USER));

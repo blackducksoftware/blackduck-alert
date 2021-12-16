@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.persistence.accessor.UniqueConfigurationAccessor;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.component.settings.proxy.model.SettingsProxyModel;
@@ -47,7 +48,7 @@ public class SettingsProxyConfigAccessor implements UniqueConfigurationAccessor<
     @Override
     @Transactional(readOnly = true)
     public Optional<SettingsProxyModel> getConfiguration() {
-        return settingsProxyConfigurationRepository.findByName(DEFAULT_CONFIGURATION_NAME).map(this::createConfigModel);
+        return settingsProxyConfigurationRepository.findByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME).map(this::createConfigModel);
     }
 
     @Override
@@ -73,7 +74,7 @@ public class SettingsProxyConfigAccessor implements UniqueConfigurationAccessor<
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public SettingsProxyModel updateConfiguration(SettingsProxyModel configuration) throws AlertConfigurationException {
-        SettingsProxyConfigurationEntity configurationEntity = settingsProxyConfigurationRepository.findByName(DEFAULT_CONFIGURATION_NAME)
+        SettingsProxyConfigurationEntity configurationEntity = settingsProxyConfigurationRepository.findByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
                                                                    .orElseThrow(() -> new AlertConfigurationException("Proxy config does not exist"));
         UUID configurationId = configurationEntity.getConfigurationId();
         OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
@@ -89,7 +90,7 @@ public class SettingsProxyConfigAccessor implements UniqueConfigurationAccessor<
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public void deleteConfiguration() {
-        settingsProxyConfigurationRepository.deleteByName(DEFAULT_CONFIGURATION_NAME);
+        settingsProxyConfigurationRepository.deleteByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
     }
 
     private SettingsProxyModel createConfigModel(SettingsProxyConfigurationEntity proxyConfiguration) {

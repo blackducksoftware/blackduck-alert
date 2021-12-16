@@ -17,8 +17,6 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.UniqueConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
@@ -64,7 +62,7 @@ public class SettingsProxyCrudActionsTest {
         SettingsProxyConfigurationRepository settingsProxyConfigurationRepository = Mockito.mock(SettingsProxyConfigurationRepository.class);
         NonProxyHostsConfigurationRepository nonProxyHostsConfigurationRepository = Mockito.mock(NonProxyHostsConfigurationRepository.class);
 
-        Mockito.when(settingsProxyConfigurationRepository.findByName(UniqueConfigurationAccessor.DEFAULT_CONFIGURATION_NAME)).thenReturn(Optional.of(createSettingsProxyConfigurationEntity(uuid)));
+        Mockito.when(settingsProxyConfigurationRepository.findByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)).thenReturn(Optional.of(createSettingsProxyConfigurationEntity(uuid)));
 
         SettingsProxyConfigAccessor settingsProxyConfigAccessor = new SettingsProxyConfigAccessor(encryptionUtility, settingsProxyConfigurationRepository, nonProxyHostsConfigurationRepository);
 
@@ -84,7 +82,7 @@ public class SettingsProxyCrudActionsTest {
         NonProxyHostsConfigurationRepository nonProxyHostsConfigurationRepository = Mockito.mock(NonProxyHostsConfigurationRepository.class);
 
         SettingsProxyConfigurationEntity entity = createSettingsProxyConfigurationEntity(uuid);
-        Mockito.when(settingsProxyConfigurationRepository.findByName(UniqueConfigurationAccessor.DEFAULT_CONFIGURATION_NAME)).thenReturn(Optional.empty());
+        Mockito.when(settingsProxyConfigurationRepository.findByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)).thenReturn(Optional.empty());
 
         Mockito.when(settingsProxyConfigurationRepository.save(Mockito.any())).thenReturn(entity);
         Mockito.when(settingsProxyConfigurationRepository.getOne(uuid)).thenReturn(entity);
@@ -107,7 +105,7 @@ public class SettingsProxyCrudActionsTest {
         SettingsProxyConfigurationRepository settingsProxyConfigurationRepository = Mockito.mock(SettingsProxyConfigurationRepository.class);
         NonProxyHostsConfigurationRepository nonProxyHostsConfigurationRepository = Mockito.mock(NonProxyHostsConfigurationRepository.class);
 
-        Mockito.when(settingsProxyConfigurationRepository.findByName(UniqueConfigurationAccessor.DEFAULT_CONFIGURATION_NAME)).thenReturn(Optional.of(createSettingsProxyConfigurationEntity(uuid)));
+        Mockito.when(settingsProxyConfigurationRepository.findByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)).thenReturn(Optional.of(createSettingsProxyConfigurationEntity(uuid)));
 
         SettingsProxyConfigAccessor settingsProxyConfigAccessor = new SettingsProxyConfigAccessor(encryptionUtility, settingsProxyConfigurationRepository, nonProxyHostsConfigurationRepository);
 
@@ -126,7 +124,7 @@ public class SettingsProxyCrudActionsTest {
         NonProxyHostsConfigurationRepository nonProxyHostsConfigurationRepository = Mockito.mock(NonProxyHostsConfigurationRepository.class);
 
         SettingsProxyConfigurationEntity entity = createSettingsProxyConfigurationEntity(uuid);
-        Mockito.when(settingsProxyConfigurationRepository.findByName(UniqueConfigurationAccessor.DEFAULT_CONFIGURATION_NAME)).thenReturn(Optional.of(entity));
+        Mockito.when(settingsProxyConfigurationRepository.findByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)).thenReturn(Optional.of(entity));
         Mockito.when(settingsProxyConfigurationRepository.save(Mockito.any())).thenReturn(entity);
         Mockito.when(settingsProxyConfigurationRepository.getOne(uuid)).thenReturn(entity);
 
@@ -149,14 +147,14 @@ public class SettingsProxyCrudActionsTest {
         SettingsProxyConfigurationRepository settingsProxyConfigurationRepository = Mockito.mock(SettingsProxyConfigurationRepository.class);
         NonProxyHostsConfigurationRepository nonProxyHostsConfigurationRepository = Mockito.mock(NonProxyHostsConfigurationRepository.class);
 
-        Mockito.when(settingsProxyConfigurationRepository.findByName(UniqueConfigurationAccessor.DEFAULT_CONFIGURATION_NAME)).thenReturn(Optional.of(createSettingsProxyConfigurationEntity(uuid)));
+        Mockito.when(settingsProxyConfigurationRepository.findByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)).thenReturn(Optional.of(createSettingsProxyConfigurationEntity(uuid)));
 
         SettingsProxyConfigAccessor settingsProxyConfigAccessor = new SettingsProxyConfigAccessor(encryptionUtility, settingsProxyConfigurationRepository, nonProxyHostsConfigurationRepository);
 
         SettingsProxyCrudActions configActions = new SettingsProxyCrudActions(authorizationManager, settingsProxyConfigAccessor, settingsProxyValidator, settingsDescriptorKey);
         ActionResponse<SettingsProxyModel> actionResponse = configActions.delete();
 
-        Mockito.verify(settingsProxyConfigurationRepository).deleteByName(UniqueConfigurationAccessor.DEFAULT_CONFIGURATION_NAME);
+        Mockito.verify(settingsProxyConfigurationRepository).deleteByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
         assertTrue(actionResponse.isSuccessful());
         assertFalse(actionResponse.hasContent());
         assertEquals(HttpStatus.NO_CONTENT, actionResponse.getHttpStatus());
@@ -165,7 +163,7 @@ public class SettingsProxyCrudActionsTest {
     private SettingsProxyConfigurationEntity createSettingsProxyConfigurationEntity(UUID id) {
         return new SettingsProxyConfigurationEntity(
             id,
-            ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME,
+            AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
             DateUtils.createCurrentDateTimestamp(),
             DateUtils.createCurrentDateTimestamp(),
             HOST,
@@ -178,7 +176,7 @@ public class SettingsProxyCrudActionsTest {
 
     private SettingsProxyModel createSettingsProxyModel() {
         SettingsProxyModel settingsProxyModel = new SettingsProxyModel();
-        settingsProxyModel.setName(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME);
+        settingsProxyModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
         settingsProxyModel.setProxyHost(HOST);
         settingsProxyModel.setProxyPort(PORT);
         settingsProxyModel.setProxyUsername(USERNAME);
