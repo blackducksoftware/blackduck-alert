@@ -36,7 +36,7 @@ import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationTyp
 //TODO: This class depends on AlertIntegrationTest which cannot be moved into test-common yet due to it's dependencies.
 //  Move this class into the workflow subproject once the dependencies are resolved
 @AlertIntegrationTest
-public class NotificationReceivedEventHandlerTestIT {
+class NotificationReceivedEventHandlerTestIT {
 
     @Autowired
     private DefaultNotificationAccessor defaultNotificationAccessor;
@@ -85,7 +85,7 @@ public class NotificationReceivedEventHandlerTestIT {
     }
 
     @Test
-    public void testHandleEventNotProcessedNotifications() {
+    void testHandleEventNotProcessedNotifications() {
 
         List<AlertNotificationModel> notificationContent = new ArrayList<>();
         notificationContent.add(createAlertNotificationModel(1L, false));
@@ -94,12 +94,13 @@ public class NotificationReceivedEventHandlerTestIT {
         List<AlertNotificationModel> savedModels = defaultNotificationAccessor.saveAllNotifications(notificationContent);
         assertNotNull(savedModels);
         notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
-
+        savedModels = defaultNotificationAccessor.saveAllNotifications(notificationContent);
+        assertNotNull(savedModels);
         testAlertNotificationModels(savedModels);
     }
 
     @Test
-    public void testHandleEventProcessedNotifications() {
+    void testHandleEventProcessedNotifications() {
         List<AlertNotificationModel> notificationContent = new ArrayList<>();
         notificationContent.add(createAlertNotificationModel(1L, true));
         notificationContent.add(createAlertNotificationModel(2L, true));
@@ -109,12 +110,13 @@ public class NotificationReceivedEventHandlerTestIT {
         assertEquals(0, defaultNotificationAccessor.getFirstPageOfNotificationsNotProcessed(pageSize).getModels().size());
 
         notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
-
+        savedModels = defaultNotificationAccessor.saveAllNotifications(notificationContent);
+        assertNotNull(savedModels);
         testAlertNotificationModels(savedModels);
     }
 
     @Test
-    public void testHandleEventMixedProcessedNotifications() {
+    void testHandleEventMixedProcessedNotifications() {
         List<AlertNotificationModel> notificationContent = new ArrayList<>();
         notificationContent.add(createAlertNotificationModel(1L, true));
         notificationContent.add(createAlertNotificationModel(2L, false));
@@ -123,7 +125,27 @@ public class NotificationReceivedEventHandlerTestIT {
         assertNotNull(savedModels);
 
         notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
+        savedModels = defaultNotificationAccessor.saveAllNotifications(notificationContent);
+        assertNotNull(savedModels);
+        testAlertNotificationModels(savedModels);
+    }
 
+    @Test
+    void testHandleEventMixedProcessedNotificationsWithPages() {
+        List<AlertNotificationModel> notificationContent = new ArrayList<>();
+        for (int index = 0; index < 500; index++) {
+            boolean processed = false;
+            if (index % 3 == 0) {
+                processed = true;
+            }
+            notificationContent.add(createAlertNotificationModel(Integer.valueOf(index + 1).longValue(), processed));
+        }
+        List<AlertNotificationModel> savedModels = defaultNotificationAccessor.saveAllNotifications(notificationContent);
+        assertNotNull(savedModels);
+
+        notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
+        savedModels = defaultNotificationAccessor.saveAllNotifications(notificationContent);
+        assertNotNull(savedModels);
         testAlertNotificationModels(savedModels);
     }
 

@@ -160,6 +160,7 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     }
 
     @Override
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public AlertPagedModel<AlertNotificationModel> getFirstPageOfNotificationsNotProcessed(int pageSize) {
         int currentPage = 0;
         Sort.Order sortingOrder = Sort.Order.asc("providerCreationTime");
@@ -183,6 +184,12 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     @Transactional
     public void setNotificationsProcessedById(Set<Long> notificationIds) {
         notificationContentRepository.setProcessedByIds(notificationIds);
+    }
+
+    @Override
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
+    public boolean hasMoreNotificationsToProcess() {
+        return notificationContentRepository.existsByProcessedFalse();
     }
 
     private List<AlertNotificationModel> toModels(List<NotificationEntity> notificationEntities) {
