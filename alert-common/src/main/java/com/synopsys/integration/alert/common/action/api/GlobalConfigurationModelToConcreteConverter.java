@@ -12,6 +12,6 @@ import java.util.Optional;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.model.ConfigWithMetadata;
 
-public interface GlobalFieldModelToConcreteConverter<T extends ConfigWithMetadata> {
+public interface GlobalConfigurationModelToConcreteConverter<T extends ConfigWithMetadata> {
     Optional<T> convert(ConfigurationModel globalConfigurationModel);
 }

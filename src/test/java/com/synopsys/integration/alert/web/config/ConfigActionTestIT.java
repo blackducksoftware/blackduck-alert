@@ -31,7 +31,7 @@ import com.synopsys.integration.alert.component.settings.descriptor.SettingsDesc
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.web.api.config.ConfigActions;
-import com.synopsys.integration.alert.web.api.config.GlobalFieldModelToConcreteConversionService;
+import com.synopsys.integration.alert.web.api.config.GlobalConfigurationModelToConcreteConversionService;
 
 import junit.framework.AssertionFailedError;
 
@@ -59,7 +59,7 @@ class ConfigActionTestIT {
 
     @Test
     void deleteSensitiveFieldFromConfig() {
-        GlobalFieldModelToConcreteConversionService conversionService = new GlobalFieldModelToConcreteConversionService(List.of(), descriptorMap);
+        GlobalConfigurationModelToConcreteConversionService conversionService = new GlobalConfigurationModelToConcreteConversionService(List.of(), descriptorMap);
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
         Mockito.when(authorizationManager.hasDeletePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
         Mockito.when(authorizationManager.hasWritePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);

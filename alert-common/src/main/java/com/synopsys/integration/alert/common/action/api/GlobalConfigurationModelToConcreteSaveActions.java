@@ -10,7 +10,7 @@ package com.synopsys.integration.alert.common.action.api;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
-public interface GlobalFieldModelToConcreteSaveActions {
+public interface GlobalConfigurationModelToConcreteSaveActions {
 
     DescriptorKey getDescriptorKey();
 

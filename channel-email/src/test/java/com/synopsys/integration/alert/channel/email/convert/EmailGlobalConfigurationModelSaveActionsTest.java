@@ -36,7 +36,7 @@ import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKey
 import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
 
-class EmailGlobalFieldModelSaveActionsTest {
+class EmailGlobalConfigurationModelSaveActionsTest {
 
     public static final String TEST_AUTH_REQUIRED = "true";
     public static final String TEST_FROM = "test.user@some.company.example.com";
@@ -50,12 +50,12 @@ class EmailGlobalFieldModelSaveActionsTest {
     private final FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, gson);
     private final EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, filePersistenceUtil);
     private final AuthorizationManager authorizationManager = createAuthorizationManager();
-    private final EmailGlobalFieldModelConverter converter = new EmailGlobalFieldModelConverter();
+    private final EmailGlobalConfigurationModelConverter converter = new EmailGlobalConfigurationModelConverter();
     private final EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
 
     @Test
     void getDescriptorKeyTest() {
-        EmailGlobalFieldModelSaveActions saveActions = new EmailGlobalFieldModelSaveActions(null, null, null);
+        EmailGlobalConfigurationModelSaveActions saveActions = new EmailGlobalConfigurationModelSaveActions(null, null, null);
         assertEquals(ChannelKeys.EMAIL, saveActions.getDescriptorKey());
     }
 
@@ -80,7 +80,7 @@ class EmailGlobalFieldModelSaveActionsTest {
 
         EmailGlobalConfigAccessor configurationAccessor = new EmailGlobalConfigAccessor(encryptionUtility, emailConfigurationRepository, emailConfigurationPropertiesRepository);
         EmailGlobalCrudActions crudActions = new EmailGlobalCrudActions(authorizationManager, configurationAccessor, validator);
-        EmailGlobalFieldModelSaveActions saveActions = new EmailGlobalFieldModelSaveActions(converter, crudActions, configurationAccessor);
+        EmailGlobalConfigurationModelSaveActions saveActions = new EmailGlobalConfigurationModelSaveActions(converter, crudActions, configurationAccessor);
         saveActions.createConcreteModel(createDefaultConfigurationModel());
 
         EmailConfigurationEntity actualEntity = savedEntity.get();
@@ -118,7 +118,7 @@ class EmailGlobalFieldModelSaveActionsTest {
 
         EmailGlobalConfigAccessor configurationAccessor = new EmailGlobalConfigAccessor(encryptionUtility, emailConfigurationRepository, emailConfigurationPropertiesRepository);
         EmailGlobalCrudActions crudActions = new EmailGlobalCrudActions(authorizationManager, configurationAccessor, validator);
-        EmailGlobalFieldModelSaveActions saveActions = new EmailGlobalFieldModelSaveActions(converter, crudActions, configurationAccessor);
+        EmailGlobalConfigurationModelSaveActions saveActions = new EmailGlobalConfigurationModelSaveActions(converter, crudActions, configurationAccessor);
         ConfigurationModel configurationModel = createDefaultConfigurationModel();
         updateField(configurationModel, EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), "badport");
         saveActions.createConcreteModel(configurationModel);
@@ -153,7 +153,7 @@ class EmailGlobalFieldModelSaveActionsTest {
 
         EmailGlobalConfigAccessor configurationAccessor = new EmailGlobalConfigAccessor(encryptionUtility, emailConfigurationRepository, emailConfigurationPropertiesRepository);
         EmailGlobalCrudActions crudActions = new EmailGlobalCrudActions(authorizationManager, configurationAccessor, validator);
-        EmailGlobalFieldModelSaveActions saveActions = new EmailGlobalFieldModelSaveActions(converter, crudActions, configurationAccessor);
+        EmailGlobalConfigurationModelSaveActions saveActions = new EmailGlobalConfigurationModelSaveActions(converter, crudActions, configurationAccessor);
         String newPassword = "updatedPassword";
         String newHost = "updated." + TEST_SMTP_HOST;
         ConfigurationModel configurationModel = createDefaultConfigurationModel();
@@ -204,7 +204,7 @@ class EmailGlobalFieldModelSaveActionsTest {
 
         EmailGlobalConfigAccessor configurationAccessor = new EmailGlobalConfigAccessor(encryptionUtility, emailConfigurationRepository, emailConfigurationPropertiesRepository);
         EmailGlobalCrudActions crudActions = new EmailGlobalCrudActions(authorizationManager, configurationAccessor, validator);
-        EmailGlobalFieldModelSaveActions saveActions = new EmailGlobalFieldModelSaveActions(converter, crudActions, configurationAccessor);
+        EmailGlobalConfigurationModelSaveActions saveActions = new EmailGlobalConfigurationModelSaveActions(converter, crudActions, configurationAccessor);
         String newPassword = "updatedPassword";
         String newHost = "updated." + TEST_SMTP_HOST;
         ConfigurationModel configurationModel = createDefaultConfigurationModel();
@@ -249,7 +249,7 @@ class EmailGlobalFieldModelSaveActionsTest {
 
         EmailGlobalConfigAccessor configurationAccessor = new EmailGlobalConfigAccessor(encryptionUtility, emailConfigurationRepository, emailConfigurationPropertiesRepository);
         EmailGlobalCrudActions crudActions = new EmailGlobalCrudActions(authorizationManager, configurationAccessor, validator);
-        EmailGlobalFieldModelSaveActions saveActions = new EmailGlobalFieldModelSaveActions(converter, crudActions, configurationAccessor);
+        EmailGlobalConfigurationModelSaveActions saveActions = new EmailGlobalConfigurationModelSaveActions(converter, crudActions, configurationAccessor);
         String newPassword = "updatedPassword";
         String newHost = "updated." + TEST_SMTP_HOST;
         ConfigurationModel configurationModel = createDefaultConfigurationModel();
@@ -297,7 +297,7 @@ class EmailGlobalFieldModelSaveActionsTest {
 
         EmailGlobalConfigAccessor configurationAccessor = new EmailGlobalConfigAccessor(encryptionUtility, emailConfigurationRepository, emailConfigurationPropertiesRepository);
         EmailGlobalCrudActions crudActions = new EmailGlobalCrudActions(authorizationManager, configurationAccessor, validator);
-        EmailGlobalFieldModelSaveActions saveActions = new EmailGlobalFieldModelSaveActions(converter, crudActions, configurationAccessor);
+        EmailGlobalConfigurationModelSaveActions saveActions = new EmailGlobalConfigurationModelSaveActions(converter, crudActions, configurationAccessor);
         ConfigurationModel configurationModel = createDefaultConfigurationModel();
         saveActions.createConcreteModel(configurationModel);
         EmailConfigurationEntity actualEntity = savedEntity.get();

@@ -18,14 +18,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.action.api.GlobalFieldModelToConcreteConverter;
+import com.synopsys.integration.alert.common.action.api.GlobalConfigurationModelToConcreteConverter;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
 @Component
-public class EmailGlobalFieldModelConverter implements GlobalFieldModelToConcreteConverter<EmailGlobalConfigModel> {
+public class EmailGlobalConfigurationModelConverter implements GlobalConfigurationModelToConcreteConverter<EmailGlobalConfigModel> {
     private Logger logger = LoggerFactory.getLogger(getClass());
     private static final String EMAIL_FIELD_PREFIX = "mail.smtp.";
 
@@ -39,7 +39,7 @@ public class EmailGlobalFieldModelConverter implements GlobalFieldModelToConcret
 
     private Predicate<Map.Entry<String, ConfigurationFieldModel>> validAdditionalPropertiesKeyTest;
 
-    public EmailGlobalFieldModelConverter() {
+    public EmailGlobalConfigurationModelConverter() {
         validAdditionalPropertiesKeyTest = entry -> !RESERVED_PROPERTY_KEYS.contains(entry.getKey());
         validAdditionalPropertiesKeyTest = validAdditionalPropertiesKeyTest.and(entry -> entry.getKey().startsWith(EMAIL_FIELD_PREFIX));
     }

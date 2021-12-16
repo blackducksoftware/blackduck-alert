@@ -15,11 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.channel.email.action.EmailGlobalCrudActions;
-import com.synopsys.integration.alert.channel.email.convert.EmailGlobalFieldModelConverter;
-import com.synopsys.integration.alert.channel.email.convert.EmailGlobalFieldModelSaveActions;
+import com.synopsys.integration.alert.channel.email.convert.EmailGlobalConfigurationModelConverter;
+import com.synopsys.integration.alert.channel.email.convert.EmailGlobalConfigurationModelSaveActions;
 import com.synopsys.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
-import com.synopsys.integration.alert.common.action.api.GlobalFieldModelToConcreteSaveActions;
+import com.synopsys.integration.alert.common.action.api.GlobalConfigurationModelToConcreteSaveActions;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -43,7 +43,7 @@ import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel
 import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.web.api.config.ConfigActions;
-import com.synopsys.integration.alert.web.api.config.GlobalFieldModelToConcreteConversionService;
+import com.synopsys.integration.alert.web.api.config.GlobalConfigurationModelToConcreteConversionService;
 
 @AlertIntegrationTest
 public class EmailConfigActionTestIT {
@@ -87,9 +87,9 @@ public class EmailConfigActionTestIT {
     void createEmailGlobalConfigTest() {
         AuthorizationManager authorizationManager = createEmailAuthorizationManager();
         EmailGlobalCrudActions emailGlobalCrudActions = createEmailCrudActions(authorizationManager);
-        GlobalFieldModelToConcreteConversionService globalFieldModelToConcreteConversionService = createConversionService(emailGlobalCrudActions);
+        GlobalConfigurationModelToConcreteConversionService globalConfigurationModelToConcreteConversionService = createConversionService(emailGlobalCrudActions);
         ConfigActions configActions = new ConfigActions(authorizationManager, descriptorAccessor, configurationModelConfigurationAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter, descriptorMap,
-            pkixErrorResponseFactory, encryptionUtility, settingsDescriptorKey, globalFieldModelToConcreteConversionService);
+            pkixErrorResponseFactory, encryptionUtility, settingsDescriptorKey, globalConfigurationModelToConcreteConversionService);
         FieldModel fieldModel = createEmailFieldModel();
         configActions.create(fieldModel);
 
@@ -113,9 +113,9 @@ public class EmailConfigActionTestIT {
     void updatePasswordEmailGlobalConfigTest() throws AlertConfigurationException {
         AuthorizationManager authorizationManager = createEmailAuthorizationManager();
         EmailGlobalCrudActions emailGlobalCrudActions = createEmailCrudActions(authorizationManager);
-        GlobalFieldModelToConcreteConversionService globalFieldModelToConcreteConversionService = createConversionService(emailGlobalCrudActions);
+        GlobalConfigurationModelToConcreteConversionService globalConfigurationModelToConcreteConversionService = createConversionService(emailGlobalCrudActions);
         ConfigActions configActions = new ConfigActions(authorizationManager, descriptorAccessor, configurationModelConfigurationAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter, descriptorMap,
-            pkixErrorResponseFactory, encryptionUtility, settingsDescriptorKey, globalFieldModelToConcreteConversionService);
+            pkixErrorResponseFactory, encryptionUtility, settingsDescriptorKey, globalConfigurationModelToConcreteConversionService);
         FieldModel fieldModel = createEmailFieldModel();
         fieldModel = configActions.create(fieldModel).getContent().orElseThrow(() -> new AlertConfigurationException("Couldn't create configuration"));
 
@@ -146,9 +146,9 @@ public class EmailConfigActionTestIT {
     void updateReadExistingPasswordEmailGlobalConfigTest() throws AlertConfigurationException {
         AuthorizationManager authorizationManager = createEmailAuthorizationManager();
         EmailGlobalCrudActions emailGlobalCrudActions = createEmailCrudActions(authorizationManager);
-        GlobalFieldModelToConcreteConversionService globalFieldModelToConcreteConversionService = createConversionService(emailGlobalCrudActions);
+        GlobalConfigurationModelToConcreteConversionService globalConfigurationModelToConcreteConversionService = createConversionService(emailGlobalCrudActions);
         ConfigActions configActions = new ConfigActions(authorizationManager, descriptorAccessor, configurationModelConfigurationAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter, descriptorMap,
-            pkixErrorResponseFactory, encryptionUtility, settingsDescriptorKey, globalFieldModelToConcreteConversionService);
+            pkixErrorResponseFactory, encryptionUtility, settingsDescriptorKey, globalConfigurationModelToConcreteConversionService);
         FieldModel fieldModel = createEmailFieldModel();
         fieldModel = configActions.create(fieldModel).getContent().orElseThrow(() -> new AlertConfigurationException("Couldn't create configuration"));
         String updatedHost = "updated." + TEST_SMTP_HOST;
@@ -176,9 +176,9 @@ public class EmailConfigActionTestIT {
     void deleteEmailGlobalConfigTest() throws AlertConfigurationException {
         AuthorizationManager authorizationManager = createEmailAuthorizationManager();
         EmailGlobalCrudActions emailGlobalCrudActions = createEmailCrudActions(authorizationManager);
-        GlobalFieldModelToConcreteConversionService globalFieldModelToConcreteConversionService = createConversionService(emailGlobalCrudActions);
+        GlobalConfigurationModelToConcreteConversionService globalConfigurationModelToConcreteConversionService = createConversionService(emailGlobalCrudActions);
         ConfigActions configActions = new ConfigActions(authorizationManager, descriptorAccessor, configurationModelConfigurationAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter, descriptorMap,
-            pkixErrorResponseFactory, encryptionUtility, settingsDescriptorKey, globalFieldModelToConcreteConversionService);
+            pkixErrorResponseFactory, encryptionUtility, settingsDescriptorKey, globalConfigurationModelToConcreteConversionService);
         FieldModel fieldModel = createEmailFieldModel();
         fieldModel = configActions.create(fieldModel).getContent().orElseThrow(() -> new AlertConfigurationException("Couldn't create configuration"));
 
@@ -200,11 +200,11 @@ public class EmailConfigActionTestIT {
         return new EmailGlobalCrudActions(authorizationManager, emailGlobalConfigAccessor, new EmailGlobalConfigurationValidator());
     }
 
-    private GlobalFieldModelToConcreteConversionService createConversionService(EmailGlobalCrudActions emailGlobalCrudActions) {
-        EmailGlobalFieldModelConverter modelConverter = new EmailGlobalFieldModelConverter();
-        EmailGlobalFieldModelSaveActions emailGlobalFieldModelSaveActions = new EmailGlobalFieldModelSaveActions(modelConverter, emailGlobalCrudActions, emailGlobalConfigAccessor);
-        List<GlobalFieldModelToConcreteSaveActions> conversionActions = List.of(emailGlobalFieldModelSaveActions);
-        return new GlobalFieldModelToConcreteConversionService(conversionActions, descriptorMap);
+    private GlobalConfigurationModelToConcreteConversionService createConversionService(EmailGlobalCrudActions emailGlobalCrudActions) {
+        EmailGlobalConfigurationModelConverter modelConverter = new EmailGlobalConfigurationModelConverter();
+        EmailGlobalConfigurationModelSaveActions emailGlobalConfigurationModelSaveActions = new EmailGlobalConfigurationModelSaveActions(modelConverter, emailGlobalCrudActions, emailGlobalConfigAccessor);
+        List<GlobalConfigurationModelToConcreteSaveActions> conversionActions = List.of(emailGlobalConfigurationModelSaveActions);
+        return new GlobalConfigurationModelToConcreteConversionService(conversionActions, descriptorMap);
     }
 
     private FieldModel createEmailFieldModel() {

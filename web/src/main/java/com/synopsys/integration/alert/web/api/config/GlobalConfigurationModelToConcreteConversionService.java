@@ -15,22 +15,22 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.action.api.GlobalFieldModelToConcreteSaveActions;
+import com.synopsys.integration.alert.common.action.api.GlobalConfigurationModelToConcreteSaveActions;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 @Component
-public class GlobalFieldModelToConcreteConversionService {
+public class GlobalConfigurationModelToConcreteConversionService {
     private final DescriptorMap descriptorMap;
-    private final Map<DescriptorKey, GlobalFieldModelToConcreteSaveActions> conversionActionMap;
+    private final Map<DescriptorKey, GlobalConfigurationModelToConcreteSaveActions> conversionActionMap;
 
     @Autowired
-    public GlobalFieldModelToConcreteConversionService(List<? extends GlobalFieldModelToConcreteSaveActions> conversionActions, DescriptorMap descriptorMap) {
+    public GlobalConfigurationModelToConcreteConversionService(List<? extends GlobalConfigurationModelToConcreteSaveActions> conversionActions, DescriptorMap descriptorMap) {
         this.descriptorMap = descriptorMap;
         this.conversionActionMap = conversionActions.stream()
-            .collect(Collectors.toMap(GlobalFieldModelToConcreteSaveActions::getDescriptorKey, Function.identity()));
+            .collect(Collectors.toMap(GlobalConfigurationModelToConcreteSaveActions::getDescriptorKey, Function.identity()));
     }
 
     public void createDefaultConcreteModel(String descriptorName, ConfigurationModel configurationModel) {

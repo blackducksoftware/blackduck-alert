@@ -15,7 +15,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
-class EmailGlobalFieldModelConverterTest {
+class EmailGlobalConfigurationModelConverterTest {
     public static final String TEST_AUTH_REQUIRED = "true";
     public static final String TEST_FROM = "test.user@some.company.example.com";
     public static final String TEST_SMTP_HOST = "stmp.server.example.com";
@@ -26,7 +26,7 @@ class EmailGlobalFieldModelConverterTest {
     @Test
     void validConversionTest() {
         ConfigurationModel configurationModel = createDefaultConfigurationModel();
-        EmailGlobalFieldModelConverter converter = new EmailGlobalFieldModelConverter();
+        EmailGlobalConfigurationModelConverter converter = new EmailGlobalConfigurationModelConverter();
         Optional<EmailGlobalConfigModel> model = converter.convert(configurationModel);
         assertTrue(model.isPresent());
         EmailGlobalConfigModel emailModel = model.get();
@@ -48,7 +48,7 @@ class EmailGlobalFieldModelConverterTest {
         ConfigurationModel configurationModel = createDefaultConfigurationModel();
         configurationModel.getField(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey())
             .ifPresent(field -> field.setFieldValue("twenty-five"));
-        EmailGlobalFieldModelConverter converter = new EmailGlobalFieldModelConverter();
+        EmailGlobalConfigurationModelConverter converter = new EmailGlobalConfigurationModelConverter();
         Optional<EmailGlobalConfigModel> model = converter.convert(configurationModel);
         assertTrue(model.isEmpty());
     }
@@ -56,7 +56,7 @@ class EmailGlobalFieldModelConverterTest {
     @Test
     void emptyFieldsTest() {
         ConfigurationModel emptyModel = new ConfigurationModel(1L, 1L, "", "", ConfigContextEnum.GLOBAL, Map.of());
-        EmailGlobalFieldModelConverter converter = new EmailGlobalFieldModelConverter();
+        EmailGlobalConfigurationModelConverter converter = new EmailGlobalConfigurationModelConverter();
         Optional<EmailGlobalConfigModel> model = converter.convert(emptyModel);
         assertTrue(model.isPresent());
         EmailGlobalConfigModel emailModel = model.get();
@@ -76,7 +76,7 @@ class EmailGlobalFieldModelConverterTest {
         ConfigurationFieldModel invalidField = ConfigurationFieldModel.create(invalidFieldKey);
         Map<String, ConfigurationFieldModel> fieldValues = Map.of(invalidFieldKey, invalidField);
         ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, "", "", ConfigContextEnum.GLOBAL, fieldValues);
-        EmailGlobalFieldModelConverter converter = new EmailGlobalFieldModelConverter();
+        EmailGlobalConfigurationModelConverter converter = new EmailGlobalConfigurationModelConverter();
         Optional<EmailGlobalConfigModel> model = converter.convert(configurationModel);
         assertTrue(model.isPresent());
         EmailGlobalConfigModel emailModel = model.get();

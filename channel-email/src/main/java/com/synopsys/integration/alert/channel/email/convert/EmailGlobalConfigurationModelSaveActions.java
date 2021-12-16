@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.action.EmailGlobalCrudActions;
 import com.synopsys.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
-import com.synopsys.integration.alert.common.action.api.GlobalFieldModelToConcreteSaveActions;
+import com.synopsys.integration.alert.common.action.api.GlobalConfigurationModelToConcreteSaveActions;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
@@ -23,13 +23,13 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
 @Component
-public class EmailGlobalFieldModelSaveActions implements GlobalFieldModelToConcreteSaveActions {
-    private final EmailGlobalFieldModelConverter emailFieldModelConverter;
+public class EmailGlobalConfigurationModelSaveActions implements GlobalConfigurationModelToConcreteSaveActions {
+    private final EmailGlobalConfigurationModelConverter emailFieldModelConverter;
     private final EmailGlobalCrudActions configurationActions;
     private final EmailGlobalConfigAccessor configurationAccessor;
 
     @Autowired
-    public EmailGlobalFieldModelSaveActions(EmailGlobalFieldModelConverter emailFieldModelConverter, EmailGlobalCrudActions configurationActions,
+    public EmailGlobalConfigurationModelSaveActions(EmailGlobalConfigurationModelConverter emailFieldModelConverter, EmailGlobalCrudActions configurationActions,
         EmailGlobalConfigAccessor configurationAccessor) {
         this.emailFieldModelConverter = emailFieldModelConverter;
         this.configurationActions = configurationActions;

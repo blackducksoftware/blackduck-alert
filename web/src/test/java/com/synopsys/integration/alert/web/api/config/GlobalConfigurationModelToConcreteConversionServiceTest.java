@@ -8,14 +8,14 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.common.action.api.GlobalFieldModelToConcreteSaveActions;
+import com.synopsys.integration.alert.common.action.api.GlobalConfigurationModelToConcreteSaveActions;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
-public class GlobalFieldModelToConcreteConversionServiceTest {
+public class GlobalConfigurationModelToConcreteConversionServiceTest {
     private static final String TEST_DESCRIPTOR_KEY = "test_descriptor_key";
 
     private DescriptorKey testDescriptorKey = new DescriptorKey(TEST_DESCRIPTOR_KEY, TEST_DESCRIPTOR_KEY) {
@@ -30,7 +30,7 @@ public class GlobalFieldModelToConcreteConversionServiceTest {
         String timestamp = DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
         ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, timestamp, timestamp, ConfigContextEnum.GLOBAL, Map.of());
 
-        GlobalFieldModelToConcreteConversionService conversionService = new GlobalFieldModelToConcreteConversionService(fieldModelSaveActions, descriptorMap);
+        GlobalConfigurationModelToConcreteConversionService conversionService = new GlobalConfigurationModelToConcreteConversionService(fieldModelSaveActions, descriptorMap);
         conversionService.createDefaultConcreteModel(TEST_DESCRIPTOR_KEY, configurationModel);
         assertTrue(saveActions.wasCreatedCalled());
     }
@@ -43,7 +43,7 @@ public class GlobalFieldModelToConcreteConversionServiceTest {
         String timestamp = DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
         ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, timestamp, timestamp, ConfigContextEnum.GLOBAL, Map.of());
 
-        GlobalFieldModelToConcreteConversionService conversionService = new GlobalFieldModelToConcreteConversionService(fieldModelSaveActions, descriptorMap);
+        GlobalConfigurationModelToConcreteConversionService conversionService = new GlobalConfigurationModelToConcreteConversionService(fieldModelSaveActions, descriptorMap);
         conversionService.updateDefaultConcreteModel(TEST_DESCRIPTOR_KEY, configurationModel);
         assertTrue(saveActions.wasUpdateCalled());
     }
@@ -56,7 +56,7 @@ public class GlobalFieldModelToConcreteConversionServiceTest {
         String timestamp = DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
         ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, timestamp, timestamp, ConfigContextEnum.GLOBAL, Map.of());
 
-        GlobalFieldModelToConcreteConversionService conversionService = new GlobalFieldModelToConcreteConversionService(fieldModelSaveActions, descriptorMap);
+        GlobalConfigurationModelToConcreteConversionService conversionService = new GlobalConfigurationModelToConcreteConversionService(fieldModelSaveActions, descriptorMap);
         conversionService.deleteDefaultConcreteModel(TEST_DESCRIPTOR_KEY, configurationModel);
         assertTrue(saveActions.wasDeleteCalled());
     }
@@ -69,7 +69,7 @@ public class GlobalFieldModelToConcreteConversionServiceTest {
         String timestamp = DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
         ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, timestamp, timestamp, ConfigContextEnum.GLOBAL, Map.of());
 
-        GlobalFieldModelToConcreteConversionService conversionService = new GlobalFieldModelToConcreteConversionService(fieldModelSaveActions, descriptorMap);
+        GlobalConfigurationModelToConcreteConversionService conversionService = new GlobalConfigurationModelToConcreteConversionService(fieldModelSaveActions, descriptorMap);
         conversionService.createDefaultConcreteModel(TEST_DESCRIPTOR_KEY, configurationModel);
         assertFalse(saveActions.wasCreatedCalled());
     }
@@ -82,7 +82,7 @@ public class GlobalFieldModelToConcreteConversionServiceTest {
         String timestamp = DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
         ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, timestamp, timestamp, ConfigContextEnum.GLOBAL, Map.of());
 
-        GlobalFieldModelToConcreteConversionService conversionService = new GlobalFieldModelToConcreteConversionService(fieldModelSaveActions, descriptorMap);
+        GlobalConfigurationModelToConcreteConversionService conversionService = new GlobalConfigurationModelToConcreteConversionService(fieldModelSaveActions, descriptorMap);
         conversionService.updateDefaultConcreteModel(TEST_DESCRIPTOR_KEY, configurationModel);
         assertFalse(saveActions.wasUpdateCalled());
     }
@@ -95,7 +95,7 @@ public class GlobalFieldModelToConcreteConversionServiceTest {
         String timestamp = DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
         ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, timestamp, timestamp, ConfigContextEnum.GLOBAL, Map.of());
 
-        GlobalFieldModelToConcreteConversionService conversionService = new GlobalFieldModelToConcreteConversionService(fieldModelSaveActions, descriptorMap);
+        GlobalConfigurationModelToConcreteConversionService conversionService = new GlobalConfigurationModelToConcreteConversionService(fieldModelSaveActions, descriptorMap);
         conversionService.deleteDefaultConcreteModel(TEST_DESCRIPTOR_KEY, configurationModel);
         assertFalse(saveActions.wasDeleteCalled());
     }
@@ -108,7 +108,7 @@ public class GlobalFieldModelToConcreteConversionServiceTest {
         String timestamp = DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
         ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, timestamp, timestamp, ConfigContextEnum.DISTRIBUTION, Map.of());
 
-        GlobalFieldModelToConcreteConversionService conversionService = new GlobalFieldModelToConcreteConversionService(fieldModelSaveActions, descriptorMap);
+        GlobalConfigurationModelToConcreteConversionService conversionService = new GlobalConfigurationModelToConcreteConversionService(fieldModelSaveActions, descriptorMap);
         conversionService.createDefaultConcreteModel(TEST_DESCRIPTOR_KEY, configurationModel);
         assertFalse(saveActions.wasCreatedCalled());
     }
@@ -121,7 +121,7 @@ public class GlobalFieldModelToConcreteConversionServiceTest {
         String timestamp = DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
         ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, timestamp, timestamp, ConfigContextEnum.DISTRIBUTION, Map.of());
 
-        GlobalFieldModelToConcreteConversionService conversionService = new GlobalFieldModelToConcreteConversionService(fieldModelSaveActions, descriptorMap);
+        GlobalConfigurationModelToConcreteConversionService conversionService = new GlobalConfigurationModelToConcreteConversionService(fieldModelSaveActions, descriptorMap);
         conversionService.updateDefaultConcreteModel(TEST_DESCRIPTOR_KEY, configurationModel);
         assertFalse(saveActions.wasUpdateCalled());
     }
@@ -134,12 +134,12 @@ public class GlobalFieldModelToConcreteConversionServiceTest {
         String timestamp = DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
         ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, timestamp, timestamp, ConfigContextEnum.DISTRIBUTION, Map.of());
 
-        GlobalFieldModelToConcreteConversionService conversionService = new GlobalFieldModelToConcreteConversionService(fieldModelSaveActions, descriptorMap);
+        GlobalConfigurationModelToConcreteConversionService conversionService = new GlobalConfigurationModelToConcreteConversionService(fieldModelSaveActions, descriptorMap);
         conversionService.deleteDefaultConcreteModel(TEST_DESCRIPTOR_KEY, configurationModel);
         assertFalse(saveActions.wasDeleteCalled());
     }
 
-    private static class TestSaveActions implements GlobalFieldModelToConcreteSaveActions {
+    private static class TestSaveActions implements GlobalConfigurationModelToConcreteSaveActions {
         private boolean createdCalled = false;
         private boolean updateCalled = false;
         private boolean deleteCalled = false;

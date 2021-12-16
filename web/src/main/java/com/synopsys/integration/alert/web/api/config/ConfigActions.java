@@ -63,13 +63,13 @@ public class ConfigActions extends AbstractConfigResourceActions {
     private final PKIXErrorResponseFactory pkixErrorResponseFactory;
     private final EncryptionUtility encryptionUtility;
     private final SettingsDescriptorKey settingsDescriptorKey;
-    private final GlobalFieldModelToConcreteConversionService globalFieldModelToConcreteConversionService;
+    private final GlobalConfigurationModelToConcreteConversionService globalConfigurationModelToConcreteConversionService;
 
     @Autowired
     public ConfigActions(AuthorizationManager authorizationManager, DescriptorAccessor descriptorAccessor, ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor,
         FieldModelProcessor fieldModelProcessor, DescriptorProcessor descriptorProcessor, ConfigurationFieldModelConverter modelConverter,
         DescriptorMap descriptorMap, PKIXErrorResponseFactory pkixErrorResponseFactory, EncryptionUtility encryptionUtility, SettingsDescriptorKey settingsDescriptorKey,
-        GlobalFieldModelToConcreteConversionService globalFieldModelToConcreteConversionService) {
+        GlobalConfigurationModelToConcreteConversionService globalConfigurationModelToConcreteConversionService) {
         super(authorizationManager, descriptorAccessor);
         this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
         this.fieldModelProcessor = fieldModelProcessor;
@@ -79,7 +79,7 @@ public class ConfigActions extends AbstractConfigResourceActions {
         this.pkixErrorResponseFactory = pkixErrorResponseFactory;
         this.encryptionUtility = encryptionUtility;
         this.settingsDescriptorKey = settingsDescriptorKey;
-        this.globalFieldModelToConcreteConversionService = globalFieldModelToConcreteConversionService;
+        this.globalConfigurationModelToConcreteConversionService = globalConfigurationModelToConcreteConversionService;
     }
 
     @Override
@@ -148,7 +148,7 @@ public class ConfigActions extends AbstractConfigResourceActions {
                 FieldModel convertedFieldModel = modelConverter.convertToFieldModel(configurationModel);
                 FieldModel fieldModel = fieldModelProcessor.performBeforeDeleteAction(convertedFieldModel);
                 configurationModelConfigurationAccessor.deleteConfiguration(Long.parseLong(fieldModel.getId()));
-                globalFieldModelToConcreteConversionService.deleteDefaultConcreteModel(fieldModel.getDescriptorName(), configurationModel);
+                globalConfigurationModelToConcreteConversionService.deleteDefaultConcreteModel(fieldModel.getDescriptorName(), configurationModel);
                 fieldModelProcessor.performAfterDeleteAction(fieldModel);
 
             } catch (AlertException ex) {
@@ -168,7 +168,7 @@ public class ConfigActions extends AbstractConfigResourceActions {
                 String context = modifiedFieldModel.getContext();
                 Map<String, ConfigurationFieldModel> configurationFieldModelMap = modelConverter.convertToConfigurationFieldModelMap(modifiedFieldModel);
                 ConfigurationModel configuration = configurationModelConfigurationAccessor.createConfiguration(descriptorKey.get(), EnumUtils.getEnum(ConfigContextEnum.class, context), configurationFieldModelMap.values());
-                globalFieldModelToConcreteConversionService.createDefaultConcreteModel(modifiedFieldModel.getDescriptorName(), configuration);
+                globalConfigurationModelToConcreteConversionService.createDefaultConcreteModel(modifiedFieldModel.getDescriptorName(), configuration);
                 FieldModel dbSavedModel = modelConverter.convertToFieldModel(configuration);
                 FieldModel afterSaveAction = fieldModelProcessor.performAfterSaveAction(dbSavedModel);
                 FieldModel responseModel = dbSavedModel.fill(afterSaveAction);
@@ -190,7 +190,7 @@ public class ConfigActions extends AbstractConfigResourceActions {
             FieldModel updatedFieldModel = fieldModelProcessor.performBeforeUpdateAction(resource);
             Collection<ConfigurationFieldModel> updatedFields = fieldModelProcessor.fillFieldModelWithExistingData(id, updatedFieldModel);
             ConfigurationModel configurationModel = configurationModelConfigurationAccessor.updateConfiguration(id, updatedFields);
-            globalFieldModelToConcreteConversionService.updateDefaultConcreteModel(updatedFieldModel.getDescriptorName(), configurationModel);
+            globalConfigurationModelToConcreteConversionService.updateDefaultConcreteModel(updatedFieldModel.getDescriptorName(), configurationModel);
             FieldModel dbSavedModel = modelConverter.convertToFieldModel(configurationModel);
             FieldModel afterUpdateAction = fieldModelProcessor.performAfterUpdateAction(previousFieldModel, dbSavedModel);
             FieldModel responseModel = dbSavedModel.fill(afterUpdateAction);
