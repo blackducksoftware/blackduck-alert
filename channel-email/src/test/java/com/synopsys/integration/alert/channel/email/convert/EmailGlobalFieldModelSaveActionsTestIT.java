@@ -97,6 +97,37 @@ class EmailGlobalFieldModelSaveActionsTest {
     }
 
     @Test
+    void createInvalidConversionTest() {
+        AtomicReference<EmailConfigurationEntity> savedEntity = new AtomicReference<>();
+        AtomicReference<EmailConfigurationsPropertyEntity> savedProperty = new AtomicReference<>();
+        EmailConfigurationRepository emailConfigurationRepository = Mockito.mock(EmailConfigurationRepository.class);
+        EmailConfigurationPropertiesRepository emailConfigurationPropertiesRepository = Mockito.mock(EmailConfigurationPropertiesRepository.class);
+        Mockito.when(emailConfigurationRepository.save(Mockito.any(EmailConfigurationEntity.class))).thenAnswer(invocation -> {
+            savedEntity.set(invocation.getArgument(0));
+            return savedEntity.get();
+        });
+
+        Mockito.when(emailConfigurationPropertiesRepository.saveAll(Mockito.any(List.class))).thenAnswer(invocation -> {
+            Iterable<EmailConfigurationsPropertyEntity> iterable = invocation.getArgument(0);
+            for (EmailConfigurationsPropertyEntity entity : iterable) {
+                savedProperty.set(entity);
+            }
+            return List.of(savedProperty.get());
+        });
+
+        EmailGlobalConfigAccessor configurationAccessor = new EmailGlobalConfigAccessor(encryptionUtility, emailConfigurationRepository, emailConfigurationPropertiesRepository);
+        EmailGlobalCrudActions crudActions = new EmailGlobalCrudActions(authorizationManager, configurationAccessor, validator);
+        EmailGlobalFieldModelSaveActions saveActions = new EmailGlobalFieldModelSaveActions(converter, crudActions, configurationAccessor);
+        FieldModel fieldModel = createDefaultFieldModel();
+        fieldModel.putField(EmailGlobalFieldModelConverter.EMAIL_PORT_KEY, new FieldValueModel(List.of("badport"), false));
+        saveActions.createConcreteModel(fieldModel);
+        EmailConfigurationEntity actualEntity = savedEntity.get();
+        EmailConfigurationsPropertyEntity emailProperty = savedProperty.get();
+        assertNull(actualEntity);
+        assertNull(emailProperty);
+    }
+
+    @Test
     void updateTest() {
         AtomicReference<EmailConfigurationEntity> savedEntity = new AtomicReference<>();
         AtomicReference<EmailConfigurationsPropertyEntity> savedProperty = new AtomicReference<>();
@@ -142,6 +173,88 @@ class EmailGlobalFieldModelSaveActionsTest {
         assertNotNull(emailProperty);
         assertEquals(TEST_ADDITIONAL_PROPERTY, emailProperty.getPropertyKey());
         assertEquals("false", emailProperty.getPropertyValue());
+    }
+
+    @Test
+    void updateInvalidConversionTest() {
+        AtomicReference<EmailConfigurationEntity> savedEntity = new AtomicReference<>();
+        AtomicReference<EmailConfigurationsPropertyEntity> savedProperty = new AtomicReference<>();
+        EmailConfigurationRepository emailConfigurationRepository = Mockito.mock(EmailConfigurationRepository.class);
+        EmailConfigurationPropertiesRepository emailConfigurationPropertiesRepository = Mockito.mock(EmailConfigurationPropertiesRepository.class);
+        Mockito.when(emailConfigurationRepository.save(Mockito.any(EmailConfigurationEntity.class))).thenAnswer(invocation -> {
+            savedEntity.set(invocation.getArgument(0));
+            return savedEntity.get();
+        });
+
+        Mockito.when(emailConfigurationRepository.findByName(Mockito.anyString())).thenAnswer(invocation -> Optional.ofNullable(savedEntity.get()));
+        Mockito.when(emailConfigurationRepository.findById(Mockito.any())).thenAnswer(invocation -> Optional.ofNullable(savedEntity.get()));
+
+        Mockito.when(emailConfigurationPropertiesRepository.saveAll(Mockito.any(List.class))).thenAnswer(invocation -> {
+            Iterable<EmailConfigurationsPropertyEntity> iterable = invocation.getArgument(0);
+            for (EmailConfigurationsPropertyEntity entity : iterable) {
+                savedProperty.set(entity);
+            }
+            return List.of(savedProperty.get());
+        });
+
+        EmailGlobalConfigAccessor configurationAccessor = new EmailGlobalConfigAccessor(encryptionUtility, emailConfigurationRepository, emailConfigurationPropertiesRepository);
+        EmailGlobalCrudActions crudActions = new EmailGlobalCrudActions(authorizationManager, configurationAccessor, validator);
+        EmailGlobalFieldModelSaveActions saveActions = new EmailGlobalFieldModelSaveActions(converter, crudActions, configurationAccessor);
+        String newPassword = "updatedPassword";
+        String newHost = "updated." + TEST_SMTP_HOST;
+        FieldModel fieldModel = createDefaultFieldModel();
+        saveActions.createConcreteModel(fieldModel);
+        fieldModel.putField(EmailGlobalFieldModelConverter.EMAIL_PORT_KEY, new FieldValueModel(List.of("badport"), false));
+        fieldModel.putField(EmailGlobalFieldModelConverter.EMAIL_HOST_KEY, new FieldValueModel(List.of(newHost), false));
+        fieldModel.putField(EmailGlobalFieldModelConverter.AUTH_PASSWORD_KEY, new FieldValueModel(List.of(newPassword), false));
+        fieldModel.putField(TEST_ADDITIONAL_PROPERTY, new FieldValueModel(List.of("false"), false));
+        saveActions.updateConcreteModel(fieldModel);
+        // make sure the values are not the updated values
+        EmailConfigurationEntity actualEntity = savedEntity.get();
+        assertEquals(TEST_AUTH_PASSWORD, encryptionUtility.decrypt(actualEntity.getAuthPassword()));
+        assertEquals(TEST_SMTP_HOST, actualEntity.getSmtpHost());
+        assertEquals(Integer.valueOf(TEST_SMTP_PORT), actualEntity.getSmtpPort());
+    }
+
+    @Test
+    void updateItemNotFoundTest() {
+        AtomicReference<EmailConfigurationEntity> savedEntity = new AtomicReference<>();
+        AtomicReference<EmailConfigurationsPropertyEntity> savedProperty = new AtomicReference<>();
+        EmailConfigurationRepository emailConfigurationRepository = Mockito.mock(EmailConfigurationRepository.class);
+        EmailConfigurationPropertiesRepository emailConfigurationPropertiesRepository = Mockito.mock(EmailConfigurationPropertiesRepository.class);
+        Mockito.when(emailConfigurationRepository.save(Mockito.any(EmailConfigurationEntity.class))).thenAnswer(invocation -> {
+            savedEntity.set(invocation.getArgument(0));
+            return savedEntity.get();
+        });
+
+        Mockito.when(emailConfigurationRepository.findByName(Mockito.anyString())).thenAnswer(invocation -> Optional.ofNullable(savedEntity.get()));
+        Mockito.when(emailConfigurationRepository.findById(Mockito.any())).thenAnswer(invocation -> Optional.ofNullable(savedEntity.get()));
+
+        Mockito.when(emailConfigurationPropertiesRepository.saveAll(Mockito.any(List.class))).thenAnswer(invocation -> {
+            Iterable<EmailConfigurationsPropertyEntity> iterable = invocation.getArgument(0);
+            for (EmailConfigurationsPropertyEntity entity : iterable) {
+                savedProperty.set(entity);
+            }
+            return List.of(savedProperty.get());
+        });
+
+        EmailGlobalConfigAccessor configurationAccessor = new EmailGlobalConfigAccessor(encryptionUtility, emailConfigurationRepository, emailConfigurationPropertiesRepository);
+        EmailGlobalCrudActions crudActions = new EmailGlobalCrudActions(authorizationManager, configurationAccessor, validator);
+        EmailGlobalFieldModelSaveActions saveActions = new EmailGlobalFieldModelSaveActions(converter, crudActions, configurationAccessor);
+        String newPassword = "updatedPassword";
+        String newHost = "updated." + TEST_SMTP_HOST;
+        FieldModel fieldModel = createDefaultFieldModel();
+        saveActions.createConcreteModel(fieldModel);
+        fieldModel.putField(EmailGlobalFieldModelConverter.EMAIL_PORT_KEY, new FieldValueModel(List.of("badport"), false));
+        fieldModel.putField(EmailGlobalFieldModelConverter.EMAIL_HOST_KEY, new FieldValueModel(List.of(newHost), false));
+        fieldModel.putField(EmailGlobalFieldModelConverter.AUTH_PASSWORD_KEY, new FieldValueModel(List.of(newPassword), false));
+        fieldModel.putField(TEST_ADDITIONAL_PROPERTY, new FieldValueModel(List.of("false"), false));
+        saveActions.updateConcreteModel(fieldModel);
+        // make sure the values are not the updated values
+        EmailConfigurationEntity actualEntity = savedEntity.get();
+        assertEquals(TEST_AUTH_PASSWORD, encryptionUtility.decrypt(actualEntity.getAuthPassword()));
+        assertEquals(TEST_SMTP_HOST, actualEntity.getSmtpHost());
+        assertEquals(Integer.valueOf(TEST_SMTP_PORT), actualEntity.getSmtpPort());
     }
 
     @Test
