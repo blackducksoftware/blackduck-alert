@@ -10,7 +10,8 @@ package com.synopsys.integration.alert.component.settings.proxy.model;
 import java.util.List;
 import java.util.Optional;
 
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
+import org.apache.commons.lang3.StringUtils;
+
 import com.synopsys.integration.alert.common.rest.model.ConfigWithMetadata;
 import com.synopsys.integration.alert.common.rest.model.Obfuscated;
 
@@ -18,6 +19,7 @@ public class SettingsProxyModel extends ConfigWithMetadata implements Obfuscated
     private String proxyHost;
     private Integer proxyPort;
     private String proxyUsername;
+    private Boolean isProxyPasswordSet;
     private String proxyPassword;
 
     private List<String> nonProxyHosts;
@@ -50,6 +52,14 @@ public class SettingsProxyModel extends ConfigWithMetadata implements Obfuscated
         return Optional.ofNullable(proxyPassword);
     }
 
+    public Boolean getIsProxyPasswordSet() {
+        return isProxyPasswordSet;
+    }
+
+    public void setIsSmtpPasswordSet(Boolean isProxyPasswordSet) {
+        this.isProxyPasswordSet = isProxyPasswordSet;
+    }
+
     public void setProxyPassword(String proxyPassword) {
         this.proxyPassword = proxyPassword;
     }
@@ -76,8 +86,8 @@ public class SettingsProxyModel extends ConfigWithMetadata implements Obfuscated
         settingsProxyModel.setProxyUsername(proxyUsername);
         settingsProxyModel.setNonProxyHosts(nonProxyHosts);
 
-        String maskedPassword = (proxyPassword != null) ? AlertRestConstants.MASKED_VALUE : null;
-        settingsProxyModel.setProxyPassword(maskedPassword);
+        settingsProxyModel.setIsSmtpPasswordSet(StringUtils.isNotBlank(proxyPassword));
+        settingsProxyModel.setProxyPassword(null);
 
         return settingsProxyModel;
     }
