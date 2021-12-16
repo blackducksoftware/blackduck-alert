@@ -9,8 +9,6 @@ package com.synopsys.integration.alert.component.settings.encryption.model;
 
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.rest.model.Obfuscated;
 
@@ -69,10 +67,8 @@ public class SettingsEncryptionModel extends AlertSerializableModel implements O
     public SettingsEncryptionModel obfuscate() {
         SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel();
 
-        settingsEncryptionModel.setIsEncryptionPasswordSet(StringUtils.isNotBlank(encryptionPassword));
-        settingsEncryptionModel.setEncryptionPassword(null);
-        settingsEncryptionModel.setIsEncryptionGlobalSaltSet(StringUtils.isNotBlank(encryptionGlobalSalt));
-        settingsEncryptionModel.setEncryptionGlobalSalt(null);
+        settingsEncryptionModel.setIsEncryptionPasswordSet(isEncryptionPasswordSet);
+        settingsEncryptionModel.setIsEncryptionGlobalSaltSet(isEncryptionGlobalSaltSet);
         settingsEncryptionModel.setReadOnly(readOnly);
 
         return settingsEncryptionModel;

@@ -33,8 +33,6 @@ public class SettingsEncryptionCrudActions {
     private final EncryptionUtility encryptionUtility;
     private final SettingsEncryptionValidator validator;
 
-    private static final String ENCRYPTION_TEMPORARY_PASSWORD_VALUE = "TO_BE_REPLACED";
-
     @Autowired
     public SettingsEncryptionCrudActions(AuthorizationManager authorizationManager, EncryptionUtility encryptionUtility, SettingsEncryptionValidator validator, SettingsDescriptorKey settingsDescriptorKey) {
         this.configurationHelper = new ConfigurationCrudHelper(authorizationManager, ConfigContextEnum.GLOBAL, settingsDescriptorKey);
@@ -89,12 +87,9 @@ public class SettingsEncryptionCrudActions {
 
     private SettingsEncryptionModel createMaskedSettingsEncryptionModel() {
         // EncryptionUtility does not return a model. A SettingsEncryptionModel with values must be created in order to obfuscate in the ConfigurationCrudHelper later.
-        // The encryption password and global salt will be set to "null" by the obfuscate method within settingsEncryptionModel.
         SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel();
         settingsEncryptionModel.setIsEncryptionPasswordSet(true);
         settingsEncryptionModel.setIsEncryptionGlobalSaltSet(true);
-        settingsEncryptionModel.setEncryptionPassword(ENCRYPTION_TEMPORARY_PASSWORD_VALUE);
-        settingsEncryptionModel.setEncryptionGlobalSalt(ENCRYPTION_TEMPORARY_PASSWORD_VALUE);
         settingsEncryptionModel.setReadOnly(encryptionUtility.isEncryptionFromEnvironment());
         return settingsEncryptionModel;
     }
