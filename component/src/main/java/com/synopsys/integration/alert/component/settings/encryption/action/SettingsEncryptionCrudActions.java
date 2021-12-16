@@ -89,6 +89,8 @@ public class SettingsEncryptionCrudActions {
     private SettingsEncryptionModel createMaskedSettingsEncryptionModel() {
         // EncryptionUtility does not return a model. A SettingsEncryptionModel with values must be created in order to obfuscate in the ConfigurationCrudHelper later.
         SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel();
+        settingsEncryptionModel.setIsEncryptionPasswordSet(true);
+        settingsEncryptionModel.setIsEncryptionGlobalSaltSet(true);
         settingsEncryptionModel.setEncryptionPassword(AlertRestConstants.MASKED_VALUE);
         settingsEncryptionModel.setEncryptionGlobalSalt(AlertRestConstants.MASKED_VALUE);
         settingsEncryptionModel.setReadOnly(encryptionUtility.isEncryptionFromEnvironment());
