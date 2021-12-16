@@ -19,12 +19,10 @@ const EmailGlobalConfiguration = ({
 }) => {
     const emailRequestUrl = `${ConfigurationRequestBuilder.CONFIG_API_URL}/email`;
     const additionalPropertiesName = 'additionalJavaMailProperties';
-    const passwordName = 'smtpPassword';
 
     const [emailConfig, setEmailConfig] = useState({});
     const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
     const [testEmailAddress, setTestEmailAddress] = useState('');
-    const [passwordFromApiExists, setPasswordFromApiExists] = useState(false);
 
     const testField = (
         <TextInput
@@ -46,18 +44,8 @@ const EmailGlobalConfiguration = ({
         const data = await response.json();
 
         const { models } = data;
-        if (models && models.length > 0) {
-            const firstResult = models[0];
-            if (firstResult[passwordName]) {
-                setPasswordFromApiExists(true);
-                delete firstResult[passwordName];
-            } else {
-                setPasswordFromApiExists(false);
-            }
-            setEmailConfig(firstResult);
-        } else {
-            setEmailConfig({ name: 'default-configuration' });
-        }
+        const firstResult = (models && models.length > 0) ? models[0] : { name: 'default-configuration' };
+        setEmailConfig(firstResult);
     };
 
     return (
@@ -144,14 +132,14 @@ const EmailGlobalConfiguration = ({
                 />
                 <PasswordInput
                     id={EMAIL_GLOBAL_FIELD_KEYS.password}
-                    name={passwordName}
+                    name="smtpPassword"
                     label="SMTP Password"
                     description="The password to authenticate with the SMTP server."
                     readOnly={readonly}
                     onChange={fieldModelUtilities.handleTestChange(emailConfig, setEmailConfig)}
-                    value={emailConfig[passwordName] || undefined}
-                    isSet={passwordFromApiExists}
-                    errorName={passwordName}
+                    value={emailConfig.smtpPassword || undefined}
+                    isSet={emailConfig.isSmtpPasswordSet}
+                    errorName="smtpPassword"
                     errorValue={errors.fieldErrors.password}
                 />
                 <FluidFieldMappingField

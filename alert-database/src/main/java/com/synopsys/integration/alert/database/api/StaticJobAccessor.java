@@ -99,11 +99,17 @@ public class StaticJobAccessor implements JobAccessor {
 
     @Override
     @Transactional(readOnly = true)
+    public boolean hasJobsByFrequency(String frequency) {
+        return distributionJobRepository.existsByDistributionFrequency(frequency);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<DistributionJobModel> getJobsById(Collection<UUID> jobIds) {
         return distributionJobRepository.findAllById(jobIds)
-                   .stream()
-                   .map(this::convertToDistributionJobModel)
-                   .collect(Collectors.toList());
+            .stream()
+            .map(this::convertToDistributionJobModel)
+            .collect(Collectors.toList());
     }
 
     @Override
