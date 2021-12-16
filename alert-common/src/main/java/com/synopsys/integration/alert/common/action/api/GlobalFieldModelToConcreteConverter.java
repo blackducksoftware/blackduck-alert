@@ -9,9 +9,9 @@ package com.synopsys.integration.alert.common.action.api;
 
 import java.util.Optional;
 
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.model.ConfigWithMetadata;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
 public interface GlobalFieldModelToConcreteConverter<T extends ConfigWithMetadata> {
-    Optional<T> convert(FieldModel globalFieldModel);
+    Optional<T> convert(ConfigurationModel globalConfigurationModel);
 }

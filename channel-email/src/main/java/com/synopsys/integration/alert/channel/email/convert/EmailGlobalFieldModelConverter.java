@@ -19,30 +19,25 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.api.GlobalFieldModelToConcreteConverter;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
 @Component
 public class EmailGlobalFieldModelConverter implements GlobalFieldModelToConcreteConverter<EmailGlobalConfigModel> {
     private Logger logger = LoggerFactory.getLogger(getClass());
     private static final String EMAIL_FIELD_PREFIX = "mail.smtp.";
-    public static final String AUTH_REQUIRED_KEY = EMAIL_FIELD_PREFIX + "auth";
-    public static final String EMAIL_FROM_KEY = EMAIL_FIELD_PREFIX + "from";
-    public static final String EMAIL_HOST_KEY = EMAIL_FIELD_PREFIX + "host";
-    public static final String AUTH_PASSWORD_KEY = EMAIL_FIELD_PREFIX + "password";
-    public static final String EMAIL_PORT_KEY = EMAIL_FIELD_PREFIX + "port";
-    public static final String AUTH_USER_KEY = EMAIL_FIELD_PREFIX + "user";
 
     private static final Set<String> RESERVED_PROPERTY_KEYS = Set.of(
-        AUTH_PASSWORD_KEY,
-        AUTH_REQUIRED_KEY,
-        AUTH_USER_KEY,
-        EMAIL_FROM_KEY,
-        EMAIL_HOST_KEY,
-        EMAIL_PORT_KEY);
+        EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey(),
+        EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey(),
+        EmailPropertyKeys.JAVAMAIL_USER_KEY.getPropertyKey(),
+        EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey(),
+        EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey(),
+        EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey());
 
-    private Predicate<Map.Entry<String, FieldValueModel>> validAdditionalPropertiesKeyTest;
+    private Predicate<Map.Entry<String, ConfigurationFieldModel>> validAdditionalPropertiesKeyTest;
 
     public EmailGlobalFieldModelConverter() {
         validAdditionalPropertiesKeyTest = entry -> !RESERVED_PROPERTY_KEYS.contains(entry.getKey());
@@ -50,26 +45,31 @@ public class EmailGlobalFieldModelConverter implements GlobalFieldModelToConcret
     }
 
     @Override
-    public Optional<EmailGlobalConfigModel> convert(FieldModel globalFieldModel) {
+    public Optional<EmailGlobalConfigModel> convert(ConfigurationModel globalConfigurationModel) {
         Optional<EmailGlobalConfigModel> convertedModel = Optional.empty();
-        Map<String, FieldValueModel> keyToValues = globalFieldModel.getKeyToValues();
         EmailGlobalConfigModel model = new EmailGlobalConfigModel();
         try {
-            globalFieldModel.getFieldValue(EMAIL_FROM_KEY).ifPresent(model::setSmtpFrom);
-            globalFieldModel.getFieldValue(EMAIL_HOST_KEY).ifPresent(model::setSmtpHost);
-            globalFieldModel.getFieldValue(EMAIL_PORT_KEY)
+            globalConfigurationModel.getField(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey())
+                .flatMap(ConfigurationFieldModel::getFieldValue)
+                .ifPresent(model::setSmtpFrom);
+            globalConfigurationModel.getField(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey())
+                .flatMap(ConfigurationFieldModel::getFieldValue)
+                .ifPresent(model::setSmtpHost);
+            globalConfigurationModel.getField(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey())
+                .flatMap(ConfigurationFieldModel::getFieldValue)
                 .map(Integer::valueOf)
                 .ifPresent(model::setSmtpPort);
-            globalFieldModel.getFieldValue(AUTH_REQUIRED_KEY)
+            globalConfigurationModel.getField(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey())
+                .flatMap(ConfigurationFieldModel::getFieldValue)
                 .map(Boolean::valueOf)
                 .ifPresent(model::setSmtpAuth);
-            globalFieldModel.getFieldValue(AUTH_USER_KEY)
+            globalConfigurationModel.getField(EmailPropertyKeys.JAVAMAIL_USER_KEY.getPropertyKey())
+                .flatMap(ConfigurationFieldModel::getFieldValue)
                 .ifPresent(model::setSmtpUsername);
-            globalFieldModel.getFieldValueModel(AUTH_PASSWORD_KEY)
-                .filter(Predicate.not(FieldValueModel::getIsSet))
-                .flatMap(FieldValueModel::getValue)
+            globalConfigurationModel.getField(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey())
+                .flatMap(ConfigurationFieldModel::getFieldValue)
                 .ifPresent(model::setSmtpPassword);
-            model.setAdditionalJavaMailProperties(createAdditionalProperties(globalFieldModel, keyToValues));
+            model.setAdditionalJavaMailProperties(createAdditionalProperties(globalConfigurationModel));
             convertedModel = Optional.of(model);
         } catch (NumberFormatException ex) {
             logger.error("Error converting field model to concrete email configuration", ex);
@@ -77,11 +77,14 @@ public class EmailGlobalFieldModelConverter implements GlobalFieldModelToConcret
         return convertedModel;
     }
 
-    private Map<String, String> createAdditionalProperties(FieldModel globalFieldModel, Map<String, FieldValueModel> keyToValue) {
+    private Map<String, String> createAdditionalProperties(ConfigurationModel globalConfigurationModel) {
         Map<String, String> additionalPropertiesMap = new HashMap<>();
+        Map<String, ConfigurationFieldModel> keyToValue = globalConfigurationModel.getCopyOfKeyToFieldMap();
         keyToValue.entrySet().stream()
             .filter(validAdditionalPropertiesKeyTest)
-            .forEach(entry -> additionalPropertiesMap.computeIfAbsent(entry.getKey(), (key) -> globalFieldModel.getFieldValue(key).orElse(StringUtils.EMPTY)));
+            .forEach(entry -> additionalPropertiesMap.computeIfAbsent(entry.getKey(), (key) -> globalConfigurationModel.getField(key)
+                .flatMap(ConfigurationFieldModel::getFieldValue)
+                .orElse(StringUtils.EMPTY)));
         return additionalPropertiesMap;
     }
 }

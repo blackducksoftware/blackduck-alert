@@ -19,11 +19,11 @@ import com.synopsys.integration.alert.channel.email.database.accessor.EmailGloba
 import com.synopsys.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.database.email.EmailConfigurationEntity;
@@ -32,6 +32,7 @@ import com.synopsys.integration.alert.database.email.properties.EmailConfigurati
 import com.synopsys.integration.alert.database.email.properties.EmailConfigurationsPropertyEntity;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
+import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
 
@@ -43,7 +44,6 @@ class EmailGlobalFieldModelSaveActionsTest {
     public static final String TEST_AUTH_PASSWORD = "apassword";
     public static final String TEST_SMTP_PORT = "2025";
     public static final String TEST_AUTH_USER = "auser";
-    public static final String TEST_ADDITIONAL_PROPERTY = "mail.smtp.ehlo";
 
     private final Gson gson = new Gson();
     private final AlertProperties alertProperties = new MockAlertProperties();
@@ -81,7 +81,8 @@ class EmailGlobalFieldModelSaveActionsTest {
         EmailGlobalConfigAccessor configurationAccessor = new EmailGlobalConfigAccessor(encryptionUtility, emailConfigurationRepository, emailConfigurationPropertiesRepository);
         EmailGlobalCrudActions crudActions = new EmailGlobalCrudActions(authorizationManager, configurationAccessor, validator);
         EmailGlobalFieldModelSaveActions saveActions = new EmailGlobalFieldModelSaveActions(converter, crudActions, configurationAccessor);
-        saveActions.createConcreteModel(createDefaultFieldModel());
+        saveActions.createConcreteModel(createDefaultConfigurationModel());
+
         EmailConfigurationEntity actualEntity = savedEntity.get();
         assertEquals(Boolean.TRUE, actualEntity.getAuthRequired());
         assertEquals(TEST_AUTH_USER, actualEntity.getAuthUsername());
@@ -92,7 +93,7 @@ class EmailGlobalFieldModelSaveActionsTest {
 
         EmailConfigurationsPropertyEntity emailProperty = savedProperty.get();
         assertNotNull(emailProperty);
-        assertEquals(TEST_ADDITIONAL_PROPERTY, emailProperty.getPropertyKey());
+        assertEquals(EmailPropertyKeys.JAVAMAIL_EHLO_KEY.getPropertyKey(), emailProperty.getPropertyKey());
         assertEquals("true", emailProperty.getPropertyValue());
     }
 
@@ -118,9 +119,10 @@ class EmailGlobalFieldModelSaveActionsTest {
         EmailGlobalConfigAccessor configurationAccessor = new EmailGlobalConfigAccessor(encryptionUtility, emailConfigurationRepository, emailConfigurationPropertiesRepository);
         EmailGlobalCrudActions crudActions = new EmailGlobalCrudActions(authorizationManager, configurationAccessor, validator);
         EmailGlobalFieldModelSaveActions saveActions = new EmailGlobalFieldModelSaveActions(converter, crudActions, configurationAccessor);
-        FieldModel fieldModel = createDefaultFieldModel();
-        fieldModel.putField(EmailGlobalFieldModelConverter.EMAIL_PORT_KEY, new FieldValueModel(List.of("badport"), false));
-        saveActions.createConcreteModel(fieldModel);
+        ConfigurationModel configurationModel = createDefaultConfigurationModel();
+        updateField(configurationModel, EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), "badport");
+        saveActions.createConcreteModel(configurationModel);
+
         EmailConfigurationEntity actualEntity = savedEntity.get();
         EmailConfigurationsPropertyEntity emailProperty = savedProperty.get();
         assertNull(actualEntity);
@@ -154,12 +156,15 @@ class EmailGlobalFieldModelSaveActionsTest {
         EmailGlobalFieldModelSaveActions saveActions = new EmailGlobalFieldModelSaveActions(converter, crudActions, configurationAccessor);
         String newPassword = "updatedPassword";
         String newHost = "updated." + TEST_SMTP_HOST;
-        FieldModel defaultFieldModel = createDefaultFieldModel();
-        saveActions.createConcreteModel(defaultFieldModel);
-        defaultFieldModel.putField(EmailGlobalFieldModelConverter.EMAIL_HOST_KEY, new FieldValueModel(List.of(newHost), false));
-        defaultFieldModel.putField(EmailGlobalFieldModelConverter.AUTH_PASSWORD_KEY, new FieldValueModel(List.of(newPassword), false));
-        defaultFieldModel.putField(TEST_ADDITIONAL_PROPERTY, new FieldValueModel(List.of("false"), false));
-        saveActions.updateConcreteModel(defaultFieldModel);
+        ConfigurationModel configurationModel = createDefaultConfigurationModel();
+        saveActions.createConcreteModel(configurationModel);
+
+        updateField(configurationModel, EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey(), newHost);
+        updateField(configurationModel, EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey(), newPassword);
+        updateField(configurationModel, EmailPropertyKeys.JAVAMAIL_EHLO_KEY.getPropertyKey(), "false");
+
+        saveActions.updateConcreteModel(configurationModel);
+
         EmailConfigurationEntity actualEntity = savedEntity.get();
         assertEquals(ChannelKeys.EMAIL, saveActions.getDescriptorKey());
         assertEquals(Boolean.TRUE, actualEntity.getAuthRequired());
@@ -171,7 +176,7 @@ class EmailGlobalFieldModelSaveActionsTest {
 
         EmailConfigurationsPropertyEntity emailProperty = savedProperty.get();
         assertNotNull(emailProperty);
-        assertEquals(TEST_ADDITIONAL_PROPERTY, emailProperty.getPropertyKey());
+        assertEquals(EmailPropertyKeys.JAVAMAIL_EHLO_KEY.getPropertyKey(), emailProperty.getPropertyKey());
         assertEquals("false", emailProperty.getPropertyValue());
     }
 
@@ -202,13 +207,17 @@ class EmailGlobalFieldModelSaveActionsTest {
         EmailGlobalFieldModelSaveActions saveActions = new EmailGlobalFieldModelSaveActions(converter, crudActions, configurationAccessor);
         String newPassword = "updatedPassword";
         String newHost = "updated." + TEST_SMTP_HOST;
-        FieldModel fieldModel = createDefaultFieldModel();
-        saveActions.createConcreteModel(fieldModel);
-        fieldModel.putField(EmailGlobalFieldModelConverter.EMAIL_PORT_KEY, new FieldValueModel(List.of("badport"), false));
-        fieldModel.putField(EmailGlobalFieldModelConverter.EMAIL_HOST_KEY, new FieldValueModel(List.of(newHost), false));
-        fieldModel.putField(EmailGlobalFieldModelConverter.AUTH_PASSWORD_KEY, new FieldValueModel(List.of(newPassword), false));
-        fieldModel.putField(TEST_ADDITIONAL_PROPERTY, new FieldValueModel(List.of("false"), false));
-        saveActions.updateConcreteModel(fieldModel);
+        ConfigurationModel configurationModel = createDefaultConfigurationModel();
+
+        saveActions.createConcreteModel(configurationModel);
+
+        updateField(configurationModel, EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), "badport");
+        updateField(configurationModel, EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey(), newHost);
+        updateField(configurationModel, EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), newPassword);
+        updateField(configurationModel, EmailPropertyKeys.JAVAMAIL_EHLO_KEY.getPropertyKey(), "false");
+
+        saveActions.updateConcreteModel(configurationModel);
+
         // make sure the values are not the updated values
         EmailConfigurationEntity actualEntity = savedEntity.get();
         assertEquals(TEST_AUTH_PASSWORD, encryptionUtility.decrypt(actualEntity.getAuthPassword()));
@@ -243,13 +252,15 @@ class EmailGlobalFieldModelSaveActionsTest {
         EmailGlobalFieldModelSaveActions saveActions = new EmailGlobalFieldModelSaveActions(converter, crudActions, configurationAccessor);
         String newPassword = "updatedPassword";
         String newHost = "updated." + TEST_SMTP_HOST;
-        FieldModel fieldModel = createDefaultFieldModel();
-        saveActions.createConcreteModel(fieldModel);
-        fieldModel.putField(EmailGlobalFieldModelConverter.EMAIL_PORT_KEY, new FieldValueModel(List.of("badport"), false));
-        fieldModel.putField(EmailGlobalFieldModelConverter.EMAIL_HOST_KEY, new FieldValueModel(List.of(newHost), false));
-        fieldModel.putField(EmailGlobalFieldModelConverter.AUTH_PASSWORD_KEY, new FieldValueModel(List.of(newPassword), false));
-        fieldModel.putField(TEST_ADDITIONAL_PROPERTY, new FieldValueModel(List.of("false"), false));
-        saveActions.updateConcreteModel(fieldModel);
+        ConfigurationModel configurationModel = createDefaultConfigurationModel();
+        saveActions.createConcreteModel(configurationModel);
+
+        updateField(configurationModel, EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), "badport");
+        updateField(configurationModel, EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey(), newHost);
+        updateField(configurationModel, EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), newPassword);
+        updateField(configurationModel, EmailPropertyKeys.JAVAMAIL_EHLO_KEY.getPropertyKey(), "false");
+        saveActions.updateConcreteModel(configurationModel);
+
         // make sure the values are not the updated values
         EmailConfigurationEntity actualEntity = savedEntity.get();
         assertEquals(TEST_AUTH_PASSWORD, encryptionUtility.decrypt(actualEntity.getAuthPassword()));
@@ -287,13 +298,13 @@ class EmailGlobalFieldModelSaveActionsTest {
         EmailGlobalConfigAccessor configurationAccessor = new EmailGlobalConfigAccessor(encryptionUtility, emailConfigurationRepository, emailConfigurationPropertiesRepository);
         EmailGlobalCrudActions crudActions = new EmailGlobalCrudActions(authorizationManager, configurationAccessor, validator);
         EmailGlobalFieldModelSaveActions saveActions = new EmailGlobalFieldModelSaveActions(converter, crudActions, configurationAccessor);
-        FieldModel fieldModel = createDefaultFieldModel();
-        saveActions.createConcreteModel(fieldModel);
+        ConfigurationModel configurationModel = createDefaultConfigurationModel();
+        saveActions.createConcreteModel(configurationModel);
         EmailConfigurationEntity actualEntity = savedEntity.get();
         EmailConfigurationsPropertyEntity actualPropertyEntity = savedProperty.get();
         assertNotNull(actualEntity);
         assertNotNull(actualPropertyEntity);
-        saveActions.deleteConcreteModel(fieldModel);
+        saveActions.deleteConcreteModel(configurationModel);
 
         actualEntity = savedEntity.get();
         actualPropertyEntity = savedProperty.get();
@@ -309,16 +320,35 @@ class EmailGlobalFieldModelSaveActionsTest {
         return authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
     }
 
-    private FieldModel createDefaultFieldModel() {
-        Map<String, FieldValueModel> fieldValuesMap = new HashMap<>();
-        fieldValuesMap.put(EmailGlobalFieldModelConverter.EMAIL_FROM_KEY, new FieldValueModel(List.of(TEST_FROM), false));
-        fieldValuesMap.put(EmailGlobalFieldModelConverter.EMAIL_HOST_KEY, new FieldValueModel(List.of(TEST_SMTP_HOST), false));
-        fieldValuesMap.put(EmailGlobalFieldModelConverter.EMAIL_PORT_KEY, new FieldValueModel(List.of(TEST_SMTP_PORT), false));
-        fieldValuesMap.put(EmailGlobalFieldModelConverter.AUTH_REQUIRED_KEY, new FieldValueModel(List.of(TEST_AUTH_REQUIRED), false));
-        fieldValuesMap.put(EmailGlobalFieldModelConverter.AUTH_PASSWORD_KEY, new FieldValueModel(List.of(TEST_AUTH_PASSWORD), false));
-        fieldValuesMap.put(EmailGlobalFieldModelConverter.AUTH_USER_KEY, new FieldValueModel(List.of(TEST_AUTH_USER), false));
+    private ConfigurationModel createDefaultConfigurationModel() {
+        Map<String, ConfigurationFieldModel> fieldValuesMap = new HashMap<>();
 
-        fieldValuesMap.put(TEST_ADDITIONAL_PROPERTY, new FieldValueModel(List.of("true"), false));
-        return new FieldModel(ChannelKeys.EMAIL.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), fieldValuesMap);
+        ConfigurationFieldModel fromField = ConfigurationFieldModel.create(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey());
+        ConfigurationFieldModel hostField = ConfigurationFieldModel.create(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey());
+        ConfigurationFieldModel portField = ConfigurationFieldModel.create(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey());
+        ConfigurationFieldModel authField = ConfigurationFieldModel.create(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey());
+        ConfigurationFieldModel passwordField = ConfigurationFieldModel.create(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey());
+        ConfigurationFieldModel userField = ConfigurationFieldModel.create(EmailPropertyKeys.JAVAMAIL_USER_KEY.getPropertyKey());
+
+        ConfigurationFieldModel ehloField = ConfigurationFieldModel.create(EmailPropertyKeys.JAVAMAIL_EHLO_KEY.getPropertyKey());
+        fromField.setFieldValue(TEST_FROM);
+        hostField.setFieldValue(TEST_SMTP_HOST);
+        portField.setFieldValue(TEST_SMTP_PORT);
+        authField.setFieldValue(TEST_AUTH_REQUIRED);
+        passwordField.setFieldValue(TEST_AUTH_PASSWORD);
+        userField.setFieldValue(TEST_AUTH_USER);
+        ehloField.setFieldValue("true");
+        fieldValuesMap.put(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey(), fromField);
+        fieldValuesMap.put(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey(), hostField);
+        fieldValuesMap.put(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), portField);
+        fieldValuesMap.put(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey(), authField);
+        fieldValuesMap.put(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey(), passwordField);
+        fieldValuesMap.put(EmailPropertyKeys.JAVAMAIL_USER_KEY.getPropertyKey(), userField);
+        fieldValuesMap.put(EmailPropertyKeys.JAVAMAIL_EHLO_KEY.getPropertyKey(), ehloField);
+        return new ConfigurationModel(1L, 1L, "", "", ConfigContextEnum.GLOBAL, fieldValuesMap);
+    }
+
+    private void updateField(ConfigurationModel configurationModel, String key, String value) {
+        configurationModel.getField(key).ifPresent(field -> field.setFieldValue(value));
     }
 }

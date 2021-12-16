@@ -9,8 +9,6 @@ package com.synopsys.integration.alert.web.api.config;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -20,7 +18,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.action.api.GlobalFieldModelToConcreteSaveActions;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 @Component
@@ -35,39 +33,28 @@ public class GlobalFieldModelToConcreteConversionService {
             .collect(Collectors.toMap(GlobalFieldModelToConcreteSaveActions::getDescriptorKey, Function.identity()));
     }
 
-    public void createDefaultConcreteModel(FieldModel fieldModel) {
-        descriptorMap.getDescriptorKey(fieldModel.getDescriptorName())
+    public void createDefaultConcreteModel(String descriptorName, ConfigurationModel configurationModel) {
+        descriptorMap.getDescriptorKey(descriptorName)
+            .filter(ignored -> ConfigContextEnum.GLOBAL == configurationModel.getDescriptorContext())
             .filter(conversionActionMap::containsKey)
             .map(conversionActionMap::get)
-            .ifPresent(conversionAction -> convertToConcrete(fieldModel, conversionAction::createConcreteModel));
+            .ifPresent(conversionAction -> conversionAction.createConcreteModel(configurationModel));
 
     }
 
-    public void updateDefaultConcreteModel(FieldModel fieldModel) {
-        descriptorMap.getDescriptorKey(fieldModel.getDescriptorName())
+    public void updateDefaultConcreteModel(String descriptorName, ConfigurationModel configurationModel) {
+        descriptorMap.getDescriptorKey(descriptorName)
+            .filter(ignored -> ConfigContextEnum.GLOBAL == configurationModel.getDescriptorContext())
             .filter(conversionActionMap::containsKey)
             .map(conversionActionMap::get)
-            .ifPresent(conversionAction -> convertToConcrete(fieldModel, conversionAction::updateConcreteModel));
+            .ifPresent(conversionAction -> conversionAction.updateConcreteModel(configurationModel));
     }
 
-    public void deleteDefaultConcreteModel(FieldModel fieldModel) {
-        descriptorMap.getDescriptorKey(fieldModel.getDescriptorName())
+    public void deleteDefaultConcreteModel(String descriptorName, ConfigurationModel configurationModel) {
+        descriptorMap.getDescriptorKey(descriptorName)
+            .filter(ignored -> ConfigContextEnum.GLOBAL == configurationModel.getDescriptorContext())
             .filter(conversionActionMap::containsKey)
             .map(conversionActionMap::get)
-            .ifPresent(conversionAction -> convertToConcrete(fieldModel, conversionAction::deleteConcreteModel));
-    }
-
-    private void convertToConcrete(FieldModel fieldModel, Consumer<FieldModel> conversionAction) {
-        Optional<DescriptorKey> descriptor = descriptorMap.getDescriptorKey(fieldModel.getDescriptorName());
-        if (descriptor.isEmpty() || !isGlobalConfig(fieldModel)) {
-            // not a field model that can be converted.
-            return;
-        }
-        conversionAction.accept(fieldModel);
-    }
-
-    private boolean isGlobalConfig(FieldModel fieldModel) {
-        ConfigContextEnum fieldModelContext = ConfigContextEnum.valueOf(fieldModel.getContext());
-        return ConfigContextEnum.GLOBAL == fieldModelContext;
+            .ifPresent(conversionAction -> conversionAction.deleteConcreteModel(configurationModel));
     }
 }

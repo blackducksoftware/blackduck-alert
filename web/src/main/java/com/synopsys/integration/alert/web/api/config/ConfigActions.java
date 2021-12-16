@@ -148,8 +148,9 @@ public class ConfigActions extends AbstractConfigResourceActions {
                 FieldModel convertedFieldModel = modelConverter.convertToFieldModel(configurationModel);
                 FieldModel fieldModel = fieldModelProcessor.performBeforeDeleteAction(convertedFieldModel);
                 configurationModelConfigurationAccessor.deleteConfiguration(Long.parseLong(fieldModel.getId()));
+                globalFieldModelToConcreteConversionService.deleteDefaultConcreteModel(fieldModel.getDescriptorName(), configurationModel);
                 fieldModelProcessor.performAfterDeleteAction(fieldModel);
-                globalFieldModelToConcreteConversionService.deleteDefaultConcreteModel(fieldModel);
+
             } catch (AlertException ex) {
                 logger.error(String.format("Error deleting config id: %d", id), ex);
                 return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
@@ -167,10 +168,11 @@ public class ConfigActions extends AbstractConfigResourceActions {
                 String context = modifiedFieldModel.getContext();
                 Map<String, ConfigurationFieldModel> configurationFieldModelMap = modelConverter.convertToConfigurationFieldModelMap(modifiedFieldModel);
                 ConfigurationModel configuration = configurationModelConfigurationAccessor.createConfiguration(descriptorKey.get(), EnumUtils.getEnum(ConfigContextEnum.class, context), configurationFieldModelMap.values());
+                globalFieldModelToConcreteConversionService.createDefaultConcreteModel(modifiedFieldModel.getDescriptorName(), configuration);
                 FieldModel dbSavedModel = modelConverter.convertToFieldModel(configuration);
                 FieldModel afterSaveAction = fieldModelProcessor.performAfterSaveAction(dbSavedModel);
                 FieldModel responseModel = dbSavedModel.fill(afterSaveAction);
-                globalFieldModelToConcreteConversionService.createDefaultConcreteModel(resource);
+
                 return new ActionResponse<>(HttpStatus.OK, responseModel);
             } catch (AlertException ex) {
                 logger.error("Error creating configuration", ex);
@@ -188,10 +190,10 @@ public class ConfigActions extends AbstractConfigResourceActions {
             FieldModel updatedFieldModel = fieldModelProcessor.performBeforeUpdateAction(resource);
             Collection<ConfigurationFieldModel> updatedFields = fieldModelProcessor.fillFieldModelWithExistingData(id, updatedFieldModel);
             ConfigurationModel configurationModel = configurationModelConfigurationAccessor.updateConfiguration(id, updatedFields);
+            globalFieldModelToConcreteConversionService.updateDefaultConcreteModel(updatedFieldModel.getDescriptorName(), configurationModel);
             FieldModel dbSavedModel = modelConverter.convertToFieldModel(configurationModel);
             FieldModel afterUpdateAction = fieldModelProcessor.performAfterUpdateAction(previousFieldModel, dbSavedModel);
             FieldModel responseModel = dbSavedModel.fill(afterUpdateAction);
-            globalFieldModelToConcreteConversionService.updateDefaultConcreteModel(resource);
             return new ActionResponse<>(HttpStatus.OK, responseModel);
         } catch (AlertException ex) {
             logger.error("Error creating configuration", ex);

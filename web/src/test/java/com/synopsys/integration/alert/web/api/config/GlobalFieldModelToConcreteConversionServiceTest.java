@@ -11,7 +11,8 @@ import org.junit.jupiter.api.Test;
 import com.synopsys.integration.alert.common.action.api.GlobalFieldModelToConcreteSaveActions;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 public class GlobalFieldModelToConcreteConversionServiceTest {
@@ -26,10 +27,11 @@ public class GlobalFieldModelToConcreteConversionServiceTest {
         TestSaveActions saveActions = new TestSaveActions(testDescriptorKey);
         DescriptorMap descriptorMap = new DescriptorMap(List.of(testDescriptorKey), List.of());
         List<TestSaveActions> fieldModelSaveActions = List.of(saveActions);
-        FieldModel fieldModel = new FieldModel(TEST_DESCRIPTOR_KEY, ConfigContextEnum.GLOBAL.name(), Map.of());
+        String timestamp = DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
+        ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, timestamp, timestamp, ConfigContextEnum.GLOBAL, Map.of());
 
         GlobalFieldModelToConcreteConversionService conversionService = new GlobalFieldModelToConcreteConversionService(fieldModelSaveActions, descriptorMap);
-        conversionService.createDefaultConcreteModel(fieldModel);
+        conversionService.createDefaultConcreteModel(TEST_DESCRIPTOR_KEY, configurationModel);
         assertTrue(saveActions.wasCreatedCalled());
     }
 
@@ -38,10 +40,11 @@ public class GlobalFieldModelToConcreteConversionServiceTest {
         TestSaveActions saveActions = new TestSaveActions(testDescriptorKey);
         DescriptorMap descriptorMap = new DescriptorMap(List.of(testDescriptorKey), List.of());
         List<TestSaveActions> fieldModelSaveActions = List.of(saveActions);
-        FieldModel fieldModel = new FieldModel(TEST_DESCRIPTOR_KEY, ConfigContextEnum.GLOBAL.name(), Map.of());
+        String timestamp = DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
+        ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, timestamp, timestamp, ConfigContextEnum.GLOBAL, Map.of());
 
         GlobalFieldModelToConcreteConversionService conversionService = new GlobalFieldModelToConcreteConversionService(fieldModelSaveActions, descriptorMap);
-        conversionService.updateDefaultConcreteModel(fieldModel);
+        conversionService.updateDefaultConcreteModel(TEST_DESCRIPTOR_KEY, configurationModel);
         assertTrue(saveActions.wasUpdateCalled());
     }
 
@@ -50,10 +53,11 @@ public class GlobalFieldModelToConcreteConversionServiceTest {
         TestSaveActions saveActions = new TestSaveActions(testDescriptorKey);
         DescriptorMap descriptorMap = new DescriptorMap(List.of(testDescriptorKey), List.of());
         List<TestSaveActions> fieldModelSaveActions = List.of(saveActions);
-        FieldModel fieldModel = new FieldModel(TEST_DESCRIPTOR_KEY, ConfigContextEnum.GLOBAL.name(), Map.of());
+        String timestamp = DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
+        ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, timestamp, timestamp, ConfigContextEnum.GLOBAL, Map.of());
 
         GlobalFieldModelToConcreteConversionService conversionService = new GlobalFieldModelToConcreteConversionService(fieldModelSaveActions, descriptorMap);
-        conversionService.deleteDefaultConcreteModel(fieldModel);
+        conversionService.deleteDefaultConcreteModel(TEST_DESCRIPTOR_KEY, configurationModel);
         assertTrue(saveActions.wasDeleteCalled());
     }
 
@@ -62,10 +66,11 @@ public class GlobalFieldModelToConcreteConversionServiceTest {
         TestSaveActions saveActions = new TestSaveActions(testDescriptorKey);
         DescriptorMap descriptorMap = new DescriptorMap(List.of(), List.of());
         List<TestSaveActions> fieldModelSaveActions = List.of(saveActions);
-        FieldModel fieldModel = new FieldModel(TEST_DESCRIPTOR_KEY, ConfigContextEnum.GLOBAL.name(), Map.of());
+        String timestamp = DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
+        ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, timestamp, timestamp, ConfigContextEnum.GLOBAL, Map.of());
 
         GlobalFieldModelToConcreteConversionService conversionService = new GlobalFieldModelToConcreteConversionService(fieldModelSaveActions, descriptorMap);
-        conversionService.createDefaultConcreteModel(fieldModel);
+        conversionService.createDefaultConcreteModel(TEST_DESCRIPTOR_KEY, configurationModel);
         assertFalse(saveActions.wasCreatedCalled());
     }
 
@@ -74,10 +79,11 @@ public class GlobalFieldModelToConcreteConversionServiceTest {
         TestSaveActions saveActions = new TestSaveActions(testDescriptorKey);
         DescriptorMap descriptorMap = new DescriptorMap(List.of(), List.of());
         List<TestSaveActions> fieldModelSaveActions = List.of(saveActions);
-        FieldModel fieldModel = new FieldModel(TEST_DESCRIPTOR_KEY, ConfigContextEnum.GLOBAL.name(), Map.of());
+        String timestamp = DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
+        ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, timestamp, timestamp, ConfigContextEnum.GLOBAL, Map.of());
 
         GlobalFieldModelToConcreteConversionService conversionService = new GlobalFieldModelToConcreteConversionService(fieldModelSaveActions, descriptorMap);
-        conversionService.updateDefaultConcreteModel(fieldModel);
+        conversionService.updateDefaultConcreteModel(TEST_DESCRIPTOR_KEY, configurationModel);
         assertFalse(saveActions.wasUpdateCalled());
     }
 
@@ -86,10 +92,11 @@ public class GlobalFieldModelToConcreteConversionServiceTest {
         TestSaveActions saveActions = new TestSaveActions(testDescriptorKey);
         DescriptorMap descriptorMap = new DescriptorMap(List.of(), List.of());
         List<TestSaveActions> fieldModelSaveActions = List.of(saveActions);
-        FieldModel fieldModel = new FieldModel(TEST_DESCRIPTOR_KEY, ConfigContextEnum.GLOBAL.name(), Map.of());
+        String timestamp = DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
+        ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, timestamp, timestamp, ConfigContextEnum.GLOBAL, Map.of());
 
         GlobalFieldModelToConcreteConversionService conversionService = new GlobalFieldModelToConcreteConversionService(fieldModelSaveActions, descriptorMap);
-        conversionService.deleteDefaultConcreteModel(fieldModel);
+        conversionService.deleteDefaultConcreteModel(TEST_DESCRIPTOR_KEY, configurationModel);
         assertFalse(saveActions.wasDeleteCalled());
     }
 
@@ -98,10 +105,11 @@ public class GlobalFieldModelToConcreteConversionServiceTest {
         TestSaveActions saveActions = new TestSaveActions(testDescriptorKey);
         DescriptorMap descriptorMap = new DescriptorMap(List.of(testDescriptorKey), List.of());
         List<TestSaveActions> fieldModelSaveActions = List.of(saveActions);
-        FieldModel fieldModel = new FieldModel(TEST_DESCRIPTOR_KEY, ConfigContextEnum.DISTRIBUTION.name(), Map.of());
+        String timestamp = DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
+        ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, timestamp, timestamp, ConfigContextEnum.DISTRIBUTION, Map.of());
 
         GlobalFieldModelToConcreteConversionService conversionService = new GlobalFieldModelToConcreteConversionService(fieldModelSaveActions, descriptorMap);
-        conversionService.createDefaultConcreteModel(fieldModel);
+        conversionService.createDefaultConcreteModel(TEST_DESCRIPTOR_KEY, configurationModel);
         assertFalse(saveActions.wasCreatedCalled());
     }
 
@@ -110,10 +118,11 @@ public class GlobalFieldModelToConcreteConversionServiceTest {
         TestSaveActions saveActions = new TestSaveActions(testDescriptorKey);
         DescriptorMap descriptorMap = new DescriptorMap(List.of(testDescriptorKey), List.of());
         List<TestSaveActions> fieldModelSaveActions = List.of(saveActions);
-        FieldModel fieldModel = new FieldModel(TEST_DESCRIPTOR_KEY, ConfigContextEnum.DISTRIBUTION.name(), Map.of());
+        String timestamp = DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
+        ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, timestamp, timestamp, ConfigContextEnum.DISTRIBUTION, Map.of());
 
         GlobalFieldModelToConcreteConversionService conversionService = new GlobalFieldModelToConcreteConversionService(fieldModelSaveActions, descriptorMap);
-        conversionService.updateDefaultConcreteModel(fieldModel);
+        conversionService.updateDefaultConcreteModel(TEST_DESCRIPTOR_KEY, configurationModel);
         assertFalse(saveActions.wasUpdateCalled());
     }
 
@@ -122,10 +131,11 @@ public class GlobalFieldModelToConcreteConversionServiceTest {
         TestSaveActions saveActions = new TestSaveActions(testDescriptorKey);
         DescriptorMap descriptorMap = new DescriptorMap(List.of(testDescriptorKey), List.of());
         List<TestSaveActions> fieldModelSaveActions = List.of(saveActions);
-        FieldModel fieldModel = new FieldModel(TEST_DESCRIPTOR_KEY, ConfigContextEnum.DISTRIBUTION.name(), Map.of());
+        String timestamp = DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
+        ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, timestamp, timestamp, ConfigContextEnum.DISTRIBUTION, Map.of());
 
         GlobalFieldModelToConcreteConversionService conversionService = new GlobalFieldModelToConcreteConversionService(fieldModelSaveActions, descriptorMap);
-        conversionService.deleteDefaultConcreteModel(fieldModel);
+        conversionService.deleteDefaultConcreteModel(TEST_DESCRIPTOR_KEY, configurationModel);
         assertFalse(saveActions.wasDeleteCalled());
     }
 
@@ -156,17 +166,17 @@ public class GlobalFieldModelToConcreteConversionServiceTest {
         }
 
         @Override
-        public void updateConcreteModel(FieldModel fieldModel) {
+        public void updateConcreteModel(ConfigurationModel configurationModel) {
             this.updateCalled = true;
         }
 
         @Override
-        public void createConcreteModel(FieldModel fieldModel) {
+        public void createConcreteModel(ConfigurationModel configurationModel) {
             this.createdCalled = true;
         }
 
         @Override
-        public void deleteConcreteModel(FieldModel fieldModel) {
+        public void deleteConcreteModel(ConfigurationModel configurationModel) {
             this.deleteCalled = true;
         }
     }

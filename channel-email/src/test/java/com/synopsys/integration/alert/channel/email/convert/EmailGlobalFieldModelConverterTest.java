@@ -4,16 +4,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
 class EmailGlobalFieldModelConverterTest {
@@ -23,13 +22,12 @@ class EmailGlobalFieldModelConverterTest {
     public static final String TEST_AUTH_PASSWORD = "apassword";
     public static final String TEST_SMTP_PORT = "2025";
     public static final String TEST_AUTH_USER = "auser";
-    public static final String TEST_ADDITIONAL_PROPERTY = "mail.smtp.ehlo";
 
     @Test
     void validConversionTest() {
-        FieldModel fieldModel = createDefaultFieldModel();
+        ConfigurationModel configurationModel = createDefaultConfigurationModel();
         EmailGlobalFieldModelConverter converter = new EmailGlobalFieldModelConverter();
-        Optional<EmailGlobalConfigModel> model = converter.convert(fieldModel);
+        Optional<EmailGlobalConfigModel> model = converter.convert(configurationModel);
         assertTrue(model.isPresent());
         EmailGlobalConfigModel emailModel = model.get();
         assertEquals(Boolean.TRUE, emailModel.getSmtpAuth().orElse(Boolean.FALSE));
@@ -41,22 +39,23 @@ class EmailGlobalFieldModelConverterTest {
 
         Map<String, String> additionalProperties = emailModel.getAdditionalJavaMailProperties().orElse(Map.of());
         assertEquals(1, additionalProperties.size());
-        assertEquals("true", additionalProperties.get(TEST_ADDITIONAL_PROPERTY));
+        assertEquals("true", additionalProperties.get(EmailPropertyKeys.JAVAMAIL_EHLO_KEY.getPropertyKey()));
 
     }
 
     @Test
     void invalidPortTest() {
-        FieldModel fieldModel = createDefaultFieldModel();
-        fieldModel.putField(EmailGlobalFieldModelConverter.EMAIL_PORT_KEY, new FieldValueModel(List.of("twenty-five"), false));
+        ConfigurationModel configurationModel = createDefaultConfigurationModel();
+        configurationModel.getField(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey())
+            .ifPresent(field -> field.setFieldValue("twenty-five"));
         EmailGlobalFieldModelConverter converter = new EmailGlobalFieldModelConverter();
-        Optional<EmailGlobalConfigModel> model = converter.convert(fieldModel);
+        Optional<EmailGlobalConfigModel> model = converter.convert(configurationModel);
         assertTrue(model.isEmpty());
     }
 
     @Test
     void emptyFieldsTest() {
-        FieldModel emptyModel = new FieldModel(ChannelKeys.EMAIL.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), Map.of());
+        ConfigurationModel emptyModel = new ConfigurationModel(1L, 1L, "", "", ConfigContextEnum.GLOBAL, Map.of());
         EmailGlobalFieldModelConverter converter = new EmailGlobalFieldModelConverter();
         Optional<EmailGlobalConfigModel> model = converter.convert(emptyModel);
         assertTrue(model.isPresent());
@@ -73,11 +72,12 @@ class EmailGlobalFieldModelConverterTest {
 
     @Test
     void invalidEmailPropertyKeysTest() {
-        FieldModel fieldModel = createDefaultFieldModel();
-        fieldModel.removeField(TEST_ADDITIONAL_PROPERTY);
-        fieldModel.putField("invalid.email.field", new FieldValueModel(List.of(), false));
+        String invalidFieldKey = "invalid.email.field";
+        ConfigurationFieldModel invalidField = ConfigurationFieldModel.create(invalidFieldKey);
+        Map<String, ConfigurationFieldModel> fieldValues = Map.of(invalidFieldKey, invalidField);
+        ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, "", "", ConfigContextEnum.GLOBAL, fieldValues);
         EmailGlobalFieldModelConverter converter = new EmailGlobalFieldModelConverter();
-        Optional<EmailGlobalConfigModel> model = converter.convert(fieldModel);
+        Optional<EmailGlobalConfigModel> model = converter.convert(configurationModel);
         assertTrue(model.isPresent());
         EmailGlobalConfigModel emailModel = model.get();
         Map<String, String> additionalProperties = emailModel.getAdditionalJavaMailProperties().orElse(Map.of());
@@ -85,17 +85,32 @@ class EmailGlobalFieldModelConverterTest {
 
     }
 
-    private FieldModel createDefaultFieldModel() {
-        Map<String, FieldValueModel> fieldValuesMap = new HashMap<>();
-        fieldValuesMap.put(EmailGlobalFieldModelConverter.EMAIL_FROM_KEY, new FieldValueModel(List.of(TEST_FROM), false));
-        fieldValuesMap.put(EmailGlobalFieldModelConverter.EMAIL_HOST_KEY, new FieldValueModel(List.of(TEST_SMTP_HOST), false));
-        fieldValuesMap.put(EmailGlobalFieldModelConverter.EMAIL_PORT_KEY, new FieldValueModel(List.of(TEST_SMTP_PORT), false));
-        fieldValuesMap.put(EmailGlobalFieldModelConverter.AUTH_REQUIRED_KEY, new FieldValueModel(List.of(TEST_AUTH_REQUIRED), false));
-        fieldValuesMap.put(EmailGlobalFieldModelConverter.AUTH_PASSWORD_KEY, new FieldValueModel(List.of(TEST_AUTH_PASSWORD), false));
-        fieldValuesMap.put(EmailGlobalFieldModelConverter.AUTH_USER_KEY, new FieldValueModel(List.of(TEST_AUTH_USER), false));
+    private ConfigurationModel createDefaultConfigurationModel() {
+        Map<String, ConfigurationFieldModel> fieldValuesMap = new HashMap<>();
 
-        fieldValuesMap.put(TEST_ADDITIONAL_PROPERTY, new FieldValueModel(List.of("true"), false));
-        return new FieldModel(ChannelKeys.EMAIL.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), fieldValuesMap);
+        ConfigurationFieldModel fromField = ConfigurationFieldModel.create(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey());
+        ConfigurationFieldModel hostField = ConfigurationFieldModel.create(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey());
+        ConfigurationFieldModel portField = ConfigurationFieldModel.create(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey());
+        ConfigurationFieldModel authField = ConfigurationFieldModel.create(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey());
+        ConfigurationFieldModel passwordField = ConfigurationFieldModel.create(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey());
+        ConfigurationFieldModel userField = ConfigurationFieldModel.create(EmailPropertyKeys.JAVAMAIL_USER_KEY.getPropertyKey());
+
+        ConfigurationFieldModel ehloField = ConfigurationFieldModel.create(EmailPropertyKeys.JAVAMAIL_EHLO_KEY.getPropertyKey());
+        fromField.setFieldValue(TEST_FROM);
+        hostField.setFieldValue(TEST_SMTP_HOST);
+        portField.setFieldValue(TEST_SMTP_PORT);
+        authField.setFieldValue(TEST_AUTH_REQUIRED);
+        passwordField.setFieldValue(TEST_AUTH_PASSWORD);
+        userField.setFieldValue(TEST_AUTH_USER);
+        ehloField.setFieldValue("true");
+        fieldValuesMap.put(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey(), fromField);
+        fieldValuesMap.put(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey(), hostField);
+        fieldValuesMap.put(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), portField);
+        fieldValuesMap.put(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey(), authField);
+        fieldValuesMap.put(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey(), passwordField);
+        fieldValuesMap.put(EmailPropertyKeys.JAVAMAIL_USER_KEY.getPropertyKey(), userField);
+        fieldValuesMap.put(EmailPropertyKeys.JAVAMAIL_EHLO_KEY.getPropertyKey(), ehloField);
+        return new ConfigurationModel(1L, 1L, "", "", ConfigContextEnum.GLOBAL, fieldValuesMap);
     }
 
 }
