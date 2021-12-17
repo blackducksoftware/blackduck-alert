@@ -16,8 +16,8 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.channel.email.action.EmailGlobalCrudActions;
 import com.synopsys.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
 import com.synopsys.integration.alert.common.action.api.GlobalConfigurationModelToConcreteSaveActions;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
@@ -43,13 +43,13 @@ public class EmailGlobalConfigurationModelSaveActions implements GlobalConfigura
 
     @Override
     public void updateConcreteModel(ConfigurationModel configurationModel) {
-        Optional<UUID> defaultConfigurationId = configurationAccessor.getConfigurationByName(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME)
+        Optional<UUID> defaultConfigurationId = configurationAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
             .map(EmailGlobalConfigModel::getId)
             .map(UUID::fromString);
         Optional<EmailGlobalConfigModel> emailGlobalConfigModel = emailFieldModelConverter.convert(configurationModel);
         if (defaultConfigurationId.isPresent() && emailGlobalConfigModel.isPresent()) {
             EmailGlobalConfigModel model = emailGlobalConfigModel.get();
-            model.setName(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME);
+            model.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
             configurationActions.update(defaultConfigurationId.get(), model);
         }
     }
@@ -59,14 +59,14 @@ public class EmailGlobalConfigurationModelSaveActions implements GlobalConfigura
         Optional<EmailGlobalConfigModel> emailGlobalConfigModel = emailFieldModelConverter.convert(configurationModel);
         if (emailGlobalConfigModel.isPresent()) {
             EmailGlobalConfigModel model = emailGlobalConfigModel.get();
-            model.setName(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME);
+            model.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
             configurationActions.create(model);
         }
     }
 
     @Override
     public void deleteConcreteModel(ConfigurationModel configurationModel) {
-        Optional<UUID> defaultConfigurationId = configurationAccessor.getConfigurationByName(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME)
+        Optional<UUID> defaultConfigurationId = configurationAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
             .map(EmailGlobalConfigModel::getId)
             .map(UUID::fromString);
         defaultConfigurationId.ifPresent(configurationActions::delete);

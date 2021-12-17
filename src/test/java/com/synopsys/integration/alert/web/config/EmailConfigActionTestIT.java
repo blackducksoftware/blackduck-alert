@@ -23,12 +23,12 @@ import com.synopsys.integration.alert.common.action.api.GlobalConfigurationModel
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.FieldModelProcessor;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
@@ -77,7 +77,7 @@ public class EmailConfigActionTestIT {
 
     @BeforeEach
     void deleteDefaultConfig() {
-        emailGlobalConfigAccessor.getConfigurationByName(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME)
+        emailGlobalConfigAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
             .map(EmailGlobalConfigModel::getId)
             .map(id -> UUID.fromString(id))
             .ifPresent(emailGlobalConfigAccessor::deleteConfiguration);
@@ -93,7 +93,7 @@ public class EmailConfigActionTestIT {
         FieldModel fieldModel = createEmailFieldModel();
         configActions.create(fieldModel);
 
-        Optional<EmailGlobalConfigModel> staticEmailConfig = emailGlobalConfigAccessor.getConfigurationByName(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME);
+        Optional<EmailGlobalConfigModel> staticEmailConfig = emailGlobalConfigAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
         assertTrue(staticEmailConfig.isPresent());
         EmailGlobalConfigModel staticModel = staticEmailConfig.get();
         assertEquals(Boolean.TRUE, staticModel.getSmtpAuth().orElse(null));
@@ -126,7 +126,7 @@ public class EmailConfigActionTestIT {
 
         configActions.update(Long.valueOf(fieldModel.getId()), fieldModel);
 
-        Optional<EmailGlobalConfigModel> staticEmailConfig = emailGlobalConfigAccessor.getConfigurationByName(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME);
+        Optional<EmailGlobalConfigModel> staticEmailConfig = emailGlobalConfigAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
         assertTrue(staticEmailConfig.isPresent());
         EmailGlobalConfigModel staticModel = staticEmailConfig.get();
         assertEquals(Boolean.TRUE, staticModel.getSmtpAuth().orElse(null));
@@ -156,7 +156,7 @@ public class EmailConfigActionTestIT {
 
         configActions.update(Long.valueOf(fieldModel.getId()), fieldModel);
 
-        Optional<EmailGlobalConfigModel> staticEmailConfig = emailGlobalConfigAccessor.getConfigurationByName(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME);
+        Optional<EmailGlobalConfigModel> staticEmailConfig = emailGlobalConfigAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
         assertTrue(staticEmailConfig.isPresent());
         EmailGlobalConfigModel staticModel = staticEmailConfig.get();
         assertEquals(Boolean.TRUE, staticModel.getSmtpAuth().orElse(null));
@@ -183,7 +183,7 @@ public class EmailConfigActionTestIT {
         fieldModel = configActions.create(fieldModel).getContent().orElseThrow(() -> new AlertConfigurationException("Couldn't create configuration"));
 
         configActions.delete(Long.valueOf(fieldModel.getId()));
-        Optional<EmailGlobalConfigModel> staticEmailConfig = emailGlobalConfigAccessor.getConfigurationByName(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME);
+        Optional<EmailGlobalConfigModel> staticEmailConfig = emailGlobalConfigAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
         assertTrue(staticEmailConfig.isEmpty());
 
     }
