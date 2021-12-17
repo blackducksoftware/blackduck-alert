@@ -12,7 +12,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.synopsys.integration.util.Stringable;
 
 public class ProcessedProviderMessage<T extends ProviderMessage<T>> extends AlertSerializableModel implements CombinableModel<ProcessedProviderMessage<T>> {
     private final Set<Long> notificationIds;
@@ -55,4 +59,13 @@ public class ProcessedProviderMessage<T extends ProviderMessage<T>> extends Aler
         throw new IllegalStateException("Combining models had more than two results");
     }
 
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(17, 37, this, false, Stringable.class, "notificationIds");
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj, false, Stringable.class, true, "notificationIds");
+    }
 }
