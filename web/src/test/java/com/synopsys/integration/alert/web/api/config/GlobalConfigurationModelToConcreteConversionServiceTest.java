@@ -26,7 +26,7 @@ public class GlobalConfigurationModelToConcreteConversionServiceTest {
     public void createdDescriptorFoundTest() {
         TestSaveActions saveActions = new TestSaveActions(testDescriptorKey);
         DescriptorMap descriptorMap = new DescriptorMap(List.of(testDescriptorKey), List.of());
-        List<TestSaveActions> fieldModelSaveActions = List.of(saveActions);
+        List<GlobalConfigurationModelToConcreteSaveActions> fieldModelSaveActions = List.of(saveActions);
         String timestamp = DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
         ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, timestamp, timestamp, ConfigContextEnum.GLOBAL, Map.of());
 
@@ -39,7 +39,7 @@ public class GlobalConfigurationModelToConcreteConversionServiceTest {
     public void updatedDescriptorFoundTest() {
         TestSaveActions saveActions = new TestSaveActions(testDescriptorKey);
         DescriptorMap descriptorMap = new DescriptorMap(List.of(testDescriptorKey), List.of());
-        List<TestSaveActions> fieldModelSaveActions = List.of(saveActions);
+        List<GlobalConfigurationModelToConcreteSaveActions> fieldModelSaveActions = List.of(saveActions);
         String timestamp = DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
         ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, timestamp, timestamp, ConfigContextEnum.GLOBAL, Map.of());
 
@@ -52,7 +52,7 @@ public class GlobalConfigurationModelToConcreteConversionServiceTest {
     public void deleteDescriptorFoundTest() {
         TestSaveActions saveActions = new TestSaveActions(testDescriptorKey);
         DescriptorMap descriptorMap = new DescriptorMap(List.of(testDescriptorKey), List.of());
-        List<TestSaveActions> fieldModelSaveActions = List.of(saveActions);
+        List<GlobalConfigurationModelToConcreteSaveActions> fieldModelSaveActions = List.of(saveActions);
         String timestamp = DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
         ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, timestamp, timestamp, ConfigContextEnum.GLOBAL, Map.of());
 
@@ -65,7 +65,7 @@ public class GlobalConfigurationModelToConcreteConversionServiceTest {
     public void createdDescriptorMissingTest() {
         TestSaveActions saveActions = new TestSaveActions(testDescriptorKey);
         DescriptorMap descriptorMap = new DescriptorMap(List.of(), List.of());
-        List<TestSaveActions> fieldModelSaveActions = List.of(saveActions);
+        List<GlobalConfigurationModelToConcreteSaveActions> fieldModelSaveActions = List.of(saveActions);
         String timestamp = DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
         ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, timestamp, timestamp, ConfigContextEnum.GLOBAL, Map.of());
 
@@ -78,7 +78,7 @@ public class GlobalConfigurationModelToConcreteConversionServiceTest {
     public void updatedDescriptorMissingTest() {
         TestSaveActions saveActions = new TestSaveActions(testDescriptorKey);
         DescriptorMap descriptorMap = new DescriptorMap(List.of(), List.of());
-        List<TestSaveActions> fieldModelSaveActions = List.of(saveActions);
+        List<GlobalConfigurationModelToConcreteSaveActions> fieldModelSaveActions = List.of(saveActions);
         String timestamp = DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
         ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, timestamp, timestamp, ConfigContextEnum.GLOBAL, Map.of());
 
@@ -91,7 +91,7 @@ public class GlobalConfigurationModelToConcreteConversionServiceTest {
     public void deletedDescriptorMissingTest() {
         TestSaveActions saveActions = new TestSaveActions(testDescriptorKey);
         DescriptorMap descriptorMap = new DescriptorMap(List.of(), List.of());
-        List<TestSaveActions> fieldModelSaveActions = List.of(saveActions);
+        List<GlobalConfigurationModelToConcreteSaveActions> fieldModelSaveActions = List.of(saveActions);
         String timestamp = DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
         ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, timestamp, timestamp, ConfigContextEnum.GLOBAL, Map.of());
 
@@ -104,7 +104,7 @@ public class GlobalConfigurationModelToConcreteConversionServiceTest {
     public void createdDescriptorFoundNotGlobalTest() {
         TestSaveActions saveActions = new TestSaveActions(testDescriptorKey);
         DescriptorMap descriptorMap = new DescriptorMap(List.of(testDescriptorKey), List.of());
-        List<TestSaveActions> fieldModelSaveActions = List.of(saveActions);
+        List<GlobalConfigurationModelToConcreteSaveActions> fieldModelSaveActions = List.of(saveActions);
         String timestamp = DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
         ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, timestamp, timestamp, ConfigContextEnum.DISTRIBUTION, Map.of());
 
@@ -117,7 +117,7 @@ public class GlobalConfigurationModelToConcreteConversionServiceTest {
     public void updateDescriptorFoundNotGlobalTest() {
         TestSaveActions saveActions = new TestSaveActions(testDescriptorKey);
         DescriptorMap descriptorMap = new DescriptorMap(List.of(testDescriptorKey), List.of());
-        List<TestSaveActions> fieldModelSaveActions = List.of(saveActions);
+        List<GlobalConfigurationModelToConcreteSaveActions> fieldModelSaveActions = List.of(saveActions);
         String timestamp = DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
         ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, timestamp, timestamp, ConfigContextEnum.DISTRIBUTION, Map.of());
 
@@ -130,7 +130,7 @@ public class GlobalConfigurationModelToConcreteConversionServiceTest {
     public void deletedDescriptorFoundNotGlobalTest() {
         TestSaveActions saveActions = new TestSaveActions(testDescriptorKey);
         DescriptorMap descriptorMap = new DescriptorMap(List.of(testDescriptorKey), List.of());
-        List<TestSaveActions> fieldModelSaveActions = List.of(saveActions);
+        List<GlobalConfigurationModelToConcreteSaveActions> fieldModelSaveActions = List.of(saveActions);
         String timestamp = DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
         ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, timestamp, timestamp, ConfigContextEnum.DISTRIBUTION, Map.of());
 

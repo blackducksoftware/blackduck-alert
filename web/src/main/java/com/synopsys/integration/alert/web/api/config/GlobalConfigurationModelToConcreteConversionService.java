@@ -9,8 +9,6 @@ package com.synopsys.integration.alert.web.api.config;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,6 +17,7 @@ import com.synopsys.integration.alert.common.action.api.GlobalConfigurationModel
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 @Component
@@ -27,10 +26,9 @@ public class GlobalConfigurationModelToConcreteConversionService {
     private final Map<DescriptorKey, GlobalConfigurationModelToConcreteSaveActions> conversionActionMap;
 
     @Autowired
-    public GlobalConfigurationModelToConcreteConversionService(List<? extends GlobalConfigurationModelToConcreteSaveActions> conversionActions, DescriptorMap descriptorMap) {
+    public GlobalConfigurationModelToConcreteConversionService(List<GlobalConfigurationModelToConcreteSaveActions> conversionActions, DescriptorMap descriptorMap) {
         this.descriptorMap = descriptorMap;
-        this.conversionActionMap = conversionActions.stream()
-            .collect(Collectors.toMap(GlobalConfigurationModelToConcreteSaveActions::getDescriptorKey, Function.identity()));
+        this.conversionActionMap = DataStructureUtils.mapToValues(conversionActions, GlobalConfigurationModelToConcreteSaveActions::getDescriptorKey);
     }
 
     public void createDefaultConcreteModel(String descriptorName, ConfigurationModel configurationModel) {
