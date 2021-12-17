@@ -13,10 +13,10 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.rest.api.ConfigurationValidationHelper;
+import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
-import com.synopsys.integration.alert.component.settings.proxy.model.SettingsProxyModel;
 import com.synopsys.integration.alert.component.settings.proxy.validator.SettingsProxyValidator;
 
 @Component
