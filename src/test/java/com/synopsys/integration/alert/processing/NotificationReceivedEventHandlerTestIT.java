@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -114,7 +115,6 @@ class NotificationReceivedEventHandlerTestIT {
         NotificationReceivedEventHandler notificationReceivedEventHandler = new NotificationReceivedEventHandler(defaultNotificationAccessor, notificationProcessor, eventManager);
         notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
 
-        assertNotNull(savedModels);
         testAlertNotificationModels(savedModels);
     }
 
@@ -132,7 +132,6 @@ class NotificationReceivedEventHandlerTestIT {
         NotificationReceivedEventHandler notificationReceivedEventHandler = new NotificationReceivedEventHandler(defaultNotificationAccessor, notificationProcessor, eventManager);
         notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
 
-        assertNotNull(savedModels);
         testAlertNotificationModels(savedModels);
     }
 
@@ -149,27 +148,26 @@ class NotificationReceivedEventHandlerTestIT {
         NotificationReceivedEventHandler notificationReceivedEventHandler = new NotificationReceivedEventHandler(defaultNotificationAccessor, notificationProcessor, eventManager);
         notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
 
-        assertNotNull(savedModels);
         testAlertNotificationModels(savedModels);
     }
 
     @Test
-    void testHandleEventMixedProcessedNotificationsWithPages() {
+    void testHandleEventProcessedNotificationsWithPages() {
+        EventManager eventManagerSpy = Mockito.spy(eventManager);
+        int totalNotifications = 200;
         List<AlertNotificationModel> notificationContent = new ArrayList<>();
-        for (int index = 0; index < 500; index++) {
-            boolean processed = index % 3 == 0;
-            notificationContent.add(createAlertNotificationModel(processed));
+        for (int index = 0; index < totalNotifications; index++) {
+            notificationContent.add(createAlertNotificationModel(false));
         }
         List<AlertNotificationModel> savedModels = defaultNotificationAccessor.saveAllNotifications(notificationContent);
         assertNotNull(savedModels);
 
         NotificationProcessor notificationProcessor = createNotificationProcessor();
-        NotificationReceivedEventHandler notificationReceivedEventHandler = new NotificationReceivedEventHandler(defaultNotificationAccessor, notificationProcessor, eventManager);
+        NotificationReceivedEventHandler notificationReceivedEventHandler = new NotificationReceivedEventHandler(defaultNotificationAccessor, notificationProcessor, eventManagerSpy);
         notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
 
-        notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
-        assertNotNull(savedModels);
-        testAlertNotificationModels(savedModels);
+        Mockito.verify(eventManagerSpy, Mockito.atLeastOnce()).sendEvent(Mockito.any());
+        assertEquals(100, defaultNotificationAccessor.getFirstPageOfNotificationsNotProcessed(100).getModels().size());
     }
 
     private AlertNotificationModel createAlertNotificationModel(boolean processed) {
@@ -216,6 +214,22 @@ class NotificationReceivedEventHandlerTestIT {
         // We aren't testing the processor here since we have bad data.  We just want to make sure the processor marks the notifications as processed to test the paging in the handler.
         NotificationDetailExtractionDelegator notificationDetailExtractionDelegator = Mockito.mock(NotificationDetailExtractionDelegator.class);
         Mockito.when(notificationDetailExtractionDelegator.wrapNotification(Mockito.any())).thenReturn(List.of());
+        return new NotificationProcessor(notificationDetailExtractionDelegator,
+            jobNotificationMapper,
+            notificationContentProcessor,
+            providerMessageDistributor,
+            lifecycleCaches,
+            defaultNotificationAccessor
+        );
+    }
+
+    private NotificationProcessor createNotificationProcessor(CountDownLatch countDownLatch) {
+        // We aren't testing the processor here since we have bad data.  We just want to make sure the processor marks the notifications as processed to test the paging in the handler.
+        NotificationDetailExtractionDelegator notificationDetailExtractionDelegator = Mockito.mock(NotificationDetailExtractionDelegator.class);
+        Mockito.when(notificationDetailExtractionDelegator.wrapNotification(Mockito.any())).thenAnswer(invocation -> {
+            countDownLatch.countDown();
+            return List.of();
+        });
         return new NotificationProcessor(notificationDetailExtractionDelegator,
             jobNotificationMapper,
             notificationContentProcessor,
