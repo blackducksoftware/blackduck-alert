@@ -37,7 +37,6 @@ import com.synopsys.integration.alert.database.notification.NotificationContentR
 import com.synopsys.integration.alert.database.notification.NotificationEntity;
 
 @Component
-@Transactional
 public class DefaultNotificationAccessor implements NotificationAccessor {
     private final NotificationContentRepository notificationContentRepository;
     private final AuditEntryRepository auditEntryRepository;
@@ -55,6 +54,7 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     }
 
     @Override
+    @Transactional
     public List<AlertNotificationModel> saveAllNotifications(Collection<AlertNotificationModel> notifications) {
         List<NotificationEntity> entitiesToSave = notifications
             .stream()
@@ -129,11 +129,13 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     }
 
     @Override
+    @Transactional
     public void deleteNotification(AlertNotificationModel notification) {
         notificationContentRepository.deleteById(notification.getId());
     }
 
     @Override
+    @Transactional
     public int deleteNotificationsCreatedBefore(OffsetDateTime date) {
         int deletedNotificationsCount = notificationContentRepository.bulkDeleteCreatedAtBefore(date);
         auditEntryRepository.bulkDeleteOrphanedEntries();
@@ -172,6 +174,7 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     }
 
     @Override
+    @Transactional
     public void setNotificationsProcessed(List<AlertNotificationModel> notifications) {
         Set<Long> notificationIds = notifications
             .stream()
@@ -184,6 +187,7 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     @Transactional
     public void setNotificationsProcessedById(Set<Long> notificationIds) {
         notificationContentRepository.setProcessedByIds(notificationIds);
+        notificationContentRepository.flush();
     }
 
     @Override
