@@ -10,19 +10,18 @@ package com.synopsys.integration.alert.common.rest.proxy;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
 import com.synopsys.integration.rest.credentials.CredentialsBuilder;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 import com.synopsys.integration.rest.proxy.ProxyInfoBuilder;
@@ -36,7 +35,7 @@ public class ProxyManager {
     public static final String KEY_PROXY_PWD = "settings.proxy.password";
     public static final String KEY_PROXY_NON_PROXY_HOSTS = "settings.proxy.non.proxy.hosts";
 
-    private final Logger logger = LoggerFactory.getLogger(ProxyManager.class);
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final SettingsUtility settingsUtility;
 
@@ -46,7 +45,7 @@ public class ProxyManager {
     }
 
     public ProxyInfo createProxyInfo() throws IllegalArgumentException {
-        Optional<ConfigurationModel> optionalSettingsConfiguration = settingsUtility.getConfiguration();
+        Optional<SettingsProxyModel> optionalSettingsConfiguration = settingsUtility.getConfiguration();
         if (optionalSettingsConfiguration.isPresent()) {
             return createProxyInfo(optionalSettingsConfiguration.get());
         }
@@ -54,48 +53,31 @@ public class ProxyManager {
     }
 
     public ProxyInfo createProxyInfoForHost(String proxyHostCandidate) throws IllegalArgumentException {
-        Optional<ConfigurationModel> optionalSettingsConfiguration = settingsUtility.getConfiguration();
+        Optional<SettingsProxyModel> optionalSettingsConfiguration = settingsUtility.getConfiguration();
         if (optionalSettingsConfiguration.isPresent()) {
-            ConfigurationModel settingsConfiguration = optionalSettingsConfiguration.get();
+            SettingsProxyModel settingsProxyModel = optionalSettingsConfiguration.get();
 
-            Collection<String> nonProxyHosts = extractNonProxyHosts(settingsConfiguration);
+            List<String> nonProxyHosts = settingsProxyModel.getNonProxyHosts().orElse(List.of());
             NonProxyHostChecker nonProxyHostChecker = new NonProxyHostChecker(nonProxyHosts);
             if (StringUtils.isNotBlank(proxyHostCandidate) && nonProxyHostChecker.isNonProxyHost(proxyHostCandidate)) {
                 return ProxyInfo.NO_PROXY_INFO;
             }
-
-            return createProxyInfo(settingsConfiguration);
+            return createProxyInfo(settingsProxyModel);
         }
         return ProxyInfo.NO_PROXY_INFO;
     }
 
-    private Optional<String> extractProxySetting(ConfigurationModel settingsConfiguration, String key) {
-        return settingsConfiguration.getField(key).flatMap(ConfigurationFieldModel::getFieldValue);
-    }
-
-    private ProxyInfo createProxyInfo(ConfigurationModel settingsConfiguration) {
-        Optional<String> alertProxyHost = extractProxySetting(settingsConfiguration, KEY_PROXY_HOST);
-        Optional<String> alertProxyPort = extractProxySetting(settingsConfiguration, KEY_PROXY_PORT);
-        Optional<String> alertProxyUsername = extractProxySetting(settingsConfiguration, KEY_PROXY_USERNAME);
-        Optional<String> alertProxyPassword = extractProxySetting(settingsConfiguration, KEY_PROXY_PWD);
-
+    private ProxyInfo createProxyInfo(SettingsProxyModel settingsProxyModel) {
         ProxyInfoBuilder proxyBuilder = new ProxyInfoBuilder();
-        alertProxyHost.ifPresent(proxyBuilder::setHost);
-        alertProxyPort.map(NumberUtils::toInt).ifPresent(proxyBuilder::setPort);
+        settingsProxyModel.getProxyHost().ifPresent(proxyBuilder::setHost);
+        settingsProxyModel.getProxyPort().ifPresent(proxyBuilder::setPort);
 
         CredentialsBuilder credentialsBuilder = new CredentialsBuilder();
-        alertProxyUsername.ifPresent(credentialsBuilder::setUsername);
-        alertProxyPassword.ifPresent(credentialsBuilder::setPassword);
+        settingsProxyModel.getProxyUsername().ifPresent(credentialsBuilder::setUsername);
+        settingsProxyModel.getProxyPassword().ifPresent(credentialsBuilder::setPassword);
         proxyBuilder.setCredentials(credentialsBuilder.build());
 
         return proxyBuilder.build();
-    }
-
-    private Collection<String> extractNonProxyHosts(ConfigurationModel settingsConfiguration) {
-        return settingsConfiguration
-                   .getField(KEY_PROXY_NON_PROXY_HOSTS)
-                   .map(ConfigurationFieldModel::getFieldValues)
-                   .orElseGet(Set::of);
     }
 
     public static class NonProxyHostChecker {
@@ -128,7 +110,5 @@ public class ProxyManager {
         private boolean includesOrContains(String candidate) {
             return wildcardFilter.willInclude(candidate) || nonProxyHosts.contains(candidate);
         }
-
     }
-
 }
