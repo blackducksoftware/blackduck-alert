@@ -27,12 +27,12 @@ import com.synopsys.integration.alert.processor.api.filter.StatefulAlertPage;
 import com.synopsys.integration.alert.test.common.TestResourceUtils;
 import com.synopsys.integration.blackduck.http.transform.subclass.BlackDuckResponseResolver;
 
-public class NotificationReceivedEventHandlerTest {
+class NotificationReceivedEventHandlerTest {
     private final Gson gson = new Gson();
     private final BlackDuckResponseResolver blackDuckResponseResolver = new BlackDuckResponseResolver(gson);
 
     @Test
-    public void handleEventTest() throws IOException {
+    void handleEventTest() throws IOException {
         AlertNotificationModel alertNotificationModel = createAlertNotificationModel(1L, false);
         List<AlertNotificationModel> alertNotificationModels = List.of(alertNotificationModel);
         NotificationAccessor notificationAccessor = new MockNotificationAccessor(alertNotificationModels);
@@ -48,7 +48,7 @@ public class NotificationReceivedEventHandlerTest {
     }
 
     @Test
-    public void handleEventProcessingInterruptedTest() throws IOException {
+    void handleEventProcessingInterruptedTest() throws IOException {
         NotificationAccessor notificationAccessor = Mockito.mock(NotificationAccessor.class);
         Mockito.doAnswer(invocation -> {
             throw new InterruptedException("Test: exception for thread");
@@ -65,7 +65,7 @@ public class NotificationReceivedEventHandlerTest {
     }
 
     @Test
-    public void handleEventProcessingExceptionTest() throws IOException {
+    void handleEventProcessingExceptionTest() throws IOException {
         NotificationAccessor notificationAccessor = Mockito.mock(NotificationAccessor.class);
         Mockito.doAnswer((invocation) -> {
             throw new ExecutionException(new RuntimeException("Test: exception for thread"));

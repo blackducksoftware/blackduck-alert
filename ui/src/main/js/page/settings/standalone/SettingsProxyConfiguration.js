@@ -14,26 +14,15 @@ const SettingsProxyConfiguration = ({
     csrfToken, errorHandler, readOnly, displaySave, displayDelete
 }) => {
     const proxyRequestUrl = `${ConfigurationRequestBuilder.PROXY_API_URL}`;
-    const passwordName = 'proxyPassword';
 
     const [settingsProxyConfig, setSettingsProxyConfig] = useState({});
     const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
-    const [passwordFromApiExists, setPasswordFromApiExists] = useState(false);
 
     const fetchData = async () => {
         const response = await ConfigurationRequestBuilder.createReadRequest(proxyRequestUrl, csrfToken);
-        const data = await response.json();
-
-        const { models } = data;
-        if (models && models.length > 0) {
-            const firstResult = models[0];
-            if (firstResult[passwordName]) {
-                setPasswordFromApiExists(true);
-                delete firstResult[passwordName];
-            } else {
-                setPasswordFromApiExists(false);
-            }
-            setSettingsProxyConfig(firstResult);
+        if (response.ok) {
+            const data = await response.json();
+            setSettingsProxyConfig(data);
         } else {
             setSettingsProxyConfig({ name: 'default-configuration' });
         }
@@ -54,9 +43,9 @@ const SettingsProxyConfiguration = ({
             setErrors={(formErrors) => setErrors(formErrors)}
             buttonIdPrefix={SETTINGS_INFO.key}
             getRequest={fetchData}
-            deleteRequest={() => ConfigurationRequestBuilder.createDeleteRequest(proxyRequestUrl, csrfToken, settingsProxyConfig.id)}
+            deleteRequest={() => ConfigurationRequestBuilder.createDeleteRequest(proxyRequestUrl, csrfToken)}
             createRequest={() => ConfigurationRequestBuilder.createNewConfigurationRequest(proxyRequestUrl, csrfToken, settingsProxyConfig)}
-            updateRequest={() => ConfigurationRequestBuilder.createUpdateRequest(proxyRequestUrl, csrfToken, settingsProxyConfig.id, settingsProxyConfig)}
+            updateRequest={() => ConfigurationRequestBuilder.createUpdateWithoutIdRequest(proxyRequestUrl, csrfToken, settingsProxyConfig)}
             validateRequest={() => ConfigurationRequestBuilder.createValidateRequest(proxyRequestUrl, csrfToken, settingsProxyConfig)}
             readonly={readOnly}
             displaySave={displaySave}
@@ -100,15 +89,15 @@ const SettingsProxyConfiguration = ({
             />
             <PasswordInput
                 id={SETTINGS_FIELD_KEYS.proxyPassword}
-                name={passwordName}
+                name="proxyPassword"
                 label="Proxy Password"
                 description="If the proxy server requires authentication, the password to authenticate with the proxy server."
                 readOnly={readOnly}
                 onChange={fieldModelUtilities.handleTestChange(settingsProxyConfig, setSettingsProxyConfig)}
-                value={settingsProxyConfig[passwordName] || undefined}
-                isSet={passwordFromApiExists}
-                errorName={passwordName}
-                errorValue={errors.fieldErrors[passwordName]}
+                value={settingsProxyConfig.proxyPassword || undefined}
+                isSet={settingsProxyConfig.isProxyPasswordSet}
+                errorName="proxyPassword"
+                errorValue={errors.fieldErrors.proxyPassword}
             />
             <DynamicSelectInput
                 id={SETTINGS_FIELD_KEYS.proxyNonProxyHosts}

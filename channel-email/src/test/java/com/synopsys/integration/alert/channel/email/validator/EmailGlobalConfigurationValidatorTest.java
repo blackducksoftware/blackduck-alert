@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
@@ -27,7 +27,7 @@ public class EmailGlobalConfigurationValidatorTest {
     public void verifyValidConfig() {
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailGlobalConfigModel model = new EmailGlobalConfigModel();
-        model.setName(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME);
+        model.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
         model.setSmtpHost("host");
         model.setSmtpFrom("from");
         model.setSmtpAuth(true);
@@ -71,7 +71,7 @@ public class EmailGlobalConfigurationValidatorTest {
     public void verifyMissingAuth() {
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailGlobalConfigModel model = new EmailGlobalConfigModel();
-        model.setName(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME);
+        model.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
         model.setSmtpHost("host");
         model.setSmtpFrom("from");
         model.setSmtpAuth(true);
@@ -88,7 +88,7 @@ public class EmailGlobalConfigurationValidatorTest {
     public void verifyAuthNotProvided() {
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailGlobalConfigModel model = new EmailGlobalConfigModel();
-        model.setName(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME);
+        model.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
         model.setSmtpHost("host");
         model.setSmtpFrom("from");
         model.setSmtpUsername("user");
@@ -102,7 +102,7 @@ public class EmailGlobalConfigurationValidatorTest {
     public void verifyMissingAuthPassword() {
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailGlobalConfigModel model = new EmailGlobalConfigModel();
-        model.setName(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME);
+        model.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
         model.setSmtpHost("host");
         model.setSmtpFrom("from");
         model.setSmtpAuth(true);

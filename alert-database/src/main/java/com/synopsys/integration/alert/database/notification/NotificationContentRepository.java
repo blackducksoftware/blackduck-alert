@@ -78,4 +78,5 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
     @Modifying
     int bulkDeleteCreatedAtBefore(@Param("date") OffsetDateTime date);
 
+    boolean existsByProcessedFalse();
 }
