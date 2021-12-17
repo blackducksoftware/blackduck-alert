@@ -35,8 +35,7 @@ public class OAuthRequestValidator {
             logger.error("OAuth authorization key is null, authorization request will not be added");
             return;
         }
-        Optional<UUID> requestId = parseRequestKey(requestKey);
-        String oauthRequestId = requestId.map(UUID::toString).orElse(UNKNOWN_OAUTH_ID);
+        String oauthRequestId = parseRequestIdString(requestKey);
         logger.debug("Adding OAuth authorization key {}", oauthRequestId);
         requestMap.put(requestKey, Instant.now());
     }
@@ -47,8 +46,7 @@ public class OAuthRequestValidator {
             return;
         }
         requestMap.remove(requestKey);
-        Optional<UUID> requestId = parseRequestKey(requestKey);
-        String oauthRequestId = requestId.map(UUID::toString).orElse(UNKNOWN_OAUTH_ID);
+        String oauthRequestId = parseRequestIdString(requestKey);
         logger.debug("Removed OAuth authorization key {}", oauthRequestId);
     }
 
