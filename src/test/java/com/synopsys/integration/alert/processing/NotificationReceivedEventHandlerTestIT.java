@@ -114,7 +114,6 @@ class NotificationReceivedEventHandlerTestIT {
         NotificationReceivedEventHandler notificationReceivedEventHandler = new NotificationReceivedEventHandler(defaultNotificationAccessor, notificationProcessor, eventManager);
         notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
 
-        assertNotNull(savedModels);
         testAlertNotificationModels(savedModels);
     }
 
@@ -132,7 +131,6 @@ class NotificationReceivedEventHandlerTestIT {
         NotificationReceivedEventHandler notificationReceivedEventHandler = new NotificationReceivedEventHandler(defaultNotificationAccessor, notificationProcessor, eventManager);
         notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
 
-        assertNotNull(savedModels);
         testAlertNotificationModels(savedModels);
     }
 
@@ -149,27 +147,26 @@ class NotificationReceivedEventHandlerTestIT {
         NotificationReceivedEventHandler notificationReceivedEventHandler = new NotificationReceivedEventHandler(defaultNotificationAccessor, notificationProcessor, eventManager);
         notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
 
-        assertNotNull(savedModels);
         testAlertNotificationModels(savedModels);
     }
 
     @Test
-    void testHandleEventMixedProcessedNotificationsWithPages() {
+    void testHandleEventProcessedNotificationsWithPages() {
+        EventManager eventManagerSpy = Mockito.spy(eventManager);
+        int totalNotifications = 200;
         List<AlertNotificationModel> notificationContent = new ArrayList<>();
-        for (int index = 0; index < 500; index++) {
-            boolean processed = index % 3 == 0;
-            notificationContent.add(createAlertNotificationModel(processed));
+        for (int index = 0; index < totalNotifications; index++) {
+            notificationContent.add(createAlertNotificationModel(false));
         }
         List<AlertNotificationModel> savedModels = defaultNotificationAccessor.saveAllNotifications(notificationContent);
         assertNotNull(savedModels);
 
         NotificationProcessor notificationProcessor = createNotificationProcessor();
-        NotificationReceivedEventHandler notificationReceivedEventHandler = new NotificationReceivedEventHandler(defaultNotificationAccessor, notificationProcessor, eventManager);
+        NotificationReceivedEventHandler notificationReceivedEventHandler = new NotificationReceivedEventHandler(defaultNotificationAccessor, notificationProcessor, eventManagerSpy);
         notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
 
-        notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
-        assertNotNull(savedModels);
-        testAlertNotificationModels(savedModels);
+        Mockito.verify(eventManagerSpy, Mockito.atLeastOnce()).sendEvent(Mockito.any());
+        assertEquals(100, defaultNotificationAccessor.getFirstPageOfNotificationsNotProcessed(100).getModels().size());
     }
 
     private AlertNotificationModel createAlertNotificationModel(boolean processed) {
