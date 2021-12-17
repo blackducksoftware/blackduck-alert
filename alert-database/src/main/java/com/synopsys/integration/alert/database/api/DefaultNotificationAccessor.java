@@ -121,6 +121,7 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     }
 
     @Override
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<AlertNotificationModel> findByCreatedAtBeforeDayOffset(int dayOffset) {
         OffsetDateTime searchTime = DateUtils.createCurrentDateTimestamp()
             .minusDays(dayOffset)
