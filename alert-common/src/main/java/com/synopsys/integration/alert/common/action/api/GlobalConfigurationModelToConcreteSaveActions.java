@@ -7,14 +7,16 @@
  */
 package com.synopsys.integration.alert.common.action.api;
 
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
-public interface GlobalFieldModelToConcreteSaveActions {
+public interface GlobalConfigurationModelToConcreteSaveActions {
 
     DescriptorKey getDescriptorKey();
 
-    void updateConcreteModel(FieldModel fieldModel);
+    void updateConcreteModel(ConfigurationModel configurationModel);
 
-    void createConcreteModel(FieldModel fieldModel);
+    void createConcreteModel(ConfigurationModel configurationModel);
+
+    void deleteConcreteModel(ConfigurationModel configurationModel);
 }
