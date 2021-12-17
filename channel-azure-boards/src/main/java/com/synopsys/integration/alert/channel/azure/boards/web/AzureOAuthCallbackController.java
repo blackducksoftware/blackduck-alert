@@ -84,22 +84,23 @@ public class AzureOAuthCallbackController {
         }
 
         String state = request.getParameter("state");
+        String oAuthRequestId = oAuthRequestValidator.parseRequestIdString(state);
         try {
             String requestURI = request.getRequestURI();
             String requestQueryString = request.getQueryString();
             logger.debug("Request URI {}?{}", requestURI, requestQueryString);
             String authorizationCode = request.getParameter("code");
             if (!oAuthRequestValidator.hasRequestKey(state)) {
-                logger.info(createOAuthRequestLoggerMessage(state, "not found."));
+                logger.info("OAuth request with id {}: not found.", oAuthRequestId);
             } else {
-                logger.info(createOAuthRequestLoggerMessage(state, "Processing..."));
+                logger.info("OAuth request with id {}: Processing...", oAuthRequestId);
                 oAuthRequestValidator.removeAuthorizationRequest(state);
                 FieldUtility fieldUtility = createFieldAccessor();
                 if (fieldUtility.getFields().isEmpty()) {
-                    logger.error(createOAuthRequestLoggerMessage(state, "Azure oauth callback: Channel global configuration missing"));
+                    logger.error("OAuth request with id {}: Azure oauth callback: Channel global configuration missing", oAuthRequestId);
                 } else {
                     if (StringUtils.isBlank(authorizationCode)) {
-                        logger.error(createOAuthRequestLoggerMessage(state, "Azure oauth callback: Authorization code isn't valid. Stop processing"));
+                        logger.error("OAuth request with id {}: Azure oauth callback: Authorization code isn't valid. Stop processing", oAuthRequestId);
                     } else {
                         String oAuthRedirectUri = azureRedirectUrlCreator.createOAuthRedirectUri();
                         AzureBoardsProperties properties = AzureBoardsProperties.fromFieldAccessor(azureBoardsCredentialDataStoreFactory, oAuthRedirectUri, fieldUtility);
@@ -109,33 +110,27 @@ public class AzureOAuthCallbackController {
             }
         } catch (Exception ex) {
             // catch any exceptions so the redirect back to the UI happens and doesn't display the URL with the authorization code to the user.
-            logger.error(createOAuthRequestLoggerMessage(state, "Azure OAuth callback error occurred"), ex);
+            logger.error("OAuth request with id {}: Azure OAuth callback error occurred", oAuthRequestId, ex);
         }
         // redirect back to the global channel configuration URL in the Alert UI.
         return responseFactory.createFoundRedirectResponse(azureRedirectUrlCreator.createUIRedirectLocation());
     }
 
-    private void testOAuthConnection(AzureBoardsProperties azureBoardsProperties, String authorizationCode, String oAuthRequestKey) {
+    private void testOAuthConnection(AzureBoardsProperties azureBoardsProperties, String authorizationCode, String oAuthRequestId) {
         try {
             ProxyInfo proxyInfo = proxyManager.createProxyInfoForHost(AzureHttpRequestCreatorFactory.DEFAULT_BASE_URL);
             String organizationName = azureBoardsProperties.getOrganizationName();
             // save initiate token requests with the authorization code.
-            logger.info(createOAuthRequestLoggerMessage(oAuthRequestKey, "Testing with authorization code to save tokens."));
-            testGetProjects(azureBoardsProperties.createAzureHttpService(proxyInfo, gson, authorizationCode), organizationName, oAuthRequestKey);
+            logger.info("OAuth request with id {}: Testing with authorization code to save tokens.", oAuthRequestId);
+            testGetProjects(azureBoardsProperties.createAzureHttpService(proxyInfo, gson, authorizationCode), organizationName, oAuthRequestId);
             // load the oauth credentials from the store.
 
-            logger.info(createOAuthRequestLoggerMessage(oAuthRequestKey, "Testing with store to read tokens."));
-            testGetProjects(azureBoardsProperties.createAzureHttpService(proxyInfo, gson), organizationName, oAuthRequestKey);
+            logger.info("OAuth request with id {}: Testing with store to read tokens.", oAuthRequestId);
+            testGetProjects(azureBoardsProperties.createAzureHttpService(proxyInfo, gson), organizationName, oAuthRequestId);
         } catch (AlertException ex) {
-            logger.error(createOAuthRequestLoggerMessage(oAuthRequestKey, "Error in azure oauth validation test "), ex);
+            logger.error("OAuth request with id {}: Error in azure oauth validation test ", oAuthRequestId, ex);
+            logger.error("Caused by: ", ex);
         }
-    }
-
-    // This method take a logger formatting string and appends a prefix for the OAuth authorization request in order to correlate the
-    // authorization requests from the custom endpoint and the callback controller for debugging potential customer issues.
-    private String createOAuthRequestLoggerMessage(String oAuthRequestKey, String loggerMessageFormat) {
-        String requestKey = StringUtils.isNotBlank(oAuthRequestKey) ? oAuthRequestKey : "<unknown value>";
-        return String.format("OAuth request %s: %s", requestKey, loggerMessageFormat);
     }
 
     private void testGetProjects(AzureHttpService azureHttpService, String organizationName, String oAuthRequestKey) {
@@ -143,9 +138,9 @@ public class AzureOAuthCallbackController {
             AzureProjectService azureProjectService = new AzureProjectService(azureHttpService, new AzureApiVersionAppender());
             AzureArrayResponseModel<TeamProjectReferenceResponseModel> projects = azureProjectService.getProjects(organizationName);
             Integer projectCount = projects.getCount();
-            logger.info(createOAuthRequestLoggerMessage(oAuthRequestKey, "Azure Boards project count: {}"), projectCount);
+            logger.info("OAuth request with id {}: Azure Boards project count: {}", oAuthRequestKey, projectCount);
         } catch (HttpServiceException ex) {
-            logger.error(createOAuthRequestLoggerMessage(oAuthRequestKey, "Error in azure oauth get projects validation test "), ex);
+            logger.error("OAuth request with id {}: Error in azure oauth get projects validation test ", oAuthRequestKey, ex);
         }
     }
 

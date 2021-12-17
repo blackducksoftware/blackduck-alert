@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -105,7 +104,7 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
                 return createErrorResponse("Could not determine the alert server url for the callback.");
             }
 
-            String requestKey = createRequestKey();
+            String requestKey = oAuthRequestValidator.generateRequestKey();
             // since we have only one OAuth channel now remove any other requests.
             // if we have more OAuth clients then the "remove requests" will have to be removed from here.
             // beginning authentication process create the request id at the start.
@@ -114,7 +113,7 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
 
             logger.info("OAuth authorization request created: {}", requestKey);
             String authUrl = createAuthURL(clientId.get(), requestKey);
-            logger.debug("Authenticating Azure OAuth URL: " + authUrl);
+            logger.debug("Authenticating Azure OAuth URL: {}", authUrl);
             return new ActionResponse<>(HttpStatus.OK, new OAuthEndpointResponse(isAuthenticated(fieldUtility), authUrl, "Authenticating..."));
         } catch (Exception ex) {
             logger.error("Error activating Azure Boards", ex);
@@ -185,11 +184,6 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
         queryBuilder.append("&redirect_uri=");
         queryBuilder.append(URLEncoder.encode(authorizationUrl, StandardCharsets.UTF_8));
         return queryBuilder.toString();
-    }
-
-    private String createRequestKey() {
-        UUID requestID = UUID.randomUUID();
-        return String.format("%s-%s", "alert-oauth-request", requestID.toString());
     }
 
 }
