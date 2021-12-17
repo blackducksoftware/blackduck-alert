@@ -11,10 +11,12 @@ import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.api.event.NotificationReceivedEvent;
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -27,6 +29,12 @@ import com.synopsys.integration.alert.database.api.DefaultNotificationAccessor;
 import com.synopsys.integration.alert.database.notification.NotificationEntity;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
+import com.synopsys.integration.alert.processor.api.NotificationContentProcessor;
+import com.synopsys.integration.alert.processor.api.NotificationProcessingLifecycleCache;
+import com.synopsys.integration.alert.processor.api.NotificationProcessor;
+import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExtractionDelegator;
+import com.synopsys.integration.alert.processor.api.distribute.ProviderMessageDistributor;
+import com.synopsys.integration.alert.processor.api.filter.JobNotificationMapper;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.test.common.TestProperties;
@@ -36,16 +44,24 @@ import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationTyp
 //TODO: This class depends on AlertIntegrationTest which cannot be moved into test-common yet due to it's dependencies.
 //  Move this class into the workflow subproject once the dependencies are resolved
 @AlertIntegrationTest
-public class NotificationReceivedEventHandlerTestIT {
+class NotificationReceivedEventHandlerTestIT {
 
     @Autowired
     private DefaultNotificationAccessor defaultNotificationAccessor;
     @Autowired
-    private NotificationReceivedEventHandler notificationReceivedEventHandler;
-    @Autowired
     private DefaultConfigurationModelConfigurationAccessor defaultConfigurationAccessor;
     @Autowired
     private BlackDuckProviderKey blackDuckProviderKey;
+    @Autowired
+    private EventManager eventManager;
+    @Autowired
+    private JobNotificationMapper jobNotificationMapper;
+    @Autowired
+    private NotificationContentProcessor notificationContentProcessor;
+    @Autowired
+    private ProviderMessageDistributor providerMessageDistributor;
+    @Autowired
+    private List<NotificationProcessingLifecycleCache> lifecycleCaches;
     private Long blackDuckGlobalConfigId;
     private TestProperties properties;
 
@@ -85,63 +101,92 @@ public class NotificationReceivedEventHandlerTestIT {
     }
 
     @Test
-    public void testHandleEventNotProcessedNotifications() {
+    void testHandleEventNotProcessedNotifications() {
 
         List<AlertNotificationModel> notificationContent = new ArrayList<>();
-        notificationContent.add(createAlertNotificationModel(1L, false));
-        notificationContent.add(createAlertNotificationModel(2L, false));
+        notificationContent.add(createAlertNotificationModel(false));
+        notificationContent.add(createAlertNotificationModel(false));
 
         List<AlertNotificationModel> savedModels = defaultNotificationAccessor.saveAllNotifications(notificationContent);
         assertNotNull(savedModels);
+
+        NotificationProcessor notificationProcessor = createNotificationProcessor();
+        NotificationReceivedEventHandler notificationReceivedEventHandler = new NotificationReceivedEventHandler(defaultNotificationAccessor, notificationProcessor, eventManager);
         notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
 
+        assertNotNull(savedModels);
         testAlertNotificationModels(savedModels);
     }
 
     @Test
-    public void testHandleEventProcessedNotifications() {
+    void testHandleEventProcessedNotifications() {
         List<AlertNotificationModel> notificationContent = new ArrayList<>();
-        notificationContent.add(createAlertNotificationModel(1L, true));
-        notificationContent.add(createAlertNotificationModel(2L, true));
+        notificationContent.add(createAlertNotificationModel(true));
+        notificationContent.add(createAlertNotificationModel(true));
 
         List<AlertNotificationModel> savedModels = defaultNotificationAccessor.saveAllNotifications(notificationContent);
         assertNotNull(savedModels);
         assertEquals(0, defaultNotificationAccessor.getFirstPageOfNotificationsNotProcessed(pageSize).getModels().size());
 
+        NotificationProcessor notificationProcessor = createNotificationProcessor();
+        NotificationReceivedEventHandler notificationReceivedEventHandler = new NotificationReceivedEventHandler(defaultNotificationAccessor, notificationProcessor, eventManager);
         notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
 
+        assertNotNull(savedModels);
         testAlertNotificationModels(savedModels);
     }
 
     @Test
-    public void testHandleEventMixedProcessedNotifications() {
+    void testHandleEventMixedProcessedNotifications() {
         List<AlertNotificationModel> notificationContent = new ArrayList<>();
-        notificationContent.add(createAlertNotificationModel(1L, true));
-        notificationContent.add(createAlertNotificationModel(2L, false));
+        notificationContent.add(createAlertNotificationModel(true));
+        notificationContent.add(createAlertNotificationModel(false));
 
         List<AlertNotificationModel> savedModels = defaultNotificationAccessor.saveAllNotifications(notificationContent);
         assertNotNull(savedModels);
 
+        NotificationProcessor notificationProcessor = createNotificationProcessor();
+        NotificationReceivedEventHandler notificationReceivedEventHandler = new NotificationReceivedEventHandler(defaultNotificationAccessor, notificationProcessor, eventManager);
         notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
 
+        assertNotNull(savedModels);
         testAlertNotificationModels(savedModels);
     }
 
-    private AlertNotificationModel createAlertNotificationModel(Long id, boolean processed) {
+    @Test
+    void testHandleEventMixedProcessedNotificationsWithPages() {
+        List<AlertNotificationModel> notificationContent = new ArrayList<>();
+        for (int index = 0; index < 500; index++) {
+            boolean processed = index % 3 == 0;
+            notificationContent.add(createAlertNotificationModel(processed));
+        }
+        List<AlertNotificationModel> savedModels = defaultNotificationAccessor.saveAllNotifications(notificationContent);
+        assertNotNull(savedModels);
+
+        NotificationProcessor notificationProcessor = createNotificationProcessor();
+        NotificationReceivedEventHandler notificationReceivedEventHandler = new NotificationReceivedEventHandler(defaultNotificationAccessor, notificationProcessor, eventManager);
+        notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
+
+        notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
+        assertNotNull(savedModels);
+        testAlertNotificationModels(savedModels);
+    }
+
+    private AlertNotificationModel createAlertNotificationModel(boolean processed) {
         String bomEditContent = "{"
             + "\"type\":\"" + NotificationType.BOM_EDIT.name() + "\","
             + "\"content\": {"
-            + "\"projectVersion\": \"" + properties.getBlackDuckURL() + "/api/project\","
+            + "\"projectVersion\": \"" + properties.getBlackDuckURL() + "/api/projects\","
             + "\"bomComponent\": \"" + properties.getBlackDuckURL() + "\","
             + "\"componentName\": \"test\","
             + "\"componentVersionName\": \"test\""
             + "}"
             + "}";
         MockNotificationContent notificationMocker = new MockNotificationContent(DateUtils.createCurrentDateTimestamp(), blackDuckProviderKey.getUniversalKey(), DateUtils.createCurrentDateTimestamp(), NotificationType.BOM_EDIT.name(),
-            bomEditContent, id, blackDuckGlobalConfigId);
+            bomEditContent, null, blackDuckGlobalConfigId);
         NotificationEntity entity = notificationMocker.createEntity();
         return new AlertNotificationModel(
-            id,
+            null,
             entity.getProviderConfigId(),
             entity.getProvider(),
             "providerConfigName",
@@ -165,6 +210,19 @@ public class NotificationReceivedEventHandlerTestIT {
         for (AlertNotificationModel notificationModel : notificationModels) {
             assertTrue(notificationModel.getProcessed());
         }
+    }
+
+    private NotificationProcessor createNotificationProcessor() {
+        // We aren't testing the processor here since we have bad data.  We just want to make sure the processor marks the notifications as processed to test the paging in the handler.
+        NotificationDetailExtractionDelegator notificationDetailExtractionDelegator = Mockito.mock(NotificationDetailExtractionDelegator.class);
+        Mockito.when(notificationDetailExtractionDelegator.wrapNotification(Mockito.any())).thenReturn(List.of());
+        return new NotificationProcessor(notificationDetailExtractionDelegator,
+            jobNotificationMapper,
+            notificationContentProcessor,
+            providerMessageDistributor,
+            lifecycleCaches,
+            defaultNotificationAccessor
+        );
     }
 
 }

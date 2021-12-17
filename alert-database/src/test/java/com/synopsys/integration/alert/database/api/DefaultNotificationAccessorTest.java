@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.database.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.OffsetDateTime;
@@ -30,7 +31,7 @@ import com.synopsys.integration.alert.database.audit.AuditNotificationRepository
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
 import com.synopsys.integration.alert.database.notification.NotificationEntity;
 
-public class DefaultNotificationAccessorTest {
+class DefaultNotificationAccessorTest {
     private final Long id = 1L;
     private final Long providerConfigId = 2L;
 
@@ -46,7 +47,7 @@ public class DefaultNotificationAccessorTest {
         DateUtils.createCurrentDateTimestamp(), false);
 
     @Test
-    public void saveAllNotificationsTest() {
+    void saveAllNotificationsTest() {
         OffsetDateTime createdAt = DateUtils.createCurrentDateTimestamp();
         OffsetDateTime providerCreationTime = createdAt.minusSeconds(10);
 
@@ -69,7 +70,7 @@ public class DefaultNotificationAccessorTest {
     }
 
     @Test
-    public void saveAllNotificationsEmptyModelListTest() {
+    void saveAllNotificationsEmptyModelListTest() {
         NotificationContentRepository notificationContentRepository = Mockito.mock(NotificationContentRepository.class);
 
         Mockito.when(notificationContentRepository.saveAll(Mockito.any())).thenReturn(new ArrayList<>());
@@ -81,7 +82,7 @@ public class DefaultNotificationAccessorTest {
     }
 
     @Test
-    public void finalAllTest() {
+    void finalAllTest() {
         PageRequest pageRequest = PageRequest.of(0, 10);
 
         NotificationEntity notificationEntity = new NotificationEntity(id, DateUtils.createCurrentDateTimestamp(), provider, providerConfigId, DateUtils.createCurrentDateTimestamp(), notificationType, content, false);
@@ -103,7 +104,7 @@ public class DefaultNotificationAccessorTest {
     }
 
     @Test
-    public void finalAllShowNotificationsFalseTest() {
+    void finalAllShowNotificationsFalseTest() {
         PageRequest pageRequest = PageRequest.of(0, 10);
 
         NotificationEntity notificationEntity = new NotificationEntity(id, DateUtils.createCurrentDateTimestamp(), provider, providerConfigId, DateUtils.createCurrentDateTimestamp(), notificationType, content, false);
@@ -125,7 +126,7 @@ public class DefaultNotificationAccessorTest {
     }
 
     @Test
-    public void findAllWithSearchTest() {
+    void findAllWithSearchTest() {
         final String searchTerm = "searchTerm-test";
         PageRequest pageRequest = PageRequest.of(0, 10);
 
@@ -154,7 +155,7 @@ public class DefaultNotificationAccessorTest {
     }
 
     @Test
-    public void findByIdsTest() {
+    void findByIdsTest() {
         NotificationEntity notificationEntity = new NotificationEntity(id, DateUtils.createCurrentDateTimestamp(), provider, providerConfigId, DateUtils.createCurrentDateTimestamp(), notificationType, content, false);
         ConfigurationModel configurationModel = createConfigurationModel();
 
@@ -173,7 +174,7 @@ public class DefaultNotificationAccessorTest {
     }
 
     @Test
-    public void findByIdTest() {
+    void findByIdTest() {
         NotificationEntity notificationEntity = new NotificationEntity(id, DateUtils.createCurrentDateTimestamp(), provider, providerConfigId, DateUtils.createCurrentDateTimestamp(), notificationType, content, false);
         ConfigurationModel configurationModel = createConfigurationModel();
 
@@ -191,7 +192,7 @@ public class DefaultNotificationAccessorTest {
     }
 
     @Test
-    public void findByCreatedAtBetweenTest() {
+    void findByCreatedAtBetweenTest() {
         NotificationEntity notificationEntity = new NotificationEntity(id, DateUtils.createCurrentDateTimestamp(), provider, providerConfigId, DateUtils.createCurrentDateTimestamp(), notificationType, content, false);
         ConfigurationModel configurationModel = createConfigurationModel();
 
@@ -212,7 +213,7 @@ public class DefaultNotificationAccessorTest {
     }
 
     @Test
-    public void findByCreatedAtBeforeTest() {
+    void findByCreatedAtBeforeTest() {
         NotificationEntity notificationEntity = new NotificationEntity(id, DateUtils.createCurrentDateTimestamp(), provider, providerConfigId, DateUtils.createCurrentDateTimestamp(), notificationType, content, false);
         ConfigurationModel configurationModel = createConfigurationModel();
 
@@ -231,7 +232,7 @@ public class DefaultNotificationAccessorTest {
     }
 
     @Test
-    public void findByCreatedAtBeforeDayOffsetTest() {
+    void findByCreatedAtBeforeDayOffsetTest() {
         NotificationEntity notificationEntity = new NotificationEntity(id, DateUtils.createCurrentDateTimestamp(), provider, providerConfigId, DateUtils.createCurrentDateTimestamp(), notificationType, content, false);
         ConfigurationModel configurationModel = createConfigurationModel();
 
@@ -250,7 +251,7 @@ public class DefaultNotificationAccessorTest {
     }
 
     @Test
-    public void getPageRequestForNotificationsTest() {
+    void getPageRequestForNotificationsTest() {
         final int pageNumber = 1;
         final int pageSize = 1;
         final String sortField = "content";
@@ -269,7 +270,7 @@ public class DefaultNotificationAccessorTest {
     }
 
     @Test
-    public void getFirstPageOfNotificationsNotProcessedTest() {
+    void getFirstPageOfNotificationsNotProcessedTest() {
         NotificationEntity notificationEntity = new NotificationEntity(id, DateUtils.createCurrentDateTimestamp(), provider, providerConfigId, DateUtils.createCurrentDateTimestamp(), notificationType, content, false);
         Page<NotificationEntity> pageOfNotificationEntities = new PageImpl<>(List.of(notificationEntity));
         ConfigurationModel configurationModel = createConfigurationModel();
@@ -289,7 +290,7 @@ public class DefaultNotificationAccessorTest {
     }
 
     @Test
-    public void setNotificationsProcessedTest() {
+    void setNotificationsProcessedTest() {
         AlertNotificationModel alertNotificationModel = new AlertNotificationModel(null, providerConfigId, provider, providerConfigName, notificationType, content, DateUtils.createCurrentDateTimestamp(),
             DateUtils.createCurrentDateTimestamp(), false);
 
@@ -303,7 +304,7 @@ public class DefaultNotificationAccessorTest {
     }
 
     @Test
-    public void setNotificationsProcessedByIdTest() {
+    void setNotificationsProcessedByIdTest() {
         NotificationEntity notificationEntity = new NotificationEntity(id, DateUtils.createCurrentDateTimestamp(), provider, providerConfigId, DateUtils.createCurrentDateTimestamp(), notificationType, content, false);
         ConfigurationModel configurationModel = createConfigurationModel();
         Set<Long> notificationIds = Set.of(1L);
@@ -318,6 +319,22 @@ public class DefaultNotificationAccessorTest {
         notificationManager.setNotificationsProcessedById(notificationIds);
 
         Mockito.verify(notificationContentRepository).setProcessedByIds(Mockito.any());
+    }
+
+    @Test
+    void hasMoreNotificationsToProcessFalseTest() {
+        NotificationContentRepository notificationContentRepository = Mockito.mock(NotificationContentRepository.class);
+        Mockito.when(notificationContentRepository.existsByProcessedFalse()).thenReturn(Boolean.FALSE);
+        DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(notificationContentRepository, null, null);
+        assertFalse(notificationManager.hasMoreNotificationsToProcess());
+    }
+
+    @Test
+    void hasMoreNotificationsToProcessTrueTest() {
+        NotificationContentRepository notificationContentRepository = Mockito.mock(NotificationContentRepository.class);
+        Mockito.when(notificationContentRepository.existsByProcessedFalse()).thenReturn(Boolean.TRUE);
+        DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(notificationContentRepository, null, null);
+        assertTrue(notificationManager.hasMoreNotificationsToProcess());
     }
 
     private void testExpectedAlertNotificationModel(AlertNotificationModel expected, AlertNotificationModel actual) {
