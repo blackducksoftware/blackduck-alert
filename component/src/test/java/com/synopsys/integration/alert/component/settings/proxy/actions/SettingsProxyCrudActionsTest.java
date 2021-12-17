@@ -169,7 +169,7 @@ public class SettingsProxyCrudActionsTest {
             HOST,
             PORT,
             USERNAME,
-            PASSWORD,
+            encryptionUtility.encrypt(PASSWORD),
             List.of()
         );
     }
@@ -194,11 +194,11 @@ public class SettingsProxyCrudActionsTest {
         assertTrue(settingsProxyModel.getProxyHost().isPresent());
         assertTrue(settingsProxyModel.getProxyPort().isPresent());
         assertTrue(settingsProxyModel.getProxyUsername().isPresent());
-        assertTrue(settingsProxyModel.getProxyPassword().isPresent());
+        assertTrue(settingsProxyModel.getProxyPassword().isEmpty());
+        assertTrue(settingsProxyModel.getIsProxyPasswordSet());
 
         assertEquals(HOST, settingsProxyModel.getProxyHost().get());
         assertEquals(PORT, settingsProxyModel.getProxyPort().get());
         assertEquals(USERNAME, settingsProxyModel.getProxyUsername().get());
-        assertEquals(AlertRestConstants.MASKED_VALUE, settingsProxyModel.getProxyPassword().get());
     }
 }

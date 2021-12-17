@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -76,6 +77,11 @@ public class SettingsProxyConfigAccessor implements UniqueConfigurationAccessor<
     public SettingsProxyModel updateConfiguration(SettingsProxyModel configuration) throws AlertConfigurationException {
         SettingsProxyConfigurationEntity configurationEntity = settingsProxyConfigurationRepository.findByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
                                                                    .orElseThrow(() -> new AlertConfigurationException("Proxy config does not exist"));
+
+        if (BooleanUtils.toBoolean(configuration.getIsProxyPasswordSet()) && configuration.getProxyPassword().isEmpty()) {
+            String decryptedPassword = encryptionUtility.decrypt(configurationEntity.getPassword());
+            configuration.setProxyPassword(decryptedPassword);
+        }
         UUID configurationId = configurationEntity.getConfigurationId();
         OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
         SettingsProxyConfigurationEntity configurationToSave = toEntity(configurationId, configuration, configurationEntity.getCreatedAt(), currentTime);
@@ -107,8 +113,12 @@ public class SettingsProxyConfigAccessor implements UniqueConfigurationAccessor<
             newModel.setProxyHost(proxyConfiguration.getHost());
             newModel.setProxyPort(proxyConfiguration.getPort());
             newModel.setProxyUsername(proxyConfiguration.getUsername());
-            if (StringUtils.isNotBlank(proxyConfiguration.getPassword())) {
-                newModel.setProxyPassword(encryptionUtility.decrypt(proxyConfiguration.getPassword()));
+
+            String proxyPassword = proxyConfiguration.getPassword();
+            boolean doesPasswordExist = StringUtils.isNotBlank(proxyPassword);
+            newModel.setIsSmtpPasswordSet(doesPasswordExist);
+            if (doesPasswordExist) {
+                newModel.setProxyPassword(encryptionUtility.decrypt(proxyPassword));
             }
             newModel.setNonProxyHosts(getNonProxyHosts(proxyConfiguration.getNonProxyHosts()));
         }

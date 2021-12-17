@@ -17,23 +17,14 @@ const SettingsEncryptionConfiguration = ({
     const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
     const [encryptionReadOnly, setEncryptionReadOnly] = useState(readonly);
 
-    const [passwordFromApiExists, setPasswordFromApiExists] = useState(false);
-    const [globalSaltFromApiExists, setGlobalSaltFromApiExists] = useState(false);
-
     const fetchData = async () => {
         const response = await ConfigurationRequestBuilder.createReadRequest(encryptionRequestUrl, csrfToken);
         const data = await response.json();
 
-        if (data) {
-            setPasswordFromApiExists(true);
-            setGlobalSaltFromApiExists(true);
+        if (response.ok && data) {
             setEncryptionReadOnly(readonly || data.readOnly);
-            delete data.encryptionPassword;
-            delete data.encryptionGlobalSalt;
             setSettingsEncryptionConfig(data);
         } else {
-            setPasswordFromApiExists(false);
-            setGlobalSaltFromApiExists(false);
             setEncryptionReadOnly(readonly);
             setSettingsEncryptionConfig({});
         }
@@ -73,7 +64,7 @@ const SettingsEncryptionConfiguration = ({
                 readOnly={encryptionReadOnly}
                 onChange={fieldModelUtilities.handleTestChange(settingsEncryptionConfig, setSettingsEncryptionConfig)}
                 value={settingsEncryptionConfig.encryptionPassword || undefined}
-                isSet={passwordFromApiExists}
+                isSet={settingsEncryptionConfig.isEncryptionPasswordSet}
                 errorName="encryptionPassword"
                 errorValue={errors.fieldErrors.encryptionPassword}
             />
@@ -86,7 +77,7 @@ const SettingsEncryptionConfiguration = ({
                 readOnly={encryptionReadOnly}
                 onChange={fieldModelUtilities.handleTestChange(settingsEncryptionConfig, setSettingsEncryptionConfig)}
                 value={settingsEncryptionConfig.encryptionGlobalSalt || undefined}
-                isSet={globalSaltFromApiExists}
+                isSet={settingsEncryptionConfig.isEncryptionGlobalSaltSet}
                 errorName="encryptionGlobalSalt"
                 errorValue={errors.fieldErrors.encryptionGlobalSalt}
             />

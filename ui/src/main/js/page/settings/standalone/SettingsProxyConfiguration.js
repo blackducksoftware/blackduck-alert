@@ -14,21 +14,16 @@ const SettingsProxyConfiguration = ({
     csrfToken, errorHandler, readOnly, displaySave, displayDelete
 }) => {
     const proxyRequestUrl = `${ConfigurationRequestBuilder.PROXY_API_URL}`;
-    const passwordName = 'proxyPassword';
 
     const [settingsProxyConfig, setSettingsProxyConfig] = useState({});
     const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
-    const [passwordFromApiExists, setPasswordFromApiExists] = useState(false);
 
     const fetchData = async () => {
         const response = await ConfigurationRequestBuilder.createReadRequest(proxyRequestUrl, csrfToken);
         if (response.ok) {
             const data = await response.json();
-            setPasswordFromApiExists(true);
-            delete data.proxyPassword;
             setSettingsProxyConfig(data);
         } else {
-            setPasswordFromApiExists(false);
             setSettingsProxyConfig({ name: 'default-configuration' });
         }
     };
@@ -94,15 +89,15 @@ const SettingsProxyConfiguration = ({
             />
             <PasswordInput
                 id={SETTINGS_FIELD_KEYS.proxyPassword}
-                name={passwordName}
+                name="proxyPassword"
                 label="Proxy Password"
                 description="If the proxy server requires authentication, the password to authenticate with the proxy server."
                 readOnly={readOnly}
                 onChange={fieldModelUtilities.handleTestChange(settingsProxyConfig, setSettingsProxyConfig)}
-                value={settingsProxyConfig[passwordName] || undefined}
-                isSet={passwordFromApiExists}
-                errorName={passwordName}
-                errorValue={errors.fieldErrors[passwordName]}
+                value={settingsProxyConfig.proxyPassword || undefined}
+                isSet={settingsProxyConfig.isProxyPasswordSet}
+                errorName="proxyPassword"
+                errorValue={errors.fieldErrors.proxyPassword}
             />
             <DynamicSelectInput
                 id={SETTINGS_FIELD_KEYS.proxyNonProxyHosts}

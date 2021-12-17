@@ -19,7 +19,6 @@ import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageA
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
@@ -30,7 +29,7 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
 
-public class SettingsEncryptionCrudActionsTest {
+class SettingsEncryptionCrudActionsTest {
     private final Gson gson = new Gson();
     private final AlertProperties alertProperties = new MockAlertProperties();
     private final FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, gson);
@@ -48,7 +47,7 @@ public class SettingsEncryptionCrudActionsTest {
     private final SettingsDescriptorKey settingsDescriptorKey = new SettingsDescriptorKey();
 
     @Test
-    public void getOneTest() {
+    void getOneTest() {
         SettingsEncryptionCrudActions configActions = new SettingsEncryptionCrudActions(authorizationManager, encryptionUtility, validator, settingsDescriptorKey);
         ActionResponse<SettingsEncryptionModel> actionResponse = configActions.getOne();
 
@@ -59,7 +58,7 @@ public class SettingsEncryptionCrudActionsTest {
     }
 
     @Test
-    public void getOneNotInitializedTest() {
+    void getOneNotInitializedTest() {
         MockAlertProperties alertPropertiesNoEncryption = new MockAlertProperties();
         alertPropertiesNoEncryption.setEncryptionPassword("");
         alertPropertiesNoEncryption.setEncryptionSalt("");
@@ -75,7 +74,7 @@ public class SettingsEncryptionCrudActionsTest {
     }
 
     @Test
-    public void updateTest() {
+    void updateTest() {
         SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel();
         settingsEncryptionModel.setEncryptionPassword("password");
         settingsEncryptionModel.setEncryptionGlobalSalt("globalSalt");
@@ -94,11 +93,11 @@ public class SettingsEncryptionCrudActionsTest {
         assertTrue(optionalSettingsEncryptionModel.isPresent());
 
         SettingsEncryptionModel settingsEncryptionModel = optionalSettingsEncryptionModel.get();
-        assertTrue(settingsEncryptionModel.getEncryptionPassword().isPresent());
-        assertTrue(settingsEncryptionModel.getEncryptionGlobalSalt().isPresent());
+        assertTrue(settingsEncryptionModel.getEncryptionPassword().isEmpty());
+        assertTrue(settingsEncryptionModel.getEncryptionGlobalSalt().isEmpty());
+        assertTrue(settingsEncryptionModel.getIsEncryptionPasswordSet());
+        assertTrue(settingsEncryptionModel.getIsEncryptionGlobalSaltSet());
 
-        assertEquals(AlertRestConstants.MASKED_VALUE, settingsEncryptionModel.getEncryptionPassword().get());
-        assertEquals(AlertRestConstants.MASKED_VALUE, settingsEncryptionModel.getEncryptionGlobalSalt().get());
         assertTrue(settingsEncryptionModel.isReadOnly());
     }
 }
