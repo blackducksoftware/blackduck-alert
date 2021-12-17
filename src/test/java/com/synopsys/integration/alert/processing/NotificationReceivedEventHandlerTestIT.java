@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -214,22 +213,6 @@ class NotificationReceivedEventHandlerTestIT {
         // We aren't testing the processor here since we have bad data.  We just want to make sure the processor marks the notifications as processed to test the paging in the handler.
         NotificationDetailExtractionDelegator notificationDetailExtractionDelegator = Mockito.mock(NotificationDetailExtractionDelegator.class);
         Mockito.when(notificationDetailExtractionDelegator.wrapNotification(Mockito.any())).thenReturn(List.of());
-        return new NotificationProcessor(notificationDetailExtractionDelegator,
-            jobNotificationMapper,
-            notificationContentProcessor,
-            providerMessageDistributor,
-            lifecycleCaches,
-            defaultNotificationAccessor
-        );
-    }
-
-    private NotificationProcessor createNotificationProcessor(CountDownLatch countDownLatch) {
-        // We aren't testing the processor here since we have bad data.  We just want to make sure the processor marks the notifications as processed to test the paging in the handler.
-        NotificationDetailExtractionDelegator notificationDetailExtractionDelegator = Mockito.mock(NotificationDetailExtractionDelegator.class);
-        Mockito.when(notificationDetailExtractionDelegator.wrapNotification(Mockito.any())).thenAnswer(invocation -> {
-            countDownLatch.countDown();
-            return List.of();
-        });
         return new NotificationProcessor(notificationDetailExtractionDelegator,
             jobNotificationMapper,
             notificationContentProcessor,
