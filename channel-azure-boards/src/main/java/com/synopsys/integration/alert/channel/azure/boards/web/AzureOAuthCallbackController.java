@@ -104,7 +104,7 @@ public class AzureOAuthCallbackController {
                     } else {
                         String oAuthRedirectUri = azureRedirectUrlCreator.createOAuthRedirectUri();
                         AzureBoardsProperties properties = AzureBoardsProperties.fromFieldAccessor(azureBoardsCredentialDataStoreFactory, oAuthRedirectUri, fieldUtility);
-                        testOAuthConnection(properties, authorizationCode, state);
+                        testOAuthConnection(properties, authorizationCode, oAuthRequestId);
                     }
                 }
             }
