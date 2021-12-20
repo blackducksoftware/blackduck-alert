@@ -27,7 +27,7 @@ import org.testcontainers.shaded.com.google.common.reflect.TypeToken;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.component.settings.proxy.model.SettingsProxyModel;
+import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
 import com.synopsys.integration.alert.database.settings.proxy.NonProxyHostsConfigurationRepository;
 import com.synopsys.integration.alert.database.settings.proxy.SettingsProxyConfigurationRepository;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;

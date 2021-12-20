@@ -5,15 +5,12 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.component.settings.proxy.model;
+package com.synopsys.integration.alert.common.rest.model;
 
 import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-
-import com.synopsys.integration.alert.common.rest.model.ConfigWithMetadata;
-import com.synopsys.integration.alert.common.rest.model.Obfuscated;
 
 public class SettingsProxyModel extends ConfigWithMetadata implements Obfuscated<SettingsProxyModel> {
     private String proxyHost;
