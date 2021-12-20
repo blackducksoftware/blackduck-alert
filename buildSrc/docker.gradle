@@ -33,17 +33,13 @@ task buildDockerImage(type: com.bmuschko.gradle.docker.tasks.image.DockerBuildIm
 }
 
 task dockerLogin(type: Exec) {
-    File passFile = file("${project.buildDir}/docker/pass.txt")
     doFirst {
-        passFile.parentFile.mkdirs()
-        passFile.createNewFile()
-        passFile.write(System.env.DOCKER_INT_BLACKDUCK_PASSWORD)
+        def password = "${System.env.DOCKER_INT_BLACKDUCK_PASSWORD}"
+        if (password?.trim()) {
+            standardInput = new ByteArrayInputStream(password.getBytes())
+        }
     }
-    doLast {
-        passFile.delete()
-    }
-    commandLine "cat", "${passFile.getAbsolutePath()}", " | ", "docker", "login", "--username", "$System.env.DOCKER_INT_BLACKDUCK_USER", "--password-stdin"
-
+    commandLine "docker", "login", "--username", "$System.env.DOCKER_INT_BLACKDUCK_USER", "--password-stdin"
 }
 
 task pushImage(type: Exec, dependsOn: [buildDockerImage]) {
