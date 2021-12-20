@@ -39,4 +39,6 @@ public interface NotificationAccessor {
 
     void deleteNotification(AlertNotificationModel notification);
 
+    boolean hasMoreNotificationsToProcess();
+
 }

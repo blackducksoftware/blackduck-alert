@@ -110,6 +110,11 @@ public class MockProcessingNotificationAccessor implements NotificationAccessor 
         return 0;
     }
 
+    @Override
+    public boolean hasMoreNotificationsToProcess() {
+        return false;
+    }
+
     //AlertNotificationModel is immutable, this is a workaround for the unit test to set "processed" to true.
     private AlertNotificationModel createProcessedAlertNotificationModel(AlertNotificationModel alertNotificationModel) {
         return new AlertNotificationModel(alertNotificationModel.getId(),
