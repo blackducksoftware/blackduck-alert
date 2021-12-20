@@ -38,6 +38,7 @@ import com.synopsys.integration.alert.database.notification.NotificationEntity;
 
 @Component
 public class DefaultNotificationAccessor implements NotificationAccessor {
+    public static final String COLUMN_NAME_PROVIDER_CREATION_TIME = "providerCreationTime";
     private final NotificationContentRepository notificationContentRepository;
     private final AuditEntryRepository auditEntryRepository;
     private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
@@ -104,7 +105,7 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public AlertPagedModel<AlertNotificationModel> findByCreatedAtBetween(OffsetDateTime startDate, OffsetDateTime endDate, int pageNumber, int pageSize) {
-        Sort.Order sortingOrder = Sort.Order.asc("providerCreationTime");
+        Sort.Order sortingOrder = Sort.Order.asc(COLUMN_NAME_PROVIDER_CREATION_TIME);
         PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, Sort.by(sortingOrder));
         Page<AlertNotificationModel> pageOfNotifications = notificationContentRepository.findByCreatedAtBetween(startDate, endDate, pageRequest)
             .map(this::toModel);
@@ -149,7 +150,7 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
         // We can only modify the query for the fields that exist in NotificationContent
         if (StringUtils.isNotBlank(sortField) && "createdAt".equalsIgnoreCase(sortField)
                 || "provider".equalsIgnoreCase(sortField)
-                || "providerCreationTime".equalsIgnoreCase(sortField)
+                || COLUMN_NAME_PROVIDER_CREATION_TIME.equalsIgnoreCase(sortField)
                 || "notificationType".equalsIgnoreCase(sortField)
                 || "content".equalsIgnoreCase(sortField)) {
             sortingField = sortField;
@@ -166,7 +167,7 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public AlertPagedModel<AlertNotificationModel> getFirstPageOfNotificationsNotProcessed(int pageSize) {
         int currentPage = 0;
-        Sort.Order sortingOrder = Sort.Order.asc("providerCreationTime");
+        Sort.Order sortingOrder = Sort.Order.asc(COLUMN_NAME_PROVIDER_CREATION_TIME);
         PageRequest pageRequest = PageRequest.of(currentPage, pageSize, Sort.by(sortingOrder));
         Page<AlertNotificationModel> pageOfNotifications = notificationContentRepository.findByProcessedFalseOrderByProviderCreationTimeAsc(pageRequest)
             .map(this::toModel);
