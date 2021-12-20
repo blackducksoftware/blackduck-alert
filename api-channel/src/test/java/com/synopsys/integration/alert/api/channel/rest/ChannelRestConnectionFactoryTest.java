@@ -15,11 +15,11 @@ import com.synopsys.integration.rest.credentials.CredentialsBuilder;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 import com.synopsys.integration.rest.proxy.ProxyInfoBuilder;
 
-public class ChannelRestConnectionFactoryTest {
+class ChannelRestConnectionFactoryTest {
     private final Gson gson = new Gson();
 
     @Test
-    public void testConnectionFields() {
+    void testConnectionFields() {
         String baseUrl = "https://example-base-url";
         final String host = "host";
         final int port = 1;
@@ -39,7 +39,7 @@ public class ChannelRestConnectionFactoryTest {
         MockAlertProperties testAlertProperties = new MockAlertProperties();
         testAlertProperties.setAlertTrustCertificate(true);
         ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
-        Mockito.when(proxyManager.createProxyInfoForHost(Mockito.eq(baseUrl))).thenReturn(expectedProxyInfo);
+        Mockito.when(proxyManager.createProxyInfoForHost(baseUrl)).thenReturn(expectedProxyInfo);
         ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties, proxyManager, gson);
 
         IntHttpClient intHttpClient = channelRestConnectionFactory.createIntHttpClient(baseUrl);

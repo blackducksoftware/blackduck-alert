@@ -9,8 +9,8 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
+import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
-import com.synopsys.integration.alert.component.settings.proxy.model.SettingsProxyModel;
 
 public class SettingsProxyValidatorTest {
     private static final String HOST = "hostname";
