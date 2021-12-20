@@ -1,8 +1,6 @@
 package com.synopsys.integration.alert.component.settings.convert;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -36,7 +34,7 @@ public class ProxyConfigurationModelConverter implements GlobalConfigurationMode
                 .ifPresent(model::setProxyPort);
             globalConfigurationModel.getField(FIELD_KEY_NON_PROXY_HOSTS)
                 .map(ConfigurationFieldModel::getFieldValues)
-                .map(this::convertProxyHosts)
+                .map(ArrayList::new)
                 .ifPresent(model::setNonProxyHosts);
             globalConfigurationModel.getField(FIELD_KEY_USERNAME)
                 .flatMap(ConfigurationFieldModel::getFieldValue)
@@ -49,9 +47,5 @@ public class ProxyConfigurationModelConverter implements GlobalConfigurationMode
             logger.error("Error converting field model to concrete proxy configuration", ex);
         }
         return convertedModel;
-    }
-
-    private List<String> convertProxyHosts(Collection<String> nonProxyHostCollection) {
-        return new ArrayList<>(nonProxyHostCollection);
     }
 }
