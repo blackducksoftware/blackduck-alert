@@ -16,9 +16,9 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
-import com.synopsys.integration.util.Stringable;
 
 public class ProcessedProviderMessage<T extends ProviderMessage<T>> extends AlertSerializableModel implements CombinableModel<ProcessedProviderMessage<T>> {
+    private static final String[] EXCLUDED_COMPARISON_FIELDS = { "notificationIds" };
     private final Set<Long> notificationIds;
     private final T providerMessage;
 
@@ -61,11 +61,11 @@ public class ProcessedProviderMessage<T extends ProviderMessage<T>> extends Aler
 
     @Override
     public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(17, 37, this, false, Stringable.class, "notificationIds");
+        return HashCodeBuilder.reflectionHashCode(this, EXCLUDED_COMPARISON_FIELDS);
     }
 
     @Override
     public boolean equals(Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj, false, Stringable.class, true, "notificationIds");
+        return EqualsBuilder.reflectionEquals(this, obj, EXCLUDED_COMPARISON_FIELDS);
     }
 }

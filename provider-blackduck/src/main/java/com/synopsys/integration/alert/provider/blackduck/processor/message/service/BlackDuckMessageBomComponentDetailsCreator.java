@@ -108,8 +108,7 @@ public class BlackDuckMessageBomComponentDetailsCreator {
 
     public BomComponentDetails createBomComponentUnknownVersionDetails(
         ProjectVersionComponentVersionView bomComponent, List<ComponentConcern> componentConcerns, ComponentUpgradeGuidance componentUpgradeGuidance,
-        List<LinkableItem> additionalAttributes
-    ) throws IntegrationException {
+        List<LinkableItem> additionalAttributes) throws IntegrationException {
         // FIXME using this query link only in a successful result and not in an unsuccessful result leads to inconsistent values in our custom fields which leads to inconsistent search results (bug).
         String componentQueryLink = BlackDuckMessageLinkUtils.createComponentQueryLink(bomComponent);
 
