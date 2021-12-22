@@ -19,8 +19,8 @@ public class ProxyConfigurationModelSaveActions implements GlobalConfigurationMo
     private final ProxyConfigurationModelConverter proxyFieldModelConverter;
     private final SettingsProxyCrudActions configurationActions;
 
-    public ProxyConfigurationModelSaveActions(SettingsProxyCrudActions configurationActions) {
-        this.proxyFieldModelConverter = new ProxyConfigurationModelConverter();
+    public ProxyConfigurationModelSaveActions(ProxyConfigurationModelConverter proxyFieldModelConverter, SettingsProxyCrudActions configurationActions) {
+        this.proxyFieldModelConverter = proxyFieldModelConverter;
         this.configurationActions = configurationActions;
     }
 
