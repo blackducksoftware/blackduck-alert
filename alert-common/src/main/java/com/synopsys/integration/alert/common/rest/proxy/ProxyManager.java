@@ -67,7 +67,7 @@ public class ProxyManager {
         return ProxyInfo.NO_PROXY_INFO;
     }
 
-    private ProxyInfo createProxyInfo(SettingsProxyModel settingsProxyModel) {
+    public ProxyInfo createProxyInfo(SettingsProxyModel settingsProxyModel) {
         ProxyInfoBuilder proxyBuilder = new ProxyInfoBuilder();
         settingsProxyModel.getProxyHost().ifPresent(proxyBuilder::setHost);
         settingsProxyModel.getProxyPort().ifPresent(proxyBuilder::setPort);

@@ -8,7 +8,10 @@
 package com.synopsys.integration.alert.component.settings.proxy.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
@@ -18,6 +21,7 @@ import com.synopsys.integration.alert.common.rest.api.ValidateController;
 import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.component.settings.proxy.action.SettingsProxyCrudActions;
+import com.synopsys.integration.alert.component.settings.proxy.action.SettingsProxyTestAction;
 import com.synopsys.integration.alert.component.settings.proxy.action.SettingsProxyValidationAction;
 
 @RestController
@@ -25,11 +29,13 @@ import com.synopsys.integration.alert.component.settings.proxy.action.SettingsPr
 public class SettingsProxyController implements StaticUniqueConfigResourceController<SettingsProxyModel>, ValidateController<SettingsProxyModel> {
     private final SettingsProxyCrudActions configActions;
     private final SettingsProxyValidationAction validationAction;
+    private final SettingsProxyTestAction testAction;
 
     @Autowired
-    public SettingsProxyController(SettingsProxyCrudActions configActions, SettingsProxyValidationAction validationAction) {
+    public SettingsProxyController(SettingsProxyCrudActions configActions, SettingsProxyValidationAction validationAction, SettingsProxyTestAction testAction) {
         this.configActions = configActions;
         this.validationAction = validationAction;
+        this.testAction = testAction;
     }
 
     @Override
@@ -55,5 +61,10 @@ public class SettingsProxyController implements StaticUniqueConfigResourceContro
     @Override
     public ValidationResponseModel validate(SettingsProxyModel requestBody) {
         return ResponseFactory.createContentResponseFromAction(validationAction.validate(requestBody));
+    }
+
+    @PostMapping("/test")
+    public ValidationResponseModel test(@RequestParam String testUrl, @RequestBody SettingsProxyModel resource) {
+        return ResponseFactory.createContentResponseFromAction(testAction.testWithPermissionCheck(testUrl, resource));
     }
 }
