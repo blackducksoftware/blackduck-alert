@@ -130,13 +130,13 @@ public class DescriptorMetadataActionsTest {
         assertTrue(response1.isSuccessful());
         assertTrue(response1.hasContent());
         Set<DescriptorMetadata> descriptorMetadata1 = response1.getContent().get().getDescriptors();
-        assertEquals(descriptors.size() / 2, descriptorMetadata1.size());
+        assertEquals(descriptors.size(), descriptorMetadata1.size());
 
         ActionResponse<DescriptorsResponseModel> response2 = actions.getDescriptorsByPermissions(null, null, ConfigContextEnum.DISTRIBUTION.name());
         assertTrue(response2.isSuccessful());
         assertTrue(response2.hasContent());
         Set<DescriptorMetadata> descriptorMetadata2 = response2.getContent().get().getDescriptors();
-        assertEquals(descriptors.size() / 2, descriptorMetadata2.size());
+        assertEquals(descriptors.size(), descriptorMetadata2.size());
     }
 
     @Test
@@ -144,7 +144,7 @@ public class DescriptorMetadataActionsTest {
         DescriptorType type1 = DescriptorType.CHANNEL;
         ConfigContextEnum context1 = ConfigContextEnum.GLOBAL;
         ActionResponse<DescriptorsResponseModel> response1 = actions.getDescriptorsByPermissions(null, type1.name(), context1.name());
-        int expectedSize = descriptors.size() / (DescriptorType.values().length * ConfigContextEnum.values().length);
+        int expectedSize = descriptors.size() / (DescriptorType.values().length);
         assertTrue(response1.isSuccessful());
         assertTrue(response1.hasContent());
         Set<DescriptorMetadata> descriptorMetadata1 = response1.getContent().get().getDescriptors();

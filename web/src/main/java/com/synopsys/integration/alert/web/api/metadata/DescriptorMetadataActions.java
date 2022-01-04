@@ -63,6 +63,8 @@ public class DescriptorMetadataActions {
             ConfigContextEnum requestedContext = EnumUtils.getEnum(ConfigContextEnum.class, context);
             if (null != requestedContext) {
                 requestedContexts = Set.of(requestedContext);
+            } else {
+                requestedContexts = Set.of();
             }
         }
 
