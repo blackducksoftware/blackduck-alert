@@ -60,12 +60,6 @@ public class DescriptorMetadataActions {
         }
 
         if (StringUtils.isNotBlank(context)) {
-            descriptorFilter = descriptorFilter.and(descriptor ->
-                                                        descriptor.getConfigContexts()
-                                                            .stream()
-                                                            .map(Enum::name)
-                                                            .anyMatch(context::equals)
-            );
             ConfigContextEnum requestedContext = EnumUtils.getEnum(ConfigContextEnum.class, context);
             if (null != requestedContext) {
                 requestedContexts = Set.of(requestedContext);

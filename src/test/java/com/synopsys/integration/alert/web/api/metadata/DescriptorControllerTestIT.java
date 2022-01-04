@@ -1,5 +1,6 @@
 package com.synopsys.integration.alert.web.api.metadata;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URI;
@@ -51,7 +52,8 @@ public class DescriptorControllerTestIT {
             .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
             .with(SecurityMockMvcRequestPostProcessors.csrf());
 
-        assertValidResponse(request);
+        DescriptorsResponseModel descriptorsResponseModel = assertValidResponse(request);
+        assertEquals(21, descriptorsResponseModel.getDescriptors().size());
     }
 
     @Test
@@ -102,7 +104,8 @@ public class DescriptorControllerTestIT {
             .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
             .with(SecurityMockMvcRequestPostProcessors.csrf());
 
-        assertValidResponse(request);
+        DescriptorsResponseModel descriptorsResponseModel = assertValidResponse(request);
+        assertEquals(1, descriptorsResponseModel.getDescriptors().size());
     }
 
     @Test
@@ -130,7 +133,8 @@ public class DescriptorControllerTestIT {
             .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
             .with(SecurityMockMvcRequestPostProcessors.csrf());
 
-        assertValidResponse(request);
+        DescriptorsResponseModel descriptorsResponseModel = assertValidResponse(request);
+        assertEquals(1, descriptorsResponseModel.getDescriptors().size());
     }
 
     private DescriptorsResponseModel assertValidResponse(MockHttpServletRequestBuilder request) throws Exception {
@@ -138,7 +142,7 @@ public class DescriptorControllerTestIT {
         String listOfDescriptorsJson = mvcResult.getResponse().getContentAsString();
         DescriptorsResponseModel descriptorsResponseModel = new Gson().fromJson(listOfDescriptorsJson, DescriptorsResponseModel.class);
         Set<DescriptorMetadata> setOfDescriptors = descriptorsResponseModel.getDescriptors();
-        
+
         assertTrue(setOfDescriptors.size() > 0);
 
         return descriptorsResponseModel;
