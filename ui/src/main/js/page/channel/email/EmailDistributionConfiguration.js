@@ -65,6 +65,7 @@ const EmailDistributionConfiguration = ({
         />
         <DynamicSelectInput
             id={EMAIL_DISTRIBUTION_FIELD_KEYS.attachmentFormat}
+            name={EMAIL_DISTRIBUTION_FIELD_KEYS.attachmentFormat}
             label="Attachment File Type"
             description="If a file type is selected, a file of that type, representing the message content, will be attached to the email."
             options={EMAIL_DISTRIBUTION_ATTACHMENT_OPTIONS}

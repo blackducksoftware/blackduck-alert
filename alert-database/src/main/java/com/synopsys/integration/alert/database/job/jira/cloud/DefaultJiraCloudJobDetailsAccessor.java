@@ -1,7 +1,7 @@
 /*
  * alert-database
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -53,7 +53,7 @@ public class DefaultJiraCloudJobDetailsAccessor implements JiraCloudJobDetailsAc
             jiraCloudJobDetails.getIssueSummary()
         );
         JiraCloudJobDetailsEntity savedJobDetails = jiraCloudJobDetailsRepository.save(jiraCloudJobDetailsToSave);
-        jiraCloudJobCustomFieldRepository.deleteByJobId(jobId);
+        jiraCloudJobCustomFieldRepository.bulkDeleteByJobId(jobId);
         List<JiraCloudJobCustomFieldEntity> customFieldsToSave = jiraCloudJobDetails.getCustomFields()
                                                                      .stream()
                                                                      .map(model -> new JiraCloudJobCustomFieldEntity(savedJobDetails.getJobId(), model.getFieldName(), model.getFieldValue()))

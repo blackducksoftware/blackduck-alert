@@ -1,7 +1,7 @@
 /*
  * api-processor
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -22,6 +22,7 @@ public class ComponentConcern extends AlertSerializableModel implements Combinab
     private final String name;
     private final ComponentConcernSeverity severity;
     private final String url;
+    private final Number numericValue;
 
     public static ComponentConcern policy(ItemOperation operation, String policyName, String url) {
         return new ComponentConcern(ComponentConcernType.POLICY, operation, policyName, ComponentConcernSeverity.UNSPECIFIED_UNKNOWN, url);
@@ -35,12 +36,21 @@ public class ComponentConcern extends AlertSerializableModel implements Combinab
         return new ComponentConcern(ComponentConcernType.VULNERABILITY, operation, vulnerabilityId, severity, vulnerabilityUrl);
     }
 
+    public static ComponentConcern unknownComponentVersion(ItemOperation operation, String componentName, ComponentConcernSeverity severity, Number count, String url) {
+        return new ComponentConcern(ComponentConcernType.UNKNOWN_VERSION, operation, componentName, severity, url, count);
+    }
+
     private ComponentConcern(ComponentConcernType type, ItemOperation operation, String name, ComponentConcernSeverity severity, @Nullable String url) {
+        this(type, operation, name, severity, url, null);
+    }
+
+    private ComponentConcern(ComponentConcernType type, ItemOperation operation, String name, ComponentConcernSeverity severity, @Nullable String url, @Nullable Number numericValue) {
         this.operation = operation;
         this.type = type;
         this.name = name;
         this.severity = severity;
         this.url = url;
+        this.numericValue = numericValue;
     }
 
     public ComponentConcernType getType() {
@@ -61,6 +71,14 @@ public class ComponentConcern extends AlertSerializableModel implements Combinab
 
     public Optional<String> getUrl() {
         return Optional.ofNullable(url);
+    }
+
+    public boolean hasNumericValue() {
+        return numericValue != null;
+    }
+
+    public Number getNumericValue() {
+        return numericValue;
     }
 
     @Override

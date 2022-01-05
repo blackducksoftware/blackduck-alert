@@ -1,7 +1,7 @@
 /*
  * alert-common
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -18,6 +18,9 @@ import com.synopsys.integration.alert.common.persistence.model.job.DistributionJ
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 
 public interface JobAccessor {
+
+    boolean hasJobsByFrequency(String frequency);
+
     List<DistributionJobModel> getJobsById(Collection<UUID> jobIds);
 
     AlertPagedModel<DistributionJobModel> getPageOfJobs(int pageOffset, int pageLimit);

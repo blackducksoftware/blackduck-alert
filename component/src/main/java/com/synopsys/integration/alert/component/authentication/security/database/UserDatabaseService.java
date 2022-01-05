@@ -1,7 +1,7 @@
 /*
  * component
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
+import com.synopsys.integration.alert.common.security.UserPrincipal;
 
 @Service
 public class UserDatabaseService implements UserDetailsService {

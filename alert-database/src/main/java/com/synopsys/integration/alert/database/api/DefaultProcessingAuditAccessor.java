@@ -1,7 +1,7 @@
 /*
  * alert-database
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -19,6 +19,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +36,7 @@ import com.synopsys.integration.alert.database.audit.AuditNotificationRepository
 
 @Component
 public class DefaultProcessingAuditAccessor implements ProcessingAuditAccessor {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final AuditEntryRepository auditEntryRepository;
     private final AuditNotificationRepository auditNotificationRepository;
 
@@ -65,6 +68,7 @@ public class DefaultProcessingAuditAccessor implements ProcessingAuditAccessor {
             }
 
             AuditEntryEntity savedAuditEntry = auditEntryRepository.save(auditEntryToSave);
+            logger.trace("Created audit entry: {}. For notification: {}", savedAuditEntry.getId(), notificationId);
 
             AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntry.getId(), notificationId);
             relationsToUpdate.add(auditNotificationRelation);
@@ -108,6 +112,7 @@ public class DefaultProcessingAuditAccessor implements ProcessingAuditAccessor {
             auditEntryToSave.setTimeLastSent(DateUtils.createCurrentDateTimestamp());
             auditFieldSetter.accept(auditEntryToSave);
             updatedAuditEntries.add(auditEntryToSave);
+            logger.trace("Updated audit entry: {}.", auditEntryToSave.getId());
         }
         auditEntryRepository.saveAll(updatedAuditEntries);
     }

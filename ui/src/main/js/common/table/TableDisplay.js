@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import {
-    BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn
-} from 'react-bootstrap-table';
+import { BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn } from 'react-bootstrap-table';
 import AutoRefresh from 'common/table/AutoRefresh';
 import IconTableCellFormatter from 'common/table/IconTableCellFormatter';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

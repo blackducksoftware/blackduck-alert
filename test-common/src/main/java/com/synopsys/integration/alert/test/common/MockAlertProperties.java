@@ -1,7 +1,7 @@
 /*
  * test-common
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -14,8 +14,8 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.common.AlertProperties;
 
 public class MockAlertProperties extends AlertProperties {
     private static final String SUB_PROJECT_DIR_NAME = "test-common";

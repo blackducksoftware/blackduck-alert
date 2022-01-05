@@ -1,7 +1,7 @@
 /*
  * alert-common
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -40,6 +40,10 @@ public class DescriptorMap {
 
     public Optional<Descriptor> getDescriptor(DescriptorKey key) {
         return Optional.ofNullable(keyToDescriptor.get(key));
+    }
+
+    public Set<DescriptorKey> getDescriptorKeys() {
+        return keyToDescriptor.keySet();
     }
 
     public Set<Descriptor> getDescriptorByType(DescriptorType descriptorType) {

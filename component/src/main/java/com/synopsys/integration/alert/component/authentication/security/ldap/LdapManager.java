@@ -1,7 +1,7 @@
 /*
  * component
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -25,7 +25,7 @@ import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -36,25 +36,25 @@ import com.synopsys.integration.alert.component.authentication.security.UserMana
 @Component
 public class LdapManager {
     private final AuthenticationDescriptorKey authenticationDescriptorKey;
-    private final ConfigurationAccessor configurationAccessor;
+    private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     private final UserManagementAuthoritiesPopulator authoritiesPopulator;
     private final InetOrgPersonContextMapper inetOrgPersonContextMapper;
 
     @Autowired
     public LdapManager(
         AuthenticationDescriptorKey authenticationDescriptorKey,
-        ConfigurationAccessor configurationAccessor,
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor,
         UserManagementAuthoritiesPopulator authoritiesPopulator,
         InetOrgPersonContextMapper inetOrgPersonContextMapper
     ) {
         this.authenticationDescriptorKey = authenticationDescriptorKey;
-        this.configurationAccessor = configurationAccessor;
+        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
         this.authoritiesPopulator = authoritiesPopulator;
         this.inetOrgPersonContextMapper = inetOrgPersonContextMapper;
     }
 
     public boolean isLdapEnabled() {
-        Optional<ConfigurationModel> ldapConfig = configurationAccessor.getConfigurationsByDescriptorKey(authenticationDescriptorKey)
+        Optional<ConfigurationModel> ldapConfig = configurationModelConfigurationAccessor.getConfigurationsByDescriptorKey(authenticationDescriptorKey)
                                                       .stream()
                                                       .findFirst();
         return ldapConfig.map(configurationModel -> Boolean.valueOf(getFieldValueOrEmpty(configurationModel, AuthenticationDescriptor.KEY_LDAP_ENABLED)))
@@ -62,7 +62,7 @@ public class LdapManager {
     }
 
     public FieldUtility getCurrentConfiguration() throws AlertConfigurationException {
-        ConfigurationModel configModel = configurationAccessor.getConfigurationsByDescriptorKey(authenticationDescriptorKey)
+        ConfigurationModel configModel = configurationModelConfigurationAccessor.getConfigurationsByDescriptorKey(authenticationDescriptorKey)
                                              .stream()
                                              .findFirst()
                                              .orElseThrow(() -> new AlertConfigurationException("Settings configuration missing"));

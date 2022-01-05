@@ -16,13 +16,13 @@ import org.springframework.data.domain.PageRequest;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.job.BlackDuckProjectDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
+import com.synopsys.integration.alert.database.api.DefaultConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.descriptor.api.MsTeamsKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
@@ -46,7 +46,7 @@ public class DistributionJobNotificationFilterRepositoryTestIT {
     @Autowired
     private JobAccessor jobAccessor;
     @Autowired
-    private ConfigurationAccessor configurationAccessor;
+    private DefaultConfigurationModelConfigurationAccessor configurationAccessor;
 
     private Long blackDuckConfigId = null;
 

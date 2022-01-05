@@ -1,7 +1,7 @@
 /*
  * api-channel-jira
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -162,6 +162,10 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
         if (optionalPolicyName.isPresent()) {
             concernType = ComponentConcernType.POLICY;
             additionalKey = JiraIssueSearchPropertyStringCompatibilityUtils.createPolicyAdditionalKey(optionalPolicyName.get());
+        }
+
+        if (alertIssueSource.getComponentUnknownVersionDetails().isPresent()) {
+            concernType = ComponentConcernType.UNKNOWN_VERSION;
         }
 
         String category = JiraIssueSearchPropertyStringCompatibilityUtils.createCategory(concernType);

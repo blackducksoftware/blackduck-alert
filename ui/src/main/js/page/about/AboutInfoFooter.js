@@ -2,12 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import {
-    Overlay,
-    Popover,
-    PopoverContent,
-    PopoverTitle
-} from 'react-bootstrap';
+import { Overlay, Popover, PopoverContent, PopoverTitle } from 'react-bootstrap';
 
 import SystemMessage from 'common/SystemMessage';
 import { getAboutInfo } from 'store/actions/about';
@@ -176,7 +171,7 @@ class AboutInfoFooter extends React.Component {
                     {version}
                 </span>
                 <span className="copyright">
-                    &nbsp;© 2021&nbsp;
+                    &nbsp;© 2022&nbsp;
                     <a id="aboutLink" href="https://www.synopsys.com/">Synopsys, Inc.</a>
                     &nbsp;All rights reserved
                 </span>

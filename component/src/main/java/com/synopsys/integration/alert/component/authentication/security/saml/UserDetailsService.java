@@ -1,7 +1,7 @@
 /*
  * component
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -19,8 +19,8 @@ import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
+import com.synopsys.integration.alert.common.security.UserPrincipal;
 import com.synopsys.integration.alert.component.authentication.security.UserManagementAuthoritiesPopulator;
-import com.synopsys.integration.alert.component.authentication.security.database.UserPrincipal;
 
 public class UserDetailsService implements SAMLUserDetailsService {
     private final UserManagementAuthoritiesPopulator authoritiesPopulator;

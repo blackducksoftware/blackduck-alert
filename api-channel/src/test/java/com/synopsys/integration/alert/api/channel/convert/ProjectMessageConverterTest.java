@@ -86,6 +86,11 @@ public class ProjectMessageConverterTest {
         LinkableItem longTermUpgradeGuidance = new LinkableItem("Upgrade Guidance - Long Term", "2.0");
         ComponentUpgradeGuidance componentUpgradeGuidance = new ComponentUpgradeGuidance(shortTermUpgradeGuidance, longTermUpgradeGuidance);
 
+        ComponentConcern unknownVersionConcern1 = ComponentConcern.unknownComponentVersion(ItemOperation.ADD, "Component-Unknown-Version-01", ComponentConcernSeverity.CRITICAL, 0, "https://synopsys.com");
+        ComponentConcern unknownVersionConcern2 = ComponentConcern.unknownComponentVersion(ItemOperation.ADD, "Component-Unknown-Version-01", ComponentConcernSeverity.MAJOR_HIGH, 1, "https://synopsys.com");
+        ComponentConcern unknownVersionConcern3 = ComponentConcern.unknownComponentVersion(ItemOperation.ADD, "Component-Unknown-Version-01", ComponentConcernSeverity.MINOR_MEDIUM, 2, "https://synopsys.com");
+        ComponentConcern unknownVersionConcern4 = ComponentConcern.unknownComponentVersion(ItemOperation.ADD, "Component-Unknown-Version-01", ComponentConcernSeverity.TRIVIAL_LOW, 3, "https://synopsys.com");
+
         LinkableItem attribute1 = new LinkableItem("Attribute", "The first attribute");
         LinkableItem attribute2 = new LinkableItem("Attribute Prime", "The second attribute");
 
@@ -94,7 +99,7 @@ public class ProjectMessageConverterTest {
             new LinkableItem("Component Version", "The component version"),
             createComponentVulnerabilities(),
             List.of(componentPolicy1, componentPolicy2),
-            List.of(policyConcern1, policyConcern2, vulnerabilityConcern1, vulnerabilityConcern2, vulnerabilityConcern3),
+            List.of(policyConcern1, policyConcern2, vulnerabilityConcern1, vulnerabilityConcern2, vulnerabilityConcern3, unknownVersionConcern1, unknownVersionConcern2, unknownVersionConcern3, unknownVersionConcern4),
             new LinkableItem("License", "The software license name", "https://license-url"),
             "The usage of the component",
             componentUpgradeGuidance,

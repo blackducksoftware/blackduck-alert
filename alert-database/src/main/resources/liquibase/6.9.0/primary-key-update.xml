@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="psantos" id="update-primary-key-user-role-mapping">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <primaryKeyExists schemaName="alert" tableName="user_roles"/>
+            </not>
+        </preConditions>
+        <addPrimaryKey schemaName="alert"
+                       tableName="user_roles"
+                       columnNames="user_id, role_id"
+                       constraintName="user_roles_pk"/>
+    </changeSet>
+</databaseChangeLog>

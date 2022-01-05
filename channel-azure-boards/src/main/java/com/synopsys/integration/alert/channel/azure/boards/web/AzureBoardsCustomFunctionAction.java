@@ -1,7 +1,7 @@
 /*
  * channel-azure-boards
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -9,13 +9,11 @@ package com.synopsys.integration.alert.channel.azure.boards.web;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -35,7 +33,7 @@ import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.action.api.ConfigResourceActions;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthEndpointResponse;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -53,7 +51,7 @@ import com.synopsys.integration.rest.proxy.ProxyInfo;
 public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthEndpointResponse> {
     private final Logger logger = LoggerFactory.getLogger(AzureBoardsCustomFunctionAction.class);
 
-    private final ConfigurationAccessor configurationAccessor;
+    private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     private final ConfigurationFieldModelConverter modelConverter;
     private final AzureBoardsGlobalConfigurationFieldModelValidator globalConfigurationValidator;
     private final AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory;
@@ -65,18 +63,19 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
 
     @Autowired
     public AzureBoardsCustomFunctionAction(
-        ConfigurationAccessor configurationAccessor,
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor,
         ConfigurationFieldModelConverter modelConverter,
         AzureBoardsGlobalConfigurationFieldModelValidator globalConfigurationValidator,
         AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory,
         AzureRedirectUrlCreator azureRedirectUrlCreator,
-        ProxyManager proxyManager, OAuthRequestValidator oAuthRequestValidator,
+        ProxyManager proxyManager,
+        OAuthRequestValidator oAuthRequestValidator,
         ConfigResourceActions configActions,
         AuthorizationManager authorizationManager,
         AlertWebServerUrlManager alertWebServerUrlManager
     ) {
         super(authorizationManager);
-        this.configurationAccessor = configurationAccessor;
+        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
         this.modelConverter = modelConverter;
         this.globalConfigurationValidator = globalConfigurationValidator;
         this.azureBoardsCredentialDataStoreFactory = azureBoardsCredentialDataStoreFactory;
@@ -105,17 +104,16 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
                 return createErrorResponse("Could not determine the alert server url for the callback.");
             }
 
-            String requestKey = createRequestKey();
+            String requestKey = oAuthRequestValidator.generateRequestKey();
             // since we have only one OAuth channel now remove any other requests.
             // if we have more OAuth clients then the "remove requests" will have to be removed from here.
             // beginning authentication process create the request id at the start.
-            Instant fiveMinutesAgo = Instant.now().minusSeconds(300);
-            oAuthRequestValidator.removeRequestsOlderThanInstant(fiveMinutesAgo);
+            oAuthRequestValidator.removeRequestsOlderThan5MinutesAgo();
             oAuthRequestValidator.addAuthorizationRequest(requestKey);
 
             logger.info("OAuth authorization request created: {}", requestKey);
             String authUrl = createAuthURL(clientId.get(), requestKey);
-            logger.debug("Authenticating Azure OAuth URL: " + authUrl);
+            logger.debug("Authenticating Azure OAuth URL: {}", authUrl);
             return new ActionResponse<>(HttpStatus.OK, new OAuthEndpointResponse(isAuthenticated(fieldUtility), authUrl, "Authenticating..."));
         } catch (Exception ex) {
             logger.error("Error activating Azure Boards", ex);
@@ -153,7 +151,7 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
         Map<String, ConfigurationFieldModel> fields = new HashMap<>(modelConverter.convertToConfigurationFieldModelMap(fieldModel));
         // check if a configuration exists because the client id is a sensitive field and won't have a value in the field model if updating.
         if (StringUtils.isNotBlank(fieldModel.getId())) {
-            configurationAccessor.getConfigurationById(Long.valueOf(fieldModel.getId()))
+            configurationModelConfigurationAccessor.getConfigurationById(Long.valueOf(fieldModel.getId()))
                 .map(ConfigurationModel::getCopyOfKeyToFieldMap)
                 .ifPresent(fields::putAll);
         }
@@ -186,11 +184,6 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
         queryBuilder.append("&redirect_uri=");
         queryBuilder.append(URLEncoder.encode(authorizationUrl, StandardCharsets.UTF_8));
         return queryBuilder.toString();
-    }
-
-    private String createRequestKey() {
-        UUID requestID = UUID.randomUUID();
-        return String.format("%s-%s", "alert-oauth-request", requestID.toString());
     }
 
 }

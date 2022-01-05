@@ -1,7 +1,7 @@
 /*
  * channel-azure-boards
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -15,12 +15,13 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
+import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidator;
 import com.synopsys.integration.alert.common.action.ApiAction;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -29,15 +30,22 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 @Component
 public class AzureBoardsGlobalApiAction extends ApiAction {
-    private final ConfigurationAccessor configurationAccessor;
+    private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     private final DescriptorMap descriptorMap;
     private final ConfigurationFieldModelConverter fieldModelConverter;
+    private final OAuthRequestValidator oAuthRequestValidator;
 
     @Autowired
-    public AzureBoardsGlobalApiAction(ConfigurationAccessor configurationAccessor, DescriptorMap descriptorMap, ConfigurationFieldModelConverter configurationFieldModelConverter) {
-        this.configurationAccessor = configurationAccessor;
+    public AzureBoardsGlobalApiAction(
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor,
+        DescriptorMap descriptorMap,
+        ConfigurationFieldModelConverter configurationFieldModelConverter,
+        OAuthRequestValidator oAuthRequestValidator
+    ) {
+        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
         this.descriptorMap = descriptorMap;
         this.fieldModelConverter = configurationFieldModelConverter;
+        this.oAuthRequestValidator = oAuthRequestValidator;
     }
 
     @Override
@@ -49,22 +57,27 @@ public class AzureBoardsGlobalApiAction extends ApiAction {
             return updatedFieldModel;
         }
         ConfigContextEnum context = ConfigContextEnum.valueOf(fieldModel.getContext());
-        List<ConfigurationModel> existingConfig = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey.get(), context);
+        List<ConfigurationModel> existingConfig = configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey.get(), context);
         Optional<ConfigurationModel> configurationModel = existingConfig.stream()
-                                                              .findFirst();
+            .findFirst();
         return configurationModel
-                   .map(config -> updateTokenFields(updatedFieldModel, config))
-                   .orElse(updatedFieldModel);
+            .map(config -> updateTokenFields(updatedFieldModel, config))
+            .orElse(updatedFieldModel);
 
     }
 
     @Override
     public FieldModel beforeUpdateAction(FieldModel fieldModel) throws AlertException {
         FieldModel updatedFieldModel = super.beforeUpdateAction(fieldModel);
-        Optional<ConfigurationModel> existingConfig = configurationAccessor.getConfigurationById(Long.valueOf(fieldModel.getId()));
+        Optional<ConfigurationModel> existingConfig = configurationModelConfigurationAccessor.getConfigurationById(Long.valueOf(fieldModel.getId()));
         return existingConfig
-                   .map(config -> updateTokenFields(updatedFieldModel, config))
-                   .orElse(updatedFieldModel);
+            .map(config -> updateTokenFields(updatedFieldModel, config))
+            .orElse(updatedFieldModel);
+    }
+
+    @Override
+    public void afterDeleteAction(FieldModel fieldModel) throws AlertException {
+        oAuthRequestValidator.removeAllRequests();
     }
 
     private FieldModel updateTokenFields(FieldModel fieldModel, ConfigurationModel configurationModel) {

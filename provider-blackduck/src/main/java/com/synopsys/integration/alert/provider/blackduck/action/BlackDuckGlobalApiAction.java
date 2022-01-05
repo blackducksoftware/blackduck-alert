@@ -1,7 +1,7 @@
 /*
  * provider-blackduck
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -17,7 +17,7 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.api.provider.lifecycle.ProviderSchedulingManager;
 import com.synopsys.integration.alert.common.action.ApiAction;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -32,20 +32,20 @@ public class BlackDuckGlobalApiAction extends ApiAction {
     private final ProviderSchedulingManager providerLifecycleManager;
     private final ProviderDataAccessor providerDataAccessor;
     private final BlackDuckProvider blackDuckProvider;
-    private final ConfigurationAccessor configurationAccessor;
+    private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     private final BlackDuckCacheHttpClientCache blackDuckCacheHttpClientCache;
 
     public BlackDuckGlobalApiAction(
         BlackDuckProvider blackDuckProvider,
         ProviderSchedulingManager providerLifecycleManager,
         ProviderDataAccessor providerDataAccessor,
-        ConfigurationAccessor configurationAccessor,
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor,
         BlackDuckCacheHttpClientCache blackDuckCacheHttpClientCache
     ) {
         this.blackDuckProvider = blackDuckProvider;
         this.providerLifecycleManager = providerLifecycleManager;
         this.providerDataAccessor = providerDataAccessor;
-        this.configurationAccessor = configurationAccessor;
+        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
         this.blackDuckCacheHttpClientCache = blackDuckCacheHttpClientCache;
     }
 
@@ -85,7 +85,7 @@ public class BlackDuckGlobalApiAction extends ApiAction {
     private void handleNewOrUpdatedConfig(FieldModel currentFieldModel) throws AlertException {
         Optional<String> providerConfigName = currentFieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
         if (providerConfigName.isPresent()) {
-            Optional<ConfigurationModel> retrievedConfig = configurationAccessor.getProviderConfigurationByName(providerConfigName.get());
+            Optional<ConfigurationModel> retrievedConfig = configurationModelConfigurationAccessor.getProviderConfigurationByName(providerConfigName.get());
             if (retrievedConfig.isPresent()) {
                 ConfigurationModel blackDuckGlobalConfig = retrievedConfig.get();
                 boolean valid = blackDuckProvider.validate(blackDuckGlobalConfig);

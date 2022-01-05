@@ -1,7 +1,7 @@
 /*
  * alert-common
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -17,7 +17,7 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 public abstract class ConfigurationAction {
     private final DescriptorKey descriptorKey;
     private final Map<ConfigContextEnum, ApiAction> apiActionMap = new EnumMap<>(ConfigContextEnum.class);
-    private final Map<ConfigContextEnum, TestAction> testActionMap = new EnumMap<>(ConfigContextEnum.class);
+    private final Map<ConfigContextEnum, FieldModelTestAction> testActionMap = new EnumMap<>(ConfigContextEnum.class);
 
     protected ConfigurationAction(DescriptorKey descriptorKey) {
         this.descriptorKey = descriptorKey;
@@ -31,19 +31,19 @@ public abstract class ConfigurationAction {
         apiActionMap.put(ConfigContextEnum.GLOBAL, apiAction);
     }
 
-    public void addGlobalTestAction(TestAction testAction) {
-        testActionMap.put(ConfigContextEnum.GLOBAL, testAction);
+    public void addGlobalTestAction(FieldModelTestAction fieldModelTestAction) {
+        testActionMap.put(ConfigContextEnum.GLOBAL, fieldModelTestAction);
     }
 
-    public void addDistributionTestAction(TestAction testAction) {
-        testActionMap.put(ConfigContextEnum.DISTRIBUTION, testAction);
+    public void addDistributionTestAction(FieldModelTestAction fieldModelTestAction) {
+        testActionMap.put(ConfigContextEnum.DISTRIBUTION, fieldModelTestAction);
     }
 
     public ApiAction getApiAction(ConfigContextEnum context) {
         return apiActionMap.get(context);
     }
 
-    public TestAction getTestAction(ConfigContextEnum context) {
+    public FieldModelTestAction getTestAction(ConfigContextEnum context) {
         return testActionMap.get(context);
     }
 

@@ -1,7 +1,7 @@
 /*
  * component
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -103,14 +103,14 @@ public class SettingsGlobalApiAction extends ApiAction {
             if (optionalEncryptionPassword.isPresent()) {
                 String passwordToSave = optionalEncryptionPassword.get().getValue().orElse("");
                 if (StringUtils.isNotBlank(passwordToSave)) {
-                    encryptionUtility.updatePasswordField(passwordToSave);
+                    encryptionUtility.updatePasswordFieldInVolumeDataFile(passwordToSave);
                 }
             }
 
             if (optionalEncryptionSalt.isPresent()) {
                 String saltToSave = optionalEncryptionSalt.get().getValue().orElse("");
                 if (StringUtils.isNotBlank(saltToSave)) {
-                    encryptionUtility.updateSaltField(saltToSave);
+                    encryptionUtility.updateSaltFieldInVolumeDataFile(saltToSave);
                 }
             }
         } catch (IllegalArgumentException | IOException ex) {

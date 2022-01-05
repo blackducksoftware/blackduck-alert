@@ -1,7 +1,7 @@
 /*
  * alert-database
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -55,7 +55,7 @@ public class DefaultJiraServerJobDetailsAccessor implements JiraServerJobDetails
         );
         JiraServerJobDetailsEntity savedJobDetails = jiraServerJobDetailsRepository.save(jiraServerJobDetailsToSave);
 
-        jiraServerJobCustomFieldRepository.deleteByJobId(jobId);
+        jiraServerJobCustomFieldRepository.bulkDeleteByJobId(jobId);
         List<JiraServerJobCustomFieldEntity> customFieldsToSave = jiraServerJobDetails.getCustomFields()
                                                                       .stream()
                                                                       .map(model -> new JiraServerJobCustomFieldEntity(savedJobDetails.getJobId(), model.getFieldName(), model.getFieldValue()))

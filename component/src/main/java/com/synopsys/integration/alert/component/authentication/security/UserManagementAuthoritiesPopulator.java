@@ -1,7 +1,7 @@
 /*
  * component
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -21,9 +21,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.enumeration.DefaultUserRole;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.enumeration.DefaultUserRole;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -35,13 +35,13 @@ import com.synopsys.integration.alert.component.authentication.descriptor.Authen
 public class UserManagementAuthoritiesPopulator {
     private final Logger logger = LoggerFactory.getLogger(UserManagementAuthoritiesPopulator.class);
     private final AuthenticationDescriptorKey authenticationDescriptorKey;
-    private final ConfigurationAccessor configurationAccessor;
+    private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     private final UserAccessor userAccessor;
 
     @Autowired
-    public UserManagementAuthoritiesPopulator(AuthenticationDescriptorKey authenticationDescriptorKey, ConfigurationAccessor configurationAccessor, UserAccessor userAccessor) {
+    public UserManagementAuthoritiesPopulator(AuthenticationDescriptorKey authenticationDescriptorKey, ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor, UserAccessor userAccessor) {
         this.authenticationDescriptorKey = authenticationDescriptorKey;
-        this.configurationAccessor = configurationAccessor;
+        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
         this.userAccessor = userAccessor;
     }
 
@@ -86,7 +86,7 @@ public class UserManagementAuthoritiesPopulator {
     }
 
     private ConfigurationModel getCurrentConfiguration() throws AlertException {
-        return configurationAccessor.getConfigurationsByDescriptorKey(authenticationDescriptorKey)
+        return configurationModelConfigurationAccessor.getConfigurationsByDescriptorKey(authenticationDescriptorKey)
                    .stream()
                    .findFirst()
                    .orElseThrow(() -> new AlertException("Settings configuration missing"));

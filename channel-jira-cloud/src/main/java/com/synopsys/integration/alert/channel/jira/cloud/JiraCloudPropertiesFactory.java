@@ -1,7 +1,7 @@
 /*
  * channel-jira-cloud
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -29,13 +29,13 @@ import com.synopsys.integration.rest.proxy.ProxyInfo;
 public class JiraCloudPropertiesFactory {
     private final JiraCloudChannelKey channelKey;
     private final ProxyManager proxyManager;
-    private final ConfigurationAccessor configurationAccessor;
+    private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
 
     @Autowired
-    public JiraCloudPropertiesFactory(JiraCloudChannelKey channelKey, ProxyManager proxyManager, ConfigurationAccessor configurationAccessor) {
+    public JiraCloudPropertiesFactory(JiraCloudChannelKey channelKey, ProxyManager proxyManager, ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor) {
         this.channelKey = channelKey;
         this.proxyManager = proxyManager;
-        this.configurationAccessor = configurationAccessor;
+        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
     }
 
     public JiraCloudProperties createJiraProperties(FieldUtility fieldUtility) {
@@ -62,7 +62,7 @@ public class JiraCloudPropertiesFactory {
     }
 
     public JiraCloudProperties createJiraProperties() throws AlertConfigurationException {
-        ConfigurationModel jiraServerGlobalConfig = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(channelKey, ConfigContextEnum.GLOBAL)
+        ConfigurationModel jiraServerGlobalConfig = configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(channelKey, ConfigContextEnum.GLOBAL)
                                                         .stream()
                                                         .findAny()
                                                         .orElseThrow(() -> new AlertConfigurationException("Missing Jira Cloud global configuration"));
@@ -75,7 +75,7 @@ public class JiraCloudPropertiesFactory {
         String accessToken = fieldAccessToken.getValue().orElse("");
         boolean accessTokenSet = fieldAccessToken.getIsSet();
         if (StringUtils.isBlank(accessToken) && accessTokenSet) {
-            return configurationAccessor.getConfigurationsByDescriptorKeyAndContext(ChannelKeys.JIRA_CLOUD, ConfigContextEnum.GLOBAL)
+            return configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(ChannelKeys.JIRA_CLOUD, ConfigContextEnum.GLOBAL)
                        .stream()
                        .findFirst()
                        .flatMap(configurationModel -> configurationModel.getField(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN))

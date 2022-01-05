@@ -1,7 +1,7 @@
 /*
  * api-channel-jira
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -21,9 +21,9 @@ import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDeta
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueCommenter;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueResponseCreator;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueTransitioner;
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueMissingTransitionException;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.model.components.IdComponent;
 import com.synopsys.integration.jira.common.model.components.StatusCategory;

@@ -1,7 +1,7 @@
 /*
  * azure-boards-common
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -10,9 +10,8 @@ package com.synopsys.integration.azure.boards.common.service.project;
 import java.util.List;
 import java.util.Map;
 
-import org.jetbrains.annotations.Nullable;
-
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.azure.boards.common.model.ReferenceLinkModel;
 import com.synopsys.integration.azure.boards.common.service.query.SupportedQueryOperationModel;

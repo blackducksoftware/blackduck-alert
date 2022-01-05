@@ -3,8 +3,12 @@ import HeaderUtilities from 'common/util/HeaderUtilities';
 export const ALERT_API_URL = '/alert/api';
 export const CONFIG_API_URL = `${ALERT_API_URL}/configuration`;
 export const JOB_API_URL = `${ALERT_API_URL}/configuration/job`;
+export const JOB_AUDIT_API_URL = `${ALERT_API_URL}/distribution/audit-statuses`;
 export const ROLE_API_URL = `${ALERT_API_URL}/configuration/role`;
 export const USER_API_URL = `${ALERT_API_URL}/configuration/user`;
+export const SETTINGS_API_URL = `${ALERT_API_URL}/settings`;
+export const ENCRYPTION_API_URL = `${SETTINGS_API_URL}/encryption`;
+export const PROXY_API_URL = `${SETTINGS_API_URL}/proxy`;
 
 export function createReadAllRequest(apiUrl, csrfToken, context, descriptorName) {
     const queryParams = {
@@ -109,8 +113,12 @@ export function createValidateRequest(apiUrl, csrfToken, fieldModel) {
     });
 }
 
-export function createTestRequest(apiUrl, csrfToken, fieldModel) {
-    const url = `${apiUrl}/test`;
+export function createTestRequest(apiUrl, csrfToken, fieldModel, queryParam) {
+    let url = `${apiUrl}/test`;
+    if (queryParam) {
+        url = url.concat(`?${queryParam}`);
+    }
+
     const headersUtil = new HeaderUtilities();
     headersUtil.addDefaultHeaders(csrfToken);
     return fetch(url, {

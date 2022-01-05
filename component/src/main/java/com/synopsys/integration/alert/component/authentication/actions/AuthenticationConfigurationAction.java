@@ -1,7 +1,7 @@
 /*
  * component
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -17,10 +17,10 @@ import com.synopsys.integration.alert.component.authentication.descriptor.Authen
 public class AuthenticationConfigurationAction extends ConfigurationAction {
 
     @Autowired
-    protected AuthenticationConfigurationAction(AuthenticationDescriptorKey descriptorKey, AuthenticationApiAction authenticationApiAction, AuthenticationTestAction authenticationTestAction) {
+    protected AuthenticationConfigurationAction(AuthenticationDescriptorKey descriptorKey, AuthenticationApiAction authenticationApiAction, AuthenticationFieldModelTestAction authenticationFieldModelTestAction) {
         super(descriptorKey);
         addGlobalApiAction(authenticationApiAction);
-        addGlobalTestAction(authenticationTestAction);
+        addGlobalTestAction(authenticationFieldModelTestAction);
 
     }
 }

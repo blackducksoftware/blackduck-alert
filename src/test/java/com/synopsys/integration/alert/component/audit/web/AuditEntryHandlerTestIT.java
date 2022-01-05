@@ -37,7 +37,7 @@ import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.RestApiAuditAccessor;
@@ -87,7 +87,7 @@ public class AuditEntryHandlerTestIT {
     @Autowired
     private JobAccessor jobAccessor;
     @Autowired
-    private ConfigurationAccessor configurationAccessor;
+    private ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     @Autowired
     private DescriptorConfigRepository descriptorConfigRepository;
     @Autowired
@@ -132,13 +132,13 @@ public class AuditEntryHandlerTestIT {
         blackduckTimeout.setFieldValue("300");
 
         List<ConfigurationFieldModel> providerConfigFields = List.of(providerConfigEnabled, providerConfigName, blackduckUrl, blackduckApiKey, blackduckTimeout);
-        providerConfigModel = configurationAccessor.createConfiguration(new BlackDuckProviderKey(), ConfigContextEnum.GLOBAL, providerConfigFields);
+        providerConfigModel = configurationModelConfigurationAccessor.createConfiguration(new BlackDuckProviderKey(), ConfigContextEnum.GLOBAL, providerConfigFields);
         mockNotification.setProviderConfigId(providerConfigModel.getConfigurationId());
     }
 
     @AfterEach
     public void cleanup() {
-        configurationAccessor.deleteConfiguration(providerConfigModel.getConfigurationId());
+        configurationModelConfigurationAccessor.deleteConfiguration(providerConfigModel.getConfigurationId());
 
         auditEntryRepository.flush();
         notificationContentRepository.flush();

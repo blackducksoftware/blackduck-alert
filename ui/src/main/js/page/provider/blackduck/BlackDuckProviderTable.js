@@ -1,7 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import {
-    BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn
-} from 'react-bootstrap-table';
+import { BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn } from 'react-bootstrap-table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useHistory } from 'react-router-dom';
 import * as PropTypes from 'prop-types';
@@ -11,6 +9,7 @@ import { BLACKDUCK_GLOBAL_FIELD_KEYS, BLACKDUCK_INFO, BLACKDUCK_URLS } from 'pag
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import ConfirmModal from 'common/ConfirmModal';
 import IconTableCellFormatter from 'common/table/IconTableCellFormatter';
+import { ProgressIcon } from 'common/table/ProgressIcon';
 
 const BlackDuckProviderTable = ({
     csrfToken, readonly, showRefreshButton, displayDelete
@@ -18,6 +17,7 @@ const BlackDuckProviderTable = ({
     const [tableData, setTableData] = useState([]);
     const [showDelete, setShowDelete] = useState(false);
     const [allSelectedRows, setAllSelectedRows] = useState([]);
+    const [progress, setProgress] = useState(false);
     const tableRef = useRef();
     const history = useHistory();
 
@@ -25,6 +25,7 @@ const BlackDuckProviderTable = ({
     const deleteRequest = (id) => ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, id);
 
     const retrieveTableData = async () => {
+        setProgress(true);
         const response = await readRequest();
         const data = await response.json();
 
@@ -38,9 +39,11 @@ const BlackDuckProviderTable = ({
             createdAt: fieldModel.createdAt
         }));
         setTableData(convertedTableData);
+        setProgress(false);
     };
 
     const deleteTableData = async () => {
+        setProgress(true);
         if (allSelectedRows) {
             allSelectedRows.forEach((configId) => {
                 deleteRequest(configId);
@@ -48,6 +51,7 @@ const BlackDuckProviderTable = ({
         }
         await retrieveTableData();
         setShowDelete(false);
+        setProgress(false);
     };
 
     useEffect(() => {
@@ -252,6 +256,7 @@ const BlackDuckProviderTable = ({
                 {createIconTableHeader(editColumnFormatter(), 'Edit')}
                 {createIconTableHeader(copyColumnFormatter(), 'Copy')}
             </BootstrapTable>
+            <ProgressIcon inProgress={progress} />
         </div>
     );
 };

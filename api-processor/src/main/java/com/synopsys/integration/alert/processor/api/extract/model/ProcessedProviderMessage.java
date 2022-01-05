@@ -1,7 +1,7 @@
 /*
  * api-processor
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -12,9 +12,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
 public class ProcessedProviderMessage<T extends ProviderMessage<T>> extends AlertSerializableModel implements CombinableModel<ProcessedProviderMessage<T>> {
+    private static final String[] EXCLUDED_COMPARISON_FIELDS = { "notificationIds" };
     private final Set<Long> notificationIds;
     private final T providerMessage;
 
@@ -55,4 +59,13 @@ public class ProcessedProviderMessage<T extends ProviderMessage<T>> extends Aler
         throw new IllegalStateException("Combining models had more than two results");
     }
 
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this, EXCLUDED_COMPARISON_FIELDS);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj, EXCLUDED_COMPARISON_FIELDS);
+    }
 }

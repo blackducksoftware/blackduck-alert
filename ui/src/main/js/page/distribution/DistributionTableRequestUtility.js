@@ -38,6 +38,7 @@ const readAuditDataAndBuildTableData = (csrfToken, errorHandler, stateUpdateFunc
         setProgress, setTableData
     } = stateUpdateFunctions;
 
+    setProgress(true);
     const jobIds = [];
     jobs.forEach((jobConfig) => {
         jobIds.push(jobConfig.jobId);
@@ -86,7 +87,7 @@ export const fetchDistributions = ({
     const {
         setProgress, setError, setTotalPages, setTableData
     } = stateUpdateFunctions;
-    setProgress(false);
+    setProgress(true);
     const pageNumber = currentPage ? currentPage - 1 : 0;
     const searchPageSize = pageSize || 10;
     const encodedSearchTerm = encodeURIComponent(searchTerm);
@@ -103,6 +104,42 @@ export const fetchDistributions = ({
                         setError(errorHandler.handle(response, responseData, true));
                         setTableData([]);
                     }
+                });
+        })
+        .catch((httpError) => {
+            console.log(httpError);
+            setError(HTTPErrorUtils.createErrorObject({ message: httpError }));
+            setProgress(false);
+        });
+};
+
+export const fetchDistributionsWithAudit = ({
+    csrfToken, errorHandler, pagingData, sortData, stateUpdateFunctions, createTableEntry
+}) => {
+    const { currentPage, pageSize, searchTerm } = pagingData;
+    const {
+        setProgress, setError, setTotalPages, setTableData
+    } = stateUpdateFunctions;
+    const { sortName, sortOrder } = sortData;
+    setProgress(true);
+    const pageNumber = currentPage ? currentPage - 1 : 0;
+    const searchPageSize = pageSize || 10;
+    const encodedSearchTerm = encodeURIComponent(searchTerm);
+    const requestUrl = `${ConfigRequestBuilder.JOB_AUDIT_API_URL}?pageNumber=${pageNumber}&pageSize=${searchPageSize}&searchTerm=${encodedSearchTerm}&sortBy=${sortName}&sortOrder=${sortOrder}`;
+    createReadRequest(requestUrl, csrfToken)
+        .then((response) => {
+            response.json()
+                .then((responseData) => {
+                    if (response.ok) {
+                        const { models } = responseData;
+                        setTotalPages(responseData.totalPages);
+                        const tableData = models.map((model) => createTableEntry(model));
+                        setTableData(tableData);
+                    } else {
+                        setError(errorHandler.handle(response, responseData, true));
+                        setTableData([]);
+                    }
+                    setProgress(false);
                 });
         })
         .catch((httpError) => {

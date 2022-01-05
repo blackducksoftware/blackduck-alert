@@ -1,7 +1,7 @@
 /*
  * alert-common
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -21,9 +21,12 @@ public class ValidationActionResponse extends ActionResponse<ValidationResponseM
 
     public static ValidationActionResponse createResponseFromIntegrationRestException(IntegrationRestException integrationRestException) {
         String exceptionMessage = integrationRestException.getMessage();
-        String message = exceptionMessage;
+        String message = (StringUtils.isNotBlank(exceptionMessage)) ? exceptionMessage : "";
         if (StringUtils.isNotBlank(integrationRestException.getHttpStatusMessage())) {
-            message += ": " + integrationRestException.getHttpStatusMessage();
+            if (StringUtils.isNotBlank(message)) {
+                message += ": ";
+            }
+            message += integrationRestException.getHttpStatusMessage();
         }
         return new ValidationActionResponse(HttpStatus.valueOf(integrationRestException.getHttpStatusCode()), ValidationResponseModel.generalError(message));
     }

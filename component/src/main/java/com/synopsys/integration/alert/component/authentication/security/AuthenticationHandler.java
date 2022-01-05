@@ -1,7 +1,7 @@
 /*
  * component
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -77,7 +77,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptorKey;
@@ -105,13 +105,13 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     private final FilePersistenceUtil filePersistenceUtil;
     private final UserManagementAuthoritiesPopulator authoritiesPopulator;
-    private final ConfigurationAccessor configurationAccessor;
+    private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     private final AuthenticationDescriptorKey authenticationDescriptorKey;
     private final AuthenticationEventManager authenticationEventManager;
 
     @Autowired
     AuthenticationHandler(HttpPathManager httpPathManager, CsrfTokenRepository csrfTokenRepository, AlertProperties alertProperties, RoleAccessor roleAccessor,
-        FilePersistenceUtil filePersistenceUtil, UserManagementAuthoritiesPopulator authoritiesPopulator, ConfigurationAccessor configurationAccessor,
+        FilePersistenceUtil filePersistenceUtil, UserManagementAuthoritiesPopulator authoritiesPopulator, ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor,
         AuthenticationDescriptorKey authenticationDescriptorKey, AuthenticationEventManager authenticationEventManager) {
         this.httpPathManager = httpPathManager;
         this.csrfTokenRepository = csrfTokenRepository;
@@ -119,7 +119,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
         this.roleAccessor = roleAccessor;
         this.filePersistenceUtil = filePersistenceUtil;
         this.authoritiesPopulator = authoritiesPopulator;
-        this.configurationAccessor = configurationAccessor;
+        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
         this.authenticationDescriptorKey = authenticationDescriptorKey;
         this.authenticationEventManager = authenticationEventManager;
     }
@@ -265,7 +265,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Bean
     public SAMLContext samlContext() {
-        return new SAMLContext(authenticationDescriptorKey, configurationAccessor);
+        return new SAMLContext(authenticationDescriptorKey, configurationModelConfigurationAccessor);
     }
 
     @Bean

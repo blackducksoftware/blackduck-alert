@@ -1,7 +1,7 @@
 /*
  * channel-azure-boards
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -16,7 +16,7 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 @Component
 public class AzureBoardsConfigurationAction extends ConfigurationAction {
     @Autowired
-    protected AzureBoardsConfigurationAction(AzureBoardsGlobalTestAction azureBoardsGlobalTestAction, AzureBoardsGlobalApiAction azureBoardsGlobalApiAction) {
+    protected AzureBoardsConfigurationAction(AzureBoardsGlobalFieldModelTestAction azureBoardsGlobalTestAction, AzureBoardsGlobalApiAction azureBoardsGlobalApiAction) {
         super(ChannelKeys.AZURE_BOARDS);
         addGlobalTestAction(azureBoardsGlobalTestAction);
         addGlobalApiAction(azureBoardsGlobalApiAction);

@@ -1,7 +1,7 @@
 /*
  * alert-common
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -23,7 +23,7 @@ public interface NotificationAccessor {
 
     Optional<AlertNotificationModel> findById(Long notificationId);
 
-    List<AlertNotificationModel> findByCreatedAtBetween(OffsetDateTime startDate, OffsetDateTime endDate);
+    AlertPagedModel<AlertNotificationModel> findByCreatedAtBetween(OffsetDateTime startDate, OffsetDateTime endDate, int pageNumber, int pageSize);
 
     List<AlertNotificationModel> findByCreatedAtBefore(OffsetDateTime date);
 
@@ -38,5 +38,7 @@ public interface NotificationAccessor {
     int deleteNotificationsCreatedBefore(OffsetDateTime date);
 
     void deleteNotification(AlertNotificationModel notification);
+
+    boolean hasMoreNotificationsToProcess();
 
 }

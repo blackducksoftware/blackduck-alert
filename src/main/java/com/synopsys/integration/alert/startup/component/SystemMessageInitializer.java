@@ -1,7 +1,7 @@
 /*
  * blackduck-alert
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.provider.Provider;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
@@ -30,16 +30,16 @@ public class SystemMessageInitializer extends StartupComponent {
     private final Logger logger = LoggerFactory.getLogger(SystemMessageInitializer.class);
     private final List<Provider> providers;
     private final SettingsSystemValidator settingsSystemValidator;
-    private final ConfigurationAccessor configurationAccessor;
+    private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     private final UserSystemValidator userSystemValidator;
     private final SystemMessageAccessor systemMessageAccessor;
 
     @Autowired
-    public SystemMessageInitializer(List<Provider> providers, SettingsSystemValidator settingsSystemValidator, ConfigurationAccessor configurationAccessor, UserSystemValidator userSystemValidator,
+    public SystemMessageInitializer(List<Provider> providers, SettingsSystemValidator settingsSystemValidator, ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor, UserSystemValidator userSystemValidator,
         SystemMessageAccessor systemMessageAccessor) {
         this.providers = providers;
         this.settingsSystemValidator = settingsSystemValidator;
-        this.configurationAccessor = configurationAccessor;
+        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
         this.userSystemValidator = userSystemValidator;
         this.systemMessageAccessor = systemMessageAccessor;
     }
@@ -72,7 +72,7 @@ public class SystemMessageInitializer extends StartupComponent {
         boolean valid = true;
         logger.info("Validating configured providers: ");
         for (Provider provider : providers) {
-            List<ConfigurationModel> configurations = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(provider.getKey(), ConfigContextEnum.GLOBAL);
+            List<ConfigurationModel> configurations = configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(provider.getKey(), ConfigContextEnum.GLOBAL);
             valid = configurations.stream()
                         .filter(model -> !model.getCopyOfFieldList().isEmpty())
                         .allMatch(provider::validate);

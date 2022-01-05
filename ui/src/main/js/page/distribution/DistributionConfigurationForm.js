@@ -9,6 +9,7 @@ import {
     DISTRIBUTION_FREQUENCY_OPTIONS,
     DISTRIBUTION_NOTIFICATION_TYPE_OPTIONS,
     DISTRIBUTION_POLICY_SELECT_COLUMNS,
+    DISTRIBUTION_PROCESSING_DESCRIPTIONS,
     DISTRIBUTION_PROCESSING_TYPES,
     DISTRIBUTION_PROJECT_SELECT_COLUMNS,
     DISTRIBUTION_TEST_FIELD_KEYS,
@@ -155,6 +156,8 @@ const DistributionConfigurationForm = ({
         }
     };
 
+    const getProcessingDescription = (processingType) => DISTRIBUTION_PROCESSING_DESCRIPTIONS[processingType] || '';
+
     useEffect(() => {
         switch (selectedChannel.toString()) {
             case AZURE_INFO.key:
@@ -278,6 +281,8 @@ const DistributionConfigurationForm = ({
         </div>
     );
 
+    const processingFieldDescription = `Select the way messages will be processed: ${getProcessingDescription(FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.processingType))}`;
+
     // TODO need to provide finer grain control with permissions.
     return (
         <CommonGlobalConfiguration
@@ -341,6 +346,7 @@ const DistributionConfigurationForm = ({
                 />
                 <SelectInput
                     id={DISTRIBUTION_COMMON_FIELD_KEYS.frequency}
+                    name={DISTRIBUTION_COMMON_FIELD_KEYS.frequency}
                     label="Frequency"
                     description="Select how frequently this job should check for notifications to send."
                     options={DISTRIBUTION_FREQUENCY_OPTIONS}
@@ -388,6 +394,7 @@ const DistributionConfigurationForm = ({
                     <div>
                         <SelectInput
                             id={DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes}
+                            name={DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes}
                             label="Notification Types"
                             description="Select one or more of the notification types. Only these notification types will be included for this distribution job."
                             options={DISTRIBUTION_NOTIFICATION_TYPE_OPTIONS}
@@ -402,8 +409,9 @@ const DistributionConfigurationForm = ({
                         />
                         <SelectInput
                             id={DISTRIBUTION_COMMON_FIELD_KEYS.processingType}
+                            name={DISTRIBUTION_COMMON_FIELD_KEYS.processingType}
                             label="Processing"
-                            description="Select the way messages will be processed: <TODO create the dynamic description>"
+                            description={processingFieldDescription}
                             options={processingTypes}
                             readOnly={readonly}
                             required
@@ -485,6 +493,7 @@ const DistributionConfigurationForm = ({
                         />
                         <SelectInput
                             id={DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter}
+                            name={DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter}
                             label="Vulnerability Notification Contains Severities"
                             description="Filters out the notifications that do not contain any of the relevant severities (You must have the vulnerability notification type selected for this filter to apply)."
                             options={DISTRIBUTION_VULNERABILITY_SEVERITY_OPTIONS}

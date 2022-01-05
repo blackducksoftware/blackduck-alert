@@ -1,9 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Select, {
-    components,
-    Creatable
-} from 'react-select';
+import Select, { components } from 'react-select';
+import Creatable from 'react-select/creatable';
 import LabeledField, { LabelFieldPropertyDefaults } from 'common/input/field/LabeledField';
 import DescriptorOption from 'common/DescriptorOption';
 
@@ -12,6 +10,7 @@ const { Option, SingleValue, MultiValue } = components;
 const DynamicSelectInput = ({
     onChange,
     id,
+    name,
     inputClass,
     options,
     searchable,
@@ -48,7 +47,7 @@ const DynamicSelectInput = ({
         const parsedArray = (Array.isArray(option) && option.length > 0) ? option.map((mappedOption) => mappedOption.value) : [singleSelectOptionValue];
         onChange({
             target: {
-                name: id,
+                name,
                 value: parsedArray
             }
         });
@@ -78,6 +77,14 @@ const DynamicSelectInput = ({
         MultiValue: multiTypeLabel
     };
 
+    // moves the dropdown in front of our fixed buttons
+    const selectStyles = {
+        menu: (base, state) => ({
+            ...base,
+            zIndex: '101'
+        })
+    };
+
     const createStandardSelect = () => (
         <Select
             id={id}
@@ -97,6 +104,7 @@ const DynamicSelectInput = ({
             onFocus={onFocus}
             menuPlacement="auto"
             maxMenuHeight={250}
+            styles={selectStyles}
         />
     );
 
@@ -119,6 +127,7 @@ const DynamicSelectInput = ({
             onFocus={onFocus}
             menuPlacement="auto"
             maxMenuHeight={250}
+            styles={selectStyles}
         />
     );
 
@@ -143,6 +152,7 @@ const DynamicSelectInput = ({
 
 DynamicSelectInput.propTypes = {
     id: PropTypes.string,
+    name: PropTypes.string,
     inputClass: PropTypes.string,
     selectSpacingClass: PropTypes.string,
     options: PropTypes.array,
@@ -167,6 +177,7 @@ DynamicSelectInput.propTypes = {
 
 DynamicSelectInput.defaultProps = {
     id: 'dynamicSelectInputId',
+    name: 'dynamicSelectInputId',
     value: [],
     placeholder: 'Choose a value',
     options: [],

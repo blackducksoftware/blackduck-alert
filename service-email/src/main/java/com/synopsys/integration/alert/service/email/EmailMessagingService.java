@@ -1,7 +1,7 @@
 /*
  * service-email
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -10,9 +10,11 @@ package com.synopsys.integration.alert.service.email;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -29,10 +31,11 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
@@ -43,26 +46,26 @@ import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 
+@Component
 public class EmailMessagingService {
     public static final String EMAIL_SUBJECT_LINE_TEMPLATE = "subjectLineTemplate";
     private final Logger logger = LoggerFactory.getLogger(EmailMessagingService.class);
 
-    private final EmailProperties emailProperties;
     private final FreemarkerTemplatingService freemarkerTemplatingService;
 
-    public EmailMessagingService(EmailProperties emailProperties, FreemarkerTemplatingService freemarkerTemplatingService) {
-        this.emailProperties = emailProperties;
+    @Autowired
+    public EmailMessagingService(FreemarkerTemplatingService freemarkerTemplatingService) {
         this.freemarkerTemplatingService = freemarkerTemplatingService;
     }
 
-    public void sendEmailMessage(EmailTarget emailTarget) throws AlertException {
+    public void sendEmailMessage(Properties javamailProperties, String smtpFrom, String smtpHost, int smtpPort, boolean smtpAuth, String smtpUsername, String smtpPassword, EmailTarget emailTarget) throws AlertException {
         try {
             String templateName = StringUtils.trimToEmpty(emailTarget.getTemplateName());
             Set<String> emailAddresses = emailTarget.getEmailAddresses()
-                                             .stream()
-                                             .map(String::trim)
-                                             .filter(StringUtils::isNotBlank)
-                                             .collect(Collectors.toSet());
+                .stream()
+                .map(String::trim)
+                .filter(StringUtils::isNotBlank)
+                .collect(Collectors.toSet());
             if (emailAddresses.isEmpty() || StringUtils.isBlank(templateName)) {
                 // Nothing to send
                 logger.debug("No non-blank email addresses were provided");
@@ -70,7 +73,7 @@ public class EmailMessagingService {
             }
 
             Map<String, Object> model = emailTarget.getModel();
-            Session session = createMailSession(emailProperties);
+            Session session = Session.getInstance(javamailProperties);
             TemplateLoader templateLoader = freemarkerTemplatingService.createClassTemplateLoader("/templates/email");
             Configuration templateDirectory = freemarkerTemplatingService.createFreemarkerConfig(templateLoader);
             Template emailTemplate = templateDirectory.getTemplate(templateName);
@@ -93,8 +96,9 @@ public class EmailMessagingService {
             }
             Template subjectLineTemplate = new Template(EMAIL_SUBJECT_LINE_TEMPLATE, subjectLine, templateDirectory);
             String resolvedSubjectLine = freemarkerTemplatingService.resolveTemplate(model, subjectLineTemplate);
-            List<Message> messages = createMessages(emailAddresses, resolvedSubjectLine, session, mimeMultipart, emailProperties);
-            sendMessages(emailProperties, session, messages);
+
+            List<Message> messages = createMessages(emailAddresses, resolvedSubjectLine, session, mimeMultipart, smtpFrom);
+            sendMessages(smtpAuth, smtpHost, smtpPort, smtpUsername, smtpPassword, session, messages);
         } catch (MessagingException | IOException | IntegrationException ex) {
             String errorMessage = "Could not send the email. " + ex.getMessage();
             throw new AlertException(errorMessage, ex);
@@ -107,15 +111,7 @@ public class EmailMessagingService {
         contentIdsToFilePaths.put("<" + cid + ">", value);
     }
 
-    private Session createMailSession(EmailProperties emailProperties) {
-        Map<String, String> sessionProps = emailProperties.getJavamailConfigProperties();
-        Properties props = new Properties();
-        props.putAll(sessionProps);
-
-        return Session.getInstance(props);
-    }
-
-    private List<Message> createMessages(Collection<String> emailAddresses, String subjectLine, Session session, MimeMultipart mimeMultipart, EmailProperties emailProperties)
+    private List<Message> createMessages(Collection<String> emailAddresses, String subjectLine, Session session, MimeMultipart mimeMultipart, String fromString)
         throws AlertException, MessagingException {
         List<InternetAddress> addresses = new ArrayList<>();
         Set<String> invalidAddresses = new HashSet<>();
@@ -139,7 +135,6 @@ public class EmailMessagingService {
             throw new AlertException(noValidAddressesErrorMessage);
         }
 
-        String fromString = emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_FROM_KEY);
         InternetAddress fromAddress;
         if (StringUtils.isBlank(fromString)) {
             logger.warn("No 'from' address specified");
@@ -165,51 +160,52 @@ public class EmailMessagingService {
         return messages;
     }
 
-    public void sendMessages(EmailProperties emailProperties, Session session, List<Message> messages) throws AlertException {
+    public void sendMessages(boolean auth, String host, int port, String username, String password, Session session, List<Message> messages) throws AlertException {
         Set<String> errorMessages = new HashSet<>();
-        Set<String> invalidRecipients = new HashSet<>();
-        for (Message message : messages) {
-            Address[] recipients = null;
-            try {
-                recipients = message.getAllRecipients();
-                if (Boolean.valueOf(emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_AUTH_KEY))) {
-                    sendAuthenticated(emailProperties, message, session);
-                } else {
-                    Transport.send(message);
-                }
-            } catch (MessagingException e) {
-                if (recipients != null) {
-                    Stream.of(recipients).map(Address::toString).forEach(invalidRecipients::add);
-                }
-                errorMessages.add(e.getMessage());
-                logger.error("Could not send this email to the following recipients: {}. Reason: {}", recipients, e.getMessage());
+
+        try (Transport transport = getAndConnectTransport(auth, host, port, username, password, session)) {
+            for (Message message : messages) {
+                Optional<String> errors = sendMessage(transport, message);
+                errors.ifPresent(errorMessages::add);
             }
+        } catch (MessagingException e) {
+            String errorMessage = "Could not setup the email transport: " + e.getMessage();
+            logger.error(errorMessage);
+            throw new AlertException(errorMessage, e);
         }
+        logger.trace("Transport session closed.");
         if (!errorMessages.isEmpty()) {
-            String joinedErrorMessages = StringUtils.join(errorMessages, ", ");
-            String errorMessage;
-            if (invalidRecipients.isEmpty()) {
-                errorMessage = "Errors sending emails. " + joinedErrorMessages;
-            } else {
-                errorMessage = String.format("Error sending emails to the following recipients: %s. %s.", invalidRecipients, joinedErrorMessages);
-            }
-            throw new AlertException(errorMessage);
+            String joinedErrorMessages = StringUtils.join(errorMessages, System.lineSeparator());
+            logger.error(joinedErrorMessages);
+            throw new AlertException(joinedErrorMessages);
         }
     }
 
-    private void sendAuthenticated(EmailProperties emailProperties, Message message, Session session) throws MessagingException {
-        String host = emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_HOST_KEY);
-        int port = NumberUtils.toInt(emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_PORT_KEY));
-        String username = emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_USER_KEY);
-        String password = emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY);
-
-        Transport transport = session.getTransport("smtp");
-        try {
+    private Transport getAndConnectTransport(boolean auth, String host, int port, String username, String password, Session session) throws MessagingException {
+        Transport transport = session.getTransport();
+        if (auth) {
             transport.connect(host, port, username, password);
-            transport.sendMessage(message, message.getAllRecipients());
-        } finally {
-            transport.close();
+        } else {
+            transport.connect();
         }
+        logger.trace("Transport session established.");
+        return transport;
+    }
+
+    private Optional<String> sendMessage(Transport transport, Message message) {
+        Address[] recipients = null;
+        try {
+            recipients = message.getAllRecipients();
+            transport.sendMessage(message, recipients);
+        } catch (MessagingException e) {
+            Set<String> recipientAddresses = Collections.emptySet();
+            if (recipients != null) {
+                recipientAddresses = Stream.of(recipients).map(Address::toString).collect(Collectors.toSet());
+            }
+            String error = String.format("Could not send this email to the following recipients: %s. Reason: %s", recipientAddresses, e.getMessage());
+            return Optional.of(error);
+        }
+        return Optional.empty();
     }
 
     private String generateContentId(String value) {

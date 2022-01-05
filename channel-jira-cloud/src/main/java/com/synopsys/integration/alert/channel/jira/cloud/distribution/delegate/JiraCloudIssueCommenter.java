@@ -1,14 +1,14 @@
 /*
  * channel-jira-cloud
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.synopsys.integration.alert.channel.jira.cloud.distribution.delegate;
 
-import com.synopsys.integration.alert.api.channel.jira.distribution.delegate.JiraIssueCommenter;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueResponseCreator;
+import com.synopsys.integration.alert.api.channel.jira.distribution.delegate.JiraIssueCommenter;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.service.IssueService;

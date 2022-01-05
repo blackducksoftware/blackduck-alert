@@ -1,7 +1,7 @@
 /*
  * blackduck-alert
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -18,10 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.descriptor.accessor.DefaultDescriptorGlobalConfigUtility;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
@@ -30,7 +30,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.component.authentication.actions.AuthenticationApiAction;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptorKey;
-import com.synopsys.integration.alert.startup.EnvironmentVariableUtility;
+import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
 
 @Component
 @Order(11)
@@ -47,10 +47,10 @@ public class ConfigurationOverridesStartupComponent extends StartupComponent {
     private final UserAccessor userAccessor;
 
     @Autowired
-    public ConfigurationOverridesStartupComponent(EnvironmentVariableUtility environmentVariableUtility, UserAccessor userAccessor, AuthenticationDescriptorKey descriptorKey, ConfigurationAccessor configurationAccessor,
+    public ConfigurationOverridesStartupComponent(EnvironmentVariableUtility environmentVariableUtility, UserAccessor userAccessor, AuthenticationDescriptorKey descriptorKey, ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor,
         AuthenticationApiAction apiAction, ConfigurationFieldModelConverter configurationFieldModelConverter) {
         this.environmentVariableUtility = environmentVariableUtility;
-        this.configUtility = new DefaultDescriptorGlobalConfigUtility(descriptorKey, configurationAccessor, apiAction, configurationFieldModelConverter);
+        this.configUtility = new DefaultDescriptorGlobalConfigUtility(descriptorKey, configurationModelConfigurationAccessor, apiAction, configurationFieldModelConverter);
         this.userAccessor = userAccessor;
     }
 

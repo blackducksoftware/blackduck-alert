@@ -113,6 +113,15 @@ public class MessageValueReplacementResolverTest {
         testReplacements(messageReplacementValues, originalFieldValue, expectedFieldValue);
     }
 
+    @Test
+    public void replacementProviderTypeAndName() {
+        String originalFieldValue = "Old providerName: {{providerName}} | new providerType: {{providerType}} (Should be the same)";
+        String expectedFieldValue = "Old providerName: BlackDuck | new providerType: BlackDuck (Should be the same)";
+
+        MessageReplacementValues messageReplacementValues = new MessageReplacementValues.Builder("BlackDuck", "Project name").build();
+        testReplacements(messageReplacementValues, originalFieldValue, expectedFieldValue);
+    }
+
     private void testReplacements(MessageReplacementValues messageReplacementValues, String originalValue, String expectedValue) {
         MessageValueReplacementResolver messageValueReplacementResolver = new MessageValueReplacementResolver(messageReplacementValues);
         String replacedFieldValue = messageValueReplacementResolver.createReplacedFieldValue(originalValue);

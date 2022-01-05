@@ -1,7 +1,7 @@
 /*
  * blackduck-alert
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -17,7 +17,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
@@ -42,13 +42,13 @@ public class LastSearchDataMigration extends StartupComponent {
     // We don't have admin privileges to postgres when alert starts.
 
     private final BlackDuckProviderKey blackDuckProviderKey;
-    private final ConfigurationAccessor configurationAccessor;
+    private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     private final FilePersistenceUtil filePersistenceUtil;
     private final ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor;
 
-    public LastSearchDataMigration(BlackDuckProviderKey providerKey, ConfigurationAccessor configurationAccessor, FilePersistenceUtil filePersistenceUtil, ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor) {
+    public LastSearchDataMigration(BlackDuckProviderKey providerKey, ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor, FilePersistenceUtil filePersistenceUtil, ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor) {
         this.blackDuckProviderKey = providerKey;
-        this.configurationAccessor = configurationAccessor;
+        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
         this.filePersistenceUtil = filePersistenceUtil;
         this.providerTaskPropertiesAccessor = providerTaskPropertiesAccessor;
     }
@@ -59,7 +59,7 @@ public class LastSearchDataMigration extends StartupComponent {
         if (filePersistenceUtil.exists(LAST_SEARCH_FILE)) {
             logger.info("Last search text file exists; attempt migration to task properties.");
             try {
-                List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(blackDuckProviderKey, ConfigContextEnum.GLOBAL);
+                List<ConfigurationModel> configurationModels = configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(blackDuckProviderKey, ConfigContextEnum.GLOBAL);
                 if (configurationModels.size() == 1) {
                     logger.info("Configuration found. Creating property data.");
                     Long configId = configurationModels.get(0).getConfigurationId();

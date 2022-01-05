@@ -1,7 +1,7 @@
 /*
  * provider-blackduck
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -19,7 +19,7 @@ import com.synopsys.integration.alert.api.event.AlertEventHandler;
 import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerCallbackEvent;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerCallbackInfo;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
 import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
@@ -36,12 +36,12 @@ public class BlackDuckIssueTrackerCallbackEventHandler implements AlertEventHand
 
     private final Gson gson;
     private final BlackDuckPropertiesFactory blackDuckPropertiesFactory;
-    private final ConfigurationAccessor configurationAccessor;
+    private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
 
-    public BlackDuckIssueTrackerCallbackEventHandler(Gson gson, BlackDuckPropertiesFactory blackDuckPropertiesFactory, ConfigurationAccessor configurationAccessor) {
+    public BlackDuckIssueTrackerCallbackEventHandler(Gson gson, BlackDuckPropertiesFactory blackDuckPropertiesFactory, ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor) {
         this.gson = gson;
         this.blackDuckPropertiesFactory = blackDuckPropertiesFactory;
-        this.configurationAccessor = configurationAccessor;
+        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
     }
 
     @Override
@@ -65,7 +65,7 @@ public class BlackDuckIssueTrackerCallbackEventHandler implements AlertEventHand
     }
 
     private Optional<BlackDuckProperties> createBlackDuckProperties(Long providerConfigId) {
-        return configurationAccessor.getConfigurationById(providerConfigId)
+        return configurationModelConfigurationAccessor.getConfigurationById(providerConfigId)
                    .map(blackDuckPropertiesFactory::createProperties);
     }
 

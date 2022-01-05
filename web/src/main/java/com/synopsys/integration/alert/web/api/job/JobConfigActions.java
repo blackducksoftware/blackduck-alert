@@ -1,7 +1,7 @@
 /*
  * web
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -33,7 +33,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.provider.ProviderProjectExistencePopulator;
 import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.action.TestAction;
+import com.synopsys.integration.alert.common.action.FieldModelTestAction;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.action.api.AbstractJobResourceActions;
 import com.synopsys.integration.alert.common.channel.DistributionChannelTestAction;
@@ -48,7 +48,7 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
@@ -81,7 +81,7 @@ import com.synopsys.integration.rest.exception.IntegrationRestException;
 public class JobConfigActions extends AbstractJobResourceActions {
     private final Logger logger = LoggerFactory.getLogger(JobConfigActions.class);
 
-    private final ConfigurationAccessor configurationAccessor;
+    private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     private final JobAccessor jobAccessor;
     private final FieldModelProcessor fieldModelProcessor;
     private final DescriptorProcessor descriptorProcessor;
@@ -97,7 +97,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
     public JobConfigActions(
         AuthorizationManager authorizationManager,
         DescriptorAccessor descriptorAccessor,
-        ConfigurationAccessor configurationAccessor,
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor,
         JobAccessor jobAccessor,
         FieldModelProcessor fieldModelProcessor,
         DescriptorProcessor descriptorProcessor,
@@ -110,7 +110,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
         DistributionJobModelExtractor distributionJobModelExtractor
     ) {
         super(authorizationManager, descriptorAccessor, descriptorMap);
-        this.configurationAccessor = configurationAccessor;
+        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
         this.fieldModelProcessor = fieldModelProcessor;
         this.descriptorProcessor = descriptorProcessor;
         this.modelConverter = modelConverter;
@@ -374,10 +374,10 @@ public class JobConfigActions extends AbstractJobResourceActions {
                 Map<String, ConfigurationFieldModel> fields = createFieldsMap(channelFieldModel, otherJobModels);
                 // The custom message fields are not written to the database or defined fields in the database.  Need to manually add them.
                 // TODO Create a mechanism to create the field accessor with a combination of fields in the database and fields that are not.
-                Optional<ConfigurationFieldModel> topicField = convertFieldToConfigurationField(channelFieldModel, TestAction.KEY_CUSTOM_TOPIC);
-                Optional<ConfigurationFieldModel> messageField = convertFieldToConfigurationField(channelFieldModel, TestAction.KEY_CUSTOM_MESSAGE);
-                topicField.ifPresent(model -> fields.put(TestAction.KEY_CUSTOM_TOPIC, model));
-                messageField.ifPresent(model -> fields.put(TestAction.KEY_CUSTOM_MESSAGE, model));
+                Optional<ConfigurationFieldModel> topicField = convertFieldToConfigurationField(channelFieldModel, FieldModelTestAction.KEY_CUSTOM_TOPIC);
+                Optional<ConfigurationFieldModel> messageField = convertFieldToConfigurationField(channelFieldModel, FieldModelTestAction.KEY_CUSTOM_MESSAGE);
+                topicField.ifPresent(model -> fields.put(FieldModelTestAction.KEY_CUSTOM_TOPIC, model));
+                messageField.ifPresent(model -> fields.put(FieldModelTestAction.KEY_CUSTOM_MESSAGE, model));
 
                 MessageResult providerTestResult = testProviderConfig(new FieldUtility(fields), jobIdString, channelFieldModel);
                 if (providerTestResult.hasErrors()) {
@@ -483,7 +483,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
         Map<String, ConfigurationFieldModel> fields = new HashMap<>();
 
         fields.putAll(modelConverter.convertToConfigurationFieldModelMap(channelFieldModel));
-        Optional<ConfigurationModel> configurationFieldModel = configurationAccessor.getConfigurationsByDescriptorNameAndContext(channelFieldModel.getDescriptorName(), ConfigContextEnum.GLOBAL).stream().findFirst();
+        Optional<ConfigurationModel> configurationFieldModel = configurationModelConfigurationAccessor.getConfigurationsByDescriptorNameAndContext(channelFieldModel.getDescriptorName(), ConfigContextEnum.GLOBAL).stream().findFirst();
 
         configurationFieldModel.ifPresent(model -> fields.putAll(model.getCopyOfKeyToFieldMap()));
 
@@ -494,7 +494,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
     }
 
     private MessageResult testProviderConfig(FieldUtility fieldUtility, String jobId, FieldModel fieldModel) throws IntegrationException {
-        Optional<TestAction> providerTestAction = fieldUtility.getString(ChannelDescriptor.KEY_PROVIDER_TYPE)
+        Optional<FieldModelTestAction> providerTestAction = fieldUtility.getString(ChannelDescriptor.KEY_PROVIDER_TYPE)
             .flatMap(providerName -> descriptorProcessor.retrieveTestAction(providerName, ConfigContextEnum.DISTRIBUTION));
         if (providerTestAction.isPresent()) {
             MessageResult providerConfigTestResult = providerTestAction.get().testConfig(jobId, fieldModel, fieldUtility);

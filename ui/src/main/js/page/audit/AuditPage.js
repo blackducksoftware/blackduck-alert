@@ -1,15 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import {
-    BootstrapTable,
-    ButtonGroup,
-    TableHeaderColumn
-} from 'react-bootstrap-table';
-import {
-    getAuditData,
-    resendNotification
-} from 'store/actions/audit';
+import { BootstrapTable, ButtonGroup, TableHeaderColumn } from 'react-bootstrap-table';
+import { getAuditData, resendNotification } from 'store/actions/audit';
 import AutoRefresh from 'common/table/AutoRefresh';
 import DescriptorLabel from 'common/DescriptorLabel';
 import RefreshTableCellFormatter from 'common/table/RefreshTableCellFormatter';
@@ -23,6 +16,7 @@ import StatusMessage from 'common/StatusMessage';
 import '../../../css/audit.scss';
 import { AUDIT_INFO } from 'page/audit/AuditModel';
 import { EXISTING_CHANNELS, EXISTING_PROVIDERS } from 'common/DescriptorInfo';
+import { ProgressIcon } from 'common/table/ProgressIcon';
 
 class AuditPage extends Component {
     constructor(props) {
@@ -420,14 +414,7 @@ class AuditPage extends Component {
                         <TableHeaderColumn width="48" columnClassName="tableCell" dataFormat={this.resendButton} />
                         <TableHeaderColumn dataField="id" isKey hidden>Notification Id</TableHeaderColumn>
                     </BootstrapTable>
-
-                    {inProgress && (
-                        <div className="progressIcon">
-                            <span className="fa-layers fa-fw">
-                                <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
-                            </span>
-                        </div>
-                    )}
+                    <ProgressIcon inProgress={inProgress} />
                 </div>
             </div>
         );

@@ -1,7 +1,7 @@
 /*
  * component
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -19,6 +19,7 @@ import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.system.BaseSystemValidator;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
 
+//TODO: Deprecate this class once the SettingsEncryptionValidator is complete and the old settings page is removed.
 @Component
 public class SettingsSystemValidator extends BaseSystemValidator {
     private final Logger logger = LoggerFactory.getLogger(SettingsSystemValidator.class);

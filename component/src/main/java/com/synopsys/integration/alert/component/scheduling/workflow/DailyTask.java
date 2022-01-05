@@ -1,7 +1,7 @@
 /*
  * component
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -13,7 +13,9 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.task.TaskManager;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
@@ -27,7 +29,7 @@ public class DailyTask extends ProcessingTask {
     public static final int DEFAULT_HOUR_OF_DAY = 0;
 
     private final SchedulingDescriptorKey schedulingDescriptorKey;
-    private final ConfigurationAccessor configurationAccessor;
+    private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
 
     @Autowired
     public DailyTask(
@@ -36,16 +38,17 @@ public class DailyTask extends ProcessingTask {
         NotificationAccessor notificationAccessor,
         NotificationProcessor notificationProcessor,
         TaskManager taskManager,
-        ConfigurationAccessor configurationAccessor
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor,
+        JobAccessor jobAccessor
     ) {
-        super(taskScheduler, notificationAccessor, taskManager, notificationProcessor, FrequencyType.DAILY);
+        super(taskScheduler, taskManager, notificationAccessor, notificationProcessor, jobAccessor, FrequencyType.DAILY);
         this.schedulingDescriptorKey = schedulingDescriptorKey;
-        this.configurationAccessor = configurationAccessor;
+        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
     }
 
     @Override
     public String scheduleCronExpression() {
-        String dailySavedCronValue = configurationAccessor.getConfigurationsByDescriptorKey(schedulingDescriptorKey)
+        String dailySavedCronValue = configurationModelConfigurationAccessor.getConfigurationsByDescriptorKey(schedulingDescriptorKey)
                                          .stream()
                                          .findFirst()
                                          .flatMap(configurationModel -> configurationModel.getField(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY))

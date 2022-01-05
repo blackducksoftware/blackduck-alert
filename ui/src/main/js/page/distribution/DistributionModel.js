@@ -49,14 +49,15 @@ export const DISTRIBUTION_FREQUENCY_OPTIONS = [
 ];
 
 export const DISTRIBUTION_NOTIFICATION_TYPE_OPTIONS = [
-    { label: 'LICENSE_LIMIT', value: 'LICENSE_LIMIT' },
-    { label: 'POLICY_OVERRIDE', value: 'POLICY_OVERRIDE' },
-    { label: 'RULE_VIOLATION', value: 'RULE_VIOLATION' },
-    { label: 'RULE_VIOLATION_CLEARED', value: 'RULE_VIOLATION_CLEARED' },
-    { label: 'VULNERABILITY', value: 'VULNERABILITY' },
-    { label: 'BOM_EDIT', value: 'BOM_EDIT' },
-    { label: 'PROJECT', value: 'PROJECT' },
-    { label: 'PROJECT_VERSION', value: 'PROJECT_VERSION' }
+    { label: 'License Limit', value: 'LICENSE_LIMIT' },
+    { label: 'Policy Override', value: 'POLICY_OVERRIDE' },
+    { label: 'Rule Violation', value: 'RULE_VIOLATION' },
+    { label: 'Rule Violation Cleared', value: 'RULE_VIOLATION_CLEARED' },
+    { label: 'Vulnerability', value: 'VULNERABILITY' },
+    { label: 'Bom Edit', value: 'BOM_EDIT' },
+    { label: 'Project', value: 'PROJECT' },
+    { label: 'Project Version', value: 'PROJECT_VERSION' },
+    { label: 'Component Unknown Version', value: 'COMPONENT_UNKNOWN_VERSION' }
 ];
 
 export const DISTRIBUTION_CHANNEL_OPTIONS = [
@@ -74,11 +75,17 @@ export const DISTRIBUTION_PROCESSING_TYPES = [
     { label: 'Summary', value: 'SUMMARY' }
 ];
 
+export const DISTRIBUTION_PROCESSING_DESCRIPTIONS = {
+    DEFAULT: 'The message will contain all the relevant data found in your selected provider.',
+    DIGEST: 'The message will contain a delta of the content found in your selected provider since it was last queried."\n Add and Delete operations will cancel each other out depending on the order they occurred.',
+    SUMMARY: 'The message contains only a summarized form of the Digest data'
+};
+
 export const DISTRIBUTION_VULNERABILITY_SEVERITY_OPTIONS = [
-    { label: 'CRITICAL', value: 'CRITICAL' },
-    { label: 'HIGH', value: 'HIGH' },
-    { label: 'LOW', value: 'LOW' },
-    { label: 'MEDIUM', value: 'MEDIUM' }
+    { label: 'Critical', value: 'CRITICAL' },
+    { label: 'High', value: 'HIGH' },
+    { label: 'Low', value: 'LOW' },
+    { label: 'Medium', value: 'MEDIUM' }
 ];
 
 export const DISTRIBUTION_PROJECT_SELECT_COLUMNS = [

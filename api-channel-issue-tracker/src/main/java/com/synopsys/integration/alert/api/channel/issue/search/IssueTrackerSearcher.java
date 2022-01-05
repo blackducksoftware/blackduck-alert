@@ -1,7 +1,7 @@
 /*
  * api-channel-issue-tracker
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.api.channel.issue.convert.ProjectMessageToIssueModelTransformer;
+import com.synopsys.integration.alert.api.channel.issue.model.IssueComponentUnknownVersionDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.IssuePolicyDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueVulnerabilityDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
@@ -116,19 +117,14 @@ public class IssueTrackerSearcher<T extends Serializable> {
 
             Optional<ItemOperation> policyOperation = projectIssueModel.getPolicyDetails().map(IssuePolicyDetails::getOperation);
             Optional<IssueVulnerabilityDetails> optionalVulnerabilityDetails = projectIssueModel.getVulnerabilityDetails();
+            Optional<ItemOperation> componentUnknownOperation = projectIssueModel.getComponentUnknownVersionDetails().map(IssueComponentUnknownVersionDetails::getItemOperation);
             if (policyOperation.isPresent()) {
                 searchResultOperation = policyOperation.get();
             } else if (optionalVulnerabilityDetails.isPresent()) {
                 IssueVulnerabilityDetails issueVulnerabilityDetails = optionalVulnerabilityDetails.get();
-                boolean isResolvableOrUnknown = IssueStatus.RESOLVABLE.equals(existingIssue.getIssueStatus()) || IssueStatus.UNKNOWN.equals(existingIssue.getIssueStatus());
-                boolean isReopenableOrUnknown = IssueStatus.REOPENABLE.equals(existingIssue.getIssueStatus()) || IssueStatus.UNKNOWN.equals(existingIssue.getIssueStatus());
-                if (issueVulnerabilityDetails.areAllComponentVulnerabilitiesRemediated() && isResolvableOrUnknown) {
-                    searchResultOperation = ItemOperation.DELETE;
-                } else if (!issueVulnerabilityDetails.areAllComponentVulnerabilitiesRemediated() && isReopenableOrUnknown) {
-                    searchResultOperation = ItemOperation.ADD;
-                } else {
-                    searchResultOperation = ItemOperation.UPDATE;
-                }
+                searchResultOperation = findVulnerabilitySearchResultOperation(existingIssue, issueVulnerabilityDetails);
+            } else if (componentUnknownOperation.isPresent()) {
+                searchResultOperation = componentUnknownOperation.get();
             }
         } else if (foundIssuesCount > 1) {
             throw new AlertException("Expect to find a unique issue, but more than one was found");
@@ -138,12 +134,26 @@ public class IssueTrackerSearcher<T extends Serializable> {
         return new ActionableIssueSearchResult<>(existingIssue, projectIssueModel, searchResultOperation);
     }
 
+    private ItemOperation findVulnerabilitySearchResultOperation(ExistingIssueDetails<T> existingIssue, IssueVulnerabilityDetails issueVulnerabilityDetails) {
+        ItemOperation searchResultOperation;
+        boolean isResolvableOrUnknown = IssueStatus.RESOLVABLE.equals(existingIssue.getIssueStatus()) || IssueStatus.UNKNOWN.equals(existingIssue.getIssueStatus());
+        boolean isReopenableOrUnknown = IssueStatus.REOPENABLE.equals(existingIssue.getIssueStatus()) || IssueStatus.UNKNOWN.equals(existingIssue.getIssueStatus());
+        if (issueVulnerabilityDetails.areAllComponentVulnerabilitiesRemediated() && isResolvableOrUnknown) {
+            searchResultOperation = ItemOperation.DELETE;
+        } else if (!issueVulnerabilityDetails.areAllComponentVulnerabilitiesRemediated() && isReopenableOrUnknown) {
+            searchResultOperation = ItemOperation.ADD;
+        } else {
+            searchResultOperation = ItemOperation.UPDATE;
+        }
+        return searchResultOperation;
+    }
+
     private List<ActionableIssueSearchResult<T>> findProjectIssues(boolean isEntireBomDeleted, ThrowingSupplier<List<ProjectIssueSearchResult<T>>, AlertException> find) throws AlertException {
         if (isEntireBomDeleted) {
             return find.get()
-                       .stream()
-                       .map(this::convertToDeleteResult)
-                       .collect(Collectors.toList());
+                .stream()
+                .map(this::convertToDeleteResult)
+                .collect(Collectors.toList());
         }
         logger.debug("Ignoring project-level notification for issue-tracker because no action would be taken");
         return List.of();
@@ -163,9 +173,14 @@ public class IssueTrackerSearcher<T extends Serializable> {
 
     private boolean isOnlyDeleteOperation(ProjectIssueModel projectIssueModel) {
         boolean isPolicyDelete = projectIssueModel.getPolicyDetails()
-                                     .map(IssuePolicyDetails::getOperation)
-                                     .filter(ItemOperation.DELETE::equals)
-                                     .isPresent();
+            .map(IssuePolicyDetails::getOperation)
+            .filter(ItemOperation.DELETE::equals)
+            .isPresent();
+
+        boolean isEstimatedRiskDelete = projectIssueModel.getComponentUnknownVersionDetails()
+            .map(IssueComponentUnknownVersionDetails::getItemOperation)
+            .filter(ItemOperation.DELETE::equals)
+            .isPresent();
 
         boolean isVulnerabilityDelete = false;
         Optional<IssueVulnerabilityDetails> optionalVulnDetails = projectIssueModel.getVulnerabilityDetails();
@@ -178,7 +193,7 @@ public class IssueTrackerSearcher<T extends Serializable> {
             isVulnerabilityDelete = allVulnsRemediated || (hasDeletions && doesNotHaveAdditions && doesNotHaveUpdates);
         }
 
-        return isPolicyDelete || isVulnerabilityDelete;
+        return isPolicyDelete || isVulnerabilityDelete || isEstimatedRiskDelete;
     }
 
 }

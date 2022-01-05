@@ -1,7 +1,7 @@
 /*
  * alert-database
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -64,7 +64,7 @@ public class BlackDuckJobDetailsAccessor {
                                                                                .stream()
                                                                                .map(notificationType -> new BlackDuckJobNotificationTypeEntity(jobId, notificationType))
                                                                                .collect(Collectors.toList());
-        blackDuckJobNotificationTypeRepository.deleteAllByJobId(jobId);
+        blackDuckJobNotificationTypeRepository.bulkDeleteAllByJobId(jobId);
         List<BlackDuckJobNotificationTypeEntity> savedNotificationTypes = blackDuckJobNotificationTypeRepository.saveAll(notificationTypesToSave);
         savedBlackDuckJobDetails.setBlackDuckJobNotificationTypes(savedNotificationTypes);
 
@@ -72,7 +72,7 @@ public class BlackDuckJobDetailsAccessor {
                                                                    .stream()
                                                                    .map(projectDetails -> new BlackDuckJobProjectEntity(jobId, projectDetails.getName(), projectDetails.getHref()))
                                                                    .collect(Collectors.toList());
-        blackDuckJobProjectRepository.deleteAllByJobId(jobId);
+        blackDuckJobProjectRepository.bulkDeleteAllByJobId(jobId);
         List<BlackDuckJobProjectEntity> savedProjectFilters = blackDuckJobProjectRepository.saveAll(projectFiltersToSave);
         savedBlackDuckJobDetails.setBlackDuckJobProjects(savedProjectFilters);
 
@@ -80,7 +80,7 @@ public class BlackDuckJobDetailsAccessor {
                                                                        .stream()
                                                                        .map(policyName -> new BlackDuckJobPolicyFilterEntity(jobId, policyName))
                                                                        .collect(Collectors.toList());
-        blackDuckJobPolicyFilterRepository.deleteAllByJobId(jobId);
+        blackDuckJobPolicyFilterRepository.bulkDeleteAllByJobId(jobId);
         List<BlackDuckJobPolicyFilterEntity> savedPolicyFilters = blackDuckJobPolicyFilterRepository.saveAll(policyFiltersToSave);
         savedBlackDuckJobDetails.setBlackDuckJobPolicyFilters(savedPolicyFilters);
 
@@ -88,7 +88,7 @@ public class BlackDuckJobDetailsAccessor {
                                                                                                      .stream()
                                                                                                      .map(severityName -> new BlackDuckJobVulnerabilitySeverityFilterEntity(jobId, severityName))
                                                                                                      .collect(Collectors.toList());
-        blackDuckJobVulnerabilitySeverityFilterRepository.deleteAllByJobId(jobId);
+        blackDuckJobVulnerabilitySeverityFilterRepository.bulkDeleteAllByJobId(jobId);
         List<BlackDuckJobVulnerabilitySeverityFilterEntity> savedVulnerabilitySeverityFilters = blackDuckJobVulnerabilitySeverityFilterRepository.saveAll(vulnerabilitySeverityFiltersToSave);
         savedBlackDuckJobDetails.setBlackDuckJobVulnerabilitySeverityFilters(savedVulnerabilitySeverityFilters);
 

@@ -1,42 +1,32 @@
 /*
  * alert-common
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.synopsys.integration.alert.common.persistence.accessor;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 
-public interface ConfigurationAccessor {
-    Optional<ConfigurationModel> getProviderConfigurationByName(String providerConfigName);
+public interface ConfigurationAccessor<T extends AlertSerializableModel> {
+    long getConfigurationCount();
 
-    Optional<ConfigurationModel> getConfigurationById(Long id);
+    Optional<T> getConfiguration(UUID id);
 
-    List<ConfigurationModel> getConfigurationsByDescriptorKey(DescriptorKey descriptorKey);
+    Optional<T> getConfigurationByName(String configurationName);
 
-    List<ConfigurationModel> getConfigurationsByDescriptorType(DescriptorType descriptorType);
+    AlertPagedModel<T> getConfigurationPage(int page, int size);
 
-    List<ConfigurationModel> getConfigurationsByDescriptorNameAndContext(String descriptorName, ConfigContextEnum context);
+    T createConfiguration(T configuration);
 
-    List<ConfigurationModel> getConfigurationsByDescriptorKeyAndContext(DescriptorKey descriptorKey, ConfigContextEnum context);
+    T updateConfiguration(UUID configurationId, T configuration) throws AlertConfigurationException;
 
-    ConfigurationModel createConfiguration(DescriptorKey descriptorKey, ConfigContextEnum context, Collection<ConfigurationFieldModel> configuredFields);
-
-    ConfigurationModel updateConfiguration(Long descriptorConfigId, Collection<ConfigurationFieldModel> configuredFields) throws AlertConfigurationException;
-
-    void deleteConfiguration(ConfigurationModel configModel);
-
-    void deleteConfiguration(Long descriptorConfigId);
+    void deleteConfiguration(UUID configurationId);
 
 }

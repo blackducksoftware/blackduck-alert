@@ -1,17 +1,19 @@
 /*
  * api-processor
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.synopsys.integration.alert.processor.api.summarize;
 
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
@@ -67,8 +69,8 @@ public class ProjectMessageSummarizer {
 
     private Pair<String, String> constructProjectVersionStatusSummaryAndDescription(String providerName, String projectName, ProjectMessage projectMessage) {
         String operationString = projectMessage.getOperation()
-                                     .map(this::convertToParticiple)
-                                     .orElse(OP_PARTICIPLE_UPDATED);
+            .map(this::convertToParticiple)
+            .orElse(OP_PARTICIPLE_UPDATED);
 
         Optional<String> optionalProjectVersionName = projectMessage.getProjectVersion().map(LinkableItem::getValue);
         if (optionalProjectVersionName.isPresent()) {
@@ -87,8 +89,8 @@ public class ProjectMessageSummarizer {
 
     private Pair<String, String> constructComponentStatusAndDescription(String providerName, String projectName, MessageReason messageReason, ProjectMessage projectMessage) {
         String projectVersionName = projectMessage.getProjectVersion()
-                                        .map(LinkableItem::getValue)
-                                        .orElse("Unknown Version");
+            .map(LinkableItem::getValue)
+            .orElse("Unknown Version");
         String operationString = MessageReason.COMPONENT_CONCERN.equals(messageReason) ? "problems" : "updates";
         return Pair.of(
             String.format("[%s] %s > %s component %s", providerName, projectName, projectVersionName, operationString),
@@ -106,11 +108,22 @@ public class ProjectMessageSummarizer {
             for (ComponentConcern concern : bomComponent.getComponentConcerns()) {
                 ComponentConcernSummaryGrouping concernKey = new ComponentConcernSummaryGrouping(concern.getType(), concern.getOperation(), concern.getSeverity());
                 int currentCount = groupedConcernCounts.getOrDefault(concernKey, 0);
-                groupedConcernCounts.put(concernKey, currentCount + 1);
+                Number concernNumericValue = concern.getNumericValue();
+                int concernCount = (concernNumericValue != null) ? concernNumericValue.intValue() : 1;
+                groupedConcernCounts.put(concernKey, currentCount + concernCount);
             }
         }
+        Map<ComponentConcernSummaryGrouping, Integer> sortedGroupedConcernCountsBySeverity = groupedConcernCounts
+                                                                                                 .entrySet()
+                                                                                                 .stream()
+                                                                                                 .sorted(Map.Entry.comparingByKey(ComponentConcernSummaryGrouping.getComparator()))
+                                                                                                 .collect(Collectors.toMap(
+                                                                                                     Map.Entry::getKey,
+                                                                                                     Map.Entry::getValue,
+                                                                                                     (old, newIgnored) -> old, // Merge operation is equivalent to Map::putIfAbsent
+                                                                                                     LinkedHashMap::new));
 
-        for (Map.Entry<ComponentConcernSummaryGrouping, Integer> groupedConcernCount : groupedConcernCounts.entrySet()) {
+        for (Map.Entry<ComponentConcernSummaryGrouping, Integer> groupedConcernCount : sortedGroupedConcernCountsBySeverity.entrySet()) {
             ComponentConcernSummaryGrouping concernGrouping = groupedConcernCount.getKey();
 
             String severityLabel = ComponentConcernType.POLICY.equals(concernGrouping.type) ? concernGrouping.severity.getPolicyLabel() : concernGrouping.severity.getVulnerabilityLabel();
@@ -141,6 +154,8 @@ public class ProjectMessageSummarizer {
         switch (type) {
             case POLICY:
                 return "Policies";
+            case UNKNOWN_VERSION:
+                return "Estimated Security Risks";
             case VULNERABILITY:
                 return "Vulnerabilities";
             default:
@@ -172,6 +187,11 @@ public class ProjectMessageSummarizer {
             this.severity = severity;
         }
 
+        public static Comparator<ComponentConcernSummaryGrouping> getComparator() {
+            Comparator<ComponentConcernSummaryGrouping> comparatorType = Comparator.comparing(grouping -> grouping.type);
+            Comparator<ComponentConcernSummaryGrouping> comparatorSeverity = Comparator.comparing(grouping -> grouping.severity);
+            return comparatorType.thenComparing(comparatorSeverity);
+        }
     }
 
 }

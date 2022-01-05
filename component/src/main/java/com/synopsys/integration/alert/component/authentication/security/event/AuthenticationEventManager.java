@@ -1,7 +1,7 @@
 /*
  * component
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -10,6 +10,8 @@ package com.synopsys.integration.alert.component.authentication.security.event;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -78,15 +80,24 @@ public class AuthenticationEventManager {
             throw new AlertException("Unable to send authentication event with null username");
         }
         Set<UserRoleModel> alertRoles = authorities
-                                            .stream()
-                                            .map(this::getRoleFromAuthority)
-                                            .flatMap(Optional::stream)
-                                            .map(UserRoleModel::of)
-                                            .collect(Collectors.toSet());
+            .stream()
+            .map(this::getRoleFromAuthority)
+            .flatMap(Optional::stream)
+            .map(UserRoleModel::of)
+            .collect(Collectors.toSet());
         // The database users will not be enabled because they already exist in the database when this is called. So a new entry will not be added to the database.
         UserModel userModel = UserModel.newUser(username, null, emailAddress, authenticationType, alertRoles, true);
+        sendAuthenticationEvent(userModel);
+    }
+
+    private void sendAuthenticationEvent(UserModel userModel) {
         AlertAuthenticationEvent authEvent = new AlertAuthenticationEvent(userModel);
-        eventManager.sendEvent(authEvent);
+
+        // this event is used primarily to update the user database with the authentication type. LDAP or SAML are the most important.
+        // if the message queue broker is full having a new thread will block that thread until the queue can produce more events.
+        // By using a new thread this allows the user to be able to authenticate with Alert.
+        ExecutorService userUpdateThread = Executors.newSingleThreadExecutor();
+        userUpdateThread.submit(() -> eventManager.sendEvent(authEvent));
     }
 
 }

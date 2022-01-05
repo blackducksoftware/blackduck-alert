@@ -1,7 +1,7 @@
 /*
  * provider-blackduck
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -23,7 +23,7 @@ import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationF
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -32,11 +32,11 @@ import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDes
 
 @Component
 public class BlackDuckGlobalConfigurationFieldModelValidator implements GlobalConfigurationFieldModelValidator {
-    private final ConfigurationAccessor configurationAccessor;
+    private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
 
     @Autowired
-    public BlackDuckGlobalConfigurationFieldModelValidator(ConfigurationAccessor configurationAccessor) {
-        this.configurationAccessor = configurationAccessor;
+    public BlackDuckGlobalConfigurationFieldModelValidator(ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor) {
+        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
     }
 
     @Override
@@ -83,7 +83,7 @@ public class BlackDuckGlobalConfigurationFieldModelValidator implements GlobalCo
     }
 
     private Optional<AlertFieldStatus> validateDuplicateNames(FieldModel fieldModel) {
-        List<ConfigurationModel> configurations = configurationAccessor.getConfigurationsByDescriptorType(DescriptorType.PROVIDER);
+        List<ConfigurationModel> configurations = configurationModelConfigurationAccessor.getConfigurationsByDescriptorType(DescriptorType.PROVIDER);
         if (configurations.isEmpty()) {
             return Optional.empty();
         }

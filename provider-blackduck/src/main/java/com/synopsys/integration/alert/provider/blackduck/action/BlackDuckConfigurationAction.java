@@ -1,7 +1,7 @@
 /*
  * provider-blackduck
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -18,9 +18,9 @@ public class BlackDuckConfigurationAction extends ConfigurationAction {
     @Autowired
     protected BlackDuckConfigurationAction(
         BlackDuckGlobalApiAction blackDuckGlobalApiAction,
-        BlackDuckGlobalTestAction blackDuckGlobalTestAction,
+        BlackDuckGlobalFieldModelTestAction blackDuckGlobalTestAction,
         BlackDuckProviderKey blackDuckProviderKey,
-        BlackDuckDistributionTestAction blackDuckDistributionTestAction
+        BlackDuckDistributionFieldModelTestAction blackDuckDistributionTestAction
     ) {
         super(blackDuckProviderKey);
         addGlobalApiAction(blackDuckGlobalApiAction);

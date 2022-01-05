@@ -1,7 +1,7 @@
 /*
  * provider-blackduck
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -24,7 +24,7 @@ import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.PagedCustomFunctionAction;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
@@ -54,19 +54,19 @@ public class PolicyNotificationFilterCustomFunctionAction extends PagedCustomFun
     private final IntLogger logger = new Slf4jIntLogger(LoggerFactory.getLogger(getClass()));
     private final BlackDuckPropertiesFactory blackDuckPropertiesFactory;
     private final ConfigurationFieldModelConverter fieldModelConverter;
-    private final ConfigurationAccessor configurationAccessor;
+    private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
 
     @Autowired
     protected PolicyNotificationFilterCustomFunctionAction(
         AuthorizationManager authorizationManager,
         BlackDuckPropertiesFactory blackDuckPropertiesFactory,
         ConfigurationFieldModelConverter fieldModelConverter,
-        ConfigurationAccessor configurationAccessor
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor
     ) {
         super(authorizationManager);
         this.blackDuckPropertiesFactory = blackDuckPropertiesFactory;
         this.fieldModelConverter = fieldModelConverter;
-        this.configurationAccessor = configurationAccessor;
+        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
     }
 
     @Override
@@ -161,7 +161,7 @@ public class PolicyNotificationFilterCustomFunctionAction extends PagedCustomFun
             return Optional.empty();
         }
 
-        return configurationAccessor.getConfigurationById(providerConfigId)
+        return configurationModelConfigurationAccessor.getConfigurationById(providerConfigId)
             .map(blackDuckPropertiesFactory::createProperties);
     }
 

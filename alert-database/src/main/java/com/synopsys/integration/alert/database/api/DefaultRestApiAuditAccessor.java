@@ -1,7 +1,7 @@
 /*
  * alert-database
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -12,6 +12,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -32,7 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.RestApiAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
@@ -57,18 +58,18 @@ public class DefaultRestApiAuditAccessor implements RestApiAuditAccessor {
     private final AuditEntryRepository auditEntryRepository;
     private final AuditNotificationRepository auditNotificationRepository;
     private final JobAccessor jobAccessor;
-    private final ConfigurationAccessor configurationAccessor;
+    private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     private final DefaultNotificationAccessor notificationAccessor;
     private final ContentConverter contentConverter;
 
     @Autowired
     public DefaultRestApiAuditAccessor(AuditEntryRepository auditEntryRepository, AuditNotificationRepository auditNotificationRepository, JobAccessor jobAccessor,
-        ConfigurationAccessor configurationAccessor,
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor,
         DefaultNotificationAccessor notificationAccessor, ContentConverter contentConverter) {
         this.auditEntryRepository = auditEntryRepository;
         this.auditNotificationRepository = auditNotificationRepository;
         this.jobAccessor = jobAccessor;
-        this.configurationAccessor = configurationAccessor;
+        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
         this.notificationAccessor = notificationAccessor;
         this.contentConverter = contentConverter;
     }
@@ -239,7 +240,8 @@ public class DefaultRestApiAuditAccessor implements RestApiAuditAccessor {
     @Nullable
     private String formatAuditDate(OffsetDateTime dateTime) {
         if (null != dateTime) {
-            return DateUtils.formatDate(dateTime, DateUtils.AUDIT_DATE_FORMAT);
+            OffsetDateTime utcDateTime = DateUtils.fromDateUTC(Date.from(dateTime.toInstant()));
+            return DateUtils.formatDate(utcDateTime, DateUtils.AUDIT_DATE_FORMAT);
         }
         return null;
     }
@@ -255,7 +257,7 @@ public class DefaultRestApiAuditAccessor implements RestApiAuditAccessor {
     }
 
     private String retrieveProviderConfigName(Long providerConfigId) {
-        return configurationAccessor.getConfigurationById(providerConfigId)
+        return configurationModelConfigurationAccessor.getConfigurationById(providerConfigId)
                    .stream()
                    .map(ConfigurationModel::getCopyOfFieldList)
                    .flatMap(List::stream)

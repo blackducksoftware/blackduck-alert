@@ -3,19 +3,19 @@ package com.synopsys.integration.alert.web.config;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -31,14 +31,15 @@ import com.synopsys.integration.alert.component.settings.descriptor.SettingsDesc
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.web.api.config.ConfigActions;
+import com.synopsys.integration.alert.web.api.config.GlobalConfigurationModelToConcreteConversionService;
 
 import junit.framework.AssertionFailedError;
 
-@Transactional
 @AlertIntegrationTest
-public class ConfigActionTestIT {
+class ConfigActionTestIT {
+
     @Autowired
-    private ConfigurationAccessor configurationAccessor;
+    private ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     @Autowired
     private FieldModelProcessor fieldModelProcessor;
     @Autowired
@@ -57,12 +58,13 @@ public class ConfigActionTestIT {
     private EncryptionUtility encryptionUtility;
 
     @Test
-    public void deleteSensitiveFieldFromConfig() {
+    void deleteSensitiveFieldFromConfig() {
+        GlobalConfigurationModelToConcreteConversionService conversionService = new GlobalConfigurationModelToConcreteConversionService(List.of(), descriptorMap);
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
         Mockito.when(authorizationManager.hasDeletePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
         Mockito.when(authorizationManager.hasWritePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
-        ConfigActions configActions = new ConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter, descriptorMap,
-            pkixErrorResponseFactory, encryptionUtility, settingsDescriptorKey);
+        ConfigActions configActions = new ConfigActions(authorizationManager, descriptorAccessor, configurationModelConfigurationAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter, descriptorMap,
+            pkixErrorResponseFactory, encryptionUtility, settingsDescriptorKey, conversionService);
         ConfigurationFieldModel proxyHost = ConfigurationFieldModel.create(ProxyManager.KEY_PROXY_HOST);
         proxyHost.setFieldValue("proxyHost");
         ConfigurationFieldModel proxyPort = ConfigurationFieldModel.create(ProxyManager.KEY_PROXY_PORT);
@@ -75,7 +77,7 @@ public class ConfigActionTestIT {
         encryptionPassword.setFieldValue("pants");
         ConfigurationFieldModel encryptionSalt = ConfigurationFieldModel.createSensitive(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT);
         encryptionSalt.setFieldValue("salty pants");
-        ConfigurationModel configurationModel = configurationAccessor.createConfiguration(settingsDescriptorKey, ConfigContextEnum.GLOBAL, Set.of(proxyHost, proxyPort, proxyUsername, proxyPassword, encryptionPassword, encryptionSalt));
+        ConfigurationModel configurationModel = configurationModelConfigurationAccessor.createConfiguration(settingsDescriptorKey, ConfigContextEnum.GLOBAL, Set.of(proxyHost, proxyPort, proxyUsername, proxyPassword, encryptionPassword, encryptionSalt));
 
         FieldValueModel proxyHostFieldValue = new FieldValueModel(Set.of("proxyHost"), true);
         FieldValueModel proxyPortFieldValue = new FieldValueModel(Set.of("80"), true);
@@ -101,3 +103,4 @@ public class ConfigActionTestIT {
     }
 
 }
+

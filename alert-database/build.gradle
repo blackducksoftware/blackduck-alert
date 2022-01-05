@@ -28,7 +28,7 @@ dependencies {
 
     implementation project(':api-provider')
 
-    implementation 'org.springframework.data:spring-data-jpa'
+    api 'org.springframework.data:spring-data-jpa'
     implementation 'jakarta.persistence:jakarta.persistence-api'
     implementation 'com.zaxxer:HikariCP'
     implementation 'org.springframework.boot:spring-boot-autoconfigure'
@@ -52,8 +52,15 @@ dependencies {
     testImplementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
 }
 
+//TODO: All these docker tasks here we should check if they can be replaced with applying the docker.gradle file.
 task dockerLogin(type: Exec) {
-    commandLine "docker", "login", "--username", "$System.env.DOCKER_INT_BLACKDUCK_USER", "--password", "$System.env.DOCKER_INT_BLACKDUCK_PASSWORD"
+    doFirst {
+        def password = "${System.env.DOCKER_INT_BLACKDUCK_PASSWORD}"
+        if (password?.trim()) {
+            standardInput = new ByteArrayInputStream(password.getBytes())
+        }
+    }
+    commandLine "docker", "login", "--username", "$System.env.DOCKER_INT_BLACKDUCK_USER", "--password-stdin"
 }
 
 task stageDocker(type: Copy) {

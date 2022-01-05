@@ -1,7 +1,7 @@
 /*
  * alert-database
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -17,12 +17,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
 import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
-import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.persistence.accessor.AuthenticationTypeAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.AuthenticationTypeDetails;
@@ -34,8 +35,6 @@ import com.synopsys.integration.alert.database.user.UserRoleRelation;
 import com.synopsys.integration.alert.database.user.UserRoleRepository;
 
 @Component
-// FIXME update the usage of @Transactional within this class
-@Transactional
 public class DefaultUserAccessor implements UserAccessor {
     private static final Set<Long> RESERVED_USER_IDS = Set.of(UserAccessor.DEFAULT_ADMIN_USER_ID, UserAccessor.DEFAULT_JOB_MANAGER_ID, UserAccessor.DEFAULT_ALERT_USER_ID);
 
@@ -56,27 +55,32 @@ public class DefaultUserAccessor implements UserAccessor {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<UserModel> getUsers() {
         List<UserEntity> userList = userRepository.findAll();
         return userList.stream().map(this::createModel).collect(Collectors.toList());
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<UserModel> getUser(Long userId) {
         return userRepository.findById(userId).map(this::createModel);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<UserModel> getUser(String username) {
         return userRepository.findByUserName(username).map(this::createModel);
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public UserModel addUser(String userName, String password, String emailAddress) throws AlertConfigurationException {
         return addUser(UserModel.newUser(userName, password, emailAddress, AuthenticationType.DATABASE, Collections.emptySet(), true), false);
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public UserModel addUser(UserModel user, boolean passwordEncoded) throws AlertConfigurationException {
         String username = user.getName();
         Optional<UserEntity> userWithSameUsername = userRepository.findByUserName(username);
@@ -97,6 +101,7 @@ public class DefaultUserAccessor implements UserAccessor {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public UserModel updateUser(UserModel user, boolean passwordEncoded) throws AlertConfigurationException, AlertForbiddenOperationException {
         Long userId = user.getId();
         UserEntity existingUser = userRepository.findById(userId)
@@ -127,6 +132,7 @@ public class DefaultUserAccessor implements UserAccessor {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public boolean assignRoles(String username, Set<Long> roleIds) {
         Optional<Long> optionalUserId = userRepository.findByUserName(username).map(UserEntity::getId);
         if (optionalUserId.isPresent()) {
@@ -137,6 +143,7 @@ public class DefaultUserAccessor implements UserAccessor {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public boolean changeUserPassword(String username, String newPassword) {
         Optional<UserEntity> entity = userRepository.findByUserName(username);
         if (entity.isPresent()) {
@@ -147,6 +154,7 @@ public class DefaultUserAccessor implements UserAccessor {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public boolean changeUserEmailAddress(String username, String emailAddress) {
         Optional<UserEntity> entity = userRepository.findByUserName(username);
         if (entity.isPresent()) {
@@ -157,6 +165,7 @@ public class DefaultUserAccessor implements UserAccessor {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void deleteUser(String userName) throws AlertForbiddenOperationException {
         Optional<UserEntity> optionalUser = userRepository.findByUserName(userName);
         if (optionalUser.isPresent()) {
@@ -166,6 +175,7 @@ public class DefaultUserAccessor implements UserAccessor {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void deleteUser(Long userId) throws AlertForbiddenOperationException {
         Optional<UserEntity> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
