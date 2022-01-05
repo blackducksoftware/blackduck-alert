@@ -16,9 +16,9 @@ import com.synopsys.integration.alert.channel.email.database.accessor.EmailGloba
 import com.synopsys.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
@@ -61,7 +61,7 @@ public class EmailGlobalConfigurationActionTest {
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailGlobalConfigAccessor emailGlobalConfigAccessor = Mockito.mock(EmailGlobalConfigAccessor.class);
         EmailGlobalConfigModel model = new EmailGlobalConfigModel();
-        model.setName(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME);
+        model.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
         model.setSmtpHost("host");
         model.setSmtpFrom("from");
         model.setSmtpAuth(true);
@@ -87,7 +87,7 @@ public class EmailGlobalConfigurationActionTest {
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailGlobalConfigAccessor emailGlobalConfigAccessor = Mockito.mock(EmailGlobalConfigAccessor.class);
         EmailGlobalConfigModel model = new EmailGlobalConfigModel();
-        model.setName(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME);
+        model.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
         model.setSmtpHost("host");
         model.setSmtpFrom("from");
         model.setSmtpAuth(true);

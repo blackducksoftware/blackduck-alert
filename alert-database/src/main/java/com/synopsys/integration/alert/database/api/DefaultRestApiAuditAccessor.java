@@ -1,18 +1,18 @@
 /*
  * alert-database
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.synopsys.integration.alert.database.api;
 
-import java.sql.Date;
 import java.text.ParseException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

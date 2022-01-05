@@ -101,7 +101,7 @@ public class ComponentUnknownVersionNotificationSerializationTest {
 
         try {
             WaitJobConfig waitJobConfig = new WaitJobConfig(intLogger, "notification serialization test notification wait", 300, searchStartTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), 20);
-            NotificationRecievedWaitJobTask notificationWaitJobTask = new NotificationRecievedWaitJobTask(intLogger, notificationAccessor, searchStartTime, "Apache Commons FileUpload", null, NotificationType.COMPONENT_UNKNOWN_VERSION);
+            NotificationReceivedWaitJobTask notificationWaitJobTask = new NotificationReceivedWaitJobTask(notificationAccessor, searchStartTime, "Apache Commons FileUpload", null, NotificationType.COMPONENT_UNKNOWN_VERSION);
             WaitJob<Boolean> waitForNotificationToBeProcessed = WaitJob.createSimpleWait(waitJobConfig, notificationWaitJobTask);
             boolean isComplete = waitForNotificationToBeProcessed.waitFor();
 

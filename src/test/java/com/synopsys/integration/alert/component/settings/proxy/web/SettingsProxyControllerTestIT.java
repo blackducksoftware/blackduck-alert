@@ -26,9 +26,8 @@ import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.shaded.com.google.common.reflect.TypeToken;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.component.settings.proxy.model.SettingsProxyModel;
+import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
 import com.synopsys.integration.alert.database.settings.proxy.NonProxyHostsConfigurationRepository;
 import com.synopsys.integration.alert.database.settings.proxy.SettingsProxyConfigurationRepository;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
@@ -71,7 +70,7 @@ public class SettingsProxyControllerTestIT {
     @Test
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void testCreate() throws Exception {
-        SettingsProxyModel settingsProxyModel = createSettingsProxyModel(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME);
+        SettingsProxyModel settingsProxyModel = createSettingsProxyModel(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
 
         String url = AlertRestConstants.SETTINGS_PROXY_PATH;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(new URI(url))
@@ -84,10 +83,28 @@ public class SettingsProxyControllerTestIT {
 
     @Test
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
-    public void testGetOne() throws Exception {
-        SettingsProxyModel settingsProxyModel = createDefaultSettingsProxyModel(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME).orElseThrow(AssertionFailedError::new);
+    public void testCreateTwice() throws Exception {
+        createDefaultSettingsProxyModel(AlertRestConstants.DEFAULT_CONFIGURATION_NAME).orElseThrow(AssertionFailedError::new);
+        SettingsProxyModel newSettingsProxyModel = new SettingsProxyModel();
+        newSettingsProxyModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
+        newSettingsProxyModel.setProxyHost("newHostname");
+        newSettingsProxyModel.setProxyPort(678);
 
-        String url = AlertRestConstants.SETTINGS_PROXY_PATH + String.format("/%s", settingsProxyModel.getId());
+        String url = AlertRestConstants.SETTINGS_PROXY_PATH;
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(new URI(url))
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.csrf())
+                                                    .content(gson.toJson(newSettingsProxyModel))
+                                                    .contentType(contentType);
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isInternalServerError());
+    }
+
+    @Test
+    @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
+    public void testGetOne() throws Exception {
+        createDefaultSettingsProxyModel(AlertRestConstants.DEFAULT_CONFIGURATION_NAME).orElseThrow(AssertionFailedError::new);
+
+        String url = AlertRestConstants.SETTINGS_PROXY_PATH;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(new URI(url))
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
@@ -96,29 +113,14 @@ public class SettingsProxyControllerTestIT {
 
     @Test
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
-    public void getPageTest() throws Exception {
-        int pageNumber = 0;
-        int pageSize = 1;
-        createDefaultSettingsProxyModel(String.format("%s_1", ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME)).orElseThrow(AssertionFailedError::new);
-        createDefaultSettingsProxyModel(String.format("%s_2", ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME)).orElseThrow(AssertionFailedError::new);
-
-        String url = AlertRestConstants.SETTINGS_PROXY_PATH + "?pageNumber=" + pageNumber + "&pageSize=" + pageSize;
-        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(new URI(url))
-            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
-            .with(SecurityMockMvcRequestPostProcessors.csrf());
-        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
-    }
-
-    @Test
-    @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void testUpdate() throws Exception {
-        SettingsProxyModel defaultSettingsProxyModel = createDefaultSettingsProxyModel(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME).orElseThrow(AssertionFailedError::new);
+        createDefaultSettingsProxyModel(AlertRestConstants.DEFAULT_CONFIGURATION_NAME).orElseThrow(AssertionFailedError::new);
         SettingsProxyModel newSettingsProxyModel = new SettingsProxyModel();
-        newSettingsProxyModel.setName(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME);
+        newSettingsProxyModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
         newSettingsProxyModel.setProxyHost("newHostname");
         newSettingsProxyModel.setProxyPort(678);
 
-        String url = AlertRestConstants.SETTINGS_PROXY_PATH + String.format("/%s", defaultSettingsProxyModel.getId());
+        String url = AlertRestConstants.SETTINGS_PROXY_PATH;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(new URI(url))
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf())
@@ -129,9 +131,9 @@ public class SettingsProxyControllerTestIT {
 
     @Test
     public void testDelete() throws Exception {
-        SettingsProxyModel defaultSettingsProxyModel = createDefaultSettingsProxyModel(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME).orElseThrow(AssertionFailedError::new);
+        createDefaultSettingsProxyModel(AlertRestConstants.DEFAULT_CONFIGURATION_NAME).orElseThrow(AssertionFailedError::new);
 
-        String url = AlertRestConstants.SETTINGS_PROXY_PATH + String.format("/%s", defaultSettingsProxyModel.getId());
+        String url = AlertRestConstants.SETTINGS_PROXY_PATH;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete(new URI(url))
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
@@ -140,7 +142,7 @@ public class SettingsProxyControllerTestIT {
 
     @Test
     public void testValidate() throws Exception {
-        SettingsProxyModel settingsProxyModel = createSettingsProxyModel(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME);
+        SettingsProxyModel settingsProxyModel = createSettingsProxyModel(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
 
         String url = AlertRestConstants.SETTINGS_PROXY_PATH + "/validate";
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(new URI(url))

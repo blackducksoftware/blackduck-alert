@@ -1,7 +1,7 @@
 /*
  * alert-common
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -15,8 +15,6 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurat
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 
 public interface ConfigurationAccessor<T extends AlertSerializableModel> {
-    String DEFAULT_CONFIGURATION_NAME = "default-configuration";
-
     long getConfigurationCount();
 
     Optional<T> getConfiguration(UUID id);

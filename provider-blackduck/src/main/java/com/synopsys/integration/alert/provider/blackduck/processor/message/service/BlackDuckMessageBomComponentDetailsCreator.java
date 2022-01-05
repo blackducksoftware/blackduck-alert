@@ -1,12 +1,13 @@
 /*
  * provider-blackduck
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.synopsys.integration.alert.provider.blackduck.processor.message.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -15,6 +16,8 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
@@ -40,6 +43,7 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.HttpUrl;
 
 public class BlackDuckMessageBomComponentDetailsCreator {
+    private final Logger logger = LoggerFactory.getLogger(BlackDuckMessageBomComponentDetailsCreator.class);
     private static final String ORIGIN_SPEC = "/origins";
     private static final LinkMultipleResponses<BlackDuckProjectVersionComponentVulnerabilitiesView> VULNERABILITIES_LINK =
         new LinkMultipleResponses<>("vulnerabilities", BlackDuckProjectVersionComponentVulnerabilitiesView.class);
@@ -102,7 +106,8 @@ public class BlackDuckMessageBomComponentDetailsCreator {
         );
     }
 
-    public BomComponentDetails createBomComponentUnknownVersionDetails(ProjectVersionComponentVersionView bomComponent, List<ComponentConcern> componentConcerns, ComponentUpgradeGuidance componentUpgradeGuidance,
+    public BomComponentDetails createBomComponentUnknownVersionDetails(
+        ProjectVersionComponentVersionView bomComponent, List<ComponentConcern> componentConcerns, ComponentUpgradeGuidance componentUpgradeGuidance,
         List<LinkableItem> additionalAttributes) throws IntegrationException {
         // FIXME using this query link only in a successful result and not in an unsuccessful result leads to inconsistent values in our custom fields which leads to inconsistent search results (bug).
         String componentQueryLink = BlackDuckMessageLinkUtils.createComponentQueryLink(bomComponent);
@@ -242,15 +247,18 @@ public class BlackDuckMessageBomComponentDetailsCreator {
             return ComponentVulnerabilities.none();
         }
 
-        HttpUrl vulnerabilitiesUrl = createVulnerabilitiesLink(bomComponent);
-        UrlMultipleResponses<BlackDuckProjectVersionComponentVulnerabilitiesView> urlMultipleResponses = new UrlMultipleResponses<>(vulnerabilitiesUrl, VULNERABILITIES_LINK.getResponseClass());
-        BlackDuckMultipleRequest<BlackDuckProjectVersionComponentVulnerabilitiesView> spec = new BlackDuckRequestBuilder()
-            .commonGet()
-            .addHeader(HttpHeaders.ACCEPT, VULNERABILITIES_MEDIA_TYPE)
-            .buildBlackDuckRequest(urlMultipleResponses);
+        List<HttpUrl> vulnerabilitiesUrls = createVulnerabilitiesLinks(bomComponent.getHref(), bomComponent.getOrigins());
+        List<BlackDuckProjectVersionComponentVulnerabilitiesView> allVulnerabilitiesViews = new ArrayList<>();
+        for (HttpUrl vulnerabilitiesUrl : vulnerabilitiesUrls) {
+            UrlMultipleResponses<BlackDuckProjectVersionComponentVulnerabilitiesView> urlMultipleResponses = new UrlMultipleResponses<>(vulnerabilitiesUrl, VULNERABILITIES_LINK.getResponseClass());
+            BlackDuckMultipleRequest<BlackDuckProjectVersionComponentVulnerabilitiesView> spec = new BlackDuckRequestBuilder()
+                .commonGet()
+                .addHeader(HttpHeaders.ACCEPT, VULNERABILITIES_MEDIA_TYPE)
+                .buildBlackDuckRequest(urlMultipleResponses);
 
-        List<BlackDuckProjectVersionComponentVulnerabilitiesView> vulnerabilities = blackDuckApiClient.getAllResponses(spec);
-        return vulnerabilityDetailsCreator.toComponentVulnerabilities(vulnerabilities);
+            allVulnerabilitiesViews.addAll(blackDuckApiClient.getAllResponses(spec));
+        }
+        return vulnerabilityDetailsCreator.toComponentVulnerabilities(allVulnerabilitiesViews);
     }
 
     private List<ComponentPolicy> retrieveComponentPolicies(ProjectVersionComponentVersionView bomComponent, List<ComponentConcern> componentConcerns) throws IntegrationException {
@@ -289,20 +297,26 @@ public class BlackDuckMessageBomComponentDetailsCreator {
         return false;
     }
 
-    private HttpUrl createVulnerabilitiesLink(ProjectVersionComponentVersionView bomComponent) throws IntegrationException {
-        HttpUrl vulnerabilitiesUrl = bomComponent.getHref();
+    // Takes the list of origins from the collapsed notifications instead of the bom component itself
+    private List<HttpUrl> createVulnerabilitiesLinks(HttpUrl vulnerabilitiesUrl, List<VersionBomOriginView> allOrigins) {
+        return allOrigins.stream()
+            .map(VersionBomOriginView::getOrigin)
+            .map((origin) -> createVulnerabilitiesLink(vulnerabilitiesUrl, origin))
+            .flatMap(Optional::stream)
+            .collect(Collectors.toList());
+    }
 
-        List<VersionBomOriginView> origins = bomComponent.getOrigins();
-        // TODO determine what to do when there are multiple origins
-        if (null != origins && origins.size() == 1) {
-            VersionBomOriginView singleOrigin = origins.get(0);
-            String originUrl = singleOrigin.getOrigin();
+    private Optional<HttpUrl> createVulnerabilitiesLink(HttpUrl vulnerabilitiesUrl, String originUrl) {
+        try {
             if (StringUtils.isNotBlank(originUrl)) {
                 String originId = StringUtils.substringAfterLast(originUrl, ORIGIN_SPEC);
                 vulnerabilitiesUrl = vulnerabilitiesUrl.appendRelativeUrl(ORIGIN_SPEC).appendRelativeUrl(originId);
             }
+            return Optional.of(vulnerabilitiesUrl.appendRelativeUrl(VULNERABILITIES_LINK.getLink()));
+        } catch (IntegrationException integrationException) {
+            logger.error("Was unable to create a proper url with the given origin: {}.", integrationException.getMessage());
+            return Optional.empty();
         }
-        return vulnerabilitiesUrl.appendRelativeUrl(VULNERABILITIES_LINK.getLink());
     }
 
 }

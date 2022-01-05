@@ -1,7 +1,7 @@
 /*
  * api-environment
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -24,18 +24,21 @@ public class EnvironmentVariableProcessor {
     private static final String TWO_SPACE_INDENT = "  ";
     private static final String FOUR_SPACE_INDENT = "    ";
     private Logger logger = LoggerFactory.getLogger(getClass());
-    private final List<EnvironmentVariableHandler> handlerList;
+    private final List<EnvironmentVariableHandlerFactory> factoryList;
 
     @Autowired
     public EnvironmentVariableProcessor(List<EnvironmentVariableHandlerFactory> factoryList) {
-        this.handlerList = factoryList.stream()
-            .map(EnvironmentVariableHandlerFactory::build)
-            .collect(Collectors.toList());
+        this.factoryList = factoryList;
     }
 
     public void updateConfigurations() {
         logger.info("** {} **", LINE_DIVIDER);
         logger.info("Initializing system configurations from environment variables...");
+        logger.info("Building environment variables handlers.");
+        List<EnvironmentVariableHandler> handlerList = factoryList.stream()
+            .map(EnvironmentVariableHandlerFactory::build)
+            .collect(Collectors.toList());
+        logger.info("Begin handling environment variables...");
         for (EnvironmentVariableHandler handler : handlerList) {
             logger.info(LINE_DIVIDER);
             logger.info("Handler name: {}", handler.getName());

@@ -1,7 +1,7 @@
 /*
  * channel-email
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -31,8 +31,8 @@ import com.synopsys.integration.alert.common.descriptor.config.field.errors.Aler
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.FieldStatusSeverity;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.service.email.EmailTarget;
 import com.synopsys.integration.alert.service.email.JavamailPropertiesFactory;
@@ -88,8 +88,8 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
         }
 
         // Distribution
-        EmailGlobalConfigModel emailServerConfiguration = emailGlobalConfigAccessor.getConfigurationByName(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME)
-            .orElseThrow(() -> new AlertConfigurationException("ERROR: Missing Email global config."));
+        EmailGlobalConfigModel emailServerConfiguration = emailGlobalConfigAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
+                                                              .orElseThrow(() -> new AlertConfigurationException("ERROR: Missing Email global config."));
 
         SmtpConfig smtpConfig = SmtpConfig.builder()
             .setJavamailProperties(javamailPropertiesFactory.createJavaMailProperties(emailServerConfiguration))

@@ -1,7 +1,7 @@
 /*
  * component
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -15,8 +15,8 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatusMessages;
+import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
-import com.synopsys.integration.alert.component.settings.proxy.model.SettingsProxyModel;
 
 @Component
 public class SettingsProxyValidator {

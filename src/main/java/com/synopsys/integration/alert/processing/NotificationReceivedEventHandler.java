@@ -1,7 +1,7 @@
 /*
  * blackduck-alert
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -68,8 +68,8 @@ public class NotificationReceivedEventHandler implements AlertEventHandler<Notif
             List<AlertNotificationModel> notifications = pageOfAlertNotificationModels.getModels();
             logger.info("Starting to process {} notifications.", notifications.size());
             notificationProcessor.processNotifications(notifications, List.of(FrequencyType.REAL_TIME));
-            pageOfAlertNotificationModels = notificationAccessor.getFirstPageOfNotificationsNotProcessed(PAGE_SIZE);
-            if (!CollectionUtils.isEmpty(pageOfAlertNotificationModels.getModels())) {
+            boolean hasMoreNotificationsToProcess = notificationAccessor.hasMoreNotificationsToProcess();
+            if (hasMoreNotificationsToProcess) {
                 eventManager.sendEvent(new NotificationReceivedEvent());
             }
         }

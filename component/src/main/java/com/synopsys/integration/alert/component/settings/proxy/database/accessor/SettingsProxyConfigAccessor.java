@@ -1,7 +1,7 @@
 /*
  * component
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -13,26 +13,25 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
+import com.synopsys.integration.alert.common.persistence.accessor.UniqueConfigurationAccessor;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
+import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.component.settings.proxy.model.SettingsProxyModel;
 import com.synopsys.integration.alert.database.settings.proxy.NonProxyHostConfigurationEntity;
 import com.synopsys.integration.alert.database.settings.proxy.NonProxyHostsConfigurationRepository;
 import com.synopsys.integration.alert.database.settings.proxy.SettingsProxyConfigurationEntity;
 import com.synopsys.integration.alert.database.settings.proxy.SettingsProxyConfigurationRepository;
 
 @Component
-public class SettingsProxyConfigAccessor implements ConfigurationAccessor<SettingsProxyModel> {
+public class SettingsProxyConfigAccessor implements UniqueConfigurationAccessor<SettingsProxyModel> {
     private final EncryptionUtility encryptionUtility;
     private final SettingsProxyConfigurationRepository settingsProxyConfigurationRepository;
     private final NonProxyHostsConfigurationRepository nonProxyHostsConfigurationRepository;
@@ -49,36 +48,18 @@ public class SettingsProxyConfigAccessor implements ConfigurationAccessor<Settin
 
     @Override
     @Transactional(readOnly = true)
-    public long getConfigurationCount() {
-        return settingsProxyConfigurationRepository.count();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Optional<SettingsProxyModel> getConfiguration(UUID id) {
-        return settingsProxyConfigurationRepository.findById(id).map(this::createConfigModel);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Optional<SettingsProxyModel> getConfigurationByName(String configurationName) {
-        return settingsProxyConfigurationRepository.findByName(configurationName).map(this::createConfigModel);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public AlertPagedModel<SettingsProxyModel> getConfigurationPage(int page, int size) {
-        Page<SettingsProxyConfigurationEntity> resultPage = settingsProxyConfigurationRepository.findAll(PageRequest.of(page, size));
-        List<SettingsProxyModel> pageContent = resultPage.getContent()
-            .stream()
-            .map(this::createConfigModel)
-            .collect(Collectors.toList());
-        return new AlertPagedModel<>(resultPage.getTotalPages(), resultPage.getNumber(), resultPage.getSize(), pageContent);
+    public Optional<SettingsProxyModel> getConfiguration() {
+        return settingsProxyConfigurationRepository.findByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME).map(this::createConfigModel);
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public SettingsProxyModel createConfiguration(SettingsProxyModel configuration) {
+    public SettingsProxyModel createConfiguration(SettingsProxyModel configuration) throws AlertConfigurationException {
+        Optional<SettingsProxyModel> existingConfiguration = getConfiguration();
+        if (existingConfiguration.isPresent()) {
+            throw new AlertConfigurationException("A proxy config already exists.");
+        }
+
         OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
         UUID configurationId = UUID.randomUUID();
         configuration.setId(configurationId.toString());
@@ -93,9 +74,15 @@ public class SettingsProxyConfigAccessor implements ConfigurationAccessor<Settin
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public SettingsProxyModel updateConfiguration(UUID configurationId, SettingsProxyModel configuration) throws AlertConfigurationException {
-        SettingsProxyConfigurationEntity configurationEntity = settingsProxyConfigurationRepository.findById(configurationId)
-                                                                   .orElseThrow(() -> new AlertConfigurationException(String.format("Config with id '%s' did not exist", configurationId.toString())));
+    public SettingsProxyModel updateConfiguration(SettingsProxyModel configuration) throws AlertConfigurationException {
+        SettingsProxyConfigurationEntity configurationEntity = settingsProxyConfigurationRepository.findByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
+                                                                   .orElseThrow(() -> new AlertConfigurationException("Proxy config does not exist"));
+
+        if (BooleanUtils.toBoolean(configuration.getIsProxyPasswordSet()) && configuration.getProxyPassword().isEmpty()) {
+            String decryptedPassword = encryptionUtility.decrypt(configurationEntity.getPassword());
+            configuration.setProxyPassword(decryptedPassword);
+        }
+        UUID configurationId = configurationEntity.getConfigurationId();
         OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
         SettingsProxyConfigurationEntity configurationToSave = toEntity(configurationId, configuration, configurationEntity.getCreatedAt(), currentTime);
         SettingsProxyConfigurationEntity savedProxyConfig = settingsProxyConfigurationRepository.save(configurationToSave);
@@ -108,10 +95,8 @@ public class SettingsProxyConfigAccessor implements ConfigurationAccessor<Settin
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public void deleteConfiguration(UUID configurationId) {
-        if (null != configurationId) {
-            settingsProxyConfigurationRepository.deleteById(configurationId);
-        }
+    public void deleteConfiguration() {
+        settingsProxyConfigurationRepository.deleteByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
     }
 
     private SettingsProxyModel createConfigModel(SettingsProxyConfigurationEntity proxyConfiguration) {
@@ -128,8 +113,12 @@ public class SettingsProxyConfigAccessor implements ConfigurationAccessor<Settin
             newModel.setProxyHost(proxyConfiguration.getHost());
             newModel.setProxyPort(proxyConfiguration.getPort());
             newModel.setProxyUsername(proxyConfiguration.getUsername());
-            if (StringUtils.isNotBlank(proxyConfiguration.getPassword())) {
-                newModel.setProxyPassword(encryptionUtility.decrypt(proxyConfiguration.getPassword()));
+
+            String proxyPassword = proxyConfiguration.getPassword();
+            boolean doesPasswordExist = StringUtils.isNotBlank(proxyPassword);
+            newModel.setIsSmtpPasswordSet(doesPasswordExist);
+            if (doesPasswordExist) {
+                newModel.setProxyPassword(encryptionUtility.decrypt(proxyPassword));
             }
             newModel.setNonProxyHosts(getNonProxyHosts(proxyConfiguration.getNonProxyHosts()));
         }

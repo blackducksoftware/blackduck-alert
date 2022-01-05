@@ -1,7 +1,7 @@
 /*
  * blackduck-alert
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -21,11 +21,11 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.SettingsKeyAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.SettingsKeyModel;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.service.email.EmailMessagingService;
 import com.synopsys.integration.alert.service.email.EmailTarget;
 import com.synopsys.integration.alert.service.email.JavamailPropertiesFactory;
@@ -72,8 +72,8 @@ public class UpdateEmailService {
                                                     .filter(StringUtils::isNotBlank);
         if (optionalEmailAddress.isPresent()) {
             try {
-                EmailGlobalConfigModel emailServerConfiguration = emailGlobalConfigAccessor.getConfigurationByName(ConfigurationAccessor.DEFAULT_CONFIGURATION_NAME)
-                    .orElseThrow(() -> new AlertException("No global email configuration found"));
+                EmailGlobalConfigModel emailServerConfiguration = emailGlobalConfigAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
+                                                                      .orElseThrow(() -> new AlertException("No global email configuration found"));
 
                 String alertServerUrl = alertProperties.getServerURL();
                 Map<String, Object> templateFields = new HashMap<>();

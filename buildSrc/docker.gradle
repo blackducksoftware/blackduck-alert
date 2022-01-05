@@ -33,7 +33,13 @@ task buildDockerImage(type: com.bmuschko.gradle.docker.tasks.image.DockerBuildIm
 }
 
 task dockerLogin(type: Exec) {
-    commandLine "docker", "login", "--username", "$System.env.DOCKER_INT_BLACKDUCK_USER", "--password", "$System.env.DOCKER_INT_BLACKDUCK_PASSWORD"
+    doFirst {
+        def password = "${System.env.DOCKER_INT_BLACKDUCK_PASSWORD}"
+        if (password?.trim()) {
+            standardInput = new ByteArrayInputStream(password.getBytes())
+        }
+    }
+    commandLine "docker", "login", "--username", "$System.env.DOCKER_INT_BLACKDUCK_USER", "--password-stdin"
 }
 
 task pushImage(type: Exec, dependsOn: [buildDockerImage]) {

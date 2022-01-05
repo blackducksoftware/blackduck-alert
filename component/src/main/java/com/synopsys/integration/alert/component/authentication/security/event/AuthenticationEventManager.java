@@ -1,7 +1,7 @@
 /*
  * component
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -87,8 +87,7 @@ public class AuthenticationEventManager {
             .collect(Collectors.toSet());
         // The database users will not be enabled because they already exist in the database when this is called. So a new entry will not be added to the database.
         UserModel userModel = UserModel.newUser(username, null, emailAddress, authenticationType, alertRoles, true);
-        AlertAuthenticationEvent authEvent = new AlertAuthenticationEvent(userModel);
-        eventManager.sendEvent(authEvent);
+        sendAuthenticationEvent(userModel);
     }
 
     private void sendAuthenticationEvent(UserModel userModel) {

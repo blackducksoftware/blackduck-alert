@@ -1,7 +1,7 @@
 /*
  * channel-email
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -15,6 +15,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -93,6 +94,10 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
     public EmailGlobalConfigModel updateConfiguration(UUID configurationId, EmailGlobalConfigModel configuration) throws AlertConfigurationException {
         EmailConfigurationEntity configurationEntity = emailConfigurationRepository.findById(configurationId)
             .orElseThrow(() -> new AlertConfigurationException(String.format("Config with id '%s' did not exist", configurationId.toString())));
+        if (BooleanUtils.toBoolean(configuration.getIsSmtpPasswordSet()) && configuration.getSmtpPassword().isEmpty()) {
+            String decryptedPassword = encryptionUtility.decrypt(configurationEntity.getAuthPassword());
+            configuration.setSmtpPassword(decryptedPassword);
+        }
         return populateConfiguration(configurationId, configuration, configurationEntity.getCreatedAt());
     }
 
@@ -132,8 +137,11 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
             newModel.setSmtpFrom(emailConfiguration.getSmtpFrom());
             newModel.setSmtpAuth(emailConfiguration.getAuthRequired());
             newModel.setSmtpUsername(emailConfiguration.getAuthUsername());
-            if (StringUtils.isNotBlank(emailConfiguration.getAuthPassword())) {
-                newModel.setSmtpPassword(encryptionUtility.decrypt(emailConfiguration.getAuthPassword()));
+            String authPassword = emailConfiguration.getAuthPassword();
+            boolean doesPasswordExist = StringUtils.isNotBlank(authPassword);
+            newModel.setIsSmtpPasswordSet(doesPasswordExist);
+            if (doesPasswordExist) {
+                newModel.setSmtpPassword(encryptionUtility.decrypt(authPassword));
             }
             newModel.setAdditionalJavaMailProperties(getAdditionalProperties(emailConfiguration.getEmailConfigurationProperties()));
         }

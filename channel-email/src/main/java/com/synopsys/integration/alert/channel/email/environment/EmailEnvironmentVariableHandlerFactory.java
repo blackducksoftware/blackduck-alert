@@ -1,7 +1,7 @@
 /*
  * channel-email
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -113,12 +113,12 @@ public class EmailEnvironmentVariableHandlerFactory implements EnvironmentVariab
 
         EmailGlobalConfigModel obfuscatedModel = configModel.obfuscate();
 
-        obfuscatedModel.getSmtpHost().map(String::valueOf).ifPresent(value -> properties.put(EMAIL_HOST_KEY, value));
+        obfuscatedModel.getSmtpHost().ifPresent(value -> properties.put(EMAIL_HOST_KEY, value));
         obfuscatedModel.getSmtpPort().map(String::valueOf).ifPresent(value -> properties.put(EMAIL_PORT_KEY, value));
-        obfuscatedModel.getSmtpFrom().map(String::valueOf).ifPresent(value -> properties.put(EMAIL_FROM_KEY, value));
+        obfuscatedModel.getSmtpFrom().ifPresent(value -> properties.put(EMAIL_FROM_KEY, value));
         obfuscatedModel.getSmtpAuth().map(String::valueOf).ifPresent(value -> properties.put(AUTH_REQUIRED_KEY, value));
-        obfuscatedModel.getSmtpPassword().map(String::valueOf).ifPresent(value -> properties.put(AUTH_PASSWORD_KEY, value));
-        obfuscatedModel.getSmtpUsername().map(String::valueOf).ifPresent(value -> properties.put(AUTH_USER_KEY, value));
+        obfuscatedModel.getSmtpPassword().ifPresent(value -> properties.put(AUTH_PASSWORD_KEY, value));
+        obfuscatedModel.getSmtpUsername().ifPresent(value -> properties.put(AUTH_USER_KEY, value));
 
         if (!properties.isEmpty()) {
             configAccessor.createConfiguration(configModel);

@@ -1,7 +1,7 @@
 /*
  * alert-database
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -37,8 +37,8 @@ import com.synopsys.integration.alert.database.notification.NotificationContentR
 import com.synopsys.integration.alert.database.notification.NotificationEntity;
 
 @Component
-@Transactional
 public class DefaultNotificationAccessor implements NotificationAccessor {
+    public static final String COLUMN_NAME_PROVIDER_CREATION_TIME = "providerCreationTime";
     private final NotificationContentRepository notificationContentRepository;
     private final AuditEntryRepository auditEntryRepository;
     private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
@@ -55,6 +55,7 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     }
 
     @Override
+    @Transactional
     public List<AlertNotificationModel> saveAllNotifications(Collection<AlertNotificationModel> notifications) {
         List<NotificationEntity> entitiesToSave = notifications
             .stream()
@@ -103,9 +104,14 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
 
     @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public List<AlertNotificationModel> findByCreatedAtBetween(OffsetDateTime startDate, OffsetDateTime endDate) {
-        List<NotificationEntity> byCreatedAtBetween = notificationContentRepository.findByCreatedAtBetween(startDate, endDate);
-        return toModels(byCreatedAtBetween);
+    public AlertPagedModel<AlertNotificationModel> findByCreatedAtBetween(OffsetDateTime startDate, OffsetDateTime endDate, int pageNumber, int pageSize) {
+        Sort.Order sortingOrder = Sort.Order.asc(COLUMN_NAME_PROVIDER_CREATION_TIME);
+        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, Sort.by(sortingOrder));
+        Page<AlertNotificationModel> pageOfNotifications = notificationContentRepository.findByCreatedAtBetween(startDate, endDate, pageRequest)
+            .map(this::toModel);
+        List<AlertNotificationModel> alertNotificationModels = pageOfNotifications.getContent();
+        return new AlertPagedModel<>(pageOfNotifications.getTotalPages(), pageNumber, pageSize, alertNotificationModels);
+
     }
 
     @Override
@@ -116,6 +122,7 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     }
 
     @Override
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<AlertNotificationModel> findByCreatedAtBeforeDayOffset(int dayOffset) {
         OffsetDateTime searchTime = DateUtils.createCurrentDateTimestamp()
             .minusDays(dayOffset)
@@ -124,11 +131,13 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     }
 
     @Override
+    @Transactional
     public void deleteNotification(AlertNotificationModel notification) {
         notificationContentRepository.deleteById(notification.getId());
     }
 
     @Override
+    @Transactional
     public int deleteNotificationsCreatedBefore(OffsetDateTime date) {
         int deletedNotificationsCount = notificationContentRepository.bulkDeleteCreatedAtBefore(date);
         auditEntryRepository.bulkDeleteOrphanedEntries();
@@ -141,7 +150,7 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
         // We can only modify the query for the fields that exist in NotificationContent
         if (StringUtils.isNotBlank(sortField) && "createdAt".equalsIgnoreCase(sortField)
                 || "provider".equalsIgnoreCase(sortField)
-                || "providerCreationTime".equalsIgnoreCase(sortField)
+                || COLUMN_NAME_PROVIDER_CREATION_TIME.equalsIgnoreCase(sortField)
                 || "notificationType".equalsIgnoreCase(sortField)
                 || "content".equalsIgnoreCase(sortField)) {
             sortingField = sortField;
@@ -155,9 +164,10 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     }
 
     @Override
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public AlertPagedModel<AlertNotificationModel> getFirstPageOfNotificationsNotProcessed(int pageSize) {
         int currentPage = 0;
-        Sort.Order sortingOrder = Sort.Order.asc("providerCreationTime");
+        Sort.Order sortingOrder = Sort.Order.asc(COLUMN_NAME_PROVIDER_CREATION_TIME);
         PageRequest pageRequest = PageRequest.of(currentPage, pageSize, Sort.by(sortingOrder));
         Page<AlertNotificationModel> pageOfNotifications = notificationContentRepository.findByProcessedFalseOrderByProviderCreationTimeAsc(pageRequest)
             .map(this::toModel);
@@ -166,6 +176,7 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     }
 
     @Override
+    @Transactional
     public void setNotificationsProcessed(List<AlertNotificationModel> notifications) {
         Set<Long> notificationIds = notifications
             .stream()
@@ -178,6 +189,13 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     @Transactional
     public void setNotificationsProcessedById(Set<Long> notificationIds) {
         notificationContentRepository.setProcessedByIds(notificationIds);
+        notificationContentRepository.flush();
+    }
+
+    @Override
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
+    public boolean hasMoreNotificationsToProcess() {
+        return notificationContentRepository.existsByProcessedFalse();
     }
 
     private List<AlertNotificationModel> toModels(List<NotificationEntity> notificationEntities) {

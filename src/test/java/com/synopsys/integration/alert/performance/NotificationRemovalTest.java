@@ -9,6 +9,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -36,6 +37,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageA
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptorKey;
 import com.synopsys.integration.alert.component.scheduling.workflow.PurgeTask;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
@@ -121,14 +123,14 @@ public class NotificationRemovalTest {
         purgeTask = new PurgeTask(schedulingDescriptorKey, taskScheduler, notificationAccessor, systemMessageAccessor, taskManager, configurationModelConfigurationAccessor);
         LocalDateTime startTime = LocalDateTime.now();
         WaitJob<Boolean> waitJob = createWaitJob(startTime, () -> {
-            List<AlertNotificationModel> notificationsInDatabase = notificationAccessor.findByCreatedAtBetween(oldestNotificationCreationTime, testStartTime);
+            List<AlertNotificationModel> notificationsInDatabase = getAllNotificationsInDatabase(oldestNotificationCreationTime, testStartTime);
             return notificationsInDatabase.size() == BATCH_SIZE && notificationsInDatabase.stream()
                 .allMatch(AlertNotificationModel::getProcessed);
         });
         purgeTask.runTask();
         boolean isComplete = waitJob.waitFor();
         logTimeElapsedWithMessage("Purge of notifications duration: %s", startTime, LocalDateTime.now());
-        List<AlertNotificationModel> remainingNotifications = notificationAccessor.findByCreatedAtBetween(oldestNotificationCreationTime, testStartTime);
+        List<AlertNotificationModel> remainingNotifications = getAllNotificationsInDatabase(oldestNotificationCreationTime, testStartTime);
 
         assertTrue(isComplete);
         assertEquals(BATCH_SIZE, remainingNotifications.size());
@@ -144,6 +146,22 @@ public class NotificationRemovalTest {
         String durationFormatted = String.format("%sH:%sm:%ss", duration.toHoursPart(), duration.toMinutesPart(), duration.toSecondsPart());
         LOGGER.info(String.format(messageFormat, durationFormatted));
         LOGGER.info(String.format("Current time %s.", dateTimeFormatter.format(end)));
+    }
+
+    private List<AlertNotificationModel> getAllNotificationsInDatabase(OffsetDateTime oldestNotificationCreationTime, OffsetDateTime testStartTime) {
+        List<AlertNotificationModel> notifications = new LinkedList<>();
+        int pageSize = 100;
+        AlertPagedModel<AlertNotificationModel> page = notificationAccessor.findByCreatedAtBetween(oldestNotificationCreationTime, testStartTime, AlertPagedModel.DEFAULT_PAGE_NUMBER, pageSize);
+        int currentPage = page.getCurrentPage();
+        int totalPages = page.getTotalPages();
+        notifications.addAll(page.getModels());
+        while (!page.getModels().isEmpty() || currentPage < totalPages) {
+            page = notificationAccessor.findByCreatedAtBetween(oldestNotificationCreationTime, testStartTime, currentPage + 1, pageSize);
+            currentPage = page.getCurrentPage();
+            totalPages = page.getTotalPages();
+            notifications.addAll(page.getModels());
+        }
+        return notifications;
     }
 
     private WaitJob<Boolean> createWaitJob(LocalDateTime startTime, WaitJobCondition waitCondition) {

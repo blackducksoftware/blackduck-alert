@@ -3,10 +3,14 @@ package com.synopsys.integration.alert.processing;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.ListUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 
@@ -37,8 +41,21 @@ public class MockNotificationAccessor implements NotificationAccessor {
     }
 
     @Override
-    public List<AlertNotificationModel> findByCreatedAtBetween(OffsetDateTime startDate, OffsetDateTime endDate) {
-        return null;
+    public AlertPagedModel<AlertNotificationModel> findByCreatedAtBetween(OffsetDateTime startDate, OffsetDateTime endDate, int pageNumber, int pageSize) {
+        Predicate<AlertNotificationModel> beforePredicate = notification -> notification.getCreatedAt().isBefore(endDate) || notification.getCreatedAt().isEqual(endDate);
+        Predicate<AlertNotificationModel> afterPredicate = notification -> notification.getCreatedAt().isAfter(startDate) || notification.getCreatedAt().isEqual(startDate);
+        Predicate<AlertNotificationModel> withinRange = beforePredicate.and(afterPredicate);
+        List<AlertNotificationModel> notifications = alertNotificationModels.stream()
+            .sorted(Comparator.comparing(AlertNotificationModel::getCreatedAt))
+            .filter(withinRange)
+            .collect(Collectors.toList());
+        List<List<AlertNotificationModel>> partitionedLists = ListUtils.partition(notifications, pageSize);
+        int totalPages = partitionedLists.size();
+        if (partitionedLists.size() >= pageNumber) {
+            return new AlertPagedModel<>(totalPages, pageNumber, pageSize, partitionedLists.get(pageNumber));
+        } else {
+            return new AlertPagedModel<>(0, 0, pageSize, List.of());
+        }
     }
 
     @Override
@@ -90,6 +107,12 @@ public class MockNotificationAccessor implements NotificationAccessor {
     @Override
     public int deleteNotificationsCreatedBefore(OffsetDateTime date) {
         return 0;
+    }
+
+    @Override
+    public boolean hasMoreNotificationsToProcess() {
+        return alertNotificationModels.stream()
+            .anyMatch(AlertNotificationModel::getProcessed);
     }
 
     //AlertNotificationModel is immutable, this is a workaround for the unit test to set "processed" to true.

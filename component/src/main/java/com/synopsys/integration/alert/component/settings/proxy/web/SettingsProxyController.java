@@ -1,13 +1,11 @@
 /*
  * component
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.synopsys.integration.alert.component.settings.proxy.web;
-
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,18 +13,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
-import com.synopsys.integration.alert.common.rest.api.ReadPageController;
-import com.synopsys.integration.alert.common.rest.api.StaticConfigResourceController;
+import com.synopsys.integration.alert.common.rest.api.StaticUniqueConfigResourceController;
 import com.synopsys.integration.alert.common.rest.api.ValidateController;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
+import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.component.settings.proxy.action.SettingsProxyCrudActions;
 import com.synopsys.integration.alert.component.settings.proxy.action.SettingsProxyValidationAction;
-import com.synopsys.integration.alert.component.settings.proxy.model.SettingsProxyModel;
 
 @RestController
 @RequestMapping(AlertRestConstants.SETTINGS_PROXY_PATH)
-public class SettingsProxyController implements StaticConfigResourceController<SettingsProxyModel>, ValidateController<SettingsProxyModel>, ReadPageController<AlertPagedModel<SettingsProxyModel>> {
+public class SettingsProxyController implements StaticUniqueConfigResourceController<SettingsProxyModel>, ValidateController<SettingsProxyModel> {
     private final SettingsProxyCrudActions configActions;
     private final SettingsProxyValidationAction validationAction;
 
@@ -42,23 +38,18 @@ public class SettingsProxyController implements StaticConfigResourceController<S
     }
 
     @Override
-    public SettingsProxyModel getOne(UUID id) {
-        return ResponseFactory.createContentResponseFromAction(configActions.getOne(id));
+    public SettingsProxyModel getOne() {
+        return ResponseFactory.createContentResponseFromAction(configActions.getOne());
     }
 
     @Override
-    public AlertPagedModel<SettingsProxyModel> getPage(Integer pageNumber, Integer pageSize, String searchTerm) {
-        return ResponseFactory.createContentResponseFromAction(configActions.getPaged(pageNumber, pageSize));
+    public void update(SettingsProxyModel resource) {
+        ResponseFactory.createContentResponseFromAction(configActions.update(resource));
     }
 
     @Override
-    public void update(UUID id, SettingsProxyModel resource) {
-        ResponseFactory.createContentResponseFromAction(configActions.update(id, resource));
-    }
-
-    @Override
-    public void delete(UUID id) {
-        ResponseFactory.createContentResponseFromAction(configActions.delete(id));
+    public void delete() {
+        ResponseFactory.createContentResponseFromAction(configActions.delete());
     }
 
     @Override
