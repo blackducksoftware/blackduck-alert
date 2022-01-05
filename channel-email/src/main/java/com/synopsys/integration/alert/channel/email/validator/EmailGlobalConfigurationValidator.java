@@ -37,9 +37,9 @@ public class EmailGlobalConfigurationValidator implements GlobalConfigurationVal
         configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_SOCKS_PORT_KEY.getPropertyKey());
 
         boolean useAuth = fieldModel.getFieldValueModel(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey())
-            .flatMap(FieldValueModel::getValue)
-            .map(Boolean::valueOf)
-            .orElse(false);
+                              .flatMap(FieldValueModel::getValue)
+                              .map(Boolean::valueOf)
+                              .orElse(false);
 
         if (useAuth) {
             configurationFieldValidator.validateRequiredFieldsAreNotBlank(List.of(

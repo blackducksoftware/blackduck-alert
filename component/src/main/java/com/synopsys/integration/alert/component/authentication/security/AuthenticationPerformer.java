@@ -24,8 +24,8 @@ import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.component.authentication.security.event.AuthenticationEventManager;
 
 public abstract class AuthenticationPerformer {
-    private final AuthenticationEventManager authenticationEventManager;
-    private final RoleAccessor roleAccessor;
+    private AuthenticationEventManager authenticationEventManager;
+    private RoleAccessor roleAccessor;
 
     protected AuthenticationPerformer(AuthenticationEventManager authenticationEventManager, RoleAccessor roleAccessor) {
         this.authenticationEventManager = authenticationEventManager;
@@ -51,14 +51,14 @@ public abstract class AuthenticationPerformer {
 
     private boolean isAuthorized(Authentication authentication) {
         Set<String> allowedRoles = roleAccessor.getRoles()
-            .stream()
-            .map(UserRoleModel::getName)
-            .collect(Collectors.toSet());
+                                       .stream()
+                                       .map(UserRoleModel::getName)
+                                       .collect(Collectors.toSet());
         return authentication.getAuthorities()
-            .stream()
-            .map(authenticationEventManager::getRoleFromAuthority)
-            .flatMap(Optional::stream)
-            .anyMatch(allowedRoles::contains);
+                   .stream()
+                   .map(authenticationEventManager::getRoleFromAuthority)
+                   .flatMap(Optional::stream)
+                   .anyMatch(allowedRoles::contains);
     }
 
 }

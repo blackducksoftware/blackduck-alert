@@ -92,7 +92,7 @@ public class HttpPathManager {
         return createDefaultPaths(DEFAULT_PATHS);
     }
 
-    private List<String> createSamlDefaultAllowedPaths() {return createDefaultPaths(DEFAULT_SAML_PATHS);}
+    private List<String> createSamlDefaultAllowedPaths() { return createDefaultPaths(DEFAULT_SAML_PATHS);}
 
     public void addAllowedPath(String path) {
         allowedPaths.add(path);

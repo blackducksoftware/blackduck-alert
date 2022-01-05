@@ -48,11 +48,11 @@ public class DailyTask extends ProcessingTask {
     @Override
     public String scheduleCronExpression() {
         String dailySavedCronValue = configurationAccessor.getConfigurationsByDescriptorKey(schedulingDescriptorKey)
-            .stream()
-            .findFirst()
-            .flatMap(configurationModel -> configurationModel.getField(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY))
-            .flatMap(ConfigurationFieldModel::getFieldValue)
-            .orElse(String.valueOf(DEFAULT_HOUR_OF_DAY));
+                                         .stream()
+                                         .findFirst()
+                                         .flatMap(configurationModel -> configurationModel.getField(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY))
+                                         .flatMap(ConfigurationFieldModel::getFieldValue)
+                                         .orElse(String.valueOf(DEFAULT_HOUR_OF_DAY));
         return String.format(CRON_FORMAT, dailySavedCronValue);
     }
 

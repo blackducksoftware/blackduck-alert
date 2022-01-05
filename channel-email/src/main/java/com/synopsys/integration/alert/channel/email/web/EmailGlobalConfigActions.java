@@ -48,9 +48,7 @@ public class EmailGlobalConfigActions {
     private final EmailGlobalConfigModelTransformer concreteModelTransformer;
 
     @Autowired
-    public EmailGlobalConfigActions(
-        AuthorizationManager authorizationManager, ConfigurationAccessor configurationAccessor, ConfigurationFieldModelConverter modelConverter, EmailGlobalConfigurationValidator validator, EmailGlobalTestAction testAction
-    ) {
+    public EmailGlobalConfigActions(AuthorizationManager authorizationManager, ConfigurationAccessor configurationAccessor, ConfigurationFieldModelConverter modelConverter, EmailGlobalConfigurationValidator validator, EmailGlobalTestAction testAction) {
         this.authorizationManager = authorizationManager;
         this.configurationAccessor = configurationAccessor;
         this.modelConverter = modelConverter;
@@ -166,10 +164,10 @@ public class EmailGlobalConfigActions {
 
     public ActionResponse<EmailGlobalConfigModel> deleteWithoutChecks(Long id) {
         configurationAccessor.getConfigurationById(id)
-            .map(modelConverter::convertToFieldModel)
-            .map(FieldModel::getId)
-            .map(Long::parseLong)
-            .ifPresent(configurationAccessor::deleteConfiguration);
+                         .map(modelConverter::convertToFieldModel)
+                         .map(FieldModel::getId)
+                         .map(Long::parseLong)
+                         .ifPresent(configurationAccessor::deleteConfiguration);
 
         return new ActionResponse<>(HttpStatus.NO_CONTENT);
     }
@@ -199,8 +197,8 @@ public class EmailGlobalConfigActions {
 
     private Optional<EmailGlobalConfigModel> getEmailGlobalConfigResponse(Long id) {
         return configurationAccessor
-            .getConfigurationById(id)
-            .map(concreteModelTransformer::fromConfigurationModel);
+                   .getConfigurationById(id)
+                   .map(concreteModelTransformer::fromConfigurationModel);
     }
 
 }

@@ -38,8 +38,8 @@ public class SlackChannelMessageConverter extends AbstractChannelMessageConverte
 
     private List<SlackChannelMessageModel> createMessageModel(List<String> messageChunks) {
         return messageChunks.stream()
-            .map(SlackChannelMessageModel::new)
-            .collect(Collectors.toList());
+                   .map(SlackChannelMessageModel::new)
+                   .collect(Collectors.toList());
     }
 
 }

@@ -12,7 +12,7 @@ import java.util.List;
 import com.synopsys.integration.alert.common.rest.model.MultiResponseModel;
 
 public class MultiRolePermissionModel extends MultiResponseModel<RolePermissionModel> {
-    public MultiRolePermissionModel(List<RolePermissionModel> models) {
+    public MultiRolePermissionModel(final List<RolePermissionModel> models) {
         super(models);
     }
 

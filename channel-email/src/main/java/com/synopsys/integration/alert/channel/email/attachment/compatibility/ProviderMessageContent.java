@@ -16,8 +16,8 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.builder.Buildable;
 import com.synopsys.integration.datastructure.SetMap;
@@ -37,10 +37,8 @@ public class ProviderMessageContent extends AlertSerializableModel implements Bu
     private final OffsetDateTime providerCreationTime;
     private final Long providerConfigId;
 
-    private ProviderMessageContent(
-        LinkableItem provider, LinkableItem topic, LinkableItem subTopic, ContentKey contentKey, ItemOperation action, Long notificationId, Set<ComponentItem> componentItems,
-        OffsetDateTime providerCreationTime, Long providerConfigId
-    ) {
+    private ProviderMessageContent(LinkableItem provider, LinkableItem topic, LinkableItem subTopic, ContentKey contentKey, ItemOperation action, Long notificationId, Set<ComponentItem> componentItems,
+        OffsetDateTime providerCreationTime, Long providerConfigId) {
         this.provider = provider;
         this.topic = topic;
         this.subTopic = subTopic;

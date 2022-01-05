@@ -77,6 +77,7 @@ public class EmailGlobalConfigModelTransformer {
         );
     }
 
+
     public FieldModel toFieldModel(EmailGlobalConfigModel resource) {
         HashMap<String, FieldValueModel> resourceAsMap = new HashMap<>();
 
@@ -156,14 +157,14 @@ public class EmailGlobalConfigModelTransformer {
         if (value == null) {
             return createEmptyFieldValueModel();
         }
-        return new FieldValueModel(List.of(value), true);
+        return new FieldValueModel(List.of(value),true);
     }
 
     public FieldValueModel createEmptyFieldValueModel() {
         return new FieldValueModel(List.of(), false);
     }
 
-    public EmailGlobalConfigModel fromConfigurationModel(ConfigurationModel configurationModel) {
+    public EmailGlobalConfigModel fromConfigurationModel(ConfigurationModel configurationModel){
         EmailGlobalConfigModel concreteModel = new EmailGlobalConfigModel();
 
         concreteModel.setId(String.valueOf(configurationModel.getConfigurationId()));
@@ -250,6 +251,6 @@ public class EmailGlobalConfigModelTransformer {
     }
 
     public AlertFieldStatus toResponseFieldStatus(AlertFieldStatus alertFieldStatus) {
-        return new AlertFieldStatus(propertyKeyToResponseKey.get(alertFieldStatus.getFieldName()), alertFieldStatus.getSeverity(), alertFieldStatus.getFieldMessage());
+        return new AlertFieldStatus(propertyKeyToResponseKey.get(alertFieldStatus.getFieldName()), alertFieldStatus.getSeverity(),alertFieldStatus.getFieldMessage());
     }
 }

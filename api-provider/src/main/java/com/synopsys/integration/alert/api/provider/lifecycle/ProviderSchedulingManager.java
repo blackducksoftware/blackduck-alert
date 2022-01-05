@@ -78,9 +78,9 @@ public class ProviderSchedulingManager {
         logger.debug("Performing unscheduling tasks for provider config: id={}", providerConfigId);
 
         List<ProviderTask> tasks = taskManager.getTasksByClass(ProviderTask.class)
-            .stream()
-            .filter(task -> task.getProviderProperties().getConfigId().equals(providerConfigId))
-            .collect(Collectors.toList());
+                                       .stream()
+                                       .filter(task -> task.getProviderProperties().getConfigId().equals(providerConfigId))
+                                       .collect(Collectors.toList());
 
         for (ProviderTask task : tasks) {
             unscheduleTask(task);
