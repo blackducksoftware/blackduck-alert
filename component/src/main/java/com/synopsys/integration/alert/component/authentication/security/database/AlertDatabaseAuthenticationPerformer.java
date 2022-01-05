@@ -23,7 +23,7 @@ import com.synopsys.integration.alert.component.authentication.security.event.Au
 public class AlertDatabaseAuthenticationPerformer extends AuthenticationPerformer {
     private final Logger logger = LoggerFactory.getLogger(AlertDatabaseAuthenticationPerformer.class);
 
-    private final DaoAuthenticationProvider alertDatabaseAuthProvider;
+    private DaoAuthenticationProvider alertDatabaseAuthProvider;
 
     @Autowired
     public AlertDatabaseAuthenticationPerformer(AuthenticationEventManager authenticationEventManager, RoleAccessor roleAccessor, DaoAuthenticationProvider alertDatabaseAuthProvider) {

@@ -19,7 +19,7 @@ import com.synopsys.integration.alert.component.authentication.security.event.Au
 
 public class SAMLAuthProvider extends SAMLAuthenticationProvider {
     private final Logger logger = LoggerFactory.getLogger(SAMLAuthProvider.class);
-    private final AuthenticationEventManager authenticationEventManager;
+    private AuthenticationEventManager authenticationEventManager;
 
     public SAMLAuthProvider(AuthenticationEventManager authenticationEventManager) {
         this.authenticationEventManager = authenticationEventManager;

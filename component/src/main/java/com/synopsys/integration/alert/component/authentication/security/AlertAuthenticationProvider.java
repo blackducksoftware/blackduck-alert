@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class AlertAuthenticationProvider implements AuthenticationProvider {
     private final Logger logger = LoggerFactory.getLogger(AlertAuthenticationProvider.class);
-    private final List<AuthenticationPerformer> authenticationPerformers;
+    private List<AuthenticationPerformer> authenticationPerformers;
 
     @Autowired
     public AlertAuthenticationProvider(List<AuthenticationPerformer> authenticationPerformers) {
@@ -38,7 +38,7 @@ public class AlertAuthenticationProvider implements AuthenticationProvider {
         for (AuthenticationPerformer authenticationPerformer : authenticationPerformers) {
             try {
                 Optional<Authentication> completedAuthentication = authenticationPerformer.performAuthentication(authentication)
-                    .filter(Authentication::isAuthenticated);
+                                                                       .filter(Authentication::isAuthenticated);
                 if (completedAuthentication.isPresent()) {
                     return completedAuthentication.get();
                 }

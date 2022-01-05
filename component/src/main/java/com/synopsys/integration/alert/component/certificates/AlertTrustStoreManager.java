@@ -165,9 +165,9 @@ public class AlertTrustStoreManager {
 
     private char[] getTrustStorePassword() {
         return alertProperties
-            .getTrustStorePass()
-            .map(String::toCharArray)
-            .orElse(null);
+                   .getTrustStorePass()
+                   .map(String::toCharArray)
+                   .orElse(null);
     }
 
 }

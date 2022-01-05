@@ -71,8 +71,8 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
     @Override
     protected final ExistingIssueDetails<String> createIssueAndExtractDetails(IssueCreationModel alertIssueCreationModel) throws AlertException {
         MessageReplacementValues replacementValues = alertIssueCreationModel.getSource()
-            .map(this::createCustomFieldReplacementValues)
-            .orElse(new MessageReplacementValues.Builder(alertIssueCreationModel.getProvider().getLabel(), MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE).build());
+                                                         .map(this::createCustomFieldReplacementValues)
+                                                         .orElse(new MessageReplacementValues.Builder(alertIssueCreationModel.getProvider().getLabel(), MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE).build());
         T creationRequest = createIssueCreationRequest(alertIssueCreationModel, replacementValues);
         try {
             IssueCreationResponseModel issueCreationResponseModel = createIssue(creationRequest);
@@ -82,8 +82,8 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
             String issueUILink = JiraCallbackUtils.createUILink(createdIssue);
 
             IssueCategory issueCategory = alertIssueCreationModel.getSource()
-                .map(issueCategoryRetriever::retrieveIssueCategoryFromProjectIssueModel)
-                .orElse(IssueCategory.BOM);
+                                              .map(issueCategoryRetriever::retrieveIssueCategoryFromProjectIssueModel)
+                                              .orElse(IssueCategory.BOM);
 
             return new ExistingIssueDetails<>(createdIssue.getId(), createdIssue.getKey(), createdIssueFields.getSummary(), issueUILink, IssueStatus.RESOLVABLE, issueCategory);
         } catch (IntegrationRestException restException) {
@@ -122,25 +122,25 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
             IssuePolicyDetails policyDetails = issuePolicyDetails.get();
             severity = Optional.ofNullable(policyDetails.getSeverity().getPolicyLabel());
             policyCategory = bomComponent.getRelevantPolicies()
-                .stream()
-                .filter(policy -> policyDetails.getName().equals(policy.getPolicyName()))
-                .findAny()
-                .flatMap(ComponentPolicy::getCategory);
+                                 .stream()
+                                 .filter(policy -> policyDetails.getName().equals(policy.getPolicyName()))
+                                 .findAny()
+                                 .flatMap(ComponentPolicy::getCategory);
         }
         if (vulnerabilityDetails.isPresent()) {
             severity = vulnerabilityDetails.get().getHighestSeverityAddedOrUpdated();
         }
         return new MessageReplacementValues.Builder(alertIssueSource.getProvider().getLabel(), alertIssueSource.getProject().getValue())
-            .projectVersionName(alertIssueSource.getProjectVersion().map(LinkableItem::getValue).orElse(MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE))
-            .componentName(bomComponent.getComponent().getValue())
-            .componentVersionName(bomComponent.getComponentVersion().map(LinkableItem::getValue).orElse(MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE))
-            .componentUsage(bomComponent.getUsage())
-            .componentLicense(bomComponent.getLicense().getValue())
-            .severity(severity.orElse(MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE))
-            .policyCategory(policyCategory.orElse(MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE))
-            .shortTermUpgradeGuidance(upgradeGuidance.getShortTermUpgradeGuidance().map(LinkableItem::getValue).orElse(MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE))
-            .longTermUpgradeGuidance(upgradeGuidance.getLongTermUpgradeGuidance().map(LinkableItem::getValue).orElse(MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE))
-            .build();
+                   .projectVersionName(alertIssueSource.getProjectVersion().map(LinkableItem::getValue).orElse(MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE))
+                   .componentName(bomComponent.getComponent().getValue())
+                   .componentVersionName(bomComponent.getComponentVersion().map(LinkableItem::getValue).orElse(MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE))
+                   .componentUsage(bomComponent.getUsage())
+                   .componentLicense(bomComponent.getLicense().getValue())
+                   .severity(severity.orElse(MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE))
+                   .policyCategory(policyCategory.orElse(MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE))
+                   .shortTermUpgradeGuidance(upgradeGuidance.getShortTermUpgradeGuidance().map(LinkableItem::getValue).orElse(MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE))
+                   .longTermUpgradeGuidance(upgradeGuidance.getLongTermUpgradeGuidance().map(LinkableItem::getValue).orElse(MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE))
+                   .build();
     }
 
     private JiraIssueSearchProperties createSearchProperties(ProjectIssueModel alertIssueSource) {
@@ -148,7 +148,7 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
         LinkableItem project = alertIssueSource.getProject();
 
         LinkableItem projectVersion = alertIssueSource.getProjectVersion()
-            .orElseThrow(() -> new AlertRuntimeException("Missing project version"));
+                                          .orElseThrow(() -> new AlertRuntimeException("Missing project version"));
 
         IssueBomComponentDetails bomComponent = alertIssueSource.getBomComponentDetails();
         LinkableItem component = bomComponent.getComponent();

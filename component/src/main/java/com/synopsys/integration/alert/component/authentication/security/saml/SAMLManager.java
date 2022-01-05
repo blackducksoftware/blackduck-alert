@@ -44,10 +44,8 @@ public class SAMLManager {
     private final FilePersistenceUtil filePersistenceUtil;
     private final SAMLContext samlContext;
 
-    public SAMLManager(
-        ParserPool parserPool, ExtendedMetadata extendedMetadata, MetadataManager metadataManager, MetadataGenerator metadataGenerator,
-        FilePersistenceUtil filePersistenceUtil, SAMLContext samlContext
-    ) {
+    public SAMLManager(ParserPool parserPool, ExtendedMetadata extendedMetadata, MetadataManager metadataManager, MetadataGenerator metadataGenerator,
+        FilePersistenceUtil filePersistenceUtil, SAMLContext samlContext) {
         this.parserPool = parserPool;
         this.extendedMetadata = extendedMetadata;
         this.metadataManager = metadataManager;
@@ -109,8 +107,8 @@ public class SAMLManager {
         Optional<ExtendedMetadataDelegate> fileProvider = createFileProvider();
         Optional<ExtendedMetadataDelegate> memoryProvider = createMemoryProvider();
         List<MetadataProvider> providers = List.of(httpProvider, fileProvider, memoryProvider).stream()
-            .flatMap(Optional::stream)
-            .collect(Collectors.toList());
+                                               .flatMap(Optional::stream)
+                                               .collect(Collectors.toList());
         metadataManager.setProviders(providers);
         metadataManager.setHostedSPName(entityId);
         metadataManager.afterPropertiesSet();

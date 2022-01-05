@@ -61,11 +61,9 @@ public class UserActions extends AbstractResourceActions<UserConfig, UserModel, 
     private final ActionMessageCreator actionMessageCreator = new ActionMessageCreator();
 
     @Autowired
-    public UserActions(
-        UserManagementDescriptorKey userManagementDescriptorKey, UserAccessor userAccessor, RoleAccessor roleAccessor, AuthorizationManager authorizationManager,
+    public UserActions(UserManagementDescriptorKey userManagementDescriptorKey, UserAccessor userAccessor, RoleAccessor roleAccessor, AuthorizationManager authorizationManager,
         AuthenticationTypeAccessor authenticationTypeAccessor,
-        UserSystemValidator userSystemValidator
-    ) {
+        UserSystemValidator userSystemValidator) {
         super(userManagementDescriptorKey, ConfigContextEnum.GLOBAL, authorizationManager);
         this.userAccessor = userAccessor;
         this.roleAccessor = roleAccessor;
@@ -77,7 +75,7 @@ public class UserActions extends AbstractResourceActions<UserConfig, UserModel, 
     @Override
     protected Optional<UserConfig> findExisting(Long id) {
         return userAccessor.getUser(id)
-            .map(this::convertDatabaseModelToRestModel);
+                   .map(this::convertDatabaseModelToRestModel);
     }
 
     @Override
@@ -148,8 +146,8 @@ public class UserActions extends AbstractResourceActions<UserConfig, UserModel, 
             Set<String> configuredRoleNames = resource.getRoleNames();
             if (null != configuredRoleNames && !configuredRoleNames.isEmpty()) {
                 Collection<UserRoleModel> roleNames = roleAccessor.getRoles().stream()
-                    .filter(role -> configuredRoleNames.contains(role.getName()))
-                    .collect(Collectors.toList());
+                                                          .filter(role -> configuredRoleNames.contains(role.getName()))
+                                                          .collect(Collectors.toList());
                 authorizationManager.updateUserRoles(userId, roleNames);
             }
             userModel = userAccessor.getUser(userId).orElse(userModel);
@@ -178,14 +176,14 @@ public class UserActions extends AbstractResourceActions<UserConfig, UserModel, 
                 Set<String> configuredRoleNames = resource.getRoleNames();
                 if (null != configuredRoleNames && !configuredRoleNames.isEmpty()) {
                     Collection<UserRoleModel> roleNames = roleAccessor.getRoles().stream()
-                        .filter(role -> configuredRoleNames.contains(role.getName()))
-                        .collect(Collectors.toList());
+                                                              .filter(role -> configuredRoleNames.contains(role.getName()))
+                                                              .collect(Collectors.toList());
                     authorizationManager.updateUserRoles(existingUser.getId(), roleNames);
                 }
                 userSystemValidator.validateDefaultAdminUser(id);
                 UserConfig user = userAccessor.getUser(id)
-                    .map(this::convertDatabaseModelToRestModel)
-                    .orElse(resource);
+                                      .map(this::convertDatabaseModelToRestModel)
+                                      .orElse(resource);
                 logger.debug(actionMessageCreator.updateSuccessMessage("User", userName));
                 return new ActionResponse<>(HttpStatus.NO_CONTENT);
             } catch (AlertException ex) {
@@ -281,7 +279,7 @@ public class UserActions extends AbstractResourceActions<UserConfig, UserModel, 
     private Optional<AlertFieldStatus> validateUserExistsById(Long userId, String userName) {
         Optional<UserModel> userModel = userAccessor.getUser(userName);
         return userModel.filter(user -> !user.getId().equals(userId))
-            .map(user -> AlertFieldStatus.error(FIELD_KEY_USER_MGMT_USERNAME, "A user with that username already exists."));
+                   .map(user -> AlertFieldStatus.error(FIELD_KEY_USER_MGMT_USERNAME, "A user with that username already exists."));
     }
 
     private void validatePasswordLength(List<AlertFieldStatus> fieldErrors, String passwordValue) {

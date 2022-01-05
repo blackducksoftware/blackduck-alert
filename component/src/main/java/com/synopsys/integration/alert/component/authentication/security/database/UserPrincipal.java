@@ -18,7 +18,7 @@ import com.synopsys.integration.util.Stringable;
 public class UserPrincipal extends Stringable implements UserDetails {
     private final UserModel userModel;
 
-    public UserPrincipal(UserModel userModel) {
+    public UserPrincipal(final UserModel userModel) {
         this.userModel = userModel;
     }
 

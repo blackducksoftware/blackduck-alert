@@ -55,17 +55,17 @@ public class LdapManager {
 
     public boolean isLdapEnabled() {
         Optional<ConfigurationModel> ldapConfig = configurationAccessor.getConfigurationsByDescriptorKey(authenticationDescriptorKey)
-            .stream()
-            .findFirst();
+                                                      .stream()
+                                                      .findFirst();
         return ldapConfig.map(configurationModel -> Boolean.valueOf(getFieldValueOrEmpty(configurationModel, AuthenticationDescriptor.KEY_LDAP_ENABLED)))
-            .orElse(false);
+                   .orElse(false);
     }
 
     public FieldUtility getCurrentConfiguration() throws AlertConfigurationException {
         ConfigurationModel configModel = configurationAccessor.getConfigurationsByDescriptorKey(authenticationDescriptorKey)
-            .stream()
-            .findFirst()
-            .orElseThrow(() -> new AlertConfigurationException("Settings configuration missing"));
+                                             .stream()
+                                             .findFirst()
+                                             .orElseThrow(() -> new AlertConfigurationException("Settings configuration missing"));
         return new FieldUtility(configModel.getCopyOfKeyToFieldMap());
     }
 

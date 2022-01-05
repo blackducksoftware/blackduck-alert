@@ -51,11 +51,11 @@ public class JiraCloudPropertiesFactory {
         String url = fieldModel.getFieldValue(JiraCloudDescriptor.KEY_JIRA_URL).orElse("");
         String username = fieldModel.getFieldValue(JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS).orElse("");
         String accessToken = fieldModel.getFieldValueModel(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN)
-            .map(this::getAppropriateAccessToken)
-            .orElse("");
+                                 .map(this::getAppropriateAccessToken)
+                                 .orElse("");
         boolean pluginCheckDisabled = fieldModel.getFieldValue(JiraCloudDescriptor.KEY_JIRA_DISABLE_PLUGIN_CHECK)
-            .map(Boolean::parseBoolean)
-            .orElse(false);
+                                          .map(Boolean::parseBoolean)
+                                          .orElse(false);
 
         ProxyInfo proxy = proxyManager.createProxyInfoForHost(url);
         return new JiraCloudProperties(url, accessToken, username, pluginCheckDisabled, proxy);
@@ -63,9 +63,9 @@ public class JiraCloudPropertiesFactory {
 
     public JiraCloudProperties createJiraProperties() throws AlertConfigurationException {
         ConfigurationModel jiraServerGlobalConfig = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(channelKey, ConfigContextEnum.GLOBAL)
-            .stream()
-            .findAny()
-            .orElseThrow(() -> new AlertConfigurationException("Missing Jira Cloud global configuration"));
+                                                        .stream()
+                                                        .findAny()
+                                                        .orElseThrow(() -> new AlertConfigurationException("Missing Jira Cloud global configuration"));
 
         FieldUtility fieldUtility = new FieldUtility(jiraServerGlobalConfig.getCopyOfKeyToFieldMap());
         return createJiraProperties(fieldUtility);
@@ -76,11 +76,11 @@ public class JiraCloudPropertiesFactory {
         boolean accessTokenSet = fieldAccessToken.getIsSet();
         if (StringUtils.isBlank(accessToken) && accessTokenSet) {
             return configurationAccessor.getConfigurationsByDescriptorKeyAndContext(ChannelKeys.JIRA_CLOUD, ConfigContextEnum.GLOBAL)
-                .stream()
-                .findFirst()
-                .flatMap(configurationModel -> configurationModel.getField(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN))
-                .flatMap(ConfigurationFieldModel::getFieldValue)
-                .orElse("");
+                       .stream()
+                       .findFirst()
+                       .flatMap(configurationModel -> configurationModel.getField(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN))
+                       .flatMap(ConfigurationFieldModel::getFieldValue)
+                       .orElse("");
         }
         return accessToken;
     }

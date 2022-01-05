@@ -28,10 +28,8 @@ public class DefaultSettingsUtility implements SettingsUtility {
     private final DefaultDescriptorGlobalConfigUtility configUtility;
 
     @Autowired
-    public DefaultSettingsUtility(
-        SettingsDescriptorKey settingsDescriptorKey, ConfigurationAccessor configurationAccessor, SettingsGlobalApiAction settingsGlobalApiAction,
-        ConfigurationFieldModelConverter configurationFieldModelConverter
-    ) {
+    public DefaultSettingsUtility(SettingsDescriptorKey settingsDescriptorKey, ConfigurationAccessor configurationAccessor, SettingsGlobalApiAction settingsGlobalApiAction,
+        ConfigurationFieldModelConverter configurationFieldModelConverter) {
         this.configUtility = new DefaultDescriptorGlobalConfigUtility(settingsDescriptorKey, configurationAccessor, settingsGlobalApiAction, configurationFieldModelConverter);
     }
 

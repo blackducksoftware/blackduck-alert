@@ -122,9 +122,9 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
 
     private JiraCloudProperties createJiraCloudProperties() throws AlertConfigurationException {
         ConfigurationModel jiraCloudGlobalConfig = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(jiraCloudChannelKey, ConfigContextEnum.GLOBAL)
-            .stream()
-            .findAny()
-            .orElseThrow(() -> new AlertConfigurationException("Missing Jira Cloud global configuration"));
+                                                       .stream()
+                                                       .findAny()
+                                                       .orElseThrow(() -> new AlertConfigurationException("Missing Jira Cloud global configuration"));
         String jiraUrl = jiraCloudGlobalConfig.getField(JiraCloudDescriptor.KEY_JIRA_URL).flatMap(ConfigurationFieldModel::getFieldValue).orElse("");
         return JiraCloudProperties.fromConfig(jiraCloudGlobalConfig, proxyManager.createProxyInfoForHost(jiraUrl));
     }

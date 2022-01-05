@@ -44,9 +44,9 @@ public class TaskActions {
 
         Collection<ScheduledTask> tasks = taskManager.getRunningTasks();
         List<TaskMetaData> taskList = tasks.stream()
-            .map(ScheduledTask::createTaskMetaData)
-            .sorted(Comparator.comparing(TaskMetaData::getType))
-            .collect(Collectors.toList());
+                                          .map(ScheduledTask::createTaskMetaData)
+                                          .sorted(Comparator.comparing(TaskMetaData::getType))
+                                          .collect(Collectors.toList());
         MultiTaskMetaDataModel content = new MultiTaskMetaDataModel(taskList);
         return new ActionResponse<>(HttpStatus.OK, content);
     }

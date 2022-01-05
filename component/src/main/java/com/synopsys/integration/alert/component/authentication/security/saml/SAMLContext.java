@@ -43,14 +43,14 @@ public class SAMLContext implements Serializable {
 
     public ConfigurationModel getCurrentConfiguration() throws AlertException {
         return configurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey, ConfigContextEnum.GLOBAL).stream()
-            .findFirst()
-            .orElseThrow(() -> new AlertConfigurationException("Settings configuration missing"));
+                   .findFirst()
+                   .orElseThrow(() -> new AlertConfigurationException("Settings configuration missing"));
     }
 
     public boolean isSAMLEnabled() {
         Optional<ConfigurationModel> samlConfig = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey, ConfigContextEnum.GLOBAL)
-            .stream()
-            .findFirst();
+                                                      .stream()
+                                                      .findFirst();
         return isSAMLEnabled(samlConfig);
     }
 

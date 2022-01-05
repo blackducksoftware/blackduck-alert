@@ -52,9 +52,9 @@ public class MSTeamsChannelMessageSender implements ChannelMessageSender<MSTeams
         RestChannelUtility restChannelUtility = new RestChannelUtility(intHttpClient);
 
         List<Request> messageRequests = channelMessages.stream()
-            .map(this::createJsonString)
-            .map(jsonString -> restChannelUtility.createPostMessageRequest(webhook, requestHeaders, jsonString))
-            .collect(Collectors.toList());
+                                            .map(this::createJsonString)
+                                            .map(jsonString -> restChannelUtility.createPostMessageRequest(webhook, requestHeaders, jsonString))
+                                            .collect(Collectors.toList());
 
         restChannelUtility.sendMessage(messageRequests, msTeamsKey.getUniversalKey());
 

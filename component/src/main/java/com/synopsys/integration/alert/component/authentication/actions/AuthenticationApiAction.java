@@ -49,9 +49,9 @@ public class AuthenticationApiAction extends ApiAction {
     private void addSAMLMetadata(FieldModel fieldModel) {
         try {
             boolean samlEnabled = fieldModel.getFieldValueModel(AuthenticationDescriptor.KEY_SAML_ENABLED)
-                .flatMap(FieldValueModel::getValue)
-                .map(BooleanUtils::toBoolean)
-                .orElse(false);
+                                      .flatMap(FieldValueModel::getValue)
+                                      .map(BooleanUtils::toBoolean)
+                                      .orElse(false);
             Optional<FieldValueModel> metadataURLFieldValueOptional = fieldModel.getFieldValueModel(AuthenticationDescriptor.KEY_SAML_METADATA_URL);
             Optional<FieldValueModel> metadataEntityFieldValueOptional = fieldModel.getFieldValueModel(AuthenticationDescriptor.KEY_SAML_ENTITY_ID);
             Optional<FieldValueModel> metadataBaseURLFieldValueOptional = fieldModel.getFieldValueModel(AuthenticationDescriptor.KEY_SAML_ENTITY_BASE_URL);

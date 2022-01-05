@@ -86,10 +86,10 @@ public class TaskManager {
      */
     public <T extends ScheduledTask> List<T> getTasksByClass(Class<T> classOrSuperclass) {
         return scheduledTaskMap.values()
-            .stream()
-            .filter(task -> classOrSuperclass.isAssignableFrom(task.getClass()))
-            .map(classOrSuperclass::cast)
-            .collect(Collectors.toList());
+                   .stream()
+                   .filter(task -> classOrSuperclass.isAssignableFrom(task.getClass()))
+                   .map(classOrSuperclass::cast)
+                   .collect(Collectors.toList());
     }
 
     public final Optional<String> getNextRunTime(String taskName) {
@@ -105,7 +105,7 @@ public class TaskManager {
         }
         Optional<Long> millisecondsToNextRun = scheduledTaskMap.get(taskName).getMillisecondsToNextRun();
         return millisecondsToNextRun
-            .map(value -> timeUnit.convert(value, TimeUnit.MILLISECONDS));
+                   .map(value -> timeUnit.convert(value, TimeUnit.MILLISECONDS));
     }
 
 }

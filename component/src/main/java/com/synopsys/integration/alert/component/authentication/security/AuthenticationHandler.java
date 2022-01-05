@@ -110,11 +110,9 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     private final AuthenticationEventManager authenticationEventManager;
 
     @Autowired
-    AuthenticationHandler(
-        HttpPathManager httpPathManager, CsrfTokenRepository csrfTokenRepository, AlertProperties alertProperties, RoleAccessor roleAccessor,
+    AuthenticationHandler(HttpPathManager httpPathManager, CsrfTokenRepository csrfTokenRepository, AlertProperties alertProperties, RoleAccessor roleAccessor,
         FilePersistenceUtil filePersistenceUtil, UserManagementAuthoritiesPopulator authoritiesPopulator, ConfigurationAccessor configurationAccessor,
-        AuthenticationDescriptorKey authenticationDescriptorKey, AuthenticationEventManager authenticationEventManager
-    ) {
+        AuthenticationDescriptorKey authenticationDescriptorKey, AuthenticationEventManager authenticationEventManager) {
         this.httpPathManager = httpPathManager;
         this.csrfTokenRepository = csrfTokenRepository;
         this.alertProperties = alertProperties;
@@ -210,9 +208,9 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     private String[] retrieveAllowedRoles() {
         return roleAccessor.getRoles()
-            .stream()
-            .map(UserRoleModel::getName)
-            .toArray(String[]::new);
+                   .stream()
+                   .map(UserRoleModel::getName)
+                   .toArray(String[]::new);
     }
 
     @Bean
