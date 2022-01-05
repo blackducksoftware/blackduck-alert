@@ -21,8 +21,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.enumeration.DefaultUserRole;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.common.enumeration.DefaultUserRole;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -49,8 +49,8 @@ public class UserManagementAuthoritiesPopulator {
         Set<String> existingRoleNames = existingRoles.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
         Set<String> alertRoles = addAdditionalRoleNames(userName, existingRoleNames, true);
         return alertRoles.stream()
-                   .map(SimpleGrantedAuthority::new)
-                   .collect(Collectors.toSet());
+            .map(SimpleGrantedAuthority::new)
+            .collect(Collectors.toSet());
 
     }
 
@@ -87,9 +87,9 @@ public class UserManagementAuthoritiesPopulator {
 
     private ConfigurationModel getCurrentConfiguration() throws AlertException {
         return configurationAccessor.getConfigurationsByDescriptorKey(authenticationDescriptorKey)
-                   .stream()
-                   .findFirst()
-                   .orElseThrow(() -> new AlertException("Settings configuration missing"));
+            .stream()
+            .findFirst()
+            .orElseThrow(() -> new AlertException("Settings configuration missing"));
     }
 
     private Optional<String> getFieldValue(ConfigurationModel configurationModel, String fieldKey) {

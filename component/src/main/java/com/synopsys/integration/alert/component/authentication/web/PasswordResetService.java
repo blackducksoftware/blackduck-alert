@@ -51,14 +51,14 @@ public class PasswordResetService {
 
     public void resetPassword(String username) throws AlertException {
         UserModel userModel = userAccessor.getUser(username)
-                                  .orElseThrow(() -> new AlertConfigurationException("No user exists for the username: " + username));
+            .orElseThrow(() -> new AlertConfigurationException("No user exists for the username: " + username));
         if (StringUtils.isBlank(userModel.getEmailAddress())) {
             throw new AlertConfigurationException("No email address configured for user: " + username);
         }
         ConfigurationModel emailConfig = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(ChannelKeys.EMAIL, ConfigContextEnum.GLOBAL)
-                                             .stream()
-                                             .findFirst()
-                                             .orElseThrow(() -> new AlertConfigurationException("No global email configuration found"));
+            .stream()
+            .findFirst()
+            .orElseThrow(() -> new AlertConfigurationException("No global email configuration found"));
         EmailProperties emailProperties = new EmailProperties(emailConfig);
         String alertServerUrl = alertProperties.getServerURL();
         String tempPassword = RandomStringUtils.randomAlphanumeric(TEMP_PASSWORD_LENGTH);

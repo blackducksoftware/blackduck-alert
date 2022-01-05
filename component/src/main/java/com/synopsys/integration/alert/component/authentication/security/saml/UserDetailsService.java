@@ -40,8 +40,8 @@ public class UserDetailsService implements SAMLUserDetailsService {
         }
         Set<String> roleNames = authoritiesPopulator.addAdditionalRoleNames(userName, existingRoles, false);
         Set<UserRoleModel> roles = roleNames.stream()
-                                       .map(UserRoleModel::of)
-                                       .collect(Collectors.toSet());
+            .map(UserRoleModel::of)
+            .collect(Collectors.toSet());
 
         UserModel userModel = UserModel.newUser(userName, "", emailAddress, AuthenticationType.SAML, roles, true);
         return new UserPrincipal(userModel);

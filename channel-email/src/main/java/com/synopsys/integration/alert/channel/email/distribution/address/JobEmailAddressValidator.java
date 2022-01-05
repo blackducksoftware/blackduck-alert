@@ -34,9 +34,9 @@ public class JobEmailAddressValidator {
 
     public ValidatedEmailAddresses validate(UUID jobId, Collection<String> emailAddresses) {
         return jobAccessor.getJobById(jobId)
-                   .map(DistributionJobModel::getBlackDuckGlobalConfigId)
-                   .map(aLong -> validate(aLong, emailAddresses))
-                   .orElseGet(() -> new ValidatedEmailAddresses(Set.of(), new HashSet<>(emailAddresses)));
+            .map(DistributionJobModel::getBlackDuckGlobalConfigId)
+            .map(aLong -> validate(aLong, emailAddresses))
+            .orElseGet(() -> new ValidatedEmailAddresses(Set.of(), new HashSet<>(emailAddresses)));
     }
 
     private ValidatedEmailAddresses validate(Long providerConfigId, Collection<String> emailAddresses) {

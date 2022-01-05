@@ -18,8 +18,8 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
-import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 import com.synopsys.integration.builder.Buildable;
@@ -70,19 +70,19 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
 
     public static Comparator<ComponentItem> createDefaultComparator() {
         return Comparator
-                   .comparing(ComponentItem::getCategory)
-                   .thenComparing(ComponentItem::getOperation)
-                   .thenComparing(ComponentItem::getPriority)
-                   .thenComparing(ComponentItem::getComponent)
-                   .thenComparing(ComponentItem::getSubComponent, ComponentItem::compareOptionalItems)
-                   .thenComparing(ComponentItem::getCategoryItem);
+            .comparing(ComponentItem::getCategory)
+            .thenComparing(ComponentItem::getOperation)
+            .thenComparing(ComponentItem::getPriority)
+            .thenComparing(ComponentItem::getComponent)
+            .thenComparing(ComponentItem::getSubComponent, ComponentItem::compareOptionalItems)
+            .thenComparing(ComponentItem::getCategoryItem);
     }
 
     private static int compareOptionalItems(Optional<LinkableItem> optionalItem1, Optional<LinkableItem> optionalItem2) {
         if (optionalItem1.isPresent()) {
             return optionalItem2
-                       .map(item2 -> optionalItem1.get().compareTo(item2))
-                       .orElse(1);
+                .map(item2 -> optionalItem1.get().compareTo(item2))
+                .orElse(1);
         } else if (optionalItem2.isPresent()) {
             return -1;
         } else {

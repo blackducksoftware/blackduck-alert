@@ -68,7 +68,7 @@ public class EmailChannelMessageConverter extends AbstractChannelMessageConverte
         String subjectLine = String.format("%s%s | %s", subjectLinePrefix, projectMessage.getMessageReason().name(), project.getValue());
 
         Optional<String> projectVersionName = projectMessage.getProjectVersion()
-                                                  .map(LinkableItem::getValue);
+            .map(LinkableItem::getValue);
         if (projectVersionName.isPresent()) {
             subjectLine += String.format("[%s]", projectVersionName.get());
         }

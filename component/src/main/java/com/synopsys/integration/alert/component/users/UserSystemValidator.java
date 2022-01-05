@@ -28,7 +28,7 @@ public class UserSystemValidator extends BaseSystemValidator {
     public static final String FIELD_ERROR_DEFAULT_USER_EMAIL = "Default admin user email missing";
 
     private final Logger logger = LoggerFactory.getLogger(UserSystemValidator.class);
-    private UserAccessor userAccessor;
+    private final UserAccessor userAccessor;
 
     @Autowired
     public UserSystemValidator(UserAccessor userAccessor, SystemMessageAccessor systemMessageAccessor) {

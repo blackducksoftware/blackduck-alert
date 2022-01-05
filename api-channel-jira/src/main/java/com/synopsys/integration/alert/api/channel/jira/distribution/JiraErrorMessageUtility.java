@@ -68,9 +68,9 @@ public class JiraErrorMessageUtility {
             ));
         } else {
             List<String> fieldErrors = errors.entrySet()
-                                           .stream()
-                                           .map(entry -> String.format("Field '%s' has error %s", entry.getKey(), entry.getValue()))
-                                           .collect(Collectors.toList());
+                .stream()
+                .map(entry -> String.format("Field '%s' has error %s", entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
             responseErrors.addAll(fieldErrors);
         }
 

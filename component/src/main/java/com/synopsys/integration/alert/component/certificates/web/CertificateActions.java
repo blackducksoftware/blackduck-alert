@@ -54,7 +54,7 @@ public class CertificateActions extends AbstractResourceActions<CertificateModel
     @Override
     protected Optional<CertificateModel> findExisting(Long id) {
         return certificateAccessor.getCertificate(id)
-                   .map(this::convertDatabaseModelToRestModel);
+            .map(this::convertDatabaseModelToRestModel);
     }
 
     @Override
@@ -180,8 +180,8 @@ public class CertificateActions extends AbstractResourceActions<CertificateModel
             fieldErrors.add(AlertFieldStatus.error(CertificatesDescriptor.KEY_ALIAS, "Alias cannot be empty."));
         } else {
             List<CustomCertificateModel> duplicateCertificates = certificateAccessor.getCertificates().stream()
-                                                                     .filter(certificate -> certificate.getAlias().equals(certificateModel.getAlias()))
-                                                                     .collect(Collectors.toList());
+                .filter(certificate -> certificate.getAlias().equals(certificateModel.getAlias()))
+                .collect(Collectors.toList());
             if (duplicateCertificates.size() > 1) {
                 fieldErrors.add(AlertFieldStatus.error(CertificatesDescriptor.KEY_ALIAS, ERROR_DUPLICATE_ALIAS));
             } else if (duplicateCertificates.size() == 1) {

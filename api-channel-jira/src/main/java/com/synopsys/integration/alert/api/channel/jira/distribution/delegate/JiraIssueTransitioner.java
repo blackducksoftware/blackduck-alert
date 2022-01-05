@@ -21,9 +21,9 @@ import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDeta
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueCommenter;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueResponseCreator;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueTransitioner;
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueMissingTransitionException;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.model.components.IdComponent;
 import com.synopsys.integration.jira.common.model.components.StatusCategory;
@@ -118,18 +118,18 @@ public abstract class JiraIssueTransitioner extends IssueTrackerIssueTransitione
 
     private Optional<IdComponent> findTransitionIdByTransitionName(List<TransitionComponent> transitions, String transitionName) {
         return transitions
-                   .stream()
-                   .filter(transitionComp -> transitionComp.getName().equals(transitionName))
-                   .map(TransitionComponent::getId)
-                   .map(IdComponent::new)
-                   .findFirst();
+            .stream()
+            .filter(transitionComp -> transitionComp.getName().equals(transitionName))
+            .map(TransitionComponent::getId)
+            .map(IdComponent::new)
+            .findFirst();
     }
 
     private List<String> gatherValidTransitionNames(List<TransitionComponent> transitions) {
         return transitions
-                   .stream()
-                   .map(TransitionComponent::getName)
-                   .collect(Collectors.toList());
+            .stream()
+            .map(TransitionComponent::getName)
+            .collect(Collectors.toList());
     }
 
     private void performTransition(String issueKey, IdComponent transitionId) throws AlertException {

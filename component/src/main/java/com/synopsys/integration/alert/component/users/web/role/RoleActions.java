@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.action.api.AbstractResourceActions;
@@ -29,7 +30,6 @@ import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
@@ -73,8 +73,8 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Us
     @Override
     protected ActionResponse<RolePermissionModel> deleteWithoutChecks(Long id) {
         Optional<UserRoleModel> existingRole = roleAccessor.getRoles(List.of(id))
-                                                   .stream()
-                                                   .findFirst();
+            .stream()
+            .findFirst();
         if (existingRole.isPresent()) {
             String roleName = existingRole.get().getName();
             try {
@@ -119,8 +119,8 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Us
         try {
             String roleName = resource.getRoleName();
             Optional<UserRoleModel> existingRole = roleAccessor.getRoles(List.of(id))
-                                                       .stream()
-                                                       .findFirst();
+                .stream()
+                .findFirst();
             if (existingRole.isPresent()) {
                 logger.debug(actionMessageCreator.updateStartMessage("role", existingRole.get().getName()));
                 if (!existingRole.get().getName().equals(roleName)) {
@@ -155,9 +155,9 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Us
     @Override
     protected Optional<RolePermissionModel> findExisting(Long id) {
         return roleAccessor.getRoles(List.of(id))
-                   .stream()
-                   .findFirst()
-                   .map(this::convertDatabaseModelToRestModel);
+            .stream()
+            .findFirst()
+            .map(this::convertDatabaseModelToRestModel);
     }
 
     private Set<PermissionModel> convertPermissionMatrixModel(PermissionMatrixModel permissionMatrixModel) {

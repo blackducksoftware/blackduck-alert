@@ -45,8 +45,10 @@ public class PurgeTask extends StartupScheduledTask {
     private int dayOffset;
 
     @Autowired
-    public PurgeTask(SchedulingDescriptorKey schedulingDescriptorKey, TaskScheduler taskScheduler, NotificationAccessor notificationAccessor, SystemMessageAccessor systemMessageAccessor, TaskManager taskManager,
-        ConfigurationAccessor configurationAccessor) {
+    public PurgeTask(
+        SchedulingDescriptorKey schedulingDescriptorKey, TaskScheduler taskScheduler, NotificationAccessor notificationAccessor, SystemMessageAccessor systemMessageAccessor, TaskManager taskManager,
+        ConfigurationAccessor configurationAccessor
+    ) {
         super(taskScheduler, taskManager);
         this.schedulingDescriptorKey = schedulingDescriptorKey;
         this.notificationAccessor = notificationAccessor;

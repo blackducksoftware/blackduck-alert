@@ -28,8 +28,10 @@ public class ProviderConfigMissingValidator extends BaseSystemValidator {
     private final ConfigurationAccessor configurationAccessor;
 
     @Autowired
-    public ProviderConfigMissingValidator(SystemMessageAccessor systemMessageAccessor, List<Provider> providers,
-        ConfigurationAccessor configurationAccessor) {
+    public ProviderConfigMissingValidator(
+        SystemMessageAccessor systemMessageAccessor, List<Provider> providers,
+        ConfigurationAccessor configurationAccessor
+    ) {
         super(systemMessageAccessor);
         this.providers = providers;
         this.configurationAccessor = configurationAccessor;
@@ -51,8 +53,8 @@ public class ProviderConfigMissingValidator extends BaseSystemValidator {
             return true;
         }
         return configurations.stream()
-                   .map(ConfigurationModel::getCopyOfFieldList)
-                   .allMatch(List::isEmpty);
+            .map(ConfigurationModel::getCopyOfFieldList)
+            .allMatch(List::isEmpty);
     }
 
 }

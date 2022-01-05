@@ -45,7 +45,7 @@ public class SlackChannelMessageSender implements ChannelMessageSender<SlackJobD
         String webhook = slackJobDetails.getWebhook();
         String channelName = slackJobDetails.getChannelName();
         String channelUsername = Optional.ofNullable(slackJobDetails.getChannelUsername())
-                                     .orElse(SLACK_DEFAULT_USERNAME);
+            .orElse(SLACK_DEFAULT_USERNAME);
         Map<String, String> requestHeaders = new HashMap<>();
         requestHeaders.put("Content-Type", "application/json");
 
@@ -53,9 +53,9 @@ public class SlackChannelMessageSender implements ChannelMessageSender<SlackJobD
         RestChannelUtility restChannelUtility = new RestChannelUtility(intHttpClient);
 
         List<Request> requests = channelMessages.stream()
-                                     .map(channelMessage -> createJsonString(channelMessage.getMarkdownContent(), channelName, channelUsername))
-                                     .map(jsonString -> restChannelUtility.createPostMessageRequest(webhook, requestHeaders, jsonString))
-                                     .collect(Collectors.toList());
+            .map(channelMessage -> createJsonString(channelMessage.getMarkdownContent(), channelName, channelUsername))
+            .map(jsonString -> restChannelUtility.createPostMessageRequest(webhook, requestHeaders, jsonString))
+            .collect(Collectors.toList());
 
         restChannelUtility.sendMessage(requests, slackChannelKey.getUniversalKey());
 
