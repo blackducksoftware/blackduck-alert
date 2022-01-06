@@ -21,6 +21,7 @@ import com.synopsys.integration.rest.proxy.ProxyInfo;
 import com.synopsys.integration.rest.request.Request;
 import com.synopsys.integration.rest.response.Response;
 
+//TODO: This should be in the component subproject but currently requires several dependencies not available to that subproject.
 @Component
 public class ProxyTestService {
     private final Logger logger = LoggerFactory.getLogger(getClass());

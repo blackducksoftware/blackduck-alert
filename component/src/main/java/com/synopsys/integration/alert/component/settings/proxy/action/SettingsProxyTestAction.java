@@ -1,7 +1,9 @@
 package com.synopsys.integration.alert.component.settings.proxy.action;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,6 +20,7 @@ import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
+import com.synopsys.integration.alert.component.settings.proxy.database.accessor.SettingsProxyConfigAccessor;
 import com.synopsys.integration.alert.component.settings.proxy.validator.SettingsProxyValidator;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -27,13 +30,16 @@ public class SettingsProxyTestAction {
     private final ConfigurationTestHelper testHelper;
     private final SettingsProxyValidator validator;
     private final ProxyTestService proxyTestService;
+    private final SettingsProxyConfigAccessor configurationAccessor;
 
     @Autowired
-    public SettingsProxyTestAction(AuthorizationManager authorizationManager, SettingsProxyValidator validator, SettingsDescriptorKey settingsDescriptorKey, ProxyTestService proxyTestService) {
+    public SettingsProxyTestAction(AuthorizationManager authorizationManager, SettingsProxyValidator validator, SettingsDescriptorKey settingsDescriptorKey, ProxyTestService proxyTestService,
+        SettingsProxyConfigAccessor configurationAccessor) {
         this.validationHelper = new ConfigurationValidationHelper(authorizationManager, ConfigContextEnum.GLOBAL, settingsDescriptorKey);
         this.testHelper = new ConfigurationTestHelper(authorizationManager, ConfigContextEnum.GLOBAL, settingsDescriptorKey);
         this.validator = validator;
         this.proxyTestService = proxyTestService;
+        this.configurationAccessor = configurationAccessor;
     }
 
     public ActionResponse<ValidationResponseModel> testWithPermissionCheck(String testUrl, SettingsProxyModel requestResource) {
@@ -43,7 +49,15 @@ public class SettingsProxyTestAction {
 
     public MessageResult testConfigModelContent(String testUrl, SettingsProxyModel settingsProxyModel) throws AlertException {
         if (StringUtils.isBlank(testUrl)) {
-            throw new AlertException("Could not determine what URL to test the proxy. testUrl was not provided or was blank. Please provide a valid URL to test the configuration.");
+            throw new AlertException("Could not determine what URL to test the proxy. Target URL was not provided or was blank. Please provide a valid URL to test the configuration.");
+        }
+
+        if (BooleanUtils.toBoolean(settingsProxyModel.getIsProxyPasswordSet()) && settingsProxyModel.getProxyPassword().isEmpty()) {
+            Optional<SettingsProxyModel> settingsProxyModelSaved = configurationAccessor.getConfiguration();
+            if (settingsProxyModelSaved.isPresent()) {
+                String proxyPassword = settingsProxyModelSaved.get().getProxyPassword().orElseThrow(() -> new AlertException("Could not determine password configured."));
+                settingsProxyModel.setProxyPassword(proxyPassword);
+            }
         }
 
         try {
