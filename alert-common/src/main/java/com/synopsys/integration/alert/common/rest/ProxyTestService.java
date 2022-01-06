@@ -24,6 +24,7 @@ import com.synopsys.integration.rest.response.Response;
 //TODO: This should be in the component subproject but currently requires several dependencies not available to that subproject.
 @Component
 public class ProxyTestService {
+    private static final int DEFAULT_TIMEOUT_IN_SECONDS = 5 * 60 * 1000;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final AlertProperties alertProperties;
@@ -56,6 +57,6 @@ public class ProxyTestService {
 
     private IntHttpClient createIntHttpClient(ProxyInfo proxyInfo) {
         Optional<Boolean> alertTrustCertificate = alertProperties.getAlertTrustCertificate();
-        return new IntHttpClient(new Slf4jIntLogger(logger), gson, 5 * 60 * 1000, alertTrustCertificate.orElse(Boolean.FALSE), proxyInfo);
+        return new IntHttpClient(new Slf4jIntLogger(logger), gson, DEFAULT_TIMEOUT_IN_SECONDS, alertTrustCertificate.orElse(Boolean.FALSE), proxyInfo);
     }
 }

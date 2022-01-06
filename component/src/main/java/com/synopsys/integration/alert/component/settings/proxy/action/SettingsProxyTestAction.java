@@ -54,10 +54,8 @@ public class SettingsProxyTestAction {
 
         if (BooleanUtils.toBoolean(settingsProxyModel.getIsProxyPasswordSet()) && settingsProxyModel.getProxyPassword().isEmpty()) {
             Optional<SettingsProxyModel> settingsProxyModelSaved = configurationAccessor.getConfiguration();
-            if (settingsProxyModelSaved.isPresent()) {
-                String proxyPassword = settingsProxyModelSaved.get().getProxyPassword().orElseThrow(() -> new AlertException("Could not determine password configured."));
-                settingsProxyModel.setProxyPassword(proxyPassword);
-            }
+            settingsProxyModelSaved.flatMap(SettingsProxyModel::getProxyPassword)
+                .ifPresent(settingsProxyModel::setProxyPassword);
         }
 
         try {
