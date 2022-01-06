@@ -103,7 +103,7 @@ class StaticJobAccessorTest {
         UUID jobId = UUID.randomUUID();
 
         DistributionJobEntity distributionJobEntity = createSlackDistributionJobEntity(jobId);
-        distributionJobEntity.setBlackDuckJobDetails(new BlackDuckJobDetailsEntity(jobId, 3L, true, "*"));
+        distributionJobEntity.setBlackDuckJobDetails(new BlackDuckJobDetailsEntity(jobId, 3L, true, "*", "*"));
 
         Mockito.when(distributionJobRepository.findById(jobId)).thenReturn(Optional.of(distributionJobEntity));
         Optional<DistributionJobModel> jobById = jobAccessor.getJobById(jobId);
@@ -118,7 +118,7 @@ class StaticJobAccessorTest {
     void getJobByNameTest() {
         UUID jobId = UUID.randomUUID();
         DistributionJobEntity distributionJobEntity = createSlackDistributionJobEntity(jobId);
-        distributionJobEntity.setBlackDuckJobDetails(new BlackDuckJobDetailsEntity(jobId, 3L, true, "*"));
+        distributionJobEntity.setBlackDuckJobDetails(new BlackDuckJobDetailsEntity(jobId, 3L, true, "*", "*"));
 
         Mockito.when(distributionJobRepository.findByName(Mockito.any())).thenReturn(Optional.of(distributionJobEntity));
         Optional<DistributionJobModel> jobByName = jobAccessor.getJobByName(jobName);
@@ -170,6 +170,7 @@ class StaticJobAccessorTest {
             3L,
             true,
             "*",
+            "*",
             Collections.emptyList(),
             Collections.emptyList(),
             Collections.emptyList(),
@@ -193,7 +194,8 @@ class StaticJobAccessorTest {
             jobId,
             distributionJobRequestModel.getBlackDuckGlobalConfigId(),
             distributionJobRequestModel.isFilterByProject(),
-            distributionJobRequestModel.getProjectNamePattern().orElse(null)
+            distributionJobRequestModel.getProjectNamePattern().orElse(null),
+            distributionJobRequestModel.getProjectVersionNamePattern().orElse(null)
         );
 
         Mockito.when(slackJobDetailsAccessor.saveSlackJobDetails(Mockito.any(), Mockito.any())).thenReturn(slackJobDetailsEntity);
@@ -215,7 +217,7 @@ class StaticJobAccessorTest {
         UUID jobId = UUID.randomUUID();
 
         DistributionJobEntity distributionJobEntity = createSlackDistributionJobEntity(jobId);
-        distributionJobEntity.setBlackDuckJobDetails(new BlackDuckJobDetailsEntity(jobId, 3L, true, "*"));
+        distributionJobEntity.setBlackDuckJobDetails(new BlackDuckJobDetailsEntity(jobId, 3L, true, "*", "*"));
 
         Mockito.when(distributionJobRepository.findAllById(Mockito.any())).thenReturn(List.of(distributionJobEntity));
 
@@ -232,7 +234,7 @@ class StaticJobAccessorTest {
         UUID jobId = UUID.randomUUID();
 
         DistributionJobEntity distributionJobEntity = createSlackDistributionJobEntity(jobId);
-        distributionJobEntity.setBlackDuckJobDetails(new BlackDuckJobDetailsEntity(jobId, 3L, true, "*"));
+        distributionJobEntity.setBlackDuckJobDetails(new BlackDuckJobDetailsEntity(jobId, 3L, true, "*", "*"));
 
         Page<DistributionJobEntity> page = new PageImpl<>(List.of(distributionJobEntity));
         Mockito.when(distributionJobRepository.findAll(Mockito.any(PageRequest.class))).thenReturn(page);
@@ -253,7 +255,7 @@ class StaticJobAccessorTest {
         UUID jobId = UUID.randomUUID();
 
         DistributionJobEntity distributionJobEntity = createSlackDistributionJobEntity(jobId);
-        distributionJobEntity.setBlackDuckJobDetails(new BlackDuckJobDetailsEntity(jobId, 3L, true, "*"));
+        distributionJobEntity.setBlackDuckJobDetails(new BlackDuckJobDetailsEntity(jobId, 3L, true, "*", "*"));
 
         Page<DistributionJobEntity> page = new PageImpl<>(List.of(distributionJobEntity));
         Mockito.when(distributionJobRepository.findByChannelDescriptorNamesAndSearchTerm(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(page);
@@ -274,7 +276,7 @@ class StaticJobAccessorTest {
         UUID jobId = UUID.randomUUID();
 
         DistributionJobEntity distributionJobEntity = createSlackDistributionJobEntity(jobId);
-        distributionJobEntity.setBlackDuckJobDetails(new BlackDuckJobDetailsEntity(jobId, 3L, true, "*"));
+        distributionJobEntity.setBlackDuckJobDetails(new BlackDuckJobDetailsEntity(jobId, 3L, true, "*", "*"));
 
         Page<DistributionJobEntity> page = new PageImpl<>(List.of(distributionJobEntity));
         Mockito.when(distributionJobRepository.findByChannelDescriptorNameIn(Mockito.any(), Mockito.any())).thenReturn(page);
@@ -417,6 +419,7 @@ class StaticJobAccessorTest {
             3L,
             true,
             "*",
+            "*",
             Collections.emptyList(),
             Collections.emptyList(),
             Collections.emptyList(),
@@ -443,7 +446,8 @@ class StaticJobAccessorTest {
             jobId,
             distributionJobRequestModel.getBlackDuckGlobalConfigId(),
             distributionJobRequestModel.isFilterByProject(),
-            distributionJobRequestModel.getProjectNamePattern().orElse(null)
+            distributionJobRequestModel.getProjectNamePattern().orElse(null),
+            distributionJobRequestModel.getProjectVersionNamePattern().orElse(null)
         );
     }
 

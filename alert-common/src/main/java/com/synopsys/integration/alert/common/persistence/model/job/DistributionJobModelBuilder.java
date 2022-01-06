@@ -34,6 +34,7 @@ public class DistributionJobModelBuilder {
     private Long blackDuckGlobalConfigId;
     private boolean filterByProject = false;
     private String projectNamePattern;
+    private String projectVersionNamePattern;
     private List<String> notificationTypes;
     private List<BlackDuckProjectDetailsModel> projectFilterDetails = List.of();
     private List<String> policyFilterPolicyNames = List.of();
@@ -54,7 +55,7 @@ public class DistributionJobModelBuilder {
             throw createMissingFieldException(NOTIFICATION_TYPES_FIELD_NAME);
         }
 
-        if (filterByProject && StringUtils.isBlank(projectNamePattern) && projectFilterDetails.isEmpty()) {
+        if (filterByProject && StringUtils.isBlank(projectNamePattern) && StringUtils.isBlank(projectVersionNamePattern) && projectFilterDetails.isEmpty()) {
             throw new AlertRuntimeException("Missing project details");
         }
 
@@ -70,6 +71,7 @@ public class DistributionJobModelBuilder {
             blackDuckGlobalConfigId,
             filterByProject,
             projectNamePattern,
+            projectVersionNamePattern,
             notificationTypes,
             projectFilterDetails,
             policyFilterPolicyNames,
@@ -140,6 +142,11 @@ public class DistributionJobModelBuilder {
 
     public DistributionJobModelBuilder projectNamePattern(String projectNamePattern) {
         this.projectNamePattern = projectNamePattern;
+        return this;
+    }
+
+    public DistributionJobModelBuilder projectVersionNamePattern(String projectVersionNamePattern) {
+        this.projectVersionNamePattern = projectVersionNamePattern;
         return this;
     }
 
