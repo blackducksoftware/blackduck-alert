@@ -1,7 +1,7 @@
 /*
  * web
  *
- * Copyright (c) 2021 Synopsys, Inc.
+ * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -60,15 +60,11 @@ public class DescriptorMetadataActions {
         }
 
         if (StringUtils.isNotBlank(context)) {
-            descriptorFilter = descriptorFilter.and(descriptor ->
-                                                        descriptor.getConfigContexts()
-                                                            .stream()
-                                                            .map(Enum::name)
-                                                            .anyMatch(context::equals)
-            );
             ConfigContextEnum requestedContext = EnumUtils.getEnum(ConfigContextEnum.class, context);
             if (null != requestedContext) {
                 requestedContexts = Set.of(requestedContext);
+            } else {
+                requestedContexts = Set.of();
             }
         }
 
@@ -87,15 +83,12 @@ public class DescriptorMetadataActions {
     }
 
     private Set<DescriptorMetadata> createDescriptorMetadata(Descriptor requestedDescriptor, Set<ConfigContextEnum> requestedContexts) {
-        Set<DescriptorMetadata> descriptorMetadata = new HashSet<>();
         // Permissions can exist for contexts that do not have configuration (e.g. empty Global Channel configs)
-        for (ConfigContextEnum context : requestedContexts) {
-            if (requestedContexts.contains(context)) {
-                createDescriptorMetadata(requestedDescriptor.getDescriptorKey(), context, requestedDescriptor.getType())
-                    .ifPresent(descriptorMetadata::add);
-            }
-        }
-        return descriptorMetadata;
+        return requestedContexts.stream()
+            .filter(requestedContexts::contains)
+            .map(configContextEnum -> createDescriptorMetadata(requestedDescriptor.getDescriptorKey(), configContextEnum, requestedDescriptor.getType()))
+            .flatMap(Optional::stream)
+            .collect(Collectors.toSet());
     }
 
     private Optional<DescriptorMetadata> createDescriptorMetadata(DescriptorKey descriptorKey, ConfigContextEnum context, DescriptorType descriptorType) {
