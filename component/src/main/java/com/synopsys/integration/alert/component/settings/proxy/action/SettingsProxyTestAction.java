@@ -1,6 +1,5 @@
 package com.synopsys.integration.alert.component.settings.proxy.action;
 
-import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.apache.commons.lang3.BooleanUtils;
@@ -53,8 +52,8 @@ public class SettingsProxyTestAction {
         }
 
         if (BooleanUtils.toBoolean(settingsProxyModel.getIsProxyPasswordSet()) && settingsProxyModel.getProxyPassword().isEmpty()) {
-            Optional<SettingsProxyModel> settingsProxyModelSaved = configurationAccessor.getConfiguration();
-            settingsProxyModelSaved.flatMap(SettingsProxyModel::getProxyPassword)
+            configurationAccessor.getConfiguration()
+                .flatMap(SettingsProxyModel::getProxyPassword)
                 .ifPresent(settingsProxyModel::setProxyPassword);
         }
 
