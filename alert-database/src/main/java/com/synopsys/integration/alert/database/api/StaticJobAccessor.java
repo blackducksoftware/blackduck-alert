@@ -231,7 +231,7 @@ public class StaticJobAccessor implements JobAccessor {
             ChannelKey channelKey = ChannelKeys.getChannelKey(channelDescriptorName);
             if (jobDetailsAccessorMap.containsKey(channelKey) && distributionJobDetails.isA(channelKey)) {
                 JobDetailsAccessor2<? extends DistributionJobDetailsModel> accessor = jobDetailsAccessorMap.get(channelKey);
-                DistributionJobDetailsModel savedJobDetails = accessor.saveJobDetails(jobId, distributionJobDetails);
+                DistributionJobDetailsModel savedJobDetails = accessor.saveJobDetails(savedJobId, distributionJobDetails);
                 return convertToDistributionJobModel(savedJobEntity, savedJobDetails);
             }
         }
