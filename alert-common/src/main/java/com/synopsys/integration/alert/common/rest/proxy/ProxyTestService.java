@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.common.rest;
+package com.synopsys.integration.alert.common.rest.proxy;
 
 import java.util.Optional;
 
@@ -8,10 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.message.model.ConfigurationTestResult;
 import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
-import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.rest.HttpUrl;
@@ -38,20 +37,23 @@ public class ProxyTestService {
         this.gson = gson;
     }
 
-    public void pingHost(String testUrl, SettingsProxyModel settingsProxyModel) throws IntegrationException {
+    public ConfigurationTestResult pingHost(String testUrl, SettingsProxyModel settingsProxyModel) {
         ProxyInfo proxyInfo = proxyManager.createProxyInfo(settingsProxyModel);
         IntHttpClient client = createIntHttpClient(proxyInfo);
 
-        HttpUrl httpUrl = new HttpUrl(testUrl);
-        Request testRequest = new Request.Builder(httpUrl).build();
-        try (Response response = client.execute(testRequest)) {
+        try {
+            HttpUrl httpUrl = new HttpUrl(testUrl);
+            Request testRequest = new Request.Builder(httpUrl).build();
+            Response response = client.execute(testRequest);
             if (RestConstants.OK_200 >= response.getStatusCode() && response.getStatusCode() < RestConstants.MULT_CHOICE_300) {
                 logger.info("Successfully pinged {}!", testUrl);
+                return ConfigurationTestResult.success();
             } else {
-                throw new AlertException(String.format("Could not ping: %s. Status Message: %s. Status code: %s", testUrl, response.getStatusMessage(), response.getStatusCode()));
+                return ConfigurationTestResult.failure(String.format("Could not ping: %s. Status Message: %s. Status code: %s", testUrl, response.getStatusMessage(), response.getStatusCode()));
             }
-        } catch (Exception e) {
-            throw new AlertException(e.getMessage(), e);
+        } catch (IntegrationException e) {
+            logger.error(e.getMessage(), e);
+            return ConfigurationTestResult.failure(e.getMessage());
         }
     }
 
