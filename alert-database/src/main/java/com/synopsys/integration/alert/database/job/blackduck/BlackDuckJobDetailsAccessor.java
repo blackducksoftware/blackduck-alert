@@ -56,38 +56,39 @@ public class BlackDuckJobDetailsAccessor {
             jobId,
             requestModel.getBlackDuckGlobalConfigId(),
             requestModel.isFilterByProject(),
-            requestModel.getProjectNamePattern().orElse(null)
+            requestModel.getProjectNamePattern().orElse(null),
+            requestModel.getProjectVersionNamePattern().orElse(null)
         );
         BlackDuckJobDetailsEntity savedBlackDuckJobDetails = blackDuckJobDetailsRepository.save(blackDuckJobDetailsToSave);
 
         List<BlackDuckJobNotificationTypeEntity> notificationTypesToSave = requestModel.getNotificationTypes()
-                                                                               .stream()
-                                                                               .map(notificationType -> new BlackDuckJobNotificationTypeEntity(jobId, notificationType))
-                                                                               .collect(Collectors.toList());
+            .stream()
+            .map(notificationType -> new BlackDuckJobNotificationTypeEntity(jobId, notificationType))
+            .collect(Collectors.toList());
         blackDuckJobNotificationTypeRepository.bulkDeleteAllByJobId(jobId);
         List<BlackDuckJobNotificationTypeEntity> savedNotificationTypes = blackDuckJobNotificationTypeRepository.saveAll(notificationTypesToSave);
         savedBlackDuckJobDetails.setBlackDuckJobNotificationTypes(savedNotificationTypes);
 
         List<BlackDuckJobProjectEntity> projectFiltersToSave = requestModel.getProjectFilterDetails()
-                                                                   .stream()
-                                                                   .map(projectDetails -> new BlackDuckJobProjectEntity(jobId, projectDetails.getName(), projectDetails.getHref()))
-                                                                   .collect(Collectors.toList());
+            .stream()
+            .map(projectDetails -> new BlackDuckJobProjectEntity(jobId, projectDetails.getName(), projectDetails.getHref()))
+            .collect(Collectors.toList());
         blackDuckJobProjectRepository.bulkDeleteAllByJobId(jobId);
         List<BlackDuckJobProjectEntity> savedProjectFilters = blackDuckJobProjectRepository.saveAll(projectFiltersToSave);
         savedBlackDuckJobDetails.setBlackDuckJobProjects(savedProjectFilters);
 
         List<BlackDuckJobPolicyFilterEntity> policyFiltersToSave = requestModel.getPolicyFilterPolicyNames()
-                                                                       .stream()
-                                                                       .map(policyName -> new BlackDuckJobPolicyFilterEntity(jobId, policyName))
-                                                                       .collect(Collectors.toList());
+            .stream()
+            .map(policyName -> new BlackDuckJobPolicyFilterEntity(jobId, policyName))
+            .collect(Collectors.toList());
         blackDuckJobPolicyFilterRepository.bulkDeleteAllByJobId(jobId);
         List<BlackDuckJobPolicyFilterEntity> savedPolicyFilters = blackDuckJobPolicyFilterRepository.saveAll(policyFiltersToSave);
         savedBlackDuckJobDetails.setBlackDuckJobPolicyFilters(savedPolicyFilters);
 
         List<BlackDuckJobVulnerabilitySeverityFilterEntity> vulnerabilitySeverityFiltersToSave = requestModel.getVulnerabilityFilterSeverityNames()
-                                                                                                     .stream()
-                                                                                                     .map(severityName -> new BlackDuckJobVulnerabilitySeverityFilterEntity(jobId, severityName))
-                                                                                                     .collect(Collectors.toList());
+            .stream()
+            .map(severityName -> new BlackDuckJobVulnerabilitySeverityFilterEntity(jobId, severityName))
+            .collect(Collectors.toList());
         blackDuckJobVulnerabilitySeverityFilterRepository.bulkDeleteAllByJobId(jobId);
         List<BlackDuckJobVulnerabilitySeverityFilterEntity> savedVulnerabilitySeverityFilters = blackDuckJobVulnerabilitySeverityFilterRepository.saveAll(vulnerabilitySeverityFiltersToSave);
         savedBlackDuckJobDetails.setBlackDuckJobVulnerabilitySeverityFilters(savedVulnerabilitySeverityFilters);
@@ -97,30 +98,30 @@ public class BlackDuckJobDetailsAccessor {
 
     public List<String> retrieveNotificationTypesForJob(UUID jobId) {
         return blackDuckJobNotificationTypeRepository.findByJobId(jobId)
-                   .stream()
-                   .map(BlackDuckJobNotificationTypeEntity::getNotificationType)
-                   .collect(Collectors.toList());
+            .stream()
+            .map(BlackDuckJobNotificationTypeEntity::getNotificationType)
+            .collect(Collectors.toList());
     }
 
     public List<BlackDuckProjectDetailsModel> retrieveProjectDetailsForJob(UUID jobId) {
         return blackDuckJobProjectRepository.findByJobId(jobId)
-                   .stream()
-                   .map(blackDuckJobProject -> new BlackDuckProjectDetailsModel(blackDuckJobProject.getProjectName(), blackDuckJobProject.getHref()))
-                   .collect(Collectors.toList());
+            .stream()
+            .map(blackDuckJobProject -> new BlackDuckProjectDetailsModel(blackDuckJobProject.getProjectName(), blackDuckJobProject.getHref()))
+            .collect(Collectors.toList());
     }
 
     public List<String> retrievePolicyNamesForJob(UUID jobId) {
         return blackDuckJobPolicyFilterRepository.findByJobId(jobId)
-                   .stream()
-                   .map(BlackDuckJobPolicyFilterEntity::getPolicyName)
-                   .collect(Collectors.toList());
+            .stream()
+            .map(BlackDuckJobPolicyFilterEntity::getPolicyName)
+            .collect(Collectors.toList());
     }
 
     public List<String> retrieveVulnerabilitySeverityNamesForJob(UUID jobId) {
         return blackDuckJobVulnerabilitySeverityFilterRepository.findByJobId(jobId)
-                   .stream()
-                   .map(BlackDuckJobVulnerabilitySeverityFilterEntity::getSeverityName)
-                   .collect(Collectors.toList());
+            .stream()
+            .map(BlackDuckJobVulnerabilitySeverityFilterEntity::getSeverityName)
+            .collect(Collectors.toList());
     }
 
 }

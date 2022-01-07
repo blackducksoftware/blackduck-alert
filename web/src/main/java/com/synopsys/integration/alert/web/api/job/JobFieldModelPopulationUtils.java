@@ -85,6 +85,9 @@ public final class JobFieldModelPopulationUtils {
             jobModel.getProjectNamePattern()
                 .filter(StringUtils::isNotBlank)
                 .ifPresent(pattern -> putField(providerFieldModel, ProviderDescriptor.KEY_PROJECT_NAME_PATTERN, pattern));
+            jobModel.getProjectVersionNamePattern()
+                .filter(StringUtils::isNotBlank)
+                .ifPresent(pattern -> putField(providerFieldModel, ProviderDescriptor.KEY_PROJECT_VERSION_NAME_PATTERN, pattern));
 
             putJsonField(providerFieldModel, ProviderDescriptor.KEY_CONFIGURED_PROJECT, jobProviderProjects);
         }

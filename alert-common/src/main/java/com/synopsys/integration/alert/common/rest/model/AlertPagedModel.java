@@ -12,11 +12,9 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
-
 import net.minidev.json.annotate.JsonIgnore;
 
-public class AlertPagedModel<M extends AlertSerializableModel> extends AlertPagedDetails<M> implements Serializable {
+public class AlertPagedModel<M> extends AlertPagedDetails<M> implements Serializable {
     public static final String DEFAULT_PAGE_NUMBER_STRING = "0";
     public static final String DEFAULT_PAGE_SIZE_STRING = "10";
     public static final Integer DEFAULT_PAGE_NUMBER = Integer.valueOf(DEFAULT_PAGE_NUMBER_STRING);
@@ -33,7 +31,7 @@ public class AlertPagedModel<M extends AlertSerializableModel> extends AlertPage
     }
 
     @JsonIgnore
-    public <T extends AlertSerializableModel> AlertPagedModel<T> transformContent(Function<M, T> transformation) {
+    public <T> AlertPagedModel<T> transformContent(Function<M, T> transformation) {
         List<T> transformedContent = getModels().stream().map(transformation).collect(Collectors.toList());
         return new AlertPagedModel<>(getTotalPages(), getCurrentPage(), getPageSize(), transformedContent);
     }

@@ -188,6 +188,7 @@ public class JobNotificationMapperTestIT {
                 true,
                 // Regex to verify we retrieve notifications without a number in the name (PROJECT_NAME_1)
                 "^([^0-9]*)$",
+                null,
                 List.of(NotificationType.VULNERABILITY.name()),
                 List.of(),
                 List.of(),
@@ -313,6 +314,7 @@ public class JobNotificationMapperTestIT {
             ChannelKeys.SLACK.getUniversalKey(),
             0L,
             projectNames != null && !projectNames.isEmpty(),
+            null,
             null,
             notificationTypes,
             blackDuckProjectDetailsModels,

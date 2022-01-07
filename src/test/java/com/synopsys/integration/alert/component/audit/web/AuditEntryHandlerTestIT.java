@@ -227,9 +227,9 @@ public class AuditEntryHandlerTestIT {
         NotificationEntity savedNotificationEntity = notificationContentRepository.save(mockNotification.createEntity());
 
         AuditEntryEntity savedAuditEntryEntity = auditEntryRepository
-                                                     .save(new AuditEntryEntity(jobModel.getJobId(), DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp(),
-                                                         AuditEntryStatus.SUCCESS.toString(),
-                                                         null, null));
+            .save(new AuditEntryEntity(jobModel.getJobId(), DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp(),
+                AuditEntryStatus.SUCCESS.toString(),
+                null, null));
 
         auditNotificationRepository.save(new AuditNotificationRelation(savedAuditEntryEntity.getId(), savedNotificationEntity.getId()));
 
@@ -268,6 +268,7 @@ public class AuditEntryHandlerTestIT {
             ChannelKeys.SLACK.getUniversalKey(),
             providerConfigModel.getConfigurationId(),
             false,
+            null,
             null,
             List.of("notificationType"),
             List.of(),

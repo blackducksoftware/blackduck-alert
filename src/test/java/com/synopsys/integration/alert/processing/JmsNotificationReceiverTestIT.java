@@ -150,6 +150,7 @@ public class JmsNotificationReceiverTestIT {
             blackDuckGlobalConfigId,
             false,
             ".*",
+            null,
             List.of(NotificationType.PROJECT.name()),
             List.of(),
             List.of(),
