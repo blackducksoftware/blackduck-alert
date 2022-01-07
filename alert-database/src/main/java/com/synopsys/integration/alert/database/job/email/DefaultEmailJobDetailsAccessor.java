@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.persistence.accessor.EmailJobDetailsAccessor;
+import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 import com.synopsys.integration.alert.database.job.email.additional.EmailJobAdditionalEmailAddressEntity;
 import com.synopsys.integration.alert.database.job.email.additional.EmailJobAdditionalEmailAddressRepository;
@@ -51,7 +52,14 @@ public class DefaultEmailJobDetailsAccessor implements EmailJobDetailsAccessor {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public EmailJobDetailsModel saveJobDetails(UUID jobId, EmailJobDetailsModel jobDetails) {
+    public EmailJobDetailsModel saveJobDetails(UUID jobId, DistributionJobDetailsModel jobDetailsModel) {
+        EmailJobDetailsModel emailJobDetailsModel = jobDetailsModel.getAs(EmailJobDetailsModel.class);
+        return saveConcreteJobDetails(jobId, emailJobDetailsModel);
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED)
+    public EmailJobDetailsModel saveConcreteJobDetails(UUID jobId, EmailJobDetailsModel jobDetails) {
         EmailJobDetailsEntity savedJobDetails = saveEmailJobDetails(jobId, jobDetails);
         return convertToModel(savedJobDetails);
     }

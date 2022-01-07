@@ -16,5 +16,7 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 public interface JobDetailsAccessor2<D extends DistributionJobDetailsModel> extends JobDetailsAccessor<D> {
     DescriptorKey getDescriptorKey();
 
-    D saveJobDetails(UUID jobId, D jobDetails);
+    D saveJobDetails(UUID jobId, DistributionJobDetailsModel jobDetailsModel);
+
+    D saveConcreteJobDetails(UUID jobId, D jobDetails);
 }

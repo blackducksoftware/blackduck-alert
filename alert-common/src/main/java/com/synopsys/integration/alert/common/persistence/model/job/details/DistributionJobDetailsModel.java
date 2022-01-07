@@ -18,6 +18,7 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 @JsonAdapter(DistributionJobDetailsModelJsonAdapter.class)
 public abstract class DistributionJobDetailsModel extends AlertSerializableModel {
+    private static final long serialVersionUID = -9210491364879513303L;
     public static final Class<AzureBoardsJobDetailsModel> AZURE = AzureBoardsJobDetailsModel.class;
     public static final Class<EmailJobDetailsModel> EMAIL = EmailJobDetailsModel.class;
     public static final Class<JiraCloudJobDetailsModel> JIRA_CLOUD = JiraCloudJobDetailsModel.class;
@@ -43,7 +44,7 @@ public abstract class DistributionJobDetailsModel extends AlertSerializableModel
     private final ChannelKey channelKey;
     private final UUID jobId;
 
-    public DistributionJobDetailsModel(ChannelKey channelKey, UUID jobId) {
+    protected DistributionJobDetailsModel(ChannelKey channelKey, UUID jobId) {
         this.channelKey = channelKey;
         this.jobId = jobId;
     }
