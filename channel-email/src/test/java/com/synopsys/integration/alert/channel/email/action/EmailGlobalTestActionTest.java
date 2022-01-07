@@ -3,7 +3,6 @@ package com.synopsys.integration.alert.channel.email.action;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +25,7 @@ import com.synopsys.integration.alert.channel.email.distribution.address.Validat
 import com.synopsys.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.message.model.ConfigurationTestResult;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
@@ -55,13 +55,8 @@ public class EmailGlobalTestActionTest {
         JavamailPropertiesFactory javamailPropertiesFactory = new JavamailPropertiesFactory();
         EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(authorizationManager, validator, emailChannelMessagingService, javamailPropertiesFactory);
 
-        try {
-            MessageResult messageResult = emailGlobalTestAction.testConfigModelContent("noreply@synopsys.com", new EmailGlobalConfigModel());
-            assertFalse(messageResult.hasErrors(), "Expected the message result to not have errors");
-            assertFalse(messageResult.hasWarnings(), "Expected the message result to not have warnings");
-        } catch (AlertException e) {
-            fail("An exception was thrown where none was expected", e);
-        }
+        ConfigurationTestResult testResult = emailGlobalTestAction.testConfigModelContent("noreply@synopsys.com", new EmailGlobalConfigModel());
+        assertTrue(testResult.isSuccess(), "Expected the message result to not have errors");
     }
 
     @Test
@@ -88,12 +83,8 @@ public class EmailGlobalTestActionTest {
 
         EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(authorizationManager, validator, emailChannelMessagingService, javamailPropertiesFactory);
 
-        try {
-            emailGlobalTestAction.testConfigModelContent("", new EmailGlobalConfigModel());
-            fail("Expected an exception to be thrown");
-        } catch (AlertException e) {
-            // Pass
-        }
+        ConfigurationTestResult testResult = emailGlobalTestAction.testConfigModelContent("", new EmailGlobalConfigModel());
+        assertFalse(testResult.isSuccess());
     }
 
     @Test
@@ -102,12 +93,8 @@ public class EmailGlobalTestActionTest {
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(authorizationManager, validator, null, null);
 
-        try {
-            emailGlobalTestAction.testConfigModelContent("not a valid email address", new EmailGlobalConfigModel());
-            fail("Expected an exception to be thrown");
-        } catch (AlertException e) {
-            // Pass
-        }
+        ConfigurationTestResult testResult = emailGlobalTestAction.testConfigModelContent("not a valid email address", new EmailGlobalConfigModel());
+        assertFalse(testResult.isSuccess());
     }
 
     @Test
@@ -127,13 +114,8 @@ public class EmailGlobalTestActionTest {
 
         EmailGlobalConfigModel globalConfigModel = createValidEmailGlobalConfigModel(testProperties);
 
-        try {
-            MessageResult messageResult = emailGlobalTestAction.testConfigModelContent(emailAddress, globalConfigModel);
-            assertFalse(messageResult.hasErrors(), "Expected the message result to not have errors");
-            assertFalse(messageResult.hasWarnings(), "Expected the message result to not have warnings");
-        } catch (AlertException e) {
-            fail("An exception was thrown where none was expected", e);
-        }
+        ConfigurationTestResult testResult = emailGlobalTestAction.testConfigModelContent(emailAddress, globalConfigModel);
+        assertTrue(testResult.isSuccess(), "Expected the message result to not have errors");
     }
 
     @Test

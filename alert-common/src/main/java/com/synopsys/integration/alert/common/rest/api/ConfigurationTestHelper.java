@@ -11,15 +11,13 @@ import java.util.function.Supplier;
 
 import org.springframework.http.HttpStatus;
 
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.message.model.MessageResult;
+import com.synopsys.integration.alert.common.message.model.ConfigurationTestResult;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
-import com.synopsys.integration.function.ThrowingSupplier;
 
 public class ConfigurationTestHelper {
 
@@ -33,7 +31,7 @@ public class ConfigurationTestHelper {
         this.descriptorKey = descriptorKey;
     }
 
-    public ValidationActionResponse test(Supplier<ValidationActionResponse> validationSupplier, ThrowingSupplier<MessageResult, AlertException> testResultSupplier) {
+    public ValidationActionResponse test(Supplier<ValidationActionResponse> validationSupplier, Supplier<ConfigurationTestResult> testResultSupplier) {
         if (!authorizationManager.hasExecutePermission(context, descriptorKey)) {
             ValidationResponseModel responseModel = ValidationResponseModel.generalError(ActionResponse.FORBIDDEN_MESSAGE);
             return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
@@ -44,11 +42,11 @@ public class ConfigurationTestHelper {
             return validationResponse;
         }
 
-        try {
-            MessageResult messageResult = testResultSupplier.get();
-            return new ValidationActionResponse(HttpStatus.OK, ValidationResponseModel.success(messageResult.getStatusMessage()));
-        } catch (AlertException e) {
-            return new ValidationActionResponse(HttpStatus.OK, ValidationResponseModel.generalError(e.getMessage()));
+        ConfigurationTestResult testResult = testResultSupplier.get();
+        if (testResult.isSuccess()) {
+            return new ValidationActionResponse(HttpStatus.OK, ValidationResponseModel.success(testResult.getStatusMessage()));
+        } else {
+            return new ValidationActionResponse(HttpStatus.OK, ValidationResponseModel.generalError(testResult.getStatusMessage()));
         }
     }
 }
