@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="bmandel" id="create-project-version-name-pattern-column">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists schemaName="alert" tableName="blackduck_job_details" columnName="project_version_name_pattern"/>
+            </not>
+        </preConditions>
+        <addColumn schemaName="alert" tableName="blackduck_job_details">
+            <column name="project_version_name_pattern" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="add-defined-field-to-descriptor" author="bmandel">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM alert.descriptor_fields
+                WHERE descriptor_id = GET_DESCRIPTOR_ID('provider_blackduck')
+                  AND field_id = GET_FIELD_ID('channel.common.project.version.name.pattern')
+            </sqlCheck>
+        </preConditions>
+        <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY">channel.common.project.version.name.pattern</column>
+            <column name="SENSITIVE">false</column>
+        </insert>
+        <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('provider_blackduck')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.project.version.name.pattern')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.project.version.name.pattern')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

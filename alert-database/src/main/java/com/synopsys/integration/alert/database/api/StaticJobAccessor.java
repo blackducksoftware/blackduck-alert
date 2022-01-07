@@ -162,7 +162,7 @@ public class StaticJobAccessor implements JobAccessor {
     @Transactional
     public DistributionJobModel updateJob(UUID jobId, DistributionJobRequestModel requestModel) throws AlertConfigurationException {
         DistributionJobEntity jobEntity = distributionJobRepository.findById(jobId)
-                                              .orElseThrow(() -> new AlertConfigurationException(String.format("No job exists with the id [%s]", jobId)));
+            .orElseThrow(() -> new AlertConfigurationException(String.format("No job exists with the id [%s]", jobId)));
         OffsetDateTime createdAt = jobEntity.getCreatedAt();
 
         if (!jobEntity.getChannelDescriptorName().equals(requestModel.getChannelDescriptorName())) {
@@ -324,6 +324,7 @@ public class StaticJobAccessor implements JobAccessor {
             .blackDuckGlobalConfigId(blackDuckJobDetails.getGlobalConfigId())
             .filterByProject(blackDuckJobDetails.getFilterByProject())
             .projectNamePattern(blackDuckJobDetails.getProjectNamePattern())
+            .projectVersionNamePattern(blackDuckJobDetails.getProjectVersionNamePattern())
             .notificationTypes(notificationTypes)
             .projectFilterDetails(projectDetails)
             .policyFilterPolicyNames(policyNames)

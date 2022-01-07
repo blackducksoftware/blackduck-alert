@@ -34,6 +34,7 @@ import com.synopsys.integration.alert.provider.blackduck.factory.BlackDuckProper
 import com.synopsys.integration.blackduck.api.core.BlackDuckResponse;
 import com.synopsys.integration.blackduck.api.core.response.UrlMultipleResponses;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.generated.view.UserView;
 import com.synopsys.integration.blackduck.http.BlackDuckPageDefinition;
@@ -113,6 +114,29 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
         return configurationModelConfigurationAccessor.getConfigurationById(providerConfigId)
             .flatMap(providerConfig -> retrieveOptionalProjectData(() -> retrieveProjectsForProvider(providerConfig, pageNumber, pageSize, searchTerm)))
             .orElse(new AlertPagedModel<>(0, pageNumber, pageSize, List.of()));
+    }
+
+    @Override
+    public AlertPagedModel<String> getProjectVersionNamesByHref(Long providerConfigId, String projectHref, int pageNumber) {
+        Optional<ConfigurationModel> providerConfigOptional = configurationModelConfigurationAccessor.getConfigurationById(providerConfigId);
+        if (providerConfigOptional.isPresent()) {
+            try {
+                BlackDuckServicesFactory blackDuckServicesFactory = createBlackDuckServicesFactory(providerConfigOptional.get());
+                BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
+                ProjectView foundProject = blackDuckApiClient.getResponse(new HttpUrl(projectHref), ProjectView.class);
+
+                BlackDuckPageDefinition blackDuckPageDefinition = new BlackDuckPageDefinition(BlackDuckRequestBuilder.DEFAULT_LIMIT, pageNumber * BlackDuckRequestBuilder.DEFAULT_LIMIT);
+                BlackDuckMultipleRequest<ProjectVersionView> projectVersionSpec = new BlackDuckRequestBuilder()
+                    .commonGet()
+                    .setBlackDuckPageDefinition(blackDuckPageDefinition)
+                    .buildBlackDuckRequest(foundProject.metaVersionsLink());
+                BlackDuckPageResponse<ProjectVersionView> pageResponse = blackDuckApiClient.getPageResponse(projectVersionSpec);
+                return new AlertPagedModel<>(pageResponse.getTotalCount(), pageNumber, BlackDuckRequestBuilder.DEFAULT_LIMIT, pageResponse.getItems()).transformContent(ProjectVersionView::getVersionName);
+            } catch (IntegrationException e) {
+                logger.errorAndDebug(createProjectNotFoundString(providerConfigId, e.getMessage()), e);
+            }
+        }
+        return null;
     }
 
     @Override
@@ -241,10 +265,10 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
         BlackDuckQuery nameQuery = new BlackDuckQuery("name", searchTerm);
         BlackDuckPageDefinition blackDuckPageDefinition = new BlackDuckPageDefinition(pageSize, pageNumber * pageSize);
         BlackDuckMultipleRequest<ProjectView> projectSpec = new BlackDuckRequestBuilder()
-                                                                .commonGet()
-                                                                .addBlackDuckQuery(nameQuery)
-                                                                .setBlackDuckPageDefinition(blackDuckPageDefinition)
-                                                                .buildBlackDuckRequest(apiDiscovery.metaProjectsLink());
+            .commonGet()
+            .addBlackDuckQuery(nameQuery)
+            .setBlackDuckPageDefinition(blackDuckPageDefinition)
+            .buildBlackDuckRequest(apiDiscovery.metaProjectsLink());
         BlackDuckPageResponse<ProjectView> pageOfProjects = blackDuckApiClient.getPageResponse(projectSpec);
 
         List<ProviderProject> foundProjects = convertBlackDuckProjects(pageOfProjects.getItems(), blackDuckApiClient);
@@ -279,8 +303,8 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
         ApiDiscovery apiDiscovery = blackDuckServicesFactory.getApiDiscovery();
         Set<String> allActiveBlackDuckEmailAddresses = getAllActiveBlackDuckEmailAddresses(blackDuckService, apiDiscovery);
         return allActiveBlackDuckEmailAddresses.stream()
-           .map(email -> new ProviderUserModel(email, false))
-           .collect(Collectors.toList());
+            .map(email -> new ProviderUserModel(email, false))
+            .collect(Collectors.toList());
     }
 
     private List<ProviderProject> convertBlackDuckProjects(List<ProjectView> projectViews, BlackDuckApiClient blackDuckService) {
@@ -348,9 +372,9 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
 
         int offset = pageNumber * pageSize;
         BlackDuckMultipleRequest<T> spec = new BlackDuckRequestBuilder()
-                                               .commonGet()
-                                               .setLimitAndOffset(pageSize, offset)
-                                               .buildBlackDuckRequest(urlMultipleResponses);
+            .commonGet()
+            .setLimitAndOffset(pageSize, offset)
+            .buildBlackDuckRequest(urlMultipleResponses);
         return blackDuckResponsesTransformer.getSomeMatchingResponses(spec, searchFilter, pageSize);
     }
 

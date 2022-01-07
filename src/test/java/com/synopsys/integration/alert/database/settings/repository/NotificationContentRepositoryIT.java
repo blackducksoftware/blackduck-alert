@@ -258,6 +258,7 @@ public class NotificationContentRepositoryIT {
             providerConfigModel.getConfigurationId(),
             false,
             null,
+            null,
             List.of(),
             List.of(),
             List.of(),

@@ -203,6 +203,7 @@ public class ProcessingJobAccessorTestIT {
             providerConfigId,
             projectNames != null && !projectNames.isEmpty(),
             null,
+            null,
             notificationTypes,
             blackDuckProjectDetailsModels,
             policies,

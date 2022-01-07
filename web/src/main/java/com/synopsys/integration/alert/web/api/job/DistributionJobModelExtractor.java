@@ -59,6 +59,7 @@ public final class DistributionJobModelExtractor {
             .blackDuckGlobalConfigId(distributionJobFieldExtractor.extractFieldValue(ProviderDescriptor.KEY_COMMON_CONFIG_ID, configuredFieldsMap).map(Long::valueOf).orElse(-1L))
             .filterByProject(distributionJobFieldExtractor.extractFieldValue(ProviderDescriptor.KEY_FILTER_BY_PROJECT, configuredFieldsMap).map(Boolean::valueOf).orElse(false))
             .projectNamePattern(distributionJobFieldExtractor.extractFieldValue(ProviderDescriptor.KEY_PROJECT_NAME_PATTERN, configuredFieldsMap).orElse(null))
+            .projectVersionNamePattern(distributionJobFieldExtractor.extractFieldValue(ProviderDescriptor.KEY_PROJECT_VERSION_NAME_PATTERN, configuredFieldsMap).orElse(null))
             .notificationTypes(distributionJobFieldExtractor.extractFieldValues(ProviderDescriptor.KEY_NOTIFICATION_TYPES, configuredFieldsMap))
             .policyFilterPolicyNames(distributionJobFieldExtractor.extractFieldValues("blackduck.policy.notification.filter", configuredFieldsMap))
             .vulnerabilityFilterSeverityNames(distributionJobFieldExtractor.extractFieldValues("blackduck.vulnerability.notification.filter", configuredFieldsMap))

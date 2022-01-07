@@ -34,6 +34,7 @@ public abstract class ProviderDescriptor extends Descriptor {
     public static final String KEY_PROCESSING_TYPE = "provider.distribution.processing.type";
     public static final String KEY_FILTER_BY_PROJECT = ChannelDescriptor.KEY_COMMON_CHANNEL_PREFIX + "filter.by.project";
     public static final String KEY_PROJECT_NAME_PATTERN = ChannelDescriptor.KEY_COMMON_CHANNEL_PREFIX + "project.name.pattern";
+    public static final String KEY_PROJECT_VERSION_NAME_PATTERN = ChannelDescriptor.KEY_COMMON_CHANNEL_PREFIX + "project.version.name.pattern";
     public static final String KEY_CONFIGURED_PROJECT = ChannelDescriptor.KEY_COMMON_CHANNEL_PREFIX + "configured.project";
 
     public static final String LABEL_PROJECTS = "Projects";

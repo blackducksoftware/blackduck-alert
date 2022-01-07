@@ -38,6 +38,9 @@ public class BlackDuckJobDetailsEntity {
     @Column(name = "project_name_pattern")
     private String projectNamePattern;
 
+    @Column(name = "project_version_name_pattern")
+    private String projectVersionNamePattern;
+
     @OneToMany
     @JoinColumn(name = "job_id", referencedColumnName = "job_id", insertable = false, updatable = false)
     private List<BlackDuckJobNotificationTypeEntity> blackDuckJobNotificationTypes;
@@ -57,11 +60,12 @@ public class BlackDuckJobDetailsEntity {
     public BlackDuckJobDetailsEntity() {
     }
 
-    public BlackDuckJobDetailsEntity(UUID jobId, Long globalConfigId, Boolean filterByProject, String projectNamePattern) {
+    public BlackDuckJobDetailsEntity(UUID jobId, Long globalConfigId, Boolean filterByProject, String projectNamePattern, String projectVersionNamePattern) {
         this.jobId = jobId;
         this.globalConfigId = globalConfigId;
         this.filterByProject = filterByProject;
         this.projectNamePattern = projectNamePattern;
+        this.projectVersionNamePattern = projectVersionNamePattern;
     }
 
     public UUID getJobId() {
@@ -94,6 +98,14 @@ public class BlackDuckJobDetailsEntity {
 
     public void setProjectNamePattern(String projectNamePattern) {
         this.projectNamePattern = projectNamePattern;
+    }
+
+    public String getProjectVersionNamePattern() {
+        return projectVersionNamePattern;
+    }
+
+    public void setProjectVersionNamePattern(String projectVersionNamePattern) {
+        this.projectVersionNamePattern = projectVersionNamePattern;
     }
 
     public List<BlackDuckJobNotificationTypeEntity> getBlackDuckJobNotificationTypes() {
