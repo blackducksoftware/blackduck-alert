@@ -1,8 +1,11 @@
 package com.synopsys.integration.alert.database.job.email;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -12,8 +15,11 @@ import org.mockito.Mockito;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 import com.synopsys.integration.alert.database.job.email.additional.EmailJobAdditionalEmailAddressEntity;
 import com.synopsys.integration.alert.database.job.email.additional.EmailJobAdditionalEmailAddressRepository;
+import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
-public class EmailJobDetailsAccessorTest {
+class EmailJobDetailsAccessorTest {
+    private EmailChannelKey channelKey = ChannelKeys.EMAIL;
     private EmailJobDetailsRepository emailJobDetailsRepository;
     private EmailJobAdditionalEmailAddressRepository additionalEmailAddressRepository;
 
@@ -24,11 +30,37 @@ public class EmailJobDetailsAccessorTest {
         emailJobDetailsRepository = Mockito.mock(EmailJobDetailsRepository.class);
         additionalEmailAddressRepository = Mockito.mock(EmailJobAdditionalEmailAddressRepository.class);
 
-        emailJobDetailsAccessor = new DefaultEmailJobDetailsAccessor(emailJobDetailsRepository, additionalEmailAddressRepository);
+        emailJobDetailsAccessor = new DefaultEmailJobDetailsAccessor(channelKey, emailJobDetailsRepository, additionalEmailAddressRepository);
     }
 
     @Test
-    public void saveEmailJobDetailsTest() {
+    void getChannelKeyTest() {
+        assertEquals(channelKey, emailJobDetailsAccessor.getDescriptorKey());
+    }
+
+    @Test
+    void saveEmailJobDetailsTest() {
+        UUID jobId = UUID.randomUUID();
+        String additionalEmailAddress = "fake@synopsys.com";
+
+        EmailJobDetailsModel emailJobDetailsModel = new EmailJobDetailsModel(null, null, false, false, null, List.of(additionalEmailAddress));
+        EmailJobDetailsEntity emailJobDetailsEntity = new EmailJobDetailsEntity(jobId, null, false, false, null);
+        EmailJobAdditionalEmailAddressEntity emailJobAdditionalEmailAddressEntity = new EmailJobAdditionalEmailAddressEntity(jobId, additionalEmailAddress);
+
+        Mockito.when(emailJobDetailsRepository.save(Mockito.any())).thenReturn(emailJobDetailsEntity);
+        Mockito.when(additionalEmailAddressRepository.saveAll(Mockito.any())).thenReturn(List.of(emailJobAdditionalEmailAddressEntity));
+        Mockito.when(additionalEmailAddressRepository.findByJobId(Mockito.any())).thenReturn(List.of(emailJobAdditionalEmailAddressEntity));
+
+        EmailJobDetailsModel newEmailJobDetails = emailJobDetailsAccessor.saveJobDetails(jobId, emailJobDetailsModel);
+
+        Mockito.verify(additionalEmailAddressRepository).bulkDeleteByJobId(Mockito.any());
+        assertEquals(jobId, newEmailJobDetails.getJobId());
+        assertEquals(1, newEmailJobDetails.getAdditionalEmailAddresses().size());
+        assertEquals(additionalEmailAddress, newEmailJobDetails.getAdditionalEmailAddresses().get(0));
+    }
+
+    @Test
+    void oldSaveEmailJobDetailsTest() {
         UUID jobId = UUID.randomUUID();
         String additionalEmailAddress = "fake@synopsys.com";
 
@@ -48,7 +80,38 @@ public class EmailJobDetailsAccessorTest {
     }
 
     @Test
-    public void retrieveAdditionalEmailAddressesForJobTest() {
+    void retrieveDetailsTest() {
+        UUID jobId = UUID.randomUUID();
+        String additionalEmailAddress = "fake@synopsys.com";
+
+        EmailJobDetailsEntity emailJobDetailsEntity = new EmailJobDetailsEntity(jobId, null, false, false, null);
+        EmailJobAdditionalEmailAddressEntity emailJobAdditionalEmailAddressEntity = new EmailJobAdditionalEmailAddressEntity(jobId, additionalEmailAddress);
+
+        Mockito.when(emailJobDetailsRepository.findById(Mockito.any())).thenReturn(Optional.of(emailJobDetailsEntity));
+        Mockito.when(additionalEmailAddressRepository.findByJobId(Mockito.any())).thenReturn(List.of(emailJobAdditionalEmailAddressEntity));
+        EmailJobDetailsModel foundJobDetailsModel = emailJobDetailsAccessor.retrieveDetails(jobId).orElse(null);
+        assertNotNull(foundJobDetailsModel);
+        assertEquals(jobId, foundJobDetailsModel.getJobId());
+        assertEquals(1, foundJobDetailsModel.getAdditionalEmailAddresses().size());
+        assertEquals(additionalEmailAddress, foundJobDetailsModel.getAdditionalEmailAddresses().get(0));
+    }
+
+    @Test
+    void retrieveDetailsUnknownIdTest() {
+        UUID jobId = UUID.randomUUID();
+        String additionalEmailAddress = "fake@synopsys.com";
+
+        EmailJobDetailsEntity emailJobDetailsEntity = new EmailJobDetailsEntity(jobId, null, false, false, null);
+        EmailJobAdditionalEmailAddressEntity emailJobAdditionalEmailAddressEntity = new EmailJobAdditionalEmailAddressEntity(jobId, additionalEmailAddress);
+
+        Mockito.when(emailJobDetailsRepository.findById(Mockito.any())).thenReturn(Optional.empty());
+        Mockito.when(additionalEmailAddressRepository.findByJobId(Mockito.any())).thenReturn(List.of(emailJobAdditionalEmailAddressEntity));
+        Optional<EmailJobDetailsModel> foundJobDetailsModel = emailJobDetailsAccessor.retrieveDetails(jobId);
+        assertTrue(foundJobDetailsModel.isEmpty());
+    }
+
+    @Test
+    void retrieveAdditionalEmailAddressesForJobTest() {
         UUID jobId = UUID.randomUUID();
         String additionalEmailAddress = "fake@synopsys.com";
 
