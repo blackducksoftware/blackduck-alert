@@ -27,6 +27,8 @@ public interface ProviderDataAccessor {
 
     AlertPagedModel<ProviderProject> getProjectsByProviderConfigId(Long providerConfigId, int pageNumber, int pageSize, String searchTerm);
 
+    AlertPagedModel<String> getProjectVersionNamesByHref(Long providerConfigId, String projectHref, int pageNumber);
+
     @Deprecated
     void deleteProjects(Collection<ProviderProject> providerProjects);
 
