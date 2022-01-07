@@ -21,16 +21,26 @@ import com.synopsys.integration.alert.common.persistence.accessor.EmailJobDetail
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 import com.synopsys.integration.alert.database.job.email.additional.EmailJobAdditionalEmailAddressEntity;
 import com.synopsys.integration.alert.database.job.email.additional.EmailJobAdditionalEmailAddressRepository;
+import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 @Component
 public class DefaultEmailJobDetailsAccessor implements EmailJobDetailsAccessor {
+    private final EmailChannelKey channelKey;
     private final EmailJobDetailsRepository emailJobDetailsRepository;
     private final EmailJobAdditionalEmailAddressRepository additionalEmailAddressRepository;
 
     @Autowired
-    public DefaultEmailJobDetailsAccessor(EmailJobDetailsRepository emailJobDetailsRepository, EmailJobAdditionalEmailAddressRepository additionalEmailAddressRepository) {
+    public DefaultEmailJobDetailsAccessor(EmailChannelKey channelKey, EmailJobDetailsRepository emailJobDetailsRepository,
+        EmailJobAdditionalEmailAddressRepository additionalEmailAddressRepository) {
+        this.channelKey = channelKey;
         this.emailJobDetailsRepository = emailJobDetailsRepository;
         this.additionalEmailAddressRepository = additionalEmailAddressRepository;
+    }
+
+    @Override
+    public DescriptorKey getDescriptorKey() {
+        return channelKey;
     }
 
     @Override
@@ -39,22 +49,29 @@ public class DefaultEmailJobDetailsAccessor implements EmailJobDetailsAccessor {
         return emailJobDetailsRepository.findById(jobId).map(this::convertToModel);
     }
 
+    @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public EmailJobDetailsEntity saveEmailJobDetails(UUID jobId, EmailJobDetailsModel emailJobDetails) {
+    public EmailJobDetailsModel saveJobDetails(UUID jobId, EmailJobDetailsModel jobDetails) {
+        EmailJobDetailsEntity savedJobDetails = saveEmailJobDetails(jobId, jobDetails);
+        return convertToModel(savedJobDetails);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public EmailJobDetailsEntity saveEmailJobDetails(UUID jobId, EmailJobDetailsModel jobDetails) {
         EmailJobDetailsEntity jobDetailsToSave = new EmailJobDetailsEntity(
             jobId,
-            emailJobDetails.getSubjectLine().orElse(null),
-            emailJobDetails.isProjectOwnerOnly(),
-            emailJobDetails.isAdditionalEmailAddressesOnly(),
-            emailJobDetails.getAttachmentFileType()
+            jobDetails.getSubjectLine().orElse(null),
+            jobDetails.isProjectOwnerOnly(),
+            jobDetails.isAdditionalEmailAddressesOnly(),
+            jobDetails.getAttachmentFileType()
         );
         EmailJobDetailsEntity savedJobDetails = emailJobDetailsRepository.save(jobDetailsToSave);
 
         additionalEmailAddressRepository.bulkDeleteByJobId(jobId);
-        List<EmailJobAdditionalEmailAddressEntity> additionalEmailAddressEntitiesToSave = emailJobDetails.getAdditionalEmailAddresses()
-                                                                                              .stream()
-                                                                                              .map(emailAddress -> new EmailJobAdditionalEmailAddressEntity(jobId, emailAddress))
-                                                                                              .collect(Collectors.toList());
+        List<EmailJobAdditionalEmailAddressEntity> additionalEmailAddressEntitiesToSave = jobDetails.getAdditionalEmailAddresses()
+            .stream()
+            .map(emailAddress -> new EmailJobAdditionalEmailAddressEntity(jobId, emailAddress))
+            .collect(Collectors.toList());
         List<EmailJobAdditionalEmailAddressEntity> savedAdditionalEmailAddressEntities = additionalEmailAddressRepository.saveAll(additionalEmailAddressEntitiesToSave);
         savedJobDetails.setEmailJobAdditionalEmailAddresses(savedAdditionalEmailAddressEntities);
 

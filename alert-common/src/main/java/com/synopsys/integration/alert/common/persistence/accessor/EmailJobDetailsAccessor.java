@@ -9,5 +9,5 @@ package com.synopsys.integration.alert.common.persistence.accessor;
 
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 
-public interface EmailJobDetailsAccessor extends JobDetailsAccessor<EmailJobDetailsModel> {
+public interface EmailJobDetailsAccessor extends JobDetailsAccessor2<EmailJobDetailsModel> {
 }
