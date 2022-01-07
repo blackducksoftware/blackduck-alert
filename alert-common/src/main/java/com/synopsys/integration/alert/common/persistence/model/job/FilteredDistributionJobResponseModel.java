@@ -24,6 +24,7 @@ public class FilteredDistributionJobResponseModel extends AlertSerializableModel
     private final List<String> vulnerabilitySeverityNames;
     private final boolean filterByProject;
     private final String projectNamePattern;
+    private final String projectVersionNamePattern;
 
     public FilteredDistributionJobResponseModel(
         UUID id,
@@ -35,7 +36,8 @@ public class FilteredDistributionJobResponseModel extends AlertSerializableModel
         List<String> policyNames,
         List<String> vulnerabilitySeverityNames,
         boolean filterByProject,
-        String projectNamePattern
+        String projectNamePattern,
+        String projectVersionNamePattern
     ) {
         this.processingType = processingType;
         this.id = id;
@@ -47,6 +49,7 @@ public class FilteredDistributionJobResponseModel extends AlertSerializableModel
         this.vulnerabilitySeverityNames = vulnerabilitySeverityNames;
         this.filterByProject = filterByProject;
         this.projectNamePattern = projectNamePattern;
+        this.projectVersionNamePattern = projectVersionNamePattern;
     }
 
     public UUID getId() {
@@ -89,4 +92,7 @@ public class FilteredDistributionJobResponseModel extends AlertSerializableModel
         return projectNamePattern;
     }
 
+    public String getProjectVersionNamePattern() {
+        return projectVersionNamePattern;
+    }
 }

@@ -60,8 +60,8 @@ public class JobNotificationMapperTestIT {
         createJobs(createDistributionJobModels(List.of(VulnerabilitySeverityType.LOW.name()), 100));
         createJobs(createDistributionJobModels(List.of(VulnerabilitySeverityType.LOW.name(), VulnerabilitySeverityType.HIGH.name()), 15));
         List<DetailedNotificationContent> notifications = new ArrayList<>();
-        notifications.addAll(createVulnerabilityNotificationWrappers(List.of(VulnerabilitySeverityType.LOW.name()), "testProject1"));
-        notifications.addAll(createVulnerabilityNotificationWrappers(List.of(VulnerabilitySeverityType.HIGH.name()), "testProject2"));
+        notifications.addAll(createVulnerabilityNotificationWrappers(List.of(VulnerabilitySeverityType.LOW.name()), "testProject1", null));
+        notifications.addAll(createVulnerabilityNotificationWrappers(List.of(VulnerabilitySeverityType.HIGH.name()), "testProject2", null));
 
         runTest(notifications, 115);
     }
@@ -74,9 +74,9 @@ public class JobNotificationMapperTestIT {
         createJobs(createDistributionJobModels(List.of(VulnerabilitySeverityType.CRITICAL.name()), 50));
 
         List<DetailedNotificationContent> notifications = new ArrayList<>();
-        notifications.addAll(createVulnerabilityNotificationWrappers(List.of(VulnerabilitySeverityType.LOW.name()), "testProject1"));
-        notifications.addAll(createVulnerabilityNotificationWrappers(List.of(VulnerabilitySeverityType.HIGH.name()), "testProject2"));
-        notifications.addAll(createVulnerabilityNotificationWrappers(List.of(VulnerabilitySeverityType.CRITICAL.name()), "testProject3"));
+        notifications.addAll(createVulnerabilityNotificationWrappers(List.of(VulnerabilitySeverityType.LOW.name()), "testProject1", null));
+        notifications.addAll(createVulnerabilityNotificationWrappers(List.of(VulnerabilitySeverityType.HIGH.name()), "testProject2", null));
+        notifications.addAll(createVulnerabilityNotificationWrappers(List.of(VulnerabilitySeverityType.CRITICAL.name()), "testProject3", null));
 
         runTest(notifications, 265);
     }
@@ -330,12 +330,13 @@ public class JobNotificationMapperTestIT {
         return new VulnerabilityUniqueProjectNotificationContent(new VulnerabilityNotificationContent(), affectedProjectVersion);
     }
 
-    private List<DetailedNotificationContent> createVulnerabilityNotificationWrappers(List<String> vulnerabilitySeverities, String projectName) {
+    private List<DetailedNotificationContent> createVulnerabilityNotificationWrappers(List<String> vulnerabilitySeverities, String projectName, String projectVersionName) {
         AlertNotificationModel alertNotificationModel = createAlertNotificationModel(NotificationType.VULNERABILITY);
         DetailedNotificationContent test_project = DetailedNotificationContent.vulnerability(
             alertNotificationModel,
             createVulnerabilityUniqueProjectNotificationContent(projectName),
             projectName,
+            projectVersionName,
             vulnerabilitySeverities
         );
         return List.of(test_project);
@@ -347,6 +348,7 @@ public class JobNotificationMapperTestIT {
             alertNotificationModel,
             createVulnerabilityUniqueProjectNotificationContent(PROJECT_NAME_1),
             PROJECT_NAME_1,
+            null,
             List.of(VulnerabilitySeverityType.LOW.name())
         );
         String projectName1 = "test_project1";
@@ -354,6 +356,7 @@ public class JobNotificationMapperTestIT {
             alertNotificationModel,
             createVulnerabilityUniqueProjectNotificationContent(projectName1),
             projectName1,
+            null,
             List.of(VulnerabilitySeverityType.HIGH.name())
         );
         String projectName2 = "test_project2";
@@ -361,6 +364,7 @@ public class JobNotificationMapperTestIT {
             alertNotificationModel,
             createVulnerabilityUniqueProjectNotificationContent(projectName2),
             projectName2,
+            null,
             List.of(VulnerabilitySeverityType.LOW.name(), VulnerabilitySeverityType.HIGH.name())
         );
         AlertNotificationModel alertPolicyNotificationModel = createAlertNotificationModel(NotificationType.POLICY_OVERRIDE);
@@ -368,6 +372,7 @@ public class JobNotificationMapperTestIT {
             alertPolicyNotificationModel,
             createVulnerabilityUniqueProjectNotificationContent(projectName2),
             projectName2,
+            null,
             POLICY_FILTER_NAME
         );
 

@@ -26,7 +26,8 @@ public class JobNotificationFilterUtils {
             return false;
         }
         String projectName = detailedNotificationContent.getProjectName().orElse("");
-        if (!doesProjectApplyToJob(filteredDistributionJobResponseModel, projectName)) {
+        String projectVersionName = detailedNotificationContent.getProjectVersionName().orElse("");
+        if (!doesProjectApplyToJob(filteredDistributionJobResponseModel, projectName, projectVersionName)) {
             return false;
         }
         switch (notificationTypeEnum) {
@@ -48,7 +49,7 @@ public class JobNotificationFilterUtils {
         return filteredDistributionJobResponseModel.getNotificationTypes().contains(notificationType);
     }
 
-    public static boolean doesProjectApplyToJob(FilteredDistributionJobResponseModel filteredDistributionJobResponseModel, String projectName) {
+    public static boolean doesProjectApplyToJob(FilteredDistributionJobResponseModel filteredDistributionJobResponseModel, String projectName, String projectVersionName) {
         if (!filteredDistributionJobResponseModel.isFilterByProject()) {
             return true;
         }
@@ -58,11 +59,16 @@ public class JobNotificationFilterUtils {
             return true;
         }
 
+        String projectVersionNamePattern = filteredDistributionJobResponseModel.getProjectVersionNamePattern();
+        if (projectVersionNamePattern != null && Pattern.matches(projectVersionNamePattern, projectVersionName)) {
+            return true;
+        }
+
         return filteredDistributionJobResponseModel.getProjectDetails()
-                   .stream()
-                   .map(BlackDuckProjectDetailsModel::getName)
-                   .distinct()
-                   .anyMatch(projectName::equals);
+            .stream()
+            .map(BlackDuckProjectDetailsModel::getName)
+            .distinct()
+            .anyMatch(projectName::equals);
     }
 
     public static boolean doVulnerabilitySeveritiesApplyToJob(FilteredDistributionJobResponseModel filteredDistributionJobResponseModel, List<String> notificationSeverities) {

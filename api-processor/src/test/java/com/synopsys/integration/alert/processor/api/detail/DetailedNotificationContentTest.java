@@ -21,9 +21,10 @@ public class DetailedNotificationContentTest {
     @Test
     public void vulnerabilityTest() {
         String projectName = "vuln project";
+        String projectVersionName = "version";
         List<String> severities = List.of("S1", "S2");
         VulnerabilityNotificationContent vulnerabilityNotificationContent = new VulnerabilityNotificationContent();
-        DetailedNotificationContent detailedContent = DetailedNotificationContent.vulnerability(ALERT_NOTIFICATION_MODEL, vulnerabilityNotificationContent, projectName, severities);
+        DetailedNotificationContent detailedContent = DetailedNotificationContent.vulnerability(ALERT_NOTIFICATION_MODEL, vulnerabilityNotificationContent, projectName, projectVersionName, severities);
         assertContent(detailedContent, ALERT_NOTIFICATION_MODEL.getProviderConfigId(), vulnerabilityNotificationContent.getClass(), severities);
         assertEquals(projectName, detailedContent.getProjectName().orElse(null));
         assertTrue(detailedContent.getPolicyName().isEmpty(), EXPECTED_NO_POLICY);
@@ -32,9 +33,10 @@ public class DetailedNotificationContentTest {
     @Test
     public void policyTest() {
         String projectName = "policy project";
+        String projectVersionName = "version";
         String policyName = "policy name 01";
         RuleViolationNotificationContent ruleViolationNotificationContent = new RuleViolationNotificationContent();
-        DetailedNotificationContent detailedContent = DetailedNotificationContent.policy(ALERT_NOTIFICATION_MODEL, ruleViolationNotificationContent, projectName, policyName);
+        DetailedNotificationContent detailedContent = DetailedNotificationContent.policy(ALERT_NOTIFICATION_MODEL, ruleViolationNotificationContent, projectName, projectVersionName, policyName);
         assertContent(detailedContent, ALERT_NOTIFICATION_MODEL.getProviderConfigId(), ruleViolationNotificationContent.getClass(), List.of());
         assertEquals(projectName, detailedContent.getProjectName().orElse(null));
         assertEquals(policyName, detailedContent.getPolicyName().orElse(null));
@@ -43,8 +45,9 @@ public class DetailedNotificationContentTest {
     @Test
     public void projectTest() {
         String projectName = "project with version";
+        String projectVersionName = "version";
         ProjectVersionNotificationContent projectVersionNotificationContent = new ProjectVersionNotificationContent();
-        DetailedNotificationContent detailedContent = DetailedNotificationContent.project(ALERT_NOTIFICATION_MODEL, projectVersionNotificationContent, projectName);
+        DetailedNotificationContent detailedContent = DetailedNotificationContent.project(ALERT_NOTIFICATION_MODEL, projectVersionNotificationContent, projectName, projectVersionName);
         assertContent(detailedContent, ALERT_NOTIFICATION_MODEL.getProviderConfigId(), projectVersionNotificationContent.getClass(), List.of());
         assertEquals(projectName, detailedContent.getProjectName().orElse(null));
         assertTrue(detailedContent.getPolicyName().isEmpty(), EXPECTED_NO_POLICY);
