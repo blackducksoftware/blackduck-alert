@@ -256,7 +256,7 @@ class StaticJobAccessorTest {
         UUID jobId = UUID.randomUUID();
 
         DistributionJobEntity distributionJobEntity = createEmailDistributionJobEntity(jobId);
-        distributionJobEntity.setBlackDuckJobDetails(new BlackDuckJobDetailsEntity(jobId, 3L, true, "*"));
+        distributionJobEntity.setBlackDuckJobDetails(new BlackDuckJobDetailsEntity(jobId, 3L, true, "*", "*"));
         Page<DistributionJobEntity> page = new PageImpl<>(List.of(distributionJobEntity));
         Mockito.when(distributionJobRepository.findAll(Mockito.any(PageRequest.class))).thenReturn(page);
         Mockito.when(emailJobDetailsAccessor.retrieveDetails(Mockito.any())).thenReturn(Optional.of(new EmailJobDetailsModel(
