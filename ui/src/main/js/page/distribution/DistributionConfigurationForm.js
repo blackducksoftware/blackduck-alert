@@ -22,9 +22,7 @@ import CollapsiblePane from 'common/CollapsiblePane';
 import TableSelectInput from 'common/input/TableSelectInput';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
-import {
-    CONTEXT_TYPE, isOneOperationAssigned, isOperationAssigned, OPERATIONS
-} from 'common/util/descriptorUtilities';
+import { CONTEXT_TYPE, isOneOperationAssigned, isOperationAssigned, OPERATIONS } from 'common/util/descriptorUtilities';
 import CommonDistributionConfigurationForm from 'page/distribution/CommonDistributionConfigurationForm';
 import * as DistributionRequestUtility from 'page/distribution/DistributionRequestUtility';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
@@ -43,8 +41,8 @@ import MsTeamsDistributionConfiguration from 'page/channel/msteams/MsTeamsDistri
 import SlackDistributionConfiguration from 'page/channel/slack/SlackDistributionConfiguration';
 
 const DistributionConfigurationForm = ({
-    csrfToken, errorHandler, descriptors, lastUpdated
-}) => {
+                                           csrfToken, errorHandler, descriptors, lastUpdated
+                                       }) => {
     const { id } = useParams();
     const history = useHistory();
     const location = useLocation();
@@ -389,50 +387,50 @@ const DistributionConfigurationForm = ({
                 />
                 {renderChannelFields()}
                 {FieldModelUtilities.hasValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName)
-                && FieldModelUtilities.hasValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId)
-                && (
-                    <div>
-                        <SelectInput
-                            id={DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes}
-                            name={DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes}
-                            label="Notification Types"
-                            description="Select one or more of the notification types. Only these notification types will be included for this distribution job."
-                            options={DISTRIBUTION_NOTIFICATION_TYPE_OPTIONS}
-                            multiSelect
-                            readOnly={readonly}
-                            removeSelected
-                            required
-                            onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
-                            value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes)}
-                            errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes)}
-                            errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes]}
-                        />
-                        <SelectInput
-                            id={DISTRIBUTION_COMMON_FIELD_KEYS.processingType}
-                            name={DISTRIBUTION_COMMON_FIELD_KEYS.processingType}
-                            label="Processing"
-                            description={processingFieldDescription}
-                            options={processingTypes}
-                            readOnly={readonly}
-                            required
-                            onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
-                            value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.processingType)}
-                            errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.processingType)}
-                            errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.processingType]}
-                        />
-                        <CheckboxInput
-                            id={DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject}
-                            name={DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject}
-                            label="Filter By Project"
-                            description="If selected, only notifications from the selected Projects table will be processed. Otherwise notifications from all Projects are processed."
-                            readOnly={readonly}
-                            onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
-                            isChecked={FieldModelUtilities.getFieldModelBooleanValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject)}
-                            errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject)}
-                            errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject]}
-                        />
-                    </div>
-                )}
+                    && FieldModelUtilities.hasValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId)
+                    && (
+                        <div>
+                            <SelectInput
+                                id={DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes}
+                                name={DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes}
+                                label="Notification Types"
+                                description="Select one or more of the notification types. Only these notification types will be included for this distribution job."
+                                options={DISTRIBUTION_NOTIFICATION_TYPE_OPTIONS}
+                                multiSelect
+                                readOnly={readonly}
+                                removeSelected
+                                required
+                                onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
+                                value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes)}
+                                errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes)}
+                                errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes]}
+                            />
+                            <SelectInput
+                                id={DISTRIBUTION_COMMON_FIELD_KEYS.processingType}
+                                name={DISTRIBUTION_COMMON_FIELD_KEYS.processingType}
+                                label="Processing"
+                                description={processingFieldDescription}
+                                options={processingTypes}
+                                readOnly={readonly}
+                                required
+                                onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
+                                value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.processingType)}
+                                errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.processingType)}
+                                errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.processingType]}
+                            />
+                            <CheckboxInput
+                                id={DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject}
+                                name={DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject}
+                                label="Filter By Project"
+                                description="If selected, only notifications from the selected Projects table will be processed. Otherwise notifications from all Projects are processed."
+                                readOnly={readonly}
+                                onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
+                                isChecked={FieldModelUtilities.getFieldModelBooleanValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject)}
+                                errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject)}
+                                errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject]}
+                            />
+                        </div>
+                    )}
                 {FieldModelUtilities.getFieldModelBooleanValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject) && (
                     <div>
                         <TextInput
@@ -446,6 +444,18 @@ const DistributionConfigurationForm = ({
                             value={FieldModelUtilities.getFieldModelSingleValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.projectNamePattern)}
                             errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.projectNamePattern)}
                             errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.projectNamePattern]}
+                        />
+                        <TextInput
+                            id={DISTRIBUTION_COMMON_FIELD_KEYS.projectVersionNamePattern}
+                            key={DISTRIBUTION_COMMON_FIELD_KEYS.projectVersionNamePattern}
+                            name={DISTRIBUTION_COMMON_FIELD_KEYS.projectVersionNamePattern}
+                            label="Project Version Name Pattern"
+                            description="The regular expression to use to determine what Project Versions to include."
+                            readOnly={readonly}
+                            onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
+                            value={FieldModelUtilities.getFieldModelSingleValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.projectVersionNamePattern)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.projectVersionNamePattern)}
+                            errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.projectVersionNamePattern]}
                         />
                         <TableSelectInput
                             id={DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects}
@@ -468,44 +478,44 @@ const DistributionConfigurationForm = ({
                     </div>
                 )}
                 {FieldModelUtilities.hasValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes)
-                && (
-                    <CollapsiblePane
-                        id="distribution-notification-filtering"
-                        title="Black Duck Notification Filtering"
-                        expanded={false}
-                    >
-                        <TableSelectInput
-                            id={DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter}
-                            csrfToken={csrfToken}
-                            endpoint={DISTRIBUTION_URLS.endpointSelectPath}
-                            fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter}
-                            columns={DISTRIBUTION_POLICY_SELECT_COLUMNS}
-                            label="Policy Notification Type Filter"
-                            description="Filter which notifications you want sent via this job (You must have the policy notification type selected for this filter to apply)."
-                            readOnly={readonly}
-                            paged
-                            searchable
-                            createRequestBody={createProviderRequestBody}
-                            onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
-                            value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter)}
-                            errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter)}
-                            errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter]}
-                        />
-                        <SelectInput
-                            id={DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter}
-                            name={DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter}
-                            label="Vulnerability Notification Contains Severities"
-                            description="Filters out the notifications that do not contain any of the relevant severities (You must have the vulnerability notification type selected for this filter to apply)."
-                            options={DISTRIBUTION_VULNERABILITY_SEVERITY_OPTIONS}
-                            multiSelect
-                            readOnly={readonly}
-                            onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
-                            value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter)}
-                            errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter)}
-                            errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter]}
-                        />
-                    </CollapsiblePane>
-                )}
+                    && (
+                        <CollapsiblePane
+                            id="distribution-notification-filtering"
+                            title="Black Duck Notification Filtering"
+                            expanded={false}
+                        >
+                            <TableSelectInput
+                                id={DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter}
+                                csrfToken={csrfToken}
+                                endpoint={DISTRIBUTION_URLS.endpointSelectPath}
+                                fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter}
+                                columns={DISTRIBUTION_POLICY_SELECT_COLUMNS}
+                                label="Policy Notification Type Filter"
+                                description="Filter which notifications you want sent via this job (You must have the policy notification type selected for this filter to apply)."
+                                readOnly={readonly}
+                                paged
+                                searchable
+                                createRequestBody={createProviderRequestBody}
+                                onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
+                                value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter)}
+                                errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter)}
+                                errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter]}
+                            />
+                            <SelectInput
+                                id={DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter}
+                                name={DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter}
+                                label="Vulnerability Notification Contains Severities"
+                                description="Filters out the notifications that do not contain any of the relevant severities (You must have the vulnerability notification type selected for this filter to apply)."
+                                options={DISTRIBUTION_VULNERABILITY_SEVERITY_OPTIONS}
+                                multiSelect
+                                readOnly={readonly}
+                                onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
+                                value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter)}
+                                errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter)}
+                                errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter]}
+                            />
+                        </CollapsiblePane>
+                    )}
             </CommonDistributionConfigurationForm>
         </CommonGlobalConfiguration>
     );

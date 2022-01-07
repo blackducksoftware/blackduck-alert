@@ -61,10 +61,10 @@ public abstract class DatabaseConfiguredFieldTest {
 
     public ConfigurationModel addGlobalConfiguration(DescriptorKey descriptorKey, Map<String, Collection<String>> fieldsValues) {
         Set<ConfigurationFieldModel> fieldModels = fieldsValues
-                                                       .entrySet()
-                                                       .stream()
-                                                       .map(entry -> createConfigurationFieldModel(entry.getKey(), entry.getValue()))
-                                                       .collect(Collectors.toSet());
+            .entrySet()
+            .stream()
+            .map(entry -> createConfigurationFieldModel(entry.getKey(), entry.getValue()))
+            .collect(Collectors.toSet());
 
         return configurationModelConfigurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.GLOBAL, fieldModels);
     }
@@ -89,6 +89,7 @@ public abstract class DatabaseConfiguredFieldTest {
             ChannelKeys.SLACK.getUniversalKey(),
             blackDuckGlobalConfigId,
             false,
+            null,
             null,
             List.of("notificationType"),
             List.of(),

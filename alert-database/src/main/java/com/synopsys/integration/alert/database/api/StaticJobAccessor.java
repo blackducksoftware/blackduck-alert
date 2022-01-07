@@ -149,7 +149,7 @@ public class StaticJobAccessor implements JobAccessor {
     @Transactional(readOnly = true)
     public Optional<DistributionJobModel> getJobByName(String jobName) {
         return distributionJobRepository.findByName(jobName)
-                   .map(this::convertToDistributionJobModel);
+            .map(this::convertToDistributionJobModel);
     }
 
     @Override
@@ -162,7 +162,7 @@ public class StaticJobAccessor implements JobAccessor {
     @Transactional
     public DistributionJobModel updateJob(UUID jobId, DistributionJobRequestModel requestModel) throws AlertConfigurationException {
         DistributionJobEntity jobEntity = distributionJobRepository.findById(jobId)
-                                              .orElseThrow(() -> new AlertConfigurationException(String.format("No job exists with the id [%s]", jobId)));
+            .orElseThrow(() -> new AlertConfigurationException(String.format("No job exists with the id [%s]", jobId)));
         OffsetDateTime createdAt = jobEntity.getCreatedAt();
 
         if (!jobEntity.getChannelDescriptorName().equals(requestModel.getChannelDescriptorName())) {
@@ -238,9 +238,9 @@ public class StaticJobAccessor implements JobAccessor {
         } else if (ChannelKeys.EMAIL.equals(channelKey)) {
             EmailJobDetailsEntity jobDetails = jobEntity.getEmailJobDetails();
             List<String> additionalEmailAddresses = jobDetails.getEmailJobAdditionalEmailAddresses()
-                                                        .stream()
-                                                        .map(EmailJobAdditionalEmailAddressEntity::getEmailAddress)
-                                                        .collect(Collectors.toList());
+                .stream()
+                .map(EmailJobAdditionalEmailAddressEntity::getEmailAddress)
+                .collect(Collectors.toList());
             distributionJobDetailsModel = new EmailJobDetailsModel(
                 jobId,
                 jobDetails.getSubjectLine(),
@@ -252,9 +252,9 @@ public class StaticJobAccessor implements JobAccessor {
         } else if (ChannelKeys.JIRA_CLOUD.equals(channelKey)) {
             JiraCloudJobDetailsEntity jobDetails = jobEntity.getJiraCloudJobDetails();
             List<JiraJobCustomFieldModel> customFields = jobDetails.getJobCustomFields()
-                                                             .stream()
-                                                             .map(entity -> new JiraJobCustomFieldModel(entity.getFieldName(), entity.getFieldValue()))
-                                                             .collect(Collectors.toList());
+                .stream()
+                .map(entity -> new JiraJobCustomFieldModel(entity.getFieldName(), entity.getFieldValue()))
+                .collect(Collectors.toList());
             distributionJobDetailsModel = new JiraCloudJobDetailsModel(
                 jobId,
                 jobDetails.getAddComments(),
@@ -268,9 +268,9 @@ public class StaticJobAccessor implements JobAccessor {
         } else if (ChannelKeys.JIRA_SERVER.equals(channelKey)) {
             JiraServerJobDetailsEntity jobDetails = jobEntity.getJiraServerJobDetails();
             List<JiraJobCustomFieldModel> customFields = jobDetails.getJobCustomFields()
-                                                             .stream()
-                                                             .map(entity -> new JiraJobCustomFieldModel(entity.getFieldName(), entity.getFieldValue()))
-                                                             .collect(Collectors.toList());
+                .stream()
+                .map(entity -> new JiraJobCustomFieldModel(entity.getFieldName(), entity.getFieldValue()))
+                .collect(Collectors.toList());
             distributionJobDetailsModel = new JiraServerJobDetailsModel(
                 jobId,
                 jobDetails.getAddComments(),
@@ -301,25 +301,26 @@ public class StaticJobAccessor implements JobAccessor {
         List<String> vulnerabilitySeverityNames = blackDuckJobDetailsAccessor.retrieveVulnerabilitySeverityNamesForJob(jobId);
 
         return new DistributionJobModelBuilder()
-                   .jobId(jobId)
-                   .name(jobEntity.getName())
-                   .enabled(jobEntity.getEnabled())
-                   .distributionFrequency(jobEntity.getDistributionFrequency())
-                   .processingType(jobEntity.getProcessingType())
-                   .channelDescriptorName(channelKey.getUniversalKey())
-                   .createdAt(jobEntity.getCreatedAt())
-                   .lastUpdated(jobEntity.getLastUpdated())
-                   .blackDuckGlobalConfigId(blackDuckJobDetails.getGlobalConfigId())
-                   .filterByProject(blackDuckJobDetails.getFilterByProject())
-                   .projectNamePattern(blackDuckJobDetails.getProjectNamePattern())
-                   .notificationTypes(notificationTypes)
-                   .projectFilterDetails(projectDetails)
-                   .policyFilterPolicyNames(policyNames)
-                   .vulnerabilityFilterSeverityNames(vulnerabilitySeverityNames)
-                   .distributionJobDetails(distributionJobDetailsModel)
-                   .createdAt(jobEntity.getCreatedAt())
-                   .lastUpdated(jobEntity.getLastUpdated())
-                   .build();
+            .jobId(jobId)
+            .name(jobEntity.getName())
+            .enabled(jobEntity.getEnabled())
+            .distributionFrequency(jobEntity.getDistributionFrequency())
+            .processingType(jobEntity.getProcessingType())
+            .channelDescriptorName(channelKey.getUniversalKey())
+            .createdAt(jobEntity.getCreatedAt())
+            .lastUpdated(jobEntity.getLastUpdated())
+            .blackDuckGlobalConfigId(blackDuckJobDetails.getGlobalConfigId())
+            .filterByProject(blackDuckJobDetails.getFilterByProject())
+            .projectNamePattern(blackDuckJobDetails.getProjectNamePattern())
+            .projectVersionNamePattern(blackDuckJobDetails.getProjectVersionNamePattern())
+            .notificationTypes(notificationTypes)
+            .projectFilterDetails(projectDetails)
+            .policyFilterPolicyNames(policyNames)
+            .vulnerabilityFilterSeverityNames(vulnerabilitySeverityNames)
+            .distributionJobDetails(distributionJobDetailsModel)
+            .createdAt(jobEntity.getCreatedAt())
+            .lastUpdated(jobEntity.getLastUpdated())
+            .build();
     }
 
 }

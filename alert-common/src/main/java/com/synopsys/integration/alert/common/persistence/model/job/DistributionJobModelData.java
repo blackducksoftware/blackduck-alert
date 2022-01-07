@@ -29,6 +29,7 @@ public abstract class DistributionJobModelData extends AlertSerializableModel {
     private final boolean filterByProject;
     @Nullable
     private final String projectNamePattern;
+    private final String projectVersionNamePattern;
     private final List<String> notificationTypes;
     private final List<BlackDuckProjectDetailsModel> projectFilterDetails;
     private final List<String> policyFilterPolicyNames;
@@ -45,6 +46,7 @@ public abstract class DistributionJobModelData extends AlertSerializableModel {
         this.blackDuckGlobalConfigId = null;
         this.filterByProject = false;
         this.projectNamePattern = null;
+        this.projectVersionNamePattern = null;
         this.notificationTypes = List.of();
         this.projectFilterDetails = List.of();
         this.policyFilterPolicyNames = List.of();
@@ -61,6 +63,7 @@ public abstract class DistributionJobModelData extends AlertSerializableModel {
         Long blackDuckGlobalConfigId,
         boolean filterByProject,
         @Nullable String projectNamePattern,
+        @Nullable String projectVersionNamePattern,
         List<String> notificationTypes,
         List<BlackDuckProjectDetailsModel> projectFilterDetails,
         List<String> policyFilterPolicyNames,
@@ -75,6 +78,7 @@ public abstract class DistributionJobModelData extends AlertSerializableModel {
         this.blackDuckGlobalConfigId = blackDuckGlobalConfigId;
         this.filterByProject = filterByProject;
         this.projectNamePattern = projectNamePattern;
+        this.projectVersionNamePattern = projectVersionNamePattern;
         this.notificationTypes = notificationTypes;
         this.projectFilterDetails = projectFilterDetails;
         this.policyFilterPolicyNames = policyFilterPolicyNames;
@@ -112,6 +116,10 @@ public abstract class DistributionJobModelData extends AlertSerializableModel {
 
     public Optional<String> getProjectNamePattern() {
         return Optional.ofNullable(projectNamePattern);
+    }
+
+    public Optional<String> getProjectVersionNamePattern() {
+        return Optional.ofNullable(projectVersionNamePattern);
     }
 
     public List<String> getNotificationTypes() {
