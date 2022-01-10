@@ -26,10 +26,10 @@ import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixM
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.database.email.EmailConfigurationEntity;
-import com.synopsys.integration.alert.database.email.EmailConfigurationRepository;
-import com.synopsys.integration.alert.database.email.properties.EmailConfigurationPropertiesRepository;
-import com.synopsys.integration.alert.database.email.properties.EmailConfigurationsPropertyEntity;
+import com.synopsys.integration.alert.channel.email.database.configuration.EmailConfigurationEntity;
+import com.synopsys.integration.alert.channel.email.database.configuration.EmailConfigurationRepository;
+import com.synopsys.integration.alert.channel.email.database.configuration.properties.EmailConfigurationPropertiesRepository;
+import com.synopsys.integration.alert.channel.email.database.configuration.properties.EmailConfigurationsPropertyEntity;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
