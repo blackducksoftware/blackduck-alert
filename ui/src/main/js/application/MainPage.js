@@ -274,6 +274,7 @@ const MainPage = ({
                                 csrfToken={csrfToken}
                                 errorHandler={errorHandler}
                                 readonly={readOnly}
+                                displayTest={isOperationAssigned(globalDescriptorMap[SETTINGS_INFO.key], OPERATIONS.EXECUTE)}
                                 displaySave={showSave}
                                 displayDelete={isOperationAssigned(globalDescriptorMap[SETTINGS_INFO.key], OPERATIONS.DELETE)}
                             />

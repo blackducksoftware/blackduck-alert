@@ -31,7 +31,7 @@ public class ComponentUnknownVersionNotificationDetailExtractor extends Notifica
     public List<DetailedNotificationContent> extractDetailedContent(AlertNotificationModel alertNotificationModel, ComponentUnknownVersionNotificationView notificationView) {
         ComponentUnknownVersionNotificationContent notificationContent = notificationView.getContent();
         ComponentUnknownVersionWithStatusNotificationContent componentUnknownVersionNotificationContent = extractContents(notificationContent);
-        return List.of(DetailedNotificationContent.project(alertNotificationModel, componentUnknownVersionNotificationContent, notificationContent.getProjectName()));
+        return List.of(DetailedNotificationContent.project(alertNotificationModel, componentUnknownVersionNotificationContent, notificationContent.getProjectName(), notificationContent.getProjectVersionName()));
     }
 
     private ComponentUnknownVersionWithStatusNotificationContent extractContents(ComponentUnknownVersionNotificationContent notificationContent) {

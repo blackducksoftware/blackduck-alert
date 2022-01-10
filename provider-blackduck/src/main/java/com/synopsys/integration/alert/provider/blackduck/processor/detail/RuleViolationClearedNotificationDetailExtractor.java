@@ -32,10 +32,10 @@ public class RuleViolationClearedNotificationDetailExtractor extends Notificatio
     public List<DetailedNotificationContent> extractDetailedContent(AlertNotificationModel alertNotificationModel, RuleViolationClearedNotificationView notificationView) {
         RuleViolationClearedNotificationContent notificationContent = notificationView.getContent();
         return notificationContent.getPolicyInfos()
-                   .stream()
-                   .map(policyInfo -> createFlattenedContent(notificationContent, policyInfo))
-                   .map(content -> DetailedNotificationContent.policy(alertNotificationModel, content, notificationContent.getProjectName(), content.getPolicyInfo().getPolicyName()))
-                   .collect(Collectors.toList());
+            .stream()
+            .map(policyInfo -> createFlattenedContent(notificationContent, policyInfo))
+            .map(content -> DetailedNotificationContent.policy(alertNotificationModel, content, notificationContent.getProjectName(), notificationContent.getProjectVersionName(), content.getPolicyInfo().getPolicyName()))
+            .collect(Collectors.toList());
     }
 
     private RuleViolationClearedUniquePolicyNotificationContent createFlattenedContent(RuleViolationClearedNotificationContent notificationContent, PolicyInfo policyInfo) {

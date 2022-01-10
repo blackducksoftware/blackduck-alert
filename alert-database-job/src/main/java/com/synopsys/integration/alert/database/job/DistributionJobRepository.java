@@ -51,7 +51,7 @@ public interface DistributionJobRepository extends JpaRepository<DistributionJob
                        + "    AND blackDuckDetails.globalConfigId = :blackDuckConfigId"
                        + "    AND notificationTypes.notificationType IN (:notificationTypeSet)"
                        + "    AND jobEntity.distributionFrequency IN (:frequencies)"
-                       + "    AND (blackDuckDetails.filterByProject = false OR blackDuckDetails.projectNamePattern IS NOT NULL OR projects.projectName IN (:projectNames))"
+                       + "    AND (blackDuckDetails.filterByProject = false OR blackDuckDetails.projectNamePattern IS NOT NULL OR blackDuckDetails.projectVersionNamePattern IS NOT NULL OR projects.projectName IN (:projectNames))"
                        + "    AND ("
                        + "          ("
                        + "            coalesce(:vulnerabilitySeverities, NULL) IS NULL"

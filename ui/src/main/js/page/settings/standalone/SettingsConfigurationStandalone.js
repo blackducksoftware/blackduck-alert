@@ -7,7 +7,7 @@ import SettingsEncryptionConfiguration from 'page/settings/standalone/SettingsEn
 import SettingsProxyConfiguration from 'page/settings/standalone/SettingsProxyConfiguration';
 
 const SettingsConfigurationStandalone = ({
-    csrfToken, errorHandler, readOnly, displaySave, displayDelete
+    csrfToken, errorHandler, readOnly, displayTest, displaySave, displayDelete
 }) => (
     <CommonGlobalConfiguration
         label={`${SETTINGS_INFO.label} BETA (WIP)`}
@@ -27,6 +27,7 @@ const SettingsConfigurationStandalone = ({
                     csrfToken={csrfToken}
                     errorHandler={errorHandler}
                     readOnly={readOnly}
+                    displayTest={displayTest}
                     displaySave={displaySave}
                     displayDelete={displayDelete}
                 />
@@ -40,12 +41,14 @@ SettingsConfigurationStandalone.propTypes = {
     errorHandler: PropTypes.object.isRequired,
     // Pass this in for now while we have all descriptors in global state, otherwise retrieve this in this component
     readOnly: PropTypes.bool,
+    displayTest: PropTypes.bool,
     displaySave: PropTypes.bool,
     displayDelete: PropTypes.bool
 };
 
 SettingsConfigurationStandalone.defaultProps = {
     readOnly: false,
+    displayTest: true,
     displaySave: true,
     displayDelete: true
 };

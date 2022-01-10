@@ -68,7 +68,7 @@ public class RestChannelUtility {
     private void sendMessageRequest(Request request, String messageType) throws AlertException {
         logger.info("Attempting to send a {} message...", messageType);
         try (Response response = sendGenericRequest(request)) {
-            if (RestConstants.OK_200 <= response.getStatusCode() && response.getStatusCode() < RestConstants.MULT_CHOICE_300) {
+            if (RestConstants.OK_200 >= response.getStatusCode() && response.getStatusCode() < RestConstants.MULT_CHOICE_300) {
                 logger.info("Successfully sent a {} message!", messageType);
             } else {
                 throw new AlertException(String.format("Could not send message: %s. Status code: %s", response.getStatusMessage(), response.getStatusCode()));
