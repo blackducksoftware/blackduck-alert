@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.database.job.email;
+package com.synopsys.integration.alert.channel.email.database.job;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,7 +17,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.synopsys.integration.alert.database.job.email.additional.EmailJobAdditionalEmailAddressEntity;
+import com.synopsys.integration.alert.channel.email.database.job.additional.EmailJobAdditionalEmailAddressEntity;
 
 @Entity
 @Table(schema = "alert", name = "email_job_details")

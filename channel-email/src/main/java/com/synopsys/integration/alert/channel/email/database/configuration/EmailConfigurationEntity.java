@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.database.email;
+package com.synopsys.integration.alert.channel.email.database.configuration;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -18,8 +18,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.synopsys.integration.alert.channel.email.database.configuration.properties.EmailConfigurationsPropertyEntity;
 import com.synopsys.integration.alert.database.BaseEntity;
-import com.synopsys.integration.alert.database.email.properties.EmailConfigurationsPropertyEntity;
 
 @Entity
 @Table(schema = "alert", name = "configuration_email")

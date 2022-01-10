@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.database.job.email;
+package com.synopsys.integration.alert.channel.email.database.accessor;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -12,9 +12,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.synopsys.integration.alert.channel.email.database.job.EmailJobDetailsEntity;
+import com.synopsys.integration.alert.channel.email.database.job.EmailJobDetailsRepository;
+import com.synopsys.integration.alert.channel.email.database.job.additional.EmailJobAdditionalEmailAddressEntity;
+import com.synopsys.integration.alert.channel.email.database.job.additional.EmailJobAdditionalEmailAddressRepository;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
-import com.synopsys.integration.alert.database.job.email.additional.EmailJobAdditionalEmailAddressEntity;
-import com.synopsys.integration.alert.database.job.email.additional.EmailJobAdditionalEmailAddressRepository;
 import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
