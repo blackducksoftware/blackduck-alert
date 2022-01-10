@@ -78,16 +78,18 @@ class StaticJobAccessorTest {
         Mockito.when(blackDuckJobDetailsAccessor.retrieveProjectDetailsForJob(Mockito.any())).thenReturn(Collections.emptyList());
         Mockito.when(blackDuckJobDetailsAccessor.retrievePolicyNamesForJob(Mockito.any())).thenReturn(Collections.emptyList());
         Mockito.when(blackDuckJobDetailsAccessor.retrieveVulnerabilitySeverityNamesForJob(Mockito.any())).thenReturn(Collections.emptyList());
+        Mockito.when(emailJobDetailsAccessor.getDescriptorKey()).thenReturn(ChannelKeys.EMAIL);
+
         jobAccessor = new StaticJobAccessor(
             distributionJobRepository,
             blackDuckJobDetailsAccessor,
             azureBoardsJobDetailsAccessor,
-            emailJobDetailsAccessor,
             jiraCloudJobDetailsAccessor,
             jiraServerJobDetailsAccessor,
             msTeamsJobDetailsAccessor,
             slackJobDetailsAccessor,
-            new BlackDuckProviderKey()
+            new BlackDuckProviderKey(),
+            List.of(emailJobDetailsAccessor)
         );
     }
 
@@ -250,6 +252,33 @@ class StaticJobAccessorTest {
     }
 
     @Test
+    void getPageOfJobsEmailTest() {
+        UUID jobId = UUID.randomUUID();
+
+        DistributionJobEntity distributionJobEntity = createEmailDistributionJobEntity(jobId);
+        distributionJobEntity.setBlackDuckJobDetails(new BlackDuckJobDetailsEntity(jobId, 3L, true, "*", "*"));
+        Page<DistributionJobEntity> page = new PageImpl<>(List.of(distributionJobEntity));
+        Mockito.when(distributionJobRepository.findAll(Mockito.any(PageRequest.class))).thenReturn(page);
+        Mockito.when(emailJobDetailsAccessor.retrieveDetails(Mockito.any())).thenReturn(Optional.of(new EmailJobDetailsModel(
+            jobId,
+            null,
+            false,
+            false,
+            "NONE",
+            List.of()
+        )));
+
+        AlertPagedModel<DistributionJobModel> pageOfJobs = jobAccessor.getPageOfJobs(0, 10);
+
+        assertEquals(1, pageOfJobs.getTotalPages());
+        List<DistributionJobModel> models = pageOfJobs.getModels();
+        assertEquals(1, models.size());
+        DistributionJobModel distributionJobModel = models.get(0);
+        assertEquals(jobId, distributionJobModel.getJobId());
+        assertEquals(jobName, distributionJobModel.getName());
+    }
+
+    @Test
     void getPageOfJobsSearchTest() {
         ProviderKey providerKey = new BlackDuckProviderKey();
         UUID jobId = UUID.randomUUID();
@@ -302,7 +331,7 @@ class StaticJobAccessorTest {
     }
 
     @Test
-    public void createAzureBoardsJobTest() {
+    void createAzureBoardsJobTest() {
         UUID jobId = UUID.randomUUID();
         AzureBoardsJobDetailsModel azureBoardsJobDetailsModel = new AzureBoardsJobDetailsModel(jobId, false, null, null, null, null);
         DistributionJobRequestModel distributionJobRequestModel = createDistributionJobEntity(ChannelKeys.AZURE_BOARDS.getUniversalKey(), azureBoardsJobDetailsModel);
@@ -323,7 +352,7 @@ class StaticJobAccessorTest {
     }
 
     @Test
-    public void createEmailJobTest() {
+    void createEmailJobTest() {
         UUID jobId = UUID.randomUUID();
         EmailJobDetailsModel emailJobDetailsModel = new EmailJobDetailsModel(jobId, null, false, false, null, List.of());
         DistributionJobRequestModel distributionJobRequestModel = createDistributionJobEntity(ChannelKeys.EMAIL.getUniversalKey(), emailJobDetailsModel);
@@ -345,7 +374,7 @@ class StaticJobAccessorTest {
     }
 
     @Test
-    public void createJiraCloudJobTest() {
+    void createJiraCloudJobTest() {
         UUID jobId = UUID.randomUUID();
         JiraCloudJobDetailsModel jiraCloudJobDetailsModel = new JiraCloudJobDetailsModel(jobId, false, null, null, null, null, null, List.of(), null);
         DistributionJobRequestModel distributionJobRequestModel = createDistributionJobEntity(ChannelKeys.JIRA_CLOUD.getUniversalKey(), jiraCloudJobDetailsModel);
@@ -367,7 +396,7 @@ class StaticJobAccessorTest {
     }
 
     @Test
-    public void createJiraServerJobTest() {
+    void createJiraServerJobTest() {
         UUID jobId = UUID.randomUUID();
         JiraServerJobDetailsModel jiraServerJobDetailsModel = new JiraServerJobDetailsModel(jobId, false, null, null, null, null, null, List.of(), "issueSummary");
         DistributionJobRequestModel distributionJobRequestModel = createDistributionJobEntity(ChannelKeys.JIRA_SERVER.getUniversalKey(), jiraServerJobDetailsModel);
@@ -389,7 +418,7 @@ class StaticJobAccessorTest {
     }
 
     @Test
-    public void createMSTeamsJobTest() {
+    void createMSTeamsJobTest() {
         UUID jobId = UUID.randomUUID();
         MSTeamsJobDetailsModel msTeamsJobDetailsModel = new MSTeamsJobDetailsModel(jobId, null);
         DistributionJobRequestModel distributionJobRequestModel = createDistributionJobEntity(ChannelKeys.MS_TEAMS.getUniversalKey(), msTeamsJobDetailsModel);
@@ -464,6 +493,22 @@ class StaticJobAccessorTest {
             DateUtils.createCurrentDateTimestamp()
         );
         distributionJobEntity.setSlackJobDetails(slackJobDetailsEntity);
+        return distributionJobEntity;
+    }
+
+    private DistributionJobEntity createEmailDistributionJobEntity(UUID jobId) {
+        EmailJobDetailsEntity emailJobDetailsEntity = new EmailJobDetailsEntity();
+        DistributionJobEntity distributionJobEntity = new DistributionJobEntity(
+            jobId,
+            jobName,
+            true,
+            FrequencyType.REAL_TIME.name(),
+            ProcessingType.DEFAULT.name(),
+            ChannelKeys.EMAIL.getUniversalKey(),
+            DateUtils.createCurrentDateTimestamp(),
+            DateUtils.createCurrentDateTimestamp()
+        );
+        distributionJobEntity.setEmailJobDetails(emailJobDetailsEntity);
         return distributionJobEntity;
     }
 

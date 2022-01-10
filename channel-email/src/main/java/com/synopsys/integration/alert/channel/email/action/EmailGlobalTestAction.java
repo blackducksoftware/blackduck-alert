@@ -23,6 +23,7 @@ import com.synopsys.integration.alert.channel.email.validator.EmailGlobalConfigu
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.message.model.ConfigurationTestResult;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.rest.api.ConfigurationTestHelper;
 import com.synopsys.integration.alert.common.rest.api.ConfigurationValidationHelper;
@@ -62,16 +63,16 @@ public class EmailGlobalTestAction {
         return testHelper.test(validationSupplier, () -> testConfigModelContent(testAddress, requestResource));
     }
 
-    public MessageResult testConfigModelContent(String testAddress, EmailGlobalConfigModel emailGlobalConfigModel) throws AlertException {
+    public ConfigurationTestResult testConfigModelContent(String testAddress, EmailGlobalConfigModel emailGlobalConfigModel) {
         if (StringUtils.isBlank(testAddress)) {
-            throw new AlertException("Could not determine what email address to send this content to. testAddress was not provided or was blank. Please provide a valid email address to test the configuration.");
+            return ConfigurationTestResult.failure("Could not determine what email address to send this content to. testAddress was not provided or was blank. Please provide a valid email address to test the configuration.");
         }
 
         try {
             InternetAddress emailAddress = new InternetAddress(testAddress);
             emailAddress.validate();
         } catch (AddressException ex) {
-            throw new AlertException(String.format("%s is not a valid email address. %s", testAddress, ex.getMessage()));
+            return ConfigurationTestResult.failure(String.format("%s is not a valid email address. %s", testAddress, ex.getMessage()));
         }
 
         EmailChannelMessageModel testMessage = EmailChannelMessageModel.simple(TEST_SUBJECT_LINE, TEST_MESSAGE_CONTENT, "", "");
@@ -88,9 +89,13 @@ public class EmailGlobalTestAction {
 
         SmtpConfig smtpConfig = smtpConfigBuilder.build();
 
-        EmailTarget emailTarget = emailChannelMessagingService.createTarget(testMessage, testAddress);
-
-        return emailChannelMessagingService.sendMessage(smtpConfig, emailTarget);
+        try {
+            EmailTarget emailTarget = emailChannelMessagingService.createTarget(testMessage, testAddress);
+            MessageResult messageResult = emailChannelMessagingService.sendMessage(smtpConfig, emailTarget);
+            return ConfigurationTestResult.success(messageResult.getStatusMessage());
+        } catch (AlertException ex) {
+            return ConfigurationTestResult.failure(ex.getMessage());
+        }
     }
 
 }
