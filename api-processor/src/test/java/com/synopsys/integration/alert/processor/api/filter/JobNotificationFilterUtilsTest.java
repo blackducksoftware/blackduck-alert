@@ -148,6 +148,51 @@ public class JobNotificationFilterUtilsTest {
         assertFalse(doesProjectApplyToJob);
     }
 
+    @Test
+    public void doesProjectVersionNameMatchWithWrongProjectTest() {
+        List<String> notValidProjects = List.of("fake project", "project 2", "flippant");
+        FilteredDistributionJobResponseModel jobResponseModel = createFilteredDistributionJobResponseModel(List.of(), notValidProjects, List.of(), List.of(), true, "", "1.0.*");
+        boolean doesProjectApplyToJob = JobNotificationFilterUtils.doesProjectApplyToJob(jobResponseModel, "projectName", "1.0.0");
+
+        assertFalse(doesProjectApplyToJob);
+    }
+
+    @Test
+    public void doesProjectVersionNameMatchWithProjectTest() {
+        String validProject = "projectName";
+        List<String> projects = List.of("fake project", "project 2", "flippant", validProject);
+        FilteredDistributionJobResponseModel jobResponseModel = createFilteredDistributionJobResponseModel(List.of(), projects, List.of(), List.of(), true, "", "1.0.*");
+        boolean doesProjectApplyToJob = JobNotificationFilterUtils.doesProjectApplyToJob(jobResponseModel, "projectName", "1.0.0");
+
+        assertTrue(doesProjectApplyToJob);
+    }
+
+    @Test
+    public void doesProjectVersionNameMatchWithNoProjectTest() {
+        FilteredDistributionJobResponseModel jobResponseModel = createFilteredDistributionJobResponseModel(List.of(), List.of(), List.of(), List.of(), true, "", "1.0.*");
+        boolean doesProjectApplyToJob = JobNotificationFilterUtils.doesProjectApplyToJob(jobResponseModel, "projectName", "1.0.0");
+
+        assertTrue(doesProjectApplyToJob);
+    }
+
+    @Test
+    public void doesProjectVersionNameMatchWithProjectPatternMatchTest() {
+        List<String> projects = List.of("fake project", "project 2", "flippant");
+        FilteredDistributionJobResponseModel jobResponseModel = createFilteredDistributionJobResponseModel(List.of(), projects, List.of(), List.of(), true, "projectN.*", "1.0.*");
+        boolean doesProjectApplyToJob = JobNotificationFilterUtils.doesProjectApplyToJob(jobResponseModel, "projectName", "1.0.0");
+
+        assertTrue(doesProjectApplyToJob);
+    }
+
+    @Test
+    public void doesProjectVersionNameMatchWithInvalidProjectPatternMatchTest() {
+        List<String> projects = List.of("fake project", "project 2", "flippant");
+        FilteredDistributionJobResponseModel jobResponseModel = createFilteredDistributionJobResponseModel(List.of(), projects, List.of(), List.of(), true, "projectN.*", "1.0.*");
+        boolean doesProjectApplyToJob = JobNotificationFilterUtils.doesProjectApplyToJob(jobResponseModel, "wrong", "1.0.0");
+
+        assertFalse(doesProjectApplyToJob);
+    }
+
     private FilteredDistributionJobResponseModel createFilteredDistributionJobResponseModel(
         List<String> notificationTypes,
         List<String> projectNames,

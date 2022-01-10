@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.common.persistence.model.job.BlackDuckProjectDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
@@ -55,20 +56,20 @@ public class JobNotificationFilterUtils {
         }
 
         String projectNamePattern = filteredDistributionJobResponseModel.getProjectNamePattern();
-        if (projectNamePattern != null && Pattern.matches(projectNamePattern, projectName)) {
-            return true;
-        }
-
-        String projectVersionNamePattern = filteredDistributionJobResponseModel.getProjectVersionNamePattern();
-        if (projectVersionNamePattern != null && Pattern.matches(projectVersionNamePattern, projectVersionName)) {
-            return true;
-        }
-
-        return filteredDistributionJobResponseModel.getProjectDetails()
+        boolean matchingProjectNamePattern = (StringUtils.isNotBlank(projectNamePattern)) ? Pattern.matches(projectNamePattern, projectName) : false;
+        boolean hasMatchingProjects = filteredDistributionJobResponseModel.getProjectDetails()
             .stream()
             .map(BlackDuckProjectDetailsModel::getName)
             .distinct()
             .anyMatch(projectName::equals);
+
+        String projectVersionNamePattern = filteredDistributionJobResponseModel.getProjectVersionNamePattern();
+        if (StringUtils.isNotBlank(projectVersionNamePattern)) {
+            boolean listIsEmptyOrMatches = filteredDistributionJobResponseModel.getProjectDetails().isEmpty() || hasMatchingProjects;
+            return Pattern.matches(projectVersionNamePattern, projectVersionName) && (listIsEmptyOrMatches || matchingProjectNamePattern);
+        }
+
+        return matchingProjectNamePattern || hasMatchingProjects;
     }
 
     public static boolean doVulnerabilitySeveritiesApplyToJob(FilteredDistributionJobResponseModel filteredDistributionJobResponseModel, List<String> notificationSeverities) {
