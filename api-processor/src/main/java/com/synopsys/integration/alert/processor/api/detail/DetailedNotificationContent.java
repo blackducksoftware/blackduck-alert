@@ -22,6 +22,7 @@ import com.synopsys.integration.util.Stringable;
 public class DetailedNotificationContent extends Stringable {
     private final Long providerConfigId;
     private final String projectName;
+    private final String projectVersionName;
     private final String policyName;
     private final List<String> vulnerabilitySeverities;
     private final NotificationContentWrapper notificationContentWrapper;
@@ -30,37 +31,45 @@ public class DetailedNotificationContent extends Stringable {
         AlertNotificationModel notificationModel,
         NotificationContentComponent notificationContent,
         String projectName,
+        String projectVersionName,
         List<String> vulnerabilitySeverities
     ) {
-        return new DetailedNotificationContent(notificationModel, notificationContent, projectName, null, vulnerabilitySeverities);
+        return new DetailedNotificationContent(notificationModel, notificationContent, projectName, projectVersionName, null, vulnerabilitySeverities);
     }
 
     public static DetailedNotificationContent policy(
         AlertNotificationModel notificationModel,
         NotificationContentComponent notificationContent,
         String projectName,
+        String projectVersionName,
         String policyName
     ) {
-        return new DetailedNotificationContent(notificationModel, notificationContent, projectName, policyName, List.of());
+        return new DetailedNotificationContent(notificationModel, notificationContent, projectName, projectVersionName, policyName, List.of());
     }
 
-    public static DetailedNotificationContent project(AlertNotificationModel notificationModel, NotificationContentComponent notificationContent, String projectName) {
-        return new DetailedNotificationContent(notificationModel, notificationContent, projectName, null, List.of());
+    public static DetailedNotificationContent project(AlertNotificationModel notificationModel, NotificationContentComponent notificationContent, String projectName, String projectVersionName) {
+        return new DetailedNotificationContent(notificationModel, notificationContent, projectName, projectVersionName, null, List.of());
+    }
+
+    public static DetailedNotificationContent versionLess(AlertNotificationModel notificationModel, NotificationContentComponent notificationContent, String projectName) {
+        return new DetailedNotificationContent(notificationModel, notificationContent, projectName, null, null, List.of());
     }
 
     public static DetailedNotificationContent projectless(AlertNotificationModel notificationModel, NotificationContentComponent notificationContent) {
-        return new DetailedNotificationContent(notificationModel, notificationContent, null, null, List.of());
+        return new DetailedNotificationContent(notificationModel, notificationContent, null, null, null, List.of());
     }
 
     private DetailedNotificationContent(
         AlertNotificationModel alertNotificationModel,
         NotificationContentComponent notificationContent,
         @Nullable String projectName,
+        @Nullable String projectVersionName,
         @Nullable String policyName,
         List<String> vulnerabilitySeverities
     ) {
         this.providerConfigId = alertNotificationModel.getProviderConfigId();
         this.projectName = StringUtils.trimToNull(projectName);
+        this.projectVersionName = StringUtils.trimToNull(projectVersionName);
         this.policyName = StringUtils.trimToNull(policyName);
         this.vulnerabilitySeverities = vulnerabilitySeverities;
         this.notificationContentWrapper = new NotificationContentWrapper(alertNotificationModel, notificationContent, notificationContent.getClass());
@@ -72,6 +81,10 @@ public class DetailedNotificationContent extends Stringable {
 
     public Optional<String> getProjectName() {
         return Optional.ofNullable(projectName);
+    }
+
+    public Optional<String> getProjectVersionName() {
+        return Optional.ofNullable(projectVersionName);
     }
 
     public Optional<String> getPolicyName() {

@@ -32,10 +32,10 @@ public class PolicyOverrideNotificationDetailExtractor extends NotificationDetai
     public List<DetailedNotificationContent> extractDetailedContent(AlertNotificationModel alertNotificationModel, PolicyOverrideNotificationView notificationView) {
         PolicyOverrideNotificationContent notificationContent = notificationView.getContent();
         return notificationContent.getPolicyInfos()
-                   .stream()
-                   .map(policyInfo -> createFlattenedContent(notificationContent, policyInfo))
-                   .map(content -> DetailedNotificationContent.policy(alertNotificationModel, content, notificationContent.getProjectName(), content.getPolicyInfo().getPolicyName()))
-                   .collect(Collectors.toList());
+            .stream()
+            .map(policyInfo -> createFlattenedContent(notificationContent, policyInfo))
+            .map(content -> DetailedNotificationContent.policy(alertNotificationModel, content, notificationContent.getProjectName(), notificationContent.getProjectVersionName(), content.getPolicyInfo().getPolicyName()))
+            .collect(Collectors.toList());
     }
 
     private PolicyOverrideUniquePolicyNotificationContent createFlattenedContent(PolicyOverrideNotificationContent notificationContent, PolicyInfo policyInfo) {

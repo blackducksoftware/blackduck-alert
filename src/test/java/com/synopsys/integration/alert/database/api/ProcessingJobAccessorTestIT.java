@@ -50,6 +50,8 @@ public class ProcessingJobAccessorTestIT {
     private static final List<UUID> CREATED_JOBS = new LinkedList<>();
     private static final String PROJECT_NAME_1 = "testProject1";
     private static final String PROJECT_NAME_2 = "testProject2";
+    private static final String PROJECT_VERSION_NAME_1 = "version";
+    private static final String PROJECT_VERSION_NAME_2 = "1.1.0";
     private Long providerConfigId;
 
     @Autowired
@@ -102,8 +104,8 @@ public class ProcessingJobAccessorTestIT {
         createJobs(createDistributionJobModels(List.of(VulnerabilitySeverityType.LOW.name()), 100));
 
         List<DetailedNotificationContent> notifications = new ArrayList<>();
-        notifications.addAll(createVulnerabilityNotificationWrappers(List.of(VulnerabilitySeverityType.LOW.name()), PROJECT_NAME_1));
-        notifications.addAll(createVulnerabilityNotificationWrappers(List.of(VulnerabilitySeverityType.HIGH.name()), PROJECT_NAME_2));
+        notifications.addAll(createVulnerabilityNotificationWrappers(List.of(VulnerabilitySeverityType.LOW.name()), PROJECT_NAME_1, PROJECT_VERSION_NAME_1));
+        notifications.addAll(createVulnerabilityNotificationWrappers(List.of(VulnerabilitySeverityType.HIGH.name()), PROJECT_NAME_2, PROJECT_VERSION_NAME_2));
 
         int currentPage = 0;
         FilteredDistributionJobRequestModel filteredDistributionJobRequestModel = new FilteredDistributionJobRequestModel(providerConfigId, List.of(FrequencyType.REAL_TIME));
@@ -128,12 +130,13 @@ public class ProcessingJobAccessorTestIT {
         assertEquals(expectedNumOfJobs, previousJobIdSet.size());
     }
 
-    private List<DetailedNotificationContent> createVulnerabilityNotificationWrappers(List<String> vulnerabilitySeverities, String projectName) {
+    private List<DetailedNotificationContent> createVulnerabilityNotificationWrappers(List<String> vulnerabilitySeverities, String projectName, String projectVersionName) {
         AlertNotificationModel alertNotificationModel = createAlertNotificationModel(NotificationType.VULNERABILITY);
         DetailedNotificationContent test_project = DetailedNotificationContent.vulnerability(
             alertNotificationModel,
             createVulnerabilityUniqueProjectNotificationContent(projectName),
             projectName,
+            projectVersionName,
             vulnerabilitySeverities
         );
         return List.of(test_project);

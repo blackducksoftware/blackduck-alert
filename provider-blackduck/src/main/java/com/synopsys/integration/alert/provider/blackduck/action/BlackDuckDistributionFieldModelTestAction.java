@@ -70,7 +70,7 @@ public class BlackDuckDistributionFieldModelTestAction extends FieldModelTestAct
                     .flatMap(projectNamePattern -> validatePatternMatchesProject(providerConfigId, projectNamePattern))
                     .ifPresent(fieldStatuses::add);
                 registeredFieldValues.getString(ProviderDescriptor.KEY_PROJECT_VERSION_NAME_PATTERN)
-                    .flatMap(projectVersionNamePattern -> validatePatternMatchesProjectVersion(providerConfigId, projectVersionNamePattern))
+                    .flatMap(projectVersionNamePattern -> validatePatternMatchesProjectVersion(providerConfigId, projectVersionNamePattern, configuredProjects))
                     .ifPresent(fieldStatuses::add);
             }
 
@@ -98,23 +98,23 @@ public class BlackDuckDistributionFieldModelTestAction extends FieldModelTestAct
         return new MessageResult("Successfully tested BlackDuck provider fields", fieldStatuses);
     }
 
-    private Optional<AlertFieldStatus> validatePatternMatchesProjectVersion(Long providerConfigId, String projectVersionNamePattern) {
+    private Optional<AlertFieldStatus> validatePatternMatchesProjectVersion(Long providerConfigId, String projectVersionNamePattern, Collection<String> configuredProjects) {
         if (StringUtils.isNotBlank(projectVersionNamePattern)) {
             Pattern pattern = Pattern.compile(projectVersionNamePattern);
 
             int currentPage = AlertPagedModel.DEFAULT_PAGE_NUMBER;
-            AlertPagedModel<ProviderProject> projectsByProviderConfigId = blackDuckDataAccessor.getProjectsByProviderConfigId(providerConfigId, currentPage, AlertPagedModel.DEFAULT_PAGE_SIZE, "");
+            AlertPagedModel<String> projectsByProviderConfigId = filterAndMapHrefs(providerConfigId, currentPage, configuredProjects);
             boolean foundResult = false;
             while (!foundResult && currentPage < projectsByProviderConfigId.getTotalPages()) {
-                List<ProviderProject> providerProjects = projectsByProviderConfigId.getModels();
-                foundResult = providerProjects.stream().anyMatch(providerProject ->
+                List<String> providerProjects = projectsByProviderConfigId.getModels();
+                foundResult = providerProjects.stream().anyMatch(href ->
                                                                      iteratePagesAndCheck(
-                                                                         versionCurrentPage -> blackDuckDataAccessor.getProjectVersionNamesByHref(providerConfigId, providerProject.getHref(), versionCurrentPage),
+                                                                         versionCurrentPage -> blackDuckDataAccessor.getProjectVersionNamesByHref(providerConfigId, href, versionCurrentPage),
                                                                          versionNames -> versionNames.stream().anyMatch(versionName -> pattern.matcher(versionName).matches()),
                                                                          Boolean.FALSE
                                                                      ).isEmpty());
                 currentPage++;
-                projectsByProviderConfigId = blackDuckDataAccessor.getProjectsByProviderConfigId(providerConfigId, currentPage, AlertPagedModel.DEFAULT_PAGE_SIZE, "");
+                projectsByProviderConfigId = filterAndMapHrefs(providerConfigId, currentPage, configuredProjects);
             }
 
             if (!foundResult) {
@@ -122,6 +122,17 @@ public class BlackDuckDistributionFieldModelTestAction extends FieldModelTestAct
             }
         }
         return Optional.empty();
+    }
+
+    private AlertPagedModel<String> filterAndMapHrefs(Long providerConfigId, int currentPage, Collection<String> validProjects) {
+        Predicate<ProviderProject> filterFunction = validProjects.isEmpty() ? project -> true : project -> validProjects.contains(project.getName());
+        AlertPagedModel<ProviderProject> projectsByProviderConfigId = blackDuckDataAccessor.getProjectsByProviderConfigId(providerConfigId, currentPage, AlertPagedModel.DEFAULT_PAGE_SIZE, "");
+        List<String> hrefs = projectsByProviderConfigId.getModels()
+            .stream()
+            .filter(filterFunction)
+            .map(ProviderProject::getHref)
+            .collect(Collectors.toList());
+        return new AlertPagedModel<>(projectsByProviderConfigId.getTotalPages(), projectsByProviderConfigId.getCurrentPage(), projectsByProviderConfigId.getPageSize(), hrefs);
     }
 
     private Optional<AlertFieldStatus> validatePatternMatchesProject(Long providerConfigId, String projectNamePattern) {

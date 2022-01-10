@@ -86,6 +86,7 @@ public class DefaultProcessingJobAccessor implements ProcessingJobAccessor {
 
         boolean filterByProject = blackDuckJobDetails.getFilterByProject();
         String projectNamePattern = blackDuckJobDetails.getProjectNamePattern();
+        String projectVersionNamePattern = blackDuckJobDetails.getProjectVersionNamePattern();
 
         return new FilteredDistributionJobResponseModel(
             jobId,
@@ -97,7 +98,8 @@ public class DefaultProcessingJobAccessor implements ProcessingJobAccessor {
             policyNames,
             vulnerabilitySeverityNames,
             filterByProject,
-            projectNamePattern
+            projectNamePattern,
+            projectVersionNamePattern
         );
     }
 
