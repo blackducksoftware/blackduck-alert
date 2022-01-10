@@ -1,5 +1,5 @@
 /*
- * alert-database
+ * channel-email
  *
  * Copyright (c) 2022 Synopsys, Inc.
  *
