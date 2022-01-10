@@ -130,6 +130,7 @@ public class SettingsProxyControllerTestIT {
     }
 
     @Test
+    @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void testDelete() throws Exception {
         createDefaultSettingsProxyModel(AlertRestConstants.DEFAULT_CONFIGURATION_NAME).orElseThrow(AssertionFailedError::new);
 
@@ -141,10 +142,26 @@ public class SettingsProxyControllerTestIT {
     }
 
     @Test
+    @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void testValidate() throws Exception {
         SettingsProxyModel settingsProxyModel = createSettingsProxyModel(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
 
         String url = AlertRestConstants.SETTINGS_PROXY_PATH + "/validate";
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(new URI(url))
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.csrf())
+                                                    .content(gson.toJson(settingsProxyModel))
+                                                    .contentType(contentType);
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
+    void testTest() throws Exception {
+        SettingsProxyModel settingsProxyModel = createSettingsProxyModel(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
+        String testUrl = "https://google.com";
+
+        String url = AlertRestConstants.SETTINGS_PROXY_PATH + "/test" + "?testUrl=" + testUrl;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(new URI(url))
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf())
