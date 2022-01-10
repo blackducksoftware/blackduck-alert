@@ -65,8 +65,10 @@ public class JobNotificationFilterUtils {
 
         String projectVersionNamePattern = filteredDistributionJobResponseModel.getProjectVersionNamePattern();
         if (StringUtils.isNotBlank(projectVersionNamePattern)) {
+            // This check has to be made. ProjectDetails isn't empty and hasMatchingProjects is false meaning no projects match and that's a failed case.
+            // Project version pattern has to always be valid and if something else exists (Selected project or project name pattern), that also needs to be valid
             boolean listIsEmptyOrMatches = filteredDistributionJobResponseModel.getProjectDetails().isEmpty() || hasMatchingProjects;
-            return Pattern.matches(projectVersionNamePattern, projectVersionName) && (listIsEmptyOrMatches || matchingProjectNamePattern);
+            return (listIsEmptyOrMatches || matchingProjectNamePattern) && Pattern.matches(projectVersionNamePattern, projectVersionName);
         }
 
         return matchingProjectNamePattern || hasMatchingProjects;
