@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.processor.api.detail;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -51,6 +52,7 @@ public class DetailedNotificationContentTest {
         assertContent(detailedContent, ALERT_NOTIFICATION_MODEL.getProviderConfigId(), projectVersionNotificationContent.getClass(), List.of());
         assertEquals(projectName, detailedContent.getProjectName().orElse(null));
         assertTrue(detailedContent.getPolicyName().isEmpty(), EXPECTED_NO_POLICY);
+        assertEquals(projectVersionName, detailedContent.getProjectVersionName().orElse(null));
     }
 
     @Test
@@ -60,6 +62,18 @@ public class DetailedNotificationContentTest {
         assertContent(detailedContent, ALERT_NOTIFICATION_MODEL.getProviderConfigId(), licenseLimitNotificationContent.getClass(), List.of());
         assertTrue(detailedContent.getProjectName().isEmpty(), "Expected no project name");
         assertTrue(detailedContent.getPolicyName().isEmpty(), EXPECTED_NO_POLICY);
+    }
+
+    @Test
+    public void versionlessTest() {
+        String projectName = "project with version";
+        String projectVersionName = "version";
+        ProjectVersionNotificationContent projectVersionNotificationContent = new ProjectVersionNotificationContent();
+        DetailedNotificationContent detailedContent = DetailedNotificationContent.versionLess(ALERT_NOTIFICATION_MODEL, projectVersionNotificationContent, projectName);
+        assertContent(detailedContent, ALERT_NOTIFICATION_MODEL.getProviderConfigId(), projectVersionNotificationContent.getClass(), List.of());
+        assertEquals(projectName, detailedContent.getProjectName().orElse(null));
+        assertTrue(detailedContent.getPolicyName().isEmpty(), EXPECTED_NO_POLICY);
+        assertNull(detailedContent.getProjectVersionName().orElse(null));
     }
 
     private static void assertContent(DetailedNotificationContent content, Long providerConfigId, Class<? extends NotificationContentComponent> notificationClass, List<String> vulnerabilitySeverities) {

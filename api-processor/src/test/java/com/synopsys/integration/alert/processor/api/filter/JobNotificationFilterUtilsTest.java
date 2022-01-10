@@ -29,7 +29,7 @@ public class JobNotificationFilterUtilsTest {
         NotificationContentComponent notificationContent = Mockito.mock(NotificationContentComponent.class);
         AlertNotificationModel notificationModel = createAlertNotificationModel(NotificationType.VULNERABILITY);
         DetailedNotificationContent detailedNotificationContent = DetailedNotificationContent.vulnerability(notificationModel, notificationContent, PROJECT_NAME, PROJECT_VERSION_NAME, List.of("vuln"));
-        FilteredDistributionJobResponseModel jobResponseModel = createFilteredDistributionJobResponseModel(List.of(NotificationType.POLICY_OVERRIDE.name()), List.of(), List.of(), List.of(), false, "");
+        FilteredDistributionJobResponseModel jobResponseModel = createFilteredDistributionJobResponseModel(List.of(NotificationType.POLICY_OVERRIDE.name()), List.of(), List.of(), List.of(), false, "", "");
 
         assertFalse(JobNotificationFilterUtils.doesNotificationApplyToJob(jobResponseModel, detailedNotificationContent));
     }
@@ -39,7 +39,7 @@ public class JobNotificationFilterUtilsTest {
         NotificationContentComponent notificationContent = Mockito.mock(NotificationContentComponent.class);
         AlertNotificationModel notificationModel = createAlertNotificationModel(NotificationType.VULNERABILITY);
         DetailedNotificationContent detailedNotificationContent = DetailedNotificationContent.project(notificationModel, notificationContent, PROJECT_NAME, PROJECT_VERSION_NAME);
-        FilteredDistributionJobResponseModel jobResponseModel = createFilteredDistributionJobResponseModel(List.of(NotificationType.VULNERABILITY.name()), List.of("projectDoesNotExist"), List.of(), List.of(), true, "");
+        FilteredDistributionJobResponseModel jobResponseModel = createFilteredDistributionJobResponseModel(List.of(NotificationType.VULNERABILITY.name()), List.of("projectDoesNotExist"), List.of(), List.of(), true, "", "");
 
         assertFalse(JobNotificationFilterUtils.doesNotificationApplyToJob(jobResponseModel, detailedNotificationContent));
     }
@@ -49,11 +49,11 @@ public class JobNotificationFilterUtilsTest {
         NotificationContentComponent notificationContent = Mockito.mock(NotificationContentComponent.class);
         AlertNotificationModel notificationModel = createAlertNotificationModel(NotificationType.VULNERABILITY);
         DetailedNotificationContent detailedNotificationContent = DetailedNotificationContent.vulnerability(notificationModel, notificationContent, PROJECT_NAME, PROJECT_VERSION_NAME, List.of("vuln"));
-        FilteredDistributionJobResponseModel jobResponseModel = createFilteredDistributionJobResponseModel(List.of(NotificationType.VULNERABILITY.name()), List.of(), List.of(), List.of(), false, "");
+        FilteredDistributionJobResponseModel jobResponseModel = createFilteredDistributionJobResponseModel(List.of(NotificationType.VULNERABILITY.name()), List.of(), List.of(), List.of(), false, "", "");
 
         assertTrue(JobNotificationFilterUtils.doesNotificationApplyToJob(jobResponseModel, detailedNotificationContent));
 
-        FilteredDistributionJobResponseModel jobResponseModelWithFailure = createFilteredDistributionJobResponseModel(List.of(NotificationType.VULNERABILITY.name()), List.of(), List.of(), List.of("vulnDoesNotExist"), false, "");
+        FilteredDistributionJobResponseModel jobResponseModelWithFailure = createFilteredDistributionJobResponseModel(List.of(NotificationType.VULNERABILITY.name()), List.of(), List.of(), List.of("vulnDoesNotExist"), false, "", "");
         assertFalse(JobNotificationFilterUtils.doesNotificationApplyToJob(jobResponseModelWithFailure, detailedNotificationContent));
     }
 
@@ -66,7 +66,7 @@ public class JobNotificationFilterUtilsTest {
         NotificationContentComponent notificationContent = Mockito.mock(NotificationContentComponent.class);
         AlertNotificationModel notificationModel = createAlertNotificationModel(NotificationType.POLICY_OVERRIDE);
         DetailedNotificationContent detailedNotificationContent = DetailedNotificationContent.policy(notificationModel, notificationContent, PROJECT_NAME, PROJECT_VERSION_NAME, POLICY_NAME);
-        FilteredDistributionJobResponseModel jobResponseModelWithFailure = createFilteredDistributionJobResponseModel(List.of(NotificationType.POLICY_OVERRIDE.name()), List.of(), List.of("policyDoesNotExist"), List.of(), false, "");
+        FilteredDistributionJobResponseModel jobResponseModelWithFailure = createFilteredDistributionJobResponseModel(List.of(NotificationType.POLICY_OVERRIDE.name()), List.of(), List.of("policyDoesNotExist"), List.of(), false, "", "");
         assertFalse(JobNotificationFilterUtils.doesNotificationApplyToJob(jobResponseModelWithFailure, detailedNotificationContent));
     }
 
@@ -75,7 +75,7 @@ public class JobNotificationFilterUtilsTest {
         NotificationContentComponent notificationContent = Mockito.mock(NotificationContentComponent.class);
         AlertNotificationModel notificationModel = createAlertNotificationModel(NotificationType.LICENSE_LIMIT);
         DetailedNotificationContent detailedNotificationContent = DetailedNotificationContent.projectless(notificationModel, notificationContent);
-        FilteredDistributionJobResponseModel jobResponseModel = createFilteredDistributionJobResponseModel(List.of(NotificationType.LICENSE_LIMIT.name()), List.of(), List.of(), List.of(), false, "");
+        FilteredDistributionJobResponseModel jobResponseModel = createFilteredDistributionJobResponseModel(List.of(NotificationType.LICENSE_LIMIT.name()), List.of(), List.of(), List.of(), false, "", "");
 
         assertTrue(JobNotificationFilterUtils.doesNotificationApplyToJob(jobResponseModel, detailedNotificationContent));
     }
@@ -84,7 +84,7 @@ public class JobNotificationFilterUtilsTest {
     public void doesNotificationTypeMatchTest() {
         List<String> notificationTypes = List.of(NotificationType.VULNERABILITY.name(), NotificationType.POLICY_OVERRIDE.name());
 
-        FilteredDistributionJobResponseModel jobResponseModel = createFilteredDistributionJobResponseModel(notificationTypes, List.of(), List.of(), List.of(), false, "");
+        FilteredDistributionJobResponseModel jobResponseModel = createFilteredDistributionJobResponseModel(notificationTypes, List.of(), List.of(), List.of(), false, "", "");
 
         assertTrue(JobNotificationFilterUtils.doesNotificationTypeMatch(jobResponseModel, NotificationType.VULNERABILITY.name()));
         assertTrue(JobNotificationFilterUtils.doesNotificationTypeMatch(jobResponseModel, NotificationType.POLICY_OVERRIDE.name()));
@@ -93,42 +93,59 @@ public class JobNotificationFilterUtilsTest {
 
     @Test
     public void doesProjectApplyToJobTest() {
-        FilteredDistributionJobResponseModel jobResponseModel = createFilteredDistributionJobResponseModel(List.of(NotificationType.VULNERABILITY.name()), List.of(PROJECT_NAME), List.of(), List.of(), false, "");
+        FilteredDistributionJobResponseModel jobResponseModel = createFilteredDistributionJobResponseModel(List.of(NotificationType.VULNERABILITY.name()), List.of(PROJECT_NAME), List.of(), List.of(), false, "", "");
         assertTrue(JobNotificationFilterUtils.doesProjectApplyToJob(jobResponseModel, PROJECT_NAME, PROJECT_VERSION_NAME));
 
-        FilteredDistributionJobResponseModel jobResponseModelFilterByProject = createFilteredDistributionJobResponseModel(List.of(NotificationType.VULNERABILITY.name()), List.of(PROJECT_NAME), List.of(), List.of(), true, "");
+        FilteredDistributionJobResponseModel jobResponseModelFilterByProject = createFilteredDistributionJobResponseModel(List.of(NotificationType.VULNERABILITY.name()), List.of(PROJECT_NAME), List.of(), List.of(), true, "", "");
         assertTrue(JobNotificationFilterUtils.doesProjectApplyToJob(jobResponseModelFilterByProject, PROJECT_NAME, PROJECT_VERSION_NAME));
         assertFalse(JobNotificationFilterUtils.doesProjectApplyToJob(jobResponseModelFilterByProject, "projectDoesNotExist", PROJECT_VERSION_NAME));
     }
 
     @Test
     public void doesProjectApplyToJobPatternMatchingTest() {
-        FilteredDistributionJobResponseModel jobResponseModel = createFilteredDistributionJobResponseModel(List.of(NotificationType.VULNERABILITY.name()), List.of(PROJECT_NAME), List.of(), List.of(), true, ".*");
+        FilteredDistributionJobResponseModel jobResponseModel = createFilteredDistributionJobResponseModel(List.of(NotificationType.VULNERABILITY.name()), List.of(PROJECT_NAME), List.of(), List.of(), true, ".*", "");
         assertTrue(JobNotificationFilterUtils.doesProjectApplyToJob(jobResponseModel, PROJECT_NAME, PROJECT_VERSION_NAME));
 
-        FilteredDistributionJobResponseModel jobResponseModelFilterByNamePattern = createFilteredDistributionJobResponseModel(List.of(NotificationType.VULNERABILITY.name()), List.of(PROJECT_NAME), List.of(), List.of(), true, "project*");
+        FilteredDistributionJobResponseModel jobResponseModelFilterByNamePattern = createFilteredDistributionJobResponseModel(List.of(NotificationType.VULNERABILITY.name()), List.of(PROJECT_NAME), List.of(), List.of(), true, "project*",
+            "");
         assertTrue(JobNotificationFilterUtils.doesProjectApplyToJob(jobResponseModelFilterByNamePattern, PROJECT_NAME, PROJECT_VERSION_NAME));
         assertFalse(JobNotificationFilterUtils.doesProjectApplyToJob(jobResponseModelFilterByNamePattern, "nonMatchingName", PROJECT_VERSION_NAME));
     }
 
     @Test
     public void doVulnerabilitySeveritiesApplyToJobTest() {
-        FilteredDistributionJobResponseModel jobResponseModel = createFilteredDistributionJobResponseModel(List.of(NotificationType.VULNERABILITY.name()), List.of(), List.of(), List.of("vuln1", "vuln2"), false, "");
+        FilteredDistributionJobResponseModel jobResponseModel = createFilteredDistributionJobResponseModel(List.of(NotificationType.VULNERABILITY.name()), List.of(), List.of(), List.of("vuln1", "vuln2"), false, "", "");
         assertTrue(JobNotificationFilterUtils.doVulnerabilitySeveritiesApplyToJob(jobResponseModel, List.of("vuln1", "vuln2")));
         assertFalse(JobNotificationFilterUtils.doVulnerabilitySeveritiesApplyToJob(jobResponseModel, List.of("vulnDoesNotExist")));
 
-        FilteredDistributionJobResponseModel jobResponseModelNoVulnNames = createFilteredDistributionJobResponseModel(List.of(NotificationType.VULNERABILITY.name()), List.of(), List.of(), List.of(), false, "");
+        FilteredDistributionJobResponseModel jobResponseModelNoVulnNames = createFilteredDistributionJobResponseModel(List.of(NotificationType.VULNERABILITY.name()), List.of(), List.of(), List.of(), false, "", "");
         assertTrue(JobNotificationFilterUtils.doVulnerabilitySeveritiesApplyToJob(jobResponseModelNoVulnNames, List.of("vuln1")));
     }
 
     @Test
     public void doesPolicyApplyToJobTest() {
-        FilteredDistributionJobResponseModel jobResponseModel = createFilteredDistributionJobResponseModel(List.of(NotificationType.POLICY_OVERRIDE.name()), List.of(), List.of(POLICY_NAME), List.of(), false, "");
+        FilteredDistributionJobResponseModel jobResponseModel = createFilteredDistributionJobResponseModel(List.of(NotificationType.POLICY_OVERRIDE.name()), List.of(), List.of(POLICY_NAME), List.of(), false, "", "");
         assertTrue(JobNotificationFilterUtils.doesPolicyApplyToJob(jobResponseModel, POLICY_NAME));
         assertFalse(JobNotificationFilterUtils.doesPolicyApplyToJob(jobResponseModel, "policyDoesNotExist"));
 
-        FilteredDistributionJobResponseModel jobResponseModelNoPolicyNames = createFilteredDistributionJobResponseModel(List.of(NotificationType.POLICY_OVERRIDE.name()), List.of(), List.of(), List.of(), false, "");
+        FilteredDistributionJobResponseModel jobResponseModelNoPolicyNames = createFilteredDistributionJobResponseModel(List.of(NotificationType.POLICY_OVERRIDE.name()), List.of(), List.of(), List.of(), false, "", "");
         assertTrue(JobNotificationFilterUtils.doesPolicyApplyToJob(jobResponseModelNoPolicyNames, POLICY_NAME));
+    }
+
+    @Test
+    public void doesProjectVersionNameMatchTest() {
+        FilteredDistributionJobResponseModel jobResponseModel = createFilteredDistributionJobResponseModel(List.of(), List.of(), List.of(), List.of(), true, "", "1.0.*");
+        boolean doesProjectApplyToJob = JobNotificationFilterUtils.doesProjectApplyToJob(jobResponseModel, "projectName", "1.0.0");
+
+        assertTrue(doesProjectApplyToJob);
+    }
+
+    @Test
+    public void doesProjectVersionNameNotMatchTest() {
+        FilteredDistributionJobResponseModel jobResponseModel = createFilteredDistributionJobResponseModel(List.of(), List.of(), List.of(), List.of(), true, "", "1.0.*");
+        boolean doesProjectApplyToJob = JobNotificationFilterUtils.doesProjectApplyToJob(jobResponseModel, "projectName", "fakeNews");
+
+        assertFalse(doesProjectApplyToJob);
     }
 
     private FilteredDistributionJobResponseModel createFilteredDistributionJobResponseModel(
@@ -137,7 +154,8 @@ public class JobNotificationFilterUtilsTest {
         List<String> policyNames,
         List<String> vulnerabilitySeverityNames,
         boolean filerByProject,
-        String projectNamePattern
+        String projectNamePattern,
+        String projectNameVersionPattern
     ) {
         List<BlackDuckProjectDetailsModel> blackDuckProjectDetailsModel = projectNames.stream()
             .map(projectName -> new BlackDuckProjectDetailsModel(projectName, "href"))
@@ -153,7 +171,7 @@ public class JobNotificationFilterUtilsTest {
             vulnerabilitySeverityNames,
             filerByProject,
             projectNamePattern,
-            null);
+            projectNameVersionPattern);
     }
 
     private AlertNotificationModel createAlertNotificationModel(NotificationType notificationType) {
@@ -174,7 +192,7 @@ public class JobNotificationFilterUtilsTest {
         NotificationContentComponent notificationContent = Mockito.mock(NotificationContentComponent.class);
         AlertNotificationModel notificationModel = createAlertNotificationModel(notificationType);
         DetailedNotificationContent detailedNotificationContent = DetailedNotificationContent.policy(notificationModel, notificationContent, PROJECT_NAME, POLICY_NAME, PROJECT_VERSION_NAME);
-        FilteredDistributionJobResponseModel jobResponseModel = createFilteredDistributionJobResponseModel(List.of(notificationType.name()), List.of(), List.of(), List.of(), false, "");
+        FilteredDistributionJobResponseModel jobResponseModel = createFilteredDistributionJobResponseModel(List.of(notificationType.name()), List.of(), List.of(), List.of(), false, "", "");
 
         assertTrue(JobNotificationFilterUtils.doesNotificationApplyToJob(jobResponseModel, detailedNotificationContent));
     }

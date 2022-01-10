@@ -41,6 +41,7 @@ import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationTyp
 public class JobNotificationMapperTestIT {
     private static final List<UUID> CREATED_JOBS = new LinkedList<>();
     private static final String PROJECT_NAME_1 = "test_project";
+    private static final String PROJECT_VERSION_NAME_1 = "first_version";
     private static final String POLICY_FILTER_NAME = "policyName";
 
     @Autowired
@@ -200,6 +201,31 @@ public class JobNotificationMapperTestIT {
         testProjectJob();
     }
 
+    @Test
+    public void extractJobsWithMatchingProjectVersionNamePatternFilter() {
+        createJobs(List.of(
+            new DistributionJobRequestModel(
+                true,
+                "name",
+                FrequencyType.REAL_TIME,
+                ProcessingType.DIGEST,
+                ChannelKeys.SLACK.getUniversalKey(),
+                0L,
+                true,
+                null,
+                // Regex to verify we retrieve notifications without a number in the name (PROJECT_VERSION_NAME_1)
+                "^([^0-9]*)$",
+                List.of(NotificationType.VULNERABILITY.name()),
+                List.of(),
+                List.of(),
+                List.of(),
+                new SlackJobDetailsModel(null, "webhook", "channelName", "username")
+            ))
+        );
+
+        testProjectJob();
+    }
+
     private void testSingleJob(DistributionJobRequestModel jobRequestModel, int expectedMappedNotifications) {
         createJobs(List.of(jobRequestModel));
 
@@ -348,7 +374,7 @@ public class JobNotificationMapperTestIT {
             alertNotificationModel,
             createVulnerabilityUniqueProjectNotificationContent(PROJECT_NAME_1),
             PROJECT_NAME_1,
-            null,
+            PROJECT_VERSION_NAME_1,
             List.of(VulnerabilitySeverityType.LOW.name())
         );
         String projectName1 = "test_project1";
@@ -356,7 +382,7 @@ public class JobNotificationMapperTestIT {
             alertNotificationModel,
             createVulnerabilityUniqueProjectNotificationContent(projectName1),
             projectName1,
-            null,
+            "version1",
             List.of(VulnerabilitySeverityType.HIGH.name())
         );
         String projectName2 = "test_project2";
@@ -364,7 +390,7 @@ public class JobNotificationMapperTestIT {
             alertNotificationModel,
             createVulnerabilityUniqueProjectNotificationContent(projectName2),
             projectName2,
-            null,
+            "version2",
             List.of(VulnerabilitySeverityType.LOW.name(), VulnerabilitySeverityType.HIGH.name())
         );
         AlertNotificationModel alertPolicyNotificationModel = createAlertNotificationModel(NotificationType.POLICY_OVERRIDE);
@@ -372,7 +398,7 @@ public class JobNotificationMapperTestIT {
             alertPolicyNotificationModel,
             createVulnerabilityUniqueProjectNotificationContent(projectName2),
             projectName2,
-            null,
+            "1.0.0",
             POLICY_FILTER_NAME
         );
 
