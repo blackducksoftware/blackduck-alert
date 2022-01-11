@@ -37,6 +37,12 @@ public class SettingsProxyTestActionTestIT {
 
     private SettingsProxyTestAction settingsProxyTestAction;
 
+    public static final String HOST = "host";
+    public static final Integer PORT = 9999;
+    public static final String USERNAME = "username";
+    public static final String PASSWORD = "password";
+    public static final String NON_PROXY_HOST = "nonProxyHostUrl";
+
     @BeforeEach
     public void init() {
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
@@ -45,7 +51,7 @@ public class SettingsProxyTestActionTestIT {
         Mockito.when(authorizationManager.hasDeletePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.TRUE);
         Mockito.when(authorizationManager.hasWritePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.TRUE);
         Mockito.when(authorizationManager.hasExecutePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.TRUE);
-        settingsProxyTestAction = new SettingsProxyTestAction(authorizationManager, settingsProxyValidator, settingsDescriptorKey,  proxyTestService, settingsProxyConfigAccessor);
+        settingsProxyTestAction = new SettingsProxyTestAction(authorizationManager, settingsProxyValidator, settingsDescriptorKey, proxyTestService, settingsProxyConfigAccessor);
     }
 
     @Test
@@ -61,12 +67,12 @@ public class SettingsProxyTestActionTestIT {
     }
 
     private SettingsProxyModel createSettingsProxyModel() {
-        SettingsProxyModel  settingsProxyModel = new SettingsProxyModel();
+        SettingsProxyModel settingsProxyModel = new SettingsProxyModel();
         settingsProxyModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
-        settingsProxyModel.setProxyHost("qa-ssl-proxy01.dc1.lan");
-        settingsProxyModel.setProxyPort(3130);
-        settingsProxyModel.setProxyUsername("bds");
-        settingsProxyModel.setProxyPassword("blackduck");
+        settingsProxyModel.setProxyHost(HOST);
+        settingsProxyModel.setProxyPort(PORT);
+        settingsProxyModel.setProxyUsername(USERNAME);
+        settingsProxyModel.setProxyPassword(PASSWORD);
         settingsProxyModel.setIsSmtpPasswordSet(false);
         return settingsProxyModel;
     }
