@@ -20,7 +20,7 @@ import AzureGlobalConfiguration from 'page/channel/azure/AzureGlobalConfiguratio
 import { SCHEDULING_INFO } from 'page/scheduling/SchedulingModel';
 import SchedulingConfiguration from 'page/scheduling/SchedulingConfiguration';
 import { SETTINGS_INFO } from 'page/settings/SettingsModel';
-import SettingsConfigurationStandalone from 'page/settings/standalone/SettingsConfigurationStandalone';
+import SettingsConfiguration from 'page/settings/standalone/SettingsConfiguration';
 import { AUTHENTICATION_INFO } from 'application/auth/AuthenticationModel';
 import AuthenticationConfiguration from 'application/auth/AuthenticationConfiguration';
 import { BLACKDUCK_INFO, BLACKDUCK_URLS } from 'page/provider/blackduck/BlackDuckModel';
@@ -241,7 +241,7 @@ const MainPage = ({
                 urlName={SETTINGS_INFO.url}
                 descriptor={globalDescriptorMap[SETTINGS_INFO.key]}
                 render={(readOnly, showTest, showSave) => (
-                    <SettingsConfigurationStandalone
+                    <SettingsConfiguration
                         csrfToken={csrfToken}
                         errorHandler={errorHandler}
                         readonly={readOnly}
