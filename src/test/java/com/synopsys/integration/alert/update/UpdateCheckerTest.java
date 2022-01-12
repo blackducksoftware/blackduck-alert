@@ -35,6 +35,7 @@ import com.synopsys.integration.rest.proxy.ProxyInfo;
 public class UpdateCheckerTest {
     private static final String SUFFIX_SNAPSHOT = "SNAPSHOT";
     private static final String SUFFIX_SIGQA_1 = "SIGQA1";
+    private static final String SUFFIX_OTHER_TEXT = "TEXT-UNKNOWN-TAG";
     private final Gson gson = new Gson();
 
     @Test
@@ -78,7 +79,7 @@ public class UpdateCheckerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1 })
+    @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1, SUFFIX_OTHER_TEXT })
     public void testAlertIsNewerSnapshot(String versionSuffix) {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
         UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-" + versionSuffix, null, "0.1.0", null, null);
@@ -87,7 +88,7 @@ public class UpdateCheckerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1 })
+    @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1, SUFFIX_OTHER_TEXT })
     public void testAlertIsNewerSnapshotPatch(String versionSuffix) {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
         UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0.1-" + versionSuffix, null, "1.0.0", null, null);
@@ -96,7 +97,7 @@ public class UpdateCheckerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1 })
+    @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1, SUFFIX_OTHER_TEXT })
     public void testAlertIsNewerButCloseSnapshot(String versionSuffix) {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
 
@@ -109,7 +110,7 @@ public class UpdateCheckerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1 })
+    @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1, SUFFIX_OTHER_TEXT })
     public void testAlertIsOlderButCloseSnapshot(String versionSuffix) {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
 
@@ -122,7 +123,7 @@ public class UpdateCheckerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1 })
+    @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1, SUFFIX_OTHER_TEXT })
     public void testAlertIsOlderSnapshot(String versionSuffix) {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
 
@@ -135,7 +136,7 @@ public class UpdateCheckerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1 })
+    @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1, SUFFIX_OTHER_TEXT })
     public void testAlertIsOlderSnapshotDockerPatch(String versionSuffix) {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
 
@@ -148,7 +149,7 @@ public class UpdateCheckerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1 })
+    @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1, SUFFIX_OTHER_TEXT })
     public void testAlertIsNewerBothSnapshot(String versionSuffix) {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
 
@@ -158,7 +159,7 @@ public class UpdateCheckerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1 })
+    @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1, SUFFIX_OTHER_TEXT })
     public void testAlertIsNewerDateBothSnapshot(String versionSuffix) {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
 
@@ -171,7 +172,7 @@ public class UpdateCheckerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1 })
+    @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1, SUFFIX_OTHER_TEXT })
     public void testAlertIsNewerButCloseBothSnapshot(String versionSuffix) {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
 
@@ -184,7 +185,7 @@ public class UpdateCheckerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1 })
+    @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1, SUFFIX_OTHER_TEXT })
     public void testAlertIsOlderButCloseBothSnapshot(String versionSuffix) {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
 
@@ -197,7 +198,7 @@ public class UpdateCheckerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1 })
+    @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1, SUFFIX_OTHER_TEXT })
     public void testAlertIsOlderBothSnapshot(String versionSuffix) {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
 
@@ -210,7 +211,7 @@ public class UpdateCheckerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1 })
+    @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1, SUFFIX_OTHER_TEXT })
     public void testAlertIsOlderButCloseDockerSnapshot(String versionSuffix) {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
 
@@ -223,7 +224,7 @@ public class UpdateCheckerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1 })
+    @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1, SUFFIX_OTHER_TEXT })
     public void testAlertIsOlderDockerSnapshot(String versionSuffix) {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
 
