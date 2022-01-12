@@ -3,7 +3,7 @@ import * as PropTypes from 'prop-types';
 import * as ConfigurationRequestBuilder from 'common/util/configurationRequestBuilder';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
 import ConfigurationForm from 'common/ConfigurationForm';
-import { SETTINGS_FIELD_KEYS, SETTINGS_INFO } from 'page/settings/SettingsModel';
+import { SETTINGS_FIELD_KEYS, SETTINGS_INFO, SETTINGS_PROXY_TEST_FIELD } from 'page/settings/SettingsModel';
 import TextInput from 'common/input/TextInput';
 import * as fieldModelUtilities from 'common/util/fieldModelUtilities';
 import NumberInput from 'common/input/NumberInput';
@@ -11,12 +11,24 @@ import PasswordInput from 'common/input/PasswordInput';
 import DynamicSelectInput from 'common/input/DynamicSelectInput';
 
 const SettingsProxyConfiguration = ({
-    csrfToken, errorHandler, readOnly, displaySave, displayDelete
+    csrfToken, errorHandler, readOnly, displayTest, displaySave, displayDelete
 }) => {
     const proxyRequestUrl = `${ConfigurationRequestBuilder.PROXY_API_URL}`;
 
     const [settingsProxyConfig, setSettingsProxyConfig] = useState({});
     const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
+    const [testUrl, setTestUrl] = useState('');
+
+    const testField = (
+        <TextInput
+            id={SETTINGS_PROXY_TEST_FIELD.key}
+            name={SETTINGS_PROXY_TEST_FIELD.key}
+            label={SETTINGS_PROXY_TEST_FIELD.label}
+            description={SETTINGS_PROXY_TEST_FIELD.description}
+            onChange={({ target }) => setTestUrl(target.value)}
+            value={testUrl}
+        />
+    );
 
     const fetchData = async () => {
         const response = await ConfigurationRequestBuilder.createReadRequest(proxyRequestUrl, csrfToken);
@@ -41,15 +53,18 @@ const SettingsProxyConfiguration = ({
             csrfToken={csrfToken}
             formDataId={settingsProxyConfig.id}
             setErrors={(formErrors) => setErrors(formErrors)}
+            testFields={testField}
+            clearTestForm={() => setTestUrl('')}
             buttonIdPrefix={SETTINGS_INFO.key}
             getRequest={fetchData}
             deleteRequest={() => ConfigurationRequestBuilder.createDeleteRequest(proxyRequestUrl, csrfToken)}
             createRequest={() => ConfigurationRequestBuilder.createNewConfigurationRequest(proxyRequestUrl, csrfToken, settingsProxyConfig)}
             updateRequest={() => ConfigurationRequestBuilder.createUpdateWithoutIdRequest(proxyRequestUrl, csrfToken, settingsProxyConfig)}
             validateRequest={() => ConfigurationRequestBuilder.createValidateRequest(proxyRequestUrl, csrfToken, settingsProxyConfig)}
+            testRequest={() => ConfigurationRequestBuilder.createTestRequest(proxyRequestUrl, csrfToken, settingsProxyConfig, `testUrl=${testUrl}`)}
             readonly={readOnly}
             displaySave={displaySave}
-            displayTest={false}
+            displayTest={displayTest}
             displayDelete={displayDelete}
             errorHandler={errorHandler}
         >
@@ -122,12 +137,14 @@ SettingsProxyConfiguration.propTypes = {
     errorHandler: PropTypes.object.isRequired,
     // Pass this in for now while we have all descriptors in global state, otherwise retrieve this in this component
     readOnly: PropTypes.bool,
+    displayTest: PropTypes.bool,
     displaySave: PropTypes.bool,
     displayDelete: PropTypes.bool
 };
 
 SettingsProxyConfiguration.defaultProps = {
     readOnly: false,
+    displayTest: true,
     displaySave: true,
     displayDelete: true
 };

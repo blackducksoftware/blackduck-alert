@@ -10,6 +10,7 @@ package com.synopsys.integration.alert.api.provider;
 import static com.synopsys.integration.alert.api.provider.ProviderDescriptor.KEY_CONFIGURED_PROJECT;
 import static com.synopsys.integration.alert.api.provider.ProviderDescriptor.KEY_FILTER_BY_PROJECT;
 import static com.synopsys.integration.alert.api.provider.ProviderDescriptor.KEY_PROJECT_NAME_PATTERN;
+import static com.synopsys.integration.alert.api.provider.ProviderDescriptor.KEY_PROJECT_VERSION_NAME_PATTERN;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -49,6 +50,7 @@ public class CommonProviderDistributionValidator {
 
         this.validateFilterByProject(configurationFieldValidator);
         this.validateProjectNamePattern(configurationFieldValidator);
+        this.validateProjectVersionNamePattern(configurationFieldValidator);
 
         configurationFieldValidator.validateRequiredRelatedSet(ProviderDescriptor.KEY_CONFIGURED_PROJECT, ProviderDescriptor.LABEL_PROJECTS, ChannelDescriptor.KEY_PROVIDER_TYPE, ProviderDescriptor.KEY_PROVIDER_CONFIG_ID);
         this.validateConfiguredProject(configurationFieldValidator);
@@ -65,20 +67,29 @@ public class CommonProviderDistributionValidator {
     private void validateFilterByProject(ConfigurationFieldValidator configurationFieldValidator) {
         boolean filterByProject = configurationFieldValidator.getBooleanValue(KEY_FILTER_BY_PROJECT).orElse(false);
         String projectNamePattern = configurationFieldValidator.getStringValue(KEY_PROJECT_NAME_PATTERN).orElse(null);
+        String projectVersionNamePattern = configurationFieldValidator.getStringValue(KEY_PROJECT_VERSION_NAME_PATTERN).orElse(null);
         Collection<String> configuredProjects = configurationFieldValidator.getCollectionOfValues(KEY_CONFIGURED_PROJECT).orElse(Collections.emptySet());
 
-        if (filterByProject && StringUtils.isBlank(projectNamePattern) && configuredProjects.isEmpty()) {
+        if (filterByProject && StringUtils.isBlank(projectNamePattern) && StringUtils.isBlank(projectVersionNamePattern) && configuredProjects.isEmpty()) {
             configurationFieldValidator.addValidationResults(AlertFieldStatus.error(KEY_FILTER_BY_PROJECT, "You must specify a project name pattern or select at least one project."));
         }
     }
 
     private void validateProjectNamePattern(ConfigurationFieldValidator configurationFieldValidator) {
-        String projectNamePattern = configurationFieldValidator.getStringValue(KEY_PROJECT_NAME_PATTERN).orElse(null);
-        if (StringUtils.isNotBlank(projectNamePattern)) {
+        validatePattern(configurationFieldValidator, KEY_PROJECT_NAME_PATTERN, "Project name pattern");
+    }
+
+    private void validateProjectVersionNamePattern(ConfigurationFieldValidator configurationFieldValidator) {
+        validatePattern(configurationFieldValidator, KEY_PROJECT_VERSION_NAME_PATTERN, "Project version name pattern");
+    }
+
+    private void validatePattern(ConfigurationFieldValidator configurationFieldValidator, String key, String label) {
+        String pattern = configurationFieldValidator.getStringValue(key).orElse(null);
+        if (StringUtils.isNotBlank(pattern)) {
             try {
-                Pattern.compile(projectNamePattern);
+                Pattern.compile(pattern);
             } catch (PatternSyntaxException e) {
-                configurationFieldValidator.addValidationResults(AlertFieldStatus.error(KEY_PROJECT_NAME_PATTERN, "Project name pattern is not a regular expression. " + e.getMessage()));
+                configurationFieldValidator.addValidationResults(AlertFieldStatus.error(key, label + " is not a regular expression. " + e.getMessage()));
             }
         }
     }
@@ -86,9 +97,10 @@ public class CommonProviderDistributionValidator {
     private void validateConfiguredProject(ConfigurationFieldValidator configurationFieldValidator) {
         boolean filterByProject = configurationFieldValidator.getBooleanValue(KEY_FILTER_BY_PROJECT).orElse(false);
         String projectNamePattern = configurationFieldValidator.getStringValue(KEY_PROJECT_NAME_PATTERN).orElse(null);
+        String projectVersionNamePattern = configurationFieldValidator.getStringValue(KEY_PROJECT_VERSION_NAME_PATTERN).orElse(null);
         Collection<String> configuredProjects = configurationFieldValidator.getCollectionOfValues(KEY_CONFIGURED_PROJECT).orElse(Collections.emptySet());
 
-        boolean missingProject = configuredProjects.isEmpty() && StringUtils.isBlank(projectNamePattern);
+        boolean missingProject = configuredProjects.isEmpty() && StringUtils.isBlank(projectNamePattern) && StringUtils.isBlank(projectVersionNamePattern);
         if (filterByProject && missingProject) {
             configurationFieldValidator.addValidationResults(AlertFieldStatus.error(KEY_CONFIGURED_PROJECT, "You must select at least one project."));
         }

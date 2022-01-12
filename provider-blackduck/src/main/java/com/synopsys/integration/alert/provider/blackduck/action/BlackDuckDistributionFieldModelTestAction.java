@@ -14,13 +14,15 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.api.provider.state.StatefulProvider;
 import com.synopsys.integration.alert.common.action.FieldModelTestAction;
@@ -41,6 +43,8 @@ import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class BlackDuckDistributionFieldModelTestAction extends FieldModelTestAction {
+    private static final Logger logger = LoggerFactory.getLogger(BlackDuckDistributionFieldModelTestAction.class);
+
     private final ProviderDataAccessor blackDuckDataAccessor;
     private final BlackDuckProvider blackDuckProvider;
     private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
@@ -64,6 +68,9 @@ public class BlackDuckDistributionFieldModelTestAction extends FieldModelTestAct
                 validateSelectedProjectExists(providerConfigId, configuredProjects).ifPresent(fieldStatuses::add);
                 registeredFieldValues.getString(ProviderDescriptor.KEY_PROJECT_NAME_PATTERN)
                     .flatMap(projectNamePattern -> validatePatternMatchesProject(providerConfigId, projectNamePattern))
+                    .ifPresent(fieldStatuses::add);
+                registeredFieldValues.getString(ProviderDescriptor.KEY_PROJECT_VERSION_NAME_PATTERN)
+                    .flatMap(projectVersionNamePattern -> validatePatternMatchesProjectVersion(providerConfigId, projectVersionNamePattern, configuredProjects))
                     .ifPresent(fieldStatuses::add);
             }
 
@@ -91,11 +98,49 @@ public class BlackDuckDistributionFieldModelTestAction extends FieldModelTestAct
         return new MessageResult("Successfully tested BlackDuck provider fields", fieldStatuses);
     }
 
+    private Optional<AlertFieldStatus> validatePatternMatchesProjectVersion(Long providerConfigId, String projectVersionNamePattern, Collection<String> configuredProjects) {
+        if (StringUtils.isNotBlank(projectVersionNamePattern)) {
+            Pattern pattern = Pattern.compile(projectVersionNamePattern);
+
+            int currentPage = AlertPagedModel.DEFAULT_PAGE_NUMBER;
+            AlertPagedModel<String> projectsByProviderConfigId = filterAndMapHrefs(providerConfigId, currentPage, configuredProjects);
+            boolean foundResult = false;
+            while (!foundResult && currentPage < projectsByProviderConfigId.getTotalPages()) {
+                List<String> providerProjects = projectsByProviderConfigId.getModels();
+                foundResult = providerProjects.stream().anyMatch(href ->
+                                                                     iteratePagesAndCheck(
+                                                                         versionCurrentPage -> blackDuckDataAccessor.getProjectVersionNamesByHref(providerConfigId, href, versionCurrentPage),
+                                                                         versionNames -> versionNames.stream().anyMatch(versionName -> pattern.matcher(versionName).matches()),
+                                                                         Boolean.FALSE
+                                                                     ).isEmpty());
+                currentPage++;
+                projectsByProviderConfigId = filterAndMapHrefs(providerConfigId, currentPage, configuredProjects);
+            }
+
+            if (!foundResult) {
+                return Optional.of(AlertFieldStatus.warning(ProviderDescriptor.KEY_PROJECT_VERSION_NAME_PATTERN, "Does not match any of the project versions."));
+            }
+        }
+        return Optional.empty();
+    }
+
+    private AlertPagedModel<String> filterAndMapHrefs(Long providerConfigId, int currentPage, Collection<String> validProjects) {
+        Predicate<ProviderProject> filterFunction = validProjects.isEmpty() ? project -> true : project -> validProjects.contains(project.getName());
+        AlertPagedModel<ProviderProject> projectsByProviderConfigId = blackDuckDataAccessor.getProjectsByProviderConfigId(providerConfigId, currentPage, AlertPagedModel.DEFAULT_PAGE_SIZE, "");
+        List<String> hrefs = projectsByProviderConfigId.getModels()
+            .stream()
+            .filter(filterFunction)
+            .map(ProviderProject::getHref)
+            .collect(Collectors.toList());
+        return new AlertPagedModel<>(projectsByProviderConfigId.getTotalPages(), projectsByProviderConfigId.getCurrentPage(), projectsByProviderConfigId.getPageSize(), hrefs);
+    }
+
     private Optional<AlertFieldStatus> validatePatternMatchesProject(Long providerConfigId, String projectNamePattern) {
         if (StringUtils.isNotBlank(projectNamePattern)) {
+            Pattern pattern = Pattern.compile(projectNamePattern);
             return iteratePagesAndCheck(
                 (currentPage) -> blackDuckDataAccessor.getProjectsByProviderConfigId(providerConfigId, currentPage, AlertPagedModel.DEFAULT_PAGE_SIZE, ""),
-                (providerProjects) -> providerProjects.stream().anyMatch(databaseEntity -> databaseEntity.getName().matches(projectNamePattern)),
+                (providerProjects) -> providerProjects.stream().anyMatch(databaseEntity -> pattern.matcher(databaseEntity.getName()).matches()),
                 AlertFieldStatus.warning(ProviderDescriptor.KEY_PROJECT_NAME_PATTERN, "Does not match any of the Projects.")
             );
         }
@@ -128,19 +173,21 @@ public class BlackDuckDistributionFieldModelTestAction extends FieldModelTestAct
         return Optional.empty();
     }
 
-    private <U extends AlertSerializableModel, T extends AlertPagedModel<U>> Optional<AlertFieldStatus> iteratePagesAndCheck(Function<Integer, T> getData, Function<Collection<U>, Boolean> checkValidity, AlertFieldStatus alertFieldStatus) {
+    private <U, T extends AlertPagedModel<U>, R> Optional<R> iteratePagesAndCheck(Function<Integer, T> getData, Function<Collection<U>, Boolean> findResult, R missingContentResult) {
         int currentPage = AlertPagedModel.DEFAULT_PAGE_NUMBER;
         T retrievedData = getData.apply(currentPage);
         int totalPages = retrievedData.getTotalPages();
-        boolean invalid = false;
-        while (!invalid && currentPage <= totalPages) {
+        boolean noResult = true;
+        while (noResult && currentPage <= totalPages) {
+            logger.info("Getting page {} out of {}", currentPage, totalPages);
             List<U> models = retrievedData.getModels();
-            invalid = checkValidity.apply(models);
+            noResult = !findResult.apply(models);
             currentPage++;
             retrievedData = getData.apply(currentPage);
         }
-        if (!invalid) {
-            return Optional.of(alertFieldStatus);
+
+        if (noResult) {
+            return Optional.of(missingContentResult);
         }
         return Optional.empty();
     }

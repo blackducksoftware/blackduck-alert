@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.common.persistence.model.job.BlackDuckProjectDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
@@ -26,7 +27,8 @@ public class JobNotificationFilterUtils {
             return false;
         }
         String projectName = detailedNotificationContent.getProjectName().orElse("");
-        if (!doesProjectApplyToJob(filteredDistributionJobResponseModel, projectName)) {
+        String projectVersionName = detailedNotificationContent.getProjectVersionName().orElse("");
+        if (!doesProjectApplyToJob(filteredDistributionJobResponseModel, projectName, projectVersionName)) {
             return false;
         }
         switch (notificationTypeEnum) {
@@ -48,21 +50,29 @@ public class JobNotificationFilterUtils {
         return filteredDistributionJobResponseModel.getNotificationTypes().contains(notificationType);
     }
 
-    public static boolean doesProjectApplyToJob(FilteredDistributionJobResponseModel filteredDistributionJobResponseModel, String projectName) {
+    public static boolean doesProjectApplyToJob(FilteredDistributionJobResponseModel filteredDistributionJobResponseModel, String projectName, String projectVersionName) {
         if (!filteredDistributionJobResponseModel.isFilterByProject()) {
             return true;
         }
 
         String projectNamePattern = filteredDistributionJobResponseModel.getProjectNamePattern();
-        if (projectNamePattern != null && Pattern.matches(projectNamePattern, projectName)) {
-            return true;
+        boolean matchingProjectNamePattern = (StringUtils.isNotBlank(projectNamePattern)) ? Pattern.matches(projectNamePattern, projectName) : false;
+        boolean hasMatchingProjects = filteredDistributionJobResponseModel.getProjectDetails()
+            .stream()
+            .map(BlackDuckProjectDetailsModel::getName)
+            .distinct()
+            .anyMatch(projectName::equals);
+
+        String projectVersionNamePattern = filteredDistributionJobResponseModel.getProjectVersionNamePattern();
+        if (StringUtils.isNotBlank(projectVersionNamePattern)) {
+            // Project version pattern has to always be valid and if something else exists (Selected project or project name pattern), that also needs to be valid
+            boolean selectedProjectsOrNamePatternMatches = hasMatchingProjects || matchingProjectNamePattern;
+            boolean noSelectedProjects = filteredDistributionJobResponseModel.getProjectDetails().isEmpty();
+            boolean projectMatchedOrNoneSelected = noSelectedProjects || selectedProjectsOrNamePatternMatches;
+            return projectMatchedOrNoneSelected && Pattern.matches(projectVersionNamePattern, projectVersionName);
         }
 
-        return filteredDistributionJobResponseModel.getProjectDetails()
-                   .stream()
-                   .map(BlackDuckProjectDetailsModel::getName)
-                   .distinct()
-                   .anyMatch(projectName::equals);
+        return matchingProjectNamePattern || hasMatchingProjects;
     }
 
     public static boolean doVulnerabilitySeveritiesApplyToJob(FilteredDistributionJobResponseModel filteredDistributionJobResponseModel, List<String> notificationSeverities) {

@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.database.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -104,8 +105,6 @@ public class DefaultDistributionAccessorTestIT {
         List<DistributionWithAuditInfo> distributionWithAuditInfos = queryResult.getModels();
         assertEquals(3, distributionWithAuditInfos.size());
 
-        distributionWithAuditInfos.forEach(it -> System.out.println(it.getAuditStatus()));
-
         for (Map.Entry<DistributionJobEntity, List<AuditEntryEntity>> jobAndAudits : jobAndAuditData.entrySet()) {
             DistributionJobEntity distributionJobEntity = jobAndAudits.getKey();
 
@@ -114,6 +113,7 @@ public class DefaultDistributionAccessorTestIT {
 
             DistributionWithAuditInfo distributionWithAuditInfo = distributionInfoWithEntity.get();
             assertEquals(distributionJobEntity.getName(), distributionWithAuditInfo.getJobName());
+            assertNotEquals(AuditEntryStatus.PENDING.name(), distributionWithAuditInfo.getAuditStatus());
 
             List<AuditEntryEntity> audits = jobAndAudits.getValue();
             if (!audits.isEmpty()) {
@@ -149,12 +149,12 @@ public class DefaultDistributionAccessorTestIT {
         );
     }
 
-    private AuditEntryEntity createAuditEntryEntity(UUID commonConfigId, OffsetDateTime timeLastSent) {
+    private AuditEntryEntity createAuditEntryEntity(UUID commonConfigId, OffsetDateTime timeLastSent, AuditEntryStatus auditEntryStatus) {
         return new AuditEntryEntity(
             commonConfigId,
             OffsetDateTime.now(),
             timeLastSent,
-            AuditEntryStatus.SUCCESS.name(),
+            auditEntryStatus.name(),
             "",
             ""
         );
@@ -173,9 +173,9 @@ public class DefaultDistributionAccessorTestIT {
         createdJobs.add(secondJobSaved.getJobId());
         createdJobs.add(thirdJobSaved.getJobId());
 
-        AuditEntryEntity firstAudit = createAuditEntryEntity(firstJob.getJobId(), OffsetDateTime.now());
-        AuditEntryEntity secondAudit = createAuditEntryEntity(firstJob.getJobId(), OffsetDateTime.now());
-        AuditEntryEntity thirdAudit = createAuditEntryEntity(secondJob.getJobId(), OffsetDateTime.now());
+        AuditEntryEntity firstAudit = createAuditEntryEntity(firstJob.getJobId(), OffsetDateTime.now(), AuditEntryStatus.SUCCESS);
+        AuditEntryEntity secondAudit = createAuditEntryEntity(firstJob.getJobId(), OffsetDateTime.now().minusDays(1), AuditEntryStatus.PENDING);
+        AuditEntryEntity thirdAudit = createAuditEntryEntity(secondJob.getJobId(), OffsetDateTime.now(), AuditEntryStatus.FAILURE);
 
         saveAllAudits(List.of(firstAudit, secondAudit, thirdAudit));
 

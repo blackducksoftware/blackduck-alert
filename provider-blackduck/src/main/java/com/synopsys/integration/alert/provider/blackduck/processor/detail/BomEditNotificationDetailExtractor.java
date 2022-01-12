@@ -53,7 +53,7 @@ public class BomEditNotificationDetailExtractor extends NotificationDetailExtrac
 
             String projectName = project.getName();
             BomEditWithProjectNameNotificationContent updatedNotificationContent = new BomEditWithProjectNameNotificationContent(notificationContent, projectName, projectVersion.getVersionName());
-            DetailedNotificationContent detailedContent = DetailedNotificationContent.project(alertNotificationModel, updatedNotificationContent, projectName);
+            DetailedNotificationContent detailedContent = DetailedNotificationContent.project(alertNotificationModel, updatedNotificationContent, projectName, projectVersion.getVersionName());
             return List.of(detailedContent);
         }
         return List.of();

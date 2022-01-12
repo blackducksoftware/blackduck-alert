@@ -13,3 +13,9 @@ export const SETTINGS_FIELD_KEYS = {
     proxyPassword: 'settings.proxy.password',
     proxyNonProxyHosts: 'settings.proxy.non.proxy.hosts'
 };
+
+export const SETTINGS_PROXY_TEST_FIELD = {
+    key: 'test.field.target.url',
+    label: 'Target URL',
+    description: 'The URL to ping using the proxy configuration.'
+};

@@ -13,6 +13,8 @@ dependencies {
     implementation project(':api-provider')
     implementation project(':alert-database')
 
+    api 'org.springframework.data:spring-data-jpa'
+    implementation 'jakarta.persistence:jakarta.persistence-api'
     implementation 'org.springframework:spring-web'
     implementation 'org.apache.tomcat.embed:tomcat-embed-core'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8'

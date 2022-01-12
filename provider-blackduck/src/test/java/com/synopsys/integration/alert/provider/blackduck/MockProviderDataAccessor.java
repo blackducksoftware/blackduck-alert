@@ -43,9 +43,9 @@ public final class MockProviderDataAccessor implements ProviderDataAccessor {
         Set<ProviderProject> providerProjects = this.providerProjects.get(providerConfigId);
         if (null != providerProjects) {
             return providerProjects
-                       .stream()
-                       .filter(providerProject -> href.equals(providerProject.getHref()))
-                       .findFirst();
+                .stream()
+                .filter(providerProject -> href.equals(providerProject.getHref()))
+                .findFirst();
         }
         return Optional.empty();
     }
@@ -53,8 +53,8 @@ public final class MockProviderDataAccessor implements ProviderDataAccessor {
     @Override
     public List<ProviderProject> getProjectsByProviderConfigName(String providerConfigName) {
         return getProviderConfigId(providerConfigName)
-                   .map(this::getProjectsByProviderConfigId)
-                   .orElse(List.of());
+            .map(this::getProjectsByProviderConfigId)
+            .orElse(List.of());
     }
 
     @Override
@@ -74,14 +74,19 @@ public final class MockProviderDataAccessor implements ProviderDataAccessor {
     }
 
     @Override
+    public AlertPagedModel<String> getProjectVersionNamesByHref(Long providerConfigId, String projectHref, int pageNumber) {
+        return null;
+    }
+
+    @Override
     public ProviderUserModel getProviderConfigUserById(Long providerConfigId) throws AlertConfigurationException {
         Set<ProviderUserModel> providerUserModels = providerUsers.get(providerConfigId);
         // This is supposed to be the user whose API Token is used for the provider config
         // Modify if necessary
         return providerUserModels
-                   .stream()
-                   .findAny()
-                   .orElseThrow(() -> new AlertConfigurationException("Missing provider config user"));
+            .stream()
+            .findAny()
+            .orElseThrow(() -> new AlertConfigurationException("Missing provider config user"));
     }
 
     @Override
@@ -103,8 +108,8 @@ public final class MockProviderDataAccessor implements ProviderDataAccessor {
     @Override
     public List<ProviderUserModel> getUsersByProviderConfigName(String providerConfigName) {
         return getProviderConfigId(providerConfigName)
-                   .map(this::getUsersByProviderConfigId)
-                   .orElse(List.of());
+            .map(this::getUsersByProviderConfigId)
+            .orElse(List.of());
     }
 
     @Override
@@ -162,9 +167,9 @@ public final class MockProviderDataAccessor implements ProviderDataAccessor {
 
         List<ProviderUserModel> providerUserEntities = getUsersByProviderConfigId(providerConfigId);
         Set<String> storedEmails = providerUserEntities
-                                       .stream()
-                                       .map(ProviderUserModel::getEmailAddress)
-                                       .collect(Collectors.toSet());
+            .stream()
+            .map(ProviderUserModel::getEmailAddress)
+            .collect(Collectors.toSet());
 
         for (String storedData : storedEmails) {// If the storedData no longer exists in the current then we need to remove the entry
             // If any of the fields have changed in the currentData, then the storedData will not be in the currentData so we will need to remove the old entry
@@ -181,14 +186,14 @@ public final class MockProviderDataAccessor implements ProviderDataAccessor {
         }
 
         Set<ProviderUserModel> providerUserEntitiesToRemove = providerUserEntities
-                                                                  .stream()
-                                                                  .filter(userEntity -> emailsToRemove.contains(userEntity.getEmailAddress()))
-                                                                  .collect(Collectors.toSet());
+            .stream()
+            .filter(userEntity -> emailsToRemove.contains(userEntity.getEmailAddress()))
+            .collect(Collectors.toSet());
 
         Set<ProviderUserModel> providerUserEntitiesToAdd = emailsToAdd
-                                                               .stream()
-                                                               .map(email -> new ProviderUserModel(email, false))
-                                                               .collect(Collectors.toSet());
+            .stream()
+            .map(email -> new ProviderUserModel(email, false))
+            .collect(Collectors.toSet());
         providerUsers.computeIfPresent(providerConfigId, (id, users) -> {
             users.removeAll(providerUserEntitiesToRemove);
             return providerUserEntitiesToRemove;
@@ -207,11 +212,11 @@ public final class MockProviderDataAccessor implements ProviderDataAccessor {
 
     private void mapUsersToProjectByEmail(ProviderProject project, Collection<String> emailAddresses) throws AlertConfigurationException {
         Set<ProviderUserModel> applicableUsers = providerUsers
-                                                     .values()
-                                                     .stream()
-                                                     .flatMap(Set::stream)
-                                                     .filter(emailAddresses::contains)
-                                                     .collect(Collectors.toSet());
+            .values()
+            .stream()
+            .flatMap(Set::stream)
+            .filter(emailAddresses::contains)
+            .collect(Collectors.toSet());
         for (ProviderUserModel user : applicableUsers) {
             providerUsersToProjects.add(user, project);
         }
@@ -219,20 +224,20 @@ public final class MockProviderDataAccessor implements ProviderDataAccessor {
 
     private Optional<Long> getProviderConfigId(String providerConfigName) {
         return providerConfigs
-                   .entrySet()
-                   .stream()
-                   .filter(entry -> entry.getValue().equals(providerConfigName))
-                   .map(Map.Entry::getKey)
-                   .findFirst();
+            .entrySet()
+            .stream()
+            .filter(entry -> entry.getValue().equals(providerConfigName))
+            .map(Map.Entry::getKey)
+            .findFirst();
     }
 
     private <T extends AlertSerializableModel> AlertPagedModel<T> retrievePageOfProviderData(Set<T> providerDataSet, int pageNumber, int pageSize, Predicate<T> searchFilter) {
         if (null != providerDataSet) {
             List<T> providerDataList = new ArrayList<>(providerDataSet);
             List<T> reducedProviderDataList = providerDataList
-                                                  .stream()
-                                                  .filter(searchFilter)
-                                                  .collect(Collectors.toList());
+                .stream()
+                .filter(searchFilter)
+                .collect(Collectors.toList());
             int totalElements = reducedProviderDataList.size();
             int totalPages = (totalElements + (pageSize - 1)) / pageSize;
             if (totalPages > pageNumber) {

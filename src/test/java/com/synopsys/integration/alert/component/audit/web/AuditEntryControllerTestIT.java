@@ -121,8 +121,8 @@ public class AuditEntryControllerTestIT {
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void testGetConfig() throws Exception {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(auditUrl)
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
-                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -139,8 +139,8 @@ public class AuditEntryControllerTestIT {
 
         String getUrl = auditUrl + "/" + notificationContent.getId();
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(getUrl)
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
-                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -151,8 +151,8 @@ public class AuditEntryControllerTestIT {
         entity = auditEntryRepository.save(entity);
         String getUrl = auditUrl + "/job/" + entity.getCommonConfigId();
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(getUrl)
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
-                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -171,8 +171,8 @@ public class AuditEntryControllerTestIT {
 
         String resendUrl = auditUrl + "/resend/" + notificationEntity.getId() + "/";
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(resendUrl)
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
-                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -195,8 +195,8 @@ public class AuditEntryControllerTestIT {
 
         String resendUrl = auditUrl + "/resend/" + notificationEntity.getId() + "/job/" + auditEntity.getCommonConfigId();
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(resendUrl)
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
-                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -210,6 +210,7 @@ public class AuditEntryControllerTestIT {
             ChannelKeys.SLACK.getUniversalKey(),
             mockNotificationContent.getProviderConfigId(),
             false,
+            null,
             null,
             List.of("notificationType"),
             List.of(),

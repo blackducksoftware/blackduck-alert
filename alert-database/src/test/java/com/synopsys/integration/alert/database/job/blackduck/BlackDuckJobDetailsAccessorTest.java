@@ -61,6 +61,7 @@ public class BlackDuckJobDetailsAccessorTest {
             3L,
             true,
             "*",
+            "*",
             Collections.emptyList(),
             Collections.emptyList(),
             Collections.emptyList(),
@@ -72,7 +73,8 @@ public class BlackDuckJobDetailsAccessorTest {
             jobId,
             distributionJobRequestModel.getBlackDuckGlobalConfigId(),
             distributionJobRequestModel.isFilterByProject(),
-            distributionJobRequestModel.getProjectNamePattern().orElse(null)
+            distributionJobRequestModel.getProjectNamePattern().orElse(null),
+            distributionJobRequestModel.getProjectVersionNamePattern().orElse(null)
         );
 
         BlackDuckJobNotificationTypeEntity blackDuckJobNotificationTypeEntity = new BlackDuckJobNotificationTypeEntity(jobId, "testNotificationType");

@@ -12,18 +12,22 @@ import java.util.function.Supplier;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.email.distribution.EmailChannelMessageModel;
 import com.synopsys.integration.alert.channel.email.distribution.EmailChannelMessagingService;
 import com.synopsys.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.message.model.ConfigurationTestResult;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.api.ConfigurationTestHelper;
 import com.synopsys.integration.alert.common.rest.api.ConfigurationValidationHelper;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
@@ -43,18 +47,20 @@ public class EmailGlobalTestAction {
     private final ConfigurationValidationHelper validationHelper;
     private final ConfigurationTestHelper testHelper;
     private final EmailGlobalConfigurationValidator validator;
+    private final EmailGlobalConfigAccessor configurationAccessor;
 
     private final EmailChannelMessagingService emailChannelMessagingService;
     private final JavamailPropertiesFactory javamailPropertiesFactory;
 
     @Autowired
     public EmailGlobalTestAction(AuthorizationManager authorizationManager, EmailGlobalConfigurationValidator validator,
-        EmailChannelMessagingService emailChannelMessagingService, JavamailPropertiesFactory javamailPropertiesFactory) {
+        EmailChannelMessagingService emailChannelMessagingService, JavamailPropertiesFactory javamailPropertiesFactory, EmailGlobalConfigAccessor configurationAccessor) {
         this.testHelper = new ConfigurationTestHelper(authorizationManager, ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL);
         this.validationHelper = new ConfigurationValidationHelper(authorizationManager, ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL);
         this.validator = validator;
         this.emailChannelMessagingService = emailChannelMessagingService;
         this.javamailPropertiesFactory = javamailPropertiesFactory;
+        this.configurationAccessor = configurationAccessor;
     }
 
     public ActionResponse<ValidationResponseModel> testWithPermissionCheck(String testAddress, EmailGlobalConfigModel requestResource) {
@@ -62,16 +68,16 @@ public class EmailGlobalTestAction {
         return testHelper.test(validationSupplier, () -> testConfigModelContent(testAddress, requestResource));
     }
 
-    public MessageResult testConfigModelContent(String testAddress, EmailGlobalConfigModel emailGlobalConfigModel) throws AlertException {
+    public ConfigurationTestResult testConfigModelContent(String testAddress, EmailGlobalConfigModel emailGlobalConfigModel) {
         if (StringUtils.isBlank(testAddress)) {
-            throw new AlertException("Could not determine what email address to send this content to. testAddress was not provided or was blank. Please provide a valid email address to test the configuration.");
+            return ConfigurationTestResult.failure("Could not determine what email address to send this content to. testAddress was not provided or was blank. Please provide a valid email address to test the configuration.");
         }
 
         try {
             InternetAddress emailAddress = new InternetAddress(testAddress);
             emailAddress.validate();
         } catch (AddressException ex) {
-            throw new AlertException(String.format("%s is not a valid email address. %s", testAddress, ex.getMessage()));
+            return ConfigurationTestResult.failure(String.format("%s is not a valid email address. %s", testAddress, ex.getMessage()));
         }
 
         EmailChannelMessageModel testMessage = EmailChannelMessageModel.simple(TEST_SUBJECT_LINE, TEST_MESSAGE_CONTENT, "", "");
@@ -84,13 +90,25 @@ public class EmailGlobalTestAction {
         emailGlobalConfigModel.getSmtpPort().ifPresent(smtpConfigBuilder::setSmtpPort);
         emailGlobalConfigModel.getSmtpAuth().ifPresent(smtpConfigBuilder::setSmtpAuth);
         emailGlobalConfigModel.getSmtpUsername().ifPresent(smtpConfigBuilder::setSmtpUsername);
+        
+        if (BooleanUtils.toBoolean(emailGlobalConfigModel.getIsSmtpPasswordSet()) && emailGlobalConfigModel.getSmtpPassword().isEmpty()) {
+            //TODO: This assumes if the password is saved but not provided we only test using the default configuration password.
+            //  If the UI supports multiple configurations in the future we should determine which configuration to get the password from.
+            configurationAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
+                .flatMap(EmailGlobalConfigModel::getSmtpPassword)
+                .ifPresent(emailGlobalConfigModel::setSmtpPassword);
+        }
         emailGlobalConfigModel.getSmtpPassword().ifPresent(smtpConfigBuilder::setSmtpPassword);
 
         SmtpConfig smtpConfig = smtpConfigBuilder.build();
 
-        EmailTarget emailTarget = emailChannelMessagingService.createTarget(testMessage, testAddress);
-
-        return emailChannelMessagingService.sendMessage(smtpConfig, emailTarget);
+        try {
+            EmailTarget emailTarget = emailChannelMessagingService.createTarget(testMessage, testAddress);
+            MessageResult messageResult = emailChannelMessagingService.sendMessage(smtpConfig, emailTarget);
+            return ConfigurationTestResult.success(messageResult.getStatusMessage());
+        } catch (AlertException ex) {
+            return ConfigurationTestResult.failure(ex.getMessage());
+        }
     }
 
 }

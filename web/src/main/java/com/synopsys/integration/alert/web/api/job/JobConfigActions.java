@@ -448,6 +448,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
             fromResource.getBlackDuckGlobalConfigId(),
             fromResource.isFilterByProject(),
             fromResource.getProjectNamePattern().orElse(null),
+            fromResource.getProjectVersionNamePattern().orElse(null),
             fromResource.getNotificationTypes(),
             projectFilterDetails,
             fromResource.getPolicyFilterPolicyNames(),
