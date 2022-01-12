@@ -7,12 +7,19 @@
  */
 package com.synopsys.integration.alert.database.api;
 
+import java.text.ParseException;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,7 +38,7 @@ import com.synopsys.integration.alert.database.distribution.DistributionWithAudi
 
 @Component
 public class DefaultDistributionAccessor implements DistributionAccessor {
-
+    private final Logger logger = LoggerFactory.getLogger(DefaultDistributionAccessor.class);
     private final DistributionRepository distributionRepository;
 
     @Autowired
@@ -58,13 +65,45 @@ public class DefaultDistributionAccessor implements DistributionAccessor {
     }
 
     private AlertPagedModel<DistributionWithAuditInfo> convert(Page<DistributionWithAuditEntity> pageOfDistributionWithAuditEntity) {
-        List<DistributionWithAuditInfo> results = pageOfDistributionWithAuditEntity.get().map(this::convert).collect(Collectors.toList());
+        List<DistributionWithAuditInfo> results = dedupeList(pageOfDistributionWithAuditEntity.get());
         return new AlertPagedModel<>(
             pageOfDistributionWithAuditEntity.getTotalPages(),
             pageOfDistributionWithAuditEntity.getNumber(),
             pageOfDistributionWithAuditEntity.getSize(),
             results
         );
+    }
+
+    // FIXME Bug, we need to modify the query to successfully avoid duplicate jobs.
+    private List<DistributionWithAuditInfo> dedupeList(Stream<DistributionWithAuditEntity> withAuditEntityStream) {
+        Map<UUID, DistributionWithAuditInfo> existingInfos = new HashMap<>();
+        withAuditEntityStream.forEach(entity -> swapValues(existingInfos, entity));
+        return new ArrayList<>(existingInfos.values());
+    }
+
+    private void swapValues(Map<UUID, DistributionWithAuditInfo> existingInfos, DistributionWithAuditEntity entity) {
+        UUID jobId = entity.getJobId();
+        DistributionWithAuditInfo existingEntity = existingInfos.get(jobId);
+        if (null == existingEntity) {
+            existingInfos.put(jobId, convert(entity));
+            return;
+        }
+
+        String currentTimeLastSent = existingEntity.getAuditTimeLastSent();
+        if (null == currentTimeLastSent) {
+            existingInfos.put(jobId, convert(entity));
+            return;
+        }
+
+        try {
+            OffsetDateTime storedDateTime = DateUtils.parseDate(currentTimeLastSent, DateUtils.AUDIT_DATE_FORMAT);
+            if (entity.getAuditTimeLastSent().compareTo(storedDateTime) > 0) {
+                existingInfos.put(jobId, convert(entity));
+            }
+        } catch (ParseException e) {
+            logger.error("Unexpected error when parsing date: {}", e.getMessage());
+            existingInfos.put(jobId, convert(entity));
+        }
     }
 
     private DistributionWithAuditInfo convert(DistributionWithAuditEntity distributionWithAuditEntity) {
