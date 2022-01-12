@@ -299,11 +299,26 @@ public class BlackDuckMessageBomComponentDetailsCreator {
 
     // Takes the list of origins from the collapsed notifications instead of the bom component itself
     private List<HttpUrl> createVulnerabilitiesLinks(HttpUrl vulnerabilitiesUrl, List<VersionBomOriginView> allOrigins) {
+        // if the origins are empty then the link that will be created for the component will not be as accurate to report remediation data.
+        if (allOrigins.isEmpty()) {
+            return createVulnerabilitiesLinkMissingOrigins(vulnerabilitiesUrl);
+        }
+
         return allOrigins.stream()
             .map(VersionBomOriginView::getOrigin)
             .map((origin) -> createVulnerabilitiesLink(vulnerabilitiesUrl, origin))
             .flatMap(Optional::stream)
             .collect(Collectors.toList());
+    }
+
+    private List<HttpUrl> createVulnerabilitiesLinkMissingOrigins(HttpUrl vulnerabilitiesUrl) {
+        List<HttpUrl> vulnerabilitiesLinks = List.of();
+        try {
+            vulnerabilitiesLinks = List.of(vulnerabilitiesUrl.appendRelativeUrl(VULNERABILITIES_LINK.getLink()));
+        } catch (IntegrationException ex) {
+            logger.error("Error appending vulnerabilities relative URL to Bom Component detail", ex);
+        }
+        return vulnerabilitiesLinks;
     }
 
     private Optional<HttpUrl> createVulnerabilitiesLink(HttpUrl vulnerabilitiesUrl, String originUrl) {
