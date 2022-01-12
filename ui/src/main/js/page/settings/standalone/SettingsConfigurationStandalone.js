@@ -10,8 +10,8 @@ const SettingsConfigurationStandalone = ({
     csrfToken, errorHandler, readOnly, displayTest, displaySave, displayDelete
 }) => (
     <CommonGlobalConfiguration
-        label={`${SETTINGS_INFO.label} BETA (WIP)`}
-        description="This page allows you to configure the global settings. (WIP: Everything on this page is currently in development)"
+        label={`${SETTINGS_INFO.label}`}
+        description="This page allows you to configure the global settings."
     >
         <Tabs defaultActiveKey={1} id="settings-tabs">
             <Tab eventKey={1} title="SettingsEncryption">
