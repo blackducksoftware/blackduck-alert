@@ -8,7 +8,6 @@ import LogoutConfirmation from 'common/LogoutConfirmation';
 import { getDescriptors } from 'store/actions/descriptors';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import SlackGlobalConfiguration from 'page/channel/slack/SlackGlobalConfiguration';
-import EmailGlobalConfigurationUsingOldApi from 'page/channel/email/EmailGlobalConfigurationUsingOldApi';
 import JiraCloudGlobalConfiguration from 'page/channel/jira/cloud/JiraCloudGlobalConfiguration';
 import { JIRA_CLOUD_INFO } from 'page/channel/jira/cloud/JiraCloudModel';
 import { SLACK_INFO } from 'page/channel/slack/SlackModels';
@@ -21,8 +20,7 @@ import AzureGlobalConfiguration from 'page/channel/azure/AzureGlobalConfiguratio
 import { SCHEDULING_INFO } from 'page/scheduling/SchedulingModel';
 import SchedulingConfiguration from 'page/scheduling/SchedulingConfiguration';
 import { SETTINGS_INFO } from 'page/settings/SettingsModel';
-import SettingsConfiguration from 'page/settings/SettingsConfiguration';
-import SettingsConfigurationStandalone from 'page/settings/standalone/SettingsConfigurationStandalone';
+import SettingsConfiguration from 'page/settings/standalone/SettingsConfiguration';
 import { AUTHENTICATION_INFO } from 'application/auth/AuthenticationModel';
 import AuthenticationConfiguration from 'application/auth/AuthenticationConfiguration';
 import { BLACKDUCK_INFO, BLACKDUCK_URLS } from 'page/provider/blackduck/BlackDuckModel';
@@ -44,10 +42,7 @@ import DistributionConfigurationForm from 'page/distribution/DistributionConfigu
 import { unauthorized } from 'store/actions/session';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 import DescriptorRoute from 'common/DescriptorRoute';
-import BetaPage from 'common/beta/BetaPage';
 import EmailGlobalConfiguration from 'page/channel/email/EmailGlobalConfiguration';
-import CurrentComponent from 'common/beta/CurrentComponent';
-import BetaComponent from 'common/beta/BetaComponent';
 
 const MainPage = ({
     descriptors, fetching, getDescriptorsRedux, csrfToken, autoRefresh, unauthorizedFunction
@@ -144,28 +139,14 @@ const MainPage = ({
                 urlName={EMAIL_INFO.url}
                 descriptor={globalDescriptorMap[EMAIL_INFO.key]}
                 render={(readOnly, showTest, showSave, showDelete) => (
-                    <BetaPage betaSelected>
-                        <CurrentComponent>
-                            <EmailGlobalConfigurationUsingOldApi
-                                csrfToken={csrfToken}
-                                errorHandler={errorHandler}
-                                readonly={readOnly}
-                                displayTest={showTest}
-                                displaySave={showSave}
-                                displayDelete={showDelete}
-                            />
-                        </CurrentComponent>
-                        <BetaComponent>
-                            <EmailGlobalConfiguration
-                                csrfToken={csrfToken}
-                                errorHandler={errorHandler}
-                                readonly={readOnly}
-                                displayTest={showTest}
-                                displaySave={showSave}
-                                displayDelete={showDelete}
-                            />
-                        </BetaComponent>
-                    </BetaPage>
+                    <EmailGlobalConfiguration
+                        csrfToken={csrfToken}
+                        errorHandler={errorHandler}
+                        readonly={readOnly}
+                        displayTest={showTest}
+                        displaySave={showSave}
+                        displayDelete={showDelete}
+                    />
                 )}
             />
             <DescriptorRoute
@@ -260,26 +241,14 @@ const MainPage = ({
                 urlName={SETTINGS_INFO.url}
                 descriptor={globalDescriptorMap[SETTINGS_INFO.key]}
                 render={(readOnly, showTest, showSave) => (
-                    <BetaPage>
-                        <CurrentComponent>
-                            <SettingsConfiguration
-                                csrfToken={csrfToken}
-                                errorHandler={errorHandler}
-                                readonly={readOnly}
-                                displaySave={showSave}
-                            />
-                        </CurrentComponent>
-                        <BetaComponent>
-                            <SettingsConfigurationStandalone
-                                csrfToken={csrfToken}
-                                errorHandler={errorHandler}
-                                readonly={readOnly}
-                                displayTest={isOperationAssigned(globalDescriptorMap[SETTINGS_INFO.key], OPERATIONS.EXECUTE)}
-                                displaySave={showSave}
-                                displayDelete={isOperationAssigned(globalDescriptorMap[SETTINGS_INFO.key], OPERATIONS.DELETE)}
-                            />
-                        </BetaComponent>
-                    </BetaPage>
+                    <SettingsConfiguration
+                        csrfToken={csrfToken}
+                        errorHandler={errorHandler}
+                        readonly={readOnly}
+                        displayTest={isOperationAssigned(globalDescriptorMap[SETTINGS_INFO.key], OPERATIONS.EXECUTE)}
+                        displaySave={showSave}
+                        displayDelete={isOperationAssigned(globalDescriptorMap[SETTINGS_INFO.key], OPERATIONS.DELETE)}
+                    />
                 )}
             />
             <DescriptorRoute
