@@ -11,10 +11,9 @@ buildscript {
     }
 }
 
-def alertDatabaseDockerImageVersion = '1.0.3-SNAPSHOT'
-
 ext {
     moduleName = 'com.synopsys.integration.alert.database'
+    alertDatabaseDockerImageVersion = '1.0.3-SNAPSHOT'
 }
 
 apply plugin: com.bmuschko.gradle.docker.DockerRemoteApiPlugin
