@@ -180,10 +180,13 @@ public class UpdateChecker {
         // currently we get -SIGQA1-SNAPSHOT so we need to look for SIGQA first.
         int indexOfQABuild = versionToken.indexOf(QA_BUILD);
         int indexOfSnapshot = versionToken.indexOf(SNAPSHOT);
-        if (indexOfQABuild > 0) {
+        int indexOfHyphen = versionToken.indexOf("-");
+        if (indexOfQABuild > 0 && indexOfQABuild < indexOfSnapshot) {
             resultToken = versionToken.substring(0, indexOfQABuild);
-        } else if (indexOfSnapshot > 0) {
+        } else if (indexOfSnapshot > 0 && indexOfSnapshot <= indexOfHyphen) {
             resultToken = versionToken.substring(0, indexOfSnapshot);
+        } else if (indexOfHyphen > 0) {
+            resultToken = versionToken.substring(0, indexOfHyphen);
         }
 
         return resultToken;
