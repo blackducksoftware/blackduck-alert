@@ -87,7 +87,7 @@ public class ProxyManagerTest {
         settingsProxyModel.setProxyHost(HOST);
         settingsProxyModel.setProxyPort(PORT);
         settingsProxyModel.setProxyUsername(USERNAME);
-        settingsProxyModel.setIsSmtpPasswordSet(true);
+        settingsProxyModel.setIsProxyPasswordSet(true);
         settingsProxyModel.setProxyPassword(PASSWORD);
         return settingsProxyModel;
     }

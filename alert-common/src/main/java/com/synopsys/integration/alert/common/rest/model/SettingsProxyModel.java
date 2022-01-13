@@ -53,7 +53,7 @@ public class SettingsProxyModel extends ConfigWithMetadata implements Obfuscated
         return isProxyPasswordSet;
     }
 
-    public void setIsSmtpPasswordSet(Boolean isProxyPasswordSet) {
+    public void setIsProxyPasswordSet(Boolean isProxyPasswordSet) {
         this.isProxyPasswordSet = isProxyPasswordSet;
     }
 
@@ -83,7 +83,7 @@ public class SettingsProxyModel extends ConfigWithMetadata implements Obfuscated
         settingsProxyModel.setProxyUsername(proxyUsername);
         settingsProxyModel.setNonProxyHosts(nonProxyHosts);
 
-        settingsProxyModel.setIsSmtpPasswordSet(StringUtils.isNotBlank(proxyPassword));
+        settingsProxyModel.setIsProxyPasswordSet(StringUtils.isNotBlank(proxyPassword));
         settingsProxyModel.setProxyPassword(null);
 
         return settingsProxyModel;

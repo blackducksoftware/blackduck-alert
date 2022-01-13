@@ -104,7 +104,7 @@ class SettingsProxyValidatorTest {
         settingsProxyModel.setProxyHost(HOST);
         settingsProxyModel.setProxyPort(PORT);
         settingsProxyModel.setProxyUsername(USERNAME);
-        settingsProxyModel.setIsSmtpPasswordSet(true);
+        settingsProxyModel.setIsProxyPasswordSet(true);
 
         ValidationResponseModel validationResponseModel = settingsProxyValidator.validate(settingsProxyModel);
         assertFalse(validationResponseModel.hasErrors());
@@ -130,7 +130,7 @@ class SettingsProxyValidatorTest {
         settingsProxyModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
         settingsProxyModel.setProxyHost(HOST);
         settingsProxyModel.setProxyPort(PORT);
-        settingsProxyModel.setIsSmtpPasswordSet(true);
+        settingsProxyModel.setIsProxyPasswordSet(true);
 
         ValidationResponseModel validationResponseModel = settingsProxyValidator.validate(settingsProxyModel);
         assertTrue(validationResponseModel.hasErrors());
