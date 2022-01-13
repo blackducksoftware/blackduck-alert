@@ -192,6 +192,7 @@ public class EmailGlobalTestActionTest {
 
     @Test
     public void testPermissionConfigValidTest() throws AlertException {
+        TestProperties testProperties = new TestProperties();
         AuthorizationManager authorizationManager = createAuthorizationManager(AuthenticationTestUtils.FULL_PERMISSIONS);
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailChannelMessagingService emailChannelMessagingService = Mockito.mock(EmailChannelMessagingService.class);
@@ -200,7 +201,9 @@ public class EmailGlobalTestActionTest {
         JavamailPropertiesFactory javamailPropertiesFactory = new JavamailPropertiesFactory();
         EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(authorizationManager, validator, emailChannelMessagingService, javamailPropertiesFactory, configurationAccessor);
 
-        ActionResponse<ValidationResponseModel> response = emailGlobalTestAction.testWithPermissionCheck("noreply@synopsys.com", new EmailGlobalConfigModel());
+        EmailGlobalConfigModel globalConfigModel = createValidEmailGlobalConfigModel(testProperties);
+
+        ActionResponse<ValidationResponseModel> response = emailGlobalTestAction.testWithPermissionCheck("noreply@synopsys.com", globalConfigModel);
         assertEquals(HttpStatus.OK, response.getHttpStatus());
         assertTrue(response.isSuccessful());
         assertTrue(response.hasContent());
@@ -301,6 +304,7 @@ public class EmailGlobalTestActionTest {
 
     private EmailGlobalConfigModel createValidEmailGlobalConfigModel(TestProperties testProperties) {
         EmailGlobalConfigModel emailGlobalConfigModel = new EmailGlobalConfigModel();
+        emailGlobalConfigModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
         emailGlobalConfigModel.setSmtpFrom(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM));
         emailGlobalConfigModel.setSmtpHost(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST));
         testProperties.getOptionalProperty(TestPropertyKey.TEST_EMAIL_SMTP_PORT).map(Integer::valueOf).ifPresent(emailGlobalConfigModel::setSmtpPort);
