@@ -37,7 +37,7 @@ class StartupLogTest {
         settingsProxyModel.setProxyHost("google.com");
         settingsProxyModel.setProxyPort(3218);
         settingsProxyModel.setProxyUsername("AUser");
-        settingsProxyModel.setIsSmtpPasswordSet(true);
+        settingsProxyModel.setIsProxyPasswordSet(true);
         settingsProxyModel.setProxyPassword("aPassword");
 
         SettingsUtility mockSettingsUtility = Mockito.mock(SettingsUtility.class);

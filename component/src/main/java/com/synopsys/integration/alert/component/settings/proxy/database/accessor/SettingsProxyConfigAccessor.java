@@ -116,7 +116,7 @@ public class SettingsProxyConfigAccessor implements UniqueConfigurationAccessor<
 
             String proxyPassword = proxyConfiguration.getPassword();
             boolean doesPasswordExist = StringUtils.isNotBlank(proxyPassword);
-            newModel.setIsSmtpPasswordSet(doesPasswordExist);
+            newModel.setIsProxyPasswordSet(doesPasswordExist);
             if (doesPasswordExist) {
                 newModel.setProxyPassword(encryptionUtility.decrypt(proxyPassword));
             }
