@@ -28,7 +28,7 @@ public class ProjectNotificationDetailExtractor extends NotificationDetailExtrac
     @Override
     public List<DetailedNotificationContent> extractDetailedContent(AlertNotificationModel alertNotificationModel, ProjectNotificationView notificationView) {
         ProjectNotificationContent notificationContent = notificationView.getContent();
-        return List.of(DetailedNotificationContent.project(alertNotificationModel, notificationContent, notificationContent.getProjectName()));
+        return List.of(DetailedNotificationContent.versionLess(alertNotificationModel, notificationContent, notificationContent.getProjectName()));
     }
 
 }

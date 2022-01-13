@@ -25,14 +25,14 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.synopsys.integration.alert.channel.email.database.configuration.EmailConfigurationEntity;
+import com.synopsys.integration.alert.channel.email.database.configuration.EmailConfigurationRepository;
+import com.synopsys.integration.alert.channel.email.database.configuration.properties.EmailConfigurationPropertiesRepository;
+import com.synopsys.integration.alert.channel.email.database.configuration.properties.EmailConfigurationsPropertyEntity;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.database.email.EmailConfigurationEntity;
-import com.synopsys.integration.alert.database.email.EmailConfigurationRepository;
-import com.synopsys.integration.alert.database.email.properties.EmailConfigurationPropertiesRepository;
-import com.synopsys.integration.alert.database.email.properties.EmailConfigurationsPropertyEntity;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
 @Component

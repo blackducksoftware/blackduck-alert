@@ -50,8 +50,8 @@ const EmailGlobalConfiguration = ({
 
     return (
         <CommonGlobalConfiguration
-            label={`${EMAIL_INFO.label} Beta (WIP)`}
-            description="Configure the email server that Alert will send emails to. (WIP: Everything on this page is currently in development)"
+            label={`${EMAIL_INFO.label}`}
+            description="Configure the email server that Alert will send emails to."
             lastUpdated={emailConfig.lastUpdated}
         >
             <ConfigurationForm

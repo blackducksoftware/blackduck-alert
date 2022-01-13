@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.synopsys.integration.alert.component.authentication.security.database.UserDatabaseService;
 
-@EnableJpaRepositories(basePackages = { "com.synopsys.integration.alert.database" })
+@EnableJpaRepositories(basePackages = { "com.synopsys.integration.alert.database", "com.synopsys.integration.alert.channel" })
 @EnableTransactionManagement
 @EnableBatchProcessing
 @EnableScheduling

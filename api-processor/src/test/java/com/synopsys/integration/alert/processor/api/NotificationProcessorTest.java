@@ -172,7 +172,8 @@ public class NotificationProcessorTest {
             List.of(),
             List.of(),
             filterByProject,
-            projectNamePattern
+            projectNamePattern,
+            null
         );
     }
 

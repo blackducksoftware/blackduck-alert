@@ -1,0 +1,18 @@
+ext.moduleName = 'com.synopsys.integration.alert.database.job'
+
+dependencies {
+    implementation platform(project(':alert-platform'))
+
+    implementation project(':alert-common')
+    implementation project(':api-common-model')
+    implementation project(':api-descriptor')
+    
+    implementation project(':alert-database')
+    implementation project(':channel-email')
+
+    api 'org.springframework.data:spring-data-jpa'
+    implementation 'jakarta.persistence:jakarta.persistence-api'
+
+    testImplementation project(':test-common')
+    testImplementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
+}

@@ -3,11 +3,14 @@ package com.synopsys.integration.alert.channel.email.action;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Tags;
 import org.junit.jupiter.api.Test;
@@ -18,6 +21,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFileCreator;
 import com.synopsys.integration.alert.channel.email.attachment.MessageContentGroupCsvCreator;
+import com.synopsys.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.email.distribution.EmailChannelMessagingService;
 import com.synopsys.integration.alert.channel.email.distribution.address.EmailAddressGatherer;
 import com.synopsys.integration.alert.channel.email.distribution.address.JobEmailAddressValidator;
@@ -29,6 +33,7 @@ import com.synopsys.integration.alert.common.message.model.ConfigurationTestResu
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
@@ -45,6 +50,13 @@ import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.test.common.TestTags;
 
 public class EmailGlobalTestActionTest {
+    private EmailGlobalConfigAccessor configurationAccessor;
+
+    @BeforeEach
+    public void init() {
+        configurationAccessor = Mockito.mock(EmailGlobalConfigAccessor.class);
+    }
+
     @Test
     public void testConfigValidTest() throws AlertException {
         AuthorizationManager authorizationManager = createAuthorizationManager(255);
@@ -53,7 +65,7 @@ public class EmailGlobalTestActionTest {
         Mockito.when(emailChannelMessagingService.sendMessage(Mockito.any(), Mockito.any())).thenReturn(new MessageResult("PASS"));
 
         JavamailPropertiesFactory javamailPropertiesFactory = new JavamailPropertiesFactory();
-        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(authorizationManager, validator, emailChannelMessagingService, javamailPropertiesFactory);
+        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(authorizationManager, validator, emailChannelMessagingService, javamailPropertiesFactory, configurationAccessor);
 
         ConfigurationTestResult testResult = emailGlobalTestAction.testConfigModelContent("noreply@synopsys.com", new EmailGlobalConfigModel());
         assertTrue(testResult.isSuccess(), "Expected the message result to not have errors");
@@ -81,7 +93,7 @@ public class EmailGlobalTestActionTest {
 
         JavamailPropertiesFactory javamailPropertiesFactory = new JavamailPropertiesFactory();
 
-        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(authorizationManager, validator, emailChannelMessagingService, javamailPropertiesFactory);
+        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(authorizationManager, validator, emailChannelMessagingService, javamailPropertiesFactory, configurationAccessor);
 
         ConfigurationTestResult testResult = emailGlobalTestAction.testConfigModelContent("", new EmailGlobalConfigModel());
         assertFalse(testResult.isSuccess());
@@ -91,10 +103,56 @@ public class EmailGlobalTestActionTest {
     public void testConfigInvalidDestinationTest() {
         AuthorizationManager authorizationManager = createAuthorizationManager(AuthenticationTestUtils.FULL_PERMISSIONS);
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
-        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(authorizationManager, validator, null, null);
+        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(authorizationManager, validator, null, null, null);
 
         ConfigurationTestResult testResult = emailGlobalTestAction.testConfigModelContent("not a valid email address", new EmailGlobalConfigModel());
         assertFalse(testResult.isSuccess());
+    }
+
+    @Test
+    public void testSmtpPasswordMissingTest() throws AlertException {
+        AuthorizationManager authorizationManager = createAuthorizationManager(255);
+        EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
+        EmailChannelMessagingService emailChannelMessagingService = Mockito.mock(EmailChannelMessagingService.class);
+        Mockito.when(emailChannelMessagingService.sendMessage(Mockito.any(), Mockito.any())).thenReturn(new MessageResult("PASS"));
+
+        JavamailPropertiesFactory javamailPropertiesFactory = new JavamailPropertiesFactory();
+        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(authorizationManager, validator, emailChannelMessagingService, javamailPropertiesFactory, configurationAccessor);
+
+        EmailGlobalConfigModel emailGlobalConfigModel = new EmailGlobalConfigModel();
+        emailGlobalConfigModel.setIsSmtpPasswordSet(true);
+        EmailGlobalConfigModel configModelWithPassword = new EmailGlobalConfigModel();
+        configModelWithPassword.setIsSmtpPasswordSet(true);
+        configModelWithPassword.setSmtpPassword("password");
+        Mockito.when(configurationAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)).thenReturn(Optional.of(configModelWithPassword));
+
+        ConfigurationTestResult testResult = emailGlobalTestAction.testConfigModelContent("noreply@synopsys.com", emailGlobalConfigModel);
+        assertTrue(testResult.isSuccess(), "Expected the message result to not have errors");
+    }
+
+    @Test
+    @Tags(value = {
+        @Tag(TestTags.DEFAULT_INTEGRATION),
+        @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
+    })
+    public void testSmtpPasswordMissingTestIT() {
+        AuthorizationManager authorizationManager = createAuthorizationManager(AuthenticationTestUtils.FULL_PERMISSIONS);
+        EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
+        TestProperties testProperties = new TestProperties();
+        String emailAddress = testProperties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT);
+
+        assumeTrue(testProperties.getOptionalProperty(TestPropertyKey.TEST_EMAIL_SMTP_PASSWORD).isPresent());
+
+        JavamailPropertiesFactory javamailPropertiesFactory = new JavamailPropertiesFactory();
+        EmailChannelMessagingService validEmailChannelMessagingService = createValidEmailChannelMessagingService(emailAddress);
+        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(authorizationManager, validator, validEmailChannelMessagingService, javamailPropertiesFactory, configurationAccessor);
+
+        EmailGlobalConfigModel globalConfigModelWithoutPassword = createEmailGlobalConfigModelObfuscated(testProperties);
+        EmailGlobalConfigModel globalConfigModelWithPassword = createValidEmailGlobalConfigModel(testProperties);
+        Mockito.when(configurationAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)).thenReturn(Optional.of(globalConfigModelWithPassword));
+
+        ConfigurationTestResult testResult = emailGlobalTestAction.testConfigModelContent(emailAddress, globalConfigModelWithoutPassword);
+        assertTrue(testResult.isSuccess(), "Expected the message result to not have errors");
     }
 
     @Test
@@ -110,7 +168,7 @@ public class EmailGlobalTestActionTest {
 
         JavamailPropertiesFactory javamailPropertiesFactory = new JavamailPropertiesFactory();
         EmailChannelMessagingService validEmailChannelMessagingService = createValidEmailChannelMessagingService(emailAddress);
-        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(authorizationManager, validator, validEmailChannelMessagingService, javamailPropertiesFactory);
+        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(authorizationManager, validator, validEmailChannelMessagingService, javamailPropertiesFactory, configurationAccessor);
 
         EmailGlobalConfigModel globalConfigModel = createValidEmailGlobalConfigModel(testProperties);
 
@@ -126,7 +184,7 @@ public class EmailGlobalTestActionTest {
         Mockito.when(emailChannelMessagingService.sendMessage(Mockito.any(), Mockito.any())).thenReturn(new MessageResult("PASS"));
 
         JavamailPropertiesFactory javamailPropertiesFactory = new JavamailPropertiesFactory();
-        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(authorizationManager, validator, emailChannelMessagingService, javamailPropertiesFactory);
+        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(authorizationManager, validator, emailChannelMessagingService, javamailPropertiesFactory, configurationAccessor);
 
         ActionResponse<ValidationResponseModel> response = emailGlobalTestAction.testWithPermissionCheck("noreply@synopsys.com", new EmailGlobalConfigModel());
         assertEquals(HttpStatus.FORBIDDEN, response.getHttpStatus());
@@ -140,7 +198,7 @@ public class EmailGlobalTestActionTest {
         Mockito.when(emailChannelMessagingService.sendMessage(Mockito.any(), Mockito.any())).thenReturn(new MessageResult("PASS"));
 
         JavamailPropertiesFactory javamailPropertiesFactory = new JavamailPropertiesFactory();
-        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(authorizationManager, validator, emailChannelMessagingService, javamailPropertiesFactory);
+        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(authorizationManager, validator, emailChannelMessagingService, javamailPropertiesFactory, configurationAccessor);
 
         ActionResponse<ValidationResponseModel> response = emailGlobalTestAction.testWithPermissionCheck("noreply@synopsys.com", new EmailGlobalConfigModel());
         assertEquals(HttpStatus.OK, response.getHttpStatus());
@@ -171,7 +229,7 @@ public class EmailGlobalTestActionTest {
 
         JavamailPropertiesFactory javamailPropertiesFactory = new JavamailPropertiesFactory();
 
-        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(authorizationManager, validator, emailChannelMessagingService, javamailPropertiesFactory);
+        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(authorizationManager, validator, emailChannelMessagingService, javamailPropertiesFactory, configurationAccessor);
 
         ActionResponse<ValidationResponseModel> response = emailGlobalTestAction.testWithPermissionCheck("", new EmailGlobalConfigModel());
         assertEquals(HttpStatus.OK, response.getHttpStatus());
@@ -184,7 +242,7 @@ public class EmailGlobalTestActionTest {
     public void testPermissionConfigInvalidDestinationTest() {
         AuthorizationManager authorizationManager = createAuthorizationManager(AuthenticationTestUtils.FULL_PERMISSIONS);
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
-        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(authorizationManager, validator, null, null);
+        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(authorizationManager, validator, null, null, configurationAccessor);
 
         ActionResponse<ValidationResponseModel> response = emailGlobalTestAction.testWithPermissionCheck("not a valid email address", new EmailGlobalConfigModel());
         assertEquals(HttpStatus.OK, response.getHttpStatus());
@@ -205,7 +263,7 @@ public class EmailGlobalTestActionTest {
 
         JavamailPropertiesFactory javamailPropertiesFactory = new JavamailPropertiesFactory();
         EmailChannelMessagingService validEmailChannelMessagingService = createValidEmailChannelMessagingService(emailAddress);
-        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(authorizationManager, validator, validEmailChannelMessagingService, javamailPropertiesFactory);
+        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(authorizationManager, validator, validEmailChannelMessagingService, javamailPropertiesFactory, configurationAccessor);
 
         EmailGlobalConfigModel globalConfigModel = createValidEmailGlobalConfigModel(testProperties);
 
@@ -255,6 +313,16 @@ public class EmailGlobalTestActionTest {
         testProperties.getOptionalProperty(TestPropertyKey.TEST_EMAIL_SMTP_EHLO).ifPresent(prop -> additionalPropertiesMap.put(EmailPropertyKeys.JAVAMAIL_EHLO_KEY.getPropertyKey(), prop));
 
         emailGlobalConfigModel.setAdditionalJavaMailProperties(additionalPropertiesMap);
+
+        return emailGlobalConfigModel;
+    }
+
+    private EmailGlobalConfigModel createEmailGlobalConfigModelObfuscated(TestProperties testProperties) {
+        EmailGlobalConfigModel emailGlobalConfigModel = createValidEmailGlobalConfigModel(testProperties);
+        if (testProperties.getOptionalProperty(TestPropertyKey.TEST_EMAIL_SMTP_PASSWORD).isPresent()) {
+            emailGlobalConfigModel.setIsSmtpPasswordSet(true);
+            emailGlobalConfigModel.setSmtpPassword(null);
+        }
 
         return emailGlobalConfigModel;
     }
