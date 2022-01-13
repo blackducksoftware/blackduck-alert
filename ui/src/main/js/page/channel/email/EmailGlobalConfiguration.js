@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import * as PropTypes from 'prop-types';
 import CommonGlobalConfiguration from 'common/global/CommonGlobalConfiguration';
 import {
-    EMAIL_GLOBAL_ADVANCED_FIELD_KEYS, EMAIL_GLOBAL_FIELD_KEYS, EMAIL_INFO, EMAIL_TEST_FIELD
+    EMAIL_GLOBAL_ADVANCED_FIELD_KEYS, EMAIL_GLOBAL_FIELD_ERROR_MESSAGES, EMAIL_GLOBAL_FIELD_KEYS, EMAIL_INFO, EMAIL_TEST_FIELD
 } from 'page/channel/email/EmailModels';
 import TextInput from 'common/input/TextInput';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
@@ -13,10 +13,12 @@ import * as ConfigurationRequestBuilder from 'common/util/configurationRequestBu
 import * as fieldModelUtilities from 'common/util/fieldModelUtilities';
 import FluidFieldMappingField from 'common/input/mapping/FluidFieldMappingField';
 import NumberInput from 'common/input/NumberInput';
+import MessageLocator from 'common/messages/MessageLocator';
 
 const EmailGlobalConfiguration = ({
     csrfToken, errorHandler, readonly, displayTest, displaySave, displayDelete
 }) => {
+    const emailMessageUtil = new MessageLocator(EMAIL_GLOBAL_FIELD_ERROR_MESSAGES);
     const emailRequestUrl = `${ConfigurationRequestBuilder.CONFIG_API_URL}/email`;
     const additionalPropertiesName = 'additionalJavaMailProperties';
 
@@ -83,7 +85,7 @@ const EmailGlobalConfiguration = ({
                     onChange={fieldModelUtilities.handleTestChange(emailConfig, setEmailConfig)}
                     value={emailConfig.smtpHost || undefined}
                     errorName="smtpHost"
-                    errorValue={errors.fieldErrors.host}
+                    errorValue={emailMessageUtil.findFieldMessage(errors.fieldErrors.host)}
                 />
                 <TextInput
                     id={EMAIL_GLOBAL_FIELD_KEYS.from}
@@ -95,7 +97,7 @@ const EmailGlobalConfiguration = ({
                     onChange={fieldModelUtilities.handleTestChange(emailConfig, setEmailConfig)}
                     value={emailConfig.smtpFrom || undefined}
                     errorName="smtpFrom"
-                    errorValue={errors.fieldErrors.from}
+                    errorValue={emailMessageUtil.findFieldMessage(errors.fieldErrors.from)}
                 />
                 <NumberInput
                     id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.port}
@@ -106,7 +108,7 @@ const EmailGlobalConfiguration = ({
                     onChange={fieldModelUtilities.handleTestChange(emailConfig, setEmailConfig)}
                     value={emailConfig.smtpPort || undefined}
                     errorName="smtpPort"
-                    errorValue={errors.fieldErrors.smtpPort}
+                    errorValue={emailMessageUtil.findFieldMessage(errors.fieldErrors.smtpPort)}
                 />
                 <CheckboxInput
                     id={EMAIL_GLOBAL_FIELD_KEYS.auth}
@@ -117,7 +119,7 @@ const EmailGlobalConfiguration = ({
                     onChange={fieldModelUtilities.handleTestChange(emailConfig, setEmailConfig)}
                     isChecked={(emailConfig.smtpAuth || 'false').toString().toLowerCase() === 'true'}
                     errorName="smtpAuth"
-                    errorValue={errors.fieldErrors.smtpAuth}
+                    errorValue={emailMessageUtil.findFieldMessage(errors.fieldErrors.smtpAuth)}
                 />
                 <TextInput
                     id={EMAIL_GLOBAL_FIELD_KEYS.user}
@@ -128,7 +130,7 @@ const EmailGlobalConfiguration = ({
                     onChange={fieldModelUtilities.handleTestChange(emailConfig, setEmailConfig)}
                     value={emailConfig.smtpUsername || undefined}
                     errorName="smtpUsername"
-                    errorValue={errors.fieldErrors.user}
+                    errorValue={emailMessageUtil.findFieldMessage(errors.fieldErrors.user)}
                 />
                 <PasswordInput
                     id={EMAIL_GLOBAL_FIELD_KEYS.password}
@@ -140,7 +142,7 @@ const EmailGlobalConfiguration = ({
                     value={emailConfig.smtpPassword || undefined}
                     isSet={emailConfig.isSmtpPasswordSet}
                     errorName="smtpPassword"
-                    errorValue={errors.fieldErrors.password}
+                    errorValue={emailMessageUtil.findFieldMessage(errors.fieldErrors.password)}
                 />
                 <FluidFieldMappingField
                     id="additional.email.properties"
@@ -151,7 +153,7 @@ const EmailGlobalConfiguration = ({
                     value={emailConfig[additionalPropertiesName] || {}}
                     setValue={updateAdditionalProperties}
                     errorName="additionalJavaMailProperties"
-                    errorValue={errors.fieldErrors[additionalPropertiesName]}
+                    errorValue={emailMessageUtil.findFieldMessage(errors.fieldErrors[additionalPropertiesName])}
                 />
             </ConfigurationForm>
         </CommonGlobalConfiguration>

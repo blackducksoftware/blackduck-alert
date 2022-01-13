@@ -1,4 +1,5 @@
 import { createTableSelectColumn } from 'common/input/TableSelectInput';
+import { COMMON_FIELD_EROR_MESSAGES } from 'common/messages/CommonMessages';
 
 export const EMAIL_DISTRIBUTION_FIELD_KEYS = {
     additionalAddresses: 'email.additional.addresses',
@@ -98,3 +99,8 @@ export const EMAIL_GLOBAL_ADVANCED_FIELD_KEYS = {
     "endDate",
     "emailCategory",
  */
+
+export const EMAIL_GLOBAL_FIELD_ERROR_MESSAGES = {
+    ...COMMON_FIELD_EROR_MESSAGES,
+    REQUIRED_BECAUSE_AUTH_KEY: "Field is required to be set because 'auth' is set to 'true'."
+};

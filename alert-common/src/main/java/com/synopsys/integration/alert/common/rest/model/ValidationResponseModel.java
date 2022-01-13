@@ -46,7 +46,7 @@ public class ValidationResponseModel extends AlertSerializableModel {
             if (null != existingStatus) {
                 if (existingStatus.getSeverity().equals(fieldStatus.getSeverity())) {
                     String combinedMessage = String.format("%s, %s", existingStatus.getFieldMessage(), fieldStatus.getFieldMessage());
-                    fieldNameToStatus.put(fieldName, new AlertFieldStatus(fieldName, fieldStatus.getSeverity(), combinedMessage));
+                    fieldNameToStatus.put(fieldName, new AlertFieldStatus(fieldName, fieldStatus.getSeverity(), combinedMessage, null));
                 } else if (FieldStatusSeverity.WARNING.equals(fieldStatus.getSeverity())) {
                     continue;
                 }

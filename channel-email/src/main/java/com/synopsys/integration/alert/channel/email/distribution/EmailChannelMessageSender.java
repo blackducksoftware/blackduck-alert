@@ -138,7 +138,7 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
         if (!invalidEmailAddresses.isEmpty()) {
             String invalidEmailAddressesString = StringUtils.join(invalidEmailAddresses, ", ");
             String errorMessage = String.format("No emails were sent to the following recipients because they were invalid: %s", invalidEmailAddressesString);
-            AlertFieldStatus errorStatus = new AlertFieldStatus(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES, FieldStatusSeverity.ERROR, errorMessage);
+            AlertFieldStatus errorStatus = new AlertFieldStatus(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES, FieldStatusSeverity.ERROR, errorMessage, null);
             return new MessageResult(errorMessage, List.of(errorStatus));
         }
         return new MessageResult(String.format("Successfully sent %d email(s)", totalEmailsSent));
