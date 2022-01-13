@@ -153,6 +153,7 @@ public class DistributionJobNotificationFilterRepositoryTestIT {
             blackDuckConfigId,
             filterByProject,
             projectNamePattern,
+            null,
             List.of(NotificationType.VULNERABILITY.name()),
             projectFilterDetails,
             List.of(),

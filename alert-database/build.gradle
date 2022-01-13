@@ -33,8 +33,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-autoconfigure'
     implementation 'org.springframework.security:spring-security-core'
     implementation 'org.hibernate:hibernate-core'
-    implementation 'com.vladmihalcea:hibernate-types-52'
-    implementation 'org.hibernate:hibernate-core'
 
     runtimeOnly 'org.postgresql:postgresql'
     runtimeOnly 'org.liquibase:liquibase-core'
