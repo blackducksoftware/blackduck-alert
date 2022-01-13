@@ -50,4 +50,9 @@ public class ValidationActionResponse extends ActionResponse<ValidationResponseM
         return getContent()
                    .map(ValidationResponseModel::getMessage);
     }
+
+    public boolean hasValidationErrors() {
+        return getContent().stream()
+                   .anyMatch(ValidationResponseModel::hasErrors);
+    }
 }
