@@ -10,6 +10,7 @@ package com.synopsys.integration.alert.component.settings.proxy.validator;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -45,10 +46,12 @@ public class SettingsProxyValidator {
 
         if (model.getProxyUsername().isPresent()) {
             validateRequiredFieldIsNotBlank(statuses, model.getProxyHost().isPresent(), PROXY_HOST_FIELD_NAME);
-            validateRequiredFieldIsNotBlank(statuses, model.getProxyPassword().isPresent(), PROXY_PASSWORD_FIELD_NAME);
+            if (!BooleanUtils.toBoolean(model.getIsProxyPasswordSet())) {
+                validateRequiredFieldIsNotBlank(statuses, model.getProxyPassword().isPresent(), PROXY_PASSWORD_FIELD_NAME);
+            }
         }
 
-        if (model.getProxyPassword().isPresent()) {
+        if (model.getProxyPassword().isPresent() || BooleanUtils.toBoolean(model.getIsProxyPasswordSet())) {
             validateRequiredFieldIsNotBlank(statuses, model.getProxyHost().isPresent(), PROXY_HOST_FIELD_NAME);
             validateRequiredFieldIsNotBlank(statuses, model.getProxyUsername().isPresent(), PROXY_USERNAME_FIELD_NAME);
         }
