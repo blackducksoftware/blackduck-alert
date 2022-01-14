@@ -3,14 +3,18 @@ package com.synopsys.integration.alert.component.settings.proxy.actions;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.jupiter.api.BeforeEach;
+import java.util.Map;
+
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
+import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
@@ -20,12 +24,14 @@ import com.synopsys.integration.alert.component.settings.descriptor.SettingsDesc
 import com.synopsys.integration.alert.component.settings.proxy.action.SettingsProxyTestAction;
 import com.synopsys.integration.alert.component.settings.proxy.database.accessor.SettingsProxyConfigAccessor;
 import com.synopsys.integration.alert.component.settings.proxy.validator.SettingsProxyValidator;
-import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
+import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
+import com.synopsys.integration.alert.test.common.TestProperties;
+import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @Transactional
 @AlertIntegrationTest
-public class SettingsProxyTestActionTestIT {
+class SettingsProxyTestActionTestIT {
     @Autowired
     private SettingsProxyValidator settingsProxyValidator;
     @Autowired
@@ -35,30 +41,23 @@ public class SettingsProxyTestActionTestIT {
     @Autowired
     private SettingsProxyConfigAccessor settingsProxyConfigAccessor;
 
+    private final TestProperties testProperties = new TestProperties();
+    private final String validTargetUrl = "https://google.com";
+
     private SettingsProxyTestAction settingsProxyTestAction;
 
-    public static final String HOST = "host";
-    public static final Integer PORT = 9999;
-    public static final String USERNAME = "username";
-    public static final String PASSWORD = "password";
-    public static final String NON_PROXY_HOST = "nonProxyHostUrl";
-
-    @BeforeEach
-    public void init() {
-        AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
-        Mockito.when(authorizationManager.hasCreatePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.TRUE);
-        Mockito.when(authorizationManager.hasReadPermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.TRUE);
-        Mockito.when(authorizationManager.hasDeletePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.TRUE);
-        Mockito.when(authorizationManager.hasWritePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.TRUE);
-        Mockito.when(authorizationManager.hasExecutePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.TRUE);
-        settingsProxyTestAction = new SettingsProxyTestAction(authorizationManager, settingsProxyValidator, settingsDescriptorKey, proxyTestService, settingsProxyConfigAccessor);
+    @AfterEach
+    void cleanup() {
+        settingsProxyConfigAccessor.deleteConfiguration();
     }
 
     @Test
-    public void testWithPermissionCheckTest() {
-        String testUrl = "https://google.com";
-        SettingsProxyModel settingsProxyModel = createSettingsProxyModel();
-        ActionResponse<ValidationResponseModel> testResult = settingsProxyTestAction.testWithPermissionCheck(testUrl, settingsProxyModel);
+    void testWithPermissionCheckTest() {
+        SettingsProxyModel settingsProxyModel = createSettingsProxyModel(testProperties);
+        AuthorizationManager authorizationManager = createAuthorizationManager(AuthenticationTestUtils.FULL_PERMISSIONS);
+        settingsProxyTestAction = new SettingsProxyTestAction(authorizationManager, settingsProxyValidator, settingsDescriptorKey, proxyTestService, settingsProxyConfigAccessor);
+
+        ActionResponse<ValidationResponseModel> testResult = settingsProxyTestAction.testWithPermissionCheck(validTargetUrl, settingsProxyModel);
 
         assertTrue(testResult.isSuccessful());
         assertTrue(testResult.getContent().isPresent());
@@ -66,14 +65,107 @@ public class SettingsProxyTestActionTestIT {
         assertFalse(validationResponseModel.hasErrors());
     }
 
-    private SettingsProxyModel createSettingsProxyModel() {
+    @Test
+    void testWithoutPermissionsCheckTest() {
+        SettingsProxyModel settingsProxyModel = createSettingsProxyModel(testProperties);
+        AuthorizationManager authorizationManager = createAuthorizationManager(AuthenticationTestUtils.NO_PERMISSIONS);
+        settingsProxyTestAction = new SettingsProxyTestAction(authorizationManager, settingsProxyValidator, settingsDescriptorKey, proxyTestService, settingsProxyConfigAccessor);
+
+        ActionResponse<ValidationResponseModel> testResult = settingsProxyTestAction.testWithPermissionCheck(validTargetUrl, settingsProxyModel);
+
+        assertTrue(testResult.isError());
+        assertTrue(testResult.getContent().isPresent());
+        ValidationResponseModel validationResponseModel = testResult.getContent().get();
+        assertTrue(validationResponseModel.hasErrors());
+    }
+
+    @Test
+    void testValidationFailureTest() {
         SettingsProxyModel settingsProxyModel = new SettingsProxyModel();
+        AuthorizationManager authorizationManager = createAuthorizationManager(AuthenticationTestUtils.FULL_PERMISSIONS);
+        settingsProxyTestAction = new SettingsProxyTestAction(authorizationManager, settingsProxyValidator, settingsDescriptorKey, proxyTestService, settingsProxyConfigAccessor);
+
+        ActionResponse<ValidationResponseModel> testResult = settingsProxyTestAction.testWithPermissionCheck(validTargetUrl, settingsProxyModel);
+
+        assertTrue(testResult.isSuccessful());
+        assertTrue(testResult.getContent().isPresent());
+        ValidationResponseModel validationResponseModel = testResult.getContent().get();
+        assertTrue(validationResponseModel.hasErrors());
+    }
+
+    @Test
+    void missingTargetUrlTest() {
+        SettingsProxyModel settingsProxyModel = createSettingsProxyModel(testProperties);
+        AuthorizationManager authorizationManager = createAuthorizationManager(AuthenticationTestUtils.FULL_PERMISSIONS);
+        settingsProxyTestAction = new SettingsProxyTestAction(authorizationManager, settingsProxyValidator, settingsDescriptorKey, proxyTestService, settingsProxyConfigAccessor);
+
+        ActionResponse<ValidationResponseModel> testResult = settingsProxyTestAction.testWithPermissionCheck("", settingsProxyModel);
+        assertTrue(testResult.isSuccessful());
+        assertTrue(testResult.getContent().isPresent());
+        ValidationResponseModel validationResponseModel = testResult.getContent().get();
+        assertTrue(validationResponseModel.hasErrors());
+    }
+
+    @Test
+    void malformedTargetUrlTest() {
+        SettingsProxyModel settingsProxyModel = createSettingsProxyModel(testProperties);
+        AuthorizationManager authorizationManager = createAuthorizationManager(AuthenticationTestUtils.FULL_PERMISSIONS);
+        settingsProxyTestAction = new SettingsProxyTestAction(authorizationManager, settingsProxyValidator, settingsDescriptorKey, proxyTestService, settingsProxyConfigAccessor);
+
+        ActionResponse<ValidationResponseModel> testResult = settingsProxyTestAction.testWithPermissionCheck("Not a valid url", settingsProxyModel);
+        assertTrue(testResult.isSuccessful());
+        assertTrue(testResult.getContent().isPresent());
+        ValidationResponseModel validationResponseModel = testResult.getContent().get();
+        assertTrue(validationResponseModel.hasErrors());
+    }
+
+    @Test
+    void testUrlWithBadResponseTest() {
+        SettingsProxyModel settingsProxyModel = createSettingsProxyModel(testProperties);
+        AuthorizationManager authorizationManager = createAuthorizationManager(AuthenticationTestUtils.FULL_PERMISSIONS);
+        settingsProxyTestAction = new SettingsProxyTestAction(authorizationManager, settingsProxyValidator, settingsDescriptorKey, proxyTestService, settingsProxyConfigAccessor);
+
+        ActionResponse<ValidationResponseModel> testResult = settingsProxyTestAction.testWithPermissionCheck("http://thisUrlWillReturnFailures", settingsProxyModel);
+        assertTrue(testResult.isSuccessful());
+        assertTrue(testResult.getContent().isPresent());
+        ValidationResponseModel validationResponseModel = testResult.getContent().get();
+        assertTrue(validationResponseModel.hasErrors());
+    }
+
+    @Test
+    void testConfigurationWithPasswordSaved() throws AlertConfigurationException {
+        SettingsProxyModel settingsProxyModel = createSettingsProxyModel(testProperties);
+        settingsProxyConfigAccessor.createConfiguration(createSettingsProxyModel(testProperties));
+
+        settingsProxyModel.setProxyPassword(null);
+        settingsProxyModel.setIsProxyPasswordSet(true);
+        AuthorizationManager authorizationManager = createAuthorizationManager(AuthenticationTestUtils.FULL_PERMISSIONS);
+        settingsProxyTestAction = new SettingsProxyTestAction(authorizationManager, settingsProxyValidator, settingsDescriptorKey, proxyTestService, settingsProxyConfigAccessor);
+
+        ActionResponse<ValidationResponseModel> testResult = settingsProxyTestAction.testWithPermissionCheck(validTargetUrl, settingsProxyModel);
+        assertTrue(testResult.isSuccessful());
+        assertTrue(testResult.getContent().isPresent());
+        ValidationResponseModel validationResponseModel = testResult.getContent().get();
+        assertFalse(validationResponseModel.hasErrors());
+    }
+
+    private SettingsProxyModel createSettingsProxyModel(TestProperties testProperties) {
+        SettingsProxyModel settingsProxyModel = new SettingsProxyModel();
+
         settingsProxyModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
-        settingsProxyModel.setProxyHost(HOST);
-        settingsProxyModel.setProxyPort(PORT);
-        settingsProxyModel.setProxyUsername(USERNAME);
-        settingsProxyModel.setProxyPassword(PASSWORD);
-        settingsProxyModel.setIsSmtpPasswordSet(false);
+        settingsProxyModel.setProxyHost(testProperties.getProperty(TestPropertyKey.TEST_PROXY_HOST));
+        settingsProxyModel.setProxyPort(Integer.valueOf(testProperties.getProperty(TestPropertyKey.TEST_PROXY_PORT)));
+
+        testProperties.getOptionalProperty(TestPropertyKey.TEST_PROXY_USERNAME).ifPresent(settingsProxyModel::setProxyUsername);
+        testProperties.getOptionalProperty(TestPropertyKey.TEST_PROXY_PASSWORD).ifPresent(settingsProxyModel::setProxyPassword);
+
         return settingsProxyModel;
+    }
+
+    private AuthorizationManager createAuthorizationManager(int assignedPermissions) {
+        AuthenticationTestUtils authenticationTestUtils = new AuthenticationTestUtils();
+        PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), settingsDescriptorKey.getUniversalKey());
+        Map<PermissionKey, Integer> permissions = Map.of(permissionKey, assignedPermissions);
+        return authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
     }
 }
