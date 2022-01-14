@@ -10,10 +10,13 @@ package com.synopsys.integration.alert.common.action;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 
 public class SSLValidationResponseModel extends ValidationResponseModel {
+    private static final long serialVersionUID = 2731575810087212980L;
+    public static final String SSL_ERROR_KEY = "SSL_PKIX_ERROR_KEY";
+    
     private final boolean isDetailed;
 
     public SSLValidationResponseModel(String message) {
-        super(message, true);
+        super(message, true, SSL_ERROR_KEY);
         this.isDetailed = true;
     }
 

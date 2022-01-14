@@ -68,10 +68,24 @@ public class ValidationResponseModel extends AlertSerializableModel {
         this.hasErrors = hasErrors;
     }
 
+    protected ValidationResponseModel(String message, Boolean hasErrors, String messageKey) {
+        this.message = message;
+        this.errors = Map.of();
+        this.hasErrors = hasErrors;
+        this.messageKey = messageKey;
+    }
+
     public ValidationResponseModel(String message, Map<String, AlertFieldStatus> statuses) {
         this.message = message;
         this.errors = statuses;
         this.hasErrors = !errors.isEmpty();
+    }
+
+    public ValidationResponseModel(String message, Map<String, AlertFieldStatus> statuses, String messageKey) {
+        this.message = message;
+        this.errors = statuses;
+        this.hasErrors = !errors.isEmpty();
+        this.messageKey = messageKey;
     }
 
     public String getMessage() {

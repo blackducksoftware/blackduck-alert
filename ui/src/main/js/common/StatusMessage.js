@@ -3,10 +3,13 @@ import PropTypes from 'prop-types';
 import Alert from 'react-bootstrap/Alert';
 import FadeField from 'common/FadeField';
 import MessageFormatter from 'common/MessageFormatter';
+import MessageLocator from 'common/messages/MessageLocator';
+import { COMMON_STATUS_MESSAGES } from 'common/messages/CommonMessages';
 
 const StatusMessage = ({
     id, errorMessage, actionMessage, errorIsDetailed
 }) => {
+    const messageLocator = new MessageLocator(COMMON_STATUS_MESSAGES);
     const [showError, setShowError] = useState(false);
     const [showMessage, setShowMessage] = useState(false);
 
