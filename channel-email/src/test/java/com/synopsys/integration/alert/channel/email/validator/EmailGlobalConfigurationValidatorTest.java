@@ -2,15 +2,14 @@ package com.synopsys.integration.alert.channel.email.validator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collection;
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldCommonMessageKeys;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
+import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
@@ -65,7 +64,7 @@ class EmailGlobalConfigurationValidatorTest {
         Collection<AlertFieldStatus> alertFieldStatuses = validationResponseModel.getErrors().values();
         assertEquals(3, alertFieldStatuses.size(), "Validation found more or fewer errors than expected.");
         for (AlertFieldStatus status : alertFieldStatuses) {
-            assertTrue(StringUtils.isBlank(status.getFieldMessage()), "Validation had unexpected field message.");
+            assertEquals(ConfigurationFieldValidator.REQUIRED_FIELD_MISSING_MESSAGE, status.getFieldMessage(), "Validation had unexpected field message.");
             assertEquals(AlertFieldCommonMessageKeys.REQUIRED_FIELD_MISSING_KEY.name(), status.getMessageKey().orElse("UNKNOWN-KEY"), "Validation had unexpected message key");
         }
     }
@@ -83,8 +82,8 @@ class EmailGlobalConfigurationValidatorTest {
         Collection<AlertFieldStatus> alertFieldStatuses = validationResponseModel.getErrors().values();
         assertEquals(2, alertFieldStatuses.size(), "Validation found more or fewer errors than expected.");
         for (AlertFieldStatus status : alertFieldStatuses) {
-            assertTrue(StringUtils.isBlank(status.getFieldMessage()), "Validation had unexpected field message.");
-            assertEquals(EmailGlobalConfigurationValidator.REQUIRED_BECAUSE_AUTH, status.getMessageKey().orElse("UNKNOWN-KEY"), "Validation had unexpected message key");
+            assertEquals(EmailGlobalConfigurationValidator.REQUIRED_BECAUSE_AUTH, status.getFieldMessage(), "Validation had unexpected field message.");
+            assertEquals(EmailGlobalConfigurationValidator.REQUIRED_BECAUSE_AUTH_KEY, status.getMessageKey().orElse("UNKNOWN-KEY"), "Validation had unexpected message key");
         }
     }
 
@@ -116,9 +115,9 @@ class EmailGlobalConfigurationValidatorTest {
         Collection<AlertFieldStatus> alertFieldStatuses = validationResponseModel.getErrors().values();
         assertEquals(1, alertFieldStatuses.size(), "Validation found more or fewer errors than expected.");
         for (AlertFieldStatus status : alertFieldStatuses) {
-
-            assertTrue(StringUtils.isBlank(status.getFieldMessage()), "Validation had unexpected field message.");
-            assertEquals(EmailGlobalConfigurationValidator.REQUIRED_BECAUSE_AUTH, status.getMessageKey().orElse("UNKNOWN-KEY"), "Validation had unexpected message key");
+            assertEquals("password", status.getFieldName(), "Validation reported an error for an unexpected field.");
+            assertEquals(EmailGlobalConfigurationValidator.REQUIRED_BECAUSE_AUTH, status.getFieldMessage(), "Validation had unexpected field message.");
+            assertEquals(EmailGlobalConfigurationValidator.REQUIRED_BECAUSE_AUTH_KEY, status.getMessageKey().orElse("UNKNOWN-KEY"), "Validation had unexpected message key");
         }
     }
 

@@ -10,6 +10,7 @@ package com.synopsys.integration.alert.common.rest.model;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
@@ -21,6 +22,7 @@ public class ValidationResponseModel extends AlertSerializableModel {
     private String message;
     private Boolean hasErrors;
     private Map<String, AlertFieldStatus> errors;
+    private String messageKey;
 
     public static ValidationResponseModel success() {
         return success(ValidationActionResponse.VALIDATION_SUCCESS_MESSSAGE);
@@ -85,4 +87,7 @@ public class ValidationResponseModel extends AlertSerializableModel {
         return hasErrors;
     }
 
+    public Optional<String> getMessageKey() {
+        return Optional.ofNullable(messageKey);
+    }
 }

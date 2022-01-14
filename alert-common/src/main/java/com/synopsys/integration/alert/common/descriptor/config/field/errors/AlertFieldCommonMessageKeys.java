@@ -8,7 +8,18 @@
 package com.synopsys.integration.alert.common.descriptor.config.field.errors;
 
 public enum AlertFieldCommonMessageKeys {
-    ENCRYPTION_MISSING_KEY,
-    INVALID_OPTION_KEY,
-    REQUIRED_FIELD_MISSING_KEY,
+
+    ENCRYPTION_MISSING_KEY("Encryption configuration missing."),
+    INVALID_OPTION_KEY("Invalid option selected"),
+    REQUIRED_FIELD_MISSING_KEY("Required field missing");
+
+    private final String message;
+
+    AlertFieldCommonMessageKeys(String message) {
+        this.message = message;
+    }
+
+    public String getMessage() {
+        return message;
+    }
 }

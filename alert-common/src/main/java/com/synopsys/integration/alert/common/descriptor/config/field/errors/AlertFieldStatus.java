@@ -9,7 +9,6 @@ package com.synopsys.integration.alert.common.descriptor.config.field.errors;
 
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
@@ -28,12 +27,12 @@ public class AlertFieldStatus extends AlertSerializableModel {
         return new AlertFieldStatus(fieldName, FieldStatusSeverity.WARNING, fieldWarningMessage, null);
     }
 
-    public static AlertFieldStatus errorWithMessageKey(String fieldName, String messageKey) {
-        return new AlertFieldStatus(fieldName, FieldStatusSeverity.ERROR, StringUtils.EMPTY, messageKey);
+    public static AlertFieldStatus errorWithMessageKey(String fieldName, String fieldErrorMessage, String messageKey) {
+        return new AlertFieldStatus(fieldName, FieldStatusSeverity.ERROR, fieldErrorMessage, messageKey);
     }
 
-    public static AlertFieldStatus warningWithMessageKey(String fieldName, String messageKey) {
-        return new AlertFieldStatus(fieldName, FieldStatusSeverity.WARNING, StringUtils.EMPTY, messageKey);
+    public static AlertFieldStatus warningWithMessageKey(String fieldName, String fieldWarningMessage, String messageKey) {
+        return new AlertFieldStatus(fieldName, FieldStatusSeverity.WARNING, fieldWarningMessage, messageKey);
     }
 
     public AlertFieldStatus(String fieldName, FieldStatusSeverity severity, String fieldMessage, @Nullable String messageKey) {

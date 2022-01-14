@@ -21,26 +21,27 @@ import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel
 
 @Component
 public class EmailGlobalConfigurationValidator {
-    public static final String REQUIRED_BECAUSE_AUTH = "REQUIRED_BECAUSE_AUTH_KEY";
+    public static final String REQUIRED_BECAUSE_AUTH = "Field is required to be set because 'auth' is set to 'true'.";
+    public static final String REQUIRED_BECAUSE_AUTH_KEY = "REQUIRED_BECAUSE_AUTH_KEY";
 
     public ValidationResponseModel validate(EmailGlobalConfigModel model) {
         Set<AlertFieldStatus> statuses = new HashSet<>();
         if (StringUtils.isBlank(model.getName())) {
-            statuses.add(AlertFieldStatus.errorWithMessageKey("name", AlertFieldCommonMessageKeys.REQUIRED_FIELD_MISSING_KEY.name()));
+            statuses.add(AlertFieldStatus.errorWithMessageKey("name", AlertFieldCommonMessageKeys.REQUIRED_FIELD_MISSING_KEY.getMessage(), AlertFieldCommonMessageKeys.REQUIRED_FIELD_MISSING_KEY.name()));
         }
         if (model.getSmtpHost().filter(StringUtils::isNotBlank).isEmpty()) {
-            statuses.add(AlertFieldStatus.errorWithMessageKey("host", AlertFieldCommonMessageKeys.REQUIRED_FIELD_MISSING_KEY.name()));
+            statuses.add(AlertFieldStatus.errorWithMessageKey("host", AlertFieldCommonMessageKeys.REQUIRED_FIELD_MISSING_KEY.getMessage(), AlertFieldCommonMessageKeys.REQUIRED_FIELD_MISSING_KEY.name()));
         }
         if (model.getSmtpFrom().filter(StringUtils::isNotBlank).isEmpty()) {
-            statuses.add(AlertFieldStatus.errorWithMessageKey("from", AlertFieldCommonMessageKeys.REQUIRED_FIELD_MISSING_KEY.name()));
+            statuses.add(AlertFieldStatus.errorWithMessageKey("from", AlertFieldCommonMessageKeys.REQUIRED_FIELD_MISSING_KEY.getMessage(), AlertFieldCommonMessageKeys.REQUIRED_FIELD_MISSING_KEY.name()));
         }
 
         if (model.getSmtpAuth().filter(Boolean.TRUE::equals).isPresent()) {
             if (model.getSmtpUsername().filter(StringUtils::isNotBlank).isEmpty()) {
-                statuses.add(AlertFieldStatus.errorWithMessageKey("user", REQUIRED_BECAUSE_AUTH));
+                statuses.add(AlertFieldStatus.errorWithMessageKey("user", REQUIRED_BECAUSE_AUTH, REQUIRED_BECAUSE_AUTH_KEY));
             }
             if (model.getSmtpPassword().filter(StringUtils::isNotBlank).isEmpty() && !BooleanUtils.toBoolean(model.getIsSmtpPasswordSet())) {
-                statuses.add(AlertFieldStatus.errorWithMessageKey("password", REQUIRED_BECAUSE_AUTH));
+                statuses.add(AlertFieldStatus.errorWithMessageKey("password", REQUIRED_BECAUSE_AUTH, REQUIRED_BECAUSE_AUTH_KEY));
             }
         }
 
