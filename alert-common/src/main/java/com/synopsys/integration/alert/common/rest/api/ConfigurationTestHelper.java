@@ -38,7 +38,9 @@ public class ConfigurationTestHelper {
         }
 
         ValidationActionResponse validationResponse = validationSupplier.get();
-        if (validationResponse.isError()) {
+        // validationResponse.isError() will always be false due to the validationHelper always returning an HttpStatus OK. If unused by future test actions
+        //  using different validation schemes, this should be removed.
+        if (validationResponse.isError() || validationResponse.hasValidationErrors()) {
             return validationResponse;
         }
 

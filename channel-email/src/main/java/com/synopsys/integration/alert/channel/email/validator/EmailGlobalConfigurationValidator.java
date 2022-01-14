@@ -10,6 +10,7 @@ package com.synopsys.integration.alert.channel.email.validator;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -38,7 +39,7 @@ public class EmailGlobalConfigurationValidator {
             if (model.getSmtpUsername().filter(StringUtils::isNotBlank).isEmpty()) {
                 statuses.add(AlertFieldStatus.errorWithMessageKey("user", REQUIRED_BECAUSE_AUTH));
             }
-            if (model.getSmtpPassword().filter(StringUtils::isNotBlank).isEmpty()) {
+            if (model.getSmtpPassword().filter(StringUtils::isNotBlank).isEmpty() && !BooleanUtils.toBoolean(model.getIsSmtpPasswordSet())) {
                 statuses.add(AlertFieldStatus.errorWithMessageKey("password", REQUIRED_BECAUSE_AUTH));
             }
         }

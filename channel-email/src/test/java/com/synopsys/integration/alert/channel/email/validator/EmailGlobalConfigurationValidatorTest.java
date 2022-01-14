@@ -15,7 +15,7 @@ import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
-public class EmailGlobalConfigurationValidatorTest {
+class EmailGlobalConfigurationValidatorTest {
 
     /*
      * Email host: Required
@@ -26,7 +26,7 @@ public class EmailGlobalConfigurationValidatorTest {
      */
 
     @Test
-    public void verifyValidConfig() {
+    void verifyValidConfig() {
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailGlobalConfigModel model = new EmailGlobalConfigModel();
         model.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
@@ -42,7 +42,7 @@ public class EmailGlobalConfigurationValidatorTest {
     }
 
     @Test
-    public void verifyNameMissingConfig() {
+    void verifyNameMissingConfig() {
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailGlobalConfigModel model = new EmailGlobalConfigModel();
         model.setSmtpHost("host");
@@ -57,7 +57,7 @@ public class EmailGlobalConfigurationValidatorTest {
     }
 
     @Test
-    public void verifyEmptyConfig() {
+    void verifyEmptyConfig() {
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailGlobalConfigModel model = new EmailGlobalConfigModel();
 
@@ -71,7 +71,7 @@ public class EmailGlobalConfigurationValidatorTest {
     }
 
     @Test
-    public void verifyMissingAuth() {
+    void verifyMissingAuth() {
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailGlobalConfigModel model = new EmailGlobalConfigModel();
         model.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
@@ -89,7 +89,7 @@ public class EmailGlobalConfigurationValidatorTest {
     }
 
     @Test
-    public void verifyAuthNotProvided() {
+    void verifyAuthNotProvided() {
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailGlobalConfigModel model = new EmailGlobalConfigModel();
         model.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
@@ -103,7 +103,7 @@ public class EmailGlobalConfigurationValidatorTest {
     }
 
     @Test
-    public void verifyMissingAuthPassword() {
+    void verifyMissingAuthPassword() {
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailGlobalConfigModel model = new EmailGlobalConfigModel();
         model.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
@@ -120,5 +120,21 @@ public class EmailGlobalConfigurationValidatorTest {
             assertTrue(StringUtils.isBlank(status.getFieldMessage()), "Validation had unexpected field message.");
             assertEquals(EmailGlobalConfigurationValidator.REQUIRED_BECAUSE_AUTH, status.getMessageKey().orElse("UNKNOWN-KEY"), "Validation had unexpected message key");
         }
+    }
+
+    @Test
+    void verifyIsPasswordSet() {
+        EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
+        EmailGlobalConfigModel model = new EmailGlobalConfigModel();
+        model.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
+        model.setSmtpHost("host");
+        model.setSmtpFrom("from");
+        model.setSmtpAuth(true);
+        model.setSmtpUsername("user");
+        model.setIsSmtpPasswordSet(true);
+
+        ValidationResponseModel validationResponseModel = validator.validate(model);
+        Collection<AlertFieldStatus> alertFieldStatuses = validationResponseModel.getErrors().values();
+        assertEquals(0, alertFieldStatuses.size(), "There were errors in the configuration when none were expected.");
     }
 }
