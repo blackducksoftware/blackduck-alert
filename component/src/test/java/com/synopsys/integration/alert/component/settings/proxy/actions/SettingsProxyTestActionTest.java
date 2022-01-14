@@ -134,7 +134,7 @@ class SettingsProxyTestActionTest {
 
         SettingsProxyModel settingsProxyModel = createDefaultSettingsProxyModel();
         settingsProxyModel.setProxyPassword(null);
-        settingsProxyModel.setIsSmtpPasswordSet(true);
+        settingsProxyModel.setIsProxyPasswordSet(true);
 
         SettingsProxyTestAction settingsProxyTestAction = new SettingsProxyTestAction(authorizationManager, settingsProxyValidator, settingsDescriptorKey, proxyTestService, settingsProxyConfigAccessor);
         ConfigurationTestResult testResult = settingsProxyTestAction.testConfigModelContent(TEST_URL, settingsProxyModel);
@@ -158,10 +158,11 @@ class SettingsProxyTestActionTest {
 
     private SettingsProxyModel createDefaultSettingsProxyModel() {
         SettingsProxyModel settingsProxyModel = new SettingsProxyModel();
+        settingsProxyModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
         settingsProxyModel.setProxyHost(HOST);
         settingsProxyModel.setProxyPort(PORT);
         settingsProxyModel.setProxyUsername(USERNAME);
-        settingsProxyModel.setIsSmtpPasswordSet(false);
+        settingsProxyModel.setIsProxyPasswordSet(false);
         settingsProxyModel.setProxyPassword(PASSWORD);
         return settingsProxyModel;
     }
