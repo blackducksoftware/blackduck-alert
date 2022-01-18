@@ -45,6 +45,12 @@ public enum TestPropertyKey {
     TEST_ENCRYPTION_PASSWORD("alert.encryption.password"),
     TEST_ENCRYPTION_SALT("alert.encryption.global.salt"),
 
+    TEST_PROXY_HOST("alert.proxy.host"),
+    TEST_PROXY_PORT("alert.proxy.port"),
+    TEST_PROXY_USERNAME("alert.proxy.username"),
+    TEST_PROXY_PASSWORD("alert.proxy.password"),
+    TEST_PROXY_NON_PROXY_HOSTS("alert.proxy.non.proxy.hosts"),
+
     TEST_JIRA_CLOUD_URL("alert.jira.cloud.url"),
     TEST_JIRA_CLOUD_USER_EMAIL("alert.jira.cloud.user.email"),
     TEST_JIRA_CLOUD_API_TOKEN("alert.jira.cloud.api.token"),

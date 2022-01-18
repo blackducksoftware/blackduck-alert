@@ -14,7 +14,7 @@ const SettingsConfiguration = ({
         description="This page allows you to configure the global settings."
     >
         <Tabs defaultActiveKey={1} id="settings-tabs">
-            <Tab eventKey={1} title="SettingsEncryption">
+            <Tab eventKey={1} title="Encryption">
                 <SettingsEncryptionConfiguration
                     csrfToken={csrfToken}
                     errorHandler={errorHandler}
@@ -22,7 +22,7 @@ const SettingsConfiguration = ({
                     displaySave={displaySave}
                 />
             </Tab>
-            <Tab eventKey={2} title="SettingsProxy">
+            <Tab eventKey={2} title="Proxy">
                 <SettingsProxyConfiguration
                     csrfToken={csrfToken}
                     errorHandler={errorHandler}
