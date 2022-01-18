@@ -34,7 +34,6 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Azure
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraJobCustomFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
@@ -49,7 +48,6 @@ import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetails
 import com.synopsys.integration.alert.database.job.jira.cloud.DefaultJiraCloudJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.jira.cloud.JiraCloudJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.jira.server.DefaultJiraServerJobDetailsAccessor;
-import com.synopsys.integration.alert.database.job.jira.server.JiraServerJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.msteams.DefaultMSTeamsJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.slack.DefaultSlackJobDetailsAccessor;
@@ -65,7 +63,6 @@ public class StaticJobAccessor implements JobAccessor {
     private final BlackDuckJobDetailsAccessor blackDuckJobDetailsAccessor;
     private final DefaultAzureBoardsJobDetailsAccessor azureBoardsJobDetailsAccessor;
     private final DefaultJiraCloudJobDetailsAccessor jiraCloudJobDetailsAccessor;
-    private final DefaultJiraServerJobDetailsAccessor jiraServerJobDetailsAccessor;
     private final DefaultMSTeamsJobDetailsAccessor msTeamsJobDetailsAccessor;
     private final DefaultSlackJobDetailsAccessor slackJobDetailsAccessor;
 
@@ -91,7 +88,6 @@ public class StaticJobAccessor implements JobAccessor {
         this.blackDuckJobDetailsAccessor = blackDuckJobDetailsAccessor;
         this.azureBoardsJobDetailsAccessor = azureBoardsJobDetailsAccessor;
         this.jiraCloudJobDetailsAccessor = jiraCloudJobDetailsAccessor;
-        this.jiraServerJobDetailsAccessor = jiraServerJobDetailsAccessor;
         this.msTeamsJobDetailsAccessor = msTeamsJobDetailsAccessor;
         this.slackJobDetailsAccessor = slackJobDetailsAccessor;
         this.blackDuckProviderKey = blackDuckProviderKey;
@@ -217,9 +213,6 @@ public class StaticJobAccessor implements JobAccessor {
         } else if (distributionJobDetails.isA(ChannelKeys.JIRA_CLOUD)) {
             JiraCloudJobDetailsEntity savedJiraCloudJobDetails = jiraCloudJobDetailsAccessor.saveJiraCloudJobDetails(savedJobId, distributionJobDetails.getAs(DistributionJobDetailsModel.JIRA_CLOUD));
             savedJobEntity.setJiraCloudJobDetails(savedJiraCloudJobDetails);
-        } else if (distributionJobDetails.isA(ChannelKeys.JIRA_SERVER)) {
-            JiraServerJobDetailsEntity savedJiraServerJobDetails = jiraServerJobDetailsAccessor.saveJiraServerJobDetails(savedJobId, distributionJobDetails.getAs(DistributionJobDetailsModel.JIRA_SERVER));
-            savedJobEntity.setJiraServerJobDetails(savedJiraServerJobDetails);
         } else if (distributionJobDetails.isA(ChannelKeys.MS_TEAMS)) {
             MSTeamsJobDetailsEntity savedMSTeamsJobDetails = msTeamsJobDetailsAccessor.saveMSTeamsJobDetails(savedJobId, distributionJobDetails.getAs(DistributionJobDetailsModel.MS_TEAMS));
             savedJobEntity.setMsTeamsJobDetails(savedMSTeamsJobDetails);
@@ -264,22 +257,6 @@ public class StaticJobAccessor implements JobAccessor {
                 jobId,
                 jobDetails.getAddComments(),
                 jobDetails.getIssueCreatorEmail(),
-                jobDetails.getProjectNameOrKey(),
-                jobDetails.getIssueType(),
-                jobDetails.getResolveTransition(),
-                jobDetails.getReopenTransition(),
-                customFields,
-                jobDetails.getIssueSummary());
-        } else if (ChannelKeys.JIRA_SERVER.equals(channelKey)) {
-            JiraServerJobDetailsEntity jobDetails = jobEntity.getJiraServerJobDetails();
-            List<JiraJobCustomFieldModel> customFields = jobDetails.getJobCustomFields()
-                .stream()
-                .map(entity -> new JiraJobCustomFieldModel(entity.getFieldName(), entity.getFieldValue()))
-                .collect(Collectors.toList());
-            distributionJobDetailsModel = new JiraServerJobDetailsModel(
-                jobId,
-                jobDetails.getAddComments(),
-                jobDetails.getIssueCreatorUsername(),
                 jobDetails.getProjectNameOrKey(),
                 jobDetails.getIssueType(),
                 jobDetails.getResolveTransition(),
