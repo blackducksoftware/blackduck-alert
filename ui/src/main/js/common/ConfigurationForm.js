@@ -4,6 +4,8 @@ import ConfigButtons from 'common/button/ConfigButtons';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
 import GlobalTestModal from 'common/global/GlobalTestModal';
 import StatusMessage from 'common/StatusMessage';
+import { COMMON_STATUS_MESSAGES } from 'common/messages/CommonMessages';
+import MessageLocator from 'common/messages/MessageLocator';
 
 const ConfigurationForm = ({
     formDataId,
@@ -24,7 +26,8 @@ const ConfigurationForm = ({
     buttonIdPrefix,
     afterSuccessfulSave,
     readonly,
-    errorHandler
+    errorHandler,
+    messageLocator
 }) => {
     const [showTest, setShowTest] = useState(false);
     const [errorMessage, setErrorMessage] = useState(null);
@@ -52,7 +55,7 @@ const ConfigurationForm = ({
         if (response.ok) {
             if (json.hasErrors) {
                 setErrorIsDetailed(json.detailed);
-                setErrorMessage(json.message);
+                setErrorMessage(messageLocator.findMessage(json.messageKey));
                 setErrors(HttpErrorUtilities.createErrorObject(json));
             } else {
                 setActionMessage('Test Successful');
@@ -60,7 +63,7 @@ const ConfigurationForm = ({
         } else {
             const errorObject = errorHandler.handle(response, json, false);
             if (errorObject && errorObject.message) {
-                setErrorMessage(errorObject.message);
+                setErrorMessage(errorObject);
             }
         }
         handleTestCancel();
@@ -200,7 +203,8 @@ ConfigurationForm.propTypes = {
     buttonIdPrefix: PropTypes.string,
     afterSuccessfulSave: PropTypes.func,
     readonly: PropTypes.bool,
-    errorHandler: PropTypes.object.isRequired
+    errorHandler: PropTypes.object.isRequired,
+    messageLocator: PropTypes.object
 };
 
 ConfigurationForm.defaultProps = {
@@ -214,7 +218,8 @@ ConfigurationForm.defaultProps = {
     clearTestForm: () => null,
     buttonIdPrefix: 'common-form',
     afterSuccessfulSave: () => null,
-    readonly: false
+    readonly: false,
+    messageLocator: new MessageLocator(COMMON_STATUS_MESSAGES)
 };
 
 export default ConfigurationForm;

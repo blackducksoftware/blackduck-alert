@@ -6,6 +6,8 @@ import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
 import GlobalTestModal from 'common/global/GlobalTestModal';
 import StatusMessage from 'common/StatusMessage';
+import MessageLocator from '../messages/MessageLocator';
+import { COMMON_STATUS_MESSAGES } from '../messages/CommonMessages';
 
 const CommonGlobalConfigurationForm = ({
     formData,
@@ -24,7 +26,8 @@ const CommonGlobalConfigurationForm = ({
     afterSuccessfulSave,
     retrieveData,
     readonly,
-    errorHandler
+    errorHandler,
+    messageLocator
 }) => {
     const [showTest, setShowTest] = useState(false);
     const [errorMessage, setErrorMessage] = useState(null);
@@ -68,7 +71,7 @@ const CommonGlobalConfigurationForm = ({
         if (response.ok) {
             if (json.hasErrors) {
                 setErrorIsDetailed(json.detailed);
-                setErrorMessage(json.message);
+                setErrorMessage(messageLocator.findMessage(json.messageKey));
                 setErrors(HttpErrorUtilities.createErrorObject(json));
             } else {
                 setActionMessage('Test Successful');
@@ -218,7 +221,8 @@ CommonGlobalConfigurationForm.propTypes = {
     buttonIdPrefix: PropTypes.string,
     afterSuccessfulSave: PropTypes.func,
     readonly: PropTypes.bool,
-    errorHandler: PropTypes.object.isRequired
+    errorHandler: PropTypes.object.isRequired,
+    messageLocator: PropTypes.object
 };
 
 CommonGlobalConfigurationForm.defaultProps = {
@@ -231,7 +235,8 @@ CommonGlobalConfigurationForm.defaultProps = {
     setTestFormData: () => null,
     buttonIdPrefix: 'common-form',
     afterSuccessfulSave: () => null,
-    readonly: false
+    readonly: false,
+    messageLocator: new MessageLocator(COMMON_STATUS_MESSAGES)
 };
 
 export default CommonGlobalConfigurationForm;
