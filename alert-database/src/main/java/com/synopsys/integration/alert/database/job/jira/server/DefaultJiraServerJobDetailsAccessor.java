@@ -83,13 +83,6 @@ public class DefaultJiraServerJobDetailsAccessor implements JiraServerJobDetails
         return convertToModel(savedJobDetails);
     }
 
-    public List<JiraJobCustomFieldModel> retrieveCustomFieldsForJob(UUID jobId) {
-        return jiraServerJobCustomFieldRepository.findByJobId(jobId)
-                   .stream()
-                   .map(customFieldEntity -> new JiraJobCustomFieldModel(customFieldEntity.getFieldName(), customFieldEntity.getFieldValue()))
-                   .collect(Collectors.toList());
-    }
-
     private JiraServerJobDetailsModel convertToModel(JiraServerJobDetailsEntity jobDetails) {
         List<JiraJobCustomFieldModel> customFields = jiraServerJobCustomFieldRepository.findByJobId(jobDetails.getJobId())
             .stream()
