@@ -1,21 +1,19 @@
-package com.synopsys.integration.alert.database.api;
+package com.synopsys.integration.alert.provider.blackduck;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
@@ -23,51 +21,37 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
-import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderDataAccessor;
 import com.synopsys.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
-import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.blackduck.api.core.ResourceMetadata;
 import com.synopsys.integration.blackduck.api.core.response.UrlMultipleResponses;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.generated.view.UserView;
 import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
-import com.synopsys.integration.blackduck.http.transform.BlackDuckJsonTransformer;
-import com.synopsys.integration.blackduck.http.transform.subclass.BlackDuckResponseResolver;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.dataservice.ProjectService;
 import com.synopsys.integration.blackduck.service.dataservice.ProjectUsersService;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
-import com.synopsys.integration.log.SilentIntLogger;
 import com.synopsys.integration.rest.HttpUrl;
 
-@Transactional
-@AlertIntegrationTest
-public class ProviderDataAccessorTestIT {
+class ProviderDataAccessorTest {
     private static final String PROVIDER_CONFIG_NAME = "Test Black Duck configuration";
+    private static final String HREF_1 = "http://localhost";
 
-    @Autowired
     private ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
-    @Autowired
-    private BlackDuckProviderKey blackDuckProviderKey;
-
-    private final Gson gson = new Gson();
-    private final BlackDuckJsonTransformer blackDuckJsonTransformer = new BlackDuckJsonTransformer(gson, new ObjectMapper(), new BlackDuckResponseResolver(gson), new SilentIntLogger());
 
     private BlackDuckPropertiesFactory blackDuckPropertiesFactory;
     private ApiDiscovery apiDiscovery;
     private ProjectService projectService;
-    private BlackDuckApiClient blackDuckService;
+    private BlackDuckApiClient blackDuckApiClient;
     private ProjectUsersService projectUsersService;
 
     private ConfigurationModel providerConfiguration;
 
     @BeforeEach
-    public void init() throws Exception {
+    void init() throws Exception {
         blackDuckPropertiesFactory = Mockito.mock(BlackDuckPropertiesFactory.class);
         BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
         Mockito.when(blackDuckPropertiesFactory.createProperties(Mockito.any(ConfigurationModel.class))).thenReturn(blackDuckProperties);
@@ -77,8 +61,8 @@ public class ProviderDataAccessorTestIT {
         Mockito.when(blackDuckProperties.createBlackDuckServicesFactory(Mockito.any(BlackDuckHttpClient.class), Mockito.any(IntLogger.class))).thenReturn(blackDuckServicesFactory);
         projectService = Mockito.mock(ProjectService.class);
         Mockito.when(blackDuckServicesFactory.createProjectService()).thenReturn(projectService);
-        blackDuckService = Mockito.mock(BlackDuckApiClient.class);
-        Mockito.when(blackDuckServicesFactory.getBlackDuckApiClient()).thenReturn(blackDuckService);
+        blackDuckApiClient = Mockito.mock(BlackDuckApiClient.class);
+        Mockito.when(blackDuckServicesFactory.getBlackDuckApiClient()).thenReturn(blackDuckApiClient);
         projectUsersService = Mockito.mock(ProjectUsersService.class);
         Mockito.when(blackDuckServicesFactory.createProjectUsersService()).thenReturn(projectUsersService);
 
@@ -89,86 +73,92 @@ public class ProviderDataAccessorTestIT {
 
         ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
         configurationFieldModel.setFieldValue(PROVIDER_CONFIG_NAME);
-        providerConfiguration = configurationModelConfigurationAccessor.createConfiguration(blackDuckProviderKey, ConfigContextEnum.GLOBAL, List.of(configurationFieldModel));
-    }
-
-    @AfterEach
-    public void cleanup() {
-        configurationModelConfigurationAccessor.deleteConfiguration(providerConfiguration);
+        configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
+        providerConfiguration = new ConfigurationModel(1L, 1L, "createdAt", "lastModified", ConfigContextEnum.GLOBAL, Map.of(PROVIDER_CONFIG_NAME, configurationFieldModel));
+        Mockito.when(configurationModelConfigurationAccessor.getConfigurationById(Mockito.anyLong())).thenReturn(Optional.of(providerConfiguration));
+        Mockito.when(configurationModelConfigurationAccessor.getProviderConfigurationByName(Mockito.anyString())).thenReturn(Optional.of(providerConfiguration));
     }
 
     @Test
-    public void getEmailAddressesForProjectHrefTest() throws Exception {
+    void getEmailAddressesForProjectHrefTest() throws Exception {
         Long providerConfigId = providerConfiguration.getConfigurationId();
 
-        String href = "http://localhost";
-
-        ProjectView projectView = new ProjectView();
-        ResourceMetadata resourceMetadata = new ResourceMetadata();
-        resourceMetadata.setHref(new HttpUrl(href));
-        projectView.setMeta(resourceMetadata);
-        Mockito.when(blackDuckService.getResponse(Mockito.any(HttpUrl.class), Mockito.eq(ProjectView.class))).thenReturn(projectView);
+        ProjectView projectView = createProjectView1();
+        Mockito.when(blackDuckApiClient.getResponse(Mockito.any(HttpUrl.class), Mockito.eq(ProjectView.class))).thenReturn(projectView);
 
         Set<UserView> userViews = createUserViews();
         Mockito.when(projectUsersService.getAllActiveUsersForProject(Mockito.any(ProjectView.class))).thenReturn(userViews);
 
-        BlackDuckProviderDataAccessor providerDataAccessor = new BlackDuckProviderDataAccessor(configurationModelConfigurationAccessor, blackDuckPropertiesFactory, blackDuckJsonTransformer);
-        Set<String> foundEmailAddresses = providerDataAccessor.getEmailAddressesForProjectHref(providerConfigId, href);
+        BlackDuckProviderDataAccessor providerDataAccessor = new BlackDuckProviderDataAccessor(configurationModelConfigurationAccessor, blackDuckPropertiesFactory);
+        Set<String> foundEmailAddresses = providerDataAccessor.getEmailAddressesForProjectHref(providerConfigId, HREF_1);
         assertEquals(3, foundEmailAddresses.size());
     }
 
     @Test
-    public void getEmailAddressesForNonExistentProjectHrefTest() throws Exception {
-        Mockito.when(blackDuckService.getResponse(Mockito.any(HttpUrl.class), Mockito.eq(ProjectView.class))).thenThrow(new IntegrationException("Could not find the project."));
+    void getEmailAddressesForNonExistentProjectHrefTest() throws Exception {
+        Mockito.when(blackDuckApiClient.getResponse(Mockito.any(HttpUrl.class), Mockito.eq(ProjectView.class))).thenThrow(new IntegrationException("Could not find the project."));
 
         Long providerConfigId = providerConfiguration.getConfigurationId();
-        BlackDuckProviderDataAccessor providerDataAccessor = new BlackDuckProviderDataAccessor(configurationModelConfigurationAccessor, blackDuckPropertiesFactory, blackDuckJsonTransformer);
+        BlackDuckProviderDataAccessor providerDataAccessor = new BlackDuckProviderDataAccessor(configurationModelConfigurationAccessor, blackDuckPropertiesFactory);
         Set<String> foundEmailAddresses = providerDataAccessor.getEmailAddressesForProjectHref(providerConfigId, "expecting no results");
         assertEquals(0, foundEmailAddresses.size());
     }
 
     @Test
-    public void getAllUsersTest() throws Exception {
+    void getAllUsersTest() throws Exception {
         Long providerConfigId = providerConfiguration.getConfigurationId();
 
         List<UserView> userViews = new ArrayList<>(createUserViews());
-        Mockito.when(blackDuckService.getAllResponses(Mockito.any(UrlMultipleResponses.class))).thenReturn(userViews);
+        Mockito.when(blackDuckApiClient.getAllResponses(Mockito.any(UrlMultipleResponses.class))).thenReturn(userViews);
 
-        BlackDuckProviderDataAccessor providerDataAccessor = new BlackDuckProviderDataAccessor(configurationModelConfigurationAccessor, blackDuckPropertiesFactory, blackDuckJsonTransformer);
+        BlackDuckProviderDataAccessor providerDataAccessor = new BlackDuckProviderDataAccessor(configurationModelConfigurationAccessor, blackDuckPropertiesFactory);
         List<ProviderUserModel> allProviderUsers = providerDataAccessor.getUsersByProviderConfigId(providerConfigId);
         assertEquals(3, allProviderUsers.size());
     }
 
     @Test
-    public void getAllUsersByConfigNameTest() throws Exception {
+    void getAllUsersByConfigNameTest() throws Exception {
         List<UserView> userViews = new ArrayList<>(createUserViews());
-        Mockito.when(blackDuckService.getAllResponses(Mockito.any(UrlMultipleResponses.class))).thenReturn(userViews);
+        Mockito.when(blackDuckApiClient.getAllResponses(Mockito.any(UrlMultipleResponses.class))).thenReturn(userViews);
 
-        BlackDuckProviderDataAccessor providerDataAccessor = new BlackDuckProviderDataAccessor(configurationModelConfigurationAccessor, blackDuckPropertiesFactory, blackDuckJsonTransformer);
+        BlackDuckProviderDataAccessor providerDataAccessor = new BlackDuckProviderDataAccessor(configurationModelConfigurationAccessor, blackDuckPropertiesFactory);
         List<ProviderUserModel> allProviderUsers = providerDataAccessor.getUsersByProviderConfigName(PROVIDER_CONFIG_NAME);
         assertEquals(3, allProviderUsers.size());
     }
 
     @Test
-    public void getAllProjectsTest() throws Exception {
+    void getAllProjectsTest() throws Exception {
         Long providerConfigId = providerConfiguration.getConfigurationId();
 
         List<ProjectView> projectViews = createProjectViews();
         Mockito.when(projectService.getAllProjects()).thenReturn(projectViews);
 
-        BlackDuckProviderDataAccessor providerDataAccessor = new BlackDuckProviderDataAccessor(configurationModelConfigurationAccessor, blackDuckPropertiesFactory, blackDuckJsonTransformer);
+        BlackDuckProviderDataAccessor providerDataAccessor = new BlackDuckProviderDataAccessor(configurationModelConfigurationAccessor, blackDuckPropertiesFactory);
         List<ProviderProject> allProviderUsers = providerDataAccessor.getProjectsByProviderConfigId(providerConfigId);
         assertEquals(projectViews.size(), allProviderUsers.size());
     }
 
     @Test
-    public void getAllProjectsByConfigNameTest() throws Exception {
+    void getAllProjectsByConfigNameTest() throws Exception {
         List<ProjectView> projectViews = createProjectViews();
         Mockito.when(projectService.getAllProjects()).thenReturn(projectViews);
 
-        BlackDuckProviderDataAccessor providerDataAccessor = new BlackDuckProviderDataAccessor(configurationModelConfigurationAccessor, blackDuckPropertiesFactory, blackDuckJsonTransformer);
+        BlackDuckProviderDataAccessor providerDataAccessor = new BlackDuckProviderDataAccessor(configurationModelConfigurationAccessor, blackDuckPropertiesFactory);
         List<ProviderProject> allProviderUsers = providerDataAccessor.getProjectsByProviderConfigName(PROVIDER_CONFIG_NAME);
         assertEquals(projectViews.size(), allProviderUsers.size());
+    }
+
+    @Test
+    void getProjectByHrefTest() throws IntegrationException {
+        ProjectView projectView = createProjectView1();
+        Mockito.when(blackDuckApiClient.getResponse(Mockito.any(HttpUrl.class), Mockito.eq(ProjectView.class))).thenReturn(projectView);
+        BlackDuckProviderDataAccessor blackDuckProviderDataAccessor = new BlackDuckProviderDataAccessor(configurationModelConfigurationAccessor, blackDuckPropertiesFactory);
+        Optional<ProviderProject> projectByHref = blackDuckProviderDataAccessor.getProjectByHref(providerConfiguration.getConfigurationId(), HREF_1);
+
+        assertTrue(projectByHref.isPresent());
+        ProviderProject providerProject = projectByHref.get();
+
+        assertEquals(HREF_1, providerProject.getHref());
     }
 
     private Set<UserView> createUserViews() {
@@ -205,21 +195,27 @@ public class ProviderDataAccessorTestIT {
         return userViews;
     }
 
-    private List<ProjectView> createProjectViews() throws Exception {
-        String href1 = "http://localhost";
-        String href2 = "https://localhost:8443";
-
+    private ProjectView createProjectView1() throws IntegrationException {
         ProjectView projectView = new ProjectView();
         ResourceMetadata resourceMetadata = new ResourceMetadata();
-        resourceMetadata.setHref(new HttpUrl(href1));
+        resourceMetadata.setHref(new HttpUrl(HREF_1));
         projectView.setMeta(resourceMetadata);
 
+        return projectView;
+    }
+
+    private ProjectView createProjectView2() throws IntegrationException {
+        String href2 = "https://localhost:8443";
         ProjectView projectView2 = new ProjectView();
         ResourceMetadata resourceMetadata2 = new ResourceMetadata();
         resourceMetadata2.setHref(new HttpUrl(href2));
         projectView2.setMeta(resourceMetadata2);
 
-        return List.of(projectView, projectView2);
+        return projectView2;
+    }
+
+    private List<ProjectView> createProjectViews() throws Exception {
+        return List.of(createProjectView1(), createProjectView2());
     }
 
 }

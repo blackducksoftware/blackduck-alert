@@ -22,11 +22,11 @@ import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDes
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
-public class BlackDuckNotificationRetrieverFactoryTest {
+class BlackDuckNotificationRetrieverFactoryTest {
     private final String BLACKDUCK_URL = "https://example.com";
 
     @Test
-    public void createValidNotificationRetriever() {
+    void createValidNotificationRetriever() {
         BlackDuckNotificationRetrieverFactory blackDuckNotificationRetrieverFactory = new BlackDuckNotificationRetrieverFactory();
 
         BlackDuckProperties blackDuckProperties = createBlackDuckProperties(BLACKDUCK_URL);
@@ -36,7 +36,7 @@ public class BlackDuckNotificationRetrieverFactoryTest {
     }
 
     @Test
-    public void createInvalidNotificationRetriever() {
+    void createInvalidNotificationRetriever() {
         BlackDuckNotificationRetrieverFactory blackDuckNotificationRetrieverFactory = new BlackDuckNotificationRetrieverFactory();
 
         BlackDuckProperties blackDuckProperties = createBlackDuckProperties(null);
