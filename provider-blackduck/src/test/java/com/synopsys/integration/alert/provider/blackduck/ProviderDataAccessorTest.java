@@ -1,7 +1,9 @@
 package com.synopsys.integration.alert.provider.blackduck;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -14,6 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
@@ -21,17 +24,22 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
+import com.synopsys.integration.blackduck.api.core.ResourceLink;
 import com.synopsys.integration.blackduck.api.core.ResourceMetadata;
 import com.synopsys.integration.blackduck.api.core.response.UrlMultipleResponses;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.generated.view.UserView;
+import com.synopsys.integration.blackduck.http.BlackDuckPageResponse;
 import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.dataservice.ProjectService;
 import com.synopsys.integration.blackduck.service.dataservice.ProjectUsersService;
+import com.synopsys.integration.blackduck.service.dataservice.UserService;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.rest.HttpUrl;
@@ -47,6 +55,7 @@ class ProviderDataAccessorTest {
     private ProjectService projectService;
     private BlackDuckApiClient blackDuckApiClient;
     private ProjectUsersService projectUsersService;
+    private BlackDuckServicesFactory blackDuckServicesFactory;
 
     private ConfigurationModel providerConfiguration;
 
@@ -57,7 +66,7 @@ class ProviderDataAccessorTest {
         Mockito.when(blackDuckPropertiesFactory.createProperties(Mockito.any(ConfigurationModel.class))).thenReturn(blackDuckProperties);
         BlackDuckHttpClient blackDuckHttpClient = Mockito.mock(BlackDuckHttpClient.class);
         Mockito.when(blackDuckProperties.createBlackDuckHttpClient(Mockito.any(IntLogger.class))).thenReturn(blackDuckHttpClient);
-        BlackDuckServicesFactory blackDuckServicesFactory = Mockito.mock(BlackDuckServicesFactory.class);
+        blackDuckServicesFactory = Mockito.mock(BlackDuckServicesFactory.class);
         Mockito.when(blackDuckProperties.createBlackDuckServicesFactory(Mockito.any(BlackDuckHttpClient.class), Mockito.any(IntLogger.class))).thenReturn(blackDuckServicesFactory);
         projectService = Mockito.mock(ProjectService.class);
         Mockito.when(blackDuckServicesFactory.createProjectService()).thenReturn(projectService);
@@ -75,7 +84,7 @@ class ProviderDataAccessorTest {
         configurationFieldModel.setFieldValue(PROVIDER_CONFIG_NAME);
         configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
         providerConfiguration = new ConfigurationModel(1L, 1L, "createdAt", "lastModified", ConfigContextEnum.GLOBAL, Map.of(PROVIDER_CONFIG_NAME, configurationFieldModel));
-        Mockito.when(configurationModelConfigurationAccessor.getConfigurationById(Mockito.anyLong())).thenReturn(Optional.of(providerConfiguration));
+        Mockito.when(configurationModelConfigurationAccessor.getConfigurationById(1L)).thenReturn(Optional.of(providerConfiguration));
         Mockito.when(configurationModelConfigurationAccessor.getProviderConfigurationByName(Mockito.anyString())).thenReturn(Optional.of(providerConfiguration));
     }
 
@@ -161,6 +170,89 @@ class ProviderDataAccessorTest {
         assertEquals(HREF_1, providerProject.getHref());
     }
 
+    @Test
+    void getProjectVersionsByHrefTest() throws IntegrationException {
+        ProjectView projectView = createProjectViewWithVersionsLink();
+        Mockito.when(blackDuckApiClient.getResponse(Mockito.any(HttpUrl.class), Mockito.eq(ProjectView.class))).thenReturn(projectView);
+
+        ProjectVersionView projectVersionView = new ProjectVersionView();
+        String versionName = "versionName";
+        int totalPages = 1;
+        projectVersionView.setVersionName(versionName);
+        BlackDuckPageResponse blackDuckPageResponse = new BlackDuckPageResponse(totalPages, List.of(projectVersionView));
+        Mockito.when(blackDuckApiClient.getPageResponse(Mockito.any())).thenReturn(blackDuckPageResponse);
+
+        BlackDuckProviderDataAccessor blackDuckProviderDataAccessor = new BlackDuckProviderDataAccessor(configurationModelConfigurationAccessor, blackDuckPropertiesFactory);
+        AlertPagedModel<String> projectVersionNamesByHref = blackDuckProviderDataAccessor.getProjectVersionNamesByHref(1L, HREF_1, 1);
+
+        assertNotNull(projectVersionNamesByHref);
+        assertEquals(totalPages, projectVersionNamesByHref.getTotalPages());
+
+        Optional<String> firstFoundProjectVersion = projectVersionNamesByHref.getModels().stream().findFirst();
+        assertTrue(firstFoundProjectVersion.isPresent());
+
+        String foundVersionName = firstFoundProjectVersion.get();
+        assertEquals(versionName, foundVersionName);
+    }
+
+    @Test
+    void getProjectVersionsByHrefWithNoConfigTest() throws IntegrationException {
+        ProjectView projectView = createProjectViewWithVersionsLink();
+        Mockito.when(blackDuckApiClient.getResponse(Mockito.any(HttpUrl.class), Mockito.eq(ProjectView.class))).thenReturn(projectView);
+
+        ProjectVersionView projectVersionView = new ProjectVersionView();
+        String versionName = "versionName";
+        int totalPages = 1;
+        projectVersionView.setVersionName(versionName);
+        BlackDuckPageResponse blackDuckPageResponse = new BlackDuckPageResponse(totalPages, List.of(projectVersionView));
+        Mockito.when(blackDuckApiClient.getPageResponse(Mockito.any())).thenReturn(blackDuckPageResponse);
+
+        BlackDuckProviderDataAccessor blackDuckProviderDataAccessor = new BlackDuckProviderDataAccessor(configurationModelConfigurationAccessor, blackDuckPropertiesFactory);
+        AlertPagedModel<String> projectVersionNamesByHref = blackDuckProviderDataAccessor.getProjectVersionNamesByHref(999L, HREF_1, 1);
+
+        assertNotNull(projectVersionNamesByHref);
+        assertEquals(0, projectVersionNamesByHref.getTotalPages());
+    }
+
+    @Test
+    void getProviderConfigUserByIdTest() throws IntegrationException {
+        UserService userService = Mockito.mock(UserService.class);
+        Mockito.when(blackDuckServicesFactory.createUserService()).thenReturn(userService);
+
+        String emailAddress = "fake@email.address";
+        UserView userView1 = new UserView();
+        userView1.setActive(true);
+        userView1.setEmail(emailAddress);
+        Mockito.when(userService.findCurrentUser()).thenReturn(userView1);
+
+        BlackDuckProviderDataAccessor blackDuckProviderDataAccessor = new BlackDuckProviderDataAccessor(configurationModelConfigurationAccessor, blackDuckPropertiesFactory);
+        ProviderUserModel providerConfigUser = blackDuckProviderDataAccessor.getProviderConfigUserById(1L);
+
+        assertNotNull(providerConfigUser);
+        assertEquals(emailAddress, providerConfigUser.getEmailAddress());
+    }
+
+    @Test
+    void getProviderConfigUserByIdNotFoundTest() throws IntegrationException {
+        UserService userService = Mockito.mock(UserService.class);
+        Mockito.when(blackDuckServicesFactory.createUserService()).thenReturn(userService);
+
+        String emailAddress = "fake@email.address";
+        UserView userView1 = new UserView();
+        userView1.setActive(true);
+        userView1.setEmail(emailAddress);
+        Mockito.when(userService.findCurrentUser()).thenReturn(userView1);
+
+        BlackDuckProviderDataAccessor blackDuckProviderDataAccessor = new BlackDuckProviderDataAccessor(configurationModelConfigurationAccessor, blackDuckPropertiesFactory);
+        long nonExistentConfig = 999L;
+        try {
+            ProviderUserModel providerConfigUser = blackDuckProviderDataAccessor.getProviderConfigUserById(nonExistentConfig);
+            fail();
+        } catch (AlertConfigurationException exception) {
+            assertTrue(exception.getMessage().contains(String.valueOf(nonExistentConfig)));
+        }
+    }
+
     private Set<UserView> createUserViews() {
         String emailAddress1 = "someone@gmail.com";
         String emailAddress2 = "someoneelse@gmail.com";
@@ -212,6 +304,19 @@ class ProviderDataAccessorTest {
         projectView2.setMeta(resourceMetadata2);
 
         return projectView2;
+    }
+
+    private ProjectView createProjectViewWithVersionsLink() throws IntegrationException {
+        ProjectView projectView = new ProjectView();
+        ResourceMetadata resourceMetadata = new ResourceMetadata();
+        resourceMetadata.setHref(new HttpUrl(HREF_1));
+        ResourceLink versionLink = new ResourceLink();
+        versionLink.setRel(ProjectView.VERSIONS_LINK);
+        versionLink.setHref(new HttpUrl("https://versionsHref.com"));
+        resourceMetadata.setLinks(List.of(versionLink));
+        projectView.setMeta(resourceMetadata);
+
+        return projectView;
     }
 
     private List<ProjectView> createProjectViews() throws Exception {
