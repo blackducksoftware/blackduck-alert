@@ -62,12 +62,6 @@ public class DefaultEmailJobDetailsAccessor implements EmailJobDetailsAccessor {
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public EmailJobDetailsModel saveConcreteJobDetails(UUID jobId, EmailJobDetailsModel jobDetails) {
-        EmailJobDetailsEntity savedJobDetails = saveEmailJobDetails(jobId, jobDetails);
-        return convertToModel(savedJobDetails);
-    }
-
-    @Transactional(propagation = Propagation.REQUIRED)
-    public EmailJobDetailsEntity saveEmailJobDetails(UUID jobId, EmailJobDetailsModel jobDetails) {
         EmailJobDetailsEntity jobDetailsToSave = new EmailJobDetailsEntity(
             jobId,
             jobDetails.getSubjectLine().orElse(null),
@@ -85,7 +79,7 @@ public class DefaultEmailJobDetailsAccessor implements EmailJobDetailsAccessor {
         List<EmailJobAdditionalEmailAddressEntity> savedAdditionalEmailAddressEntities = additionalEmailAddressRepository.saveAll(additionalEmailAddressEntitiesToSave);
         savedJobDetails.setEmailJobAdditionalEmailAddresses(savedAdditionalEmailAddressEntities);
 
-        return savedJobDetails;
+        return convertToModel(savedJobDetails);
     }
 
     public List<String> retrieveAdditionalEmailAddressesForJob(UUID jobId) {
