@@ -79,6 +79,7 @@ class StaticJobAccessorTest {
         Mockito.when(blackDuckJobDetailsAccessor.retrievePolicyNamesForJob(Mockito.any())).thenReturn(Collections.emptyList());
         Mockito.when(blackDuckJobDetailsAccessor.retrieveVulnerabilitySeverityNamesForJob(Mockito.any())).thenReturn(Collections.emptyList());
         Mockito.when(emailJobDetailsAccessor.getDescriptorKey()).thenReturn(ChannelKeys.EMAIL);
+        Mockito.when(jiraServerJobDetailsAccessor.getDescriptorKey()).thenReturn(ChannelKeys.JIRA_SERVER);
 
         jobAccessor = new StaticJobAccessor(
             distributionJobRepository,
@@ -363,7 +364,7 @@ class StaticJobAccessorTest {
         distributionJobEntity.setEmailJobDetails(emailJobDetailsEntity);
         BlackDuckJobDetailsEntity blackDuckJobDetailsEntity = createBlackDuckJobDetailsEntity(jobId, distributionJobRequestModel);
 
-        Mockito.when(emailJobDetailsAccessor.saveEmailJobDetails(Mockito.any(), Mockito.any())).thenReturn(emailJobDetailsEntity);
+        Mockito.when(emailJobDetailsAccessor.saveJobDetails(Mockito.any(), Mockito.any())).thenReturn(emailJobDetailsModel);
         Mockito.when(blackDuckJobDetailsAccessor.saveBlackDuckJobDetails(Mockito.any(), Mockito.any())).thenReturn(blackDuckJobDetailsEntity);
         Mockito.when(distributionJobRepository.save(Mockito.any())).thenReturn(distributionJobEntity);
 
@@ -407,7 +408,7 @@ class StaticJobAccessorTest {
         distributionJobEntity.setJiraServerJobDetails(jiraServerJobDetailsEntity);
         BlackDuckJobDetailsEntity blackDuckJobDetailsEntity = createBlackDuckJobDetailsEntity(jobId, distributionJobRequestModel);
 
-        Mockito.when(jiraServerJobDetailsAccessor.saveJiraServerJobDetails(Mockito.any(), Mockito.any())).thenReturn(jiraServerJobDetailsEntity);
+        Mockito.when(jiraServerJobDetailsAccessor.saveJobDetails(Mockito.any(), Mockito.any())).thenReturn(jiraServerJobDetailsModel);
         Mockito.when(blackDuckJobDetailsAccessor.saveBlackDuckJobDetails(Mockito.any(), Mockito.any())).thenReturn(blackDuckJobDetailsEntity);
         Mockito.when(distributionJobRepository.save(Mockito.any())).thenReturn(distributionJobEntity);
 

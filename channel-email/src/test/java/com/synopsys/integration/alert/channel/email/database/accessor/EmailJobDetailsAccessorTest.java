@@ -62,26 +62,6 @@ class EmailJobDetailsAccessorTest {
     }
 
     @Test
-    void oldSaveEmailJobDetailsTest() {
-        UUID jobId = UUID.randomUUID();
-        String additionalEmailAddress = "fake@synopsys.com";
-
-        EmailJobDetailsModel emailJobDetailsModel = new EmailJobDetailsModel(null, null, false, false, null, List.of(additionalEmailAddress));
-        EmailJobDetailsEntity emailJobDetailsEntity = new EmailJobDetailsEntity(jobId, null, false, false, null);
-        EmailJobAdditionalEmailAddressEntity emailJobAdditionalEmailAddressEntity = new EmailJobAdditionalEmailAddressEntity(jobId, additionalEmailAddress);
-
-        Mockito.when(emailJobDetailsRepository.save(Mockito.any())).thenReturn(emailJobDetailsEntity);
-        Mockito.when(additionalEmailAddressRepository.saveAll(Mockito.any())).thenReturn(List.of(emailJobAdditionalEmailAddressEntity));
-
-        EmailJobDetailsEntity newEmailJobDetailsEntity = emailJobDetailsAccessor.saveEmailJobDetails(jobId, emailJobDetailsModel);
-
-        Mockito.verify(additionalEmailAddressRepository).bulkDeleteByJobId(Mockito.any());
-        assertEquals(jobId, newEmailJobDetailsEntity.getJobId());
-        assertEquals(1, newEmailJobDetailsEntity.getEmailJobAdditionalEmailAddresses().size());
-        assertEquals(additionalEmailAddress, newEmailJobDetailsEntity.getEmailJobAdditionalEmailAddresses().get(0).getEmailAddress());
-    }
-
-    @Test
     void retrieveDetailsTest() {
         UUID jobId = UUID.randomUUID();
         String additionalEmailAddress = "fake@synopsys.com";
