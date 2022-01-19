@@ -113,7 +113,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
     public AlertPagedModel<ProviderProject> getProjectsByProviderConfigId(Long providerConfigId, int pageNumber, int pageSize, String searchTerm) {
         return configurationModelConfigurationAccessor.getConfigurationById(providerConfigId)
             .flatMap(providerConfig -> retrieveOptionalProjectData(() -> retrieveProjectsForProvider(providerConfig, pageNumber, pageSize, searchTerm)))
-            .orElse(new AlertPagedModel<>(0, pageNumber, pageSize, List.of()));
+            .orElse(AlertPagedModel.empty(pageNumber, pageSize));
     }
 
     @Override
@@ -136,7 +136,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
                 logger.errorAndDebug(createProjectNotFoundString(providerConfigId, e.getMessage()), e);
             }
         }
-        return null;
+        return AlertPagedModel.empty(pageNumber, BlackDuckRequestBuilder.DEFAULT_LIMIT);
     }
 
     @Override
@@ -198,7 +198,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
     public AlertPagedModel<ProviderUserModel> getUsersByProviderConfigId(Long providerConfigId, int pageNumber, int pageSize, String searchTerm) {
         return configurationModelConfigurationAccessor.getConfigurationById(providerConfigId)
             .flatMap(providerConfig -> retrieveOptionalProjectData(() -> retrieveUsersForProvider(providerConfig, pageNumber, pageSize, searchTerm)))
-            .orElse(new AlertPagedModel<>(0, pageNumber, pageSize, List.of()));
+            .orElse(AlertPagedModel.empty(pageNumber, pageSize));
     }
 
     @Override
