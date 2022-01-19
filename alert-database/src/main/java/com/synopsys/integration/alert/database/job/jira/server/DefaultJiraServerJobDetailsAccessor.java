@@ -54,8 +54,8 @@ public class DefaultJiraServerJobDetailsAccessor implements JiraServerJobDetails
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public JiraServerJobDetailsModel saveJobDetails(UUID jobId, DistributionJobDetailsModel jobDetailsModel) {
-        JiraServerJobDetailsModel emailJobDetailsModel = jobDetailsModel.getAs(JiraServerJobDetailsModel.class);
-        return saveConcreteJobDetails(jobId, emailJobDetailsModel);
+        JiraServerJobDetailsModel jiraJobDetailsModel = jobDetailsModel.getAs(JiraServerJobDetailsModel.class);
+        return saveConcreteJobDetails(jobId, jiraJobDetailsModel);
     }
 
     @Override
