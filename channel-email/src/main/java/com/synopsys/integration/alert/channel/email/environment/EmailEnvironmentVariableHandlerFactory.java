@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandler;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandlerFactory;
@@ -108,6 +109,7 @@ public class EmailEnvironmentVariableHandlerFactory implements EnvironmentVariab
     private Properties updateConfiguration() {
         Properties properties = new Properties();
         EmailGlobalConfigModel configModel = new EmailGlobalConfigModel();
+        configModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
         configureEmailSettings(configModel);
         configureAdditionalProperties(properties, configModel);
 
