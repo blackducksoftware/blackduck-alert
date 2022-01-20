@@ -53,16 +53,8 @@ public class JiraServerGlobalConfigModel extends ConfigWithMetadata implements O
         return url;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
     public String getUserName() {
         return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
     }
 
     public Optional<Boolean> getPasswordSet() {
