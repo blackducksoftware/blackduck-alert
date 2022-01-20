@@ -143,6 +143,6 @@ public class EmailEnvironmentHandlerFactoryTest {
             String environmentVariableName = invocation.getArgument(0);
             return hasEnvVarCheck.test(environmentVariableName);
         })).when(mockedEnvironment).containsProperty(Mockito.anyString());
-        Mockito.when(mockedEnvironment.getProperty(Mockito.eq(propertyKey))).thenReturn(value);
+        Mockito.when(mockedEnvironment.getProperty(propertyKey)).thenReturn(value);
     }
 }
