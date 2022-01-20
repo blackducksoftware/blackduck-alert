@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <!-- create an initial row -->
+    <!--
+    <changeSet author="psantos" id="create-initial-email-config-entries">
+        <preConditions onFail="MARK_RAN">
+            <rowCount schemaName="alert" tableName="configuration_jira_server" expectedRows="0"/>
+        </preConditions>
+        <sql dbms="postgresql" stripComments="true">
+            INSERT INTO alert.configuration_email (created_at, last_updated, name, smtp_host, smtp_from, port, auth_required, auth_username, auth_password)
+            SELECT now(),
+                   null,
+                   'default-configuration',
+                   '',
+                   '',
+                   null,
+                   false,
+                   null,
+                   null
+            FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_jira_server') configFields
+            WHERE configFields.source_key IS NOT NULL LIMIT 1;
+        </sql>
+    </changeSet>
+    -->
+</databaseChangeLog>
