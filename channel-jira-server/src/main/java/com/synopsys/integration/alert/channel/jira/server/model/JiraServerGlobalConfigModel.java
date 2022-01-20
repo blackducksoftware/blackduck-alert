@@ -14,17 +14,33 @@ public class JiraServerGlobalConfigModel extends ConfigWithMetadata implements O
     private String password;
     private Boolean disablePluginCheck;
 
+    public JiraServerGlobalConfigModel() {
+        // For serialization
+    }
+
+    public JiraServerGlobalConfigModel(String id, String name, String createdAt, String lastUpdated, String url, String userName) {
+        super(id, name, createdAt, lastUpdated);
+        this.url = url;
+        this.userName = userName;
+    }
+
+    public JiraServerGlobalConfigModel(String id, String name, String createdAt, String lastUpdated, String url, String userName, String password, Boolean isPasswordSet, Boolean disablePluginCheck) {
+        this(id, name, createdAt, lastUpdated, url, userName);
+        this.password = password;
+        this.isPasswordSet = isPasswordSet;
+        this.disablePluginCheck = disablePluginCheck;
+    }
+
     @Override
     public JiraServerGlobalConfigModel obfuscate() {
-        JiraServerGlobalConfigModel jiraServerGlobalConfigModel = new JiraServerGlobalConfigModel();
+        JiraServerGlobalConfigModel jiraServerGlobalConfigModel = new JiraServerGlobalConfigModel(
+            getId(),
+            getName(),
+            getCreatedAt(),
+            getLastUpdated(),
+            url,
+            userName);
 
-        jiraServerGlobalConfigModel.setId(getId());
-        jiraServerGlobalConfigModel.setName(getName());
-        jiraServerGlobalConfigModel.setLastUpdated(getLastUpdated());
-        jiraServerGlobalConfigModel.setCreatedAt(getCreatedAt());
-
-        jiraServerGlobalConfigModel.setUrl(url);
-        jiraServerGlobalConfigModel.setUserName(userName);
         jiraServerGlobalConfigModel.setDisablePluginCheck(disablePluginCheck);
 
         jiraServerGlobalConfigModel.setIsPasswordSet(StringUtils.isNotBlank(password));
@@ -33,28 +49,28 @@ public class JiraServerGlobalConfigModel extends ConfigWithMetadata implements O
         return jiraServerGlobalConfigModel;
     }
 
-    public Optional<String> getUrl() {
-        return Optional.ofNullable(url);
+    public String getUrl() {
+        return url;
     }
 
     public void setUrl(String url) {
         this.url = url;
     }
 
-    public Optional<String> getUserName() {
-        return Optional.ofNullable(userName);
+    public String getUserName() {
+        return userName;
     }
 
     public void setUserName(String userName) {
         this.userName = userName;
     }
 
-    public Boolean getIsSmtpPasswordSet() {
-        return isPasswordSet;
+    public Optional<Boolean> getPasswordSet() {
+        return Optional.ofNullable(isPasswordSet);
     }
 
-    public void setIsPasswordSet(Boolean isPasswordSet) {
-        this.isPasswordSet = isPasswordSet;
+    public void setIsPasswordSet(Boolean passwordSet) {
+        isPasswordSet = passwordSet;
     }
 
     public Optional<String> getPassword() {
