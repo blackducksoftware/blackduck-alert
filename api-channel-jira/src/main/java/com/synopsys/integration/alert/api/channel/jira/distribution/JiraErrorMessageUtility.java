@@ -9,6 +9,7 @@ package com.synopsys.integration.alert.api.channel.jira.distribution;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -40,7 +41,11 @@ public class JiraErrorMessageUtility {
                 String responseErrorString = StringUtils.join(responseErrors, ", ");
                 if (responseErrorString.contains("customfield_")) {
                     for (String customFieldId : customFieldResolver.getCustomFieldIds()) {
-                        responseErrorString = responseErrorString.replace(String.format("'%s'", customFieldId), String.format("'%s' ('%s')", customFieldId, customFieldResolver.resolveCustomFieldIdToName(customFieldId)));
+                        Optional<String> resolvedCustomFieldIdToName = customFieldResolver.resolveCustomFieldIdToName(customFieldId);
+                        if (resolvedCustomFieldIdToName.isPresent()) {
+                            String name = resolvedCustomFieldIdToName.get();
+                            responseErrorString = responseErrorString.replace(String.format("'%s'", customFieldId), String.format("'%s' ('%s')", customFieldId, name));
+                        }
                     }
                 }
                 message += " | Details: " + responseErrorString;
@@ -68,9 +73,9 @@ public class JiraErrorMessageUtility {
             ));
         } else {
             List<String> fieldErrors = errors.entrySet()
-                                           .stream()
-                                           .map(entry -> String.format("Field '%s' has error %s", entry.getKey(), entry.getValue()))
-                                           .collect(Collectors.toList());
+                .stream()
+                .map(entry -> String.format("Field '%s' has error %s", entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
             responseErrors.addAll(fieldErrors);
         }
 
