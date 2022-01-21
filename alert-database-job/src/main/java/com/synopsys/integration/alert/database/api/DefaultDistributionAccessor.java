@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +64,7 @@ public class DefaultDistributionAccessor implements DistributionAccessor {
     }
 
     private AlertPagedModel<DistributionWithAuditInfo> convert(Page<DistributionWithAuditEntity> pageOfDistributionWithAuditEntity) {
-        List<DistributionWithAuditInfo> results = dedupeList(pageOfDistributionWithAuditEntity.get());
+        List<DistributionWithAuditInfo> results = dedupeList(pageOfDistributionWithAuditEntity.getContent());
         return new AlertPagedModel<>(
             pageOfDistributionWithAuditEntity.getTotalPages(),
             pageOfDistributionWithAuditEntity.getNumber(),
@@ -75,13 +74,13 @@ public class DefaultDistributionAccessor implements DistributionAccessor {
     }
 
     // FIXME Bug, we need to modify the query to successfully avoid duplicate jobs.
-    private List<DistributionWithAuditInfo> dedupeList(Stream<DistributionWithAuditEntity> withAuditEntityStream) {
-        Map<UUID, DistributionWithAuditInfo> existingInfos = new HashMap<>();
-        withAuditEntityStream.forEach(entity -> swapValues(existingInfos, entity));
-        return new ArrayList<>(existingInfos.values());
+    private List<DistributionWithAuditInfo> dedupeList(List<DistributionWithAuditEntity> withAuditEntities) {
+        Map<UUID, DistributionWithAuditInfo> cachedInfo = new HashMap<>();
+        withAuditEntities.stream().forEach(entity -> cacheMaxValues(cachedInfo, entity));
+        return filterList(cachedInfo, withAuditEntities);
     }
 
-    private void swapValues(Map<UUID, DistributionWithAuditInfo> existingInfos, DistributionWithAuditEntity entity) {
+    private void cacheMaxValues(Map<UUID, DistributionWithAuditInfo> existingInfos, DistributionWithAuditEntity entity) {
         UUID jobId = entity.getJobId();
         DistributionWithAuditInfo existingEntity = existingInfos.get(jobId);
         if (null == existingEntity) {
@@ -102,8 +101,21 @@ public class DefaultDistributionAccessor implements DistributionAccessor {
             }
         } catch (ParseException e) {
             logger.error("Unexpected error when parsing date: {}", e.getMessage());
-            existingInfos.put(jobId, convert(entity));
         }
+    }
+
+    private List<DistributionWithAuditInfo> filterList(Map<UUID, DistributionWithAuditInfo> cachedInfo, List<DistributionWithAuditEntity> existingInfo) {
+        ArrayList<DistributionWithAuditInfo> distributionsWithAuditInfos = new ArrayList<>(cachedInfo.entrySet().size());
+        existingInfo.stream().forEach(info -> {
+            UUID jobId = info.getJobId();
+            DistributionWithAuditInfo distributionWithAuditInfo = cachedInfo.get(jobId);
+            DistributionWithAuditInfo originalInfo = convert(info);
+            if (originalInfo.equals(distributionWithAuditInfo)) {
+                distributionsWithAuditInfos.add(distributionWithAuditInfo);
+                cachedInfo.remove(jobId);
+            }
+        });
+        return distributionsWithAuditInfos;
     }
 
     private DistributionWithAuditInfo convert(DistributionWithAuditEntity distributionWithAuditEntity) {

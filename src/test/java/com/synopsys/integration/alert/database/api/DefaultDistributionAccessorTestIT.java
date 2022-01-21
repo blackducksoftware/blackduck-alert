@@ -4,19 +4,22 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
+import java.text.ParseException;
 import java.time.OffsetDateTime;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +62,6 @@ public class DefaultDistributionAccessorTestIT {
     @AfterEach
     public void cleanupDistributions() {
         distributionJobRepository.flush();
-        System.out.println(String.format("Deleting %s jobs", createdJobs.size()));
         createdJobs.forEach(distributionJobRepository::deleteById);
         createdJobs.clear();
 
@@ -68,7 +70,7 @@ public class DefaultDistributionAccessorTestIT {
 
     @Test
     @Transactional
-    public void verifyQueryBuilds() {
+    public void verifyQueryBuildsTest() {
         AlertPagedModel<DistributionWithAuditInfo> distributionWithAuditInfo = distributionAccessor.getDistributionWithAuditInfo(0, 100, "name", Direction.ASC, getAllDescriptorNames());
 
         assertNotNull(distributionWithAuditInfo);
@@ -76,23 +78,82 @@ public class DefaultDistributionAccessorTestIT {
 
     @Test
     @Transactional
-    public void verifyValidityOfQuery() {
+    public void verifyValidityOfQueryTest() {
         assertValidQueryFunctionality(() -> distributionAccessor.getDistributionWithAuditInfo(0, 100, "name", Direction.ASC, getAllDescriptorNames()));
     }
 
     @Test
     @Transactional
-    public void sortByAuditLastTimeSent() {
-        assertValidQueryFunctionality(() -> distributionAccessor.getDistributionWithAuditInfo(0, 100, "lastSent", Direction.ASC, getAllDescriptorNames()));
+    public void sortByNameDESCTest() {
+        assertSorted("name", Direction.DESC, DistributionWithAuditInfo::getJobName);
+    }
+
+    @Test
+    @Transactional
+    public void sortByNameASCTest() {
+        assertSorted("name", Direction.ASC, DistributionWithAuditInfo::getJobName);
+    }
+
+    @Test
+    @Transactional
+    public void sortByAuditLastTimeSentDESCTest() {
+        assertAuditLastTimeSent(Direction.DESC);
+    }
+
+    @Test
+    @Transactional
+    public void sortByAuditLastTimeSentASCTest() {
+        assertAuditLastTimeSent(Direction.ASC);
+    }
+
+    private void assertAuditLastTimeSent(Direction sortDirection) {
+        assertSorted("lastSent", sortDirection,
+            info -> {
+                String auditTimeLastSent = info.getAuditTimeLastSent();
+                if (StringUtils.isNotBlank(auditTimeLastSent)) {
+                    try {
+                        return DateUtils.parseDate(auditTimeLastSent, DateUtils.AUDIT_DATE_FORMAT);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+                return null;
+            }
+        );
+    }
+
+    private <T extends Comparable> void assertSorted(String sortName, Direction sortDirection, Function<DistributionWithAuditInfo, T> getNullableValue) {
+        AlertPagedModel<DistributionWithAuditInfo> distributionWithAuditInfoSorted = assertValidQueryFunctionality(
+            () -> distributionAccessor.getDistributionWithAuditInfo(0, 100, sortName, sortDirection, getAllDescriptorNames()));
+        T previouslyRetrievedValue = null;
+        boolean inOrder = true;
+        for (DistributionWithAuditInfo info : distributionWithAuditInfoSorted.getModels()) {
+            T retrievedValue = getNullableValue.apply(info);
+            if (retrievedValue != null && previouslyRetrievedValue != null) {
+                boolean previousTimeLessThanCurrent;
+                if (Direction.ASC.equals(sortDirection)) {
+                    previousTimeLessThanCurrent = previouslyRetrievedValue.compareTo(retrievedValue) <= 0;
+                } else {
+                    previousTimeLessThanCurrent = previouslyRetrievedValue.compareTo(retrievedValue) >= 0;
+                }
+                inOrder = inOrder && previousTimeLessThanCurrent;
+                if (!inOrder) {
+                    fail("Should have been in order");
+                }
+            }
+            previouslyRetrievedValue = retrievedValue;
+        }
+
+        assertTrue(inOrder);
     }
 
     private Set<String> getAllDescriptorNames() {
         return descriptorMap.getDescriptorKeys().stream().map(DescriptorKey::getUniversalKey).collect(Collectors.toSet());
     }
 
-    private void assertValidQueryFunctionality(Supplier<AlertPagedModel<DistributionWithAuditInfo>> dBQuery) {
+    private AlertPagedModel<DistributionWithAuditInfo> assertValidQueryFunctionality(Supplier<AlertPagedModel<DistributionWithAuditInfo>> dBQuery) {
         Map<DistributionJobEntity, List<AuditEntryEntity>> jobAndAuditData = createAndSave3JobAndAudit();
-        assertEquals(3, jobAndAuditData.keySet().size());
+        assertEquals(4, jobAndAuditData.keySet().size());
 
         jobAndAuditData.keySet().stream().map(DistributionJobEntity::getJobId).forEach(uuid -> {
             DistributionJobEntity job = distributionJobRepository.getOne(uuid);
@@ -103,7 +164,7 @@ public class DefaultDistributionAccessorTestIT {
         assertNotNull(queryResult);
 
         List<DistributionWithAuditInfo> distributionWithAuditInfos = queryResult.getModels();
-        assertEquals(3, distributionWithAuditInfos.size());
+        assertEquals(4, distributionWithAuditInfos.size());
 
         for (Map.Entry<DistributionJobEntity, List<AuditEntryEntity>> jobAndAudits : jobAndAuditData.entrySet()) {
             DistributionJobEntity distributionJobEntity = jobAndAudits.getKey();
@@ -127,6 +188,8 @@ public class DefaultDistributionAccessorTestIT {
                 assertEquals(formattedTime, distributionWithAuditInfo.getAuditTimeLastSent());
             }
         }
+
+        return queryResult;
     }
 
     private Optional<DistributionWithAuditInfo> getDistributionInfo(UUID jobId, List<DistributionWithAuditInfo> items) {
@@ -134,9 +197,8 @@ public class DefaultDistributionAccessorTestIT {
     }
 
     private DistributionJobEntity createJobEntity() {
-        long randomLong = new Random().nextLong();
         String slackKey = new SlackChannelKey().getUniversalKey();
-        String jobName = slackKey + randomLong;
+        String jobName = slackKey + UUID.randomUUID();
         return new DistributionJobEntity(
             null,
             jobName,
@@ -164,25 +226,30 @@ public class DefaultDistributionAccessorTestIT {
         DistributionJobEntity firstJob = createJobEntity();
         DistributionJobEntity secondJob = createJobEntity();
         DistributionJobEntity thirdJob = createJobEntity();
+        DistributionJobEntity fourthJob = createJobEntity();
 
         DistributionJobEntity firstJobSaved = distributionJobRepository.save(firstJob);
         DistributionJobEntity secondJobSaved = distributionJobRepository.save(secondJob);
         DistributionJobEntity thirdJobSaved = distributionJobRepository.save(thirdJob);
+        DistributionJobEntity fourthJobSaved = distributionJobRepository.save(fourthJob);
 
         createdJobs.add(firstJobSaved.getJobId());
         createdJobs.add(secondJobSaved.getJobId());
         createdJobs.add(thirdJobSaved.getJobId());
+        createdJobs.add(fourthJobSaved.getJobId());
 
         AuditEntryEntity firstAudit = createAuditEntryEntity(firstJob.getJobId(), OffsetDateTime.now(), AuditEntryStatus.SUCCESS);
         AuditEntryEntity secondAudit = createAuditEntryEntity(firstJob.getJobId(), OffsetDateTime.now().minusDays(1), AuditEntryStatus.PENDING);
-        AuditEntryEntity thirdAudit = createAuditEntryEntity(secondJob.getJobId(), OffsetDateTime.now(), AuditEntryStatus.FAILURE);
+        AuditEntryEntity thirdAudit = createAuditEntryEntity(secondJob.getJobId(), OffsetDateTime.now().minusMinutes(1), AuditEntryStatus.FAILURE);
+        AuditEntryEntity fourthAudit = createAuditEntryEntity(fourthJob.getJobId(), OffsetDateTime.now().minusHours(1), AuditEntryStatus.SUCCESS);
 
-        saveAllAudits(List.of(firstAudit, secondAudit, thirdAudit));
+        saveAllAudits(List.of(firstAudit, secondAudit, thirdAudit, fourthAudit));
 
         return Map.of(
             firstJobSaved, List.of(firstAudit, secondAudit),
             secondJobSaved, List.of(thirdAudit),
-            thirdJobSaved, List.of()
+            thirdJobSaved, List.of(),
+            fourthJobSaved, List.of(fourthAudit)
         );
     }
 
