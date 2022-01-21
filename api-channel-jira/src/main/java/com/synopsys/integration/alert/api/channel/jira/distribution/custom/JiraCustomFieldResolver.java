@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -57,29 +58,29 @@ public class JiraCustomFieldResolver {
     }
 
     public Set<String> getCustomFieldIds() {
-        return idToNameCache.keySet();
-    }
-
-    public String resolveCustomFieldIdToName(String customFieldId) {
-        return idToNameCache.get(customFieldId);
-    }
-
-    protected Optional<CustomFieldCreationResponseModel> retrieveFieldDefinition(String fieldName) {
         if (!cachesHaveBeenInitialized) {
             try {
                 initializeCaches();
             } catch (IntegrationException e) {
                 logger.warn("No Jira Cloud user-visible fields found");
-                return Optional.empty();
+                return Set.of();
             }
         }
-        return Optional.ofNullable(nameToModelCache.get(fieldName));
+        return idToNameCache.keySet();
+    }
+
+    public Optional<String> resolveCustomFieldIdToName(String customFieldId) {
+        return initializeAndGetValue(() -> idToNameCache.get(customFieldId));
+    }
+
+    protected Optional<CustomFieldCreationResponseModel> retrieveFieldDefinition(String fieldName) {
+        return initializeAndGetValue(() -> nameToModelCache.get(fieldName));
     }
 
     protected CustomFieldDefinitionModel retrieveCustomFieldDefinition(JiraCustomFieldConfig customFieldConfig) {
         String fieldName = customFieldConfig.getFieldName();
         CustomFieldCreationResponseModel fieldResponse = retrieveFieldDefinition(fieldName)
-                                                             .orElseThrow(() -> new AlertRuntimeException(String.format("No custom field named '%s' existed", fieldName)));
+            .orElseThrow(() -> new AlertRuntimeException(String.format("No custom field named '%s' existed", fieldName)));
         return new CustomFieldDefinitionModel(fieldResponse.getId(), fieldResponse.getSchema().getType(), fieldResponse.getSchema().getItems());
     }
 
@@ -107,6 +108,18 @@ public class JiraCustomFieldResolver {
         }
     }
 
+    private <T> Optional<T> initializeAndGetValue(Supplier<T> getValue) {
+        if (!cachesHaveBeenInitialized) {
+            try {
+                initializeCaches();
+            } catch (IntegrationException e) {
+                logger.warn("No Jira Cloud user-visible fields found");
+                return Optional.empty();
+            }
+        }
+        return Optional.ofNullable(getValue.get());
+    }
+
     private JsonArray createJsonArray(String innerFieldValue, String fieldArrayItems) {
         JsonArray jsonArray = new JsonArray();
         List<JsonElement> elements = createJsonArrayElements(innerFieldValue, fieldArrayItems);
@@ -122,12 +135,12 @@ public class JiraCustomFieldResolver {
                 return List.of(new JsonPrimitive(innerFieldValue));
             case CUSTOM_FIELD_TYPE_COMPONENT_VALUE:
                 return Arrays.stream(StringUtils.split(innerFieldValue))
-                           .map(fieldValue -> createJsonObject("name", fieldValue))
-                           .collect(Collectors.toList());
+                    .map(fieldValue -> createJsonObject("name", fieldValue))
+                    .collect(Collectors.toList());
             case CUSTOM_FIELD_TYPE_OPTION_VALUE:
                 return Arrays.stream(StringUtils.split(innerFieldValue))
-                           .map(fieldValue -> createJsonObject("value", fieldValue))
-                           .collect(Collectors.toList());
+                    .map(fieldValue -> createJsonObject("value", fieldValue))
+                    .collect(Collectors.toList());
             default:
                 throw new AlertRuntimeException(String.format("Unsupported item: '%s' for array field type", fieldArrayItems));
         }
