@@ -42,7 +42,6 @@ import com.synopsys.integration.blackduck.http.BlackDuckPageResponse;
 import com.synopsys.integration.blackduck.http.BlackDuckQuery;
 import com.synopsys.integration.blackduck.http.BlackDuckRequestBuilder;
 import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
-import com.synopsys.integration.blackduck.http.transform.BlackDuckJsonTransformer;
 import com.synopsys.integration.blackduck.http.transform.BlackDuckResponsesTransformer;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
@@ -63,13 +62,11 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
     private final IntLogger logger = new Slf4jIntLogger(LoggerFactory.getLogger(getClass()));
     private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     private final BlackDuckPropertiesFactory blackDuckPropertiesFactory;
-    private final BlackDuckJsonTransformer blackDuckJsonTransformer;
 
     @Autowired
-    public BlackDuckProviderDataAccessor(ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor, BlackDuckPropertiesFactory blackDuckPropertiesFactory, BlackDuckJsonTransformer blackDuckJsonTransformer) {
+    public BlackDuckProviderDataAccessor(ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor, BlackDuckPropertiesFactory blackDuckPropertiesFactory) {
         this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
         this.blackDuckPropertiesFactory = blackDuckPropertiesFactory;
-        this.blackDuckJsonTransformer = blackDuckJsonTransformer;
     }
 
     @Override

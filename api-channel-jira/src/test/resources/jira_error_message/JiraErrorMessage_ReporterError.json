@@ -1,0 +1,10 @@
+{
+  "errors": {
+    "hiddenfield": "Sneaky",
+    "reporter": "It'sa me, Mario",
+    "customfield": "Shouldn't be found",
+    "errorMessages": [
+      "This error is skipped"
+    ]
+  }
+}
