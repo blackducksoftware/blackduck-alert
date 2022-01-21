@@ -62,7 +62,7 @@ public class JiraCustomFieldResolver {
             try {
                 initializeCaches();
             } catch (IntegrationException e) {
-                logger.warn("No Jira Cloud user-visible fields found");
+                logger.warn("No Jira user-visible fields found");
                 return Set.of();
             }
         }
@@ -113,7 +113,7 @@ public class JiraCustomFieldResolver {
             try {
                 initializeCaches();
             } catch (IntegrationException e) {
-                logger.warn("No Jira Cloud user-visible fields found");
+                logger.warn("No Jira user-visible fields found");
                 return Optional.empty();
             }
         }
