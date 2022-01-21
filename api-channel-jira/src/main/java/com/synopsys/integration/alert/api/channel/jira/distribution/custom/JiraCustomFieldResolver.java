@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -58,23 +57,18 @@ public class JiraCustomFieldResolver {
     }
 
     public Set<String> getCustomFieldIds() {
-        if (!cachesHaveBeenInitialized) {
-            try {
-                initializeCaches();
-            } catch (IntegrationException e) {
-                logger.warn("No Jira user-visible fields found");
-                return Set.of();
-            }
-        }
+        initialize();
         return idToNameCache.keySet();
     }
 
     public Optional<String> resolveCustomFieldIdToName(String customFieldId) {
-        return initializeAndGetValue(() -> idToNameCache.get(customFieldId));
+        initialize();
+        return Optional.ofNullable(idToNameCache.get(customFieldId));
     }
 
     protected Optional<CustomFieldCreationResponseModel> retrieveFieldDefinition(String fieldName) {
-        return initializeAndGetValue(() -> nameToModelCache.get(fieldName));
+        initialize();
+        return Optional.ofNullable(nameToModelCache.get(fieldName));
     }
 
     protected CustomFieldDefinitionModel retrieveCustomFieldDefinition(JiraCustomFieldConfig customFieldConfig) {
@@ -108,16 +102,14 @@ public class JiraCustomFieldResolver {
         }
     }
 
-    private <T> Optional<T> initializeAndGetValue(Supplier<T> getValue) {
+    private void initialize() {
         if (!cachesHaveBeenInitialized) {
             try {
                 initializeCaches();
             } catch (IntegrationException e) {
                 logger.warn("No Jira user-visible fields found");
-                return Optional.empty();
             }
         }
-        return Optional.ofNullable(getValue.get());
     }
 
     private JsonArray createJsonArray(String innerFieldValue, String fieldArrayItems) {
