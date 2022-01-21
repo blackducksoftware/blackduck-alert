@@ -1,3 +1,10 @@
+/*
+ * channel-jira-server
+ *
+ * Copyright (c) 2022 Synopsys, Inc.
+ *
+ * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.synopsys.integration.alert.channel.jira.server.database.configuration;
 
 import java.time.OffsetDateTime;
@@ -5,9 +12,8 @@ import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Table;
-
-import org.springframework.data.annotation.Id;
 
 import com.synopsys.integration.alert.database.BaseEntity;
 
