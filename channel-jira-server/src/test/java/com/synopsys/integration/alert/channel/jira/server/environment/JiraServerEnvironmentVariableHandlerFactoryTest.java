@@ -20,9 +20,9 @@ import com.synopsys.integration.alert.environment.EnvironmentVariableHandlerFact
 import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
 import com.synopsys.integration.alert.test.common.EnvironmentVariableUtil;
 
-public class JiraServerEnvironmentVariableHandlerFactoryTest {
+class JiraServerEnvironmentVariableHandlerFactoryTest {
     @Test
-    public void testSetInEnvironment() {
+    void testSetInEnvironment() {
         Environment environment = Mockito.mock(Environment.class);
         JiraServerGlobalConfigAccessor configAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
         Mockito.when(configAccessor.getConfigurationCount()).thenReturn(0L);
@@ -55,7 +55,7 @@ public class JiraServerEnvironmentVariableHandlerFactoryTest {
     }
 
     @Test
-    public void testSetInEnvironmentURLMissing() {
+    void testSetInEnvironmentURLMissing() {
         Environment environment = Mockito.mock(Environment.class);
         JiraServerGlobalConfigAccessor configAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
         Mockito.when(configAccessor.getConfigurationCount()).thenReturn(0L);
@@ -81,7 +81,7 @@ public class JiraServerEnvironmentVariableHandlerFactoryTest {
     }
 
     @Test
-    public void testSetInEnvironmentUserNameMissing() {
+    void testSetInEnvironmentUserNameMissing() {
         Environment environment = Mockito.mock(Environment.class);
         JiraServerGlobalConfigAccessor configAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
         Mockito.when(configAccessor.getConfigurationCount()).thenReturn(0L);
@@ -112,7 +112,7 @@ public class JiraServerEnvironmentVariableHandlerFactoryTest {
     }
 
     @Test
-    public void testMissingFromEnvironment() {
+    void testMissingFromEnvironment() {
         Environment environment = Mockito.mock(Environment.class);
         JiraServerGlobalConfigAccessor configAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
         Mockito.when(configAccessor.getConfigurationCount()).thenReturn(0L);
@@ -125,7 +125,7 @@ public class JiraServerEnvironmentVariableHandlerFactoryTest {
     }
 
     @Test
-    public void testConfigPresent() {
+    void testConfigPresent() {
         Environment environment = Mockito.mock(Environment.class);
         JiraServerGlobalConfigAccessor configAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
         Mockito.when(configAccessor.getConfigurationCount()).thenReturn(1L);
