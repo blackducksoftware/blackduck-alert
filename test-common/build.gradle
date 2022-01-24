@@ -1,5 +1,6 @@
 dependencies {
     api project(':api-common-model')
+    api project(':api-descriptor')
 
     implementation platform(project(':alert-platform'))
     implementation project(':alert-common')
