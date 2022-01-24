@@ -20,6 +20,7 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandler;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandlerFactory;
 import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
+import com.synopsys.integration.alert.test.common.EnvironmentVariableUtil;
 
 public class EmailEnvironmentHandlerFactoryTest {
 
@@ -47,12 +48,12 @@ public class EmailEnvironmentHandlerFactoryTest {
         Predicate<String> hasEnvVarCheck = (variableName) -> !EmailEnvironmentVariableHandlerFactory.OLD_ADDITIONAL_PROPERTY_KEYSET.contains(variableName);
 
         Mockito.when(environment.containsProperty(Mockito.anyString())).thenReturn(Boolean.TRUE);
-        setupConfigurationEnvironmentVariable(environment, hasEnvVarCheck, EmailEnvironmentVariableHandlerFactory.AUTH_REQUIRED_KEY, authRequired);
-        setupConfigurationEnvironmentVariable(environment, hasEnvVarCheck, EmailEnvironmentVariableHandlerFactory.EMAIL_FROM_KEY, from);
-        setupConfigurationEnvironmentVariable(environment, hasEnvVarCheck, EmailEnvironmentVariableHandlerFactory.EMAIL_HOST_KEY, smtpHost);
-        setupConfigurationEnvironmentVariable(environment, hasEnvVarCheck, EmailEnvironmentVariableHandlerFactory.AUTH_PASSWORD_KEY, passwordValue);
-        setupConfigurationEnvironmentVariable(environment, hasEnvVarCheck, EmailEnvironmentVariableHandlerFactory.EMAIL_PORT_KEY, port);
-        setupConfigurationEnvironmentVariable(environment, hasEnvVarCheck, EmailEnvironmentVariableHandlerFactory.AUTH_USER_KEY, username);
+        EnvironmentVariableUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, EmailEnvironmentVariableHandlerFactory.AUTH_REQUIRED_KEY, authRequired);
+        EnvironmentVariableUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, EmailEnvironmentVariableHandlerFactory.EMAIL_FROM_KEY, from);
+        EnvironmentVariableUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, EmailEnvironmentVariableHandlerFactory.EMAIL_HOST_KEY, smtpHost);
+        EnvironmentVariableUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, EmailEnvironmentVariableHandlerFactory.AUTH_PASSWORD_KEY, passwordValue);
+        EnvironmentVariableUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, EmailEnvironmentVariableHandlerFactory.EMAIL_PORT_KEY, port);
+        EnvironmentVariableUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, EmailEnvironmentVariableHandlerFactory.AUTH_USER_KEY, username);
 
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
         EnvironmentVariableHandlerFactory factory = new EmailEnvironmentVariableHandlerFactory(configAccessor, environmentVariableUtility);
@@ -109,17 +110,17 @@ public class EmailEnvironmentHandlerFactoryTest {
         String port = "25";
         String username = "testuser";
         Predicate<String> hasEnvVarCheck = (variableName) -> !EmailEnvironmentVariableHandlerFactory.OLD_ADDITIONAL_PROPERTY_KEYSET.contains(variableName)
-                                                                 || ADDITIONAL_EMAIL_PROPERTY_VARIABLE_NAME.equals(variableName);
+            || ADDITIONAL_EMAIL_PROPERTY_VARIABLE_NAME.equals(variableName);
 
         Mockito.when(environment.containsProperty(Mockito.anyString())).thenReturn(Boolean.TRUE);
-        setupConfigurationEnvironmentVariable(environment, hasEnvVarCheck, EmailEnvironmentVariableHandlerFactory.AUTH_REQUIRED_KEY, authRequired);
-        setupConfigurationEnvironmentVariable(environment, hasEnvVarCheck, EmailEnvironmentVariableHandlerFactory.EMAIL_FROM_KEY, from);
-        setupConfigurationEnvironmentVariable(environment, hasEnvVarCheck, EmailEnvironmentVariableHandlerFactory.EMAIL_HOST_KEY, smtpHost);
-        setupConfigurationEnvironmentVariable(environment, hasEnvVarCheck, EmailEnvironmentVariableHandlerFactory.AUTH_PASSWORD_KEY, passwordValue);
-        setupConfigurationEnvironmentVariable(environment, hasEnvVarCheck, EmailEnvironmentVariableHandlerFactory.EMAIL_PORT_KEY, port);
-        setupConfigurationEnvironmentVariable(environment, hasEnvVarCheck, EmailEnvironmentVariableHandlerFactory.AUTH_USER_KEY, username);
+        EnvironmentVariableUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, EmailEnvironmentVariableHandlerFactory.AUTH_REQUIRED_KEY, authRequired);
+        EnvironmentVariableUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, EmailEnvironmentVariableHandlerFactory.EMAIL_FROM_KEY, from);
+        EnvironmentVariableUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, EmailEnvironmentVariableHandlerFactory.EMAIL_HOST_KEY, smtpHost);
+        EnvironmentVariableUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, EmailEnvironmentVariableHandlerFactory.AUTH_PASSWORD_KEY, passwordValue);
+        EnvironmentVariableUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, EmailEnvironmentVariableHandlerFactory.EMAIL_PORT_KEY, port);
+        EnvironmentVariableUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, EmailEnvironmentVariableHandlerFactory.AUTH_USER_KEY, username);
 
-        setupConfigurationEnvironmentVariable(environment, hasEnvVarCheck, ADDITIONAL_EMAIL_PROPERTY_VARIABLE_NAME, "true");
+        EnvironmentVariableUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, ADDITIONAL_EMAIL_PROPERTY_VARIABLE_NAME, "true");
 
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
         EnvironmentVariableHandlerFactory factory = new EmailEnvironmentVariableHandlerFactory(configAccessor, environmentVariableUtility);
@@ -136,13 +137,5 @@ public class EmailEnvironmentHandlerFactoryTest {
         assertEquals(username, updatedProperties.getProperty(EmailEnvironmentVariableHandlerFactory.AUTH_USER_KEY));
 
         assertEquals("true", updatedProperties.getProperty(ADDITIONAL_EMAIL_PROPERTY_VARIABLE_NAME));
-    }
-
-    private void setupConfigurationEnvironmentVariable(Environment mockedEnvironment, Predicate<String> hasEnvVarCheck, String propertyKey, String value) {
-        Mockito.doAnswer((invocation -> {
-            String environmentVariableName = invocation.getArgument(0);
-            return hasEnvVarCheck.test(environmentVariableName);
-        })).when(mockedEnvironment).containsProperty(Mockito.anyString());
-        Mockito.when(mockedEnvironment.getProperty(propertyKey)).thenReturn(value);
     }
 }

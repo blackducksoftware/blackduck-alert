@@ -5,11 +5,12 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.channel.jira.server;
+package com.synopsys.integration.alert.channel.jira.server.environment;
 
 import java.util.Properties;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -51,8 +52,13 @@ public class JiraServerEnvironmentVariableHandlerFactory implements EnvironmentV
 
     private Properties updateConfiguration() {
         Properties properties = new Properties();
-        String name = AlertRestConstants.DEFAULT_CONFIGURATION_NAME;
         String url = environmentVariableUtility.getEnvironmentValue(URL_KEY).orElse(null);
+
+        if (StringUtils.isBlank(url)) {
+            return properties;
+        }
+
+        String name = AlertRestConstants.DEFAULT_CONFIGURATION_NAME;
         String userName = environmentVariableUtility.getEnvironmentValue(USERNAME_KEY).orElse(null);
         String createdAt = DateUtils.formatDate(DateUtils.createCurrentDateTimestamp(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
         JiraServerGlobalConfigModel configModel = new JiraServerGlobalConfigModel(null, name, createdAt, createdAt, url, userName);
@@ -64,13 +70,14 @@ public class JiraServerEnvironmentVariableHandlerFactory implements EnvironmentV
             .ifPresent(configModel::setPassword);
 
         JiraServerGlobalConfigModel obfuscatedModel = configModel.obfuscate();
-
         properties.put(URL_KEY, obfuscatedModel.getUrl());
-        properties.put(USERNAME_KEY, obfuscatedModel.getUserName());
+        if (StringUtils.isNotBlank(obfuscatedModel.getUserName())) {
+            properties.put(USERNAME_KEY, obfuscatedModel.getUserName());
+        }
         obfuscatedModel.getDisablePluginCheck().map(String::valueOf).ifPresent(value -> properties.put(DISABLE_PLUGIN_KEY, value));
         obfuscatedModel.getPassword().ifPresent(value -> properties.put(PASSWORD_KEY, value));
 
-        if (!properties.isEmpty()) {
+        if (!properties.isEmpty() && configAccessor.getConfigurationByName(name).isEmpty()) {
             configAccessor.createConfiguration(configModel);
         }
 
