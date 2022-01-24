@@ -38,26 +38,26 @@
         </sql>
         <!-- Update Jira specific fields -->
         <sql dbms="postgresql" stripComments="true">
-            UPDATE alert.configuration_proxy config
+            UPDATE alert.configuration_jira_server config
             SET url = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_jira_server') configFields
             WHERE config.name = 'default-configuration'
               AND configFields.source_key = 'jira.server.url';
         </sql>
         <sql dbms="postgresql" stripComments="true">
-            UPDATE alert.configuration_proxy config
+            UPDATE alert.configuration_jira_server config
             SET username = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_jira_server') configFields
             WHERE config.name = 'default-configuration'
               AND configFields.source_key = 'jira.server.username';
         </sql>
         <sql dbms="postgresql" stripComments="true">
-            UPDATE alert.configuration_proxy config
+            UPDATE alert.configuration_jira_server config
             SET password = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_jira_server') configFields
             WHERE config.name = 'default-configuration'
               AND configFields.source_key = 'jira.server.password';
         </sql>
         <sql dbms="postgresql" stripComments="true">
-            UPDATE alert.configuration_proxy config
-            SET disable_plugin_check = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_jira_server') configFields
+            UPDATE alert.configuration_jira_server config
+            SET disable_plugin_check = cast(coalesce(configFields.field_value, 'false') as BOOLEAN) FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_jira_server') configFields
             WHERE config.name = 'default-configuration'
               AND configFields.source_key = 'jira.server.disable.plugin.check';
         </sql>
