@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <!-- create an initial row -->
+    <changeSet author="psantos" id="create-initial-jira-server-config-entries">
+        <preConditions onFail="MARK_RAN">
+            <rowCount schemaName="alert" tableName="configuration_jira_server" expectedRows="0"/>
+        </preConditions>
+        <sql dbms="postgresql" stripComments="true">
+            INSERT INTO alert.configuration_jira_server (created_at, last_updated, name, url, username, password, disable_plugin_check)
+            SELECT now(),
+                   null,
+                   'default-configuration',
+                   '',
+                   '',
+                   '',
+                   false
+            FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_jira_server') configFields
+            WHERE configFields.source_key IS NOT NULL LIMIT 1;
+        </sql>
+    </changeSet>
+    <!-- Update common job fields one at a time -->
+    <changeSet author="psantos" id="update-initial-jira-server-config-entries">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(url)
+                FROM alert.configuration_jira_server
+                WHERE name = 'default-configuration';
+            </sqlCheck>
+        </preConditions>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_jira_server config
+            SET created_at = configTimestamps.created_at FROM GET_GLOBAL_CONFIG_TIMESTAMPS('channel_jira_server') configTimestamps;
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_jira_server config
+            SET last_updated = configTimestamps.last_updated FROM GET_GLOBAL_CONFIG_TIMESTAMPS('channel_jira_server') configTimestamps;
+        </sql>
+        <!-- Update Jira specific fields -->
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_jira_server config
+            SET url = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_jira_server') configFields
+            WHERE config.name = 'default-configuration'
+              AND configFields.source_key = 'jira.server.url';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_jira_server config
+            SET username = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_jira_server') configFields
+            WHERE config.name = 'default-configuration'
+              AND configFields.source_key = 'jira.server.username';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_jira_server config
+            SET password = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_jira_server') configFields
+            WHERE config.name = 'default-configuration'
+              AND configFields.source_key = 'jira.server.password';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_jira_server config
+            SET disable_plugin_check = cast(coalesce(configFields.field_value, 'false') as BOOLEAN) FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_jira_server') configFields
+            WHERE config.name = 'default-configuration'
+              AND configFields.source_key = 'jira.server.disable.plugin.check';
+        </sql>
+    </changeSet>
+</databaseChangeLog>
