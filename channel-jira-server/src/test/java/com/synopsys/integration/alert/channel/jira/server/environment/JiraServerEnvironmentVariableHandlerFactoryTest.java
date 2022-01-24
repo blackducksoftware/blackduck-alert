@@ -18,7 +18,7 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandler;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandlerFactory;
 import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
-import com.synopsys.integration.alert.test.common.EnvironmentVariableUtil;
+import com.synopsys.integration.alert.test.common.EnvironmentVariableMockingUtil;
 
 class JiraServerEnvironmentVariableHandlerFactoryTest {
     @Test
@@ -35,10 +35,10 @@ class JiraServerEnvironmentVariableHandlerFactoryTest {
         Predicate<String> hasEnvVarCheck = (variableName) -> !JiraServerEnvironmentVariableHandlerFactory.VARIABLE_NAMES.contains(variableName);
 
         Mockito.when(environment.containsProperty(Mockito.anyString())).thenReturn(Boolean.TRUE);
-        EnvironmentVariableUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandlerFactory.DISABLE_PLUGIN_KEY, disablePluginCheck);
-        EnvironmentVariableUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandlerFactory.URL_KEY, url);
-        EnvironmentVariableUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandlerFactory.PASSWORD_KEY, passwordValue);
-        EnvironmentVariableUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandlerFactory.USERNAME_KEY, username);
+        EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandlerFactory.DISABLE_PLUGIN_KEY, disablePluginCheck);
+        EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandlerFactory.URL_KEY, url);
+        EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandlerFactory.PASSWORD_KEY, passwordValue);
+        EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandlerFactory.USERNAME_KEY, username);
 
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
         EnvironmentVariableHandlerFactory factory = new JiraServerEnvironmentVariableHandlerFactory(configAccessor, environmentVariableUtility);
@@ -67,9 +67,9 @@ class JiraServerEnvironmentVariableHandlerFactoryTest {
         Predicate<String> hasEnvVarCheck = (variableName) -> !JiraServerEnvironmentVariableHandlerFactory.VARIABLE_NAMES.contains(variableName);
 
         Mockito.when(environment.containsProperty(Mockito.anyString())).thenReturn(Boolean.TRUE);
-        EnvironmentVariableUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandlerFactory.DISABLE_PLUGIN_KEY, disablePluginCheck);
-        EnvironmentVariableUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandlerFactory.PASSWORD_KEY, passwordValue);
-        EnvironmentVariableUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandlerFactory.USERNAME_KEY, username);
+        EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandlerFactory.DISABLE_PLUGIN_KEY, disablePluginCheck);
+        EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandlerFactory.PASSWORD_KEY, passwordValue);
+        EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandlerFactory.USERNAME_KEY, username);
 
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
         EnvironmentVariableHandlerFactory factory = new JiraServerEnvironmentVariableHandlerFactory(configAccessor, environmentVariableUtility);
@@ -93,9 +93,9 @@ class JiraServerEnvironmentVariableHandlerFactoryTest {
         Predicate<String> hasEnvVarCheck = (variableName) -> !JiraServerEnvironmentVariableHandlerFactory.VARIABLE_NAMES.contains(variableName);
 
         Mockito.when(environment.containsProperty(Mockito.anyString())).thenReturn(Boolean.TRUE);
-        EnvironmentVariableUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandlerFactory.DISABLE_PLUGIN_KEY, disablePluginCheck);
-        EnvironmentVariableUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandlerFactory.URL_KEY, url);
-        EnvironmentVariableUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandlerFactory.PASSWORD_KEY, passwordValue);
+        EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandlerFactory.DISABLE_PLUGIN_KEY, disablePluginCheck);
+        EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandlerFactory.URL_KEY, url);
+        EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandlerFactory.PASSWORD_KEY, passwordValue);
 
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
         EnvironmentVariableHandlerFactory factory = new JiraServerEnvironmentVariableHandlerFactory(configAccessor, environmentVariableUtility);

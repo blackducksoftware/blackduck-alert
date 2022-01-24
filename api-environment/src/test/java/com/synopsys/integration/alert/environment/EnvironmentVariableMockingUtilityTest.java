@@ -12,7 +12,7 @@ import org.springframework.core.env.Environment;
 
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
-public class EnvironmentVariableUtilityTest {
+public class EnvironmentVariableMockingUtilityTest {
     private static final String WORKING_PROPERTY_KEY = "ALERT_DESCRIPTORTYPE_NAME_SPECIFIC_PROPERTY_KEY";
 
     private static class TestDescriptorKey extends DescriptorKey {

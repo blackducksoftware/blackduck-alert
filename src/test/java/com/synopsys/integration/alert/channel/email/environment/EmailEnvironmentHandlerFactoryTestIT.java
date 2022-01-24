@@ -24,6 +24,7 @@ import com.synopsys.integration.alert.environment.EnvironmentVariableHandler;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandlerFactory;
 import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
+import com.synopsys.integration.alert.test.common.EnvironmentVariableMockingUtil;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @AlertIntegrationTest
@@ -90,17 +91,12 @@ class EmailEnvironmentHandlerFactoryTestIT {
     private Environment setupMockedEnvironment() {
         Environment environment = Mockito.mock(Environment.class);
         Predicate<String> hasEnvVarCheck = (variableName) -> !EmailEnvironmentVariableHandlerFactory.OLD_ADDITIONAL_PROPERTY_KEYSET.contains(variableName);
-
-        Mockito.doAnswer((invocation -> {
-            String environmentVariableName = invocation.getArgument(0);
-            return hasEnvVarCheck.test(environmentVariableName);
-        })).when(environment).containsProperty(Mockito.anyString());
-        Mockito.when(environment.getProperty(EmailEnvironmentVariableHandlerFactory.AUTH_REQUIRED_KEY)).thenReturn(TEST_AUTH_REQUIRED);
-        Mockito.when(environment.getProperty(EmailEnvironmentVariableHandlerFactory.EMAIL_FROM_KEY)).thenReturn(TEST_FROM);
-        Mockito.when(environment.getProperty(EmailEnvironmentVariableHandlerFactory.EMAIL_HOST_KEY)).thenReturn(TEST_SMTP_HOST);
-        Mockito.when(environment.getProperty(EmailEnvironmentVariableHandlerFactory.AUTH_PASSWORD_KEY)).thenReturn(TEST_PASSWORD);
-        Mockito.when(environment.getProperty(EmailEnvironmentVariableHandlerFactory.EMAIL_PORT_KEY)).thenReturn(TEST_PORT);
-        Mockito.when(environment.getProperty(EmailEnvironmentVariableHandlerFactory.AUTH_USER_KEY)).thenReturn(TEST_USER);
+        EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, EmailEnvironmentVariableHandlerFactory.AUTH_REQUIRED_KEY, TEST_AUTH_REQUIRED);
+        EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, EmailEnvironmentVariableHandlerFactory.EMAIL_FROM_KEY, TEST_FROM);
+        EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, EmailEnvironmentVariableHandlerFactory.EMAIL_HOST_KEY, TEST_SMTP_HOST);
+        EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, EmailEnvironmentVariableHandlerFactory.AUTH_PASSWORD_KEY, TEST_PASSWORD);
+        EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, EmailEnvironmentVariableHandlerFactory.EMAIL_PORT_KEY, TEST_PORT);
+        EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, EmailEnvironmentVariableHandlerFactory.AUTH_USER_KEY, TEST_USER);
         return environment;
     }
 }
