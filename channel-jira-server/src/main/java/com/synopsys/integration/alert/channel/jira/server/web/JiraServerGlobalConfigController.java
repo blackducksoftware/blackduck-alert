@@ -11,6 +11,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -74,12 +75,12 @@ public class JiraServerGlobalConfigController implements StaticConfigResourceCon
     }
 
     @PostMapping("/test")
-    public ValidationResponseModel test(/*@RequestBody*/ JiraServerGlobalConfigModel resource) {
+    public ValidationResponseModel test(@RequestBody JiraServerGlobalConfigModel resource) {
         return ResponseFactory.createContentResponseFromAction(jiraServerGlobalTestAction.testWithPermissionCheck(resource));
     }
 
-    @PostMapping("disable-plugin")
-    public ValidationResponseModel disablePlugin(JiraServerGlobalConfigModel resource) {
+    @PostMapping("/disable-plugin")
+    public ValidationResponseModel disablePlugin(@RequestBody JiraServerGlobalConfigModel resource) {
         return ResponseFactory.createContentResponseFromAction(jiraServerDisablePluginAction.disablePlugin(resource));
     }
 
