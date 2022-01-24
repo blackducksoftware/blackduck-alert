@@ -13,7 +13,7 @@ import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobal
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 
-public interface JiraServerGlobalConfigActions {
+public interface IJiraServerGlobalConfigAction {
 
     ActionResponse<JiraServerGlobalConfigModel> getOne(UUID id);
 

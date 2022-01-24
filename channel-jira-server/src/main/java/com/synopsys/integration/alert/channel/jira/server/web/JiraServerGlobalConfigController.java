@@ -28,39 +28,39 @@ import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 @RequestMapping(AlertRestConstants.JIRA_SERVER_CONFIGURATION_PATH)
 public class JiraServerGlobalConfigController implements StaticConfigResourceController<JiraServerGlobalConfigModel>, ValidateController<JiraServerGlobalConfigModel>, ReadPageController<AlertPagedModel<JiraServerGlobalConfigModel>> {
     private final JiraServerGlobalValidationAction jiraServerGlobalValidationAction;
-    private final JiraServerGlobalTestActions jiraServerGlobalTestActions;
-    private final JiraServerGlobalConfigActions jiraServerGlobalConfigActions;
+    private final IJiraServerGlobalTestAction jiraServerGlobalTestAction;
+    private final IJiraServerGlobalConfigAction jiraServerGlobalConfigAction;
     private final JiraServerDisablePluginAction jiraServerDisablePluginAction;
 
     @Autowired
     public JiraServerGlobalConfigController(
-        JiraServerGlobalValidationAction jiraServerGlobalValidationAction, JiraServerGlobalTestActions jiraServerGlobalTestActions, JiraServerGlobalConfigActions jiraServerGlobalConfigActions,
+        JiraServerGlobalValidationAction jiraServerGlobalValidationAction, IJiraServerGlobalTestAction jiraServerGlobalTestAction, IJiraServerGlobalConfigAction jiraServerGlobalConfigAction,
         JiraServerDisablePluginAction jiraServerDisablePluginAction
     ) {
         this.jiraServerGlobalValidationAction = jiraServerGlobalValidationAction;
-        this.jiraServerGlobalTestActions = jiraServerGlobalTestActions;
-        this.jiraServerGlobalConfigActions = jiraServerGlobalConfigActions;
+        this.jiraServerGlobalTestAction = jiraServerGlobalTestAction;
+        this.jiraServerGlobalConfigAction = jiraServerGlobalConfigAction;
         this.jiraServerDisablePluginAction = jiraServerDisablePluginAction;
     }
 
     @Override
     public JiraServerGlobalConfigModel getOne(UUID id) {
-        return ResponseFactory.createContentResponseFromAction(jiraServerGlobalConfigActions.getOne(id));
+        return ResponseFactory.createContentResponseFromAction(jiraServerGlobalConfigAction.getOne(id));
     }
 
     @Override
     public AlertPagedModel<JiraServerGlobalConfigModel> getPage(Integer pageNumber, Integer pageSize, String searchTerm) {
-        return ResponseFactory.createContentResponseFromAction(jiraServerGlobalConfigActions.getPaged(pageNumber, pageSize));
+        return ResponseFactory.createContentResponseFromAction(jiraServerGlobalConfigAction.getPaged(pageNumber, pageSize));
     }
 
     @Override
     public JiraServerGlobalConfigModel create(JiraServerGlobalConfigModel resource) {
-        return ResponseFactory.createContentResponseFromAction(jiraServerGlobalConfigActions.create(resource));
+        return ResponseFactory.createContentResponseFromAction(jiraServerGlobalConfigAction.create(resource));
     }
 
     @Override
     public void update(UUID id, JiraServerGlobalConfigModel resource) {
-        ResponseFactory.createContentResponseFromAction(jiraServerGlobalConfigActions.update(id, resource));
+        ResponseFactory.createContentResponseFromAction(jiraServerGlobalConfigAction.update(id, resource));
     }
 
     @Override
@@ -70,12 +70,12 @@ public class JiraServerGlobalConfigController implements StaticConfigResourceCon
 
     @Override
     public void delete(UUID id) {
-        ResponseFactory.createContentResponseFromAction(jiraServerGlobalConfigActions.delete(id));
+        ResponseFactory.createContentResponseFromAction(jiraServerGlobalConfigAction.delete(id));
     }
 
     @PostMapping("/test")
     public ValidationResponseModel test(/*@RequestBody*/ JiraServerGlobalConfigModel resource) {
-        return ResponseFactory.createContentResponseFromAction(jiraServerGlobalTestActions.testWithPermissionCheck(resource));
+        return ResponseFactory.createContentResponseFromAction(jiraServerGlobalTestAction.testWithPermissionCheck(resource));
     }
 
     @PostMapping("disable-plugin")

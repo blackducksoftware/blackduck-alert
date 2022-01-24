@@ -11,7 +11,7 @@ import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobal
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 
-public interface JiraServerGlobalTestActions {
-    
+public interface IJiraServerGlobalTestAction {
+
     ActionResponse<ValidationResponseModel> testWithPermissionCheck(JiraServerGlobalConfigModel resource);
 }
