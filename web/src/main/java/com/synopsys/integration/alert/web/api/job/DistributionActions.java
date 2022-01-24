@@ -7,11 +7,13 @@
  */
 package com.synopsys.integration.alert.web.api.job;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
@@ -27,6 +29,8 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 @Component
 public class DistributionActions {
+    private static final String CHANNEL_DESCRIPTOR_SORT_NAME = "channelDescriptorName";
+
     private final DistributionAccessor distributionAccessor;
     private final AuthorizationManager authorizationManager;
     private final DescriptorMap descriptorMap;
@@ -46,9 +50,9 @@ public class DistributionActions {
         }
 
         String applicableSortName = convertSortName(sortName);
-        Sort.Direction validSortOrder = Sort.Direction.ASC;
-        if (Sort.Direction.DESC.name().equalsIgnoreCase(sortOrder)) {
-            validSortOrder = Sort.Direction.DESC;
+        Direction validSortOrder = Direction.ASC;
+        if (Direction.DESC.name().equalsIgnoreCase(sortOrder)) {
+            validSortOrder = Direction.DESC;
         }
         AlertPagedModel<DistributionWithAuditInfo> distributionWithAuditInfo;
         if (searchTerm != null) {
@@ -57,7 +61,32 @@ public class DistributionActions {
             distributionWithAuditInfo = distributionAccessor.getDistributionWithAuditInfo(page, pageSize, applicableSortName, validSortOrder, authorizedChannelDescriptorNames);
         }
 
-        return new ActionResponse(HttpStatus.OK, distributionWithAuditInfo);
+        AlertPagedModel<DistributionWithAuditInfo> sortedPagedModel = sortByChannelDisplayNameIfApplicable(distributionWithAuditInfo, applicableSortName, validSortOrder);
+        return new ActionResponse(HttpStatus.OK, sortedPagedModel);
+    }
+
+    private AlertPagedModel<DistributionWithAuditInfo> sortByChannelDisplayNameIfApplicable(AlertPagedModel<DistributionWithAuditInfo> distributionWithAuditInfo, String sortName, Direction sortDirection) {
+        if (!CHANNEL_DESCRIPTOR_SORT_NAME.equals(sortName)) {
+            return distributionWithAuditInfo;
+        }
+
+        List<DistributionWithAuditInfo> sortedInfos = distributionWithAuditInfo.getModels().stream().sorted((left, right) -> {
+            Comparator sorter = (Direction.DESC.equals(sortDirection)) ? Comparator.reverseOrder() : Comparator.naturalOrder();
+            String leftSideName = descriptorMap.getDescriptorKey(left.getChannelName()).map(DescriptorKey::getDisplayName).orElse(null);
+            String rightSideName = descriptorMap.getDescriptorKey(right.getChannelName()).map(DescriptorKey::getDisplayName).orElse(null);
+            if (null == leftSideName || null == rightSideName) {
+                return 0;
+            }
+
+            return sorter.compare(leftSideName, rightSideName);
+        }).collect(Collectors.toList());
+
+        return new AlertPagedModel<>(
+            distributionWithAuditInfo.getTotalPages(),
+            distributionWithAuditInfo.getCurrentPage(),
+            distributionWithAuditInfo.getPageSize(),
+            sortedInfos
+        );
     }
 
     private Set<String> findAuthorizedChannelDescriptorNames() {
@@ -71,7 +100,7 @@ public class DistributionActions {
     private String convertSortName(String sortName) {
         switch (sortName) {
             case "channel":
-                return "channelDescriptorName";
+                return CHANNEL_DESCRIPTOR_SORT_NAME;
             case "frequency":
                 return "distributionFrequency";
             case "lastSent":
