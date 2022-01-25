@@ -8,11 +8,10 @@
 package com.synopsys.integration.alert.environment;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,8 +43,8 @@ public class EnvironmentVariableProcessor {
             logger.info("Handler name: {}", handler.getName());
             logger.info(LINE_DIVIDER);
             logVariableNames(handler.getVariableNames());
-            Properties updatedConfiguration = handler.updateFromEnvironment();
-            logConfiguration(updatedConfiguration);
+            EnvironmentProcessingResult result = handler.updateFromEnvironment();
+            logConfiguration(result);
         }
     }
 
@@ -61,17 +60,15 @@ public class EnvironmentVariableProcessor {
         }
     }
 
-    private void logConfiguration(Properties configurationProperties) {
+    private void logConfiguration(EnvironmentProcessingResult configurationProperties) {
         if (!configurationProperties.isEmpty()) {
-            List<String> sortedPropertyNames = configurationProperties.entrySet().stream()
-                .map(Map.Entry::getKey)
-                .map(Object::toString)
+            List<String> sortedPropertyNames = configurationProperties.getVariableNames().stream()
                 .sorted()
                 .collect(Collectors.toList());
             logger.info(TWO_SPACE_INDENT);
             logger.info("{}### Environment Variables Used to Configure System ### ", TWO_SPACE_INDENT);
             for (String propertyName : sortedPropertyNames) {
-                logger.info("{}{} = {}", FOUR_SPACE_INDENT, propertyName, configurationProperties.get(propertyName));
+                logger.info("{}{} = {}", FOUR_SPACE_INDENT, propertyName, configurationProperties.getVariableValue(propertyName).orElse(StringUtils.EMPTY));
             }
             logger.info(TWO_SPACE_INDENT);
         }

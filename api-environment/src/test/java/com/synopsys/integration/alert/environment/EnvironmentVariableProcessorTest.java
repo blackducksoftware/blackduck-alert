@@ -5,17 +5,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
-public class EnvironmentVariableProcessorTest {
+class EnvironmentVariableProcessorTest {
 
     @Test
-    public void testUpdatingHandler() {
+    void testUpdatingHandler() {
         Environment environment = Mockito.mock(Environment.class);
         for (String variableName : EnvironmentTestHandlerFactory.VARIABLE_NAMES) {
             Mockito.when(environment.containsProperty(Mockito.eq(variableName))).thenReturn(Boolean.TRUE);
@@ -26,22 +26,21 @@ public class EnvironmentVariableProcessorTest {
         EnvironmentVariableProcessor processor = new EnvironmentVariableProcessor(List.of(handler));
         processor.updateConfigurations();
         assertTrue(handler.hasUpdateOccurred());
-        Properties updatedProperties = handler.getUpdatedProperties().orElseThrow(() -> new AssertionError("Properties should exist"));
+        EnvironmentProcessingResult result = handler.getUpdatedProperties().orElseThrow(() -> new AssertionError("Properties should exist"));
 
-        assertFalse(updatedProperties.isEmpty());
-        assertTrue(EnvironmentTestHandlerFactory.VARIABLE_NAMES.containsAll(updatedProperties.stringPropertyNames()));
+        assertFalse(result.isEmpty());
+        assertTrue(EnvironmentTestHandlerFactory.VARIABLE_NAMES.containsAll(result.getVariableNames()));
     }
 
     @Test
-    public void testMissingEnvironmentVariablesHandler() {
+    void testMissingEnvironmentVariablesHandler() {
         Environment environment = Mockito.mock(Environment.class);
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
         EnvironmentTestHandlerFactory handler = new EnvironmentTestHandlerFactory(environmentVariableUtility);
         EnvironmentVariableProcessor processor = new EnvironmentVariableProcessor(List.of(handler));
         processor.updateConfigurations();
         assertFalse(handler.hasUpdateOccurred());
-        assertTrue(handler.getUpdatedProperties().stream()
-            .allMatch(Properties::isEmpty));
+        assertTrue(handler.getUpdatedProperties().isEmpty());
     }
 
     private static class EnvironmentTestHandlerFactory implements EnvironmentVariableHandlerFactory {
@@ -54,7 +53,7 @@ public class EnvironmentVariableProcessorTest {
 
         private boolean updateOccurred = false;
         private EnvironmentVariableUtility environmentVariableUtility;
-        private Properties updatedProperties;
+        private EnvironmentProcessingResult updatedProperties;
 
         public EnvironmentTestHandlerFactory(EnvironmentVariableUtility environmentVariableUtility) {
             this.environmentVariableUtility = environmentVariableUtility;
@@ -69,20 +68,20 @@ public class EnvironmentVariableProcessorTest {
             return updateOccurred;
         }
 
-        public Optional<Properties> getUpdatedProperties() {
+        public Optional<EnvironmentProcessingResult> getUpdatedProperties() {
             return Optional.ofNullable(updatedProperties);
         }
 
-        private Properties updateFromEnvironment() {
-            Properties properties = new Properties();
+        private EnvironmentProcessingResult updateFromEnvironment() {
+            EnvironmentProcessingResult.Builder builder = new EnvironmentProcessingResult.Builder();
             for (String variableName : VARIABLE_NAMES) {
                 if (environmentVariableUtility.hasEnvironmentValue(variableName)) {
-                    properties.put(variableName, environmentVariableUtility.getEnvironmentValue(variableName));
+                    builder.addVariableValue(variableName, environmentVariableUtility.getEnvironmentValue(variableName).orElse(StringUtils.EMPTY));
                     updateOccurred = true;
                 }
             }
-            updatedProperties = properties;
-            return properties;
+            updatedProperties = builder.build();
+            return updatedProperties;
         }
     }
 }

@@ -7,7 +7,6 @@
  */
 package com.synopsys.integration.alert.channel.jira.server.environment;
 
-import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -19,6 +18,7 @@ import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobal
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import com.synopsys.integration.alert.environment.EnvironmentProcessingResult;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandler;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandlerFactory;
 import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
@@ -50,12 +50,12 @@ public class JiraServerEnvironmentVariableHandlerFactory implements EnvironmentV
         return configAccessor.getConfigurationCount() <= 0;
     }
 
-    private Properties updateConfiguration() {
-        Properties properties = new Properties();
+    private EnvironmentProcessingResult updateConfiguration() {
+        EnvironmentProcessingResult.Builder builder = new EnvironmentProcessingResult.Builder();
         String url = environmentVariableUtility.getEnvironmentValue(URL_KEY).orElse(null);
 
         if (StringUtils.isBlank(url)) {
-            return properties;
+            return EnvironmentProcessingResult.empty();
         }
 
         String name = AlertRestConstants.DEFAULT_CONFIGURATION_NAME;
@@ -70,21 +70,19 @@ public class JiraServerEnvironmentVariableHandlerFactory implements EnvironmentV
             .ifPresent(configModel::setPassword);
 
         JiraServerGlobalConfigModel obfuscatedModel = configModel.obfuscate();
-        properties.put(URL_KEY, obfuscatedModel.getUrl());
-        if (StringUtils.isNotBlank(obfuscatedModel.getUserName())) {
-            properties.put(USERNAME_KEY, obfuscatedModel.getUserName());
-        }
-        obfuscatedModel.getDisablePluginCheck().map(String::valueOf).ifPresent(value -> properties.put(DISABLE_PLUGIN_KEY, value));
-        Boolean passwordSet = obfuscatedModel.getPasswordSet().orElse(Boolean.FALSE);
+        builder.addVariableValue(URL_KEY, obfuscatedModel.getUrl());
+        builder.addVariableValue(USERNAME_KEY, obfuscatedModel.getUserName());
+        obfuscatedModel.getDisablePluginCheck().map(String::valueOf).ifPresent(value -> builder.addVariableValue(DISABLE_PLUGIN_KEY, value));
 
-        if (Boolean.TRUE.equals(passwordSet)) {
-            properties.put(PASSWORD_KEY, AlertRestConstants.MASKED_VALUE);
-        }
+        obfuscatedModel.getPasswordSet()
+            .filter(Boolean.TRUE::equals)
+            .ifPresent(ignored -> builder.addSensitiveVariable(PASSWORD_KEY));
 
-        if (!properties.isEmpty() && configAccessor.getConfigurationByName(name).isEmpty()) {
+        EnvironmentProcessingResult result = builder.build();
+        if (!result.isEmpty() && configAccessor.getConfigurationByName(name).isEmpty()) {
             configAccessor.createConfiguration(configModel);
         }
 
-        return properties;
+        return result;
     }
 }

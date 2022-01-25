@@ -9,7 +9,6 @@ package com.synopsys.integration.alert.channel.email.environment;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -20,6 +19,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import com.synopsys.integration.alert.environment.EnvironmentProcessingResult;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandler;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandlerFactory;
 import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
@@ -86,8 +86,8 @@ public class EmailEnvironmentVariableHandlerFactory implements EnvironmentVariab
         ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_USERSET",
         ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_WRITETIMEOUT");
 
-    private EmailGlobalConfigAccessor configAccessor;
-    private EnvironmentVariableUtility environmentVariableUtility;
+    private final EmailGlobalConfigAccessor configAccessor;
+    private final EnvironmentVariableUtility environmentVariableUtility;
 
     @Autowired
     public EmailEnvironmentVariableHandlerFactory(EmailGlobalConfigAccessor configAccessor, EnvironmentVariableUtility environmentVariableUtility) {
@@ -106,30 +106,28 @@ public class EmailEnvironmentVariableHandlerFactory implements EnvironmentVariab
         return configAccessor.getConfigurationCount() <= 0;
     }
 
-    private Properties updateConfiguration() {
-        Properties properties = new Properties();
+    private EnvironmentProcessingResult updateConfiguration() {
+        EnvironmentProcessingResult.Builder builder = new EnvironmentProcessingResult.Builder();
         EmailGlobalConfigModel configModel = new EmailGlobalConfigModel();
         configModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
         configureEmailSettings(configModel);
-        configureAdditionalProperties(properties, configModel);
+        configureAdditionalProperties(builder, configModel);
 
         EmailGlobalConfigModel obfuscatedModel = configModel.obfuscate();
 
-        obfuscatedModel.getSmtpHost().ifPresent(value -> properties.put(EMAIL_HOST_KEY, value));
-        obfuscatedModel.getSmtpPort().map(String::valueOf).ifPresent(value -> properties.put(EMAIL_PORT_KEY, value));
-        obfuscatedModel.getSmtpFrom().ifPresent(value -> properties.put(EMAIL_FROM_KEY, value));
-        obfuscatedModel.getSmtpAuth().map(String::valueOf).ifPresent(value -> properties.put(AUTH_REQUIRED_KEY, value));
-        Boolean passwordSet = obfuscatedModel.getIsSmtpPasswordSet();
-        if (Boolean.TRUE.equals(passwordSet)) {
-            properties.put(AUTH_PASSWORD_KEY, AlertRestConstants.MASKED_VALUE);
-        }
-        obfuscatedModel.getSmtpUsername().ifPresent(value -> properties.put(AUTH_USER_KEY, value));
+        obfuscatedModel.getSmtpHost().ifPresent(value -> builder.addVariableValue(EMAIL_HOST_KEY, value));
+        obfuscatedModel.getSmtpPort().map(String::valueOf).ifPresent(value -> builder.addVariableValue(EMAIL_PORT_KEY, value));
+        obfuscatedModel.getSmtpFrom().ifPresent(value -> builder.addVariableValue(EMAIL_FROM_KEY, value));
+        obfuscatedModel.getSmtpAuth().map(String::valueOf).ifPresent(value -> builder.addVariableValue(AUTH_REQUIRED_KEY, value));
+        builder.addSensitiveVariable(AUTH_PASSWORD_KEY);
 
-        if (!properties.isEmpty()) {
+        obfuscatedModel.getSmtpUsername().ifPresent(value -> builder.addVariableValue(AUTH_USER_KEY, value));
+        EnvironmentProcessingResult result = builder.build();
+        if (!result.isEmpty()) {
             configAccessor.createConfiguration(configModel);
         }
 
-        return properties;
+        return result;
     }
 
     private void configureEmailSettings(EmailGlobalConfigModel configuration) {
@@ -155,14 +153,14 @@ public class EmailEnvironmentVariableHandlerFactory implements EnvironmentVariab
 
     }
 
-    private void configureAdditionalProperties(Properties properties, EmailGlobalConfigModel configuration) {
+    private void configureAdditionalProperties(EnvironmentProcessingResult.Builder builder, EmailGlobalConfigModel configuration) {
         Map<String, String> additionalProperties = new HashMap<>();
         for (String additionalPropertyName : OLD_ADDITIONAL_PROPERTY_KEYSET) {
             if (environmentVariableUtility.hasEnvironmentValue(additionalPropertyName)) {
                 String javamailPropertyName = EmailEnvironmentVariableHandlerFactory.convertVariableNameToJavamailPropertyKey(additionalPropertyName);
                 String value = environmentVariableUtility.getEnvironmentValue(additionalPropertyName).orElse(null);
                 additionalProperties.put(javamailPropertyName, value);
-                properties.put(additionalPropertyName, value);
+                builder.addVariableValue(additionalPropertyName, value);
             }
         }
         configuration.setAdditionalJavaMailProperties(additionalProperties);

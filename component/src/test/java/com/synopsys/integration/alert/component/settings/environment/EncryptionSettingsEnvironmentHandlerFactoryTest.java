@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
+import com.synopsys.integration.alert.api.common.model.AlertConstants;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandler;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandlerFactory;
 import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
@@ -31,8 +31,8 @@ public class EncryptionSettingsEnvironmentHandlerFactoryTest {
         EnvironmentVariableHandler handler = factory.build();
         Properties updatedProperties = handler.updateFromEnvironment();
         assertFalse(updatedProperties.isEmpty());
-        assertEquals(AlertRestConstants.MASKED_VALUE, updatedProperties.getProperty(EncryptionSettingsEnvironmentHandlerFactory.ENCRYPTION_PASSWORD_KEY));
-        assertEquals(AlertRestConstants.MASKED_VALUE, updatedProperties.getProperty(EncryptionSettingsEnvironmentHandlerFactory.ENCRYPTION_SALT_KEY));
+        assertEquals(AlertConstants.MASKED_VALUE, updatedProperties.getProperty(EncryptionSettingsEnvironmentHandlerFactory.ENCRYPTION_PASSWORD_KEY));
+        assertEquals(AlertConstants.MASKED_VALUE, updatedProperties.getProperty(EncryptionSettingsEnvironmentHandlerFactory.ENCRYPTION_SALT_KEY));
     }
 
     @Test

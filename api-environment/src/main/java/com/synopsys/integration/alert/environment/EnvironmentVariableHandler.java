@@ -7,7 +7,6 @@
  */
 package com.synopsys.integration.alert.environment;
 
-import java.util.Properties;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -17,9 +16,9 @@ public class EnvironmentVariableHandler {
     private final String name;
     private final Set<String> environmentVariableNames;
     private final BooleanSupplier configurationMissingCheck;
-    private final Supplier<Properties> updateFunction;
+    private final Supplier<EnvironmentProcessingResult> updateFunction;
 
-    public EnvironmentVariableHandler(String name, Set<String> environmentVariableNames, BooleanSupplier configurationMissingCheck, Supplier<Properties> updateFunction) {
+    public EnvironmentVariableHandler(String name, Set<String> environmentVariableNames, BooleanSupplier configurationMissingCheck, Supplier<EnvironmentProcessingResult> updateFunction) {
         this.name = name;
         this.environmentVariableNames = environmentVariableNames;
         this.configurationMissingCheck = configurationMissingCheck;
@@ -38,12 +37,12 @@ public class EnvironmentVariableHandler {
         return configurationMissingCheck.getAsBoolean();
     }
 
-    public Properties updateFromEnvironment() {
+    public EnvironmentProcessingResult updateFromEnvironment() {
         boolean configurationMissing = configurationMissingCheck.getAsBoolean();
         if (configurationMissing) {
             return updateFunction.get();
         }
 
-        return new Properties();
+        return EnvironmentProcessingResult.empty();
     }
 }

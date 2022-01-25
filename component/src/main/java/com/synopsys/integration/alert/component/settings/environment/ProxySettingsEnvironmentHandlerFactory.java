@@ -8,7 +8,6 @@
 package com.synopsys.integration.alert.component.settings.environment;
 
 import java.util.Arrays;
-import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -20,6 +19,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
 import com.synopsys.integration.alert.component.settings.proxy.database.accessor.SettingsProxyConfigAccessor;
+import com.synopsys.integration.alert.environment.EnvironmentProcessingResult;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandler;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandlerFactory;
 import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
@@ -60,20 +60,21 @@ public class ProxySettingsEnvironmentHandlerFactory implements EnvironmentVariab
         return configAccessor.getConfiguration().isPresent();
     }
 
-    private Properties updateFunction() {
-        Properties properties = new Properties();
+    private EnvironmentProcessingResult updateFunction() {
+        EnvironmentProcessingResult.Builder builder = new EnvironmentProcessingResult.Builder();
         SettingsProxyModel configModel = new SettingsProxyModel();
         configureProxySettings(configModel);
 
         SettingsProxyModel obfuscatedModel = configModel.obfuscate();
 
-        obfuscatedModel.getProxyHost().ifPresent(value -> properties.put(PROXY_HOST_KEY, value));
-        obfuscatedModel.getProxyPort().map(String::valueOf).ifPresent(value -> properties.put(PROXY_PORT_KEY, value));
-        obfuscatedModel.getProxyUsername().ifPresent(value -> properties.put(PROXY_USERNAME_KEY, value));
-        obfuscatedModel.getProxyPassword().ifPresent(value -> properties.put(PROXY_PASSWORD_KEY, value));
-        obfuscatedModel.getNonProxyHosts().ifPresent(value -> properties.put(PROXY_NON_PROXY_HOSTS_KEY, value));
+        obfuscatedModel.getProxyHost().ifPresent(value -> builder.addVariableValue(PROXY_HOST_KEY, value));
+        obfuscatedModel.getProxyPort().map(String::valueOf).ifPresent(value -> builder.addVariableValue(PROXY_PORT_KEY, value));
+        obfuscatedModel.getProxyUsername().ifPresent(value -> builder.addVariableValue(PROXY_USERNAME_KEY, value));
+        obfuscatedModel.getProxyPassword().ifPresent(value -> builder.addSensitiveVariable(PROXY_PASSWORD_KEY));
+        obfuscatedModel.getNonProxyHosts().ifPresent(value -> builder.addVariableValue(PROXY_NON_PROXY_HOSTS_KEY, value.toString()));
 
-        if (!properties.isEmpty()) {
+        EnvironmentProcessingResult result = builder.build();
+        if (!result.isEmpty()) {
             try {
                 configAccessor.createConfiguration(configModel);
             } catch (AlertConfigurationException ex) {
@@ -81,7 +82,7 @@ public class ProxySettingsEnvironmentHandlerFactory implements EnvironmentVariab
             }
         }
 
-        return properties;
+        return result;
     }
 
     private void configureProxySettings(SettingsProxyModel configuration) {
