@@ -28,8 +28,6 @@ import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
-// FIXME: Need to mask sensitive data. Need to allow any values in Additional properties.
-
 @RestController
 @RequestMapping(AlertRestConstants.EMAIL_CONFIGURATION_PATH)
 public class EmailGlobalConfigController implements StaticConfigResourceController<EmailGlobalConfigModel>, ValidateController<EmailGlobalConfigModel>, ReadPageController<AlertPagedModel<EmailGlobalConfigModel>> {

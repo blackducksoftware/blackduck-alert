@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.IssuePolicyDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
@@ -23,6 +26,7 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
 
 public class JiraExactIssueFinder implements ExactIssueFinder<String> {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final String jiraProjectKey;
     private final JqlQueryExecutor jqlQueryExecutor;
     private final JiraIssueSearchResultCreator searchResultCreator;
@@ -65,12 +69,12 @@ public class JiraExactIssueFinder implements ExactIssueFinder<String> {
             concernType,
             policyName
         );
-
+        logger.debug("Searching for Jira issues with this Query: {}", jqlString);
         IssueCategory issueCategory = issueCategoryRetriever.retrieveIssueCategoryFromComponentConcernType(concernType);
         return jqlQueryExecutor.executeQuery(jqlString)
-                   .stream()
-                   .map(jiraSearcherResponseModel -> searchResultCreator.createExistingIssueDetails(jiraSearcherResponseModel, issueCategory))
-                   .collect(Collectors.toList());
+            .stream()
+            .map(jiraSearcherResponseModel -> searchResultCreator.createExistingIssueDetails(jiraSearcherResponseModel, issueCategory))
+            .collect(Collectors.toList());
     }
 
 }

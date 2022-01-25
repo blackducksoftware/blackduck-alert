@@ -119,7 +119,10 @@ public class EmailEnvironmentVariableHandlerFactory implements EnvironmentVariab
         obfuscatedModel.getSmtpPort().map(String::valueOf).ifPresent(value -> properties.put(EMAIL_PORT_KEY, value));
         obfuscatedModel.getSmtpFrom().ifPresent(value -> properties.put(EMAIL_FROM_KEY, value));
         obfuscatedModel.getSmtpAuth().map(String::valueOf).ifPresent(value -> properties.put(AUTH_REQUIRED_KEY, value));
-        obfuscatedModel.getSmtpPassword().ifPresent(value -> properties.put(AUTH_PASSWORD_KEY, value));
+        Boolean passwordSet = obfuscatedModel.getIsSmtpPasswordSet();
+        if (Boolean.TRUE.equals(passwordSet)) {
+            properties.put(AUTH_PASSWORD_KEY, AlertRestConstants.MASKED_VALUE);
+        }
         obfuscatedModel.getSmtpUsername().ifPresent(value -> properties.put(AUTH_USER_KEY, value));
 
         if (!properties.isEmpty()) {

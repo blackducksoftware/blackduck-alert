@@ -16,6 +16,7 @@ public final class AlertRestConstants {
     public static final String OAUTH_CALLBACK_PATH = CALLBACKS_PATH + "/" + OAUTH;
     public static final String CONFIGURATION_PATH = AlertRestConstants.BASE_PATH + "/configuration";
     public static final String EMAIL_CONFIGURATION_PATH = AlertRestConstants.CONFIGURATION_PATH + "/email";
+    public static final String JIRA_SERVER_CONFIGURATION_PATH = AlertRestConstants.CONFIGURATION_PATH + "/jira_server";
     public static final String SETTINGS_PATH = AlertRestConstants.BASE_PATH + "/settings";
     public static final String SETTINGS_ENCRYPTION_PATH = AlertRestConstants.SETTINGS_PATH + "/encryption";
     public static final String SETTINGS_PROXY_PATH = AlertRestConstants.SETTINGS_PATH + "/proxy";
