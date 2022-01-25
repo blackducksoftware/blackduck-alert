@@ -2,7 +2,6 @@ package com.synopsys.integration.alert.channel.jira.environment;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Properties;
@@ -60,7 +59,7 @@ class JiraServerEnvironmentHandlerFactoryTestIT {
 
         assertEquals(TEST_DISABLE_PLUGIN_CHECK, updatedProperties.getProperty(JiraServerEnvironmentVariableHandlerFactory.DISABLE_PLUGIN_KEY));
         assertEquals(TEST_URL, updatedProperties.getProperty(JiraServerEnvironmentVariableHandlerFactory.URL_KEY));
-        assertNull(updatedProperties.getProperty(JiraServerEnvironmentVariableHandlerFactory.PASSWORD_KEY));
+        assertEquals(AlertRestConstants.MASKED_VALUE, updatedProperties.getProperty(JiraServerEnvironmentVariableHandlerFactory.PASSWORD_KEY));
         assertEquals(TEST_USER, updatedProperties.getProperty(JiraServerEnvironmentVariableHandlerFactory.USERNAME_KEY));
     }
 

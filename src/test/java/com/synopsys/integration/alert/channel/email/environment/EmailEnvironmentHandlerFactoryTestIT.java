@@ -2,7 +2,6 @@ package com.synopsys.integration.alert.channel.email.environment;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Properties;
@@ -61,7 +60,7 @@ class EmailEnvironmentHandlerFactoryTestIT {
         assertEquals(TEST_AUTH_REQUIRED, updatedProperties.getProperty(EmailEnvironmentVariableHandlerFactory.AUTH_REQUIRED_KEY));
         assertEquals(TEST_FROM, updatedProperties.getProperty(EmailEnvironmentVariableHandlerFactory.EMAIL_FROM_KEY));
         assertEquals(TEST_SMTP_HOST, updatedProperties.getProperty(EmailEnvironmentVariableHandlerFactory.EMAIL_HOST_KEY));
-        assertNull(updatedProperties.getProperty(EmailEnvironmentVariableHandlerFactory.AUTH_PASSWORD_KEY));
+        assertEquals(AlertRestConstants.MASKED_VALUE, updatedProperties.getProperty(EmailEnvironmentVariableHandlerFactory.AUTH_PASSWORD_KEY));
         assertEquals(TEST_PORT, updatedProperties.getProperty(EmailEnvironmentVariableHandlerFactory.EMAIL_PORT_KEY));
         assertEquals(TEST_USER, updatedProperties.getProperty(EmailEnvironmentVariableHandlerFactory.AUTH_USER_KEY));
     }
