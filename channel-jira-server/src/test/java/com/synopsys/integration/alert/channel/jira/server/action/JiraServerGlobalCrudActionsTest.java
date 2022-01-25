@@ -63,11 +63,6 @@ public class JiraServerGlobalCrudActionsTest {
     }
 
     @Test
-    void getOneEmptyTest() {
-
-    }
-
-    @Test
     void getPagedTest() {
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel = createJiraServerGlobalConfigModel(id);
         AlertPagedModel<JiraServerGlobalConfigModel> alertPagedModel = new AlertPagedModel<>(1, AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE, List.of(jiraServerGlobalConfigModel));
