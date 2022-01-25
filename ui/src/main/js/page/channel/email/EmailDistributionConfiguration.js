@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import TextInput from 'common/input/TextInput';
+import TextInput from 'common/component/input/TextInput';
 import { EMAIL_DISTRIBUTION_ADDITIONAL_EMAIL_COLUMNS, EMAIL_DISTRIBUTION_ATTACHMENT_OPTIONS, EMAIL_DISTRIBUTION_FIELD_KEYS } from 'page/channel/email/EmailModels';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
-import CheckboxInput from 'common/input/CheckboxInput';
-import DynamicSelectInput from 'common/input/DynamicSelectInput';
-import TableSelectInput from 'common/input/TableSelectInput';
+import CheckboxInput from 'common/component/input/CheckboxInput';
+import DynamicSelectInput from 'common/component/input/DynamicSelectInput';
+import TableSelectInput from 'common/component/input/TableSelectInput';
 import { DISTRIBUTION_URLS } from 'page/distribution/DistributionModel';
 
 const EmailDistributionConfiguration = ({

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Header from 'common/Header';
+import Header from 'common/component/Header';
 import { connect } from 'react-redux';
 
 class LogoutPage extends Component {

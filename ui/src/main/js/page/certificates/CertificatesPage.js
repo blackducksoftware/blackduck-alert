@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { clearCertificateFieldErrors, deleteCertificate, fetchCertificates, saveCertificate, validateCertificate } from 'store/actions/certificates';
-import ConfigurationLabel from 'common/ConfigurationLabel';
-import TableDisplay from 'common/table/TableDisplay';
-import TextInput from 'common/input/TextInput';
-import TextArea from 'common/input/TextArea';
-import ReadOnlyField from 'common/input/field/ReadOnlyField';
+import ConfigurationLabel from 'common/component/ConfigurationLabel';
+import TableDisplay from 'common/component/table/TableDisplay';
+import TextInput from 'common/component/input/TextInput';
+import TextArea from 'common/component/input/TextArea';
+import ReadOnlyField from 'common/component/input/field/ReadOnlyField';
 import * as DescriptorUtilities from 'common/util/descriptorUtilities';
 import { CERTIFICATE_INFO } from 'page/certificates/CertificateModel';
 

@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
-import TextInput from 'common/input/TextInput';
+import TextInput from 'common/component/input/TextInput';
 import { BLACKDUCK_GLOBAL_FIELD_KEYS, BLACKDUCK_INFO, BLACKDUCK_URLS } from 'page/provider/blackduck/BlackDuckModel';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
-import PasswordInput from 'common/input/PasswordInput';
-import NumberInput from 'common/input/NumberInput';
-import CommonGlobalConfigurationForm from 'common/global/CommonGlobalConfigurationForm';
+import PasswordInput from 'common/component/input/PasswordInput';
+import NumberInput from 'common/component/input/NumberInput';
+import CommonGlobalConfigurationForm from 'common/configuration/global/CommonGlobalConfigurationForm';
 import { CONTEXT_TYPE } from 'common/util/descriptorUtilities';
 import * as PropTypes from 'prop-types';
-import CommonGlobalConfiguration from 'common/global/CommonGlobalConfiguration';
-import CheckboxInput from 'common/input/CheckboxInput';
-import * as GlobalRequestHelper from 'common/global/GlobalRequestHelper';
+import CommonGlobalConfiguration from 'common/configuration/global/CommonGlobalConfiguration';
+import CheckboxInput from 'common/component/input/CheckboxInput';
+import * as GlobalRequestHelper from 'common/configuration/global/GlobalRequestHelper';
 
 const BlackDuckConfiguration = ({
     csrfToken, errorHandler, readonly, displayTest, displaySave

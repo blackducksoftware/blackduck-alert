@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { Modal, Tab, Tabs } from 'react-bootstrap';
-import DescriptorLabel from 'common/DescriptorLabel';
-import TextInput from 'common/input/TextInput';
-import TextArea from 'common/input/TextArea';
-import RefreshTableCellFormatter from 'common/table/RefreshTableCellFormatter';
+import DescriptorLabel from 'common/component/descriptor/DescriptorLabel';
+import TextInput from 'common/component/input/TextInput';
+import TextArea from 'common/component/input/TextArea';
+import RefreshTableCellFormatter from 'common/component/table/RefreshTableCellFormatter';
 import * as DescriptorUtilities from 'common/util/descriptorUtilities';
-import StatusMessage from 'common/StatusMessage';
+import StatusMessage from 'common/component/StatusMessage';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class Details extends Component {

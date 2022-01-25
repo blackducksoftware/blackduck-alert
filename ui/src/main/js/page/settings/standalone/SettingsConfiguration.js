@@ -1,7 +1,7 @@
 import React from 'react';
 import * as PropTypes from 'prop-types';
 import { Tab, Tabs } from 'react-bootstrap';
-import CommonGlobalConfiguration from 'common/global/CommonGlobalConfiguration';
+import CommonGlobalConfiguration from 'common/configuration/global/CommonGlobalConfiguration';
 import { SETTINGS_INFO } from 'page/settings/SettingsModel';
 import SettingsEncryptionConfiguration from 'page/settings/standalone/SettingsEncryptionConfiguration.js';
 import SettingsProxyConfiguration from 'page/settings/standalone/SettingsProxyConfiguration';

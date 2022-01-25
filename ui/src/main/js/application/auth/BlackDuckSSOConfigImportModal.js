@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
-import PopUp from 'common/PopUp';
-import EndpointSelectField from 'common/input/EndpointSelectField';
+import PopUp from 'common/component/PopUp';
+import EndpointSelectField from 'common/component/input/EndpointSelectField';
 import { DISTRIBUTION_COMMON_FIELD_KEYS, DISTRIBUTION_URLS } from 'page/distribution/DistributionModel';
 import { CONTEXT_TYPE } from 'common/util/descriptorUtilities';
 import { BLACKDUCK_INFO } from 'page/provider/blackduck/BlackDuckModel';
 import { createReadRequest } from 'common/util/configurationRequestBuilder';
 import * as PropTypes from 'prop-types';
-import StatusMessage from 'common/StatusMessage';
+import StatusMessage from 'common/component/StatusMessage';
 import { AUTHENTICATION_SAML_FIELD_KEYS } from './AuthenticationModel';
 
 const BlackDuckSSOConfigImportModal = ({
