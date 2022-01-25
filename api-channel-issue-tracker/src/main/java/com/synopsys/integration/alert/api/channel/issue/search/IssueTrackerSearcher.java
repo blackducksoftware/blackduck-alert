@@ -11,8 +11,10 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -127,7 +129,9 @@ public class IssueTrackerSearcher<T extends Serializable> {
                 searchResultOperation = componentUnknownOperation.get();
             }
         } else if (foundIssuesCount > 1) {
-            throw new AlertException("Expect to find a unique issue, but more than one was found");
+            Set<String> issueKeys = existingIssues.stream().map(ExistingIssueDetails::getIssueKey).collect(Collectors.toSet());
+            String issueKeyString = StringUtils.join(issueKeys, ", ");
+            throw new AlertException("Expect to find a unique issue, but more than one was found. " + issueKeyString);
         } else {
             searchResultOperation = ItemOperation.ADD;
         }
