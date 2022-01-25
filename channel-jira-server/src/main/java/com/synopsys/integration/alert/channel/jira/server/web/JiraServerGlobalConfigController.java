@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.synopsys.integration.alert.channel.jira.server.action.JiraServerGlobalCrudActions;
 import com.synopsys.integration.alert.channel.jira.server.action.JiraServerGlobalValidationAction;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
@@ -30,38 +31,40 @@ import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 public class JiraServerGlobalConfigController implements StaticConfigResourceController<JiraServerGlobalConfigModel>, ValidateController<JiraServerGlobalConfigModel>, ReadPageController<AlertPagedModel<JiraServerGlobalConfigModel>> {
     private final JiraServerGlobalValidationAction jiraServerGlobalValidationAction;
     private final IJiraServerGlobalTestAction jiraServerGlobalTestAction;
-    private final IJiraServerGlobalConfigAction jiraServerGlobalConfigAction;
+    private final JiraServerGlobalCrudActions configActions;
     private final JiraServerDisablePluginAction jiraServerDisablePluginAction;
 
     @Autowired
     public JiraServerGlobalConfigController(
-        JiraServerGlobalValidationAction jiraServerGlobalValidationAction, IJiraServerGlobalTestAction jiraServerGlobalTestAction, IJiraServerGlobalConfigAction jiraServerGlobalConfigAction,
+        JiraServerGlobalValidationAction jiraServerGlobalValidationAction,
+        IJiraServerGlobalTestAction jiraServerGlobalTestAction,
+        JiraServerGlobalCrudActions configActions,
         JiraServerDisablePluginAction jiraServerDisablePluginAction
     ) {
         this.jiraServerGlobalValidationAction = jiraServerGlobalValidationAction;
         this.jiraServerGlobalTestAction = jiraServerGlobalTestAction;
-        this.jiraServerGlobalConfigAction = jiraServerGlobalConfigAction;
+        this.configActions = configActions;
         this.jiraServerDisablePluginAction = jiraServerDisablePluginAction;
     }
 
     @Override
     public JiraServerGlobalConfigModel getOne(UUID id) {
-        return ResponseFactory.createContentResponseFromAction(jiraServerGlobalConfigAction.getOne(id));
+        return ResponseFactory.createContentResponseFromAction(configActions.getOne(id));
     }
 
     @Override
     public AlertPagedModel<JiraServerGlobalConfigModel> getPage(Integer pageNumber, Integer pageSize, String searchTerm) {
-        return ResponseFactory.createContentResponseFromAction(jiraServerGlobalConfigAction.getPaged(pageNumber, pageSize));
+        return ResponseFactory.createContentResponseFromAction(configActions.getPaged(pageNumber, pageSize));
     }
 
     @Override
     public JiraServerGlobalConfigModel create(JiraServerGlobalConfigModel resource) {
-        return ResponseFactory.createContentResponseFromAction(jiraServerGlobalConfigAction.create(resource));
+        return ResponseFactory.createContentResponseFromAction(configActions.create(resource));
     }
 
     @Override
     public void update(UUID id, JiraServerGlobalConfigModel resource) {
-        ResponseFactory.createContentResponseFromAction(jiraServerGlobalConfigAction.update(id, resource));
+        ResponseFactory.createContentResponseFromAction(configActions.update(id, resource));
     }
 
     @Override
@@ -71,7 +74,7 @@ public class JiraServerGlobalConfigController implements StaticConfigResourceCon
 
     @Override
     public void delete(UUID id) {
-        ResponseFactory.createContentResponseFromAction(jiraServerGlobalConfigAction.delete(id));
+        ResponseFactory.createContentResponseFromAction(configActions.delete(id));
     }
 
     @PostMapping("/test")
