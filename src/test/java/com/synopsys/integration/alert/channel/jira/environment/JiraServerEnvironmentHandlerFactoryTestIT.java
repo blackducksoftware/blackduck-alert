@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.channel.email.environment;
+package com.synopsys.integration.alert.channel.jira.environment;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -65,7 +65,7 @@ class JiraServerEnvironmentHandlerFactoryTestIT {
     }
 
     @Test
-    void testExistingEmailConfig() {
+    void testExistingConfig() {
         String createdAt = DateUtils.formatDate(DateUtils.createCurrentDateTimestamp(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
         JiraServerGlobalConfigModel emailGlobalConfigModel = new JiraServerGlobalConfigModel(null, AlertRestConstants.DEFAULT_CONFIGURATION_NAME, createdAt, createdAt, TEST_URL, TEST_USER, TEST_PASSWORD, false, true);
 
@@ -82,7 +82,7 @@ class JiraServerEnvironmentHandlerFactoryTestIT {
 
     private Environment setupMockedEnvironment() {
         Environment environment = Mockito.mock(Environment.class);
-        Predicate<String> hasEnvVarCheck = (variableName) -> !EmailEnvironmentVariableHandlerFactory.OLD_ADDITIONAL_PROPERTY_KEYSET.contains(variableName);
+        Predicate<String> hasEnvVarCheck = (variableName) -> !JiraServerEnvironmentVariableHandlerFactory.VARIABLE_NAMES.contains(variableName);
         EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandlerFactory.DISABLE_PLUGIN_KEY, TEST_DISABLE_PLUGIN_CHECK);
         EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandlerFactory.URL_KEY, TEST_URL);
         EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandlerFactory.PASSWORD_KEY, TEST_PASSWORD);
