@@ -13,26 +13,21 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
 import com.synopsys.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationValidator;
-import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
-import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
-import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
-import com.synopsys.integration.alert.test.common.MockAlertProperties;
 
 public class JiraServerGlobalCrudActionsTest {
     private final String CREATED_AT = String.valueOf(DateUtils.createCurrentDateTimestamp().minusMinutes(5L));
@@ -41,10 +36,7 @@ public class JiraServerGlobalCrudActionsTest {
     private final String USER_NAME = "username";
     private final String PASSWORD = "password";
 
-    private final Gson gson = new Gson();
-    private final AlertProperties alertProperties = new MockAlertProperties();
-    private final FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, gson);
-    private final EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, filePersistenceUtil);
+    private final UUID id = UUID.randomUUID();
 
     private final AuthenticationTestUtils authenticationTestUtils = new AuthenticationTestUtils();
     private final DescriptorKey descriptorKey = new JiraServerChannelKey();
@@ -56,8 +48,6 @@ public class JiraServerGlobalCrudActionsTest {
 
     @Test
     void getOneTest() {
-        UUID id = UUID.randomUUID();
-
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel = createJiraServerGlobalConfigModel(id);
 
         JiraServerGlobalConfigAccessor configAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
@@ -73,9 +63,12 @@ public class JiraServerGlobalCrudActionsTest {
     }
 
     @Test
-    void getPagedTest() {
-        UUID id = UUID.randomUUID();
+    void getOneEmptyTest() {
 
+    }
+
+    @Test
+    void getPagedTest() {
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel = createJiraServerGlobalConfigModel(id);
         AlertPagedModel<JiraServerGlobalConfigModel> alertPagedModel = new AlertPagedModel<>(1, AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE, List.of(jiraServerGlobalConfigModel));
 
@@ -97,8 +90,6 @@ public class JiraServerGlobalCrudActionsTest {
 
     @Test
     void createTest() {
-        UUID id = UUID.randomUUID();
-
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel = createJiraServerGlobalConfigModel(id);
         JiraServerGlobalConfigAccessor configAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
         Mockito.when(configAccessor.createConfiguration(Mockito.any())).thenReturn(jiraServerGlobalConfigModel);
@@ -114,8 +105,6 @@ public class JiraServerGlobalCrudActionsTest {
 
     @Test
     void updateTest() throws AlertConfigurationException {
-        UUID id = UUID.randomUUID();
-
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel = createJiraServerGlobalConfigModel(id);
         JiraServerGlobalConfigAccessor configAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
         Mockito.when(configAccessor.getConfiguration(id)).thenReturn(Optional.of(jiraServerGlobalConfigModel));
@@ -132,8 +121,6 @@ public class JiraServerGlobalCrudActionsTest {
 
     @Test
     void deleteTest() {
-        UUID id = UUID.randomUUID();
-
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel = createJiraServerGlobalConfigModel(id);
         JiraServerGlobalConfigAccessor configAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
         Mockito.when(configAccessor.getConfiguration(id)).thenReturn(Optional.of(jiraServerGlobalConfigModel));
@@ -141,7 +128,7 @@ public class JiraServerGlobalCrudActionsTest {
         JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator);
         ActionResponse<JiraServerGlobalConfigModel> actionResponse = crudActions.delete(id);
 
-        Mockito.verify(configAccessor).deleteConfiguration(Mockito.eq(id));
+        Mockito.verify(configAccessor).deleteConfiguration(id);
 
         assertTrue(actionResponse.isSuccessful());
         assertFalse(actionResponse.hasContent());
