@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import * as PropTypes from 'prop-types';
 import * as ConfigurationRequestBuilder from 'common/util/configurationRequestBuilder';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
-import ConfigurationForm from 'common/ConfigurationForm';
+import ConcreteConfigurationForm from 'common/configuration/global/ConcreteConfigurationForm';
 import { SETTINGS_FIELD_KEYS, SETTINGS_INFO, SETTINGS_PROXY_TEST_FIELD } from 'page/settings/SettingsModel';
-import TextInput from 'common/input/TextInput';
+import TextInput from 'common/component/input/TextInput';
 import * as fieldModelUtilities from 'common/util/fieldModelUtilities';
-import NumberInput from 'common/input/NumberInput';
-import PasswordInput from 'common/input/PasswordInput';
-import DynamicSelectInput from 'common/input/DynamicSelectInput';
+import NumberInput from 'common/component/input/NumberInput';
+import PasswordInput from 'common/component/input/PasswordInput';
+import DynamicSelectInput from 'common/component/input/DynamicSelectInput';
 
 const SettingsProxyConfiguration = ({
     csrfToken, errorHandler, readOnly, displayTest, displaySave, displayDelete
@@ -49,7 +49,7 @@ const SettingsProxyConfiguration = ({
     ];
 
     return (
-        <ConfigurationForm
+        <ConcreteConfigurationForm
             csrfToken={csrfToken}
             formDataId={settingsProxyConfig.id}
             setErrors={(formErrors) => setErrors(formErrors)}
@@ -128,7 +128,7 @@ const SettingsProxyConfiguration = ({
                 options={nonProxyHostOptions}
                 placeholder="Choose an option or type to add your own"
             />
-        </ConfigurationForm>
+        </ConcreteConfigurationForm>
     );
 };
 

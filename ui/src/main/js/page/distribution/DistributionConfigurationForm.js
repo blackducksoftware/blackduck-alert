@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import * as PropTypes from 'prop-types';
-import CommonGlobalConfiguration from 'common/global/CommonGlobalConfiguration';
-import CheckboxInput from 'common/input/CheckboxInput';
-import SelectInput from 'common/input/DynamicSelectInput';
+import CommonGlobalConfiguration from 'common/configuration/global/CommonGlobalConfiguration';
+import CheckboxInput from 'common/component/input/CheckboxInput';
+import SelectInput from 'common/component/input/DynamicSelectInput';
 import {
     DISTRIBUTION_CHANNEL_OPTIONS,
     DISTRIBUTION_COMMON_FIELD_KEYS,
@@ -16,10 +16,10 @@ import {
     DISTRIBUTION_URLS,
     DISTRIBUTION_VULNERABILITY_SEVERITY_OPTIONS
 } from 'page/distribution/DistributionModel';
-import EndpointSelectField from 'common/input/EndpointSelectField';
-import TextInput from 'common/input/TextInput';
-import CollapsiblePane from 'common/CollapsiblePane';
-import TableSelectInput from 'common/input/TableSelectInput';
+import EndpointSelectField from 'common/component/input/EndpointSelectField';
+import TextInput from 'common/component/input/TextInput';
+import CollapsiblePane from 'common/component/CollapsiblePane';
+import TableSelectInput from 'common/component/input/TableSelectInput';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import { CONTEXT_TYPE, isOneOperationAssigned, isOperationAssigned, OPERATIONS } from 'common/util/descriptorUtilities';

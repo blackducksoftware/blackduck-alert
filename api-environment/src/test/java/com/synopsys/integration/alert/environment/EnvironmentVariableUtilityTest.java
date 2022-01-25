@@ -12,10 +12,12 @@ import org.springframework.core.env.Environment;
 
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
-public class EnvironmentVariableUtilityTest {
+class EnvironmentVariableUtilityTest {
     private static final String WORKING_PROPERTY_KEY = "ALERT_DESCRIPTORTYPE_NAME_SPECIFIC_PROPERTY_KEY";
 
     private static class TestDescriptorKey extends DescriptorKey {
+        private static final long serialVersionUID = 577451208866602851L;
+
         public TestDescriptorKey(String universalKey, String displayName) {
             super(universalKey, displayName);
         }
@@ -24,39 +26,38 @@ public class EnvironmentVariableUtilityTest {
     private static final TestDescriptorKey DESCRIPTOR_KEY = new TestDescriptorKey("descriptortype_name", "Test Descriptor");
 
     @Test
-    public void testKeyConversion() {
+    void testKeyConversion() {
         Environment environment = Mockito.mock(Environment.class);
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
         String actualPropertyKey = environmentVariableUtility.convertKeyToProperty(DESCRIPTOR_KEY, "specific.property.key");
-        String expectedPropertyKey = WORKING_PROPERTY_KEY;
-        assertEquals(expectedPropertyKey, actualPropertyKey);
+        assertEquals(WORKING_PROPERTY_KEY, actualPropertyKey);
     }
 
     @Test
-    public void testHasEnvironment() {
+    void testHasEnvironment() {
         Environment environment = Mockito.mock(Environment.class);
         String workingPropertyKey = WORKING_PROPERTY_KEY;
-        Mockito.when(environment.containsProperty(Mockito.eq(workingPropertyKey))).thenReturn(Boolean.TRUE);
+        Mockito.when(environment.containsProperty(workingPropertyKey)).thenReturn(Boolean.TRUE);
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
         assertFalse(environmentVariableUtility.hasEnvironmentValue("BAD_KEY"));
         assertTrue(environmentVariableUtility.hasEnvironmentValue(workingPropertyKey));
     }
 
     @Test
-    public void testGetEnvironmentValueEmpty() {
+    void testGetEnvironmentValueEmpty() {
         Environment environment = Mockito.mock(Environment.class);
         String workingPropertyKey = WORKING_PROPERTY_KEY;
-        Mockito.when(environment.containsProperty(Mockito.eq(workingPropertyKey))).thenReturn(Boolean.TRUE);
+        Mockito.when(environment.containsProperty(workingPropertyKey)).thenReturn(Boolean.TRUE);
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
         assertTrue(environmentVariableUtility.getEnvironmentValue(workingPropertyKey).isEmpty());
     }
 
     @Test
-    public void testGetEnvironmentValue() {
+    void testGetEnvironmentValue() {
         Environment environment = Mockito.mock(Environment.class);
         String workingPropertyKey = WORKING_PROPERTY_KEY;
         String expectedValue = "expected value";
-        Mockito.when(environment.getProperty(Mockito.eq(workingPropertyKey))).thenReturn(expectedValue);
+        Mockito.when(environment.getProperty(workingPropertyKey)).thenReturn(expectedValue);
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
         Optional<String> optionalValue = environmentVariableUtility.getEnvironmentValue(workingPropertyKey);
         assertTrue(optionalValue.isPresent());
@@ -64,14 +65,12 @@ public class EnvironmentVariableUtilityTest {
     }
 
     @Test
-    public void testGetEnvironmentValueDefaultValue() {
+    void testGetEnvironmentValueDefaultValue() {
         Environment environment = Mockito.mock(Environment.class);
-        String workingPropertyKey = WORKING_PROPERTY_KEY;
         String expectedValue = "expected value";
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
-        Optional<String> optionalValue = environmentVariableUtility.getEnvironmentValue(workingPropertyKey, expectedValue);
+        Optional<String> optionalValue = environmentVariableUtility.getEnvironmentValue(WORKING_PROPERTY_KEY, expectedValue);
         assertTrue(optionalValue.isPresent());
         assertEquals(expectedValue, optionalValue.get());
     }
-
 }

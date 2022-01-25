@@ -1,4 +1,4 @@
-import { createTableSelectColumn } from 'common/input/TableSelectInput';
+import { createTableSelectColumn } from 'common/component/input/TableSelectInput';
 
 export const EMAIL_DISTRIBUTION_FIELD_KEYS = {
     additionalAddresses: 'email.additional.addresses',

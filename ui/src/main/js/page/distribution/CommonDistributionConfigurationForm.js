@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import * as PropTypes from 'prop-types';
-import ConfigButtons from 'common/button/ConfigButtons';
+import ConfigButtons from 'common/component/button/ConfigButtons';
 import * as ConfigRequestBuilder from 'common/util/configurationRequestBuilder';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
-import GlobalTestModal from 'common/global/GlobalTestModal';
-import StatusMessage from 'common/StatusMessage';
+import GlobalTestModal from 'common/configuration/global/GlobalTestModal';
+import StatusMessage from 'common/component/StatusMessage';
 
 const CommonDistributionConfigurationForm = ({
     formData,

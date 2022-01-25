@@ -1,21 +1,21 @@
 import React, { useState } from 'react';
-import CommonGlobalConfigurationForm from 'common/global/CommonGlobalConfigurationForm';
+import CommonGlobalConfigurationForm from 'common/configuration/global/CommonGlobalConfigurationForm';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import { CONTEXT_TYPE } from 'common/util/descriptorUtilities';
 import * as PropTypes from 'prop-types';
-import CommonGlobalConfiguration from 'common/global/CommonGlobalConfiguration';
-import TextInput from 'common/input/TextInput';
+import CommonGlobalConfiguration from 'common/configuration/global/CommonGlobalConfiguration';
+import TextInput from 'common/component/input/TextInput';
 import { AUTHENTICATION_INFO, AUTHENTICATION_LDAP_FIELD_KEYS, AUTHENTICATION_SAML_FIELD_KEYS, AUTHENTICATION_TEST_FIELD_KEYS } from 'application/auth/AuthenticationModel';
-import CheckboxInput from 'common/input/CheckboxInput';
-import PasswordInput from 'common/input/PasswordInput';
-import DynamicSelectInput from 'common/input/DynamicSelectInput';
-import CollapsiblePane from 'common/CollapsiblePane';
-import UploadFileButtonField from 'common/input/field/UploadFileButtonField';
-import ReadOnlyField from 'common/input/field/ReadOnlyField';
-import * as GlobalRequestHelper from 'common/global/GlobalRequestHelper';
+import CheckboxInput from 'common/component/input/CheckboxInput';
+import PasswordInput from 'common/component/input/PasswordInput';
+import DynamicSelectInput from 'common/component/input/DynamicSelectInput';
+import CollapsiblePane from 'common/component/CollapsiblePane';
+import UploadFileButtonField from 'common/component/input/field/UploadFileButtonField';
+import ReadOnlyField from 'common/component/input/field/ReadOnlyField';
+import * as GlobalRequestHelper from 'common/configuration/global/GlobalRequestHelper';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
-import GeneralButton from 'common/button/GeneralButton';
-import LabeledField from 'common/input/field/LabeledField';
+import GeneralButton from 'common/component/button/GeneralButton';
+import LabeledField from 'common/component/input/field/LabeledField';
 import BlackDuckSSOConfigImportModal from './BlackDuckSSOConfigImportModal';
 
 const AuthenticationConfiguration = ({

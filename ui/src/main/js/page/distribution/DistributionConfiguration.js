@@ -1,7 +1,7 @@
 import React from 'react';
 import { DISTRIBUTION_INFO } from 'page/distribution/DistributionModel';
 import DistributionConfigurationTable from 'page/distribution/DistributionConfigurationTable';
-import CommonGlobalConfiguration from 'common/global/CommonGlobalConfiguration';
+import CommonGlobalConfiguration from 'common/configuration/global/CommonGlobalConfiguration';
 import * as PropTypes from 'prop-types';
 
 const DistributionConfiguration = ({
