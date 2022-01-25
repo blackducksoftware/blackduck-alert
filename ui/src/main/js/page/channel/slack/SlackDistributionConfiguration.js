@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import { SLACK_DISTRIBUTION_FIELD_KEYS } from 'page/channel/slack/SlackModels';
-import TextInput from 'common/input/TextInput';
+import TextInput from 'common/component/input/TextInput';
 
 const SlackDistributionConfiguration = ({
     data, setData, errors, readonly

@@ -3,13 +3,13 @@ import * as PropTypes from 'prop-types';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
 import { CONTEXT_TYPE } from 'common/util/descriptorUtilities';
-import CommonGlobalConfiguration from 'common/global/CommonGlobalConfiguration';
-import CommonGlobalConfigurationForm from 'common/global/CommonGlobalConfigurationForm';
-import PasswordInput from 'common/input/PasswordInput';
+import CommonGlobalConfiguration from 'common/configuration/global/CommonGlobalConfiguration';
+import CommonGlobalConfigurationForm from 'common/configuration/global/CommonGlobalConfigurationForm';
+import PasswordInput from 'common/component/input/PasswordInput';
 import { AZURE_GLOBAL_FIELD_KEYS, AZURE_INFO } from 'page/channel/azure/AzureModel';
-import OAuthEndpointButtonField from 'common/input/field/OAuthEndpointButtonField';
-import * as GlobalRequestHelper from 'common/global/GlobalRequestHelper';
-import TextInput from 'common/input/TextInput';
+import OAuthEndpointButtonField from 'common/component/input/field/OAuthEndpointButtonField';
+import * as GlobalRequestHelper from 'common/configuration/global/GlobalRequestHelper';
+import TextInput from 'common/component/input/TextInput';
 
 const AzureGlobalConfiguration = ({
     csrfToken, errorHandler, readonly, displayTest, displaySave, displayDelete

@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import ConfigurationLabel from 'common/ConfigurationLabel';
-import TableDisplay from 'common/table/TableDisplay';
-import ReadOnlyField from 'common/input/field/ReadOnlyField';
+import ConfigurationLabel from 'common/component/ConfigurationLabel';
+import TableDisplay from 'common/component/table/TableDisplay';
+import ReadOnlyField from 'common/component/input/field/ReadOnlyField';
 import { fetchTasks } from 'store/actions/tasks';
 import { TASK_MANAGEMENT_INFO } from 'page/task/TaskManagementModel';
 

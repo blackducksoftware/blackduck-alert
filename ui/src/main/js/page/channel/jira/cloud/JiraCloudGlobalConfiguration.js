@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import * as PropTypes from 'prop-types';
-import CommonGlobalConfiguration from 'common/global/CommonGlobalConfiguration';
+import CommonGlobalConfiguration from 'common/configuration/global/CommonGlobalConfiguration';
 import { JIRA_CLOUD_GLOBAL_FIELD_KEYS, JIRA_CLOUD_INFO } from 'page/channel/jira/cloud/JiraCloudModel';
-import CommonGlobalConfigurationForm from 'common/global/CommonGlobalConfigurationForm';
-import TextInput from 'common/input/TextInput';
+import CommonGlobalConfigurationForm from 'common/configuration/global/CommonGlobalConfigurationForm';
+import TextInput from 'common/component/input/TextInput';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
-import PasswordInput from 'common/input/PasswordInput';
-import CheckboxInput from 'common/input/CheckboxInput';
-import EndpointButtonField from 'common/input/field/EndpointButtonField';
+import PasswordInput from 'common/component/input/PasswordInput';
+import CheckboxInput from 'common/component/input/CheckboxInput';
+import EndpointButtonField from 'common/component/input/field/EndpointButtonField';
 import { CONTEXT_TYPE } from 'common/util/descriptorUtilities';
-import * as GlobalRequestHelper from 'common/global/GlobalRequestHelper';
+import * as GlobalRequestHelper from 'common/configuration/global/GlobalRequestHelper';
 
 const JiraCloudGlobalConfiguration = ({
     csrfToken, errorHandler, readonly, displayTest, displaySave, displayDelete

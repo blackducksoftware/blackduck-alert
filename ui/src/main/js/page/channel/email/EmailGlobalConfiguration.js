@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import * as PropTypes from 'prop-types';
-import CommonGlobalConfiguration from 'common/global/CommonGlobalConfiguration';
+import CommonGlobalConfiguration from 'common/configuration/global/CommonGlobalConfiguration';
 import {
     EMAIL_GLOBAL_ADVANCED_FIELD_KEYS, EMAIL_GLOBAL_FIELD_KEYS, EMAIL_INFO, EMAIL_TEST_FIELD
 } from 'page/channel/email/EmailModels';
-import TextInput from 'common/input/TextInput';
+import TextInput from 'common/component/input/TextInput';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
-import CheckboxInput from 'common/input/CheckboxInput';
-import PasswordInput from 'common/input/PasswordInput';
-import ConfigurationForm from 'common/ConfigurationForm';
+import CheckboxInput from 'common/component/input/CheckboxInput';
+import PasswordInput from 'common/component/input/PasswordInput';
+import ConcreteConfigurationForm from 'common/configuration/global/ConcreteConfigurationForm';
 import * as ConfigurationRequestBuilder from 'common/util/configurationRequestBuilder';
 import * as fieldModelUtilities from 'common/util/fieldModelUtilities';
-import FluidFieldMappingField from 'common/input/mapping/FluidFieldMappingField';
-import NumberInput from 'common/input/NumberInput';
+import FluidFieldMappingField from 'common/component/input/mapping/FluidFieldMappingField';
+import NumberInput from 'common/component/input/NumberInput';
 
 const EmailGlobalConfiguration = ({
     csrfToken, errorHandler, readonly, displayTest, displaySave, displayDelete
@@ -54,7 +54,7 @@ const EmailGlobalConfiguration = ({
             description="Configure the email server that Alert will send emails to."
             lastUpdated={emailConfig.lastUpdated}
         >
-            <ConfigurationForm
+            <ConcreteConfigurationForm
                 csrfToken={csrfToken}
                 formDataId={emailConfig.id}
                 setErrors={(formErrors) => setErrors(formErrors)}
@@ -153,7 +153,7 @@ const EmailGlobalConfiguration = ({
                     errorName="additionalJavaMailProperties"
                     errorValue={errors.fieldErrors[additionalPropertiesName]}
                 />
-            </ConfigurationForm>
+            </ConcreteConfigurationForm>
         </CommonGlobalConfiguration>
     );
 };

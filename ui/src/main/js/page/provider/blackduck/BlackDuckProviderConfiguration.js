@@ -1,7 +1,7 @@
 import React from 'react';
 import * as PropTypes from 'prop-types';
 import { BLACKDUCK_INFO } from 'page/provider/blackduck/BlackDuckModel';
-import CommonGlobalConfiguration from 'common/global/CommonGlobalConfiguration';
+import CommonGlobalConfiguration from 'common/configuration/global/CommonGlobalConfiguration';
 import BlackDuckProviderTable from 'page/provider/blackduck/BlackDuckProviderTable';
 
 const BlackDuckProviderConfiguration = ({
