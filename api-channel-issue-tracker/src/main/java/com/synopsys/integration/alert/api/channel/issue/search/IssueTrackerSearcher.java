@@ -131,7 +131,7 @@ public class IssueTrackerSearcher<T extends Serializable> {
         } else if (foundIssuesCount > 1) {
             Set<String> issueKeys = existingIssues.stream().map(ExistingIssueDetails::getIssueKey).collect(Collectors.toSet());
             String issueKeyString = StringUtils.join(issueKeys, ", ");
-            throw new AlertException("Expect to find a unique issue, but more than one was found. " + issueKeyString);
+            throw new AlertException("Expected to find a unique issue, but more than one was found. " + issueKeyString);
         } else {
             searchResultOperation = ItemOperation.ADD;
         }
