@@ -14,6 +14,7 @@ import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
 import com.synopsys.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandler;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandlerFactory;
@@ -50,7 +51,7 @@ class JiraServerEnvironmentVariableHandlerFactoryTest {
 
         assertEquals(disablePluginCheck, updatedProperties.getProperty(JiraServerEnvironmentVariableHandlerFactory.DISABLE_PLUGIN_KEY));
         assertEquals(url, updatedProperties.getProperty(JiraServerEnvironmentVariableHandlerFactory.URL_KEY));
-        assertNull(updatedProperties.getProperty(JiraServerEnvironmentVariableHandlerFactory.PASSWORD_KEY));
+        assertEquals(AlertRestConstants.MASKED_VALUE, updatedProperties.getProperty(JiraServerEnvironmentVariableHandlerFactory.PASSWORD_KEY));
         assertEquals(username, updatedProperties.getProperty(JiraServerEnvironmentVariableHandlerFactory.USERNAME_KEY));
     }
 
@@ -107,7 +108,7 @@ class JiraServerEnvironmentVariableHandlerFactoryTest {
 
         assertEquals(disablePluginCheck, updatedProperties.getProperty(JiraServerEnvironmentVariableHandlerFactory.DISABLE_PLUGIN_KEY));
         assertEquals(url, updatedProperties.getProperty(JiraServerEnvironmentVariableHandlerFactory.URL_KEY));
-        assertNull(updatedProperties.getProperty(JiraServerEnvironmentVariableHandlerFactory.PASSWORD_KEY));
+        assertEquals(AlertRestConstants.MASKED_VALUE, updatedProperties.getProperty(JiraServerEnvironmentVariableHandlerFactory.PASSWORD_KEY));
         assertNull(updatedProperties.getProperty(JiraServerEnvironmentVariableHandlerFactory.USERNAME_KEY));
     }
 
