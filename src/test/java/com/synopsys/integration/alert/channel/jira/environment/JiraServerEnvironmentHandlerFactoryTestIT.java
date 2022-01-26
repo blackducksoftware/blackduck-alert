@@ -56,7 +56,7 @@ class JiraServerEnvironmentHandlerFactoryTestIT {
         EnvironmentVariableHandler handler = factory.build();
         EnvironmentProcessingResult result = handler.updateFromEnvironment();
         assertEquals(ChannelKeys.JIRA_SERVER.getDisplayName(), handler.getName());
-        assertFalse(result.hasValues());
+        assertTrue(result.hasValues());
 
         assertEquals(TEST_DISABLE_PLUGIN_CHECK, result.getVariableValue(JiraServerEnvironmentVariableHandlerFactory.DISABLE_PLUGIN_KEY).orElse(null));
         assertEquals(TEST_URL, result.getVariableValue(JiraServerEnvironmentVariableHandlerFactory.URL_KEY).orElse(null));
@@ -77,7 +77,7 @@ class JiraServerEnvironmentHandlerFactoryTestIT {
         EnvironmentVariableHandler handler = factory.build();
         EnvironmentProcessingResult result = handler.updateFromEnvironment();
         assertEquals(ChannelKeys.JIRA_SERVER.getDisplayName(), handler.getName());
-        assertTrue(result.hasValues());
+        assertFalse(result.hasValues());
     }
 
     private Environment setupMockedEnvironment() {

@@ -56,7 +56,7 @@ class EmailEnvironmentHandlerFactoryTestIT {
         EnvironmentVariableHandler handler = factory.build();
         EnvironmentProcessingResult result = handler.updateFromEnvironment();
         assertEquals(ChannelKeys.EMAIL.getDisplayName(), handler.getName());
-        assertFalse(result.hasValues());
+        assertTrue(result.hasValues());
 
         assertEquals(TEST_AUTH_REQUIRED, result.getVariableValue(EmailEnvironmentVariableHandlerFactory.AUTH_REQUIRED_KEY).orElse(null));
         assertEquals(TEST_FROM, result.getVariableValue(EmailEnvironmentVariableHandlerFactory.EMAIL_FROM_KEY).orElse(null));
@@ -85,7 +85,7 @@ class EmailEnvironmentHandlerFactoryTestIT {
         EnvironmentVariableHandler handler = factory.build();
         EnvironmentProcessingResult result = handler.updateFromEnvironment();
         assertEquals(ChannelKeys.EMAIL.getDisplayName(), handler.getName());
-        assertTrue(result.hasValues());
+        assertFalse(result.hasValues());
     }
 
     private Environment setupMockedEnvironment() {
