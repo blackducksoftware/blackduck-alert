@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import * as PropTypes from 'prop-types';
 import * as ConfigurationRequestBuilder from 'common/util/configurationRequestBuilder';
 import * as fieldModelUtilities from 'common/util/fieldModelUtilities';
-import PasswordInput from 'common/input/PasswordInput';
-import ConfigurationForm from 'common/ConfigurationForm';
+import PasswordInput from 'common/component/input/PasswordInput';
+import ConcreteConfigurationForm from 'common/configuration/global/ConcreteConfigurationForm';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
 import { SETTINGS_FIELD_KEYS, SETTINGS_INFO } from 'page/settings/SettingsModel';
-import ReadOnlyField from 'common/input/field/ReadOnlyField';
+import ReadOnlyField from 'common/component/input/field/ReadOnlyField';
 
 const SettingsEncryptionConfiguration = ({
     csrfToken, errorHandler, readonly, displaySave
@@ -33,7 +33,7 @@ const SettingsEncryptionConfiguration = ({
     const configSourceValue = encryptionReadOnly ? 'Encryption values were set during installation. Please contact your system administrator to change.' : '';
 
     return (
-        <ConfigurationForm
+        <ConcreteConfigurationForm
             csrfToken={csrfToken}
             setErrors={(formErrors) => setErrors(formErrors)}
             buttonIdPrefix={SETTINGS_INFO.key}
@@ -81,7 +81,7 @@ const SettingsEncryptionConfiguration = ({
                 errorName="encryptionGlobalSalt"
                 errorValue={errors.fieldErrors.encryptionGlobalSalt}
             />
-        </ConfigurationForm>
+        </ConcreteConfigurationForm>
     );
 };
 

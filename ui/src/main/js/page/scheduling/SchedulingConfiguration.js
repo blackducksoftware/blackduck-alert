@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import CommonGlobalConfigurationForm from 'common/global/CommonGlobalConfigurationForm';
+import CommonGlobalConfigurationForm from 'common/configuration/global/CommonGlobalConfigurationForm';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import { CONTEXT_TYPE } from 'common/util/descriptorUtilities';
 import { SCHEDULING_DIGEST_HOURS_OPTIONS, SCHEDULING_FIELD_KEYS, SCHEDULING_INFO, SCHEDULING_PURGE_FREQUENCY_OPTIONS } from 'page/scheduling/SchedulingModel';
 import * as PropTypes from 'prop-types';
-import CommonGlobalConfiguration from 'common/global/CommonGlobalConfiguration';
-import DynamicSelectInput from 'common/input/DynamicSelectInput';
-import ReadOnlyField from 'common/input/field/ReadOnlyField';
-import * as GlobalRequestHelper from 'common/global/GlobalRequestHelper';
+import CommonGlobalConfiguration from 'common/configuration/global/CommonGlobalConfiguration';
+import DynamicSelectInput from 'common/component/input/DynamicSelectInput';
+import ReadOnlyField from 'common/component/input/field/ReadOnlyField';
+import * as GlobalRequestHelper from 'common/configuration/global/GlobalRequestHelper';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
 
 const SchedulingConfiguration = ({ csrfToken, errorHandler, readonly, displaySave }) => {

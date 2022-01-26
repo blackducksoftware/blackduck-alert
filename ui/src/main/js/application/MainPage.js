@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Redirect, Route, withRouter } from 'react-router-dom';
 import Navigation from 'application/Navigation';
 import AboutInfo from 'page/about/AboutInfo';
-import LogoutConfirmation from 'common/LogoutConfirmation';
+import LogoutConfirmation from 'common/component/LogoutConfirmation';
 import { getDescriptors } from 'store/actions/descriptors';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import SlackGlobalConfiguration from 'page/channel/slack/SlackGlobalConfiguration';
@@ -41,7 +41,7 @@ import DistributionConfiguration from 'page/distribution/DistributionConfigurati
 import DistributionConfigurationForm from 'page/distribution/DistributionConfigurationForm';
 import { unauthorized } from 'store/actions/session';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
-import DescriptorRoute from 'common/DescriptorRoute';
+import DescriptorRoute from 'common/component/descriptor/DescriptorRoute';
 import EmailGlobalConfiguration from 'page/channel/email/EmailGlobalConfiguration';
 
 const MainPage = ({

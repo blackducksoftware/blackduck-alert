@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import TableDisplay from 'common/table/TableDisplay';
-import TextInput from 'common/input/TextInput';
+import TableDisplay from 'common/component/table/TableDisplay';
+import TextInput from 'common/component/input/TextInput';
 import { connect } from 'react-redux';
 import PermissionTable, { PERMISSIONS_TABLE } from 'page/user/PermissionTable';
 import { clearRoleFieldErrors, deleteRole, fetchRoles, saveRole, validateRole } from 'store/actions/roles';

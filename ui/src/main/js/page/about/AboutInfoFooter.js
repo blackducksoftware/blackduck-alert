@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Overlay, Popover, PopoverContent, PopoverTitle } from 'react-bootstrap';
 
-import SystemMessage from 'common/SystemMessage';
+import SystemMessage from 'common/component/SystemMessage';
 import { getAboutInfo } from 'store/actions/about';
 import { getLatestMessages } from 'store/actions/system';
 import '../../../css/footer.scss';

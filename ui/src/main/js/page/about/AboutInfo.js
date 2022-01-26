@@ -2,11 +2,11 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
-import ReadOnlyField from 'common/input/field/ReadOnlyField';
+import ReadOnlyField from 'common/component/input/field/ReadOnlyField';
 import { getAboutInfo } from 'store/actions/about';
-import ConfigurationLabel from 'common/ConfigurationLabel';
+import ConfigurationLabel from 'common/component/ConfigurationLabel';
 import { NavLink } from 'react-router-dom';
-import LabeledField from 'common/input/field/LabeledField';
+import LabeledField from 'common/component/input/field/LabeledField';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { EXISTING_CHANNELS, EXISTING_PROVIDERS } from 'common/DescriptorInfo';
 

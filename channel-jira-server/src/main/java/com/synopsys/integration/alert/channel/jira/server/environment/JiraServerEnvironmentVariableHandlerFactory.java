@@ -62,7 +62,9 @@ public class JiraServerEnvironmentVariableHandlerFactory implements EnvironmentV
         String name = AlertRestConstants.DEFAULT_CONFIGURATION_NAME;
         String userName = environmentVariableUtility.getEnvironmentValue(USERNAME_KEY).orElse(null);
         String createdAt = DateUtils.formatDate(DateUtils.createCurrentDateTimestamp(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
-        JiraServerGlobalConfigModel configModel = new JiraServerGlobalConfigModel(null, name, createdAt, createdAt, url, userName);
+        JiraServerGlobalConfigModel configModel = new JiraServerGlobalConfigModel(null, name, url, userName);
+        configModel.setCreatedAt(createdAt);
+        configModel.setLastUpdated(createdAt);
         environmentVariableUtility.getEnvironmentValue(DISABLE_PLUGIN_KEY)
             .map(Boolean::valueOf)
             .ifPresent(configModel::setDisablePluginCheck);

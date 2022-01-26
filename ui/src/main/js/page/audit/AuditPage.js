@@ -3,20 +3,20 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { BootstrapTable, ButtonGroup, TableHeaderColumn } from 'react-bootstrap-table';
 import { getAuditData, resendNotification } from 'store/actions/audit';
-import AutoRefresh from 'common/table/AutoRefresh';
-import DescriptorLabel from 'common/DescriptorLabel';
-import RefreshTableCellFormatter from 'common/table/RefreshTableCellFormatter';
+import AutoRefresh from 'common/component/table/AutoRefresh';
+import DescriptorLabel from 'common/component/descriptor/DescriptorLabel';
+import RefreshTableCellFormatter from 'common/component/table/RefreshTableCellFormatter';
 import NotificationTypeLegend from 'page/audit/NotificationTypeLegend';
 import AuditDetails from 'page/audit/Details';
-import CheckboxInput from 'common/input/CheckboxInput';
+import CheckboxInput from 'common/component/input/CheckboxInput';
 import * as DescriptorUtilities from 'common/util/descriptorUtilities';
-import ConfigurationLabel from 'common/ConfigurationLabel';
+import ConfigurationLabel from 'common/component/ConfigurationLabel';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import StatusMessage from 'common/StatusMessage';
+import StatusMessage from 'common/component/StatusMessage';
 import '../../../css/audit.scss';
 import { AUDIT_INFO } from 'page/audit/AuditModel';
 import { EXISTING_CHANNELS, EXISTING_PROVIDERS } from 'common/DescriptorInfo';
-import { ProgressIcon } from 'common/table/ProgressIcon';
+import { ProgressIcon } from 'common/component/table/ProgressIcon';
 
 class AuditPage extends Component {
     constructor(props) {

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { NavLink, withRouter } from 'react-router-dom';
-import Logo from 'common/Logo';
+import Logo from 'common/component/Logo';
 import { confirmLogout } from 'store/actions/session';
 import { SLACK_INFO } from 'page/channel/slack/SlackModels';
 import { EMAIL_INFO } from 'page/channel/email/EmailModels';
