@@ -18,8 +18,8 @@ class EnvironmentVariableProcessorTest {
     void testUpdatingHandler() {
         Environment environment = Mockito.mock(Environment.class);
         for (String variableName : EnvironmentTestHandlerFactory.VARIABLE_NAMES) {
-            Mockito.when(environment.containsProperty(Mockito.eq(variableName))).thenReturn(Boolean.TRUE);
-            Mockito.when(environment.getProperty(Mockito.eq(variableName))).thenReturn(EnvironmentTestHandlerFactory.DEFAULT_VALUE);
+            Mockito.when(environment.containsProperty(variableName)).thenReturn(Boolean.TRUE);
+            Mockito.when(environment.getProperty(variableName)).thenReturn(EnvironmentTestHandlerFactory.DEFAULT_VALUE);
         }
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
         EnvironmentTestHandlerFactory handler = new EnvironmentTestHandlerFactory(environmentVariableUtility);
@@ -28,7 +28,7 @@ class EnvironmentVariableProcessorTest {
         assertTrue(handler.hasUpdateOccurred());
         EnvironmentProcessingResult result = handler.getUpdatedProperties().orElseThrow(() -> new AssertionError("Properties should exist"));
 
-        assertFalse(result.isEmpty());
+        assertTrue(result.hasValues());
         assertTrue(EnvironmentTestHandlerFactory.VARIABLE_NAMES.containsAll(result.getVariableNames()));
     }
 
@@ -40,7 +40,8 @@ class EnvironmentVariableProcessorTest {
         EnvironmentVariableProcessor processor = new EnvironmentVariableProcessor(List.of(handler));
         processor.updateConfigurations();
         assertFalse(handler.hasUpdateOccurred());
-        assertTrue(handler.getUpdatedProperties().isEmpty());
+        assertFalse(handler.getUpdatedProperties().stream()
+            .allMatch(EnvironmentProcessingResult::hasValues));
     }
 
     private static class EnvironmentTestHandlerFactory implements EnvironmentVariableHandlerFactory {
@@ -76,7 +77,8 @@ class EnvironmentVariableProcessorTest {
             EnvironmentProcessingResult.Builder builder = new EnvironmentProcessingResult.Builder();
             for (String variableName : VARIABLE_NAMES) {
                 if (environmentVariableUtility.hasEnvironmentValue(variableName)) {
-                    builder.addVariableValue(variableName, environmentVariableUtility.getEnvironmentValue(variableName).orElse(StringUtils.EMPTY));
+                    String value = environmentVariableUtility.getEnvironmentValue(variableName).orElse(StringUtils.EMPTY);
+                    builder.addVariableValue(variableName, value, StringUtils.isNotBlank(value));
                     updateOccurred = true;
                 }
             }

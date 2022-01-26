@@ -2,10 +2,8 @@ package com.synopsys.integration.alert.channel.jira.server.environment;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Properties;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -45,15 +43,15 @@ class JiraServerEnvironmentVariableHandlerFactoryTest {
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
         EnvironmentVariableHandlerFactory factory = new JiraServerEnvironmentVariableHandlerFactory(configAccessor, environmentVariableUtility);
         EnvironmentVariableHandler handler = factory.build();
-        EnvironmentProcessingResult updatedProperties = handler.updateFromEnvironment();
+        EnvironmentProcessingResult result = handler.updateFromEnvironment();
         assertEquals(ChannelKeys.JIRA_SERVER.getDisplayName(), handler.getName());
         assertEquals(expectedVariableNames, handler.getVariableNames());
-        assertFalse(updatedProperties.isEmpty());
+        assertTrue(result.hasValues());
 
-        assertEquals(disablePluginCheck, updatedProperties.getVariableValue(JiraServerEnvironmentVariableHandlerFactory.DISABLE_PLUGIN_KEY).orElse(null));
-        assertEquals(url, updatedProperties.getVariableValue(JiraServerEnvironmentVariableHandlerFactory.URL_KEY).orElse(null));
-        assertEquals(AlertConstants.MASKED_VALUE, updatedProperties.getVariableValue(JiraServerEnvironmentVariableHandlerFactory.PASSWORD_KEY).orElse(null));
-        assertEquals(username, updatedProperties.getVariableValue(JiraServerEnvironmentVariableHandlerFactory.USERNAME_KEY).orElse(null));
+        assertEquals(disablePluginCheck, result.getVariableValue(JiraServerEnvironmentVariableHandlerFactory.DISABLE_PLUGIN_KEY).orElse(null));
+        assertEquals(url, result.getVariableValue(JiraServerEnvironmentVariableHandlerFactory.URL_KEY).orElse(null));
+        assertEquals(AlertConstants.MASKED_VALUE, result.getVariableValue(JiraServerEnvironmentVariableHandlerFactory.PASSWORD_KEY).orElse(null));
+        assertEquals(username, result.getVariableValue(JiraServerEnvironmentVariableHandlerFactory.USERNAME_KEY).orElse(null));
     }
 
     @Test
@@ -76,10 +74,10 @@ class JiraServerEnvironmentVariableHandlerFactoryTest {
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
         EnvironmentVariableHandlerFactory factory = new JiraServerEnvironmentVariableHandlerFactory(configAccessor, environmentVariableUtility);
         EnvironmentVariableHandler handler = factory.build();
-        EnvironmentProcessingResult updatedProperties = handler.updateFromEnvironment();
+        EnvironmentProcessingResult result = handler.updateFromEnvironment();
         assertEquals(ChannelKeys.JIRA_SERVER.getDisplayName(), handler.getName());
         assertEquals(expectedVariableNames, handler.getVariableNames());
-        assertTrue(updatedProperties.isEmpty());
+        assertFalse(result.hasValues());
     }
 
     @Test
@@ -102,15 +100,15 @@ class JiraServerEnvironmentVariableHandlerFactoryTest {
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
         EnvironmentVariableHandlerFactory factory = new JiraServerEnvironmentVariableHandlerFactory(configAccessor, environmentVariableUtility);
         EnvironmentVariableHandler handler = factory.build();
-        EnvironmentProcessingResult updatedProperties = handler.updateFromEnvironment();
+        EnvironmentProcessingResult result = handler.updateFromEnvironment();
         assertEquals(ChannelKeys.JIRA_SERVER.getDisplayName(), handler.getName());
         assertEquals(expectedVariableNames, handler.getVariableNames());
-        assertFalse(updatedProperties.isEmpty());
+        assertTrue(result.hasValues());
 
-        assertEquals(disablePluginCheck, updatedProperties.getProperty(JiraServerEnvironmentVariableHandlerFactory.DISABLE_PLUGIN_KEY));
-        assertEquals(url, updatedProperties.getProperty(JiraServerEnvironmentVariableHandlerFactory.URL_KEY));
-        assertEquals(AlertConstants.MASKED_VALUE, updatedProperties.getProperty(JiraServerEnvironmentVariableHandlerFactory.PASSWORD_KEY));
-        assertNull(updatedProperties.getProperty(JiraServerEnvironmentVariableHandlerFactory.USERNAME_KEY));
+        assertEquals(disablePluginCheck, result.getVariableValue(JiraServerEnvironmentVariableHandlerFactory.DISABLE_PLUGIN_KEY).orElse(null));
+        assertEquals(url, result.getVariableValue(JiraServerEnvironmentVariableHandlerFactory.URL_KEY).orElse(null));
+        assertEquals(AlertConstants.MASKED_VALUE, result.getVariableValue(JiraServerEnvironmentVariableHandlerFactory.PASSWORD_KEY).orElse(null));
+        assertTrue(result.getVariableValue(JiraServerEnvironmentVariableHandlerFactory.USERNAME_KEY).isEmpty());
     }
 
     @Test
@@ -121,9 +119,9 @@ class JiraServerEnvironmentVariableHandlerFactoryTest {
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
         EnvironmentVariableHandlerFactory factory = new JiraServerEnvironmentVariableHandlerFactory(configAccessor, environmentVariableUtility);
         EnvironmentVariableHandler handler = factory.build();
-        Properties updatedProperties = handler.updateFromEnvironment();
+        EnvironmentProcessingResult result = handler.updateFromEnvironment();
         assertEquals(ChannelKeys.JIRA_SERVER.getDisplayName(), handler.getName());
-        assertTrue(updatedProperties.isEmpty());
+        assertFalse(result.hasValues());
     }
 
     @Test
@@ -134,8 +132,8 @@ class JiraServerEnvironmentVariableHandlerFactoryTest {
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
         EnvironmentVariableHandlerFactory factory = new JiraServerEnvironmentVariableHandlerFactory(configAccessor, environmentVariableUtility);
         EnvironmentVariableHandler handler = factory.build();
-        Properties updatedProperties = handler.updateFromEnvironment();
+        EnvironmentProcessingResult result = handler.updateFromEnvironment();
         assertEquals(ChannelKeys.JIRA_SERVER.getDisplayName(), handler.getName());
-        assertTrue(updatedProperties.isEmpty());
+        assertFalse(result.hasValues());
     }
 }

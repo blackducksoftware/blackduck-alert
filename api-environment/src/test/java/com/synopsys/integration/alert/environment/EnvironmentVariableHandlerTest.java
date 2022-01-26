@@ -19,7 +19,7 @@ class EnvironmentVariableHandlerTest {
         EnvironmentVariableHandler handler = new EnvironmentVariableHandler(name, variableNames, () -> Boolean.FALSE, EnvironmentProcessingResult::empty);
         EnvironmentProcessingResult updatedProperties = handler.updateFromEnvironment();
         assertFalse(handler.isConfigurationMissing());
-        assertTrue(updatedProperties.isEmpty());
+        assertFalse(updatedProperties.hasValues());
         assertEquals(variableNames, handler.getVariableNames());
         assertEquals(name, handler.getName());
     }
@@ -32,7 +32,7 @@ class EnvironmentVariableHandlerTest {
         EnvironmentVariableHandler handler = new EnvironmentVariableHandler(name, variableNames, () -> Boolean.TRUE, EnvironmentProcessingResult::empty);
         EnvironmentProcessingResult updatedProperties = handler.updateFromEnvironment();
         assertTrue(handler.isConfigurationMissing());
-        assertTrue(updatedProperties.isEmpty());
+        assertFalse(updatedProperties.hasValues());
         assertEquals(variableNames, handler.getVariableNames());
         assertEquals(name, handler.getName());
     }
@@ -43,8 +43,8 @@ class EnvironmentVariableHandlerTest {
         Set<String> variableNames = Set.of("VARIABLE_1, VARIABLE_2", "VARIABLE_3");
         Supplier<EnvironmentProcessingResult> updateFunction = () -> {
             EnvironmentProcessingResult.Builder builder = new EnvironmentProcessingResult.Builder();
-            builder.addVariableValue("VARIABLE_1", "variable_1_value")
-                .addVariableValue("VARIABLE_3", "variable_3_value");
+            builder.addVariableValue("VARIABLE_1", "variable_1_value", true)
+                .addVariableValue("VARIABLE_3", "variable_3_value", true);
             return builder.build();
         };
 

@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.common.model.AlertConstants;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
 import com.synopsys.integration.alert.component.settings.proxy.database.accessor.SettingsProxyConfigAccessor;
@@ -61,20 +62,19 @@ public class ProxySettingsEnvironmentHandlerFactory implements EnvironmentVariab
     }
 
     private EnvironmentProcessingResult updateFunction() {
-        EnvironmentProcessingResult.Builder builder = new EnvironmentProcessingResult.Builder();
+        EnvironmentProcessingResult.Builder builder = new EnvironmentProcessingResult.Builder(PROXY_CONFIGURATION_KEYSET);
         SettingsProxyModel configModel = new SettingsProxyModel();
         configureProxySettings(configModel);
 
         SettingsProxyModel obfuscatedModel = configModel.obfuscate();
-
-        obfuscatedModel.getProxyHost().ifPresent(value -> builder.addVariableValue(PROXY_HOST_KEY, value));
-        obfuscatedModel.getProxyPort().map(String::valueOf).ifPresent(value -> builder.addVariableValue(PROXY_PORT_KEY, value));
-        obfuscatedModel.getProxyUsername().ifPresent(value -> builder.addVariableValue(PROXY_USERNAME_KEY, value));
-        obfuscatedModel.getProxyPassword().ifPresent(value -> builder.addSensitiveVariable(PROXY_PASSWORD_KEY));
-        obfuscatedModel.getNonProxyHosts().ifPresent(value -> builder.addVariableValue(PROXY_NON_PROXY_HOSTS_KEY, value.toString()));
+        builder.addVariableValue(PROXY_HOST_KEY, obfuscatedModel.getProxyHost().orElse(null), obfuscatedModel.getProxyHost().isPresent())
+            .addVariableValue(PROXY_PORT_KEY, obfuscatedModel.getProxyPort().map(String::valueOf).orElse(null), obfuscatedModel.getProxyPort().isPresent())
+            .addVariableValue(PROXY_USERNAME_KEY, obfuscatedModel.getProxyUsername().orElse(null), obfuscatedModel.getProxyUsername().isPresent())
+            .addVariableValue(PROXY_PASSWORD_KEY, AlertConstants.MASKED_VALUE, obfuscatedModel.getIsProxyPasswordSet())
+            .addVariableValue(PROXY_NON_PROXY_HOSTS_KEY, obfuscatedModel.getNonProxyHosts().map(String::valueOf).orElse(null), obfuscatedModel.getNonProxyHosts().isPresent());
 
         EnvironmentProcessingResult result = builder.build();
-        if (!result.isEmpty()) {
+        if (result.hasValues()) {
             try {
                 configAccessor.createConfiguration(configModel);
             } catch (AlertConfigurationException ex) {

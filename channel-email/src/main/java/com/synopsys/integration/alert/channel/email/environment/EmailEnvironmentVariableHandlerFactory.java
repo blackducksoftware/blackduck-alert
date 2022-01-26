@@ -16,6 +16,7 @@ import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.common.model.AlertConstants;
 import com.synopsys.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
@@ -107,7 +108,8 @@ public class EmailEnvironmentVariableHandlerFactory implements EnvironmentVariab
     }
 
     private EnvironmentProcessingResult updateConfiguration() {
-        EnvironmentProcessingResult.Builder builder = new EnvironmentProcessingResult.Builder();
+        EnvironmentProcessingResult.Builder builder = new EnvironmentProcessingResult.Builder(EMAIL_CONFIGURATION_KEYSET)
+            .addVariableNames(OLD_ADDITIONAL_PROPERTY_KEYSET);
         EmailGlobalConfigModel configModel = new EmailGlobalConfigModel();
         configModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
         configureEmailSettings(configModel);
@@ -115,15 +117,15 @@ public class EmailEnvironmentVariableHandlerFactory implements EnvironmentVariab
 
         EmailGlobalConfigModel obfuscatedModel = configModel.obfuscate();
 
-        obfuscatedModel.getSmtpHost().ifPresent(value -> builder.addVariableValue(EMAIL_HOST_KEY, value));
-        obfuscatedModel.getSmtpPort().map(String::valueOf).ifPresent(value -> builder.addVariableValue(EMAIL_PORT_KEY, value));
-        obfuscatedModel.getSmtpFrom().ifPresent(value -> builder.addVariableValue(EMAIL_FROM_KEY, value));
-        obfuscatedModel.getSmtpAuth().map(String::valueOf).ifPresent(value -> builder.addVariableValue(AUTH_REQUIRED_KEY, value));
-        builder.addSensitiveVariable(AUTH_PASSWORD_KEY);
+        builder.addVariableValue(EMAIL_HOST_KEY, obfuscatedModel.getSmtpHost().orElse(null), obfuscatedModel.getSmtpHost().isPresent())
+            .addVariableValue(EMAIL_PORT_KEY, obfuscatedModel.getSmtpPort().map(String::valueOf).orElse(null), obfuscatedModel.getSmtpPort().isPresent())
+            .addVariableValue(EMAIL_FROM_KEY, obfuscatedModel.getSmtpFrom().orElse(null), obfuscatedModel.getSmtpFrom().isPresent())
+            .addVariableValue(AUTH_REQUIRED_KEY, obfuscatedModel.getSmtpAuth().map(String::valueOf).orElse(null), obfuscatedModel.getSmtpAuth().isPresent())
+            .addVariableValue(AUTH_USER_KEY, obfuscatedModel.getSmtpUsername().orElse(null), obfuscatedModel.getSmtpUsername().isPresent())
+            .addVariableValue(AUTH_PASSWORD_KEY, AlertConstants.MASKED_VALUE, obfuscatedModel.getIsSmtpPasswordSet());
 
-        obfuscatedModel.getSmtpUsername().ifPresent(value -> builder.addVariableValue(AUTH_USER_KEY, value));
         EnvironmentProcessingResult result = builder.build();
-        if (!result.isEmpty()) {
+        if (result.hasValues()) {
             configAccessor.createConfiguration(configModel);
         }
 
@@ -160,7 +162,7 @@ public class EmailEnvironmentVariableHandlerFactory implements EnvironmentVariab
                 String javamailPropertyName = EmailEnvironmentVariableHandlerFactory.convertVariableNameToJavamailPropertyKey(additionalPropertyName);
                 String value = environmentVariableUtility.getEnvironmentValue(additionalPropertyName).orElse(null);
                 additionalProperties.put(javamailPropertyName, value);
-                builder.addVariableValue(additionalPropertyName, value);
+                builder.addVariableValue(additionalPropertyName, value, null != value);
             }
         }
         configuration.setAdditionalJavaMailProperties(additionalProperties);

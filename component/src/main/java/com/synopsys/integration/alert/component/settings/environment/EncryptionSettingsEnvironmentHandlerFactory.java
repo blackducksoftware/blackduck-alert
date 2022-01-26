@@ -13,6 +13,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.common.model.AlertConstants;
 import com.synopsys.integration.alert.environment.EnvironmentProcessingResult;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandler;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandlerFactory;
@@ -42,17 +43,17 @@ public class EncryptionSettingsEnvironmentHandlerFactory implements EnvironmentV
     }
 
     private EnvironmentProcessingResult updateFunction() {
-        EnvironmentProcessingResult.Builder builder = new EnvironmentProcessingResult.Builder();
+        EnvironmentProcessingResult.Builder builder = new EnvironmentProcessingResult.Builder(ENCRYPTION_PASSWORD_KEY, ENCRYPTION_SALT_KEY);
         Optional<String> password = environmentVariableUtility.getEnvironmentValue(ENCRYPTION_PASSWORD_KEY);
         Optional<String> salt = environmentVariableUtility.getEnvironmentValue(ENCRYPTION_SALT_KEY);
 
         // The encryption utility will read the environment variables.  We just want to be able to log if the variables are set.
         if (password.isPresent()) {
-            builder.addSensitiveVariable(ENCRYPTION_PASSWORD_KEY);
+            builder.addVariableValue(ENCRYPTION_PASSWORD_KEY, AlertConstants.MASKED_VALUE, true);
         }
 
         if (salt.isPresent()) {
-            builder.addSensitiveVariable(ENCRYPTION_SALT_KEY);
+            builder.addVariableValue(ENCRYPTION_SALT_KEY, AlertConstants.MASKED_VALUE, true);
         }
         return builder.build();
     }

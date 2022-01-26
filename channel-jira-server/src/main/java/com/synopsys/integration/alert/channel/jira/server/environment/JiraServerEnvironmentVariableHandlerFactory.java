@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.common.model.AlertConstants;
 import com.synopsys.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
@@ -51,7 +52,7 @@ public class JiraServerEnvironmentVariableHandlerFactory implements EnvironmentV
     }
 
     private EnvironmentProcessingResult updateConfiguration() {
-        EnvironmentProcessingResult.Builder builder = new EnvironmentProcessingResult.Builder();
+        EnvironmentProcessingResult.Builder builder = new EnvironmentProcessingResult.Builder(VARIABLE_NAMES);
         String url = environmentVariableUtility.getEnvironmentValue(URL_KEY).orElse(null);
 
         if (StringUtils.isBlank(url)) {
@@ -70,16 +71,13 @@ public class JiraServerEnvironmentVariableHandlerFactory implements EnvironmentV
             .ifPresent(configModel::setPassword);
 
         JiraServerGlobalConfigModel obfuscatedModel = configModel.obfuscate();
-        builder.addVariableValue(URL_KEY, obfuscatedModel.getUrl());
-        builder.addVariableValue(USERNAME_KEY, obfuscatedModel.getUserName());
-        obfuscatedModel.getDisablePluginCheck().map(String::valueOf).ifPresent(value -> builder.addVariableValue(DISABLE_PLUGIN_KEY, value));
-
-        obfuscatedModel.getPasswordSet()
-            .filter(Boolean.TRUE::equals)
-            .ifPresent(ignored -> builder.addSensitiveVariable(PASSWORD_KEY));
+        builder.addVariableValue(URL_KEY, obfuscatedModel.getUrl(), StringUtils.isNotBlank(obfuscatedModel.getUrl()))
+            .addVariableValue(USERNAME_KEY, obfuscatedModel.getUserName(), StringUtils.isNotBlank(obfuscatedModel.getUserName()))
+            .addVariableValue(DISABLE_PLUGIN_KEY, obfuscatedModel.getDisablePluginCheck().map(String::valueOf).orElse(null), obfuscatedModel.getDisablePluginCheck().isPresent())
+            .addVariableValue(PASSWORD_KEY, AlertConstants.MASKED_VALUE, obfuscatedModel.getPasswordSet().orElse(Boolean.FALSE));
 
         EnvironmentProcessingResult result = builder.build();
-        if (!result.isEmpty() && configAccessor.getConfigurationByName(name).isEmpty()) {
+        if (result.hasValues() && configAccessor.getConfigurationByName(name).isEmpty()) {
             configAccessor.createConfiguration(configModel);
         }
 
