@@ -18,7 +18,6 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
-import com.synopsys.integration.alert.api.common.model.AlertConstants;
 import com.synopsys.integration.util.Stringable;
 
 public class EnvironmentProcessingResult extends Stringable {
@@ -46,26 +45,15 @@ public class EnvironmentProcessingResult extends Stringable {
         return Optional.ofNullable(variableValues.getOrDefault(variableName, null));
     }
 
-    public Map<String, String> getVariableValues() {
-        return variableValues;
-    }
-
     public static class Builder {
-        private final Set<String> variableNames;
-        private final Map<String, String> variableValues;
-
-        private Builder() {
-            variableNames = new HashSet<>();
-            variableValues = new HashMap<>();
-        }
+        private final Set<String> variableNames = new HashSet<>();
+        private final Map<String, String> variableValues = new HashMap<>();
 
         public Builder(String... variableNames) {
-            this();
-            this.addVariableNames(variableNames);
+            this.addVariableNames(Arrays.asList(variableNames));
         }
 
         public Builder(Collection<String> variableNames) {
-            this();
             this.addVariableNames(variableNames);
         }
 
@@ -73,25 +61,16 @@ public class EnvironmentProcessingResult extends Stringable {
             return new EnvironmentProcessingResult(this.variableNames, this.variableValues);
         }
 
-        public Builder addVariableNames(String... variableNames) {
-            return addVariableNames(Arrays.asList(variableNames));
-        }
-
         public Builder addVariableNames(Collection<String> variableNames) {
             this.variableNames.addAll(variableNames);
             return this;
         }
 
-        public Builder addSensitiveVariable(String variableName, boolean isVariableSet) {
-            return addVariableValue(variableName, AlertConstants.MASKED_VALUE, isVariableSet);
-        }
-
-        public Builder addVariableValue(String variableName, @Nullable String value, boolean isVariableSet) {
+        public Builder addVariableValue(String variableName, @Nullable String value) {
             this.variableNames.add(variableName);
-            if (isVariableSet) {
-                String propertyValue = StringUtils.trimToEmpty(value);
-                this.variableValues.put(variableName, propertyValue);
-            }
+            String propertyValue = StringUtils.trimToEmpty(value);
+            this.variableValues.put(variableName, propertyValue);
+
             return this;
         }
     }

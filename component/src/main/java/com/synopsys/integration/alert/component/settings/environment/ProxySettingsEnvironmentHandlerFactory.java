@@ -67,11 +67,14 @@ public class ProxySettingsEnvironmentHandlerFactory implements EnvironmentVariab
         configureProxySettings(configModel);
 
         SettingsProxyModel obfuscatedModel = configModel.obfuscate();
-        builder.addVariableValue(PROXY_HOST_KEY, obfuscatedModel.getProxyHost().orElse(null), obfuscatedModel.getProxyHost().isPresent())
-            .addVariableValue(PROXY_PORT_KEY, obfuscatedModel.getProxyPort().map(String::valueOf).orElse(null), obfuscatedModel.getProxyPort().isPresent())
-            .addVariableValue(PROXY_USERNAME_KEY, obfuscatedModel.getProxyUsername().orElse(null), obfuscatedModel.getProxyUsername().isPresent())
-            .addVariableValue(PROXY_PASSWORD_KEY, AlertConstants.MASKED_VALUE, obfuscatedModel.getIsProxyPasswordSet())
-            .addVariableValue(PROXY_NON_PROXY_HOSTS_KEY, obfuscatedModel.getNonProxyHosts().map(String::valueOf).orElse(null), obfuscatedModel.getNonProxyHosts().isPresent());
+        obfuscatedModel.getProxyHost().ifPresent(value -> builder.addVariableValue(PROXY_HOST_KEY, value));
+        obfuscatedModel.getProxyPort().map(String::valueOf).ifPresent(value -> builder.addVariableValue(PROXY_PORT_KEY, value));
+        obfuscatedModel.getProxyUsername().ifPresent(value -> builder.addVariableValue(PROXY_USERNAME_KEY, value));
+        obfuscatedModel.getNonProxyHosts().map(String::valueOf).ifPresent(value -> builder.addVariableValue(PROXY_NON_PROXY_HOSTS_KEY, value));
+
+        if (Boolean.TRUE.equals(obfuscatedModel.getIsProxyPasswordSet())) {
+            builder.addVariableValue(PROXY_PASSWORD_KEY, AlertConstants.MASKED_VALUE);
+        }
 
         EnvironmentProcessingResult result = builder.build();
         if (result.hasValues()) {

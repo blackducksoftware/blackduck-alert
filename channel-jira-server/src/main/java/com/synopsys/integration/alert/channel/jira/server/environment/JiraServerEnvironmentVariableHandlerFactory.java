@@ -73,10 +73,22 @@ public class JiraServerEnvironmentVariableHandlerFactory implements EnvironmentV
             .ifPresent(configModel::setPassword);
 
         JiraServerGlobalConfigModel obfuscatedModel = configModel.obfuscate();
-        builder.addVariableValue(URL_KEY, obfuscatedModel.getUrl(), StringUtils.isNotBlank(obfuscatedModel.getUrl()))
-            .addVariableValue(USERNAME_KEY, obfuscatedModel.getUserName(), StringUtils.isNotBlank(obfuscatedModel.getUserName()))
-            .addVariableValue(DISABLE_PLUGIN_KEY, obfuscatedModel.getDisablePluginCheck().map(String::valueOf).orElse(null), obfuscatedModel.getDisablePluginCheck().isPresent())
-            .addVariableValue(PASSWORD_KEY, AlertConstants.MASKED_VALUE, obfuscatedModel.getPasswordSet().orElse(Boolean.FALSE));
+        if (StringUtils.isNotBlank(obfuscatedModel.getUrl())) {
+            builder.addVariableValue(URL_KEY, obfuscatedModel.getUrl());
+        }
+
+        if (StringUtils.isNotBlank(obfuscatedModel.getUserName())) {
+            builder.addVariableValue(USERNAME_KEY, obfuscatedModel.getUserName());
+        }
+
+        obfuscatedModel.getDisablePluginCheck()
+            .map(String::valueOf)
+            .ifPresent(value -> builder.addVariableValue(DISABLE_PLUGIN_KEY, value));
+        
+        obfuscatedModel.getPasswordSet()
+            .filter(Boolean::booleanValue)
+            .map(value -> AlertConstants.MASKED_VALUE)
+            .ifPresent(value -> builder.addVariableValue(PASSWORD_KEY, value));
 
         EnvironmentProcessingResult result = builder.build();
         if (result.hasValues() && configAccessor.getConfigurationByName(name).isEmpty()) {

@@ -78,7 +78,7 @@ class EnvironmentVariableProcessorTest {
             for (String variableName : VARIABLE_NAMES) {
                 if (environmentVariableUtility.hasEnvironmentValue(variableName)) {
                     String value = environmentVariableUtility.getEnvironmentValue(variableName).orElse(StringUtils.EMPTY);
-                    builder.addVariableValue(variableName, value, StringUtils.isNotBlank(value));
+                    builder.addVariableValue(variableName, value);
                     updateOccurred = true;
                 }
             }

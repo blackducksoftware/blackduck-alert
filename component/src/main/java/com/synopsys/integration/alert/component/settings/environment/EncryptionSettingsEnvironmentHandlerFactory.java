@@ -49,12 +49,13 @@ public class EncryptionSettingsEnvironmentHandlerFactory implements EnvironmentV
 
         // The encryption utility will read the environment variables.  We just want to be able to log if the variables are set.
         if (password.isPresent()) {
-            builder.addVariableValue(ENCRYPTION_PASSWORD_KEY, AlertConstants.MASKED_VALUE, true);
+            builder.addVariableValue(ENCRYPTION_PASSWORD_KEY, AlertConstants.MASKED_VALUE);
         }
 
         if (salt.isPresent()) {
-            builder.addVariableValue(ENCRYPTION_SALT_KEY, AlertConstants.MASKED_VALUE, true);
+            builder.addVariableValue(ENCRYPTION_SALT_KEY, AlertConstants.MASKED_VALUE);
         }
+
         return builder.build();
     }
 }

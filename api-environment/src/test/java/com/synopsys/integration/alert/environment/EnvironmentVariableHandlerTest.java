@@ -43,8 +43,8 @@ class EnvironmentVariableHandlerTest {
         Set<String> variableNames = Set.of("VARIABLE_1, VARIABLE_2", "VARIABLE_3");
         Supplier<EnvironmentProcessingResult> updateFunction = () -> {
             EnvironmentProcessingResult.Builder builder = new EnvironmentProcessingResult.Builder();
-            builder.addVariableValue("VARIABLE_1", "variable_1_value", true)
-                .addVariableValue("VARIABLE_3", "variable_3_value", true);
+            builder.addVariableValue("VARIABLE_1", "variable_1_value")
+                .addVariableValue("VARIABLE_3", "variable_3_value");
             return builder.build();
         };
 
