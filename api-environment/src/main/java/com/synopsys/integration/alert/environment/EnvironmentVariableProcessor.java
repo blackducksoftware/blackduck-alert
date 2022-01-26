@@ -8,10 +8,10 @@
 package com.synopsys.integration.alert.environment;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,13 +62,14 @@ public class EnvironmentVariableProcessor {
 
     private void logConfiguration(EnvironmentProcessingResult configurationProperties) {
         if (!configurationProperties.hasValues()) {
-            List<String> sortedPropertyNames = configurationProperties.getVariableNames().stream()
+            List<String> sortedVariableNames = configurationProperties.getVariableNames().stream()
                 .sorted()
                 .collect(Collectors.toList());
             logger.info(TWO_SPACE_INDENT);
             logger.info("{}### Environment Variables Used to Configure System ### ", TWO_SPACE_INDENT);
-            for (String propertyName : sortedPropertyNames) {
-                logger.info("{}{} = {}", FOUR_SPACE_INDENT, propertyName, configurationProperties.getVariableValue(propertyName).orElse(StringUtils.EMPTY));
+            for (String variableName : sortedVariableNames) {
+                Optional<String> variableValue = configurationProperties.getVariableValue(variableName);
+                variableValue.ifPresent(value -> logger.info("{}{} = {}", FOUR_SPACE_INDENT, variableName, value));
             }
             logger.info(TWO_SPACE_INDENT);
         }

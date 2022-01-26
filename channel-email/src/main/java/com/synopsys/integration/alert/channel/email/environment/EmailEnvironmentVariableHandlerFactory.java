@@ -162,7 +162,7 @@ public class EmailEnvironmentVariableHandlerFactory implements EnvironmentVariab
                 String javamailPropertyName = EmailEnvironmentVariableHandlerFactory.convertVariableNameToJavamailPropertyKey(additionalPropertyName);
                 String value = environmentVariableUtility.getEnvironmentValue(additionalPropertyName).orElse(null);
                 additionalProperties.put(javamailPropertyName, value);
-                builder.addVariableValue(additionalPropertyName, value, null != value);
+                builder.addVariableValue(additionalPropertyName, value, true);
             }
         }
         configuration.setAdditionalJavaMailProperties(additionalProperties);
