@@ -23,7 +23,7 @@ public interface ConfigurationAccessor<T extends AlertSerializableModel> {
 
     AlertPagedModel<T> getConfigurationPage(int page, int size);
 
-    T createConfiguration(T configuration);
+    T createConfiguration(T configuration) throws AlertConfigurationException;
 
     T updateConfiguration(UUID configurationId, T configuration) throws AlertConfigurationException;
 

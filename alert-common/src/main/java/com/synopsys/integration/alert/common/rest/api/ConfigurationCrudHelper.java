@@ -67,7 +67,7 @@ public class ConfigurationCrudHelper {
         return new ActionResponse<>(HttpStatus.OK, pagedResponse);
     }
 
-    public <T extends Obfuscated<T>> ActionResponse<T> create(Supplier<ValidationResponseModel> validator, ThrowingSupplier<T, Exception> modelCreator) {
+    public <T extends Obfuscated<T>> ActionResponse<T> create(Supplier<ValidationResponseModel> validator, BooleanSupplier existingModelSupplier, ThrowingSupplier<T, Exception> modelCreator) {
         if (!authorizationManager.hasCreatePermission(context, descriptorKey)) {
             return ActionResponse.createForbiddenResponse();
         }
@@ -76,8 +76,18 @@ public class ConfigurationCrudHelper {
         if (validationResponse.hasErrors()) {
             return new ActionResponse<>(HttpStatus.BAD_REQUEST, validationResponse.getMessage());
         }
+
+        boolean configurationExists = existingModelSupplier.getAsBoolean();
+        if (configurationExists) {
+            logger.error("A configuration with this name already exists.");
+            return new ActionResponse<>(HttpStatus.BAD_REQUEST, "A configuration with this name already exists.");
+        }
+
         try {
             return new ActionResponse<>(HttpStatus.OK, modelCreator.get().obfuscate());
+        } catch (AlertConfigurationException ex) {
+            logger.error("Error creating config:", ex);
+            return new ActionResponse<>(HttpStatus.BAD_REQUEST, String.format("Error creating config: %s", ex.getMessage()));
         } catch (Exception ex) {
             logger.error("Error creating config:", ex);
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Error creating config: %s", ex.getMessage()));
@@ -100,6 +110,9 @@ public class ConfigurationCrudHelper {
         }
         try {
             return new ActionResponse<>(HttpStatus.OK, updateFunction.get().obfuscate());
+        } catch (AlertConfigurationException ex) {
+            logger.error("Error updating config:", ex);
+            return new ActionResponse<>(HttpStatus.BAD_REQUEST, String.format("Error updating config: %s", ex.getMessage()));
         } catch (Exception ex) {
             logger.error("Error updating config:", ex);
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Error updating config: %s", ex.getMessage()));

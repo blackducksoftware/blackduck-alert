@@ -40,6 +40,7 @@ public class SettingsProxyCrudActions {
     public ActionResponse<SettingsProxyModel> create(SettingsProxyModel resource) {
         return configurationHelper.create(
             () -> validator.validate(resource),
+            () -> configurationAccessor.getConfiguration().isPresent(),
             () -> configurationAccessor.createConfiguration(resource)
         );
     }

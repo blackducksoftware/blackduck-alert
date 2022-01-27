@@ -114,7 +114,7 @@ public class SettingsProxyCrudActionsTest {
 
         assertTrue(actionResponse.isError());
         assertFalse(actionResponse.hasContent());
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, actionResponse.getHttpStatus());
+        assertEquals(HttpStatus.BAD_REQUEST, actionResponse.getHttpStatus());
     }
 
     @Test
