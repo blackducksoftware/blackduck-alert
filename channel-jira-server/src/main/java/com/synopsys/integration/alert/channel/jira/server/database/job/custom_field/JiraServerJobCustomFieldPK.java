@@ -1,11 +1,11 @@
 /*
- * alert-database
+ * channel-jira-server
  *
  * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.database.job.jira.server.custom_field;
+package com.synopsys.integration.alert.channel.jira.server.database.job.custom_field;
 
 import java.io.Serializable;
 import java.util.UUID;

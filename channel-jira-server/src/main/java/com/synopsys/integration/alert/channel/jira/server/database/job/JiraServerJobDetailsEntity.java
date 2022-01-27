@@ -1,11 +1,11 @@
 /*
- * alert-database
+ * channel-jira-server
  *
  * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.database.job.jira.server;
+package com.synopsys.integration.alert.channel.jira.server.database.job;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,7 +17,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.synopsys.integration.alert.database.job.jira.server.custom_field.JiraServerJobCustomFieldEntity;
+import com.synopsys.integration.alert.channel.jira.server.database.job.custom_field.JiraServerJobCustomFieldEntity;
 
 @Entity
 @Table(schema = "alert", name = "jira_server_job_details")

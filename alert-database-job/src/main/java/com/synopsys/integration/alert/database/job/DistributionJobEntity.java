@@ -20,10 +20,10 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.synopsys.integration.alert.channel.email.database.job.EmailJobDetailsEntity;
+import com.synopsys.integration.alert.channel.jira.server.database.job.JiraServerJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.jira.cloud.JiraCloudJobDetailsEntity;
-import com.synopsys.integration.alert.database.job.jira.server.JiraServerJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsEntity;
 

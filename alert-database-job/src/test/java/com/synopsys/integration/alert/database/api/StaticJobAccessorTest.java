@@ -17,6 +17,8 @@ import org.springframework.data.domain.PageRequest;
 
 import com.synopsys.integration.alert.channel.email.database.accessor.DefaultEmailJobDetailsAccessor;
 import com.synopsys.integration.alert.channel.email.database.job.EmailJobDetailsEntity;
+import com.synopsys.integration.alert.channel.jira.server.database.accessor.DefaultJiraServerJobDetailsAccessor;
+import com.synopsys.integration.alert.channel.jira.server.database.job.JiraServerJobDetailsEntity;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
@@ -39,8 +41,6 @@ import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetails
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.jira.cloud.DefaultJiraCloudJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.jira.cloud.JiraCloudJobDetailsEntity;
-import com.synopsys.integration.alert.database.job.jira.server.DefaultJiraServerJobDetailsAccessor;
-import com.synopsys.integration.alert.database.job.jira.server.JiraServerJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.msteams.DefaultMSTeamsJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.slack.DefaultSlackJobDetailsAccessor;
