@@ -52,11 +52,11 @@ class ProxySettingsEnvironmentHandlerFactoryTest {
         assertEquals(expectedVariableNames, handler.getVariableNames());
         assertTrue(result.hasValues());
 
-        assertEquals(proxyHost, result.getVariableValue(ProxySettingsEnvironmentHandlerFactory.PROXY_HOST_KEY).orElse(null));
-        assertEquals(proxyPort, result.getVariableValue(ProxySettingsEnvironmentHandlerFactory.PROXY_PORT_KEY).orElse(null));
-        assertEquals(proxyUsername, result.getVariableValue(ProxySettingsEnvironmentHandlerFactory.PROXY_USERNAME_KEY).orElse(null));
-        assertEquals(AlertConstants.MASKED_VALUE, result.getVariableValue(ProxySettingsEnvironmentHandlerFactory.PROXY_PASSWORD_KEY).orElse(null));
-        assertEquals(List.of(nonProxyHosts).toString(), result.getVariableValue(ProxySettingsEnvironmentHandlerFactory.PROXY_NON_PROXY_HOSTS_KEY).orElse(null));
+        assertEquals(proxyHost, result.getVariableValue(ProxySettingsEnvironmentHandlerFactory.PROXY_HOST_KEY).orElse("Proxy host value is missing"));
+        assertEquals(proxyPort, result.getVariableValue(ProxySettingsEnvironmentHandlerFactory.PROXY_PORT_KEY).orElse("Proxy port value is missing"));
+        assertEquals(proxyUsername, result.getVariableValue(ProxySettingsEnvironmentHandlerFactory.PROXY_USERNAME_KEY).orElse("Proxy username value is missing"));
+        assertEquals(AlertConstants.MASKED_VALUE, result.getVariableValue(ProxySettingsEnvironmentHandlerFactory.PROXY_PASSWORD_KEY).orElse("Proxy password value is missing"));
+        assertEquals(List.of(nonProxyHosts).toString(), result.getVariableValue(ProxySettingsEnvironmentHandlerFactory.PROXY_NON_PROXY_HOSTS_KEY).orElse("Proxy non-proxy hosts value is missing"));
     }
 
     @Test

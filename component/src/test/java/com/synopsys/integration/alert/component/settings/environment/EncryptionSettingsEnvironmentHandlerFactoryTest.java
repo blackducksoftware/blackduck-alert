@@ -31,8 +31,8 @@ class EncryptionSettingsEnvironmentHandlerFactoryTest {
         EnvironmentVariableHandler handler = factory.build();
         EnvironmentProcessingResult result = handler.updateFromEnvironment();
         assertTrue(result.hasValues());
-        assertEquals(AlertConstants.MASKED_VALUE, result.getVariableValue(EncryptionSettingsEnvironmentHandlerFactory.ENCRYPTION_PASSWORD_KEY).orElse(null));
-        assertEquals(AlertConstants.MASKED_VALUE, result.getVariableValue(EncryptionSettingsEnvironmentHandlerFactory.ENCRYPTION_SALT_KEY).orElse(null));
+        assertEquals(AlertConstants.MASKED_VALUE, result.getVariableValue(EncryptionSettingsEnvironmentHandlerFactory.ENCRYPTION_PASSWORD_KEY).orElse("Password value is missing"));
+        assertEquals(AlertConstants.MASKED_VALUE, result.getVariableValue(EncryptionSettingsEnvironmentHandlerFactory.ENCRYPTION_SALT_KEY).orElse("Salt value is missing"));
     }
 
     @Test

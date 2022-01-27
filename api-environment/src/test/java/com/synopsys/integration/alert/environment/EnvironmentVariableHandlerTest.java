@@ -53,8 +53,8 @@ class EnvironmentVariableHandlerTest {
         assertTrue(handler.isConfigurationMissing());
         assertEquals(variableNames, handler.getVariableNames());
         assertEquals(name, handler.getName());
-        assertEquals("variable_1_value", result.getVariableValue("VARIABLE_1").orElse(null));
+        assertEquals("variable_1_value", result.getVariableValue("VARIABLE_1").orElse("VARIABLE_1 value expected but was missing"));
         assertTrue(result.getVariableValue("VARIABLE_2").isEmpty());
-        assertEquals("variable_3_value", result.getVariableValue("VARIABLE_3").orElse(null));
+        assertEquals("variable_3_value", result.getVariableValue("VARIABLE_3").orElse("VARIABLE_3 value expected but was missing"));
     }
 }

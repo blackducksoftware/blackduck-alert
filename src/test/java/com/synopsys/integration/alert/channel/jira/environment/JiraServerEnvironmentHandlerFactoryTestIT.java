@@ -58,10 +58,10 @@ class JiraServerEnvironmentHandlerFactoryTestIT {
         assertEquals(ChannelKeys.JIRA_SERVER.getDisplayName(), handler.getName());
         assertTrue(result.hasValues());
 
-        assertEquals(TEST_DISABLE_PLUGIN_CHECK, result.getVariableValue(JiraServerEnvironmentVariableHandlerFactory.DISABLE_PLUGIN_KEY).orElse(null));
-        assertEquals(TEST_URL, result.getVariableValue(JiraServerEnvironmentVariableHandlerFactory.URL_KEY).orElse(null));
-        assertEquals(AlertConstants.MASKED_VALUE, result.getVariableValue(JiraServerEnvironmentVariableHandlerFactory.PASSWORD_KEY).orElse(null));
-        assertEquals(TEST_USER, result.getVariableValue(JiraServerEnvironmentVariableHandlerFactory.USERNAME_KEY).orElse(null));
+        assertEquals(TEST_DISABLE_PLUGIN_CHECK, result.getVariableValue(JiraServerEnvironmentVariableHandlerFactory.DISABLE_PLUGIN_KEY).orElse("Disable plugin check value missing"));
+        assertEquals(TEST_URL, result.getVariableValue(JiraServerEnvironmentVariableHandlerFactory.URL_KEY).orElse("Url value missing"));
+        assertEquals(AlertConstants.MASKED_VALUE, result.getVariableValue(JiraServerEnvironmentVariableHandlerFactory.PASSWORD_KEY).orElse("Password value missing"));
+        assertEquals(TEST_USER, result.getVariableValue(JiraServerEnvironmentVariableHandlerFactory.USERNAME_KEY).orElse("Username value missing"));
     }
 
     @Test

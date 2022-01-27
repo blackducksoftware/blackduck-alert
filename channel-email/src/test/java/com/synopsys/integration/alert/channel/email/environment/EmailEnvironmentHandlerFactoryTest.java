@@ -62,12 +62,12 @@ class EmailEnvironmentHandlerFactoryTest {
         assertEquals(expectedVariableNames, handler.getVariableNames());
         assertTrue(result.hasValues());
 
-        assertEquals(authRequired, result.getVariableValue(EmailEnvironmentVariableHandlerFactory.AUTH_REQUIRED_KEY).orElse(null));
-        assertEquals(from, result.getVariableValue(EmailEnvironmentVariableHandlerFactory.EMAIL_FROM_KEY).orElse(null));
-        assertEquals(smtpHost, result.getVariableValue(EmailEnvironmentVariableHandlerFactory.EMAIL_HOST_KEY).orElse(null));
-        assertEquals(AlertConstants.MASKED_VALUE, result.getVariableValue(EmailEnvironmentVariableHandlerFactory.AUTH_PASSWORD_KEY).orElse(null));
-        assertEquals(port, result.getVariableValue(EmailEnvironmentVariableHandlerFactory.EMAIL_PORT_KEY).orElse(null));
-        assertEquals(username, result.getVariableValue(EmailEnvironmentVariableHandlerFactory.AUTH_USER_KEY).orElse(null));
+        assertEquals(authRequired, result.getVariableValue(EmailEnvironmentVariableHandlerFactory.AUTH_REQUIRED_KEY).orElse("Auth required value missing"));
+        assertEquals(from, result.getVariableValue(EmailEnvironmentVariableHandlerFactory.EMAIL_FROM_KEY).orElse("SMTP from value missing"));
+        assertEquals(smtpHost, result.getVariableValue(EmailEnvironmentVariableHandlerFactory.EMAIL_HOST_KEY).orElse("SMTP host value missing"));
+        assertEquals(AlertConstants.MASKED_VALUE, result.getVariableValue(EmailEnvironmentVariableHandlerFactory.AUTH_PASSWORD_KEY).orElse("Auth password value missing"));
+        assertEquals(port, result.getVariableValue(EmailEnvironmentVariableHandlerFactory.EMAIL_PORT_KEY).orElse("SMTP port value missing"));
+        assertEquals(username, result.getVariableValue(EmailEnvironmentVariableHandlerFactory.AUTH_USER_KEY).orElse("Auth user value missing"));
     }
 
      @Test
@@ -128,13 +128,13 @@ class EmailEnvironmentHandlerFactoryTest {
         assertEquals(ChannelKeys.EMAIL.getDisplayName(), handler.getName());
         assertTrue(result.hasValues());
 
-        assertEquals(authRequired, result.getVariableValue(EmailEnvironmentVariableHandlerFactory.AUTH_REQUIRED_KEY).orElse(null));
-        assertEquals(from, result.getVariableValue(EmailEnvironmentVariableHandlerFactory.EMAIL_FROM_KEY).orElse(null));
-        assertEquals(smtpHost, result.getVariableValue(EmailEnvironmentVariableHandlerFactory.EMAIL_HOST_KEY).orElse(null));
-        assertEquals(AlertConstants.MASKED_VALUE, result.getVariableValue(EmailEnvironmentVariableHandlerFactory.AUTH_PASSWORD_KEY).orElse(null));
-        assertEquals(port, result.getVariableValue(EmailEnvironmentVariableHandlerFactory.EMAIL_PORT_KEY).orElse(null));
-        assertEquals(username, result.getVariableValue(EmailEnvironmentVariableHandlerFactory.AUTH_USER_KEY).orElse(null));
+        assertEquals(authRequired, result.getVariableValue(EmailEnvironmentVariableHandlerFactory.AUTH_REQUIRED_KEY).orElse("Auth required value missing"));
+        assertEquals(from, result.getVariableValue(EmailEnvironmentVariableHandlerFactory.EMAIL_FROM_KEY).orElse("SMTP from value missing"));
+        assertEquals(smtpHost, result.getVariableValue(EmailEnvironmentVariableHandlerFactory.EMAIL_HOST_KEY).orElse("SMTP host value missing"));
+        assertEquals(AlertConstants.MASKED_VALUE, result.getVariableValue(EmailEnvironmentVariableHandlerFactory.AUTH_PASSWORD_KEY).orElse("Auth password value missing"));
+        assertEquals(port, result.getVariableValue(EmailEnvironmentVariableHandlerFactory.EMAIL_PORT_KEY).orElse("SMTP port value missing"));
+        assertEquals(username, result.getVariableValue(EmailEnvironmentVariableHandlerFactory.AUTH_USER_KEY).orElse("Auth user value missing"));
 
-        assertEquals("true", result.getVariableValue(ADDITIONAL_EMAIL_PROPERTY_VARIABLE_NAME).orElse(null));
+        assertEquals("true", result.getVariableValue(ADDITIONAL_EMAIL_PROPERTY_VARIABLE_NAME).orElse("Additional email property value missing"));
     }
 }
