@@ -205,7 +205,7 @@ class Details extends Component {
                                             columnClassName="tableCell"
                                             dataFormat={this.getEventType}
                                         >
-                                            Event Type
+                                            Channel
                                         </TableHeaderColumn>
                                         <TableHeaderColumn
                                             dataField="timeLastSent"
