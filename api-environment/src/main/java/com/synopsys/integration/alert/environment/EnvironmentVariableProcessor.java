@@ -61,7 +61,7 @@ public class EnvironmentVariableProcessor {
     }
 
     private void logConfiguration(EnvironmentProcessingResult configurationProperties) {
-        if (!configurationProperties.hasValues()) {
+        if (configurationProperties.hasValues()) {
             List<String> sortedVariableNames = configurationProperties.getVariableNames().stream()
                 .sorted()
                 .collect(Collectors.toList());
