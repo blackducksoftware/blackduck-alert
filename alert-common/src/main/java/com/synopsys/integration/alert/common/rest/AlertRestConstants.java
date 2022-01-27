@@ -21,7 +21,6 @@ public final class AlertRestConstants {
     public static final String SETTINGS_ENCRYPTION_PATH = AlertRestConstants.SETTINGS_PATH + "/encryption";
     public static final String SETTINGS_PROXY_PATH = AlertRestConstants.SETTINGS_PATH + "/proxy";
 
-    public static final String MASKED_VALUE = "*****";
     public static final String DEFAULT_CONFIGURATION_NAME = "default-configuration";
 
     private AlertRestConstants() {
