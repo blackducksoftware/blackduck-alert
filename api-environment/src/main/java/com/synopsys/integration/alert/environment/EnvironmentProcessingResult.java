@@ -42,7 +42,7 @@ public class EnvironmentProcessingResult extends Stringable {
     }
 
     public Optional<String> getVariableValue(String variableName) {
-        return Optional.ofNullable(variableValues.getOrDefault(variableName, null));
+        return Optional.ofNullable(variableValues.get(variableName));
     }
 
     public static class Builder {

@@ -84,11 +84,10 @@ public class JiraServerEnvironmentVariableHandlerFactory implements EnvironmentV
         obfuscatedModel.getDisablePluginCheck()
             .map(String::valueOf)
             .ifPresent(value -> builder.addVariableValue(DISABLE_PLUGIN_KEY, value));
-        
+
         obfuscatedModel.getPasswordSet()
             .filter(Boolean::booleanValue)
-            .map(value -> AlertConstants.MASKED_VALUE)
-            .ifPresent(value -> builder.addVariableValue(PASSWORD_KEY, value));
+            .ifPresent(ignored -> builder.addVariableValue(PASSWORD_KEY, AlertConstants.MASKED_VALUE));
 
         EnvironmentProcessingResult result = builder.build();
         if (result.hasValues() && configAccessor.getConfigurationByName(name).isEmpty()) {
