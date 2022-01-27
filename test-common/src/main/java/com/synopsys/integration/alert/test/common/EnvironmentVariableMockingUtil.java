@@ -23,7 +23,7 @@ public class EnvironmentVariableMockingUtil {
         }
     }
 
-    private EnvironmentVariableMockingUtil() {
-        // prevent construction
+    private EnvironmentVariableMockingUtil() throws InstantiationException {
+        throw new InstantiationException("Cannot instantiate instance of utility class '" + getClass().getName() + "'");
     }
 }

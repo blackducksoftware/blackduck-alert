@@ -3,13 +3,13 @@ import { BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn } from 'r
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useHistory } from 'react-router-dom';
 import * as PropTypes from 'prop-types';
-import AutoRefresh from 'common/table/AutoRefresh';
+import AutoRefresh from 'common/component/table/AutoRefresh';
 import * as ConfigRequestBuilder from 'common/util/configurationRequestBuilder';
 import { BLACKDUCK_GLOBAL_FIELD_KEYS, BLACKDUCK_INFO, BLACKDUCK_URLS } from 'page/provider/blackduck/BlackDuckModel';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
-import ConfirmModal from 'common/ConfirmModal';
-import IconTableCellFormatter from 'common/table/IconTableCellFormatter';
-import { ProgressIcon } from 'common/table/ProgressIcon';
+import ConfirmModal from 'common/component/ConfirmModal';
+import IconTableCellFormatter from 'common/component/table/IconTableCellFormatter';
+import { ProgressIcon } from 'common/component/table/ProgressIcon';
 
 const BlackDuckProviderTable = ({
     csrfToken, readonly, showRefreshButton, displayDelete

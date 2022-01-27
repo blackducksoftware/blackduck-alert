@@ -8,13 +8,13 @@
 package com.synopsys.integration.alert.component.settings.environment;
 
 import java.util.Optional;
-import java.util.Properties;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
+import com.synopsys.integration.alert.api.common.model.AlertConstants;
+import com.synopsys.integration.alert.environment.EnvironmentProcessingResult;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandler;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandlerFactory;
 import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
@@ -42,19 +42,20 @@ public class EncryptionSettingsEnvironmentHandlerFactory implements EnvironmentV
         return true;
     }
 
-    private Properties updateFunction() {
-        Properties properties = new Properties();
+    private EnvironmentProcessingResult updateFunction() {
+        EnvironmentProcessingResult.Builder builder = new EnvironmentProcessingResult.Builder(ENCRYPTION_PASSWORD_KEY, ENCRYPTION_SALT_KEY);
         Optional<String> password = environmentVariableUtility.getEnvironmentValue(ENCRYPTION_PASSWORD_KEY);
         Optional<String> salt = environmentVariableUtility.getEnvironmentValue(ENCRYPTION_SALT_KEY);
 
         // The encryption utility will read the environment variables.  We just want to be able to log if the variables are set.
         if (password.isPresent()) {
-            properties.put(ENCRYPTION_PASSWORD_KEY, AlertRestConstants.MASKED_VALUE);
+            builder.addVariableValue(ENCRYPTION_PASSWORD_KEY, AlertConstants.MASKED_VALUE);
         }
 
         if (salt.isPresent()) {
-            properties.put(ENCRYPTION_SALT_KEY, AlertRestConstants.MASKED_VALUE);
+            builder.addVariableValue(ENCRYPTION_SALT_KEY, AlertConstants.MASKED_VALUE);
         }
-        return properties;
+
+        return builder.build();
     }
 }

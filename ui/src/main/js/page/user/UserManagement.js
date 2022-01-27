@@ -2,14 +2,13 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Tab, Tabs } from 'react-bootstrap';
-import ConfigurationLabel from 'common/ConfigurationLabel';
+import ConfigurationLabel from 'common/component/ConfigurationLabel';
 import RoleTable from 'page/user/RoleTable';
 import UserTable from 'page/user/UserTable';
 import * as DescriptorUtilities from 'common/util/descriptorUtilities';
 import { USER_MANAGEMENT_INFO } from 'page/user/UserModel';
 
-function UserManagement(props) {
-    const { descriptors } = props;
+const UserManagement = ({ descriptors }) => {
     const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_NAME.COMPONENT_USERS, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
     const canCreate = DescriptorUtilities.isOperationAssigned(descriptor, DescriptorUtilities.OPERATIONS.CREATE);
     const canDelete = DescriptorUtilities.isOperationAssigned(descriptor, DescriptorUtilities.OPERATIONS.DELETE);
@@ -30,7 +29,7 @@ function UserManagement(props) {
             </Tabs>
         </div>
     );
-}
+};
 
 UserManagement.propTypes = {
     descriptors: PropTypes.array.isRequired

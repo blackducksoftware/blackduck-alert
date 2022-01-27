@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Properties;
 import java.util.UUID;
 import java.util.function.Predicate;
 
@@ -15,10 +14,12 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 
+import com.synopsys.integration.alert.api.common.model.AlertConstants;
 import com.synopsys.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.model.Config;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import com.synopsys.integration.alert.environment.EnvironmentProcessingResult;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandler;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandlerFactory;
 import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
@@ -53,16 +54,16 @@ class EmailEnvironmentHandlerFactoryTestIT {
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
         EnvironmentVariableHandlerFactory factory = new EmailEnvironmentVariableHandlerFactory(emailGlobalConfigAccessor, environmentVariableUtility);
         EnvironmentVariableHandler handler = factory.build();
-        Properties updatedProperties = handler.updateFromEnvironment();
+        EnvironmentProcessingResult result = handler.updateFromEnvironment();
         assertEquals(ChannelKeys.EMAIL.getDisplayName(), handler.getName());
-        assertFalse(updatedProperties.isEmpty());
+        assertTrue(result.hasValues());
 
-        assertEquals(TEST_AUTH_REQUIRED, updatedProperties.getProperty(EmailEnvironmentVariableHandlerFactory.AUTH_REQUIRED_KEY));
-        assertEquals(TEST_FROM, updatedProperties.getProperty(EmailEnvironmentVariableHandlerFactory.EMAIL_FROM_KEY));
-        assertEquals(TEST_SMTP_HOST, updatedProperties.getProperty(EmailEnvironmentVariableHandlerFactory.EMAIL_HOST_KEY));
-        assertEquals(AlertRestConstants.MASKED_VALUE, updatedProperties.getProperty(EmailEnvironmentVariableHandlerFactory.AUTH_PASSWORD_KEY));
-        assertEquals(TEST_PORT, updatedProperties.getProperty(EmailEnvironmentVariableHandlerFactory.EMAIL_PORT_KEY));
-        assertEquals(TEST_USER, updatedProperties.getProperty(EmailEnvironmentVariableHandlerFactory.AUTH_USER_KEY));
+        assertEquals(TEST_AUTH_REQUIRED, result.getVariableValue(EmailEnvironmentVariableHandlerFactory.AUTH_REQUIRED_KEY).orElse("Auth required value missing"));
+        assertEquals(TEST_FROM, result.getVariableValue(EmailEnvironmentVariableHandlerFactory.EMAIL_FROM_KEY).orElse("SMTP from value missing"));
+        assertEquals(TEST_SMTP_HOST, result.getVariableValue(EmailEnvironmentVariableHandlerFactory.EMAIL_HOST_KEY).orElse("SMTP host value missing"));
+        assertEquals(AlertConstants.MASKED_VALUE, result.getVariableValue(EmailEnvironmentVariableHandlerFactory.AUTH_PASSWORD_KEY).orElse("Auth password value missing"));
+        assertEquals(TEST_PORT, result.getVariableValue(EmailEnvironmentVariableHandlerFactory.EMAIL_PORT_KEY).orElse("SMTP port value missing"));
+        assertEquals(TEST_USER, result.getVariableValue(EmailEnvironmentVariableHandlerFactory.AUTH_USER_KEY).orElse("Auth user value missing"));
     }
 
     @Test
@@ -82,9 +83,9 @@ class EmailEnvironmentHandlerFactoryTestIT {
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
         EnvironmentVariableHandlerFactory factory = new EmailEnvironmentVariableHandlerFactory(emailGlobalConfigAccessor, environmentVariableUtility);
         EnvironmentVariableHandler handler = factory.build();
-        Properties updatedProperties = handler.updateFromEnvironment();
+        EnvironmentProcessingResult result = handler.updateFromEnvironment();
         assertEquals(ChannelKeys.EMAIL.getDisplayName(), handler.getName());
-        assertTrue(updatedProperties.isEmpty());
+        assertFalse(result.hasValues());
     }
 
     private Environment setupMockedEnvironment() {

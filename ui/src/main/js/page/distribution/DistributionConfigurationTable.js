@@ -6,14 +6,14 @@ import {
     BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn
 } from 'react-bootstrap-table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import DescriptorLabel from 'common/DescriptorLabel';
+import DescriptorLabel from 'common/component/descriptor/DescriptorLabel';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
-import ConfirmModal from 'common/ConfirmModal';
-import AutoRefresh from 'common/table/AutoRefresh';
-import IconTableCellFormatter from 'common/table/IconTableCellFormatter';
+import ConfirmModal from 'common/component/ConfirmModal';
+import AutoRefresh from 'common/component/table/AutoRefresh';
+import IconTableCellFormatter from 'common/component/table/IconTableCellFormatter';
 import * as DistributionRequestUtility from 'page/distribution/DistributionTableRequestUtility';
 import { EXISTING_CHANNELS, EXISTING_PROVIDERS } from 'common/DescriptorInfo';
-import { ProgressIcon } from 'common/table/ProgressIcon';
+import { ProgressIcon } from 'common/component/table/ProgressIcon';
 import { BLACKDUCK_INFO } from 'page/provider/blackduck/BlackDuckModel';
 
 const DistributionConfigurationTable = ({

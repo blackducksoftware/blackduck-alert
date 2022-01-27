@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import TableDisplay from 'common/table/TableDisplay';
-import TextInput from 'common/input/TextInput';
-import PasswordInput from 'common/input/PasswordInput';
+import TableDisplay from 'common/component/table/TableDisplay';
+import TextInput from 'common/component/input/TextInput';
+import PasswordInput from 'common/component/input/PasswordInput';
 import { connect } from 'react-redux';
 import { clearUserFieldErrors, deleteUser, fetchUsers, saveUser, validateUser } from 'store/actions/users';
-import DynamicSelectInput from 'common/input/DynamicSelectInput';
+import DynamicSelectInput from 'common/component/input/DynamicSelectInput';
 import { fetchRoles } from 'store/actions/roles';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
-import StatusMessage from 'common/StatusMessage';
+import StatusMessage from 'common/component/StatusMessage';
 
 const KEY_CONFIRM_PASSWORD_ERROR = 'confirmPasswordError';
 
