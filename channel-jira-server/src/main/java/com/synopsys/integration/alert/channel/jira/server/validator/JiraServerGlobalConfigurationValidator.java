@@ -43,8 +43,7 @@ public class JiraServerGlobalConfigurationValidator {
             statuses.add(AlertFieldStatus.error("username", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
         }
 
-        boolean isPasswordSet = model.getPasswordSet().isEmpty() || model.getPasswordSet().filter(Boolean.FALSE::equals).isPresent();
-        if (model.getPassword().isEmpty() && isPasswordSet) {
+        if (model.getPassword().isEmpty() && !model.getIsPasswordSet().orElse(Boolean.FALSE)) {
             statuses.add(AlertFieldStatus.error("password", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
         }
 

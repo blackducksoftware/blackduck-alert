@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import * as PropTypes from 'prop-types';
 import * as ConfigurationRequestBuilder from 'common/util/configurationRequestBuilder';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
-import ConcreteConfigurationForm from 'common/configuration/global/ConcreteConfigurationForm';
+import ConcreteConfigurationForm from 'common/configuration/global/concrete/ConcreteConfigurationForm';
 import { SETTINGS_FIELD_KEYS, SETTINGS_INFO, SETTINGS_PROXY_TEST_FIELD } from 'page/settings/SettingsModel';
 import TextInput from 'common/component/input/TextInput';
 import * as fieldModelUtilities from 'common/util/fieldModelUtilities';

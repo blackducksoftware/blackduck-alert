@@ -64,7 +64,7 @@ class JiraServerGlobalConfigAccessorTest {
         assertEquals(id.toString(), configModel.getId());
         assertEquals(TEST_URL, configModel.getUrl());
         assertEquals(TEST_USERNAME, configModel.getUserName());
-        assertTrue(configModel.getPasswordSet().orElse(Boolean.FALSE));
+        assertTrue(configModel.getIsPasswordSet().orElse(Boolean.FALSE));
         assertEquals(TEST_PASSWORD, configModel.getPassword().orElse(null));
         assertTrue(configModel.getDisablePluginCheck().orElse(Boolean.FALSE));
     }
@@ -87,7 +87,7 @@ class JiraServerGlobalConfigAccessorTest {
         assertEquals(id.toString(), configModel.getId());
         assertEquals(TEST_URL, configModel.getUrl());
         assertEquals(TEST_USERNAME, configModel.getUserName());
-        assertTrue(configModel.getPasswordSet().orElse(Boolean.FALSE));
+        assertTrue(configModel.getIsPasswordSet().orElse(Boolean.FALSE));
         assertEquals(TEST_PASSWORD, configModel.getPassword().orElse(null));
         assertTrue(configModel.getDisablePluginCheck().orElse(Boolean.FALSE));
     }
@@ -142,7 +142,7 @@ class JiraServerGlobalConfigAccessorTest {
         assertEquals(entity.getConfigurationId().toString(), createdModel.getId());
         assertEquals(entity.getUrl(), createdModel.getUrl());
         assertEquals(entity.getUsername(), createdModel.getUserName());
-        assertTrue(createdModel.getPasswordSet().orElse(Boolean.FALSE));
+        assertTrue(createdModel.getIsPasswordSet().orElse(Boolean.FALSE));
         assertEquals(TEST_PASSWORD, createdModel.getPassword().orElse(null));
         assertEquals(entity.getDisablePluginCheck(), createdModel.getDisablePluginCheck().orElse(null));
     }
@@ -167,7 +167,7 @@ class JiraServerGlobalConfigAccessorTest {
         assertNull(createdModel.getId());
         assertNull(createdModel.getUrl());
         assertNull(createdModel.getUserName());
-        assertTrue(createdModel.getPasswordSet().isEmpty());
+        assertTrue(createdModel.getIsPasswordSet().isEmpty());
         assertTrue(createdModel.getPassword().isEmpty());
         assertTrue(createdModel.getDisablePluginCheck().isEmpty());
     }
@@ -196,7 +196,7 @@ class JiraServerGlobalConfigAccessorTest {
         assertEquals(updatedEntity.getConfigurationId().toString(), updatedModel.getId());
         assertEquals(updatedEntity.getUrl(), updatedModel.getUrl());
         assertEquals(updatedEntity.getUsername(), updatedModel.getUserName());
-        assertTrue(updatedModel.getPasswordSet().orElse(Boolean.FALSE));
+        assertTrue(updatedModel.getIsPasswordSet().orElse(Boolean.FALSE));
         assertEquals(TEST_PASSWORD, updatedModel.getPassword().orElse(null));
         assertEquals(updatedEntity.getDisablePluginCheck(), updatedModel.getDisablePluginCheck().orElse(null));
     }
@@ -225,7 +225,7 @@ class JiraServerGlobalConfigAccessorTest {
         assertEquals(updatedEntity.getConfigurationId().toString(), updatedModel.getId());
         assertEquals(updatedEntity.getUrl(), updatedModel.getUrl());
         assertEquals(updatedEntity.getUsername(), updatedModel.getUserName());
-        assertTrue(updatedModel.getPasswordSet().orElse(Boolean.FALSE));
+        assertTrue(updatedModel.getIsPasswordSet().orElse(Boolean.FALSE));
         assertEquals(TEST_PASSWORD, updatedModel.getPassword().orElse(null));
         assertEquals(updatedEntity.getDisablePluginCheck(), updatedModel.getDisablePluginCheck().orElse(null));
     }
