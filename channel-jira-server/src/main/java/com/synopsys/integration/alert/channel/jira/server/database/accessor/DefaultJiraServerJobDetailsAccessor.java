@@ -1,11 +1,11 @@
 /*
- * alert-database
+ * channel-jira-server
  *
  * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.database.job.jira.server;
+package com.synopsys.integration.alert.channel.jira.server.database.accessor;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,12 +17,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.channel.jira.server.database.job.JiraServerJobDetailsEntity;
+import com.synopsys.integration.alert.channel.jira.server.database.job.JiraServerJobDetailsRepository;
+import com.synopsys.integration.alert.channel.jira.server.database.job.custom_field.JiraServerJobCustomFieldEntity;
+import com.synopsys.integration.alert.channel.jira.server.database.job.custom_field.JiraServerJobCustomFieldRepository;
 import com.synopsys.integration.alert.common.persistence.accessor.JiraServerJobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraJobCustomFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
-import com.synopsys.integration.alert.database.job.jira.server.custom_field.JiraServerJobCustomFieldEntity;
-import com.synopsys.integration.alert.database.job.jira.server.custom_field.JiraServerJobCustomFieldRepository;
 import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 

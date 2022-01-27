@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.database.job.jira.server;
+package com.synopsys.integration.alert.channel.jira.server.database.accessor;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -12,10 +12,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.synopsys.integration.alert.channel.jira.server.database.job.JiraServerJobDetailsEntity;
+import com.synopsys.integration.alert.channel.jira.server.database.job.JiraServerJobDetailsRepository;
+import com.synopsys.integration.alert.channel.jira.server.database.job.custom_field.JiraServerJobCustomFieldEntity;
+import com.synopsys.integration.alert.channel.jira.server.database.job.custom_field.JiraServerJobCustomFieldRepository;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraJobCustomFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
-import com.synopsys.integration.alert.database.job.jira.server.custom_field.JiraServerJobCustomFieldEntity;
-import com.synopsys.integration.alert.database.job.jira.server.custom_field.JiraServerJobCustomFieldRepository;
 import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
