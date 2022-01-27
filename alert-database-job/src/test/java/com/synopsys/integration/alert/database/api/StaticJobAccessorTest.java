@@ -86,7 +86,6 @@ class StaticJobAccessorTest {
             blackDuckJobDetailsAccessor,
             azureBoardsJobDetailsAccessor,
             jiraCloudJobDetailsAccessor,
-            jiraServerJobDetailsAccessor,
             msTeamsJobDetailsAccessor,
             slackJobDetailsAccessor,
             new BlackDuckProviderKey(),
