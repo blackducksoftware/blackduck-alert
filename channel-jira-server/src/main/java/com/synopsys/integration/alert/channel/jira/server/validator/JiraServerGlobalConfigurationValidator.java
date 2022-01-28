@@ -40,7 +40,7 @@ public class JiraServerGlobalConfigurationValidator {
             }
         }
         if (StringUtils.isBlank(model.getUserName())) {
-            statuses.add(AlertFieldStatus.error("username", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
+            statuses.add(AlertFieldStatus.error("userName", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
         }
 
         if (model.getPassword().isEmpty() && !model.getIsPasswordSet().orElse(Boolean.FALSE)) {

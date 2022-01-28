@@ -170,7 +170,7 @@ public class JiraServerGlobalConfigControllerTestIT {
     @Test
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void verifyDisablePluginEndpointTest() throws Exception {
-        String urlPath = REQUEST_URL + "/disable-plugin";
+        String urlPath = REQUEST_URL + "/install-plugin";
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(urlPath)
             .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
             .with(SecurityMockMvcRequestPostProcessors.csrf());
