@@ -3,6 +3,7 @@ package com.synopsys.integration.alert.channel.jira.server.web;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -25,10 +26,11 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurat
 import com.synopsys.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 
-@Transactional
 @AlertIntegrationTest
 public class JiraServerGlobalConfigControllerTestIT {
     private static final MediaType MEDIA_TYPE = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), StandardCharsets.UTF_8);
@@ -48,6 +50,16 @@ public class JiraServerGlobalConfigControllerTestIT {
     @BeforeEach
     public void setup() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).apply(SecurityMockMvcConfigurers.springSecurity()).build();
+    }
+
+    @AfterEach
+    public void cleanup() {
+        jiraServerGlobalConfigAccessor.getConfigurationPage(0, 100)
+            .getModels()
+            .stream()
+            .map(JiraServerGlobalConfigModel::getId)
+            .map(UUID::fromString)
+            .forEach(jiraServerGlobalConfigAccessor::deleteConfiguration);
     }
 
     @Test
@@ -156,7 +168,7 @@ public class JiraServerGlobalConfigControllerTestIT {
     @Test
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void verifyDisablePluginEndpointTest() throws Exception {
-        String urlPath = REQUEST_URL + "/disable-plugin";
+        String urlPath = REQUEST_URL + "/install-plugin";
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(urlPath)
             .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
             .with(SecurityMockMvcRequestPostProcessors.csrf());

@@ -90,7 +90,7 @@ public class JiraServerEnvironmentVariableHandlerFactory implements EnvironmentV
             .map(String::valueOf)
             .ifPresent(value -> builder.addVariableValue(DISABLE_PLUGIN_KEY, value));
 
-        obfuscatedModel.getPasswordSet()
+        obfuscatedModel.getIsPasswordSet()
             .filter(Boolean::booleanValue)
             .ifPresent(ignored -> builder.addVariableValue(PASSWORD_KEY, AlertConstants.MASKED_VALUE));
 

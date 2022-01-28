@@ -88,7 +88,7 @@ public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<Jir
     public JiraServerGlobalConfigModel updateConfiguration(UUID configurationId, JiraServerGlobalConfigModel configuration) throws AlertConfigurationException {
         JiraServerConfigurationEntity configurationEntity = jiraServerConfigurationRepository.findById(configurationId)
             .orElseThrow(() -> new AlertConfigurationException(String.format("Config with id '%s' did not exist", configurationId.toString())));
-        if (BooleanUtils.toBoolean(configuration.getPasswordSet().orElse(Boolean.FALSE)) && configuration.getPassword().isEmpty()) {
+        if (BooleanUtils.toBoolean(configuration.getIsPasswordSet().orElse(Boolean.FALSE)) && configuration.getPassword().isEmpty()) {
             String decryptedPassword = encryptionUtility.decrypt(configurationEntity.getPassword());
             configuration.setPassword(decryptedPassword);
         }
