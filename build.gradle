@@ -141,9 +141,11 @@ dependencies {
     // Test and Dev
     // =============
     testImplementation 'org.testcontainers:postgresql'
+    testRuntimeClasspath 'com.playtika.testcontainers:embedded-postgresql'
+    testRuntimeClasspath 'org.springframework.cloud:spring-cloud-starter-bootstrap'
     if (getGradle().getStartParameter().taskNames.contains('runServer') && !getGradle().getStartParameter().taskNames.contains("--externaldb")) {
-        runtimeClasspath 'com.playtika.testcontainers:embedded-postgresql:2.0.5'
-        runtimeClasspath 'org.springframework.cloud:spring-cloud-starter-bootstrap:3.0.1'
+        runtimeClasspath 'com.playtika.testcontainers:embedded-postgresql'
+        runtimeClasspath 'org.springframework.cloud:spring-cloud-starter-bootstrap'
         runtimeClasspath 'org.springframework.boot:spring-boot-devtools'
     }
 

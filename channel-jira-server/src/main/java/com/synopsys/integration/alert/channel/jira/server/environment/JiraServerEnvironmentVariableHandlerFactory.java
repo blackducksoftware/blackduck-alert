@@ -7,18 +7,19 @@
  */
 package com.synopsys.integration.alert.channel.jira.server.environment;
 
-import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.common.model.AlertConstants;
 import com.synopsys.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import com.synopsys.integration.alert.environment.EnvironmentProcessingResult;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandler;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandlerFactory;
 import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
@@ -50,12 +51,12 @@ public class JiraServerEnvironmentVariableHandlerFactory implements EnvironmentV
         return configAccessor.getConfigurationCount() <= 0;
     }
 
-    private Properties updateConfiguration() {
-        Properties properties = new Properties();
+    private EnvironmentProcessingResult updateConfiguration() {
+        EnvironmentProcessingResult.Builder builder = new EnvironmentProcessingResult.Builder(VARIABLE_NAMES);
         String url = environmentVariableUtility.getEnvironmentValue(URL_KEY).orElse(null);
 
         if (StringUtils.isBlank(url)) {
-            return properties;
+            return EnvironmentProcessingResult.empty();
         }
 
         String name = AlertRestConstants.DEFAULT_CONFIGURATION_NAME;
@@ -72,21 +73,27 @@ public class JiraServerEnvironmentVariableHandlerFactory implements EnvironmentV
             .ifPresent(configModel::setPassword);
 
         JiraServerGlobalConfigModel obfuscatedModel = configModel.obfuscate();
-        properties.put(URL_KEY, obfuscatedModel.getUrl());
+        if (StringUtils.isNotBlank(obfuscatedModel.getUrl())) {
+            builder.addVariableValue(URL_KEY, obfuscatedModel.getUrl());
+        }
+
         if (StringUtils.isNotBlank(obfuscatedModel.getUserName())) {
-            properties.put(USERNAME_KEY, obfuscatedModel.getUserName());
-        }
-        obfuscatedModel.getDisablePluginCheck().map(String::valueOf).ifPresent(value -> properties.put(DISABLE_PLUGIN_KEY, value));
-        Boolean passwordSet = obfuscatedModel.getIsPasswordSet().orElse(Boolean.FALSE);
-
-        if (Boolean.TRUE.equals(passwordSet)) {
-            properties.put(PASSWORD_KEY, AlertRestConstants.MASKED_VALUE);
+            builder.addVariableValue(USERNAME_KEY, obfuscatedModel.getUserName());
         }
 
-        if (!properties.isEmpty() && configAccessor.getConfigurationByName(name).isEmpty()) {
+        obfuscatedModel.getDisablePluginCheck()
+            .map(String::valueOf)
+            .ifPresent(value -> builder.addVariableValue(DISABLE_PLUGIN_KEY, value));
+
+        obfuscatedModel.getIsPasswordSet()
+            .filter(Boolean::booleanValue)
+            .ifPresent(ignored -> builder.addVariableValue(PASSWORD_KEY, AlertConstants.MASKED_VALUE));
+
+        EnvironmentProcessingResult result = builder.build();
+        if (result.hasValues() && configAccessor.getConfigurationByName(name).isEmpty()) {
             configAccessor.createConfiguration(configModel);
         }
 
-        return properties;
+        return result;
     }
 }

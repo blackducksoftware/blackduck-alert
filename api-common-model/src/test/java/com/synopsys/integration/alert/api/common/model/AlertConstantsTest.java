@@ -5,10 +5,9 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.lang.reflect.Constructor;
 
 import org.junit.jupiter.api.Test;
-
-public class AlertConstantsTest {
+class AlertConstantsTest {
     @Test
-    public void privateConstructorTest() {
+    void privateConstructorTest() {
         for (Constructor<?> constructor : AlertConstants.class.getConstructors()) {
             try {
                 constructor.newInstance();

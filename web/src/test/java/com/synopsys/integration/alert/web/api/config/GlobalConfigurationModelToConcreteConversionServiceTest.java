@@ -15,7 +15,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
-public class GlobalConfigurationModelToConcreteConversionServiceTest {
+class GlobalConfigurationModelToConcreteConversionServiceTest {
     private static final String TEST_DESCRIPTOR_KEY = "test_descriptor_key";
 
     private DescriptorKey testDescriptorKey = new DescriptorKey(TEST_DESCRIPTOR_KEY, TEST_DESCRIPTOR_KEY) {
@@ -23,7 +23,7 @@ public class GlobalConfigurationModelToConcreteConversionServiceTest {
     };
 
     @Test
-    public void createdDescriptorFoundTest() {
+    void createdDescriptorFoundTest() {
         TestSaveActions saveActions = new TestSaveActions(testDescriptorKey);
         DescriptorMap descriptorMap = new DescriptorMap(List.of(testDescriptorKey), List.of());
         List<GlobalConfigurationModelToConcreteSaveActions> fieldModelSaveActions = List.of(saveActions);
@@ -36,7 +36,7 @@ public class GlobalConfigurationModelToConcreteConversionServiceTest {
     }
 
     @Test
-    public void updatedDescriptorFoundTest() {
+    void updatedDescriptorFoundTest() {
         TestSaveActions saveActions = new TestSaveActions(testDescriptorKey);
         DescriptorMap descriptorMap = new DescriptorMap(List.of(testDescriptorKey), List.of());
         List<GlobalConfigurationModelToConcreteSaveActions> fieldModelSaveActions = List.of(saveActions);
@@ -49,7 +49,7 @@ public class GlobalConfigurationModelToConcreteConversionServiceTest {
     }
 
     @Test
-    public void deleteDescriptorFoundTest() {
+    void deleteDescriptorFoundTest() {
         TestSaveActions saveActions = new TestSaveActions(testDescriptorKey);
         DescriptorMap descriptorMap = new DescriptorMap(List.of(testDescriptorKey), List.of());
         List<GlobalConfigurationModelToConcreteSaveActions> fieldModelSaveActions = List.of(saveActions);
@@ -62,7 +62,7 @@ public class GlobalConfigurationModelToConcreteConversionServiceTest {
     }
 
     @Test
-    public void createdDescriptorMissingTest() {
+    void createdDescriptorMissingTest() {
         TestSaveActions saveActions = new TestSaveActions(testDescriptorKey);
         DescriptorMap descriptorMap = new DescriptorMap(List.of(), List.of());
         List<GlobalConfigurationModelToConcreteSaveActions> fieldModelSaveActions = List.of(saveActions);
@@ -75,7 +75,7 @@ public class GlobalConfigurationModelToConcreteConversionServiceTest {
     }
 
     @Test
-    public void updatedDescriptorMissingTest() {
+    void updatedDescriptorMissingTest() {
         TestSaveActions saveActions = new TestSaveActions(testDescriptorKey);
         DescriptorMap descriptorMap = new DescriptorMap(List.of(), List.of());
         List<GlobalConfigurationModelToConcreteSaveActions> fieldModelSaveActions = List.of(saveActions);
@@ -88,7 +88,7 @@ public class GlobalConfigurationModelToConcreteConversionServiceTest {
     }
 
     @Test
-    public void deletedDescriptorMissingTest() {
+    void deletedDescriptorMissingTest() {
         TestSaveActions saveActions = new TestSaveActions(testDescriptorKey);
         DescriptorMap descriptorMap = new DescriptorMap(List.of(), List.of());
         List<GlobalConfigurationModelToConcreteSaveActions> fieldModelSaveActions = List.of(saveActions);
@@ -101,7 +101,7 @@ public class GlobalConfigurationModelToConcreteConversionServiceTest {
     }
 
     @Test
-    public void createdDescriptorFoundNotGlobalTest() {
+    void createdDescriptorFoundNotGlobalTest() {
         TestSaveActions saveActions = new TestSaveActions(testDescriptorKey);
         DescriptorMap descriptorMap = new DescriptorMap(List.of(testDescriptorKey), List.of());
         List<GlobalConfigurationModelToConcreteSaveActions> fieldModelSaveActions = List.of(saveActions);
@@ -114,7 +114,7 @@ public class GlobalConfigurationModelToConcreteConversionServiceTest {
     }
 
     @Test
-    public void updateDescriptorFoundNotGlobalTest() {
+    void updateDescriptorFoundNotGlobalTest() {
         TestSaveActions saveActions = new TestSaveActions(testDescriptorKey);
         DescriptorMap descriptorMap = new DescriptorMap(List.of(testDescriptorKey), List.of());
         List<GlobalConfigurationModelToConcreteSaveActions> fieldModelSaveActions = List.of(saveActions);
@@ -127,7 +127,7 @@ public class GlobalConfigurationModelToConcreteConversionServiceTest {
     }
 
     @Test
-    public void deletedDescriptorFoundNotGlobalTest() {
+    void deletedDescriptorFoundNotGlobalTest() {
         TestSaveActions saveActions = new TestSaveActions(testDescriptorKey);
         DescriptorMap descriptorMap = new DescriptorMap(List.of(testDescriptorKey), List.of());
         List<GlobalConfigurationModelToConcreteSaveActions> fieldModelSaveActions = List.of(saveActions);
@@ -144,7 +144,7 @@ public class GlobalConfigurationModelToConcreteConversionServiceTest {
         private boolean updateCalled = false;
         private boolean deleteCalled = false;
 
-        private DescriptorKey descriptorKey;
+        private final DescriptorKey descriptorKey;
 
         public TestSaveActions(DescriptorKey descriptorKey) {
             this.descriptorKey = descriptorKey;

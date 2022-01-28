@@ -2,23 +2,24 @@ package com.synopsys.integration.alert.component.settings.environment;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
+import com.synopsys.integration.alert.api.common.model.AlertConstants;
 import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
 import com.synopsys.integration.alert.component.settings.proxy.database.accessor.SettingsProxyConfigAccessor;
+import com.synopsys.integration.alert.environment.EnvironmentProcessingResult;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandler;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandlerFactory;
 import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
+import com.synopsys.integration.alert.test.common.EnvironmentVariableMockingUtil;
 
 class ProxySettingsEnvironmentHandlerFactoryTest {
     @Test
@@ -36,27 +37,26 @@ class ProxySettingsEnvironmentHandlerFactoryTest {
         String proxyPassword = "testPassword";
         String nonProxyHosts = "https://nonProxyHostUrl";
 
-        Mockito.when(environment.containsProperty(Mockito.anyString())).thenReturn(Boolean.TRUE);
-        Mockito.when(environment.getProperty(ProxySettingsEnvironmentHandlerFactory.PROXY_HOST_KEY)).thenReturn(proxyHost);
-        Mockito.when(environment.getProperty(ProxySettingsEnvironmentHandlerFactory.PROXY_PORT_KEY)).thenReturn(proxyPort);
-        Mockito.when(environment.getProperty(ProxySettingsEnvironmentHandlerFactory.PROXY_USERNAME_KEY)).thenReturn(proxyUsername);
-        Mockito.when(environment.getProperty(ProxySettingsEnvironmentHandlerFactory.PROXY_PASSWORD_KEY)).thenReturn(proxyPassword);
-        Mockito.when(environment.getProperty(ProxySettingsEnvironmentHandlerFactory.PROXY_NON_PROXY_HOSTS_KEY)).thenReturn(nonProxyHosts);
+        EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, (ignored) -> Boolean.TRUE, ProxySettingsEnvironmentHandlerFactory.PROXY_HOST_KEY, proxyHost);
+        EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, (ignored) -> Boolean.TRUE, ProxySettingsEnvironmentHandlerFactory.PROXY_PORT_KEY, proxyPort);
+        EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, (ignored) -> Boolean.TRUE, ProxySettingsEnvironmentHandlerFactory.PROXY_USERNAME_KEY, proxyUsername);
+        EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, (ignored) -> Boolean.TRUE, ProxySettingsEnvironmentHandlerFactory.PROXY_PASSWORD_KEY, proxyPassword);
+        EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, (ignored) -> Boolean.TRUE, ProxySettingsEnvironmentHandlerFactory.PROXY_NON_PROXY_HOSTS_KEY, nonProxyHosts);
 
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
         EnvironmentVariableHandlerFactory factory = new ProxySettingsEnvironmentHandlerFactory(configAccessor, environmentVariableUtility);
         EnvironmentVariableHandler handler = factory.build();
-        Properties updatedProperties = handler.updateFromEnvironment();
+        EnvironmentProcessingResult result = handler.updateFromEnvironment();
 
         assertEquals(ProxySettingsEnvironmentHandlerFactory.HANDLER_NAME, handler.getName());
         assertEquals(expectedVariableNames, handler.getVariableNames());
-        assertFalse(updatedProperties.isEmpty());
+        assertTrue(result.hasValues());
 
-        assertEquals(proxyHost, updatedProperties.getProperty(ProxySettingsEnvironmentHandlerFactory.PROXY_HOST_KEY));
-        assertEquals(proxyPort, updatedProperties.getProperty(ProxySettingsEnvironmentHandlerFactory.PROXY_PORT_KEY));
-        assertEquals(proxyUsername, updatedProperties.getProperty(ProxySettingsEnvironmentHandlerFactory.PROXY_USERNAME_KEY));
-        assertNull(updatedProperties.getProperty(ProxySettingsEnvironmentHandlerFactory.PROXY_PASSWORD_KEY));
-        assertEquals(List.of(nonProxyHosts), updatedProperties.get(ProxySettingsEnvironmentHandlerFactory.PROXY_NON_PROXY_HOSTS_KEY));
+        assertEquals(proxyHost, result.getVariableValue(ProxySettingsEnvironmentHandlerFactory.PROXY_HOST_KEY).orElse("Proxy host value is missing"));
+        assertEquals(proxyPort, result.getVariableValue(ProxySettingsEnvironmentHandlerFactory.PROXY_PORT_KEY).orElse("Proxy port value is missing"));
+        assertEquals(proxyUsername, result.getVariableValue(ProxySettingsEnvironmentHandlerFactory.PROXY_USERNAME_KEY).orElse("Proxy username value is missing"));
+        assertEquals(AlertConstants.MASKED_VALUE, result.getVariableValue(ProxySettingsEnvironmentHandlerFactory.PROXY_PASSWORD_KEY).orElse("Proxy password value is missing"));
+        assertEquals(List.of(nonProxyHosts).toString(), result.getVariableValue(ProxySettingsEnvironmentHandlerFactory.PROXY_NON_PROXY_HOSTS_KEY).orElse("Proxy non-proxy hosts value is missing"));
     }
 
     @Test
@@ -67,8 +67,8 @@ class ProxySettingsEnvironmentHandlerFactoryTest {
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
         EnvironmentVariableHandlerFactory factory = new ProxySettingsEnvironmentHandlerFactory(configAccessor, environmentVariableUtility);
         EnvironmentVariableHandler handler = factory.build();
-        Properties updatedProperties = handler.updateFromEnvironment();
+        EnvironmentProcessingResult result = handler.updateFromEnvironment();
         assertEquals(ProxySettingsEnvironmentHandlerFactory.HANDLER_NAME, handler.getName());
-        assertTrue(updatedProperties.isEmpty());
+        assertFalse(result.hasValues());
     }
 }

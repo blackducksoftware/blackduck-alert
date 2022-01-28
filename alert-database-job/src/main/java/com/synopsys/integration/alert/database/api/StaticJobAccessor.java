@@ -47,7 +47,6 @@ import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetails
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.jira.cloud.DefaultJiraCloudJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.jira.cloud.JiraCloudJobDetailsEntity;
-import com.synopsys.integration.alert.database.job.jira.server.DefaultJiraServerJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.msteams.DefaultMSTeamsJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.slack.DefaultSlackJobDetailsAccessor;
@@ -78,7 +77,6 @@ public class StaticJobAccessor implements JobAccessor {
         BlackDuckJobDetailsAccessor blackDuckJobDetailsAccessor,
         DefaultAzureBoardsJobDetailsAccessor azureBoardsJobDetailsAccessor,
         DefaultJiraCloudJobDetailsAccessor jiraCloudJobDetailsAccessor,
-        DefaultJiraServerJobDetailsAccessor jiraServerJobDetailsAccessor,
         DefaultMSTeamsJobDetailsAccessor msTeamsJobDetailsAccessor,
         DefaultSlackJobDetailsAccessor slackJobDetailsAccessor,
         ProviderKey blackDuckProviderKey,
