@@ -74,9 +74,8 @@ public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<Jir
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public JiraServerGlobalConfigModel createConfiguration(JiraServerGlobalConfigModel configuration) throws AlertConfigurationException {
-        Optional<JiraServerConfigurationEntity> configurationEntity = jiraServerConfigurationRepository.findByName(configuration.getName());
-        if (configurationEntity.isPresent()) {
-            throw new AlertConfigurationException(String.format("A config with the name '%s' already exists.", configurationEntity.get().getName()));
+        if (jiraServerConfigurationRepository.existsByName(configuration.getName())) {
+            throw new AlertConfigurationException(String.format("A config with the name '%s' already exists.", configuration.getName()));
         }
         UUID configurationId = UUID.randomUUID();
         configuration.setId(configurationId.toString());
