@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -65,8 +66,9 @@ import com.synopsys.integration.blackduck.api.manual.view.ProjectNotificationVie
 @WebAppConfiguration
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("alertdb")
+@SpringBootTest
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
-public class JmsNotificationReceiverTestIT {
+class JmsNotificationReceiverTestIT {
     protected TestProperties properties;
     private List<AlertNotificationModel> savedModels;
     private DistributionJobModel distributionJobModel;
@@ -128,7 +130,7 @@ public class JmsNotificationReceiverTestIT {
 
     @Test
     @Disabled
-    public void testJms() throws InterruptedException {
+    void testJms() throws InterruptedException {
         // Set breakpoints throughout this test, there is nothing to assert against here. Suggestions for breakpoints:
         //      Registering listeners: EventListenerConfigurer
         //      Sending events: EventManager
