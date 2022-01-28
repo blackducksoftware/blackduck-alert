@@ -83,7 +83,11 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public EmailGlobalConfigModel createConfiguration(EmailGlobalConfigModel configuration) {
+    public EmailGlobalConfigModel createConfiguration(EmailGlobalConfigModel configuration) throws AlertConfigurationException {
+        Optional<EmailConfigurationEntity> configurationEntity = emailConfigurationRepository.findByName(configuration.getName());
+        if (configurationEntity.isPresent()) {
+            throw new AlertConfigurationException(String.format("A config with the name '%s' already exists.", configurationEntity.get().getName()));
+        }
         UUID configurationId = UUID.randomUUID();
         configuration.setId(configurationId.toString());
         return populateConfiguration(configurationId, configuration, DateUtils.createCurrentDateTimestamp());
