@@ -123,7 +123,7 @@ class JiraServerGlobalConfigAccessorTest {
     }
 
     @Test
-    void createConfigurationTest() {
+    void createConfigurationTest() throws AlertConfigurationException {
         UUID id = UUID.randomUUID();
         JiraServerConfigurationEntity entity = createEntity(id, OffsetDateTime.now(), OffsetDateTime.now());
         JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(null,
@@ -148,7 +148,7 @@ class JiraServerGlobalConfigAccessorTest {
     }
 
     @Test
-    void createConfigurationModelNullTest() {
+    void createConfigurationModelNullTest() throws AlertConfigurationException {
         UUID id = UUID.randomUUID();
         JiraServerConfigurationEntity entity = createEntity(id, OffsetDateTime.now(), OffsetDateTime.now());
         JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(null,

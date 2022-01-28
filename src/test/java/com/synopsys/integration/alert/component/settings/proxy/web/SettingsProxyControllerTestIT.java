@@ -96,7 +96,7 @@ public class SettingsProxyControllerTestIT {
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf())
                                                     .content(gson.toJson(newSettingsProxyModel))
                                                     .contentType(contentType);
-        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isInternalServerError());
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
     @Test

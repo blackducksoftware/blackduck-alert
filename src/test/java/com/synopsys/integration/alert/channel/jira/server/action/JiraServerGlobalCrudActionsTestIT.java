@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
 import com.synopsys.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
-import com.synopsys.integration.alert.channel.jira.server.database.configuration.JiraServerConfigurationRepository;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
 import com.synopsys.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.action.ActionResponse;
@@ -37,8 +36,6 @@ public class JiraServerGlobalCrudActionsTestIT {
     private JiraServerGlobalConfigAccessor configAccessor;
     @Autowired
     private JiraServerGlobalConfigurationValidator validator;
-    @Autowired
-    private JiraServerConfigurationRepository jiraServerConfigurationRepository;
 
     @BeforeEach
     public void init() {
@@ -49,11 +46,8 @@ public class JiraServerGlobalCrudActionsTestIT {
         authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
     }
 
-    //@Transactional
     @AfterEach
     public void cleanup() {
-        //jiraServerConfigurationRepository.deleteAllInBatch();
-        //jiraServerConfigurationRepository.flush();
         AlertPagedModel<JiraServerGlobalConfigModel> pagedModel = configAccessor.getConfigurationPage(0, 20);
         for (JiraServerGlobalConfigModel model : pagedModel.getModels()) {
             configAccessor.deleteConfiguration(UUID.fromString(model.getId()));
@@ -108,7 +102,7 @@ public class JiraServerGlobalCrudActionsTestIT {
         int pageSize = 5;
         JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator);
 
-        ActionResponse<AlertPagedModel<JiraServerGlobalConfigModel>> pagedActionResponse = crudActions.getPaged(0, pageSize);
+        ActionResponse<AlertPagedModel<JiraServerGlobalConfigModel>> pagedActionResponse = crudActions.getPaged(1, pageSize);
         assertTrue(pagedActionResponse.isError());
         assertFalse(pagedActionResponse.hasContent());
         assertEquals(HttpStatus.NOT_FOUND, pagedActionResponse.getHttpStatus());
@@ -149,7 +143,7 @@ public class JiraServerGlobalCrudActionsTestIT {
 
         assertTrue(actionResponseDuplicate.isError());
         assertFalse(actionResponseDuplicate.hasContent());
-        assertEquals(HttpStatus.BAD_REQUEST, actionResponse.getHttpStatus());
+        assertEquals(HttpStatus.BAD_REQUEST, actionResponseDuplicate.getHttpStatus());
     }
 
     @Test

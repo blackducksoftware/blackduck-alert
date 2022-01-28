@@ -1,11 +1,8 @@
 package com.synopsys.integration.alert.channel.jira.server.web;
 
 import java.nio.charset.StandardCharsets;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.UUID;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -15,7 +12,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -25,10 +21,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 
@@ -189,8 +185,7 @@ public class JiraServerGlobalConfigControllerTestIT {
         return jiraServerGlobalConfigModel;
     }
 
-    private JiraServerGlobalConfigModel saveConfigModel(JiraServerGlobalConfigModel jiraServerGlobalConfigModel) {
-        JiraServerGlobalConfigModel configuration = jiraServerGlobalConfigAccessor.createConfiguration(jiraServerGlobalConfigModel);
-        return configuration;
+    private JiraServerGlobalConfigModel saveConfigModel(JiraServerGlobalConfigModel jiraServerGlobalConfigModel) throws AlertConfigurationException {
+        return jiraServerGlobalConfigAccessor.createConfiguration(jiraServerGlobalConfigModel);
     }
 }

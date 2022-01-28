@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.Callable;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -73,7 +72,7 @@ public class ConfigurationCrudHelperTest {
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
         ConfigurationCrudHelper configurationHelper = new ConfigurationCrudHelper(authorizationManager, ConfigContextEnum.GLOBAL, descriptorKey);
 
-        ActionResponse response = configurationHelper.create(() -> ValidationResponseModel.success(), () -> createDefault());
+        ActionResponse response = configurationHelper.create(() -> ValidationResponseModel.success(), () -> Boolean.FALSE, () -> createDefault());
         assertEquals(HttpStatus.FORBIDDEN, response.getHttpStatus());
     }
 
@@ -86,7 +85,7 @@ public class ConfigurationCrudHelperTest {
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
         ConfigurationCrudHelper configurationHelper = new ConfigurationCrudHelper(authorizationManager, ConfigContextEnum.GLOBAL, descriptorKey);
 
-        ActionResponse response = configurationHelper.create(() -> ValidationResponseModel.generalError("Validation Error"), () -> createDefault());
+        ActionResponse response = configurationHelper.create(() -> ValidationResponseModel.generalError("Validation Error"), () -> Boolean.FALSE, () -> createDefault());
         assertEquals(HttpStatus.BAD_REQUEST, response.getHttpStatus());
     }
 
@@ -102,7 +101,7 @@ public class ConfigurationCrudHelperTest {
         };
         ConfigurationCrudHelper configurationHelper = new ConfigurationCrudHelper(authorizationManager, ConfigContextEnum.GLOBAL, descriptorKey);
 
-        ActionResponse response = configurationHelper.create(() -> ValidationResponseModel.success(), modelCreator);
+        ActionResponse response = configurationHelper.create(() -> ValidationResponseModel.success(), () -> Boolean.FALSE, modelCreator);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getHttpStatus());
     }
 
@@ -115,7 +114,7 @@ public class ConfigurationCrudHelperTest {
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
         ConfigurationCrudHelper configurationHelper = new ConfigurationCrudHelper(authorizationManager, ConfigContextEnum.GLOBAL, descriptorKey);
 
-        ActionResponse response = configurationHelper.create(() -> ValidationResponseModel.success(), () -> createDefault());
+        ActionResponse response = configurationHelper.create(() -> ValidationResponseModel.success(), () -> Boolean.FALSE, () -> createDefault());
         assertEquals(HttpStatus.OK, response.getHttpStatus());
     }
 
@@ -240,7 +239,7 @@ public class ConfigurationCrudHelperTest {
     class TestObfuscatedVariable implements Obfuscated<TestObfuscatedVariable> {
         private String variable;
 
-        TestObfuscatedVariable(final String variable) {
+        TestObfuscatedVariable(String variable) {
             this.variable = variable;
         }
 
@@ -248,7 +247,7 @@ public class ConfigurationCrudHelperTest {
             return variable;
         }
 
-        public void setVariable(final String variable) {
+        public void setVariable(String variable) {
             this.variable = variable;
         }
 

@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 
 import com.synopsys.integration.alert.api.common.model.AlertConstants;
+import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.jira.server.environment.JiraServerEnvironmentVariableHandlerFactory;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
@@ -65,7 +66,7 @@ class JiraServerEnvironmentHandlerFactoryTestIT {
     }
 
     @Test
-    void testExistingConfig() {
+    void testExistingConfig() throws AlertConfigurationException {
         String createdAt = DateUtils.formatDate(DateUtils.createCurrentDateTimestamp(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
         JiraServerGlobalConfigModel emailGlobalConfigModel = new JiraServerGlobalConfigModel(null, AlertRestConstants.DEFAULT_CONFIGURATION_NAME, createdAt, createdAt, TEST_URL, TEST_USER, TEST_PASSWORD, false, true);
 
