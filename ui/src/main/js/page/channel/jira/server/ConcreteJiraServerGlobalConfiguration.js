@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import * as PropTypes from 'prop-types';
 import CommonGlobalConfiguration from 'common/configuration/global/CommonGlobalConfiguration';
-import { JIRA_SERVER_GLOBAL_FIELD_KEYS, JIRA_SERVER_INFO } from 'page/channel/jira/server/JiraServerModel';
+import { JIRA_SERVER_GLOBAL_FIELD_KEYS, JIRA_SERVER_INFO, JIRA_SERVER_URLS } from 'page/channel/jira/server/JiraServerModel';
 import TextInput from 'common/component/input/TextInput';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
@@ -10,10 +10,15 @@ import CheckboxInput from 'common/component/input/CheckboxInput';
 import ConcreteConfigurationForm from 'common/configuration/global/concrete/ConcreteConfigurationForm';
 import * as ConfigurationRequestBuilder from 'common/util/configurationRequestBuilder';
 import ButtonField from 'common/component/input/field/ButtonField';
+import { useHistory, useLocation, useParams } from 'react-router-dom';
 
 const ConcreteJiraServerGlobalConfiguration = ({
-    csrfToken, errorHandler, readonly, displayTest, displaySave, displayDelete
+    csrfToken, errorHandler, readonly, displayTest, displaySave
 }) => {
+    const { id } = useParams();
+    const history = useHistory();
+    const location = useLocation();
+
     const [jiraServerConfig, setJiraServerConfig] = useState({});
     const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
     const [buttonErrorMessage, setButtonErrorMessage] = useState('');
@@ -24,12 +29,14 @@ const ConcreteJiraServerGlobalConfiguration = ({
     const jiraServerDisablePluginUrl = `${jiraServerRequestUrl}/install-plugin`;
 
     const fetchData = async () => {
-        const response = await ConfigurationRequestBuilder.createReadRequest(jiraServerRequestUrl, csrfToken);
+        const response = await ConfigurationRequestBuilder.createReadRequest(jiraServerRequestUrl, csrfToken, id);
         const data = await response.json();
-
-        const { models } = data;
-        const firstResult = (models && models.length > 0) ? models[0] : { name: 'default-configuration' };
-        setJiraServerConfig(firstResult);
+        if (data) {
+            if (location.pathname.includes('/copy')) {
+                delete data.id;
+            }
+            setJiraServerConfig(data);
+        }
     };
 
     const installPlugin = async () => {
@@ -52,21 +59,34 @@ const ConcreteJiraServerGlobalConfiguration = ({
         >
             <ConcreteConfigurationForm
                 csrfToken={csrfToken}
-                formDataId={jiraServerConfig.id}
+                formDataId={id}
                 setErrors={(formErrors) => setErrors(formErrors)}
                 buttonIdPrefix={JIRA_SERVER_INFO.key}
                 getRequest={fetchData}
                 deleteRequest={() => ConfigurationRequestBuilder.createDeleteRequest(jiraServerRequestUrl, csrfToken, jiraServerConfig.id)}
-                updateRequest={() => ConfigurationRequestBuilder.createUpdateRequest(jiraServerRequestUrl, csrfToken, jiraServerConfig.id, jiraServerConfig)}
+                updateRequest={() => ConfigurationRequestBuilder.createUpdateRequest(jiraServerRequestUrl, csrfToken, id, jiraServerConfig)}
                 createRequest={() => ConfigurationRequestBuilder.createNewConfigurationRequest(jiraServerRequestUrl, csrfToken, jiraServerConfig)}
                 validateRequest={() => ConfigurationRequestBuilder.createValidateRequest(jiraServerRequestUrl, csrfToken, jiraServerConfig)}
                 testRequest={() => ConfigurationRequestBuilder.createTestRequest(jiraServerRequestUrl, csrfToken, jiraServerConfig)}
+                afterSuccessfulSave={() => history.push(JIRA_SERVER_URLS.jiraServerUrl)}
                 readonly={readonly}
                 displayTest={displayTest}
                 displaySave={displaySave}
-                displayDelete={displayDelete}
+                displayDelete={false}
                 errorHandler={errorHandler}
             >
+                <TextInput
+                    id={JIRA_SERVER_GLOBAL_FIELD_KEYS.name}
+                    name="name"
+                    label="Name"
+                    description="The unique name for the Jira Server server."
+                    required
+                    readOnly={readonly}
+                    onChange={FieldModelUtilities.handleTestChange(jiraServerConfig, setJiraServerConfig)}
+                    value={jiraServerConfig.name || undefined}
+                    errorName="name"
+                    errorValue={errors.fieldErrors.name}
+                />
                 <TextInput
                     id={JIRA_SERVER_GLOBAL_FIELD_KEYS.url}
                     name="url"
@@ -139,15 +159,13 @@ ConcreteJiraServerGlobalConfiguration.propTypes = {
     // Pass this in for now while we have all descriptors in global state, otherwise retrieve this in this component
     readonly: PropTypes.bool,
     displayTest: PropTypes.bool,
-    displaySave: PropTypes.bool,
-    displayDelete: PropTypes.bool
+    displaySave: PropTypes.bool
 };
 
 ConcreteJiraServerGlobalConfiguration.defaultProps = {
     readonly: false,
     displayTest: true,
-    displaySave: true,
-    displayDelete: true
+    displaySave: true
 };
 
 export default ConcreteJiraServerGlobalConfiguration;
