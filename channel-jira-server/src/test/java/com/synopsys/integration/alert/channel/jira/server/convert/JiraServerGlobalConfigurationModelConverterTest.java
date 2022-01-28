@@ -66,7 +66,7 @@ class JiraServerGlobalConfigurationModelConverterTest {
     }
 
     @Test
-    void invalidEmailPropertyKeysTest() {
+    void invalidPropertyKeysTest() {
         String invalidFieldKey = "invalid.jira.field";
         ConfigurationFieldModel invalidField = ConfigurationFieldModel.create(invalidFieldKey);
         Map<String, ConfigurationFieldModel> fieldValues = Map.of(invalidFieldKey, invalidField);
