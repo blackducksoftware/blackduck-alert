@@ -52,7 +52,7 @@ public class EmailGlobalConfigurationActionTest {
     }
 
     @Test
-    public void testCreate() {
+    public void testCreate() throws AlertConfigurationException {
         AuthenticationTestUtils authenticationTestUtils = new AuthenticationTestUtils();
         DescriptorKey descriptorKey = ChannelKeys.EMAIL;
         PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
