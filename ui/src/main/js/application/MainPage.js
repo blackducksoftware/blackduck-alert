@@ -43,10 +43,10 @@ import { unauthorized } from 'store/actions/session';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 import DescriptorRoute from 'common/component/descriptor/DescriptorRoute';
 import EmailGlobalConfiguration from 'page/channel/email/EmailGlobalConfiguration';
-import BetaPage from "../common/component/beta/BetaPage";
-import BetaComponent from "../common/component/beta/BetaComponent";
-import ConcreteJiraServerGlobalConfiguration from "../page/channel/jira/server/ConcreteJiraServerGlobalConfiguration";
-import CurrentComponent from "../common/component/beta/CurrentComponent";
+import BetaPage from 'common/component/beta/BetaPage';
+import BetaComponent from 'common/component/beta/BetaComponent';
+import ConcreteJiraServerGlobalConfiguration from 'page/channel/jira/server/ConcreteJiraServerGlobalConfiguration';
+import CurrentComponent from 'common/component/beta/CurrentComponent';
 
 const MainPage = ({
     descriptors, fetching, getDescriptorsRedux, csrfToken, autoRefresh, unauthorizedFunction
