@@ -34,7 +34,7 @@ import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
 
 class JiraServerGlobalConfigurationModelSaveActionsTest {
-    public static final String TEST_URL = "test.jira.example.com";
+    public static final String TEST_URL = "https://test.jira.example.com";
     public static final String TEST_USERNAME = "testuser";
     public static final String TEST_PASSWORD = "testpassword";
     public static final String TEST_DISABLE_PLUGIN_CHECK = "true";
@@ -154,7 +154,10 @@ class JiraServerGlobalConfigurationModelSaveActionsTest {
 
         // make sure the values are not the updated values
         JiraServerConfigurationEntity actualEntity = savedEntity.get();
-        assertNull(actualEntity);
+        assertEquals(TEST_URL, actualEntity.getUrl());
+        assertEquals(TEST_USERNAME, actualEntity.getUsername());
+        assertEquals(TEST_PASSWORD, encryptionUtility.decrypt(actualEntity.getPassword()));
+        assertTrue(actualEntity.getDisablePluginCheck());
     }
 
     @Test
