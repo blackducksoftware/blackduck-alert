@@ -10,10 +10,13 @@ package com.synopsys.integration.alert.channel.jira.server.environment;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.AlertConstants;
+import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
@@ -26,6 +29,8 @@ import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
 
 @Component
 public class JiraServerEnvironmentVariableHandlerFactory implements EnvironmentVariableHandlerFactory {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     public static final String DISABLE_PLUGIN_KEY = "ALERT_CHANNEL_JIRA_SERVER_JIRA_SERVER_DISABLE_PLUGIN_CHECK";
     public static final String PASSWORD_KEY = "ALERT_CHANNEL_JIRA_SERVER_JIRA_SERVER_PASSWORD";
     public static final String URL_KEY = "ALERT_CHANNEL_JIRA_SERVER_JIRA_SERVER_URL";
@@ -91,7 +96,11 @@ public class JiraServerEnvironmentVariableHandlerFactory implements EnvironmentV
 
         EnvironmentProcessingResult result = builder.build();
         if (result.hasValues() && configAccessor.getConfigurationByName(name).isEmpty()) {
-            configAccessor.createConfiguration(configModel);
+            try {
+                configAccessor.createConfiguration(configModel);
+            } catch (AlertConfigurationException ex) {
+                logger.error("Failed to create config: ", ex);
+            }
         }
 
         return result;
