@@ -12,13 +12,13 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.Obfuscated;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
@@ -27,7 +27,7 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.function.ThrowingSupplier;
 
 public class ConfigurationCrudHelper {
-    private final Logger logger = LoggerFactory.getLogger(ConfigurationCrudHelper.class);
+    private final Logger logger = AlertLoggerFactory.getLogger(getClass());
     private final AuthorizationManager authorizationManager;
     private final ConfigContextEnum context;
     private final DescriptorKey descriptorKey;
