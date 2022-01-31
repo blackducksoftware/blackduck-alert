@@ -61,7 +61,6 @@ public class SettingsProxyConfigAccessor implements UniqueConfigurationAccessor<
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public SettingsProxyModel createConfiguration(SettingsProxyModel configuration) throws AlertConfigurationException {
-        boolean foo = doesConfigurationExist(); //TODO
         if (doesConfigurationExist()) {
             throw new AlertConfigurationException("A proxy config already exists.");
         }
