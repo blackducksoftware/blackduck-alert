@@ -134,6 +134,7 @@ class ProxyConfigurationModelSaveActionsTest {
         });
 
         Mockito.when(settingsProxyConfigurationRepository.findByName(Mockito.anyString())).thenAnswer(invocation -> Optional.ofNullable(savedEntity.get()));
+        Mockito.when(settingsProxyConfigurationRepository.existsByName(Mockito.anyString())).thenAnswer(invocation -> savedEntity.get() != null);
 
         Mockito.when(nonProxyHostsConfigurationRepository.saveAll(Mockito.any(List.class))).thenAnswer(invocation -> {
             Iterable<NonProxyHostConfigurationEntity> iterable = invocation.getArgument(0);
@@ -226,6 +227,8 @@ class ProxyConfigurationModelSaveActionsTest {
             savedNonProxyHostEntity.set(null);
             return null;
         }).when(settingsProxyConfigurationRepository).deleteByName(Mockito.anyString());
+
+        Mockito.when(settingsProxyConfigurationRepository.existsByName(Mockito.anyString())).thenAnswer(invocation -> savedEntity.get() != null);
 
         Mockito.when(nonProxyHostsConfigurationRepository.saveAll(Mockito.any(List.class))).thenAnswer(invocation -> {
             Iterable<NonProxyHostConfigurationEntity> iterable = invocation.getArgument(0);

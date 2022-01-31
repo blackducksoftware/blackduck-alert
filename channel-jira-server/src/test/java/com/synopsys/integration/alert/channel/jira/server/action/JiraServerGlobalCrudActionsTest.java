@@ -102,7 +102,7 @@ public class JiraServerGlobalCrudActionsTest {
     void createDuplicateTest() throws AlertConfigurationException {
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel = createJiraServerGlobalConfigModel(id);
         JiraServerGlobalConfigAccessor configAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
-        Mockito.when(configAccessor.getConfigurationByName(Mockito.any())).thenReturn(Optional.of(jiraServerGlobalConfigModel));
+        Mockito.when(configAccessor.existsConfigurationByName(Mockito.any())).thenReturn(true);
         Mockito.when(configAccessor.createConfiguration(Mockito.any())).thenReturn(jiraServerGlobalConfigModel);
 
         JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator);

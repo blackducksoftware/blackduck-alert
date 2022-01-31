@@ -21,6 +21,8 @@ public interface ConfigurationAccessor<T extends AlertSerializableModel> {
 
     Optional<T> getConfigurationByName(String configurationName);
 
+    boolean existsConfigurationByName(String configurationName);
+
     AlertPagedModel<T> getConfigurationPage(int page, int size);
 
     T createConfiguration(T configuration) throws AlertConfigurationException;

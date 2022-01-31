@@ -40,7 +40,7 @@ public class SettingsProxyCrudActions {
     public ActionResponse<SettingsProxyModel> create(SettingsProxyModel resource) {
         return configurationHelper.create(
             () -> validator.validate(resource),
-            () -> configurationAccessor.getConfiguration().isPresent(),
+            configurationAccessor::doesConfigurationExist,
             () -> configurationAccessor.createConfiguration(resource)
         );
     }
@@ -48,14 +48,14 @@ public class SettingsProxyCrudActions {
     public ActionResponse<SettingsProxyModel> update(SettingsProxyModel requestResource) {
         return configurationHelper.update(
             () -> validator.validate(requestResource),
-            () -> configurationAccessor.getConfiguration().isPresent(),
+            configurationAccessor::doesConfigurationExist,
             () -> configurationAccessor.updateConfiguration(requestResource)
         );
     }
 
     public ActionResponse<SettingsProxyModel> delete() {
         return configurationHelper.delete(
-            () -> configurationAccessor.getConfiguration().isPresent(),
+            configurationAccessor::doesConfigurationExist,
             configurationAccessor::deleteConfiguration
         );
     }

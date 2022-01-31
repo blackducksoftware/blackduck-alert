@@ -62,12 +62,18 @@ public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<Jir
 
     @Override
     @Transactional(readOnly = true)
+    public boolean existsConfigurationByName(String configurationName) {
+        return jiraServerConfigurationRepository.existsByName(configurationName);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public AlertPagedModel<JiraServerGlobalConfigModel> getConfigurationPage(int page, int size) {
         Page<JiraServerConfigurationEntity> resultPage = jiraServerConfigurationRepository.findAll(PageRequest.of(page, size));
         List<JiraServerGlobalConfigModel> pageContent = resultPage.getContent()
-            .stream()
-            .map(this::createConfigModel)
-            .collect(Collectors.toList());
+                                                            .stream()
+                                                            .map(this::createConfigModel)
+                                                            .collect(Collectors.toList());
         return new AlertPagedModel<>(resultPage.getTotalPages(), resultPage.getNumber(), resultPage.getSize(), pageContent);
     }
 
