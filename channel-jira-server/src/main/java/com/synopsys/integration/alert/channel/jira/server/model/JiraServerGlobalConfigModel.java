@@ -66,7 +66,7 @@ public class JiraServerGlobalConfigModel extends ConfigWithMetadata implements O
         return userName;
     }
 
-    public Optional<Boolean> getPasswordSet() {
+    public Optional<Boolean> getIsPasswordSet() {
         return Optional.ofNullable(isPasswordSet);
     }
 

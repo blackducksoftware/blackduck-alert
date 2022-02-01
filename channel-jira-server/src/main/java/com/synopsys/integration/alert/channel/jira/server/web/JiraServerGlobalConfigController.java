@@ -32,19 +32,19 @@ public class JiraServerGlobalConfigController implements StaticConfigResourceCon
     private final JiraServerGlobalValidationAction jiraServerGlobalValidationAction;
     private final IJiraServerGlobalTestAction jiraServerGlobalTestAction;
     private final JiraServerGlobalCrudActions configActions;
-    private final JiraServerDisablePluginAction jiraServerDisablePluginAction;
+    private final JiraServerInstallPluginAction jiraServerInstallPluginAction;
 
     @Autowired
     public JiraServerGlobalConfigController(
         JiraServerGlobalValidationAction jiraServerGlobalValidationAction,
         IJiraServerGlobalTestAction jiraServerGlobalTestAction,
         JiraServerGlobalCrudActions configActions,
-        JiraServerDisablePluginAction jiraServerDisablePluginAction
+        JiraServerInstallPluginAction jiraServerInstallPluginAction
     ) {
         this.jiraServerGlobalValidationAction = jiraServerGlobalValidationAction;
         this.jiraServerGlobalTestAction = jiraServerGlobalTestAction;
         this.configActions = configActions;
-        this.jiraServerDisablePluginAction = jiraServerDisablePluginAction;
+        this.jiraServerInstallPluginAction = jiraServerInstallPluginAction;
     }
 
     @Override
@@ -82,9 +82,9 @@ public class JiraServerGlobalConfigController implements StaticConfigResourceCon
         return ResponseFactory.createContentResponseFromAction(jiraServerGlobalTestAction.testWithPermissionCheck(resource));
     }
 
-    @PostMapping("/disable-plugin")
-    public ValidationResponseModel disablePlugin(@RequestBody JiraServerGlobalConfigModel resource) {
-        return ResponseFactory.createContentResponseFromAction(jiraServerDisablePluginAction.disablePlugin(resource));
+    @PostMapping("/install-plugin")
+    public ValidationResponseModel installPlugin(@RequestBody JiraServerGlobalConfigModel resource) {
+        return ResponseFactory.createContentResponseFromAction(jiraServerInstallPluginAction.installPlugin(resource));
     }
 
 }

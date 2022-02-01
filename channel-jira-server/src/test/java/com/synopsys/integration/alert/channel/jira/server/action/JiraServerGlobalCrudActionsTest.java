@@ -158,8 +158,8 @@ public class JiraServerGlobalCrudActionsTest {
         assertEquals(USER_NAME, jiraServerGlobalConfigModel.getUserName());
 
         assertTrue(jiraServerGlobalConfigModel.getPassword().isEmpty());
-        assertTrue(jiraServerGlobalConfigModel.getPasswordSet().isPresent());
-        assertEquals(Boolean.TRUE, jiraServerGlobalConfigModel.getPasswordSet().get());
+        assertTrue(jiraServerGlobalConfigModel.getIsPasswordSet().isPresent());
+        assertEquals(Boolean.TRUE, jiraServerGlobalConfigModel.getIsPasswordSet().get());
         assertTrue(jiraServerGlobalConfigModel.getDisablePluginCheck().isPresent());
         assertEquals(Boolean.TRUE, jiraServerGlobalConfigModel.getDisablePluginCheck().get());
     }

@@ -32,15 +32,15 @@ import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 @Component
-public class JiraServerDisablePluginAction {
-    private final Logger logger = LoggerFactory.getLogger(JiraServerDisablePluginAction.class);
+public class JiraServerInstallPluginAction {
+    private final Logger logger = LoggerFactory.getLogger(JiraServerInstallPluginAction.class);
 
     private final AuthorizationManager authorizationManager;
     private final JiraServerPropertiesFactory jiraServerPropertiesFactory;
     private final JiraServerGlobalValidationAction jiraServerGlobalValidationAction;
     private final Gson gson;
 
-    public JiraServerDisablePluginAction(
+    public JiraServerInstallPluginAction(
         AuthorizationManager authorizationManager, JiraServerPropertiesFactory jiraServerPropertiesFactory, JiraServerGlobalValidationAction jiraServerGlobalValidationAction,
         Gson gson
     ) {
@@ -50,7 +50,7 @@ public class JiraServerDisablePluginAction {
         this.gson = gson;
     }
 
-    public ActionResponse<ValidationResponseModel> disablePlugin(JiraServerGlobalConfigModel jiraServerGlobalConfigModel) {
+    public ActionResponse<ValidationResponseModel> installPlugin(JiraServerGlobalConfigModel jiraServerGlobalConfigModel) {
         if (!authorizationManager.hasExecutePermission(ConfigContextEnum.GLOBAL, ChannelKeys.JIRA_SERVER)) {
             return new ActionResponse<>(HttpStatus.FORBIDDEN, ResponseFactory.UNAUTHORIZED_REQUEST_MESSAGE);
         }

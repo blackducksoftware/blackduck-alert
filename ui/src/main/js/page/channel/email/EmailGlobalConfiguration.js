@@ -8,7 +8,7 @@ import TextInput from 'common/component/input/TextInput';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
 import CheckboxInput from 'common/component/input/CheckboxInput';
 import PasswordInput from 'common/component/input/PasswordInput';
-import ConcreteConfigurationForm from 'common/configuration/global/ConcreteConfigurationForm';
+import ConcreteConfigurationForm from 'common/configuration/global/concrete/ConcreteConfigurationForm';
 import * as ConfigurationRequestBuilder from 'common/util/configurationRequestBuilder';
 import * as fieldModelUtilities from 'common/util/fieldModelUtilities';
 import FluidFieldMappingField from 'common/component/input/mapping/FluidFieldMappingField';
