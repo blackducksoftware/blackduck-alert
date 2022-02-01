@@ -1,7 +1,7 @@
 import * as PropTypes from 'prop-types';
 import React, { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { DISTRIBUTION_URLS } from 'page/distribution/DistributionModel';
+import { DISTRIBUTION_AUDIT_STATUSES, DISTRIBUTION_URLS } from 'page/distribution/DistributionModel';
 import {
     BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn
 } from 'react-bootstrap-table';
@@ -46,7 +46,7 @@ const DistributionConfigurationTable = ({
         } = jobWithAuditData;
 
         const modifiedAuditSent = auditTimeLastSent ?? 'Unknown';
-        const modifiedAuditStatus = auditStatus ?? 'Unknown';
+        const modifiedAuditStatus = auditStatus ? DISTRIBUTION_AUDIT_STATUSES[auditStatus] : 'Unknown';
 
         return {
             id: jobId,
@@ -448,7 +448,7 @@ const DistributionConfigurationTable = ({
                         {column('name', 'Distribution Job', nameColumnFormatter)}
                         {column('distributionType', 'Channel', descriptorColumnFormatter)}
                         {unsortableColumn('providerName', 'Provider', descriptorColumnFormatter)}
-                        {column('frequency', 'Frequency Type', frequencyColumnFormatter)}
+                        {column('frequency', 'Frequency', frequencyColumnFormatter)}
                         {column('lastRan', 'Last Run')}
                         {column('status', 'Status', assignedDataFormat, statusColumnClassName)}
                     </BootstrapTable>
@@ -478,7 +478,7 @@ const DistributionConfigurationTable = ({
                 {column('name', 'Name', nameColumnFormatter)}
                 {column('distributionType', 'Channel', descriptorColumnFormatter)}
                 {unsortableColumn('providerName', 'Provider', descriptorColumnFormatter)}
-                {column('frequency', 'Frequency Type', frequencyColumnFormatter)}
+                {column('frequency', 'Frequency', frequencyColumnFormatter)}
                 {column('lastRan', 'Last Run')}
                 {column('status', 'Status', assignedDataFormat, statusColumnClassName)}
                 <TableHeaderColumn

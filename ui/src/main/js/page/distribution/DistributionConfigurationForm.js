@@ -319,7 +319,7 @@ const DistributionConfigurationForm = ({
                 <SelectInput
                     id={DISTRIBUTION_COMMON_FIELD_KEYS.channelName}
                     name={DISTRIBUTION_COMMON_FIELD_KEYS.channelName}
-                    label="Channel Type"
+                    label="Channel"
                     description="Select the channel. Notifications generated through Alert will be sent through this channel."
                     options={DISTRIBUTION_CHANNEL_OPTIONS}
                     clearable={false}
@@ -358,7 +358,7 @@ const DistributionConfigurationForm = ({
                 <SelectInput
                     id={DISTRIBUTION_COMMON_FIELD_KEYS.providerName}
                     name={DISTRIBUTION_COMMON_FIELD_KEYS.providerName}
-                    label="Provider Type"
+                    label="Provider"
                     description="Select the provider. Only notifications for that provider will be processed in this distribution job."
                     options={[{ label: BLACKDUCK_INFO.label, value: BLACKDUCK_INFO.key }]}
                     clearable={false}
