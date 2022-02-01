@@ -45,10 +45,14 @@ public class JiraServerGlobalConfigurationModelSaveActions implements GlobalConf
             .map(JiraServerGlobalConfigModel::getId)
             .map(UUID::fromString);
         Optional<JiraServerGlobalConfigModel> jiraGlobalConfigModel = jiraFieldModelConverter.convert(configurationModel);
-        if (defaultConfigurationId.isPresent() && jiraGlobalConfigModel.isPresent()) {
+        if (jiraGlobalConfigModel.isPresent()) {
             JiraServerGlobalConfigModel model = jiraGlobalConfigModel.get();
             model.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
-            configurationActions.update(defaultConfigurationId.get(), model);
+            if (defaultConfigurationId.isPresent()) {
+                configurationActions.update(defaultConfigurationId.get(), model);
+            } else {
+                configurationActions.create(model);
+            }
         }
     }
 
