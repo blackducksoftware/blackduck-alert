@@ -186,9 +186,9 @@ ConcreteConfigurationForm.propTypes = {
     setErrors: PropTypes.func.isRequired,
     clearTestForm: PropTypes.func,
     getRequest: PropTypes.func.isRequired,
-    deleteRequest: PropTypes.func,
-    updateRequest: PropTypes.func,
-    createRequest: PropTypes.func,
+    deleteRequest: PropTypes.func.isRequired,
+    updateRequest: PropTypes.func.isRequired,
+    createRequest: PropTypes.func.isRequired,
     validateRequest: PropTypes.func.isRequired,
     testRequest: PropTypes.func,
     displaySave: PropTypes.bool,
@@ -204,14 +204,11 @@ ConcreteConfigurationForm.propTypes = {
 };
 
 ConcreteConfigurationForm.defaultProps = {
-    deleteRequest: () => null,
-    updateRequest: () => null,
-    createRequest: () => null,
     testRequest: () => null,
     displaySave: true,
     displayTest: true,
     displayDelete: true,
-    displayCancel: true,
+    displayCancel: false,
     formDataId: null,
     testFields: null,
     clearTestForm: () => null,

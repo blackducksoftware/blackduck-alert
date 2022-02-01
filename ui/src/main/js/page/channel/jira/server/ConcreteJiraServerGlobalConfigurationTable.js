@@ -5,24 +5,12 @@ import * as ConfigurationRequestBuilder from 'common/util/configurationRequestBu
 import ConcreteGlobalConfigurationTable from 'page/channel/jira/server/ConcreteGlobalConfigurationTable';
 import { TableHeaderColumn } from 'react-bootstrap-table';
 
-const ConcreteJiraServerGlobalConfigurationTable = ({ csrfToken, readonly, showRefreshButton, displayDelete }) => {
+const ConcreteJiraServerGlobalConfigurationTable = ({
+    csrfToken, readonly, showRefreshButton, displayDelete
+}) => {
     const [jiraServerConfigs, setJiraServerConfigs] = useState([]);
 
     const jiraServerRequestUrl = `${ConfigurationRequestBuilder.CONFIG_API_URL}/jira_server`;
-    // FIXME needs to add true paging
-    const jiraServerPagedRequestUrl = `${jiraServerRequestUrl}?pageNumber=0&pageSize=100`;
-
-    const fetchData = async () => {
-        const response = await ConfigurationRequestBuilder.createReadRequest(jiraServerPagedRequestUrl, csrfToken);
-        const data = await response.json();
-        if (data) {
-            setJiraServerConfigs(data.models);
-        }
-    };
-
-    const deleteData = async (configId) => {
-        await ConfigurationRequestBuilder.createDeleteRequest(jiraServerRequestUrl, csrfToken, configId);
-    };
 
     const assignedDataFormat = (cell) => (
         <div title={(cell) ? cell.toString() : null}>
@@ -46,12 +34,13 @@ const ConcreteJiraServerGlobalConfigurationTable = ({ csrfToken, readonly, showR
 
     return (
         <ConcreteGlobalConfigurationTable
+            csrfToken={csrfToken}
             key={JIRA_SERVER_INFO.key}
             label={JIRA_SERVER_INFO.label}
             description="Configure the Jira Server instance that Alert will send issue updates to."
+            apiUrl={jiraServerRequestUrl}
             tableData={jiraServerConfigs}
-            readRequest={fetchData}
-            deleteRequest={deleteData}
+            setTableData={setJiraServerConfigs}
             editPageUrl={JIRA_SERVER_URLS.jiraServerEditUrl}
             copyPageUrl={JIRA_SERVER_URLS.jiraServerCopyUrl}
             includeEnabled={false}

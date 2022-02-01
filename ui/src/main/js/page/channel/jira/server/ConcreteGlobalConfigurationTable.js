@@ -10,15 +10,17 @@ import { ProgressIcon } from 'common/component/table/ProgressIcon';
 import { useHistory } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import IconTableCellFormatter from 'common/component/table/IconTableCellFormatter';
+import * as ConfigurationRequestBuilder from 'common/util/configurationRequestBuilder';
 
 const ConcreteGlobalConfigurationTable = ({
+    csrfToken,
     fieldKey,
     label,
     description,
     children,
     tableData,
-    readRequest,
-    deleteRequest,
+    apiUrl,
+    setTableData,
     readonly,
     displayDelete,
     editPageUrl,
@@ -30,25 +32,46 @@ const ConcreteGlobalConfigurationTable = ({
     const [allSelectedRows, setAllSelectedRows] = useState([]);
     const [progress, setProgress] = useState(false);
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(10);
+    const [totalPages, setTotalPages] = useState(1);
+    const [sortName, setSortName] = useState('name');
+    const [sortOrder, setSortOrder] = useState('asc');
+    const [searchTerm, setSearchTerm] = useState('');
+
     const tableRef = useRef();
     const history = useHistory();
 
-    useEffect(() => {
-        readRequest();
-    }, []);
-
     const retrieveTableData = async () => {
         setProgress(true);
-        await readRequest();
+
+        const mutatorData = {
+            sortName,
+            sortOrder,
+            searchTerm
+        };
+
+        const pageNumber = currentPage ? currentPage - 1 : 0;
+        const response = await ConfigurationRequestBuilder.createReadPageRequest(apiUrl, csrfToken, pageNumber, pageSize, mutatorData);
+        const data = await response.json();
+        if (data) {
+            setTotalPages(data.totalPages);
+            setTableData(data.models);
+        }
+
         setProgress(false);
     };
+
+    useEffect(() => {
+        retrieveTableData();
+    }, [currentPage, pageSize, searchTerm, sortName, sortOrder]);
 
     const deleteTableData = async () => {
         setProgress(true);
         if (allSelectedRows) {
-            allSelectedRows.forEach((configId) => {
-                deleteRequest(configId);
-            });
+            await Promise.all(allSelectedRows.map(async (configId) => {
+                await ConfigurationRequestBuilder.createDeleteRequest(apiUrl, csrfToken, configId);
+            }));
         }
         await retrieveTableData();
         setShowDelete(false);
@@ -177,16 +200,45 @@ const ConcreteGlobalConfigurationTable = ({
         );
     };
 
+    const onSortChange = (newSortName, newSortOrder) => {
+        setSortName(newSortName);
+        setSortOrder(newSortOrder);
+    };
+
+    const onPageChange = (page, sizePerPage) => {
+        setCurrentPage(page);
+        setPageSize(sizePerPage);
+    };
+
+    const onSizePerPageList = (sizePerPage) => {
+        setPageSize(sizePerPage);
+    };
+
+    const onSearchChange = (inputSearchTerm) => {
+        setSearchTerm(inputSearchTerm);
+        setCurrentPage(1);
+    };
+
+    const tableFetchInfo = {
+        dataTotalSize: totalPages * pageSize
+    };
+
     const tableOptions = {
         btnGroup: insertAndDeleteButton,
         noDataText: 'No Data',
         clearSearch: true,
         handleConfirmDeleteRow: (next, rows) => setAllSelectedRows(rows),
-        defaultSortName: 'name',
-        defaultSortOrder: 'asc',
         onRowDoubleClick: (id) => {
             editButtonClicked(id);
-        }
+        },
+        defaultSortName: 'name',
+        defaultSortOrder: 'asc',
+        onSortChange,
+        onPageChange,
+        onSizePerPageList,
+        onSearchChange,
+        sizePerPage: pageSize,
+        page: currentPage
     };
 
     const selectRow = {
@@ -242,6 +294,9 @@ const ConcreteGlobalConfigurationTable = ({
                 ref={tableRef}
                 options={tableOptions}
                 search
+                pagination
+                remote
+                fetchInfo={tableFetchInfo}
             >
                 {createColumns()}
             </BootstrapTable>
@@ -251,12 +306,12 @@ const ConcreteGlobalConfigurationTable = ({
 };
 
 ConcreteGlobalConfigurationTable.propTypes = {
-    // Pass this in for now while we have all descriptors in global state, otherwise retrieve this in this component
+    csrfToken: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
     children: PropTypes.node.isRequired,
     tableData: PropTypes.array.isRequired,
-    readRequest: PropTypes.func.isRequired,
-    deleteRequest: PropTypes.func.isRequired,
+    setTableData: PropTypes.func.isRequired,
+    apiUrl: PropTypes.string.isRequired,
     editPageUrl: PropTypes.string,
     copyPageUrl: PropTypes.string,
     fieldKey: PropTypes.string,

@@ -34,6 +34,8 @@ const ConcreteJiraServerGlobalConfiguration = ({
         if (data) {
             if (location.pathname.includes('/copy')) {
                 delete data.id;
+                delete data.isPasswordSet;
+                delete data.password;
             }
             setJiraServerConfig(data);
         }
@@ -58,8 +60,7 @@ const ConcreteJiraServerGlobalConfiguration = ({
             lastUpdated={jiraServerConfig.lastUpdated}
         >
             <ConcreteConfigurationForm
-                csrfToken={csrfToken}
-                formDataId={id}
+                formDataId={jiraServerConfig.id}
                 setErrors={(formErrors) => setErrors(formErrors)}
                 buttonIdPrefix={JIRA_SERVER_INFO.key}
                 getRequest={fetchData}

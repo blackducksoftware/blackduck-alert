@@ -51,6 +51,29 @@ export function createReadRequest(apiUrl, csrfToken, configurationId = null) {
     });
 }
 
+export function createReadPageRequest(apiUrl, csrfToken, currentPage, pageSize, mutatorData) {
+    const parameters = [
+        `${encodeURIComponent('pageNumber')}=${encodeURIComponent(currentPage)}`,
+        `${encodeURIComponent('pageSize')}=${encodeURIComponent(pageSize)}`
+    ];
+    Object.keys(mutatorData)
+        .forEach((key) => {
+            const value = mutatorData[key];
+            if (value) {
+                const parameterString = `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+                parameters.push(parameterString);
+            }
+        });
+    const queryString = parameters.join('&');
+    const url = `${apiUrl}?${queryString}`;
+    const headersUtil = new HeaderUtilities();
+    headersUtil.addXCsrfToken(csrfToken);
+    return fetch(url, {
+        credentials: 'same-origin',
+        headers: headersUtil.getHeaders()
+    });
+}
+
 export function createNewConfigurationRequest(apiUrl, csrfToken, fieldModel) {
     const headersUtil = new HeaderUtilities();
     headersUtil.addDefaultHeaders(csrfToken);
