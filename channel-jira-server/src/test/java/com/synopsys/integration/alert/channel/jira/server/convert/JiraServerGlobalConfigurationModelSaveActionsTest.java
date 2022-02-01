@@ -169,38 +169,6 @@ class JiraServerGlobalConfigurationModelSaveActionsTest {
             return savedEntity.get();
         });
 
-        Mockito.when(jiraConfigurationRepository.findByName(Mockito.anyString())).thenAnswer(invocation -> Optional.ofNullable(savedEntity.get()));
-        Mockito.when(jiraConfigurationRepository.findById(Mockito.any())).thenAnswer(invocation -> Optional.ofNullable(savedEntity.get()));
-
-        JiraServerGlobalConfigAccessor configurationAccessor = new JiraServerGlobalConfigAccessor(encryptionUtility, jiraConfigurationRepository);
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configurationAccessor, validator);
-        JiraServerGlobalConfigurationModelSaveActions saveActions = new JiraServerGlobalConfigurationModelSaveActions(converter, crudActions, configurationAccessor);
-        String newPassword = "updatedPassword";
-        String newUrl = "https://updated.jira.example.com";
-        ConfigurationModel configurationModel = createDefaultConfigurationModel();
-        saveActions.createConcreteModel(configurationModel);
-
-        updateField(configurationModel, JiraServerGlobalConfigurationModelConverter.URL_KEY, newUrl);
-        updateField(configurationModel, JiraServerGlobalConfigurationModelConverter.PASSWORD_KEY, newPassword);
-        saveActions.updateConcreteModel(configurationModel);
-
-        // make sure the values are not the updated values
-        JiraServerConfigurationEntity actualEntity = savedEntity.get();
-        assertEquals(newUrl, actualEntity.getUrl());
-        assertEquals(TEST_USERNAME, actualEntity.getUsername());
-        assertEquals(newPassword, encryptionUtility.decrypt(actualEntity.getPassword()));
-        assertTrue(actualEntity.getDisablePluginCheck());
-    }
-
-    @Test
-    void updateItemNotFoundCreateTest() {
-        AtomicReference<JiraServerConfigurationEntity> savedEntity = new AtomicReference<>();
-        JiraServerConfigurationRepository jiraConfigurationRepository = Mockito.mock(JiraServerConfigurationRepository.class);
-        Mockito.when(jiraConfigurationRepository.save(Mockito.any(JiraServerConfigurationEntity.class))).thenAnswer(invocation -> {
-            savedEntity.set(invocation.getArgument(0));
-            return savedEntity.get();
-        });
-
         Mockito.when(jiraConfigurationRepository.findByName(Mockito.anyString())).thenAnswer(invocation -> Optional.empty());
         Mockito.when(jiraConfigurationRepository.findById(Mockito.any())).thenAnswer(invocation -> Optional.ofNullable(savedEntity.get()));
 
