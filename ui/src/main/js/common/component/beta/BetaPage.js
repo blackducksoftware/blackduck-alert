@@ -10,6 +10,7 @@ const BetaPage = ({ disableBeta, children, betaSelected }) => {
     const foundBetaComponent = children.find((child) => child.type === BetaComponent);
     const foundCurrentComponent = children.find((child) => child.type === CurrentComponent);
 
+    // TODO we may not want to make this check as it prevents wrappers around the child from being valid
     if (!foundBetaComponent || !foundCurrentComponent) {
         throw Error('Missing BetaComponent or CurrentComponent. Please ensure both are set as BetaPage children.');
     }

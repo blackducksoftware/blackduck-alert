@@ -5,6 +5,7 @@ export const JIRA_SERVER_INFO = {
 };
 
 export const JIRA_SERVER_GLOBAL_FIELD_KEYS = {
+    name: 'jira.server.name',
     url: 'jira.server.url',
     username: 'jira.server.username',
     password: 'jira.server.password',
@@ -21,4 +22,10 @@ export const JIRA_SERVER_DISTRIBUTION_FIELD_KEYS = {
     resolveWorkflow: 'channel.jira.server.resolve.workflow',
     reopenWorkflow: 'channel.jira.server.reopen.workflow',
     issueSummary: 'channel.jira.server.issue.summary'
+};
+
+export const JIRA_SERVER_URLS = {
+    jiraServerUrl: '/alert/channels/jira_server',
+    jiraServerEditUrl: '/alert/channels/jira_server/edit',
+    jiraServerCopyUrl: '/alert/channels/jira_server/copy'
 };

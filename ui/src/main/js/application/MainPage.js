@@ -12,7 +12,7 @@ import JiraCloudGlobalConfiguration from 'page/channel/jira/cloud/JiraCloudGloba
 import { JIRA_CLOUD_INFO } from 'page/channel/jira/cloud/JiraCloudModel';
 import { SLACK_INFO } from 'page/channel/slack/SlackModels';
 import { EMAIL_INFO } from 'page/channel/email/EmailModels';
-import { JIRA_SERVER_INFO } from 'page/channel/jira/server/JiraServerModel';
+import { JIRA_SERVER_INFO, JIRA_SERVER_URLS } from 'page/channel/jira/server/JiraServerModel';
 import { MSTEAMS_INFO } from 'page/channel/msteams/MSTeamsModel';
 import MSTeamsGlobalConfiguration from 'page/channel/msteams/MSTeamsGlobalConfiguration';
 import { AZURE_INFO } from 'page/channel/azure/AzureModel';
@@ -47,6 +47,7 @@ import BetaPage from 'common/component/beta/BetaPage';
 import BetaComponent from 'common/component/beta/BetaComponent';
 import ConcreteJiraServerGlobalConfiguration from 'page/channel/jira/server/ConcreteJiraServerGlobalConfiguration';
 import CurrentComponent from 'common/component/beta/CurrentComponent';
+import ConcreteJiraServerGlobalConfigurationTable from 'page/channel/jira/server/ConcreteJiraServerGlobalConfigurationTable';
 
 const MainPage = ({
     descriptors, fetching, getDescriptorsRedux, csrfToken, autoRefresh, unauthorizedFunction
@@ -169,18 +170,30 @@ const MainPage = ({
                 )}
             />
             <DescriptorRoute
+                descriptor={globalDescriptorMap[JIRA_SERVER_INFO.key]}
+                urlName={JIRA_SERVER_INFO.url}
+                paths={[`${JIRA_SERVER_URLS.jiraServerEditUrl}/:id?`, `${JIRA_SERVER_URLS.jiraServerCopyUrl}/:id?`]}
+                render={(readonly, showTest, showSave) => (
+                    <ConcreteJiraServerGlobalConfiguration
+                        errorHandler={errorHandler}
+                        csrfToken={csrfToken}
+                        readonly={readonly}
+                        displayTest={showTest}
+                        displaySave={showSave}
+                    />
+                )}
+            />
+            <DescriptorRoute
                 uriPrefix={channelUri}
                 urlName={JIRA_SERVER_INFO.url}
                 descriptor={globalDescriptorMap[JIRA_SERVER_INFO.key]}
                 render={(readOnly, showTest, showSave, showDelete) => (
                     <BetaPage betaSelected>
                         <BetaComponent>
-                            <ConcreteJiraServerGlobalConfiguration
-                                errorHandler={errorHandler}
+                            <ConcreteJiraServerGlobalConfigurationTable
                                 csrfToken={csrfToken}
                                 readonly={readOnly}
-                                displayTest={showTest}
-                                displaySave={showSave}
+                                showRefreshButton={!autoRefresh}
                                 displayDelete={showDelete}
                             />
                         </BetaComponent>
@@ -191,7 +204,6 @@ const MainPage = ({
                                 readonly={readOnly}
                                 displayTest={showTest}
                                 displaySave={showSave}
-                                displayDelete={showDelete}
                             />
                         </CurrentComponent>
                     </BetaPage>
