@@ -266,6 +266,7 @@ public class AuditEntryHandlerTestIT {
             FrequencyType.REAL_TIME,
             ProcessingType.DEFAULT,
             ChannelKeys.SLACK.getUniversalKey(),
+            UUID.randomUUID(),
             providerConfigModel.getConfigurationId(),
             false,
             null,

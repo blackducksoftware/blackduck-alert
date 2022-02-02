@@ -50,6 +50,9 @@ public class DistributionJobEntity {
     @Column(name = "channel_descriptor_name")
     private String channelDescriptorName;
 
+    @Column(name = "channel_global_config_id")
+    private UUID channelGlobalConfigId;
+
     @Column(name = "created_at")
     private OffsetDateTime createdAt;
 
@@ -87,13 +90,16 @@ public class DistributionJobEntity {
     public DistributionJobEntity() {
     }
 
-    public DistributionJobEntity(UUID jobId, String name, Boolean enabled, String distributionFrequency, String processingType, String channelDescriptorName, OffsetDateTime createdAt, OffsetDateTime lastUpdated) {
+    public DistributionJobEntity(
+        UUID jobId, String name, Boolean enabled, String distributionFrequency, String processingType, String channelDescriptorName, UUID channelGlobalConfigId, OffsetDateTime createdAt, OffsetDateTime lastUpdated
+    ) {
         this.jobId = jobId;
         this.name = name;
         this.enabled = enabled;
         this.distributionFrequency = distributionFrequency;
         this.processingType = processingType;
         this.channelDescriptorName = channelDescriptorName;
+        this.channelGlobalConfigId = channelGlobalConfigId;
         this.createdAt = createdAt;
         this.lastUpdated = lastUpdated;
     }
@@ -144,6 +150,14 @@ public class DistributionJobEntity {
 
     public void setChannelDescriptorName(String channelDescriptorName) {
         this.channelDescriptorName = channelDescriptorName;
+    }
+
+    public UUID getChannelGlobalConfigId() {
+        return channelGlobalConfigId;
+    }
+
+    public void setChannelGlobalConfigId(UUID channelGlobalConfigId) {
+        this.channelGlobalConfigId = channelGlobalConfigId;
     }
 
     public OffsetDateTime getCreatedAt() {

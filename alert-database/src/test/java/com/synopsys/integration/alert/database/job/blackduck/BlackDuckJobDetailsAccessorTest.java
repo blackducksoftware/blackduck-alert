@@ -58,6 +58,7 @@ public class BlackDuckJobDetailsAccessorTest {
             FrequencyType.DAILY,
             ProcessingType.DEFAULT,
             null,
+            UUID.randomUUID(),
             3L,
             true,
             "*",
