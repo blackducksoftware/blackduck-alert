@@ -1,8 +1,16 @@
+/*
+ * channel-jira-server
+ *
+ * Copyright (c) 2022 Synopsys, Inc.
+ *
+ * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.synopsys.integration.alert.channel.jira.server.convert;
 
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
 import com.synopsys.integration.alert.common.action.api.GlobalConfigurationModelToConcreteConverter;
@@ -10,6 +18,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 
+@Component
 public class JiraServerGlobalConfigurationModelConverter implements GlobalConfigurationModelToConcreteConverter<JiraServerGlobalConfigModel> {
     public static final String URL_KEY = "jira.server.url";
     public static final String USERNAME_KEY = "jira.server.username";
