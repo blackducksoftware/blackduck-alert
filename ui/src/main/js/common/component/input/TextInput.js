@@ -10,6 +10,7 @@ const TextInput = ({
 
     return (
         <LabeledField
+            id={id}
             labelClass={labelClass}
             description={description}
             showDescriptionPlaceHolder={showDescriptionPlaceHolder}

@@ -135,6 +135,7 @@ const DynamicSelectInput = ({
 
     return (
         <LabeledField
+            id={id}
             description={description}
             errorName={errorName}
             errorValue={errorValue}

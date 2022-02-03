@@ -6,6 +6,7 @@ const CheckboxInput = ({
     id, description, errorName, errorValue, isChecked, label, labelClass, name, onChange, readOnly, required, showDescriptionPlaceHolder
 }) => (
     <LabeledField
+        id={id}
         labelClass={labelClass}
         description={description}
         showDescriptionPlaceHolder={showDescriptionPlaceHolder}
