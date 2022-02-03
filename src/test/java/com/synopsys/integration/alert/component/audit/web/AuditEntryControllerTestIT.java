@@ -2,6 +2,7 @@ package com.synopsys.integration.alert.component.audit.web;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -208,6 +209,7 @@ public class AuditEntryControllerTestIT {
             FrequencyType.REAL_TIME,
             ProcessingType.DEFAULT,
             ChannelKeys.SLACK.getUniversalKey(),
+            UUID.randomUUID(),
             mockNotificationContent.getProviderConfigId(),
             false,
             null,

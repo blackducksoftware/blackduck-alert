@@ -207,6 +207,7 @@ public class DefaultDistributionAccessorTestIT {
             FrequencyType.REAL_TIME.name(),
             ProcessingType.DEFAULT.name(),
             channelKey,
+            UUID.randomUUID(),
             OffsetDateTime.now(),
             OffsetDateTime.now()
         );

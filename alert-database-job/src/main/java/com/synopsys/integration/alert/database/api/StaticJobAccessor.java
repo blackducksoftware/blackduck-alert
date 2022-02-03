@@ -195,6 +195,7 @@ public class StaticJobAccessor implements JobAccessor {
             requestModel.getDistributionFrequency().name(),
             requestModel.getProcessingType().name(),
             channelDescriptorName,
+            requestModel.getChannelGlobalConfigId(),
             createdAt,
             lastUpdated
         );
@@ -294,6 +295,7 @@ public class StaticJobAccessor implements JobAccessor {
             .distributionFrequency(jobEntity.getDistributionFrequency())
             .processingType(jobEntity.getProcessingType())
             .channelDescriptorName(channelKey.getUniversalKey())
+            .channelGlobalConfigId(jobEntity.getChannelGlobalConfigId())
             .createdAt(jobEntity.getCreatedAt())
             .lastUpdated(jobEntity.getLastUpdated())
             .blackDuckGlobalConfigId(blackDuckJobDetails.getGlobalConfigId())

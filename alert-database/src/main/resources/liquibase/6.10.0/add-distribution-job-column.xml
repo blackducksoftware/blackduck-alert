@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="bmandel" id="create-global-channel-id-column">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists schemaName="alert" tableName="distribution_jobs" columnName="channel_global_config_id"/>
+            </not>
+        </preConditions>
+        <addColumn schemaName="alert" tableName="distribution_jobs">
+            <column name="channel_global_config_id" type="UUID">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+        <changeSet id="add-global-config-id-to-descriptors" author="bmandel">
+            <preConditions onFail="MARK_RAN">
+                <sqlCheck expectedResult="0">
+                    SELECT COUNT(*)
+                    FROM alert.descriptor_fields
+                    WHERE (descriptor_id = GET_DESCRIPTOR_ID('channel_azure_boards')
+                        AND field_id = GET_FIELD_ID('channel.common.global.config.id'))
+                       OR (descriptor_id = GET_DESCRIPTOR_ID('channel_email')
+                        AND field_id = GET_FIELD_ID('channel.common.global.config.id'))
+                       OR (descriptor_id = GET_DESCRIPTOR_ID('channel_jira_cloud')
+                        AND field_id = GET_FIELD_ID('channel.common.global.config.id'))
+                       OR (descriptor_id = GET_DESCRIPTOR_ID('channel_jira_server')
+                        AND field_id = GET_FIELD_ID('channel.common.global.config.id'))
+                       OR (descriptor_id = GET_DESCRIPTOR_ID('msteamskey')
+                        AND field_id = GET_FIELD_ID('channel.common.global.config.id'))
+                       OR (descriptor_id = GET_DESCRIPTOR_ID('channel_slack')
+                        AND field_id = GET_FIELD_ID('channel.common.global.config.id'))
+                </sqlCheck>
+            </preConditions>
+            <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
+                <column name="SOURCE_KEY">channel.common.global.config.id</column>
+                <column name="SENSITIVE">false</column>
+            </insert>
+            <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
+                <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.global.config.id')"/>
+                <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
+            </insert>
+            <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
+                <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_azure_boards')"/>
+                <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.global.config.id')"/>
+            </insert>
+            <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
+                <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_email')"/>
+                <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.global.config.id')"/>
+            </insert>
+            <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
+                <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_cloud')"/>
+                <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.global.config.id')"/>
+            </insert>
+            <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
+                <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_server')"/>
+                <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.global.config.id')"/>
+            </insert>
+            <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
+                <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('msteamskey')"/>
+                <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.global.config.id')"/>
+            </insert>
+            <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
+                <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_slack')"/>
+                <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.global.config.id')"/>
+            </insert>
+        </changeSet>
+</databaseChangeLog>

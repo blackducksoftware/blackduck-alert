@@ -169,6 +169,7 @@ class StaticJobAccessorTest {
             FrequencyType.DAILY,
             ProcessingType.DEFAULT,
             ChannelKeys.SLACK.getUniversalKey(),
+            UUID.randomUUID(),
             3L,
             true,
             "*",
@@ -188,6 +189,7 @@ class StaticJobAccessorTest {
             distributionJobRequestModel.getDistributionFrequency().name(),
             distributionJobRequestModel.getProcessingType().name(),
             distributionJobRequestModel.getChannelDescriptorName(),
+            distributionJobRequestModel.getChannelGlobalConfigId(),
             DateUtils.createCurrentDateTimestamp(),
             DateUtils.createCurrentDateTimestamp()
         );
@@ -445,6 +447,7 @@ class StaticJobAccessorTest {
             FrequencyType.DAILY,
             ProcessingType.DEFAULT,
             channelDescriptorName,
+            UUID.randomUUID(),
             3L,
             true,
             "*",
@@ -465,6 +468,7 @@ class StaticJobAccessorTest {
             distributionJobRequestModel.getDistributionFrequency().name(),
             distributionJobRequestModel.getProcessingType().name(),
             distributionJobRequestModel.getChannelDescriptorName(),
+            distributionJobRequestModel.getChannelGlobalConfigId(),
             DateUtils.createCurrentDateTimestamp(),
             DateUtils.createCurrentDateTimestamp()
         );
@@ -489,6 +493,7 @@ class StaticJobAccessorTest {
             FrequencyType.REAL_TIME.name(),
             ProcessingType.DEFAULT.name(),
             ChannelKeys.SLACK.getUniversalKey(),
+            UUID.randomUUID(),
             DateUtils.createCurrentDateTimestamp(),
             DateUtils.createCurrentDateTimestamp()
         );
@@ -505,6 +510,7 @@ class StaticJobAccessorTest {
             FrequencyType.REAL_TIME.name(),
             ProcessingType.DEFAULT.name(),
             ChannelKeys.EMAIL.getUniversalKey(),
+            UUID.randomUUID(),
             DateUtils.createCurrentDateTimestamp(),
             DateUtils.createCurrentDateTimestamp()
         );

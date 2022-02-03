@@ -203,7 +203,8 @@ public class NotificationAccessorTestIT {
         notificationContent = notificationContentRepository.save(notificationContent);
 
         OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
-        DistributionJobEntity distributionJobEntity = new DistributionJobEntity(null, "job_name", true, FrequencyType.REAL_TIME.name(), ProcessingType.DEFAULT.name(), ChannelKeys.EMAIL.getUniversalKey(), currentTime, null);
+        DistributionJobEntity distributionJobEntity = new DistributionJobEntity(null, "job_name", true, FrequencyType.REAL_TIME.name(), ProcessingType.DEFAULT.name(), ChannelKeys.EMAIL.getUniversalKey(), UUID.randomUUID(), currentTime,
+            null);
         DistributionJobEntity savedJob = distributionJobRepository.save(distributionJobEntity);
 
         final String auditStatus = "audit status thing";

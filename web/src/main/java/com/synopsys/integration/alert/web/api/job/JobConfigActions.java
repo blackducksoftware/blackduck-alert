@@ -445,6 +445,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
             fromResource.getDistributionFrequency(),
             fromResource.getProcessingType(),
             fromResource.getChannelDescriptorName(),
+            fromResource.getChannelGlobalConfigId(),
             fromResource.getBlackDuckGlobalConfigId(),
             fromResource.isFilterByProject(),
             fromResource.getProjectNamePattern().orElse(null),

@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterEach;
@@ -87,6 +88,7 @@ public abstract class DatabaseConfiguredFieldTest {
             FrequencyType.DAILY,
             ProcessingType.DEFAULT,
             ChannelKeys.SLACK.getUniversalKey(),
+            UUID.randomUUID(),
             blackDuckGlobalConfigId,
             false,
             null,
