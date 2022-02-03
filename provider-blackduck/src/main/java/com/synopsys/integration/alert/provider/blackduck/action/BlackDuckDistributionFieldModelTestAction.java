@@ -21,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
@@ -66,11 +67,12 @@ public class BlackDuckDistributionFieldModelTestAction extends FieldModelTestAct
             if (filterByProjects) {
                 Collection<String> configuredProjects = registeredFieldValues.getAllStrings(ProviderDescriptor.KEY_CONFIGURED_PROJECT);
                 validateSelectedProjectExists(providerConfigId, configuredProjects).ifPresent(fieldStatuses::add);
-                registeredFieldValues.getString(ProviderDescriptor.KEY_PROJECT_NAME_PATTERN)
+                Optional<String> optionalProjectNamePattern = registeredFieldValues.getString(ProviderDescriptor.KEY_PROJECT_NAME_PATTERN);
+                optionalProjectNamePattern
                     .flatMap(projectNamePattern -> validatePatternMatchesProject(providerConfigId, projectNamePattern))
                     .ifPresent(fieldStatuses::add);
                 registeredFieldValues.getString(ProviderDescriptor.KEY_PROJECT_VERSION_NAME_PATTERN)
-                    .flatMap(projectVersionNamePattern -> validatePatternMatchesProjectVersion(providerConfigId, projectVersionNamePattern, configuredProjects))
+                    .flatMap(projectVersionNamePattern -> validatePatternMatchesProjectVersion(providerConfigId, projectVersionNamePattern, optionalProjectNamePattern.orElse(null), configuredProjects))
                     .ifPresent(fieldStatuses::add);
             }
 
@@ -98,23 +100,24 @@ public class BlackDuckDistributionFieldModelTestAction extends FieldModelTestAct
         return new MessageResult("Successfully tested BlackDuck provider fields", fieldStatuses);
     }
 
-    private Optional<AlertFieldStatus> validatePatternMatchesProjectVersion(Long providerConfigId, String projectVersionNamePattern, Collection<String> configuredProjects) {
+    private Optional<AlertFieldStatus> validatePatternMatchesProjectVersion(Long providerConfigId, String projectVersionNamePattern, String projectNamePattern, Collection<String> configuredProjects) {
         if (StringUtils.isNotBlank(projectVersionNamePattern)) {
-            Pattern pattern = Pattern.compile(projectVersionNamePattern);
+            Pattern compiledProjectVersionPattern = Pattern.compile(projectVersionNamePattern);
+            Pattern compiledProjectNamePattern = StringUtils.isNotBlank(projectNamePattern) ? Pattern.compile(projectNamePattern) : null;
 
             int currentPage = AlertPagedModel.DEFAULT_PAGE_NUMBER;
-            AlertPagedModel<String> projectsByProviderConfigId = filterAndMapHrefs(providerConfigId, currentPage, configuredProjects);
+            AlertPagedModel<String> projectsByProviderConfigId = filterAndMapHrefs(providerConfigId, currentPage, configuredProjects, compiledProjectNamePattern);
             boolean foundResult = false;
             while (!foundResult && currentPage < projectsByProviderConfigId.getTotalPages()) {
                 List<String> providerProjects = projectsByProviderConfigId.getModels();
                 foundResult = providerProjects.stream().anyMatch(href ->
                                                                      iteratePagesAndCheck(
                                                                          versionCurrentPage -> blackDuckDataAccessor.getProjectVersionNamesByHref(providerConfigId, href, versionCurrentPage),
-                                                                         versionNames -> versionNames.stream().anyMatch(versionName -> pattern.matcher(versionName).matches()),
+                                                                         versionNames -> versionNames.stream().anyMatch(versionName -> compiledProjectVersionPattern.matcher(versionName).matches()),
                                                                          Boolean.FALSE
                                                                      ).isEmpty());
                 currentPage++;
-                projectsByProviderConfigId = filterAndMapHrefs(providerConfigId, currentPage, configuredProjects);
+                projectsByProviderConfigId = filterAndMapHrefs(providerConfigId, currentPage, configuredProjects, compiledProjectNamePattern);
             }
 
             if (!foundResult) {
@@ -124,12 +127,14 @@ public class BlackDuckDistributionFieldModelTestAction extends FieldModelTestAct
         return Optional.empty();
     }
 
-    private AlertPagedModel<String> filterAndMapHrefs(Long providerConfigId, int currentPage, Collection<String> validProjects) {
+    private AlertPagedModel<String> filterAndMapHrefs(Long providerConfigId, int currentPage, Collection<String> validProjects, @Nullable Pattern projectNamePattern) {
         Predicate<ProviderProject> filterFunction = validProjects.isEmpty() ? project -> true : project -> validProjects.contains(project.getName());
+        Predicate<ProviderProject> filterProjectNamePattern = (projectNamePattern == null) ? project -> true : project -> projectNamePattern.matcher(project.getName()).matches();
         AlertPagedModel<ProviderProject> projectsByProviderConfigId = blackDuckDataAccessor.getProjectsByProviderConfigId(providerConfigId, currentPage, AlertPagedModel.DEFAULT_PAGE_SIZE, "");
         List<String> hrefs = projectsByProviderConfigId.getModels()
             .stream()
             .filter(filterFunction)
+            .filter(filterProjectNamePattern)
             .map(ProviderProject::getHref)
             .collect(Collectors.toList());
         return new AlertPagedModel<>(projectsByProviderConfigId.getTotalPages(), projectsByProviderConfigId.getCurrentPage(), projectsByProviderConfigId.getPageSize(), hrefs);
@@ -158,7 +163,7 @@ public class BlackDuckDistributionFieldModelTestAction extends FieldModelTestAct
             .collect(Collectors.toList());
         int totalPages = projectsByProviderConfigId.getTotalPages();
         int currentPage = projectsByProviderConfigId.getCurrentPage();
-        while (!invalidProjects.isEmpty() && currentPage <= totalPages) {
+        while (!invalidProjects.isEmpty() && currentPage < totalPages) {
             currentPage++;
             projectNames = blackDuckDataAccessor.getProjectsByProviderConfigId(providerConfigId, currentPage, AlertPagedModel.DEFAULT_PAGE_SIZE, "")
                 .getModels()
@@ -178,8 +183,8 @@ public class BlackDuckDistributionFieldModelTestAction extends FieldModelTestAct
         T retrievedData = getData.apply(currentPage);
         int totalPages = retrievedData.getTotalPages();
         boolean noResult = true;
-        while (noResult && currentPage <= totalPages) {
-            logger.info("Getting page {} out of {}", currentPage, totalPages);
+        while (noResult && currentPage < totalPages) {
+            logger.debug("Getting page {} out of {}", currentPage + 1, totalPages);
             List<U> models = retrievedData.getModels();
             noResult = !findResult.apply(models);
             currentPage++;
