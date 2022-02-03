@@ -48,7 +48,7 @@ public class JiraServerGlobalFieldModelTestAction extends JiraGlobalFieldModelTe
 
     @Override
     protected boolean isAppMissing(FieldUtility fieldUtility) throws IntegrationException {
-        JiraServerProperties jiraProperties = jiraServerPropertiesFactory.createJiraProperties(fieldUtility);
+        JiraServerProperties jiraProperties = createJiraProperties(fieldUtility);
         JiraServerServiceFactory jiraServerServiceFactory = jiraProperties.createJiraServicesServerFactory(logger, gson);
         PluginManagerService jiraAppService = jiraServerServiceFactory.createPluginManagerService();
         return !jiraAppService.isAppInstalled(JiraConstants.JIRA_APP_KEY);
@@ -56,7 +56,7 @@ public class JiraServerGlobalFieldModelTestAction extends JiraGlobalFieldModelTe
 
     @Override
     protected boolean canUserGetIssues(FieldUtility fieldUtility) throws IntegrationException {
-        JiraServerProperties jiraProperties = jiraServerPropertiesFactory.createJiraProperties(fieldUtility);
+        JiraServerProperties jiraProperties = createJiraProperties(fieldUtility);
         JiraServerServiceFactory jiraServerServiceFactory = jiraProperties.createJiraServicesServerFactory(logger, gson);
         IssueSearchService issueSearchService = jiraServerServiceFactory.createIssueSearchService();
         IssueSearchResponseModel issueSearchResponseModel = issueSearchService.queryForIssuePage("", 0, 1);
@@ -65,7 +65,7 @@ public class JiraServerGlobalFieldModelTestAction extends JiraGlobalFieldModelTe
 
     @Override
     protected boolean isUserAdmin(FieldUtility fieldUtility) throws IntegrationException {
-        JiraServerProperties jiraProperties = jiraServerPropertiesFactory.createJiraProperties(fieldUtility);
+        JiraServerProperties jiraProperties = createJiraProperties(fieldUtility);
         JiraServerServiceFactory jiraServerServiceFactory = jiraProperties.createJiraServicesServerFactory(logger, gson);
         MyPermissionsService myPermissionsService = jiraServerServiceFactory.createMyPermissionsService();
         MultiPermissionResponseModel myPermissions = myPermissionsService.getMyPermissions();
@@ -76,6 +76,14 @@ public class JiraServerGlobalFieldModelTestAction extends JiraGlobalFieldModelTe
     @Override
     protected String getChannelDisplayName() {
         return JiraServerDescriptor.JIRA_LABEL;
+    }
+
+    private JiraServerProperties createJiraProperties(FieldUtility fieldUtility) {
+        String url = fieldUtility.getStringOrNull(JiraServerDescriptor.KEY_SERVER_URL);
+        String username = fieldUtility.getStringOrNull(JiraServerDescriptor.KEY_SERVER_USERNAME);
+        String password = fieldUtility.getStringOrNull(JiraServerDescriptor.KEY_SERVER_PASSWORD);
+        boolean pluginCheckDisabled = fieldUtility.getBooleanOrFalse(JiraServerDescriptor.KEY_JIRA_DISABLE_PLUGIN_CHECK);
+        return jiraServerPropertiesFactory.createJiraProperties(url, password, username, pluginCheckDisabled);
     }
 
 }

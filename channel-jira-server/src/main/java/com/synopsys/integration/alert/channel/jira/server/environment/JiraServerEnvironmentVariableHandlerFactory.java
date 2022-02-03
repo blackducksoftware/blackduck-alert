@@ -1,3 +1,4 @@
+
 /*
  * channel-jira-server
  *
@@ -66,16 +67,14 @@ public class JiraServerEnvironmentVariableHandlerFactory implements EnvironmentV
 
         String name = AlertRestConstants.DEFAULT_CONFIGURATION_NAME;
         String userName = environmentVariableUtility.getEnvironmentValue(USERNAME_KEY).orElse(null);
+        String password = environmentVariableUtility.getEnvironmentValue(PASSWORD_KEY).orElse(null);
         String createdAt = DateUtils.formatDate(DateUtils.createCurrentDateTimestamp(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
-        JiraServerGlobalConfigModel configModel = new JiraServerGlobalConfigModel(null, name, url, userName);
+        JiraServerGlobalConfigModel configModel = new JiraServerGlobalConfigModel(null, name, url, userName, password);
         configModel.setCreatedAt(createdAt);
         configModel.setLastUpdated(createdAt);
         environmentVariableUtility.getEnvironmentValue(DISABLE_PLUGIN_KEY)
             .map(Boolean::valueOf)
             .ifPresent(configModel::setDisablePluginCheck);
-
-        environmentVariableUtility.getEnvironmentValue(PASSWORD_KEY)
-            .ifPresent(configModel::setPassword);
 
         JiraServerGlobalConfigModel obfuscatedModel = configModel.obfuscate();
         if (StringUtils.isNotBlank(obfuscatedModel.getUrl())) {

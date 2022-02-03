@@ -72,7 +72,7 @@ public class JiraServerProcessorFactory implements IssueTrackerProcessorFactory<
 
     @Override
     public IssueTrackerProcessor<String> createProcessor(JiraServerJobDetailsModel distributionDetails) throws AlertException {
-        JiraServerProperties jiraProperties = jiraServerPropertiesFactory.createJiraProperties();
+        JiraServerProperties jiraProperties = jiraServerPropertiesFactory.createJiraPropertiesWithJobId(distributionDetails.getJobId());
         JiraServerServiceFactory jiraServerServiceFactory = jiraProperties.createJiraServicesServerFactory(logger, gson);
 
         if (!jiraProperties.isPluginCheckDisabled()) {
