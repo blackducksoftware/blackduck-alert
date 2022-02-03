@@ -9,6 +9,7 @@ package com.synopsys.integration.alert.test.common;
 
 import java.util.function.Predicate;
 
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
@@ -18,7 +19,7 @@ public class EnvironmentVariableMockingUtil {
             Mockito.doAnswer((invocation -> {
                 String environmentVariableName = invocation.getArgument(0);
                 return hasEnvVarCheck.test(environmentVariableName);
-            })).when(mockedEnvironment).containsProperty(Mockito.anyString());
+            })).when(mockedEnvironment).containsProperty(ArgumentMatchers.anyString());
             Mockito.when(mockedEnvironment.getProperty(propertyKey)).thenReturn(value);
         }
     }

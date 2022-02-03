@@ -27,8 +27,6 @@ const ButtonField = ({
         setProgress(false);
     };
 
-    console.log(`Progress: ${progress}`);
-
     return (
         <div>
             <LabeledField

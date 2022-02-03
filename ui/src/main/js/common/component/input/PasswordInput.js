@@ -9,6 +9,7 @@ const PasswordInput = ({
     const onChangeHandler = readOnly ? null : onChange;
     return (
         <LabeledField
+            id={id}
             labelClass={labelClass}
             description={description}
             showDescriptionPlaceHolder={showDescriptionPlaceHolder}

@@ -8,6 +8,7 @@ const NumberInput = ({
     const onChangeHandler = readOnly ? null : onChange;
     return (
         <LabeledField
+            id={id}
             description={description}
             errorName={errorName}
             errorValue={errorValue}
