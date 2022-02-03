@@ -15,6 +15,8 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurat
 public interface UniqueConfigurationAccessor<T extends AlertSerializableModel> {
     Optional<T> getConfiguration();
 
+    boolean doesConfigurationExist();
+
     T createConfiguration(T configuration) throws AlertConfigurationException;
 
     T updateConfiguration(T configuration) throws AlertConfigurationException;

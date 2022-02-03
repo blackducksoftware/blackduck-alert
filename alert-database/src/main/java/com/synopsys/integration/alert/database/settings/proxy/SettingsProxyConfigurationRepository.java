@@ -14,6 +14,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface SettingsProxyConfigurationRepository extends JpaRepository<SettingsProxyConfigurationEntity, UUID> {
     Optional<SettingsProxyConfigurationEntity> findByName(String name);
-    
+
+    boolean existsByName(String name);
+
     void deleteByName(String name);
 }

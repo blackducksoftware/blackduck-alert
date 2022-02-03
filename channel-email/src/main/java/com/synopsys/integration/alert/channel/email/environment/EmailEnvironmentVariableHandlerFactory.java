@@ -13,10 +13,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.AlertConstants;
+import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
@@ -89,6 +92,7 @@ public class EmailEnvironmentVariableHandlerFactory implements EnvironmentVariab
 
     private final EmailGlobalConfigAccessor configAccessor;
     private final EnvironmentVariableUtility environmentVariableUtility;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     public EmailEnvironmentVariableHandlerFactory(EmailGlobalConfigAccessor configAccessor, EnvironmentVariableUtility environmentVariableUtility) {
@@ -129,7 +133,11 @@ public class EmailEnvironmentVariableHandlerFactory implements EnvironmentVariab
 
         EnvironmentProcessingResult result = builder.build();
         if (result.hasValues()) {
-            configAccessor.createConfiguration(configModel);
+            try {
+                configAccessor.createConfiguration(configModel);
+            } catch (AlertConfigurationException ex) {
+                logger.error("Failed to create config: ", ex);
+            }
         }
 
         return result;

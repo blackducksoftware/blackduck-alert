@@ -46,6 +46,7 @@ public class EmailGlobalCrudActions {
     public ActionResponse<EmailGlobalConfigModel> create(EmailGlobalConfigModel resource) {
         return configurationHelper.create(
             () -> validator.validate(resource),
+            () -> configurationAccessor.existsConfigurationByName(resource.getName()),
             () -> configurationAccessor.createConfiguration(resource)
         );
     }

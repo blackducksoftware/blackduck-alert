@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 
 import com.synopsys.integration.alert.api.common.model.AlertConstants;
+import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.model.Config;
@@ -67,7 +68,7 @@ class EmailEnvironmentHandlerFactoryTestIT {
     }
 
     @Test
-    void testExistingEmailConfig() {
+    void testExistingEmailConfig() throws AlertConfigurationException {
         EmailGlobalConfigModel emailGlobalConfigModel = new EmailGlobalConfigModel();
         emailGlobalConfigModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
         emailGlobalConfigModel.setSmtpAuth(Boolean.valueOf(TEST_AUTH_REQUIRED));

@@ -14,4 +14,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface JiraServerConfigurationRepository extends JpaRepository<JiraServerConfigurationEntity, UUID> {
     Optional<JiraServerConfigurationEntity> findByName(String name);
+
+    boolean existsByName(String name);
 }

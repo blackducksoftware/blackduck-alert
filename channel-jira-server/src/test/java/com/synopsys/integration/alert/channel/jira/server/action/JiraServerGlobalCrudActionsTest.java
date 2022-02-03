@@ -84,7 +84,7 @@ public class JiraServerGlobalCrudActionsTest {
     }
 
     @Test
-    void createTest() {
+    void createTest() throws AlertConfigurationException {
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel = createJiraServerGlobalConfigModel(id);
         JiraServerGlobalConfigAccessor configAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
         Mockito.when(configAccessor.createConfiguration(Mockito.any())).thenReturn(jiraServerGlobalConfigModel);
@@ -96,6 +96,21 @@ public class JiraServerGlobalCrudActionsTest {
         assertTrue(actionResponse.hasContent());
         assertEquals(HttpStatus.OK, actionResponse.getHttpStatus());
         assertModelObfuscated(actionResponse);
+    }
+
+    @Test
+    void createDuplicateTest() throws AlertConfigurationException {
+        JiraServerGlobalConfigModel jiraServerGlobalConfigModel = createJiraServerGlobalConfigModel(id);
+        JiraServerGlobalConfigAccessor configAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
+        Mockito.when(configAccessor.existsConfigurationByName(Mockito.any())).thenReturn(true);
+        Mockito.when(configAccessor.createConfiguration(Mockito.any())).thenReturn(jiraServerGlobalConfigModel);
+
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator);
+        ActionResponse<JiraServerGlobalConfigModel> actionResponse = crudActions.create(jiraServerGlobalConfigModel);
+
+        assertTrue(actionResponse.isError());
+        assertFalse(actionResponse.hasContent());
+        assertEquals(HttpStatus.BAD_REQUEST, actionResponse.getHttpStatus());
     }
 
     @Test

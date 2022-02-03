@@ -46,6 +46,7 @@ public class JiraServerGlobalCrudActions {
     public ActionResponse<JiraServerGlobalConfigModel> create(JiraServerGlobalConfigModel resource) {
         return configurationHelper.create(
             () -> validator.validate(resource),
+            () -> configurationAccessor.existsConfigurationByName(resource.getName()),
             () -> configurationAccessor.createConfiguration(resource)
         );
     }
