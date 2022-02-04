@@ -2,10 +2,10 @@ package com.synopsys.integration.alert.channel.jira.server;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Disabled;
@@ -21,13 +21,16 @@ import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerRespon
 import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraMessageFormatter;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
+import com.synopsys.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerMessageSenderFactory;
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerProcessorFactory;
+import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModelBuilder;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraJobCustomFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
@@ -52,11 +55,13 @@ public class JiraServerExternalConnectionTest {
         JiraMessageFormatter jiraMessageFormatter = new JiraMessageFormatter();
 
         JiraServerChannelKey jiraServerChannelKey = new JiraServerChannelKey();
-        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
-        Mockito.when(configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(Mockito.any(), Mockito.any())).thenReturn(List.of(createConfigurationModelForJiraServer()));
+        JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
+        Mockito.when(jiraServerGlobalConfigAccessor.getConfigurationByName(Mockito.anyString())).thenReturn(Optional.of(createJiraServerConfigModel()));
         ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfoForHost(Mockito.anyString())).thenReturn(null);
-        JiraServerPropertiesFactory jiraServerPropertiesFactory = new JiraServerPropertiesFactory(jiraServerChannelKey, proxyManager, configurationModelConfigurationAccessor);
+        JobAccessor jobAccessor = Mockito.mock(JobAccessor.class);
+        Mockito.when(jobAccessor.getJobById(Mockito.any())).thenReturn(Optional.of(createDistributionJobModel()));
+        JiraServerPropertiesFactory jiraServerPropertiesFactory = new JiraServerPropertiesFactory(proxyManager, jiraServerGlobalConfigAccessor, jobAccessor);
 
         IssueTrackerCallbackInfoCreator issueTrackerCallbackInfoCreator = new IssueTrackerCallbackInfoCreator();
         IssueCategoryRetriever issueCategoryRetriever = new IssueCategoryRetriever();
@@ -79,14 +84,27 @@ public class JiraServerExternalConnectionTest {
         return new ProviderMessageHolder(List.of(), List.of(simpleMessage));
     }
 
-    private ConfigurationModel createConfigurationModelForJiraServer() {
-        Map<String, ConfigurationFieldModel> configuredFields = new HashMap<>();
-        addConfigurationFieldToMap(configuredFields, JiraServerDescriptor.KEY_SERVER_URL, testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_URL));
-        addConfigurationFieldToMap(configuredFields, JiraServerDescriptor.KEY_SERVER_USERNAME, testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_USERNAME));
-        addConfigurationFieldToMap(configuredFields, JiraServerDescriptor.KEY_SERVER_PASSWORD, testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_PASSWORD));
-        addConfigurationFieldToMap(configuredFields, JiraServerDescriptor.KEY_JIRA_DISABLE_PLUGIN_CHECK, testProperties.getOptionalProperty(TestPropertyKey.TEST_JIRA_SERVER_URL).orElse("false"));
+    private JiraServerGlobalConfigModel createJiraServerConfigModel() {
+        return new JiraServerGlobalConfigModel(
+            UUID.randomUUID().toString(),
+            "name",
+            testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_URL),
+            testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_USERNAME),
+            testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_PASSWORD)
+        );
+    }
 
-        return new ConfigurationModel(null, null, null, null, null, configuredFields);
+    private DistributionJobModel createDistributionJobModel() {
+        return new DistributionJobModelBuilder()
+            .channelGlobalConfigId(UUID.randomUUID())
+            .name("name")
+            .distributionFrequency(FrequencyType.REAL_TIME)
+            .processingType(ProcessingType.DEFAULT)
+            .channelDescriptorName("channelName")
+            .createdAt(OffsetDateTime.now())
+            .blackDuckGlobalConfigId(1L)
+            .notificationTypes(List.of("POLICY_OVERRIDE"))
+            .build();
     }
 
     private JiraServerJobDetailsModel createDistributionDetails() {
@@ -105,12 +123,6 @@ public class JiraServerExternalConnectionTest {
             customFields,
             ""
         );
-    }
-
-    private void addConfigurationFieldToMap(Map<String, ConfigurationFieldModel> configuredFields, String key, String value) {
-        ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create(key);
-        configurationFieldModel.setFieldValue(value);
-        configuredFields.put(key, configurationFieldModel);
     }
 
 }

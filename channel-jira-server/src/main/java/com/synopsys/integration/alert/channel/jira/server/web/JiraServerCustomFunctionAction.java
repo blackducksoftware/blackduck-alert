@@ -8,6 +8,7 @@
 package com.synopsys.integration.alert.channel.jira.server.web;
 
 import java.util.Collection;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,8 +52,8 @@ public class JiraServerCustomFunctionAction extends CustomFunctionAction<String>
 
     @Override
     public ActionResponse<String> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper ignoredServletContent) {
-        JiraServerProperties jiraProperties = jiraServerPropertiesFactory.createJiraProperties(fieldModel);
         try {
+            JiraServerProperties jiraProperties = jiraServerPropertiesFactory.createJiraPropertiesWithJobId(UUID.fromString(fieldModel.getId()));
             JiraServerServiceFactory jiraServicesFactory = jiraProperties.createJiraServicesServerFactory(logger, gson);
             PluginManagerService jiraAppService = jiraServicesFactory.createPluginManagerService();
             try {

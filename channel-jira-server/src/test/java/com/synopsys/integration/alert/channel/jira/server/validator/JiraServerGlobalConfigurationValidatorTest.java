@@ -73,7 +73,7 @@ class JiraServerGlobalConfigurationValidatorTest {
     @Test
     void verifyPasswordIsMissingAndNotSaved() {
         JiraServerGlobalConfigurationValidator validator = new JiraServerGlobalConfigurationValidator();
-        JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(ID, NAME, URL, USER_NAME);
+        JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(ID, NAME, URL, USER_NAME, null);
 
         ValidationResponseModel validationResponseModel = validator.validate(model);
         Collection<AlertFieldStatus> alertFieldStatuses = validationResponseModel.getErrors().values();

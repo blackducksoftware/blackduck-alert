@@ -25,15 +25,15 @@ public class JiraServerGlobalConfigModel extends ConfigWithMetadata implements O
         // For serialization
     }
 
-    public JiraServerGlobalConfigModel(String id, String name, String url, String userName) {
+    public JiraServerGlobalConfigModel(String id, String name, String url, String userName, String password) {
         super(id, name);
         this.url = url;
         this.userName = userName;
+        this.password = password;
     }
 
     public JiraServerGlobalConfigModel(String id, String name, String createdAt, String lastUpdated, String url, String userName, String password, Boolean isPasswordSet, Boolean disablePluginCheck) {
-        this(id, name, url, userName);
-        this.password = password;
+        this(id, name, url, userName, password);
         this.isPasswordSet = isPasswordSet;
         this.disablePluginCheck = disablePluginCheck;
         setCreatedAt(createdAt);
@@ -42,20 +42,17 @@ public class JiraServerGlobalConfigModel extends ConfigWithMetadata implements O
 
     @Override
     public JiraServerGlobalConfigModel obfuscate() {
-        JiraServerGlobalConfigModel jiraServerGlobalConfigModel = new JiraServerGlobalConfigModel(
+        return new JiraServerGlobalConfigModel(
             getId(),
             getName(),
+            getCreatedAt(),
+            getLastUpdated(),
             url,
-            userName);
-
-        jiraServerGlobalConfigModel.setCreatedAt(getCreatedAt());
-        jiraServerGlobalConfigModel.setLastUpdated(getLastUpdated());
-        jiraServerGlobalConfigModel.setDisablePluginCheck(disablePluginCheck);
-
-        jiraServerGlobalConfigModel.setIsPasswordSet(StringUtils.isNotBlank(password));
-        jiraServerGlobalConfigModel.setPassword(null);
-
-        return jiraServerGlobalConfigModel;
+            userName,
+            null,
+            StringUtils.isNotBlank(password),
+            disablePluginCheck
+        );
     }
 
     public String getUrl() {
