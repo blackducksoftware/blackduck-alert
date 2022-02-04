@@ -1,14 +1,17 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
-import { JIRA_SERVER_DISTRIBUTION_FIELD_KEYS } from 'page/channel/jira/server/JiraServerModel';
+import { JIRA_SERVER_DISTRIBUTION_FIELD_KEYS, JIRA_SERVER_DISTRIBUTION_GLOBAL_CONFIG_COLUMNS } from 'page/channel/jira/server/JiraServerModel';
 import CheckboxInput from 'common/component/input/CheckboxInput';
 import TextInput from 'common/component/input/TextInput';
 import CollapsiblePane from 'common/component/CollapsiblePane';
 import FieldMappingField from 'common/component/input/FieldMappingField';
+import { DISTRIBUTION_COMMON_FIELD_KEYS } from 'page/distribution/DistributionModel';
+import TableSelectInput from 'common/component/input/TableSelectInput';
+import { createReadRequest } from 'common/util/configurationRequestBuilder';
 
 const JiraServerDistributionConfiguration = ({
-    data, setData, errors, readonly
+    csrfToken, data, setData, errors, readonly
 }) => {
     if (!FieldModelUtilities.hasValue(data, JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueType)) {
         setData(FieldModelUtilities.updateFieldModelSingleValue(data, JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueType, 'Task'));
@@ -16,6 +19,25 @@ const JiraServerDistributionConfiguration = ({
 
     return (
         <>
+            <TableSelectInput
+                id={DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId}
+                csrfToken={csrfToken}
+                endpoint="/api/configuration/jira_server"
+                fieldKey=""
+                columns={JIRA_SERVER_DISTRIBUTION_GLOBAL_CONFIG_COLUMNS}
+                label="Jira Server"
+                description="Select a Jira server that will be used to create or update issues."
+                readOnly={readonly}
+                paged
+                searchable
+                useRowAsValue
+                createRequestBody={() => data}
+                createDataRequest={(apiUrl, csrftoken) => createReadRequest(apiUrl, csrftoken)}
+                onChange={FieldModelUtilities.handleChange(data, setData)}
+                value={FieldModelUtilities.getFieldModelValues(data, DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId)}
+                errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId)}
+                errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId]}
+            />
             <CheckboxInput
                 id={JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.comment}
                 name={JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.comment}
@@ -120,6 +142,7 @@ const JiraServerDistributionConfiguration = ({
 };
 
 JiraServerDistributionConfiguration.propTypes = {
+    csrfToken: PropTypes.string.isRequired,
     data: PropTypes.object.isRequired,
     setData: PropTypes.func.isRequired,
     errors: PropTypes.object.isRequired,

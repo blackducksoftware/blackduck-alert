@@ -69,7 +69,8 @@ const TableSelectInput = (props) => {
         label,
         required,
         showDescriptionPlaceHolder,
-        createRequestBody
+        createRequestBody,
+        createDataRequest
     } = props;
     const [progress, setProgress] = useState(false);
     const [showTable, setShowTable] = useState(false);
@@ -197,7 +198,7 @@ const TableSelectInput = (props) => {
         const pageNumber = uiPageNumber ? uiPageNumber - 1 : 0;
         const encodedSearchTerm = encodeURIComponent(searchTerm);
         const apiUrl = `/alert${endpoint}/${fieldKey}?pageNumber=${pageNumber}&pageSize=${pageSize}&searchTerm=${encodedSearchTerm}`;
-        const request = createNewConfigurationRequest(apiUrl, csrfToken, newFieldModel);
+        const request = createDataRequest ? createDataRequest(apiUrl, csrfToken) : createNewConfigurationRequest(apiUrl, csrfToken, newFieldModel);
         return request.then((response) => {
             setProgress(false);
             if (response.ok) {
@@ -506,7 +507,8 @@ TableSelectInput.propTypes = {
     label: PropTypes.string.isRequired,
     required: PropTypes.bool,
     showDescriptionPlaceHolder: PropTypes.bool,
-    createRequestBody: PropTypes.func
+    createRequestBody: PropTypes.func,
+    createDataRequest: PropTypes.func
 };
 
 TableSelectInput.defaultProps = {
@@ -521,6 +523,7 @@ TableSelectInput.defaultProps = {
     useRowAsValue: false,
     value: [],
     createRequestBody: null,
+    createDataRequest: null,
     description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
