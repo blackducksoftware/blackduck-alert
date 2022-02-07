@@ -47,9 +47,12 @@ public class SettingsEncryptionCrudActions {
     }
 
     public ActionResponse<SettingsEncryptionModel> update(SettingsEncryptionModel requestResource) {
+        // Due to the unique behavior of Encryption, in the event that nothing is saved on the system through the environment nor volume data file, we must supply
+        //  a value of TRUE for the existingModelSupplier. The encryptionUtility handles writing the data correctly whether the model exists or not. Without this,
+        //  the value will not be written to the volume data file during the update.
         return configurationHelper.update(
             () -> validator.validate(requestResource),
-            () -> getSettingsEncryptionModel().isPresent(),
+            () -> Boolean.TRUE,
             () -> updateSettingsEncryptionModel(requestResource)
         );
     }
@@ -88,8 +91,8 @@ public class SettingsEncryptionCrudActions {
     private SettingsEncryptionModel createMaskedSettingsEncryptionModel() {
         // EncryptionUtility does not return a model. A SettingsEncryptionModel with values must be created in order to obfuscate in the ConfigurationCrudHelper later.
         SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel();
-        settingsEncryptionModel.setIsEncryptionPasswordSet(true);
-        settingsEncryptionModel.setIsEncryptionGlobalSaltSet(true);
+        settingsEncryptionModel.setIsEncryptionPasswordSet(encryptionUtility.isPasswordSet());
+        settingsEncryptionModel.setIsEncryptionGlobalSaltSet(encryptionUtility.isGlobalSaltSet());
         settingsEncryptionModel.setReadOnly(encryptionUtility.isEncryptionFromEnvironment());
         return settingsEncryptionModel;
     }
