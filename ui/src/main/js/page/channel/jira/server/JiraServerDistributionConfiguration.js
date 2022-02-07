@@ -6,9 +6,9 @@ import CheckboxInput from 'common/component/input/CheckboxInput';
 import TextInput from 'common/component/input/TextInput';
 import CollapsiblePane from 'common/component/CollapsiblePane';
 import FieldMappingField from 'common/component/input/FieldMappingField';
-import { DISTRIBUTION_COMMON_FIELD_KEYS } from 'page/distribution/DistributionModel';
-import TableSelectInput from 'common/component/input/TableSelectInput';
-import { createReadRequest } from 'common/util/configurationRequestBuilder';
+import { DISTRIBUTION_COMMON_FIELD_KEYS } from '../../../distribution/DistributionModel';
+import { createReadRequest } from '../../../../common/util/configurationRequestBuilder';
+import TableSelectInput from '../../../../common/component/input/TableSelectInput';
 
 const JiraServerDistributionConfiguration = ({
     csrfToken, data, setData, errors, readonly
@@ -16,7 +16,6 @@ const JiraServerDistributionConfiguration = ({
     if (!FieldModelUtilities.hasValue(data, JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueType)) {
         setData(FieldModelUtilities.updateFieldModelSingleValue(data, JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueType, 'Task'));
     }
-
     return (
         <>
             <TableSelectInput

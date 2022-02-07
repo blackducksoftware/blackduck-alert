@@ -90,6 +90,8 @@ const TableSelectInput = (props) => {
         let valueToUse = value;
         if (useRowAsValue && value && value.length > 0) {
             const areStringValues = value.every((option) => typeof option === 'string');
+            // TODO add read of a single value of the global configuration here.
+            // Create a global configuration component.
             if (areStringValues) {
                 valueToUse = value.map((option) => JSON.parse(option));
             }

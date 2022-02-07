@@ -204,16 +204,19 @@ const DistributionConfigurationForm = ({
                         readonly={readonly}
                     />
                 );
-            case JIRA_SERVER_INFO.key:
+            case JIRA_SERVER_INFO.key: {
+                const commonGlobalConfigId = FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId);
+                const jiraSpecificModel = FieldModelUtilities.updateFieldModelSingleValue(specificChannelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId, commonGlobalConfigId);
                 return (
                     <JiraServerDistributionConfiguration
                         csrfToken={csrfToken}
-                        data={specificChannelModel}
+                        data={jiraSpecificModel}
                         setData={setSpecificChannelModel}
                         errors={errors}
                         readonly={readonly}
                     />
                 );
+            }
             case MSTEAMS_INFO.key:
                 return (
                     <MsTeamsDistributionConfiguration

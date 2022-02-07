@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.channel.CommonChannelDistributionValidator;
 import com.synopsys.integration.alert.api.channel.jira.validation.JiraFieldMappingValidator;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
+import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
@@ -45,7 +46,7 @@ public class JiraServerDistributionConfigurationValidator implements Distributio
         ConfigurationFieldValidator configurationFieldValidator = ConfigurationFieldValidator.fromJobFieldModel(jobFieldModel);
 
         commonChannelDistributionValidator.validate(configurationFieldValidator);
-        configurationFieldValidator.validateRequiredFieldsAreNotBlank(JiraServerDescriptor.KEY_JIRA_PROJECT_NAME, JiraServerDescriptor.KEY_ISSUE_TYPE);
+        configurationFieldValidator.validateRequiredFieldsAreNotBlank(ChannelDescriptor.KEY_CHANNEL_GLOBAL_CONFIG_ID, JiraServerDescriptor.KEY_JIRA_PROJECT_NAME, JiraServerDescriptor.KEY_ISSUE_TYPE);
         configurationFieldValidator.validateRequiredRelatedSet(
             JiraServerDescriptor.KEY_OPEN_WORKFLOW_TRANSITION, JiraServerDescriptor.LABEL_OPEN_WORKFLOW_TRANSITION,
             JiraServerDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION
