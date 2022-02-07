@@ -30,14 +30,14 @@ import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 @RequestMapping(AlertRestConstants.JIRA_SERVER_CONFIGURATION_PATH)
 public class JiraServerGlobalConfigController implements StaticConfigResourceController<JiraServerGlobalConfigModel>, ValidateController<JiraServerGlobalConfigModel>, ReadPageController<AlertPagedModel<JiraServerGlobalConfigModel>> {
     private final JiraServerGlobalValidationAction jiraServerGlobalValidationAction;
-    private final IJiraServerGlobalTestAction jiraServerGlobalTestAction;
+    private final JiraServerGlobalTestAction jiraServerGlobalTestAction;
     private final JiraServerGlobalCrudActions configActions;
     private final JiraServerInstallPluginAction jiraServerInstallPluginAction;
 
     @Autowired
     public JiraServerGlobalConfigController(
         JiraServerGlobalValidationAction jiraServerGlobalValidationAction,
-        IJiraServerGlobalTestAction jiraServerGlobalTestAction,
+        JiraServerGlobalTestAction jiraServerGlobalTestAction,
         JiraServerGlobalCrudActions configActions,
         JiraServerInstallPluginAction jiraServerInstallPluginAction
     ) {

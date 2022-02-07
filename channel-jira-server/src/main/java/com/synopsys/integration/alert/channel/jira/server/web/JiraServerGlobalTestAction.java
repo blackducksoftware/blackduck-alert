@@ -16,16 +16,15 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.jira.JiraConstants;
-import com.synopsys.integration.alert.api.channel.jira.action.JiraGlobalFieldModelTestAction;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
+import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
 import com.synopsys.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.message.model.ConfigurationTestResult;
-import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.rest.api.ConfigurationTestHelper;
 import com.synopsys.integration.alert.common.rest.api.ConfigurationValidationHelper;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
@@ -40,9 +39,12 @@ import com.synopsys.integration.jira.common.server.service.IssueSearchService;
 import com.synopsys.integration.jira.common.server.service.JiraServerServiceFactory;
 import com.synopsys.integration.jira.common.server.service.MyPermissionsService;
 
-// FIXME Implement this class
 @Component
-public class JiraServerGlobalTestAction /* TODO: implements IJiraServerGlobalTestAction */ {
+public class JiraServerGlobalTestAction {
+    public static final String JIRA_ADMIN_PERMISSION_NAME = "ADMINISTER";
+
+    private static final String TEST_ERROR_MESSAGE = "An error occurred during testing: ";
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final ConfigurationValidationHelper validationHelper;
     private final ConfigurationTestHelper testHelper;
@@ -66,19 +68,28 @@ public class JiraServerGlobalTestAction /* TODO: implements IJiraServerGlobalTes
     }
 
     public ConfigurationTestResult testConfigModelContent(JiraServerGlobalConfigModel jiraServerGlobalConfigModel) {
-        //TODO:  Look into  JiraGlobalFieldModelTestAction for old test steps
-
-        //split JiraServerGlobalFieldModelTestAction into its own class, simplify the first two calls for the properties and service factory
-
-        return null; //TODO
-    }
-
-    public MessageResult testConfig(JiraServerGlobalConfigModel jiraServerGlobalConfigModel) throws IntegrationException {
         JiraServerProperties jiraProperties = jiraServerPropertiesFactory.createJiraProperties(jiraServerGlobalConfigModel);
-        JiraServerServiceFactory jiraServerServiceFactory = jiraProperties.createJiraServicesServerFactory(logger, gson);
+        try {
+            JiraServerServiceFactory jiraServerServiceFactory = jiraProperties.createJiraServicesServerFactory(logger, gson);
+            if (!canUserGetIssues(jiraServerServiceFactory)) {
+                return ConfigurationTestResult.failure(TEST_ERROR_MESSAGE + "User does not have access to view any issues in Jira.");
+            }
 
-        return MessageResult.success(); //TODO
+            if (isAppCheckEnabled(jiraServerGlobalConfigModel)) {
+                if (!isUserAdmin(jiraServerServiceFactory)) {
+                    return ConfigurationTestResult.failure(TEST_ERROR_MESSAGE + "The configured user must be an admin if 'Plugin Check' is enabled");
+                }
+
+                if (isAppMissing(jiraServerServiceFactory)) {
+                    return ConfigurationTestResult.failure(TEST_ERROR_MESSAGE + String.format("Please configure the '%s' plugin for your server.", JiraConstants.JIRA_ALERT_APP_NAME));
+                }
+            }
+        } catch (IntegrationException ex) {
+            return ConfigurationTestResult.failure(TEST_ERROR_MESSAGE + ex.getMessage());
+        }
+        return ConfigurationTestResult.success(String.format("Successfully connected to %s instance.", JiraServerDescriptor.JIRA_LABEL));
     }
+
 
     private boolean isAppCheckEnabled(JiraServerGlobalConfigModel jiraServerGlobalConfigModel) {
         return jiraServerGlobalConfigModel.getDisablePluginCheck().orElse(false);
@@ -98,8 +109,7 @@ public class JiraServerGlobalTestAction /* TODO: implements IJiraServerGlobalTes
     private boolean isUserAdmin(JiraServerServiceFactory jiraServerServiceFactory) throws IntegrationException {
         MyPermissionsService myPermissionsService = jiraServerServiceFactory.createMyPermissionsService();
         MultiPermissionResponseModel myPermissions = myPermissionsService.getMyPermissions();
-        PermissionModel adminPermission = myPermissions.extractPermission(JiraGlobalFieldModelTestAction.JIRA_ADMIN_PERMISSION_NAME);
+        PermissionModel adminPermission = myPermissions.extractPermission(JIRA_ADMIN_PERMISSION_NAME);
         return null != adminPermission && adminPermission.getHavePermission();
     }
-
 }
