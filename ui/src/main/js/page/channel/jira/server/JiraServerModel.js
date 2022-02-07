@@ -33,6 +33,6 @@ export const JIRA_SERVER_URLS = {
 };
 
 export const JIRA_SERVER_DISTRIBUTION_GLOBAL_CONFIG_COLUMNS = [
-    createTableSelectColumn('id', 'Jira Server Config Id', true, false, false),
-    createTableSelectColumn('name', 'Jira Server Name', false, true, true)
+    createTableSelectColumn('id', 'Jira Server Config Id', false, false, false),
+    createTableSelectColumn('name', 'Jira Server Name', true, true, true)
 ];

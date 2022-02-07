@@ -23,7 +23,7 @@ const JiraServerDistributionConfiguration = ({
                 id={DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId}
                 csrfToken={csrfToken}
                 endpoint="/api/configuration/jira_server"
-                fieldKey=""
+                fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId}
                 columns={JIRA_SERVER_DISTRIBUTION_GLOBAL_CONFIG_COLUMNS}
                 label="Jira Server"
                 description="Select a Jira server that will be used to create or update issues."
@@ -32,8 +32,13 @@ const JiraServerDistributionConfiguration = ({
                 searchable
                 useRowAsValue
                 createRequestBody={() => data}
-                createDataRequest={(apiUrl, csrftoken) => createReadRequest(apiUrl, csrftoken)}
-                onChange={FieldModelUtilities.handleChange(data, setData)}
+                createDataRequest={(apiUrl, csrftoken) => {
+                    const revisedUrl = apiUrl.replace(`/${DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId}`, '');
+                    return createReadRequest(revisedUrl, csrftoken);
+                }}
+                dataObjectKey="models"
+                selectMultiple={false}
+                onChange={FieldModelUtilities.handleSingleSelectChange('id', data, setData)}
                 value={FieldModelUtilities.getFieldModelValues(data, DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId)}
                 errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId)}
                 errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId]}

@@ -70,7 +70,9 @@ const TableSelectInput = (props) => {
         required,
         showDescriptionPlaceHolder,
         createRequestBody,
-        createDataRequest
+        createDataRequest,
+        dataObjectKey,
+        selectMultiple
     } = props;
     const [progress, setProgress] = useState(false);
     const [showTable, setShowTable] = useState(false);
@@ -166,9 +168,15 @@ const TableSelectInput = (props) => {
     };
 
     const onRowSelected = (row, isSelected) => {
-        const selected = Object.assign([], selectedData);
-        createSelectedArray(selected, row, isSelected);
-        setSelectedData(selected);
+        if (selectMultiple) {
+            const selected = Object.assign([], selectedData);
+            createSelectedArray(selected, row, isSelected);
+            setSelectedData(selected);
+        } else {
+            const selected = [];
+            selected.push(row);
+            setSelectedData(selected);
+        }
     };
 
     const createRowSelectionProps = () => {
@@ -181,8 +189,9 @@ const TableSelectInput = (props) => {
         } else {
             selectedRowData = selectedData;
         }
+
         return {
-            mode: 'checkbox',
+            mode: selectMultiple ? 'checkbox' : 'radio',
             clickToSelect: true,
             showOnlySelected: true,
             selected: selectedRowData,
@@ -203,7 +212,8 @@ const TableSelectInput = (props) => {
             setProgress(false);
             if (response.ok) {
                 return response.json().then((responseData) => {
-                    const { options, totalPages } = responseData;
+                    const { totalPages } = responseData;
+                    const options = responseData[dataObjectKey];
                     setData(options);
                     setTotalPageCount(totalPages);
                     return responseData;
@@ -219,7 +229,8 @@ const TableSelectInput = (props) => {
         const dataList = data.map((itemData) => Object.assign(itemData, { missing: false }));
         selectedData.forEach((selected) => {
             const missingAttribute = selected.missing;
-            if (missingAttribute !== undefined && missingAttribute) {
+            if ((missingAttribute !== undefined && missingAttribute)
+                || !dataList.some((element) => element === selected)) {
                 dataList.unshift(Object.assign(selected, { missing: true }));
             }
         });
@@ -403,7 +414,7 @@ const TableSelectInput = (props) => {
                         className="typeAheadField"
                         onChange={null}
                         options={[]}
-                        isMulti
+                        isMulti={selectMultiple}
                         components={selectComponents}
                         noOptionsMessage={null}
                         isDisabled
@@ -508,7 +519,9 @@ TableSelectInput.propTypes = {
     required: PropTypes.bool,
     showDescriptionPlaceHolder: PropTypes.bool,
     createRequestBody: PropTypes.func,
-    createDataRequest: PropTypes.func
+    createDataRequest: PropTypes.func,
+    dataObjectKey: PropTypes.string,
+    selectMultiple: PropTypes.bool
 };
 
 TableSelectInput.defaultProps = {
@@ -528,7 +541,9 @@ TableSelectInput.defaultProps = {
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
     required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
-    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT
+    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT,
+    dataObjectKey: 'options',
+    selectMultiple: true
 };
 
 export default TableSelectInput;
