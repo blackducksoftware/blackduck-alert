@@ -21,6 +21,7 @@ public abstract class ChannelDescriptor extends Descriptor {
     public static final String KEY_CHANNEL_NAME = KEY_COMMON_CHANNEL_PREFIX + "channel.name";
     public static final String KEY_NAME = KEY_COMMON_CHANNEL_PREFIX + "name";
     public static final String KEY_ENABLED = KEY_COMMON_CHANNEL_PREFIX + "enabled";
+    public static final String KEY_CHANNEL_GLOBAL_CONFIG_ID = KEY_COMMON_CHANNEL_PREFIX + "global.config.id";
 
     public static final String LABEL_ENABLED = "Enabled";
     public static final String LABEL_NAME = "Name";

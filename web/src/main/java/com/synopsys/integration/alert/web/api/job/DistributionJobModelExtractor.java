@@ -53,6 +53,7 @@ public final class DistributionJobModelExtractor {
             .distributionFrequency(distributionJobFieldExtractor.extractFieldValueOrEmptyString(ChannelDescriptor.KEY_FREQUENCY, configuredFieldsMap))
             .processingType(distributionJobFieldExtractor.extractFieldValueOrEmptyString(ProviderDescriptor.KEY_PROCESSING_TYPE, configuredFieldsMap))
             .channelDescriptorName(channelDescriptorName)
+            .channelGlobalConfigId(distributionJobFieldExtractor.extractFieldValue(ChannelDescriptor.KEY_CHANNEL_GLOBAL_CONFIG_ID, configuredFieldsMap).map(UUID::fromString).orElse(null))
             .createdAt(createdAt)
             .lastUpdated(lastUpdated)
 

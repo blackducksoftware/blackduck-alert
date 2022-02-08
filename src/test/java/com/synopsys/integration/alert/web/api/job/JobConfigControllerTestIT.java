@@ -249,6 +249,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
             FrequencyType.DAILY,
             ProcessingType.DEFAULT,
             ChannelKeys.SLACK.getUniversalKey(),
+            UUID.randomUUID(),
             blackDuckGlobalConfigId,
             false,
             null,

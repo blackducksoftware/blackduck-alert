@@ -149,6 +149,7 @@ class JmsNotificationReceiverTestIT {
             FrequencyType.REAL_TIME,
             ProcessingType.DEFAULT,
             ChannelKeys.SLACK.getUniversalKey(),
+            UUID.randomUUID(),
             blackDuckGlobalConfigId,
             false,
             ".*",

@@ -9,6 +9,7 @@ package com.synopsys.integration.alert.common.persistence.model.job;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -23,6 +24,7 @@ public abstract class DistributionJobModelData extends AlertSerializableModel {
     private final FrequencyType distributionFrequency;
     private final ProcessingType processingType;
     private final String channelDescriptorName;
+    private final UUID channelGlobalConfigId;
 
     // Black Duck fields will be common as long as it is the only provider
     private final Long blackDuckGlobalConfigId;
@@ -43,6 +45,7 @@ public abstract class DistributionJobModelData extends AlertSerializableModel {
         this.distributionFrequency = FrequencyType.REAL_TIME;
         this.processingType = ProcessingType.DEFAULT;
         this.channelDescriptorName = null;
+        this.channelGlobalConfigId = null;
         this.blackDuckGlobalConfigId = null;
         this.filterByProject = false;
         this.projectNamePattern = null;
@@ -60,6 +63,7 @@ public abstract class DistributionJobModelData extends AlertSerializableModel {
         FrequencyType distributionFrequency,
         ProcessingType processingType,
         String channelDescriptorName,
+        @Nullable UUID channelGlobalConfigId,
         Long blackDuckGlobalConfigId,
         boolean filterByProject,
         @Nullable String projectNamePattern,
@@ -75,6 +79,7 @@ public abstract class DistributionJobModelData extends AlertSerializableModel {
         this.distributionFrequency = distributionFrequency;
         this.processingType = processingType;
         this.channelDescriptorName = channelDescriptorName;
+        this.channelGlobalConfigId = channelGlobalConfigId;
         this.blackDuckGlobalConfigId = blackDuckGlobalConfigId;
         this.filterByProject = filterByProject;
         this.projectNamePattern = projectNamePattern;
@@ -104,6 +109,10 @@ public abstract class DistributionJobModelData extends AlertSerializableModel {
 
     public String getChannelDescriptorName() {
         return channelDescriptorName;
+    }
+
+    public UUID getChannelGlobalConfigId() {
+        return channelGlobalConfigId;
     }
 
     public Long getBlackDuckGlobalConfigId() {

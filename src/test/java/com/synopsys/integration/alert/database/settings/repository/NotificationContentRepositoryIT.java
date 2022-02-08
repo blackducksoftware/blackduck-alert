@@ -255,6 +255,7 @@ public class NotificationContentRepositoryIT {
             FrequencyType.REAL_TIME,
             ProcessingType.DEFAULT,
             ChannelKeys.SLACK.getUniversalKey(),
+            UUID.randomUUID(),
             providerConfigModel.getConfigurationId(),
             false,
             null,

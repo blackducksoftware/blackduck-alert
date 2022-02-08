@@ -8,6 +8,7 @@
 package com.synopsys.integration.alert.common.persistence.model.job;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -22,6 +23,7 @@ public class DistributionJobRequestModel extends DistributionJobModelData {
         FrequencyType distributionFrequency,
         ProcessingType processingType,
         String channelDescriptorName,
+        UUID channelGlobalConfigId,
         Long blackDuckGlobalConfigId,
         boolean filterByProject,
         @Nullable String projectNamePattern,
@@ -32,7 +34,8 @@ public class DistributionJobRequestModel extends DistributionJobModelData {
         List<String> vulnerabilityFilterSeverityNames,
         DistributionJobDetailsModel distributionJobDetails
     ) {
-        super(enabled, name, distributionFrequency, processingType, channelDescriptorName, blackDuckGlobalConfigId, filterByProject, projectNamePattern, projectVersionNamePattern, notificationTypes, projectFilterDetails,
+        super(enabled, name, distributionFrequency, processingType, channelDescriptorName, channelGlobalConfigId, blackDuckGlobalConfigId, filterByProject, projectNamePattern, projectVersionNamePattern, notificationTypes,
+            projectFilterDetails,
             policyFilterPolicyNames, vulnerabilityFilterSeverityNames, distributionJobDetails);
     }
 

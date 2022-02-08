@@ -185,6 +185,7 @@ public class JobNotificationMapperTestIT {
                 FrequencyType.REAL_TIME,
                 ProcessingType.DIGEST,
                 ChannelKeys.SLACK.getUniversalKey(),
+                UUID.randomUUID(),
                 0L,
                 true,
                 // Regex to verify we retrieve notifications without a number in the name (PROJECT_NAME_1)
@@ -210,6 +211,7 @@ public class JobNotificationMapperTestIT {
                 FrequencyType.REAL_TIME,
                 ProcessingType.DIGEST,
                 ChannelKeys.SLACK.getUniversalKey(),
+                UUID.randomUUID(),
                 0L,
                 true,
                 null,
@@ -338,6 +340,7 @@ public class JobNotificationMapperTestIT {
             frequencyType,
             processingType,
             ChannelKeys.SLACK.getUniversalKey(),
+            UUID.randomUUID(),
             0L,
             projectNames != null && !projectNames.isEmpty(),
             null,

@@ -63,7 +63,7 @@ public class JiraServerMessageSenderFactory implements IssueTrackerMessageSender
 
     @Override
     public IssueTrackerMessageSender<String> createMessageSender(JiraServerJobDetailsModel distributionDetails) throws AlertException {
-        JiraServerProperties jiraServerProperties = jiraServerPropertiesFactory.createJiraProperties();
+        JiraServerProperties jiraServerProperties = jiraServerPropertiesFactory.createJiraPropertiesWithJobId(distributionDetails.getJobId());
         JiraServerServiceFactory jiraServerServiceFactory = jiraServerProperties.createJiraServicesServerFactory(logger, gson);
 
         // Jira Services

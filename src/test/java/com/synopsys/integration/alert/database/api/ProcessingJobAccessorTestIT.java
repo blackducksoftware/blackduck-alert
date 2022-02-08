@@ -203,6 +203,7 @@ public class ProcessingJobAccessorTestIT {
             frequencyType,
             processingType,
             ChannelKeys.SLACK.getUniversalKey(),
+            UUID.randomUUID(),
             providerConfigId,
             projectNames != null && !projectNames.isEmpty(),
             null,

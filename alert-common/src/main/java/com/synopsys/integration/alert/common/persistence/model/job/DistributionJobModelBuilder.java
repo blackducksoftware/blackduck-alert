@@ -28,6 +28,7 @@ public class DistributionJobModelBuilder {
     private FrequencyType distributionFrequency;
     private ProcessingType processingType;
     private String channelDescriptorName;
+    private UUID channelGlobalConfigId;
     private OffsetDateTime createdAt;
     private OffsetDateTime lastUpdated;
 
@@ -66,6 +67,7 @@ public class DistributionJobModelBuilder {
             distributionFrequency,
             processingType,
             channelDescriptorName,
+            channelGlobalConfigId,
             createdAt,
             lastUpdated,
             blackDuckGlobalConfigId,
@@ -117,6 +119,11 @@ public class DistributionJobModelBuilder {
 
     public DistributionJobModelBuilder channelDescriptorName(String channelDescriptorName) {
         this.channelDescriptorName = channelDescriptorName;
+        return this;
+    }
+
+    public DistributionJobModelBuilder channelGlobalConfigId(UUID channelGlobalConfigId) {
+        this.channelGlobalConfigId = channelGlobalConfigId;
         return this;
     }
 
