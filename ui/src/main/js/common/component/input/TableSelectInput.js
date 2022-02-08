@@ -15,7 +15,7 @@ const { MultiValue, ValueContainer } = components;
 
 const typeLabel = (props) => {
     const { data } = props;
-    const missingItem = (data.missing) ? { textDecoration: 'line-through' } : {};
+    const missingItem = (data.missing) ? { textDecoration: 'line-through', marginLeft: '15px' } : {};
 
     return (
         <MultiValue {...props}>

@@ -14,7 +14,7 @@ const { SingleValue, ValueContainer } = components;
 
 const typeLabel = (props) => {
     const { data } = props;
-    const missingItem = (data.missing) ? { textDecoration: 'line-through' } : {};
+    const missingItem = (data.missing) ? { textDecoration: 'line-through', marginLeft: '15px' } : {};
 
     return (
         <SingleValue {...props}>
@@ -24,28 +24,16 @@ const typeLabel = (props) => {
 };
 
 const container = ({ children, getValue, ...props }) => {
-    const { length } = getValue();
     const error = (
-        <span className="missingData">
+        <div className="missingData">
             <FontAwesomeIcon icon="exclamation-triangle" className="alert-icon" size="lg" />
-        </span>
+        </div>
     );
     const hasError = getValue().find((value) => value.missing);
-    if (length <= 5) {
-        return (
-            <ValueContainer {...props}>
-                {children}
-                {hasError && error}
-            </ValueContainer>
-        );
-    }
-
     return (
         <ValueContainer {...props}>
-            {!props.selectProps.menuIsOpen
-                && `${length} Items selected`}
-            {React.cloneElement(children[1])}
             {hasError && error}
+            {children}
         </ValueContainer>
     );
 };
@@ -98,12 +86,12 @@ const GlobalConfigurationSelectInput = (props) => {
                 }
                 response.json().then((responseData) => {
                     setFieldError(responseData.message);
-                    return {
-                        id: value,
-                        name: `Unknown(${value})`,
-                        missing: true
-                    };
                 });
+                return {
+                    id: value,
+                    name: `Unknown(${value})`,
+                    missing: true
+                };
             });
             setDisplayedData({
                 label: configuration.name,
