@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.channel.jira.server.action.JiraServerGlobalCrudActions;
+import com.synopsys.integration.alert.channel.jira.server.action.JiraServerGlobalTestAction;
 import com.synopsys.integration.alert.channel.jira.server.action.JiraServerGlobalValidationAction;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;

@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.channel.jira.server.web;
+package com.synopsys.integration.alert.channel.jira.server.action;
 
 import java.util.function.Supplier;
 
@@ -92,7 +92,7 @@ public class JiraServerGlobalTestAction {
 
 
     private boolean isAppCheckEnabled(JiraServerGlobalConfigModel jiraServerGlobalConfigModel) {
-        return jiraServerGlobalConfigModel.getDisablePluginCheck().orElse(false);
+        return !jiraServerGlobalConfigModel.getDisablePluginCheck().orElse(false);
     }
 
     private boolean isAppMissing(JiraServerServiceFactory jiraServerServiceFactory) throws IntegrationException {
