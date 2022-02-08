@@ -270,13 +270,6 @@ export const handleChange = (data, setData) => ({ target }) => {
     setData(newState);
 };
 
-export const handleSingleSelectChange = (dataFieldKey, data, setData) => ({ target }) => {
-    const { type, name, value } = target;
-    const updatedValue = type === 'checkbox' ? target.checked.toString() : value;
-    const newState = Array.isArray(updatedValue) ? updateFieldModelSingleValue(data, name, updatedValue[0][dataFieldKey]) : updateFieldModelSingleValue(data, name, updatedValue);
-    setData(newState);
-};
-
 // TODO: This name can be misleading, consider changing to createDefaultInputChangeHandler to separate from old FieldModels
 export const handleTestChange = (testData, setTestData) => ({ target }) => {
     const { type, name, value } = target;
