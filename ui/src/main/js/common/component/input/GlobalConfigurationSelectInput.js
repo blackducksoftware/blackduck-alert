@@ -5,22 +5,21 @@ import LabeledField, { LabelFieldPropertyDefaults } from 'common/component/input
 import Select, { components } from 'react-select';
 import DescriptorOption from 'common/component/descriptor/DescriptorOption';
 import GeneralButton from 'common/component/button/GeneralButton';
-import { createNewConfigurationRequest } from 'common/util/configurationRequestBuilder';
+import { createReadRequest } from 'common/util/configurationRequestBuilder';
 import PropTypes from 'prop-types';
 import { Modal } from 'react-bootstrap';
-import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import ConfirmModal from 'common/component/ConfirmModal';
 
-const { MultiValue, ValueContainer } = components;
+const { SingleValue, ValueContainer } = components;
 
 const typeLabel = (props) => {
     const { data } = props;
     const missingItem = (data.missing) ? { textDecoration: 'line-through' } : {};
 
     return (
-        <MultiValue {...props}>
+        <SingleValue {...props}>
             <DescriptorOption style={missingItem} label={data.label} value={data.value} />
-        </MultiValue>
+        </SingleValue>
     );
 };
 
@@ -51,25 +50,15 @@ const container = ({ children, getValue, ...props }) => {
     );
 };
 
-export const createTableSelectColumn = (header, headerLabel, isKey, sortBy, visible) => ({
-    header,
-    headerLabel,
-    isKey,
-    sortBy,
-    hidden: !visible
-});
-
-// TODO remove currentConfig and requiredRelatedFields in favor of createRequestBody function.
-const TableSelectInput = (props) => {
+const GlobalConfigurationSelectInput = (props) => {
     const {
-        id, value, columns, useRowAsValue, onChange, fieldKey, csrfToken, currentConfig, endpoint, requiredRelatedFields, paged, searchable, readOnly,
+        id, value, columns, onChange, fieldKey, csrfToken, endpoint, paged, searchable, readOnly,
         description,
         errorName,
         errorValue,
         label,
         required,
-        showDescriptionPlaceHolder,
-        createRequestBody
+        showDescriptionPlaceHolder
     } = props;
     const [progress, setProgress] = useState(false);
     const [showTable, setShowTable] = useState(false);
@@ -78,38 +67,54 @@ const TableSelectInput = (props) => {
     const [totalPageCount, setTotalPageCount] = useState(0);
     const [currentSearchTerm, setCurrentSearchTerm] = useState('');
     const [data, setData] = useState([]);
-    const [selectedData, setSelectedData] = useState([]);
-    const [displayedData, setDisplayedData] = useState([]);
+    const [selectedData, setSelectedData] = useState(null);
+    const [displayedData, setDisplayedData] = useState(null);
     const [showClearConfirm, setShowClearConfirm] = useState(false);
     const [fieldError, setFieldError] = useState(null);
 
-    const loadSelectedValues = () => {
-        let valueToUse = value;
-        if (useRowAsValue && value && value.length > 0) {
-            const areStringValues = value.every((option) => typeof option === 'string');
-            if (areStringValues) {
-                valueToUse = value.map((option) => JSON.parse(option));
-            }
+    const loadSelectedValue = async () => {
+        if (value) {
+            setProgress(true);
+            const apiUrl = `/alert${endpoint}/${value}`;
+            const request = createReadRequest(apiUrl, csrfToken);
+            const configuration = await request.then((response) => {
+                setProgress(false);
+                if (response.ok) {
+                    return response.json().then((responseData) => {
+                        const { id: configId, name } = responseData;
+                        if (configId === value) {
+                            return {
+                                id: configId,
+                                name,
+                                missing: false
+                            };
+                        }
+                        return {
+                            id: value,
+                            name: `Unknown(${value})`,
+                            missing: true
+                        };
+                    });
+                }
+                response.json().then((responseData) => {
+                    setFieldError(responseData.message);
+                    return {
+                        id: value,
+                        name: `Unknown(${value})`,
+                        missing: true
+                    };
+                });
+            });
+            setDisplayedData({
+                label: configuration.name,
+                value: configuration,
+                missing: configuration.missing
+            });
+            setSelectedData(configuration);
         }
-        const loadedSelectedData = [];
-        loadedSelectedData.push(...valueToUse);
-
-        const keyColumnHeader = columns.find((column) => column.isKey).header;
-        const convertedValues = loadedSelectedData.map((selected) => {
-            const labelToUse = useRowAsValue ? selected[keyColumnHeader] : selected;
-            const isMissing = selected.missing !== undefined ? selected.missing : false;
-            return {
-                label: labelToUse,
-                value: selected,
-                missing: isMissing
-            };
-        });
-        setDisplayedData(convertedValues);
-        setSelectedData(loadedSelectedData);
     };
-
     useEffect(() => {
-        loadSelectedValues();
+        loadSelectedValue();
     }, []);
 
     const handleShowClearConfirm = () => {
@@ -121,89 +126,55 @@ const TableSelectInput = (props) => {
     };
 
     const handleClearClick = () => {
-        setSelectedData([]);
-        setDisplayedData([]);
+        setSelectedData(null);
+        setDisplayedData(null);
         setShowClearConfirm(false);
 
         onChange({
             target: {
                 name: fieldKey,
-                value: []
+                value: null
             }
         });
     };
 
-    const createSelectedArray = (selectedArray, row, isSelected) => {
-        const keyColumnHeader = columns.find((column) => column.isKey).header;
-        const rowKeyValue = row[keyColumnHeader];
-
-        if (isSelected) {
-            const itemFound = selectedArray.find((selectedItem) => (useRowAsValue ? selectedItem[keyColumnHeader] === rowKeyValue : selectedItem === rowKeyValue));
-            if (!itemFound) {
-                const rowData = (useRowAsValue) ? row : rowKeyValue;
-                selectedArray.push(rowData);
-            }
-        } else {
-            const index = useRowAsValue ? selectedArray.findIndex((selection) => selection[keyColumnHeader] === rowKeyValue) : selectedArray.indexOf(rowKeyValue);
-            if (index >= 0) {
-                // if found, remove that element from selected array
-                selectedArray.splice(index, 1);
-            }
-        }
-    };
-
-    const onRowSelectedAll = (isSelected, rows) => {
-        if (rows) {
-            const selected = Object.assign([], selectedData);
-            rows.forEach((row) => {
-                createSelectedArray(selected, row, isSelected);
-            });
-            setSelectedData(selected);
-        } else {
-            setSelectedData([]);
-        }
-    };
-
-    const onRowSelected = (row, isSelected) => {
-        const selected = Object.assign([], selectedData);
-        createSelectedArray(selected, row, isSelected);
-        setSelectedData(selected);
+    const onRowSelected = (row) => {
+        setSelectedData(row);
     };
 
     const createRowSelectionProps = () => {
         const keyColumnHeader = columns.find((column) => column.isKey).header;
+        const selectedRowData = selectedData ? [selectedData[keyColumnHeader]] : [];
 
-        const condition = selectedData && useRowAsValue;
-        let selectedRowData;
-        if (condition) {
-            selectedRowData = selectedData.map((itemData) => itemData[keyColumnHeader]);
-        } else {
-            selectedRowData = selectedData;
-        }
         return {
-            mode: 'checkbox',
+            mode: 'radio',
             clickToSelect: true,
             showOnlySelected: true,
             selected: selectedRowData,
-            onSelect: onRowSelected,
-            onSelectAll: onRowSelectedAll
+            onSelect: onRowSelected
         };
     };
 
     const retrieveTableData = async (uiPageNumber, pageSize, searchTerm) => {
         setProgress(true);
 
-        const newFieldModel = createRequestBody ? createRequestBody() : FieldModelUtilities.createFieldModelFromRequestedFields(currentConfig, requiredRelatedFields);
         const pageNumber = uiPageNumber ? uiPageNumber - 1 : 0;
         const encodedSearchTerm = encodeURIComponent(searchTerm);
-        const apiUrl = `/alert${endpoint}/${fieldKey}?pageNumber=${pageNumber}&pageSize=${pageSize}&searchTerm=${encodedSearchTerm}`;
-        const request = createNewConfigurationRequest(apiUrl, csrfToken, newFieldModel);
+        const apiUrl = `/alert${endpoint}?pageNumber=${pageNumber}&pageSize=${pageSize}&searchTerm=${encodedSearchTerm}`;
+        const request = createReadRequest(apiUrl, csrfToken);
         return request.then((response) => {
             setProgress(false);
             if (response.ok) {
                 return response.json().then((responseData) => {
-                    const { options, totalPages } = responseData;
-                    setData(options);
+                    const { models, totalPages } = responseData;
+                    const configData = models.map((configurationModel) => {
+                        const { id: configId, name } = configurationModel;
+                        return {
+                            id: configId,
+                            name
+                        };
+                    });
+                    setData(configData);
                     setTotalPageCount(totalPages);
                     return responseData;
                 });
@@ -216,12 +187,15 @@ const TableSelectInput = (props) => {
 
     const createDataList = () => {
         const dataList = data.map((itemData) => Object.assign(itemData, { missing: false }));
-        selectedData.forEach((selected) => {
-            const missingAttribute = selected.missing;
-            if (missingAttribute !== undefined && missingAttribute) {
-                dataList.unshift(Object.assign(selected, { missing: true }));
+        if (selectedData) {
+            if (!dataList.some((element) => element.id === selectedData.id)) {
+                dataList.unshift({
+                    id: selectedData.id,
+                    name: selectedData.name,
+                    missing: true
+                });
             }
-        });
+        }
         return dataList;
     };
 
@@ -293,17 +267,15 @@ const TableSelectInput = (props) => {
 
         const keyColumnHeader = columns.find((column) => column.isKey).header;
         const okClicked = () => {
-            const convertedValues = selectedData.map((selected) => {
-                const labelToUse = useRowAsValue ? selected[keyColumnHeader] : selected;
-                const isMissing = selected.missing !== undefined ? selected.missing : false;
-                return {
-                    label: labelToUse,
-                    value: selected,
-                    missing: isMissing
-                };
-            });
+            const labelToUse = selectedData[keyColumnHeader];
+            const isMissing = selectedData.missing !== undefined ? selectedData.missing : false;
+            const convertedValue = {
+                label: labelToUse,
+                value: selectedData,
+                missing: isMissing
+            };
             setShowTable(false);
-            setDisplayedData(convertedValues);
+            setDisplayedData(convertedValue);
             setCurrentPage(1);
             setCurrentPageSize(10);
             setCurrentSearchTerm('');
@@ -311,7 +283,7 @@ const TableSelectInput = (props) => {
             onChange({
                 target: {
                     name: fieldKey,
-                    value: selectedData
+                    value: selectedData.id
                 }
             });
         };
@@ -385,7 +357,7 @@ const TableSelectInput = (props) => {
 
     const createSelect = () => {
         const selectComponents = {
-            MultiValue: typeLabel,
+            SingleValue: typeLabel,
             ValueContainer: container,
             DropdownIndicator: null,
             MultiValueRemove: () => <div />
@@ -402,7 +374,7 @@ const TableSelectInput = (props) => {
                         className="typeAheadField"
                         onChange={null}
                         options={[]}
-                        isMulti
+                        isMulti={false}
                         components={selectComponents}
                         noOptionsMessage={null}
                         isDisabled
@@ -418,7 +390,7 @@ const TableSelectInput = (props) => {
                         >
                             Select
                         </GeneralButton>
-                        {selectedData && selectedData.length > 0
+                        {selectedData
                             && (
                                 <GeneralButton
                                     id={clearButtonId}
@@ -446,12 +418,8 @@ const TableSelectInput = (props) => {
     };
 
     const onHideTableSelectModal = () => {
-        const previousSelectedData = displayedData.map((currentValue) => ({
-            ...currentValue.value
-        }));
-
         setShowTable(false);
-        setSelectedData(previousSelectedData);
+        setSelectedData(displayedData && displayedData.value);
     };
 
     const tableModal = (
@@ -485,42 +453,33 @@ const TableSelectInput = (props) => {
         </div>
     );
 };
-
-TableSelectInput.propTypes = {
+GlobalConfigurationSelectInput.propTypes = {
     id: PropTypes.string,
     fieldKey: PropTypes.string.isRequired,
     endpoint: PropTypes.string.isRequired,
     csrfToken: PropTypes.string.isRequired,
-    currentConfig: PropTypes.object,
     columns: PropTypes.array.isRequired,
-    requiredRelatedFields: PropTypes.array,
     searchable: PropTypes.bool,
     onChange: PropTypes.func,
     paged: PropTypes.bool,
     readOnly: PropTypes.bool,
-    useRowAsValue: PropTypes.bool,
-    value: PropTypes.array,
+    value: PropTypes.string,
     description: PropTypes.string,
     errorName: PropTypes.string,
     errorValue: PropTypes.object,
     label: PropTypes.string.isRequired,
     required: PropTypes.bool,
-    showDescriptionPlaceHolder: PropTypes.bool,
-    createRequestBody: PropTypes.func
+    showDescriptionPlaceHolder: PropTypes.bool
 };
 
-TableSelectInput.defaultProps = {
-    id: 'tableSelectInputId',
-    currentConfig: {},
-    requiredRelatedFields: [],
+GlobalConfigurationSelectInput.defaultProps = {
+    id: 'GlobalConfigurationSelectInputId',
     searchable: true,
     onChange: () => {
     },
     paged: false,
     readOnly: false,
-    useRowAsValue: false,
-    value: [],
-    createRequestBody: null,
+    value: null,
     description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
@@ -528,4 +487,4 @@ TableSelectInput.defaultProps = {
     showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT
 };
 
-export default TableSelectInput;
+export default GlobalConfigurationSelectInput;

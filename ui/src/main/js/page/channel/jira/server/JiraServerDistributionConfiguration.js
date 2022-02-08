@@ -6,9 +6,8 @@ import CheckboxInput from 'common/component/input/CheckboxInput';
 import TextInput from 'common/component/input/TextInput';
 import CollapsiblePane from 'common/component/CollapsiblePane';
 import FieldMappingField from 'common/component/input/FieldMappingField';
-import { DISTRIBUTION_COMMON_FIELD_KEYS } from '../../../distribution/DistributionModel';
-import { createReadRequest } from '../../../../common/util/configurationRequestBuilder';
-import TableSelectInput from '../../../../common/component/input/TableSelectInput';
+import { DISTRIBUTION_COMMON_FIELD_KEYS } from 'page/distribution/DistributionModel';
+import GlobalConfigurationSelectInput from 'common/component/input/GlobalConfigurationSelectInput';
 
 const JiraServerDistributionConfiguration = ({
     csrfToken, data, setData, errors, readonly
@@ -16,9 +15,10 @@ const JiraServerDistributionConfiguration = ({
     if (!FieldModelUtilities.hasValue(data, JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueType)) {
         setData(FieldModelUtilities.updateFieldModelSingleValue(data, JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueType, 'Task'));
     }
+    // TODO make configuration select searchable but requires support in the backend
     return (
         <>
-            <TableSelectInput
+            <GlobalConfigurationSelectInput
                 id={DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId}
                 csrfToken={csrfToken}
                 endpoint="/api/configuration/jira_server"
@@ -28,17 +28,8 @@ const JiraServerDistributionConfiguration = ({
                 description="Select a Jira server that will be used to create or update issues."
                 readOnly={readonly}
                 paged
-                searchable
-                useRowAsValue
-                createRequestBody={() => data}
-                createDataRequest={(apiUrl, csrftoken) => {
-                    const revisedUrl = apiUrl.replace(`/${DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId}`, '');
-                    return createReadRequest(revisedUrl, csrftoken);
-                }}
-                dataObjectKey="models"
-                selectMultiple={false}
-                onChange={FieldModelUtilities.handleSingleSelectChange('id', data, setData)}
-                value={FieldModelUtilities.getFieldModelValues(data, DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId)}
+                onChange={FieldModelUtilities.handleChange(data, setData)}
+                value={FieldModelUtilities.getFieldModelSingleValue(data, DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId)}
                 errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId)}
                 errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId]}
             />
