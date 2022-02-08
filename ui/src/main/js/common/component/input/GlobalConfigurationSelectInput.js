@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BootstrapTable, SearchField, TableHeaderColumn } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import LabeledField, { LabelFieldPropertyDefaults } from 'common/component/input/field/LabeledField';
 import Select, { components } from 'react-select';
@@ -52,7 +52,7 @@ const container = ({ children, getValue, ...props }) => {
 
 const GlobalConfigurationSelectInput = (props) => {
     const {
-        id, value, columns, onChange, fieldKey, csrfToken, endpoint, paged, searchable, readOnly,
+        id, value, columns, onChange, fieldKey, csrfToken, endpoint, paged, readOnly,
         description,
         errorName,
         errorValue,
@@ -227,23 +227,12 @@ const GlobalConfigurationSelectInput = (props) => {
         const noTableDataMessage = fieldError || 'No data found';
         const tableOptions = {
             noDataText: noTableDataMessage,
-            clearSearch: true,
             defaultSortName,
             defaultSortOrder: 'asc',
-
-            searchDelayTime: 750,
-            searchField: (searchFieldProps) => (
-                <SearchField
-                    defaultValue={currentSearchTerm}
-                    placeholder="Search"
-                />
-            ),
-
             sizePerPage: currentPageSize,
             page: currentPage,
             onPageChange,
-            onSizePerPageListChange,
-            onSearchChange
+            onSizePerPageListChange
         };
 
         const projectsSelectRowProp = createRowSelectionProps();
@@ -327,7 +316,7 @@ const GlobalConfigurationSelectInput = (props) => {
                         trClassName="tableRow"
                         headerContainerClass="scrollable"
                         bodyContainerClass="tableScrollableBody"
-                        search={searchable}
+                        search={false}
                         pagination={paged}
                         remote
                         fetchInfo={tableFetchInfo}
@@ -459,7 +448,6 @@ GlobalConfigurationSelectInput.propTypes = {
     endpoint: PropTypes.string.isRequired,
     csrfToken: PropTypes.string.isRequired,
     columns: PropTypes.array.isRequired,
-    searchable: PropTypes.bool,
     onChange: PropTypes.func,
     paged: PropTypes.bool,
     readOnly: PropTypes.bool,
@@ -474,7 +462,6 @@ GlobalConfigurationSelectInput.propTypes = {
 
 GlobalConfigurationSelectInput.defaultProps = {
     id: 'GlobalConfigurationSelectInputId',
-    searchable: true,
     onChange: () => {
     },
     paged: false,
