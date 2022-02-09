@@ -96,7 +96,8 @@ public class DefaultDistributionAccessor implements DistributionAccessor {
 
         try {
             OffsetDateTime storedDateTime = DateUtils.parseDate(currentTimeLastSent, DateUtils.AUDIT_DATE_FORMAT);
-            if (entity.getAuditTimeLastSent().compareTo(storedDateTime) > 0) {
+            OffsetDateTime timeLastSent = entity.getAuditTimeLastSent();
+            if (timeLastSent != null && timeLastSent.compareTo(storedDateTime) > 0) {
                 existingInfos.put(jobId, convert(entity));
             }
         } catch (ParseException e) {
