@@ -166,7 +166,7 @@ public class DefaultDistributionAccessorTestIT {
         assertNotNull(queryResult);
 
         List<DistributionWithAuditInfo> distributionWithAuditInfos = queryResult.getModels();
-        assertEquals(5, distributionWithAuditInfos.size());
+        assertEquals(6, distributionWithAuditInfos.size());
 
         for (Map.Entry<DistributionJobEntity, List<AuditEntryEntity>> jobAndAudits : jobAndAuditData.entrySet()) {
             DistributionJobEntity distributionJobEntity = jobAndAudits.getKey();
@@ -231,18 +231,21 @@ public class DefaultDistributionAccessorTestIT {
         DistributionJobEntity thirdJob = createJobEntity(slackKey);
         DistributionJobEntity fourthJob = createJobEntity(slackKey);
         DistributionJobEntity fifthJob = createJobEntity(msTeamsKey);
+        DistributionJobEntity sixthJob = createJobEntity(msTeamsKey);
 
         DistributionJobEntity firstJobSaved = distributionJobRepository.save(firstJob);
         DistributionJobEntity secondJobSaved = distributionJobRepository.save(secondJob);
         DistributionJobEntity thirdJobSaved = distributionJobRepository.save(thirdJob);
         DistributionJobEntity fourthJobSaved = distributionJobRepository.save(fourthJob);
         DistributionJobEntity fifthJobSaved = distributionJobRepository.save(fifthJob);
+        DistributionJobEntity sixthJobSaved = distributionJobRepository.save(sixthJob);
 
         createdJobs.add(firstJobSaved.getJobId());
         createdJobs.add(secondJobSaved.getJobId());
         createdJobs.add(thirdJobSaved.getJobId());
         createdJobs.add(fourthJobSaved.getJobId());
         createdJobs.add(fifthJobSaved.getJobId());
+        createdJobs.add(sixthJobSaved.getJobId());
 
         AuditEntryEntity firstAudit = createAuditEntryEntity(firstJob.getJobId(), OffsetDateTime.now(), AuditEntryStatus.SUCCESS);
         AuditEntryEntity secondAudit = createAuditEntryEntity(firstJob.getJobId(), OffsetDateTime.now().minusDays(1), AuditEntryStatus.PENDING);
@@ -250,8 +253,11 @@ public class DefaultDistributionAccessorTestIT {
         AuditEntryEntity fourthAudit = createAuditEntryEntity(fourthJob.getJobId(), OffsetDateTime.now().minusHours(1), AuditEntryStatus.SUCCESS);
         AuditEntryEntity fifthAudit = createAuditEntryEntity(fifthJob.getJobId(), OffsetDateTime.now().minusHours(2), AuditEntryStatus.SUCCESS);
         AuditEntryEntity sixthAudit = createAuditEntryEntity(fifthJob.getJobId(), OffsetDateTime.now().minusMinutes(2), AuditEntryStatus.FAILURE);
+        AuditEntryEntity seventhAudit = createAuditEntryEntity(sixthJob.getJobId(), null, AuditEntryStatus.SUCCESS);
+        AuditEntryEntity eighthAudit = createAuditEntryEntity(sixthJob.getJobId(), OffsetDateTime.now(), AuditEntryStatus.FAILURE);
+        AuditEntryEntity ninthAudit = createAuditEntryEntity(sixthJob.getJobId(), null, AuditEntryStatus.PENDING);
 
-        saveAllAudits(List.of(firstAudit, secondAudit, thirdAudit, fourthAudit, fifthAudit, sixthAudit));
+        saveAllAudits(List.of(firstAudit, secondAudit, thirdAudit, fourthAudit, fifthAudit, sixthAudit, seventhAudit, eighthAudit));
 
         return Map.of(
             firstJobSaved, List.of(firstAudit, secondAudit),
