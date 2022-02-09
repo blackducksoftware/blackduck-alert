@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.jira.JiraConstants;
-import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
@@ -31,13 +30,6 @@ import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.model.response.MultiPermissionResponseModel;
-import com.synopsys.integration.jira.common.model.response.PermissionModel;
-import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
-import com.synopsys.integration.jira.common.server.model.IssueSearchResponseModel;
-import com.synopsys.integration.jira.common.server.service.IssueSearchService;
-import com.synopsys.integration.jira.common.server.service.JiraServerServiceFactory;
-import com.synopsys.integration.jira.common.server.service.MyPermissionsService;
 
 @Component
 public class JiraServerGlobalTestAction {
@@ -59,7 +51,6 @@ public class JiraServerGlobalTestAction {
         this.validator = validator;
         this.jiraServerPropertiesFactory = jiraServerPropertiesFactory;
         this.gson = gson;
-
     }
 
     public ActionResponse<ValidationResponseModel> testWithPermissionCheck(JiraServerGlobalConfigModel requestResource) {
@@ -68,19 +59,18 @@ public class JiraServerGlobalTestAction {
     }
 
     public ConfigurationTestResult testConfigModelContent(JiraServerGlobalConfigModel jiraServerGlobalConfigModel) {
-        JiraServerProperties jiraProperties = jiraServerPropertiesFactory.createJiraProperties(jiraServerGlobalConfigModel);
         try {
-            JiraServerServiceFactory jiraServerServiceFactory = jiraProperties.createJiraServicesServerFactory(logger, gson);
-            if (!canUserGetIssues(jiraServerServiceFactory)) {
+            JiraServerGlobalTestActionWrapper testActionWrapper = new JiraServerGlobalTestActionWrapper(jiraServerPropertiesFactory, gson, jiraServerGlobalConfigModel);
+            if (!testActionWrapper.canUserGetIssues()) {
                 return ConfigurationTestResult.failure(TEST_ERROR_MESSAGE + "User does not have access to view any issues in Jira.");
             }
 
-            if (isAppCheckEnabled(jiraServerGlobalConfigModel)) {
-                if (!isUserAdmin(jiraServerServiceFactory)) {
+            if (testActionWrapper.isAppCheckEnabled()) {
+                if (!testActionWrapper.isUserAdmin()) {
                     return ConfigurationTestResult.failure(TEST_ERROR_MESSAGE + "The configured user must be an admin if 'Plugin Check' is enabled");
                 }
 
-                if (isAppMissing(jiraServerServiceFactory)) {
+                if (testActionWrapper.isAppMissing()) {
                     return ConfigurationTestResult.failure(TEST_ERROR_MESSAGE + String.format("Please configure the '%s' plugin for your server.", JiraConstants.JIRA_ALERT_APP_NAME));
                 }
             }
@@ -88,28 +78,5 @@ public class JiraServerGlobalTestAction {
             return ConfigurationTestResult.failure(TEST_ERROR_MESSAGE + ex.getMessage());
         }
         return ConfigurationTestResult.success(String.format("Successfully connected to %s instance.", JiraServerDescriptor.JIRA_LABEL));
-    }
-
-
-    private boolean isAppCheckEnabled(JiraServerGlobalConfigModel jiraServerGlobalConfigModel) {
-        return !jiraServerGlobalConfigModel.getDisablePluginCheck().orElse(false);
-    }
-
-    private boolean isAppMissing(JiraServerServiceFactory jiraServerServiceFactory) throws IntegrationException {
-        PluginManagerService jiraAppService = jiraServerServiceFactory.createPluginManagerService();
-        return !jiraAppService.isAppInstalled(JiraConstants.JIRA_APP_KEY);
-    }
-
-    private boolean canUserGetIssues(JiraServerServiceFactory jiraServerServiceFactory) throws IntegrationException {
-        IssueSearchService issueSearchService = jiraServerServiceFactory.createIssueSearchService();
-        IssueSearchResponseModel issueSearchResponseModel = issueSearchService.queryForIssuePage("", 0, 1);
-        return !issueSearchResponseModel.getIssues().isEmpty();
-    }
-
-    private boolean isUserAdmin(JiraServerServiceFactory jiraServerServiceFactory) throws IntegrationException {
-        MyPermissionsService myPermissionsService = jiraServerServiceFactory.createMyPermissionsService();
-        MultiPermissionResponseModel myPermissions = myPermissionsService.getMyPermissions();
-        PermissionModel adminPermission = myPermissions.extractPermission(JIRA_ADMIN_PERMISSION_NAME);
-        return null != adminPermission && adminPermission.getHavePermission();
     }
 }
