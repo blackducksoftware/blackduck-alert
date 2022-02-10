@@ -9,14 +9,10 @@ package com.synopsys.integration.alert.channel.jira.server.action;
 
 import java.util.function.Supplier;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.jira.JiraConstants;
-import com.synopsys.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
 import com.synopsys.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationValidator;
@@ -37,20 +33,17 @@ public class JiraServerGlobalTestAction {
 
     private static final String TEST_ERROR_MESSAGE = "An error occurred during testing: ";
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final ConfigurationValidationHelper validationHelper;
     private final ConfigurationTestHelper testHelper;
     private final JiraServerGlobalConfigurationValidator validator;
-    private final JiraServerPropertiesFactory jiraServerPropertiesFactory;
-    private final Gson gson;
+    private final JiraServerTestActionFactory jiraServerTestActionFactory;
 
     @Autowired
-    public JiraServerGlobalTestAction(AuthorizationManager authorizationManager, JiraServerGlobalConfigurationValidator validator, JiraServerPropertiesFactory jiraServerPropertiesFactory, Gson gson) {
+    public JiraServerGlobalTestAction(AuthorizationManager authorizationManager, JiraServerGlobalConfigurationValidator validator, JiraServerTestActionFactory jiraServerTestActionFactory) {
         this.testHelper = new ConfigurationTestHelper(authorizationManager, ConfigContextEnum.GLOBAL, ChannelKeys.JIRA_SERVER);
         this.validationHelper = new ConfigurationValidationHelper(authorizationManager, ConfigContextEnum.GLOBAL, ChannelKeys.JIRA_SERVER);
         this.validator = validator;
-        this.jiraServerPropertiesFactory = jiraServerPropertiesFactory;
-        this.gson = gson;
+        this.jiraServerTestActionFactory = jiraServerTestActionFactory;
     }
 
     public ActionResponse<ValidationResponseModel> testWithPermissionCheck(JiraServerGlobalConfigModel requestResource) {
@@ -60,7 +53,7 @@ public class JiraServerGlobalTestAction {
 
     public ConfigurationTestResult testConfigModelContent(JiraServerGlobalConfigModel jiraServerGlobalConfigModel) {
         try {
-            JiraServerGlobalTestActionWrapper testActionWrapper = new JiraServerGlobalTestActionWrapper(jiraServerPropertiesFactory, gson, jiraServerGlobalConfigModel);
+            JiraServerGlobalTestActionWrapper testActionWrapper = jiraServerTestActionFactory.createTestActionWrapper(jiraServerGlobalConfigModel);
             if (!testActionWrapper.canUserGetIssues()) {
                 return ConfigurationTestResult.failure(TEST_ERROR_MESSAGE + "User does not have access to view any issues in Jira.");
             }
