@@ -84,6 +84,12 @@ public class DefaultDistributionAccessorTestIT {
 
     @Test
     @Transactional
+    public void verifyValidityOfQueryWithNullsTest() {
+        assertValidQueryFunctionality(() -> distributionAccessor.getDistributionWithAuditInfo(0, 100, null, null, getAllDescriptorNames()));
+    }
+
+    @Test
+    @Transactional
     public void sortByNameDESCTest() {
         assertSorted("name", Direction.DESC, DistributionWithAuditInfo::getJobName);
     }
@@ -257,7 +263,7 @@ public class DefaultDistributionAccessorTestIT {
         AuditEntryEntity eighthAudit = createAuditEntryEntity(sixthJob.getJobId(), OffsetDateTime.now(), AuditEntryStatus.FAILURE);
         AuditEntryEntity ninthAudit = createAuditEntryEntity(sixthJob.getJobId(), null, AuditEntryStatus.PENDING);
 
-        saveAllAudits(List.of(firstAudit, secondAudit, thirdAudit, fourthAudit, fifthAudit, sixthAudit, seventhAudit, eighthAudit));
+        saveAllAudits(List.of(firstAudit, secondAudit, thirdAudit, fourthAudit, fifthAudit, sixthAudit, seventhAudit, eighthAudit, ninthAudit));
 
         return Map.of(
             firstJobSaved, List.of(firstAudit, secondAudit),
