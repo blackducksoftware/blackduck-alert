@@ -69,11 +69,17 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
     public Optional<EmailGlobalConfigModel> getConfigurationByName(String configurationName) {
         return emailConfigurationRepository.findByName(configurationName).map(this::createConfigModel);
     }
-    
+
     @Override
     @Transactional(readOnly = true)
     public boolean existsConfigurationByName(String configurationName) {
         return emailConfigurationRepository.existsByName(configurationName);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existsConfigurationById(UUID id) {
+        return emailConfigurationRepository.existsByConfigurationId(id);
     }
 
     @Override

@@ -18,4 +18,6 @@ public interface EmailConfigurationRepository extends JpaRepository<EmailConfigu
 
     boolean existsByName(String name);
 
+    boolean existsByConfigurationId(UUID uuid);
+
 }
