@@ -16,4 +16,6 @@ public interface JiraServerConfigurationRepository extends JpaRepository<JiraSer
     Optional<JiraServerConfigurationEntity> findByName(String name);
 
     boolean existsByName(String name);
+
+    boolean existsByConfigurationId(UUID uuid);
 }

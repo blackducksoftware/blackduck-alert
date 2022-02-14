@@ -117,7 +117,7 @@ public class JiraServerGlobalCrudActionsTest {
     void updateTest() throws AlertConfigurationException {
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel = createJiraServerGlobalConfigModel(id);
         JiraServerGlobalConfigAccessor configAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
-        Mockito.when(configAccessor.getConfiguration(id)).thenReturn(Optional.of(jiraServerGlobalConfigModel));
+        Mockito.when(configAccessor.existsConfigurationById(id)).thenReturn(true);
         Mockito.when(configAccessor.updateConfiguration(Mockito.eq(id), Mockito.any())).thenReturn(jiraServerGlobalConfigModel);
 
         JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator);
@@ -131,9 +131,8 @@ public class JiraServerGlobalCrudActionsTest {
 
     @Test
     void deleteTest() {
-        JiraServerGlobalConfigModel jiraServerGlobalConfigModel = createJiraServerGlobalConfigModel(id);
         JiraServerGlobalConfigAccessor configAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
-        Mockito.when(configAccessor.getConfiguration(id)).thenReturn(Optional.of(jiraServerGlobalConfigModel));
+        Mockito.when(configAccessor.existsConfigurationById(id)).thenReturn(true);
 
         JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator);
         ActionResponse<JiraServerGlobalConfigModel> actionResponse = crudActions.delete(id);
