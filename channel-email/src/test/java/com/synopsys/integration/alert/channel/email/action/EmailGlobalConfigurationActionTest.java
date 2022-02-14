@@ -93,7 +93,7 @@ public class EmailGlobalConfigurationActionTest {
         model.setSmtpAuth(true);
         model.setSmtpUsername("user");
         model.setSmtpPassword("password");
-        Mockito.when(emailGlobalConfigAccessor.getConfiguration(Mockito.any(UUID.class))).thenReturn(Optional.of(model));
+        Mockito.when(emailGlobalConfigAccessor.existsConfigurationById(Mockito.any(UUID.class))).thenReturn(true);
         Mockito.when(emailGlobalConfigAccessor.updateConfiguration(Mockito.any(UUID.class), Mockito.eq(model))).thenReturn(model);
 
         EmailGlobalCrudActions configActions = new EmailGlobalCrudActions(authorizationManager, emailGlobalConfigAccessor, validator);
@@ -113,13 +113,7 @@ public class EmailGlobalConfigurationActionTest {
         UUID configId = UUID.randomUUID();
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailGlobalConfigAccessor emailGlobalConfigAccessor = Mockito.mock(EmailGlobalConfigAccessor.class);
-        EmailGlobalConfigModel model = new EmailGlobalConfigModel();
-        model.setSmtpHost("host");
-        model.setSmtpFrom("from");
-        model.setSmtpAuth(true);
-        model.setSmtpUsername("user");
-        model.setSmtpPassword("password");
-        Mockito.when(emailGlobalConfigAccessor.getConfiguration(Mockito.any(UUID.class))).thenReturn(Optional.of(model));
+        Mockito.when(emailGlobalConfigAccessor.existsConfigurationById(Mockito.any(UUID.class))).thenReturn(true);
 
         EmailGlobalCrudActions configActions = new EmailGlobalCrudActions(authorizationManager, emailGlobalConfigAccessor, validator);
         ActionResponse<EmailGlobalConfigModel> response = configActions.delete(configId);

@@ -68,6 +68,12 @@ public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<Jir
 
     @Override
     @Transactional(readOnly = true)
+    public boolean existsConfigurationById(UUID id) {
+        return jiraServerConfigurationRepository.existsByConfigurationId(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public AlertPagedModel<JiraServerGlobalConfigModel> getConfigurationPage(int page, int size) {
         Page<JiraServerConfigurationEntity> resultPage = jiraServerConfigurationRepository.findAll(PageRequest.of(page, size));
         List<JiraServerGlobalConfigModel> pageContent = resultPage.getContent()

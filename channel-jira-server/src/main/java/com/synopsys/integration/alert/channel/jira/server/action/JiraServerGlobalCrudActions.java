@@ -54,14 +54,14 @@ public class JiraServerGlobalCrudActions {
     public ActionResponse<JiraServerGlobalConfigModel> update(UUID id, JiraServerGlobalConfigModel requestResource) {
         return configurationHelper.update(
             () -> validator.validate(requestResource),
-            () -> configurationAccessor.getConfiguration(id).isPresent(),
+            () -> configurationAccessor.existsConfigurationById(id),
             () -> configurationAccessor.updateConfiguration(id, requestResource)
         );
     }
     
     public ActionResponse<JiraServerGlobalConfigModel> delete(UUID id) {
         return configurationHelper.delete(
-            () -> configurationAccessor.getConfiguration(id).isPresent(),
+            () -> configurationAccessor.existsConfigurationById(id),
             () -> configurationAccessor.deleteConfiguration(id)
         );
     }

@@ -54,14 +54,14 @@ public class EmailGlobalCrudActions {
     public ActionResponse<EmailGlobalConfigModel> update(UUID id, EmailGlobalConfigModel requestResource) {
         return configurationHelper.update(
             () -> validator.validate(requestResource),
-            () -> configurationAccessor.getConfiguration(id).isPresent(),
+            () -> configurationAccessor.existsConfigurationById(id),
             () -> configurationAccessor.updateConfiguration(id, requestResource)
         );
     }
 
     public ActionResponse<EmailGlobalConfigModel> delete(UUID id) {
         return configurationHelper.delete(
-            () -> configurationAccessor.getConfiguration(id).isPresent(),
+            () -> configurationAccessor.existsConfigurationById(id),
             () -> configurationAccessor.deleteConfiguration(id)
         );
     }

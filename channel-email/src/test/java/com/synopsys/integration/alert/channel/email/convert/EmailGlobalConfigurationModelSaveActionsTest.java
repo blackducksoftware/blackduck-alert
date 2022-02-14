@@ -16,6 +16,10 @@ import org.mockito.Mockito;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.email.action.EmailGlobalCrudActions;
 import com.synopsys.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
+import com.synopsys.integration.alert.channel.email.database.configuration.EmailConfigurationEntity;
+import com.synopsys.integration.alert.channel.email.database.configuration.EmailConfigurationRepository;
+import com.synopsys.integration.alert.channel.email.database.configuration.properties.EmailConfigurationPropertiesRepository;
+import com.synopsys.integration.alert.channel.email.database.configuration.properties.EmailConfigurationsPropertyEntity;
 import com.synopsys.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -26,10 +30,6 @@ import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixM
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.channel.email.database.configuration.EmailConfigurationEntity;
-import com.synopsys.integration.alert.channel.email.database.configuration.EmailConfigurationRepository;
-import com.synopsys.integration.alert.channel.email.database.configuration.properties.EmailConfigurationPropertiesRepository;
-import com.synopsys.integration.alert.channel.email.database.configuration.properties.EmailConfigurationsPropertyEntity;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
@@ -142,6 +142,7 @@ class EmailGlobalConfigurationModelSaveActionsTest {
 
         Mockito.when(emailConfigurationRepository.findByName(Mockito.anyString())).thenAnswer(invocation -> Optional.ofNullable(savedEntity.get()));
         Mockito.when(emailConfigurationRepository.findById(Mockito.any())).thenAnswer(invocation -> Optional.ofNullable(savedEntity.get()));
+        Mockito.when(emailConfigurationRepository.existsByConfigurationId(Mockito.any())).thenAnswer(invocation -> savedEntity.get() != null);
 
         Mockito.when(emailConfigurationPropertiesRepository.saveAll(Mockito.any(List.class))).thenAnswer(invocation -> {
             Iterable<EmailConfigurationsPropertyEntity> iterable = invocation.getArgument(0);
@@ -193,6 +194,7 @@ class EmailGlobalConfigurationModelSaveActionsTest {
 
         Mockito.when(emailConfigurationRepository.findByName(Mockito.anyString())).thenAnswer(invocation -> Optional.ofNullable(savedEntity.get()));
         Mockito.when(emailConfigurationRepository.findById(Mockito.any())).thenAnswer(invocation -> Optional.ofNullable(savedEntity.get()));
+        Mockito.when(emailConfigurationRepository.existsByConfigurationId(Mockito.any())).thenAnswer(invocation -> savedEntity.get() != null);
 
         Mockito.when(emailConfigurationPropertiesRepository.saveAll(Mockito.any(List.class))).thenAnswer(invocation -> {
             Iterable<EmailConfigurationsPropertyEntity> iterable = invocation.getArgument(0);
@@ -238,6 +240,7 @@ class EmailGlobalConfigurationModelSaveActionsTest {
 
         Mockito.when(emailConfigurationRepository.findByName(Mockito.anyString())).thenAnswer(invocation -> Optional.ofNullable(savedEntity.get()));
         Mockito.when(emailConfigurationRepository.findById(Mockito.any())).thenAnswer(invocation -> Optional.ofNullable(savedEntity.get()));
+        Mockito.when(emailConfigurationRepository.existsByConfigurationId(Mockito.any())).thenAnswer(invocation -> savedEntity.get() != null);
 
         Mockito.when(emailConfigurationPropertiesRepository.saveAll(Mockito.any(List.class))).thenAnswer(invocation -> {
             Iterable<EmailConfigurationsPropertyEntity> iterable = invocation.getArgument(0);
@@ -281,6 +284,7 @@ class EmailGlobalConfigurationModelSaveActionsTest {
 
         Mockito.when(emailConfigurationRepository.findByName(Mockito.anyString())).thenAnswer(invocation -> Optional.ofNullable(savedEntity.get()));
         Mockito.when(emailConfigurationRepository.findById(Mockito.any())).thenAnswer(invocation -> Optional.ofNullable(savedEntity.get()));
+        Mockito.when(emailConfigurationRepository.existsByConfigurationId(Mockito.any())).thenAnswer(invocation -> savedEntity.get() != null);
         Mockito.doAnswer(invocation -> {
             savedEntity.set(null);
             savedProperty.set(null);
