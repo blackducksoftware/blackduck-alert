@@ -31,6 +31,12 @@ const FluidFieldMappingField = ({
     });
 
     useEffect(() => {
+        if (Object.keys(value).length === 0) {
+            setFieldMappings([]);
+        }
+    }, [value]);
+
+    useEffect(() => {
         const updatedMappings = {};
         fieldMappings.filter((mapping) => Object.keys(mapping).length === 1).forEach((mapping) => {
             Object.assign(updatedMappings, mapping);
