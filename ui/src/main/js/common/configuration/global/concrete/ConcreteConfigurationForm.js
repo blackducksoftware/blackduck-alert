@@ -124,7 +124,7 @@ const ConcreteConfigurationForm = ({
         if (formDataId) {
             const response = await deleteRequest(formDataId);
             if (response.ok) {
-                getRequest();
+                await getRequest();
                 setActionMessage('Delete Successful');
             } else {
                 const errorObject = errorHandler.handle(response, await response.json(), false);
@@ -133,6 +133,8 @@ const ConcreteConfigurationForm = ({
                 }
                 setActionMessage('Delete Failed');
             }
+        } else {
+            await getRequest();
         }
         setInProgress(false);
     };
