@@ -33,7 +33,6 @@ public class EmailGlobalConfigurationActionTest {
         PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
         Map<PermissionKey, Integer> permissions = Map.of(permissionKey, AuthenticationTestUtils.FULL_PERMISSIONS);
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
-        UUID configId = UUID.randomUUID();
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailGlobalConfigAccessor emailGlobalConfigAccessor = Mockito.mock(EmailGlobalConfigAccessor.class);
         EmailGlobalConfigModel model = new EmailGlobalConfigModel();
@@ -42,10 +41,10 @@ public class EmailGlobalConfigurationActionTest {
         model.setSmtpAuth(true);
         model.setSmtpUsername("user");
         model.setSmtpPassword("password");
-        Mockito.when(emailGlobalConfigAccessor.getConfiguration(Mockito.any(UUID.class))).thenReturn(Optional.of(model));
+        Mockito.when(emailGlobalConfigAccessor.getConfiguration()).thenReturn(Optional.of(model));
 
         EmailGlobalCrudActions configActions = new EmailGlobalCrudActions(authorizationManager, emailGlobalConfigAccessor, validator);
-        ActionResponse<EmailGlobalConfigModel> response = configActions.getOne(configId);
+        ActionResponse<EmailGlobalConfigModel> response = configActions.getOne();
         assertEquals(HttpStatus.OK, response.getHttpStatus());
         assertTrue(response.hasContent());
         assertEquals(model.obfuscate(), response.getContent().get());
@@ -83,7 +82,6 @@ public class EmailGlobalConfigurationActionTest {
         PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
         Map<PermissionKey, Integer> permissions = Map.of(permissionKey, AuthenticationTestUtils.FULL_PERMISSIONS);
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
-        UUID configId = UUID.randomUUID();
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailGlobalConfigAccessor emailGlobalConfigAccessor = Mockito.mock(EmailGlobalConfigAccessor.class);
         EmailGlobalConfigModel model = new EmailGlobalConfigModel();
@@ -93,11 +91,12 @@ public class EmailGlobalConfigurationActionTest {
         model.setSmtpAuth(true);
         model.setSmtpUsername("user");
         model.setSmtpPassword("password");
-        Mockito.when(emailGlobalConfigAccessor.getConfiguration(Mockito.any(UUID.class))).thenReturn(Optional.of(model));
-        Mockito.when(emailGlobalConfigAccessor.updateConfiguration(Mockito.any(UUID.class), Mockito.eq(model))).thenReturn(model);
+        Mockito.when(emailGlobalConfigAccessor.getConfiguration()).thenReturn(Optional.of(model));
+        Mockito.when(emailGlobalConfigAccessor.updateConfiguration(Mockito.eq(model))).thenReturn(model);
+        Mockito.when(emailGlobalConfigAccessor.doesConfigExist()).thenReturn(true);
 
         EmailGlobalCrudActions configActions = new EmailGlobalCrudActions(authorizationManager, emailGlobalConfigAccessor, validator);
-        ActionResponse<EmailGlobalConfigModel> response = configActions.update(configId, model);
+        ActionResponse<EmailGlobalConfigModel> response = configActions.update(model);
         assertEquals(HttpStatus.OK, response.getHttpStatus());
         assertTrue(response.hasContent());
         assertEquals(model.obfuscate(), response.getContent().get());
@@ -110,7 +109,6 @@ public class EmailGlobalConfigurationActionTest {
         PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
         Map<PermissionKey, Integer> permissions = Map.of(permissionKey, AuthenticationTestUtils.FULL_PERMISSIONS);
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
-        UUID configId = UUID.randomUUID();
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailGlobalConfigAccessor emailGlobalConfigAccessor = Mockito.mock(EmailGlobalConfigAccessor.class);
         EmailGlobalConfigModel model = new EmailGlobalConfigModel();
@@ -119,10 +117,11 @@ public class EmailGlobalConfigurationActionTest {
         model.setSmtpAuth(true);
         model.setSmtpUsername("user");
         model.setSmtpPassword("password");
-        Mockito.when(emailGlobalConfigAccessor.getConfiguration(Mockito.any(UUID.class))).thenReturn(Optional.of(model));
+        Mockito.when(emailGlobalConfigAccessor.getConfiguration()).thenReturn(Optional.of(model));
+        Mockito.when(emailGlobalConfigAccessor.doesConfigExist()).thenReturn(true);
 
         EmailGlobalCrudActions configActions = new EmailGlobalCrudActions(authorizationManager, emailGlobalConfigAccessor, validator);
-        ActionResponse<EmailGlobalConfigModel> response = configActions.delete(configId);
+        ActionResponse<EmailGlobalConfigModel> response = configActions.delete();
         assertEquals(HttpStatus.NO_CONTENT, response.getHttpStatus());
     }
 
@@ -133,12 +132,11 @@ public class EmailGlobalConfigurationActionTest {
         PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
         Map<PermissionKey, Integer> permissions = Map.of(permissionKey, AuthenticationTestUtils.NO_PERMISSIONS);
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
-        UUID configId = UUID.randomUUID();
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailGlobalConfigAccessor emailGlobalConfigAccessor = Mockito.mock(EmailGlobalConfigAccessor.class);
 
         EmailGlobalCrudActions configActions = new EmailGlobalCrudActions(authorizationManager, emailGlobalConfigAccessor, validator);
-        ActionResponse<EmailGlobalConfigModel> response = configActions.getOne(configId);
+        ActionResponse<EmailGlobalConfigModel> response = configActions.getOne();
         assertEquals(HttpStatus.FORBIDDEN, response.getHttpStatus());
     }
 
@@ -181,7 +179,7 @@ public class EmailGlobalConfigurationActionTest {
         model.setSmtpPassword("password");
 
         EmailGlobalCrudActions configActions = new EmailGlobalCrudActions(authorizationManager, emailGlobalConfigAccessor, validator);
-        ActionResponse<EmailGlobalConfigModel> response = configActions.update(configId, model);
+        ActionResponse<EmailGlobalConfigModel> response = configActions.update(model);
         assertEquals(HttpStatus.FORBIDDEN, response.getHttpStatus());
     }
 
@@ -195,7 +193,7 @@ public class EmailGlobalConfigurationActionTest {
         UUID configId = UUID.randomUUID();
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailGlobalConfigAccessor emailGlobalConfigAccessor = Mockito.mock(EmailGlobalConfigAccessor.class);
-        Mockito.when(emailGlobalConfigAccessor.getConfiguration(Mockito.any(UUID.class))).thenReturn(Optional.empty());
+        Mockito.when(emailGlobalConfigAccessor.getConfiguration()).thenReturn(Optional.empty());
 
         EmailGlobalConfigModel model = new EmailGlobalConfigModel();
         model.setSmtpHost("host");
@@ -205,7 +203,7 @@ public class EmailGlobalConfigurationActionTest {
         model.setSmtpPassword("password");
 
         EmailGlobalCrudActions configActions = new EmailGlobalCrudActions(authorizationManager, emailGlobalConfigAccessor, validator);
-        ActionResponse<EmailGlobalConfigModel> response = configActions.update(configId, model);
+        ActionResponse<EmailGlobalConfigModel> response = configActions.update(model);
         assertEquals(HttpStatus.NOT_FOUND, response.getHttpStatus());
     }
 
@@ -221,7 +219,7 @@ public class EmailGlobalConfigurationActionTest {
         EmailGlobalConfigAccessor emailGlobalConfigAccessor = Mockito.mock(EmailGlobalConfigAccessor.class);
 
         EmailGlobalCrudActions configActions = new EmailGlobalCrudActions(authorizationManager, emailGlobalConfigAccessor, validator);
-        ActionResponse<EmailGlobalConfigModel> response = configActions.delete(configId);
+        ActionResponse<EmailGlobalConfigModel> response = configActions.delete();
         assertEquals(HttpStatus.FORBIDDEN, response.getHttpStatus());
     }
 
@@ -232,13 +230,12 @@ public class EmailGlobalConfigurationActionTest {
         PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
         Map<PermissionKey, Integer> permissions = Map.of(permissionKey, AuthenticationTestUtils.FULL_PERMISSIONS);
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
-        UUID configId = UUID.randomUUID();
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailGlobalConfigAccessor emailGlobalConfigAccessor = Mockito.mock(EmailGlobalConfigAccessor.class);
-        Mockito.when(emailGlobalConfigAccessor.getConfiguration(Mockito.any(UUID.class))).thenReturn(Optional.empty());
+        Mockito.when(emailGlobalConfigAccessor.getConfiguration()).thenReturn(Optional.empty());
 
         EmailGlobalCrudActions configActions = new EmailGlobalCrudActions(authorizationManager, emailGlobalConfigAccessor, validator);
-        ActionResponse<EmailGlobalConfigModel> response = configActions.delete(configId);
+        ActionResponse<EmailGlobalConfigModel> response = configActions.delete();
         assertEquals(HttpStatus.NOT_FOUND, response.getHttpStatus());
     }
 
