@@ -10,6 +10,7 @@ package com.synopsys.integration.alert.channel.email.action;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -27,6 +28,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.BlackDuckProj
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 
 @Component
 public class EmailTestActionHelper {
@@ -57,8 +59,30 @@ public class EmailTestActionHelper {
         return emailAddresses;
     }
 
-    private boolean doesProjectMatchConfiguration(String currentProjectName, String projectNamePattern, Set<String> configuredProjectNames) {
-        return currentProjectName.matches(projectNamePattern) || configuredProjectNames.contains(currentProjectName);
+    private boolean doesProjectMatchConfiguration(Long providerConfigId, ProviderProject currentProject, String projectNamePattern, String projectVersionNamePattern, Set<String> configuredProjectNames) {
+        String currentProjectName = currentProject.getName();
+        if (currentProjectName.matches(projectNamePattern) || configuredProjectNames.contains(currentProjectName)) {
+            return true;
+        }
+
+        if (StringUtils.isBlank(projectVersionNamePattern)) {
+            return false;
+        }
+
+        Pattern compiledVersionPattern = Pattern.compile(projectVersionNamePattern);
+        int currentPage = 0;
+        AlertPagedModel<String> projectVersionNamesByHref = providerDataAccessor.getProjectVersionNamesByHref(providerConfigId, currentProject.getHref(), currentPage);
+        while (currentPage < projectVersionNamesByHref.getTotalPages()) {
+            for (String version : projectVersionNamesByHref.getModels()) {
+                if (compiledVersionPattern.matcher(version).matches()) {
+                    return true;
+                }
+            }
+            currentPage++;
+            projectVersionNamesByHref = providerDataAccessor.getProjectVersionNamesByHref(providerConfigId, currentProject.getHref(), currentPage);
+        }
+
+        return false;
     }
 
     private Set<ProviderProject> retrieveProviderProjects(DistributionJobModel distributionJobModel, Long providerConfigId) {
@@ -69,9 +93,10 @@ public class EmailTestActionHelper {
                 .map(BlackDuckProjectDetailsModel::getName)
                 .collect(Collectors.toSet());
             String projectNamePattern = distributionJobModel.getProjectNamePattern().orElse("");
+            String projectVersionNamePattern = distributionJobModel.getProjectVersionNamePattern().orElse("");
             return providerProjects
                 .stream()
-                .filter(providerProject -> doesProjectMatchConfiguration(providerProject.getName(), projectNamePattern, configuredProjects))
+                .filter(providerProject -> doesProjectMatchConfiguration(providerConfigId, providerProject, projectNamePattern, projectVersionNamePattern, configuredProjects))
                 .collect(Collectors.toSet());
         }
         return new HashSet<>(providerProjects);
