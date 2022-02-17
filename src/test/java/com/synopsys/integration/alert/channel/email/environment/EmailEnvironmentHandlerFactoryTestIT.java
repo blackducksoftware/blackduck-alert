@@ -6,10 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Properties;
-import java.util.UUID;
 import java.util.function.Predicate;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,6 @@ import org.springframework.core.env.Environment;
 
 import com.synopsys.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.common.rest.model.Config;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandler;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandlerFactory;
@@ -38,11 +37,11 @@ class EmailEnvironmentHandlerFactoryTestIT {
     private EmailGlobalConfigAccessor emailGlobalConfigAccessor;
 
     @AfterEach
+    @BeforeEach
     public void cleanup() {
-        emailGlobalConfigAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
-            .map(Config::getId)
-            .map(UUID::fromString)
-            .ifPresent(emailGlobalConfigAccessor::deleteConfiguration);
+        if (emailGlobalConfigAccessor.doesConfigExist()) {
+            emailGlobalConfigAccessor.deleteConfiguration();
+        }
     }
 
     @Test

@@ -27,7 +27,6 @@ import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.message.model.ConfigurationTestResult;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.api.ConfigurationTestHelper;
 import com.synopsys.integration.alert.common.rest.api.ConfigurationValidationHelper;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
@@ -53,8 +52,10 @@ public class EmailGlobalTestAction {
     private final JavamailPropertiesFactory javamailPropertiesFactory;
 
     @Autowired
-    public EmailGlobalTestAction(AuthorizationManager authorizationManager, EmailGlobalConfigurationValidator validator,
-        EmailChannelMessagingService emailChannelMessagingService, JavamailPropertiesFactory javamailPropertiesFactory, EmailGlobalConfigAccessor configurationAccessor) {
+    public EmailGlobalTestAction(
+        AuthorizationManager authorizationManager, EmailGlobalConfigurationValidator validator,
+        EmailChannelMessagingService emailChannelMessagingService, JavamailPropertiesFactory javamailPropertiesFactory, EmailGlobalConfigAccessor configurationAccessor
+    ) {
         this.testHelper = new ConfigurationTestHelper(authorizationManager, ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL);
         this.validationHelper = new ConfigurationValidationHelper(authorizationManager, ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL);
         this.validator = validator;
@@ -90,11 +91,11 @@ public class EmailGlobalTestAction {
         emailGlobalConfigModel.getSmtpPort().ifPresent(smtpConfigBuilder::setSmtpPort);
         emailGlobalConfigModel.getSmtpAuth().ifPresent(smtpConfigBuilder::setSmtpAuth);
         emailGlobalConfigModel.getSmtpUsername().ifPresent(smtpConfigBuilder::setSmtpUsername);
-        
+
         if (BooleanUtils.toBoolean(emailGlobalConfigModel.getIsSmtpPasswordSet()) && emailGlobalConfigModel.getSmtpPassword().isEmpty()) {
             //TODO: This assumes if the password is saved but not provided we only test using the default configuration password.
             //  If the UI supports multiple configurations in the future we should determine which configuration to get the password from.
-            configurationAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
+            configurationAccessor.getConfiguration()
                 .flatMap(EmailGlobalConfigModel::getSmtpPassword)
                 .ifPresent(emailGlobalConfigModel::setSmtpPassword);
         }

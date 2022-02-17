@@ -29,8 +29,10 @@ public class EmailGlobalConfigurationModelSaveActions implements GlobalConfigura
     private final EmailGlobalConfigAccessor configurationAccessor;
 
     @Autowired
-    public EmailGlobalConfigurationModelSaveActions(EmailGlobalConfigurationModelConverter emailFieldModelConverter, EmailGlobalCrudActions configurationActions,
-        EmailGlobalConfigAccessor configurationAccessor) {
+    public EmailGlobalConfigurationModelSaveActions(
+        EmailGlobalConfigurationModelConverter emailFieldModelConverter, EmailGlobalCrudActions configurationActions,
+        EmailGlobalConfigAccessor configurationAccessor
+    ) {
         this.emailFieldModelConverter = emailFieldModelConverter;
         this.configurationActions = configurationActions;
         this.configurationAccessor = configurationAccessor;
@@ -43,14 +45,14 @@ public class EmailGlobalConfigurationModelSaveActions implements GlobalConfigura
 
     @Override
     public void updateConcreteModel(ConfigurationModel configurationModel) {
-        Optional<UUID> defaultConfigurationId = configurationAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
+        Optional<UUID> defaultConfigurationId = configurationAccessor.getConfiguration()
             .map(EmailGlobalConfigModel::getId)
             .map(UUID::fromString);
         Optional<EmailGlobalConfigModel> emailGlobalConfigModel = emailFieldModelConverter.convert(configurationModel);
         if (defaultConfigurationId.isPresent() && emailGlobalConfigModel.isPresent()) {
             EmailGlobalConfigModel model = emailGlobalConfigModel.get();
             model.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
-            configurationActions.update(defaultConfigurationId.get(), model);
+            configurationActions.update(model);
         }
     }
 
@@ -66,9 +68,8 @@ public class EmailGlobalConfigurationModelSaveActions implements GlobalConfigura
 
     @Override
     public void deleteConcreteModel(ConfigurationModel configurationModel) {
-        Optional<UUID> defaultConfigurationId = configurationAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
-            .map(EmailGlobalConfigModel::getId)
-            .map(UUID::fromString);
-        defaultConfigurationId.ifPresent(configurationActions::delete);
+        if (configurationAccessor.doesConfigExist()) {
+            configurationAccessor.deleteConfiguration();
+        }
     }
 }

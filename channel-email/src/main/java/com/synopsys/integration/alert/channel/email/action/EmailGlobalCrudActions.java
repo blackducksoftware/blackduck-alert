@@ -7,8 +7,6 @@
  */
 package com.synopsys.integration.alert.channel.email.action;
 
-import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +15,6 @@ import com.synopsys.integration.alert.channel.email.validator.EmailGlobalConfigu
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.rest.api.ConfigurationCrudHelper;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
@@ -35,12 +32,8 @@ public class EmailGlobalCrudActions {
         this.validator = validator;
     }
 
-    public ActionResponse<EmailGlobalConfigModel> getOne(UUID id) {
-        return configurationHelper.getOne(() -> configurationAccessor.getConfiguration(id));
-    }
-
-    public ActionResponse<AlertPagedModel<EmailGlobalConfigModel>> getPaged(int page, int size) {
-        return configurationHelper.getPage(() -> configurationAccessor.getConfigurationPage(page, size));
+    public ActionResponse<EmailGlobalConfigModel> getOne() {
+        return configurationHelper.getOne(() -> configurationAccessor.getConfiguration());
     }
 
     public ActionResponse<EmailGlobalConfigModel> create(EmailGlobalConfigModel resource) {
@@ -50,18 +43,18 @@ public class EmailGlobalCrudActions {
         );
     }
 
-    public ActionResponse<EmailGlobalConfigModel> update(UUID id, EmailGlobalConfigModel requestResource) {
+    public ActionResponse<EmailGlobalConfigModel> update(EmailGlobalConfigModel requestResource) {
         return configurationHelper.update(
             () -> validator.validate(requestResource),
-            () -> configurationAccessor.getConfiguration(id).isPresent(),
-            () -> configurationAccessor.updateConfiguration(id, requestResource)
+            () -> configurationAccessor.doesConfigExist(),
+            () -> configurationAccessor.updateConfiguration(requestResource)
         );
     }
 
-    public ActionResponse<EmailGlobalConfigModel> delete(UUID id) {
+    public ActionResponse<EmailGlobalConfigModel> delete() {
         return configurationHelper.delete(
-            () -> configurationAccessor.getConfiguration(id).isPresent(),
-            () -> configurationAccessor.deleteConfiguration(id)
+            () -> configurationAccessor.doesConfigExist(),
+            () -> configurationAccessor.deleteConfiguration()
         );
     }
 }
