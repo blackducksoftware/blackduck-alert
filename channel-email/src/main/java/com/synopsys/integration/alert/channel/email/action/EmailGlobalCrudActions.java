@@ -33,7 +33,7 @@ public class EmailGlobalCrudActions {
     }
 
     public ActionResponse<EmailGlobalConfigModel> getOne() {
-        return configurationHelper.getOne(() -> configurationAccessor.getConfiguration());
+        return configurationHelper.getOne(configurationAccessor::getConfiguration);
     }
 
     public ActionResponse<EmailGlobalConfigModel> create(EmailGlobalConfigModel resource) {
