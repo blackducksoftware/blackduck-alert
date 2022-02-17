@@ -25,7 +25,6 @@ import com.synopsys.integration.alert.common.persistence.accessor.SettingsKeyAcc
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.SettingsKeyModel;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.service.email.EmailMessagingService;
 import com.synopsys.integration.alert.service.email.EmailTarget;
 import com.synopsys.integration.alert.service.email.JavamailPropertiesFactory;
@@ -50,8 +49,10 @@ public class UpdateEmailService {
     private final JavamailPropertiesFactory javamailPropertiesFactory;
 
     @Autowired
-    public UpdateEmailService(AlertProperties alertProperties, SettingsKeyAccessor settingsKeyAccessor, UserAccessor userAccessor, EmailGlobalConfigAccessor emailGlobalConfigAccessor, EmailMessagingService emailMessagingService,
-        JavamailPropertiesFactory javamailPropertiesFactory) {
+    public UpdateEmailService(
+        AlertProperties alertProperties, SettingsKeyAccessor settingsKeyAccessor, UserAccessor userAccessor, EmailGlobalConfigAccessor emailGlobalConfigAccessor, EmailMessagingService emailMessagingService,
+        JavamailPropertiesFactory javamailPropertiesFactory
+    ) {
         this.alertProperties = alertProperties;
         this.settingsKeyAccessor = settingsKeyAccessor;
         this.userAccessor = userAccessor;
@@ -68,12 +69,12 @@ public class UpdateEmailService {
 
         String username = "sysadmin";
         Optional<String> optionalEmailAddress = userAccessor.getUser(username)
-                                                    .map(UserModel::getEmailAddress)
-                                                    .filter(StringUtils::isNotBlank);
+            .map(UserModel::getEmailAddress)
+            .filter(StringUtils::isNotBlank);
         if (optionalEmailAddress.isPresent()) {
             try {
-                EmailGlobalConfigModel emailServerConfiguration = emailGlobalConfigAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
-                                                                      .orElseThrow(() -> new AlertException("No global email configuration found"));
+                EmailGlobalConfigModel emailServerConfiguration = emailGlobalConfigAccessor.getConfiguration()
+                    .orElseThrow(() -> new AlertException("No global email configuration found"));
 
                 String alertServerUrl = alertProperties.getServerURL();
                 Map<String, Object> templateFields = new HashMap<>();
@@ -105,13 +106,14 @@ public class UpdateEmailService {
 
     private boolean wasEmailAlreadySentForVersion(String updateVersion) {
         return settingsKeyAccessor
-                   .getSettingsKeyByKey(SETTINGS_KEY_VERSION_FOR_UPDATE_EMAIL)
-                   .map(SettingsKeyModel::getValue)
-                   .filter(storedValue -> storedValue.equals(updateVersion))
-                   .isPresent();
+            .getSettingsKeyByKey(SETTINGS_KEY_VERSION_FOR_UPDATE_EMAIL)
+            .map(SettingsKeyModel::getValue)
+            .filter(storedValue -> storedValue.equals(updateVersion))
+            .isPresent();
     }
 
-    private void handleSend(Properties javamailProperties, String smtpFrom, String smtpHost, int smtpPort, boolean smtpAuth, String smtpUsername, String smtpPassword, Map<String, Object> templateFields, String emailAddress) throws AlertException {
+    private void handleSend(Properties javamailProperties, String smtpFrom, String smtpHost, int smtpPort, boolean smtpAuth, String smtpUsername, String smtpPassword, Map<String, Object> templateFields, String emailAddress)
+        throws AlertException {
         try {
             String alertLogo = alertProperties.createSynopsysLogoPath();
 

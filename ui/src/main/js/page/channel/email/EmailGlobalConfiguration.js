@@ -41,11 +41,12 @@ const EmailGlobalConfiguration = ({
 
     const fetchData = async () => {
         const response = await ConfigurationRequestBuilder.createReadRequest(emailRequestUrl, csrfToken);
-        const data = await response.json();
-
-        const { models } = data;
-        const firstResult = (models && models.length > 0) ? models[0] : { name: 'default-configuration' };
-        setEmailConfig(firstResult);
+        if (response.ok) {
+            const data = await response.json();
+            setEmailConfig(data);
+        } else {
+            setEmailConfig({ name: 'default-configuration' });
+        }
     };
 
     return (
@@ -62,8 +63,8 @@ const EmailGlobalConfiguration = ({
                 clearTestForm={() => setTestEmailAddress('')}
                 buttonIdPrefix={EMAIL_INFO.key}
                 getRequest={fetchData}
-                deleteRequest={() => ConfigurationRequestBuilder.createDeleteRequest(emailRequestUrl, csrfToken, emailConfig.id)}
-                updateRequest={() => ConfigurationRequestBuilder.createUpdateRequest(emailRequestUrl, csrfToken, emailConfig.id, emailConfig)}
+                deleteRequest={() => ConfigurationRequestBuilder.createDeleteRequest(emailRequestUrl, csrfToken)}
+                updateRequest={() => ConfigurationRequestBuilder.createUpdateWithoutIdRequest(emailRequestUrl, csrfToken, emailConfig)}
                 createRequest={() => ConfigurationRequestBuilder.createNewConfigurationRequest(emailRequestUrl, csrfToken, emailConfig)}
                 validateRequest={() => ConfigurationRequestBuilder.createValidateRequest(emailRequestUrl, csrfToken, emailConfig)}
                 testRequest={() => ConfigurationRequestBuilder.createTestRequest(emailRequestUrl, csrfToken, emailConfig, `sendTo=${testEmailAddress}`)}

@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.UUID;
 import java.util.function.Predicate;
 
 import org.junit.jupiter.api.AfterEach;
@@ -18,7 +17,6 @@ import com.synopsys.integration.alert.api.common.model.AlertConstants;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.common.rest.model.Config;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.environment.EnvironmentProcessingResult;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandler;
@@ -40,13 +38,12 @@ class EmailEnvironmentHandlerFactoryTestIT {
     @Autowired
     private EmailGlobalConfigAccessor emailGlobalConfigAccessor;
 
-    @BeforeEach
     @AfterEach
+    @BeforeEach
     public void cleanup() {
-        emailGlobalConfigAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
-            .map(Config::getId)
-            .map(UUID::fromString)
-            .ifPresent(emailGlobalConfigAccessor::deleteConfiguration);
+        if (emailGlobalConfigAccessor.doesConfigurationExist()) {
+            emailGlobalConfigAccessor.deleteConfiguration();
+        }
     }
 
     @Test

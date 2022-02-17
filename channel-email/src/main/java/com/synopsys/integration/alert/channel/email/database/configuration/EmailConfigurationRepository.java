@@ -16,8 +16,8 @@ public interface EmailConfigurationRepository extends JpaRepository<EmailConfigu
 
     Optional<EmailConfigurationEntity> findByName(String name);
 
-    boolean existsByName(String name);
+    void deleteByName(String name);
 
-    boolean existsByConfigurationId(UUID uuid);
+    boolean existsByName(String name);
 
 }
