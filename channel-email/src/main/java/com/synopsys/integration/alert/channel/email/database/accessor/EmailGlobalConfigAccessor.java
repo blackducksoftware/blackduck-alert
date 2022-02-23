@@ -51,11 +51,6 @@ public class EmailGlobalConfigAccessor implements UniqueConfigurationAccessor<Em
     }
 
     @Transactional(readOnly = true)
-    public long getConfigurationCount() {
-        return emailConfigurationRepository.count();
-    }
-
-    @Transactional(readOnly = true)
     public boolean doesConfigExist() {
         return emailConfigurationRepository.existsByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
     }

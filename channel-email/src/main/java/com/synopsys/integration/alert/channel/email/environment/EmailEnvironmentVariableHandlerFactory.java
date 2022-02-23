@@ -103,7 +103,7 @@ public class EmailEnvironmentVariableHandlerFactory implements EnvironmentVariab
     }
 
     private Boolean isConfigurationMissing() {
-        return configAccessor.getConfigurationCount() <= 0;
+        return !configAccessor.doesConfigExist();
     }
 
     private Properties updateConfiguration() {
