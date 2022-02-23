@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
-import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
 import com.synopsys.integration.alert.component.settings.proxy.database.accessor.SettingsProxyConfigAccessor;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandler;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandlerFactory;
@@ -26,8 +25,7 @@ class ProxySettingsEnvironmentHandlerFactoryTest {
         Environment environment = Mockito.mock(Environment.class);
         SettingsProxyConfigAccessor configAccessor = Mockito.mock(SettingsProxyConfigAccessor.class);
 
-        SettingsProxyModel settingsProxyModel = new SettingsProxyModel();
-        Mockito.when(configAccessor.getConfiguration()).thenReturn(Optional.of(settingsProxyModel));
+        Mockito.when(configAccessor.getConfiguration()).thenReturn(Optional.empty());
         Set<String> expectedVariableNames = ProxySettingsEnvironmentHandlerFactory.PROXY_CONFIGURATION_KEYSET;
 
         String proxyHost = "https://proxyHostUrl";

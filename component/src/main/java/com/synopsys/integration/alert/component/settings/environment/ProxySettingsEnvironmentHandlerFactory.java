@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
 import com.synopsys.integration.alert.component.settings.proxy.database.accessor.SettingsProxyConfigAccessor;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandler;
@@ -57,12 +58,13 @@ public class ProxySettingsEnvironmentHandlerFactory implements EnvironmentVariab
     }
 
     private Boolean isConfigurationMissing() {
-        return configAccessor.getConfiguration().isPresent();
+        return configAccessor.getConfiguration().isEmpty();
     }
 
     private Properties updateFunction() {
         Properties properties = new Properties();
         SettingsProxyModel configModel = new SettingsProxyModel();
+        configModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
         configureProxySettings(configModel);
 
         SettingsProxyModel obfuscatedModel = configModel.obfuscate();
