@@ -124,7 +124,7 @@ public class EmailEnvironmentVariableHandlerFactory implements EnvironmentVariab
 
         ValidationResponseModel validationResponseModel = validator.validate(configModel);
         if (validationResponseModel.hasErrors()) {
-            logger.error("Error inserting startup values");
+            logger.error("Error inserting startup values: {}", validationResponseModel.getMessage());
             Map<String, AlertFieldStatus> errors = validationResponseModel.getErrors();
             for (Map.Entry<String, AlertFieldStatus> error : errors.entrySet()) {
                 AlertFieldStatus status = error.getValue();
