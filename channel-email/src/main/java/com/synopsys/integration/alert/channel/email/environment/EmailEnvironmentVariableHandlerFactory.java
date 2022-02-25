@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,10 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.common.model.AlertConstants;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
+import com.synopsys.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
+import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.environment.EnvironmentProcessingResult;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandler;
@@ -93,11 +97,13 @@ public class EmailEnvironmentVariableHandlerFactory implements EnvironmentVariab
     private final EmailGlobalConfigAccessor configAccessor;
     private final EnvironmentVariableUtility environmentVariableUtility;
     private final Logger logger = LoggerFactory.getLogger(getClass());
+    private EmailGlobalConfigurationValidator validator;
 
     @Autowired
-    public EmailEnvironmentVariableHandlerFactory(EmailGlobalConfigAccessor configAccessor, EnvironmentVariableUtility environmentVariableUtility) {
+    public EmailEnvironmentVariableHandlerFactory(EmailGlobalConfigAccessor configAccessor, EnvironmentVariableUtility environmentVariableUtility, EmailGlobalConfigurationValidator validator) {
         this.configAccessor = configAccessor;
         this.environmentVariableUtility = environmentVariableUtility;
+        this.validator = validator;
     }
 
     @Override
@@ -108,7 +114,7 @@ public class EmailEnvironmentVariableHandlerFactory implements EnvironmentVariab
     }
 
     private Boolean isConfigurationMissing() {
-        return configAccessor.getConfigurationCount() <= 0;
+        return !configAccessor.doesConfigurationExist();
     }
 
     private EnvironmentProcessingResult updateConfiguration() {
@@ -118,6 +124,17 @@ public class EmailEnvironmentVariableHandlerFactory implements EnvironmentVariab
         configModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
         configureEmailSettings(configModel);
         configureAdditionalProperties(builder, configModel);
+
+        ValidationResponseModel validationResponseModel = validator.validate(configModel);
+        if (validationResponseModel.hasErrors()) {
+            logger.error("Error inserting startup values: {}", validationResponseModel.getMessage());
+            Map<String, AlertFieldStatus> errors = validationResponseModel.getErrors();
+            for (Map.Entry<String, AlertFieldStatus> error : errors.entrySet()) {
+                AlertFieldStatus status = error.getValue();
+                logger.error("Field: '{}' failed with the error: {}", status.getFieldName(), status.getFieldMessage());
+            }
+            return EnvironmentProcessingResult.empty();
+        }
 
         EmailGlobalConfigModel obfuscatedModel = configModel.obfuscate();
 
@@ -148,7 +165,8 @@ public class EmailEnvironmentVariableHandlerFactory implements EnvironmentVariab
             .ifPresent(configuration::setSmtpHost);
 
         environmentVariableUtility.getEnvironmentValue(EMAIL_PORT_KEY)
-            .map(Integer::valueOf)
+            .filter(NumberUtils::isDigits)
+            .map(NumberUtils::toInt)
             .ifPresent(configuration::setSmtpPort);
 
         environmentVariableUtility.getEnvironmentValue(EMAIL_FROM_KEY)

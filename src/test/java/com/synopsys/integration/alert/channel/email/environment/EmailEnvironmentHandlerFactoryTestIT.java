@@ -16,6 +16,7 @@ import org.springframework.core.env.Environment;
 import com.synopsys.integration.alert.api.common.model.AlertConstants;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
+import com.synopsys.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.environment.EnvironmentProcessingResult;
@@ -38,6 +39,8 @@ class EmailEnvironmentHandlerFactoryTestIT {
     @Autowired
     private EmailGlobalConfigAccessor emailGlobalConfigAccessor;
 
+    private EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
+
     @AfterEach
     @BeforeEach
     public void cleanup() {
@@ -50,7 +53,7 @@ class EmailEnvironmentHandlerFactoryTestIT {
     void testCleanEnvironment() {
         Environment environment = setupMockedEnvironment();
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
-        EnvironmentVariableHandlerFactory factory = new EmailEnvironmentVariableHandlerFactory(emailGlobalConfigAccessor, environmentVariableUtility);
+        EnvironmentVariableHandlerFactory factory = new EmailEnvironmentVariableHandlerFactory(emailGlobalConfigAccessor, environmentVariableUtility, validator);
         EnvironmentVariableHandler handler = factory.build();
         EnvironmentProcessingResult result = handler.updateFromEnvironment();
         assertEquals(ChannelKeys.EMAIL.getDisplayName(), handler.getName());
@@ -79,7 +82,7 @@ class EmailEnvironmentHandlerFactoryTestIT {
 
         Environment environment = setupMockedEnvironment();
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
-        EnvironmentVariableHandlerFactory factory = new EmailEnvironmentVariableHandlerFactory(emailGlobalConfigAccessor, environmentVariableUtility);
+        EnvironmentVariableHandlerFactory factory = new EmailEnvironmentVariableHandlerFactory(emailGlobalConfigAccessor, environmentVariableUtility, validator);
         EnvironmentVariableHandler handler = factory.build();
         EnvironmentProcessingResult result = handler.updateFromEnvironment();
         assertEquals(ChannelKeys.EMAIL.getDisplayName(), handler.getName());

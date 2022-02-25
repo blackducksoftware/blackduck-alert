@@ -27,8 +27,7 @@ class ProxySettingsEnvironmentHandlerFactoryTest {
         Environment environment = Mockito.mock(Environment.class);
         SettingsProxyConfigAccessor configAccessor = Mockito.mock(SettingsProxyConfigAccessor.class);
 
-        SettingsProxyModel settingsProxyModel = new SettingsProxyModel();
-        Mockito.when(configAccessor.getConfiguration()).thenReturn(Optional.of(settingsProxyModel));
+        Mockito.when(configAccessor.getConfiguration()).thenReturn(Optional.empty());
         Set<String> expectedVariableNames = ProxySettingsEnvironmentHandlerFactory.PROXY_CONFIGURATION_KEYSET;
 
         String proxyHost = "https://proxyHostUrl";
