@@ -14,11 +14,17 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.math.NumberUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
+import com.synopsys.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
+import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandler;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandlerFactory;
@@ -86,13 +92,16 @@ public class EmailEnvironmentVariableHandlerFactory implements EnvironmentVariab
         ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_USERSET",
         ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_WRITETIMEOUT");
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private EmailGlobalConfigAccessor configAccessor;
     private EnvironmentVariableUtility environmentVariableUtility;
+    private EmailGlobalConfigurationValidator validator;
 
     @Autowired
-    public EmailEnvironmentVariableHandlerFactory(EmailGlobalConfigAccessor configAccessor, EnvironmentVariableUtility environmentVariableUtility) {
+    public EmailEnvironmentVariableHandlerFactory(EmailGlobalConfigAccessor configAccessor, EnvironmentVariableUtility environmentVariableUtility, EmailGlobalConfigurationValidator validator) {
         this.configAccessor = configAccessor;
         this.environmentVariableUtility = environmentVariableUtility;
+        this.validator = validator;
     }
 
     @Override
@@ -112,6 +121,17 @@ public class EmailEnvironmentVariableHandlerFactory implements EnvironmentVariab
         configModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
         configureEmailSettings(configModel);
         configureAdditionalProperties(properties, configModel);
+
+        ValidationResponseModel validationResponseModel = validator.validate(configModel);
+        if (validationResponseModel.hasErrors()) {
+            logger.error("Error inserting startup values");
+            Map<String, AlertFieldStatus> errors = validationResponseModel.getErrors();
+            for (Map.Entry<String, AlertFieldStatus> error : errors.entrySet()) {
+                AlertFieldStatus status = error.getValue();
+                logger.error("Field: '{}' failed with the error: {}", status.getFieldName(), status.getFieldMessage());
+            }
+            return properties;
+        }
 
         EmailGlobalConfigModel obfuscatedModel = configModel.obfuscate();
 
@@ -134,7 +154,8 @@ public class EmailEnvironmentVariableHandlerFactory implements EnvironmentVariab
             .ifPresent(configuration::setSmtpHost);
 
         environmentVariableUtility.getEnvironmentValue(EMAIL_PORT_KEY)
-            .map(Integer::valueOf)
+            .filter(NumberUtils::isDigits)
+            .map(NumberUtils::toInt)
             .ifPresent(configuration::setSmtpPort);
 
         environmentVariableUtility.getEnvironmentValue(EMAIL_FROM_KEY)
