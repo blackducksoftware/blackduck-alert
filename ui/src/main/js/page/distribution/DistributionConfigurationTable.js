@@ -169,38 +169,38 @@ const DistributionConfigurationTable = ({
         return (
             <div>
                 {!readonly
-                && (
-                    <>
-                        <InsertButton
-                            id="distribution-insert-button"
-                            className="addJobButton btn-md"
-                            onClick={insertClick}
-                        >
-                            <FontAwesomeIcon icon="plus" className="alert-icon" size="lg" />
-                            New
-                        </InsertButton>
-                        <DeleteButton
-                            id="distribution-delete-button"
-                            className="deleteJobButton btn-md"
-                            onClick={deleteClick}
-                        >
-                            <FontAwesomeIcon icon="trash" className="alert-icon" size="lg" />
-                            Delete
-                        </DeleteButton>
-                    </>
-                )}
+                    && (
+                        <>
+                            <InsertButton
+                                id="distribution-insert-button"
+                                className="addJobButton btn-md"
+                                onClick={insertClick}
+                            >
+                                <FontAwesomeIcon icon="plus" className="alert-icon" size="lg" />
+                                New
+                            </InsertButton>
+                            <DeleteButton
+                                id="distribution-delete-button"
+                                className="deleteJobButton btn-md"
+                                onClick={deleteClick}
+                            >
+                                <FontAwesomeIcon icon="trash" className="alert-icon" size="lg" />
+                                Delete
+                            </DeleteButton>
+                        </>
+                    )}
                 {showRefreshButton
-                && (
-                    <button
-                        id="distribution-refresh-button"
-                        type="button"
-                        className="btn btn-md btn-info react-bs-table-add-btn tableButton"
-                        onClick={retrieveTableData}
-                    >
-                        <FontAwesomeIcon icon="sync" className="alert-icon" size="lg" />
-                        Refresh
-                    </button>
-                )}
+                    && (
+                        <button
+                            id="distribution-refresh-button"
+                            type="button"
+                            className="btn btn-md btn-info react-bs-table-add-btn tableButton"
+                            onClick={retrieveTableData}
+                        >
+                            <FontAwesomeIcon icon="sync" className="alert-icon" size="lg" />
+                            Refresh
+                        </button>
+                    )}
             </div>
         );
     };
@@ -479,8 +479,8 @@ const DistributionConfigurationTable = ({
                 {column('distributionType', 'Channel', descriptorColumnFormatter)}
                 {unsortableColumn('providerName', 'Provider', descriptorColumnFormatter)}
                 {column('frequency', 'Frequency', frequencyColumnFormatter)}
-                {column('lastRan', 'Last Run')}
-                {column('status', 'Status', assignedDataFormat, statusColumnClassName)}
+                {unsortableColumn('lastRan', 'Last Run')}
+                {unsortableColumn('status', 'Status', assignedDataFormat, statusColumnClassName)}
                 <TableHeaderColumn
                     dataField="enabled"
                     width="70"
