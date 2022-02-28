@@ -14,20 +14,21 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
-import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
 import com.synopsys.integration.alert.component.settings.proxy.database.accessor.SettingsProxyConfigAccessor;
+import com.synopsys.integration.alert.component.settings.proxy.validator.SettingsProxyValidator;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandler;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandlerFactory;
 import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
 
 class ProxySettingsEnvironmentHandlerFactoryTest {
+    private final SettingsProxyValidator validator = new SettingsProxyValidator();
+
     @Test
     void testProxySetInEnvironment() {
         Environment environment = Mockito.mock(Environment.class);
         SettingsProxyConfigAccessor configAccessor = Mockito.mock(SettingsProxyConfigAccessor.class);
 
-        SettingsProxyModel settingsProxyModel = new SettingsProxyModel();
-        Mockito.when(configAccessor.getConfiguration()).thenReturn(Optional.of(settingsProxyModel));
+        Mockito.when(configAccessor.getConfiguration()).thenReturn(Optional.empty());
         Set<String> expectedVariableNames = ProxySettingsEnvironmentHandlerFactory.PROXY_CONFIGURATION_KEYSET;
 
         String proxyHost = "https://proxyHostUrl";
@@ -44,7 +45,7 @@ class ProxySettingsEnvironmentHandlerFactoryTest {
         Mockito.when(environment.getProperty(ProxySettingsEnvironmentHandlerFactory.PROXY_NON_PROXY_HOSTS_KEY)).thenReturn(nonProxyHosts);
 
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
-        EnvironmentVariableHandlerFactory factory = new ProxySettingsEnvironmentHandlerFactory(configAccessor, environmentVariableUtility);
+        EnvironmentVariableHandlerFactory factory = new ProxySettingsEnvironmentHandlerFactory(configAccessor, environmentVariableUtility, validator);
         EnvironmentVariableHandler handler = factory.build();
         Properties updatedProperties = handler.updateFromEnvironment();
 
@@ -65,7 +66,7 @@ class ProxySettingsEnvironmentHandlerFactoryTest {
         SettingsProxyConfigAccessor configAccessor = Mockito.mock(SettingsProxyConfigAccessor.class);
         Mockito.when(configAccessor.getConfiguration()).thenReturn(Optional.empty());
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
-        EnvironmentVariableHandlerFactory factory = new ProxySettingsEnvironmentHandlerFactory(configAccessor, environmentVariableUtility);
+        EnvironmentVariableHandlerFactory factory = new ProxySettingsEnvironmentHandlerFactory(configAccessor, environmentVariableUtility, validator);
         EnvironmentVariableHandler handler = factory.build();
         Properties updatedProperties = handler.updateFromEnvironment();
         assertEquals(ProxySettingsEnvironmentHandlerFactory.HANDLER_NAME, handler.getName());

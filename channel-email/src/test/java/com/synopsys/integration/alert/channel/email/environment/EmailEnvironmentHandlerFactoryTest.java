@@ -16,13 +16,14 @@ import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
 import com.synopsys.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
+import com.synopsys.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandler;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandlerFactory;
 import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
 
 public class EmailEnvironmentHandlerFactoryTest {
-
+    private final EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
     public static final String ADDITIONAL_EMAIL_PROPERTY_VARIABLE_NAME = "ALERT_CHANNEL_EMAIL_MAIL_SMTP_EHLO";
 
     @Test
@@ -34,7 +35,7 @@ public class EmailEnvironmentHandlerFactoryTest {
     public void testEmailSetInEnvironment() {
         Environment environment = Mockito.mock(Environment.class);
         EmailGlobalConfigAccessor configAccessor = Mockito.mock(EmailGlobalConfigAccessor.class);
-        Mockito.when(configAccessor.getConfigurationCount()).thenReturn(0L);
+        Mockito.when(configAccessor.doesConfigExist()).thenReturn(false);
         Set<String> expectedVariableNames = Stream.concat(EmailEnvironmentVariableHandlerFactory.EMAIL_CONFIGURATION_KEYSET.stream(), EmailEnvironmentVariableHandlerFactory.OLD_ADDITIONAL_PROPERTY_KEYSET.stream())
             .collect(Collectors.toSet());
 
@@ -55,7 +56,7 @@ public class EmailEnvironmentHandlerFactoryTest {
         setupConfigurationEnvironmentVariable(environment, hasEnvVarCheck, EmailEnvironmentVariableHandlerFactory.AUTH_USER_KEY, username);
 
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
-        EnvironmentVariableHandlerFactory factory = new EmailEnvironmentVariableHandlerFactory(configAccessor, environmentVariableUtility);
+        EnvironmentVariableHandlerFactory factory = new EmailEnvironmentVariableHandlerFactory(configAccessor, environmentVariableUtility, validator);
         EnvironmentVariableHandler handler = factory.build();
         Properties updatedProperties = handler.updateFromEnvironment();
         assertEquals(ChannelKeys.EMAIL.getDisplayName(), handler.getName());
@@ -74,9 +75,9 @@ public class EmailEnvironmentHandlerFactoryTest {
     public void testEmailMissingFromEnvironment() {
         Environment environment = Mockito.mock(Environment.class);
         EmailGlobalConfigAccessor configAccessor = Mockito.mock(EmailGlobalConfigAccessor.class);
-        Mockito.when(configAccessor.getConfigurationCount()).thenReturn(0L);
+        Mockito.when(configAccessor.doesConfigExist()).thenReturn(false);
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
-        EnvironmentVariableHandlerFactory factory = new EmailEnvironmentVariableHandlerFactory(configAccessor, environmentVariableUtility);
+        EnvironmentVariableHandlerFactory factory = new EmailEnvironmentVariableHandlerFactory(configAccessor, environmentVariableUtility, validator);
         EnvironmentVariableHandler handler = factory.build();
         Properties updatedProperties = handler.updateFromEnvironment();
         assertEquals(ChannelKeys.EMAIL.getDisplayName(), handler.getName());
@@ -87,9 +88,9 @@ public class EmailEnvironmentHandlerFactoryTest {
     public void testEmailConfigPresent() {
         Environment environment = Mockito.mock(Environment.class);
         EmailGlobalConfigAccessor configAccessor = Mockito.mock(EmailGlobalConfigAccessor.class);
-        Mockito.when(configAccessor.getConfigurationCount()).thenReturn(1L);
+        Mockito.when(configAccessor.doesConfigExist()).thenReturn(true);
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
-        EnvironmentVariableHandlerFactory factory = new EmailEnvironmentVariableHandlerFactory(configAccessor, environmentVariableUtility);
+        EnvironmentVariableHandlerFactory factory = new EmailEnvironmentVariableHandlerFactory(configAccessor, environmentVariableUtility, validator);
         EnvironmentVariableHandler handler = factory.build();
         Properties updatedProperties = handler.updateFromEnvironment();
         assertEquals(ChannelKeys.EMAIL.getDisplayName(), handler.getName());
@@ -100,7 +101,7 @@ public class EmailEnvironmentHandlerFactoryTest {
     public void testEmailAdditionalProperties() {
         Environment environment = Mockito.mock(Environment.class);
         EmailGlobalConfigAccessor configAccessor = Mockito.mock(EmailGlobalConfigAccessor.class);
-        Mockito.when(configAccessor.getConfigurationCount()).thenReturn(0L);
+        Mockito.when(configAccessor.doesConfigExist()).thenReturn(false);
 
         String authRequired = "true";
         String from = "noreply@example.com";
@@ -122,7 +123,7 @@ public class EmailEnvironmentHandlerFactoryTest {
         setupConfigurationEnvironmentVariable(environment, hasEnvVarCheck, ADDITIONAL_EMAIL_PROPERTY_VARIABLE_NAME, "true");
 
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
-        EnvironmentVariableHandlerFactory factory = new EmailEnvironmentVariableHandlerFactory(configAccessor, environmentVariableUtility);
+        EnvironmentVariableHandlerFactory factory = new EmailEnvironmentVariableHandlerFactory(configAccessor, environmentVariableUtility, validator);
         EnvironmentVariableHandler handler = factory.build();
         Properties updatedProperties = handler.updateFromEnvironment();
         assertEquals(ChannelKeys.EMAIL.getDisplayName(), handler.getName());
