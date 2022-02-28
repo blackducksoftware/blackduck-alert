@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.UUID;
 import java.util.function.Predicate;
 
 import org.junit.jupiter.api.AfterEach;
@@ -17,8 +16,8 @@ import org.springframework.core.env.Environment;
 import com.synopsys.integration.alert.api.common.model.AlertConstants;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
+import com.synopsys.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.common.rest.model.Config;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.environment.EnvironmentProcessingResult;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandler;
@@ -40,20 +39,21 @@ class EmailEnvironmentHandlerFactoryTestIT {
     @Autowired
     private EmailGlobalConfigAccessor emailGlobalConfigAccessor;
 
-    @BeforeEach
+    private EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
+
     @AfterEach
+    @BeforeEach
     public void cleanup() {
-        emailGlobalConfigAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
-            .map(Config::getId)
-            .map(UUID::fromString)
-            .ifPresent(emailGlobalConfigAccessor::deleteConfiguration);
+        if (emailGlobalConfigAccessor.doesConfigurationExist()) {
+            emailGlobalConfigAccessor.deleteConfiguration();
+        }
     }
 
     @Test
     void testCleanEnvironment() {
         Environment environment = setupMockedEnvironment();
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
-        EnvironmentVariableHandlerFactory factory = new EmailEnvironmentVariableHandlerFactory(emailGlobalConfigAccessor, environmentVariableUtility);
+        EnvironmentVariableHandlerFactory factory = new EmailEnvironmentVariableHandlerFactory(emailGlobalConfigAccessor, environmentVariableUtility, validator);
         EnvironmentVariableHandler handler = factory.build();
         EnvironmentProcessingResult result = handler.updateFromEnvironment();
         assertEquals(ChannelKeys.EMAIL.getDisplayName(), handler.getName());
@@ -82,7 +82,7 @@ class EmailEnvironmentHandlerFactoryTestIT {
 
         Environment environment = setupMockedEnvironment();
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
-        EnvironmentVariableHandlerFactory factory = new EmailEnvironmentVariableHandlerFactory(emailGlobalConfigAccessor, environmentVariableUtility);
+        EnvironmentVariableHandlerFactory factory = new EmailEnvironmentVariableHandlerFactory(emailGlobalConfigAccessor, environmentVariableUtility, validator);
         EnvironmentVariableHandler handler = factory.build();
         EnvironmentProcessingResult result = handler.updateFromEnvironment();
         assertEquals(ChannelKeys.EMAIL.getDisplayName(), handler.getName());

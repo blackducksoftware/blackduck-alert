@@ -58,7 +58,8 @@ public class DefaultDistributionAccessor implements DistributionAccessor {
     }
 
     private AlertPagedModel<DistributionWithAuditInfo> retrieveData(int page, int pageSize, String sortName, Direction sortOrder, Function<PageRequest, Page<DistributionWithAuditEntity>> retrieveData) {
-        PageRequest pageRequest = PageRequest.of(page, pageSize, Sort.by(sortOrder, sortName));
+        Sort sort = (sortName == null || sortOrder == null) ? Sort.unsorted() : Sort.by(sortOrder, sortName);
+        PageRequest pageRequest = PageRequest.of(page, pageSize, sort);
         Page<DistributionWithAuditEntity> distributionWithAuditInfo = retrieveData.apply(pageRequest);
         return convert(distributionWithAuditInfo);
     }
@@ -96,7 +97,8 @@ public class DefaultDistributionAccessor implements DistributionAccessor {
 
         try {
             OffsetDateTime storedDateTime = DateUtils.parseDate(currentTimeLastSent, DateUtils.AUDIT_DATE_FORMAT);
-            if (entity.getAuditTimeLastSent().compareTo(storedDateTime) > 0) {
+            OffsetDateTime timeLastSent = entity.getAuditTimeLastSent();
+            if (timeLastSent != null && timeLastSent.compareTo(storedDateTime) > 0) {
                 existingInfos.put(jobId, convert(entity));
             }
         } catch (ParseException e) {

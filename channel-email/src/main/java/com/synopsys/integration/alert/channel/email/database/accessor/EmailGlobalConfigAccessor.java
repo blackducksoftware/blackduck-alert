@@ -18,8 +18,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,14 +27,14 @@ import com.synopsys.integration.alert.channel.email.database.configuration.Email
 import com.synopsys.integration.alert.channel.email.database.configuration.EmailConfigurationRepository;
 import com.synopsys.integration.alert.channel.email.database.configuration.properties.EmailConfigurationPropertiesRepository;
 import com.synopsys.integration.alert.channel.email.database.configuration.properties.EmailConfigurationsPropertyEntity;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
+import com.synopsys.integration.alert.common.persistence.accessor.UniqueConfigurationAccessor;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
 @Component
-public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlobalConfigModel> {
+public class EmailGlobalConfigAccessor implements UniqueConfigurationAccessor<EmailGlobalConfigModel> {
     private final EncryptionUtility encryptionUtility;
     private final EmailConfigurationRepository emailConfigurationRepository;
     private final EmailConfigurationPropertiesRepository emailConfigurationPropertiesRepository;
@@ -52,39 +50,15 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
         this.emailConfigurationPropertiesRepository = emailConfigurationPropertiesRepository;
     }
 
-    @Override
     @Transactional(readOnly = true)
-    public long getConfigurationCount() {
-        return emailConfigurationRepository.count();
+    public boolean doesConfigurationExist() {
+        return emailConfigurationRepository.existsByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<EmailGlobalConfigModel> getConfiguration(UUID id) {
-        return emailConfigurationRepository.findById(id).map(this::createConfigModel);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Optional<EmailGlobalConfigModel> getConfigurationByName(String configurationName) {
-        return emailConfigurationRepository.findByName(configurationName).map(this::createConfigModel);
-    }
-    
-    @Override
-    @Transactional(readOnly = true)
-    public boolean existsConfigurationByName(String configurationName) {
-        return emailConfigurationRepository.existsByName(configurationName);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public AlertPagedModel<EmailGlobalConfigModel> getConfigurationPage(int page, int size) {
-        Page<EmailConfigurationEntity> resultPage = emailConfigurationRepository.findAll(PageRequest.of(page, size));
-        List<EmailGlobalConfigModel> pageContent = resultPage.getContent()
-                                                       .stream()
-                                                       .map(this::createConfigModel)
-                                                       .collect(Collectors.toList());
-        return new AlertPagedModel<>(resultPage.getTotalPages(), resultPage.getNumber(), resultPage.getSize(), pageContent);
+    public Optional<EmailGlobalConfigModel> getConfiguration() {
+        return emailConfigurationRepository.findByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME).map(this::createConfigModel);
     }
 
     @Override
@@ -100,22 +74,20 @@ public class EmailGlobalConfigAccessor implements ConfigurationAccessor<EmailGlo
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public EmailGlobalConfigModel updateConfiguration(UUID configurationId, EmailGlobalConfigModel configuration) throws AlertConfigurationException {
-        EmailConfigurationEntity configurationEntity = emailConfigurationRepository.findById(configurationId)
-            .orElseThrow(() -> new AlertConfigurationException(String.format("Config with id '%s' did not exist", configurationId.toString())));
+    public EmailGlobalConfigModel updateConfiguration(EmailGlobalConfigModel configuration) throws AlertConfigurationException {
+        EmailConfigurationEntity configurationEntity = emailConfigurationRepository.findByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
+            .orElseThrow(() -> new AlertConfigurationException(String.format("Config with name '%s' did not exist", AlertRestConstants.DEFAULT_CONFIGURATION_NAME)));
         if (BooleanUtils.toBoolean(configuration.getIsSmtpPasswordSet()) && configuration.getSmtpPassword().isEmpty()) {
             String decryptedPassword = encryptionUtility.decrypt(configurationEntity.getAuthPassword());
             configuration.setSmtpPassword(decryptedPassword);
         }
-        return populateConfiguration(configurationId, configuration, configurationEntity.getCreatedAt());
+        return populateConfiguration(configurationEntity.getConfigurationId(), configuration, configurationEntity.getCreatedAt());
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public void deleteConfiguration(UUID configurationId) {
-        if (null != configurationId) {
-            emailConfigurationRepository.deleteById(configurationId);
-        }
+    public void deleteConfiguration() {
+        emailConfigurationRepository.deleteByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
     }
 
     private EmailGlobalConfigModel populateConfiguration(UUID configurationId, EmailGlobalConfigModel configuration, OffsetDateTime createdAt) {

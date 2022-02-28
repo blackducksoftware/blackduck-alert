@@ -44,7 +44,13 @@ const DynamicSelectInput = ({
 
     const handleChange = (option) => {
         const singleSelectOptionValue = option ? option.value : null;
-        const parsedArray = (Array.isArray(option) && option.length > 0) ? option.map((mappedOption) => mappedOption.value) : [singleSelectOptionValue];
+        let parsedArray = null;
+        if (Array.isArray(option) && option.length > 0) {
+            parsedArray = option.map((mappedOption) => mappedOption.value);
+        } else {
+            parsedArray = (singleSelectOptionValue) ? [singleSelectOptionValue] : [];
+        }
+
         onChange({
             target: {
                 name,

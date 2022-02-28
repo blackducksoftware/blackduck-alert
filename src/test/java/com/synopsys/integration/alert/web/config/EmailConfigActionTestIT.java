@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,7 +27,6 @@ import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAcce
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.FieldModelProcessor;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
@@ -77,10 +75,9 @@ public class EmailConfigActionTestIT {
 
     @BeforeEach
     void deleteDefaultConfig() {
-        emailGlobalConfigAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
-            .map(EmailGlobalConfigModel::getId)
-            .map(id -> UUID.fromString(id))
-            .ifPresent(emailGlobalConfigAccessor::deleteConfiguration);
+        if (emailGlobalConfigAccessor.doesConfigurationExist()) {
+            emailGlobalConfigAccessor.deleteConfiguration();
+        }
     }
 
     @Test
@@ -93,7 +90,7 @@ public class EmailConfigActionTestIT {
         FieldModel fieldModel = createEmailFieldModel();
         configActions.create(fieldModel);
 
-        Optional<EmailGlobalConfigModel> staticEmailConfig = emailGlobalConfigAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
+        Optional<EmailGlobalConfigModel> staticEmailConfig = emailGlobalConfigAccessor.getConfiguration();
         assertTrue(staticEmailConfig.isPresent());
         EmailGlobalConfigModel staticModel = staticEmailConfig.get();
         assertEquals(Boolean.TRUE, staticModel.getSmtpAuth().orElse(null));
@@ -126,7 +123,7 @@ public class EmailConfigActionTestIT {
 
         configActions.update(Long.valueOf(fieldModel.getId()), fieldModel);
 
-        Optional<EmailGlobalConfigModel> staticEmailConfig = emailGlobalConfigAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
+        Optional<EmailGlobalConfigModel> staticEmailConfig = emailGlobalConfigAccessor.getConfiguration();
         assertTrue(staticEmailConfig.isPresent());
         EmailGlobalConfigModel staticModel = staticEmailConfig.get();
         assertEquals(Boolean.TRUE, staticModel.getSmtpAuth().orElse(null));
@@ -156,7 +153,7 @@ public class EmailConfigActionTestIT {
 
         configActions.update(Long.valueOf(fieldModel.getId()), fieldModel);
 
-        Optional<EmailGlobalConfigModel> staticEmailConfig = emailGlobalConfigAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
+        Optional<EmailGlobalConfigModel> staticEmailConfig = emailGlobalConfigAccessor.getConfiguration();
         assertTrue(staticEmailConfig.isPresent());
         EmailGlobalConfigModel staticModel = staticEmailConfig.get();
         assertEquals(Boolean.TRUE, staticModel.getSmtpAuth().orElse(null));
@@ -183,7 +180,7 @@ public class EmailConfigActionTestIT {
         fieldModel = configActions.create(fieldModel).getContent().orElseThrow(() -> new AlertConfigurationException("Couldn't create configuration"));
 
         configActions.delete(Long.valueOf(fieldModel.getId()));
-        Optional<EmailGlobalConfigModel> staticEmailConfig = emailGlobalConfigAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
+        Optional<EmailGlobalConfigModel> staticEmailConfig = emailGlobalConfigAccessor.getConfiguration();
         assertTrue(staticEmailConfig.isEmpty());
 
     }

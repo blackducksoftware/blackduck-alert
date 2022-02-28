@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Test;
@@ -105,6 +106,7 @@ class JiraServerGlobalConfigurationModelSaveActionsTest {
 
         Mockito.when(jiraConfigurationRepository.findByName(Mockito.anyString())).thenAnswer(invocation -> Optional.ofNullable(savedEntity.get()));
         Mockito.when(jiraConfigurationRepository.findById(Mockito.any())).thenAnswer(invocation -> Optional.ofNullable(savedEntity.get()));
+        Mockito.when(jiraConfigurationRepository.existsByConfigurationId(Mockito.any(UUID.class))).thenAnswer(invocation -> savedEntity.get() != null);
 
         JiraServerGlobalConfigAccessor configurationAccessor = new JiraServerGlobalConfigAccessor(encryptionUtility, jiraConfigurationRepository);
         JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configurationAccessor, validator);
@@ -137,6 +139,7 @@ class JiraServerGlobalConfigurationModelSaveActionsTest {
 
         Mockito.when(jiraConfigurationRepository.findByName(Mockito.anyString())).thenAnswer(invocation -> Optional.ofNullable(savedEntity.get()));
         Mockito.when(jiraConfigurationRepository.findById(Mockito.any())).thenAnswer(invocation -> Optional.ofNullable(savedEntity.get()));
+        Mockito.when(jiraConfigurationRepository.existsByConfigurationId(Mockito.any(UUID.class))).thenAnswer(invocation -> savedEntity.get() != null);
 
         JiraServerGlobalConfigAccessor configurationAccessor = new JiraServerGlobalConfigAccessor(encryptionUtility, jiraConfigurationRepository);
         JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configurationAccessor, validator);
@@ -171,6 +174,7 @@ class JiraServerGlobalConfigurationModelSaveActionsTest {
 
         Mockito.when(jiraConfigurationRepository.findByName(Mockito.anyString())).thenAnswer(invocation -> Optional.empty());
         Mockito.when(jiraConfigurationRepository.findById(Mockito.any())).thenAnswer(invocation -> Optional.ofNullable(savedEntity.get()));
+        Mockito.when(jiraConfigurationRepository.existsByConfigurationId(Mockito.any(UUID.class))).thenAnswer(invocation -> savedEntity.get() != null);
 
         JiraServerGlobalConfigAccessor configurationAccessor = new JiraServerGlobalConfigAccessor(encryptionUtility, jiraConfigurationRepository);
         JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configurationAccessor, validator);
@@ -203,6 +207,7 @@ class JiraServerGlobalConfigurationModelSaveActionsTest {
 
         Mockito.when(jiraConfigurationRepository.findByName(Mockito.anyString())).thenAnswer(invocation -> Optional.ofNullable(savedEntity.get()));
         Mockito.when(jiraConfigurationRepository.findById(Mockito.any())).thenAnswer(invocation -> Optional.ofNullable(savedEntity.get()));
+        Mockito.when(jiraConfigurationRepository.existsByConfigurationId(Mockito.any(UUID.class))).thenAnswer(invocation -> savedEntity.get() != null);
         Mockito.doAnswer(invocation -> {
             savedEntity.set(null);
             return null;
