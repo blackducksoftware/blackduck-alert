@@ -21,21 +21,59 @@ import com.synopsys.integration.alert.database.job.DistributionJobEntity;
 public interface DistributionRepository extends JpaRepository<DistributionJobEntity, UUID> {
 
     @Query(
-        "SELECT NEW com.synopsys.integration.alert.database.distribution.DistributionWithAuditEntity(job.jobId, job.enabled, job.name, job.channelDescriptorName, job.distributionFrequency, MAX(audit.timeLastSent) AS lastSent, audit.status)"
-            + " FROM DistributionJobEntity job"
-            + " LEFT OUTER JOIN com.synopsys.integration.alert.database.audit.AuditEntryEntity audit ON audit.commonConfigId = job.jobId"
-            + " WHERE job.channelDescriptorName IN (:channelDescriptorNames)"
-            + " GROUP BY job.jobId, audit.status, job.enabled, job.name, job.channelDescriptorName, job.distributionFrequency"
+        value = "SELECT CAST(job.job_id as varchar) AS id, job.enabled, job.name, job.channel_descriptor_name, job.distribution_frequency, filteredAudit.time_last_sent, filteredAudit.status"
+            + " FROM alert.distribution_jobs AS job"
+            + " LEFT OUTER JOIN ("
+            + "   SELECT auditRequirements.time_last_sent, auditRequirements.status, auditRequirements.common_config_id"
+            + "   FROM alert.audit_entries AS auditRequirements"
+            + "   INNER JOIN ("
+            + "     SELECT initialAudit.common_config_id, MAX(initialAudit.time_last_sent) AS last_sent"
+            + "     FROM alert.audit_entries AS initialAudit"
+            + "     GROUP BY initialAudit.common_config_id"
+            + "   ) AS auditMaxDate"
+            + "   ON auditRequirements.common_config_id = auditMaxDate.common_config_id"
+            + "   AND auditRequirements.time_last_sent = auditMaxDate.last_sent"
+            + " ) AS filteredAudit"
+            + " ON filteredAudit.common_config_id = job.job_id"
+            + " WHERE job.channel_descriptor_name IN (:channelDescriptorNames)",
+        nativeQuery = true
     )
-    Page<DistributionWithAuditEntity> getDistributionWithAuditInfo(Pageable pageable, @Param("channelDescriptorNames") Collection<String> channelDescriptorNames);
+    Page<DistributionDBResponse> getDistributionWithAuditInfo(Pageable pageable, @Param("channelDescriptorNames") Collection<String> channelDescriptorNames);
 
     @Query(
-        "SELECT NEW com.synopsys.integration.alert.database.distribution.DistributionWithAuditEntity(job.jobId, job.enabled, job.name, job.channelDescriptorName, job.distributionFrequency, MAX(audit.timeLastSent) AS lastSent, audit.status)"
-            + " FROM DistributionJobEntity job"
-            + " LEFT OUTER JOIN com.synopsys.integration.alert.database.audit.AuditEntryEntity audit ON audit.commonConfigId = job.jobId"
-            + " WHERE job.channelDescriptorName IN (:channelDescriptorNames) AND job.name LIKE %:searchTerm%"
-            + " GROUP BY job.jobId, audit.status, job.enabled, job.name, job.channelDescriptorName, job.distributionFrequency"
+        value = "SELECT CAST(job.job_id as varchar) AS id, job.enabled, job.name, job.channel_descriptor_name, job.distribution_frequency, filteredAudit.time_last_sent, filteredAudit.status"
+            + " FROM alert.distribution_jobs AS job"
+            + " LEFT OUTER JOIN ("
+            + "   SELECT auditRequirements.time_last_sent, auditRequirements.status, auditRequirements.common_config_id"
+            + "   FROM alert.audit_entries AS auditRequirements"
+            + "   INNER JOIN ("
+            + "     SELECT initialAudit.common_config_id, MAX(initialAudit.time_last_sent) AS last_sent"
+            + "     FROM alert.audit_entries AS initialAudit"
+            + "     GROUP BY initialAudit.common_config_id"
+            + "   ) AS auditMaxDate"
+            + "   ON auditRequirements.common_config_id = auditMaxDate.common_config_id"
+            + "   AND auditRequirements.time_last_sent = auditMaxDate.last_sent"
+            + " ) AS filteredAudit"
+            + " ON filteredAudit.common_config_id = job.job_id"
+            + " WHERE job.channel_descriptor_name IN (:channelDescriptorNames) AND job.name LIKE %:searchTerm%",
+        nativeQuery = true
     )
-    Page<DistributionWithAuditEntity> getDistributionWithAuditInfoWithSearch(Pageable pageable, @Param("channelDescriptorNames") Collection<String> channelDescriptorNames, @Param("searchTerm") String searchTerm);
+    Page<DistributionDBResponse> getDistributionWithAuditInfoWithSearch(Pageable pageable, @Param("channelDescriptorNames") Collection<String> channelDescriptorNames, @Param("searchTerm") String searchTerm);
 
+    interface DistributionDBResponse {
+        String getId();
+
+        Boolean getEnabled();
+
+        String getName();
+
+        String getChannel_Descriptor_Name();
+
+        String getDistribution_Frequency();
+
+        String getTime_Last_Sent();
+
+        String getStatus();
+
+    }
 }
