@@ -30,7 +30,7 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 @Component
 public class DistributionActions {
-    private static final String CHANNEL_DESCRIPTOR_SORT_NAME = "channelDescriptorName";
+    private static final String CHANNEL_DESCRIPTOR_SORT_NAME = "channel_descriptor_name";
 
     private final DistributionAccessor distributionAccessor;
     private final AuthorizationManager authorizationManager;
@@ -107,11 +107,7 @@ public class DistributionActions {
             case "channel":
                 return CHANNEL_DESCRIPTOR_SORT_NAME;
             case "frequency":
-                return "distributionFrequency";
-            case "lastSent":
-                return "lastSent";
-            case "status":
-                return "audit.status";
+                return "distribution_frequency";
             default:
                 return "name";
         }

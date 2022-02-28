@@ -7,18 +7,13 @@
  */
 package com.synopsys.integration.alert.database.api;
 
-import java.text.ParseException;
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,13 +26,11 @@ import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.persistence.accessor.DistributionAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.DistributionWithAuditInfo;
-import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.distribution.DistributionRepository;
-import com.synopsys.integration.alert.database.distribution.DistributionWithAuditEntity;
+import com.synopsys.integration.alert.database.distribution.DistributionRepository.DistributionDBResponse;
 
 @Component
 public class DefaultDistributionAccessor implements DistributionAccessor {
-    private final Logger logger = LoggerFactory.getLogger(DefaultDistributionAccessor.class);
     private final DistributionRepository distributionRepository;
 
     @Autowired
@@ -48,7 +41,7 @@ public class DefaultDistributionAccessor implements DistributionAccessor {
     @Override
     @Transactional(readOnly = true)
     public AlertPagedModel<DistributionWithAuditInfo> getDistributionWithAuditInfo(int page, int pageSize, String sortName, Direction sortOrder, Set<String> allowedDescriptorNames) {
-        return retrieveData(page, pageSize, sortName, sortOrder, (pageRequest -> distributionRepository.getDistributionWithAuditInfo(pageRequest, allowedDescriptorNames)));
+        return retrieveData(page, pageSize, sortName, sortOrder, pageRequest -> distributionRepository.getDistributionWithAuditInfo(pageRequest, allowedDescriptorNames));
     }
 
     @Override
@@ -57,85 +50,37 @@ public class DefaultDistributionAccessor implements DistributionAccessor {
         return retrieveData(page, pageSize, sortName, sortOrder, (pageRequest -> distributionRepository.getDistributionWithAuditInfoWithSearch(pageRequest, allowedDescriptorNames, searchTerm)));
     }
 
-    private AlertPagedModel<DistributionWithAuditInfo> retrieveData(int page, int pageSize, String sortName, Direction sortOrder, Function<PageRequest, Page<DistributionWithAuditEntity>> retrieveData) {
+    private AlertPagedModel<DistributionWithAuditInfo> retrieveData(int page, int pageSize, String sortName, Direction sortOrder, Function<PageRequest, Page<DistributionDBResponse>> retrieveData) {
         Sort sort = (sortName == null || sortOrder == null) ? Sort.unsorted() : Sort.by(sortOrder, sortName);
         PageRequest pageRequest = PageRequest.of(page, pageSize, sort);
-        Page<DistributionWithAuditEntity> distributionWithAuditInfo = retrieveData.apply(pageRequest);
-        return convert(distributionWithAuditInfo);
-    }
-
-    private AlertPagedModel<DistributionWithAuditInfo> convert(Page<DistributionWithAuditEntity> pageOfDistributionWithAuditEntity) {
-        List<DistributionWithAuditInfo> results = dedupeList(pageOfDistributionWithAuditEntity.getContent());
+        Page<DistributionDBResponse> pageOfResponses = retrieveData.apply(pageRequest);
+        List<DistributionWithAuditInfo> distributionWithAuditInfos = pageOfResponses.get().map(this::convert).collect(Collectors.toList());
         return new AlertPagedModel<>(
-            pageOfDistributionWithAuditEntity.getTotalPages(),
-            pageOfDistributionWithAuditEntity.getNumber(),
-            pageOfDistributionWithAuditEntity.getSize(),
-            results
+            pageOfResponses.getTotalPages(),
+            pageOfResponses.getNumber(),
+            pageOfResponses.getSize(),
+            distributionWithAuditInfos
         );
     }
 
-    // FIXME Bug, we need to modify the query to successfully avoid duplicate jobs.
-    private List<DistributionWithAuditInfo> dedupeList(List<DistributionWithAuditEntity> withAuditEntities) {
-        Map<UUID, DistributionWithAuditInfo> cachedInfo = new HashMap<>();
-        withAuditEntities.stream().forEach(entity -> cacheMaxValues(cachedInfo, entity));
-        return filterList(cachedInfo, withAuditEntities);
-    }
-
-    private void cacheMaxValues(Map<UUID, DistributionWithAuditInfo> existingInfos, DistributionWithAuditEntity entity) {
-        UUID jobId = entity.getJobId();
-        DistributionWithAuditInfo existingEntity = existingInfos.get(jobId);
-        if (null == existingEntity) {
-            existingInfos.put(jobId, convert(entity));
-            return;
-        }
-
-        String currentTimeLastSent = existingEntity.getAuditTimeLastSent();
-        if (null == currentTimeLastSent) {
-            existingInfos.put(jobId, convert(entity));
-            return;
-        }
-
-        try {
-            OffsetDateTime storedDateTime = DateUtils.parseDate(currentTimeLastSent, DateUtils.AUDIT_DATE_FORMAT);
-            OffsetDateTime timeLastSent = entity.getAuditTimeLastSent();
-            if (timeLastSent != null && timeLastSent.compareTo(storedDateTime) > 0) {
-                existingInfos.put(jobId, convert(entity));
-            }
-        } catch (ParseException e) {
-            logger.error("Unexpected error when parsing date: {}", e.getMessage());
-        }
-    }
-
-    private List<DistributionWithAuditInfo> filterList(Map<UUID, DistributionWithAuditInfo> cachedInfo, List<DistributionWithAuditEntity> existingInfo) {
-        ArrayList<DistributionWithAuditInfo> distributionsWithAuditInfos = new ArrayList<>(cachedInfo.entrySet().size());
-        existingInfo.stream().forEach(info -> {
-            UUID jobId = info.getJobId();
-            DistributionWithAuditInfo distributionWithAuditInfo = cachedInfo.get(jobId);
-            DistributionWithAuditInfo originalInfo = convert(info);
-            if (originalInfo.equals(distributionWithAuditInfo)) {
-                distributionsWithAuditInfos.add(distributionWithAuditInfo);
-                cachedInfo.remove(jobId);
-            }
-        });
-        return distributionsWithAuditInfos;
-    }
-
-    private DistributionWithAuditInfo convert(DistributionWithAuditEntity distributionWithAuditEntity) {
+    private DistributionWithAuditInfo convert(DistributionDBResponse distributionWithAuditEntity) {
         return new DistributionWithAuditInfo(
-            distributionWithAuditEntity.getJobId(),
-            distributionWithAuditEntity.isEnabled(),
-            distributionWithAuditEntity.getJobName(),
-            distributionWithAuditEntity.getChannelName(),
-            FrequencyType.valueOf(distributionWithAuditEntity.getFrequencyType()),
-            formatAuditDate(distributionWithAuditEntity.getAuditTimeLastSent()),
-            distributionWithAuditEntity.getAuditStatus()
+            UUID.fromString(distributionWithAuditEntity.getId()),
+            distributionWithAuditEntity.getEnabled(),
+            distributionWithAuditEntity.getName(),
+            distributionWithAuditEntity.getChannel_Descriptor_Name(),
+            FrequencyType.valueOf(distributionWithAuditEntity.getDistribution_Frequency()),
+            formatAuditDate(distributionWithAuditEntity.getTime_Last_Sent()),
+            distributionWithAuditEntity.getStatus()
         );
     }
 
-    private String formatAuditDate(OffsetDateTime dateTime) {
-        if (null != dateTime) {
-            return DateUtils.formatDate(dateTime, DateUtils.AUDIT_DATE_FORMAT);
+    private String formatAuditDate(String dateTime) {
+        if (dateTime == null) {
+            return null;
         }
-        return null;
+
+        String removedDashes = StringUtils.replace(dateTime, "-", "/");
+        return StringUtils.substringBeforeLast(removedDashes, ".");
     }
 }
