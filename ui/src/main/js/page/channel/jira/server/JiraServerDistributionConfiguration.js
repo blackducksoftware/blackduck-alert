@@ -1,33 +1,50 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
-import { JIRA_SERVER_DISTRIBUTION_FIELD_KEYS, JIRA_SERVER_DISTRIBUTION_GLOBAL_CONFIG_COLUMNS } from 'page/channel/jira/server/JiraServerModel';
+import { JIRA_SERVER_DISTRIBUTION_FIELD_KEYS } from 'page/channel/jira/server/JiraServerModel';
 import CheckboxInput from 'common/component/input/CheckboxInput';
 import TextInput from 'common/component/input/TextInput';
 import CollapsiblePane from 'common/component/CollapsiblePane';
 import FieldMappingField from 'common/component/input/FieldMappingField';
 import { DISTRIBUTION_COMMON_FIELD_KEYS } from 'page/distribution/DistributionModel';
-import GlobalConfigurationSelectInput from 'common/component/input/GlobalConfigurationSelectInput';
+import EndpointSelectField from '../../../../common/component/input/EndpointSelectField';
+import { createReadRequest } from '../../../../common/util/configurationRequestBuilder';
 
 const JiraServerDistributionConfiguration = ({
     csrfToken, data, setData, errors, readonly
 }) => {
+    const readRequest = () => {
+        const apiUrl = '/alert/api/configuration/jira_server?pageNumber=0&pageSize=25';
+        return createReadRequest(apiUrl, csrfToken);
+    };
+
+    const convertDataToOptions = (responseData) => {
+        const { models } = responseData;
+        return models.map((configurationModel) => {
+            const { id: configId, name } = configurationModel;
+            return {
+                key: configId,
+                label: name,
+                value: configId
+            };
+        });
+    };
     if (!FieldModelUtilities.hasValue(data, JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueType)) {
         setData(FieldModelUtilities.updateFieldModelSingleValue(data, JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueType, 'Task'));
     }
     // TODO make configuration select searchable but requires support in the backend
     return (
         <>
-            <GlobalConfigurationSelectInput
+            <EndpointSelectField
                 id={DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId}
                 csrfToken={csrfToken}
                 endpoint="/api/configuration/jira_server"
                 fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId}
-                columns={JIRA_SERVER_DISTRIBUTION_GLOBAL_CONFIG_COLUMNS}
                 label="Jira Server"
                 description="Select a Jira server that will be used to create or update issues."
                 readOnly={readonly}
-                paged
+                readOptionsRequest={readRequest}
+                convertDataToOptions={convertDataToOptions}
                 onChange={FieldModelUtilities.handleChange(data, setData)}
                 value={FieldModelUtilities.getFieldModelSingleValue(data, DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId)}
                 errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId)}
