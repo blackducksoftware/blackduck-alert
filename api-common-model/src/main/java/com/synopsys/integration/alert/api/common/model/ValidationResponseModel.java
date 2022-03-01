@@ -5,25 +5,26 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.common.rest.model;
+package com.synopsys.integration.alert.api.common.model;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
-import com.synopsys.integration.alert.common.action.ValidationActionResponse;
-import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.descriptor.config.field.errors.FieldStatusSeverity;
+import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
+import com.synopsys.integration.alert.api.common.model.errors.FieldStatusSeverity;
 
 public class ValidationResponseModel extends AlertSerializableModel {
+    public static final String VALIDATION_SUCCESS_MESSAGE = "The configuration is valid";
+    public static final String VALIDATION_FAILURE_MESSAGE = "There were problems with the configuration";
+
     private String message;
     private Boolean hasErrors;
     private Map<String, AlertFieldStatus> errors;
 
     public static ValidationResponseModel success() {
-        return success(ValidationActionResponse.VALIDATION_SUCCESS_MESSSAGE);
+        return success(VALIDATION_SUCCESS_MESSAGE);
     }
 
     public static ValidationResponseModel success(String message) {
@@ -35,7 +36,7 @@ public class ValidationResponseModel extends AlertSerializableModel {
     }
 
     public static ValidationResponseModel fromStatusCollection(Collection<AlertFieldStatus> fieldStatuses) {
-        return fromStatusCollection(ValidationActionResponse.VALIDATION_FAILURE_MESSAGE, fieldStatuses);
+        return fromStatusCollection(VALIDATION_FAILURE_MESSAGE, fieldStatuses);
     }
 
     public static ValidationResponseModel fromStatusCollection(String message, Collection<AlertFieldStatus> fieldStatuses) {

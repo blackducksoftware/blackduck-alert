@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.channel.email.action.EmailGlobalCrudActions;
 import com.synopsys.integration.alert.channel.email.action.EmailGlobalTestAction;
 import com.synopsys.integration.alert.channel.email.action.EmailGlobalValidationAction;
@@ -21,7 +22,6 @@ import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.api.StaticUniqueConfigResourceController;
 import com.synopsys.integration.alert.common.rest.api.ValidateController;
-import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
 @RestController
