@@ -53,7 +53,7 @@ const EndpointSelectField = ({
     });
 
     const onSendClick = () => {
-        const request = readOptionsRequest || defaultRequest();
+        const request = readOptionsRequest ? readOptionsRequest() : defaultRequest();
         request.then((response) => {
             if (response.ok) {
                 response.json().then((data) => {
@@ -74,7 +74,6 @@ const EndpointSelectField = ({
     useEffect(() => {
         onSendClick();
     }, []);
-
     return (
         <div>
             <DynamicSelectInput

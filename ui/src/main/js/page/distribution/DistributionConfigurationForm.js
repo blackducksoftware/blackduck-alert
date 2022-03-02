@@ -205,12 +205,14 @@ const DistributionConfigurationForm = ({
                     />
                 );
             case JIRA_SERVER_INFO.key: {
-                const commonGlobalConfigId = FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId);
-                const jiraSpecificModel = FieldModelUtilities.updateFieldModelSingleValue(specificChannelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId, commonGlobalConfigId);
+                if (!FieldModelUtilities.hasKey(specificChannelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId)) {
+                    const commonGlobalConfigId = FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId);
+                    setSpecificChannelModel(FieldModelUtilities.updateFieldModelSingleValue(specificChannelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId, commonGlobalConfigId));
+                }
                 return (
                     <JiraServerDistributionConfiguration
                         csrfToken={csrfToken}
-                        data={jiraSpecificModel}
+                        data={specificChannelModel}
                         setData={setSpecificChannelModel}
                         errors={errors}
                         readonly={readonly}

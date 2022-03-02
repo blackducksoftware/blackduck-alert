@@ -7,8 +7,8 @@ import TextInput from 'common/component/input/TextInput';
 import CollapsiblePane from 'common/component/CollapsiblePane';
 import FieldMappingField from 'common/component/input/FieldMappingField';
 import { DISTRIBUTION_COMMON_FIELD_KEYS } from 'page/distribution/DistributionModel';
-import EndpointSelectField from '../../../../common/component/input/EndpointSelectField';
-import { createReadRequest } from '../../../../common/util/configurationRequestBuilder';
+import EndpointSelectField from 'common/component/input/EndpointSelectField';
+import { createReadRequest } from 'common/util/configurationRequestBuilder';
 
 const JiraServerDistributionConfiguration = ({
     csrfToken, data, setData, errors, readonly
@@ -46,7 +46,7 @@ const JiraServerDistributionConfiguration = ({
                 readOptionsRequest={readRequest}
                 convertDataToOptions={convertDataToOptions}
                 onChange={FieldModelUtilities.handleChange(data, setData)}
-                value={FieldModelUtilities.getFieldModelSingleValue(data, DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId)}
+                value={FieldModelUtilities.getFieldModelValues(data, DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId)}
                 errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId)}
                 errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId]}
             />
