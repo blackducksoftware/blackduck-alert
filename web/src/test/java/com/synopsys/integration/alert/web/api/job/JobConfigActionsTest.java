@@ -544,6 +544,7 @@ public class JobConfigActionsTest {
 
     private DistributionJobModel createDistributionJobModel() {
         UUID jobId = UUID.randomUUID();
+        UUID channelConfigId = UUID.randomUUID();
         return DistributionJobModel.builder()
             .jobId(jobId)
             .enabled(true)
@@ -553,6 +554,7 @@ public class JobConfigActionsTest {
             .processingType(ProcessingType.DEFAULT)
             .channelDescriptorName(DESCRIPTOR_KEY_STRING)
             .createdAt(OffsetDateTime.now())
+            .channelGlobalConfigId(channelConfigId)
             .filterByProject(false)
             .notificationTypes(List.of("notification_type"))
             .distributionJobDetails(new MSTeamsJobDetailsModel(jobId, "webhook"))
