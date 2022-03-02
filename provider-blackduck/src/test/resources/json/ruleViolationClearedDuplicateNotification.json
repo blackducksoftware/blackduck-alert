@@ -1,0 +1,887 @@
+{
+  "content": {
+    "projectVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d",
+    "projectName": "BM_Testing",
+    "projectVersionName": "6.10.0-SNAPSHOT",
+    "componentVersionStatuses": [
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/a5ce5718-168c-4a89-976c-245a004c4397/versions/4b395323-4603-4d6f-8762-0ad273a05597",
+        "componentName": "ASM",
+        "componentVersionName": "8.0.1",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/a5ce5718-168c-4a89-976c-245a004c4397/versions/4b395323-4603-4d6f-8762-0ad273a05597/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/a5ce5718-168c-4a89-976c-245a004c4397/component-versions/4b395323-4603-4d6f-8762-0ad273a05597/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/a5ce5718-168c-4a89-976c-245a004c4397/versions/4b395323-4603-4d6f-8762-0ad273a05597"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/755247aa-5fb2-4ff7-958c-d0bb99e548e8/versions/23b299cb-f7b1-4dc5-9c75-72621ab7f871",
+        "componentName": "ASM Commons",
+        "componentVersionName": "8.0.1",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/755247aa-5fb2-4ff7-958c-d0bb99e548e8/versions/23b299cb-f7b1-4dc5-9c75-72621ab7f871/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/755247aa-5fb2-4ff7-958c-d0bb99e548e8/component-versions/23b299cb-f7b1-4dc5-9c75-72621ab7f871/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/755247aa-5fb2-4ff7-958c-d0bb99e548e8/versions/23b299cb-f7b1-4dc5-9c75-72621ab7f871"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/3569f00e-c2ff-4c25-ad6e-013073a37e6a/versions/7de27454-df52-4283-bc11-46bf4f0bf1c6",
+        "componentName": "ASM Tree",
+        "componentVersionName": "8.0.1",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/3569f00e-c2ff-4c25-ad6e-013073a37e6a/versions/7de27454-df52-4283-bc11-46bf4f0bf1c6/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/3569f00e-c2ff-4c25-ad6e-013073a37e6a/component-versions/7de27454-df52-4283-bc11-46bf4f0bf1c6/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/3569f00e-c2ff-4c25-ad6e-013073a37e6a/versions/7de27454-df52-4283-bc11-46bf4f0bf1c6"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/9c0920e4-104a-448e-8192-866544b75890/versions/47dc2f27-657f-4c8b-ae2f-289ef7f95c35",
+        "componentName": "Apache Commons Lang",
+        "componentVersionName": "3.11",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/9c0920e4-104a-448e-8192-866544b75890/versions/47dc2f27-657f-4c8b-ae2f-289ef7f95c35/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/9c0920e4-104a-448e-8192-866544b75890/component-versions/47dc2f27-657f-4c8b-ae2f-289ef7f95c35/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/9c0920e4-104a-448e-8192-866544b75890/versions/47dc2f27-657f-4c8b-ae2f-289ef7f95c35"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/f624d758-10d3-449d-96d2-d4fc12499fda/versions/7e51b795-43b9-4eaa-9d52-2fd322dddb31",
+        "componentName": "Apache HttpClient",
+        "componentVersionName": "4.5.13",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/f624d758-10d3-449d-96d2-d4fc12499fda/versions/7e51b795-43b9-4eaa-9d52-2fd322dddb31/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/f624d758-10d3-449d-96d2-d4fc12499fda/component-versions/7e51b795-43b9-4eaa-9d52-2fd322dddb31/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/f624d758-10d3-449d-96d2-d4fc12499fda/versions/7e51b795-43b9-4eaa-9d52-2fd322dddb31"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/ca433569-ea2e-4c78-b53d-106843ec1f58/versions/92d929cf-b12d-4684-9869-ea210b7ae7ba",
+        "componentName": "Apache HttpComponents Core",
+        "componentVersionName": "4.4.14",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/ca433569-ea2e-4c78-b53d-106843ec1f58/versions/92d929cf-b12d-4684-9869-ea210b7ae7ba/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/ca433569-ea2e-4c78-b53d-106843ec1f58/component-versions/92d929cf-b12d-4684-9869-ea210b7ae7ba/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/ca433569-ea2e-4c78-b53d-106843ec1f58/versions/92d929cf-b12d-4684-9869-ea210b7ae7ba"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/56d9341e-271a-4c5b-aef3-3828b875382a/versions/2a953380-14b0-46a7-8588-c23c19be74fb",
+        "componentName": "Apache HttpMime",
+        "componentVersionName": "4.5.13",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/56d9341e-271a-4c5b-aef3-3828b875382a/versions/2a953380-14b0-46a7-8588-c23c19be74fb/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/56d9341e-271a-4c5b-aef3-3828b875382a/component-versions/2a953380-14b0-46a7-8588-c23c19be74fb/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/56d9341e-271a-4c5b-aef3-3828b875382a/versions/2a953380-14b0-46a7-8588-c23c19be74fb"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/5a7e1c49-9a98-4393-b4e0-8011122bbe2f/versions/c05dc435-e4a1-41bd-8dc9-f671ba3862bf",
+        "componentName": "Apache Tomcat",
+        "componentVersionName": "9.0.55",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/5a7e1c49-9a98-4393-b4e0-8011122bbe2f/versions/c05dc435-e4a1-41bd-8dc9-f671ba3862bf/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/5a7e1c49-9a98-4393-b4e0-8011122bbe2f/component-versions/c05dc435-e4a1-41bd-8dc9-f671ba3862bf/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/5a7e1c49-9a98-4393-b4e0-8011122bbe2f/versions/c05dc435-e4a1-41bd-8dc9-f671ba3862bf"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/b847dc3a-8bd9-41d4-a3c1-11e306db1be0/versions/1c54cd6c-784d-42aa-bdc0-e341d0291c85",
+        "componentName": "Apache Tomcat Embed",
+        "componentVersionName": "9.0.55",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/b847dc3a-8bd9-41d4-a3c1-11e306db1be0/versions/1c54cd6c-784d-42aa-bdc0-e341d0291c85/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/b847dc3a-8bd9-41d4-a3c1-11e306db1be0/component-versions/1c54cd6c-784d-42aa-bdc0-e341d0291c85/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/b847dc3a-8bd9-41d4-a3c1-11e306db1be0/versions/1c54cd6c-784d-42aa-bdc0-e341d0291c85"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/670797e3-30b4-48e8-ad3d-0fcfb0e8a6b2/versions/4dcf3c62-0900-4e34-b6a1-7804a9dcc1f8",
+        "componentName": "AspectJ Runtime",
+        "componentVersionName": "1.9.7",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/670797e3-30b4-48e8-ad3d-0fcfb0e8a6b2/versions/4dcf3c62-0900-4e34-b6a1-7804a9dcc1f8/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/670797e3-30b4-48e8-ad3d-0fcfb0e8a6b2/component-versions/4dcf3c62-0900-4e34-b6a1-7804a9dcc1f8/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/670797e3-30b4-48e8-ad3d-0fcfb0e8a6b2/versions/4dcf3c62-0900-4e34-b6a1-7804a9dcc1f8"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/3a880f58-5441-4faf-bad8-01e7648149d4/versions/edbc4b32-85cf-4750-8137-2fc1ff5880bf",
+        "componentName": "Byte Buddy",
+        "componentVersionName": "byte-buddy-1.10.22",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/3a880f58-5441-4faf-bad8-01e7648149d4/versions/edbc4b32-85cf-4750-8137-2fc1ff5880bf/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/3a880f58-5441-4faf-bad8-01e7648149d4/component-versions/edbc4b32-85cf-4750-8137-2fc1ff5880bf/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/3a880f58-5441-4faf-bad8-01e7648149d4/versions/edbc4b32-85cf-4750-8137-2fc1ff5880bf"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/eaa5708e-b763-44f0-8091-2cdf7bac1cd0/versions/d66e17a7-870e-4775-bb9c-48d435a99a2e",
+        "componentName": "Checker Qual",
+        "componentVersionName": "3.5.0",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/eaa5708e-b763-44f0-8091-2cdf7bac1cd0/versions/d66e17a7-870e-4775-bb9c-48d435a99a2e/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/eaa5708e-b763-44f0-8091-2cdf7bac1cd0/component-versions/d66e17a7-870e-4775-bb9c-48d435a99a2e/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/eaa5708e-b763-44f0-8091-2cdf7bac1cd0/versions/d66e17a7-870e-4775-bb9c-48d435a99a2e"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/b84a5184-8627-4d38-b055-d92d33d97e35/versions/a4ea903d-0daa-4b5d-9ca2-287e718d0990",
+        "componentName": "H2 Database Engine",
+        "componentVersionName": "1.4.200",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/b84a5184-8627-4d38-b055-d92d33d97e35/versions/a4ea903d-0daa-4b5d-9ca2-287e718d0990/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/b84a5184-8627-4d38-b055-d92d33d97e35/component-versions/a4ea903d-0daa-4b5d-9ca2-287e718d0990/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9",
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/16bef7b9-e1f6-41c7-a8b4-2a6492aecf48"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/b84a5184-8627-4d38-b055-d92d33d97e35/versions/a4ea903d-0daa-4b5d-9ca2-287e718d0990"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/390f91c0-2a1d-4209-9792-9fa4365a48e0/versions/f763a1d1-3a07-46fa-b593-d7f1f7c0b1bb",
+        "componentName": "Hibernate Commons Annotations",
+        "componentVersionName": "5.1.2.Final",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/390f91c0-2a1d-4209-9792-9fa4365a48e0/versions/f763a1d1-3a07-46fa-b593-d7f1f7c0b1bb/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/390f91c0-2a1d-4209-9792-9fa4365a48e0/component-versions/f763a1d1-3a07-46fa-b593-d7f1f7c0b1bb/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/390f91c0-2a1d-4209-9792-9fa4365a48e0/versions/f763a1d1-3a07-46fa-b593-d7f1f7c0b1bb"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/cf193b88-f9ec-4af9-85b9-420c4a14b846/versions/8f7eb987-e61f-46f3-8ea3-ac41c3e242f8",
+        "componentName": "Hibernate ORM",
+        "componentVersionName": "5.4.32.Final",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/cf193b88-f9ec-4af9-85b9-420c4a14b846/versions/8f7eb987-e61f-46f3-8ea3-ac41c3e242f8/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/cf193b88-f9ec-4af9-85b9-420c4a14b846/component-versions/8f7eb987-e61f-46f3-8ea3-ac41c3e242f8/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/cf193b88-f9ec-4af9-85b9-420c4a14b846/versions/8f7eb987-e61f-46f3-8ea3-ac41c3e242f8"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/2182cf66-eb9c-4d08-9cb8-3d68a34ca479/versions/f76f7a68-3459-400a-97c2-481cf43cf48a",
+        "componentName": "HikariCP",
+        "componentVersionName": "HikariCP-3.4.5",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/2182cf66-eb9c-4d08-9cb8-3d68a34ca479/versions/f76f7a68-3459-400a-97c2-481cf43cf48a/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/2182cf66-eb9c-4d08-9cb8-3d68a34ca479/component-versions/f76f7a68-3459-400a-97c2-481cf43cf48a/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/2182cf66-eb9c-4d08-9cb8-3d68a34ca479/versions/f76f7a68-3459-400a-97c2-481cf43cf48a"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/a55eb8af-ba71-4b4b-b282-e07d8a3a818f/versions/5b41dfca-c52b-4c2a-8d86-fa802e20d424",
+        "componentName": "JAXB Runtime",
+        "componentVersionName": "2.3.5",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/a55eb8af-ba71-4b4b-b282-e07d8a3a818f/versions/5b41dfca-c52b-4c2a-8d86-fa802e20d424/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/a55eb8af-ba71-4b4b-b282-e07d8a3a818f/component-versions/5b41dfca-c52b-4c2a-8d86-fa802e20d424/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/a55eb8af-ba71-4b4b-b282-e07d8a3a818f/versions/5b41dfca-c52b-4c2a-8d86-fa802e20d424"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/ac1caae3-c931-479b-9023-5c8eb5e576fd/versions/2a244157-a5a6-4c2a-8b89-43f02c0ed20e",
+        "componentName": "JBoss Logging 3",
+        "componentVersionName": "3.4.2.Final",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/ac1caae3-c931-479b-9023-5c8eb5e576fd/versions/2a244157-a5a6-4c2a-8b89-43f02c0ed20e/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/ac1caae3-c931-479b-9023-5c8eb5e576fd/component-versions/2a244157-a5a6-4c2a-8b89-43f02c0ed20e/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/ac1caae3-c931-479b-9023-5c8eb5e576fd/versions/2a244157-a5a6-4c2a-8b89-43f02c0ed20e"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/4f12ae53-dd41-464a-9c68-91061974c96f/versions/66540793-3c88-4317-8fca-1d4e1214de37",
+        "componentName": "JSONassert",
+        "componentVersionName": "1.5.0",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/4f12ae53-dd41-464a-9c68-91061974c96f/versions/66540793-3c88-4317-8fca-1d4e1214de37/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/4f12ae53-dd41-464a-9c68-91061974c96f/component-versions/66540793-3c88-4317-8fca-1d4e1214de37/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/4f12ae53-dd41-464a-9c68-91061974c96f/versions/66540793-3c88-4317-8fca-1d4e1214de37"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/461f9840-a0e2-417a-82a9-39e9385dcf70/versions/ba39f686-35de-40a9-9fd5-d5dc00427131",
+        "componentName": "JUnit 5 (Bill of Materials)",
+        "componentVersionName": "5.7.2",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/461f9840-a0e2-417a-82a9-39e9385dcf70/versions/ba39f686-35de-40a9-9fd5-d5dc00427131/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/461f9840-a0e2-417a-82a9-39e9385dcf70/component-versions/ba39f686-35de-40a9-9fd5-d5dc00427131/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/461f9840-a0e2-417a-82a9-39e9385dcf70/versions/ba39f686-35de-40a9-9fd5-d5dc00427131"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/6d5c8ac2-83a0-48fb-981e-14195dd20a19/versions/d00aa724-542b-4b9d-8e06-3a810fdbc6e6",
+        "componentName": "JaCoCo",
+        "componentVersionName": "v0.8.6",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/6d5c8ac2-83a0-48fb-981e-14195dd20a19/versions/d00aa724-542b-4b9d-8e06-3a810fdbc6e6/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/6d5c8ac2-83a0-48fb-981e-14195dd20a19/component-versions/d00aa724-542b-4b9d-8e06-3a810fdbc6e6/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/6d5c8ac2-83a0-48fb-981e-14195dd20a19/versions/d00aa724-542b-4b9d-8e06-3a810fdbc6e6"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/efa30f38-bb5f-4069-b680-81eba0819c86/versions/053cc23c-ae1e-4562-b40c-620c47fc5002",
+        "componentName": "Java Annotation Indexer",
+        "componentVersionName": "2.2.3.Final",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/efa30f38-bb5f-4069-b680-81eba0819c86/versions/053cc23c-ae1e-4562-b40c-620c47fc5002/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/efa30f38-bb5f-4069-b680-81eba0819c86/component-versions/053cc23c-ae1e-4562-b40c-620c47fc5002/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/efa30f38-bb5f-4069-b680-81eba0819c86/versions/053cc23c-ae1e-4562-b40c-620c47fc5002"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/31d6af8d-8f4c-4614-8448-3728bd7d35b6/versions/22b96b19-369d-48e5-9c5e-d9306935803b",
+        "componentName": "Java Architecture for XML Binding",
+        "componentVersionName": "2.3.1",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/31d6af8d-8f4c-4614-8448-3728bd7d35b6/versions/22b96b19-369d-48e5-9c5e-d9306935803b/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/31d6af8d-8f4c-4614-8448-3728bd7d35b6/component-versions/22b96b19-369d-48e5-9c5e-d9306935803b/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/2aa7e9e5-2a41-41b4-9385-be22cb95acd8",
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/31d6af8d-8f4c-4614-8448-3728bd7d35b6/versions/22b96b19-369d-48e5-9c5e-d9306935803b"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/31d6af8d-8f4c-4614-8448-3728bd7d35b6/versions/1103f37a-fa61-40e3-bcf5-dddea320effb",
+        "componentName": "Java Architecture for XML Binding",
+        "componentVersionName": "2.3.3",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/31d6af8d-8f4c-4614-8448-3728bd7d35b6/versions/1103f37a-fa61-40e3-bcf5-dddea320effb/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/31d6af8d-8f4c-4614-8448-3728bd7d35b6/component-versions/1103f37a-fa61-40e3-bcf5-dddea320effb/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/31d6af8d-8f4c-4614-8448-3728bd7d35b6/versions/1103f37a-fa61-40e3-bcf5-dddea320effb"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/77a32229-290a-4a29-9617-02ba60866d6b/versions/5e73c8b7-2368-4371-b8d2-80a38b5af2f9",
+        "componentName": "JavaBeans Activation Framework",
+        "componentVersionName": "1.2.2",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/77a32229-290a-4a29-9617-02ba60866d6b/versions/5e73c8b7-2368-4371-b8d2-80a38b5af2f9/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/77a32229-290a-4a29-9617-02ba60866d6b/component-versions/5e73c8b7-2368-4371-b8d2-80a38b5af2f9/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/77a32229-290a-4a29-9617-02ba60866d6b/versions/5e73c8b7-2368-4371-b8d2-80a38b5af2f9"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/fcc6905e-b4c4-4e41-ae1e-0ed870ba706b/versions/09445a98-ffda-44ad-a78e-693fd944e360",
+        "componentName": "JavaBeans Activation Framework API jar",
+        "componentVersionName": "1.2.0",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/fcc6905e-b4c4-4e41-ae1e-0ed870ba706b/versions/09445a98-ffda-44ad-a78e-693fd944e360/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/fcc6905e-b4c4-4e41-ae1e-0ed870ba706b/component-versions/09445a98-ffda-44ad-a78e-693fd944e360/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/fcc6905e-b4c4-4e41-ae1e-0ed870ba706b/versions/09445a98-ffda-44ad-a78e-693fd944e360"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/fcc6905e-b4c4-4e41-ae1e-0ed870ba706b/versions/d16b16de-dfa5-459b-9c76-0e2cd68abdef",
+        "componentName": "JavaBeans Activation Framework API jar",
+        "componentVersionName": "1.2.2",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/fcc6905e-b4c4-4e41-ae1e-0ed870ba706b/versions/d16b16de-dfa5-459b-9c76-0e2cd68abdef/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/fcc6905e-b4c4-4e41-ae1e-0ed870ba706b/component-versions/d16b16de-dfa5-459b-9c76-0e2cd68abdef/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/fcc6905e-b4c4-4e41-ae1e-0ed870ba706b/versions/d16b16de-dfa5-459b-9c76-0e2cd68abdef"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/c1ff58fd-778e-41d1-931c-731e2d0298b3/versions/5f18c40e-4bf8-405d-9708-ee7ec842972e",
+        "componentName": "Javassist",
+        "componentVersionName": "3.27.0",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/c1ff58fd-778e-41d1-931c-731e2d0298b3/versions/5f18c40e-4bf8-405d-9708-ee7ec842972e/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/c1ff58fd-778e-41d1-931c-731e2d0298b3/component-versions/5f18c40e-4bf8-405d-9708-ee7ec842972e/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/c1ff58fd-778e-41d1-931c-731e2d0298b3/versions/5f18c40e-4bf8-405d-9708-ee7ec842972e"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/47f9159a-311a-4369-9c30-881bdad937fc/versions/5650f5f5-1cea-4f32-befa-25e89adb858b",
+        "componentName": "LiquiBase",
+        "componentVersionName": "v3.10.3",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/47f9159a-311a-4369-9c30-881bdad937fc/versions/5650f5f5-1cea-4f32-befa-25e89adb858b/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/47f9159a-311a-4369-9c30-881bdad937fc/component-versions/5650f5f5-1cea-4f32-befa-25e89adb858b/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/47f9159a-311a-4369-9c30-881bdad937fc/versions/5650f5f5-1cea-4f32-befa-25e89adb858b"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/9ff239a9-a142-4ebc-b3b3-3c1185d39566/versions/c861995e-0a81-48e4-ac91-11adc99cf78f",
+        "componentName": "Mockito",
+        "componentVersionName": "v3.6.28",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/9ff239a9-a142-4ebc-b3b3-3c1185d39566/versions/c861995e-0a81-48e4-ac91-11adc99cf78f/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/9ff239a9-a142-4ebc-b3b3-3c1185d39566/component-versions/c861995e-0a81-48e4-ac91-11adc99cf78f/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/9ff239a9-a142-4ebc-b3b3-3c1185d39566/versions/c861995e-0a81-48e4-ac91-11adc99cf78f"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/c34847da-31e2-471d-b230-11ebd5e58dc4/versions/a634ef3f-bd84-46ea-b04a-ab6550b30028",
+        "componentName": "PostgreSQL JDBC Driver (pgjdbc)",
+        "componentVersionName": "42.2.24",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/c34847da-31e2-471d-b230-11ebd5e58dc4/versions/a634ef3f-bd84-46ea-b04a-ab6550b30028/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/c34847da-31e2-471d-b230-11ebd5e58dc4/component-versions/a634ef3f-bd84-46ea-b04a-ab6550b30028/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/d07070f1-4d62-4898-87a3-2eab76ebe8d9",
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9",
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/16bef7b9-e1f6-41c7-a8b4-2a6492aecf48"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/c34847da-31e2-471d-b230-11ebd5e58dc4/versions/a634ef3f-bd84-46ea-b04a-ab6550b30028"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/ca782761-ef54-4eb6-b7f0-b9fbb15a0698/versions/f3cac925-5d70-459a-a24c-1bb7cfcd6e78",
+        "componentName": "SLF4J API Module",
+        "componentVersionName": "1.7.32",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/ca782761-ef54-4eb6-b7f0-b9fbb15a0698/versions/f3cac925-5d70-459a-a24c-1bb7cfcd6e78/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/ca782761-ef54-4eb6-b7f0-b9fbb15a0698/component-versions/f3cac925-5d70-459a-a24c-1bb7cfcd6e78/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/ca782761-ef54-4eb6-b7f0-b9fbb15a0698/versions/f3cac925-5d70-459a-a24c-1bb7cfcd6e78"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/ee1b331d-05e0-4bd1-b6ef-727c3b98e324/versions/b858edb3-6118-4095-8264-0f0a1a315635",
+        "componentName": "Spring Boot",
+        "componentVersionName": "2.4.13",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/ee1b331d-05e0-4bd1-b6ef-727c3b98e324/versions/b858edb3-6118-4095-8264-0f0a1a315635/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/ee1b331d-05e0-4bd1-b6ef-727c3b98e324/component-versions/b858edb3-6118-4095-8264-0f0a1a315635/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/ee1b331d-05e0-4bd1-b6ef-727c3b98e324/versions/b858edb3-6118-4095-8264-0f0a1a315635"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/a11676cf-4baa-4d65-83ac-0f61607f42f3/versions/95278f93-6eae-49c3-bf19-d064d4e0e5d1",
+        "componentName": "Spring Boot Test",
+        "componentVersionName": "2.4.13",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/a11676cf-4baa-4d65-83ac-0f61607f42f3/versions/95278f93-6eae-49c3-bf19-d064d4e0e5d1/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/a11676cf-4baa-4d65-83ac-0f61607f42f3/component-versions/95278f93-6eae-49c3-bf19-d064d4e0e5d1/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/a11676cf-4baa-4d65-83ac-0f61607f42f3/versions/95278f93-6eae-49c3-bf19-d064d4e0e5d1"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/90537eef-0fd8-455e-83ad-d97891f40434/versions/60487b36-6020-4113-825a-57153aad6c02",
+        "componentName": "Spring Boot Test Auto-Configure",
+        "componentVersionName": "2.4.13",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/90537eef-0fd8-455e-83ad-d97891f40434/versions/60487b36-6020-4113-825a-57153aad6c02/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/90537eef-0fd8-455e-83ad-d97891f40434/component-versions/60487b36-6020-4113-825a-57153aad6c02/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/90537eef-0fd8-455e-83ad-d97891f40434/versions/60487b36-6020-4113-825a-57153aad6c02"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/ecf27560-a36d-4183-bc5d-4f7566a5de6e/versions/48623ac6-86ca-4934-9a12-322fa2ae0f5c",
+        "componentName": "Spring Commons Logging Bridge",
+        "componentVersionName": "5.3.13",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/ecf27560-a36d-4183-bc5d-4f7566a5de6e/versions/48623ac6-86ca-4934-9a12-322fa2ae0f5c/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/ecf27560-a36d-4183-bc5d-4f7566a5de6e/component-versions/48623ac6-86ca-4934-9a12-322fa2ae0f5c/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/ecf27560-a36d-4183-bc5d-4f7566a5de6e/versions/48623ac6-86ca-4934-9a12-322fa2ae0f5c"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/3e5c8072-f63f-476b-a47d-b4f8c5a1b795/versions/6aed3f0b-239b-4332-ac31-b3327b65ea58",
+        "componentName": "Spring Data Commons",
+        "componentVersionName": "2.4.15",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/3e5c8072-f63f-476b-a47d-b4f8c5a1b795/versions/6aed3f0b-239b-4332-ac31-b3327b65ea58/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/3e5c8072-f63f-476b-a47d-b4f8c5a1b795/component-versions/6aed3f0b-239b-4332-ac31-b3327b65ea58/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/3e5c8072-f63f-476b-a47d-b4f8c5a1b795/versions/6aed3f0b-239b-4332-ac31-b3327b65ea58"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/628616b2-9de7-43a2-8d10-20b4573d2551/versions/28006f1d-80f0-418a-983b-4f0a393987f4",
+        "componentName": "Spring Data JPA",
+        "componentVersionName": "2.4.15",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/628616b2-9de7-43a2-8d10-20b4573d2551/versions/28006f1d-80f0-418a-983b-4f0a393987f4/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/628616b2-9de7-43a2-8d10-20b4573d2551/component-versions/28006f1d-80f0-418a-983b-4f0a393987f4/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/628616b2-9de7-43a2-8d10-20b4573d2551/versions/28006f1d-80f0-418a-983b-4f0a393987f4"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/d37fa955-90ba-4c88-85e0-da77f6980de4/versions/da5e1323-fc06-451f-953b-6e098e99b758",
+        "componentName": "Spring Framework",
+        "componentVersionName": "5.3.13",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/d37fa955-90ba-4c88-85e0-da77f6980de4/versions/da5e1323-fc06-451f-953b-6e098e99b758/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/d37fa955-90ba-4c88-85e0-da77f6980de4/component-versions/da5e1323-fc06-451f-953b-6e098e99b758/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/d37fa955-90ba-4c88-85e0-da77f6980de4/versions/da5e1323-fc06-451f-953b-6e098e99b758"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/d80c013b-7862-4ea8-83e5-eb7b91623e0c/versions/f510792e-2cd9-499f-901a-21423b515071",
+        "componentName": "Spring Security",
+        "componentVersionName": "5.4.9",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/d80c013b-7862-4ea8-83e5-eb7b91623e0c/versions/f510792e-2cd9-499f-901a-21423b515071/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/d80c013b-7862-4ea8-83e5-eb7b91623e0c/component-versions/f510792e-2cd9-499f-901a-21423b515071/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/d80c013b-7862-4ea8-83e5-eb7b91623e0c/versions/f510792e-2cd9-499f-901a-21423b515071"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/804c5648-ee3a-4527-8c48-4f9ebffe0102/versions/70b7f411-d0d1-490a-be9b-0b6492b9c653",
+        "componentName": "Spring TestContext Framework",
+        "componentVersionName": "5.3.13",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/804c5648-ee3a-4527-8c48-4f9ebffe0102/versions/70b7f411-d0d1-490a-be9b-0b6492b9c653/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/804c5648-ee3a-4527-8c48-4f9ebffe0102/component-versions/70b7f411-d0d1-490a-be9b-0b6492b9c653/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9",
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/16bef7b9-e1f6-41c7-a8b4-2a6492aecf48"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/804c5648-ee3a-4527-8c48-4f9ebffe0102/versions/70b7f411-d0d1-490a-be9b-0b6492b9c653"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/f30ee1fb-d215-4820-9b16-ff3dd4d782e1/versions/48829d75-066a-4167-beee-967c0d38e144",
+        "componentName": "Spring Transaction",
+        "componentVersionName": "5.3.13",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/f30ee1fb-d215-4820-9b16-ff3dd4d782e1/versions/48829d75-066a-4167-beee-967c0d38e144/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/f30ee1fb-d215-4820-9b16-ff3dd4d782e1/component-versions/48829d75-066a-4167-beee-967c0d38e144/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9",
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/16bef7b9-e1f6-41c7-a8b4-2a6492aecf48"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/f30ee1fb-d215-4820-9b16-ff3dd4d782e1/versions/48829d75-066a-4167-beee-967c0d38e144"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/5bebc4c7-42b8-4542-81be-101a4fc4b402/versions/53469544-455c-4a8f-8b08-7a4031ea2eb4",
+        "componentName": "TXW2 Runtime",
+        "componentVersionName": "2.3.5",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/5bebc4c7-42b8-4542-81be-101a4fc4b402/versions/53469544-455c-4a8f-8b08-7a4031ea2eb4/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/5bebc4c7-42b8-4542-81be-101a4fc4b402/component-versions/53469544-455c-4a8f-8b08-7a4031ea2eb4/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/5bebc4c7-42b8-4542-81be-101a4fc4b402/versions/53469544-455c-4a8f-8b08-7a4031ea2eb4"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/971a67a0-b0c7-4626-8078-a78a934956a7/versions/d925d00c-aea8-40b1-89fe-052ed778ba7c",
+        "componentName": "antlr",
+        "componentVersionName": "2.7.7",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/971a67a0-b0c7-4626-8078-a78a934956a7/versions/d925d00c-aea8-40b1-89fe-052ed778ba7c/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/971a67a0-b0c7-4626-8078-a78a934956a7/component-versions/d925d00c-aea8-40b1-89fe-052ed778ba7c/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/971a67a0-b0c7-4626-8078-a78a934956a7/versions/d925d00c-aea8-40b1-89fe-052ed778ba7c"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/7bd332eb-972e-491b-ab9e-02837a4e23e1/versions/37bbb0c5-6151-4a13-baf4-4dd33fe66d2a",
+        "componentName": "asm-analysis",
+        "componentVersionName": "8.0.1",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/7bd332eb-972e-491b-ab9e-02837a4e23e1/versions/37bbb0c5-6151-4a13-baf4-4dd33fe66d2a/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/7bd332eb-972e-491b-ab9e-02837a4e23e1/component-versions/37bbb0c5-6151-4a13-baf4-4dd33fe66d2a/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/7bd332eb-972e-491b-ab9e-02837a4e23e1/versions/37bbb0c5-6151-4a13-baf4-4dd33fe66d2a"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/5560c476-ef99-4551-8a6c-549997791946/versions/a9a25ab3-f73f-4e25-85f6-2b4d3be9b887",
+        "componentName": "blackduck-common",
+        "componentVersionName": "59.0.0",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/5560c476-ef99-4551-8a6c-549997791946/versions/a9a25ab3-f73f-4e25-85f6-2b4d3be9b887/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/5560c476-ef99-4551-8a6c-549997791946/component-versions/a9a25ab3-f73f-4e25-85f6-2b4d3be9b887/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/5560c476-ef99-4551-8a6c-549997791946/versions/a9a25ab3-f73f-4e25-85f6-2b4d3be9b887"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/9fa586ff-eed5-496b-b49d-7dd66c2d1cdb/versions/062f3276-8b94-4ee7-8449-f482773fa7dc",
+        "componentName": "blackduck-common-api",
+        "componentVersionName": "2021.6.0.7",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/9fa586ff-eed5-496b-b49d-7dd66c2d1cdb/versions/062f3276-8b94-4ee7-8449-f482773fa7dc/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/9fa586ff-eed5-496b-b49d-7dd66c2d1cdb/component-versions/062f3276-8b94-4ee7-8449-f482773fa7dc/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/9fa586ff-eed5-496b-b49d-7dd66c2d1cdb/versions/062f3276-8b94-4ee7-8449-f482773fa7dc"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/125e09c8-2626-480e-b0e4-242af93dbd5e/versions/18684322-5d0b-4599-92d5-e5b342f4af35",
+        "componentName": "byte-buddy-agent",
+        "componentVersionName": "1.10.22",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/125e09c8-2626-480e-b0e4-242af93dbd5e/versions/18684322-5d0b-4599-92d5-e5b342f4af35/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/125e09c8-2626-480e-b0e4-242af93dbd5e/component-versions/18684322-5d0b-4599-92d5-e5b342f4af35/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/125e09c8-2626-480e-b0e4-242af93dbd5e/versions/18684322-5d0b-4599-92d5-e5b342f4af35"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/82ec4f0a-97c7-494a-8e1f-1dc695cbc579/versions/57ab766e-f19e-403e-bac5-dbfee608dd0b",
+        "componentName": "c3p0:JDBC DataSources/Resource Pools",
+        "componentVersionName": "0.9.5.5",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/82ec4f0a-97c7-494a-8e1f-1dc695cbc579/versions/57ab766e-f19e-403e-bac5-dbfee608dd0b/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/82ec4f0a-97c7-494a-8e1f-1dc695cbc579/component-versions/57ab766e-f19e-403e-bac5-dbfee608dd0b/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/82ec4f0a-97c7-494a-8e1f-1dc695cbc579/versions/57ab766e-f19e-403e-bac5-dbfee608dd0b"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/dc3dee66-4939-4dea-b22f-ead288b4f117/versions/176073da-55bf-4cb0-8528-84f025846455",
+        "componentName": "commons-codec",
+        "componentVersionName": "1.15",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/dc3dee66-4939-4dea-b22f-ead288b4f117/versions/176073da-55bf-4cb0-8528-84f025846455/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/dc3dee66-4939-4dea-b22f-ead288b4f117/component-versions/176073da-55bf-4cb0-8528-84f025846455/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/dc3dee66-4939-4dea-b22f-ead288b4f117/versions/176073da-55bf-4cb0-8528-84f025846455"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/50bca935-34bc-4929-b6f0-036189498786/versions/7b25d87a-8c05-489a-a299-47ef9eb894f0",
+        "componentName": "dom4j: flexible XML framework for Java",
+        "componentVersionName": "2.1.3",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/50bca935-34bc-4929-b6f0-036189498786/versions/7b25d87a-8c05-489a-a299-47ef9eb894f0/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/50bca935-34bc-4929-b6f0-036189498786/component-versions/7b25d87a-8c05-489a-a299-47ef9eb894f0/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/50bca935-34bc-4929-b6f0-036189498786/versions/7b25d87a-8c05-489a-a299-47ef9eb894f0"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/5268f229-3e37-4068-ad3a-18f0bfbf8b34/versions/1296c051-16a7-42d5-944e-183bbe9d48d5",
+        "componentName": "google-gson",
+        "componentVersionName": "2.8.9",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/5268f229-3e37-4068-ad3a-18f0bfbf8b34/versions/1296c051-16a7-42d5-944e-183bbe9d48d5/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/5268f229-3e37-4068-ad3a-18f0bfbf8b34/component-versions/1296c051-16a7-42d5-944e-183bbe9d48d5/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/5268f229-3e37-4068-ad3a-18f0bfbf8b34/versions/1296c051-16a7-42d5-944e-183bbe9d48d5"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/71b39c5b-c63f-474f-92e0-43dd203ed2cc/versions/440fa3ba-390e-4f97-9354-776e490db3b5",
+        "componentName": "integration-bdio",
+        "componentVersionName": "22.1.7",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/71b39c5b-c63f-474f-92e0-43dd203ed2cc/versions/440fa3ba-390e-4f97-9354-776e490db3b5/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/71b39c5b-c63f-474f-92e0-43dd203ed2cc/component-versions/440fa3ba-390e-4f97-9354-776e490db3b5/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/71b39c5b-c63f-474f-92e0-43dd203ed2cc/versions/440fa3ba-390e-4f97-9354-776e490db3b5"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/cfdc399b-ff19-48f6-9b34-db6c662f5a25/versions/7458aa54-fca6-4640-b710-ca94a4d6cb5f",
+        "componentName": "integration-common",
+        "componentVersionName": "25.3.1",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/cfdc399b-ff19-48f6-9b34-db6c662f5a25/versions/7458aa54-fca6-4640-b710-ca94a4d6cb5f/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/cfdc399b-ff19-48f6-9b34-db6c662f5a25/component-versions/7458aa54-fca6-4640-b710-ca94a4d6cb5f/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/cfdc399b-ff19-48f6-9b34-db6c662f5a25/versions/7458aa54-fca6-4640-b710-ca94a4d6cb5f"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/f04a5bfe-c745-46e5-8058-af94cf6f0820/versions/2048784e-9ab1-4799-b795-b078fbf066be",
+        "componentName": "integration-rest",
+        "componentVersionName": "10.3.1",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/f04a5bfe-c745-46e5-8058-af94cf6f0820/versions/2048784e-9ab1-4799-b795-b078fbf066be/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/f04a5bfe-c745-46e5-8058-af94cf6f0820/component-versions/2048784e-9ab1-4799-b795-b078fbf066be/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/f04a5bfe-c745-46e5-8058-af94cf6f0820/versions/2048784e-9ab1-4799-b795-b078fbf066be"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/de5dd7b9-a257-4302-8ec8-796d438e4aa9/versions/9996038a-6054-476f-9f46-aff3285251f9",
+        "componentName": "istack common utility code runtime",
+        "componentVersionName": "3.0.12",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/de5dd7b9-a257-4302-8ec8-796d438e4aa9/versions/9996038a-6054-476f-9f46-aff3285251f9/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/de5dd7b9-a257-4302-8ec8-796d438e4aa9/component-versions/9996038a-6054-476f-9f46-aff3285251f9/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/de5dd7b9-a257-4302-8ec8-796d438e4aa9/versions/9996038a-6054-476f-9f46-aff3285251f9"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/d5b90213-52f8-4429-b3c7-ed582af929d2/versions/f691604a-d498-42d1-9765-ed3795e4f643",
+        "componentName": "jackson-annotations",
+        "componentVersionName": "2.11.4",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/d5b90213-52f8-4429-b3c7-ed582af929d2/versions/f691604a-d498-42d1-9765-ed3795e4f643/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/d5b90213-52f8-4429-b3c7-ed582af929d2/component-versions/f691604a-d498-42d1-9765-ed3795e4f643/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/d5b90213-52f8-4429-b3c7-ed582af929d2/versions/f691604a-d498-42d1-9765-ed3795e4f643"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/3e00ddf9-24b9-4f51-96fb-1e4ac8723eb2/versions/a6123b25-68c8-4bc8-9f6c-d43e12fb2f3f",
+        "componentName": "jackson-core",
+        "componentVersionName": "2.11.4",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/3e00ddf9-24b9-4f51-96fb-1e4ac8723eb2/versions/a6123b25-68c8-4bc8-9f6c-d43e12fb2f3f/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/3e00ddf9-24b9-4f51-96fb-1e4ac8723eb2/component-versions/a6123b25-68c8-4bc8-9f6c-d43e12fb2f3f/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/3e00ddf9-24b9-4f51-96fb-1e4ac8723eb2/versions/a6123b25-68c8-4bc8-9f6c-d43e12fb2f3f"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/ce7ad18a-6e02-4565-a51c-4fc2c5bc7c47/versions/0561efe8-ba25-4dc3-b0a3-b980bcf46f48",
+        "componentName": "jackson-databind",
+        "componentVersionName": "2.11.4",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/ce7ad18a-6e02-4565-a51c-4fc2c5bc7c47/versions/0561efe8-ba25-4dc3-b0a3-b980bcf46f48/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/ce7ad18a-6e02-4565-a51c-4fc2c5bc7c47/component-versions/0561efe8-ba25-4dc3-b0a3-b980bcf46f48/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/ce7ad18a-6e02-4565-a51c-4fc2c5bc7c47/versions/0561efe8-ba25-4dc3-b0a3-b980bcf46f48"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/bcf34aaf-54e2-4e09-ace5-f15295608660/versions/8a2b0037-3598-49d6-bdc6-66ed32a6eadf",
+        "componentName": "jakarta.persistence-api",
+        "componentVersionName": "2.2.3",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/bcf34aaf-54e2-4e09-ace5-f15295608660/versions/8a2b0037-3598-49d6-bdc6-66ed32a6eadf/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/bcf34aaf-54e2-4e09-ace5-f15295608660/component-versions/8a2b0037-3598-49d6-bdc6-66ed32a6eadf/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/bcf34aaf-54e2-4e09-ace5-f15295608660/versions/8a2b0037-3598-49d6-bdc6-66ed32a6eadf"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/e2e973aa-2393-4da8-aad1-f77fd482b83c/versions/f6c1a7cf-dd64-4e6c-ae9e-0df1c555450e",
+        "componentName": "java-classmate",
+        "componentVersionName": "classmate-1.5.1",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/e2e973aa-2393-4da8-aad1-f77fd482b83c/versions/f6c1a7cf-dd64-4e6c-ae9e-0df1c555450e/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/e2e973aa-2393-4da8-aad1-f77fd482b83c/component-versions/f6c1a7cf-dd64-4e6c-ae9e-0df1c555450e/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/e2e973aa-2393-4da8-aad1-f77fd482b83c/versions/f6c1a7cf-dd64-4e6c-ae9e-0df1c555450e"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/6cdf4916-7a19-4d3c-a011-c1118a639e69/versions/ef3b5251-e763-4639-8d14-efb2dc9682c8",
+        "componentName": "javax.persistence-api",
+        "componentVersionName": "2.2",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/6cdf4916-7a19-4d3c-a011-c1118a639e69/versions/ef3b5251-e763-4639-8d14-efb2dc9682c8/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/6cdf4916-7a19-4d3c-a011-c1118a639e69/component-versions/ef3b5251-e763-4639-8d14-efb2dc9682c8/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/6cdf4916-7a19-4d3c-a011-c1118a639e69/versions/ef3b5251-e763-4639-8d14-efb2dc9682c8"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/c34e6cd0-ebaa-495c-ae31-574b54554d11/versions/f68af5b4-a6b4-4877-8205-63caac5b6820",
+        "componentName": "jboss-transaction-api_1.2_spec",
+        "componentVersionName": "1.1.1.Final",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/c34e6cd0-ebaa-495c-ae31-574b54554d11/versions/f68af5b4-a6b4-4877-8205-63caac5b6820/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/c34e6cd0-ebaa-495c-ae31-574b54554d11/component-versions/f68af5b4-a6b4-4877-8205-63caac5b6820/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/2aa7e9e5-2a41-41b4-9385-be22cb95acd8",
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/c34e6cd0-ebaa-495c-ae31-574b54554d11/versions/f68af5b4-a6b4-4877-8205-63caac5b6820"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/29fce6da-8ad2-4cb7-a231-1fded0f20c11/versions/ab122652-dda3-4137-81d9-3727efdd9856",
+        "componentName": "jms",
+        "componentVersionName": "2.0.3",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/29fce6da-8ad2-4cb7-a231-1fded0f20c11/versions/ab122652-dda3-4137-81d9-3727efdd9856/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/29fce6da-8ad2-4cb7-a231-1fded0f20c11/component-versions/ab122652-dda3-4137-81d9-3727efdd9856/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/2aa7e9e5-2a41-41b4-9385-be22cb95acd8",
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/29fce6da-8ad2-4cb7-a231-1fded0f20c11/versions/ab122652-dda3-4137-81d9-3727efdd9856"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/cc44a437-708c-4ae8-88a6-50a6ca42d60c/versions/8620f059-47fd-456a-bd52-d5d785790fbc",
+        "componentName": "json-path",
+        "componentVersionName": "2.6.0",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/cc44a437-708c-4ae8-88a6-50a6ca42d60c/versions/8620f059-47fd-456a-bd52-d5d785790fbc/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/cc44a437-708c-4ae8-88a6-50a6ca42d60c/component-versions/8620f059-47fd-456a-bd52-d5d785790fbc/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/cc44a437-708c-4ae8-88a6-50a6ca42d60c/versions/8620f059-47fd-456a-bd52-d5d785790fbc"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/ae37e408-4fec-4624-9a19-d16a0f56bd11/versions/850f1821-8b1f-4d67-a71e-a82fac38de4c",
+        "componentName": "json-smart",
+        "componentVersionName": "2.4.7",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/ae37e408-4fec-4624-9a19-d16a0f56bd11/versions/850f1821-8b1f-4d67-a71e-a82fac38de4c/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/ae37e408-4fec-4624-9a19-d16a0f56bd11/component-versions/850f1821-8b1f-4d67-a71e-a82fac38de4c/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/ae37e408-4fec-4624-9a19-d16a0f56bd11/versions/850f1821-8b1f-4d67-a71e-a82fac38de4c"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/48bf822d-81eb-4ea8-ae15-af90f850c18f/versions/e6f6974a-edbc-4780-92f6-e358712f119b",
+        "componentName": "junit-pioneer",
+        "componentVersionName": "0.3.3",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/48bf822d-81eb-4ea8-ae15-af90f850c18f/versions/e6f6974a-edbc-4780-92f6-e358712f119b/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/48bf822d-81eb-4ea8-ae15-af90f850c18f/component-versions/e6f6974a-edbc-4780-92f6-e358712f119b/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/48bf822d-81eb-4ea8-ae15-af90f850c18f/versions/e6f6974a-edbc-4780-92f6-e358712f119b"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/930a993c-8f58-4983-b70e-e4958bb6ecc6/versions/c8fd1b65-2836-4248-977c-128579ae871c",
+        "componentName": "mchange-commons-java",
+        "componentVersionName": "0.2.19",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/930a993c-8f58-4983-b70e-e4958bb6ecc6/versions/c8fd1b65-2836-4248-977c-128579ae871c/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/930a993c-8f58-4983-b70e-e4958bb6ecc6/component-versions/c8fd1b65-2836-4248-977c-128579ae871c/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/930a993c-8f58-4983-b70e-e4958bb6ecc6/versions/c8fd1b65-2836-4248-977c-128579ae871c"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/2d98ef93-85e9-4367-b773-ca74444bab5c/versions/6b7b39cb-d482-424d-ae8e-e0cfa7171c1f",
+        "componentName": "org.apiguardian:apiguardian-api",
+        "componentVersionName": "1.1.0",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/2d98ef93-85e9-4367-b773-ca74444bab5c/versions/6b7b39cb-d482-424d-ae8e-e0cfa7171c1f/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/2d98ef93-85e9-4367-b773-ca74444bab5c/component-versions/6b7b39cb-d482-424d-ae8e-e0cfa7171c1f/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/2d98ef93-85e9-4367-b773-ca74444bab5c/versions/6b7b39cb-d482-424d-ae8e-e0cfa7171c1f"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/5215145d-af3c-49be-843e-c91f6a31fad2/versions/7f7114e5-0393-4106-a86c-ccaae016bb21",
+        "componentName": "org.junit.jupiter:junit-jupiter-api",
+        "componentVersionName": "5.7.2",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/5215145d-af3c-49be-843e-c91f6a31fad2/versions/7f7114e5-0393-4106-a86c-ccaae016bb21/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/5215145d-af3c-49be-843e-c91f6a31fad2/component-versions/7f7114e5-0393-4106-a86c-ccaae016bb21/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/5215145d-af3c-49be-843e-c91f6a31fad2/versions/7f7114e5-0393-4106-a86c-ccaae016bb21"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/e5acb76f-6a17-4dd6-9480-303f19d5f184/versions/9f02ed75-16ae-4dd2-bb42-4a842dda16fd",
+        "componentName": "org.junit.jupiter:junit-jupiter-engine",
+        "componentVersionName": "5.7.2",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/e5acb76f-6a17-4dd6-9480-303f19d5f184/versions/9f02ed75-16ae-4dd2-bb42-4a842dda16fd/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/e5acb76f-6a17-4dd6-9480-303f19d5f184/component-versions/9f02ed75-16ae-4dd2-bb42-4a842dda16fd/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/e5acb76f-6a17-4dd6-9480-303f19d5f184/versions/9f02ed75-16ae-4dd2-bb42-4a842dda16fd"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/034207a2-8f5a-463e-b9df-d0118b8d2810/versions/2b3b9e82-1956-4ac6-b040-884e1bb3e8cc",
+        "componentName": "org.junit.jupiter:junit-jupiter-params",
+        "componentVersionName": "5.7.2",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/034207a2-8f5a-463e-b9df-d0118b8d2810/versions/2b3b9e82-1956-4ac6-b040-884e1bb3e8cc/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/034207a2-8f5a-463e-b9df-d0118b8d2810/component-versions/2b3b9e82-1956-4ac6-b040-884e1bb3e8cc/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/034207a2-8f5a-463e-b9df-d0118b8d2810/versions/2b3b9e82-1956-4ac6-b040-884e1bb3e8cc"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/6e9e84c9-9ff7-4fc9-b1b6-4a058cbbb574/versions/6ec40780-1e6c-4a13-9f4e-b75598e1fe6c",
+        "componentName": "org.junit.platform:junit-platform-commons",
+        "componentVersionName": "1.7.2",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/6e9e84c9-9ff7-4fc9-b1b6-4a058cbbb574/versions/6ec40780-1e6c-4a13-9f4e-b75598e1fe6c/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/6e9e84c9-9ff7-4fc9-b1b6-4a058cbbb574/component-versions/6ec40780-1e6c-4a13-9f4e-b75598e1fe6c/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/6e9e84c9-9ff7-4fc9-b1b6-4a058cbbb574/versions/6ec40780-1e6c-4a13-9f4e-b75598e1fe6c"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/871977ec-f32c-408a-a000-f3a3e9387481/versions/a399a3e3-5264-44d4-bd90-77eb9eb2244e",
+        "componentName": "org.junit.platform:junit-platform-engine",
+        "componentVersionName": "1.7.2",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/871977ec-f32c-408a-a000-f3a3e9387481/versions/a399a3e3-5264-44d4-bd90-77eb9eb2244e/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/871977ec-f32c-408a-a000-f3a3e9387481/component-versions/a399a3e3-5264-44d4-bd90-77eb9eb2244e/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/871977ec-f32c-408a-a000-f3a3e9387481/versions/a399a3e3-5264-44d4-bd90-77eb9eb2244e"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/2f390e05-556d-4001-998f-4434814e7924/versions/a192ff34-3dcf-46c4-b780-7ce7b433b4ae",
+        "componentName": "org.opentest4j:opentest4j",
+        "componentVersionName": "1.2.0",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/2f390e05-556d-4001-998f-4434814e7924/versions/a192ff34-3dcf-46c4-b780-7ce7b433b4ae/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/2f390e05-556d-4001-998f-4434814e7924/component-versions/a192ff34-3dcf-46c4-b780-7ce7b433b4ae/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/2f390e05-556d-4001-998f-4434814e7924/versions/a192ff34-3dcf-46c4-b780-7ce7b433b4ae"
+      },
+      {
+        "componentVersion": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/components/4fa41000-23d3-4ca7-869d-5fc6643cc520/versions/b1c555ce-a4f2-4d6c-a5a2-a08f1f26112b",
+        "componentName": "phone-home-client",
+        "componentVersionName": "5.1.2",
+        "bomComponentVersionPolicyStatus": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/4fa41000-23d3-4ca7-869d-5fc6643cc520/versions/b1c555ce-a4f2-4d6c-a5a2-a08f1f26112b/policy-status",
+        "componentIssueLink": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/4fa41000-23d3-4ca7-869d-5fc6643cc520/component-versions/b1c555ce-a4f2-4d6c-a5a2-a08f1f26112b/issues",
+        "policies": [
+          "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9"
+        ],
+        "bomComponent": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/projects/ba0abe40-4529-4503-826a-20ddde595778/versions/e0bc931b-67bc-4082-9823-d9fc9c9bdd2d/components/4fa41000-23d3-4ca7-869d-5fc6643cc520/versions/b1c555ce-a4f2-4d6c-a5a2-a08f1f26112b"
+      }
+    ],
+    "policyInfos": [
+      {
+        "policy": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/2aa7e9e5-2a41-41b4-9385-be22cb95acd8",
+        "policyName": "Reciprocal",
+        "severity": "CRITICAL"
+      },
+      {
+        "policy": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/c6d47221-35e8-4d68-ad4d-bb79da74f5c9",
+        "policyName": "BM Not Reviewed",
+        "severity": "MAJOR"
+      },
+      {
+        "policy": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/d07070f1-4d62-4898-87a3-2eab76ebe8d9",
+        "policyName": "GitHub Action Policy",
+        "severity": "MAJOR"
+      },
+      {
+        "policy": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/policy-rules/16bef7b9-e1f6-41c7-a8b4-2a6492aecf48",
+        "policyName": "BM_Testing-SolutionAvailable-False"
+      }
+    ],
+    "componentVersionsCleared": 76
+  },
+  "contentType": "application/json",
+  "type": "RULE_VIOLATION_CLEARED",
+  "createdAt": "2022-03-01T18:59:32.436Z",
+  "notificationState": "NEW",
+  "_meta": {
+    "allow": [
+      "GET",
+      "PUT"
+    ],
+    "href": "https://us1a-int-hub02.nprd.sig.synopsys.com/api/users/00000000-0000-0000-0001-000000000001/notifications/19605b88-c593-49e1-b965-7dfaf2c38897",
+    "links": []
+  }
+}
