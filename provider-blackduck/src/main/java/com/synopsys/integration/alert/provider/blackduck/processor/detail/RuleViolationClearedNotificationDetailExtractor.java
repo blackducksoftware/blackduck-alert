@@ -17,6 +17,7 @@ import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.processor.api.detail.DetailedNotificationContent;
 import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExtractor;
 import com.synopsys.integration.alert.provider.blackduck.processor.model.RuleViolationClearedUniquePolicyNotificationContent;
+import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 import com.synopsys.integration.blackduck.api.manual.component.RuleViolationClearedNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.view.RuleViolationClearedNotificationView;
@@ -34,17 +35,27 @@ public class RuleViolationClearedNotificationDetailExtractor extends Notificatio
         return notificationContent.getPolicyInfos()
             .stream()
             .map(policyInfo -> createFlattenedContent(notificationContent, policyInfo))
-            .map(content -> DetailedNotificationContent.policy(alertNotificationModel, content, notificationContent.getProjectName(), notificationContent.getProjectVersionName(), content.getPolicyInfo().getPolicyName()))
+            .map(content -> DetailedNotificationContent.policy(
+                alertNotificationModel,
+                content,
+                notificationContent.getProjectName(),
+                notificationContent.getProjectVersionName(),
+                content.getPolicyInfo().getPolicyName()
+            ))
             .collect(Collectors.toList());
     }
 
     private RuleViolationClearedUniquePolicyNotificationContent createFlattenedContent(RuleViolationClearedNotificationContent notificationContent, PolicyInfo policyInfo) {
+        List<ComponentVersionStatus> validComponentStatuses = notificationContent.getComponentVersionStatuses()
+            .stream()
+            .filter(status -> status.getPolicies().contains(policyInfo.getPolicy()))
+            .collect(Collectors.toList());
         return new RuleViolationClearedUniquePolicyNotificationContent(
             notificationContent.getProjectName(),
             notificationContent.getProjectVersionName(),
             notificationContent.getProjectVersion(),
-            notificationContent.getComponentVersionsCleared(),
-            notificationContent.getComponentVersionStatuses(),
+            validComponentStatuses.size(),
+            validComponentStatuses,
             policyInfo
         );
     }
