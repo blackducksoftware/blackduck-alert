@@ -14,10 +14,10 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatusMessages;
+import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
+import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
+import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatusMessages;
 import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
-import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 
 @Component
 public class SettingsProxyValidator {

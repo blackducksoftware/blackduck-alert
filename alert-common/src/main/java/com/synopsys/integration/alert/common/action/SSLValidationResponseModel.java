@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.common.action;
 
-import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
+import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 
 public class SSLValidationResponseModel extends ValidationResponseModel {
     private final boolean isDetailed;

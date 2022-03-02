@@ -16,8 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 
 // TODO make this a Utils class
 @Component

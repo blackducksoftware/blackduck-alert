@@ -18,6 +18,7 @@ import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFileCreator;
 import com.synopsys.integration.alert.channel.email.attachment.MessageContentGroupCsvCreator;
@@ -34,7 +35,6 @@ import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;

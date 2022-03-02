@@ -9,7 +9,7 @@ package com.synopsys.integration.alert.common.descriptor.validator;
 
 import java.util.Set;
 
-import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
+import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 
 public interface DistributionConfigurationValidator {

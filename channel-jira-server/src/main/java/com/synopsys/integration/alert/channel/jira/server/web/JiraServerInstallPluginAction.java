@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.jira.JiraConstants;
 import com.synopsys.integration.alert.api.channel.jira.util.JiraPluginCheckUtils;
+import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
 import com.synopsys.integration.alert.channel.jira.server.action.JiraServerGlobalValidationAction;
@@ -22,7 +23,6 @@ import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobal
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
-import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.exception.IntegrationException;

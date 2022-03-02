@@ -7,11 +7,11 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
+import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
+import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
-import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 
 class JiraServerGlobalConfigurationValidatorTest {

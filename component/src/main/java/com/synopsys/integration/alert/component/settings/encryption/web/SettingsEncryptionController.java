@@ -18,10 +18,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.api.ValidateController;
-import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.component.settings.encryption.action.SettingsEncryptionCrudActions;
 import com.synopsys.integration.alert.component.settings.encryption.action.SettingsEncryptionValidationAction;
 import com.synopsys.integration.alert.component.settings.encryption.model.SettingsEncryptionModel;

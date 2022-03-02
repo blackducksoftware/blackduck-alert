@@ -12,8 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;

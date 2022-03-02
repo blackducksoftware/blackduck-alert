@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.api.BaseJobResourceController;
@@ -26,7 +27,6 @@ import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldStatuses;
 import com.synopsys.integration.alert.common.rest.model.JobIdsRequestModel;
 import com.synopsys.integration.alert.common.rest.model.JobPagedModel;
-import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 
 @RestController
 @RequestMapping(JobConfigController.JOB_CONFIGURATION_PATH)

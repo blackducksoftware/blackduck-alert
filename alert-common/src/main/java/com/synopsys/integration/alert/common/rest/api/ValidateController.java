@@ -10,7 +10,7 @@ package com.synopsys.integration.alert.common.rest.api;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
+import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 
 public interface ValidateController<T> {
     @PostMapping("/validate")

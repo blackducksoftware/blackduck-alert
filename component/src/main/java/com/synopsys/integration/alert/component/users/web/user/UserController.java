@@ -11,12 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.api.BaseResourceController;
 import com.synopsys.integration.alert.common.rest.api.ReadAllController;
 import com.synopsys.integration.alert.common.rest.api.ValidateController;
-import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 
 @RestController
 @RequestMapping(UserController.USER_BASE_PATH)

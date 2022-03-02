@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
-import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.descriptor.config.field.errors.FieldStatusSeverity;
+import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
+import com.synopsys.integration.alert.api.common.model.errors.FieldStatusSeverity;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 
 public class MessageResult extends AlertSerializableModel {
