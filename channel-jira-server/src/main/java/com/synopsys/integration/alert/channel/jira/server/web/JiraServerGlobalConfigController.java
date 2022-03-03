@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.channel.jira.server.action.JiraServerGlobalCrudActions;
 import com.synopsys.integration.alert.channel.jira.server.action.JiraServerGlobalTestAction;
 import com.synopsys.integration.alert.channel.jira.server.action.JiraServerGlobalValidationAction;
@@ -25,7 +26,6 @@ import com.synopsys.integration.alert.common.rest.api.ReadPageController;
 import com.synopsys.integration.alert.common.rest.api.StaticConfigResourceController;
 import com.synopsys.integration.alert.common.rest.api.ValidateController;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
-import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 
 @RestController
 @RequestMapping(AlertRestConstants.JIRA_SERVER_CONFIGURATION_PATH)

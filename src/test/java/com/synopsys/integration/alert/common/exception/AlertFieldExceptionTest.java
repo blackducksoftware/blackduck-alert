@@ -20,7 +20,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
+import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
 
 public class AlertFieldExceptionTest {
 

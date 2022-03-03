@@ -9,7 +9,7 @@ package com.synopsys.integration.alert.common.rest.model;
 
 import java.util.List;
 
-import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
+import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
 
 public class JobFieldStatuses extends Config {
     private final List<AlertFieldStatus> fieldStatuses;
