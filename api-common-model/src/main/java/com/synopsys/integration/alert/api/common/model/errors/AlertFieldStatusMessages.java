@@ -1,5 +1,5 @@
 /*
- * alert-common
+ * api-common-model
  *
  * Copyright (c) 2022 Synopsys, Inc.
  *

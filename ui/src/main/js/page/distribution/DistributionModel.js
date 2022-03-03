@@ -21,6 +21,7 @@ export const DISTRIBUTION_COMMON_FIELD_KEYS = {
     // Fields in the provider portion of the field model
     providerConfigId: 'provider.common.config.id',
     providerName: 'channel.common.provider.name',
+    channelGlobalConfigId: 'channel.common.global.config.id',
     notificationTypes: 'provider.distribution.notification.types',
     processingType: 'provider.distribution.processing.type',
     // these were originally included in the channel distribution configuration in old versions of alert but they actually pertain to the provider now.

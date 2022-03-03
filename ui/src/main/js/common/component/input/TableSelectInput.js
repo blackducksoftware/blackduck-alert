@@ -15,7 +15,7 @@ const { MultiValue, ValueContainer } = components;
 
 const typeLabel = (props) => {
     const { data } = props;
-    const missingItem = (data.missing) ? { textDecoration: 'line-through' } : {};
+    const missingItem = (data.missing) ? { textDecoration: 'line-through', marginLeft: '15px' } : {};
 
     return (
         <MultiValue {...props}>
@@ -44,7 +44,7 @@ const container = ({ children, getValue, ...props }) => {
     return (
         <ValueContainer {...props}>
             {!props.selectProps.menuIsOpen
-            && `${length} Items selected`}
+                && `${length} Items selected`}
             {React.cloneElement(children[1])}
             {hasError && error}
         </ValueContainer>
@@ -419,15 +419,15 @@ const TableSelectInput = (props) => {
                             Select
                         </GeneralButton>
                         {selectedData && selectedData.length > 0
-                        && (
-                            <GeneralButton
-                                id={clearButtonId}
-                                className="selectClearButton"
-                                onClick={handleShowClearConfirm}
-                            >
-                                Clear
-                            </GeneralButton>
-                        )}
+                            && (
+                                <GeneralButton
+                                    id={clearButtonId}
+                                    className="selectClearButton"
+                                    onClick={handleShowClearConfirm}
+                                >
+                                    Clear
+                                </GeneralButton>
+                            )}
                     </div>
                     <ConfirmModal
                         id={confirmModalId}

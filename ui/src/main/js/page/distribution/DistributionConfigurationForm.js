@@ -22,7 +22,9 @@ import CollapsiblePane from 'common/component/CollapsiblePane';
 import TableSelectInput from 'common/component/input/TableSelectInput';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
-import { CONTEXT_TYPE, isOneOperationAssigned, isOperationAssigned, OPERATIONS } from 'common/util/descriptorUtilities';
+import {
+    CONTEXT_TYPE, isOneOperationAssigned, isOperationAssigned, OPERATIONS
+} from 'common/util/descriptorUtilities';
 import CommonDistributionConfigurationForm from 'page/distribution/CommonDistributionConfigurationForm';
 import * as DistributionRequestUtility from 'page/distribution/DistributionRequestUtility';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
@@ -41,8 +43,8 @@ import MsTeamsDistributionConfiguration from 'page/channel/msteams/MsTeamsDistri
 import SlackDistributionConfiguration from 'page/channel/slack/SlackDistributionConfiguration';
 
 const DistributionConfigurationForm = ({
-                                           csrfToken, errorHandler, descriptors, lastUpdated
-                                       }) => {
+    csrfToken, errorHandler, descriptors, lastUpdated
+}) => {
     const { id } = useParams();
     const history = useHistory();
     const location = useLocation();
@@ -202,7 +204,11 @@ const DistributionConfigurationForm = ({
                         readonly={readonly}
                     />
                 );
-            case JIRA_SERVER_INFO.key:
+            case JIRA_SERVER_INFO.key: {
+                if (!FieldModelUtilities.hasKey(specificChannelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId)) {
+                    const commonGlobalConfigId = FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId);
+                    setSpecificChannelModel(FieldModelUtilities.updateFieldModelSingleValue(specificChannelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId, commonGlobalConfigId));
+                }
                 return (
                     <JiraServerDistributionConfiguration
                         csrfToken={csrfToken}
@@ -212,6 +218,7 @@ const DistributionConfigurationForm = ({
                         readonly={readonly}
                     />
                 );
+            }
             case MSTEAMS_INFO.key:
                 return (
                     <MsTeamsDistributionConfiguration

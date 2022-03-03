@@ -111,7 +111,9 @@ public final class JobFieldModelPopulationUtils {
         putField(channelFieldModel, ChannelDescriptor.KEY_PROVIDER_TYPE, DEFAULT_PROVIDER_NAME);
         putField(channelFieldModel, ChannelDescriptor.KEY_FREQUENCY, jobModel.getDistributionFrequency().name());
         putField(channelFieldModel, ProviderDescriptor.KEY_PROCESSING_TYPE, jobModel.getProcessingType().name());
-
+        if (null != jobModel.getChannelGlobalConfigId()) {
+            putField(channelFieldModel, ChannelDescriptor.KEY_CHANNEL_GLOBAL_CONFIG_ID, jobModel.getChannelGlobalConfigId().toString());
+        }
         DistributionJobDetailsModel jobDetails = jobModel.getDistributionJobDetails();
         if (jobDetails.isA(ChannelKeys.AZURE_BOARDS)) {
             populateAzureBoardsFields(channelFieldModel, jobDetails.getAs(DistributionJobDetailsModel.AZURE));

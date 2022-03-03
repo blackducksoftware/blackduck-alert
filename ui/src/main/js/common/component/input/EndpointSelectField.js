@@ -10,6 +10,7 @@ import { LabelFieldPropertyDefaults } from './field/LabeledField';
 const EndpointSelectField = ({
     id,
     clearable,
+    convertDataToOptions,
     createRequestBody,
     csrfToken,
     currentConfig,
@@ -25,6 +26,7 @@ const EndpointSelectField = ({
     onChange,
     placeholder,
     readOnly,
+    readOptionsRequest,
     removeSelected,
     required,
     requiredRelatedFields,
@@ -36,20 +38,26 @@ const EndpointSelectField = ({
     const [options, setOptions] = useState([]);
     const [requestErrorValue, setRequestErrorValue] = useState(null);
 
-    const onSendClick = async () => {
+    const defaultRequest = () => {
         const newFieldModel = createRequestBody ? createRequestBody() : FieldModelUtilities.createFieldModelFromRequestedFields(currentConfig, requiredRelatedFields);
-        const request = createNewConfigurationRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, newFieldModel);
+        return createNewConfigurationRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, newFieldModel);
+    };
+
+    const defaultConvertToOptions = (data) => data.options.map((item) => {
+        const dataValue = item.value;
+        return {
+            key: dataValue,
+            label: item.label,
+            value: dataValue
+        };
+    });
+
+    const onSendClick = () => {
+        const request = readOptionsRequest ? readOptionsRequest() : defaultRequest();
         request.then((response) => {
             if (response.ok) {
                 response.json().then((data) => {
-                    const selectOptions = data.options.map((item) => {
-                        const dataValue = item.value;
-                        return {
-                            key: dataValue,
-                            label: item.label,
-                            value: dataValue
-                        };
-                    });
+                    const selectOptions = convertDataToOptions ? convertDataToOptions(data) : defaultConvertToOptions(data);
                     setOptions(selectOptions);
                     setRequestErrorValue(null);
                 });
@@ -66,7 +74,6 @@ const EndpointSelectField = ({
     useEffect(() => {
         onSendClick();
     }, []);
-
     return (
         <div>
             <DynamicSelectInput
@@ -120,8 +127,9 @@ EndpointSelectField.propTypes = {
     labelClass: PropTypes.string,
     required: PropTypes.bool,
     showDescriptionPlaceHolder: PropTypes.bool,
-    createRequestBody: PropTypes.func
-
+    createRequestBody: PropTypes.func,
+    readOptionsRequest: PropTypes.func,
+    convertDataToOptions: PropTypes.func
 };
 
 EndpointSelectField.defaultProps = {
@@ -139,6 +147,8 @@ EndpointSelectField.defaultProps = {
     selectSpacingClass: 'col-sm-8',
     value: [],
     createRequestBody: null,
+    readOptionsRequest: null,
+    convertDataToOptions: null,
     description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
