@@ -86,6 +86,7 @@ public class SettingsProxyConfigAccessor implements UniqueConfigurationAccessor<
         OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
         SettingsProxyConfigurationEntity configurationToSave = toEntity(configurationId, configuration, configurationEntity.getCreatedAt(), currentTime);
         SettingsProxyConfigurationEntity savedProxyConfig = settingsProxyConfigurationRepository.save(configurationToSave);
+        nonProxyHostsConfigurationRepository.bulkDeleteByConfigurationId(savedProxyConfig.getConfigurationId());
         List<NonProxyHostConfigurationEntity> nonProxyHosts = toNonProxyHostEntityList(configurationId, configuration);
         nonProxyHostsConfigurationRepository.saveAll(nonProxyHosts);
         savedProxyConfig = settingsProxyConfigurationRepository.getOne(savedProxyConfig.getConfigurationId());
