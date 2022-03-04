@@ -139,6 +139,19 @@ class SettingsProxyValidatorTest {
     }
 
     @Test
+    void validateUsernameBlank() {
+        SettingsProxyModel settingsProxyModel = new SettingsProxyModel();
+        settingsProxyModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
+        settingsProxyModel.setProxyHost(HOST);
+        settingsProxyModel.setProxyPort(PORT);
+        settingsProxyModel.setProxyUsername("");
+        settingsProxyModel.setIsProxyPasswordSet(false);
+
+        ValidationResponseModel validationResponseModel = settingsProxyValidator.validate(settingsProxyModel);
+        assertFalse(validationResponseModel.hasErrors());
+    }
+
+    @Test
     void validateNonProxyHostsTest() {
         SettingsProxyModel settingsProxyModel = new SettingsProxyModel();
         settingsProxyModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);

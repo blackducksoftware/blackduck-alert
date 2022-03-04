@@ -44,7 +44,7 @@ public class SettingsProxyValidator {
             validateRequiredFieldIsNotBlank(statuses, model.getProxyHost().isPresent(), PROXY_HOST_FIELD_NAME);
         }
 
-        if (model.getProxyUsername().isPresent()) {
+        if (model.getProxyUsername().filter(StringUtils::isNotBlank).isPresent()) {
             validateRequiredFieldIsNotBlank(statuses, model.getProxyHost().isPresent(), PROXY_HOST_FIELD_NAME);
             if (!BooleanUtils.toBoolean(model.getIsProxyPasswordSet())) {
                 validateRequiredFieldIsNotBlank(statuses, model.getProxyPassword().isPresent(), PROXY_PASSWORD_FIELD_NAME);
