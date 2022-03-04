@@ -99,8 +99,15 @@ public final class NotificationProcessor {
 
     private void processAndDistribute(FilteredJobNotificationWrapper jobNotificationWrapper) {
         List<NotificationContentWrapper> filteredNotifications = jobNotificationWrapper.getJobNotifications();
-        ProcessedNotificationDetails processedNotificationDetails = new ProcessedNotificationDetails(jobNotificationWrapper.getJobId(), jobNotificationWrapper.getChannelName(), jobNotificationWrapper.getJobName());
-        ProcessedProviderMessageHolder processedMessageHolder = notificationContentProcessor.processNotificationContent(jobNotificationWrapper.getProcessingType(), filteredNotifications);
+        ProcessedNotificationDetails processedNotificationDetails = new ProcessedNotificationDetails(
+            jobNotificationWrapper.getJobId(),
+            jobNotificationWrapper.getChannelName(),
+            jobNotificationWrapper.getJobName()
+        );
+        ProcessedProviderMessageHolder processedMessageHolder = notificationContentProcessor.processNotificationContent(
+            jobNotificationWrapper.getProcessingType(),
+            filteredNotifications
+        );
 
         providerMessageDistributor.distribute(processedNotificationDetails, processedMessageHolder);
     }

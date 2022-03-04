@@ -12,11 +12,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingJobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModel;
@@ -51,27 +51,47 @@ public class JobNotificationMapper {
      * @param frequencies      an Additional filter to specify when querying data from the DB
      * @return a {@code StatefulAlertPage} where a page of distribution jobs is used to map to a list of notifications that were passed in.
      */
-    public StatefulAlertPage<FilteredJobNotificationWrapper, RuntimeException> mapJobsToNotifications(List<DetailedNotificationContent> detailedContents, List<FrequencyType> frequencies) {
+    public StatefulAlertPage<FilteredJobNotificationWrapper, RuntimeException> mapJobsToNotifications(
+        List<DetailedNotificationContent> detailedContents,
+        List<FrequencyType> frequencies
+    ) {
         FilteredJobWrapperPageRetriever filteredJobWrapperPageRetriever = new FilteredJobWrapperPageRetriever(detailedContents, frequencies);
         AlertPagedDetails<FilteredJobNotificationWrapper> firstPage = filteredJobWrapperPageRetriever.retrievePage(INITIAL_PAGE_NUMBER, PAGE_SIZE);
         return new StatefulAlertPage<>(firstPage, filteredJobWrapperPageRetriever, HAS_NEXT_PAGE);
     }
 
-    private AlertPagedDetails<FilteredJobNotificationWrapper> mapPageOfJobsToNotification(List<DetailedNotificationContent> detailedContents, List<FrequencyType> frequencies, int pageNumber, int pageSize) {
+    private AlertPagedDetails<FilteredJobNotificationWrapper> mapPageOfJobsToNotification(
+        List<DetailedNotificationContent> detailedContents,
+        List<FrequencyType> frequencies,
+        int pageNumber,
+        int pageSize
+    ) {
         if (detailedContents.isEmpty()) {
             return new AlertPagedDetails<>(1, pageNumber, pageSize, List.of());
         }
 
         Map<FilteredDistributionJobResponseModel, List<NotificationContentWrapper>> groupedFilterableNotifications = new HashMap<>();
 
-        FilteredDistributionJobRequestModel filteredDistributionJobRequestModel = createRequestModelFromNotifications(detailedContents, frequencies);
+        int totalPages = 0;
+        List<FilteredDistributionJobRequestModel> filteredDistributionJobRequestModels = createRequestModelFromNotifications(detailedContents, frequencies);
+        for (FilteredDistributionJobRequestModel filteredDistributionJobRequestModel : filteredDistributionJobRequestModels) {
+            AlertPagedDetails<FilteredDistributionJobResponseModel> jobs = processingJobAccessor.getMatchingEnabledJobsByFilteredNotifications(
+                filteredDistributionJobRequestModel,
+                pageNumber,
+                pageSize
+            );
+            totalPages += jobs.getTotalPages();
+            for (DetailedNotificationContent detailedNotificationContent : detailedContents) {
+                for (FilteredDistributionJobResponseModel filteredDistributionJobResponseModel : jobs.getModels()) {
 
-        AlertPagedDetails<FilteredDistributionJobResponseModel> jobs = processingJobAccessor.getMatchingEnabledJobsByFilteredNotifications(filteredDistributionJobRequestModel, pageNumber, pageSize);
-        for (DetailedNotificationContent detailedNotificationContent : detailedContents) {
-            for (FilteredDistributionJobResponseModel filteredDistributionJobResponseModel : jobs.getModels()) {
-                if (JobNotificationFilterUtils.doesNotificationApplyToJob(filteredDistributionJobResponseModel, detailedNotificationContent)) {
-                    List<NotificationContentWrapper> applicableNotifications = groupedFilterableNotifications.computeIfAbsent(filteredDistributionJobResponseModel, ignoredKey -> new LinkedList<>());
-                    applicableNotifications.add(detailedNotificationContent.getNotificationContentWrapper());
+                    if (JobNotificationFilterUtils.doesNotificationApplyToJob(filteredDistributionJobResponseModel, detailedNotificationContent) &&
+                        detailedNotificationContent.getProviderConfigId() == filteredDistributionJobRequestModel.getProviderConfigId()) {
+                        List<NotificationContentWrapper> applicableNotifications = groupedFilterableNotifications.computeIfAbsent(
+                            filteredDistributionJobResponseModel,
+                            ignoredKey -> new LinkedList<>()
+                        );
+                        applicableNotifications.add(detailedNotificationContent.getNotificationContentWrapper());
+                    }
                 }
             }
         }
@@ -79,11 +99,34 @@ public class JobNotificationMapper {
         List<FilteredJobNotificationWrapper> filterableJobNotifications = new LinkedList<>();
         for (Map.Entry<FilteredDistributionJobResponseModel, List<NotificationContentWrapper>> groupedEntry : groupedFilterableNotifications.entrySet()) {
             FilteredDistributionJobResponseModel filteredJob = groupedEntry.getKey();
-            FilteredJobNotificationWrapper wrappedJobNotifications = new FilteredJobNotificationWrapper(filteredJob.getId(), filteredJob.getProcessingType(), filteredJob.getChannelName(), filteredJob.getJobName(), groupedEntry.getValue());
+            FilteredJobNotificationWrapper wrappedJobNotifications = new FilteredJobNotificationWrapper(
+                filteredJob.getId(),
+                filteredJob.getProcessingType(),
+                filteredJob.getChannelName(),
+                filteredJob.getJobName(),
+                groupedEntry.getValue()
+            );
             filterableJobNotifications.add(wrappedJobNotifications);
         }
 
-        return new AlertPagedDetails<>(jobs.getTotalPages(), pageNumber, pageSize, filterableJobNotifications);
+        return new AlertPagedDetails<>(totalPages, pageNumber, pageSize, filterableJobNotifications);
+    }
+
+    private List<FilteredDistributionJobRequestModel> createRequestModelFromNotifications(List<DetailedNotificationContent> detailedContents, List<FrequencyType> frequencies) {
+        return detailedContents
+            .stream()
+            .map(DetailedNotificationContent::getProviderConfigId)
+            .map(id -> {
+                FilteredDistributionJobRequestModel filteredDistributionJobRequestModel = new FilteredDistributionJobRequestModel(id, frequencies);
+                for (DetailedNotificationContent detailedNotificationContent : detailedContents) {
+                    detailedNotificationContent.getProjectName().ifPresent(filteredDistributionJobRequestModel::addProjectName);
+                    filteredDistributionJobRequestModel.addNotificationType(detailedNotificationContent.getNotificationContentWrapper().extractNotificationType());
+                    filteredDistributionJobRequestModel.addVulnerabilitySeverities(detailedNotificationContent.getVulnerabilitySeverities());
+                    detailedNotificationContent.getPolicyName().ifPresent(filteredDistributionJobRequestModel::addPolicyName);
+                }
+                return filteredDistributionJobRequestModel;
+            })
+            .collect(Collectors.toList());
     }
 
     private class FilteredJobWrapperPageRetriever implements PageRetriever<FilteredJobNotificationWrapper, RuntimeException> {
@@ -105,22 +148,6 @@ public class JobNotificationMapper {
             return mapPageOfJobsToNotification(detailedContents, frequencies, currentOffset, currentLimit);
         }
 
-    }
-
-    private FilteredDistributionJobRequestModel createRequestModelFromNotifications(List<DetailedNotificationContent> detailedContents, List<FrequencyType> frequencies) {
-        Long commonProviderConfigId = detailedContents
-            .stream()
-            .map(DetailedNotificationContent::getProviderConfigId)
-            .findAny()
-            .orElseThrow(() -> new AlertRuntimeException("Notification(s) missing provider configuration id"));
-        FilteredDistributionJobRequestModel filteredDistributionJobRequestModel = new FilteredDistributionJobRequestModel(commonProviderConfigId, frequencies);
-        for (DetailedNotificationContent detailedNotificationContent : detailedContents) {
-            detailedNotificationContent.getProjectName().ifPresent(filteredDistributionJobRequestModel::addProjectName);
-            filteredDistributionJobRequestModel.addNotificationType(detailedNotificationContent.getNotificationContentWrapper().extractNotificationType());
-            filteredDistributionJobRequestModel.addVulnerabilitySeverities(detailedNotificationContent.getVulnerabilitySeverities());
-            detailedNotificationContent.getPolicyName().ifPresent(filteredDistributionJobRequestModel::addPolicyName);
-        }
-        return filteredDistributionJobRequestModel;
     }
 
 }
