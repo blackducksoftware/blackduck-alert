@@ -61,7 +61,7 @@ const SettingsProxyConfiguration = ({
             createRequest={() => ConfigurationRequestBuilder.createNewConfigurationRequest(proxyRequestUrl, csrfToken, settingsProxyConfig)}
             updateRequest={() => ConfigurationRequestBuilder.createUpdateWithoutIdRequest(proxyRequestUrl, csrfToken, settingsProxyConfig)}
             validateRequest={() => ConfigurationRequestBuilder.createValidateRequest(proxyRequestUrl, csrfToken, settingsProxyConfig)}
-            testRequest={() => ConfigurationRequestBuilder.createTestRequest(proxyRequestUrl, csrfToken, settingsProxyConfig, 'testUrl', `${testUrl}`)}
+            testRequest={() => ConfigurationRequestBuilder.createTestRequest(proxyRequestUrl, csrfToken, settingsProxyConfig, 'testUrl', testUrl)}
             readonly={readOnly}
             displaySave={displaySave}
             displayTest={displayTest}
