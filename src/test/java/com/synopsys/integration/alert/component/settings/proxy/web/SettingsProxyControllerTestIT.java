@@ -1,5 +1,7 @@
 package com.synopsys.integration.alert.component.settings.proxy.web;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.List;
@@ -40,6 +42,7 @@ public class SettingsProxyControllerTestIT {
     private static final Integer PORT = 12345;
     private static final String USERNAME = "userName";
     private static final String PASSWORD = "myPassword";
+    private static final String NON_PROXY_HOSTNAME = "nonProxyHosts";
 
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
 
@@ -163,11 +166,44 @@ public class SettingsProxyControllerTestIT {
 
         String url = AlertRestConstants.SETTINGS_PROXY_PATH + "/test" + "?testUrl=" + testUrl;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(new URI(url))
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
-                                                    .with(SecurityMockMvcRequestPostProcessors.csrf())
-                                                    .content(gson.toJson(settingsProxyModel))
-                                                    .contentType(contentType);
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf())
+            .content(gson.toJson(settingsProxyModel))
+            .contentType(contentType);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
+    void testNonProxyHostsDeleted() throws Exception {
+        createDefaultSettingsProxyModel(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
+
+        SettingsProxyModel newSettingsProxyModel = new SettingsProxyModel();
+        newSettingsProxyModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
+        newSettingsProxyModel.setProxyHost("newHostname");
+        newSettingsProxyModel.setProxyPort(678);
+
+        String url = AlertRestConstants.SETTINGS_PROXY_PATH;
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(new URI(url))
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf())
+            .content(gson.toJson(newSettingsProxyModel))
+            .contentType(contentType);
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNoContent());
+
+        String urlGet = AlertRestConstants.SETTINGS_PROXY_PATH;
+        MockHttpServletRequestBuilder requestGet = MockMvcRequestBuilders.get(new URI(urlGet))
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf());
+        MvcResult mvcResult = mockMvc.perform(requestGet).andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
+        String response = mvcResult.getResponse().getContentAsString();
+
+        TypeToken<SettingsProxyModel> settingsProxyModelType = new TypeToken<>() {};
+        SettingsProxyModel updatedSettingsProxyModel = gson.fromJson(response, settingsProxyModelType.getType());
+
+        //Non Proxy hosts will come back present, but contain nothing in the list
+        assertTrue(updatedSettingsProxyModel.getNonProxyHosts().isPresent());
+        assertTrue(updatedSettingsProxyModel.getNonProxyHosts().get().isEmpty());
     }
 
     private SettingsProxyModel createSettingsProxyModel(String configurationName) {
@@ -177,7 +213,7 @@ public class SettingsProxyControllerTestIT {
         settingsProxyModel.setProxyPort(PORT);
         settingsProxyModel.setProxyUsername(USERNAME);
         settingsProxyModel.setProxyPassword(PASSWORD);
-        settingsProxyModel.setNonProxyHosts(List.of("hosts"));
+        settingsProxyModel.setNonProxyHosts(List.of(NON_PROXY_HOSTNAME));
         return settingsProxyModel;
     }
 
