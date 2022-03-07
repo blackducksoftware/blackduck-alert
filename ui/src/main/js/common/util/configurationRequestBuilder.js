@@ -136,10 +136,10 @@ export function createValidateRequest(apiUrl, csrfToken, fieldModel) {
     });
 }
 
-export function createTestRequest(apiUrl, csrfToken, fieldModel, queryParam) {
+export function createTestRequest(apiUrl, csrfToken, fieldModel, queryParamKey, queryParamValue) {
     let url = `${apiUrl}/test`;
-    if (queryParam) {
-        url = url.concat(`?${queryParam}`);
+    if (queryParamKey && queryParamValue) {
+        url = url.concat(`?${encodeURIComponent(queryParamKey)}=${encodeURIComponent(queryParamValue)}`);
     }
 
     const headersUtil = new HeaderUtilities();
