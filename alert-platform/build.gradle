@@ -34,7 +34,7 @@ dependencies {
         api 'org.javassist:javassist:3.24.0-GA'
         api 'io.springfox:springfox-boot-starter:3.0.0'
 
-        runtime 'org.postgresql:postgresql:42.2.8'
+        runtime 'org.postgresql:postgresql:42.3.3'
         runtime 'org.liquibase:liquibase-core:3.8.9'
         runtime 'io.springfox:springfox-swagger-ui:2.8.0'
     }
