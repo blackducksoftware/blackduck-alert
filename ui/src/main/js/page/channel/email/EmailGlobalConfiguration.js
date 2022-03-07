@@ -67,7 +67,7 @@ const EmailGlobalConfiguration = ({
                 updateRequest={() => ConfigurationRequestBuilder.createUpdateWithoutIdRequest(emailRequestUrl, csrfToken, emailConfig)}
                 createRequest={() => ConfigurationRequestBuilder.createNewConfigurationRequest(emailRequestUrl, csrfToken, emailConfig)}
                 validateRequest={() => ConfigurationRequestBuilder.createValidateRequest(emailRequestUrl, csrfToken, emailConfig)}
-                testRequest={() => ConfigurationRequestBuilder.createTestRequest(emailRequestUrl, csrfToken, emailConfig, `sendTo=${testEmailAddress}`)}
+                testRequest={() => ConfigurationRequestBuilder.createTestRequest(emailRequestUrl, csrfToken, emailConfig, 'sendTo', testEmailAddress)}
                 readonly={readonly}
                 displayTest={displayTest}
                 displaySave={displaySave}
