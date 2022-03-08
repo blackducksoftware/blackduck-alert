@@ -10,6 +10,7 @@ import java.util.UUID;
 import java.util.function.Predicate;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,7 @@ class EmailEnvironmentHandlerFactoryTestIT {
     private EmailGlobalConfigAccessor emailGlobalConfigAccessor;
 
     @AfterEach
+    @BeforeEach
     public void cleanup() {
         emailGlobalConfigAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
             .map(Config::getId)

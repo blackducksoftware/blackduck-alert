@@ -28,7 +28,6 @@ import com.synopsys.integration.alert.processor.api.extract.model.ProcessedProvi
 import com.synopsys.integration.alert.processor.api.filter.FilteredJobNotificationWrapper;
 import com.synopsys.integration.alert.processor.api.filter.JobNotificationMapper;
 import com.synopsys.integration.alert.processor.api.filter.NotificationContentWrapper;
-import com.synopsys.integration.alert.processor.api.filter.StatefulAlertPage;
 
 @Component
 // TODO rename to WorkflowNotificationProcessor
@@ -87,14 +86,8 @@ public final class NotificationProcessor {
             .map(notificationDetailExtractionDelegator::wrapNotification)
             .flatMap(List::stream)
             .collect(Collectors.toList());
-        StatefulAlertPage<FilteredJobNotificationWrapper, RuntimeException> statefulAlertPage = jobNotificationMapper.mapJobsToNotifications(filterableNotifications, frequencies);
-        // If there are elements to process in the current page or if there are more pages, keep looping.
-        while (!statefulAlertPage.isCurrentPageEmpty() || statefulAlertPage.hasNextPage()) {
-            for (FilteredJobNotificationWrapper jobNotificationWrapper : statefulAlertPage.getCurrentModels()) {
-                processAndDistribute(jobNotificationWrapper);
-            }
-            statefulAlertPage = statefulAlertPage.retrieveNextPage();
-        }
+        jobNotificationMapper.mapJobsToNotifications(filterableNotifications, frequencies).stream()
+            .forEach(filteredJobNotificationWrapper -> processAndDistribute(filteredJobNotificationWrapper));
     }
 
     private void processAndDistribute(FilteredJobNotificationWrapper jobNotificationWrapper) {
