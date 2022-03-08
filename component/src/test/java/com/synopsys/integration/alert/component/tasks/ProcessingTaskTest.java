@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,18 +27,13 @@ import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedDetails;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.api.DefaultNotificationAccessor;
 import com.synopsys.integration.alert.database.api.StaticJobAccessor;
 import com.synopsys.integration.alert.processor.api.NotificationProcessor;
 import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExtractionDelegator;
-import com.synopsys.integration.alert.processor.api.filter.FilteredJobNotificationWrapper;
 import com.synopsys.integration.alert.processor.api.filter.JobNotificationMapper;
-import com.synopsys.integration.alert.processor.api.filter.PageRetriever;
-import com.synopsys.integration.alert.processor.api.filter.StatefulAlertPage;
-import com.synopsys.integration.alert.provider.blackduck.task.accumulator.BlackDuckNotificationRetriever;
 import com.synopsys.integration.alert.test.common.TestResourceUtils;
 import com.synopsys.integration.blackduck.http.transform.subclass.BlackDuckResponseResolver;
 
@@ -82,10 +78,8 @@ class ProcessingTaskTest {
         StaticJobAccessor jobAccessor = Mockito.mock(StaticJobAccessor.class);
         Mockito.when(jobAccessor.hasJobsByFrequency(Mockito.any())).thenReturn(true);
 
-        NotificationDetailExtractionDelegator extractionDelegator = new NotificationDetailExtractionDelegator(blackDuckResponseResolver, List.of());
         JobNotificationMapper jobNotificationMapper = Mockito.mock(JobNotificationMapper.class);
-        StatefulAlertPage<FilteredJobNotificationWrapper, RuntimeException> statefulAlertPage = new StatefulAlertPage(AlertPagedDetails.emptyPage(), Mockito.mock(PageRetriever.class), BlackDuckNotificationRetriever.HAS_NEXT_PAGE);
-        Mockito.when(jobNotificationMapper.mapJobsToNotifications(Mockito.anyList(), Mockito.anyList())).thenReturn(statefulAlertPage);
+        Mockito.when(jobNotificationMapper.mapJobsToNotifications(Mockito.anyList(), Mockito.anyList())).thenReturn(Set.of());
         NotificationProcessor notificationProcessor = Mockito.mock(NotificationProcessor.class);
 
         ProcessingTask task = createTask(taskScheduler, notificationManager, notificationProcessor, taskManager, jobAccessor);
@@ -103,7 +97,8 @@ class ProcessingTaskTest {
                 notificationJson,
                 DateUtils.createCurrentDateTimestamp(),
                 DateUtils.createCurrentDateTimestamp(),
-                false);
+                false
+            );
             allModels.add(model);
         }
         notificationManager.saveAllNotifications(allModels);
@@ -163,7 +158,8 @@ class ProcessingTaskTest {
 
         ProcessingTask task = createTask(taskScheduler, notificationManager, notificationProcessor, taskManager, jobAccessor);
         DateRange dateRange = task.getDateRange();
-        Mockito.doThrow(new RuntimeException("Exception reading data")).when(notificationManager).findByCreatedAtBetween(dateRange.getStart(), dateRange.getEnd(), AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE);
+        Mockito.doThrow(new RuntimeException("Exception reading data")).when(notificationManager)
+            .findByCreatedAtBetween(dateRange.getStart(), dateRange.getEnd(), AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE);
         ProcessingTask processingTask = Mockito.spy(task);
         List<AlertNotificationModel> actualModelList = processingTask.read(dateRange, AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE).getModels();
         assertEquals(Collections.emptyList(), actualModelList);
@@ -194,7 +190,8 @@ class ProcessingTaskTest {
                 notificationJson,
                 DateUtils.createCurrentDateTimestamp(),
                 DateUtils.createCurrentDateTimestamp(),
-                false);
+                false
+            );
             allModels.add(model);
         }
         notificationManager.saveAllNotifications(allModels);
@@ -242,7 +239,13 @@ class ProcessingTaskTest {
         assertEquals(expected.getDayOfMonth(), actual.getDayOfMonth());
     }
 
-    private ProcessingTask createTask(TaskScheduler taskScheduler, NotificationAccessor notificationManager, NotificationProcessor notificationProcessor, TaskManager taskManager, JobAccessor jobAccessor) {
+    private ProcessingTask createTask(
+        TaskScheduler taskScheduler,
+        NotificationAccessor notificationManager,
+        NotificationProcessor notificationProcessor,
+        TaskManager taskManager,
+        JobAccessor jobAccessor
+    ) {
         return new ProcessingTask(taskScheduler, taskManager, notificationManager, notificationProcessor, jobAccessor, FrequencyType.DAILY) {
             @Override
             public String scheduleCronExpression() {
