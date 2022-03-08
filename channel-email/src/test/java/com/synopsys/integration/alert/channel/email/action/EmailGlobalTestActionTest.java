@@ -124,7 +124,7 @@ public class EmailGlobalTestActionTest {
         EmailGlobalConfigModel configModelWithPassword = new EmailGlobalConfigModel();
         configModelWithPassword.setIsSmtpPasswordSet(true);
         configModelWithPassword.setSmtpPassword("password");
-        Mockito.when(configurationAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)).thenReturn(Optional.of(configModelWithPassword));
+        Mockito.when(configurationAccessor.getConfiguration()).thenReturn(Optional.of(configModelWithPassword));
 
         ConfigurationTestResult testResult = emailGlobalTestAction.testConfigModelContent("noreply@synopsys.com", emailGlobalConfigModel);
         assertTrue(testResult.isSuccess(), "Expected the message result to not have errors");
@@ -149,7 +149,7 @@ public class EmailGlobalTestActionTest {
 
         EmailGlobalConfigModel globalConfigModelWithoutPassword = createEmailGlobalConfigModelObfuscated(testProperties);
         EmailGlobalConfigModel globalConfigModelWithPassword = createValidEmailGlobalConfigModel(testProperties);
-        Mockito.when(configurationAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)).thenReturn(Optional.of(globalConfigModelWithPassword));
+        Mockito.when(configurationAccessor.getConfiguration()).thenReturn(Optional.of(globalConfigModelWithPassword));
 
         ConfigurationTestResult testResult = emailGlobalTestAction.testConfigModelContent(emailAddress, globalConfigModelWithoutPassword);
         assertTrue(testResult.isSuccess(), "Expected the message result to not have errors");

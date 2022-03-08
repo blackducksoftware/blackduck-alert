@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
@@ -29,7 +30,7 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 @Component
 public class DistributionActions {
-    private static final String CHANNEL_DESCRIPTOR_SORT_NAME = "channelDescriptorName";
+    private static final String CHANNEL_DESCRIPTOR_SORT_NAME = "channel_descriptor_name";
 
     private final DistributionAccessor distributionAccessor;
     private final AuthorizationManager authorizationManager;
@@ -42,7 +43,7 @@ public class DistributionActions {
         this.descriptorMap = descriptorMap;
     }
 
-    public ActionResponse<AlertPagedModel<DistributionWithAuditInfo>> retrieveJobWithAuditInfo(int page, int pageSize, String sortName, @Nullable String sortOrder, @Nullable String searchTerm) {
+    public ActionResponse<AlertPagedModel<DistributionWithAuditInfo>> retrieveJobWithAuditInfo(int page, int pageSize, @Nullable String sortName, @Nullable String sortOrder, @Nullable String searchTerm) {
         Set<String> authorizedChannelDescriptorNames = findAuthorizedChannelDescriptorNames();
 
         if (authorizedChannelDescriptorNames.isEmpty()) {
@@ -98,15 +99,15 @@ public class DistributionActions {
     }
 
     private String convertSortName(String sortName) {
+        if (StringUtils.isBlank(sortName)) {
+            return "name";
+        }
+
         switch (sortName) {
             case "channel":
                 return CHANNEL_DESCRIPTOR_SORT_NAME;
             case "frequency":
-                return "distributionFrequency";
-            case "lastSent":
-                return "lastSent";
-            case "status":
-                return "audit.status";
+                return "distribution_frequency";
             default:
                 return "name";
         }

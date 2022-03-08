@@ -19,10 +19,13 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
@@ -30,13 +33,17 @@ import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.persistence.accessor.DistributionAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.DistributionWithAuditInfo;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
-import com.synopsys.integration.alert.database.job.DistributionJobEntity;
-import com.synopsys.integration.alert.database.job.DistributionJobRepository;
 import com.synopsys.integration.alert.descriptor.api.MsTeamsKey;
 import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
@@ -44,12 +51,19 @@ import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @AlertIntegrationTest
 public class DefaultDistributionAccessorTestIT {
+    private final int TOTAL_NUMBER_OF_RECORDS = 6;
+
+    public static final String SORT_LAST_SENT = "filteredAudit.time_last_sent";
+    public static final String SORT_STATUS = "filteredAudit.status";
+    public static final String SORT_CHANNEL = "channel_descriptor_name";
+    public static final String SORT_FREQUENCY = "distribution_frequency";
+    public static final String SORT_NAME = "name";
 
     @Autowired
     private DistributionAccessor distributionAccessor;
 
     @Autowired
-    private DistributionJobRepository distributionJobRepository;
+    private JobAccessor jobAccessor;
 
     @Autowired
     private AuditEntryRepository auditEntryRepository;
@@ -61,15 +75,13 @@ public class DefaultDistributionAccessorTestIT {
 
     @AfterEach
     public void cleanupDistributions() {
-        distributionJobRepository.flush();
-        createdJobs.forEach(distributionJobRepository::deleteById);
+        createdJobs.forEach(jobAccessor::deleteJob);
         createdJobs.clear();
-
-        auditEntryRepository.bulkDeleteOrphanedEntries();
     }
 
     @Test
     @Transactional
+    @Modifying
     public void verifyQueryBuildsTest() {
         AlertPagedModel<DistributionWithAuditInfo> distributionWithAuditInfo = distributionAccessor.getDistributionWithAuditInfo(0, 100, "name", Direction.ASC, getAllDescriptorNames());
 
@@ -78,47 +90,83 @@ public class DefaultDistributionAccessorTestIT {
 
     @Test
     @Transactional
-    public void verifyValidityOfQueryTest() {
-        assertValidQueryFunctionality(() -> distributionAccessor.getDistributionWithAuditInfo(0, 100, "name", Direction.ASC, getAllDescriptorNames()));
+    @Modifying
+    public void verifyValidityOfQueryTest() throws ParseException {
+        assertValidQueryFunctionality(TOTAL_NUMBER_OF_RECORDS, () -> distributionAccessor.getDistributionWithAuditInfo(0, 100, "name", Direction.ASC, getAllDescriptorNames()));
     }
 
     @Test
     @Transactional
-    public void sortByNameDESCTest() {
-        assertSorted("name", Direction.DESC, DistributionWithAuditInfo::getJobName);
+    @Modifying
+    public void verifyValidityOfQueryWithNullsTest() throws ParseException {
+        assertValidQueryFunctionality(TOTAL_NUMBER_OF_RECORDS, () -> distributionAccessor.getDistributionWithAuditInfo(0, 100, null, null, getAllDescriptorNames()));
     }
 
     @Test
     @Transactional
-    public void sortByNameASCTest() {
-        assertSorted("name", Direction.ASC, DistributionWithAuditInfo::getJobName);
+    @Modifying
+    public void sortByNameDESCLowPageSizeTest() throws ParseException {
+        assertSorted(3, 3, SORT_NAME, Direction.DESC, DistributionWithAuditInfo::getJobName);
     }
 
     @Test
     @Transactional
-    public void sortByAuditLastTimeSentDESCTest() {
+    @Modifying
+    public void sortByNameDESCTest() throws ParseException {
+        assertSorted(TOTAL_NUMBER_OF_RECORDS, 100, SORT_NAME, Direction.DESC, DistributionWithAuditInfo::getJobName);
+    }
+
+    @Test
+    @Transactional
+    @Modifying
+    public void sortByNameASCTest() throws ParseException {
+        assertSorted(TOTAL_NUMBER_OF_RECORDS, 100, SORT_NAME, Direction.ASC, DistributionWithAuditInfo::getJobName);
+    }
+
+    @Test
+    @Transactional
+    @Modifying
+    public void sortByFrequencyASCTest() throws ParseException {
+        assertSorted(TOTAL_NUMBER_OF_RECORDS, 100, SORT_FREQUENCY, Direction.ASC, DistributionWithAuditInfo::getFrequencyType);
+    }
+
+    @Test
+    @Transactional
+    @Modifying
+    public void sortByFrequencyDESCTest() throws ParseException {
+        assertSorted(TOTAL_NUMBER_OF_RECORDS, 100, SORT_FREQUENCY, Direction.DESC, DistributionWithAuditInfo::getFrequencyType);
+    }
+
+    @Test
+    @Transactional
+    @Modifying
+    @Disabled("This feature is not currently supported due to limitations in hibernate")
+    public void sortByAuditLastTimeSentDESCTest() throws ParseException {
         assertAuditLastTimeSent(Direction.DESC);
     }
 
     @Test
     @Transactional
-    public void sortByAuditLastTimeSentASCTest() {
+    @Modifying
+    @Disabled("This feature is not currently supported due to limitations in hibernate")
+    public void sortByAuditLastTimeSentASCTest() throws ParseException {
         assertAuditLastTimeSent(Direction.ASC);
     }
 
     @Test
     @Transactional
-    void sortByChannelNameDESCTest() {
-        assertSorted("channelDescriptorName", Direction.DESC, DistributionWithAuditInfo::getChannelName);
+    @Modifying
+    void sortByChannelNameDESCTest() throws ParseException {
+        assertSorted(TOTAL_NUMBER_OF_RECORDS, 100, SORT_CHANNEL, Direction.DESC, DistributionWithAuditInfo::getChannelName);
     }
 
-    private void assertAuditLastTimeSent(Direction sortDirection) {
-        assertSorted("lastSent", sortDirection,
+    private AlertPagedModel<DistributionWithAuditInfo> assertAuditLastTimeSent(Direction sortDirection) throws ParseException {
+        return assertSorted(TOTAL_NUMBER_OF_RECORDS, 100, SORT_LAST_SENT, sortDirection,
             info -> {
                 String auditTimeLastSent = info.getAuditTimeLastSent();
                 if (StringUtils.isNotBlank(auditTimeLastSent)) {
                     try {
-                        return DateUtils.parseDate(auditTimeLastSent, DateUtils.AUDIT_DATE_FORMAT);
+                        return DateUtils.parseDate(auditTimeLastSent, "yyyy-MM-dd HH:mm:ss");
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
@@ -128,9 +176,12 @@ public class DefaultDistributionAccessorTestIT {
         );
     }
 
-    private <T extends Comparable> void assertSorted(String sortName, Direction sortDirection, Function<DistributionWithAuditInfo, T> getNullableValue) {
+    private <T extends Comparable> AlertPagedModel<DistributionWithAuditInfo> assertSorted(int expectedTotal, int pageSize, String sortName, Direction sortDirection, Function<DistributionWithAuditInfo, T> getNullableValue)
+        throws ParseException {
         AlertPagedModel<DistributionWithAuditInfo> distributionWithAuditInfoSorted = assertValidQueryFunctionality(
-            () -> distributionAccessor.getDistributionWithAuditInfo(0, 100, sortName, sortDirection, getAllDescriptorNames()));
+            expectedTotal,
+            () -> distributionAccessor.getDistributionWithAuditInfo(0, pageSize, sortName, sortDirection, getAllDescriptorNames())
+        );
         T previouslyRetrievedValue = null;
         boolean inOrder = true;
         for (DistributionWithAuditInfo info : distributionWithAuditInfoSorted.getModels()) {
@@ -147,40 +198,37 @@ public class DefaultDistributionAccessorTestIT {
         }
 
         assertTrue(inOrder);
+        return distributionWithAuditInfoSorted;
     }
 
     private Set<String> getAllDescriptorNames() {
         return descriptorMap.getDescriptorKeys().stream().map(DescriptorKey::getUniversalKey).collect(Collectors.toSet());
     }
 
-    private AlertPagedModel<DistributionWithAuditInfo> assertValidQueryFunctionality(Supplier<AlertPagedModel<DistributionWithAuditInfo>> dBQuery) {
-        Map<DistributionJobEntity, List<AuditEntryEntity>> jobAndAuditData = createAndSave3JobAndAudit();
-        assertEquals(5, jobAndAuditData.keySet().size());
+    private AlertPagedModel<DistributionWithAuditInfo> assertValidQueryFunctionality(int expectedNumberOfResults, Supplier<AlertPagedModel<DistributionWithAuditInfo>> dBQuery) throws ParseException {
+        Map<UUID, Pair<DistributionJobModel, List<AuditEntryEntity>>> jobAndAuditData = createAndSave6JobAndAudit();
+        assertEquals(TOTAL_NUMBER_OF_RECORDS, jobAndAuditData.keySet().size());
 
-        jobAndAuditData.keySet().stream().map(DistributionJobEntity::getJobId).forEach(uuid -> {
-            DistributionJobEntity job = distributionJobRepository.getOne(uuid);
-            assertNotNull(job);
+        jobAndAuditData.keySet().stream().forEach(uuid -> {
+            Optional<DistributionJobModel> job = jobAccessor.getJobById(uuid);
+            assertTrue(job.isPresent());
         });
 
         AlertPagedModel<DistributionWithAuditInfo> queryResult = dBQuery.get();
         assertNotNull(queryResult);
+        assertEquals(expectedNumberOfResults, queryResult.getModels().size());
 
-        List<DistributionWithAuditInfo> distributionWithAuditInfos = queryResult.getModels();
-        assertEquals(6, distributionWithAuditInfos.size());
+        for (DistributionWithAuditInfo distributionWithAuditInfo : queryResult.getModels()) {
+            Pair<DistributionJobModel, List<AuditEntryEntity>> distributionJobModelListPair = jobAndAuditData.get(distributionWithAuditInfo.getJobId());
+            DistributionJobModel distributionJobModel = distributionJobModelListPair.getLeft();
 
-        for (Map.Entry<DistributionJobEntity, List<AuditEntryEntity>> jobAndAudits : jobAndAuditData.entrySet()) {
-            DistributionJobEntity distributionJobEntity = jobAndAudits.getKey();
-
-            Optional<DistributionWithAuditInfo> distributionInfoWithEntity = getDistributionInfo(distributionJobEntity.getJobId(), distributionWithAuditInfos);
-            assertTrue(distributionInfoWithEntity.isPresent());
-
-            DistributionWithAuditInfo distributionWithAuditInfo = distributionInfoWithEntity.get();
-            assertEquals(distributionJobEntity.getName(), distributionWithAuditInfo.getJobName());
+            assertEquals(distributionJobModel.getName(), distributionWithAuditInfo.getJobName());
             assertNotEquals(AuditEntryStatus.PENDING.name(), distributionWithAuditInfo.getAuditStatus());
 
-            List<AuditEntryEntity> audits = jobAndAudits.getValue();
+            List<AuditEntryEntity> audits = distributionJobModelListPair.getRight();
             if (!audits.isEmpty()) {
-                OffsetDateTime mostRecentAuditEntryTime = audits.stream().max(Comparator.comparing(AuditEntryEntity::getTimeLastSent)).map(AuditEntryEntity::getTimeLastSent).orElse(null);
+                OffsetDateTime mostRecentAuditEntryTime = audits.stream().filter(auditEntryEntity -> auditEntryEntity.getTimeLastSent() != null).max(Comparator.comparing(AuditEntryEntity::getTimeLastSent))
+                    .map(AuditEntryEntity::getTimeLastSent).orElse(null);
 
                 String formattedTime = null;
                 if (null != mostRecentAuditEntryTime) {
@@ -194,51 +242,70 @@ public class DefaultDistributionAccessorTestIT {
         return queryResult;
     }
 
-    private Optional<DistributionWithAuditInfo> getDistributionInfo(UUID jobId, List<DistributionWithAuditInfo> items) {
-        return items.stream().filter(item -> item.getJobId().equals(jobId)).findFirst();
+    private DistributionJobRequestModel createSlackJob(boolean realTime) {
+        SlackJobDetailsModel slackJobDetailsModel = new SlackJobDetailsModel(
+            null,
+            "webhook",
+            "channel",
+            "username"
+        );
+        return createJobEntity(new SlackChannelKey().getUniversalKey(), realTime, slackJobDetailsModel);
     }
 
-    private DistributionJobEntity createJobEntity(String channelKey) {
-        String jobName = channelKey + UUID.randomUUID();
-        return new DistributionJobEntity(
+    private DistributionJobRequestModel createMSTeamsJob(boolean realTime) {
+        MSTeamsJobDetailsModel msTeamsJobDetailsModel = new MSTeamsJobDetailsModel(
             null,
-            jobName,
+            "webhook"
+        );
+        return createJobEntity(new MsTeamsKey().getUniversalKey(), realTime, msTeamsJobDetailsModel);
+    }
+
+    private DistributionJobRequestModel createJobEntity(String channelKey, boolean realTime, DistributionJobDetailsModel jobDetailsModel) {
+        String jobName = channelKey + UUID.randomUUID();
+        return new DistributionJobRequestModel(
             true,
-            FrequencyType.REAL_TIME.name(),
-            ProcessingType.DEFAULT.name(),
+            jobName,
+            realTime ? FrequencyType.REAL_TIME : FrequencyType.DAILY,
+            ProcessingType.DEFAULT,
             channelKey,
-            OffsetDateTime.now(),
-            OffsetDateTime.now()
+            1L,
+            false,
+            null,
+            null,
+            List.of("LICENSE_LIMIT"),
+            List.of(),
+            List.of(),
+            List.of(),
+            jobDetailsModel
         );
     }
 
     private AuditEntryEntity createAuditEntryEntity(UUID commonConfigId, OffsetDateTime timeLastSent, AuditEntryStatus auditEntryStatus) {
+        String statusName = (auditEntryStatus == null) ? null : auditEntryStatus.name();
         return new AuditEntryEntity(
             commonConfigId,
             OffsetDateTime.now(),
             timeLastSent,
-            auditEntryStatus.name(),
+            statusName,
             "",
             ""
         );
     }
 
-    private Map<DistributionJobEntity, List<AuditEntryEntity>> createAndSave3JobAndAudit() {
-        String slackKey = new SlackChannelKey().getUniversalKey();
-        String msTeamsKey = new MsTeamsKey().getUniversalKey();
-        DistributionJobEntity firstJob = createJobEntity(slackKey);
-        DistributionJobEntity secondJob = createJobEntity(slackKey);
-        DistributionJobEntity thirdJob = createJobEntity(slackKey);
-        DistributionJobEntity fourthJob = createJobEntity(slackKey);
-        DistributionJobEntity fifthJob = createJobEntity(msTeamsKey);
-        DistributionJobEntity sixthJob = createJobEntity(msTeamsKey);
+    private Map<UUID, Pair<DistributionJobModel, List<AuditEntryEntity>>> createAndSave6JobAndAudit() {
+        DistributionJobRequestModel firstJob = createSlackJob(true);
+        DistributionJobRequestModel secondJob = createSlackJob(false);
+        DistributionJobRequestModel thirdJob = createSlackJob(true);
+        DistributionJobRequestModel fourthJob = createSlackJob(false);
+        DistributionJobRequestModel fifthJob = createMSTeamsJob(true);
+        DistributionJobRequestModel sixthJob = createMSTeamsJob(false);
 
-        DistributionJobEntity firstJobSaved = distributionJobRepository.save(firstJob);
-        DistributionJobEntity secondJobSaved = distributionJobRepository.save(secondJob);
-        DistributionJobEntity thirdJobSaved = distributionJobRepository.save(thirdJob);
-        DistributionJobEntity fourthJobSaved = distributionJobRepository.save(fourthJob);
-        DistributionJobEntity fifthJobSaved = distributionJobRepository.save(fifthJob);
-        DistributionJobEntity sixthJobSaved = distributionJobRepository.save(sixthJob);
+        DistributionJobModel firstJobSaved = jobAccessor.createJob(firstJob);
+        DistributionJobModel secondJobSaved = jobAccessor.createJob(secondJob);
+        DistributionJobModel thirdJobSaved = jobAccessor.createJob(thirdJob);
+        DistributionJobModel fourthJobSaved = jobAccessor.createJob(fourthJob);
+        DistributionJobModel fifthJobSaved = jobAccessor.createJob(fifthJob);
+        DistributionJobModel sixthJobSaved = jobAccessor.createJob(sixthJob);
 
         createdJobs.add(firstJobSaved.getJobId());
         createdJobs.add(secondJobSaved.getJobId());
@@ -247,24 +314,25 @@ public class DefaultDistributionAccessorTestIT {
         createdJobs.add(fifthJobSaved.getJobId());
         createdJobs.add(sixthJobSaved.getJobId());
 
-        AuditEntryEntity firstAudit = createAuditEntryEntity(firstJob.getJobId(), OffsetDateTime.now(), AuditEntryStatus.SUCCESS);
-        AuditEntryEntity secondAudit = createAuditEntryEntity(firstJob.getJobId(), OffsetDateTime.now().minusDays(1), AuditEntryStatus.PENDING);
-        AuditEntryEntity thirdAudit = createAuditEntryEntity(secondJob.getJobId(), OffsetDateTime.now().minusMinutes(1), AuditEntryStatus.FAILURE);
-        AuditEntryEntity fourthAudit = createAuditEntryEntity(fourthJob.getJobId(), OffsetDateTime.now().minusHours(1), AuditEntryStatus.SUCCESS);
-        AuditEntryEntity fifthAudit = createAuditEntryEntity(fifthJob.getJobId(), OffsetDateTime.now().minusHours(2), AuditEntryStatus.SUCCESS);
-        AuditEntryEntity sixthAudit = createAuditEntryEntity(fifthJob.getJobId(), OffsetDateTime.now().minusMinutes(2), AuditEntryStatus.FAILURE);
-        AuditEntryEntity seventhAudit = createAuditEntryEntity(sixthJob.getJobId(), null, AuditEntryStatus.SUCCESS);
-        AuditEntryEntity eighthAudit = createAuditEntryEntity(sixthJob.getJobId(), OffsetDateTime.now(), AuditEntryStatus.FAILURE);
-        AuditEntryEntity ninthAudit = createAuditEntryEntity(sixthJob.getJobId(), null, AuditEntryStatus.PENDING);
+        AuditEntryEntity firstAudit = createAuditEntryEntity(firstJobSaved.getJobId(), OffsetDateTime.now(), AuditEntryStatus.SUCCESS);
+        AuditEntryEntity secondAudit = createAuditEntryEntity(firstJobSaved.getJobId(), OffsetDateTime.now().minusDays(1), AuditEntryStatus.PENDING);
+        AuditEntryEntity thirdAudit = createAuditEntryEntity(secondJobSaved.getJobId(), OffsetDateTime.now().minusMinutes(1), AuditEntryStatus.FAILURE);
+        AuditEntryEntity fourthAudit = createAuditEntryEntity(fourthJobSaved.getJobId(), OffsetDateTime.now().minusHours(1), AuditEntryStatus.SUCCESS);
+        AuditEntryEntity fifthAudit = createAuditEntryEntity(fifthJobSaved.getJobId(), OffsetDateTime.now().minusHours(2), AuditEntryStatus.SUCCESS);
+        AuditEntryEntity sixthAudit = createAuditEntryEntity(fifthJobSaved.getJobId(), OffsetDateTime.now().minusMinutes(2), AuditEntryStatus.FAILURE);
+        AuditEntryEntity seventhAudit = createAuditEntryEntity(sixthJobSaved.getJobId(), null, AuditEntryStatus.SUCCESS);
+        AuditEntryEntity eighthAudit = createAuditEntryEntity(sixthJobSaved.getJobId(), OffsetDateTime.now(), AuditEntryStatus.FAILURE);
+        AuditEntryEntity ninthAudit = createAuditEntryEntity(sixthJobSaved.getJobId(), null, AuditEntryStatus.PENDING);
 
-        saveAllAudits(List.of(firstAudit, secondAudit, thirdAudit, fourthAudit, fifthAudit, sixthAudit, seventhAudit, eighthAudit));
+        saveAllAudits(List.of(firstAudit, secondAudit, thirdAudit, fourthAudit, fifthAudit, sixthAudit, seventhAudit, eighthAudit, ninthAudit));
 
         return Map.of(
-            firstJobSaved, List.of(firstAudit, secondAudit),
-            secondJobSaved, List.of(thirdAudit),
-            thirdJobSaved, List.of(),
-            fourthJobSaved, List.of(fourthAudit),
-            fifthJob, List.of(fifthAudit, sixthAudit)
+            firstJobSaved.getJobId(), Pair.of(firstJobSaved, List.of(firstAudit, secondAudit)),
+            secondJobSaved.getJobId(), Pair.of(secondJobSaved, List.of(thirdAudit)),
+            thirdJobSaved.getJobId(), Pair.of(thirdJobSaved, List.of()),
+            fourthJobSaved.getJobId(), Pair.of(fourthJobSaved, List.of(fourthAudit)),
+            fifthJobSaved.getJobId(), Pair.of(fifthJobSaved, List.of(fifthAudit, sixthAudit)),
+            sixthJobSaved.getJobId(), Pair.of(sixthJobSaved, List.of(seventhAudit, eighthAudit, ninthAudit))
         );
     }
 
