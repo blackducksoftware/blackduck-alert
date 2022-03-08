@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingJobAccessor;
@@ -40,7 +41,12 @@ public class DefaultProcessingJobAccessor implements ProcessingJobAccessor {
     }
 
     @Override
-    public AlertPagedModel<FilteredDistributionJobResponseModel> getMatchingEnabledJobsByFilteredNotifications(FilteredDistributionJobRequestModel filteredDistributionJobRequestModel, int pageNumber, int pageLimit) {
+    @Transactional(readOnly = true)
+    public AlertPagedModel<FilteredDistributionJobResponseModel> getMatchingEnabledJobsByFilteredNotifications(
+        FilteredDistributionJobRequestModel filteredDistributionJobRequestModel,
+        int pageNumber,
+        int pageLimit
+    ) {
         List<String> frequencyTypes = filteredDistributionJobRequestModel.getFrequencyTypes()
             .stream()
             .map(Enum::name)
@@ -51,7 +57,9 @@ public class DefaultProcessingJobAccessor implements ProcessingJobAccessor {
 
         // If no policies and/or vulnerabilitySeverities exist the repository query expects a null to be passed
         Set<String> policyNames = filteredDistributionJobRequestModel.getPolicyNames().isEmpty() ? null : filteredDistributionJobRequestModel.getPolicyNames();
-        Set<String> vulnerabilitySeverities = filteredDistributionJobRequestModel.getVulnerabilitySeverities().isEmpty() ? null : filteredDistributionJobRequestModel.getVulnerabilitySeverities();
+        Set<String> vulnerabilitySeverities = filteredDistributionJobRequestModel.getVulnerabilitySeverities().isEmpty() ?
+            null :
+            filteredDistributionJobRequestModel.getVulnerabilitySeverities();
 
         PageRequest pageRequest = PageRequest.of(pageNumber, pageLimit);
         Page<DistributionJobEntity> pageOfDistributionJobEntities = distributionJobRepository.findAndSortMatchingEnabledJobsByFilteredNotifications(
