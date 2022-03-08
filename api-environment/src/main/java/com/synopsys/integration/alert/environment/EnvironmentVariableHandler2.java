@@ -82,16 +82,6 @@ public class EnvironmentVariableHandler2<T extends Obfuscated<T>> {
     public EnvironmentProcessingResult updateFromEnvironment() {
         boolean configurationMissing = configurationMissingCheck.getAsBoolean();
         if (configurationMissing) {
-            //return updateFunction.apply();
-        }
-
-        return EnvironmentProcessingResult.empty();
-    }
-
-    //TODO: Rename and replace with the above
-    public EnvironmentProcessingResult updateFromEnvironment2() {
-        boolean configurationMissing = configurationMissingCheck.getAsBoolean();
-        if (configurationMissing) {
             //T configurationModel = createConfiguration();
             T configurationModel = configModelSupplier.get();
             ValidationResponseModel validationResponseModel = validator.apply(configurationModel);

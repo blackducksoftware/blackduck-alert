@@ -123,6 +123,15 @@ public class EmailEnvironmentVariableHandlerFactory2 implements EnvironmentVaria
         return !configAccessor.doesConfigurationExist();
     }
 
+    private EmailGlobalConfigModel configureModel() {
+        EmailGlobalConfigModel configModel = new EmailGlobalConfigModel();
+        configModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
+        configureEmailSettings(configModel);
+        configureAdditionalProperties(configModel);
+
+        return configModel;
+    }
+
     private ValidationResponseModel validateConfiguration(EmailGlobalConfigModel configModel) {
         return validator.validate(configModel);
     }
@@ -160,15 +169,6 @@ public class EmailEnvironmentVariableHandlerFactory2 implements EnvironmentVaria
         }
 
         return result;
-    }
-
-    private EmailGlobalConfigModel configureModel() {
-        EmailGlobalConfigModel configModel = new EmailGlobalConfigModel();
-        configModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
-        configureEmailSettings(configModel);
-        configureAdditionalProperties(configModel);
-
-        return configModel;
     }
 
     private void configureEmailSettings(EmailGlobalConfigModel configuration) {

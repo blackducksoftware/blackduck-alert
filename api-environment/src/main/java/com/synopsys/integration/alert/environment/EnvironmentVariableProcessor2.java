@@ -43,7 +43,7 @@ public class EnvironmentVariableProcessor2 {
             logger.info("Handler name: {}", handler.getName());
             logger.info(LINE_DIVIDER);
             logVariableNames(handler.getVariableNames());
-            EnvironmentProcessingResult result = handler.updateFromEnvironment2();
+            EnvironmentProcessingResult result = handler.updateFromEnvironment();
             logConfiguration(result);
         }
     }
