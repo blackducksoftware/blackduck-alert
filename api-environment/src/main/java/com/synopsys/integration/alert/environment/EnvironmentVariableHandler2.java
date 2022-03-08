@@ -40,16 +40,6 @@ public class EnvironmentVariableHandler2<T extends Obfuscated<T>> {
         return new EnvironmentVariableHandler2<>(name, environmentVariableNames, configurationMissingCheck, updateFunction, validator, configModelSupplier);
     }
 
-    /*
-    public EnvironmentVariableHandler(String name, Set<String> environmentVariableNames, BooleanSupplier configurationMissingCheck, Supplier<EnvironmentProcessingResult> updateFunction) {
-        this.name = name;
-        this.environmentVariableNames = environmentVariableNames;
-        this.configurationMissingCheck = configurationMissingCheck;
-        this.updateFunction = updateFunction;
-        //TODO:
-        this.validator = null;
-    }*/
-
     //TODO: Make this private, note that it may break unit tests
     public EnvironmentVariableHandler2(
         String name,
@@ -82,7 +72,6 @@ public class EnvironmentVariableHandler2<T extends Obfuscated<T>> {
     public EnvironmentProcessingResult updateFromEnvironment() {
         boolean configurationMissing = configurationMissingCheck.getAsBoolean();
         if (configurationMissing) {
-            //T configurationModel = createConfiguration();
             T configurationModel = configModelSupplier.get();
             ValidationResponseModel validationResponseModel = validator.apply(configurationModel);
             if (validationResponseModel.hasErrors()) {
@@ -99,10 +88,4 @@ public class EnvironmentVariableHandler2<T extends Obfuscated<T>> {
 
         return EnvironmentProcessingResult.empty();
     }
-
-    //Option 2, call methods from EnvVarProc
-    //first call isConfigurationMissing -> if true, call get ConfigModel
-    //public <T extends Obfuscated<T>> ValidationResponseModel configureModel(Supplier<T> modelCreator) {
-
-    //}
 }
