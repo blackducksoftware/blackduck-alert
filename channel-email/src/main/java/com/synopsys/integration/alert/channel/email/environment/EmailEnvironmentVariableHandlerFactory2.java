@@ -27,7 +27,7 @@ import com.synopsys.integration.alert.channel.email.validator.EmailGlobalConfigu
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.environment.EnvironmentProcessingResult;
-import com.synopsys.integration.alert.environment.EnvironmentVariableHandler;
+import com.synopsys.integration.alert.environment.EnvironmentVariableHandler2;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandlerFactory2;
 import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
@@ -108,8 +108,8 @@ public class EmailEnvironmentVariableHandlerFactory2 implements EnvironmentVaria
     }
 
     @Override
-    public EnvironmentVariableHandler<EmailGlobalConfigModel> build() {
-        return EnvironmentVariableHandler.create(
+    public EnvironmentVariableHandler2<EmailGlobalConfigModel> build() {
+        return EnvironmentVariableHandler2.create(
             ChannelKeys.EMAIL.getDisplayName(),
             Stream.concat(EMAIL_CONFIGURATION_KEYSET.stream(), OLD_ADDITIONAL_PROPERTY_KEYSET.stream()).collect(Collectors.toSet()),
             this::isConfigurationMissing,
