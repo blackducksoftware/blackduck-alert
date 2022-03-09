@@ -67,6 +67,9 @@ public class JobNotificationFilterUtils {
         if (StringUtils.isNotBlank(projectVersionNamePattern)) {
             // Project version pattern has to always be valid and if something else exists (Selected project or project name pattern), that also needs to be valid
             boolean selectedProjectsOrNamePatternMatches = hasMatchingProjects || matchingProjectNamePattern;
+            if (!selectedProjectsOrNamePatternMatches && StringUtils.isNotBlank(projectNamePattern)) {
+                return false;
+            }
             boolean noSelectedProjects = filteredDistributionJobResponseModel.getProjectDetails().isEmpty();
             boolean projectMatchedOrNoneSelected = noSelectedProjects || selectedProjectsOrNamePatternMatches;
             return projectMatchedOrNoneSelected && Pattern.matches(projectVersionNamePattern, projectVersionName);
