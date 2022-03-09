@@ -88,5 +88,5 @@ task publishDockerImage(dependsOn: [dockerLogin, pushImage]) {
 }
 
 task cleanImage(type: Exec, dependsOn: [buildDockerImage]) {
-    commandLine "docker", "rmi", "blackducksoftware/${project.name}:${project.version}"
+    commandLine "docker", "rmi", "blackducksoftware/${project.name}:${alertDatabaseDockerImageVersion}"
 }
