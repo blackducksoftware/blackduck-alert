@@ -74,6 +74,7 @@ const ConcreteJiraServerGlobalConfiguration = ({
                 displayTest={displayTest}
                 displaySave={displaySave}
                 displayDelete={false}
+                displayCancel
                 errorHandler={errorHandler}
             >
                 <TextInput
