@@ -7,13 +7,16 @@
  */
 package com.synopsys.integration.alert.channel.jira.server.action;
 
+import java.util.UUID;
 import java.util.function.Supplier;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.channel.jira.JiraConstants;
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
+import com.synopsys.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
 import com.synopsys.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationValidator;
@@ -37,13 +40,20 @@ public class JiraServerGlobalTestAction {
     private final ConfigurationTestHelper testHelper;
     private final JiraServerGlobalConfigurationValidator validator;
     private final JiraServerTestActionFactory jiraServerTestActionFactory;
+    private final JiraServerGlobalConfigAccessor configurationAccessor;
 
     @Autowired
-    public JiraServerGlobalTestAction(AuthorizationManager authorizationManager, JiraServerGlobalConfigurationValidator validator, JiraServerTestActionFactory jiraServerTestActionFactory) {
+    public JiraServerGlobalTestAction(
+        AuthorizationManager authorizationManager,
+        JiraServerGlobalConfigurationValidator validator,
+        JiraServerTestActionFactory jiraServerTestActionFactory,
+        JiraServerGlobalConfigAccessor configurationAccessor
+    ) {
         this.testHelper = new ConfigurationTestHelper(authorizationManager, ConfigContextEnum.GLOBAL, ChannelKeys.JIRA_SERVER);
         this.validationHelper = new ConfigurationValidationHelper(authorizationManager, ConfigContextEnum.GLOBAL, ChannelKeys.JIRA_SERVER);
         this.validator = validator;
         this.jiraServerTestActionFactory = jiraServerTestActionFactory;
+        this.configurationAccessor = configurationAccessor;
     }
 
     public ActionResponse<ValidationResponseModel> testWithPermissionCheck(JiraServerGlobalConfigModel requestResource) {
@@ -53,6 +63,12 @@ public class JiraServerGlobalTestAction {
 
     public ConfigurationTestResult testConfigModelContent(JiraServerGlobalConfigModel jiraServerGlobalConfigModel) {
         try {
+            if (BooleanUtils.toBoolean(jiraServerGlobalConfigModel.getIsPasswordSet().orElse(Boolean.FALSE)) && jiraServerGlobalConfigModel.getPassword().isEmpty()) {
+                configurationAccessor.getConfiguration(UUID.fromString(jiraServerGlobalConfigModel.getId()))
+                    .flatMap(JiraServerGlobalConfigModel::getPassword)
+                    .ifPresent(jiraServerGlobalConfigModel::setPassword);
+            }
+
             JiraServerGlobalTestActionWrapper testActionWrapper = jiraServerTestActionFactory.createTestActionWrapper(jiraServerGlobalConfigModel);
             if (!testActionWrapper.canUserGetIssues()) {
                 return ConfigurationTestResult.failure(TEST_ERROR_MESSAGE + "User does not have access to view any issues in Jira.");
