@@ -86,3 +86,7 @@ task publishDockerImage(dependsOn: [dockerLogin, pushImage]) {
     pushImage.mustRunAfter dockerLogin
     pushImage.mustRunAfter buildDockerImage
 }
+
+task cleanImage(type: Exec, dependsOn: [buildDockerImage]) {
+    commandLine "docker", "rmi", "blackducksoftware/${project.name}:${project.version}"
+}
