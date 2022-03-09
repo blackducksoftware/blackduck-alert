@@ -51,7 +51,11 @@ public class BlackDuckDistributionFieldModelTestAction extends FieldModelTestAct
     private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
 
     @Autowired
-    public BlackDuckDistributionFieldModelTestAction(ProviderDataAccessor blackDuckDataAccessor, BlackDuckProvider blackDuckProvider, ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor) {
+    public BlackDuckDistributionFieldModelTestAction(
+        ProviderDataAccessor blackDuckDataAccessor,
+        BlackDuckProvider blackDuckProvider,
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor
+    ) {
         this.blackDuckDataAccessor = blackDuckDataAccessor;
         this.blackDuckProvider = blackDuckProvider;
         this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
@@ -72,7 +76,12 @@ public class BlackDuckDistributionFieldModelTestAction extends FieldModelTestAct
                     .flatMap(projectNamePattern -> validatePatternMatchesProject(providerConfigId, projectNamePattern))
                     .ifPresent(fieldStatuses::add);
                 registeredFieldValues.getString(ProviderDescriptor.KEY_PROJECT_VERSION_NAME_PATTERN)
-                    .flatMap(projectVersionNamePattern -> validatePatternMatchesProjectVersion(providerConfigId, projectVersionNamePattern, optionalProjectNamePattern.orElse(null), configuredProjects))
+                    .flatMap(projectVersionNamePattern -> validatePatternMatchesProjectVersion(
+                        providerConfigId,
+                        projectVersionNamePattern,
+                        optionalProjectNamePattern.orElse(null),
+                        configuredProjects
+                    ))
                     .ifPresent(fieldStatuses::add);
             }
 
@@ -100,7 +109,12 @@ public class BlackDuckDistributionFieldModelTestAction extends FieldModelTestAct
         return new MessageResult("Successfully tested BlackDuck provider fields", fieldStatuses);
     }
 
-    private Optional<AlertFieldStatus> validatePatternMatchesProjectVersion(Long providerConfigId, String projectVersionNamePattern, String projectNamePattern, Collection<String> configuredProjects) {
+    private Optional<AlertFieldStatus> validatePatternMatchesProjectVersion(
+        Long providerConfigId,
+        String projectVersionNamePattern,
+        String projectNamePattern,
+        Collection<String> configuredProjects
+    ) {
         if (StringUtils.isNotBlank(projectVersionNamePattern)) {
             Pattern compiledProjectVersionPattern = Pattern.compile(projectVersionNamePattern);
             Pattern compiledProjectNamePattern = StringUtils.isNotBlank(projectNamePattern) ? Pattern.compile(projectNamePattern) : null;
@@ -111,11 +125,11 @@ public class BlackDuckDistributionFieldModelTestAction extends FieldModelTestAct
             while (!foundResult && currentPage < projectsByProviderConfigId.getTotalPages()) {
                 List<String> providerProjects = projectsByProviderConfigId.getModels();
                 foundResult = providerProjects.stream().anyMatch(href ->
-                                                                     iteratePagesAndCheck(
-                                                                         versionCurrentPage -> blackDuckDataAccessor.getProjectVersionNamesByHref(providerConfigId, href, versionCurrentPage),
-                                                                         versionNames -> versionNames.stream().anyMatch(versionName -> compiledProjectVersionPattern.matcher(versionName).matches()),
-                                                                         Boolean.FALSE
-                                                                     ).isEmpty());
+                    iteratePagesAndCheck(
+                        versionCurrentPage -> blackDuckDataAccessor.getProjectVersionNamesByHref(providerConfigId, href, versionCurrentPage),
+                        versionNames -> versionNames.stream().anyMatch(versionName -> compiledProjectVersionPattern.matcher(versionName).matches()),
+                        Boolean.FALSE
+                    ).isEmpty());
                 currentPage++;
                 projectsByProviderConfigId = filterAndMapHrefs(providerConfigId, currentPage, configuredProjects, compiledProjectNamePattern);
             }
@@ -130,7 +144,12 @@ public class BlackDuckDistributionFieldModelTestAction extends FieldModelTestAct
     private AlertPagedModel<String> filterAndMapHrefs(Long providerConfigId, int currentPage, Collection<String> validProjects, @Nullable Pattern projectNamePattern) {
         Predicate<ProviderProject> filterFunction = validProjects.isEmpty() ? project -> true : project -> validProjects.contains(project.getName());
         Predicate<ProviderProject> filterProjectNamePattern = (projectNamePattern == null) ? project -> true : project -> projectNamePattern.matcher(project.getName()).matches();
-        AlertPagedModel<ProviderProject> projectsByProviderConfigId = blackDuckDataAccessor.getProjectsByProviderConfigId(providerConfigId, currentPage, AlertPagedModel.DEFAULT_PAGE_SIZE, "");
+        AlertPagedModel<ProviderProject> projectsByProviderConfigId = blackDuckDataAccessor.getProjectsByProviderConfigId(
+            providerConfigId,
+            currentPage,
+            AlertPagedModel.DEFAULT_PAGE_SIZE,
+            ""
+        );
         List<String> hrefs = projectsByProviderConfigId.getModels()
             .stream()
             .filter(filterFunction)
@@ -153,7 +172,12 @@ public class BlackDuckDistributionFieldModelTestAction extends FieldModelTestAct
     }
 
     private Optional<AlertFieldStatus> validateSelectedProjectExists(Long providerConfigId, Collection<String> selectedProjects) {
-        AlertPagedModel<ProviderProject> projectsByProviderConfigId = blackDuckDataAccessor.getProjectsByProviderConfigId(providerConfigId, AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE, "");
+        AlertPagedModel<ProviderProject> projectsByProviderConfigId = blackDuckDataAccessor.getProjectsByProviderConfigId(
+            providerConfigId,
+            AlertPagedModel.DEFAULT_PAGE_NUMBER,
+            AlertPagedModel.DEFAULT_PAGE_SIZE,
+            ""
+        );
         Set<String> projectNames = projectsByProviderConfigId.getModels()
             .stream()
             .map(ProviderProject::getName)
@@ -173,12 +197,19 @@ public class BlackDuckDistributionFieldModelTestAction extends FieldModelTestAct
             invalidProjects = invalidProjects.stream().filter(Predicate.not(projectNames::contains)).collect(Collectors.toList());
         }
         if (!invalidProjects.isEmpty()) {
-            return Optional.of(AlertFieldStatus.warning(ProviderDescriptor.KEY_CONFIGURED_PROJECT, "The selected projects could not be found: " + String.join(", ", invalidProjects)));
+            return Optional.of(AlertFieldStatus.warning(
+                ProviderDescriptor.KEY_CONFIGURED_PROJECT,
+                "The selected projects could not be found: " + String.join(", ", invalidProjects)
+            ));
         }
         return Optional.empty();
     }
 
-    private <U, T extends AlertPagedModel<U>, R> Optional<R> iteratePagesAndCheck(Function<Integer, T> getData, Function<Collection<U>, Boolean> findResult, R missingContentResult) {
+    private <U, T extends AlertPagedModel<U>, R> Optional<R> iteratePagesAndCheck(
+        Function<Integer, T> getData,
+        Function<Collection<U>, Boolean> findResult,
+        R missingContentResult
+    ) {
         int currentPage = AlertPagedModel.DEFAULT_PAGE_NUMBER;
         T retrievedData = getData.apply(currentPage);
         int totalPages = retrievedData.getTotalPages();
@@ -186,15 +217,14 @@ public class BlackDuckDistributionFieldModelTestAction extends FieldModelTestAct
         while (noResult && currentPage < totalPages) {
             logger.debug("Getting page {} out of {}", currentPage + 1, totalPages);
             List<U> models = retrievedData.getModels();
-            noResult = !findResult.apply(models);
+            if (findResult.apply(models)) {
+                return Optional.empty();
+            }
             currentPage++;
             retrievedData = getData.apply(currentPage);
         }
 
-        if (noResult) {
-            return Optional.of(missingContentResult);
-        }
-        return Optional.empty();
+        return Optional.of(missingContentResult);
     }
 
 }
