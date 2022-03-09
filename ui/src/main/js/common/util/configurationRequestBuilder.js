@@ -138,7 +138,7 @@ export function createValidateRequest(apiUrl, csrfToken, fieldModel) {
 
 export function createTestRequest(apiUrl, csrfToken, fieldModel, queryParamKey, queryParamValue) {
     let url = `${apiUrl}/test`;
-    if (queryParamKey && queryParamValue) {
+    if (queryParamKey) {
         url = url.concat(`?${encodeURIComponent(queryParamKey)}=${encodeURIComponent(queryParamValue)}`);
     }
 
