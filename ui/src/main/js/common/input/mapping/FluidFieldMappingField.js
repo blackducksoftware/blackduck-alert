@@ -19,28 +19,13 @@ const FluidFieldMappingField = ({
 }) => {
     const [fieldMappings, setFieldMappings] = useState([]);
 
-    // We need this instead of useEffect with empty dependencies because we render initially without data
-    const [startupFlag, setStartupFlag] = useState(true);
-
     useEffect(() => {
-        if (startupFlag && Object.keys(value).length >= 1) {
-            const valueList = Object.keys(value).map((key) => ({ [key]: value[key] }));
-            setFieldMappings(valueList);
-            setStartupFlag(false);
-        }
-    });
-
-    useEffect(() => {
-        if (Object.keys(value).length === 0) {
-            setFieldMappings([]);
-        }
+        setFieldMappings(Object.keys(value).map((key) => ({ [key]: value[key] })));
     }, [value]);
 
     useEffect(() => {
         const updatedMappings = {};
-        fieldMappings.filter((mapping) => Object.keys(mapping).length === 1).forEach((mapping) => {
-            Object.assign(updatedMappings, mapping);
-        });
+        fieldMappings.filter((mapping) => Object.keys(mapping).length === 1).forEach((mapping) => { Object.assign(updatedMappings, mapping); });
         if (JSON.stringify(updatedMappings) !== JSON.stringify(value)) {
             setValue(updatedMappings);
         }
