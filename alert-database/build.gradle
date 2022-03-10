@@ -74,20 +74,20 @@ task buildDockerImage(type: DockerBuildImage, dependsOn: [stageDocker]) {
     images.add("blackducksoftware/${project.name}:${alertDatabaseDockerImageVersion}")
 }
 
+task cleanImage(type: Exec) {
+    commandLine "docker", "rmi", "blackducksoftware/${project.name}:${alertDatabaseDockerImageVersion}"
+}
+
 task pushImage(type: Exec, dependsOn: [buildDockerImage]) {
     commandLine "docker", "push", "blackducksoftware/${project.name}:${alertDatabaseDockerImageVersion}"
+    finalizedBy cleanImage
 }
 
 task buildAll(dependsOn: [build, buildDockerImage]) {
     buildDockerImage.mustRunAfter build
 }
 
-task cleanImage(type: Exec) {
-    commandLine "docker", "rmi", "blackducksoftware/${project.name}:${alertDatabaseDockerImageVersion}"
-}
-
 task publishDockerImage(dependsOn: [dockerLogin, pushImage]) {
     pushImage.mustRunAfter dockerLogin
     pushImage.mustRunAfter buildDockerImage
-    finalizedBy cleanImage
 }
