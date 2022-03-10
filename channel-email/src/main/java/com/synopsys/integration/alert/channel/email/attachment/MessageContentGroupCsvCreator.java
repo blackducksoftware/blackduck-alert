@@ -148,7 +148,7 @@ public class MessageContentGroupCsvCreator {
         columnValues.add(categoryGroupingAttribute);
 
         String additionalAttributes = createFlattenedItemsString(componentItem.getComponentAttributes());
-        columnValues.add(additionalAttributes);
+        columnValues.add(String.format("\"%s\"", additionalAttributes));
 
         String categoryItemUrl = componentItem.getCategoryItem().getUrl().orElse(UNDEFINED_VALUE);
         columnValues.add(categoryItemUrl);
