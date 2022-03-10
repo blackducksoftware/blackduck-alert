@@ -89,5 +89,5 @@ task cleanImage(type: Exec, dependsOn: [buildDockerImage]) {
 task publishDockerImage(dependsOn: [dockerLogin, pushImage, cleanImage]) {
     pushImage.mustRunAfter dockerLogin
     pushImage.mustRunAfter buildDockerImage
-    cleanImage.mustRunAfter pushImage
+    finalizedBy cleanImage
 }
