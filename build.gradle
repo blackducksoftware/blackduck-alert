@@ -217,7 +217,7 @@ task buildAll(dependsOn: [copyToTemplates, build, helmValidation, createDeployme
     buildDockerImage.mustRunAfter createDeploymentZip
 }
 
-task publishDockerImage(dependsOn: [dockerLogin, pushImage, cleanImage]) {
+task publishDockerImage(dependsOn: [dockerLogin, pushImage]) {
     pushImage.mustRunAfter dockerLogin
     pushImage.mustRunAfter buildDockerImage
     finalizedBy cleanImage
