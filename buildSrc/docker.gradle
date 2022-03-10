@@ -42,7 +42,14 @@ task dockerLogin(type: Exec) {
     commandLine "docker", "login", "--username", "$System.env.DOCKER_INT_BLACKDUCK_USER", "--password-stdin"
 }
 
+task cleanImage(type: Exec) {
+    commandLine "docker", "rmi", "blackducksoftware/${project.name}:${project.version}"
+}
+
 task pushImage(type: Exec, dependsOn: [buildDockerImage]) {
     commandLine "docker", "push", "blackducksoftware/${project.name}:${project.version}"
+    finalizedBy cleanImage
 }
+
+
 
