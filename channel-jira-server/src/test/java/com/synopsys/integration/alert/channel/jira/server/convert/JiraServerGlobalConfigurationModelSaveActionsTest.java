@@ -46,7 +46,6 @@ class JiraServerGlobalConfigurationModelSaveActionsTest {
     private final EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, filePersistenceUtil);
     private final AuthorizationManager authorizationManager = createAuthorizationManager();
     private final JiraServerGlobalConfigurationModelConverter converter = new JiraServerGlobalConfigurationModelConverter();
-    private final JiraServerGlobalConfigurationValidator validator = new JiraServerGlobalConfigurationValidator();
 
     @Test
     void getDescriptorKeyTest() {
@@ -64,7 +63,7 @@ class JiraServerGlobalConfigurationModelSaveActionsTest {
         });
 
         JiraServerGlobalConfigAccessor configurationAccessor = new JiraServerGlobalConfigAccessor(encryptionUtility, jiraConfigurationRepository);
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configurationAccessor, validator);
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configurationAccessor, createValidator());
         JiraServerGlobalConfigurationModelSaveActions saveActions = new JiraServerGlobalConfigurationModelSaveActions(converter, crudActions, configurationAccessor);
         saveActions.createConcreteModel(createDefaultConfigurationModel());
 
@@ -85,7 +84,7 @@ class JiraServerGlobalConfigurationModelSaveActionsTest {
         });
 
         JiraServerGlobalConfigAccessor configurationAccessor = new JiraServerGlobalConfigAccessor(encryptionUtility, jiraConfigurationRepository);
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configurationAccessor, validator);
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configurationAccessor, createValidator());
         JiraServerGlobalConfigurationModelSaveActions saveActions = new JiraServerGlobalConfigurationModelSaveActions(converter, crudActions, configurationAccessor);
         ConfigurationModel configurationModel = createDefaultConfigurationModel();
         updateField(configurationModel, JiraServerGlobalConfigurationModelConverter.URL_KEY, "      ");
@@ -109,7 +108,7 @@ class JiraServerGlobalConfigurationModelSaveActionsTest {
         Mockito.when(jiraConfigurationRepository.existsByConfigurationId(Mockito.any(UUID.class))).thenAnswer(invocation -> savedEntity.get() != null);
 
         JiraServerGlobalConfigAccessor configurationAccessor = new JiraServerGlobalConfigAccessor(encryptionUtility, jiraConfigurationRepository);
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configurationAccessor, validator);
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configurationAccessor, createValidator());
         JiraServerGlobalConfigurationModelSaveActions saveActions = new JiraServerGlobalConfigurationModelSaveActions(converter, crudActions, configurationAccessor);
         String newPassword = "updatedPassword";
         String newUrl = "https://updated.jira.example.com";
@@ -142,7 +141,7 @@ class JiraServerGlobalConfigurationModelSaveActionsTest {
         Mockito.when(jiraConfigurationRepository.existsByConfigurationId(Mockito.any(UUID.class))).thenAnswer(invocation -> savedEntity.get() != null);
 
         JiraServerGlobalConfigAccessor configurationAccessor = new JiraServerGlobalConfigAccessor(encryptionUtility, jiraConfigurationRepository);
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configurationAccessor, validator);
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configurationAccessor, createValidator());
         JiraServerGlobalConfigurationModelSaveActions saveActions = new JiraServerGlobalConfigurationModelSaveActions(converter, crudActions, configurationAccessor);
         String newPassword = "updatedPassword";
         String invalidUrl = "      \t\r\n       ";
@@ -177,7 +176,7 @@ class JiraServerGlobalConfigurationModelSaveActionsTest {
         Mockito.when(jiraConfigurationRepository.existsByConfigurationId(Mockito.any(UUID.class))).thenAnswer(invocation -> savedEntity.get() != null);
 
         JiraServerGlobalConfigAccessor configurationAccessor = new JiraServerGlobalConfigAccessor(encryptionUtility, jiraConfigurationRepository);
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configurationAccessor, validator);
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configurationAccessor, createValidator());
         JiraServerGlobalConfigurationModelSaveActions saveActions = new JiraServerGlobalConfigurationModelSaveActions(converter, crudActions, configurationAccessor);
         String newPassword = "updatedPassword";
         String newUrl = "https://updated.jira.example.com";
@@ -214,7 +213,7 @@ class JiraServerGlobalConfigurationModelSaveActionsTest {
         }).when(jiraConfigurationRepository).deleteById(Mockito.any());
 
         JiraServerGlobalConfigAccessor configurationAccessor = new JiraServerGlobalConfigAccessor(encryptionUtility, jiraConfigurationRepository);
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configurationAccessor, validator);
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configurationAccessor, createValidator());
         JiraServerGlobalConfigurationModelSaveActions saveActions = new JiraServerGlobalConfigurationModelSaveActions(converter, crudActions, configurationAccessor);
         ConfigurationModel configurationModel = createDefaultConfigurationModel();
         saveActions.createConcreteModel(configurationModel);
@@ -224,6 +223,12 @@ class JiraServerGlobalConfigurationModelSaveActionsTest {
 
         actualEntity = savedEntity.get();
         assertNull(actualEntity);
+    }
+
+    private JiraServerGlobalConfigurationValidator createValidator() {
+        JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
+        Mockito.when(jiraServerGlobalConfigAccessor.getConfigurationByName(Mockito.anyString())).thenReturn(Optional.empty());
+        return new JiraServerGlobalConfigurationValidator(jiraServerGlobalConfigAccessor);
     }
 
     private AuthorizationManager createAuthorizationManager() {

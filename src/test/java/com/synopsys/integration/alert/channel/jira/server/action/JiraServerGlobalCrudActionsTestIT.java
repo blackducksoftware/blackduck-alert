@@ -155,7 +155,13 @@ public class JiraServerGlobalCrudActionsTestIT {
         assertTrue(createActionResponse.getContent().isPresent());
 
         UUID uuid = UUID.fromString(createActionResponse.getContent().get().getId());
-        JiraServerGlobalConfigModel updatedJiraServerGlobalConfigModel = new JiraServerGlobalConfigModel(null, AlertRestConstants.DEFAULT_CONFIGURATION_NAME, "https://aNewURL", "a-different-username", "newPassword");
+        JiraServerGlobalConfigModel updatedJiraServerGlobalConfigModel = new JiraServerGlobalConfigModel(
+            uuid.toString(),
+            AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
+            "https://aNewURL",
+            "a-different-username",
+            "newPassword"
+        );
         ActionResponse<JiraServerGlobalConfigModel> actionResponse = crudActions.update(uuid, updatedJiraServerGlobalConfigModel);
 
         assertTrue(createActionResponse.isSuccessful());
@@ -186,7 +192,13 @@ public class JiraServerGlobalCrudActionsTestIT {
         assertTrue(createActionResponse.getContent().isPresent());
 
         UUID uuid = UUID.fromString(createActionResponse.getContent().get().getId());
-        JiraServerGlobalConfigModel updatedJiraServerGlobalConfigModel = new JiraServerGlobalConfigModel(null, AlertRestConstants.DEFAULT_CONFIGURATION_NAME, "https://aNewURL", "a-different-username", null);
+        JiraServerGlobalConfigModel updatedJiraServerGlobalConfigModel = new JiraServerGlobalConfigModel(
+            null,
+            AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
+            "https://aNewURL",
+            "a-different-username",
+            null
+        );
         ActionResponse<JiraServerGlobalConfigModel> actionResponse = crudActions.update(uuid, updatedJiraServerGlobalConfigModel);
 
         assertTrue(actionResponse.isError());
@@ -227,7 +239,13 @@ public class JiraServerGlobalCrudActionsTestIT {
     }
 
     private JiraServerGlobalConfigModel createBasicJiraModel() {
-        JiraServerGlobalConfigModel jiraServerGlobalConfigModel = new JiraServerGlobalConfigModel(null, AlertRestConstants.DEFAULT_CONFIGURATION_NAME, "https://url", "name", "password");
+        JiraServerGlobalConfigModel jiraServerGlobalConfigModel = new JiraServerGlobalConfigModel(
+            null,
+            AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
+            "https://url",
+            "name",
+            "password"
+        );
         return jiraServerGlobalConfigModel;
     }
 
