@@ -7,7 +7,6 @@
  */
 package com.synopsys.integration.alert.environment;
 
-import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -46,14 +45,14 @@ public abstract class EnvironmentVariableHandlerV3<T extends Obfuscated<T>> {
             ValidationResponseModel validationResponseModel = validateConfiguration(configurationModel);
             if (validationResponseModel.hasErrors()) {
                 logger.error("Error inserting startup values: {}", validationResponseModel.getMessage());
-                Map<String, AlertFieldStatus> errors = validationResponseModel.getErrors();
-                for (Map.Entry<String, AlertFieldStatus> error : errors.entrySet()) {
-                    AlertFieldStatus status = error.getValue();
-                    logger.error("Field: '{}' failed with the error: {}", status.getFieldName(), status.getFieldMessage());
+                for (AlertFieldStatus errorStatus : validationResponseModel.getErrors().values()) {
+                    logger.error("Field: '{}' failed with the error: {}", errorStatus.getFieldName(), errorStatus.getFieldMessage());
                 }
                 return EnvironmentProcessingResult.empty();
             }
-            return updateConfiguration(configurationModel);
+            EnvironmentProcessingResult processingResult = buildProcessingResult(configurationModel);
+            saveConfiguration(configurationModel, processingResult);
+            return processingResult;
         }
 
         return EnvironmentProcessingResult.empty();
@@ -65,6 +64,8 @@ public abstract class EnvironmentVariableHandlerV3<T extends Obfuscated<T>> {
 
     protected abstract ValidationResponseModel validateConfiguration(T configModel);
 
-    protected abstract EnvironmentProcessingResult updateConfiguration(T configModel);
+    protected abstract EnvironmentProcessingResult buildProcessingResult(T configModel);
+
+    protected abstract void saveConfiguration(T configModel, EnvironmentProcessingResult processingResult);
 
 }

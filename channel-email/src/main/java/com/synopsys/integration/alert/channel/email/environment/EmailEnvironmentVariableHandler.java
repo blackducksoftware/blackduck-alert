@@ -121,7 +121,7 @@ public class EmailEnvironmentVariableHandler extends EnvironmentVariableHandlerV
     }
 
     @Override
-    protected EnvironmentProcessingResult updateConfiguration(EmailGlobalConfigModel configModel) {
+    protected EnvironmentProcessingResult buildProcessingResult(EmailGlobalConfigModel configModel) {
         EmailGlobalConfigModel obfuscatedModel = configModel.obfuscate();
 
         EnvironmentProcessingResult.Builder builder = new EnvironmentProcessingResult.Builder(EMAIL_CONFIGURATION_KEYSET)
@@ -144,16 +144,18 @@ public class EmailEnvironmentVariableHandler extends EnvironmentVariableHandlerV
             builder.addVariableValue(AUTH_PASSWORD_KEY, AlertConstants.MASKED_VALUE);
         }
 
-        EnvironmentProcessingResult result = builder.build();
-        if (result.hasValues()) {
+        return builder.build();
+    }
+
+    @Override
+    protected void saveConfiguration(EmailGlobalConfigModel configModel, EnvironmentProcessingResult processingResult) {
+        if (processingResult.hasValues()) {
             try {
                 configAccessor.createConfiguration(configModel);
             } catch (AlertConfigurationException ex) {
                 logger.error("Failed to create config: ", ex);
             }
         }
-
-        return result;
     }
 
     private void configureEmailSettings(EmailGlobalConfigModel configuration) {
