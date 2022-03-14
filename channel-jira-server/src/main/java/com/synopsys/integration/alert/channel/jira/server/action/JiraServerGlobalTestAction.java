@@ -57,7 +57,7 @@ public class JiraServerGlobalTestAction {
     }
 
     public ActionResponse<ValidationResponseModel> testWithPermissionCheck(JiraServerGlobalConfigModel requestResource) {
-        Supplier<ValidationActionResponse> validationSupplier = () -> validationHelper.validate(() -> validator.validate(requestResource, null));
+        Supplier<ValidationActionResponse> validationSupplier = () -> validationHelper.validate(() -> validator.validate(requestResource, requestResource.getId()));
         return testHelper.test(validationSupplier, () -> testConfigModelContent(requestResource));
     }
 

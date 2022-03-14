@@ -31,6 +31,6 @@ public class JiraServerGlobalValidationAction {
     }
 
     public ActionResponse<ValidationResponseModel> validate(JiraServerGlobalConfigModel requestResource) {
-        return validationHelper.validate(() -> validator.validate(requestResource, null));
+        return validationHelper.validate(() -> validator.validate(requestResource, requestResource.getId()));
     }
 }
