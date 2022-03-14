@@ -50,8 +50,10 @@ public abstract class EnvironmentVariableHandlerV3<T extends Obfuscated<T>> {
                 }
                 return EnvironmentProcessingResult.empty();
             }
-            EnvironmentProcessingResult processingResult = buildProcessingResult(configurationModel);
-            saveConfiguration(configurationModel, processingResult);
+            EnvironmentProcessingResult processingResult = buildProcessingResult(configurationModel.obfuscate());
+            if (processingResult.hasValues()) {
+                saveConfiguration(configurationModel, processingResult);
+            }
             return processingResult;
         }
 
@@ -64,7 +66,7 @@ public abstract class EnvironmentVariableHandlerV3<T extends Obfuscated<T>> {
 
     protected abstract ValidationResponseModel validateConfiguration(T configModel);
 
-    protected abstract EnvironmentProcessingResult buildProcessingResult(T configModel);
+    protected abstract EnvironmentProcessingResult buildProcessingResult(T obfuscatedConfigModel);
 
     protected abstract void saveConfiguration(T configModel, EnvironmentProcessingResult processingResult);
 

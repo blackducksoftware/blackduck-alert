@@ -71,16 +71,15 @@ public class ProxySettingsEnvironmentVariableHandler extends EnvironmentVariable
     }
 
     @Override
-    protected EnvironmentProcessingResult buildProcessingResult(SettingsProxyModel configModel) {
+    protected EnvironmentProcessingResult buildProcessingResult(SettingsProxyModel obfuscatedConfigModel) {
         EnvironmentProcessingResult.Builder builder = new EnvironmentProcessingResult.Builder(PROXY_CONFIGURATION_KEYSET);
 
-        SettingsProxyModel obfuscatedModel = configModel.obfuscate();
-        obfuscatedModel.getProxyHost().ifPresent(value -> builder.addVariableValue(PROXY_HOST_KEY, value));
-        obfuscatedModel.getProxyPort().map(String::valueOf).ifPresent(value -> builder.addVariableValue(PROXY_PORT_KEY, value));
-        obfuscatedModel.getProxyUsername().ifPresent(value -> builder.addVariableValue(PROXY_USERNAME_KEY, value));
-        obfuscatedModel.getNonProxyHosts().map(String::valueOf).ifPresent(value -> builder.addVariableValue(PROXY_NON_PROXY_HOSTS_KEY, value));
+        obfuscatedConfigModel.getProxyHost().ifPresent(value -> builder.addVariableValue(PROXY_HOST_KEY, value));
+        obfuscatedConfigModel.getProxyPort().map(String::valueOf).ifPresent(value -> builder.addVariableValue(PROXY_PORT_KEY, value));
+        obfuscatedConfigModel.getProxyUsername().ifPresent(value -> builder.addVariableValue(PROXY_USERNAME_KEY, value));
+        obfuscatedConfigModel.getNonProxyHosts().map(String::valueOf).ifPresent(value -> builder.addVariableValue(PROXY_NON_PROXY_HOSTS_KEY, value));
 
-        if (Boolean.TRUE.equals(obfuscatedModel.getIsProxyPasswordSet())) {
+        if (Boolean.TRUE.equals(obfuscatedConfigModel.getIsProxyPasswordSet())) {
             builder.addVariableValue(PROXY_PASSWORD_KEY, AlertConstants.MASKED_VALUE);
         }
 
@@ -89,12 +88,10 @@ public class ProxySettingsEnvironmentVariableHandler extends EnvironmentVariable
 
     @Override
     protected void saveConfiguration(SettingsProxyModel configModel, EnvironmentProcessingResult processingResult) {
-        if (processingResult.hasValues()) {
-            try {
-                configAccessor.createConfiguration(configModel);
-            } catch (AlertConfigurationException ex) {
-                logger.error("Error creating the configuration: {}", ex.getMessage());
-            }
+        try {
+            configAccessor.createConfiguration(configModel);
+        } catch (AlertConfigurationException ex) {
+            logger.error("Error creating the configuration: {}", ex.getMessage());
         }
     }
 

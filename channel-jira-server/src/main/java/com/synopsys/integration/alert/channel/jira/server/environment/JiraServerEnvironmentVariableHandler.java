@@ -72,23 +72,22 @@ public class JiraServerEnvironmentVariableHandler extends EnvironmentVariableHan
     }
 
     @Override
-    protected EnvironmentProcessingResult buildProcessingResult(JiraServerGlobalConfigModel configModel) {
+    protected EnvironmentProcessingResult buildProcessingResult(JiraServerGlobalConfigModel obfuscatedConfigModel) {
         EnvironmentProcessingResult.Builder builder = new EnvironmentProcessingResult.Builder(VARIABLE_NAMES);
 
-        JiraServerGlobalConfigModel obfuscatedModel = configModel.obfuscate();
-        if (StringUtils.isNotBlank(obfuscatedModel.getUrl())) {
-            builder.addVariableValue(URL_KEY, obfuscatedModel.getUrl());
+        if (StringUtils.isNotBlank(obfuscatedConfigModel.getUrl())) {
+            builder.addVariableValue(URL_KEY, obfuscatedConfigModel.getUrl());
         }
 
-        if (StringUtils.isNotBlank(obfuscatedModel.getUserName())) {
-            builder.addVariableValue(USERNAME_KEY, obfuscatedModel.getUserName());
+        if (StringUtils.isNotBlank(obfuscatedConfigModel.getUserName())) {
+            builder.addVariableValue(USERNAME_KEY, obfuscatedConfigModel.getUserName());
         }
 
-        obfuscatedModel.getDisablePluginCheck()
+        obfuscatedConfigModel.getDisablePluginCheck()
             .map(String::valueOf)
             .ifPresent(value -> builder.addVariableValue(DISABLE_PLUGIN_KEY, value));
 
-        obfuscatedModel.getIsPasswordSet()
+        obfuscatedConfigModel.getIsPasswordSet()
             .filter(Boolean::booleanValue)
             .ifPresent(ignored -> builder.addVariableValue(PASSWORD_KEY, AlertConstants.MASKED_VALUE));
 
@@ -97,7 +96,7 @@ public class JiraServerEnvironmentVariableHandler extends EnvironmentVariableHan
 
     @Override
     protected void saveConfiguration(JiraServerGlobalConfigModel configModel, EnvironmentProcessingResult processingResult) {
-        if (processingResult.hasValues() && configAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME).isEmpty()) {
+        if (configAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME).isEmpty()) {
             try {
                 configAccessor.createConfiguration(configModel);
             } catch (AlertConfigurationException ex) {

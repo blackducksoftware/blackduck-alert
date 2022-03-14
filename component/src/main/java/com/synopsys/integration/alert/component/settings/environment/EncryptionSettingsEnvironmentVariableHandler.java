@@ -39,7 +39,7 @@ public class EncryptionSettingsEnvironmentVariableHandler extends EnvironmentVar
     }
 
     @Override
-    protected ValidationResponseModel validateConfiguration(SettingsEncryptionModel configModel) {
+    protected ValidationResponseModel validateConfiguration(SettingsEncryptionModel obfuscatedConfigModel) {
         // Since the encryption utility gets the environment variables, there is nothing to validate here.
         return ValidationResponseModel.success();
     }
@@ -52,13 +52,8 @@ public class EncryptionSettingsEnvironmentVariableHandler extends EnvironmentVar
         Optional<String> salt = environmentVariableUtility.getEnvironmentValue(ENCRYPTION_SALT_KEY);
 
         // The encryption utility will read the environment variables.  We just want to be able to log if the variables are set.
-        if (password.isPresent()) {
-            builder.addVariableValue(ENCRYPTION_PASSWORD_KEY, AlertConstants.MASKED_VALUE);
-        }
-
-        if (salt.isPresent()) {
-            builder.addVariableValue(ENCRYPTION_SALT_KEY, AlertConstants.MASKED_VALUE);
-        }
+        password.ifPresent(unusedValue -> builder.addVariableValue(ENCRYPTION_PASSWORD_KEY, AlertConstants.MASKED_VALUE));
+        salt.ifPresent(unusedValue -> builder.addVariableValue(ENCRYPTION_SALT_KEY, AlertConstants.MASKED_VALUE));
 
         return builder.build();
     }

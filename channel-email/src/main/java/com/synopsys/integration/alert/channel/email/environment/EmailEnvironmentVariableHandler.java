@@ -92,6 +92,12 @@ public class EmailEnvironmentVariableHandler extends EnvironmentVariableHandlerV
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final EmailGlobalConfigurationValidator validator;
 
+    public static String convertVariableNameToJavamailPropertyKey(String environmentVariableName) {
+        String propertyKey = environmentVariableName.substring(ENVIRONMENT_VARIABLE_PREFIX.length());
+        propertyKey = propertyKey.replace("_", ".").toLowerCase();
+        return propertyKey;
+    }
+
     @Autowired
     public EmailEnvironmentVariableHandler(EmailGlobalConfigAccessor configAccessor, EnvironmentVariableUtility environmentVariableUtility, EmailGlobalConfigurationValidator validator) {
         super(ChannelKeys.EMAIL.getDisplayName(), Stream.concat(EMAIL_CONFIGURATION_KEYSET.stream(), OLD_ADDITIONAL_PROPERTY_KEYSET.stream()).collect(Collectors.toSet()));
@@ -121,9 +127,7 @@ public class EmailEnvironmentVariableHandler extends EnvironmentVariableHandlerV
     }
 
     @Override
-    protected EnvironmentProcessingResult buildProcessingResult(EmailGlobalConfigModel configModel) {
-        EmailGlobalConfigModel obfuscatedModel = configModel.obfuscate();
-
+    protected EnvironmentProcessingResult buildProcessingResult(EmailGlobalConfigModel obfuscatedConfigModel) {
         EnvironmentProcessingResult.Builder builder = new EnvironmentProcessingResult.Builder(EMAIL_CONFIGURATION_KEYSET)
             .addVariableNames(OLD_ADDITIONAL_PROPERTY_KEYSET);
 
@@ -134,13 +138,13 @@ public class EmailEnvironmentVariableHandler extends EnvironmentVariableHandlerV
             }
         }
 
-        obfuscatedModel.getSmtpHost().ifPresent(value -> builder.addVariableValue(EMAIL_HOST_KEY, value));
-        obfuscatedModel.getSmtpPort().map(String::valueOf).ifPresent(value -> builder.addVariableValue(EMAIL_PORT_KEY, value));
-        obfuscatedModel.getSmtpFrom().ifPresent(value -> builder.addVariableValue(EMAIL_FROM_KEY, value));
-        obfuscatedModel.getSmtpAuth().map(String::valueOf).ifPresent(value -> builder.addVariableValue(AUTH_REQUIRED_KEY, value));
-        obfuscatedModel.getSmtpUsername().ifPresent(value -> builder.addVariableValue(AUTH_USER_KEY, value));
+        obfuscatedConfigModel.getSmtpHost().ifPresent(value -> builder.addVariableValue(EMAIL_HOST_KEY, value));
+        obfuscatedConfigModel.getSmtpPort().map(String::valueOf).ifPresent(value -> builder.addVariableValue(EMAIL_PORT_KEY, value));
+        obfuscatedConfigModel.getSmtpFrom().ifPresent(value -> builder.addVariableValue(EMAIL_FROM_KEY, value));
+        obfuscatedConfigModel.getSmtpAuth().map(String::valueOf).ifPresent(value -> builder.addVariableValue(AUTH_REQUIRED_KEY, value));
+        obfuscatedConfigModel.getSmtpUsername().ifPresent(value -> builder.addVariableValue(AUTH_USER_KEY, value));
 
-        if (Boolean.TRUE.equals(obfuscatedModel.getIsSmtpPasswordSet())) {
+        if (Boolean.TRUE.equals(obfuscatedConfigModel.getIsSmtpPasswordSet())) {
             builder.addVariableValue(AUTH_PASSWORD_KEY, AlertConstants.MASKED_VALUE);
         }
 
@@ -149,12 +153,10 @@ public class EmailEnvironmentVariableHandler extends EnvironmentVariableHandlerV
 
     @Override
     protected void saveConfiguration(EmailGlobalConfigModel configModel, EnvironmentProcessingResult processingResult) {
-        if (processingResult.hasValues()) {
-            try {
-                configAccessor.createConfiguration(configModel);
-            } catch (AlertConfigurationException ex) {
-                logger.error("Failed to create config: ", ex);
-            }
+        try {
+            configAccessor.createConfiguration(configModel);
+        } catch (AlertConfigurationException ex) {
+            logger.error("Failed to create config: ", ex);
         }
     }
 
@@ -192,11 +194,5 @@ public class EmailEnvironmentVariableHandler extends EnvironmentVariableHandlerV
             }
         }
         configuration.setAdditionalJavaMailProperties(additionalProperties);
-    }
-
-    public static String convertVariableNameToJavamailPropertyKey(String environmentVariableName) {
-        String propertyKey = environmentVariableName.substring(ENVIRONMENT_VARIABLE_PREFIX.length());
-        propertyKey = propertyKey.replace("_", ".").toLowerCase();
-        return propertyKey;
     }
 }
