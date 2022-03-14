@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -117,12 +118,19 @@ public class StaticJobAccessor implements JobAccessor {
 
     @Override
     @Transactional(readOnly = true)
-    public AlertPagedModel<DistributionJobModel> getPageOfJobs(int pageNumber, int pageLimit, String searchTerm, Collection<String> descriptorsNamesToInclude) {
+    public AlertPagedModel<DistributionJobModel> getPageOfJobs(
+        int pageNumber,
+        int pageLimit,
+        String searchTerm,
+        String sortField,
+        String sortOrder, Collection<String> descriptorsNamesToInclude
+    ) {
         if (!descriptorsNamesToInclude.contains(blackDuckProviderKey.getUniversalKey())) {
             return new AlertPagedModel<>(0, pageNumber, pageLimit, List.of());
         }
 
-        PageRequest pageRequest = PageRequest.of(pageNumber, pageLimit);
+        Sort sort = (sortField == null || sortOrder == null) ? Sort.unsorted() : Sort.by(sortOrder, sortField);
+        PageRequest pageRequest = PageRequest.of(pageNumber, pageLimit, sort);
         Page<DistributionJobEntity> pageOfJobsWithDescriptorNames;
         if (StringUtils.isBlank(searchTerm)) {
             pageOfJobsWithDescriptorNames = distributionJobRepository.findByChannelDescriptorNameIn(descriptorsNamesToInclude, pageRequest);

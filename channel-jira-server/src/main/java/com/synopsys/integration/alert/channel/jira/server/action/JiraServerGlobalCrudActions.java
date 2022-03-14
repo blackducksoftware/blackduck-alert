@@ -29,7 +29,11 @@ public class JiraServerGlobalCrudActions {
     private final JiraServerGlobalConfigurationValidator validator;
 
     @Autowired
-    public JiraServerGlobalCrudActions(AuthorizationManager authorizationManager, JiraServerGlobalConfigAccessor configurationAccessor, JiraServerGlobalConfigurationValidator validator) {
+    public JiraServerGlobalCrudActions(
+        AuthorizationManager authorizationManager,
+        JiraServerGlobalConfigAccessor configurationAccessor,
+        JiraServerGlobalConfigurationValidator validator
+    ) {
         this.configurationHelper = new ConfigurationCrudHelper(authorizationManager, ConfigContextEnum.GLOBAL, ChannelKeys.JIRA_SERVER);
         this.configurationAccessor = configurationAccessor;
         this.validator = validator;
@@ -39,8 +43,10 @@ public class JiraServerGlobalCrudActions {
         return configurationHelper.getOne(() -> configurationAccessor.getConfiguration(id));
     }
 
-    public ActionResponse<AlertPagedModel<JiraServerGlobalConfigModel>> getPaged(int page, int size) {
-        return configurationHelper.getPage(() -> configurationAccessor.getConfigurationPage(page, size));
+    public ActionResponse<AlertPagedModel<JiraServerGlobalConfigModel>> getPaged(
+        int page, int size, String searchTerm, String sortField, String sortOrder
+    ) {
+        return configurationHelper.getPage(() -> configurationAccessor.getConfigurationPage(page, size, searchTerm, sortField, sortOrder));
     }
 
     public ActionResponse<JiraServerGlobalConfigModel> create(JiraServerGlobalConfigModel resource) {
@@ -58,7 +64,7 @@ public class JiraServerGlobalCrudActions {
             () -> configurationAccessor.updateConfiguration(id, requestResource)
         );
     }
-    
+
     public ActionResponse<JiraServerGlobalConfigModel> delete(UUID id) {
         return configurationHelper.delete(
             () -> configurationAccessor.existsConfigurationById(id),

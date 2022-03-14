@@ -104,7 +104,7 @@ class JiraServerGlobalConfigAccessorTest {
         JiraServerConfigurationEntity entity = createEntity(id);
         Page<JiraServerConfigurationEntity> jiraConfigurations = new PageImpl<>(List.of(entity));
         Mockito.when(jiraServerConfigurationRepository.findAll(Mockito.any(PageRequest.class))).thenReturn(jiraConfigurations);
-        AlertPagedModel<JiraServerGlobalConfigModel> pagedModel = jiraServerGlobalConfigAccessor.getConfigurationPage(0, 10);
+        AlertPagedModel<JiraServerGlobalConfigModel> pagedModel = jiraServerGlobalConfigAccessor.getConfigurationPage(0, 10, null, null, null);
         assertEquals(0, pagedModel.getCurrentPage());
         assertEquals(1, pagedModel.getTotalPages());
         assertNotNull(pagedModel.getModels());
@@ -116,7 +116,7 @@ class JiraServerGlobalConfigAccessorTest {
         UUID id = UUID.randomUUID();
         Page<JiraServerConfigurationEntity> jiraConfigurations = new PageImpl<>(List.of());
         Mockito.when(jiraServerConfigurationRepository.findAll(Mockito.any(PageRequest.class))).thenReturn(jiraConfigurations);
-        AlertPagedModel<JiraServerGlobalConfigModel> pagedModel = jiraServerGlobalConfigAccessor.getConfigurationPage(0, 10);
+        AlertPagedModel<JiraServerGlobalConfigModel> pagedModel = jiraServerGlobalConfigAccessor.getConfigurationPage(0, 10, null, null, null);
         assertEquals(0, pagedModel.getCurrentPage());
         assertEquals(1, pagedModel.getTotalPages());
         assertEquals(0, pagedModel.getModels().size());

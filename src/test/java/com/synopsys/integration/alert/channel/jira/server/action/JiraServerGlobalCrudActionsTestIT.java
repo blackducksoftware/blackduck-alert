@@ -48,7 +48,7 @@ public class JiraServerGlobalCrudActionsTestIT {
 
     @AfterEach
     public void cleanup() {
-        AlertPagedModel<JiraServerGlobalConfigModel> pagedModel = configAccessor.getConfigurationPage(0, 20);
+        AlertPagedModel<JiraServerGlobalConfigModel> pagedModel = configAccessor.getConfigurationPage(0, 20, null, null, null);
         for (JiraServerGlobalConfigModel model : pagedModel.getModels()) {
             configAccessor.deleteConfiguration(UUID.fromString(model.getId()));
         }
@@ -88,7 +88,7 @@ public class JiraServerGlobalCrudActionsTestIT {
             crudActions.create(createJiraModelWithName(String.format("config-%d", i)));
         }
 
-        ActionResponse<AlertPagedModel<JiraServerGlobalConfigModel>> pagedActionResponse = crudActions.getPaged(0, pageSize);
+        ActionResponse<AlertPagedModel<JiraServerGlobalConfigModel>> pagedActionResponse = crudActions.getPaged(0, pageSize, null, null, null);
         assertTrue(pagedActionResponse.isSuccessful());
         assertEquals(HttpStatus.OK, pagedActionResponse.getHttpStatus());
         assertTrue(pagedActionResponse.getContent().isPresent());
@@ -102,7 +102,7 @@ public class JiraServerGlobalCrudActionsTestIT {
         int pageSize = 5;
         JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator);
 
-        ActionResponse<AlertPagedModel<JiraServerGlobalConfigModel>> pagedActionResponse = crudActions.getPaged(1, pageSize);
+        ActionResponse<AlertPagedModel<JiraServerGlobalConfigModel>> pagedActionResponse = crudActions.getPaged(1, pageSize, null, null, null);
         assertTrue(pagedActionResponse.isError());
         assertFalse(pagedActionResponse.hasContent());
         assertEquals(HttpStatus.NOT_FOUND, pagedActionResponse.getHttpStatus());

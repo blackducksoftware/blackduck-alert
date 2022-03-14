@@ -291,7 +291,7 @@ class StaticJobAccessorTest {
         Page<DistributionJobEntity> page = new PageImpl<>(List.of(distributionJobEntity));
         Mockito.when(distributionJobRepository.findByChannelDescriptorNamesAndSearchTerm(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(page);
 
-        AlertPagedModel<DistributionJobModel> pageOfJobs = jobAccessor.getPageOfJobs(0, 10, "test-search-term", List.of(providerKey.getUniversalKey()));
+        AlertPagedModel<DistributionJobModel> pageOfJobs = jobAccessor.getPageOfJobs(0, 10, "test-search-term", null, null, List.of(providerKey.getUniversalKey()));
 
         assertEquals(1, pageOfJobs.getTotalPages());
         List<DistributionJobModel> models = pageOfJobs.getModels();
@@ -312,7 +312,7 @@ class StaticJobAccessorTest {
         Page<DistributionJobEntity> page = new PageImpl<>(List.of(distributionJobEntity));
         Mockito.when(distributionJobRepository.findByChannelDescriptorNameIn(Mockito.any(), Mockito.any())).thenReturn(page);
 
-        AlertPagedModel<DistributionJobModel> pageOfJobs = jobAccessor.getPageOfJobs(0, 10, " ", List.of(providerKey.getUniversalKey()));
+        AlertPagedModel<DistributionJobModel> pageOfJobs = jobAccessor.getPageOfJobs(0, 10, " ", null, null, List.of(providerKey.getUniversalKey()));
 
         assertEquals(1, pageOfJobs.getTotalPages());
         List<DistributionJobModel> models = pageOfJobs.getModels();
@@ -324,7 +324,7 @@ class StaticJobAccessorTest {
 
     @Test
     void getPageOfJobsExcludedDescriptorTest() {
-        AlertPagedModel<DistributionJobModel> pageOfJobs = jobAccessor.getPageOfJobs(0, 10, null, List.of("invalid-descriptor-key"));
+        AlertPagedModel<DistributionJobModel> pageOfJobs = jobAccessor.getPageOfJobs(0, 10, null, null, null, List.of("invalid-descriptor-key"));
 
         assertEquals(0, pageOfJobs.getTotalPages());
         assertEquals(0, pageOfJobs.getCurrentPage());

@@ -18,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -74,12 +75,17 @@ public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<Jir
 
     @Override
     @Transactional(readOnly = true)
-    public AlertPagedModel<JiraServerGlobalConfigModel> getConfigurationPage(int page, int size) {
-        Page<JiraServerConfigurationEntity> resultPage = jiraServerConfigurationRepository.findAll(PageRequest.of(page, size));
+    public AlertPagedModel<JiraServerGlobalConfigModel> getConfigurationPage(
+        int page, int size, String searchTerm,
+        String sortField,
+        String sortOrder
+    ) {
+        Sort sort = (sortField == null || sortOrder == null) ? Sort.unsorted() : Sort.by(sortOrder, sortField);
+        Page<JiraServerConfigurationEntity> resultPage = jiraServerConfigurationRepository.findAll(PageRequest.of(page, size, sort));
         List<JiraServerGlobalConfigModel> pageContent = resultPage.getContent()
-                                                            .stream()
-                                                            .map(this::createConfigModel)
-                                                            .collect(Collectors.toList());
+            .stream()
+            .map(this::createConfigModel)
+            .collect(Collectors.toList());
         return new AlertPagedModel<>(resultPage.getTotalPages(), resultPage.getNumber(), resultPage.getSize(), pageContent);
     }
 

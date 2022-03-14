@@ -54,8 +54,14 @@ public class JiraServerGlobalConfigController implements StaticConfigResourceCon
     }
 
     @Override
-    public AlertPagedModel<JiraServerGlobalConfigModel> getPage(Integer pageNumber, Integer pageSize, String searchTerm) {
-        return ResponseFactory.createContentResponseFromAction(configActions.getPaged(pageNumber, pageSize));
+    public AlertPagedModel<JiraServerGlobalConfigModel> getPage(
+        Integer pageNumber,
+        Integer pageSize,
+        String searchTerm,
+        String sortField,
+        String sortOrder
+    ) {
+        return ResponseFactory.createContentResponseFromAction(configActions.getPaged(pageNumber, pageSize, searchTerm, sortField, sortOrder));
     }
 
     @Override

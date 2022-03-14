@@ -51,7 +51,7 @@ public class JiraServerGlobalConfigControllerTestIT {
 
     @AfterEach
     public void cleanup() {
-        jiraServerGlobalConfigAccessor.getConfigurationPage(0, 100)
+        jiraServerGlobalConfigAccessor.getConfigurationPage(0, 100, null, null, null)
             .getModels()
             .stream()
             .map(JiraServerGlobalConfigModel::getId)

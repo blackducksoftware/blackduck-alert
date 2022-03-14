@@ -51,8 +51,8 @@ public class JobConfigController implements BaseJobResourceController, ReadPageC
     }
 
     @Override
-    public JobPagedModel getPage(Integer pageNumber, Integer pageSize, String searchTerm) {
-        return ResponseFactory.createContentResponseFromAction(jobConfigActions.getPage(pageNumber, pageSize, searchTerm));
+    public JobPagedModel getPage(Integer pageNumber, Integer pageSize, String searchTerm, String sortField, String sortOrder) {
+        return ResponseFactory.createContentResponseFromAction(jobConfigActions.getPage(pageNumber, pageSize, searchTerm, sortField, sortOrder));
     }
 
     @Override

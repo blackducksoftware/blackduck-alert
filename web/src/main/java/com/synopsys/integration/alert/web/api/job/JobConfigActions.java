@@ -123,8 +123,11 @@ public class JobConfigActions extends AbstractJobResourceActions {
     }
 
     @Override
-    public final ActionResponse<JobPagedModel> readPageWithoutChecks(Integer pageNumber, Integer pageSize, String searchTerm, Collection<String> permittedDescriptorsForSession) {
-        AlertPagedModel<DistributionJobModel> pageOfJobs = jobAccessor.getPageOfJobs(pageNumber, pageSize, searchTerm, permittedDescriptorsForSession);
+    public final ActionResponse<JobPagedModel> readPageWithoutChecks(
+        Integer pageNumber, Integer pageSize, String searchTerm, String sortField,
+        String sortOrder, Collection<String> permittedDescriptorsForSession
+    ) {
+        AlertPagedModel<DistributionJobModel> pageOfJobs = jobAccessor.getPageOfJobs(pageNumber, pageSize, searchTerm, sortField, sortOrder, permittedDescriptorsForSession);
         List<DistributionJobModel> distributionJobModels = pageOfJobs.getModels();
 
         List<JobFieldModel> jobFieldModels = new ArrayList<>(distributionJobModels.size());

@@ -57,7 +57,13 @@ public abstract class AbstractJobResourceActions {
 
     protected abstract ActionResponse<JobFieldModel> deleteWithoutChecks(UUID id);
 
-    protected abstract ActionResponse<JobPagedModel> readPageWithoutChecks(Integer pageNumber, Integer pageSize, String searchTerm, Collection<String> permittedDescriptorsForSession);
+    protected abstract ActionResponse<JobPagedModel> readPageWithoutChecks(
+        Integer pageNumber,
+        Integer pageSize,
+        String searchTerm,
+        String sortField,
+        String sortOrder, Collection<String> permittedDescriptorsForSession
+    );
 
     protected abstract ValidationActionResponse testWithoutChecks(JobFieldModel resource);
 
@@ -67,7 +73,7 @@ public abstract class AbstractJobResourceActions {
 
     private Set<String> getDescriptorNames() {
         return descriptorAccessor.getRegisteredDescriptors()
-                   .stream()
+            .stream()
                    .filter(descriptor -> ALLOWED_JOB_DESCRIPTOR_TYPES.contains(descriptor.getType()))
                    .map(RegisteredDescriptorModel::getName)
                    .collect(Collectors.toSet());
@@ -90,7 +96,7 @@ public abstract class AbstractJobResourceActions {
         return createWithoutChecks(resource);
     }
 
-    public final ActionResponse<JobPagedModel> getPage(Integer pageNumber, Integer pageSize, String searchTerm) {
+    public final ActionResponse<JobPagedModel> getPage(Integer pageNumber, Integer pageSize, String searchTerm, String sortField, String sortOrder) {
         Optional<ActionResponse<JobPagedModel>> pagingErrorResponse = PagingParamValidationUtils.createErrorActionResponseIfInvalid(pageNumber, pageSize);
         if (pagingErrorResponse.isPresent()) {
             return pagingErrorResponse.get();
@@ -108,7 +114,7 @@ public abstract class AbstractJobResourceActions {
         if (permittedDescriptorsForSession.isEmpty()) {
             return ActionResponse.createForbiddenResponse();
         }
-        return readPageWithoutChecks(pageNumber, pageSize, searchTerm, permittedDescriptorsForSession);
+        return readPageWithoutChecks(pageNumber, pageSize, searchTerm, sortField, sortOrder, permittedDescriptorsForSession);
     }
 
     @Deprecated
