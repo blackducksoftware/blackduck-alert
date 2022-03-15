@@ -45,11 +45,11 @@ public final class WorkItemResponseFields {
     public static List<AzureFieldDefinition> list() {
         Field[] workItemClassFields = WorkItemResponseFields.class.getFields();
         return Stream.of(workItemClassFields)
-                   .filter(field -> Modifier.isPublic(field.getModifiers()) && Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers()))
-                   .filter(field -> field.getType().equals(AzureFieldDefinition.class))
-                   .map(WorkItemResponseFields::convertToAzureFieldDefinition)
-                   .filter(Objects::nonNull)
-                   .collect(Collectors.toList());
+            .filter(field -> Modifier.isPublic(field.getModifiers()) && Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers()))
+            .filter(field -> field.getType().equals(AzureFieldDefinition.class))
+            .map(WorkItemResponseFields::convertToAzureFieldDefinition)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
     }
 
     private static AzureFieldDefinition convertToAzureFieldDefinition(Field field) {

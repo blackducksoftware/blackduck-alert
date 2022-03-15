@@ -34,7 +34,7 @@ public abstract class AbstractResourceActions<T extends Config, D extends AlertS
 
     public static final String FORBIDDEN_ACTION_FORMAT = "%s action is forbidden. This user is not authorized to perform this action.";
 
-    public AbstractResourceActions(DescriptorKey descriptorKey, ConfigContextEnum context, AuthorizationManager authorizationManager) {
+    protected AbstractResourceActions(DescriptorKey descriptorKey, ConfigContextEnum context, AuthorizationManager authorizationManager) {
         this.descriptorKey = descriptorKey;
         this.context = context;
         // to do change the authorization manager to use the context enum and the descriptor key
@@ -77,8 +77,8 @@ public abstract class AbstractResourceActions<T extends Config, D extends AlertS
             return ActionResponse.createForbiddenResponse();
         }
         List<T> resources = retrieveDatabaseModels().stream()
-                                .map(this::convertDatabaseModelToRestModel)
-                                .collect(Collectors.toList());
+            .map(this::convertDatabaseModelToRestModel)
+            .collect(Collectors.toList());
         return new ActionResponse<>(HttpStatus.OK, createMultiResponseModel(resources));
     }
 

@@ -8,7 +8,7 @@
 package com.synopsys.integration.alert.descriptor.api.model;
 
 public abstract class IssueTrackerChannelKey extends ChannelKey {
-    public IssueTrackerChannelKey(String universalKey, String displayName) {
+    protected IssueTrackerChannelKey(String universalKey, String displayName) {
         super(universalKey, displayName);
     }
 }

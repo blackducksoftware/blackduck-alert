@@ -11,7 +11,7 @@ import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
 public abstract class DatabaseRelation extends BaseEntity {
-    public DatabaseRelation() {
+    protected DatabaseRelation() {
         super();
     }
 }

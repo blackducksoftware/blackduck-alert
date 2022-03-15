@@ -15,8 +15,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -34,9 +32,7 @@ public class ProxyManager {
     public static final String KEY_PROXY_USERNAME = "settings.proxy.username";
     public static final String KEY_PROXY_PWD = "settings.proxy.password";
     public static final String KEY_PROXY_NON_PROXY_HOSTS = "settings.proxy.non.proxy.hosts";
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
+    
     private final SettingsUtility settingsUtility;
 
     @Autowired

@@ -54,8 +54,8 @@ public class RestChannelUtility {
         }
 
         Request.Builder requestBuilder = new Request.Builder()
-                                             .method(HttpMethod.POST)
-                                             .url(httpUrl);
+            .method(HttpMethod.POST)
+            .url(httpUrl);
         requestBuilder.getHeaders().putAll(headers);
         requestBuilder.bodyContent(new StringBodyContent(jsonString, BodyContentConverter.DEFAULT));
 
@@ -74,7 +74,6 @@ public class RestChannelUtility {
                 throw new AlertException(String.format("Could not send message: %s. Status code: %s", response.getStatusMessage(), response.getStatusCode()));
             }
         } catch (Exception e) {
-            logger.error("Error sending request", e);
             throw new AlertException(e.getMessage(), e);
         }
     }

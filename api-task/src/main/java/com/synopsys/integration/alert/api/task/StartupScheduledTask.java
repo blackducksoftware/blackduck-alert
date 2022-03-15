@@ -17,7 +17,7 @@ public abstract class StartupScheduledTask extends ScheduledTask {
     private final TaskManager taskManager;
     private boolean enabled;
 
-    public StartupScheduledTask(TaskScheduler taskScheduler, TaskManager taskManager) {
+    protected StartupScheduledTask(TaskScheduler taskScheduler, TaskManager taskManager) {
         super(taskScheduler);
         this.taskManager = taskManager;
         this.enabled = true;

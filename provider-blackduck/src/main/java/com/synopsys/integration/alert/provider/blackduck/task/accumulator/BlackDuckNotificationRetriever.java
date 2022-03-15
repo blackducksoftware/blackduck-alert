@@ -32,7 +32,7 @@ public class BlackDuckNotificationRetriever {
 
     // (offset + limit) < total
     // Ex: offset = 0; limit = 10; total = 10; (0 + 10) < 10 == false; no next page
-    public static final Predicate<AlertPagedDetails> HAS_NEXT_PAGE = page -> (page.getCurrentPage() + page.getPageSize()) < page.getTotalPages();
+    public static final Predicate<AlertPagedDetails<NotificationUserView>> HAS_NEXT_PAGE = page -> (page.getCurrentPage() + page.getPageSize()) < page.getTotalPages();
 
     private final BlackDuckApiClient blackDuckApiClient;
     private final ApiDiscovery apiDiscovery;

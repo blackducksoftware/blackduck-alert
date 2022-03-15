@@ -16,7 +16,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Distr
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 public abstract class DistributionJobDetailsExtractor extends DescriptorAction {
-    public DistributionJobDetailsExtractor(DescriptorKey descriptorKey) {
+    protected DistributionJobDetailsExtractor(DescriptorKey descriptorKey) {
         super(descriptorKey);
     }
 

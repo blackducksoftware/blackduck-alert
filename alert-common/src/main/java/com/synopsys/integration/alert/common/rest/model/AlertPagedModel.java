@@ -20,7 +20,7 @@ public class AlertPagedModel<M> extends AlertPagedDetails<M> implements Serializ
     public static final Integer DEFAULT_PAGE_NUMBER = Integer.valueOf(DEFAULT_PAGE_NUMBER_STRING);
     public static final Integer DEFAULT_PAGE_SIZE = Integer.valueOf(DEFAULT_PAGE_SIZE_STRING);
 
-    public static AlertPagedModel empty(int currentPage, int pageSize) {
+    public static <M> AlertPagedModel<M> empty(int currentPage, int pageSize) {
         return new AlertPagedModel<>(0, currentPage, pageSize, List.of());
     }
 

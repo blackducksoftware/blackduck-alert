@@ -12,10 +12,10 @@ import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 public abstract class Config extends AlertSerializableModel {
     private String id;
 
-    public Config() {
+    protected Config() {
     }
 
-    public Config(String id) {
+    protected Config(String id) {
         this.id = id;
     }
 

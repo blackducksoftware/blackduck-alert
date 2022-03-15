@@ -16,7 +16,7 @@ import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 public abstract class ComponentDescriptor extends Descriptor {
-    public ComponentDescriptor(DescriptorKey descriptorKey) {
+    protected ComponentDescriptor(DescriptorKey descriptorKey) {
         super(descriptorKey, DescriptorType.COMPONENT, Set.of(ConfigContextEnum.GLOBAL));
     }
 

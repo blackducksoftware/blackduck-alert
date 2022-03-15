@@ -15,7 +15,7 @@ import com.synopsys.integration.util.Stringable;
 
 @MappedSuperclass
 public abstract class BaseEntity extends Stringable implements Serializable {
-    public BaseEntity() {
+    protected BaseEntity() {
         // JPA requires default constructor definitions
     }
 }

@@ -16,11 +16,11 @@ public abstract class ChannelMessageFormatter {
     private final String sectionSeparator;
     private final String nonBreakingSpace;
 
-    public ChannelMessageFormatter(int maxMessageLength, String lineSeparator) {
+    protected ChannelMessageFormatter(int maxMessageLength, String lineSeparator) {
         this(maxMessageLength, lineSeparator, DEFAULT_SECTION_SEPARATOR, DEFAULT_NON_BREAKING_SPACE);
     }
 
-    public ChannelMessageFormatter(int maxMessageLength, String lineSeparator, String sectionSeparator, String nonBreakingSpace) {
+    protected ChannelMessageFormatter(int maxMessageLength, String lineSeparator, String sectionSeparator, String nonBreakingSpace) {
         this.maxMessageLength = maxMessageLength;
         this.lineSeparator = lineSeparator;
         this.sectionSeparator = sectionSeparator;

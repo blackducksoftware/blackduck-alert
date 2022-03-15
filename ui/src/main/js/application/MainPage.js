@@ -34,7 +34,6 @@ import { TASK_MANAGEMENT_INFO } from 'page/task/TaskManagementModel';
 import TaskManagement from 'page/task/TaskManagement';
 import { USER_MANAGEMENT_INFO } from 'page/user/UserModel';
 import UserManagement from 'page/user/UserManagement';
-import JiraServerGlobalConfiguration from 'page/channel/jira/server/JiraServerGlobalConfiguration';
 import { CONTEXT_TYPE, isOperationAssigned, OPERATIONS } from 'common/util/descriptorUtilities';
 import { DISTRIBUTION_INFO, DISTRIBUTION_URLS } from 'page/distribution/DistributionModel';
 import DistributionConfiguration from 'page/distribution/DistributionConfiguration';
@@ -43,10 +42,7 @@ import { unauthorized } from 'store/actions/session';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 import DescriptorRoute from 'common/component/descriptor/DescriptorRoute';
 import EmailGlobalConfiguration from 'page/channel/email/EmailGlobalConfiguration';
-import BetaPage from 'common/component/beta/BetaPage';
-import BetaComponent from 'common/component/beta/BetaComponent';
 import ConcreteJiraServerGlobalConfiguration from 'page/channel/jira/server/ConcreteJiraServerGlobalConfiguration';
-import CurrentComponent from 'common/component/beta/CurrentComponent';
 import ConcreteJiraServerGlobalConfigurationTable from 'page/channel/jira/server/ConcreteJiraServerGlobalConfigurationTable';
 
 const MainPage = ({
@@ -188,25 +184,12 @@ const MainPage = ({
                 urlName={JIRA_SERVER_INFO.url}
                 descriptor={globalDescriptorMap[JIRA_SERVER_INFO.key]}
                 render={(readOnly, showTest, showSave, showDelete) => (
-                    <BetaPage betaSelected>
-                        <BetaComponent>
-                            <ConcreteJiraServerGlobalConfigurationTable
-                                csrfToken={csrfToken}
-                                readonly={readOnly}
-                                showRefreshButton={!autoRefresh}
-                                displayDelete={showDelete}
-                            />
-                        </BetaComponent>
-                        <CurrentComponent>
-                            <JiraServerGlobalConfiguration
-                                csrfToken={csrfToken}
-                                errorHandler={errorHandler}
-                                readonly={readOnly}
-                                displayTest={showTest}
-                                displaySave={showSave}
-                            />
-                        </CurrentComponent>
-                    </BetaPage>
+                    <ConcreteJiraServerGlobalConfigurationTable
+                        csrfToken={csrfToken}
+                        readonly={readOnly}
+                        showRefreshButton={!autoRefresh}
+                        displayDelete={showDelete}
+                    />
                 )}
             />
             <DescriptorRoute uriPrefix={channelUri} urlName={MSTEAMS_INFO.url} descriptor={globalDescriptorMap[MSTEAMS_INFO.key]} render={() => <MSTeamsGlobalConfiguration />} />

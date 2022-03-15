@@ -57,7 +57,7 @@ public class JiraServerGlobalTestAction {
     }
 
     public ActionResponse<ValidationResponseModel> testWithPermissionCheck(JiraServerGlobalConfigModel requestResource) {
-        Supplier<ValidationActionResponse> validationSupplier = () -> validationHelper.validate(() -> validator.validate(requestResource));
+        Supplier<ValidationActionResponse> validationSupplier = () -> validationHelper.validate(() -> validator.validate(requestResource, requestResource.getId()));
         return testHelper.test(validationSupplier, () -> testConfigModelContent(requestResource));
     }
 
@@ -80,7 +80,8 @@ public class JiraServerGlobalTestAction {
                 }
 
                 if (testActionWrapper.isAppMissing()) {
-                    return ConfigurationTestResult.failure(TEST_ERROR_MESSAGE + String.format("Please configure the '%s' plugin for your server.", JiraConstants.JIRA_ALERT_APP_NAME));
+                    return ConfigurationTestResult.failure(
+                        TEST_ERROR_MESSAGE + String.format("Please configure the '%s' plugin for your server.", JiraConstants.JIRA_ALERT_APP_NAME));
                 }
             }
         } catch (IntegrationException ex) {

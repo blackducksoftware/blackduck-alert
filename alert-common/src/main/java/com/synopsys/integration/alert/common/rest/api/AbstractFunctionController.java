@@ -24,7 +24,7 @@ public abstract class AbstractFunctionController<T> extends BaseController {
     public static final String API_FUNCTION_URL = "/api/function";
     private final CustomFunctionAction<T> functionAction;
 
-    public AbstractFunctionController(CustomFunctionAction<T> functionAction) {
+    protected AbstractFunctionController(CustomFunctionAction<T> functionAction) {
         this.functionAction = functionAction;
     }
 
