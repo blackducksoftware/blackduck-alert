@@ -34,6 +34,7 @@ import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
 @Component
+@Deprecated(forRemoval = true)
 public class EmailEnvironmentVariableHandlerFactory implements EnvironmentVariableHandlerFactory {
     public static final String ENVIRONMENT_VARIABLE_PREFIX = "ALERT_CHANNEL_EMAIL_";
     public static final String ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX = ENVIRONMENT_VARIABLE_PREFIX + "MAIL_";
@@ -50,7 +51,8 @@ public class EmailEnvironmentVariableHandlerFactory implements EnvironmentVariab
         AUTH_REQUIRED_KEY, EMAIL_FROM_KEY, EMAIL_HOST_KEY, AUTH_PASSWORD_KEY, EMAIL_PORT_KEY, AUTH_USER_KEY);
 
     // additional property keys
-    public static final Set<String> OLD_ADDITIONAL_PROPERTY_KEYSET = Set.of(ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_ALLOW8BITMIME",
+    public static final Set<String> OLD_ADDITIONAL_PROPERTY_KEYSET = Set.of(
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_ALLOW8BITMIME",
         ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_AUTH_DIGEST-MD5_DISABLE",
         ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_AUTH_LOGIN_DISABLE",
         ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_AUTH_MECHANISMS",
@@ -92,7 +94,8 @@ public class EmailEnvironmentVariableHandlerFactory implements EnvironmentVariab
         ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_SUBMITTER",
         ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_TIMEOUT",
         ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_USERSET",
-        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_WRITETIMEOUT");
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_WRITETIMEOUT"
+    );
 
     private final EmailGlobalConfigAccessor configAccessor;
     private final EnvironmentVariableUtility environmentVariableUtility;

@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.environment;
 
+@Deprecated(forRemoval = true)
 public interface EnvironmentVariableHandlerFactory {
 
     EnvironmentVariableHandler build();

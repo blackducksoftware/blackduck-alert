@@ -23,6 +23,7 @@ public class EnvironmentVariableProcessor {
     private static final String TWO_SPACE_INDENT = "  ";
     private static final String FOUR_SPACE_INDENT = "    ";
     private Logger logger = LoggerFactory.getLogger(getClass());
+    //TODO: Clean up the factoryList once the Factories are deprecated
     private final List<EnvironmentVariableHandlerFactory> factoryList;
     private final List<EnvironmentVariableHandlerV3<?>> environmentVariableHandlers;
 

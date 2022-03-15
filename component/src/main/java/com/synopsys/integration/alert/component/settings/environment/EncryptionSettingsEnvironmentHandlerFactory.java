@@ -20,6 +20,7 @@ import com.synopsys.integration.alert.environment.EnvironmentVariableHandlerFact
 import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
 
 @Component
+@Deprecated(forRemoval = true)
 public class EncryptionSettingsEnvironmentHandlerFactory implements EnvironmentVariableHandlerFactory {
     public static final String HANDLER_NAME = "Encryption Settings";
     public static final String ENCRYPTION_PASSWORD_KEY = "ALERT_COMPONENT_SETTINGS_SETTINGS_ENCRYPTION_PASSWORD";

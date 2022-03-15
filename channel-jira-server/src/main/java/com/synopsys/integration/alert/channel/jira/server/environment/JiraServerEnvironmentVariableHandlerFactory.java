@@ -29,6 +29,7 @@ import com.synopsys.integration.alert.environment.EnvironmentVariableHandlerFact
 import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
 
 @Component
+@Deprecated(forRemoval = true)
 public class JiraServerEnvironmentVariableHandlerFactory implements EnvironmentVariableHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
