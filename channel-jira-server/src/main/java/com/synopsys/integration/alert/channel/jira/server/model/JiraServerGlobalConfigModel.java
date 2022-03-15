@@ -11,8 +11,8 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.synopsys.integration.alert.api.common.model.Obfuscated;
 import com.synopsys.integration.alert.common.rest.model.ConfigWithMetadata;
-import com.synopsys.integration.alert.common.rest.model.Obfuscated;
 
 public class JiraServerGlobalConfigModel extends ConfigWithMetadata implements Obfuscated<JiraServerGlobalConfigModel> {
     private String url;

@@ -1,11 +1,3 @@
-
-/*
- * channel-jira-server
- *
- * Copyright (c) 2022 Synopsys, Inc.
- *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
- */
 package com.synopsys.integration.alert.channel.jira.server.environment;
 
 import java.util.Set;
@@ -17,20 +9,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.AlertConstants;
+import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
+import com.synopsys.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.environment.EnvironmentProcessingResult;
-import com.synopsys.integration.alert.environment.EnvironmentVariableHandler;
-import com.synopsys.integration.alert.environment.EnvironmentVariableHandlerFactory;
+import com.synopsys.integration.alert.environment.EnvironmentVariableHandlerV3;
 import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
 
 @Component
-@Deprecated(forRemoval = true)
-public class JiraServerEnvironmentVariableHandlerFactory implements EnvironmentVariableHandlerFactory {
+public class JiraServerEnvironmentVariableHandler extends EnvironmentVariableHandlerV3<JiraServerGlobalConfigModel> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public static final String DISABLE_PLUGIN_KEY = "ALERT_CHANNEL_JIRA_SERVER_JIRA_SERVER_DISABLE_PLUGIN_CHECK";
@@ -42,31 +34,25 @@ public class JiraServerEnvironmentVariableHandlerFactory implements EnvironmentV
 
     private final JiraServerGlobalConfigAccessor configAccessor;
     private final EnvironmentVariableUtility environmentVariableUtility;
+    private final JiraServerGlobalConfigurationValidator validator;
 
     @Autowired
-    public JiraServerEnvironmentVariableHandlerFactory(JiraServerGlobalConfigAccessor configAccessor, EnvironmentVariableUtility environmentVariableUtility) {
+    public JiraServerEnvironmentVariableHandler(JiraServerGlobalConfigAccessor configAccessor, EnvironmentVariableUtility environmentVariableUtility, JiraServerGlobalConfigurationValidator validator) {
+        super(ChannelKeys.JIRA_SERVER.getDisplayName(), VARIABLE_NAMES);
         this.configAccessor = configAccessor;
         this.environmentVariableUtility = environmentVariableUtility;
+        this.validator = validator;
     }
 
     @Override
-    public EnvironmentVariableHandler build() {
-        return new EnvironmentVariableHandler(ChannelKeys.JIRA_SERVER.getDisplayName(), VARIABLE_NAMES, this::isConfigurationMissing, this::updateConfiguration);
-    }
-
-    private Boolean isConfigurationMissing() {
+    protected Boolean configurationMissingCheck() {
         return configAccessor.getConfigurationCount() <= 0;
     }
 
-    private EnvironmentProcessingResult updateConfiguration() {
-        EnvironmentProcessingResult.Builder builder = new EnvironmentProcessingResult.Builder(VARIABLE_NAMES);
-        String url = environmentVariableUtility.getEnvironmentValue(URL_KEY).orElse(null);
-
-        if (StringUtils.isBlank(url)) {
-            return EnvironmentProcessingResult.empty();
-        }
-
+    @Override
+    protected JiraServerGlobalConfigModel configureModel() {
         String name = AlertRestConstants.DEFAULT_CONFIGURATION_NAME;
+        String url = environmentVariableUtility.getEnvironmentValue(URL_KEY).orElse(null);
         String userName = environmentVariableUtility.getEnvironmentValue(USERNAME_KEY).orElse(null);
         String password = environmentVariableUtility.getEnvironmentValue(PASSWORD_KEY).orElse(null);
         String createdAt = DateUtils.formatDate(DateUtils.createCurrentDateTimestamp(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
@@ -77,32 +63,45 @@ public class JiraServerEnvironmentVariableHandlerFactory implements EnvironmentV
             .map(Boolean::valueOf)
             .ifPresent(configModel::setDisablePluginCheck);
 
-        JiraServerGlobalConfigModel obfuscatedModel = configModel.obfuscate();
-        if (StringUtils.isNotBlank(obfuscatedModel.getUrl())) {
-            builder.addVariableValue(URL_KEY, obfuscatedModel.getUrl());
+        return configModel;
+    }
+
+    @Override
+    protected ValidationResponseModel validateConfiguration(JiraServerGlobalConfigModel configModel) {
+        return validator.validate(configModel, null);
+    }
+
+    @Override
+    protected EnvironmentProcessingResult buildProcessingResult(JiraServerGlobalConfigModel obfuscatedConfigModel) {
+        EnvironmentProcessingResult.Builder builder = new EnvironmentProcessingResult.Builder(VARIABLE_NAMES);
+
+        if (StringUtils.isNotBlank(obfuscatedConfigModel.getUrl())) {
+            builder.addVariableValue(URL_KEY, obfuscatedConfigModel.getUrl());
         }
 
-        if (StringUtils.isNotBlank(obfuscatedModel.getUserName())) {
-            builder.addVariableValue(USERNAME_KEY, obfuscatedModel.getUserName());
+        if (StringUtils.isNotBlank(obfuscatedConfigModel.getUserName())) {
+            builder.addVariableValue(USERNAME_KEY, obfuscatedConfigModel.getUserName());
         }
 
-        obfuscatedModel.getDisablePluginCheck()
+        obfuscatedConfigModel.getDisablePluginCheck()
             .map(String::valueOf)
             .ifPresent(value -> builder.addVariableValue(DISABLE_PLUGIN_KEY, value));
 
-        obfuscatedModel.getIsPasswordSet()
+        obfuscatedConfigModel.getIsPasswordSet()
             .filter(Boolean::booleanValue)
             .ifPresent(ignored -> builder.addVariableValue(PASSWORD_KEY, AlertConstants.MASKED_VALUE));
 
-        EnvironmentProcessingResult result = builder.build();
-        if (result.hasValues() && configAccessor.getConfigurationByName(name).isEmpty()) {
+        return builder.build();
+    }
+
+    @Override
+    protected void saveConfiguration(JiraServerGlobalConfigModel configModel, EnvironmentProcessingResult processingResult) {
+        if (configAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME).isEmpty()) {
             try {
                 configAccessor.createConfiguration(configModel);
             } catch (AlertConfigurationException ex) {
                 logger.error("Failed to create config: ", ex);
             }
         }
-
-        return result;
     }
 }

@@ -10,7 +10,7 @@ package com.synopsys.integration.alert.component.settings.encryption.model;
 import java.util.Optional;
 
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
-import com.synopsys.integration.alert.common.rest.model.Obfuscated;
+import com.synopsys.integration.alert.api.common.model.Obfuscated;
 
 public class SettingsEncryptionModel extends AlertSerializableModel implements Obfuscated<SettingsEncryptionModel> {
     private Boolean isEncryptionPasswordSet;

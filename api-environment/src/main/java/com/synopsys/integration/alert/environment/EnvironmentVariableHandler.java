@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
+@Deprecated(forRemoval = true)
 public class EnvironmentVariableHandler {
 
     private final String name;
