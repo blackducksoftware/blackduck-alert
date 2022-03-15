@@ -26,7 +26,7 @@ import com.synopsys.integration.alert.common.rest.model.ExistenceModel;
 public abstract class AbstractUploadFunctionController {
     private final AbstractUploadAction action;
 
-    public AbstractUploadFunctionController(AbstractUploadAction action) {
+    protected AbstractUploadFunctionController(AbstractUploadAction action) {
         this.action = action;
     }
 

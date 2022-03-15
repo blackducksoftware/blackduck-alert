@@ -41,7 +41,7 @@ public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsMod
 
     private final IssueTrackerMessageSenderFactory<D, T> messageSenderFactory;
 
-    public IssueTrackerTestAction(IssueTrackerChannelKey issueTrackerChannelKey, IssueTrackerMessageSenderFactory<D, T> messageSenderFactory) {
+    protected IssueTrackerTestAction(IssueTrackerChannelKey issueTrackerChannelKey, IssueTrackerMessageSenderFactory<D, T> messageSenderFactory) {
         super(issueTrackerChannelKey);
         this.messageSenderFactory = messageSenderFactory;
     }
@@ -81,7 +81,14 @@ public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsMod
         }
 
         IssueTrackerIssueResponseModel<T> createdIssue = createdIssues.get(0);
-        ExistingIssueDetails<T> existingIssueDetails = new ExistingIssueDetails<>(createdIssue.getIssueId(), createdIssue.getIssueKey(), createdIssue.getIssueTitle(), createdIssue.getIssueLink(), IssueStatus.RESOLVABLE, IssueCategory.BOM);
+        ExistingIssueDetails<T> existingIssueDetails = new ExistingIssueDetails<>(
+            createdIssue.getIssueId(),
+            createdIssue.getIssueKey(),
+            createdIssue.getIssueTitle(),
+            createdIssue.getIssueLink(),
+            IssueStatus.RESOLVABLE,
+            IssueCategory.BOM
+        );
 
         if (!hasResolveTransition(distributionDetails)) {
             return createSuccessMessageResult(existingIssueDetails);
@@ -89,7 +96,11 @@ public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsMod
 
         IssueTrackerTransitionTestAction<T> transitionTestAction = new IssueTrackerTransitionTestAction<>(messageSender, fieldStatusCreator);
 
-        Optional<MessageResult> optionalResolveFailure = transitionTestAction.transitionTestIssueOrReturnFailureResult(IssueOperation.RESOLVE, existingIssueDetails, testProjectIssueModel);
+        Optional<MessageResult> optionalResolveFailure = transitionTestAction.transitionTestIssueOrReturnFailureResult(
+            IssueOperation.RESOLVE,
+            existingIssueDetails,
+            testProjectIssueModel
+        );
         if (optionalResolveFailure.isPresent()) {
             return optionalResolveFailure.get();
         }
@@ -99,7 +110,8 @@ public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsMod
         }
 
         return transitionTestAction.transitionTestIssueOrReturnFailureResult(IssueOperation.OPEN, existingIssueDetails, testProjectIssueModel)
-            .orElseGet(() -> transitionTestAction.transitionTestIssueOrReturnFailureResult(IssueOperation.RESOLVE, existingIssueDetails, testProjectIssueModel).orElse(createSuccessMessageResult(existingIssueDetails)));
+            .orElseGet(() -> transitionTestAction.transitionTestIssueOrReturnFailureResult(IssueOperation.RESOLVE, existingIssueDetails, testProjectIssueModel)
+                .orElse(createSuccessMessageResult(existingIssueDetails)));
     }
 
     protected abstract boolean hasResolveTransition(D distributionDetails);

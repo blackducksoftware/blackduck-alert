@@ -57,7 +57,7 @@ public abstract class DistributionJobModelData extends AlertSerializableModel {
         this.distributionJobDetails = null;
     }
 
-    public DistributionJobModelData(
+    protected DistributionJobModelData(
         boolean enabled,
         String name,
         FrequencyType distributionFrequency,

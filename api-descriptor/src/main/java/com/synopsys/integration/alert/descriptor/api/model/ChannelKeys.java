@@ -27,6 +27,8 @@ public final class ChannelKeys {
 
     private static final Map<String, ChannelKey> KEYS = new HashMap<>();
 
+    private ChannelKeys() {}
+
     public static ChannelKey getChannelKey(String universalKey) {
         return KEYS.get(universalKey);
     }

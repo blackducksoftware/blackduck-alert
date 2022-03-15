@@ -30,7 +30,7 @@ public abstract class DistributionChannelMessageTestAction<D extends Distributio
 
     private final DistributionChannel<D> distributionChannel;
 
-    public DistributionChannelMessageTestAction(ChannelKey channelKey, DistributionChannel<D> distributionChannel) {
+    protected DistributionChannelMessageTestAction(ChannelKey channelKey, DistributionChannel<D> distributionChannel) {
         super(channelKey);
         this.distributionChannel = distributionChannel;
     }

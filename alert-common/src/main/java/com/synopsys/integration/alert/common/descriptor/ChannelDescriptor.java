@@ -29,7 +29,7 @@ public abstract class ChannelDescriptor extends Descriptor {
     public static final String LABEL_CHANNEL_NAME = "Channel Type";
     public static final String LABEL_PROVIDER_TYPE = "Provider Type";
 
-    public ChannelDescriptor(ChannelKey channelKey, Set<ConfigContextEnum> configContexts) {
+    protected ChannelDescriptor(ChannelKey channelKey, Set<ConfigContextEnum> configContexts) {
         super(channelKey, DescriptorType.CHANNEL, configContexts);
     }
 

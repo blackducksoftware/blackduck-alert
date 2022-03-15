@@ -13,11 +13,11 @@ import java.util.function.Predicate;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedDetails;
 
 public class StatefulAlertPage<T, E extends Exception> {
-    private final AlertPagedDetails alertPagedDetails;
+    private final AlertPagedDetails<T> alertPagedDetails;
     private final PageRetriever<T, E> pageRetriever;
-    private final Predicate<AlertPagedDetails> hasNextPage;
+    private final Predicate<AlertPagedDetails<T>> hasNextPage;
 
-    public StatefulAlertPage(AlertPagedDetails alertPagedDetails, PageRetriever<T, E> pageRetriever, Predicate<AlertPagedDetails> hasNextPage) {
+    public StatefulAlertPage(AlertPagedDetails<T> alertPagedDetails, PageRetriever<T, E> pageRetriever, Predicate<AlertPagedDetails<T>> hasNextPage) {
         this.alertPagedDetails = alertPagedDetails;
         this.pageRetriever = pageRetriever;
         this.hasNextPage = hasNextPage;

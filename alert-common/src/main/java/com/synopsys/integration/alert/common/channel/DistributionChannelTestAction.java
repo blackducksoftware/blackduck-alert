@@ -16,7 +16,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.DistributionJ
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 public abstract class DistributionChannelTestAction extends DescriptorAction {
-    public DistributionChannelTestAction(DescriptorKey descriptorKey) {
+    protected DistributionChannelTestAction(DescriptorKey descriptorKey) {
         super(descriptorKey);
     }
 

@@ -13,13 +13,20 @@ public abstract class IssueTrackerMessageFormatter extends ChannelMessageFormatt
     private final int maxTitleLength;
     private final int maxCommentLength;
 
-    public IssueTrackerMessageFormatter(int maxTitleLength, int maxDescriptionLength, int maxCommentLength, String lineSeparator) {
+    protected IssueTrackerMessageFormatter(int maxTitleLength, int maxDescriptionLength, int maxCommentLength, String lineSeparator) {
         super(maxDescriptionLength, lineSeparator);
         this.maxTitleLength = maxTitleLength;
         this.maxCommentLength = maxCommentLength;
     }
 
-    public IssueTrackerMessageFormatter(int maxTitleLength, int maxDescriptionLength, int maxCommentLength, String lineSeparator, String sectionSeparator, String nonBreakingSpace) {
+    protected IssueTrackerMessageFormatter(
+        int maxTitleLength,
+        int maxDescriptionLength,
+        int maxCommentLength,
+        String lineSeparator,
+        String sectionSeparator,
+        String nonBreakingSpace
+    ) {
         super(maxDescriptionLength, lineSeparator, sectionSeparator, nonBreakingSpace);
         this.maxTitleLength = maxTitleLength;
         this.maxCommentLength = maxCommentLength;
