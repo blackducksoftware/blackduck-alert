@@ -68,7 +68,7 @@ public class JiraServerEnvironmentVariableHandler extends EnvironmentVariableHan
 
     @Override
     protected ValidationResponseModel validateConfiguration(JiraServerGlobalConfigModel configModel) {
-        return validator.validate(configModel);
+        return validator.validate(configModel, null);
     }
 
     @Override
