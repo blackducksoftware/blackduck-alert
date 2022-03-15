@@ -122,14 +122,14 @@ public class StaticJobAccessor implements JobAccessor {
         int pageNumber,
         int pageLimit,
         String searchTerm,
-        String sortField,
+        String sortName,
         String sortOrder, Collection<String> descriptorsNamesToInclude
     ) {
         if (!descriptorsNamesToInclude.contains(blackDuckProviderKey.getUniversalKey())) {
             return new AlertPagedModel<>(0, pageNumber, pageLimit, List.of());
         }
 
-        Sort sort = (sortField == null || sortOrder == null) ? Sort.unsorted() : Sort.by(sortOrder, sortField);
+        Sort sort = (sortName == null || sortOrder == null) ? Sort.unsorted() : Sort.by(sortOrder, sortName);
         PageRequest pageRequest = PageRequest.of(pageNumber, pageLimit, sort);
         Page<DistributionJobEntity> pageOfJobsWithDescriptorNames;
         if (StringUtils.isBlank(searchTerm)) {

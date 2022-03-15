@@ -76,11 +76,9 @@ public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<Jir
     @Override
     @Transactional(readOnly = true)
     public AlertPagedModel<JiraServerGlobalConfigModel> getConfigurationPage(
-        int page, int size, String searchTerm,
-        String sortField,
-        String sortOrder
+        int page, int size, String searchTerm, String sortName, String sortOrder
     ) {
-        Sort sort = (sortField == null || sortOrder == null) ? Sort.unsorted() : Sort.by(sortOrder, sortField);
+        Sort sort = (sortName == null || sortOrder == null) ? Sort.unsorted() : Sort.by(sortOrder, sortName);
         Page<JiraServerConfigurationEntity> resultPage = jiraServerConfigurationRepository.findAll(PageRequest.of(page, size, sort));
         List<JiraServerGlobalConfigModel> pageContent = resultPage.getContent()
             .stream()

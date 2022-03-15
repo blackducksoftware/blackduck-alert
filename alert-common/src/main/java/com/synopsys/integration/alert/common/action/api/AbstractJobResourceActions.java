@@ -61,7 +61,7 @@ public abstract class AbstractJobResourceActions {
         Integer pageNumber,
         Integer pageSize,
         String searchTerm,
-        String sortField,
+        String sortName,
         String sortOrder, Collection<String> permittedDescriptorsForSession
     );
 
@@ -96,7 +96,7 @@ public abstract class AbstractJobResourceActions {
         return createWithoutChecks(resource);
     }
 
-    public final ActionResponse<JobPagedModel> getPage(Integer pageNumber, Integer pageSize, String searchTerm, String sortField, String sortOrder) {
+    public final ActionResponse<JobPagedModel> getPage(Integer pageNumber, Integer pageSize, String searchTerm, String sortName, String sortOrder) {
         Optional<ActionResponse<JobPagedModel>> pagingErrorResponse = PagingParamValidationUtils.createErrorActionResponseIfInvalid(pageNumber, pageSize);
         if (pagingErrorResponse.isPresent()) {
             return pagingErrorResponse.get();
@@ -114,7 +114,7 @@ public abstract class AbstractJobResourceActions {
         if (permittedDescriptorsForSession.isEmpty()) {
             return ActionResponse.createForbiddenResponse();
         }
-        return readPageWithoutChecks(pageNumber, pageSize, searchTerm, sortField, sortOrder, permittedDescriptorsForSession);
+        return readPageWithoutChecks(pageNumber, pageSize, searchTerm, sortName, sortOrder, permittedDescriptorsForSession);
     }
 
     @Deprecated

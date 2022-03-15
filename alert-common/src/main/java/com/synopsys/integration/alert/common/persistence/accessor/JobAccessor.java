@@ -29,7 +29,7 @@ public interface JobAccessor {
         int pageOffset,
         int pageLimit,
         String searchTerm,
-        String sortField,
+        String sortName,
         String sortOrder,
         Collection<String> descriptorsNamesToInclude
     );

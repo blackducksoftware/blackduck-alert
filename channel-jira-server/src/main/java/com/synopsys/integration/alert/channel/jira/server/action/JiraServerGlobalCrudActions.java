@@ -44,9 +44,9 @@ public class JiraServerGlobalCrudActions {
     }
 
     public ActionResponse<AlertPagedModel<JiraServerGlobalConfigModel>> getPaged(
-        int page, int size, String searchTerm, String sortField, String sortOrder
+        int page, int size, String searchTerm, String sortName, String sortOrder
     ) {
-        return configurationHelper.getPage(() -> configurationAccessor.getConfigurationPage(page, size, searchTerm, sortField, sortOrder));
+        return configurationHelper.getPage(() -> configurationAccessor.getConfigurationPage(page, size, searchTerm, sortName, sortOrder));
     }
 
     public ActionResponse<JiraServerGlobalConfigModel> create(JiraServerGlobalConfigModel resource) {

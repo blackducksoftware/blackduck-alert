@@ -58,10 +58,10 @@ public class JiraServerGlobalConfigController implements StaticConfigResourceCon
         Integer pageNumber,
         Integer pageSize,
         String searchTerm,
-        String sortField,
+        String sortName,
         String sortOrder
     ) {
-        return ResponseFactory.createContentResponseFromAction(configActions.getPaged(pageNumber, pageSize, searchTerm, sortField, sortOrder));
+        return ResponseFactory.createContentResponseFromAction(configActions.getPaged(pageNumber, pageSize, searchTerm, sortName, sortOrder));
     }
 
     @Override

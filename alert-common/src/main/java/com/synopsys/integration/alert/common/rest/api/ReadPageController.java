@@ -18,7 +18,7 @@ public interface ReadPageController<P extends AlertPagedModel<?>> {
         @RequestParam(defaultValue = AlertPagedModel.DEFAULT_PAGE_NUMBER_STRING) Integer pageNumber,
         @RequestParam(defaultValue = AlertPagedModel.DEFAULT_PAGE_SIZE_STRING) Integer pageSize,
         @RequestParam(required = false) String searchTerm,
-        @RequestParam(required = false) String sortField,
+        @RequestParam(required = false) String sortName,
         @RequestParam(required = false) String sortOrder
     );
 
