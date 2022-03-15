@@ -15,7 +15,7 @@ import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 public abstract class Provider {
     private final ProviderKey key;
 
-    public Provider(ProviderKey key) {
+    protected Provider(ProviderKey key) {
         this.key = key;
     }
 

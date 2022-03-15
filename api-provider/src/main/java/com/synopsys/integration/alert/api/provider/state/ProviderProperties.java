@@ -15,7 +15,7 @@ public abstract class ProviderProperties {
     private final boolean configEnabled;
     private final String configName;
 
-    public ProviderProperties(Long configId, boolean configEnabled, String configName) {
+    protected ProviderProperties(Long configId, boolean configEnabled, String configName) {
         this.configId = configId;
         this.configEnabled = configEnabled;
         this.configName = configName;

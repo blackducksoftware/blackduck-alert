@@ -41,7 +41,7 @@ public abstract class Descriptor extends Stringable {
     private final DescriptorType type;
     private final Set<ConfigContextEnum> configContexts;
 
-    public Descriptor(DescriptorKey descriptorKey, DescriptorType type, Set<ConfigContextEnum> configContexts) {
+    protected Descriptor(DescriptorKey descriptorKey, DescriptorType type, Set<ConfigContextEnum> configContexts) {
         this.descriptorKey = descriptorKey;
         this.type = type;
         this.configContexts = configContexts;

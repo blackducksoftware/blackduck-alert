@@ -17,7 +17,7 @@ import com.synopsys.integration.blackduck.api.manual.view.NotificationView;
 public abstract class NotificationDetailExtractor<U extends NotificationView> {
     private final Class<U> notificationViewClass;
 
-    public NotificationDetailExtractor(Class<U> notificationViewClass) {
+    protected NotificationDetailExtractor(Class<U> notificationViewClass) {
         this.notificationViewClass = notificationViewClass;
     }
 

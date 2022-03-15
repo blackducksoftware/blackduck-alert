@@ -16,7 +16,7 @@ public abstract class DescriptorKey extends Stringable implements Serializable {
     private final String universalKey;
     private final String displayName;
 
-    public DescriptorKey(String universalKey, String displayName) {
+    protected DescriptorKey(String universalKey, String displayName) {
         this.universalKey = universalKey;
         this.displayName = displayName;
     }

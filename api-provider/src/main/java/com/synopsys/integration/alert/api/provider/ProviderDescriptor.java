@@ -40,7 +40,7 @@ public abstract class ProviderDescriptor extends Descriptor {
     public static final String LABEL_PROJECTS = "Projects";
     public static final String LABEL_PROCESSING = "Processing";
 
-    public ProviderDescriptor(ProviderKey providerKey) {
+    protected ProviderDescriptor(ProviderKey providerKey) {
         super(providerKey, DescriptorType.PROVIDER, Set.of(ConfigContextEnum.GLOBAL, ConfigContextEnum.DISTRIBUTION));
     }
 

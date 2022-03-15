@@ -78,16 +78,16 @@ public class DefaultConfigurationModelConfigurationAccessor implements Configura
         }
 
         List<Long> providerConfigIds = definedFieldRepository.findFirstByKey(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME)
-                                           .map(DefinedFieldEntity::getId)
-                                           .stream()
-                                           .map(fieldId -> fieldValueRepository.findAllByFieldIdAndValue(fieldId, providerConfigName))
-                                           .flatMap(List::stream)
-                                           .map(FieldValueEntity::getConfigId)
-                                           .collect(Collectors.toList());
+            .map(DefinedFieldEntity::getId)
+            .stream()
+            .map(fieldId -> fieldValueRepository.findAllByFieldIdAndValue(fieldId, providerConfigName))
+            .flatMap(List::stream)
+            .map(FieldValueEntity::getConfigId)
+            .collect(Collectors.toList());
         if (!providerConfigIds.isEmpty()) {
             for (Long configId : providerConfigIds) {
                 Optional<ConfigurationModel> globalModel = getConfigurationById(configId)
-                                                               .filter(model -> model.getDescriptorContext() == ConfigContextEnum.GLOBAL);
+                    .filter(model -> model.getDescriptorContext() == ConfigContextEnum.GLOBAL);
                 if (globalModel.isPresent()) {
                     return globalModel;
                 }
@@ -104,18 +104,18 @@ public class DefaultConfigurationModelConfigurationAccessor implements Configura
     @Override
     public List<ConfigurationModel> getConfigurationsByDescriptorKey(DescriptorKey descriptorKey) {
         return descriptorConfigsRepository.findByDescriptorName(descriptorKey.getUniversalKey())
-                   .stream()
-                   .map(this::createConfigModel)
-                   .collect(Collectors.toList());
+            .stream()
+            .map(this::createConfigModel)
+            .collect(Collectors.toList());
     }
 
     @Override
     public List<ConfigurationModel> getConfigurationsByDescriptorType(DescriptorType descriptorType) {
         String descriptorTypeName = descriptorType.name();
         return descriptorConfigsRepository.findByDescriptorType(descriptorTypeName)
-                   .stream()
-                   .map(this::createConfigModel)
-                   .collect(Collectors.toList());
+            .stream()
+            .map(this::createConfigModel)
+            .collect(Collectors.toList());
     }
 
     @Override
@@ -135,16 +135,26 @@ public class DefaultConfigurationModelConfigurationAccessor implements Configura
         DescriptorConfigEntity descriptorConfigToSave = new DescriptorConfigEntity(descriptorId, configContextId, currentTime, currentTime);
         DescriptorConfigEntity savedDescriptorConfig = descriptorConfigsRepository.save(descriptorConfigToSave);
 
-        ConfigurationModelMutable createdConfig = createEmptyConfigModel(descriptorId, savedDescriptorConfig.getId(), savedDescriptorConfig.getCreatedAt(), savedDescriptorConfig.getLastUpdated(), context);
+        ConfigurationModelMutable createdConfig = createEmptyConfigModel(
+            descriptorId,
+            savedDescriptorConfig.getId(),
+            savedDescriptorConfig.getCreatedAt(),
+            savedDescriptorConfig.getLastUpdated(),
+            context
+        );
         if (configuredFields != null && !configuredFields.isEmpty()) {
             List<FieldValueEntity> fieldValuesToSave = new ArrayList<>(configuredFields.size());
             for (ConfigurationFieldModel configuredField : configuredFields) {
                 String fieldKey = configuredField.getFieldKey();
                 if (configuredField.isSet()) {
                     DefinedFieldEntity associatedField = definedFieldRepository.findFirstByKey(fieldKey)
-                                                             .orElseThrow(() -> new AlertRuntimeException(String.format("FATAL: Field with key '%s' did not exist", fieldKey)));
+                        .orElseThrow(() -> new AlertRuntimeException(String.format("FATAL: Field with key '%s' did not exist", fieldKey)));
                     for (String value : configuredField.getFieldValues()) {
-                        FieldValueEntity newFieldValueEntity = new FieldValueEntity(createdConfig.getConfigurationId(), associatedField.getId(), encrypt(value, configuredField.isSensitive()));
+                        FieldValueEntity newFieldValueEntity = new FieldValueEntity(
+                            createdConfig.getConfigurationId(),
+                            associatedField.getId(),
+                            encrypt(value, configuredField.isSensitive())
+                        );
                         fieldValuesToSave.add(newFieldValueEntity);
                     }
                 }
@@ -165,7 +175,8 @@ public class DefaultConfigurationModelConfigurationAccessor implements Configura
         List<ConfigurationModel> configurationModels = new ArrayList<>();
         for (DescriptorConfigEntity descriptorConfigEntity : descriptorConfigEntities) {
             configurationModels.add(createConfigModel(descriptorConfigEntity.getDescriptorId(), descriptorConfigEntity.getId(), descriptorConfigEntity.getCreatedAt(),
-                descriptorConfigEntity.getLastUpdated(), contextId));
+                descriptorConfigEntity.getLastUpdated(), contextId
+            ));
         }
         return configurationModels;
     }
@@ -176,13 +187,14 @@ public class DefaultConfigurationModelConfigurationAccessor implements Configura
     @Override
     public ConfigurationModel updateConfiguration(Long descriptorConfigId, Collection<ConfigurationFieldModel> configuredFields) throws AlertConfigurationException {
         DescriptorConfigEntity descriptorConfigEntity = descriptorConfigsRepository.findById(descriptorConfigId)
-                                                            .orElseThrow(() -> new AlertConfigurationException(String.format("Config with id '%d' did not exist", descriptorConfigId)));
+            .orElseThrow(() -> new AlertConfigurationException(String.format("Config with id '%d' did not exist", descriptorConfigId)));
         List<FieldValueEntity> oldValues = fieldValueRepository.findByConfigId(descriptorConfigId);
         fieldValueRepository.deleteAll(oldValues);
         fieldValueRepository.flush();
 
         ConfigurationModelMutable updatedConfig = createEmptyConfigModel(descriptorConfigEntity.getDescriptorId(), descriptorConfigEntity.getId(),
-            descriptorConfigEntity.getCreatedAt(), descriptorConfigEntity.getLastUpdated(), descriptorConfigEntity.getContextId());
+            descriptorConfigEntity.getCreatedAt(), descriptorConfigEntity.getLastUpdated(), descriptorConfigEntity.getContextId()
+        );
         if (configuredFields != null && !configuredFields.isEmpty()) {
             List<FieldValueEntity> fieldValuesToSave = new ArrayList<>(configuredFields.size());
             for (ConfigurationFieldModel configFieldModel : configuredFields) {
@@ -220,28 +232,15 @@ public class DefaultConfigurationModelConfigurationAccessor implements Configura
         Long descriptorId = getDescriptorIdOrThrowException(descriptorName);
         Long contextId = getConfigContextIdOrThrowException(ConfigContextEnum.DISTRIBUTION);
         Set<String> descriptorFields = definedFieldRepository.findByDescriptorIdAndContext(descriptorId, contextId)
-                                           .stream()
-                                           .map(DefinedFieldEntity::getKey)
-                                           .collect(Collectors.toSet());
+            .stream()
+            .map(DefinedFieldEntity::getKey)
+            .collect(Collectors.toSet());
 
         Set<ConfigurationFieldModel> relevantFields = configuredFields
-                                                          .stream()
-                                                          .filter(field -> descriptorFields.contains(field.getFieldKey()))
-                                                          .collect(Collectors.toSet());
+            .stream()
+            .filter(field -> descriptorFields.contains(field.getFieldKey()))
+            .collect(Collectors.toSet());
         return createConfiguration(descriptorName, ConfigContextEnum.DISTRIBUTION, relevantFields);
-    }
-
-    private List<ConfigurationModel> createConfigModels(Collection<RegisteredDescriptorEntity> descriptors) {
-        List<ConfigurationModel> configs = new ArrayList<>();
-        for (RegisteredDescriptorEntity descriptorEntity : descriptors) {
-            List<DescriptorConfigEntity> descriptorConfigEntities = descriptorConfigsRepository.findByDescriptorId(descriptorEntity.getId());
-            for (DescriptorConfigEntity descriptorConfigEntity : descriptorConfigEntities) {
-                ConfigurationModel newModel = createConfigModel(descriptorConfigEntity.getDescriptorId(), descriptorConfigEntity.getId(),
-                    descriptorConfigEntity.getCreatedAt(), descriptorConfigEntity.getLastUpdated(), descriptorConfigEntity.getContextId());
-                configs.add(newModel);
-            }
-        }
-        return configs;
     }
 
     private ConfigurationModelMutable createConfigModel(DescriptorConfigEntity descriptorConfigEntity) {
@@ -264,9 +263,11 @@ public class DefaultConfigurationModelConfigurationAccessor implements Configura
         List<FieldValueEntity> fieldValueEntities = fieldValueRepository.findByConfigId(configId);
         for (FieldValueEntity fieldValueEntity : fieldValueEntities) {
             DefinedFieldEntity definedFieldEntity = definedFieldRepository.findById(fieldValueEntity.getFieldId())
-                                                        .orElseThrow(() -> new AlertRuntimeException("Field Id missing from the database"));
+                .orElseThrow(() -> new AlertRuntimeException("Field Id missing from the database"));
             String fieldKey = definedFieldEntity.getKey();
-            ConfigurationFieldModel fieldModel = BooleanUtils.isTrue(definedFieldEntity.getSensitive()) ? ConfigurationFieldModel.createSensitive(fieldKey) : ConfigurationFieldModel.create(fieldKey);
+            ConfigurationFieldModel fieldModel = BooleanUtils.isTrue(definedFieldEntity.getSensitive()) ?
+                ConfigurationFieldModel.createSensitive(fieldKey) :
+                ConfigurationFieldModel.create(fieldKey);
             String decryptedValue = decrypt(fieldValueEntity.getValue(), fieldModel.isSensitive());
             fieldModel.setFieldValue(decryptedValue);
             newModel.put(fieldModel);
@@ -292,27 +293,27 @@ public class DefaultConfigurationModelConfigurationAccessor implements Configura
 
     private Long getDescriptorIdOrThrowException(String descriptorName) {
         return registeredDescriptorRepository.findFirstByName(descriptorName)
-                   .map(RegisteredDescriptorEntity::getId)
-                   .orElseThrow(() -> new AlertRuntimeException(String.format("No descriptor with name '%s' exists", descriptorName)));
+            .map(RegisteredDescriptorEntity::getId)
+            .orElseThrow(() -> new AlertRuntimeException(String.format("No descriptor with name '%s' exists", descriptorName)));
     }
 
     private Long getConfigContextIdOrThrowException(ConfigContextEnum context) {
         String contextName = context.name();
         return configContextRepository.findFirstByContext(contextName)
-                   .map(ConfigContextEntity::getId)
-                   .orElseThrow(() -> new AlertRuntimeException(String.format("No context with name '%s' exists", contextName)));
+            .map(ConfigContextEntity::getId)
+            .orElseThrow(() -> new AlertRuntimeException(String.format("No context with name '%s' exists", contextName)));
     }
 
     private String getContextById(Long contextId) {
         return configContextRepository.findById(contextId)
-                   .map(ConfigContextEntity::getContext)
-                   .orElseThrow(() -> new AlertRuntimeException(String.format("No context with id '%d' exists", contextId)));
+            .map(ConfigContextEntity::getContext)
+            .orElseThrow(() -> new AlertRuntimeException(String.format("No context with id '%d' exists", contextId)));
     }
 
     private Long getFieldIdOrThrowException(String fieldKey) {
         return definedFieldRepository.findFirstByKey(fieldKey)
-                   .map(DefinedFieldEntity::getId)
-                   .orElseThrow(() -> new AlertRuntimeException(String.format("A field with key '%s' did not exist", fieldKey)));
+            .map(DefinedFieldEntity::getId)
+            .orElseThrow(() -> new AlertRuntimeException(String.format("A field with key '%s' did not exist", fieldKey)));
     }
 
     private boolean isFieldSensitive(String fieldKey) {
@@ -320,8 +321,8 @@ public class DefaultConfigurationModelConfigurationAccessor implements Configura
             return false;
         }
         return definedFieldRepository.findFirstByKey(fieldKey)
-                   .map(DefinedFieldEntity::getSensitive)
-                   .orElse(false);
+            .map(DefinedFieldEntity::getSensitive)
+            .orElse(false);
     }
 
     private String encrypt(String value, boolean shouldEncrypt) {

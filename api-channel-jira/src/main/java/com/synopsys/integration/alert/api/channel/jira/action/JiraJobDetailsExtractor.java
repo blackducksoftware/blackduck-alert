@@ -22,7 +22,7 @@ public abstract class JiraJobDetailsExtractor extends DistributionJobDetailsExtr
     private final DistributionJobFieldExtractor fieldExtractor;
     private final Gson gson;
 
-    public JiraJobDetailsExtractor(IssueTrackerChannelKey channelKey, DistributionJobFieldExtractor fieldExtractor, Gson gson) {
+    protected JiraJobDetailsExtractor(IssueTrackerChannelKey channelKey, DistributionJobFieldExtractor fieldExtractor, Gson gson) {
         super(channelKey);
         this.fieldExtractor = fieldExtractor;
         this.gson = gson;

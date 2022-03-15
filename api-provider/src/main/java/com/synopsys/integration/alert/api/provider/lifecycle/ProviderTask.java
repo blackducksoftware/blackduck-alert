@@ -22,7 +22,7 @@ public abstract class ProviderTask extends ScheduledTask {
     private final ProviderKey providerKey;
     private final String taskName;
 
-    public ProviderTask(ProviderKey providerKey, TaskScheduler taskScheduler, ProviderProperties providerProperties) {
+    protected ProviderTask(ProviderKey providerKey, TaskScheduler taskScheduler, ProviderProperties providerProperties) {
         super(taskScheduler);
         this.providerKey = providerKey;
         this.providerProperties = providerProperties;

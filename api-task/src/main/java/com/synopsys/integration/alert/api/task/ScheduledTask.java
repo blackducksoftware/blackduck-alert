@@ -50,7 +50,7 @@ public abstract class ScheduledTask implements Runnable {
         return String.format("%s.%s", packageName, simpleClassName);
     }
 
-    public ScheduledTask(TaskScheduler taskScheduler) {
+    protected ScheduledTask(TaskScheduler taskScheduler) {
         this.taskScheduler = taskScheduler;
         this.taskName = computeTaskName(getClass());
     }
