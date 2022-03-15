@@ -78,8 +78,22 @@ public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<Jir
     public AlertPagedModel<JiraServerGlobalConfigModel> getConfigurationPage(
         int page, int size, String searchTerm, String sortName, String sortOrder
     ) {
-        Sort sort = (sortName == null || sortOrder == null) ? Sort.unsorted() : Sort.by(sortOrder, sortName);
-        Page<JiraServerConfigurationEntity> resultPage = jiraServerConfigurationRepository.findAll(PageRequest.of(page, size, sort));
+        Sort sort = Sort.unsorted();
+        if (StringUtils.isNotBlank(sortName)) {
+            Sort.Order sortingOrder = Sort.Order.desc(sortName);
+            if (StringUtils.isNotBlank(sortOrder) && Sort.Direction.ASC.name().equalsIgnoreCase(sortOrder)) {
+                sortingOrder = Sort.Order.asc(sortName);
+            }
+            sort = Sort.by(sortingOrder);
+        }
+
+        Page<JiraServerConfigurationEntity> resultPage = Page.empty();
+        PageRequest pageRequest = PageRequest.of(page, size, sort);
+        if (StringUtils.isNotBlank(searchTerm)) {
+            resultPage = jiraServerConfigurationRepository.findBySearchTerm(searchTerm, pageRequest);
+        } else {
+            resultPage = jiraServerConfigurationRepository.findAll(pageRequest);
+        }
         List<JiraServerGlobalConfigModel> pageContent = resultPage.getContent()
             .stream()
             .map(this::createConfigModel)
