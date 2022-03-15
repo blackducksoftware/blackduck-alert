@@ -45,7 +45,7 @@ public class AlertStartupInitializerTest {
         List<Descriptor> descriptors = List.of(channelDescriptor);
 
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
-        EnvironmentVariableProcessor environmentVariableProcessor = new EnvironmentVariableProcessor(List.of());
+        EnvironmentVariableProcessor environmentVariableProcessor = new EnvironmentVariableProcessor(List.of(), List.of());
         DescriptorMap descriptorMap = new DescriptorMap(descriptorKeys, descriptors);
         ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, baseDescriptorAccessor, descriptorKeys);
         Mockito.when(baseDescriptorAccessor.getFieldsForDescriptor(Mockito.any(DescriptorKey.class), Mockito.any(ConfigContextEnum.class))).thenReturn(List.of());
@@ -69,7 +69,7 @@ public class AlertStartupInitializerTest {
         EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
-        EnvironmentVariableProcessor environmentVariableProcessor = new EnvironmentVariableProcessor(List.of());
+        EnvironmentVariableProcessor environmentVariableProcessor = new EnvironmentVariableProcessor(List.of(), List.of());
         ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, baseDescriptorAccessor, List.of());
         FieldModelProcessor fieldModelProcessor = new FieldModelProcessor(modelConverter, new DescriptorProcessor(descriptorMap, baseConfigurationModelConfigurationAccessor, List.of()));
         SettingsUtility settingsUtility = Mockito.mock(SettingsUtility.class);
@@ -102,7 +102,7 @@ public class AlertStartupInitializerTest {
         final String value = "newValue";
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn(value);
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
-        EnvironmentVariableProcessor environmentVariableProcessor = new EnvironmentVariableProcessor(List.of());
+        EnvironmentVariableProcessor environmentVariableProcessor = new EnvironmentVariableProcessor(List.of(), List.of());
         FieldModelProcessor fieldModelProcessor = new FieldModelProcessor(modelConverter, new DescriptorProcessor(descriptorMap, baseConfigurationModelConfigurationAccessor, List.of()));
         SettingsUtility settingsUtility = Mockito.mock(SettingsUtility.class);
         Mockito.when(settingsUtility.getKey()).thenReturn(new SettingsDescriptorKey());
@@ -139,7 +139,7 @@ public class AlertStartupInitializerTest {
         final String value = "newValue";
         Mockito.when(environment.getProperty(Mockito.startsWith("ALERT_CHANNEL_"))).thenReturn(value);
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
-        EnvironmentVariableProcessor environmentVariableProcessor = new EnvironmentVariableProcessor(List.of());
+        EnvironmentVariableProcessor environmentVariableProcessor = new EnvironmentVariableProcessor(List.of(), List.of());
 
         FieldModelProcessor fieldModelProcessor = new FieldModelProcessor(modelConverter, new DescriptorProcessor(descriptorMap, baseConfigurationModelConfigurationAccessor, List.of()));
         SettingsUtility settingsUtility = Mockito.mock(SettingsUtility.class);
