@@ -21,7 +21,7 @@ public abstract class EnvironmentVariableHandlerV3<T extends Obfuscated<T>> {
     private final String name;
     private final Set<String> environmentVariableNames;
 
-    public EnvironmentVariableHandlerV3(String name, Set<String> environmentVariableNames) {
+    protected EnvironmentVariableHandlerV3(String name, Set<String> environmentVariableNames) {
         this.name = name;
         this.environmentVariableNames = environmentVariableNames;
     }
