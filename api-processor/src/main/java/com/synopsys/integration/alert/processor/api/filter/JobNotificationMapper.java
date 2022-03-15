@@ -136,7 +136,7 @@ public class JobNotificationMapper {
         public JobWithNotifications addNotificationsIfApplicable(Long providerId, List<DetailedNotificationContent> detailedNotificationContents) {
             for (DetailedNotificationContent detailedNotificationContent : detailedNotificationContents) {
                 if (JobNotificationFilterUtils.doesNotificationApplyToJob(filteredDistributionJobResponseModel, detailedNotificationContent)
-                    && detailedNotificationContent.getProviderConfigId() == providerId) {
+                    && detailedNotificationContent.getProviderConfigId().equals(providerId)) {
                     notificationContentWrappers.add(detailedNotificationContent.getNotificationContentWrapper());
                 }
             }
