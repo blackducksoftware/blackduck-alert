@@ -35,7 +35,7 @@ import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @AlertIntegrationTest
-public class StaticJobAccessorTestIT {
+class StaticJobAccessorTestIT {
     private static final List<UUID> createdJobIds = new LinkedList<>();
 
     @Autowired
@@ -49,7 +49,7 @@ public class StaticJobAccessorTestIT {
 
     @Test
     @Transactional
-    public void verifyAzureSavesTest() {
+    void verifyAzureSavesTest() {
         AzureBoardsJobDetailsModel azureBoardsJobDetailsModel = new AzureBoardsJobDetailsModel(
             UUID.randomUUID(),
             true,
@@ -64,7 +64,7 @@ public class StaticJobAccessorTestIT {
     }
 
     @Test
-    public void verifyJiraServerSavesTest() {
+    void verifyJiraServerSavesTest() {
         JiraServerJobDetailsModel jiraServerJobDetailsModel = new JiraServerJobDetailsModel(
             UUID.randomUUID(),
             true,
@@ -82,7 +82,7 @@ public class StaticJobAccessorTestIT {
     }
 
     @Test
-    public void verifyJiraCloudSavesTest() {
+    void verifyJiraCloudSavesTest() {
         JiraCloudJobDetailsModel jiraCloudJobDetailsModel = new JiraCloudJobDetailsModel(
             UUID.randomUUID(),
             true,
@@ -100,7 +100,7 @@ public class StaticJobAccessorTestIT {
     }
 
     @Test
-    public void verifyEmailSavesTest() {
+    void verifyEmailSavesTest() {
         EmailJobDetailsModel emailJobDetailsModel = new EmailJobDetailsModel(
             UUID.randomUUID(),
             "subjectLine",
@@ -115,7 +115,7 @@ public class StaticJobAccessorTestIT {
     }
 
     @Test
-    public void verifySlackSavesTest() {
+    void verifySlackSavesTest() {
         SlackJobDetailsModel slackJobDetailsModel = new SlackJobDetailsModel(
             UUID.randomUUID(),
             "webhook",
@@ -128,7 +128,7 @@ public class StaticJobAccessorTestIT {
     }
 
     @Test
-    public void verifyMSTeamsSavesTest() {
+    void verifyMSTeamsSavesTest() {
         MSTeamsJobDetailsModel msTeamsJobDetailsModel = new MSTeamsJobDetailsModel(
             UUID.randomUUID(),
             "webhook"

@@ -29,7 +29,7 @@ import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
 
-public class JiraServerGlobalCrudActionsTest {
+class JiraServerGlobalCrudActionsTest {
     private final String CREATED_AT = String.valueOf(DateUtils.createCurrentDateTimestamp().minusMinutes(5L));
     private final String UPDATED_AT = String.valueOf(DateUtils.createCurrentDateTimestamp());
     private final String URL = "https://someUrl";

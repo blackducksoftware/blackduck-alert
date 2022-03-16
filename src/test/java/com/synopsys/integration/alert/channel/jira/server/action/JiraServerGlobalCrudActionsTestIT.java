@@ -30,7 +30,7 @@ import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @AlertIntegrationTest
-public class JiraServerGlobalCrudActionsTestIT {
+class JiraServerGlobalCrudActionsTestIT {
     private AuthorizationManager authorizationManager;
     @Autowired
     private JiraServerGlobalConfigAccessor configAccessor;
