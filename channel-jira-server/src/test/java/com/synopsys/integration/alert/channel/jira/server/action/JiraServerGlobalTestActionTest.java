@@ -34,7 +34,9 @@ class JiraServerGlobalTestActionTest {
     @Test
     void testConfigValidTest() throws IntegrationException {
         AuthorizationManager authorizationManager = createAuthorizationManager(255);
-        JiraServerGlobalConfigurationValidator validator = new JiraServerGlobalConfigurationValidator();
+        JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
+        Mockito.when(jiraServerGlobalConfigAccessor.getConfigurationByName(Mockito.anyString())).thenReturn(Optional.empty());
+        JiraServerGlobalConfigurationValidator validator = new JiraServerGlobalConfigurationValidator(jiraServerGlobalConfigAccessor);
         JiraServerTestActionFactory jiraServerTestActionFactory = Mockito.mock(JiraServerTestActionFactory.class);
         JiraServerGlobalTestActionWrapper testActionWrapper = Mockito.mock(JiraServerGlobalTestActionWrapper.class);
         JiraServerGlobalConfigAccessor configurationAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
@@ -53,7 +55,9 @@ class JiraServerGlobalTestActionTest {
     @Test
     void testConfigValidWithPasswordSavedTest() throws IntegrationException {
         AuthorizationManager authorizationManager = createAuthorizationManager(255);
-        JiraServerGlobalConfigurationValidator validator = new JiraServerGlobalConfigurationValidator();
+        JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
+        Mockito.when(jiraServerGlobalConfigAccessor.getConfigurationByName(Mockito.anyString())).thenReturn(Optional.empty());
+        JiraServerGlobalConfigurationValidator validator = new JiraServerGlobalConfigurationValidator(jiraServerGlobalConfigAccessor);
         JiraServerTestActionFactory jiraServerTestActionFactory = Mockito.mock(JiraServerTestActionFactory.class);
         JiraServerGlobalTestActionWrapper testActionWrapper = Mockito.mock(JiraServerGlobalTestActionWrapper.class);
         JiraServerGlobalConfigAccessor configurationAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
@@ -76,7 +80,7 @@ class JiraServerGlobalTestActionTest {
             Boolean.TRUE,
             Boolean.FALSE
         );
-        
+
         JiraServerGlobalTestAction jiraServerGlobalTestAction = new JiraServerGlobalTestAction(authorizationManager, validator, jiraServerTestActionFactory, configurationAccessor);
         ConfigurationTestResult testResult = jiraServerGlobalTestAction.testConfigModelContent(configurationModel);
         assertTrue(testResult.isSuccess());
@@ -85,7 +89,9 @@ class JiraServerGlobalTestActionTest {
     @Test
     void testConfigIssueTrackerException() throws IntegrationException {
         AuthorizationManager authorizationManager = createAuthorizationManager(255);
-        JiraServerGlobalConfigurationValidator validator = new JiraServerGlobalConfigurationValidator();
+        JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
+        Mockito.when(jiraServerGlobalConfigAccessor.getConfigurationByName(Mockito.anyString())).thenReturn(Optional.empty());
+        JiraServerGlobalConfigurationValidator validator = new JiraServerGlobalConfigurationValidator(jiraServerGlobalConfigAccessor);
         JiraServerTestActionFactory jiraServerTestActionFactory = Mockito.mock(JiraServerTestActionFactory.class);
         JiraServerGlobalConfigAccessor configurationAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
 
@@ -99,9 +105,11 @@ class JiraServerGlobalTestActionTest {
     }
 
     @Test
-    void testUserCannotGetIssues() throws IntegrationException  {
+    void testUserCannotGetIssues() throws IntegrationException {
         AuthorizationManager authorizationManager = createAuthorizationManager(255);
-        JiraServerGlobalConfigurationValidator validator = new JiraServerGlobalConfigurationValidator();
+        JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
+        Mockito.when(jiraServerGlobalConfigAccessor.getConfigurationByName(Mockito.anyString())).thenReturn(Optional.empty());
+        JiraServerGlobalConfigurationValidator validator = new JiraServerGlobalConfigurationValidator(jiraServerGlobalConfigAccessor);
         JiraServerTestActionFactory jiraServerTestActionFactory = Mockito.mock(JiraServerTestActionFactory.class);
         JiraServerGlobalTestActionWrapper testActionWrapper = Mockito.mock(JiraServerGlobalTestActionWrapper.class);
         JiraServerGlobalConfigAccessor configurationAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
@@ -117,7 +125,9 @@ class JiraServerGlobalTestActionTest {
     @Test
     void testAppCheckDisabled() throws IntegrationException {
         AuthorizationManager authorizationManager = createAuthorizationManager(255);
-        JiraServerGlobalConfigurationValidator validator = new JiraServerGlobalConfigurationValidator();
+        JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
+        Mockito.when(jiraServerGlobalConfigAccessor.getConfigurationByName(Mockito.anyString())).thenReturn(Optional.empty());
+        JiraServerGlobalConfigurationValidator validator = new JiraServerGlobalConfigurationValidator(jiraServerGlobalConfigAccessor);
         JiraServerTestActionFactory jiraServerTestActionFactory = Mockito.mock(JiraServerTestActionFactory.class);
         JiraServerGlobalTestActionWrapper testActionWrapper = Mockito.mock(JiraServerGlobalTestActionWrapper.class);
         JiraServerGlobalConfigAccessor configurationAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
@@ -135,7 +145,9 @@ class JiraServerGlobalTestActionTest {
     @Test
     void testUserAdminMissing() throws IntegrationException {
         AuthorizationManager authorizationManager = createAuthorizationManager(255);
-        JiraServerGlobalConfigurationValidator validator = new JiraServerGlobalConfigurationValidator();
+        JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
+        Mockito.when(jiraServerGlobalConfigAccessor.getConfigurationByName(Mockito.anyString())).thenReturn(Optional.empty());
+        JiraServerGlobalConfigurationValidator validator = new JiraServerGlobalConfigurationValidator(jiraServerGlobalConfigAccessor);
         JiraServerTestActionFactory jiraServerTestActionFactory = Mockito.mock(JiraServerTestActionFactory.class);
         JiraServerGlobalTestActionWrapper testActionWrapper = Mockito.mock(JiraServerGlobalTestActionWrapper.class);
         JiraServerGlobalConfigAccessor configurationAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
@@ -153,7 +165,9 @@ class JiraServerGlobalTestActionTest {
     @Test
     void testAppMissing() throws IntegrationException {
         AuthorizationManager authorizationManager = createAuthorizationManager(255);
-        JiraServerGlobalConfigurationValidator validator = new JiraServerGlobalConfigurationValidator();
+        JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
+        Mockito.when(jiraServerGlobalConfigAccessor.getConfigurationByName(Mockito.anyString())).thenReturn(Optional.empty());
+        JiraServerGlobalConfigurationValidator validator = new JiraServerGlobalConfigurationValidator(jiraServerGlobalConfigAccessor);
         JiraServerTestActionFactory jiraServerTestActionFactory = Mockito.mock(JiraServerTestActionFactory.class);
         JiraServerGlobalTestActionWrapper testActionWrapper = Mockito.mock(JiraServerGlobalTestActionWrapper.class);
         JiraServerGlobalConfigAccessor configurationAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
@@ -172,7 +186,9 @@ class JiraServerGlobalTestActionTest {
     @Test
     void testPermissionForbidden() {
         AuthorizationManager authorizationManager = createAuthorizationManager(0);
-        JiraServerGlobalConfigurationValidator validator = new JiraServerGlobalConfigurationValidator();
+        JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
+        Mockito.when(jiraServerGlobalConfigAccessor.getConfigurationByName(Mockito.anyString())).thenReturn(Optional.empty());
+        JiraServerGlobalConfigurationValidator validator = new JiraServerGlobalConfigurationValidator(jiraServerGlobalConfigAccessor);
         JiraServerTestActionFactory jiraServerTestActionFactory = Mockito.mock(JiraServerTestActionFactory.class);
         JiraServerGlobalConfigAccessor configurationAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
 
@@ -183,9 +199,11 @@ class JiraServerGlobalTestActionTest {
     }
 
     @Test
-    void testPermissionOK() throws IntegrationException{
+    void testPermissionOK() throws IntegrationException {
         AuthorizationManager authorizationManager = createAuthorizationManager(255);
-        JiraServerGlobalConfigurationValidator validator = new JiraServerGlobalConfigurationValidator();
+        JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
+        Mockito.when(jiraServerGlobalConfigAccessor.getConfigurationByName(Mockito.anyString())).thenReturn(Optional.empty());
+        JiraServerGlobalConfigurationValidator validator = new JiraServerGlobalConfigurationValidator(jiraServerGlobalConfigAccessor);
         JiraServerTestActionFactory jiraServerTestActionFactory = Mockito.mock(JiraServerTestActionFactory.class);
         JiraServerGlobalTestActionWrapper testActionWrapper = Mockito.mock(JiraServerGlobalTestActionWrapper.class);
         JiraServerGlobalConfigAccessor configurationAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
@@ -202,7 +220,6 @@ class JiraServerGlobalTestActionTest {
         assertEquals(HttpStatus.OK, validationResponseModel.getHttpStatus());
     }
 
-
     private AuthorizationManager createAuthorizationManager(int assignedPermissions) {
         AuthenticationTestUtils authenticationTestUtils = new AuthenticationTestUtils();
         DescriptorKey descriptorKey = ChannelKeys.JIRA_SERVER;
@@ -212,6 +229,16 @@ class JiraServerGlobalTestActionTest {
     }
 
     private JiraServerGlobalConfigModel createValidJiraServerGlobalConfigModel() {
-        return new JiraServerGlobalConfigModel(UUID.randomUUID().toString(), "jiraServerConfigName", "createdAtTest", "lastUpdatedTest", "https://jiraServer", "jiraUser", "jiraPassword", Boolean.FALSE, Boolean.FALSE);
+        return new JiraServerGlobalConfigModel(
+            UUID.randomUUID().toString(),
+            "jiraServerConfigName",
+            "createdAtTest",
+            "lastUpdatedTest",
+            "https://jiraServer",
+            "jiraUser",
+            "jiraPassword",
+            Boolean.FALSE,
+            Boolean.FALSE
+        );
     }
 }

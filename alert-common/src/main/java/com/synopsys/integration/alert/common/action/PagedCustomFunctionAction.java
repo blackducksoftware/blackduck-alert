@@ -22,7 +22,7 @@ import com.synopsys.integration.alert.common.util.PagingParamValidationUtils;
 import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class PagedCustomFunctionAction<T extends AlertPagedModel<?>> extends CustomFunctionAction<T> {
-    public PagedCustomFunctionAction(AuthorizationManager authorizationManager) {
+    protected PagedCustomFunctionAction(AuthorizationManager authorizationManager) {
         super(authorizationManager);
     }
 
@@ -42,7 +42,13 @@ public abstract class PagedCustomFunctionAction<T extends AlertPagedModel<?>> ex
         return createPagedActionResponse(fieldModel, servletContentWrapper, pageNumber, pageSize, searchTerm);
     }
 
-    protected abstract ActionResponse<T> createPagedActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper, int pageNumber, int pageSize, String searchTerm) throws IntegrationException;
+    protected abstract ActionResponse<T> createPagedActionResponse(
+        FieldModel fieldModel,
+        HttpServletContentWrapper servletContentWrapper,
+        int pageNumber,
+        int pageSize,
+        String searchTerm
+    ) throws IntegrationException;
 
     protected final Optional<String> extractFirstParam(Map<String, String[]> parameterMap, String paramName) {
         return Optional.ofNullable(parameterMap.get(paramName))

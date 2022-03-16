@@ -51,7 +51,7 @@ public class JiraServerGlobalCrudActions {
 
     public ActionResponse<JiraServerGlobalConfigModel> create(JiraServerGlobalConfigModel resource) {
         return configurationHelper.create(
-            () -> validator.validate(resource),
+            () -> validator.validate(resource, null),
             () -> configurationAccessor.existsConfigurationByName(resource.getName()),
             () -> configurationAccessor.createConfiguration(resource)
         );
@@ -59,7 +59,7 @@ public class JiraServerGlobalCrudActions {
 
     public ActionResponse<JiraServerGlobalConfigModel> update(UUID id, JiraServerGlobalConfigModel requestResource) {
         return configurationHelper.update(
-            () -> validator.validate(requestResource),
+            () -> validator.validate(requestResource, id.toString()),
             () -> configurationAccessor.existsConfigurationById(id),
             () -> configurationAccessor.updateConfiguration(id, requestResource)
         );

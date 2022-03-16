@@ -33,7 +33,7 @@ public abstract class AbstractUploadAction {
     private final AuthorizationManager authorizationManager;
     private final FilePersistenceUtil filePersistenceUtil;
 
-    public AbstractUploadAction(AuthorizationManager authorizationManager, FilePersistenceUtil filePersistenceUtil) {
+    protected AbstractUploadAction(AuthorizationManager authorizationManager, FilePersistenceUtil filePersistenceUtil) {
         this.authorizationManager = authorizationManager;
         this.filePersistenceUtil = filePersistenceUtil;
     }

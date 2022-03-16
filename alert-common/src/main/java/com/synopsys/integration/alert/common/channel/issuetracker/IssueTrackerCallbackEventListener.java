@@ -14,7 +14,7 @@ import com.synopsys.integration.alert.api.event.AlertMessageListener;
 public abstract class IssueTrackerCallbackEventListener extends AlertMessageListener<IssueTrackerCallbackEvent> {
     public static final String ISSUE_TRACKER_CALLBACK_DESTINATION_NAME = IssueTrackerCallbackEventListener.class.getSimpleName();
 
-    public IssueTrackerCallbackEventListener(Gson gson, AlertEventHandler<IssueTrackerCallbackEvent> eventHandler) {
+    protected IssueTrackerCallbackEventListener(Gson gson, AlertEventHandler<IssueTrackerCallbackEvent> eventHandler) {
         super(gson, ISSUE_TRACKER_CALLBACK_DESTINATION_NAME, IssueTrackerCallbackEvent.class, eventHandler);
     }
 

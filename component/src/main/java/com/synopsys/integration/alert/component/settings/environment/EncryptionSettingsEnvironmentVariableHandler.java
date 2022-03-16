@@ -14,14 +14,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.AlertConstants;
+import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
+import com.synopsys.integration.alert.component.settings.encryption.model.SettingsEncryptionModel;
 import com.synopsys.integration.alert.environment.EnvironmentProcessingResult;
-import com.synopsys.integration.alert.environment.EnvironmentVariableHandler;
-import com.synopsys.integration.alert.environment.EnvironmentVariableHandlerFactory;
+import com.synopsys.integration.alert.environment.EnvironmentVariableHandlerV3;
 import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
 
 @Component
-@Deprecated(forRemoval = true)
-public class EncryptionSettingsEnvironmentHandlerFactory implements EnvironmentVariableHandlerFactory {
+public class EncryptionSettingsEnvironmentVariableHandler extends EnvironmentVariableHandlerV3<SettingsEncryptionModel> {
     public static final String HANDLER_NAME = "Encryption Settings";
     public static final String ENCRYPTION_PASSWORD_KEY = "ALERT_COMPONENT_SETTINGS_SETTINGS_ENCRYPTION_PASSWORD";
     public static final String ENCRYPTION_SALT_KEY = "ALERT_COMPONENT_SETTINGS_SETTINGS_ENCRYPTION_GLOBAL_SALT";
@@ -29,34 +29,44 @@ public class EncryptionSettingsEnvironmentHandlerFactory implements EnvironmentV
     private final EnvironmentVariableUtility environmentVariableUtility;
 
     @Autowired
-    public EncryptionSettingsEnvironmentHandlerFactory(EnvironmentVariableUtility environmentVariableUtility) {
+    public EncryptionSettingsEnvironmentVariableHandler(EnvironmentVariableUtility environmentVariableUtility) {
+        super(HANDLER_NAME, Set.of(ENCRYPTION_PASSWORD_KEY, ENCRYPTION_SALT_KEY));
         this.environmentVariableUtility = environmentVariableUtility;
     }
 
     @Override
-    public EnvironmentVariableHandler build() {
-        return new EnvironmentVariableHandler(HANDLER_NAME, Set.of(ENCRYPTION_PASSWORD_KEY, ENCRYPTION_SALT_KEY), this::isConfigurationMissing, this::updateFunction);
-    }
-
-    private Boolean isConfigurationMissing() {
+    protected Boolean configurationMissingCheck() {
         // we always pull the values from the environment variables for encryption.
         return true;
     }
 
-    private EnvironmentProcessingResult updateFunction() {
+    @Override
+    protected SettingsEncryptionModel configureModel() {
+        return new SettingsEncryptionModel();
+    }
+
+    @Override
+    protected ValidationResponseModel validateConfiguration(SettingsEncryptionModel obfuscatedConfigModel) {
+        // Since the encryption utility gets the environment variables, there is nothing to validate here.
+        return ValidationResponseModel.success();
+    }
+
+    @Override
+    protected EnvironmentProcessingResult buildProcessingResult(SettingsEncryptionModel configModel) {
         EnvironmentProcessingResult.Builder builder = new EnvironmentProcessingResult.Builder(ENCRYPTION_PASSWORD_KEY, ENCRYPTION_SALT_KEY);
+
         Optional<String> password = environmentVariableUtility.getEnvironmentValue(ENCRYPTION_PASSWORD_KEY);
         Optional<String> salt = environmentVariableUtility.getEnvironmentValue(ENCRYPTION_SALT_KEY);
 
         // The encryption utility will read the environment variables.  We just want to be able to log if the variables are set.
-        if (password.isPresent()) {
-            builder.addVariableValue(ENCRYPTION_PASSWORD_KEY, AlertConstants.MASKED_VALUE);
-        }
-
-        if (salt.isPresent()) {
-            builder.addVariableValue(ENCRYPTION_SALT_KEY, AlertConstants.MASKED_VALUE);
-        }
+        password.ifPresent(unusedValue -> builder.addVariableValue(ENCRYPTION_PASSWORD_KEY, AlertConstants.MASKED_VALUE));
+        salt.ifPresent(unusedValue -> builder.addVariableValue(ENCRYPTION_SALT_KEY, AlertConstants.MASKED_VALUE));
 
         return builder.build();
+    }
+
+    @Override
+    protected void saveConfiguration(SettingsEncryptionModel configModel, EnvironmentProcessingResult processingResult) {
+        // Encryption configuration does not need to be saved to a database.
     }
 }

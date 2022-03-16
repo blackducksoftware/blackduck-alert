@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
-import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
@@ -37,7 +36,6 @@ import com.synopsys.integration.alert.common.rest.model.JobProviderProjectFieldM
 import com.synopsys.integration.alert.common.rest.model.MultiJobFieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.common.util.PagingParamValidationUtils;
-import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 public abstract class AbstractJobResourceActions {
     private static final EnumSet<DescriptorType> ALLOWED_JOB_DESCRIPTOR_TYPES = EnumSet.of(DescriptorType.PROVIDER, DescriptorType.CHANNEL);
@@ -45,7 +43,7 @@ public abstract class AbstractJobResourceActions {
     protected final DescriptorAccessor descriptorAccessor;
     protected final DescriptorMap descriptorMap;
 
-    public AbstractJobResourceActions(AuthorizationManager authorizationManager, DescriptorAccessor descriptorAccessor, DescriptorMap descriptorMap) {
+    protected AbstractJobResourceActions(AuthorizationManager authorizationManager, DescriptorAccessor descriptorAccessor, DescriptorMap descriptorMap) {
         this.authorizationManager = authorizationManager;
         this.descriptorAccessor = descriptorAccessor;
         this.descriptorMap = descriptorMap;
@@ -74,9 +72,9 @@ public abstract class AbstractJobResourceActions {
     private Set<String> getDescriptorNames() {
         return descriptorAccessor.getRegisteredDescriptors()
             .stream()
-                   .filter(descriptor -> ALLOWED_JOB_DESCRIPTOR_TYPES.contains(descriptor.getType()))
-                   .map(RegisteredDescriptorModel::getName)
-                   .collect(Collectors.toSet());
+            .filter(descriptor -> ALLOWED_JOB_DESCRIPTOR_TYPES.contains(descriptor.getType()))
+            .map(RegisteredDescriptorModel::getName)
+            .collect(Collectors.toSet());
     }
 
     public final ActionResponse<JobFieldModel> create(JobFieldModel resource) {
@@ -196,11 +194,11 @@ public abstract class AbstractJobResourceActions {
 
     public final ValidationActionResponse validate(JobFieldModel resource) {
         boolean hasPermissions = resource.getFieldModels()
-                                     .stream()
-                                     .allMatch(model ->
-                                                   authorizationManager.hasCreatePermission(model.getContext(), model.getDescriptorName())
-                                                       || authorizationManager.hasWritePermission(model.getContext(), model.getDescriptorName())
-                                                       || authorizationManager.hasExecutePermission(model.getContext(), model.getDescriptorName()));
+            .stream()
+            .allMatch(model ->
+                authorizationManager.hasCreatePermission(model.getContext(), model.getDescriptorName())
+                    || authorizationManager.hasWritePermission(model.getContext(), model.getDescriptorName())
+                    || authorizationManager.hasExecutePermission(model.getContext(), model.getDescriptorName()));
         if (!hasPermissions) {
             ValidationResponseModel responseModel = ValidationResponseModel.generalError(ActionResponse.FORBIDDEN_MESSAGE);
             return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
@@ -227,35 +225,20 @@ public abstract class AbstractJobResourceActions {
 
     private boolean hasRequiredPermissions(Collection<FieldModel> fieldModels, BiFunction<String, String, Boolean> permissionChecker) {
         return fieldModels
-                   .stream()
-                   .allMatch(model -> permissionChecker.apply(model.getContext(), model.getDescriptorName()));
-        //TODO Once the FieldModel is updated to handle ConfigContextEnum and DescriptorKey, the following code should be used
-        /*
-        return fieldModels
-                   .stream()
-                   .allMatch(model -> checkContextAndDescriptorKey(model, permissionChecker));
-         */
-    }
-
-    private boolean checkContextAndDescriptorKey(FieldModel fieldModel, BiFunction<ConfigContextEnum, DescriptorKey, Boolean> permissionChecker) {
-        ConfigContextEnum configContextEnum = ConfigContextEnum.valueOf(fieldModel.getContext());
-        DescriptorKey descriptorKey = descriptorMap.getDescriptorKey(fieldModel.getDescriptorName()).orElseThrow(() -> new AlertRuntimeException("Could not find DescriptorKey for: " + fieldModel.getDescriptorName()));
-        return permissionChecker.apply(configContextEnum, descriptorKey);
+            .stream()
+            .allMatch(model -> permissionChecker.apply(model.getContext(), model.getDescriptorName()));
     }
 
     // FIXME More tech debt until we fix the Jobs API
     private void correctProjectsField(JobFieldModel jobFieldModel) {
         List<JobProviderProjectFieldModel> projects = jobFieldModel.getConfiguredProviderProjects();
-        if (null == projects) {
-            projects = List.of();
-        }
+        List<JobProviderProjectFieldModel> defaultedProjects = null != projects ? projects : List.of();
 
         String projectFieldKey = "channel.common.configured.project";
         for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {
             Map<String, FieldValueModel> keyToValues = fieldModel.getKeyToValues();
-            if (keyToValues.containsKey(projectFieldKey)) {
-                FieldValueModel projectFieldValues = createProjectFieldValues(projects);
-                keyToValues.put(projectFieldKey, projectFieldValues);
+            FieldValueModel computed = keyToValues.computeIfPresent(projectFieldKey, (one, two) -> createProjectFieldValues(defaultedProjects));
+            if (null == computed) {
                 return;
             }
         }

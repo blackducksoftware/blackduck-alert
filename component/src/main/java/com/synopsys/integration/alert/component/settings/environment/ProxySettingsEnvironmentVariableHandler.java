@@ -8,7 +8,6 @@
 package com.synopsys.integration.alert.component.settings.environment;
 
 import java.util.Arrays;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -20,20 +19,17 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.AlertConstants;
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
-import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
 import com.synopsys.integration.alert.component.settings.proxy.database.accessor.SettingsProxyConfigAccessor;
 import com.synopsys.integration.alert.component.settings.proxy.validator.SettingsProxyValidator;
 import com.synopsys.integration.alert.environment.EnvironmentProcessingResult;
-import com.synopsys.integration.alert.environment.EnvironmentVariableHandler;
-import com.synopsys.integration.alert.environment.EnvironmentVariableHandlerFactory;
+import com.synopsys.integration.alert.environment.EnvironmentVariableHandlerV3;
 import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
 
 @Component
-@Deprecated(forRemoval = true)
-public class ProxySettingsEnvironmentHandlerFactory implements EnvironmentVariableHandlerFactory {
+public class ProxySettingsEnvironmentVariableHandler extends EnvironmentVariableHandlerV3<SettingsProxyModel> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public static final String HANDLER_NAME = "Proxy Settings";
@@ -55,59 +51,55 @@ public class ProxySettingsEnvironmentHandlerFactory implements EnvironmentVariab
     private final SettingsProxyValidator validator;
 
     @Autowired
-    public ProxySettingsEnvironmentHandlerFactory(SettingsProxyConfigAccessor configAccessor, EnvironmentVariableUtility environmentVariableUtility, SettingsProxyValidator validator) {
+    public ProxySettingsEnvironmentVariableHandler(SettingsProxyConfigAccessor configAccessor, EnvironmentVariableUtility environmentVariableUtility, SettingsProxyValidator validator) {
+        super(HANDLER_NAME, PROXY_CONFIGURATION_KEYSET);
         this.configAccessor = configAccessor;
         this.environmentVariableUtility = environmentVariableUtility;
         this.validator = validator;
     }
 
     @Override
-    public EnvironmentVariableHandler build() {
-        return new EnvironmentVariableHandler(HANDLER_NAME, PROXY_CONFIGURATION_KEYSET, this::isConfigurationMissing, this::updateFunction);
+    protected Boolean configurationMissingCheck() {
+        return !configAccessor.doesConfigurationExist();
     }
 
-    private Boolean isConfigurationMissing() {
-        return configAccessor.getConfiguration().isEmpty();
-    }
-
-    private EnvironmentProcessingResult updateFunction() {
-        EnvironmentProcessingResult.Builder builder = new EnvironmentProcessingResult.Builder(PROXY_CONFIGURATION_KEYSET);
+    @Override
+    protected SettingsProxyModel configureModel() {
         SettingsProxyModel configModel = new SettingsProxyModel();
         configModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
         configureProxySettings(configModel);
 
-        //TODO: Refactor and remove duplicate code after 6.10.0 model package refactor
-        ValidationResponseModel validationResponseModel = validator.validate(configModel);
-        if (validationResponseModel.hasErrors()) {
-            logger.error("Error inserting startup values: {}", validationResponseModel.getMessage());
-            Map<String, AlertFieldStatus> errors = validationResponseModel.getErrors();
-            for (Map.Entry<String, AlertFieldStatus> error : errors.entrySet()) {
-                AlertFieldStatus status = error.getValue();
-                logger.error("Field: '{}' failed with the error: {}", status.getFieldName(), status.getFieldMessage());
-            }
-            return EnvironmentProcessingResult.empty();
-        }
+        return configModel;
+    }
 
-        SettingsProxyModel obfuscatedModel = configModel.obfuscate();
-        obfuscatedModel.getProxyHost().ifPresent(value -> builder.addVariableValue(PROXY_HOST_KEY, value));
-        obfuscatedModel.getProxyPort().map(String::valueOf).ifPresent(value -> builder.addVariableValue(PROXY_PORT_KEY, value));
-        obfuscatedModel.getProxyUsername().ifPresent(value -> builder.addVariableValue(PROXY_USERNAME_KEY, value));
-        obfuscatedModel.getNonProxyHosts().map(String::valueOf).ifPresent(value -> builder.addVariableValue(PROXY_NON_PROXY_HOSTS_KEY, value));
+    @Override
+    protected ValidationResponseModel validateConfiguration(SettingsProxyModel configModel) {
+        return validator.validate(configModel);
+    }
 
-        if (Boolean.TRUE.equals(obfuscatedModel.getIsProxyPasswordSet())) {
+    @Override
+    protected EnvironmentProcessingResult buildProcessingResult(SettingsProxyModel obfuscatedConfigModel) {
+        EnvironmentProcessingResult.Builder builder = new EnvironmentProcessingResult.Builder(PROXY_CONFIGURATION_KEYSET);
+
+        obfuscatedConfigModel.getProxyHost().ifPresent(value -> builder.addVariableValue(PROXY_HOST_KEY, value));
+        obfuscatedConfigModel.getProxyPort().map(String::valueOf).ifPresent(value -> builder.addVariableValue(PROXY_PORT_KEY, value));
+        obfuscatedConfigModel.getProxyUsername().ifPresent(value -> builder.addVariableValue(PROXY_USERNAME_KEY, value));
+        obfuscatedConfigModel.getNonProxyHosts().map(String::valueOf).ifPresent(value -> builder.addVariableValue(PROXY_NON_PROXY_HOSTS_KEY, value));
+
+        if (Boolean.TRUE.equals(obfuscatedConfigModel.getIsProxyPasswordSet())) {
             builder.addVariableValue(PROXY_PASSWORD_KEY, AlertConstants.MASKED_VALUE);
         }
 
-        EnvironmentProcessingResult result = builder.build();
-        if (result.hasValues()) {
-            try {
-                configAccessor.createConfiguration(configModel);
-            } catch (AlertConfigurationException ex) {
-                logger.error("Error creating the configuration: {}", ex.getMessage());
-            }
-        }
+        return builder.build();
+    }
 
-        return result;
+    @Override
+    protected void saveConfiguration(SettingsProxyModel configModel, EnvironmentProcessingResult processingResult) {
+        try {
+            configAccessor.createConfiguration(configModel);
+        } catch (AlertConfigurationException ex) {
+            logger.error("Error creating the configuration: {}", ex.getMessage());
+        }
     }
 
     private void configureProxySettings(SettingsProxyModel configuration) {

@@ -42,9 +42,11 @@ public class JiraServerGlobalCrudActionsTest {
     private final DescriptorKey descriptorKey = new JiraServerChannelKey();
     private final PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
     private final Map<PermissionKey, Integer> permissions = Map.of(permissionKey, 255);
-    private final AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
-
-    private final JiraServerGlobalConfigurationValidator validator = new JiraServerGlobalConfigurationValidator();
+    private final AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet(
+        "admin",
+        "admin",
+        () -> new PermissionMatrixModel(permissions)
+    );
 
     @Test
     void getOneTest() {
@@ -53,7 +55,7 @@ public class JiraServerGlobalCrudActionsTest {
         JiraServerGlobalConfigAccessor configAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
         Mockito.when(configAccessor.getConfiguration(id)).thenReturn(Optional.of(jiraServerGlobalConfigModel));
 
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator);
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, createValidator());
         ActionResponse<JiraServerGlobalConfigModel> actionResponse = crudActions.getOne(id);
 
         assertTrue(actionResponse.isSuccessful());
@@ -65,12 +67,17 @@ public class JiraServerGlobalCrudActionsTest {
     @Test
     void getPagedTest() {
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel = createJiraServerGlobalConfigModel(id);
-        AlertPagedModel<JiraServerGlobalConfigModel> alertPagedModel = new AlertPagedModel<>(1, AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE, List.of(jiraServerGlobalConfigModel));
+        AlertPagedModel<JiraServerGlobalConfigModel> alertPagedModel = new AlertPagedModel<>(
+            1,
+            AlertPagedModel.DEFAULT_PAGE_NUMBER,
+            AlertPagedModel.DEFAULT_PAGE_SIZE,
+            List.of(jiraServerGlobalConfigModel)
+        );
 
         JiraServerGlobalConfigAccessor configAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
         Mockito.when(configAccessor.getConfigurationPage(AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE, null, null, null)).thenReturn(alertPagedModel);
 
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator);
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, createValidator());
         ActionResponse<AlertPagedModel<JiraServerGlobalConfigModel>> actionResponse = crudActions.getPaged(
             AlertPagedModel.DEFAULT_PAGE_NUMBER,
             AlertPagedModel.DEFAULT_PAGE_SIZE,
@@ -95,7 +102,7 @@ public class JiraServerGlobalCrudActionsTest {
         JiraServerGlobalConfigAccessor configAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
         Mockito.when(configAccessor.createConfiguration(Mockito.any())).thenReturn(jiraServerGlobalConfigModel);
 
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator);
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, createValidator());
         ActionResponse<JiraServerGlobalConfigModel> actionResponse = crudActions.create(jiraServerGlobalConfigModel);
 
         assertTrue(actionResponse.isSuccessful());
@@ -111,7 +118,7 @@ public class JiraServerGlobalCrudActionsTest {
         Mockito.when(configAccessor.existsConfigurationByName(Mockito.any())).thenReturn(true);
         Mockito.when(configAccessor.createConfiguration(Mockito.any())).thenReturn(jiraServerGlobalConfigModel);
 
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator);
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, createValidator());
         ActionResponse<JiraServerGlobalConfigModel> actionResponse = crudActions.create(jiraServerGlobalConfigModel);
 
         assertTrue(actionResponse.isError());
@@ -126,7 +133,7 @@ public class JiraServerGlobalCrudActionsTest {
         Mockito.when(configAccessor.existsConfigurationById(id)).thenReturn(true);
         Mockito.when(configAccessor.updateConfiguration(Mockito.eq(id), Mockito.any())).thenReturn(jiraServerGlobalConfigModel);
 
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator);
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, createValidator());
         ActionResponse<JiraServerGlobalConfigModel> actionResponse = crudActions.update(id, jiraServerGlobalConfigModel);
 
         assertTrue(actionResponse.isSuccessful());
@@ -140,7 +147,7 @@ public class JiraServerGlobalCrudActionsTest {
         JiraServerGlobalConfigAccessor configAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
         Mockito.when(configAccessor.existsConfigurationById(id)).thenReturn(true);
 
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator);
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, createValidator());
         ActionResponse<JiraServerGlobalConfigModel> actionResponse = crudActions.delete(id);
 
         Mockito.verify(configAccessor).deleteConfiguration(id);
@@ -148,6 +155,12 @@ public class JiraServerGlobalCrudActionsTest {
         assertTrue(actionResponse.isSuccessful());
         assertFalse(actionResponse.hasContent());
         assertEquals(HttpStatus.NO_CONTENT, actionResponse.getHttpStatus());
+    }
+
+    private JiraServerGlobalConfigurationValidator createValidator() {
+        JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
+        Mockito.when(jiraServerGlobalConfigAccessor.getConfigurationByName(Mockito.anyString())).thenReturn(Optional.empty());
+        return new JiraServerGlobalConfigurationValidator(jiraServerGlobalConfigAccessor);
     }
 
     private JiraServerGlobalConfigModel createJiraServerGlobalConfigModel(UUID id) {

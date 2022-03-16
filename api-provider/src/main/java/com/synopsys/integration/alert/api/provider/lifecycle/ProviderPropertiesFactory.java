@@ -17,7 +17,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 public abstract class ProviderPropertiesFactory<T extends ProviderProperties> {
     private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
 
-    public ProviderPropertiesFactory(ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor) {
+    protected ProviderPropertiesFactory(ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor) {
         this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
     }
 
