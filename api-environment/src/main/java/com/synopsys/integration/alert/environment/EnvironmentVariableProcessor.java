@@ -23,10 +23,10 @@ public class EnvironmentVariableProcessor {
     private static final String TWO_SPACE_INDENT = "  ";
     private static final String FOUR_SPACE_INDENT = "    ";
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final List<EnvironmentVariableHandlerV3<?>> environmentVariableHandlers;
+    private final List<EnvironmentVariableHandler<?>> environmentVariableHandlers;
 
     @Autowired
-    public EnvironmentVariableProcessor(List<EnvironmentVariableHandlerV3<?>> environmentVariableHandlers) {
+    public EnvironmentVariableProcessor(List<EnvironmentVariableHandler<?>> environmentVariableHandlers) {
         this.environmentVariableHandlers = environmentVariableHandlers;
     }
 
@@ -34,7 +34,7 @@ public class EnvironmentVariableProcessor {
         logger.info("** {} **", LINE_DIVIDER);
         logger.info("Initializing system configurations from environment variables...");
         logger.info("Begin handling environment variables...");
-        for (EnvironmentVariableHandlerV3<?> handler : environmentVariableHandlers) {
+        for (EnvironmentVariableHandler<?> handler : environmentVariableHandlers) {
             logger.info(LINE_DIVIDER);
             logger.info("Handler name: {}", handler.getName());
             logger.info(LINE_DIVIDER);

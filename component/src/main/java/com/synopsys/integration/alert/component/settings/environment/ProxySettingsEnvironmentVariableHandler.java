@@ -25,11 +25,11 @@ import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
 import com.synopsys.integration.alert.component.settings.proxy.database.accessor.SettingsProxyConfigAccessor;
 import com.synopsys.integration.alert.component.settings.proxy.validator.SettingsProxyValidator;
 import com.synopsys.integration.alert.environment.EnvironmentProcessingResult;
-import com.synopsys.integration.alert.environment.EnvironmentVariableHandlerV3;
+import com.synopsys.integration.alert.environment.EnvironmentVariableHandler;
 import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
 
 @Component
-public class ProxySettingsEnvironmentVariableHandler extends EnvironmentVariableHandlerV3<SettingsProxyModel> {
+public class ProxySettingsEnvironmentVariableHandler extends EnvironmentVariableHandler<SettingsProxyModel> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public static final String HANDLER_NAME = "Proxy Settings";

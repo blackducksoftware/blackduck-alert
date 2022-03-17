@@ -53,7 +53,7 @@ class EnvironmentVariableProcessorTest {
         }
     }
 
-    private static class EnvironmentTestHandler extends EnvironmentVariableHandlerV3<TestModel> {
+    private static class EnvironmentTestHandler extends EnvironmentVariableHandler<TestModel> {
         public static final String HANDLER_NAME = "Updating Handler";
         protected static final String ENVIRONMENT_VARIABLE_PREFIX = "ALERT_DESCRIPTORTYPE_DESCRIPTORNAME_";
         public static final Set<String> VARIABLE_NAMES = Set.of(

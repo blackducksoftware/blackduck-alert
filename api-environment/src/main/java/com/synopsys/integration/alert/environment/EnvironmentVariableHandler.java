@@ -16,12 +16,12 @@ import com.synopsys.integration.alert.api.common.model.Obfuscated;
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
 
-public abstract class EnvironmentVariableHandlerV3<T extends Obfuscated<T>> {
+public abstract class EnvironmentVariableHandler<T extends Obfuscated<T>> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final String name;
     private final Set<String> environmentVariableNames;
 
-    protected EnvironmentVariableHandlerV3(String name, Set<String> environmentVariableNames) {
+    protected EnvironmentVariableHandler(String name, Set<String> environmentVariableNames) {
         this.name = name;
         this.environmentVariableNames = environmentVariableNames;
     }
