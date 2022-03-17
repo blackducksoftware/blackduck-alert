@@ -25,7 +25,7 @@ class EnvironmentVariableProcessorTest {
         }
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
         EnvironmentTestHandler handler = new EnvironmentTestHandler(environmentVariableUtility);
-        EnvironmentVariableProcessor processor = new EnvironmentVariableProcessor(null, List.of(handler));
+        EnvironmentVariableProcessor processor = new EnvironmentVariableProcessor(List.of(handler));
         processor.updateConfigurations();
         assertTrue(handler.hasUpdateOccurred());
         EnvironmentProcessingResult result = handler.getUpdatedProperties().orElseThrow(() -> new AssertionError("Properties should exist"));
@@ -33,13 +33,13 @@ class EnvironmentVariableProcessorTest {
         assertTrue(result.hasValues());
         assertTrue(EnvironmentTestHandler.VARIABLE_NAMES.containsAll(result.getVariableNames()));
     }
-    
+
     @Test
     void testMissingEnvironmentVariablesHandler() {
         Environment environment = Mockito.mock(Environment.class);
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
         EnvironmentTestHandler handler = new EnvironmentTestHandler(environmentVariableUtility);
-        EnvironmentVariableProcessor processor = new EnvironmentVariableProcessor(null, List.of(handler));
+        EnvironmentVariableProcessor processor = new EnvironmentVariableProcessor(List.of(handler));
         processor.updateConfigurations();
         assertFalse(handler.hasUpdateOccurred());
         assertFalse(handler.getUpdatedProperties().stream()

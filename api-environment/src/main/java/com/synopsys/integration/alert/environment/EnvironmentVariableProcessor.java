@@ -22,14 +22,11 @@ public class EnvironmentVariableProcessor {
     private static final String LINE_DIVIDER = "---------------------------------";
     private static final String TWO_SPACE_INDENT = "  ";
     private static final String FOUR_SPACE_INDENT = "    ";
-    private Logger logger = LoggerFactory.getLogger(getClass());
-    //TODO: Clean up the factoryList once the Factories are deprecated
-    private final List<EnvironmentVariableHandlerFactory> factoryList;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final List<EnvironmentVariableHandlerV3<?>> environmentVariableHandlers;
 
     @Autowired
-    public EnvironmentVariableProcessor(List<EnvironmentVariableHandlerFactory> factoryList, List<EnvironmentVariableHandlerV3<?>> environmentVariableHandlers) {
-        this.factoryList = factoryList;
+    public EnvironmentVariableProcessor(List<EnvironmentVariableHandlerV3<?>> environmentVariableHandlers) {
         this.environmentVariableHandlers = environmentVariableHandlers;
     }
 
@@ -50,9 +47,9 @@ public class EnvironmentVariableProcessor {
     private void logVariableNames(Set<String> names) {
         logger.info("{}### Environment Variables ### ", TWO_SPACE_INDENT);
         List<String> sortedNames = names.stream()
-            .map(String::trim)
-            .sorted()
-            .collect(Collectors.toList());
+                                       .map(String::trim)
+                                       .sorted()
+                                       .collect(Collectors.toList());
 
         for (String name : sortedNames) {
             logger.info("{}{}", FOUR_SPACE_INDENT, name);
@@ -62,8 +59,8 @@ public class EnvironmentVariableProcessor {
     private void logConfiguration(EnvironmentProcessingResult configurationProperties) {
         if (configurationProperties.hasValues()) {
             List<String> sortedVariableNames = configurationProperties.getVariableNames().stream()
-                .sorted()
-                .collect(Collectors.toList());
+                                                   .sorted()
+                                                   .collect(Collectors.toList());
             logger.info(TWO_SPACE_INDENT);
             logger.info("{}### Environment Variables Used to Configure System ### ", TWO_SPACE_INDENT);
             for (String variableName : sortedVariableNames) {
