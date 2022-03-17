@@ -85,6 +85,45 @@ class JiraServerGlobalConfigControllerTestIT {
 
     @Test
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
+    void verifyGetPageWithSearchTermEndpointTest() throws Exception {
+        int pageNumber = 0;
+        int pageSize = 10;
+
+        String urlPath = String.format("%s?pageNumber=%s&pageSize=%s&searchTerm=aname&sortName=name&sortOrder=asc", REQUEST_URL, pageNumber, pageSize);
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(urlPath)
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf());
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
+    void verifyGetPageWithSortAscendingEndpointTest() throws Exception {
+        int pageNumber = 0;
+        int pageSize = 10;
+
+        String urlPath = String.format("%s?pageNumber=%s&pageSize=%s&sortName=name&sortOrder=asc", REQUEST_URL, pageNumber, pageSize);
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(urlPath)
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf());
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
+    void verifyGetPageWithSortDescendingEndpointTest() throws Exception {
+        int pageNumber = 0;
+        int pageSize = 10;
+
+        String urlPath = String.format("%s?pageNumber=%s&pageSize=%s&sortName=name&sortOrder=desc", REQUEST_URL, pageNumber, pageSize);
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(urlPath)
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf());
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     void verifyCreateEndpointTest() throws Exception {
         String urlPath = REQUEST_URL;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(urlPath)

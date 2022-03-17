@@ -159,6 +159,24 @@ class JiraServerGlobalCrudActionsTestIT {
     }
 
     @Test
+    void getPagedMissingSearchTermTest() {
+        int numOfModels = 10;
+        int pageSize = 5;
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator);
+        for (int i = 0; i < numOfModels; i++) {
+            crudActions.create(createJiraModelWithName(String.format("config-%d", i)));
+        }
+
+        ActionResponse<AlertPagedModel<JiraServerGlobalConfigModel>> pagedActionResponse = crudActions.getPaged(0, pageSize, "config-99", "name", "asc");
+        assertTrue(pagedActionResponse.isSuccessful());
+        assertEquals(HttpStatus.OK, pagedActionResponse.getHttpStatus());
+        assertTrue(pagedActionResponse.getContent().isPresent());
+        AlertPagedModel<JiraServerGlobalConfigModel> pagedModel = pagedActionResponse.getContent().get();
+        assertEquals(0, pagedModel.getTotalPages());
+        assertTrue(pagedModel.getModels().isEmpty());
+    }
+
+    @Test
     void getPageNotFoundTest() {
         int pageSize = 5;
         JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator);
