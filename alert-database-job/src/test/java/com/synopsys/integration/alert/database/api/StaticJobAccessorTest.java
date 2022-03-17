@@ -302,6 +302,27 @@ class StaticJobAccessorTest {
     }
 
     @Test
+    void getPageOfJobsSearchAndDefaultSortTest() {
+        ProviderKey providerKey = new BlackDuckProviderKey();
+        UUID jobId = UUID.randomUUID();
+
+        DistributionJobEntity distributionJobEntity = createSlackDistributionJobEntity(jobId);
+        distributionJobEntity.setBlackDuckJobDetails(new BlackDuckJobDetailsEntity(jobId, 3L, true, "*", "*"));
+
+        Page<DistributionJobEntity> page = new PageImpl<>(List.of(distributionJobEntity));
+        Mockito.when(distributionJobRepository.findByChannelDescriptorNamesAndSearchTerm(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(page);
+
+        AlertPagedModel<DistributionJobModel> pageOfJobs = jobAccessor.getPageOfJobs(0, 10, "test-search-term", "name", "asc", List.of(providerKey.getUniversalKey()));
+
+        assertEquals(1, pageOfJobs.getTotalPages());
+        List<DistributionJobModel> models = pageOfJobs.getModels();
+        assertEquals(1, models.size());
+        DistributionJobModel distributionJobModel = models.get(0);
+        assertEquals(jobId, distributionJobModel.getJobId());
+        assertEquals(jobName, distributionJobModel.getName());
+    }
+
+    @Test
     void getPageOfJobsBlankSearchTest() {
         ProviderKey providerKey = new BlackDuckProviderKey();
         UUID jobId = UUID.randomUUID();

@@ -129,7 +129,14 @@ public class StaticJobAccessor implements JobAccessor {
             return new AlertPagedModel<>(0, pageNumber, pageLimit, List.of());
         }
 
-        Sort sort = (sortName == null || sortOrder == null) ? Sort.unsorted() : Sort.by(sortOrder, sortName);
+        Sort sort = Sort.unsorted();
+        if (StringUtils.isNotBlank(sortName) && StringUtils.isNotBlank(sortOrder)) {
+            if (Sort.Direction.ASC.name().equalsIgnoreCase(sortOrder)) {
+                sort = Sort.by(Sort.Order.asc(sortName));
+            } else {
+                sort = Sort.by(Sort.Order.desc(sortName));
+            }
+        }
         PageRequest pageRequest = PageRequest.of(pageNumber, pageLimit, sort);
         Page<DistributionJobEntity> pageOfJobsWithDescriptorNames;
         if (StringUtils.isBlank(searchTerm)) {
