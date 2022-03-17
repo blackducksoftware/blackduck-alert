@@ -87,7 +87,7 @@ public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<Jir
             sort = Sort.by(sortingOrder);
         }
 
-        Page<JiraServerConfigurationEntity> resultPage = Page.empty();
+        Page<JiraServerConfigurationEntity> resultPage;
         PageRequest pageRequest = PageRequest.of(page, size, sort);
         if (StringUtils.isNotBlank(searchTerm)) {
             resultPage = jiraServerConfigurationRepository.findBySearchTerm(searchTerm, pageRequest);

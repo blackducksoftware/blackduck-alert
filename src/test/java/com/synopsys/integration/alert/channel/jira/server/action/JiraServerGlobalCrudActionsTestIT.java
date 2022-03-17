@@ -98,6 +98,67 @@ class JiraServerGlobalCrudActionsTestIT {
     }
 
     @Test
+    void getPagedSortAscendingTest() {
+        int numOfModels = 10;
+        int pageSize = 5;
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator);
+        for (int i = 0; i < numOfModels; i++) {
+            crudActions.create(createJiraModelWithName(String.format("config-%d", i)));
+        }
+
+        ActionResponse<AlertPagedModel<JiraServerGlobalConfigModel>> pagedActionResponse = crudActions.getPaged(0, pageSize, "", "name", "asc");
+        assertTrue(pagedActionResponse.isSuccessful());
+        assertEquals(HttpStatus.OK, pagedActionResponse.getHttpStatus());
+        assertTrue(pagedActionResponse.getContent().isPresent());
+        AlertPagedModel<JiraServerGlobalConfigModel> pagedModel = pagedActionResponse.getContent().get();
+        assertEquals(numOfModels / pageSize, pagedModel.getTotalPages());
+        assertEquals(pageSize, pagedModel.getModels().size());
+        for (int index = 0; index < pageSize; index++) {
+            assertEquals(String.format("config-%d", index), pagedModel.getModels().get(index).getName());
+        }
+    }
+
+    @Test
+    void getPagedSearchTermAndSortAscendingTest() {
+        int numOfModels = 10;
+        int pageSize = 5;
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator);
+        for (int i = 0; i < numOfModels; i++) {
+            crudActions.create(createJiraModelWithName(String.format("config-%d", i)));
+        }
+
+        ActionResponse<AlertPagedModel<JiraServerGlobalConfigModel>> pagedActionResponse = crudActions.getPaged(0, pageSize, "config-2", "name", "asc");
+        assertTrue(pagedActionResponse.isSuccessful());
+        assertEquals(HttpStatus.OK, pagedActionResponse.getHttpStatus());
+        assertTrue(pagedActionResponse.getContent().isPresent());
+        AlertPagedModel<JiraServerGlobalConfigModel> pagedModel = pagedActionResponse.getContent().get();
+        assertEquals(1, pagedModel.getTotalPages());
+        assertEquals(1, pagedModel.getModels().size());
+        assertEquals("config-2", pagedModel.getModels().get(0).getName());
+    }
+
+    @Test
+    void getPagedSortDecendingTest() {
+        int numOfModels = 10;
+        int pageSize = 5;
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator);
+        for (int i = 0; i < numOfModels; i++) {
+            crudActions.create(createJiraModelWithName(String.format("config-%d", i)));
+        }
+
+        ActionResponse<AlertPagedModel<JiraServerGlobalConfigModel>> pagedActionResponse = crudActions.getPaged(0, pageSize, "", "name", "asc");
+        assertTrue(pagedActionResponse.isSuccessful());
+        assertEquals(HttpStatus.OK, pagedActionResponse.getHttpStatus());
+        assertTrue(pagedActionResponse.getContent().isPresent());
+        AlertPagedModel<JiraServerGlobalConfigModel> pagedModel = pagedActionResponse.getContent().get();
+        assertEquals(numOfModels / pageSize, pagedModel.getTotalPages());
+        assertEquals(pageSize, pagedModel.getModels().size());
+        for (int index = pageSize - 1; index >= 0; index--) {
+            assertEquals(String.format("config-%d", index), pagedModel.getModels().get(index).getName());
+        }
+    }
+
+    @Test
     void getPageNotFoundTest() {
         int pageSize = 5;
         JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator);
