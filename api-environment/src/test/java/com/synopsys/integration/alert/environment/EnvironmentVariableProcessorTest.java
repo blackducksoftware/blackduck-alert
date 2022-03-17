@@ -28,6 +28,7 @@ class EnvironmentVariableProcessorTest {
         EnvironmentVariableProcessor processor = new EnvironmentVariableProcessor(List.of(handler));
         processor.updateConfigurations();
         assertTrue(handler.hasUpdateOccurred());
+        assertTrue(handler.hasSaveOccurred());
         EnvironmentProcessingResult result = handler.getUpdatedProperties().orElseThrow(() -> new AssertionError("Properties should exist"));
 
         assertTrue(result.hasValues());
@@ -42,6 +43,7 @@ class EnvironmentVariableProcessorTest {
         EnvironmentVariableProcessor processor = new EnvironmentVariableProcessor(List.of(handler));
         processor.updateConfigurations();
         assertFalse(handler.hasUpdateOccurred());
+        assertFalse(handler.hasSaveOccurred());
         assertFalse(handler.getUpdatedProperties().stream()
                         .allMatch(EnvironmentProcessingResult::hasValues));
     }
@@ -62,6 +64,7 @@ class EnvironmentVariableProcessorTest {
         public static final String DEFAULT_VALUE = "environmentPropertyValue";
 
         private boolean updateOccurred = false;
+        private boolean saveOccurred = false;
         private final EnvironmentVariableUtility environmentVariableUtility;
         private EnvironmentProcessingResult updatedProperties;
 
@@ -101,11 +104,15 @@ class EnvironmentVariableProcessorTest {
 
         @Override
         protected void saveConfiguration(TestModel configModel, EnvironmentProcessingResult processingResult) {
-            updateOccurred = true;
+            saveOccurred = true;
         }
 
         public boolean hasUpdateOccurred() {
             return updateOccurred;
+        }
+
+        public boolean hasSaveOccurred() {
+            return saveOccurred;
         }
 
         public Optional<EnvironmentProcessingResult> getUpdatedProperties() {

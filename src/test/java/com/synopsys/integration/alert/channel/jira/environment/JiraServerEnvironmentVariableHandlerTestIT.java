@@ -68,9 +68,9 @@ class JiraServerEnvironmentVariableHandlerTestIT {
     @Test
     void testExistingConfig() throws AlertConfigurationException {
         String createdAt = DateUtils.formatDate(DateUtils.createCurrentDateTimestamp(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
-        JiraServerGlobalConfigModel emailGlobalConfigModel = new JiraServerGlobalConfigModel(null, AlertRestConstants.DEFAULT_CONFIGURATION_NAME, createdAt, createdAt, TEST_URL, TEST_USER, TEST_PASSWORD, false, true);
+        JiraServerGlobalConfigModel jiraServerGlobalConfigModel = new JiraServerGlobalConfigModel(null, AlertRestConstants.DEFAULT_CONFIGURATION_NAME, createdAt, createdAt, TEST_URL, TEST_USER, TEST_PASSWORD, false, true);
 
-        jiraGlobalConfigAccessor.createConfiguration(emailGlobalConfigModel);
+        jiraGlobalConfigAccessor.createConfiguration(jiraServerGlobalConfigModel);
 
         Environment environment = setupMockedEnvironment();
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
