@@ -29,7 +29,7 @@ import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 
 @AlertIntegrationTest
-public class JiraServerGlobalConfigControllerTestIT {
+class JiraServerGlobalConfigControllerTestIT {
     private static final MediaType MEDIA_TYPE = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), StandardCharsets.UTF_8);
     private static final String REQUEST_URL = AlertRestConstants.JIRA_SERVER_CONFIGURATION_PATH;
 
@@ -51,7 +51,7 @@ public class JiraServerGlobalConfigControllerTestIT {
 
     @AfterEach
     public void cleanup() {
-        jiraServerGlobalConfigAccessor.getConfigurationPage(0, 100)
+        jiraServerGlobalConfigAccessor.getConfigurationPage(0, 100, null, null, null)
             .getModels()
             .stream()
             .map(JiraServerGlobalConfigModel::getId)
@@ -61,7 +61,7 @@ public class JiraServerGlobalConfigControllerTestIT {
 
     @Test
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
-    public void verifyGetOneEndpointTest() throws Exception {
+    void verifyGetOneEndpointTest() throws Exception {
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel = saveConfigModel(createConfigModel(UUID.randomUUID()));
         String urlPath = REQUEST_URL + "/" + jiraServerGlobalConfigModel.getId();
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(urlPath)
@@ -72,7 +72,7 @@ public class JiraServerGlobalConfigControllerTestIT {
 
     @Test
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
-    public void verifyGetPageEndpointTest() throws Exception {
+    void verifyGetPageEndpointTest() throws Exception {
         int pageNumber = 0;
         int pageSize = 10;
 
@@ -85,7 +85,46 @@ public class JiraServerGlobalConfigControllerTestIT {
 
     @Test
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
-    public void verifyCreateEndpointTest() throws Exception {
+    void verifyGetPageWithSearchTermEndpointTest() throws Exception {
+        int pageNumber = 0;
+        int pageSize = 10;
+
+        String urlPath = String.format("%s?pageNumber=%s&pageSize=%s&searchTerm=aname&sortName=name&sortOrder=asc", REQUEST_URL, pageNumber, pageSize);
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(urlPath)
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf());
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
+    void verifyGetPageWithSortAscendingEndpointTest() throws Exception {
+        int pageNumber = 0;
+        int pageSize = 10;
+
+        String urlPath = String.format("%s?pageNumber=%s&pageSize=%s&sortName=name&sortOrder=asc", REQUEST_URL, pageNumber, pageSize);
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(urlPath)
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf());
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
+    void verifyGetPageWithSortDescendingEndpointTest() throws Exception {
+        int pageNumber = 0;
+        int pageSize = 10;
+
+        String urlPath = String.format("%s?pageNumber=%s&pageSize=%s&sortName=name&sortOrder=desc", REQUEST_URL, pageNumber, pageSize);
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(urlPath)
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf());
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
+    void verifyCreateEndpointTest() throws Exception {
         String urlPath = REQUEST_URL;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(urlPath)
             .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
@@ -101,7 +140,7 @@ public class JiraServerGlobalConfigControllerTestIT {
 
     @Test
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
-    public void verifyUpdateEndpointTest() throws Exception {
+    void verifyUpdateEndpointTest() throws Exception {
         JiraServerGlobalConfigModel configModel = createConfigModel(UUID.randomUUID());
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel = saveConfigModel(configModel);
 
@@ -118,7 +157,7 @@ public class JiraServerGlobalConfigControllerTestIT {
 
     @Test
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
-    public void verifyValidateEndpointTest() throws Exception {
+    void verifyValidateEndpointTest() throws Exception {
         String urlPath = REQUEST_URL + "/validate";
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(urlPath)
             .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
@@ -134,7 +173,7 @@ public class JiraServerGlobalConfigControllerTestIT {
 
     @Test
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
-    public void verifyDeleteEndpointTest() throws Exception {
+    void verifyDeleteEndpointTest() throws Exception {
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel = saveConfigModel(createConfigModel(UUID.randomUUID()));
 
         String urlPath = REQUEST_URL + "/" + jiraServerGlobalConfigModel.getId();
@@ -148,7 +187,7 @@ public class JiraServerGlobalConfigControllerTestIT {
     @Disabled("Test action not yet implemented")
     @Test
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
-    public void verifyTestEndpointTest() throws Exception {
+    void verifyTestEndpointTest() throws Exception {
         String urlPath = REQUEST_URL + "/test";
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(urlPath)
             .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
@@ -164,7 +203,7 @@ public class JiraServerGlobalConfigControllerTestIT {
 
     @Test
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
-    public void verifyDisablePluginEndpointTest() throws Exception {
+    void verifyDisablePluginEndpointTest() throws Exception {
         String urlPath = REQUEST_URL + "/install-plugin";
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(urlPath)
             .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))

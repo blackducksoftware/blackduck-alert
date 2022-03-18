@@ -11,10 +11,10 @@ import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.util.Stringable;
 
-public class DataStructureUtilsTest {
+class DataStructureUtilsTest {
 
     @Test
-    public void convertListWithNameKey() {
+    void convertListWithNameKey() {
         String key1 = "key1";
         String key2 = "key2";
         TestObject testObject1 = new TestObject(key1, "something");
@@ -30,7 +30,7 @@ public class DataStructureUtilsTest {
     }
 
     @Test
-    public void convertListWithObjectKey() {
+    void convertListWithObjectKey() {
         String key1 = "key1";
         String key2 = "key2";
         TestObject testObject1 = new TestObject(key1, "something");
@@ -45,7 +45,7 @@ public class DataStructureUtilsTest {
     }
 
     @Test
-    public void convertListWithNameAndObject() {
+    void convertListWithNameAndObject() {
         String key1 = "key1";
         String key2 = "key2";
         TestObject testObject1 = new TestObject(key1, "something");

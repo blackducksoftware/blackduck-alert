@@ -7,10 +7,10 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-public class MarkupEncoderTest {
+class MarkupEncoderTest {
 
     @Test
-    public void testEncoder() {
+    void testEncoder() {
         MarkupEncoderUtil markupEncoderUtil = new MarkupEncoderUtil();
         Map<Character, String> encoding = Map.of('*', "\\*", '~', "\\~", '#', "\\#", '-', "\\-", '_', "\\_");
 
@@ -34,7 +34,7 @@ public class MarkupEncoderTest {
     }
 
     @Test
-    public void testSlackEncoder() {
+    void testSlackEncoder() {
         MarkupEncoderUtil markupEncoderUtil = new MarkupEncoderUtil();
         LinkedHashMap<Character, String> encodingMap = new LinkedHashMap<>();
         encodingMap.put('&', "&amp;");
