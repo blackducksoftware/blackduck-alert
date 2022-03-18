@@ -40,6 +40,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Slack
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.common.util.DateUtils;
+import com.synopsys.integration.alert.common.util.SortUtil;
 import com.synopsys.integration.alert.database.job.DistributionJobEntity;
 import com.synopsys.integration.alert.database.job.DistributionJobRepository;
 import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDetailsEntity;
@@ -129,14 +130,7 @@ public class StaticJobAccessor implements JobAccessor {
             return new AlertPagedModel<>(0, pageNumber, pageLimit, List.of());
         }
 
-        Sort sort = Sort.unsorted();
-        if (StringUtils.isNotBlank(sortName) && StringUtils.isNotBlank(sortOrder)) {
-            if (Sort.Direction.ASC.name().equalsIgnoreCase(sortOrder)) {
-                sort = Sort.by(Sort.Order.asc(sortName));
-            } else {
-                sort = Sort.by(Sort.Order.desc(sortName));
-            }
-        }
+        Sort sort = SortUtil.createSortByFieldName(sortName, sortOrder);
         PageRequest pageRequest = PageRequest.of(pageNumber, pageLimit, sort);
         Page<DistributionJobEntity> pageOfJobsWithDescriptorNames;
         if (StringUtils.isBlank(searchTerm)) {

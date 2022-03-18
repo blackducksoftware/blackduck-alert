@@ -31,6 +31,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationA
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.util.DateUtils;
+import com.synopsys.integration.alert.common.util.SortUtil;
 
 @Component
 public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<JiraServerGlobalConfigModel> {
@@ -78,15 +79,7 @@ public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<Jir
     public AlertPagedModel<JiraServerGlobalConfigModel> getConfigurationPage(
         int page, int size, String searchTerm, String sortName, String sortOrder
     ) {
-        Sort sort = Sort.unsorted();
-        if (StringUtils.isNotBlank(sortName)) {
-            Sort.Order sortingOrder = Sort.Order.desc(sortName);
-            if (StringUtils.isNotBlank(sortOrder) && Sort.Direction.ASC.name().equalsIgnoreCase(sortOrder)) {
-                sortingOrder = Sort.Order.asc(sortName);
-            }
-            sort = Sort.by(sortingOrder);
-        }
-
+        Sort sort = SortUtil.createSortByFieldName(sortName, sortOrder);
         Page<JiraServerConfigurationEntity> resultPage;
         PageRequest pageRequest = PageRequest.of(page, size, sort);
         if (StringUtils.isNotBlank(searchTerm)) {
