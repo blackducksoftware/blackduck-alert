@@ -124,7 +124,8 @@ public class StaticJobAccessor implements JobAccessor {
         int pageLimit,
         String searchTerm,
         String sortName,
-        String sortOrder, Collection<String> descriptorsNamesToInclude
+        String sortOrder,
+        Collection<String> descriptorsNamesToInclude
     ) {
         if (!descriptorsNamesToInclude.contains(blackDuckProviderKey.getUniversalKey())) {
             return new AlertPagedModel<>(0, pageNumber, pageLimit, List.of());

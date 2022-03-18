@@ -60,7 +60,8 @@ public abstract class AbstractJobResourceActions {
         Integer pageSize,
         String searchTerm,
         String sortName,
-        String sortOrder, Collection<String> permittedDescriptorsForSession
+        String sortOrder,
+        Collection<String> permittedDescriptorsForSession
     );
 
     protected abstract ValidationActionResponse testWithoutChecks(JobFieldModel resource);
