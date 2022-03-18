@@ -25,7 +25,14 @@ public interface JobAccessor {
 
     AlertPagedModel<DistributionJobModel> getPageOfJobs(int pageOffset, int pageLimit);
 
-    AlertPagedModel<DistributionJobModel> getPageOfJobs(int pageOffset, int pageLimit, String searchTerm, Collection<String> descriptorsNamesToInclude);
+    AlertPagedModel<DistributionJobModel> getPageOfJobs(
+        int pageOffset,
+        int pageLimit,
+        String searchTerm,
+        String sortName,
+        String sortOrder,
+        Collection<String> descriptorsNamesToInclude
+    );
 
     Optional<DistributionJobModel> getJobById(UUID jobId);
 

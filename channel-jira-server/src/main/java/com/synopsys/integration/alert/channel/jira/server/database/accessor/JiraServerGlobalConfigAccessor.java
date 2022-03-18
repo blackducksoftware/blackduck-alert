@@ -18,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +31,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationA
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.util.DateUtils;
+import com.synopsys.integration.alert.common.util.SortUtil;
 
 @Component
 public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<JiraServerGlobalConfigModel> {
@@ -74,12 +76,21 @@ public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<Jir
 
     @Override
     @Transactional(readOnly = true)
-    public AlertPagedModel<JiraServerGlobalConfigModel> getConfigurationPage(int page, int size) {
-        Page<JiraServerConfigurationEntity> resultPage = jiraServerConfigurationRepository.findAll(PageRequest.of(page, size));
+    public AlertPagedModel<JiraServerGlobalConfigModel> getConfigurationPage(
+        int page, int size, String searchTerm, String sortName, String sortOrder
+    ) {
+        Sort sort = SortUtil.createSortByFieldName(sortName, sortOrder);
+        Page<JiraServerConfigurationEntity> resultPage;
+        PageRequest pageRequest = PageRequest.of(page, size, sort);
+        if (StringUtils.isNotBlank(searchTerm)) {
+            resultPage = jiraServerConfigurationRepository.findBySearchTerm(searchTerm, pageRequest);
+        } else {
+            resultPage = jiraServerConfigurationRepository.findAll(pageRequest);
+        }
         List<JiraServerGlobalConfigModel> pageContent = resultPage.getContent()
-                                                            .stream()
-                                                            .map(this::createConfigModel)
-                                                            .collect(Collectors.toList());
+            .stream()
+            .map(this::createConfigModel)
+            .collect(Collectors.toList());
         return new AlertPagedModel<>(resultPage.getTotalPages(), resultPage.getNumber(), resultPage.getSize(), pageContent);
     }
 

@@ -4,10 +4,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -25,17 +27,16 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.JiraC
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
-import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
-import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
-import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
-import com.synopsys.integration.alert.descriptor.api.MsTeamsKey;
-import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
+import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @AlertIntegrationTest
-public class StaticJobAccessorTestIT {
+class StaticJobAccessorTestIT {
     private static final List<UUID> createdJobIds = new LinkedList<>();
 
     @Autowired
@@ -49,7 +50,7 @@ public class StaticJobAccessorTestIT {
 
     @Test
     @Transactional
-    public void verifyAzureSavesTest() {
+    void verifyAzureSavesTest() {
         AzureBoardsJobDetailsModel azureBoardsJobDetailsModel = new AzureBoardsJobDetailsModel(
             UUID.randomUUID(),
             true,
@@ -59,12 +60,12 @@ public class StaticJobAccessorTestIT {
             "workItemReopenState"
         );
 
-        DistributionJobRequestModel jobRequestModel = createJobRequestModel(azureBoardsJobDetailsModel, new AzureBoardsChannelKey());
+        DistributionJobRequestModel jobRequestModel = createJobRequestModel(azureBoardsJobDetailsModel, ChannelKeys.AZURE_BOARDS);
         createAndAssertJob(jobRequestModel);
     }
 
     @Test
-    public void verifyJiraServerSavesTest() {
+    void verifyJiraServerSavesTest() {
         JiraServerJobDetailsModel jiraServerJobDetailsModel = new JiraServerJobDetailsModel(
             UUID.randomUUID(),
             true,
@@ -77,12 +78,12 @@ public class StaticJobAccessorTestIT {
             "issueSummary"
         );
 
-        DistributionJobRequestModel jobRequestModel = createJobRequestModel(jiraServerJobDetailsModel, new JiraServerChannelKey());
+        DistributionJobRequestModel jobRequestModel = createJobRequestModel(jiraServerJobDetailsModel, ChannelKeys.JIRA_SERVER);
         createAndAssertJob(jobRequestModel);
     }
 
     @Test
-    public void verifyJiraCloudSavesTest() {
+    void verifyJiraCloudSavesTest() {
         JiraCloudJobDetailsModel jiraCloudJobDetailsModel = new JiraCloudJobDetailsModel(
             UUID.randomUUID(),
             true,
@@ -95,12 +96,12 @@ public class StaticJobAccessorTestIT {
             "issueSummary"
         );
 
-        DistributionJobRequestModel jobRequestModel = createJobRequestModel(jiraCloudJobDetailsModel, new JiraServerChannelKey());
+        DistributionJobRequestModel jobRequestModel = createJobRequestModel(jiraCloudJobDetailsModel, ChannelKeys.JIRA_CLOUD);
         createAndAssertJob(jobRequestModel);
     }
 
     @Test
-    public void verifyEmailSavesTest() {
+    void verifyEmailSavesTest() {
         EmailJobDetailsModel emailJobDetailsModel = new EmailJobDetailsModel(
             UUID.randomUUID(),
             "subjectLine",
@@ -110,12 +111,12 @@ public class StaticJobAccessorTestIT {
             List.of()
         );
 
-        DistributionJobRequestModel jobRequestModel = createJobRequestModel(emailJobDetailsModel, new EmailChannelKey());
+        DistributionJobRequestModel jobRequestModel = createJobRequestModel(emailJobDetailsModel, ChannelKeys.EMAIL);
         createAndAssertJob(jobRequestModel);
     }
 
     @Test
-    public void verifySlackSavesTest() {
+    void verifySlackSavesTest() {
         SlackJobDetailsModel slackJobDetailsModel = new SlackJobDetailsModel(
             UUID.randomUUID(),
             "webhook",
@@ -123,19 +124,95 @@ public class StaticJobAccessorTestIT {
             "channelUsername"
         );
 
-        DistributionJobRequestModel jobRequestModel = createJobRequestModel(slackJobDetailsModel, new SlackChannelKey());
+        DistributionJobRequestModel jobRequestModel = createJobRequestModel(slackJobDetailsModel, ChannelKeys.SLACK);
         createAndAssertJob(jobRequestModel);
     }
 
     @Test
-    public void verifyMSTeamsSavesTest() {
+    void verifyMSTeamsSavesTest() {
         MSTeamsJobDetailsModel msTeamsJobDetailsModel = new MSTeamsJobDetailsModel(
             UUID.randomUUID(),
             "webhook"
         );
 
-        DistributionJobRequestModel jobRequestModel = createJobRequestModel(msTeamsJobDetailsModel, new MsTeamsKey());
+        DistributionJobRequestModel jobRequestModel = createJobRequestModel(msTeamsJobDetailsModel, ChannelKeys.MS_TEAMS);
         createAndAssertJob(jobRequestModel);
+    }
+
+    @Test
+    void verifySearchAndAscendingSortTest() {
+        List<String> descriptorNames = createMultipleJobs().stream()
+            .map(DescriptorKey::getUniversalKey)
+            .collect(Collectors.toList());
+
+        AlertPagedModel<DistributionJobModel> pageOfJobs = staticJobAccessor.getPageOfJobs(0, 10, "", "name", "asc", descriptorNames);
+        assertEquals(3, pageOfJobs.getModels().size());
+        assertTrue(pageOfJobs.getModels().get(0).getDistributionJobDetails().isA(ChannelKeys.EMAIL));
+        assertTrue(pageOfJobs.getModels().get(1).getDistributionJobDetails().isA(ChannelKeys.MS_TEAMS));
+        assertTrue(pageOfJobs.getModels().get(2).getDistributionJobDetails().isA(ChannelKeys.SLACK));
+    }
+
+    @Test
+    void verifySearchAndDescendingSortTest() {
+        List<String> descriptorNames = createMultipleJobs().stream()
+            .map(DescriptorKey::getUniversalKey)
+            .collect(Collectors.toList());
+
+        AlertPagedModel<DistributionJobModel> pageOfJobs = staticJobAccessor.getPageOfJobs(0, 10, "", "name", "desc", descriptorNames);
+        assertEquals(3, pageOfJobs.getModels().size());
+        assertTrue(pageOfJobs.getModels().get(2).getDistributionJobDetails().isA(ChannelKeys.EMAIL));
+        assertTrue(pageOfJobs.getModels().get(1).getDistributionJobDetails().isA(ChannelKeys.MS_TEAMS));
+        assertTrue(pageOfJobs.getModels().get(0).getDistributionJobDetails().isA(ChannelKeys.SLACK));
+    }
+
+    @Test
+    void verifySearchAndSortTest() {
+        List<String> descriptorNames = createMultipleJobs().stream()
+            .map(DescriptorKey::getUniversalKey)
+            .collect(Collectors.toList());
+
+        AlertPagedModel<DistributionJobModel> pageOfJobs = staticJobAccessor.getPageOfJobs(0, 10, "MS Teams", "name", "desc", descriptorNames);
+        assertEquals(1, pageOfJobs.getModels().size());
+        assertTrue(pageOfJobs.getModels().get(0).getDistributionJobDetails().isA(ChannelKeys.MS_TEAMS));
+    }
+
+    private List<DescriptorKey> createMultipleJobs() {
+        List<DescriptorKey> descriptorKeys = new ArrayList<>();
+        descriptorKeys.add(new BlackDuckProviderKey());
+        MSTeamsJobDetailsModel msTeamsJobDetailsModel = new MSTeamsJobDetailsModel(
+            UUID.randomUUID(),
+            "webhook"
+        );
+
+        DistributionJobRequestModel jobRequestModel = createJobRequestModel(msTeamsJobDetailsModel, ChannelKeys.MS_TEAMS);
+        descriptorKeys.add(ChannelKeys.MS_TEAMS);
+        createAndAssertJob(jobRequestModel);
+
+        SlackJobDetailsModel slackJobDetailsModel = new SlackJobDetailsModel(
+            UUID.randomUUID(),
+            "webhook",
+            "channelName",
+            "channelUsername"
+        );
+
+        jobRequestModel = createJobRequestModel(slackJobDetailsModel, ChannelKeys.SLACK);
+        descriptorKeys.add(ChannelKeys.SLACK);
+        createAndAssertJob(jobRequestModel);
+
+        EmailJobDetailsModel emailJobDetailsModel = new EmailJobDetailsModel(
+            UUID.randomUUID(),
+            "subjectLine",
+            false,
+            false,
+            "attachmentFileType",
+            List.of()
+        );
+
+        jobRequestModel = createJobRequestModel(emailJobDetailsModel, ChannelKeys.EMAIL);
+        descriptorKeys.add(ChannelKeys.EMAIL);
+        createAndAssertJob(jobRequestModel);
+
+        return descriptorKeys;
     }
 
     private void createAndAssertJob(DistributionJobRequestModel jobRequestModel) {

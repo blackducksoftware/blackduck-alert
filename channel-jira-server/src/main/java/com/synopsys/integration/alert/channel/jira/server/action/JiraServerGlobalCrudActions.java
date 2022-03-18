@@ -43,8 +43,10 @@ public class JiraServerGlobalCrudActions {
         return configurationHelper.getOne(() -> configurationAccessor.getConfiguration(id));
     }
 
-    public ActionResponse<AlertPagedModel<JiraServerGlobalConfigModel>> getPaged(int page, int size) {
-        return configurationHelper.getPage(() -> configurationAccessor.getConfigurationPage(page, size));
+    public ActionResponse<AlertPagedModel<JiraServerGlobalConfigModel>> getPaged(
+        int page, int size, String searchTerm, String sortName, String sortOrder
+    ) {
+        return configurationHelper.getPage(() -> configurationAccessor.getConfigurationPage(page, size, searchTerm, sortName, sortOrder));
     }
 
     public ActionResponse<JiraServerGlobalConfigModel> create(JiraServerGlobalConfigModel resource) {
