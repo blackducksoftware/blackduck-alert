@@ -22,14 +22,11 @@ public class EnvironmentVariableProcessor {
     private static final String LINE_DIVIDER = "---------------------------------";
     private static final String TWO_SPACE_INDENT = "  ";
     private static final String FOUR_SPACE_INDENT = "    ";
-    private Logger logger = LoggerFactory.getLogger(getClass());
-    //TODO: Clean up the factoryList once the Factories are deprecated
-    private final List<EnvironmentVariableHandlerFactory> factoryList;
-    private final List<EnvironmentVariableHandlerV3<?>> environmentVariableHandlers;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final List<EnvironmentVariableHandler<?>> environmentVariableHandlers;
 
     @Autowired
-    public EnvironmentVariableProcessor(List<EnvironmentVariableHandlerFactory> factoryList, List<EnvironmentVariableHandlerV3<?>> environmentVariableHandlers) {
-        this.factoryList = factoryList;
+    public EnvironmentVariableProcessor(List<EnvironmentVariableHandler<?>> environmentVariableHandlers) {
         this.environmentVariableHandlers = environmentVariableHandlers;
     }
 
@@ -37,7 +34,7 @@ public class EnvironmentVariableProcessor {
         logger.info("** {} **", LINE_DIVIDER);
         logger.info("Initializing system configurations from environment variables...");
         logger.info("Begin handling environment variables...");
-        for (EnvironmentVariableHandlerV3<?> handler : environmentVariableHandlers) {
+        for (EnvironmentVariableHandler<?> handler : environmentVariableHandlers) {
             logger.info(LINE_DIVIDER);
             logger.info("Handler name: {}", handler.getName());
             logger.info(LINE_DIVIDER);

@@ -37,7 +37,7 @@ class EmailEnvironmentVariableHandlerTestIT {
     @Autowired
     private EmailGlobalConfigAccessor emailGlobalConfigAccessor;
     @Autowired
-    private final EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
+    private EmailGlobalConfigurationValidator validator;
 
     @AfterEach
     @BeforeEach

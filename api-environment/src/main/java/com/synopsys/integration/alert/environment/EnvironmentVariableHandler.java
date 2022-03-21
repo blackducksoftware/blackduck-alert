@@ -8,22 +8,22 @@
 package com.synopsys.integration.alert.environment;
 
 import java.util.Set;
-import java.util.function.BooleanSupplier;
-import java.util.function.Supplier;
 
-@Deprecated(forRemoval = true)
-public class EnvironmentVariableHandler {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.synopsys.integration.alert.api.common.model.Obfuscated;
+import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
+import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
+
+public abstract class EnvironmentVariableHandler<T extends Obfuscated<T>> {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final String name;
     private final Set<String> environmentVariableNames;
-    private final BooleanSupplier configurationMissingCheck;
-    private final Supplier<EnvironmentProcessingResult> updateFunction;
 
-    public EnvironmentVariableHandler(String name, Set<String> environmentVariableNames, BooleanSupplier configurationMissingCheck, Supplier<EnvironmentProcessingResult> updateFunction) {
+    protected EnvironmentVariableHandler(String name, Set<String> environmentVariableNames) {
         this.name = name;
         this.environmentVariableNames = environmentVariableNames;
-        this.configurationMissingCheck = configurationMissingCheck;
-        this.updateFunction = updateFunction;
     }
 
     public String getName() {
@@ -34,16 +34,36 @@ public class EnvironmentVariableHandler {
         return environmentVariableNames;
     }
 
-    public boolean isConfigurationMissing() {
-        return configurationMissingCheck.getAsBoolean();
-    }
-
     public EnvironmentProcessingResult updateFromEnvironment() {
-        boolean configurationMissing = configurationMissingCheck.getAsBoolean();
+        boolean configurationMissing = configurationMissingCheck();
         if (configurationMissing) {
-            return updateFunction.get();
+            T configurationModel = configureModel();
+            ValidationResponseModel validationResponseModel = validateConfiguration(configurationModel);
+            if (validationResponseModel.hasErrors()) {
+                logger.error("Error inserting startup values: {}", validationResponseModel.getMessage());
+                for (AlertFieldStatus errorStatus : validationResponseModel.getErrors().values()) {
+                    logger.error("Field: '{}' failed with the error: {}", errorStatus.getFieldName(), errorStatus.getFieldMessage());
+                }
+                return EnvironmentProcessingResult.empty();
+            }
+            EnvironmentProcessingResult processingResult = buildProcessingResult(configurationModel.obfuscate());
+            if (processingResult.hasValues()) {
+                saveConfiguration(configurationModel, processingResult);
+            }
+            return processingResult;
         }
 
         return EnvironmentProcessingResult.empty();
     }
+
+    protected abstract Boolean configurationMissingCheck();
+
+    protected abstract T configureModel();
+
+    protected abstract ValidationResponseModel validateConfiguration(T configModel);
+
+    protected abstract EnvironmentProcessingResult buildProcessingResult(T obfuscatedConfigModel);
+
+    protected abstract void saveConfiguration(T configModel, EnvironmentProcessingResult processingResult);
+
 }

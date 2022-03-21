@@ -25,11 +25,11 @@ import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.environment.EnvironmentProcessingResult;
-import com.synopsys.integration.alert.environment.EnvironmentVariableHandlerV3;
+import com.synopsys.integration.alert.environment.EnvironmentVariableHandler;
 import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
 
 @Component
-public class JiraServerEnvironmentVariableHandler extends EnvironmentVariableHandlerV3<JiraServerGlobalConfigModel> {
+public class JiraServerEnvironmentVariableHandler extends EnvironmentVariableHandler<JiraServerGlobalConfigModel> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public static final String DISABLE_PLUGIN_KEY = "ALERT_CHANNEL_JIRA_SERVER_JIRA_SERVER_DISABLE_PLUGIN_CHECK";

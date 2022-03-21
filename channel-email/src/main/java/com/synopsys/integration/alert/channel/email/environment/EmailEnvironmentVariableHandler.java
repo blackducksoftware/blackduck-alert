@@ -27,12 +27,12 @@ import com.synopsys.integration.alert.channel.email.validator.EmailGlobalConfigu
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.environment.EnvironmentProcessingResult;
-import com.synopsys.integration.alert.environment.EnvironmentVariableHandlerV3;
+import com.synopsys.integration.alert.environment.EnvironmentVariableHandler;
 import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
 @Component
-public class EmailEnvironmentVariableHandler extends EnvironmentVariableHandlerV3<EmailGlobalConfigModel> {
+public class EmailEnvironmentVariableHandler extends EnvironmentVariableHandler<EmailGlobalConfigModel> {
     public static final String ENVIRONMENT_VARIABLE_PREFIX = "ALERT_CHANNEL_EMAIL_";
     public static final String ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX = ENVIRONMENT_VARIABLE_PREFIX + "MAIL_";
 
@@ -106,7 +106,11 @@ public class EmailEnvironmentVariableHandler extends EnvironmentVariableHandlerV
     }
 
     @Autowired
-    public EmailEnvironmentVariableHandler(EmailGlobalConfigAccessor configAccessor, EnvironmentVariableUtility environmentVariableUtility, EmailGlobalConfigurationValidator validator) {
+    public EmailEnvironmentVariableHandler(
+        EmailGlobalConfigAccessor configAccessor,
+        EnvironmentVariableUtility environmentVariableUtility,
+        EmailGlobalConfigurationValidator validator
+    ) {
         super(ChannelKeys.EMAIL.getDisplayName(), Stream.concat(EMAIL_CONFIGURATION_KEYSET.stream(), OLD_ADDITIONAL_PROPERTY_KEYSET.stream()).collect(Collectors.toSet()));
         this.configAccessor = configAccessor;
         this.environmentVariableUtility = environmentVariableUtility;

@@ -25,23 +25,25 @@ class EnvironmentVariableProcessorTest {
         }
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
         EnvironmentTestHandler handler = new EnvironmentTestHandler(environmentVariableUtility);
-        EnvironmentVariableProcessor processor = new EnvironmentVariableProcessor(null, List.of(handler));
+        EnvironmentVariableProcessor processor = new EnvironmentVariableProcessor(List.of(handler));
         processor.updateConfigurations();
         assertTrue(handler.hasUpdateOccurred());
+        assertTrue(handler.hasSaveOccurred());
         EnvironmentProcessingResult result = handler.getUpdatedProperties().orElseThrow(() -> new AssertionError("Properties should exist"));
 
         assertTrue(result.hasValues());
         assertTrue(EnvironmentTestHandler.VARIABLE_NAMES.containsAll(result.getVariableNames()));
     }
-    
+
     @Test
     void testMissingEnvironmentVariablesHandler() {
         Environment environment = Mockito.mock(Environment.class);
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
         EnvironmentTestHandler handler = new EnvironmentTestHandler(environmentVariableUtility);
-        EnvironmentVariableProcessor processor = new EnvironmentVariableProcessor(null, List.of(handler));
+        EnvironmentVariableProcessor processor = new EnvironmentVariableProcessor(List.of(handler));
         processor.updateConfigurations();
         assertFalse(handler.hasUpdateOccurred());
+        assertFalse(handler.hasSaveOccurred());
         assertFalse(handler.getUpdatedProperties().stream()
                         .allMatch(EnvironmentProcessingResult::hasValues));
     }
@@ -53,7 +55,7 @@ class EnvironmentVariableProcessorTest {
         }
     }
 
-    private static class EnvironmentTestHandler extends EnvironmentVariableHandlerV3<TestModel> {
+    private static class EnvironmentTestHandler extends EnvironmentVariableHandler<TestModel> {
         public static final String HANDLER_NAME = "Updating Handler";
         protected static final String ENVIRONMENT_VARIABLE_PREFIX = "ALERT_DESCRIPTORTYPE_DESCRIPTORNAME_";
         public static final Set<String> VARIABLE_NAMES = Set.of(
@@ -62,6 +64,7 @@ class EnvironmentVariableProcessorTest {
         public static final String DEFAULT_VALUE = "environmentPropertyValue";
 
         private boolean updateOccurred = false;
+        private boolean saveOccurred = false;
         private final EnvironmentVariableUtility environmentVariableUtility;
         private EnvironmentProcessingResult updatedProperties;
 
@@ -101,11 +104,15 @@ class EnvironmentVariableProcessorTest {
 
         @Override
         protected void saveConfiguration(TestModel configModel, EnvironmentProcessingResult processingResult) {
-            updateOccurred = true;
+            saveOccurred = true;
         }
 
         public boolean hasUpdateOccurred() {
             return updateOccurred;
+        }
+
+        public boolean hasSaveOccurred() {
+            return saveOccurred;
         }
 
         public Optional<EnvironmentProcessingResult> getUpdatedProperties() {
