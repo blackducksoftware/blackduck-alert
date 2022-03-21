@@ -34,10 +34,6 @@ public abstract class EnvironmentVariableHandler<T extends Obfuscated<T>> {
         return environmentVariableNames;
     }
 
-    public boolean isConfigurationMissing() {
-        return configurationMissingCheck();
-    }
-
     public EnvironmentProcessingResult updateFromEnvironment() {
         boolean configurationMissing = configurationMissingCheck();
         if (configurationMissing) {

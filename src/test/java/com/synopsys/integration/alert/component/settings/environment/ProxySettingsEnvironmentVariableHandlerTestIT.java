@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import java.util.function.Predicate;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,7 +32,8 @@ class ProxySettingsEnvironmentVariableHandlerTestIT {
     private static final String TEST_PROXY_PORT = "3128";
     private static final String TEST_PROXY_USERNAME = "testUser";
     private static final String TEST_PROXY_PASSWORD = "testPassword";
-    private static final String TEST_NON_PROXY_HOSTS = "https://nonProxyHostUrl";
+    private static final List<String> nonProxyHostList = List.of("https://nonProxyHostUrl", "https://anotherNonProxyHostUrl");
+    private static final String TEST_NON_PROXY_HOSTS = StringUtils.join(nonProxyHostList, ",");
 
     @Autowired
     private SettingsProxyConfigAccessor configAccessor;
@@ -50,7 +52,11 @@ class ProxySettingsEnvironmentVariableHandlerTestIT {
     void testCleanEnvironment() {
         Environment environment = setupMockedEnvironment();
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
-        ProxySettingsEnvironmentVariableHandler proxySettingsEnvironmentVariableHandler = new ProxySettingsEnvironmentVariableHandler(configAccessor, environmentVariableUtility, validator);
+        ProxySettingsEnvironmentVariableHandler proxySettingsEnvironmentVariableHandler = new ProxySettingsEnvironmentVariableHandler(
+            configAccessor,
+            environmentVariableUtility,
+            validator
+        );
         EnvironmentProcessingResult result = proxySettingsEnvironmentVariableHandler.updateFromEnvironment();
         assertEquals(ProxySettingsEnvironmentVariableHandler.HANDLER_NAME, proxySettingsEnvironmentVariableHandler.getName());
         assertTrue(result.hasValues());
@@ -59,7 +65,7 @@ class ProxySettingsEnvironmentVariableHandlerTestIT {
         assertEquals(TEST_PROXY_PORT, result.getVariableValue(ProxySettingsEnvironmentVariableHandler.PROXY_PORT_KEY).orElse("Proxy port missing"));
         assertEquals(TEST_PROXY_USERNAME, result.getVariableValue(ProxySettingsEnvironmentVariableHandler.PROXY_USERNAME_KEY).orElse("Proxy username missing"));
         assertEquals(AlertConstants.MASKED_VALUE, result.getVariableValue(ProxySettingsEnvironmentVariableHandler.PROXY_PASSWORD_KEY).orElse("Proxy password missing"));
-        assertEquals(TEST_NON_PROXY_HOSTS, result.getVariableValue(ProxySettingsEnvironmentVariableHandler.PROXY_NON_PROXY_HOSTS_KEY).orElse("Non proxy hosts missing"));
+        assertEquals(nonProxyHostList.toString(), result.getVariableValue(ProxySettingsEnvironmentVariableHandler.PROXY_NON_PROXY_HOSTS_KEY).orElse("Non proxy hosts missing"));
     }
 
     @Test
@@ -76,7 +82,11 @@ class ProxySettingsEnvironmentVariableHandlerTestIT {
 
         Environment environment = setupMockedEnvironment();
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
-        ProxySettingsEnvironmentVariableHandler proxySettingsEnvironmentVariableHandler = new ProxySettingsEnvironmentVariableHandler(configAccessor, environmentVariableUtility, validator);
+        ProxySettingsEnvironmentVariableHandler proxySettingsEnvironmentVariableHandler = new ProxySettingsEnvironmentVariableHandler(
+            configAccessor,
+            environmentVariableUtility,
+            validator
+        );
         EnvironmentProcessingResult result = proxySettingsEnvironmentVariableHandler.updateFromEnvironment();
         assertEquals(ProxySettingsEnvironmentVariableHandler.HANDLER_NAME, proxySettingsEnvironmentVariableHandler.getName());
         assertFalse(result.hasValues());
@@ -87,9 +97,12 @@ class ProxySettingsEnvironmentVariableHandlerTestIT {
         Predicate<String> hasEnvVarCheck = (variableName) -> !ProxySettingsEnvironmentVariableHandler.PROXY_CONFIGURATION_KEYSET.contains(variableName);
         EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, ProxySettingsEnvironmentVariableHandler.PROXY_HOST_KEY, TEST_PROXY_HOST);
         EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, ProxySettingsEnvironmentVariableHandler.PROXY_PORT_KEY, TEST_PROXY_PORT);
-        EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, ProxySettingsEnvironmentVariableHandler.PROXY_USERNAME_KEY, TEST_PROXY_USERNAME);
-        EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, ProxySettingsEnvironmentVariableHandler.PROXY_PASSWORD_KEY, TEST_PROXY_PASSWORD);
-        EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, ProxySettingsEnvironmentVariableHandler.PROXY_NON_PROXY_HOSTS_KEY, TEST_NON_PROXY_HOSTS);
+        EnvironmentVariableMockingUtil
+            .addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, ProxySettingsEnvironmentVariableHandler.PROXY_USERNAME_KEY, TEST_PROXY_USERNAME);
+        EnvironmentVariableMockingUtil
+            .addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, ProxySettingsEnvironmentVariableHandler.PROXY_PASSWORD_KEY, TEST_PROXY_PASSWORD);
+        EnvironmentVariableMockingUtil
+            .addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, ProxySettingsEnvironmentVariableHandler.PROXY_NON_PROXY_HOSTS_KEY, TEST_NON_PROXY_HOSTS);
         return environment;
     }
 }
