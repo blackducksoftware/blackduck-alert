@@ -106,7 +106,11 @@ public class EmailEnvironmentVariableHandler extends EnvironmentVariableHandler<
     }
 
     @Autowired
-    public EmailEnvironmentVariableHandler(EmailGlobalConfigAccessor configAccessor, EnvironmentVariableUtility environmentVariableUtility, EmailGlobalConfigurationValidator validator) {
+    public EmailEnvironmentVariableHandler(
+        EmailGlobalConfigAccessor configAccessor,
+        EnvironmentVariableUtility environmentVariableUtility,
+        EmailGlobalConfigurationValidator validator
+    ) {
         super(ChannelKeys.EMAIL.getDisplayName(), Stream.concat(EMAIL_CONFIGURATION_KEYSET.stream(), OLD_ADDITIONAL_PROPERTY_KEYSET.stream()).collect(Collectors.toSet()));
         this.configAccessor = configAccessor;
         this.environmentVariableUtility = environmentVariableUtility;
@@ -136,7 +140,7 @@ public class EmailEnvironmentVariableHandler extends EnvironmentVariableHandler<
     @Override
     protected EnvironmentProcessingResult buildProcessingResult(EmailGlobalConfigModel obfuscatedConfigModel) {
         EnvironmentProcessingResult.Builder builder = new EnvironmentProcessingResult.Builder(EMAIL_CONFIGURATION_KEYSET)
-                                                          .addVariableNames(OLD_ADDITIONAL_PROPERTY_KEYSET);
+            .addVariableNames(OLD_ADDITIONAL_PROPERTY_KEYSET);
 
         for (String additionalPropertyName : OLD_ADDITIONAL_PROPERTY_KEYSET) {
             if (environmentVariableUtility.hasEnvironmentValue(additionalPropertyName)) {

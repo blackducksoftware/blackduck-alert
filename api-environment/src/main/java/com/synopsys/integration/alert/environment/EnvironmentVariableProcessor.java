@@ -47,9 +47,9 @@ public class EnvironmentVariableProcessor {
     private void logVariableNames(Set<String> names) {
         logger.info("{}### Environment Variables ### ", TWO_SPACE_INDENT);
         List<String> sortedNames = names.stream()
-                                       .map(String::trim)
-                                       .sorted()
-                                       .collect(Collectors.toList());
+            .map(String::trim)
+            .sorted()
+            .collect(Collectors.toList());
 
         for (String name : sortedNames) {
             logger.info("{}{}", FOUR_SPACE_INDENT, name);
@@ -59,8 +59,8 @@ public class EnvironmentVariableProcessor {
     private void logConfiguration(EnvironmentProcessingResult configurationProperties) {
         if (configurationProperties.hasValues()) {
             List<String> sortedVariableNames = configurationProperties.getVariableNames().stream()
-                                                   .sorted()
-                                                   .collect(Collectors.toList());
+                .sorted()
+                .collect(Collectors.toList());
             logger.info(TWO_SPACE_INDENT);
             logger.info("{}### Environment Variables Used to Configure System ### ", TWO_SPACE_INDENT);
             for (String variableName : sortedVariableNames) {
