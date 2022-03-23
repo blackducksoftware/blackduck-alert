@@ -92,7 +92,8 @@ public class JiraServerSummaryFieldLengthTestIT {
             new IssueTrackerCallbackInfoCreator(),
             issueCategoryRetriever);
         JiraServerJobDetailsModel jiraServerJobDetails = createJiraServerJobDetails(testProperties);
-        return jiraServerMessageSenderFactory.createMessageSender(jiraServerJobDetails);
+        //Can pass null due to properties mocking
+        return jiraServerMessageSenderFactory.createMessageSender(jiraServerJobDetails, null);
     }
 
     private static JiraServerPropertiesFactory createJiraServerPropertiesFactory(TestProperties testProperties) throws AlertConfigurationException {
@@ -102,7 +103,7 @@ public class JiraServerSummaryFieldLengthTestIT {
 
         JiraServerPropertiesFactory jiraServerPropertiesFactory = Mockito.mock(JiraServerPropertiesFactory.class);
         JiraServerProperties jiraServerProperties = new JiraServerProperties(url, password, username, true, ProxyInfo.NO_PROXY_INFO);
-        Mockito.when(jiraServerPropertiesFactory.createJiraPropertiesWithJobId(Mockito.any(UUID.class))).thenReturn(jiraServerProperties);
+        Mockito.when(jiraServerPropertiesFactory.createJiraProperties(Mockito.any(UUID.class))).thenReturn(jiraServerProperties);
 
         return jiraServerPropertiesFactory;
     }
