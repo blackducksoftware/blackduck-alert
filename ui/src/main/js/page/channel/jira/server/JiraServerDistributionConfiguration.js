@@ -43,6 +43,7 @@ const JiraServerDistributionConfiguration = ({
                 label="Jira Server"
                 description="Select a Jira server that will be used to create or update issues. Please note the options are limited to the first 25 Jira Servers."
                 readOnly={readonly}
+                required
                 readOptionsRequest={readRequest}
                 convertDataToOptions={convertDataToOptions}
                 onChange={FieldModelUtilities.handleChange(data, setData)}
