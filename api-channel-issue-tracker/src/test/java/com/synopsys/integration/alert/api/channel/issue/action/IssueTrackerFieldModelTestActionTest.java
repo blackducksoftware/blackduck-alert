@@ -41,7 +41,7 @@ public class IssueTrackerFieldModelTestActionTest {
         IssueTrackerMessageSender<String> messageSender = Mockito.mock(IssueTrackerMessageSender.class);
         Mockito.when(messageSender.sendMessages(Mockito.any())).thenThrow(new AlertException(testExceptionMessage));
 
-        IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = distributionDetails -> messageSender;
+        IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = (distributionDetails, id) -> messageSender;
         TestIssueTrackerTestAction issueTrackerTestAction = new TestIssueTrackerTestAction(messageSenderFactory);
 
         MessageResult messageResult = issueTrackerTestAction.testConfig(TEST_JOB_MODEL, "jobName", null, null);
@@ -53,7 +53,7 @@ public class IssueTrackerFieldModelTestActionTest {
         IssueTrackerMessageSender<String> messageSender = Mockito.mock(IssueTrackerMessageSender.class);
         Mockito.when(messageSender.sendMessages(Mockito.any())).thenReturn(List.of());
 
-        IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = distributionDetails -> messageSender;
+        IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = (distributionDetails, id) -> messageSender;
         TestIssueTrackerTestAction issueTrackerTestAction = new TestIssueTrackerTestAction(messageSenderFactory);
 
         MessageResult messageResult = issueTrackerTestAction.testConfig(TEST_JOB_MODEL, "jobName", null, null);
@@ -65,7 +65,7 @@ public class IssueTrackerFieldModelTestActionTest {
         IssueTrackerMessageSender<String> messageSender = Mockito.mock(IssueTrackerMessageSender.class);
         Mockito.when(messageSender.sendMessages(Mockito.any())).thenReturn(List.of(TEST_ISSUE_RESPONSE_MODEL));
 
-        IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = distributionDetails -> messageSender;
+        IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = (distributionDetails, id) -> messageSender;
         TestIssueTrackerTestAction issueTrackerTestAction = new TestIssueTrackerTestAction(messageSenderFactory);
 
         MessageResult messageResult = issueTrackerTestAction.testConfig(TEST_JOB_MODEL, "jobName", null, null);
@@ -84,7 +84,7 @@ public class IssueTrackerFieldModelTestActionTest {
             return List.of();
         });
 
-        IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = distributionDetails -> messageSender;
+        IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = (distributionDetails, id) -> messageSender;
         TestIssueTrackerTestAction issueTrackerTestAction = new TestIssueTrackerTestAction(messageSenderFactory, true, false);
 
         MessageResult messageResult = issueTrackerTestAction.testConfig(TEST_JOB_MODEL, "jobName", null, null);
@@ -96,7 +96,7 @@ public class IssueTrackerFieldModelTestActionTest {
         IssueTrackerMessageSender<String> messageSender = Mockito.mock(IssueTrackerMessageSender.class);
         Mockito.when(messageSender.sendMessages(Mockito.any())).thenReturn(List.of(TEST_ISSUE_RESPONSE_MODEL));
 
-        IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = distributionDetails -> messageSender;
+        IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = (distributionDetails, id) -> messageSender;
         TestIssueTrackerTestAction issueTrackerTestAction = new TestIssueTrackerTestAction(messageSenderFactory, true, false);
 
         MessageResult messageResult = issueTrackerTestAction.testConfig(TEST_JOB_MODEL, "jobName", null, null);
@@ -120,7 +120,7 @@ public class IssueTrackerFieldModelTestActionTest {
             return List.of(TEST_ISSUE_RESPONSE_MODEL);
         });
 
-        IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = distributionDetails -> messageSender;
+        IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = (distributionDetails, id) -> messageSender;
         TestIssueTrackerTestAction issueTrackerTestAction = new TestIssueTrackerTestAction(messageSenderFactory, true, true);
 
         MessageResult messageResult = issueTrackerTestAction.testConfig(TEST_JOB_MODEL, "jobName", null, null);

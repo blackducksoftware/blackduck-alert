@@ -7,6 +7,8 @@
  */
 package com.synopsys.integration.alert.channel.jira.cloud.distribution;
 
+import java.util.UUID;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +64,7 @@ public class JiraCloudMessageSenderFactory implements IssueTrackerMessageSenderF
     }
 
     @Override
-    public IssueTrackerMessageSender<String> createMessageSender(JiraCloudJobDetailsModel distributionDetails) throws AlertException {
+    public IssueTrackerMessageSender<String> createMessageSender(JiraCloudJobDetailsModel distributionDetails, UUID globalId) throws AlertException {
         JiraCloudProperties jiraCloudProperties = jiraCloudPropertiesFactory.createJiraProperties();
         JiraCloudServiceFactory jiraCloudServiceFactory = jiraCloudProperties.createJiraServicesCloudFactory(logger, gson);
 

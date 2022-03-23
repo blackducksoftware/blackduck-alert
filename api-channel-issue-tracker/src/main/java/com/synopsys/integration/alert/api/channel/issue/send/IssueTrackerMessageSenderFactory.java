@@ -8,11 +8,14 @@
 package com.synopsys.integration.alert.api.channel.issue.send;
 
 import java.io.Serializable;
+import java.util.UUID;
+
+import org.springframework.lang.Nullable;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 
 public interface IssueTrackerMessageSenderFactory<D extends DistributionJobDetailsModel, T extends Serializable> {
-    IssueTrackerMessageSender<T> createMessageSender(D distributionDetails) throws AlertException;
+    IssueTrackerMessageSender<T> createMessageSender(D distributionDetails, @Nullable UUID globalId) throws AlertException;
 
 }

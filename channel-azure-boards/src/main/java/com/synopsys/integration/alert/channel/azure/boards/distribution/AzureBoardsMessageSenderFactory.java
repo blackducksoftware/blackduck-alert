@@ -7,6 +7,8 @@
  */
 package com.synopsys.integration.alert.channel.azure.boards.distribution;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -66,7 +68,7 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
     }
 
     @Override
-    public IssueTrackerMessageSender<Integer> createMessageSender(AzureBoardsJobDetailsModel distributionDetails) throws AlertException {
+    public IssueTrackerMessageSender<Integer> createMessageSender(AzureBoardsJobDetailsModel distributionDetails, UUID globalId) throws AlertException {
         AzureBoardsProperties azureBoardsProperties = azureBoardsPropertiesFactory.createAzureBoardsProperties();
         azureBoardsProperties.validateProperties();
 
