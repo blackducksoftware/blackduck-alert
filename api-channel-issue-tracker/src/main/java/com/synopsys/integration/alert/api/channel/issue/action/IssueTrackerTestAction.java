@@ -49,7 +49,7 @@ public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsMod
     @Override
     public MessageResult testConfig(DistributionJobModel testJobModel, String jobName, @Nullable String customTopic, @Nullable String customMessage) throws AlertException {
         D distributionDetails = (D) testJobModel.getDistributionJobDetails();
-        IssueTrackerMessageSender<T> messageSender = messageSenderFactory.createMessageSender(distributionDetails);
+        IssueTrackerMessageSender<T> messageSender = messageSenderFactory.createMessageSender(distributionDetails, testJobModel.getChannelGlobalConfigId());
 
         String topicString = Optional.ofNullable(customTopic).orElse("Alert Test Topic");
         String messageString = Optional.ofNullable(customMessage).orElse("Alert Test Message");
