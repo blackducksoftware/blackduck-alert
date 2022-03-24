@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,7 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurat
 import com.synopsys.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.environment.EnvironmentProcessingResult;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandler;
@@ -124,8 +126,14 @@ public class EmailEnvironmentVariableHandler extends EnvironmentVariableHandler<
 
     @Override
     protected EmailGlobalConfigModel configureModel() {
-        EmailGlobalConfigModel configModel = new EmailGlobalConfigModel();
-        configModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
+        String name = AlertRestConstants.DEFAULT_CONFIGURATION_NAME;
+        String smtpHost = environmentVariableUtility.getEnvironmentValue(EMAIL_HOST_KEY).orElse(null);
+        String smtpFrom = environmentVariableUtility.getEnvironmentValue(EMAIL_FROM_KEY).orElse(null);
+        String createdAt = DateUtils.formatDate(DateUtils.createCurrentDateTimestamp(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
+        EmailGlobalConfigModel configModel = new EmailGlobalConfigModel(null, name, smtpFrom, smtpHost);
+        configModel.setCreatedAt(createdAt);
+        configModel.setLastUpdated(createdAt);
+
         configureEmailSettings(configModel);
         configureAdditionalProperties(configModel);
 
@@ -149,9 +157,14 @@ public class EmailEnvironmentVariableHandler extends EnvironmentVariableHandler<
             }
         }
 
-        obfuscatedConfigModel.getSmtpHost().ifPresent(value -> builder.addVariableValue(EMAIL_HOST_KEY, value));
+        if (StringUtils.isNotBlank(obfuscatedConfigModel.getSmtpHost())) {
+            builder.addVariableValue(EMAIL_HOST_KEY, obfuscatedConfigModel.getSmtpHost());
+        }
+        if (StringUtils.isNotBlank(obfuscatedConfigModel.getSmtpFrom())) {
+            builder.addVariableValue(EMAIL_FROM_KEY, obfuscatedConfigModel.getSmtpFrom());
+        }
+
         obfuscatedConfigModel.getSmtpPort().map(String::valueOf).ifPresent(value -> builder.addVariableValue(EMAIL_PORT_KEY, value));
-        obfuscatedConfigModel.getSmtpFrom().ifPresent(value -> builder.addVariableValue(EMAIL_FROM_KEY, value));
         obfuscatedConfigModel.getSmtpAuth().map(String::valueOf).ifPresent(value -> builder.addVariableValue(AUTH_REQUIRED_KEY, value));
         obfuscatedConfigModel.getSmtpUsername().ifPresent(value -> builder.addVariableValue(AUTH_USER_KEY, value));
 
@@ -172,16 +185,10 @@ public class EmailEnvironmentVariableHandler extends EnvironmentVariableHandler<
     }
 
     private void configureEmailSettings(EmailGlobalConfigModel configuration) {
-        environmentVariableUtility.getEnvironmentValue(EMAIL_HOST_KEY)
-            .ifPresent(configuration::setSmtpHost);
-
         environmentVariableUtility.getEnvironmentValue(EMAIL_PORT_KEY)
             .filter(NumberUtils::isDigits)
             .map(NumberUtils::toInt)
             .ifPresent(configuration::setSmtpPort);
-
-        environmentVariableUtility.getEnvironmentValue(EMAIL_FROM_KEY)
-            .ifPresent(configuration::setSmtpFrom);
 
         environmentVariableUtility.getEnvironmentValue(AUTH_REQUIRED_KEY)
             .map(Boolean::valueOf)
@@ -192,7 +199,6 @@ public class EmailEnvironmentVariableHandler extends EnvironmentVariableHandler<
 
         environmentVariableUtility.getEnvironmentValue(AUTH_PASSWORD_KEY)
             .ifPresent(configuration::setSmtpPassword);
-
     }
 
     private void configureAdditionalProperties(EmailGlobalConfigModel configuration) {

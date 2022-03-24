@@ -23,20 +23,15 @@ import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKey
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
 @Component
-public class JavamailPropertiesFactory {    
+public class JavamailPropertiesFactory {
     public Properties createJavaMailProperties(EmailGlobalConfigModel globalConfiguration) {
         if (globalConfiguration == null) {
             throw new IllegalArgumentException("Could not find the global Email configuration");
         }
 
         Properties javaMailProperties = new Properties();
-        globalConfiguration.getSmtpFrom()
-            .filter(StringUtils::isNotBlank)
-            .ifPresent(value -> javaMailProperties.setProperty(JAVAMAIL_FROM_KEY.getPropertyKey(), value));
-
-        globalConfiguration.getSmtpHost()
-            .filter(StringUtils::isNotBlank)
-            .ifPresent(value -> javaMailProperties.setProperty(JAVAMAIL_HOST_KEY.getPropertyKey(), value));
+        javaMailProperties.setProperty(JAVAMAIL_FROM_KEY.getPropertyKey(), globalConfiguration.getSmtpFrom());
+        javaMailProperties.setProperty(JAVAMAIL_HOST_KEY.getPropertyKey(), globalConfiguration.getSmtpHost());
 
         globalConfiguration.getSmtpPort()
             .map(String::valueOf)

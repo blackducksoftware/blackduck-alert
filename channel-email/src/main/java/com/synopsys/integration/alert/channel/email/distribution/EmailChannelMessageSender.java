@@ -92,8 +92,8 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
 
         SmtpConfig smtpConfig = SmtpConfig.builder()
             .setJavamailProperties(javamailPropertiesFactory.createJavaMailProperties(emailServerConfiguration))
-            .setSmtpFrom(emailServerConfiguration.getSmtpFrom().orElse(null))
-            .setSmtpHost(emailServerConfiguration.getSmtpHost().orElse(null))
+            .setSmtpFrom(emailServerConfiguration.getSmtpFrom())
+            .setSmtpHost(emailServerConfiguration.getSmtpHost())
             .setSmtpPort(emailServerConfiguration.getSmtpPort().orElse(-1))
             .setSmtpAuth(emailServerConfiguration.getSmtpAuth().orElse(false))
             .setSmtpUsername(emailServerConfiguration.getSmtpUsername().orElse(null))
@@ -116,7 +116,8 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
                     throw new AlertException("Could not determine what email addresses to send this content to");
                 } else {
                     String invalidEmailAddressesString = StringUtils.join(invalidEmailAddresses, ", ");
-                    throw new AlertException(String.format("No valid email addresses to send this content to. The following email addresses were invalid: %s", invalidEmailAddressesString));
+                    throw new AlertException(String
+                        .format("No valid email addresses to send this content to. The following email addresses were invalid: %s", invalidEmailAddressesString));
                 }
             }
 
