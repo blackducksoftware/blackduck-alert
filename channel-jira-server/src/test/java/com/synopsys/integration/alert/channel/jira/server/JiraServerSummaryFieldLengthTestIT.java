@@ -45,7 +45,7 @@ public class JiraServerSummaryFieldLengthTestIT {
     }
 
     @Test
-    public void summaryLength254SucceedsTest() {
+    void summaryLength254SucceedsTest() {
         IssueCreationModel issueCreationModel = createIssueCreationModel(254);
         IssueTrackerModelHolder<String> messages = new IssueTrackerModelHolder<>(List.of(issueCreationModel), List.of(), List.of());
         try {
@@ -56,7 +56,7 @@ public class JiraServerSummaryFieldLengthTestIT {
     }
 
     @Test
-    public void summaryLength256FailsTest() {
+    void summaryLength256FailsTest() {
         IssueCreationModel issueCreationModel = createIssueCreationModel(256);
         IssueTrackerModelHolder<String> messages = new IssueTrackerModelHolder<>(List.of(issueCreationModel), List.of(), List.of());
         try {
@@ -90,10 +90,10 @@ public class JiraServerSummaryFieldLengthTestIT {
             ChannelKeys.JIRA_SERVER,
             createJiraServerPropertiesFactory(testProperties),
             new IssueTrackerCallbackInfoCreator(),
-            issueCategoryRetriever);
+            issueCategoryRetriever
+        );
         JiraServerJobDetailsModel jiraServerJobDetails = createJiraServerJobDetails(testProperties);
-        //Can pass null due to properties mocking
-        return jiraServerMessageSenderFactory.createMessageSender(jiraServerJobDetails, null);
+        return jiraServerMessageSenderFactory.createMessageSender(jiraServerJobDetails, UUID.randomUUID());
     }
 
     private static JiraServerPropertiesFactory createJiraServerPropertiesFactory(TestProperties testProperties) throws AlertConfigurationException {
@@ -124,7 +124,8 @@ public class JiraServerSummaryFieldLengthTestIT {
             resolveTransition,
             reopenTransition,
             List.of(),
-            "");
+            ""
+        );
     }
 
 }
