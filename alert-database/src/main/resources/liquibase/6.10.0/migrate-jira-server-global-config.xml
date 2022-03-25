@@ -65,11 +65,13 @@
     <!-- Migrate existing jira server jobs to use the default configuration -->
     <changeSet author="psantos" id="migrate-jira-jobs">
         <preConditions onFail="MARK_RAN">
-            <sqlCheck expectedResult="channel_jira_server">
-                SELECT job.channel_descriptor_name
-                FROM alert.distribution_jobs job
-                WHERE job.channel_descriptor_name = 'channel_jira_server' LIMIT 1;
-            </sqlCheck>
+            <not>
+                <sqlCheck expectedResult="0">
+                    SELECT COUNT(*)
+                    FROM alert.distribution_jobs job
+                    WHERE job.channel_descriptor_name = 'channel_jira_server';
+                </sqlCheck>
+            </not>
         </preConditions>
         <sql dbms="postgresql" stripComments="true">
             UPDATE alert.distribution_jobs job
