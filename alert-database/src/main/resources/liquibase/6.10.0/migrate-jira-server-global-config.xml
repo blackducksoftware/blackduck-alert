@@ -73,10 +73,8 @@
         </preConditions>
         <sql dbms="postgresql" stripComments="true">
             UPDATE alert.distribution_jobs job
-            SET channel_global_config_id =
-            SELECT configuration_id
-            FROM alert.configuration_jira_server config
-            WHERE config.name = 'default-configuration' WHERE job.channel_descriptor_name = 'channel_jira_server';
+            SET channel_global_config_id = config.configuration_id FROM alert.configuration_jira_server config
+            WHERE job.channel_descriptor_name = 'channel_jira_server' AND config.name = 'default-configuration';
         </sql>
     </changeSet>
 </databaseChangeLog>
