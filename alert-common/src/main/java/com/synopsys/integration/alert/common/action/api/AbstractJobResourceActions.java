@@ -237,7 +237,7 @@ public abstract class AbstractJobResourceActions {
         for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {
             Map<String, FieldValueModel> keyToValues = fieldModel.getKeyToValues();
             FieldValueModel computed = keyToValues.computeIfPresent(projectFieldKey, (one, two) -> createProjectFieldValues(defaultedProjects));
-            if (null == computed) {
+            if (null != computed) {
                 return;
             }
         }
