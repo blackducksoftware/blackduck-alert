@@ -91,7 +91,7 @@ public class JiraCloudSummaryFieldLengthTestIT {
             new IssueTrackerCallbackInfoCreator(),
             issueCategoryRetriever);
         JiraCloudJobDetailsModel jiraCloudJobDetails = createJiraCloudJobDetails(testProperties);
-        return jiraCloudMessageSenderFactory.createMessageSender(jiraCloudJobDetails);
+        return jiraCloudMessageSenderFactory.createMessageSender(jiraCloudJobDetails, null);
     }
 
     private static JiraCloudPropertiesFactory createJiraCloudPropertiesFactory(TestProperties testProperties) throws AlertConfigurationException {

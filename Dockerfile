@@ -1,5 +1,5 @@
 FROM blackducksoftware/hub-docker-common:1.0.6 as docker-common
-FROM eclipse-temurin:11-jdk-alpine
+FROM eclipse-temurin:17-jdk-alpine
 
 ARG VERSION
 
