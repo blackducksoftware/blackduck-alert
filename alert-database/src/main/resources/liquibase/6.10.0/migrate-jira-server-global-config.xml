@@ -23,7 +23,7 @@
     <changeSet author="psantos" id="update-initial-jira-server-config-entries">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="1">
-                SELECT COUNT(url)
+                SELECT COUNT(*)
                 FROM alert.configuration_jira_server
                 WHERE name = 'default-configuration';
             </sqlCheck>
@@ -60,6 +60,21 @@
             SET disable_plugin_check = cast(coalesce(configFields.field_value, 'false') as BOOLEAN) FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_jira_server') configFields
             WHERE config.name = 'default-configuration'
               AND configFields.source_key = 'jira.server.disable.plugin.check';
+        </sql>
+    </changeSet>
+    <!-- Migrate existing jira server jobs to use the default configuration -->
+    <changeSet author="psantos" id="migrate-jira-jobs">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="channel_jira_server">
+                SELECT job.channel_descriptor_name
+                FROM alert.distribution_jobs job
+                WHERE job.channel_descriptor_name = 'channel_jira_server' LIMIT 1;
+            </sqlCheck>
+        </preConditions>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.distribution_jobs job
+            SET channel_global_config_id = (SELECT config.configuration_id FROM alert.configuration_jira_server config WHERE config.name = 'default-configuration')
+            WHERE job.channel_descriptor_name = 'channel_jira_server';
         </sql>
     </changeSet>
 </databaseChangeLog>
