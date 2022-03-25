@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.action.api.GlobalConfigurationModelToConcreteConverter;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
@@ -35,7 +36,8 @@ public class EmailGlobalConfigurationModelConverter implements GlobalConfigurati
         EmailPropertyKeys.JAVAMAIL_USER_KEY.getPropertyKey(),
         EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey(),
         EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey(),
-        EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey());
+        EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey()
+    );
 
     private Predicate<Map.Entry<String, ConfigurationFieldModel>> validAdditionalPropertiesKeyTest;
 
@@ -46,15 +48,19 @@ public class EmailGlobalConfigurationModelConverter implements GlobalConfigurati
 
     @Override
     public Optional<EmailGlobalConfigModel> convert(ConfigurationModel globalConfigurationModel) {
-        Optional<EmailGlobalConfigModel> convertedModel = Optional.empty();
-        EmailGlobalConfigModel model = new EmailGlobalConfigModel();
+        String smtpFrom = globalConfigurationModel.getField(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey())
+            .flatMap(ConfigurationFieldModel::getFieldValue)
+            .orElse(null);
+        String smtpHost = globalConfigurationModel.getField(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey())
+            .flatMap(ConfigurationFieldModel::getFieldValue)
+            .orElse(null);
+
+        if (smtpFrom == null || smtpHost == null) {
+            return Optional.empty();
+        }
+
+        EmailGlobalConfigModel model = new EmailGlobalConfigModel(null, AlertRestConstants.DEFAULT_CONFIGURATION_NAME, smtpFrom, smtpHost);
         try {
-            globalConfigurationModel.getField(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey())
-                .flatMap(ConfigurationFieldModel::getFieldValue)
-                .ifPresent(model::setSmtpFrom);
-            globalConfigurationModel.getField(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey())
-                .flatMap(ConfigurationFieldModel::getFieldValue)
-                .ifPresent(model::setSmtpHost);
             globalConfigurationModel.getField(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey())
                 .flatMap(ConfigurationFieldModel::getFieldValue)
                 .map(Integer::valueOf)
@@ -70,11 +76,11 @@ public class EmailGlobalConfigurationModelConverter implements GlobalConfigurati
                 .flatMap(ConfigurationFieldModel::getFieldValue)
                 .ifPresent(model::setSmtpPassword);
             model.setAdditionalJavaMailProperties(createAdditionalProperties(globalConfigurationModel));
-            convertedModel = Optional.of(model);
         } catch (NumberFormatException ex) {
             logger.error("Error converting field model to concrete email configuration", ex);
+            return Optional.empty();
         }
-        return convertedModel;
+        return Optional.of(model);
     }
 
     private Map<String, String> createAdditionalProperties(ConfigurationModel globalConfigurationModel) {

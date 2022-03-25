@@ -50,6 +50,7 @@ public class EmailGlobalConfigAccessor implements UniqueConfigurationAccessor<Em
         this.emailConfigurationPropertiesRepository = emailConfigurationPropertiesRepository;
     }
 
+    @Override
     @Transactional(readOnly = true)
     public boolean doesConfigurationExist() {
         return emailConfigurationRepository.existsByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
@@ -103,33 +104,45 @@ public class EmailGlobalConfigAccessor implements UniqueConfigurationAccessor<Em
     }
 
     private EmailGlobalConfigModel createConfigModel(EmailConfigurationEntity emailConfiguration) {
-        EmailGlobalConfigModel newModel = new EmailGlobalConfigModel();
+        if (null == emailConfiguration) {
+            return new EmailGlobalConfigModel();
+        }
         String createdAtFormatted = "";
         String lastUpdatedFormatted = "";
-        if (null != emailConfiguration) {
-            createdAtFormatted = DateUtils.formatDate(emailConfiguration.getCreatedAt(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
-            if (null != emailConfiguration.getLastUpdated()) {
-                lastUpdatedFormatted = DateUtils.formatDate(emailConfiguration.getLastUpdated(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
-            }
-            newModel.setId(String.valueOf(emailConfiguration.getConfigurationId()));
-            newModel.setName(emailConfiguration.getName());
-            newModel.setSmtpHost(emailConfiguration.getSmtpHost());
-            newModel.setSmtpPort(emailConfiguration.getSmtpPort());
-            newModel.setSmtpFrom(emailConfiguration.getSmtpFrom());
-            newModel.setSmtpAuth(emailConfiguration.getAuthRequired());
-            newModel.setSmtpUsername(emailConfiguration.getAuthUsername());
-            String authPassword = emailConfiguration.getAuthPassword();
-            boolean doesPasswordExist = StringUtils.isNotBlank(authPassword);
-            newModel.setIsSmtpPasswordSet(doesPasswordExist);
-            if (doesPasswordExist) {
-                newModel.setSmtpPassword(encryptionUtility.decrypt(authPassword));
-            }
-            newModel.setAdditionalJavaMailProperties(getAdditionalProperties(emailConfiguration.getEmailConfigurationProperties()));
-        }
-        newModel.setCreatedAt(createdAtFormatted);
-        newModel.setLastUpdated(lastUpdatedFormatted);
 
-        return newModel;
+        createdAtFormatted = DateUtils.formatDate(emailConfiguration.getCreatedAt(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
+        if (null != emailConfiguration.getLastUpdated()) {
+            lastUpdatedFormatted = DateUtils.formatDate(emailConfiguration.getLastUpdated(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
+        }
+        String id = String.valueOf(emailConfiguration.getConfigurationId());
+        String name = emailConfiguration.getName();
+        String smtpHost = emailConfiguration.getSmtpHost();
+        Integer smtpPort = emailConfiguration.getSmtpPort();
+        String smtpFrom = emailConfiguration.getSmtpFrom();
+        Boolean smtpAuth = emailConfiguration.getAuthRequired();
+        String smtpUsername = emailConfiguration.getAuthUsername();
+        String smtpPassword = emailConfiguration.getAuthPassword();
+
+        boolean doesPasswordExist = StringUtils.isNotBlank(smtpPassword);
+        if (doesPasswordExist) {
+            smtpPassword = encryptionUtility.decrypt(smtpPassword);
+        }
+        Map<String, String> additionalJavaMailProperties = getAdditionalProperties(emailConfiguration.getEmailConfigurationProperties());
+
+        return new EmailGlobalConfigModel(
+            id,
+            name,
+            createdAtFormatted,
+            lastUpdatedFormatted,
+            smtpFrom,
+            smtpHost,
+            smtpPort,
+            smtpAuth,
+            smtpUsername,
+            smtpPassword,
+            doesPasswordExist,
+            additionalJavaMailProperties
+        );
     }
 
     private Map<String, String> getAdditionalProperties(List<EmailConfigurationsPropertyEntity> emailConfigurationProperties) {
@@ -138,15 +151,24 @@ public class EmailGlobalConfigAccessor implements UniqueConfigurationAccessor<Em
     }
 
     private EmailConfigurationEntity toEntity(UUID configurationId, EmailGlobalConfigModel configuration, OffsetDateTime createdTime, OffsetDateTime lastUpdated) {
-        String host = configuration.getSmtpHost().orElse(null);
-        String from = configuration.getSmtpFrom().orElse(null);
         Integer port = configuration.getSmtpPort().orElse(null);
         Boolean auth = configuration.getSmtpAuth().orElse(Boolean.FALSE);
         String username = configuration.getSmtpUsername().orElse(null);
         String password = configuration.getSmtpPassword().map(encryptionUtility::encrypt).orElse(null);
 
-        return new EmailConfigurationEntity(configurationId, configuration.getName(), createdTime, lastUpdated,
-            host, from, port, auth, username, password, List.of());
+        return new EmailConfigurationEntity(
+            configurationId,
+            configuration.getName(),
+            createdTime,
+            lastUpdated,
+            configuration.getSmtpHost(),
+            configuration.getSmtpFrom(),
+            port,
+            auth,
+            username,
+            password,
+            List.of()
+        );
     }
 
     private List<EmailConfigurationsPropertyEntity> toPropertyEntityList(UUID configurationId, EmailGlobalConfigModel configuration) {
