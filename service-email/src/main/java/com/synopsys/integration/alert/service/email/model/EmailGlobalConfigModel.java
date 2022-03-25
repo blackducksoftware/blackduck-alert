@@ -27,42 +27,65 @@ public class EmailGlobalConfigModel extends ConfigWithMetadata implements Obfusc
 
     private Map<String, String> additionalJavaMailProperties;
 
+    public EmailGlobalConfigModel() {
+        // For serialization
+    }
+
+    public EmailGlobalConfigModel(String id, String name, String smtpFrom, String smtpHost) {
+        super(id, name);
+        this.smtpFrom = smtpFrom;
+        this.smtpHost = smtpHost;
+    }
+
+    public EmailGlobalConfigModel(
+        String id,
+        String name,
+        String createdAt,
+        String lastUpdated,
+        String smtpFrom,
+        String smtpHost,
+        Integer smtpPort,
+        Boolean smtpAuth,
+        String smtpUsername,
+        String smtpPassword,
+        Boolean isSmtpPasswordSet,
+        Map<String, String> additionalJavaMailProperties
+    ) {
+        this(id, name, smtpFrom, smtpHost);
+        this.smtpPort = smtpPort;
+        this.smtpAuth = smtpAuth;
+        this.smtpUsername = smtpUsername;
+        this.smtpPassword = smtpPassword;
+        this.isSmtpPasswordSet = isSmtpPasswordSet;
+        this.additionalJavaMailProperties = additionalJavaMailProperties;
+        setCreatedAt(createdAt);
+        setLastUpdated(lastUpdated);
+    }
+
     @Override
     public EmailGlobalConfigModel obfuscate() {
-        EmailGlobalConfigModel emailGlobalConfigModel = new EmailGlobalConfigModel();
-
-        emailGlobalConfigModel.setId(getId());
-        emailGlobalConfigModel.setName(getName());
-        emailGlobalConfigModel.setLastUpdated(getLastUpdated());
-        emailGlobalConfigModel.setCreatedAt(getCreatedAt());
-
-        emailGlobalConfigModel.setSmtpFrom(smtpFrom);
-        emailGlobalConfigModel.setSmtpHost(smtpHost);
-        emailGlobalConfigModel.setSmtpPort(smtpPort);
-        emailGlobalConfigModel.setSmtpAuth(smtpAuth);
-        emailGlobalConfigModel.setSmtpUsername(smtpUsername);
-        emailGlobalConfigModel.setAdditionalJavaMailProperties(additionalJavaMailProperties);
-
-        emailGlobalConfigModel.setIsSmtpPasswordSet(StringUtils.isNotBlank(smtpPassword));
-        emailGlobalConfigModel.setSmtpPassword(null);
-
-        return emailGlobalConfigModel;
+        return new EmailGlobalConfigModel(
+            getId(),
+            getName(),
+            getCreatedAt(),
+            getLastUpdated(),
+            getSmtpFrom(),
+            getSmtpHost(),
+            smtpPort,
+            smtpAuth,
+            smtpUsername,
+            null,
+            StringUtils.isNotBlank(smtpPassword),
+            additionalJavaMailProperties
+        );
     }
 
-    public Optional<String> getSmtpFrom() {
-        return Optional.ofNullable(smtpFrom);
+    public String getSmtpFrom() {
+        return smtpFrom;
     }
 
-    public void setSmtpFrom(String smtpFrom) {
-        this.smtpFrom = smtpFrom;
-    }
-
-    public Optional<String> getSmtpHost() {
-        return Optional.ofNullable(smtpHost);
-    }
-
-    public void setSmtpHost(String smtpHost) {
-        this.smtpHost = smtpHost;
+    public String getSmtpHost() {
+        return smtpHost;
     }
 
     public Optional<Integer> getSmtpPort() {

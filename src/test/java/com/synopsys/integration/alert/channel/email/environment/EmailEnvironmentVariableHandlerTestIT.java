@@ -66,11 +66,9 @@ class EmailEnvironmentVariableHandlerTestIT {
 
     @Test
     void testExistingEmailConfig() throws AlertConfigurationException {
-        EmailGlobalConfigModel emailGlobalConfigModel = new EmailGlobalConfigModel();
+        EmailGlobalConfigModel emailGlobalConfigModel = new EmailGlobalConfigModel(null, AlertRestConstants.DEFAULT_CONFIGURATION_NAME, TEST_FROM, TEST_SMTP_HOST);
         emailGlobalConfigModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
         emailGlobalConfigModel.setSmtpAuth(Boolean.valueOf(TEST_AUTH_REQUIRED));
-        emailGlobalConfigModel.setSmtpFrom(TEST_FROM);
-        emailGlobalConfigModel.setSmtpHost(TEST_SMTP_HOST);
         emailGlobalConfigModel.setSmtpPassword(TEST_PASSWORD);
         emailGlobalConfigModel.setSmtpPort(Integer.valueOf(TEST_PORT));
         emailGlobalConfigModel.setSmtpUsername(TEST_USER);

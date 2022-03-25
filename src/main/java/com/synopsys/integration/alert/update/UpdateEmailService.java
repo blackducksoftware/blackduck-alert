@@ -50,7 +50,11 @@ public class UpdateEmailService {
 
     @Autowired
     public UpdateEmailService(
-        AlertProperties alertProperties, SettingsKeyAccessor settingsKeyAccessor, UserAccessor userAccessor, EmailGlobalConfigAccessor emailGlobalConfigAccessor, EmailMessagingService emailMessagingService,
+        AlertProperties alertProperties,
+        SettingsKeyAccessor settingsKeyAccessor,
+        UserAccessor userAccessor,
+        EmailGlobalConfigAccessor emailGlobalConfigAccessor,
+        EmailMessagingService emailMessagingService,
         JavamailPropertiesFactory javamailPropertiesFactory
     ) {
         this.alertProperties = alertProperties;
@@ -85,8 +89,8 @@ public class UpdateEmailService {
 
                 handleSend(
                     javamailPropertiesFactory.createJavaMailProperties(emailServerConfiguration),
-                    emailServerConfiguration.getSmtpFrom().orElse(StringUtils.EMPTY),
-                    emailServerConfiguration.getSmtpHost().orElse(StringUtils.EMPTY),
+                    emailServerConfiguration.getSmtpFrom(),
+                    emailServerConfiguration.getSmtpHost(),
                     emailServerConfiguration.getSmtpPort().orElse(0),
                     emailServerConfiguration.getSmtpAuth().orElse(false),
                     emailServerConfiguration.getSmtpUsername().orElse(StringUtils.EMPTY),
@@ -112,7 +116,17 @@ public class UpdateEmailService {
             .isPresent();
     }
 
-    private void handleSend(Properties javamailProperties, String smtpFrom, String smtpHost, int smtpPort, boolean smtpAuth, String smtpUsername, String smtpPassword, Map<String, Object> templateFields, String emailAddress)
+    private void handleSend(
+        Properties javamailProperties,
+        String smtpFrom,
+        String smtpHost,
+        int smtpPort,
+        boolean smtpAuth,
+        String smtpUsername,
+        String smtpPassword,
+        Map<String, Object> templateFields,
+        String emailAddress
+    )
         throws AlertException {
         try {
             String alertLogo = alertProperties.createSynopsysLogoPath();

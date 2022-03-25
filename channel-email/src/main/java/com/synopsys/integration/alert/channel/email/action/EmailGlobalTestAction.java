@@ -71,7 +71,8 @@ public class EmailGlobalTestAction {
 
     public ConfigurationTestResult testConfigModelContent(String testAddress, EmailGlobalConfigModel emailGlobalConfigModel) {
         if (StringUtils.isBlank(testAddress)) {
-            return ConfigurationTestResult.failure("Could not determine what email address to send this content to. testAddress was not provided or was blank. Please provide a valid email address to test the configuration.");
+            return ConfigurationTestResult.failure(
+                "Could not determine what email address to send this content to. testAddress was not provided or was blank. Please provide a valid email address to test the configuration.");
         }
 
         try {
@@ -86,8 +87,8 @@ public class EmailGlobalTestAction {
         SmtpConfigBuilder smtpConfigBuilder = SmtpConfig.builder();
         smtpConfigBuilder.setJavamailProperties(javamailPropertiesFactory.createJavaMailProperties(emailGlobalConfigModel));
 
-        emailGlobalConfigModel.getSmtpFrom().ifPresent(smtpConfigBuilder::setSmtpFrom);
-        emailGlobalConfigModel.getSmtpHost().ifPresent(smtpConfigBuilder::setSmtpHost);
+        smtpConfigBuilder.setSmtpFrom(emailGlobalConfigModel.getSmtpFrom());
+        smtpConfigBuilder.setSmtpHost(emailGlobalConfigModel.getSmtpHost());
         emailGlobalConfigModel.getSmtpPort().ifPresent(smtpConfigBuilder::setSmtpPort);
         emailGlobalConfigModel.getSmtpAuth().ifPresent(smtpConfigBuilder::setSmtpAuth);
         emailGlobalConfigModel.getSmtpUsername().ifPresent(smtpConfigBuilder::setSmtpUsername);

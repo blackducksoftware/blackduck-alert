@@ -49,7 +49,7 @@ import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.test.common.TestTags;
 
-public class EmailGlobalTestActionTest {
+class EmailGlobalTestActionTest {
     private EmailGlobalConfigAccessor configurationAccessor;
 
     @BeforeEach
@@ -58,21 +58,28 @@ public class EmailGlobalTestActionTest {
     }
 
     @Test
-    public void testConfigValidTest() throws AlertException {
+    void testConfigValidTest() throws AlertException {
         AuthorizationManager authorizationManager = createAuthorizationManager(255);
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailChannelMessagingService emailChannelMessagingService = Mockito.mock(EmailChannelMessagingService.class);
         Mockito.when(emailChannelMessagingService.sendMessage(Mockito.any(), Mockito.any())).thenReturn(new MessageResult("PASS"));
 
         JavamailPropertiesFactory javamailPropertiesFactory = new JavamailPropertiesFactory();
-        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(authorizationManager, validator, emailChannelMessagingService, javamailPropertiesFactory, configurationAccessor);
+        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(
+            authorizationManager,
+            validator,
+            emailChannelMessagingService,
+            javamailPropertiesFactory,
+            configurationAccessor
+        );
 
-        ConfigurationTestResult testResult = emailGlobalTestAction.testConfigModelContent("noreply@synopsys.com", new EmailGlobalConfigModel());
+        ConfigurationTestResult testResult = emailGlobalTestAction
+            .testConfigModelContent("noreply@synopsys.com", new EmailGlobalConfigModel(null, AlertRestConstants.DEFAULT_CONFIGURATION_NAME, "from", "host"));
         assertTrue(testResult.isSuccess(), "Expected the message result to not have errors");
     }
 
     @Test
-    public void testConfigMissingDestinationTest() {
+    void testConfigMissingDestinationTest() {
         AuthorizationManager authorizationManager = createAuthorizationManager(255);
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailAddressGatherer emailAddressGatherer = Mockito.mock(EmailAddressGatherer.class);
@@ -93,35 +100,49 @@ public class EmailGlobalTestActionTest {
 
         JavamailPropertiesFactory javamailPropertiesFactory = new JavamailPropertiesFactory();
 
-        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(authorizationManager, validator, emailChannelMessagingService, javamailPropertiesFactory, configurationAccessor);
+        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(
+            authorizationManager,
+            validator,
+            emailChannelMessagingService,
+            javamailPropertiesFactory,
+            configurationAccessor
+        );
 
-        ConfigurationTestResult testResult = emailGlobalTestAction.testConfigModelContent("", new EmailGlobalConfigModel());
+        ConfigurationTestResult testResult = emailGlobalTestAction
+            .testConfigModelContent("", new EmailGlobalConfigModel(null, AlertRestConstants.DEFAULT_CONFIGURATION_NAME, "from", "host"));
         assertFalse(testResult.isSuccess());
     }
 
     @Test
-    public void testConfigInvalidDestinationTest() {
+    void testConfigInvalidDestinationTest() {
         AuthorizationManager authorizationManager = createAuthorizationManager(AuthenticationTestUtils.FULL_PERMISSIONS);
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(authorizationManager, validator, null, null, null);
 
-        ConfigurationTestResult testResult = emailGlobalTestAction.testConfigModelContent("not a valid email address", new EmailGlobalConfigModel());
+        ConfigurationTestResult testResult = emailGlobalTestAction
+            .testConfigModelContent("not a valid email address", new EmailGlobalConfigModel(null, AlertRestConstants.DEFAULT_CONFIGURATION_NAME, "from", "host"));
         assertFalse(testResult.isSuccess());
     }
 
     @Test
-    public void testSmtpPasswordMissingTest() throws AlertException {
+    void testSmtpPasswordMissingTest() throws AlertException {
         AuthorizationManager authorizationManager = createAuthorizationManager(255);
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailChannelMessagingService emailChannelMessagingService = Mockito.mock(EmailChannelMessagingService.class);
         Mockito.when(emailChannelMessagingService.sendMessage(Mockito.any(), Mockito.any())).thenReturn(new MessageResult("PASS"));
 
         JavamailPropertiesFactory javamailPropertiesFactory = new JavamailPropertiesFactory();
-        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(authorizationManager, validator, emailChannelMessagingService, javamailPropertiesFactory, configurationAccessor);
+        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(
+            authorizationManager,
+            validator,
+            emailChannelMessagingService,
+            javamailPropertiesFactory,
+            configurationAccessor
+        );
 
-        EmailGlobalConfigModel emailGlobalConfigModel = new EmailGlobalConfigModel();
+        EmailGlobalConfigModel emailGlobalConfigModel = new EmailGlobalConfigModel(null, AlertRestConstants.DEFAULT_CONFIGURATION_NAME, "from", "host");
         emailGlobalConfigModel.setIsSmtpPasswordSet(true);
-        EmailGlobalConfigModel configModelWithPassword = new EmailGlobalConfigModel();
+        EmailGlobalConfigModel configModelWithPassword = new EmailGlobalConfigModel(null, AlertRestConstants.DEFAULT_CONFIGURATION_NAME, "from", "host");
         configModelWithPassword.setIsSmtpPasswordSet(true);
         configModelWithPassword.setSmtpPassword("password");
         Mockito.when(configurationAccessor.getConfiguration()).thenReturn(Optional.of(configModelWithPassword));
@@ -135,7 +156,7 @@ public class EmailGlobalTestActionTest {
         @Tag(TestTags.DEFAULT_INTEGRATION),
         @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     })
-    public void testSmtpPasswordMissingTestIT() {
+    void testSmtpPasswordMissingTestIT() {
         AuthorizationManager authorizationManager = createAuthorizationManager(AuthenticationTestUtils.FULL_PERMISSIONS);
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         TestProperties testProperties = new TestProperties();
@@ -145,7 +166,13 @@ public class EmailGlobalTestActionTest {
 
         JavamailPropertiesFactory javamailPropertiesFactory = new JavamailPropertiesFactory();
         EmailChannelMessagingService validEmailChannelMessagingService = createValidEmailChannelMessagingService(emailAddress);
-        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(authorizationManager, validator, validEmailChannelMessagingService, javamailPropertiesFactory, configurationAccessor);
+        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(
+            authorizationManager,
+            validator,
+            validEmailChannelMessagingService,
+            javamailPropertiesFactory,
+            configurationAccessor
+        );
 
         EmailGlobalConfigModel globalConfigModelWithoutPassword = createEmailGlobalConfigModelObfuscated(testProperties);
         EmailGlobalConfigModel globalConfigModelWithPassword = createValidEmailGlobalConfigModel(testProperties);
@@ -160,7 +187,7 @@ public class EmailGlobalTestActionTest {
         @Tag(TestTags.DEFAULT_INTEGRATION),
         @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     })
-    public void testConfigITTest() {
+    void testConfigITTest() {
         AuthorizationManager authorizationManager = createAuthorizationManager(AuthenticationTestUtils.FULL_PERMISSIONS);
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         TestProperties testProperties = new TestProperties();
@@ -168,7 +195,13 @@ public class EmailGlobalTestActionTest {
 
         JavamailPropertiesFactory javamailPropertiesFactory = new JavamailPropertiesFactory();
         EmailChannelMessagingService validEmailChannelMessagingService = createValidEmailChannelMessagingService(emailAddress);
-        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(authorizationManager, validator, validEmailChannelMessagingService, javamailPropertiesFactory, configurationAccessor);
+        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(
+            authorizationManager,
+            validator,
+            validEmailChannelMessagingService,
+            javamailPropertiesFactory,
+            configurationAccessor
+        );
 
         EmailGlobalConfigModel globalConfigModel = createValidEmailGlobalConfigModel(testProperties);
 
@@ -177,21 +210,28 @@ public class EmailGlobalTestActionTest {
     }
 
     @Test
-    public void testPermissionForbiddenTest() throws AlertException {
+    void testPermissionForbiddenTest() throws AlertException {
         AuthorizationManager authorizationManager = createAuthorizationManager(0);
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailChannelMessagingService emailChannelMessagingService = Mockito.mock(EmailChannelMessagingService.class);
         Mockito.when(emailChannelMessagingService.sendMessage(Mockito.any(), Mockito.any())).thenReturn(new MessageResult("PASS"));
 
         JavamailPropertiesFactory javamailPropertiesFactory = new JavamailPropertiesFactory();
-        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(authorizationManager, validator, emailChannelMessagingService, javamailPropertiesFactory, configurationAccessor);
+        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(
+            authorizationManager,
+            validator,
+            emailChannelMessagingService,
+            javamailPropertiesFactory,
+            configurationAccessor
+        );
 
-        ActionResponse<ValidationResponseModel> response = emailGlobalTestAction.testWithPermissionCheck("noreply@synopsys.com", new EmailGlobalConfigModel());
+        ActionResponse<ValidationResponseModel> response = emailGlobalTestAction
+            .testWithPermissionCheck("noreply@synopsys.com", new EmailGlobalConfigModel(null, AlertRestConstants.DEFAULT_CONFIGURATION_NAME, "from", "host"));
         assertEquals(HttpStatus.FORBIDDEN, response.getHttpStatus());
     }
 
     @Test
-    public void testPermissionConfigValidTest() throws AlertException {
+    void testPermissionConfigValidTest() throws AlertException {
         TestProperties testProperties = new TestProperties();
         AuthorizationManager authorizationManager = createAuthorizationManager(AuthenticationTestUtils.FULL_PERMISSIONS);
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
@@ -199,7 +239,13 @@ public class EmailGlobalTestActionTest {
         Mockito.when(emailChannelMessagingService.sendMessage(Mockito.any(), Mockito.any())).thenReturn(new MessageResult("PASS"));
 
         JavamailPropertiesFactory javamailPropertiesFactory = new JavamailPropertiesFactory();
-        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(authorizationManager, validator, emailChannelMessagingService, javamailPropertiesFactory, configurationAccessor);
+        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(
+            authorizationManager,
+            validator,
+            emailChannelMessagingService,
+            javamailPropertiesFactory,
+            configurationAccessor
+        );
 
         EmailGlobalConfigModel globalConfigModel = createValidEmailGlobalConfigModel(testProperties);
 
@@ -211,7 +257,7 @@ public class EmailGlobalTestActionTest {
     }
 
     @Test
-    public void testPermissionConfigMissingDestinationTest() {
+    void testPermissionConfigMissingDestinationTest() {
         AuthorizationManager authorizationManager = createAuthorizationManager(AuthenticationTestUtils.FULL_PERMISSIONS);
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailAddressGatherer emailAddressGatherer = Mockito.mock(EmailAddressGatherer.class);
@@ -232,9 +278,16 @@ public class EmailGlobalTestActionTest {
 
         JavamailPropertiesFactory javamailPropertiesFactory = new JavamailPropertiesFactory();
 
-        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(authorizationManager, validator, emailChannelMessagingService, javamailPropertiesFactory, configurationAccessor);
+        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(
+            authorizationManager,
+            validator,
+            emailChannelMessagingService,
+            javamailPropertiesFactory,
+            configurationAccessor
+        );
 
-        ActionResponse<ValidationResponseModel> response = emailGlobalTestAction.testWithPermissionCheck("", new EmailGlobalConfigModel());
+        ActionResponse<ValidationResponseModel> response = emailGlobalTestAction
+            .testWithPermissionCheck("", new EmailGlobalConfigModel(null, AlertRestConstants.DEFAULT_CONFIGURATION_NAME, "from", "host"));
         assertEquals(HttpStatus.OK, response.getHttpStatus());
         assertTrue(response.hasContent());
         assertTrue(response.getContent().get().hasErrors(), "Expected the message result to not have errors");
@@ -242,12 +295,13 @@ public class EmailGlobalTestActionTest {
     }
 
     @Test
-    public void testPermissionConfigInvalidDestinationTest() {
+    void testPermissionConfigInvalidDestinationTest() {
         AuthorizationManager authorizationManager = createAuthorizationManager(AuthenticationTestUtils.FULL_PERMISSIONS);
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(authorizationManager, validator, null, null, configurationAccessor);
 
-        ActionResponse<ValidationResponseModel> response = emailGlobalTestAction.testWithPermissionCheck("not a valid email address", new EmailGlobalConfigModel());
+        ActionResponse<ValidationResponseModel> response = emailGlobalTestAction
+            .testWithPermissionCheck("not a valid email address", new EmailGlobalConfigModel(null, AlertRestConstants.DEFAULT_CONFIGURATION_NAME, "from", "host"));
         assertEquals(HttpStatus.OK, response.getHttpStatus());
         assertTrue(response.hasContent());
         assertTrue(response.getContent().get().hasErrors(), "Expected the message result to not have errors");
@@ -258,7 +312,7 @@ public class EmailGlobalTestActionTest {
         @Tag(TestTags.DEFAULT_INTEGRATION),
         @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     })
-    public void testPermissionConfigITTest() {
+    void testPermissionConfigITTest() {
         AuthorizationManager authorizationManager = createAuthorizationManager(AuthenticationTestUtils.FULL_PERMISSIONS);
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         TestProperties testProperties = new TestProperties();
@@ -266,7 +320,13 @@ public class EmailGlobalTestActionTest {
 
         JavamailPropertiesFactory javamailPropertiesFactory = new JavamailPropertiesFactory();
         EmailChannelMessagingService validEmailChannelMessagingService = createValidEmailChannelMessagingService(emailAddress);
-        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(authorizationManager, validator, validEmailChannelMessagingService, javamailPropertiesFactory, configurationAccessor);
+        EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(
+            authorizationManager,
+            validator,
+            validEmailChannelMessagingService,
+            javamailPropertiesFactory,
+            configurationAccessor
+        );
 
         EmailGlobalConfigModel globalConfigModel = createValidEmailGlobalConfigModel(testProperties);
 
@@ -303,10 +363,9 @@ public class EmailGlobalTestActionTest {
     }
 
     private EmailGlobalConfigModel createValidEmailGlobalConfigModel(TestProperties testProperties) {
-        EmailGlobalConfigModel emailGlobalConfigModel = new EmailGlobalConfigModel();
-        emailGlobalConfigModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
-        emailGlobalConfigModel.setSmtpFrom(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM));
-        emailGlobalConfigModel.setSmtpHost(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST));
+        String smtpFrom = testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM);
+        String smtpHost = testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST);
+        EmailGlobalConfigModel emailGlobalConfigModel = new EmailGlobalConfigModel(null, AlertRestConstants.DEFAULT_CONFIGURATION_NAME, smtpFrom, smtpHost);
         testProperties.getOptionalProperty(TestPropertyKey.TEST_EMAIL_SMTP_PORT).map(Integer::valueOf).ifPresent(emailGlobalConfigModel::setSmtpPort);
 
         testProperties.getOptionalProperty(TestPropertyKey.TEST_EMAIL_SMTP_AUTH).map(Boolean::valueOf).ifPresent(emailGlobalConfigModel::setSmtpAuth);
@@ -314,7 +373,8 @@ public class EmailGlobalTestActionTest {
         testProperties.getOptionalProperty(TestPropertyKey.TEST_EMAIL_SMTP_PASSWORD).ifPresent(emailGlobalConfigModel::setSmtpPassword);
 
         Map<String, String> additionalPropertiesMap = new HashMap<>();
-        testProperties.getOptionalProperty(TestPropertyKey.TEST_EMAIL_SMTP_EHLO).ifPresent(prop -> additionalPropertiesMap.put(EmailPropertyKeys.JAVAMAIL_EHLO_KEY.getPropertyKey(), prop));
+        testProperties.getOptionalProperty(TestPropertyKey.TEST_EMAIL_SMTP_EHLO)
+            .ifPresent(prop -> additionalPropertiesMap.put(EmailPropertyKeys.JAVAMAIL_EHLO_KEY.getPropertyKey(), prop));
 
         emailGlobalConfigModel.setAdditionalJavaMailProperties(additionalPropertiesMap);
 

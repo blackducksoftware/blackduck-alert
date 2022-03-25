@@ -13,26 +13,26 @@ import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
 
-public class EmailGlobalValidationActionTest {
+class EmailGlobalValidationActionTest {
     @Test
-    public void testValidationSuccess() {
+    void testValidationSuccess() {
         AuthenticationTestUtils authenticationTestUtils = new AuthenticationTestUtils();
         DescriptorKey descriptorKey = ChannelKeys.EMAIL;
         PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
         Map<PermissionKey, Integer> permissions = Map.of(permissionKey, AuthenticationTestUtils.FULL_PERMISSIONS);
-        AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
+        AuthorizationManager authorizationManager = authenticationTestUtils
+            .createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailGlobalValidationAction validationAction = new EmailGlobalValidationAction(validator, authorizationManager);
 
-        EmailGlobalConfigModel model = new EmailGlobalConfigModel();
-        model.setSmtpHost("host");
-        model.setSmtpFrom("from");
+        EmailGlobalConfigModel model = new EmailGlobalConfigModel(null, AlertRestConstants.DEFAULT_CONFIGURATION_NAME, "from", "host");
         model.setSmtpAuth(true);
         model.setSmtpUsername("user");
         model.setSmtpPassword("password");
@@ -42,18 +42,17 @@ public class EmailGlobalValidationActionTest {
     }
 
     @Test
-    public void testValidationForbidden() {
+    void testValidationForbidden() {
         AuthenticationTestUtils authenticationTestUtils = new AuthenticationTestUtils();
         DescriptorKey descriptorKey = ChannelKeys.EMAIL;
         PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
         Map<PermissionKey, Integer> permissions = Map.of(permissionKey, AuthenticationTestUtils.NO_PERMISSIONS);
-        AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
+        AuthorizationManager authorizationManager = authenticationTestUtils
+            .createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         EmailGlobalValidationAction validationAction = new EmailGlobalValidationAction(validator, authorizationManager);
 
-        EmailGlobalConfigModel model = new EmailGlobalConfigModel();
-        model.setSmtpHost("host");
-        model.setSmtpFrom("from");
+        EmailGlobalConfigModel model = new EmailGlobalConfigModel(null, AlertRestConstants.DEFAULT_CONFIGURATION_NAME, "from", "host");
         model.setSmtpAuth(true);
         model.setSmtpUsername("user");
         model.setSmtpPassword("password");

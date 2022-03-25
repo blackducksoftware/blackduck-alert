@@ -28,10 +28,10 @@ public class EmailGlobalConfigurationValidator {
         if (StringUtils.isBlank(model.getName())) {
             statuses.add(AlertFieldStatus.error("name", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
         }
-        if (model.getSmtpHost().filter(StringUtils::isNotBlank).isEmpty()) {
+        if (StringUtils.isBlank(model.getSmtpHost())) {
             statuses.add(AlertFieldStatus.error("host", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
         }
-        if (model.getSmtpFrom().filter(StringUtils::isNotBlank).isEmpty()) {
+        if (StringUtils.isBlank(model.getSmtpFrom())) {
             statuses.add(AlertFieldStatus.error("from", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
         }
 

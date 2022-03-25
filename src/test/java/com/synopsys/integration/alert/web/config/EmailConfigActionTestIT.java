@@ -85,8 +85,19 @@ public class EmailConfigActionTestIT {
         AuthorizationManager authorizationManager = createEmailAuthorizationManager();
         EmailGlobalCrudActions emailGlobalCrudActions = createEmailCrudActions(authorizationManager);
         GlobalConfigurationModelToConcreteConversionService globalConfigurationModelToConcreteConversionService = createConversionService(emailGlobalCrudActions);
-        ConfigActions configActions = new ConfigActions(authorizationManager, descriptorAccessor, configurationModelConfigurationAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter, descriptorMap,
-            pkixErrorResponseFactory, encryptionUtility, settingsDescriptorKey, globalConfigurationModelToConcreteConversionService);
+        ConfigActions configActions = new ConfigActions(
+            authorizationManager,
+            descriptorAccessor,
+            configurationModelConfigurationAccessor,
+            fieldModelProcessor,
+            descriptorProcessor,
+            configurationFieldModelConverter,
+            descriptorMap,
+            pkixErrorResponseFactory,
+            encryptionUtility,
+            settingsDescriptorKey,
+            globalConfigurationModelToConcreteConversionService
+        );
         FieldModel fieldModel = createEmailFieldModel();
         configActions.create(fieldModel);
 
@@ -96,9 +107,9 @@ public class EmailConfigActionTestIT {
         assertEquals(Boolean.TRUE, staticModel.getSmtpAuth().orElse(null));
         assertEquals(TEST_AUTH_USER, staticModel.getSmtpUsername().orElse(null));
         assertEquals(TEST_AUTH_PASSWORD, staticModel.getSmtpPassword().orElse(null));
-        assertEquals(TEST_SMTP_HOST, staticModel.getSmtpHost().orElse(null));
+        assertEquals(TEST_SMTP_HOST, staticModel.getSmtpHost());
         assertEquals(Integer.valueOf(TEST_SMTP_PORT), staticModel.getSmtpPort().orElse(null));
-        assertEquals(TEST_FROM, staticModel.getSmtpFrom().orElse(null));
+        assertEquals(TEST_FROM, staticModel.getSmtpFrom());
 
         String propertyValue = staticModel.getAdditionalJavaMailProperties()
             .map(map -> map.get(EmailPropertyKeys.JAVAMAIL_EHLO_KEY.getPropertyKey()))
@@ -111,8 +122,19 @@ public class EmailConfigActionTestIT {
         AuthorizationManager authorizationManager = createEmailAuthorizationManager();
         EmailGlobalCrudActions emailGlobalCrudActions = createEmailCrudActions(authorizationManager);
         GlobalConfigurationModelToConcreteConversionService globalConfigurationModelToConcreteConversionService = createConversionService(emailGlobalCrudActions);
-        ConfigActions configActions = new ConfigActions(authorizationManager, descriptorAccessor, configurationModelConfigurationAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter, descriptorMap,
-            pkixErrorResponseFactory, encryptionUtility, settingsDescriptorKey, globalConfigurationModelToConcreteConversionService);
+        ConfigActions configActions = new ConfigActions(
+            authorizationManager,
+            descriptorAccessor,
+            configurationModelConfigurationAccessor,
+            fieldModelProcessor,
+            descriptorProcessor,
+            configurationFieldModelConverter,
+            descriptorMap,
+            pkixErrorResponseFactory,
+            encryptionUtility,
+            settingsDescriptorKey,
+            globalConfigurationModelToConcreteConversionService
+        );
         FieldModel fieldModel = createEmailFieldModel();
         fieldModel = configActions.create(fieldModel).getContent().orElseThrow(() -> new AlertConfigurationException("Couldn't create configuration"));
 
@@ -129,9 +151,9 @@ public class EmailConfigActionTestIT {
         assertEquals(Boolean.TRUE, staticModel.getSmtpAuth().orElse(null));
         assertEquals(TEST_AUTH_USER, staticModel.getSmtpUsername().orElse(null));
         assertEquals(updatedPassword, staticModel.getSmtpPassword().orElse(null));
-        assertEquals(updatedHost, staticModel.getSmtpHost().orElse(null));
+        assertEquals(updatedHost, staticModel.getSmtpHost());
         assertEquals(Integer.valueOf(TEST_SMTP_PORT), staticModel.getSmtpPort().orElse(null));
-        assertEquals(TEST_FROM, staticModel.getSmtpFrom().orElse(null));
+        assertEquals(TEST_FROM, staticModel.getSmtpFrom());
 
         String propertyValue = staticModel.getAdditionalJavaMailProperties()
             .map(map -> map.get(EmailPropertyKeys.JAVAMAIL_EHLO_KEY.getPropertyKey()))
@@ -144,8 +166,19 @@ public class EmailConfigActionTestIT {
         AuthorizationManager authorizationManager = createEmailAuthorizationManager();
         EmailGlobalCrudActions emailGlobalCrudActions = createEmailCrudActions(authorizationManager);
         GlobalConfigurationModelToConcreteConversionService globalConfigurationModelToConcreteConversionService = createConversionService(emailGlobalCrudActions);
-        ConfigActions configActions = new ConfigActions(authorizationManager, descriptorAccessor, configurationModelConfigurationAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter, descriptorMap,
-            pkixErrorResponseFactory, encryptionUtility, settingsDescriptorKey, globalConfigurationModelToConcreteConversionService);
+        ConfigActions configActions = new ConfigActions(
+            authorizationManager,
+            descriptorAccessor,
+            configurationModelConfigurationAccessor,
+            fieldModelProcessor,
+            descriptorProcessor,
+            configurationFieldModelConverter,
+            descriptorMap,
+            pkixErrorResponseFactory,
+            encryptionUtility,
+            settingsDescriptorKey,
+            globalConfigurationModelToConcreteConversionService
+        );
         FieldModel fieldModel = createEmailFieldModel();
         fieldModel = configActions.create(fieldModel).getContent().orElseThrow(() -> new AlertConfigurationException("Couldn't create configuration"));
         String updatedHost = "updated." + TEST_SMTP_HOST;
@@ -159,9 +192,9 @@ public class EmailConfigActionTestIT {
         assertEquals(Boolean.TRUE, staticModel.getSmtpAuth().orElse(null));
         assertEquals(TEST_AUTH_USER, staticModel.getSmtpUsername().orElse(null));
         assertEquals(TEST_AUTH_PASSWORD, staticModel.getSmtpPassword().orElse(null));
-        assertEquals(updatedHost, staticModel.getSmtpHost().orElse(null));
+        assertEquals(updatedHost, staticModel.getSmtpHost());
         assertEquals(Integer.valueOf(TEST_SMTP_PORT), staticModel.getSmtpPort().orElse(null));
-        assertEquals(TEST_FROM, staticModel.getSmtpFrom().orElse(null));
+        assertEquals(TEST_FROM, staticModel.getSmtpFrom());
 
         String propertyValue = staticModel.getAdditionalJavaMailProperties()
             .map(map -> map.get(EmailPropertyKeys.JAVAMAIL_EHLO_KEY.getPropertyKey()))
@@ -174,8 +207,19 @@ public class EmailConfigActionTestIT {
         AuthorizationManager authorizationManager = createEmailAuthorizationManager();
         EmailGlobalCrudActions emailGlobalCrudActions = createEmailCrudActions(authorizationManager);
         GlobalConfigurationModelToConcreteConversionService globalConfigurationModelToConcreteConversionService = createConversionService(emailGlobalCrudActions);
-        ConfigActions configActions = new ConfigActions(authorizationManager, descriptorAccessor, configurationModelConfigurationAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter, descriptorMap,
-            pkixErrorResponseFactory, encryptionUtility, settingsDescriptorKey, globalConfigurationModelToConcreteConversionService);
+        ConfigActions configActions = new ConfigActions(
+            authorizationManager,
+            descriptorAccessor,
+            configurationModelConfigurationAccessor,
+            fieldModelProcessor,
+            descriptorProcessor,
+            configurationFieldModelConverter,
+            descriptorMap,
+            pkixErrorResponseFactory,
+            encryptionUtility,
+            settingsDescriptorKey,
+            globalConfigurationModelToConcreteConversionService
+        );
         FieldModel fieldModel = createEmailFieldModel();
         fieldModel = configActions.create(fieldModel).getContent().orElseThrow(() -> new AlertConfigurationException("Couldn't create configuration"));
 
@@ -199,7 +243,11 @@ public class EmailConfigActionTestIT {
 
     private GlobalConfigurationModelToConcreteConversionService createConversionService(EmailGlobalCrudActions emailGlobalCrudActions) {
         EmailGlobalConfigurationModelConverter modelConverter = new EmailGlobalConfigurationModelConverter();
-        EmailGlobalConfigurationModelSaveActions emailGlobalConfigurationModelSaveActions = new EmailGlobalConfigurationModelSaveActions(modelConverter, emailGlobalCrudActions, emailGlobalConfigAccessor);
+        EmailGlobalConfigurationModelSaveActions emailGlobalConfigurationModelSaveActions = new EmailGlobalConfigurationModelSaveActions(
+            modelConverter,
+            emailGlobalCrudActions,
+            emailGlobalConfigAccessor
+        );
         List<GlobalConfigurationModelToConcreteSaveActions> conversionActions = List.of(emailGlobalConfigurationModelSaveActions);
         return new GlobalConfigurationModelToConcreteConversionService(conversionActions, descriptorMap);
     }
