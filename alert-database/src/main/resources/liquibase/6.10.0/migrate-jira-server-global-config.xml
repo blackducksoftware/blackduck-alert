@@ -62,4 +62,21 @@
               AND configFields.source_key = 'jira.server.disable.plugin.check';
         </sql>
     </changeSet>
+    <!-- Migrate existing jira server jobs to use the default configuration -->
+    <changeSet author="psantos" id="migrate-jira-jobs">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*)
+                FROM alert.distribution_jobs job
+                WHERE job.channel_descriptor_name = 'channel_jira_server' LIMIT 1;
+            </sqlCheck>
+        </preConditions>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.distribution_jobs job
+            SET channel_global_config_id =
+            SELECT configuration_id
+            FROM alert.configuration_jira_server config
+            WHERE config.name = 'default-configuration' WHERE job.channel_descriptor_name = 'channel_jira_server';
+        </sql>
+    </changeSet>
 </databaseChangeLog>
