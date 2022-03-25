@@ -23,7 +23,7 @@
     <changeSet author="psantos" id="update-initial-jira-server-config-entries">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="1">
-                SELECT COUNT(url)
+                SELECT COUNT(*)
                 FROM alert.configuration_jira_server
                 WHERE name = 'default-configuration';
             </sqlCheck>
@@ -65,8 +65,8 @@
     <!-- Migrate existing jira server jobs to use the default configuration -->
     <changeSet author="psantos" id="migrate-jira-jobs">
         <preConditions onFail="MARK_RAN">
-            <sqlCheck expectedResult="1">
-                SELECT COUNT(*)
+            <sqlCheck expectedResult="channel_jira_server">
+                SELECT job.channel_descriptor_name
                 FROM alert.distribution_jobs job
                 WHERE job.channel_descriptor_name = 'channel_jira_server' LIMIT 1;
             </sqlCheck>
