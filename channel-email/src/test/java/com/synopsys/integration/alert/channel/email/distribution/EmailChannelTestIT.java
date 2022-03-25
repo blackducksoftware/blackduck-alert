@@ -63,8 +63,12 @@ public class EmailChannelTestIT {
         EmailAddressGatherer emailAddressGatherer = new EmailAddressGatherer(null, null);
         EmailChannelMessageConverter emailChannelMessageConverter = new EmailChannelMessageConverter(new EmailChannelMessageFormatter());
 
-        EmailChannelMessageSender emailChannelMessageSender = new EmailChannelMessageSender(emailConfigurationAccessor, emailAddressGatherer, emailChannelMessagingService, emailAddressValidator,
-            javamailPropertiesFactory);
+        EmailChannelMessageSender emailChannelMessageSender = new EmailChannelMessageSender(emailConfigurationAccessor,
+            emailAddressGatherer,
+            emailChannelMessagingService,
+            emailAddressValidator,
+            javamailPropertiesFactory
+        );
         EmailChannel emailChannel = new EmailChannel(emailChannelMessageConverter, emailChannelMessageSender);
 
         List<String> emailAddresses = List.of(testEmailRecipient);
@@ -97,16 +101,22 @@ public class EmailChannelTestIT {
         EmailChannel emailChannel = new EmailChannel(emailChannelMessageConverter, emailChannelMessageSender);
 
         List<String> emailAddresses = List.of(testEmailRecipient);
-        EmailJobDetailsModel emailJobDetails = new EmailJobDetailsModel(null, EmailChannelTestIT.class.getSimpleName(), false, true, EmailAttachmentFormat.NONE.name(), emailAddresses);
+        EmailJobDetailsModel emailJobDetails = new EmailJobDetailsModel(
+            null,
+            EmailChannelTestIT.class.getSimpleName(),
+            false,
+            true,
+            EmailAttachmentFormat.NONE.name(),
+            emailAddresses
+        );
 
         EmailITTestAssertions.assertSendSimpleMessageException(emailChannel, emailJobDetails, "ERROR: Missing Email global config.");
     }
 
     private EmailGlobalConfigModel createEmailGlobalConfig() {
-        EmailGlobalConfigModel emailGlobalConfigModel = new EmailGlobalConfigModel();
-        emailGlobalConfigModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
-        emailGlobalConfigModel.setSmtpHost(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST));
-        emailGlobalConfigModel.setSmtpFrom(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM));
+        String smtpFrom = testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM);
+        String smtpHost = testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST);
+        EmailGlobalConfigModel emailGlobalConfigModel = new EmailGlobalConfigModel(null, AlertRestConstants.DEFAULT_CONFIGURATION_NAME, smtpFrom, smtpHost);
         emailGlobalConfigModel.setSmtpUsername(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_USER));
         emailGlobalConfigModel.setSmtpPassword(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PASSWORD));
 

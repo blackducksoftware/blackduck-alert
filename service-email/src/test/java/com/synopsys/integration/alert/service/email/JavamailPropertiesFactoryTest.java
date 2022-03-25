@@ -8,10 +8,11 @@ import java.util.Properties;
 
 import org.junit.jupiter.api.Test;
 
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
-public class JavamailPropertiesFactoryTest {
+class JavamailPropertiesFactoryTest {
     public static final String EXPECTED_FROM_VALUE = "expectedFrom";
     public static final String EXPECTED_HOST_VALUE = "expectedHost";
     public static final int EXPECTED_PORT_VALUE = 25;
@@ -22,12 +23,9 @@ public class JavamailPropertiesFactoryTest {
     public static final String EXPECTED_PASSWORD_VALUE = "expectedPassword";
     public static final String EXPECTED_EHLO_VALUE = "expectedEhlo";
 
-
     @Test
-    public void testCreateFromEmailGlobalConfigModel() {
-        EmailGlobalConfigModel emailGlobalConfigModel = new EmailGlobalConfigModel();
-        emailGlobalConfigModel.setSmtpFrom(EXPECTED_FROM_VALUE);
-        emailGlobalConfigModel.setSmtpHost(EXPECTED_HOST_VALUE);
+    void testCreateFromEmailGlobalConfigModel() {
+        EmailGlobalConfigModel emailGlobalConfigModel = new EmailGlobalConfigModel(null, AlertRestConstants.DEFAULT_CONFIGURATION_NAME, EXPECTED_FROM_VALUE, EXPECTED_HOST_VALUE);
         emailGlobalConfigModel.setSmtpPort(EXPECTED_PORT_VALUE);
         emailGlobalConfigModel.setSmtpAuth(EXPECTED_AUTH_VALUE);
         emailGlobalConfigModel.setSmtpUsername(EXPECTED_USERNAME_VALUE);

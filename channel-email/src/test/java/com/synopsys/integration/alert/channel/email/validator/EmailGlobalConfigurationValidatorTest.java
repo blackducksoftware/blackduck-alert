@@ -26,10 +26,7 @@ class EmailGlobalConfigurationValidatorTest {
     @Test
     void verifyValidConfig() {
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
-        EmailGlobalConfigModel model = new EmailGlobalConfigModel();
-        model.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
-        model.setSmtpHost("host");
-        model.setSmtpFrom("from");
+        EmailGlobalConfigModel model = new EmailGlobalConfigModel(null, AlertRestConstants.DEFAULT_CONFIGURATION_NAME, "from", "host");
         model.setSmtpAuth(true);
         model.setSmtpUsername("user");
         model.setSmtpPassword("password");
@@ -42,9 +39,7 @@ class EmailGlobalConfigurationValidatorTest {
     @Test
     void verifyNameMissingConfig() {
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
-        EmailGlobalConfigModel model = new EmailGlobalConfigModel();
-        model.setSmtpHost("host");
-        model.setSmtpFrom("from");
+        EmailGlobalConfigModel model = new EmailGlobalConfigModel(null, null, "from", "host");
         model.setSmtpAuth(true);
         model.setSmtpUsername("user");
         model.setSmtpPassword("password");
@@ -70,10 +65,7 @@ class EmailGlobalConfigurationValidatorTest {
     @Test
     void verifyMissingAuth() {
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
-        EmailGlobalConfigModel model = new EmailGlobalConfigModel();
-        model.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
-        model.setSmtpHost("host");
-        model.setSmtpFrom("from");
+        EmailGlobalConfigModel model = new EmailGlobalConfigModel(null, AlertRestConstants.DEFAULT_CONFIGURATION_NAME, "from", "host");
         model.setSmtpAuth(true);
 
         ValidationResponseModel validationResponseModel = validator.validate(model);
@@ -87,10 +79,7 @@ class EmailGlobalConfigurationValidatorTest {
     @Test
     void verifyAuthNotProvided() {
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
-        EmailGlobalConfigModel model = new EmailGlobalConfigModel();
-        model.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
-        model.setSmtpHost("host");
-        model.setSmtpFrom("from");
+        EmailGlobalConfigModel model = new EmailGlobalConfigModel(null, AlertRestConstants.DEFAULT_CONFIGURATION_NAME, "from", "host");
         model.setSmtpUsername("user");
         model.setSmtpPassword("password");
 
@@ -101,10 +90,7 @@ class EmailGlobalConfigurationValidatorTest {
     @Test
     void verifyMissingAuthPassword() {
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
-        EmailGlobalConfigModel model = new EmailGlobalConfigModel();
-        model.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
-        model.setSmtpHost("host");
-        model.setSmtpFrom("from");
+        EmailGlobalConfigModel model = new EmailGlobalConfigModel(null, AlertRestConstants.DEFAULT_CONFIGURATION_NAME, "from", "host");
         model.setSmtpAuth(true);
         model.setSmtpUsername("user");
 
@@ -120,10 +106,7 @@ class EmailGlobalConfigurationValidatorTest {
     @Test
     void verifyIsPasswordSet() {
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
-        EmailGlobalConfigModel model = new EmailGlobalConfigModel();
-        model.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
-        model.setSmtpHost("host");
-        model.setSmtpFrom("from");
+        EmailGlobalConfigModel model = new EmailGlobalConfigModel(null, AlertRestConstants.DEFAULT_CONFIGURATION_NAME, "from", "host");
         model.setSmtpAuth(true);
         model.setSmtpUsername("user");
         model.setIsSmtpPasswordSet(true);

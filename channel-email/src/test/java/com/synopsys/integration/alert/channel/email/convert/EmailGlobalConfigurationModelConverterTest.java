@@ -33,9 +33,9 @@ class EmailGlobalConfigurationModelConverterTest {
         assertEquals(Boolean.TRUE, emailModel.getSmtpAuth().orElse(Boolean.FALSE));
         assertEquals(TEST_AUTH_USER, emailModel.getSmtpUsername().orElse(null));
         assertEquals(TEST_AUTH_PASSWORD, emailModel.getSmtpPassword().orElse(null));
-        assertEquals(TEST_SMTP_HOST, emailModel.getSmtpHost().orElse(null));
+        assertEquals(TEST_SMTP_HOST, emailModel.getSmtpHost());
         assertEquals(Integer.valueOf(TEST_SMTP_PORT), emailModel.getSmtpPort().orElse(null));
-        assertEquals(TEST_FROM, emailModel.getSmtpFrom().orElse(null));
+        assertEquals(TEST_FROM, emailModel.getSmtpFrom());
 
         Map<String, String> additionalProperties = emailModel.getAdditionalJavaMailProperties().orElse(Map.of());
         assertEquals(1, additionalProperties.size());
@@ -58,16 +58,7 @@ class EmailGlobalConfigurationModelConverterTest {
         ConfigurationModel emptyModel = new ConfigurationModel(1L, 1L, "", "", ConfigContextEnum.GLOBAL, Map.of());
         EmailGlobalConfigurationModelConverter converter = new EmailGlobalConfigurationModelConverter();
         Optional<EmailGlobalConfigModel> model = converter.convert(emptyModel);
-        assertTrue(model.isPresent());
-        EmailGlobalConfigModel emailModel = model.get();
-        assertTrue(emailModel.getSmtpAuth().isEmpty());
-        assertTrue(emailModel.getSmtpUsername().isEmpty());
-        assertTrue(emailModel.getSmtpPassword().isEmpty());
-        assertTrue(emailModel.getSmtpHost().isEmpty());
-        assertTrue(emailModel.getSmtpPort().isEmpty());
-        assertTrue(emailModel.getSmtpFrom().isEmpty());
-        assertTrue(emailModel.getAdditionalJavaMailProperties().isPresent());
-        assertTrue(emailModel.getAdditionalJavaMailProperties().orElseThrow(() -> new AssertionError("Expected an additional properties map.")).isEmpty());
+        assertTrue(model.isEmpty());
     }
 
     @Test
@@ -78,11 +69,7 @@ class EmailGlobalConfigurationModelConverterTest {
         ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, "", "", ConfigContextEnum.GLOBAL, fieldValues);
         EmailGlobalConfigurationModelConverter converter = new EmailGlobalConfigurationModelConverter();
         Optional<EmailGlobalConfigModel> model = converter.convert(configurationModel);
-        assertTrue(model.isPresent());
-        EmailGlobalConfigModel emailModel = model.get();
-        Map<String, String> additionalProperties = emailModel.getAdditionalJavaMailProperties().orElse(Map.of());
-        assertEquals(0, additionalProperties.size());
-
+        assertTrue(model.isEmpty());
     }
 
     private ConfigurationModel createDefaultConfigurationModel() {
