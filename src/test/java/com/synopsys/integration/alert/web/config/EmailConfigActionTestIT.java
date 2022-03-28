@@ -44,7 +44,7 @@ import com.synopsys.integration.alert.web.api.config.ConfigActions;
 import com.synopsys.integration.alert.web.api.config.GlobalConfigurationModelToConcreteConversionService;
 
 @AlertIntegrationTest
-public class EmailConfigActionTestIT {
+class EmailConfigActionTestIT {
     public static final String TEST_AUTH_REQUIRED = "true";
     public static final String TEST_FROM = "test.user@some.company.example.com";
     public static final String TEST_SMTP_HOST = "smtp.server.example.com";
@@ -72,6 +72,8 @@ public class EmailConfigActionTestIT {
     private EncryptionUtility encryptionUtility;
     @Autowired
     private EmailGlobalConfigAccessor emailGlobalConfigAccessor;
+    @Autowired
+    private EmailGlobalConfigurationValidator validator;
 
     @BeforeEach
     void deleteDefaultConfig() {
@@ -242,7 +244,7 @@ public class EmailConfigActionTestIT {
     }
 
     private GlobalConfigurationModelToConcreteConversionService createConversionService(EmailGlobalCrudActions emailGlobalCrudActions) {
-        EmailGlobalConfigurationModelConverter modelConverter = new EmailGlobalConfigurationModelConverter();
+        EmailGlobalConfigurationModelConverter modelConverter = new EmailGlobalConfigurationModelConverter(validator);
         EmailGlobalConfigurationModelSaveActions emailGlobalConfigurationModelSaveActions = new EmailGlobalConfigurationModelSaveActions(
             modelConverter,
             emailGlobalCrudActions,

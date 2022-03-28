@@ -2,7 +2,6 @@ package com.synopsys.integration.alert.channel.jira.server.database.accessor;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -61,7 +60,8 @@ class JiraServerGlobalConfigAccessorTest {
         UUID id = UUID.randomUUID();
         JiraServerConfigurationEntity entity = createEntity(id);
         Mockito.when(jiraServerConfigurationRepository.findById(id)).thenReturn(Optional.of(entity));
-        JiraServerGlobalConfigModel configModel = jiraServerGlobalConfigAccessor.getConfiguration(id).orElseThrow(() -> new AlertConfigurationException("Cannot find expected configuration"));
+        JiraServerGlobalConfigModel configModel = jiraServerGlobalConfigAccessor.getConfiguration(id)
+            .orElseThrow(() -> new AlertConfigurationException("Cannot find expected configuration"));
         assertEquals(id.toString(), configModel.getId());
         assertEquals(TEST_URL, configModel.getUrl());
         assertEquals(TEST_USERNAME, configModel.getUserName());
@@ -84,7 +84,8 @@ class JiraServerGlobalConfigAccessorTest {
         UUID id = UUID.randomUUID();
         JiraServerConfigurationEntity entity = createEntity(id);
         Mockito.when(jiraServerConfigurationRepository.findByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)).thenReturn(Optional.of(entity));
-        JiraServerGlobalConfigModel configModel = jiraServerGlobalConfigAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME).orElseThrow(() -> new AlertConfigurationException("Cannot find expected configuration"));
+        JiraServerGlobalConfigModel configModel = jiraServerGlobalConfigAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
+            .orElseThrow(() -> new AlertConfigurationException("Cannot find expected configuration"));
         assertEquals(id.toString(), configModel.getId());
         assertEquals(TEST_URL, configModel.getUrl());
         assertEquals(TEST_USERNAME, configModel.getUserName());
@@ -211,7 +212,8 @@ class JiraServerGlobalConfigAccessorTest {
     void createConfigurationTest() throws AlertConfigurationException {
         UUID id = UUID.randomUUID();
         JiraServerConfigurationEntity entity = createEntity(id, OffsetDateTime.now(), OffsetDateTime.now());
-        JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(null,
+        JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(
+            null,
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
             DateUtils.formatDate(entity.getCreatedAt(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE),
             DateUtils.formatDate(entity.getLastUpdated(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE),
@@ -219,7 +221,8 @@ class JiraServerGlobalConfigAccessorTest {
             TEST_USERNAME,
             TEST_PASSWORD,
             false,
-            true);
+            true
+        );
 
         Mockito.when(jiraServerConfigurationRepository.save(Mockito.any())).thenReturn(entity);
 
@@ -233,39 +236,22 @@ class JiraServerGlobalConfigAccessorTest {
     }
 
     @Test
-    void createConfigurationModelNullTest() throws AlertConfigurationException {
-        UUID id = UUID.randomUUID();
-        JiraServerConfigurationEntity entity = createEntity(id, OffsetDateTime.now(), OffsetDateTime.now());
-        JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(null,
-            AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
-            DateUtils.formatDate(entity.getCreatedAt(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE),
-            DateUtils.formatDate(entity.getLastUpdated(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE),
-            TEST_URL,
-            TEST_USERNAME,
-            TEST_PASSWORD,
-            false,
-            true);
-
-        Mockito.when(jiraServerConfigurationRepository.save(Mockito.any())).thenReturn(null);
-
-        JiraServerGlobalConfigModel createdModel = jiraServerGlobalConfigAccessor.createConfiguration(model);
-        assertNull(createdModel.getId());
-        assertNull(createdModel.getUrl());
-        assertNull(createdModel.getUserName());
-        assertTrue(createdModel.getIsPasswordSet().isEmpty());
-        assertTrue(createdModel.getPassword().isEmpty());
-        assertTrue(createdModel.getDisablePluginCheck().isEmpty());
-    }
-
-    @Test
     void updateConfigurationTest() throws AlertConfigurationException {
         UUID id = UUID.randomUUID();
         String updatedName = "updatedName";
         String newUrl = "https://updated.example.com";
         JiraServerConfigurationEntity entity = createEntity(id, OffsetDateTime.now(), OffsetDateTime.now());
-        JiraServerConfigurationEntity updatedEntity = new JiraServerConfigurationEntity(entity.getConfigurationId(), updatedName, entity.getCreatedAt(), entity.getLastUpdated(), newUrl, entity.getUsername(), entity.getPassword(),
-            entity.getDisablePluginCheck());
-        JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(null,
+        JiraServerConfigurationEntity updatedEntity = new JiraServerConfigurationEntity(entity.getConfigurationId(),
+            updatedName,
+            entity.getCreatedAt(),
+            entity.getLastUpdated(),
+            newUrl,
+            entity.getUsername(),
+            entity.getPassword(),
+            entity.getDisablePluginCheck()
+        );
+        JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(
+            null,
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
             DateUtils.formatDate(entity.getCreatedAt(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE),
             DateUtils.formatDate(entity.getLastUpdated(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE),
@@ -273,7 +259,8 @@ class JiraServerGlobalConfigAccessorTest {
             TEST_USERNAME,
             TEST_PASSWORD,
             false,
-            true);
+            true
+        );
         Mockito.when(jiraServerConfigurationRepository.findById(id)).thenReturn(Optional.of(entity));
         Mockito.when(jiraServerConfigurationRepository.save(Mockito.any())).thenReturn(updatedEntity);
 
@@ -292,9 +279,17 @@ class JiraServerGlobalConfigAccessorTest {
         String updatedName = "updatedName";
         String newUrl = "https://updated.example.com";
         JiraServerConfigurationEntity entity = createEntity(id, OffsetDateTime.now(), OffsetDateTime.now());
-        JiraServerConfigurationEntity updatedEntity = new JiraServerConfigurationEntity(entity.getConfigurationId(), updatedName, entity.getCreatedAt(), entity.getLastUpdated(), newUrl, entity.getUsername(), entity.getPassword(),
-            entity.getDisablePluginCheck());
-        JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(null,
+        JiraServerConfigurationEntity updatedEntity = new JiraServerConfigurationEntity(entity.getConfigurationId(),
+            updatedName,
+            entity.getCreatedAt(),
+            entity.getLastUpdated(),
+            newUrl,
+            entity.getUsername(),
+            entity.getPassword(),
+            entity.getDisablePluginCheck()
+        );
+        JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(
+            null,
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
             DateUtils.formatDate(entity.getCreatedAt(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE),
             DateUtils.formatDate(entity.getLastUpdated(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE),
@@ -302,7 +297,8 @@ class JiraServerGlobalConfigAccessorTest {
             TEST_USERNAME,
             null,
             true,
-            true);
+            true
+        );
         Mockito.when(jiraServerConfigurationRepository.findById(id)).thenReturn(Optional.of(entity));
         Mockito.when(jiraServerConfigurationRepository.save(Mockito.any())).thenReturn(updatedEntity);
 
@@ -322,7 +318,8 @@ class JiraServerGlobalConfigAccessorTest {
         String newUrl = "https://updated.example.com";
         JiraServerConfigurationEntity entity = createEntity(id, OffsetDateTime.now(), OffsetDateTime.now());
 
-        JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(null,
+        JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(
+            null,
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
             DateUtils.formatDate(entity.getCreatedAt(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE),
             DateUtils.formatDate(entity.getLastUpdated(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE),
@@ -330,7 +327,8 @@ class JiraServerGlobalConfigAccessorTest {
             TEST_USERNAME,
             TEST_PASSWORD,
             false,
-            true);
+            true
+        );
         Mockito.when(jiraServerConfigurationRepository.findById(id)).thenReturn(Optional.empty());
 
         try {
@@ -359,13 +357,15 @@ class JiraServerGlobalConfigAccessorTest {
     }
 
     private JiraServerConfigurationEntity createEntity(UUID id, OffsetDateTime createdAt, OffsetDateTime lastUpdated) {
-        return new JiraServerConfigurationEntity(id,
+        return new JiraServerConfigurationEntity(
+            id,
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
             createdAt,
             lastUpdated,
             TEST_URL,
             TEST_USERNAME,
             encryptionUtility.encrypt(TEST_PASSWORD),
-            true);
+            true
+        );
     }
 }
