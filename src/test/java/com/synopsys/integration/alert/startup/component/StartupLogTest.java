@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
@@ -33,9 +34,7 @@ class StartupLogTest {
 
     @Test
     void testLogConfiguration() throws Exception {
-        SettingsProxyModel settingsProxyModel = new SettingsProxyModel();
-        settingsProxyModel.setProxyHost("google.com");
-        settingsProxyModel.setProxyPort(3218);
+        SettingsProxyModel settingsProxyModel = new SettingsProxyModel(null, AlertRestConstants.DEFAULT_CONFIGURATION_NAME, "google.com", 3128);
         settingsProxyModel.setProxyUsername("AUser");
         settingsProxyModel.setIsProxyPasswordSet(true);
         settingsProxyModel.setProxyPassword("aPassword");

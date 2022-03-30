@@ -150,11 +150,9 @@ class SettingsProxyTestActionTestIT {
     }
 
     private SettingsProxyModel createSettingsProxyModel(TestProperties testProperties) {
-        SettingsProxyModel settingsProxyModel = new SettingsProxyModel();
-
-        settingsProxyModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
-        settingsProxyModel.setProxyHost(testProperties.getProperty(TestPropertyKey.TEST_PROXY_HOST));
-        settingsProxyModel.setProxyPort(Integer.valueOf(testProperties.getProperty(TestPropertyKey.TEST_PROXY_PORT)));
+        String proxyHost = testProperties.getProperty(TestPropertyKey.TEST_PROXY_HOST);
+        Integer proxyPort = Integer.valueOf(testProperties.getProperty(TestPropertyKey.TEST_PROXY_PORT));
+        SettingsProxyModel settingsProxyModel = new SettingsProxyModel(null, AlertRestConstants.DEFAULT_CONFIGURATION_NAME, proxyHost, proxyPort);
 
         testProperties.getOptionalProperty(TestPropertyKey.TEST_PROXY_USERNAME).ifPresent(settingsProxyModel::setProxyUsername);
         testProperties.getOptionalProperty(TestPropertyKey.TEST_PROXY_PASSWORD).ifPresent(settingsProxyModel::setProxyPassword);

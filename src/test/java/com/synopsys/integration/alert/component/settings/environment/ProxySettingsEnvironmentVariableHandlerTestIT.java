@@ -70,10 +70,7 @@ class ProxySettingsEnvironmentVariableHandlerTestIT {
 
     @Test
     void testExistingConfig() throws AlertConfigurationException {
-        SettingsProxyModel settingsProxyModel = new SettingsProxyModel();
-        settingsProxyModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
-        settingsProxyModel.setProxyHost(TEST_PROXY_HOST);
-        settingsProxyModel.setProxyPort(Integer.valueOf(TEST_PROXY_PORT));
+        SettingsProxyModel settingsProxyModel = new SettingsProxyModel(null, AlertRestConstants.DEFAULT_CONFIGURATION_NAME, TEST_PROXY_HOST, Integer.valueOf(TEST_PROXY_PORT));
         settingsProxyModel.setProxyUsername(TEST_PROXY_USERNAME);
         settingsProxyModel.setProxyPassword(TEST_PROXY_PASSWORD);
         settingsProxyModel.setNonProxyHosts(List.of(TEST_NON_PROXY_HOSTS));
