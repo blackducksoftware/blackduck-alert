@@ -46,7 +46,7 @@ const ConcreteJiraServerGlobalConfiguration = ({
         setButtonSuccess(false);
         const response = await ConfigurationRequestBuilder.createNewConfigurationRequest(jiraServerDisablePluginUrl, csrfToken, jiraServerConfig);
         const data = await response.json();
-        const hasErrors = data.error && data.error.trim() !== '';
+        const hasErrors = HttpErrorUtilities.isError(response.status) && data.error && data.error.trim() !== '';
 
         setButtonSuccess(!hasErrors);
         setErrors(HttpErrorUtilities.createErrorObject(data));
