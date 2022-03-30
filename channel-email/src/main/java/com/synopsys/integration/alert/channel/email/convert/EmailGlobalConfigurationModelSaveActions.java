@@ -48,7 +48,7 @@ public class EmailGlobalConfigurationModelSaveActions implements GlobalConfigura
             .map(EmailGlobalConfigModel::getId)
             .map(UUID::fromString);
         Optional<EmailGlobalConfigModel> emailGlobalConfigModel = emailFieldModelConverter.convertAndValidate(configurationModel);
-        if (defaultConfigurationId.isPresent() && emailGlobalConfigModel.isPresent()) {
+        if (defaultConfigurationId.isPresent()) {
             emailGlobalConfigModel.ifPresent(configurationActions::update);
         }
     }
