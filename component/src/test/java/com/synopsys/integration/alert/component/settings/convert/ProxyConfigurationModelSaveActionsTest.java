@@ -48,8 +48,8 @@ class ProxyConfigurationModelSaveActionsTest {
     private final FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, gson);
     private final EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, filePersistenceUtil);
     private final AuthorizationManager authorizationManager = createAuthorizationManager();
-    private final ProxyConfigurationModelConverter converter = new ProxyConfigurationModelConverter();
     private final SettingsProxyValidator validator = new SettingsProxyValidator();
+    private final ProxyConfigurationModelConverter converter = new ProxyConfigurationModelConverter(validator);
 
     @Test
     void getDescriptorKeyTest() {
@@ -75,7 +75,11 @@ class ProxyConfigurationModelSaveActionsTest {
             return List.of(savedNonProxyHostEntity.get());
         });
 
-        SettingsProxyConfigAccessor configurationAccessor = new SettingsProxyConfigAccessor(encryptionUtility, settingsProxyConfigurationRepository, nonProxyHostsConfigurationRepository);
+        SettingsProxyConfigAccessor configurationAccessor = new SettingsProxyConfigAccessor(
+            encryptionUtility,
+            settingsProxyConfigurationRepository,
+            nonProxyHostsConfigurationRepository
+        );
         SettingsProxyCrudActions settingsProxyCrudActions = new SettingsProxyCrudActions(authorizationManager, configurationAccessor, validator, settingsDescriptorKey);
         ProxyConfigurationModelSaveActions saveActions = new ProxyConfigurationModelSaveActions(converter, settingsProxyCrudActions);
         saveActions.createConcreteModel(createDefaultConfigurationModel());
@@ -109,7 +113,11 @@ class ProxyConfigurationModelSaveActionsTest {
             return List.of(savedNonProxyHostEntity.get());
         });
 
-        SettingsProxyConfigAccessor configurationAccessor = new SettingsProxyConfigAccessor(encryptionUtility, settingsProxyConfigurationRepository, nonProxyHostsConfigurationRepository);
+        SettingsProxyConfigAccessor configurationAccessor = new SettingsProxyConfigAccessor(
+            encryptionUtility,
+            settingsProxyConfigurationRepository,
+            nonProxyHostsConfigurationRepository
+        );
         SettingsProxyCrudActions settingsProxyCrudActions = new SettingsProxyCrudActions(authorizationManager, configurationAccessor, validator, settingsDescriptorKey);
         ProxyConfigurationModelSaveActions saveActions = new ProxyConfigurationModelSaveActions(converter, settingsProxyCrudActions);
         ConfigurationModel configurationModel = createDefaultConfigurationModel();
@@ -144,7 +152,11 @@ class ProxyConfigurationModelSaveActionsTest {
             return List.of(savedNonProxyHostEntity.get());
         });
 
-        SettingsProxyConfigAccessor configurationAccessor = new SettingsProxyConfigAccessor(encryptionUtility, settingsProxyConfigurationRepository, nonProxyHostsConfigurationRepository);
+        SettingsProxyConfigAccessor configurationAccessor = new SettingsProxyConfigAccessor(
+            encryptionUtility,
+            settingsProxyConfigurationRepository,
+            nonProxyHostsConfigurationRepository
+        );
         SettingsProxyCrudActions settingsProxyCrudActions = new SettingsProxyCrudActions(authorizationManager, configurationAccessor, validator, settingsDescriptorKey);
         ProxyConfigurationModelSaveActions saveActions = new ProxyConfigurationModelSaveActions(converter, settingsProxyCrudActions);
         String newHost = "updatedHost";
@@ -189,7 +201,11 @@ class ProxyConfigurationModelSaveActionsTest {
             return List.of(savedNonProxyHostEntity.get());
         });
 
-        SettingsProxyConfigAccessor configurationAccessor = new SettingsProxyConfigAccessor(encryptionUtility, settingsProxyConfigurationRepository, nonProxyHostsConfigurationRepository);
+        SettingsProxyConfigAccessor configurationAccessor = new SettingsProxyConfigAccessor(
+            encryptionUtility,
+            settingsProxyConfigurationRepository,
+            nonProxyHostsConfigurationRepository
+        );
         SettingsProxyCrudActions settingsProxyCrudActions = new SettingsProxyCrudActions(authorizationManager, configurationAccessor, validator, settingsDescriptorKey);
         ProxyConfigurationModelSaveActions saveActions = new ProxyConfigurationModelSaveActions(converter, settingsProxyCrudActions);
         String newHost = "updatedHost";
@@ -238,7 +254,11 @@ class ProxyConfigurationModelSaveActionsTest {
             return List.of(savedNonProxyHostEntity.get());
         });
 
-        SettingsProxyConfigAccessor configurationAccessor = new SettingsProxyConfigAccessor(encryptionUtility, settingsProxyConfigurationRepository, nonProxyHostsConfigurationRepository);
+        SettingsProxyConfigAccessor configurationAccessor = new SettingsProxyConfigAccessor(
+            encryptionUtility,
+            settingsProxyConfigurationRepository,
+            nonProxyHostsConfigurationRepository
+        );
         SettingsProxyCrudActions settingsProxyCrudActions = new SettingsProxyCrudActions(authorizationManager, configurationAccessor, validator, settingsDescriptorKey);
         ProxyConfigurationModelSaveActions saveActions = new ProxyConfigurationModelSaveActions(converter, settingsProxyCrudActions);
         ConfigurationModel configurationModel = createDefaultConfigurationModel();

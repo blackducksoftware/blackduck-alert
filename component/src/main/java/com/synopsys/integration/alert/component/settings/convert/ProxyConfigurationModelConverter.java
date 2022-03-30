@@ -12,16 +12,20 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.action.api.GlobalConfigurationModelToConcreteConverter;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
+import com.synopsys.integration.alert.component.settings.proxy.validator.SettingsProxyValidator;
 
 @Component
-public class ProxyConfigurationModelConverter implements GlobalConfigurationModelToConcreteConverter<SettingsProxyModel> {
-    private Logger logger = LoggerFactory.getLogger(getClass());
+public class ProxyConfigurationModelConverter extends GlobalConfigurationModelToConcreteConverter<SettingsProxyModel> {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     // TODO Remove field keys from ProxyManager when the old field models aren't used anymore.
     public static final String FIELD_KEY_USERNAME = "settings.proxy.username";
     public static final String FIELD_KEY_PASSWORD = "settings.proxy.password";
@@ -29,10 +33,18 @@ public class ProxyConfigurationModelConverter implements GlobalConfigurationMode
     public static final String FIELD_KEY_PORT = "settings.proxy.port";
     public static final String FIELD_KEY_NON_PROXY_HOSTS = "settings.proxy.non.proxy.hosts";
 
+    private final SettingsProxyValidator validator;
+
+    @Autowired
+    public ProxyConfigurationModelConverter(SettingsProxyValidator validator) {
+        this.validator = validator;
+    }
+
     @Override
     public Optional<SettingsProxyModel> convert(ConfigurationModel globalConfigurationModel) {
         Optional<SettingsProxyModel> convertedModel = Optional.empty();
         SettingsProxyModel model = new SettingsProxyModel();
+        model.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
         try {
             globalConfigurationModel.getField(FIELD_KEY_HOST)
                 .flatMap(ConfigurationFieldModel::getFieldValue)
@@ -56,5 +68,10 @@ public class ProxyConfigurationModelConverter implements GlobalConfigurationMode
             logger.error("Error converting field model to concrete proxy configuration", ex);
         }
         return convertedModel;
+    }
+
+    @Override
+    protected ValidationResponseModel validate(SettingsProxyModel configModel) {
+        return validator.validate(configModel);
     }
 }

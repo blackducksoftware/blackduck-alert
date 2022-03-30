@@ -27,8 +27,10 @@ public class JiraServerGlobalConfigurationModelSaveActions implements GlobalConf
     private final JiraServerGlobalCrudActions configurationActions;
     private final JiraServerGlobalConfigAccessor configurationAccessor;
 
-    public JiraServerGlobalConfigurationModelSaveActions(JiraServerGlobalConfigurationModelConverter jiraFieldModelConverter, JiraServerGlobalCrudActions configurationActions,
-        JiraServerGlobalConfigAccessor configurationAccessor) {
+    public JiraServerGlobalConfigurationModelSaveActions(
+        JiraServerGlobalConfigurationModelConverter jiraFieldModelConverter, JiraServerGlobalCrudActions configurationActions,
+        JiraServerGlobalConfigAccessor configurationAccessor
+    ) {
         this.jiraFieldModelConverter = jiraFieldModelConverter;
         this.configurationActions = configurationActions;
         this.configurationAccessor = configurationAccessor;
@@ -44,7 +46,7 @@ public class JiraServerGlobalConfigurationModelSaveActions implements GlobalConf
         Optional<UUID> defaultConfigurationId = configurationAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
             .map(JiraServerGlobalConfigModel::getId)
             .map(UUID::fromString);
-        Optional<JiraServerGlobalConfigModel> jiraGlobalConfigModel = jiraFieldModelConverter.convert(configurationModel);
+        Optional<JiraServerGlobalConfigModel> jiraGlobalConfigModel = jiraFieldModelConverter.convertAndValidate(configurationModel);
         if (jiraGlobalConfigModel.isPresent()) {
             JiraServerGlobalConfigModel model = jiraGlobalConfigModel.get();
             model.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
@@ -58,7 +60,7 @@ public class JiraServerGlobalConfigurationModelSaveActions implements GlobalConf
 
     @Override
     public void createConcreteModel(ConfigurationModel configurationModel) {
-        Optional<JiraServerGlobalConfigModel> jiraGlobalConfigModel = jiraFieldModelConverter.convert(configurationModel);
+        Optional<JiraServerGlobalConfigModel> jiraGlobalConfigModel = jiraFieldModelConverter.convertAndValidate(configurationModel);
         if (jiraGlobalConfigModel.isPresent()) {
             JiraServerGlobalConfigModel model = jiraGlobalConfigModel.get();
             model.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);

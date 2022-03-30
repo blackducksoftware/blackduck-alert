@@ -104,13 +104,8 @@ public class EmailGlobalConfigAccessor implements UniqueConfigurationAccessor<Em
     }
 
     private EmailGlobalConfigModel createConfigModel(EmailConfigurationEntity emailConfiguration) {
-        if (null == emailConfiguration) {
-            return new EmailGlobalConfigModel();
-        }
-        String createdAtFormatted = "";
+        String createdAtFormatted = DateUtils.formatDate(emailConfiguration.getCreatedAt(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
         String lastUpdatedFormatted = "";
-
-        createdAtFormatted = DateUtils.formatDate(emailConfiguration.getCreatedAt(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
         if (null != emailConfiguration.getLastUpdated()) {
             lastUpdatedFormatted = DateUtils.formatDate(emailConfiguration.getLastUpdated(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
         }

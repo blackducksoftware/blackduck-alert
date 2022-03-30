@@ -17,7 +17,6 @@ import com.synopsys.integration.alert.channel.email.action.EmailGlobalCrudAction
 import com.synopsys.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
 import com.synopsys.integration.alert.common.action.api.GlobalConfigurationModelToConcreteSaveActions;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
@@ -48,22 +47,16 @@ public class EmailGlobalConfigurationModelSaveActions implements GlobalConfigura
         Optional<UUID> defaultConfigurationId = configurationAccessor.getConfiguration()
             .map(EmailGlobalConfigModel::getId)
             .map(UUID::fromString);
-        Optional<EmailGlobalConfigModel> emailGlobalConfigModel = emailFieldModelConverter.convert(configurationModel);
-        if (defaultConfigurationId.isPresent() && emailGlobalConfigModel.isPresent()) {
-            EmailGlobalConfigModel model = emailGlobalConfigModel.get();
-            model.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
-            configurationActions.update(model);
+        Optional<EmailGlobalConfigModel> emailGlobalConfigModel = emailFieldModelConverter.convertAndValidate(configurationModel);
+        if (defaultConfigurationId.isPresent()) {
+            emailGlobalConfigModel.ifPresent(configurationActions::update);
         }
     }
 
     @Override
     public void createConcreteModel(ConfigurationModel configurationModel) {
-        Optional<EmailGlobalConfigModel> emailGlobalConfigModel = emailFieldModelConverter.convert(configurationModel);
-        if (emailGlobalConfigModel.isPresent()) {
-            EmailGlobalConfigModel model = emailGlobalConfigModel.get();
-            model.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
-            configurationActions.create(model);
-        }
+        Optional<EmailGlobalConfigModel> emailGlobalConfigModel = emailFieldModelConverter.convertAndValidate(configurationModel);
+        emailGlobalConfigModel.ifPresent(configurationActions::create);
     }
 
     @Override
