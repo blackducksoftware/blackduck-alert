@@ -22,6 +22,7 @@ import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.component.settings.proxy.database.accessor.SettingsProxyConfigAccessor;
 import com.synopsys.integration.alert.component.settings.proxy.validator.SettingsProxyValidator;
 import com.synopsys.integration.alert.environment.EnvironmentProcessingResult;
@@ -51,7 +52,11 @@ public class ProxySettingsEnvironmentVariableHandler extends EnvironmentVariable
     private final SettingsProxyValidator validator;
 
     @Autowired
-    public ProxySettingsEnvironmentVariableHandler(SettingsProxyConfigAccessor configAccessor, EnvironmentVariableUtility environmentVariableUtility, SettingsProxyValidator validator) {
+    public ProxySettingsEnvironmentVariableHandler(
+        SettingsProxyConfigAccessor configAccessor,
+        EnvironmentVariableUtility environmentVariableUtility,
+        SettingsProxyValidator validator
+    ) {
         super(HANDLER_NAME, PROXY_CONFIGURATION_KEYSET);
         this.configAccessor = configAccessor;
         this.environmentVariableUtility = environmentVariableUtility;
@@ -65,8 +70,17 @@ public class ProxySettingsEnvironmentVariableHandler extends EnvironmentVariable
 
     @Override
     protected SettingsProxyModel configureModel() {
-        SettingsProxyModel configModel = new SettingsProxyModel();
-        configModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
+        String name = AlertRestConstants.DEFAULT_CONFIGURATION_NAME;
+        String proxyHost = environmentVariableUtility.getEnvironmentValue(PROXY_HOST_KEY).orElse(null);
+        Integer proxyPort = environmentVariableUtility.getEnvironmentValue(PROXY_PORT_KEY)
+            .filter(NumberUtils::isDigits)
+            .map(NumberUtils::toInt)
+            .orElse(null);
+        String createdAt = DateUtils.formatDate(DateUtils.createCurrentDateTimestamp(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
+        SettingsProxyModel configModel = new SettingsProxyModel(null, name, proxyHost, proxyPort);
+        configModel.setCreatedAt(createdAt);
+        configModel.setLastUpdated(createdAt);
+
         configureProxySettings(configModel);
 
         return configModel;
@@ -81,8 +95,13 @@ public class ProxySettingsEnvironmentVariableHandler extends EnvironmentVariable
     protected EnvironmentProcessingResult buildProcessingResult(SettingsProxyModel obfuscatedConfigModel) {
         EnvironmentProcessingResult.Builder builder = new EnvironmentProcessingResult.Builder(PROXY_CONFIGURATION_KEYSET);
 
-        obfuscatedConfigModel.getProxyHost().ifPresent(value -> builder.addVariableValue(PROXY_HOST_KEY, value));
-        obfuscatedConfigModel.getProxyPort().map(String::valueOf).ifPresent(value -> builder.addVariableValue(PROXY_PORT_KEY, value));
+        if (StringUtils.isNotBlank(obfuscatedConfigModel.getProxyHost())) {
+            builder.addVariableValue(PROXY_HOST_KEY, obfuscatedConfigModel.getProxyHost());
+        }
+        String proxyPort = String.valueOf(obfuscatedConfigModel.getProxyPort());
+        if (StringUtils.isNotBlank(proxyPort)) {
+            builder.addVariableValue(PROXY_PORT_KEY, proxyPort);
+        }
         obfuscatedConfigModel.getProxyUsername().ifPresent(value -> builder.addVariableValue(PROXY_USERNAME_KEY, value));
         obfuscatedConfigModel.getNonProxyHosts().map(String::valueOf).ifPresent(value -> builder.addVariableValue(PROXY_NON_PROXY_HOSTS_KEY, value));
 
@@ -103,14 +122,6 @@ public class ProxySettingsEnvironmentVariableHandler extends EnvironmentVariable
     }
 
     private void configureProxySettings(SettingsProxyModel configuration) {
-        environmentVariableUtility.getEnvironmentValue(PROXY_HOST_KEY)
-            .ifPresent(configuration::setProxyHost);
-
-        environmentVariableUtility.getEnvironmentValue(PROXY_PORT_KEY)
-            .filter(NumberUtils::isDigits)
-            .map(NumberUtils::toInt)
-            .ifPresent(configuration::setProxyPort);
-
         environmentVariableUtility.getEnvironmentValue(PROXY_USERNAME_KEY)
             .ifPresent(configuration::setProxyUsername);
 

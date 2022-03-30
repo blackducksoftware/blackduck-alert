@@ -31,33 +31,21 @@ public class SettingsProxyValidator {
         Set<AlertFieldStatus> statuses = new HashSet<>();
         validateRequiredFieldIsNotBlank(statuses, StringUtils.isNotBlank(model.getName()), PROXY_CONFIGURATION_NAME);
 
-        if (model.getProxyPort().isEmpty() && model.getProxyHost().isEmpty()) {
-            validateRequiredFieldIsNotBlank(statuses, model.getProxyHost().isPresent(), PROXY_HOST_FIELD_NAME);
-            validateRequiredFieldIsNotBlank(statuses, model.getProxyPort().isPresent(), PROXY_PORT_FIELD_NAME);
+        if (StringUtils.isBlank(model.getProxyHost())) {
+            statuses.add(AlertFieldStatus.error(PROXY_HOST_FIELD_NAME, AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
         }
 
-        if (model.getProxyHost().isPresent() && model.getProxyPort().isEmpty()) {
-            validateRequiredFieldIsNotBlank(statuses, model.getProxyPort().isPresent(), PROXY_PORT_FIELD_NAME);
+        if (model.getProxyPort() == null) {
+            statuses.add(AlertFieldStatus.error(PROXY_PORT_FIELD_NAME, AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
         }
 
-        if (model.getProxyPort().isPresent() && model.getProxyHost().isEmpty()) {
-            validateRequiredFieldIsNotBlank(statuses, model.getProxyHost().isPresent(), PROXY_HOST_FIELD_NAME);
-        }
+        if (model.getProxyUsername().filter(StringUtils::isNotBlank).isPresent() && !BooleanUtils.toBoolean(model.getIsProxyPasswordSet())) {
+            validateRequiredFieldIsNotBlank(statuses, model.getProxyPassword().isPresent(), PROXY_PASSWORD_FIELD_NAME);
 
-        if (model.getProxyUsername().filter(StringUtils::isNotBlank).isPresent()) {
-            validateRequiredFieldIsNotBlank(statuses, model.getProxyHost().isPresent(), PROXY_HOST_FIELD_NAME);
-            if (!BooleanUtils.toBoolean(model.getIsProxyPasswordSet())) {
-                validateRequiredFieldIsNotBlank(statuses, model.getProxyPassword().isPresent(), PROXY_PASSWORD_FIELD_NAME);
-            }
         }
 
         if (model.getProxyPassword().isPresent() || BooleanUtils.toBoolean(model.getIsProxyPasswordSet())) {
-            validateRequiredFieldIsNotBlank(statuses, model.getProxyHost().isPresent(), PROXY_HOST_FIELD_NAME);
             validateRequiredFieldIsNotBlank(statuses, model.getProxyUsername().isPresent(), PROXY_USERNAME_FIELD_NAME);
-        }
-
-        if (model.getNonProxyHosts().isPresent()) {
-            validateRequiredFieldIsNotBlank(statuses, model.getProxyHost().isPresent(), PROXY_HOST_FIELD_NAME);
         }
 
         if (!statuses.isEmpty()) {

@@ -16,7 +16,7 @@ import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
-public class ProxyManagerTest {
+class ProxyManagerTest {
     public static final String HOST = "host";
     public static final Integer PORT = 9999;
     public static final String USERNAME = "username";
@@ -33,7 +33,7 @@ public class ProxyManagerTest {
     }
 
     @Test
-    public void testCreate() {
+    void testCreate() {
         Mockito.when(settingsUtility.getConfiguration()).thenReturn(Optional.of(createSettingsProxyModel()));
 
         ProxyInfo proxyInfo = proxyManager.createProxyInfo();
@@ -41,7 +41,7 @@ public class ProxyManagerTest {
     }
 
     @Test
-    public void testCreateNoProxy() {
+    void testCreateNoProxy() {
         Mockito.when(settingsUtility.getConfiguration()).thenReturn(Optional.empty());
 
         ProxyInfo proxyInfo = proxyManager.createProxyInfo();
@@ -52,7 +52,7 @@ public class ProxyManagerTest {
     }
 
     @Test
-    public void testCreateProxyInfoForHost() {
+    void testCreateProxyInfoForHost() {
         Mockito.when(settingsUtility.getConfiguration()).thenReturn(Optional.of(createSettingsProxyModelWithNonProxyHosts()));
 
         ProxyInfo proxyInfo = proxyManager.createProxyInfoForHost(HOST);
@@ -60,7 +60,7 @@ public class ProxyManagerTest {
     }
 
     @Test
-    public void testCreateProxyInfoForHostNoProxy() {
+    void testCreateProxyInfoForHostNoProxy() {
         Mockito.when(settingsUtility.getConfiguration()).thenReturn(Optional.empty());
 
         ProxyInfo proxyInfo = proxyManager.createProxyInfoForHost(HOST);
@@ -71,7 +71,7 @@ public class ProxyManagerTest {
     }
 
     @Test
-    public void testCreateProxyInfoForHostNonProxyHost() {
+    void testCreateProxyInfoForHostNonProxyHost() {
         Mockito.when(settingsUtility.getConfiguration()).thenReturn(Optional.of(createSettingsProxyModelWithNonProxyHosts()));
 
         ProxyInfo proxyInfo = proxyManager.createProxyInfoForHost(NON_PROXY_HOST);
@@ -82,10 +82,7 @@ public class ProxyManagerTest {
     }
 
     private SettingsProxyModel createSettingsProxyModel() {
-        SettingsProxyModel settingsProxyModel = new SettingsProxyModel();
-        settingsProxyModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
-        settingsProxyModel.setProxyHost(HOST);
-        settingsProxyModel.setProxyPort(PORT);
+        SettingsProxyModel settingsProxyModel = new SettingsProxyModel(null, AlertRestConstants.DEFAULT_CONFIGURATION_NAME, HOST, PORT);
         settingsProxyModel.setProxyUsername(USERNAME);
         settingsProxyModel.setIsProxyPasswordSet(true);
         settingsProxyModel.setProxyPassword(PASSWORD);

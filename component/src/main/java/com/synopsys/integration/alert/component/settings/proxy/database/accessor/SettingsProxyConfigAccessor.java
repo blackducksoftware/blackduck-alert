@@ -81,7 +81,7 @@ public class SettingsProxyConfigAccessor implements UniqueConfigurationAccessor<
     @Transactional(propagation = Propagation.REQUIRED)
     public SettingsProxyModel updateConfiguration(SettingsProxyModel configuration) throws AlertConfigurationException {
         SettingsProxyConfigurationEntity configurationEntity = settingsProxyConfigurationRepository.findByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
-                                                                   .orElseThrow(() -> new AlertConfigurationException("Proxy config does not exist"));
+            .orElseThrow(() -> new AlertConfigurationException("Proxy config does not exist"));
 
         if (BooleanUtils.toBoolean(configuration.getIsProxyPasswordSet()) && configuration.getProxyPassword().isEmpty()) {
             String decryptedPassword = encryptionUtility.decrypt(configurationEntity.getPassword());
@@ -106,44 +106,48 @@ public class SettingsProxyConfigAccessor implements UniqueConfigurationAccessor<
     }
 
     private SettingsProxyModel createConfigModel(SettingsProxyConfigurationEntity proxyConfiguration) {
-        SettingsProxyModel newModel = new SettingsProxyModel();
-        String createdAtFormatted = null;
-        String lastUpdatedFormatted = null;
-        if (null != proxyConfiguration) {
-            createdAtFormatted = DateUtils.formatDate(proxyConfiguration.getCreatedAt(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
-            if (null != proxyConfiguration.getLastUpdated()) {
-                lastUpdatedFormatted = DateUtils.formatDate(proxyConfiguration.getLastUpdated(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
-            }
-            newModel.setId(String.valueOf(proxyConfiguration.getConfigurationId()));
-            newModel.setName(proxyConfiguration.getName());
-            newModel.setProxyHost(proxyConfiguration.getHost());
-            newModel.setProxyPort(proxyConfiguration.getPort());
-            newModel.setProxyUsername(proxyConfiguration.getUsername());
-
-            String proxyPassword = proxyConfiguration.getPassword();
-            boolean doesPasswordExist = StringUtils.isNotBlank(proxyPassword);
-            newModel.setIsProxyPasswordSet(doesPasswordExist);
-            if (doesPasswordExist) {
-                newModel.setProxyPassword(encryptionUtility.decrypt(proxyPassword));
-            }
-            newModel.setNonProxyHosts(getNonProxyHosts(proxyConfiguration.getNonProxyHosts()));
+        String createdAtFormatted = DateUtils.formatDate(proxyConfiguration.getCreatedAt(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
+        String lastUpdatedFormatted = "";
+        if (null != proxyConfiguration.getLastUpdated()) {
+            lastUpdatedFormatted = DateUtils.formatDate(proxyConfiguration.getLastUpdated(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
         }
-        newModel.setCreatedAt(createdAtFormatted);
-        newModel.setLastUpdated(lastUpdatedFormatted);
+        String id = String.valueOf(proxyConfiguration.getConfigurationId());
+        String name = proxyConfiguration.getName();
+        String proxyHost = proxyConfiguration.getHost();
+        Integer proxyPort = proxyConfiguration.getPort();
+        String proxyUsername = proxyConfiguration.getUsername();
+        String proxyPassword = proxyConfiguration.getPassword();
 
-        return newModel;
+        boolean doesPasswordExist = StringUtils.isNotBlank(proxyPassword);
+        if (doesPasswordExist) {
+            proxyPassword = encryptionUtility.decrypt(proxyPassword);
+        }
+        List<String> nonProxyHosts = getNonProxyHosts(proxyConfiguration.getNonProxyHosts());
+
+        return new SettingsProxyModel(
+            id,
+            name,
+            createdAtFormatted,
+            lastUpdatedFormatted,
+            proxyHost,
+            proxyPort,
+            proxyUsername,
+            proxyPassword,
+            doesPasswordExist,
+            nonProxyHosts
+        );
     }
 
     private List<String> getNonProxyHosts(List<NonProxyHostConfigurationEntity> nonProxyHosts) {
         return nonProxyHosts
-                   .stream()
-                   .map(NonProxyHostConfigurationEntity::getHostnamePattern)
-                   .collect(Collectors.toList());
+            .stream()
+            .map(NonProxyHostConfigurationEntity::getHostnamePattern)
+            .collect(Collectors.toList());
     }
 
     private SettingsProxyConfigurationEntity toEntity(UUID configurationId, SettingsProxyModel configuration, OffsetDateTime createdTime, OffsetDateTime lastUpdated) {
-        String host = configuration.getProxyHost().orElse(null);
-        Integer port = configuration.getProxyPort().orElse(null);
+        String host = configuration.getProxyHost();
+        Integer port = configuration.getProxyPort();
         String username = configuration.getProxyUsername().orElse(null);
         String password = configuration.getProxyPassword().map(encryptionUtility::encrypt).orElse(null);
 
