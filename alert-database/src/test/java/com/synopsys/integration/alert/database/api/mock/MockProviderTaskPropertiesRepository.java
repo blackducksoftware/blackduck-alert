@@ -1,6 +1,9 @@
 package com.synopsys.integration.alert.database.api.mock;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -19,14 +22,46 @@ public class MockProviderTaskPropertiesRepository extends DefaultMockJPAReposito
     @Override
     public Optional<ProviderTaskPropertiesEntity> findByTaskNameAndPropertyName(String taskName, String propertyName) {
         return providerTaskPropertiesEntityMap.values()
-                   .stream()
-                   .filter(entity -> entity.getTaskName().equals(taskName) && entity.getPropertyName().equals(propertyName))
-                   .findFirst();
+            .stream()
+            .filter(entity -> entity.getTaskName().equals(taskName) && entity.getPropertyName().equals(propertyName))
+            .findFirst();
     }
 
     @Override
     public <S extends ProviderTaskPropertiesEntity> S save(S entity) {
         providerTaskPropertiesEntityMap.put(entity.getProviderConfigId(), entity);
         return entity;
+    }
+
+    @Override
+    public <S extends ProviderTaskPropertiesEntity> List<S> saveAllAndFlush(Iterable<S> entities) {
+        List<S> savedItems = new LinkedList<>();
+        Iterator<S> iterator = entities.iterator();
+        while (iterator.hasNext()) {
+            S entity = iterator.next();
+            savedItems.add(save(entity));
+        }
+        return savedItems;
+    }
+
+    @Override
+    public void deleteAllInBatch(Iterable<ProviderTaskPropertiesEntity> entities) {
+        entities.forEach(this::delete);
+    }
+
+    @Override
+    public void deleteAllByIdInBatch(Iterable<Long> longs) {
+        longs.forEach(this::deleteById);
+
+    }
+
+    @Override
+    public ProviderTaskPropertiesEntity getById(Long aLong) {
+        return providerTaskPropertiesEntityMap.get(aLong);
+    }
+
+    @Override
+    public void deleteAllById(Iterable<? extends Long> longs) {
+        longs.forEach(this::deleteById);
     }
 }
