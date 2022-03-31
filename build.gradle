@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '2.4.13'
+        springBootVersion = '2.5.12'
     }
 
     apply from: 'https://raw.githubusercontent.com/blackducksoftware/integration-resources/master/gradle_common/buildscript-repositories.gradle', to: buildscript
@@ -36,7 +36,7 @@ ext {
 }
 
 mainClassName = 'com.synopsys.integration.alert.Application'
-version = '6.9.0'
+version = '6.9.1-SNAPSHOT'
 
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
