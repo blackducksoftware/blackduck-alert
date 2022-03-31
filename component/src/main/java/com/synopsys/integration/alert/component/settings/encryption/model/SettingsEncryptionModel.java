@@ -23,6 +23,24 @@ public class SettingsEncryptionModel extends AlertSerializableModel implements O
         // For serialization
     }
 
+    public SettingsEncryptionModel(Boolean isEncryptionPasswordSet, Boolean isEncryptionGlobalSaltSet, boolean readOnly) {
+        this.isEncryptionPasswordSet = isEncryptionPasswordSet;
+        this.isEncryptionGlobalSaltSet = isEncryptionGlobalSaltSet;
+        this.readOnly = readOnly;
+    }
+
+    public SettingsEncryptionModel(String encryptionPassword, Boolean isEncryptionPasswordSet, String encryptionGlobalSalt, Boolean isEncryptionGlobalSaltSet, boolean readOnly) {
+        this(isEncryptionPasswordSet, isEncryptionGlobalSaltSet, readOnly);
+        this.encryptionPassword = encryptionPassword;
+        this.encryptionGlobalSalt = encryptionGlobalSalt;
+    }
+
+    @Override
+    public SettingsEncryptionModel obfuscate() {
+        // Encryption password and global salt should never be listed after obfuscating, those values will be accessed by the EncryptionUtility when needed.
+        return new SettingsEncryptionModel(isEncryptionPasswordSet, isEncryptionGlobalSaltSet, readOnly);
+    }
+
     public Boolean getIsEncryptionPasswordSet() {
         return isEncryptionPasswordSet;
     }
@@ -61,16 +79,5 @@ public class SettingsEncryptionModel extends AlertSerializableModel implements O
 
     public void setReadOnly(boolean readOnly) {
         this.readOnly = readOnly;
-    }
-
-    @Override
-    public SettingsEncryptionModel obfuscate() {
-        SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel();
-
-        settingsEncryptionModel.setIsEncryptionPasswordSet(isEncryptionPasswordSet);
-        settingsEncryptionModel.setIsEncryptionGlobalSaltSet(isEncryptionGlobalSaltSet);
-        settingsEncryptionModel.setReadOnly(readOnly);
-
-        return settingsEncryptionModel;
     }
 }

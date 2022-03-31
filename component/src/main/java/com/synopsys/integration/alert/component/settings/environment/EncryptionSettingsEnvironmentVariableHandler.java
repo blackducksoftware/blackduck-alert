@@ -42,7 +42,8 @@ public class EncryptionSettingsEnvironmentVariableHandler extends EnvironmentVar
 
     @Override
     protected SettingsEncryptionModel configureModel() {
-        return new SettingsEncryptionModel();
+        // The model is not used when logging the environment variables so the fields do not need to be set as they will be accessed by the encryption utility.
+        return new SettingsEncryptionModel(null, null, null, null, false);
     }
 
     @Override
