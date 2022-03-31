@@ -68,4 +68,8 @@ public class EmailGlobalConfigController implements StaticUniqueConfigResourceCo
         return ResponseFactory.createContentResponseFromAction(testAction.testWithPermissionCheck(sendTo, resource));
     }
 
+    @PostMapping("/nothing")
+    public nothing() {
+        ResponseFactory.createContentResponseFromAction(configActions.nothing();
+    }
 }
