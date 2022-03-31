@@ -23,20 +23,59 @@ public class SettingsProxyModel extends ConfigWithMetadata implements Obfuscated
 
     private List<String> nonProxyHosts;
 
-    public Optional<String> getProxyHost() {
-        return Optional.ofNullable(proxyHost);
+    public SettingsProxyModel() {
+        // For serialization
     }
 
-    public void setProxyHost(String proxyHost) {
+    public SettingsProxyModel(String id, String name, String proxyHost, Integer proxyPort) {
+        super(id, name);
         this.proxyHost = proxyHost;
-    }
-
-    public Optional<Integer> getProxyPort() {
-        return Optional.ofNullable(proxyPort);
-    }
-
-    public void setProxyPort(Integer proxyPort) {
         this.proxyPort = proxyPort;
+    }
+
+    public SettingsProxyModel(
+        String id,
+        String name,
+        String createdAt,
+        String lastUpdated,
+        String proxyHost,
+        Integer proxyPort,
+        String proxyUsername,
+        String proxyPassword,
+        Boolean isProxyPasswordSet,
+        List<String> nonProxyHosts
+    ) {
+        this(id, name, proxyHost, proxyPort);
+        this.proxyUsername = proxyUsername;
+        this.proxyPassword = proxyPassword;
+        this.isProxyPasswordSet = isProxyPasswordSet;
+        this.nonProxyHosts = nonProxyHosts;
+        setCreatedAt(createdAt);
+        setLastUpdated(lastUpdated);
+    }
+
+    @Override
+    public SettingsProxyModel obfuscate() {
+        return new SettingsProxyModel(
+            getId(),
+            getName(),
+            getCreatedAt(),
+            getLastUpdated(),
+            proxyHost,
+            proxyPort,
+            proxyUsername,
+            null,
+            StringUtils.isNotBlank(proxyPassword),
+            nonProxyHosts
+        );
+    }
+
+    public String getProxyHost() {
+        return proxyHost;
+    }
+
+    public Integer getProxyPort() {
+        return proxyPort;
     }
 
     public Optional<String> getProxyUsername() {
@@ -51,6 +90,10 @@ public class SettingsProxyModel extends ConfigWithMetadata implements Obfuscated
         return Optional.ofNullable(proxyPassword);
     }
 
+    public void setProxyPassword(String proxyPassword) {
+        this.proxyPassword = proxyPassword;
+    }
+
     public Boolean getIsProxyPasswordSet() {
         return isProxyPasswordSet;
     }
@@ -59,35 +102,11 @@ public class SettingsProxyModel extends ConfigWithMetadata implements Obfuscated
         this.isProxyPasswordSet = isProxyPasswordSet;
     }
 
-    public void setProxyPassword(String proxyPassword) {
-        this.proxyPassword = proxyPassword;
-    }
-
     public Optional<List<String>> getNonProxyHosts() {
         return Optional.ofNullable(nonProxyHosts);
     }
 
     public void setNonProxyHosts(List<String> nonProxyHosts) {
         this.nonProxyHosts = nonProxyHosts;
-    }
-
-    @Override
-    public SettingsProxyModel obfuscate() {
-        SettingsProxyModel settingsProxyModel = new SettingsProxyModel();
-
-        settingsProxyModel.setId(getId());
-        settingsProxyModel.setName(getName());
-        settingsProxyModel.setLastUpdated(getLastUpdated());
-        settingsProxyModel.setCreatedAt(getCreatedAt());
-
-        settingsProxyModel.setProxyHost(proxyHost);
-        settingsProxyModel.setProxyPort(proxyPort);
-        settingsProxyModel.setProxyUsername(proxyUsername);
-        settingsProxyModel.setNonProxyHosts(nonProxyHosts);
-
-        settingsProxyModel.setIsProxyPasswordSet(StringUtils.isNotBlank(proxyPassword));
-        settingsProxyModel.setProxyPassword(null);
-
-        return settingsProxyModel;
     }
 }

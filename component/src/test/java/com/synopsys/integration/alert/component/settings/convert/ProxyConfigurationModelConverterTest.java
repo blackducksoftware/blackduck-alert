@@ -34,8 +34,8 @@ class ProxyConfigurationModelConverterTest {
         SettingsProxyModel proxyModel = model.get();
         assertEquals(TEST_AUTH_USER, proxyModel.getProxyUsername().orElse(null));
         assertEquals(TEST_AUTH_PASSWORD, proxyModel.getProxyPassword().orElse(null));
-        assertEquals(TEST_SMTP_HOST, proxyModel.getProxyHost().orElse(null));
-        assertEquals(Integer.valueOf(TEST_SMTP_PORT), proxyModel.getProxyPort().orElse(null));
+        assertEquals(TEST_SMTP_HOST, proxyModel.getProxyHost());
+        assertEquals(Integer.valueOf(TEST_SMTP_PORT), proxyModel.getProxyPort());
         assertEquals(TEST_NON_PROXY_HOSTS, proxyModel.getNonProxyHosts().orElse(null));
 
     }

@@ -32,7 +32,7 @@ public class ProxyManager {
     public static final String KEY_PROXY_USERNAME = "settings.proxy.username";
     public static final String KEY_PROXY_PWD = "settings.proxy.password";
     public static final String KEY_PROXY_NON_PROXY_HOSTS = "settings.proxy.non.proxy.hosts";
-    
+
     private final SettingsUtility settingsUtility;
 
     @Autowired
@@ -65,8 +65,8 @@ public class ProxyManager {
 
     public ProxyInfo createProxyInfo(SettingsProxyModel settingsProxyModel) {
         ProxyInfoBuilder proxyBuilder = new ProxyInfoBuilder();
-        settingsProxyModel.getProxyHost().ifPresent(proxyBuilder::setHost);
-        settingsProxyModel.getProxyPort().ifPresent(proxyBuilder::setPort);
+        proxyBuilder.setHost(settingsProxyModel.getProxyHost());
+        proxyBuilder.setPort(settingsProxyModel.getProxyPort());
 
         CredentialsBuilder credentialsBuilder = new CredentialsBuilder();
         settingsProxyModel.getProxyUsername().ifPresent(credentialsBuilder::setUsername);

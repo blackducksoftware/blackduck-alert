@@ -55,20 +55,23 @@ class SettingsProxyTestActionTest {
     private final DescriptorKey descriptorKey = new SettingsDescriptorKey();
     private final PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
     private final Map<PermissionKey, Integer> permissions = Map.of(permissionKey, 255);
-    private final AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
+    private final AuthorizationManager authorizationManager = authenticationTestUtils
+        .createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
 
     private final SettingsProxyValidator settingsProxyValidator = new SettingsProxyValidator();
     private final SettingsDescriptorKey settingsDescriptorKey = new SettingsDescriptorKey();
 
+    private final SettingsProxyModel defaultSettingsProxyModel = createDefaultSettingsProxyModel();
+
     private SettingsProxyConfigAccessor settingsProxyConfigAccessor;
-    private SettingsProxyModel defaultSettingsProxyModel = createDefaultSettingsProxyModel();
 
     @BeforeEach
     void init() {
         UUID uuid = UUID.randomUUID();
         SettingsProxyConfigurationRepository settingsProxyConfigurationRepository = Mockito.mock(SettingsProxyConfigurationRepository.class);
         NonProxyHostsConfigurationRepository nonProxyHostsConfigurationRepository = Mockito.mock(NonProxyHostsConfigurationRepository.class);
-        Mockito.when(settingsProxyConfigurationRepository.findByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)).thenReturn(Optional.of(createSettingsProxyConfigurationEntity(uuid)));
+        Mockito.when(settingsProxyConfigurationRepository.findByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME))
+            .thenReturn(Optional.of(createSettingsProxyConfigurationEntity(uuid)));
         settingsProxyConfigAccessor = new SettingsProxyConfigAccessor(encryptionUtility, settingsProxyConfigurationRepository, nonProxyHostsConfigurationRepository);
     }
 
@@ -78,7 +81,13 @@ class SettingsProxyTestActionTest {
         ProxyTestService proxyTestService = Mockito.mock(ProxyTestService.class);
         Mockito.when(proxyTestService.pingHost(Mockito.eq(TEST_URL), Mockito.any())).thenReturn(configurationTestResult);
 
-        SettingsProxyTestAction settingsProxyTestAction = new SettingsProxyTestAction(authorizationManager, settingsProxyValidator, settingsDescriptorKey, proxyTestService, settingsProxyConfigAccessor);
+        SettingsProxyTestAction settingsProxyTestAction = new SettingsProxyTestAction(
+            authorizationManager,
+            settingsProxyValidator,
+            settingsDescriptorKey,
+            proxyTestService,
+            settingsProxyConfigAccessor
+        );
         ActionResponse<ValidationResponseModel> actionResponse = settingsProxyTestAction.testWithPermissionCheck(TEST_URL, defaultSettingsProxyModel);
 
         assertTrue(actionResponse.isSuccessful());
@@ -94,7 +103,13 @@ class SettingsProxyTestActionTest {
         ProxyTestService proxyTestService = Mockito.mock(ProxyTestService.class);
         Mockito.when(proxyTestService.pingHost(Mockito.eq(TEST_URL), Mockito.any())).thenReturn(configurationTestResult);
 
-        SettingsProxyTestAction settingsProxyTestAction = new SettingsProxyTestAction(authorizationManager, settingsProxyValidator, settingsDescriptorKey, proxyTestService, settingsProxyConfigAccessor);
+        SettingsProxyTestAction settingsProxyTestAction = new SettingsProxyTestAction(
+            authorizationManager,
+            settingsProxyValidator,
+            settingsDescriptorKey,
+            proxyTestService,
+            settingsProxyConfigAccessor
+        );
         ActionResponse<ValidationResponseModel> actionResponse = settingsProxyTestAction.testWithPermissionCheck(TEST_URL, defaultSettingsProxyModel);
 
         assertTrue(actionResponse.isSuccessful());
@@ -110,7 +125,13 @@ class SettingsProxyTestActionTest {
         ProxyTestService proxyTestService = Mockito.mock(ProxyTestService.class);
         Mockito.when(proxyTestService.pingHost(Mockito.eq(TEST_URL), Mockito.any())).thenReturn(configurationTestResult);
 
-        SettingsProxyTestAction settingsProxyTestAction = new SettingsProxyTestAction(authorizationManager, settingsProxyValidator, settingsDescriptorKey, proxyTestService, settingsProxyConfigAccessor);
+        SettingsProxyTestAction settingsProxyTestAction = new SettingsProxyTestAction(
+            authorizationManager,
+            settingsProxyValidator,
+            settingsDescriptorKey,
+            proxyTestService,
+            settingsProxyConfigAccessor
+        );
         ConfigurationTestResult testResult = settingsProxyTestAction.testConfigModelContent(TEST_URL, defaultSettingsProxyModel);
 
         assertEquals(configurationTestResult, testResult);
@@ -120,7 +141,13 @@ class SettingsProxyTestActionTest {
     void blankTestUrlTest() {
         ProxyTestService proxyTestService = Mockito.mock(ProxyTestService.class);
 
-        SettingsProxyTestAction settingsProxyTestAction = new SettingsProxyTestAction(authorizationManager, settingsProxyValidator, settingsDescriptorKey, proxyTestService, settingsProxyConfigAccessor);
+        SettingsProxyTestAction settingsProxyTestAction = new SettingsProxyTestAction(
+            authorizationManager,
+            settingsProxyValidator,
+            settingsDescriptorKey,
+            proxyTestService,
+            settingsProxyConfigAccessor
+        );
         ConfigurationTestResult testResult = settingsProxyTestAction.testConfigModelContent("", defaultSettingsProxyModel);
 
         assertFalse(testResult.isSuccess());
@@ -136,7 +163,13 @@ class SettingsProxyTestActionTest {
         settingsProxyModel.setProxyPassword(null);
         settingsProxyModel.setIsProxyPasswordSet(true);
 
-        SettingsProxyTestAction settingsProxyTestAction = new SettingsProxyTestAction(authorizationManager, settingsProxyValidator, settingsDescriptorKey, proxyTestService, settingsProxyConfigAccessor);
+        SettingsProxyTestAction settingsProxyTestAction = new SettingsProxyTestAction(
+            authorizationManager,
+            settingsProxyValidator,
+            settingsDescriptorKey,
+            proxyTestService,
+            settingsProxyConfigAccessor
+        );
         ConfigurationTestResult testResult = settingsProxyTestAction.testConfigModelContent(TEST_URL, settingsProxyModel);
 
         assertEquals(configurationTestResult, testResult);
@@ -157,10 +190,7 @@ class SettingsProxyTestActionTest {
     }
 
     private SettingsProxyModel createDefaultSettingsProxyModel() {
-        SettingsProxyModel settingsProxyModel = new SettingsProxyModel();
-        settingsProxyModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
-        settingsProxyModel.setProxyHost(HOST);
-        settingsProxyModel.setProxyPort(PORT);
+        SettingsProxyModel settingsProxyModel = new SettingsProxyModel(null, AlertRestConstants.DEFAULT_CONFIGURATION_NAME, HOST, PORT);
         settingsProxyModel.setProxyUsername(USERNAME);
         settingsProxyModel.setIsProxyPasswordSet(false);
         settingsProxyModel.setProxyPassword(PASSWORD);
