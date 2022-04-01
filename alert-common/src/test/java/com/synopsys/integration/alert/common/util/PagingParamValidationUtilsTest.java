@@ -14,7 +14,7 @@ import org.springframework.http.HttpStatus;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
 
-public class PagingParamValidationUtilsTest {
+class PagingParamValidationUtilsTest {
     private static final Integer VALID_PAGE_NUMBER = 0;
     private static final Integer INVALID_PAGE_NUMBER = -1;
     private static final Integer VALID_PAGE_SIZE = 10;
@@ -29,14 +29,14 @@ public class PagingParamValidationUtilsTest {
     }
 
     @Test
-    public void validParamsTest() {
+    void validParamsTest() {
         Optional<ActionResponse<Object>> result = PagingParamValidationUtils.createErrorActionResponseIfInvalid(VALID_PAGE_NUMBER, VALID_PAGE_SIZE);
         assertTrue(result.isEmpty(), "Expected the Optional ActionResponse to be empty");
     }
 
     @ParameterizedTest
     @MethodSource("providePageNumberAndPageSizePairs")
-    public void invalidPageNumberTest(Pair<Integer, Integer> pageNumberAndPageSize) {
+    void invalidPageNumberTest(Pair<Integer, Integer> pageNumberAndPageSize) {
         Optional<ActionResponse<Object>> result = PagingParamValidationUtils.createErrorActionResponseIfInvalid(pageNumberAndPageSize.getLeft(), pageNumberAndPageSize.getRight());
         assertTrue(result.isPresent(), "Expected the Optional ActionResponse to be present");
         ActionResponse<Object> actionResponse = result.get();

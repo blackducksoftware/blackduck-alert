@@ -29,7 +29,7 @@ import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
 
-public class JiraServerGlobalCrudActionsTest {
+class JiraServerGlobalCrudActionsTest {
     private final String CREATED_AT = String.valueOf(DateUtils.createCurrentDateTimestamp().minusMinutes(5L));
     private final String UPDATED_AT = String.valueOf(DateUtils.createCurrentDateTimestamp());
     private final String URL = "https://someUrl";
@@ -75,10 +75,16 @@ public class JiraServerGlobalCrudActionsTest {
         );
 
         JiraServerGlobalConfigAccessor configAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
-        Mockito.when(configAccessor.getConfigurationPage(AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE)).thenReturn(alertPagedModel);
+        Mockito.when(configAccessor.getConfigurationPage(AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE, null, null, null)).thenReturn(alertPagedModel);
 
         JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, createValidator());
-        ActionResponse<AlertPagedModel<JiraServerGlobalConfigModel>> actionResponse = crudActions.getPaged(AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE);
+        ActionResponse<AlertPagedModel<JiraServerGlobalConfigModel>> actionResponse = crudActions.getPaged(
+            AlertPagedModel.DEFAULT_PAGE_NUMBER,
+            AlertPagedModel.DEFAULT_PAGE_SIZE,
+            null,
+            null,
+            null
+        );
 
         assertTrue(actionResponse.isSuccessful());
         assertTrue(actionResponse.hasContent());
@@ -88,6 +94,127 @@ public class JiraServerGlobalCrudActionsTest {
         AlertPagedModel<JiraServerGlobalConfigModel> pagedModel = actionResponse.getContent().get();
         assertEquals(1, pagedModel.getModels().size());
         assertModelObfuscated(pagedModel.getModels().get(0));
+    }
+
+    @Test
+    void getPagedSearchTermTest() {
+        JiraServerGlobalConfigModel jiraServerGlobalConfigModel = createJiraServerGlobalConfigModel(id);
+        AlertPagedModel<JiraServerGlobalConfigModel> alertPagedModel = new AlertPagedModel<>(
+            1,
+            AlertPagedModel.DEFAULT_PAGE_NUMBER,
+            AlertPagedModel.DEFAULT_PAGE_SIZE,
+            List.of(jiraServerGlobalConfigModel)
+        );
+
+        JiraServerGlobalConfigAccessor configAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
+        Mockito.when(configAccessor.getConfigurationPage(AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE, null, null, null)).thenReturn(alertPagedModel);
+
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, createValidator());
+        ActionResponse<AlertPagedModel<JiraServerGlobalConfigModel>> actionResponse = crudActions.getPaged(
+            AlertPagedModel.DEFAULT_PAGE_NUMBER,
+            AlertPagedModel.DEFAULT_PAGE_SIZE,
+            null,
+            null,
+            null
+        );
+
+        assertTrue(actionResponse.isSuccessful());
+        assertTrue(actionResponse.hasContent());
+        assertEquals(HttpStatus.OK, actionResponse.getHttpStatus());
+
+        assertTrue(actionResponse.getContent().isPresent());
+        AlertPagedModel<JiraServerGlobalConfigModel> pagedModel = actionResponse.getContent().get();
+        assertEquals(1, pagedModel.getModels().size());
+        assertModelObfuscated(pagedModel.getModels().get(0));
+    }
+
+    @Test
+    void getPagedSortAscendingTest() {
+        JiraServerGlobalConfigModel jiraServerGlobalConfigModel = createJiraServerGlobalConfigModel(id);
+        JiraServerGlobalConfigModel jiraServerGlobalConfigModel2 = new JiraServerGlobalConfigModel(
+            String.valueOf(UUID.randomUUID()),
+            "Another Job",
+            CREATED_AT,
+            UPDATED_AT,
+            URL,
+            USER_NAME,
+            PASSWORD,
+            Boolean.TRUE,
+            Boolean.TRUE
+        );
+        AlertPagedModel<JiraServerGlobalConfigModel> alertPagedModel = new AlertPagedModel<>(
+            1,
+            AlertPagedModel.DEFAULT_PAGE_NUMBER,
+            AlertPagedModel.DEFAULT_PAGE_SIZE,
+            List.of(jiraServerGlobalConfigModel2, jiraServerGlobalConfigModel)
+        );
+
+        JiraServerGlobalConfigAccessor configAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
+        Mockito.when(configAccessor.getConfigurationPage(AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE, "", "name", "asc")).thenReturn(alertPagedModel);
+
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, createValidator());
+        ActionResponse<AlertPagedModel<JiraServerGlobalConfigModel>> actionResponse = crudActions.getPaged(
+            AlertPagedModel.DEFAULT_PAGE_NUMBER,
+            AlertPagedModel.DEFAULT_PAGE_SIZE,
+            "",
+            "name",
+            "asc"
+        );
+
+        assertTrue(actionResponse.isSuccessful());
+        assertTrue(actionResponse.hasContent());
+        assertEquals(HttpStatus.OK, actionResponse.getHttpStatus());
+
+        assertTrue(actionResponse.getContent().isPresent());
+        AlertPagedModel<JiraServerGlobalConfigModel> pagedModel = actionResponse.getContent().get();
+        assertEquals(2, pagedModel.getModels().size());
+        assertEquals("Another Job", pagedModel.getModels().get(0).getName());
+        assertEquals(AlertRestConstants.DEFAULT_CONFIGURATION_NAME, pagedModel.getModels().get(1).getName());
+
+    }
+
+    @Test
+    void getPagedSortDescendingTest() {
+        JiraServerGlobalConfigModel jiraServerGlobalConfigModel = createJiraServerGlobalConfigModel(id);
+        JiraServerGlobalConfigModel jiraServerGlobalConfigModel2 = new JiraServerGlobalConfigModel(
+            String.valueOf(UUID.randomUUID()),
+            "Another Job",
+            CREATED_AT,
+            UPDATED_AT,
+            URL,
+            USER_NAME,
+            PASSWORD,
+            Boolean.TRUE,
+            Boolean.TRUE
+        );
+        AlertPagedModel<JiraServerGlobalConfigModel> alertPagedModel = new AlertPagedModel<>(
+            1,
+            AlertPagedModel.DEFAULT_PAGE_NUMBER,
+            AlertPagedModel.DEFAULT_PAGE_SIZE,
+            List.of(jiraServerGlobalConfigModel, jiraServerGlobalConfigModel2)
+        );
+
+        JiraServerGlobalConfigAccessor configAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
+        Mockito.when(configAccessor.getConfigurationPage(AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE, "", "name", "desc")).thenReturn(alertPagedModel);
+
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, createValidator());
+        ActionResponse<AlertPagedModel<JiraServerGlobalConfigModel>> actionResponse = crudActions.getPaged(
+            AlertPagedModel.DEFAULT_PAGE_NUMBER,
+            AlertPagedModel.DEFAULT_PAGE_SIZE,
+            "",
+            "name",
+            "desc"
+        );
+
+        assertTrue(actionResponse.isSuccessful());
+        assertTrue(actionResponse.hasContent());
+        assertEquals(HttpStatus.OK, actionResponse.getHttpStatus());
+
+        assertTrue(actionResponse.getContent().isPresent());
+        AlertPagedModel<JiraServerGlobalConfigModel> pagedModel = actionResponse.getContent().get();
+        assertEquals(2, pagedModel.getModels().size());
+        assertEquals(AlertRestConstants.DEFAULT_CONFIGURATION_NAME, pagedModel.getModels().get(0).getName());
+        assertEquals("Another Job", pagedModel.getModels().get(1).getName());
     }
 
     @Test

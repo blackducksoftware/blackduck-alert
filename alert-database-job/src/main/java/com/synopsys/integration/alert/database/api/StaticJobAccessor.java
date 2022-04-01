@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,6 +40,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Slack
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.common.util.DateUtils;
+import com.synopsys.integration.alert.common.util.SortUtil;
 import com.synopsys.integration.alert.database.job.DistributionJobEntity;
 import com.synopsys.integration.alert.database.job.DistributionJobRepository;
 import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDetailsEntity;
@@ -117,12 +119,20 @@ public class StaticJobAccessor implements JobAccessor {
 
     @Override
     @Transactional(readOnly = true)
-    public AlertPagedModel<DistributionJobModel> getPageOfJobs(int pageNumber, int pageLimit, String searchTerm, Collection<String> descriptorsNamesToInclude) {
+    public AlertPagedModel<DistributionJobModel> getPageOfJobs(
+        int pageNumber,
+        int pageLimit,
+        String searchTerm,
+        String sortName,
+        String sortOrder,
+        Collection<String> descriptorsNamesToInclude
+    ) {
         if (!descriptorsNamesToInclude.contains(blackDuckProviderKey.getUniversalKey())) {
             return new AlertPagedModel<>(0, pageNumber, pageLimit, List.of());
         }
 
-        PageRequest pageRequest = PageRequest.of(pageNumber, pageLimit);
+        Sort sort = SortUtil.createSortByFieldName(sortName, sortOrder);
+        PageRequest pageRequest = PageRequest.of(pageNumber, pageLimit, sort);
         Page<DistributionJobEntity> pageOfJobsWithDescriptorNames;
         if (StringUtils.isBlank(searchTerm)) {
             pageOfJobsWithDescriptorNames = distributionJobRepository.findByChannelDescriptorNameIn(descriptorsNamesToInclude, pageRequest);
