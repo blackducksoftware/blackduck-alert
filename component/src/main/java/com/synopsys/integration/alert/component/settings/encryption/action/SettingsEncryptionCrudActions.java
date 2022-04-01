@@ -34,7 +34,12 @@ public class SettingsEncryptionCrudActions {
     private final SettingsEncryptionValidator validator;
 
     @Autowired
-    public SettingsEncryptionCrudActions(AuthorizationManager authorizationManager, EncryptionUtility encryptionUtility, SettingsEncryptionValidator validator, SettingsDescriptorKey settingsDescriptorKey) {
+    public SettingsEncryptionCrudActions(
+        AuthorizationManager authorizationManager,
+        EncryptionUtility encryptionUtility,
+        SettingsEncryptionValidator validator,
+        SettingsDescriptorKey settingsDescriptorKey
+    ) {
         this.configurationHelper = new ConfigurationCrudHelper(authorizationManager, ConfigContextEnum.GLOBAL, settingsDescriptorKey);
         this.encryptionUtility = encryptionUtility;
         this.validator = validator;
@@ -90,10 +95,10 @@ public class SettingsEncryptionCrudActions {
 
     private SettingsEncryptionModel createMaskedSettingsEncryptionModel() {
         // EncryptionUtility does not return a model. A SettingsEncryptionModel with values must be created in order to obfuscate in the ConfigurationCrudHelper later.
-        SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel();
-        settingsEncryptionModel.setIsEncryptionPasswordSet(encryptionUtility.isPasswordSet());
-        settingsEncryptionModel.setIsEncryptionGlobalSaltSet(encryptionUtility.isGlobalSaltSet());
-        settingsEncryptionModel.setReadOnly(encryptionUtility.isEncryptionFromEnvironment());
-        return settingsEncryptionModel;
+        return new SettingsEncryptionModel(
+            encryptionUtility.isPasswordSet(),
+            encryptionUtility.isGlobalSaltSet(),
+            encryptionUtility.isEncryptionFromEnvironment()
+        );
     }
 }
