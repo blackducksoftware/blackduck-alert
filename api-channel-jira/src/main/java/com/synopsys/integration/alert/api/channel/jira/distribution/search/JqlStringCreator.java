@@ -102,7 +102,13 @@ public final class JqlStringCreator {
         }
     }
 
-    private static void appendBlackDuckProjectVersionSearchStrings(StringBuilder jqlBuilder, String jiraProjectKey, LinkableItem provider, LinkableItem project, LinkableItem projectVersion) {
+    private static void appendBlackDuckProjectVersionSearchStrings(
+        StringBuilder jqlBuilder,
+        String jiraProjectKey,
+        LinkableItem provider,
+        LinkableItem project,
+        LinkableItem projectVersion
+    ) {
         appendBlackDuckProjectSearchStrings(jqlBuilder, jiraProjectKey, provider, project);
 
         appendPropertySearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROJECT_VERSION_LABEL, projectVersion.getLabel());
