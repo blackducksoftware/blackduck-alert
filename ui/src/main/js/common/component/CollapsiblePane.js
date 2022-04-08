@@ -33,7 +33,10 @@ CollapsiblePane.defaultProps = {
 };
 
 CollapsiblePane.propTypes = {
-    children: PropTypes.array.isRequired,
+    children: PropTypes.oneOfType([
+        PropTypes.array,
+        PropTypes.object
+    ]),
     expanded: PropTypes.bool,
     id: PropTypes.string,
     title: PropTypes.string.isRequired
