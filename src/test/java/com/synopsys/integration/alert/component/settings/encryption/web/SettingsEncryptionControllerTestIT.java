@@ -25,7 +25,7 @@ import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 
 @AlertIntegrationTest
-public class SettingsEncryptionControllerTestIT {
+class SettingsEncryptionControllerTestIT {
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
 
     @Autowired
@@ -44,30 +44,28 @@ public class SettingsEncryptionControllerTestIT {
 
     @Test
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
-    public void testCreate() throws Exception {
+    void testCreate() throws Exception {
         String url = AlertRestConstants.SETTINGS_ENCRYPTION_PATH;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(new URI(url))
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
-                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isMethodNotAllowed());
     }
 
     @Test
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
-    public void testGetOne() throws Exception {
+    void testGetOne() throws Exception {
         String url = AlertRestConstants.SETTINGS_ENCRYPTION_PATH;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(new URI(url))
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
-                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
-    public void testUpdate() throws Exception {
-        SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel();
-        settingsEncryptionModel.setEncryptionPassword("password");
-        settingsEncryptionModel.setEncryptionGlobalSalt("globalSalt");
+    void testUpdate() throws Exception {
+        SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel("password", Boolean.FALSE, "globalSalt", Boolean.FALSE, false);
 
         String url = AlertRestConstants.SETTINGS_ENCRYPTION_PATH;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(new URI(url))
@@ -80,10 +78,8 @@ public class SettingsEncryptionControllerTestIT {
 
     @Test
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
-    public void testValidate() throws Exception {
-        SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel();
-        settingsEncryptionModel.setEncryptionPassword("password");
-        settingsEncryptionModel.setEncryptionGlobalSalt("globalSalt");
+    void testValidate() throws Exception {
+        SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel("password", Boolean.FALSE, "globalSalt", Boolean.FALSE, false);
 
         String url = AlertRestConstants.SETTINGS_ENCRYPTION_PATH + "/validate";
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(new URI(url))
@@ -96,11 +92,11 @@ public class SettingsEncryptionControllerTestIT {
 
     @Test
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
-    public void testDelete() throws Exception {
+    void testDelete() throws Exception {
         String url = AlertRestConstants.SETTINGS_ENCRYPTION_PATH;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete(new URI(url))
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
-                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isMethodNotAllowed());
     }
 }

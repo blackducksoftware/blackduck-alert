@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
+import com.synopsys.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -23,11 +24,13 @@ class EmailGlobalConfigurationModelConverterTest {
     public static final String TEST_SMTP_PORT = "2025";
     public static final String TEST_AUTH_USER = "auser";
 
+    private final EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
+
     @Test
     void validConversionTest() {
         ConfigurationModel configurationModel = createDefaultConfigurationModel();
-        EmailGlobalConfigurationModelConverter converter = new EmailGlobalConfigurationModelConverter();
-        Optional<EmailGlobalConfigModel> model = converter.convert(configurationModel);
+        EmailGlobalConfigurationModelConverter converter = new EmailGlobalConfigurationModelConverter(validator);
+        Optional<EmailGlobalConfigModel> model = converter.convertAndValidate(configurationModel);
         assertTrue(model.isPresent());
         EmailGlobalConfigModel emailModel = model.get();
         assertEquals(Boolean.TRUE, emailModel.getSmtpAuth().orElse(Boolean.FALSE));
@@ -48,16 +51,16 @@ class EmailGlobalConfigurationModelConverterTest {
         ConfigurationModel configurationModel = createDefaultConfigurationModel();
         configurationModel.getField(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey())
             .ifPresent(field -> field.setFieldValue("twenty-five"));
-        EmailGlobalConfigurationModelConverter converter = new EmailGlobalConfigurationModelConverter();
-        Optional<EmailGlobalConfigModel> model = converter.convert(configurationModel);
+        EmailGlobalConfigurationModelConverter converter = new EmailGlobalConfigurationModelConverter(validator);
+        Optional<EmailGlobalConfigModel> model = converter.convertAndValidate(configurationModel);
         assertTrue(model.isEmpty());
     }
 
     @Test
     void emptyFieldsTest() {
         ConfigurationModel emptyModel = new ConfigurationModel(1L, 1L, "", "", ConfigContextEnum.GLOBAL, Map.of());
-        EmailGlobalConfigurationModelConverter converter = new EmailGlobalConfigurationModelConverter();
-        Optional<EmailGlobalConfigModel> model = converter.convert(emptyModel);
+        EmailGlobalConfigurationModelConverter converter = new EmailGlobalConfigurationModelConverter(validator);
+        Optional<EmailGlobalConfigModel> model = converter.convertAndValidate(emptyModel);
         assertTrue(model.isEmpty());
     }
 
@@ -67,8 +70,8 @@ class EmailGlobalConfigurationModelConverterTest {
         ConfigurationFieldModel invalidField = ConfigurationFieldModel.create(invalidFieldKey);
         Map<String, ConfigurationFieldModel> fieldValues = Map.of(invalidFieldKey, invalidField);
         ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, "", "", ConfigContextEnum.GLOBAL, fieldValues);
-        EmailGlobalConfigurationModelConverter converter = new EmailGlobalConfigurationModelConverter();
-        Optional<EmailGlobalConfigModel> model = converter.convert(configurationModel);
+        EmailGlobalConfigurationModelConverter converter = new EmailGlobalConfigurationModelConverter(validator);
+        Optional<EmailGlobalConfigModel> model = converter.convertAndValidate(configurationModel);
         assertTrue(model.isEmpty());
     }
 

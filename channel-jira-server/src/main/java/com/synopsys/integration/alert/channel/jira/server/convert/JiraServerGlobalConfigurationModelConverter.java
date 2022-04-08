@@ -10,24 +10,33 @@ package com.synopsys.integration.alert.channel.jira.server.convert;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
+import com.synopsys.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.action.api.GlobalConfigurationModelToConcreteConverter;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 
 @Component
-public class JiraServerGlobalConfigurationModelConverter implements GlobalConfigurationModelToConcreteConverter<JiraServerGlobalConfigModel> {
+public class JiraServerGlobalConfigurationModelConverter extends GlobalConfigurationModelToConcreteConverter<JiraServerGlobalConfigModel> {
     public static final String URL_KEY = "jira.server.url";
     public static final String USERNAME_KEY = "jira.server.username";
     public static final String PASSWORD_KEY = "jira.server.password";
     public static final String DISABLE_PLUGIN_CHECK_KEY = "jira.server.disable.plugin.check";
 
+    private final JiraServerGlobalConfigurationValidator validator;
+
+    @Autowired
+    public JiraServerGlobalConfigurationModelConverter(JiraServerGlobalConfigurationValidator validator) {
+        this.validator = validator;
+    }
+
     @Override
     public Optional<JiraServerGlobalConfigModel> convert(ConfigurationModel globalConfigurationModel) {
-
         String url = globalConfigurationModel.getField(URL_KEY)
             .flatMap(ConfigurationFieldModel::getFieldValue)
             .orElse(null);
@@ -52,5 +61,10 @@ public class JiraServerGlobalConfigurationModelConverter implements GlobalConfig
             .ifPresent(model::setDisablePluginCheck);
 
         return Optional.of(model);
+    }
+
+    @Override
+    protected ValidationResponseModel validate(JiraServerGlobalConfigModel configModel) {
+        return validator.validate(configModel, null);
     }
 }

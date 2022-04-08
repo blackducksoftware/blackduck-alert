@@ -136,14 +136,19 @@ public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<Jir
         String password = configuration.getPassword().map(encryptionUtility::encrypt).orElse(null);
         Boolean disablePluginCheck = configuration.getDisablePluginCheck().orElse(Boolean.FALSE);
 
-        return new JiraServerConfigurationEntity(configurationId, configuration.getName(), createdTime, lastUpdated,
-            configuration.getUrl(), configuration.getUserName(), password, disablePluginCheck);
+        return new JiraServerConfigurationEntity(
+            configurationId,
+            configuration.getName(),
+            createdTime,
+            lastUpdated,
+            configuration.getUrl(),
+            configuration.getUserName(),
+            password,
+            disablePluginCheck
+        );
     }
 
     private JiraServerGlobalConfigModel createConfigModel(JiraServerConfigurationEntity jiraConfiguration) {
-        if (null == jiraConfiguration) {
-            return new JiraServerGlobalConfigModel();
-        }
         String createdAtFormatted = DateUtils.formatDate(jiraConfiguration.getCreatedAt(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
         String lastUpdatedFormatted = "";
         if (null != jiraConfiguration.getLastUpdated()) {

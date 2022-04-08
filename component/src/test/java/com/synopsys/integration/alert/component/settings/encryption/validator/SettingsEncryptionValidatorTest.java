@@ -16,7 +16,7 @@ import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.component.settings.encryption.model.SettingsEncryptionModel;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
 
-public class SettingsEncryptionValidatorTest {
+class SettingsEncryptionValidatorTest {
     private final Gson gson = new Gson();
     private final AlertProperties alertProperties = new MockAlertProperties();
     private final FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, gson);
@@ -25,28 +25,24 @@ public class SettingsEncryptionValidatorTest {
     private final SystemMessageAccessor systemMessageAccessor = Mockito.mock(SystemMessageAccessor.class);
 
     @Test
-    public void validateTest() {
+    void validateTest() {
         SettingsEncryptionValidator validator = new SettingsEncryptionValidator(encryptionUtility, systemMessageAccessor);
 
-        SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel();
-        settingsEncryptionModel.setEncryptionPassword("password");
-        settingsEncryptionModel.setEncryptionGlobalSalt("globalSalt");
+        SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel("password", Boolean.FALSE, "globalSalt", Boolean.FALSE, false);
 
         ValidationResponseModel validationResponseModel = validator.validate(settingsEncryptionModel);
         assertFalse(validationResponseModel.hasErrors());
     }
 
     @Test
-    public void validateNotInitializedTest() {
+    void validateNotInitializedTest() {
         MockAlertProperties alertPropertiesNoEncryption = new MockAlertProperties();
         alertPropertiesNoEncryption.setEncryptionPassword("");
         alertPropertiesNoEncryption.setEncryptionSalt("");
         FilePersistenceUtil filePersistenceUtilWithoutProperties = new FilePersistenceUtil(alertPropertiesNoEncryption, gson);
         EncryptionUtility encryptionUtilityWithoutProperties = new EncryptionUtility(alertPropertiesNoEncryption, filePersistenceUtilWithoutProperties);
 
-        SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel();
-        settingsEncryptionModel.setEncryptionPassword("password");
-        settingsEncryptionModel.setEncryptionGlobalSalt("globalSalt");
+        SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel("password", Boolean.FALSE, "globalSalt", Boolean.FALSE, false);
 
         SettingsEncryptionValidator validator = new SettingsEncryptionValidator(encryptionUtilityWithoutProperties, systemMessageAccessor);
 
@@ -55,15 +51,14 @@ public class SettingsEncryptionValidatorTest {
     }
 
     @Test
-    public void validateNotInitializedNoPasswordTest() {
+    void validateNotInitializedNoPasswordTest() {
         MockAlertProperties alertPropertiesNoEncryption = new MockAlertProperties();
         alertPropertiesNoEncryption.setEncryptionPassword("");
         alertPropertiesNoEncryption.setEncryptionSalt("");
         FilePersistenceUtil filePersistenceUtilWithoutProperties = new FilePersistenceUtil(alertPropertiesNoEncryption, gson);
         EncryptionUtility encryptionUtilityWithoutProperties = new EncryptionUtility(alertPropertiesNoEncryption, filePersistenceUtilWithoutProperties);
 
-        SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel();
-        settingsEncryptionModel.setEncryptionGlobalSalt("globalSalt");
+        SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel(null, Boolean.FALSE, "globalSalt", Boolean.FALSE, false);
 
         SettingsEncryptionValidator validator = new SettingsEncryptionValidator(encryptionUtilityWithoutProperties, systemMessageAccessor);
 
@@ -73,14 +68,14 @@ public class SettingsEncryptionValidatorTest {
     }
 
     @Test
-    public void validateNotInitializedNoGlobalSaltTest() {
+    void validateNotInitializedNoGlobalSaltTest() {
         MockAlertProperties alertPropertiesNoEncryption = new MockAlertProperties();
         alertPropertiesNoEncryption.setEncryptionPassword("");
         alertPropertiesNoEncryption.setEncryptionSalt("");
         FilePersistenceUtil filePersistenceUtilWithoutProperties = new FilePersistenceUtil(alertPropertiesNoEncryption, gson);
         EncryptionUtility encryptionUtilityWithoutProperties = new EncryptionUtility(alertPropertiesNoEncryption, filePersistenceUtilWithoutProperties);
 
-        SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel();
+        SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel("password", Boolean.FALSE, null, Boolean.FALSE, false);
         settingsEncryptionModel.setEncryptionPassword("password");
 
         SettingsEncryptionValidator validator = new SettingsEncryptionValidator(encryptionUtilityWithoutProperties, systemMessageAccessor);
@@ -91,12 +86,10 @@ public class SettingsEncryptionValidatorTest {
     }
 
     @Test
-    public void fieldNameTooShortTest() {
+    void fieldNameTooShortTest() {
         SettingsEncryptionValidator validator = new SettingsEncryptionValidator(encryptionUtility, systemMessageAccessor);
 
-        SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel();
-        settingsEncryptionModel.setEncryptionPassword("too");
-        settingsEncryptionModel.setEncryptionGlobalSalt("short");
+        SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel("too", Boolean.FALSE, "short", Boolean.FALSE, false);
 
         ValidationResponseModel validationResponseModel = validator.validate(settingsEncryptionModel);
         assertTrue(validationResponseModel.hasErrors());

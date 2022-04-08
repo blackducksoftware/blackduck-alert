@@ -16,8 +16,11 @@ import java.util.function.Predicate;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
+import com.synopsys.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.action.api.GlobalConfigurationModelToConcreteConverter;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -26,8 +29,7 @@ import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKey
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
 @Component
-public class EmailGlobalConfigurationModelConverter implements GlobalConfigurationModelToConcreteConverter<EmailGlobalConfigModel> {
-    private Logger logger = LoggerFactory.getLogger(getClass());
+public class EmailGlobalConfigurationModelConverter extends GlobalConfigurationModelToConcreteConverter<EmailGlobalConfigModel> {
     private static final String EMAIL_FIELD_PREFIX = "mail.smtp.";
 
     private static final Set<String> RESERVED_PROPERTY_KEYS = Set.of(
@@ -38,16 +40,20 @@ public class EmailGlobalConfigurationModelConverter implements GlobalConfigurati
         EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey(),
         EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey()
     );
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final EmailGlobalConfigurationValidator validator;
 
     private Predicate<Map.Entry<String, ConfigurationFieldModel>> validAdditionalPropertiesKeyTest;
 
-    public EmailGlobalConfigurationModelConverter() {
+    @Autowired
+    public EmailGlobalConfigurationModelConverter(EmailGlobalConfigurationValidator validator) {
+        this.validator = validator;
         validAdditionalPropertiesKeyTest = entry -> !RESERVED_PROPERTY_KEYS.contains(entry.getKey());
         validAdditionalPropertiesKeyTest = validAdditionalPropertiesKeyTest.and(entry -> entry.getKey().startsWith(EMAIL_FIELD_PREFIX));
     }
 
     @Override
-    public Optional<EmailGlobalConfigModel> convert(ConfigurationModel globalConfigurationModel) {
+    protected Optional<EmailGlobalConfigModel> convert(ConfigurationModel globalConfigurationModel) {
         String smtpFrom = globalConfigurationModel.getField(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey())
             .flatMap(ConfigurationFieldModel::getFieldValue)
             .orElse(null);
@@ -81,6 +87,11 @@ public class EmailGlobalConfigurationModelConverter implements GlobalConfigurati
             return Optional.empty();
         }
         return Optional.of(model);
+    }
+
+    @Override
+    protected ValidationResponseModel validate(EmailGlobalConfigModel configModel) {
+        return validator.validate(configModel);
     }
 
     private Map<String, String> createAdditionalProperties(ConfigurationModel globalConfigurationModel) {

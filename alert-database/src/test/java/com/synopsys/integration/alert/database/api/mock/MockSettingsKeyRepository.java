@@ -2,6 +2,8 @@ package com.synopsys.integration.alert.database.api.mock;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -21,7 +23,7 @@ public class MockSettingsKeyRepository extends DefaultMockJPARepository<Settings
 
     @Override
     public List<SettingsKeyEntity> findAll() {
-        return new ArrayList<SettingsKeyEntity>(settingsKeyEntities.values());
+        return new ArrayList<>(settingsKeyEntities.values());
     }
 
     @Override
@@ -38,5 +40,37 @@ public class MockSettingsKeyRepository extends DefaultMockJPARepository<Settings
         settingsKeyEntities.put(entity.getKey(), entity);
         settingsKeyEntitiesById.put(entity.getId(), entity);
         return entity;
+    }
+
+    @Override
+    public <S extends SettingsKeyEntity> List<S> saveAllAndFlush(Iterable<S> entities) {
+        List<S> savedItems = new LinkedList<>();
+        Iterator<S> iterator = entities.iterator();
+        while (iterator.hasNext()) {
+            S entity = iterator.next();
+            savedItems.add(save(entity));
+        }
+        return savedItems;
+    }
+
+    @Override
+    public void deleteAllInBatch(Iterable<SettingsKeyEntity> entities) {
+        entities.forEach(this::delete);
+    }
+
+    @Override
+    public void deleteAllByIdInBatch(Iterable<Long> longs) {
+        longs.forEach(this::deleteById);
+
+    }
+
+    @Override
+    public SettingsKeyEntity getById(Long aLong) {
+        return findById(aLong).orElse(null);
+    }
+
+    @Override
+    public void deleteAllById(Iterable<? extends Long> longs) {
+        longs.forEach(this::deleteById);
     }
 }

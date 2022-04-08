@@ -39,7 +39,8 @@ class SettingsEncryptionCrudActionsTest {
     private final DescriptorKey descriptorKey = new SettingsDescriptorKey();
     private final PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
     private final Map<PermissionKey, Integer> permissions = Map.of(permissionKey, 255);
-    private final AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
+    private final AuthorizationManager authorizationManager = authenticationTestUtils
+        .createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
 
     private final SystemMessageAccessor systemMessageAccessor = Mockito.mock(SystemMessageAccessor.class);
     private final SettingsEncryptionValidator validator = new SettingsEncryptionValidator(encryptionUtility, systemMessageAccessor);
@@ -75,9 +76,7 @@ class SettingsEncryptionCrudActionsTest {
 
     @Test
     void updateTest() {
-        SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel();
-        settingsEncryptionModel.setEncryptionPassword("password");
-        settingsEncryptionModel.setEncryptionGlobalSalt("globalSalt");
+        SettingsEncryptionModel settingsEncryptionModel = new SettingsEncryptionModel("password", Boolean.FALSE, "globalSalt", Boolean.FALSE, false);
 
         SettingsEncryptionCrudActions configActions = new SettingsEncryptionCrudActions(authorizationManager, encryptionUtility, validator, settingsDescriptorKey);
         ActionResponse<SettingsEncryptionModel> actionResponse = configActions.update(settingsEncryptionModel);

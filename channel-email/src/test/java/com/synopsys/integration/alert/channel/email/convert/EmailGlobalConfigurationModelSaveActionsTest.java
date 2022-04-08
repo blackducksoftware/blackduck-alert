@@ -50,8 +50,8 @@ class EmailGlobalConfigurationModelSaveActionsTest {
     private final FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, gson);
     private final EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, filePersistenceUtil);
     private final AuthorizationManager authorizationManager = createAuthorizationManager();
-    private final EmailGlobalConfigurationModelConverter converter = new EmailGlobalConfigurationModelConverter();
     private final EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
+    private final EmailGlobalConfigurationModelConverter converter = new EmailGlobalConfigurationModelConverter(validator);
 
     @Test
     void getDescriptorKeyTest() {

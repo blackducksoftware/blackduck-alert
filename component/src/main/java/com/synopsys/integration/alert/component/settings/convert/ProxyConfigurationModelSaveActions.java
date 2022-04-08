@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.api.GlobalConfigurationModelToConcreteSaveActions;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.synopsys.integration.alert.component.settings.proxy.action.SettingsProxyCrudActions;
@@ -52,11 +51,7 @@ public class ProxyConfigurationModelSaveActions implements GlobalConfigurationMo
     }
 
     private void convertModelAndPerformAction(ConfigurationModel configurationModel, Function<SettingsProxyModel, ActionResponse<SettingsProxyModel>> configAction) {
-        Optional<SettingsProxyModel> settingsProxyModel = proxyFieldModelConverter.convert(configurationModel);
-        if (settingsProxyModel.isPresent()) {
-            SettingsProxyModel model = settingsProxyModel.get();
-            model.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
-            configAction.apply(model);
-        }
+        Optional<SettingsProxyModel> settingsProxyModel = proxyFieldModelConverter.convertAndValidate(configurationModel);
+        settingsProxyModel.ifPresent(configAction::apply);
     }
 }

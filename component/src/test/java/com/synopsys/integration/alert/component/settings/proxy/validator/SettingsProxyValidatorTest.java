@@ -5,29 +5,41 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
+import com.synopsys.integration.alert.common.util.DateUtils;
 
 class SettingsProxyValidatorTest {
+    private static final String ID = UUID.randomUUID().toString();
+    private static final String CREATED_AT = DateUtils.createCurrentDateTimestamp().toString();
+    private static final String LAST_UPDATED = DateUtils.createCurrentDateTimestamp().toString();
     private static final String HOST = "hostname";
     private static final Integer PORT = 12345;
     private static final String USERNAME = "userName";
     private static final String PASSWORD = "password";
+    private static final List<String> NON_PROXY_HOSTS = List.of("nonProxyHost");
 
     SettingsProxyValidator settingsProxyValidator = new SettingsProxyValidator();
 
     @Test
     void validateTest() {
-        SettingsProxyModel settingsProxyModel = new SettingsProxyModel();
-        settingsProxyModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
-        settingsProxyModel.setProxyHost(HOST);
-        settingsProxyModel.setProxyPort(PORT);
-        settingsProxyModel.setProxyUsername(USERNAME);
-        settingsProxyModel.setProxyPassword(PASSWORD);
+        SettingsProxyModel settingsProxyModel = new SettingsProxyModel(
+            ID,
+            AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
+            CREATED_AT,
+            LAST_UPDATED,
+            HOST,
+            PORT,
+            USERNAME,
+            PASSWORD,
+            Boolean.TRUE,
+            NON_PROXY_HOSTS
+        );
 
         ValidationResponseModel validationResponseModel = settingsProxyValidator.validate(settingsProxyModel);
         assertFalse(validationResponseModel.hasErrors());
@@ -35,11 +47,18 @@ class SettingsProxyValidatorTest {
 
     @Test
     void validateNameMissingTest() {
-        SettingsProxyModel settingsProxyModel = new SettingsProxyModel();
-        settingsProxyModel.setProxyHost(HOST);
-        settingsProxyModel.setProxyPort(PORT);
-        settingsProxyModel.setProxyUsername(USERNAME);
-        settingsProxyModel.setProxyPassword(PASSWORD);
+        SettingsProxyModel settingsProxyModel = new SettingsProxyModel(
+            ID,
+            null,
+            CREATED_AT,
+            LAST_UPDATED,
+            HOST,
+            PORT,
+            USERNAME,
+            PASSWORD,
+            Boolean.TRUE,
+            NON_PROXY_HOSTS
+        );
 
         ValidationResponseModel validationResponseModel = settingsProxyValidator.validate(settingsProxyModel);
         assertTrue(validationResponseModel.hasErrors());
@@ -49,8 +68,18 @@ class SettingsProxyValidatorTest {
 
     @Test
     void validateWithoutHostAndPortTest() {
-        SettingsProxyModel settingsProxyModel = new SettingsProxyModel();
-        settingsProxyModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
+        SettingsProxyModel settingsProxyModel = new SettingsProxyModel(
+            ID,
+            AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
+            CREATED_AT,
+            LAST_UPDATED,
+            null,
+            null,
+            USERNAME,
+            PASSWORD,
+            Boolean.TRUE,
+            NON_PROXY_HOSTS
+        );
 
         ValidationResponseModel validationResponseModel = settingsProxyValidator.validate(settingsProxyModel);
         assertTrue(validationResponseModel.hasErrors());
@@ -61,9 +90,18 @@ class SettingsProxyValidatorTest {
 
     @Test
     void validateHostWithoutPortTest() {
-        SettingsProxyModel settingsProxyModel = new SettingsProxyModel();
-        settingsProxyModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
-        settingsProxyModel.setProxyHost(HOST);
+        SettingsProxyModel settingsProxyModel = new SettingsProxyModel(
+            ID,
+            AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
+            CREATED_AT,
+            LAST_UPDATED,
+            HOST,
+            null,
+            USERNAME,
+            PASSWORD,
+            Boolean.TRUE,
+            NON_PROXY_HOSTS
+        );
 
         ValidationResponseModel validationResponseModel = settingsProxyValidator.validate(settingsProxyModel);
         assertTrue(validationResponseModel.hasErrors());
@@ -73,9 +111,18 @@ class SettingsProxyValidatorTest {
 
     @Test
     void validatePortWithoutHostTest() {
-        SettingsProxyModel settingsProxyModel = new SettingsProxyModel();
-        settingsProxyModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
-        settingsProxyModel.setProxyPort(PORT);
+        SettingsProxyModel settingsProxyModel = new SettingsProxyModel(
+            ID,
+            AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
+            CREATED_AT,
+            LAST_UPDATED,
+            null,
+            PORT,
+            USERNAME,
+            PASSWORD,
+            Boolean.TRUE,
+            NON_PROXY_HOSTS
+        );
 
         ValidationResponseModel validationResponseModel = settingsProxyValidator.validate(settingsProxyModel);
         assertTrue(validationResponseModel.hasErrors());
@@ -85,11 +132,18 @@ class SettingsProxyValidatorTest {
 
     @Test
     void validateUsernameWithoutPasswordTest() {
-        SettingsProxyModel settingsProxyModel = new SettingsProxyModel();
-        settingsProxyModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
-        settingsProxyModel.setProxyHost(HOST);
-        settingsProxyModel.setProxyPort(PORT);
-        settingsProxyModel.setProxyUsername(USERNAME);
+        SettingsProxyModel settingsProxyModel = new SettingsProxyModel(
+            ID,
+            AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
+            CREATED_AT,
+            LAST_UPDATED,
+            HOST,
+            PORT,
+            USERNAME,
+            null,
+            Boolean.FALSE,
+            NON_PROXY_HOSTS
+        );
 
         ValidationResponseModel validationResponseModel = settingsProxyValidator.validate(settingsProxyModel);
         assertTrue(validationResponseModel.hasErrors());
@@ -99,12 +153,18 @@ class SettingsProxyValidatorTest {
 
     @Test
     void validateUsernameWithoutPasswordIsProxyPasswordSetTest() {
-        SettingsProxyModel settingsProxyModel = new SettingsProxyModel();
-        settingsProxyModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
-        settingsProxyModel.setProxyHost(HOST);
-        settingsProxyModel.setProxyPort(PORT);
-        settingsProxyModel.setProxyUsername(USERNAME);
-        settingsProxyModel.setIsProxyPasswordSet(true);
+        SettingsProxyModel settingsProxyModel = new SettingsProxyModel(
+            ID,
+            AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
+            CREATED_AT,
+            LAST_UPDATED,
+            HOST,
+            PORT,
+            USERNAME,
+            null,
+            Boolean.TRUE,
+            NON_PROXY_HOSTS
+        );
 
         ValidationResponseModel validationResponseModel = settingsProxyValidator.validate(settingsProxyModel);
         assertFalse(validationResponseModel.hasErrors());
@@ -112,11 +172,18 @@ class SettingsProxyValidatorTest {
 
     @Test
     void validatePasswordWithoutUsernameTest() {
-        SettingsProxyModel settingsProxyModel = new SettingsProxyModel();
-        settingsProxyModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
-        settingsProxyModel.setProxyHost(HOST);
-        settingsProxyModel.setProxyPort(PORT);
-        settingsProxyModel.setProxyPassword(PASSWORD);
+        SettingsProxyModel settingsProxyModel = new SettingsProxyModel(
+            ID,
+            AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
+            CREATED_AT,
+            LAST_UPDATED,
+            HOST,
+            PORT,
+            null,
+            PASSWORD,
+            Boolean.TRUE,
+            NON_PROXY_HOSTS
+        );
 
         ValidationResponseModel validationResponseModel = settingsProxyValidator.validate(settingsProxyModel);
         assertTrue(validationResponseModel.hasErrors());
@@ -126,11 +193,18 @@ class SettingsProxyValidatorTest {
 
     @Test
     void validateIsPasswordSetWithoutUsernameTest() {
-        SettingsProxyModel settingsProxyModel = new SettingsProxyModel();
-        settingsProxyModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
-        settingsProxyModel.setProxyHost(HOST);
-        settingsProxyModel.setProxyPort(PORT);
-        settingsProxyModel.setIsProxyPasswordSet(true);
+        SettingsProxyModel settingsProxyModel = new SettingsProxyModel(
+            ID,
+            AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
+            CREATED_AT,
+            LAST_UPDATED,
+            HOST,
+            PORT,
+            null,
+            null,
+            Boolean.TRUE,
+            NON_PROXY_HOSTS
+        );
 
         ValidationResponseModel validationResponseModel = settingsProxyValidator.validate(settingsProxyModel);
         assertTrue(validationResponseModel.hasErrors());
@@ -140,27 +214,20 @@ class SettingsProxyValidatorTest {
 
     @Test
     void validateUsernameBlank() {
-        SettingsProxyModel settingsProxyModel = new SettingsProxyModel();
-        settingsProxyModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
-        settingsProxyModel.setProxyHost(HOST);
-        settingsProxyModel.setProxyPort(PORT);
-        settingsProxyModel.setProxyUsername("");
-        settingsProxyModel.setIsProxyPasswordSet(false);
+        SettingsProxyModel settingsProxyModel = new SettingsProxyModel(
+            ID,
+            AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
+            CREATED_AT,
+            LAST_UPDATED,
+            HOST,
+            PORT,
+            "",
+            PASSWORD,
+            Boolean.TRUE,
+            NON_PROXY_HOSTS
+        );
 
         ValidationResponseModel validationResponseModel = settingsProxyValidator.validate(settingsProxyModel);
         assertFalse(validationResponseModel.hasErrors());
-    }
-
-    @Test
-    void validateNonProxyHostsTest() {
-        SettingsProxyModel settingsProxyModel = new SettingsProxyModel();
-        settingsProxyModel.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
-        settingsProxyModel.setProxyPort(PORT);
-        settingsProxyModel.setNonProxyHosts(List.of("nonProxyHost"));
-
-        ValidationResponseModel validationResponseModel = settingsProxyValidator.validate(settingsProxyModel);
-        assertTrue(validationResponseModel.hasErrors());
-        assertEquals(1, validationResponseModel.getErrors().size());
-        assertTrue(validationResponseModel.getErrors().containsKey(SettingsProxyValidator.PROXY_HOST_FIELD_NAME));
     }
 }
