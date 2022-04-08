@@ -128,15 +128,11 @@ dependencies {
     // Spring
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
     implementation 'org.springframework.boot:spring-boot-autoconfigure'
-    implementation 'org.springframework:spring-jms'
     implementation 'org.springframework.data:spring-data-jpa'
     implementation 'org.springframework.batch:spring-batch-core'
     implementation 'org.springframework.security:spring-security-core'
     implementation 'org.springframework.security:spring-security-web'
     implementation 'org.springframework.security:spring-security-config'
-
-    // Message Queue
-    implementation 'org.apache.activemq:activemq-broker'
 
     // =============
     // Test and Dev

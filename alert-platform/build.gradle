@@ -10,7 +10,6 @@ dependencies {
         api 'org.testcontainers:rabbitmq:1.16.3'
         api 'com.playtika.testcontainers:embedded-rabbitmq:2.1.5'
         api 'org.springframework.cloud:spring-cloud-starter-bootstrap:3.0.1'
-        api 'org.apache.activemq:activemq-broker:5.15.10'
         api 'org.springframework.boot:spring-boot-starter-amqp:2.5.12'
 
         api 'org.jsoup:jsoup:1.9.2'

@@ -9,8 +9,6 @@ dependencies {
     implementation project(':api-descriptor')
 
     implementation 'com.synopsys.integration:integration-rest'
-
-    implementation 'org.springframework:spring-jms'
     implementation 'org.springframework.amqp:spring-amqp'
 
     testImplementation project(':test-common')

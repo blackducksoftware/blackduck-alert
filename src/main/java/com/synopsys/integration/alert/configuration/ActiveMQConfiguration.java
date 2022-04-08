@@ -7,16 +7,11 @@
  */
 package com.synopsys.integration.alert.configuration;
 
-import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.activemq.ActiveMQPrefetchPolicy;
-import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQConnectionFactoryCustomizer;
-import org.springframework.context.annotation.Configuration;
-
-@Configuration
-public class ActiveMQConfiguration implements ActiveMQConnectionFactoryCustomizer {
+//@Configuration
+public class ActiveMQConfiguration {//implements ActiveMQConnectionFactoryCustomizer {
     public static final String BROKER_SPLIT_MEMORY_QUERY_PARAM = "broker.splitSystemUsageForProducersConsumers=true";
     public static final int QUEUE_PREFETCH_LIMIT = 100;
-
+/*
     @Override
     public void customize(ActiveMQConnectionFactory factory) {
         ActiveMQPrefetchPolicy prefetchPolicy = new ActiveMQPrefetchPolicy();
@@ -40,5 +35,5 @@ public class ActiveMQConfiguration implements ActiveMQConnectionFactoryCustomize
         urlBuilder.append(BROKER_SPLIT_MEMORY_QUERY_PARAM);
         return urlBuilder.toString();
     }
-
+*/
 }

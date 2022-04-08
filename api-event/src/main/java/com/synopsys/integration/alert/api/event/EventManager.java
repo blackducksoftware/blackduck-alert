@@ -9,8 +9,8 @@ package com.synopsys.integration.alert.api.event;
 
 import java.util.List;
 
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -18,12 +18,12 @@ import com.google.gson.Gson;
 @Component
 public class EventManager {
     private final Gson gson;
-    private final JmsTemplate jmsTemplate;
+    private final RabbitTemplate rabbitTemplate;
 
     @Autowired
-    public EventManager(Gson gson, JmsTemplate jmsTemplate) {
+    public EventManager(Gson gson, RabbitTemplate rabbitTemplate) {
         this.gson = gson;
-        this.jmsTemplate = jmsTemplate;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     public void sendEvents(List<? extends AlertEvent> eventList) {
@@ -35,7 +35,7 @@ public class EventManager {
     public void sendEvent(AlertEvent event) {
         String destination = event.getDestination();
         String jsonMessage = toJsonOrNull(event);
-        jmsTemplate.convertAndSend(destination, jsonMessage);
+        rabbitTemplate.convertAndSend(destination, jsonMessage);
     }
 
     private String toJsonOrNull(Object content) {

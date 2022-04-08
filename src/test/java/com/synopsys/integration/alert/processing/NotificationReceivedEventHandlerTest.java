@@ -9,7 +9,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.jms.core.JmsTemplate;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.event.EventManager;
@@ -97,11 +97,11 @@ class NotificationReceivedEventHandlerTest {
     }
 
     private EventManager mockEventManager() {
-        JmsTemplate jmsTemplate = Mockito.mock(JmsTemplate.class);
-        Mockito.doNothing().when(jmsTemplate).convertAndSend(Mockito.anyString(), Mockito.any(Object.class));
+        RabbitTemplate rabbitTemplate = Mockito.mock(RabbitTemplate.class);
+        Mockito.doNothing().when(rabbitTemplate).convertAndSend(Mockito.anyString(), Mockito.any(Object.class));
         Gson gson = new Gson();
 
-        return new EventManager(gson, jmsTemplate);
+        return new EventManager(gson, rabbitTemplate);
     }
 
 }

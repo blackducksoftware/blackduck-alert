@@ -7,15 +7,12 @@
  */
 package com.synopsys.integration.alert.component.authentication.security;
 
-import java.security.Provider;
-import java.security.Security;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.activemq.broker.BrokerService;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.velocity.app.VelocityEngine;
@@ -131,7 +128,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        configureActiveMQProvider();
+        //configureActiveMQProvider();
         configureWithSSL(http);
         http.authorizeRequests()
             .requestMatchers(createAllowedPathMatchers()).permitAll()
@@ -144,6 +141,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
             .and().logout().logoutSuccessUrl("/");
     }
 
+    /*
     private void configureActiveMQProvider() {
         // Active MQ initializes the Bouncy Castle provider in a static constructor of the Broker Service
         // static initialization of the Bouncy Castle provider breaks SAML support over SSL
@@ -161,6 +159,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
             logger.info("Alert Application Configuration: Bouncy Castle provider not found");
         }
     }
+     */
 
     private void configureWithSSL(HttpSecurity http) throws Exception {
         if (alertProperties.getSslEnabled()) {

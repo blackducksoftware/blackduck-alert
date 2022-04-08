@@ -1,13 +1,8 @@
 package com.synopsys.integration.alert.configuration;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-import org.apache.activemq.ActiveMQConnectionFactory;
-import org.junit.jupiter.api.Test;
-
 public class ActiveMQConfigurationTest {
 
+    /*
     @Test
     public void testUrlWithQueryParam() {
         String brokerUrl = "vm://localhost?broker.persistent=true";
@@ -33,4 +28,6 @@ public class ActiveMQConfigurationTest {
         assertEquals(ActiveMQConfiguration.QUEUE_PREFETCH_LIMIT, connectionFactory.getPrefetchPolicy().getQueuePrefetch());
         assertEquals(expectedUrl, connectionFactory.getBrokerURL());
     }
+    */
+    
 }

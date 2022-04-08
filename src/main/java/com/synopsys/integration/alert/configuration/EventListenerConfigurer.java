@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.AmqpAdmin;
@@ -72,6 +73,7 @@ public class EventListenerConfigurer implements RabbitListenerConfigurer {
 
     @Override
     public void configureRabbitListeners(RabbitListenerEndpointRegistrar registrar) {
+        logRabbitMqConfig();
         createDeadLetterHandler(registrar);
         org.springframework.amqp.rabbit.listener.MessageListenerContainer alertDefaultMessageListenerContainer = createMessageListenerContainer();
         logger.debug("Registering JMS Listeners");
@@ -83,6 +85,25 @@ public class EventListenerConfigurer implements RabbitListenerConfigurer {
                 registerListenerEndpoint(registrar, messageListener, alertDefaultMessageListenerContainer);
             }
         }
+    }
+
+    private void logRabbitMqConfig() {
+        logger.info("Rabbitmq connection details:");
+        logger.info("  host: {}", cachingConnectionFactory.getHost());
+        logger.info("  port: {}", cachingConnectionFactory.getPort());
+        if (StringUtils.isNotBlank(cachingConnectionFactory.getUsername())) {
+            logger.info("  username: *******");
+        } else {
+            logger.info("  username: ");
+        }
+        logger.info("  username: {}", cachingConnectionFactory.getUsername());
+        if (StringUtils.isNotBlank(cachingConnectionFactory.getRabbitConnectionFactory().getPassword())) {
+            logger.info("  password: *******");
+        } else {
+            logger.info("  password: ");
+        }
+
+        logger.info("  vhost: {}", cachingConnectionFactory.getVirtualHost());
     }
 
     private void createDeadLetterHandler(RabbitListenerEndpointRegistrar registrar) {
