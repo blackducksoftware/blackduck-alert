@@ -224,13 +224,12 @@ public class RunServerTask extends Exec {
             );
         }
         return List.of(
-            "--embedded.rabbitmq.user=sysadmin",
             "--embedded.rabbitmq.password=blackduck",
             "--embedded.rabbitmq.vhost=blackduck-alert",
 
             "--spring.rabbitmq.host=${embedded.rabbitmq.host}",
             "--spring.rabbitmq.port=${embedded.rabbitmq.port}",
-            "--spring.rabbitmq.user=${embedded.rabbitmq.user}",
+            "--spring.rabbitmq.username=${embedded.rabbitmq.user}",
             "--spring.rabbitmq.password=${embedded.rabbitmq.password}",
             "--spring.rabbitmq.virtual-host=${embedded.rabbitmq.vhost}"
         );
