@@ -126,6 +126,7 @@ dependencies {
     runtime 'org.slf4j:jul-to-slf4j'
 
     // Spring
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
     implementation 'org.springframework.boot:spring-boot-autoconfigure'
     implementation 'org.springframework:spring-jms'
     implementation 'org.springframework.data:spring-data-jpa'

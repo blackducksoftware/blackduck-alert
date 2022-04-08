@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.component.authentication.security.event;
 
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -16,8 +17,8 @@ import com.synopsys.integration.alert.api.event.AlertMessageListener;
 public class AuthenticationEventListener extends AlertMessageListener<AlertAuthenticationEvent> {
     public static final String DESTINATION_NAME = "AuthenticationEventListener";
 
-    public AuthenticationEventListener(Gson gson, AuthenticationEventHandler eventHandler) {
-        super(gson, DESTINATION_NAME, AlertAuthenticationEvent.class, eventHandler);
+    public AuthenticationEventListener(Gson gson, TaskExecutor taskExecutor, AuthenticationEventHandler eventHandler) {
+        super(gson, taskExecutor, DESTINATION_NAME, AlertAuthenticationEvent.class, eventHandler);
     }
 
 }

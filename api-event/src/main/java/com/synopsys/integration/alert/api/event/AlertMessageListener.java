@@ -7,27 +7,28 @@
  */
 package com.synopsys.integration.alert.api.event;
 
-import javax.jms.Message;
-import javax.jms.MessageListener;
-import javax.jms.TextMessage;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageListener;
+import org.springframework.core.task.TaskExecutor;
 
 import com.google.gson.Gson;
 
 public abstract class AlertMessageListener<T extends AlertEvent> implements MessageListener {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final Gson gson;
+    private final TaskExecutor taskExecutor;
     private final String destinationName;
     private final Class<T> eventClass;
     private final AlertEventHandler<T> eventHandler;
 
-    protected AlertMessageListener(Gson gson, String destinationName, Class<T> eventClass, AlertEventHandler<T> eventHandler) {
+    protected AlertMessageListener(Gson gson, TaskExecutor taskExecutor, String destinationName, Class<T> eventClass, AlertEventHandler<T> eventHandler) {
         this.gson = gson;
         this.destinationName = destinationName;
         this.eventClass = eventClass;
         this.eventHandler = eventHandler;
+        this.taskExecutor = taskExecutor;
     }
 
     public final String getDestinationName() {
@@ -37,16 +38,16 @@ public abstract class AlertMessageListener<T extends AlertEvent> implements Mess
     @Override
     public final void onMessage(Message message) {
         try {
-            if (TextMessage.class.isAssignableFrom(message.getClass())) {
-                String receiverClassName = getClass().getName();
-                logger.info("Receiver {}, sending message.", receiverClassName);
-                logger.debug("Event message: {}", message);
-                TextMessage textMessage = (TextMessage) message;
-                T event = gson.fromJson(textMessage.getText(), eventClass);
-                logger.trace("{} event {}", receiverClassName, event);
-                logger.debug("Received Event ID: {}", event.getEventId());
-                eventHandler.handle(event);
-            }
+            String messageContent = new String(message.getBody());
+            String receiverClassName = getClass().getName();
+            logger.debug("Receiver {}, sending message.", receiverClassName);
+            logger.debug("Event message: {}", message);
+            T event = gson.fromJson(messageContent, eventClass);
+            logger.debug("{} event {}", receiverClassName, event);
+            logger.debug("Received Event ID: {}", event.getEventId());
+            taskExecutor.execute(() ->
+                eventHandler.handle(event)
+            );
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
