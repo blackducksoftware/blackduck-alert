@@ -2,12 +2,16 @@ package com.synopsys.integration.alert.performance.event;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 
 import org.junit.Ignore;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
@@ -26,7 +30,8 @@ import com.synopsys.integration.alert.util.DescriptorMocker;
 @ContextConfiguration(classes = { Application.class, ApplicationConfiguration.class, DatabaseDataSource.class, DescriptorMocker.class, TestEventListenerConfiguration.class })
 @TestPropertySource(locations = "classpath:spring-test.properties")
 @WebAppConfiguration
-public class EventMemoryTest {
+class EventMemoryTest {
+    private Logger logger = LoggerFactory.getLogger(getClass());
     @Autowired
     private EventManager eventManager;
     @Autowired
@@ -35,12 +40,13 @@ public class EventMemoryTest {
     @Test
     @Ignore
     @Disabled
-    public void testEventLoadTest() {
+    void testEventLoadTest() {
         executeTest();
     }
 
     private void executeTest() {
         int count = 1000000;
+        Instant start = Instant.now();
         for (int index = 0; index < count; index++) {
             for (TestAlertEventListener listener : eventListeners) {
                 eventManager.sendEvent(new TestAlertEvent(listener.getDestinationName(), createEventContent()));
@@ -59,6 +65,9 @@ public class EventMemoryTest {
         } catch (InterruptedException ex) {
             Thread.interrupted();
         }
+        Instant end = Instant.now();
+        Duration duration = Duration.between(start, end);
+        logger.info("Execution duration {}h:{}m:{}s.{}ms", duration.toHoursPart(), duration.toMinutesPart(), duration.toSecondsPart(), duration.toMillisPart());
         for (TestAlertEventListener eventListener : eventListeners) {
             assertEquals(count, eventListener.getHandler().getMessageCount());
         }
@@ -66,9 +75,7 @@ public class EventMemoryTest {
 
     private String createEventContent() {
         StringBuilder builder = new StringBuilder(10000);
-        for (int index = 1; index < 1000; index++) {
-            builder.append("testtext12");
-        }
+        builder.append("testtext12".repeat(999));
         return builder.toString();
     }
 }
