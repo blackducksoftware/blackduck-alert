@@ -62,13 +62,24 @@ public class SlackPerformanceTest {
     }
 
     @Test
-    @Ignore
+    @Ignore // performance test
     @Disabled
-    public void testSlackJob() throws Exception {
+    void testSlackJob() throws Exception {
         AlertRequestUtility alertRequestUtility = IntegrationPerformanceTestRunner.createAlertRequestUtility(webApplicationContext);
         BlackDuckProviderService blackDuckProviderService = new BlackDuckProviderService(alertRequestUtility, gson);
-        ConfigurationManager configurationManager = new ConfigurationManager(gson, alertRequestUtility, blackDuckProviderService.getBlackDuckProviderKey(), ChannelKeys.SLACK.getUniversalKey());
-        IntegrationPerformanceTestRunner integrationPerformanceTestRunner = new IntegrationPerformanceTestRunner(gson, dateTimeFormatter, alertRequestUtility, blackDuckProviderService, configurationManager);
+        ConfigurationManager configurationManager = new ConfigurationManager(
+            gson,
+            alertRequestUtility,
+            blackDuckProviderService.getBlackDuckProviderKey(),
+            ChannelKeys.SLACK.getUniversalKey()
+        );
+        IntegrationPerformanceTestRunner integrationPerformanceTestRunner = new IntegrationPerformanceTestRunner(
+            gson,
+            dateTimeFormatter,
+            alertRequestUtility,
+            blackDuckProviderService,
+            configurationManager
+        );
 
         Map<String, FieldValueModel> slackJobFields = new HashMap<>();
         slackJobFields.put(ChannelDescriptor.KEY_ENABLED, new FieldValueModel(List.of("true"), true));

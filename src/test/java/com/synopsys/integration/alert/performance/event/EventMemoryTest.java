@@ -38,7 +38,7 @@ class EventMemoryTest {
     private List<TestAlertEventListener> eventListeners;
 
     @Test
-    @Ignore
+    @Ignore // performance test
     @Disabled
     void testEventLoadTest() {
         executeTest();
