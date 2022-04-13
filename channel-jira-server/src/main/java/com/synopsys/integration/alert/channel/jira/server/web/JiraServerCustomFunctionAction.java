@@ -73,7 +73,7 @@ public class JiraServerCustomFunctionAction extends CustomFunctionAction<String>
                     String.format("Jira Server configuration not found.  Please include the Jira Server configuration id in the request body.")
                 );
             }
-            JiraServerProperties jiraProperties = jiraServerPropertiesFactory.createJiraPropertiesWithJobId(configurationID.get());
+            JiraServerProperties jiraProperties = jiraServerPropertiesFactory.createJiraProperties(configurationID.get());
             JiraServerServiceFactory jiraServicesFactory = jiraProperties.createJiraServicesServerFactory(logger, gson);
             PluginManagerService jiraAppService = jiraServicesFactory.createPluginManagerService();
             try {

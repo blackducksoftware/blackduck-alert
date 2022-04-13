@@ -89,7 +89,7 @@ class JiraServerCustomFunctionActionTest {
         JiraServerProperties jiraProperties = Mockito.mock(JiraServerProperties.class);
         JiraServerServiceFactory serviceFactory = Mockito.mock(JiraServerServiceFactory.class);
         PluginManagerService pluginManagerService = Mockito.mock(PluginManagerService.class);
-        Mockito.when(jiraServerPropertiesFactory.createJiraPropertiesWithJobId(jiraGlobalConfigId)).thenReturn(jiraProperties);
+        Mockito.when(jiraServerPropertiesFactory.createJiraProperties(jiraGlobalConfigId)).thenReturn(jiraProperties);
         Mockito.when(jiraProperties.createJiraServicesServerFactory(Mockito.any(), Mockito.any())).thenReturn(serviceFactory);
         Mockito.when(serviceFactory.createPluginManagerService()).thenReturn(pluginManagerService);
         Mockito.when(pluginManagerService.installMarketplaceServerApp(Mockito.any())).thenReturn(HttpStatus.OK.value());
@@ -143,7 +143,7 @@ class JiraServerCustomFunctionActionTest {
         JiraServerProperties jiraProperties = Mockito.mock(JiraServerProperties.class);
         JiraServerServiceFactory serviceFactory = Mockito.mock(JiraServerServiceFactory.class);
         PluginManagerService pluginManagerService = Mockito.mock(PluginManagerService.class);
-        Mockito.when(jiraServerPropertiesFactory.createJiraPropertiesWithJobId(jiraGlobalConfigId)).thenReturn(jiraProperties);
+        Mockito.when(jiraServerPropertiesFactory.createJiraProperties(jiraGlobalConfigId)).thenReturn(jiraProperties);
         Mockito.when(jiraProperties.createJiraServicesServerFactory(Mockito.any(), Mockito.any())).thenReturn(serviceFactory);
         Mockito.when(serviceFactory.createPluginManagerService()).thenReturn(pluginManagerService);
         Mockito.when(pluginManagerService.installMarketplaceServerApp(Mockito.any())).thenReturn(HttpStatus.OK.value());
@@ -198,7 +198,7 @@ class JiraServerCustomFunctionActionTest {
         JiraServerProperties jiraProperties = Mockito.mock(JiraServerProperties.class);
         JiraServerServiceFactory serviceFactory = Mockito.mock(JiraServerServiceFactory.class);
         PluginManagerService pluginManagerService = Mockito.mock(PluginManagerService.class);
-        Mockito.when(jiraServerPropertiesFactory.createJiraPropertiesWithJobId(jiraGlobalConfigId)).thenReturn(jiraProperties);
+        Mockito.when(jiraServerPropertiesFactory.createJiraProperties(jiraGlobalConfigId)).thenReturn(jiraProperties);
         Mockito.when(jiraProperties.createJiraServicesServerFactory(Mockito.any(), Mockito.any())).thenReturn(serviceFactory);
         Mockito.when(serviceFactory.createPluginManagerService()).thenReturn(pluginManagerService);
         Mockito.when(pluginManagerService.installMarketplaceServerApp(Mockito.any())).thenReturn(HttpStatus.OK.value());
@@ -253,7 +253,7 @@ class JiraServerCustomFunctionActionTest {
         JiraServerProperties jiraProperties = Mockito.mock(JiraServerProperties.class);
         JiraServerServiceFactory serviceFactory = Mockito.mock(JiraServerServiceFactory.class);
         PluginManagerService pluginManagerService = Mockito.mock(PluginManagerService.class);
-        Mockito.when(jiraServerPropertiesFactory.createJiraPropertiesWithJobId(jiraGlobalConfigId)).thenReturn(jiraProperties);
+        Mockito.when(jiraServerPropertiesFactory.createJiraProperties(jiraGlobalConfigId)).thenReturn(jiraProperties);
         Mockito.when(jiraProperties.createJiraServicesServerFactory(Mockito.any(), Mockito.any())).thenReturn(serviceFactory);
         Mockito.when(serviceFactory.createPluginManagerService()).thenReturn(pluginManagerService);
         Mockito.when(pluginManagerService.installMarketplaceServerApp(Mockito.any()))
@@ -309,7 +309,7 @@ class JiraServerCustomFunctionActionTest {
         JiraServerProperties jiraProperties = Mockito.mock(JiraServerProperties.class);
         JiraServerServiceFactory serviceFactory = Mockito.mock(JiraServerServiceFactory.class);
         PluginManagerService pluginManagerService = Mockito.mock(PluginManagerService.class);
-        Mockito.when(jiraServerPropertiesFactory.createJiraPropertiesWithJobId(jiraGlobalConfigId)).thenReturn(jiraProperties);
+        Mockito.when(jiraServerPropertiesFactory.createJiraProperties(jiraGlobalConfigId)).thenReturn(jiraProperties);
         Mockito.when(jiraProperties.createJiraServicesServerFactory(Mockito.any(), Mockito.any())).thenReturn(serviceFactory);
         Mockito.when(serviceFactory.createPluginManagerService()).thenReturn(pluginManagerService);
         Mockito.when(pluginManagerService.installMarketplaceServerApp(Mockito.any()))
@@ -365,7 +365,7 @@ class JiraServerCustomFunctionActionTest {
         JiraServerProperties jiraProperties = Mockito.mock(JiraServerProperties.class);
         JiraServerServiceFactory serviceFactory = Mockito.mock(JiraServerServiceFactory.class);
         PluginManagerService pluginManagerService = Mockito.mock(PluginManagerService.class);
-        Mockito.when(jiraServerPropertiesFactory.createJiraPropertiesWithJobId(jiraGlobalConfigId)).thenReturn(jiraProperties);
+        Mockito.when(jiraServerPropertiesFactory.createJiraProperties(jiraGlobalConfigId)).thenReturn(jiraProperties);
         Mockito.when(jiraProperties.createJiraServicesServerFactory(Mockito.any(), Mockito.any())).thenReturn(serviceFactory);
         Mockito.when(serviceFactory.createPluginManagerService()).thenReturn(pluginManagerService);
         Mockito.when(pluginManagerService.installMarketplaceServerApp(Mockito.any())).thenReturn(HttpStatus.OK.value());
