@@ -1,5 +1,5 @@
 FROM blackducksoftware/hub-docker-common:1.0.6 as docker-common
-FROM rabbitmq:3.8.27-alpine
+FROM rabbitmq:3.8-alpine
 
 ARG VERSION
 
@@ -16,12 +16,10 @@ ENV CERTIFICATE_MANAGER_DIR $APPLICATION_HOME/bin
 RUN set -ex \
     && apk add --no-cache --virtual .run-deps \
     		curl \
-    		su-exec \
     		jq \
         openssl \
     && mkdir -p "$APPLICATION_HOME/bin" "$APPLICATION_HOME/security" "$APPLICATION_HOME/logs" \
-    && chown -R rabbitmq:root "$APPLICATION_HOME/security" "$APPLICATION_HOME/logs"  "$APPLICATION_HOME/bin" \
-    && chmod -R 775 "$APPLICATION_HOME/security" "$APPLICATION_HOME/logs" "$APPLICATION_HOME/bin" \
+    && chmod -R 775 "$APPLICATION_HOME/security" "$APPLICATION_HOME/logs" "$APPLICATION_HOME/bin"
 
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
