@@ -7,9 +7,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.slf4j.LoggerFactory;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.api.common.model.Obfuscated;
+import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
@@ -23,8 +26,11 @@ import com.synopsys.integration.alert.common.rest.model.JobProviderProjectFieldM
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.log.IntLogger;
+import com.synopsys.integration.log.Slf4jIntLogger;
 
 public class ConfigurationManagerV2 {
+    private final IntLogger intLogger = new Slf4jIntLogger(LoggerFactory.getLogger(getClass()));
     private final AlertRequestUtility alertRequestUtility;
     private final Gson gson;
     private final String blackDuckProviderKey;
@@ -37,24 +43,31 @@ public class ConfigurationManagerV2 {
         this.channelKey = channelKey;
     }
 
-    //TODO: example: use AlertRestConstants.JIRA_SERVER_CONFIGURATION_PATH  for apiConfigurationPath
-    public <T extends Obfuscated<T>> Optional<T> createGlobalConfiguration(String apiConfigurationPath, Class<T> modelType, T globalConfigModel) {
-        //We use 2 different sets of endpoints from either StaticConfigResourceController or StaticUniqueConfigResourceController
-        // We should branch logic here to deal with both cases
+    public <T extends Obfuscated<T>> Optional<T> createGlobalConfiguration(String apiConfigurationPath, T globalConfigModel, Class<T> modelType) {
         try {
             String requestBody = gson.toJson(globalConfigModel);
 
-            alertRequestUtility.executePostRequest(String.format("%s/validate", apiConfigurationPath), requestBody, "Validating the global configuration failed.");
-            alertRequestUtility.executePostRequest(String.format("%s/test", apiConfigurationPath), requestBody, "Testing the global configuration failed.");
+            String validationResponseString = alertRequestUtility
+                .executePostRequest(String.format("%s/validate", apiConfigurationPath), requestBody, "Validating the global configuration failed.");
+            ValidationResponseModel validationResponse = gson.fromJson(validationResponseString, ValidationResponseModel.class);
+            if (validationResponse.hasErrors()) {
+                intLogger.error(String.format("Could not validate global configuration model. Error: %s", validationResponse.getErrors()));
+                return Optional.empty();
+            }
+            String testResponseString = alertRequestUtility
+                .executePostRequest(String.format("%s/test", apiConfigurationPath), requestBody, "Testing the global configuration failed.");
+            ValidationResponseModel testResponse = gson.fromJson(testResponseString, ValidationResponseModel.class);
+            if (testResponse.hasErrors()) {
+                intLogger.error(String.format("Testing the global config model failed. Error: %s", validationResponse.getErrors()));
+                return Optional.empty();
+            }
 
             String globalConfigCreateResponse = alertRequestUtility.executePostRequest(apiConfigurationPath, requestBody, "Could not create the global configuration");
             JsonObject globalConfigSearchJsonObject = gson.fromJson(globalConfigCreateResponse, JsonObject.class);
             T savedGlobalConfig = gson.fromJson(globalConfigSearchJsonObject, modelType);
             return Optional.of(savedGlobalConfig);
-
         } catch (IntegrationException e) {
-            //TODO: We shouldn't be throwing RuntimeExceptions. Instead we should return an empty optional and log a test failure
-            //throw new RuntimeException(e.getMessage(), e);
+            intLogger.error("Unexpected error occurred while creating the global configuration.", e);
             return Optional.empty();
         }
     }
