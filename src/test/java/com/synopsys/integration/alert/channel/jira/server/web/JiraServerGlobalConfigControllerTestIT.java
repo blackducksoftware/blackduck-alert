@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -184,7 +183,6 @@ class JiraServerGlobalConfigControllerTestIT {
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNoContent());
     }
 
-    @Disabled("Test action not yet implemented")
     @Test
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     void verifyTestEndpointTest() throws Exception {
