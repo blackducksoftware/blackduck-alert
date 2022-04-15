@@ -64,8 +64,8 @@ class JiraServerGlobalConfigControllerTestIT {
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel = saveConfigModel(createConfigModel(UUID.randomUUID()));
         String urlPath = REQUEST_URL + "/" + jiraServerGlobalConfigModel.getId();
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(urlPath)
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
-                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -77,8 +77,8 @@ class JiraServerGlobalConfigControllerTestIT {
 
         String urlPath = REQUEST_URL + "?pageNumber=" + pageNumber + "&pageSize=" + pageSize;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(urlPath)
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
-                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -90,8 +90,8 @@ class JiraServerGlobalConfigControllerTestIT {
 
         String urlPath = String.format("%s?pageNumber=%s&pageSize=%s&searchTerm=aname&sortName=name&sortOrder=asc", REQUEST_URL, pageNumber, pageSize);
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(urlPath)
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
-                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -103,8 +103,8 @@ class JiraServerGlobalConfigControllerTestIT {
 
         String urlPath = String.format("%s?pageNumber=%s&pageSize=%s&sortName=name&sortOrder=asc", REQUEST_URL, pageNumber, pageSize);
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(urlPath)
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
-                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -116,8 +116,8 @@ class JiraServerGlobalConfigControllerTestIT {
 
         String urlPath = String.format("%s?pageNumber=%s&pageSize=%s&sortName=name&sortOrder=desc", REQUEST_URL, pageNumber, pageSize);
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(urlPath)
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
-                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -126,8 +126,8 @@ class JiraServerGlobalConfigControllerTestIT {
     void verifyCreateEndpointTest() throws Exception {
         String urlPath = REQUEST_URL;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(urlPath)
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
-                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf());
 
         JiraServerGlobalConfigModel configModel = createConfigModel(null);
         request.content(gson.toJson(configModel));
@@ -145,8 +145,8 @@ class JiraServerGlobalConfigControllerTestIT {
 
         String urlPath = REQUEST_URL + "/" + jiraServerGlobalConfigModel.getId();
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(urlPath)
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
-                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf());
 
         request.content(gson.toJson(jiraServerGlobalConfigModel));
         request.contentType(MEDIA_TYPE);
@@ -159,8 +159,8 @@ class JiraServerGlobalConfigControllerTestIT {
     void verifyValidateEndpointTest() throws Exception {
         String urlPath = REQUEST_URL + "/validate";
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(urlPath)
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
-                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf());
 
         UUID uuid = UUID.randomUUID();
         JiraServerGlobalConfigModel configModel = createConfigModel(uuid);
@@ -177,8 +177,8 @@ class JiraServerGlobalConfigControllerTestIT {
 
         String urlPath = REQUEST_URL + "/" + jiraServerGlobalConfigModel.getId();
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete(urlPath)
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
-                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf());
 
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNoContent());
     }
@@ -188,8 +188,8 @@ class JiraServerGlobalConfigControllerTestIT {
     void verifyTestEndpointTest() throws Exception {
         String urlPath = REQUEST_URL + "/test";
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(urlPath)
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
-                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf());
 
         UUID uuid = UUID.randomUUID();
         JiraServerGlobalConfigModel configModel = createConfigModel(uuid);
@@ -204,8 +204,8 @@ class JiraServerGlobalConfigControllerTestIT {
     void verifyDisablePluginEndpointTest() throws Exception {
         String urlPath = REQUEST_URL + "/install-plugin";
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(urlPath)
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
-                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf());
 
         UUID uuid = UUID.randomUUID();
         // Need to just verify the endpoint exists and not actually connect to Jira
