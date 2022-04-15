@@ -22,9 +22,11 @@ RUN set -ex \
     && chmod -R 775 "$APPLICATION_HOME/security" "$APPLICATION_HOME/logs" "$APPLICATION_HOME/bin"
 
 
-COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+COPY docker-entrypoint.sh generate-config.sh $APPLICATION_HOME/bin/
 COPY --from=docker-common healthcheck.sh /usr/local/bin/docker-healthcheck.sh
 COPY --from=docker-common certificate-manager.sh "$CERTIFICATE_MANAGER_DIR/certificate-manager.sh"
 COPY --from=docker-common java.security "$SECURITY_DIR/java.security"
 
-ENTRYPOINT [ "docker-entrypoint.sh" ]
+VOLUME [ "$APPLICATION_HOME/logs" ]
+
+ENTRYPOINT [ "/opt/blackduck/rabbitmq/bin/docker-entrypoint.sh" ]
