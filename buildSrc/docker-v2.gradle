@@ -1,0 +1,137 @@
+/*
+  Each Dockerfile to be built should be in a subdirectory of "${project.projectDir}/${baseDockerDirectory}"
+  For each Dockerfile found within 'baseDockerDirectory', gradle tasks will be added
+  The subdirectory should be named what the image should be named
+  If the image has an ENTRYPOINT script, it should be put in the subdirectory and named docker-entrypoint.sh
+*/
+String baseDockerDirectory = "${project.projectDir}/docker"
+ArrayList<String> dockerImagesToBuild = []
+new File(baseDockerDirectory).eachFileRecurse() { it ->
+    if (it.isFile() && it.name == 'Dockerfile') {
+        dockerImagesToBuild.add(it.getParentFile().getName())
+    }
+}
+
+String dockerStagingDirectory = project.buildDir.toString() + '/docker-staging'
+
+// Names of non-image specific Docker tasks
+String dockerCleanStagingAreaDirectory = 'dockerCleanStagingAreaDirectory'
+String dockerRemoveAllImages = 'dockerRemoveAllImages'
+String dockerSetupStagingAreaDirectory = 'dockerSetupStagingAreaDirectory'
+String dockerBuildAllImages = 'dockerBuildAllImages'
+String dockerLoginDockerHub = 'dockerLoginDockerHub'
+String dockerPublishAllImages = 'dockerPublishAllImages'
+
+project.tasks.create(name: dockerCleanStagingAreaDirectory, group: 'Docker', description: 'Remove staging area used for creating Docker images') {
+    doFirst {
+        logger.lifecycle('Removing Docker staging area:: ' + dockerStagingDirectory)
+    }
+
+    file(dockerStagingDirectory).deleteDir()
+}
+clean.finalizedBy(project.tasks.findByName(dockerCleanStagingAreaDirectory))
+
+project.tasks.create(name: dockerRemoveAllImages, group: 'Docker', description: 'Remove docker images and staging area for project') {}
+
+project.tasks.create(name: dockerSetupStagingAreaDirectory, type: Copy, group: 'Docker', description: 'Populate staging area used for creating Docker images') {
+    dependsOn project.tasks.findByName(dockerCleanStagingAreaDirectory)
+    dependsOn build
+
+    doFirst {
+        logger.lifecycle('Setting up docker staging area')
+    }
+
+    into dockerStagingDirectory
+    from(baseDockerDirectory)
+
+    into('blackduck-alert') {
+        from("${project.buildDir}/distributions/blackduck-alert-boot-${project.version}.tar")
+    }
+
+    into('blackduck-alert-db') {
+        from("alert-database/src/main/resources/scripts/")
+    }
+
+    // Files like the db shell and sql are specific to that image. Should those be stored in the same directory as the Dockerfile?
+    // I'm thinking of moving the tar file back a directory, and changing the Dockerfile to COPY ../<tarfile>
+}
+
+project.tasks.create(name: dockerBuildAllImages, group: 'Docker', description: 'Build docker images for project') {
+    dependsOn project.tasks.findByName(dockerSetupStagingAreaDirectory)
+}
+
+project.tasks.create(name: dockerLoginDockerHub, type: Exec, group: 'Docker', description: 'Login to hub.docker.com prior to publish image') {
+    String dockerLoginUsername = System.env.DOCKER_INT_BLACKDUCK_USER ?: '<Not Set>'
+
+    doFirst {
+        String dockerLoginPassword = System.env.DOCKER_INT_BLACKDUCK_PASSWORD
+        if (dockerLoginPassword?.trim()) {
+            standardInput = new ByteArrayInputStream(dockerLoginPassword.getBytes())
+        }
+    }
+
+    commandLine 'docker', 'login', '--username', dockerLoginUsername, '--password-stdin'
+
+    onlyIf {
+        System.env.DOCKER_INT_BLACKDUCK_USER != null && System.env.DOCKER_INT_BLACKDUCK_PASSWORD != null
+    }
+}
+
+project.tasks.create(name: dockerPublishAllImages, group: 'Docker', description: 'Publish docker images for project to hub.docker.com') {
+    dependsOn project.tasks.findByName(dockerLoginDockerHub), project.tasks.findByName(dockerBuildAllImages)
+
+    onlyIf {
+        System.env.DOCKER_INT_BLACKDUCK_USER != null && System.env.DOCKER_INT_BLACKDUCK_PASSWORD != null
+    }
+}
+
+dockerImagesToBuild.each { imageName ->
+    String fullDockerImageName = 'blackducksoftware/' + imageName + ':' + project.version
+    logger.lifecycle('Creating tasks to process Docker image:: ' + fullDockerImageName)
+
+    String imageTaskNameSuffix = ''
+    for (String token : imageName.split("-")) {
+        imageTaskNameSuffix += token.substring(0, 1).toUpperCase() + token.substring(1).toLowerCase()
+    }
+
+    String imageRemoveTaskName = "dockerRemove${imageTaskNameSuffix}"
+    String imageBuildTaskName = "dockerBuild${imageTaskNameSuffix}"
+    String imagePublishTaskName = "dockerPublish${imageTaskNameSuffix}"
+
+    project.tasks.create(name: imageRemoveTaskName, type: Exec, group: 'Docker', description: "Remove ${fullDockerImageName} docker image") {
+        doFirst {
+            logger.lifecycle('Removing docker image:: ' + fullDockerImageName)
+        }
+
+        commandLine 'docker', 'image', 'rm', fullDockerImageName
+    }
+    project.tasks.findByName(dockerRemoveAllImages).dependsOn imageRemoveTaskName
+
+    project.tasks.create(name: imageBuildTaskName, type: Exec, group: 'Docker', description: "Build ${imageName} docker image") {
+        dependsOn project.tasks.findByName(dockerSetupStagingAreaDirectory)
+        def buildCommand = ['docker', 'build', '.', '-t', fullDockerImageName, '--build-arg', "VERSION=${project.version}", '--pull', '--force-rm']
+
+        doFirst {
+            logger.lifecycle("Building docker image:: ${fullDockerImageName}")
+            logger.lifecycle("Running command:: ${buildCommand.join(" ")}")
+        }
+
+        workingDir "${dockerStagingDirectory}/${imageName}"
+        commandLine buildCommand
+    }
+    project.tasks.findByName(dockerBuildAllImages).dependsOn imageBuildTaskName
+
+    project.tasks.create(name: imagePublishTaskName, type: Exec, group: 'Docker', description: "Publish ${imageName} docker image to hub.docker.com") {
+        dependsOn project.tasks.findByName(dockerLoginDockerHub)
+        finalizedBy project.tasks.findByName(imageRemoveTaskName)
+
+        doFirst {
+            logger.lifecycle('Publishing docker image:: ' + fullDockerImageName)
+        }
+
+        commandLine 'docker', 'push', fullDockerImageName
+        finalizedBy imageRemoveTaskName
+    }
+    project.tasks.findByName(dockerPublishAllImages).dependsOn imagePublishTaskName
+
+}

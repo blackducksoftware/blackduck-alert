@@ -8,7 +8,6 @@ buildscript {
 
     dependencies {
         classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
-        classpath 'com.bmuschko:gradle-docker-plugin:6.4.0'
     }
 }
 
@@ -42,7 +41,7 @@ apply plugin: 'com.synopsys.integration.solution'
 apply from: 'buildSrc/buildTasks.gradle'
 apply from: 'buildSrc/runTasks.gradle'
 apply from: 'buildSrc/deploymentTasks.gradle'
-apply from: 'buildSrc/docker.gradle'
+apply from: 'buildSrc/docker-v2.gradle'
 
 allprojects {
     // disable the test task when running the alert server to speed up startup time.
@@ -200,24 +199,20 @@ artifactory {
     }
 }
 
-tasks.dockerLogin.mustRunAfter(helmPushChart)
+tasks.dockerLoginDockerHub.mustRunAfter(helmPushChart)
 
 tasks.helmPushChart.mustRunAfter(helmValidation)
 
 tasks.build.mustRunAfter(copyToTemplates)
 tasks.runServer.dependsOn copyToTemplates
-tasks.buildDockerImage.dependsOn copyToTemplates
+tasks.dockerBuildAllImages.dependsOn copyToTemplates
 tasks.test.dependsOn copyToTemplates
 
 
-task buildAll(dependsOn: [copyToTemplates, build, helmValidation, createDeploymentZip, buildDockerImage]) {
+task buildAll(dependsOn: [copyToTemplates, build, helmValidation, createDeploymentZip, dockerBuildAllImages]) {
     helmValidation.mustRunAfter build
     createDeploymentZip.mustRunAfter helmValidation
 
-    buildDockerImage.mustRunAfter createDeploymentZip
+    dockerBuildAllImages.mustRunAfter createDeploymentZip
 }
 
-task publishDockerImage(dependsOn: [dockerLogin, pushImage]) {
-    pushImage.mustRunAfter dockerLogin
-    pushImage.mustRunAfter buildDockerImage
-}
