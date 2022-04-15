@@ -31,8 +31,6 @@ import com.synopsys.integration.alert.Application;
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
-import com.synopsys.integration.alert.channel.jira.server.web.JiraServerInstallPluginAction;
-import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
@@ -51,6 +49,7 @@ import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.test.common.TestTags;
 import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 import com.synopsys.integration.alert.util.DescriptorMocker;
+import com.synopsys.integration.exception.IntegrationException;
 
 @Tag(TestTags.DEFAULT_PERFORMANCE)
 @SpringBootTest
@@ -64,8 +63,6 @@ class JiraServerPerformanceTestV2 {
 
     @Autowired
     private WebApplicationContext webApplicationContext;
-    @Autowired
-    private JiraServerInstallPluginAction jiraServerInstallPluginAction;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final Gson gson = IntegrationPerformanceTestRunner.createGson();
@@ -94,9 +91,8 @@ class JiraServerPerformanceTestV2 {
         TestProperties testProperties = new TestProperties();
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel = createGlobalConfigModel(testProperties);
 
-        // Install plugin
-        ActionResponse<ValidationResponseModel> installPluginResponse = jiraServerInstallPluginAction.installPlugin(jiraServerGlobalConfigModel);
-        if (installPluginResponse.isError()) {
+        ValidationResponseModel installPluginResponse = installPlugin(jiraServerGlobalConfigModel);
+        if (installPluginResponse.hasErrors()) {
             fail("Unable to install the Alert plugin for Jira Server. Exiting test...");
         }
 
@@ -123,8 +119,8 @@ class JiraServerPerformanceTestV2 {
         String userName = testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_USERNAME);
         String password = testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_PASSWORD);
         Boolean disablePluginCheck = testProperties.getOptionalProperty(TestPropertyKey.TEST_JIRA_SERVER_DISABLE_PLUGIN_CHECK)
-            .map(Boolean::valueOf)
-            .orElse(Boolean.FALSE);
+                                         .map(Boolean::valueOf)
+                                         .orElse(Boolean.FALSE);
 
         return new JiraServerGlobalConfigModel(
             uuid.toString(),
@@ -176,13 +172,26 @@ class JiraServerPerformanceTestV2 {
         if (null != jiraServerGlobalConfigModel) {
             LocalDateTime startingTime = LocalDateTime.now();
             String descriptorName = CHANNEL_KEY.getUniversalKey();
-            Optional<JiraServerGlobalConfigModel> globalConfigModel = configurationManager
-                .createGlobalConfiguration(apiConfigurationPath, jiraServerGlobalConfigModel, JiraServerGlobalConfigModel.class);
+            Optional<JiraServerGlobalConfigModel> globalConfigModel = configurationManager.createGlobalConfiguration(apiConfigurationPath, jiraServerGlobalConfigModel, JiraServerGlobalConfigModel.class);
             String globalConfigMessage = String.format("Creating the global Configuration for %s jobs took", descriptorName);
             logTimeElapsedWithMessage(globalConfigMessage + " %s", startingTime, LocalDateTime.now());
             return globalConfigModel;
         }
         return Optional.empty();
+    }
+
+    private ValidationResponseModel installPlugin(JiraServerGlobalConfigModel jiraServerGlobalConfigModel) {
+        try {
+            String requestBody = gson.toJson(jiraServerGlobalConfigModel);
+            String installPluginResponseString = alertRequestUtility.executePostRequest(String.format("%s/install-plugin", AlertRestConstants.JIRA_SERVER_CONFIGURATION_PATH),
+                requestBody,
+                "Installing the plugin failed."
+            );
+            return gson.fromJson(installPluginResponseString, ValidationResponseModel.class);
+        } catch (IntegrationException e) {
+            logger.error("Unexpected error occurred while installing the plugin.", e);
+            return ValidationResponseModel.generalError(e.getMessage());
+        }
     }
 
     public void logTimeElapsedWithMessage(String messageFormat, LocalDateTime start, LocalDateTime end) {
