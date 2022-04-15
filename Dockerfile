@@ -1,10 +1,12 @@
 FROM blackducksoftware/hub-docker-common:1.0.6 as docker-common
-FROM eclipse-temurin:17-jdk-alpine
+FROM alpine:3.15
 
 ARG VERSION
 
 LABEL com.blackducksoftware.integration.alert.vendor="Black Duck Software, Inc." \
       com.blackducksoftware.integration.alert.version="$VERSION"
+
+ENV JAVA_HOME /opt/java/openjdk
 
 ENV APPLICATION_NAME blackduck-alert
 ENV BLACKDUCK_HOME /opt/blackduck
@@ -14,6 +16,7 @@ ENV ALERT_HOME $BLACKDUCK_HOME/alert
 ENV ALERT_CONFIG_HOME $ALERT_HOME/alert-config
 ENV SECURITY_DIR $ALERT_HOME/security
 ENV ALERT_TAR_HOME $ALERT_HOME/alert-tar
+ENV PATH $JAVA_HOME/bin:$PATH
 ENV PATH $ALERT_TAR_HOME/bin:$PATH
 ENV ALERT_DATA_DIR $ALERT_CONFIG_HOME/data
 ENV ALERT_LOG_DIR $ALERT_CONFIG_HOME/log
@@ -39,6 +42,7 @@ RUN mkdir -p -m 775 $ALERT_DATA_DIR
 RUN mkdir -p -m 775 $ALERT_LOG_DIR
 
 COPY blackduck-alert-boot-$VERSION $ALERT_HOME/alert-tar
+COPY --from=eclipse-temurin:17-jdk-alpine $JAVA_HOME $JAVA_HOME
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 COPY --from=docker-common healthcheck.sh /usr/local/bin/docker-healthcheck.sh
