@@ -89,21 +89,22 @@ public class EventListenerConfigurer implements RabbitListenerConfigurer {
 
     private void logRabbitMqConfig() {
         logger.info("Rabbitmq connection details:");
-        logger.info("  host: {}", cachingConnectionFactory.getHost());
-        logger.info("  port: {}", cachingConnectionFactory.getPort());
+        logger.info("  host:        {}", cachingConnectionFactory.getHost());
+        logger.info("  port:        {}", cachingConnectionFactory.getPort());
+        logger.info("  ssl enabled: {}", cachingConnectionFactory.getRabbitConnectionFactory().isSSL());
+
         if (StringUtils.isNotBlank(cachingConnectionFactory.getUsername())) {
-            logger.info("  username: *******");
+            logger.info("  username:    *******");
         } else {
             logger.info("  username: ");
         }
-        logger.info("  username: {}", cachingConnectionFactory.getUsername());
         if (StringUtils.isNotBlank(cachingConnectionFactory.getRabbitConnectionFactory().getPassword())) {
-            logger.info("  password: *******");
+            logger.info("  password:    *******");
         } else {
             logger.info("  password: ");
         }
 
-        logger.info("  vhost: {}", cachingConnectionFactory.getVirtualHost());
+        logger.info("  vhost:       {}", cachingConnectionFactory.getVirtualHost());
     }
 
     private void createDeadLetterHandler(RabbitListenerEndpointRegistrar registrar) {
