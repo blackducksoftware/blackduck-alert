@@ -1,56 +1,45 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-class CollapsiblePane extends Component {
-    constructor(props) {
-        super(props);
+const CollapsiblePane = ({ children, id, title, expanded }) => {
+    const [isExpanded, setIsExpanded] = useState(expanded);
 
-        this.state = ({ expanded: this.props.expanded });
+    function toggleCollapsiblePane() {
+        setIsExpanded(!isExpanded);
     }
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        if (!prevProps.expanded && this.props.expanded) {
-            this.setState({
-                expanded: this.props.expanded
-            });
-        }
-    }
-
-    render() {
-        const { id, title, children } = this.props;
-        const { expanded } = this.state;
-        const contentClass = expanded ? 'shown' : 'hidden';
-        const iconClass = expanded ? 'minus' : 'plus';
-        return (
-            <div className="collapsiblePanel">
-                <button
-                    id={`${id}-expand-button`}
-                    type="button"
-                    className="btn btn-link"
-                    onClick={() => this.setState({ expanded: !this.state.expanded })}
-                >
-                    <FontAwesomeIcon icon={iconClass} className="icon" size="lg" />
-                    {title}
-                </button>
-                <div className={contentClass}>
-                    {children}
-                </div>
+    return (
+        <div className="collapsiblePanel">
+            <button
+                id={`${id}-expand-button`}
+                type="button"
+                className="btn btn-link"
+                onClick={toggleCollapsiblePane}
+            >
+                <FontAwesomeIcon icon={isExpanded ? 'minus' : 'plus'} className="icon" size="lg" />
+                {title}
+            </button>
+            <div className={isExpanded ? 'shown' : 'hidden'}>
+                {children}
             </div>
-        );
-    }
-}
-
-CollapsiblePane.propTypes = {
-    id: PropTypes.string,
-    title: PropTypes.string.isRequired,
-    expanded: PropTypes.bool,
-    children: PropTypes.array.isRequired
+        </div>
+    );
 };
 
 CollapsiblePane.defaultProps = {
     id: 'collapsiblePaneId',
     expanded: false
+};
+
+CollapsiblePane.propTypes = {
+    children: PropTypes.oneOfType([
+        PropTypes.array,
+        PropTypes.object
+    ]),
+    expanded: PropTypes.bool,
+    id: PropTypes.string,
+    title: PropTypes.string.isRequired
 };
 
 export default CollapsiblePane;

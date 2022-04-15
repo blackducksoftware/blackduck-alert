@@ -10,11 +10,12 @@ package com.synopsys.integration.alert.common.util;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.data.domain.Sort;
 
 public final class SortUtil {
 
-    public static Sort createSortByFieldName(String fieldName, String direction) {
+    public static Sort createSortByFieldName(@Nullable String fieldName, @Nullable String direction) {
         Sort sort = Sort.unsorted();
         if (StringUtils.isNotBlank(fieldName) && StringUtils.isNotBlank(direction)) {
             Optional<Sort.Direction> sortDirection = Sort.Direction.fromOptionalString(direction);
