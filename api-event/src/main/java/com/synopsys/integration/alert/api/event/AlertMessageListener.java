@@ -40,10 +40,10 @@ public abstract class AlertMessageListener<T extends AlertEvent> implements Mess
         try {
             String messageContent = new String(message.getBody());
             String receiverClassName = getClass().getName();
-            logger.debug("Receiver {}, sending message.", receiverClassName);
+            logger.info("Receiver {}, sending message.", receiverClassName);
             logger.debug("Event message: {}", message);
             T event = gson.fromJson(messageContent, eventClass);
-            logger.debug("{} event {}", receiverClassName, event);
+            logger.trace("{} event {}", receiverClassName, event);
             logger.debug("Received Event ID: {}", event.getEventId());
             taskExecutor.execute(() ->
                 eventHandler.handle(event)
