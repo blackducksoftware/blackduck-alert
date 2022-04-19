@@ -78,7 +78,8 @@ public class JiraServerInstallPluginAction {
             if (!jiraPluginInstalled) {
                 return new ActionResponse<>(HttpStatus.NOT_FOUND, String.format("Unable to confirm Jira server successfully installed the '%s' plugin. Please verify the installation on you Jira server.", JiraConstants.JIRA_ALERT_APP_NAME));
             }
-            return new ActionResponse<>(HttpStatus.OK, String.format("Successfully installed the '%s' plugin on Jira server.", JiraConstants.JIRA_ALERT_APP_NAME));
+            String successMessage = String.format("Successfully installed the '%s' plugin on Jira server.", JiraConstants.JIRA_ALERT_APP_NAME);
+            return new ActionResponse<>(HttpStatus.OK, successMessage, ValidationResponseModel.success(successMessage));
         } catch (IntegrationException e) {
             return createBadRequestIntegrationException(e);
         } catch (InterruptedException e) {
