@@ -5,11 +5,12 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.core.task.SyncTaskExecutor;
+import org.springframework.core.task.TaskExecutor;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.event.EventManager;
@@ -26,6 +27,7 @@ import com.synopsys.integration.blackduck.http.transform.subclass.BlackDuckRespo
 class NotificationReceivedEventHandlerTest {
     private final Gson gson = new Gson();
     private final BlackDuckResponseResolver blackDuckResponseResolver = new BlackDuckResponseResolver(gson);
+    private final TaskExecutor taskExecutor = new SyncTaskExecutor();
 
     @Test
     void handleEventTest() throws IOException {
@@ -34,41 +36,7 @@ class NotificationReceivedEventHandlerTest {
         NotificationAccessor notificationAccessor = new MockNotificationAccessor(alertNotificationModels);
         NotificationProcessor notificationProcessor = mockNotificationProcessor(notificationAccessor);
         EventManager eventManager = mockEventManager();
-        NotificationReceivedEventHandler eventHandler = new NotificationReceivedEventHandler(notificationAccessor, notificationProcessor, eventManager);
-
-        try {
-            eventHandler.handle(new NotificationReceivedEvent());
-        } catch (RuntimeException e) {
-            fail("Unable to handle event", e);
-        }
-    }
-
-    @Test
-    void handleEventProcessingInterruptedTest() throws IOException {
-        NotificationAccessor notificationAccessor = Mockito.mock(NotificationAccessor.class);
-        Mockito.doAnswer(invocation -> {
-            throw new InterruptedException("Test: exception for thread");
-        }).when(notificationAccessor).getFirstPageOfNotificationsNotProcessed(Mockito.anyInt());
-        NotificationProcessor notificationProcessor = mockNotificationProcessor(notificationAccessor);
-        EventManager eventManager = mockEventManager();
-        NotificationReceivedEventHandler eventHandler = new NotificationReceivedEventHandler(notificationAccessor, notificationProcessor, eventManager);
-
-        try {
-            eventHandler.handle(new NotificationReceivedEvent());
-        } catch (RuntimeException e) {
-            fail("Unable to handle event", e);
-        }
-    }
-
-    @Test
-    void handleEventProcessingExceptionTest() throws IOException {
-        NotificationAccessor notificationAccessor = Mockito.mock(NotificationAccessor.class);
-        Mockito.doAnswer((invocation) -> {
-            throw new ExecutionException(new RuntimeException("Test: exception for thread"));
-        }).when(notificationAccessor).getFirstPageOfNotificationsNotProcessed(Mockito.anyInt());
-        NotificationProcessor notificationProcessor = mockNotificationProcessor(notificationAccessor);
-        EventManager eventManager = mockEventManager();
-        NotificationReceivedEventHandler eventHandler = new NotificationReceivedEventHandler(notificationAccessor, notificationProcessor, eventManager);
+        NotificationReceivedEventHandler eventHandler = new NotificationReceivedEventHandler(notificationAccessor, notificationProcessor, eventManager, taskExecutor);
 
         try {
             eventHandler.handle(new NotificationReceivedEvent());
