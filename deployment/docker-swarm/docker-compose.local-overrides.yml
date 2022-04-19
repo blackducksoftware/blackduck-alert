@@ -15,6 +15,14 @@ services:
 #      - ALERT_DB_USERNAME
 #      - ALERT_DB_PASSWORD
 #
+#  alert-rabbitmq:
+#    environment:
+#      - ALERT_RABBIT_MQ_HOST=alert-rabbitmq
+#      - ALERT_RABBIT_MQ_PORT=5671
+#      - ALERT_RABBIT_VHOST=blackduck-alert
+#    secrets:
+#      - ALERT_RABBIT_USER
+#      - ALERT_RABBIT_PASSWORD
 #  alert:
 #    # uncomment environment to set environment variables for the alert service.
 #    environment:
