@@ -75,11 +75,11 @@ public class EventListenerConfigurer implements RabbitListenerConfigurer {
     public void configureRabbitListeners(RabbitListenerEndpointRegistrar registrar) {
         logRabbitMqConfig();
         createDeadLetterHandler(registrar);
-        org.springframework.amqp.rabbit.listener.MessageListenerContainer alertDefaultMessageListenerContainer = createMessageListenerContainer();
+        MessageListenerContainer alertDefaultMessageListenerContainer = createMessageListenerContainer();
         logger.debug("Registering JMS Listeners");
         for (AlertMessageListener<?> messageListener : allAlertMessageListeners) {
             if (distributionEventDestinationNames.contains(messageListener.getDestinationName())) {
-                org.springframework.amqp.rabbit.listener.MessageListenerContainer distributionChannelMessageListenerContainer = createMessageListenerContainer();
+                MessageListenerContainer distributionChannelMessageListenerContainer = createMessageListenerContainer();
                 registerListenerEndpoint(registrar, messageListener, distributionChannelMessageListenerContainer);
             } else {
                 registerListenerEndpoint(registrar, messageListener, alertDefaultMessageListenerContainer);
