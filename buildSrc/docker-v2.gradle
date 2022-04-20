@@ -1,18 +1,5 @@
-/*
-  Each Dockerfile to be built should be in a subdirectory of "${project.projectDir}/${baseDockerDirectory}"
-  For each Dockerfile found within 'baseDockerDirectory', gradle tasks will be added
-  The subdirectory should be named what the image should be named
-  If the image has an ENTRYPOINT script, it should be put in the subdirectory and named docker-entrypoint.sh
-*/
-String baseDockerDirectory = "${project.projectDir}/docker"
-ArrayList<String> dockerImagesToBuild = []
-new File(baseDockerDirectory).eachFileRecurse() { it ->
-    if (it.isFile() && it.name == 'Dockerfile') {
-        dockerImagesToBuild.add(it.getParentFile().getName())
-    }
-}
-
 String dockerStagingDirectory = project.buildDir.toString() + '/docker-staging'
+String baseDockerDirectory = project.projectDir.toString() + '/docker'
 
 // Names of non-image specific Docker tasks
 String dockerCleanStagingAreaDirectory = 'dockerCleanStagingAreaDirectory'
@@ -49,11 +36,8 @@ project.tasks.create(name: dockerSetupStagingAreaDirectory, type: Copy, group: '
     }
 
     into('blackduck-alert-db') {
-        from("alert-database/src/main/resources/scripts/")
+        from('alert-database/src/main/resources/scripts/')
     }
-
-    // Files like the db shell and sql are specific to that image. Should those be stored in the same directory as the Dockerfile?
-    // I'm thinking of moving the tar file back a directory, and changing the Dockerfile to COPY ../<tarfile>
 }
 
 project.tasks.create(name: dockerBuildAllImages, group: 'Docker', description: 'Build docker images for project') {
@@ -85,6 +69,19 @@ project.tasks.create(name: dockerPublishAllImages, group: 'Docker', description:
     }
 }
 
+/*
+  Each Dockerfile to be built should be in a subdirectory of "${project.projectDir}/${baseDockerDirectory}"
+  For each Dockerfile found within 'baseDockerDirectory', gradle tasks will be added
+  The subdirectory should be named what the image should be named
+  If the image has an ENTRYPOINT script, it should be put in the subdirectory and named docker-entrypoint.sh
+*/
+ArrayList<String> dockerImagesToBuild = []
+new File(baseDockerDirectory).eachFileRecurse() { it ->
+    if (it.isFile() && it.name == 'Dockerfile') {
+        dockerImagesToBuild.add(it.getParentFile().getName())
+    }
+}
+
 dockerImagesToBuild.each { imageName ->
     String fullDockerImageName = 'blackducksoftware/' + imageName + ':' + project.version
     logger.lifecycle('Creating tasks to process Docker image:: ' + fullDockerImageName)
@@ -113,7 +110,7 @@ dockerImagesToBuild.each { imageName ->
 
         doFirst {
             logger.lifecycle("Building docker image:: ${fullDockerImageName}")
-            logger.lifecycle("Running command:: ${buildCommand.join(" ")}")
+            logger.lifecycle('Running command:: ' + buildCommand.join(" "))
         }
 
         workingDir "${dockerStagingDirectory}/${imageName}"
