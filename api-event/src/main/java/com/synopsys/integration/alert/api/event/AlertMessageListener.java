@@ -46,8 +46,16 @@ public abstract class AlertMessageListener<T extends AlertEvent> implements Mess
             logger.trace("{} event {}", receiverClassName, event);
             logger.debug("Received Event ID: {}", event.getEventId());
             taskExecutor.execute(() ->
-                eventHandler.handle(event)
+                handleEvent(event)
             );
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+    }
+
+    private void handleEvent(T event) {
+        try {
+            eventHandler.handle(event);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
