@@ -62,7 +62,7 @@ import com.synopsys.integration.wait.WaitJobConfig;
 
 @Tag(TestTags.DEFAULT_PERFORMANCE)
 @AlertIntegrationTest
-public class NotificationRemovalTest {
+class NotificationRemovalTest {
     private static final IntLogger LOGGER = new Slf4jIntLogger(LoggerFactory.getLogger(NotificationRemovalTest.class));
     private static final Gson GSON = new GsonBuilder().create();
     private static final String PROJECT_NAME = "1234 - Test Project";
@@ -104,9 +104,9 @@ public class NotificationRemovalTest {
     }
 
     @Test
-    @Ignore
+    @Ignore // performance test
     @Disabled
-    public void testDeletion() throws IntegrationException, InterruptedException {
+    void testDeletion() throws IntegrationException, InterruptedException {
         providerConfig = createBlackDuckConfiguration();
         OffsetDateTime testStartTime = OffsetDateTime.now();
         OffsetDateTime notificationCreatedAtTime = OffsetDateTime.now();

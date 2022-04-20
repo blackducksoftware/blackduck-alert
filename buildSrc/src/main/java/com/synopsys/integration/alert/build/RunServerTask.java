@@ -23,6 +23,12 @@ public class RunServerTask extends Exec {
     private String externalDBName = "alertdb";
     private String externalDbUser = "sa";
     private String externalDbPassword = "blackduck";
+    private boolean externalRabbitmq = false;
+    private String externalRabbitHost = "localhost";
+    private String externalRabbitPort = "5671";
+    private String externalRabbitUser = "sysadmin";
+    private String externalRabbitPassword = "blackduck";
+    private String externalRabbitVirtualHost = "blackduck-alert";
 
     @Option(option = "suspend", description = "Suspends the server until a debug connection is made")
     public void setSuspend(boolean suspend) {
@@ -76,6 +82,36 @@ public class RunServerTask extends Exec {
     @Option(option = "externaldb-password", description = "Password of the user with access to the external database")
     public void setExternalDbPassword(String externalDbPassword) {
         this.externalDbPassword = externalDbPassword;
+    }
+
+    @Option(option = "external-rabbit", description = "Flag to indicate an external rabbitmq is used")
+    public void setExternalRabbitmq(boolean externalRabbitmq) {
+        this.externalRabbitmq = externalRabbitmq;
+    }
+
+    @Option(option = "external-rabbit-host", description = "Host name of the host where rabbit mq is installed")
+    public void setExternalRabbitHost(String externalRabbitHost) {
+        this.externalRabbitHost = externalRabbitHost;
+    }
+
+    @Option(option = "external-rabbit-port", description = "Port of the external rabbitmq")
+    public void setExternalRabbitPort(String externalRabbitPort) {
+        this.externalRabbitPort = externalRabbitPort;
+    }
+
+    @Option(option = "external-rabbit-user", description = "Username to authenticate with rabbitmq")
+    public void setExternalRabbitUser(String externalRabbitUser) {
+        this.externalRabbitUser = externalRabbitUser;
+    }
+
+    @Option(option = "external-rabbit-password", description = "Password to authenticate with rabbitmq")
+    public void setExternalRabbitPassword(String externalRabbitPassword) {
+        this.externalRabbitPassword = externalRabbitPassword;
+    }
+
+    @Option(option = "external-rabbit-virtual-host", description = "Virtual host name with rabbitmq")
+    public void setExternalRabbitVirtualHost(String externalRabbitVirtualHost) {
+        this.externalRabbitVirtualHost = externalRabbitVirtualHost;
     }
 
     @Override
@@ -138,8 +174,10 @@ public class RunServerTask extends Exec {
             String.format("--alert.images.dir=%s/resources/main/images", buildDirectory),
             String.format("--alert.email.attachments.dir=%s/email/attachments", buildDirectory));
         List<String> databaseVariables = getDatabaseVariables();
+        List<String> messageQueueVariables = getMessageQueueVariables();
         variables.addAll(commonVariables);
         variables.addAll(databaseVariables);
+        variables.addAll(messageQueueVariables);
 
         return variables;
     }
@@ -172,6 +210,28 @@ public class RunServerTask extends Exec {
             "--spring.datasource.password=blackduck",
             "--spring.datasource.url=jdbc:postgresql://${embedded.postgresql.host}:${embedded.postgresql.port}/${embedded.postgresql.database}",
             "--spring.datasource.hikari.jdbc-url=jdbc:postgresql://${embedded.postgresql.host}:${embedded.postgresql.port}/${embedded.postgresql.database}"
+        );
+    }
+
+    public List<String> getMessageQueueVariables() {
+        if (externalRabbitmq) {
+            return List.of(
+                String.format("--spring.rabbitmq.host=%s", externalRabbitHost),
+                String.format("--spring.rabbitmq.port=%s", externalRabbitPort),
+                String.format("--spring.rabbitmq.username=%s", externalRabbitUser),
+                String.format("--spring.rabbitmq.password=%s", externalRabbitPassword),
+                String.format("--spring.rabbitmq.virtual-host=%s", externalRabbitVirtualHost)
+            );
+        }
+        return List.of(
+            "--embedded.rabbitmq.password=blackduck",
+            "--embedded.rabbitmq.vhost=blackduck-alert",
+
+            "--spring.rabbitmq.host=${embedded.rabbitmq.host}",
+            "--spring.rabbitmq.port=${embedded.rabbitmq.port}",
+            "--spring.rabbitmq.username=${embedded.rabbitmq.user}",
+            "--spring.rabbitmq.password=${embedded.rabbitmq.password}",
+            "--spring.rabbitmq.virtual-host=${embedded.rabbitmq.vhost}"
         );
     }
 }

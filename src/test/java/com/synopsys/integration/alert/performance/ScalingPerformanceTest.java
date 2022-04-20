@@ -64,9 +64,9 @@ public class ScalingPerformanceTest {
     }
 
     @Test
-    @Ignore
+    @Ignore // performance test
     @Disabled
-    public void testAlertPerformance() throws Exception {
+    void testAlertPerformance() throws Exception {
         LocalDateTime startingTime = LocalDateTime.now();
         intLogger.info(String.format("Starting time %s", dateTimeFormatter.format(startingTime)));
 
@@ -76,7 +76,12 @@ public class ScalingPerformanceTest {
         logTimeElapsedWithMessage("Logging in took %s", startingTime, LocalDateTime.now());
 
         BlackDuckProviderService blackDuckProviderService = new BlackDuckProviderService(alertRequestUtility, gson);
-        ConfigurationManager configurationManager = new ConfigurationManager(gson, alertRequestUtility, blackDuckProviderService.getBlackDuckProviderKey(), ChannelKeys.SLACK.getUniversalKey());
+        ConfigurationManager configurationManager = new ConfigurationManager(
+            gson,
+            alertRequestUtility,
+            blackDuckProviderService.getBlackDuckProviderKey(),
+            ChannelKeys.SLACK.getUniversalKey()
+        );
 
         startingTime = LocalDateTime.now();
         // Create the Black Duck Global provider configuration

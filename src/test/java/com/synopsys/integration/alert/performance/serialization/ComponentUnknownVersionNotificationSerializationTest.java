@@ -85,9 +85,9 @@ public class ComponentUnknownVersionNotificationSerializationTest {
     }
 
     @Test
-    @Ignore
+    @Ignore // performance test
     @Disabled
-    public void testNotificationSerialization() throws IntegrationException, InterruptedException {
+    void testNotificationSerialization() throws IntegrationException, InterruptedException {
         LocalDateTime searchStartTime = LocalDateTime.now().minusMinutes(1);
         AlertRequestUtility alertRequestUtility = IntegrationPerformanceTestRunner.createAlertRequestUtility(webApplicationContext);
         BlackDuckProviderService blackDuckProviderService = new BlackDuckProviderService(alertRequestUtility, gson);
