@@ -8,6 +8,7 @@
 package com.synopsys.integration.alert.processing;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -51,7 +52,7 @@ public class NotificationReceivedEventHandler implements AlertEventHandler<Notif
         logger.info("Processing event {} for notifications.", event.getEventId());
         logger.info("Processing event for notifications.");
         ExecutorService processingThread = Executors.newSingleThreadExecutor();
-        Future<?> processingTask = processingThread.submit(this::processNotifications);
+        Future<?> processingTask = processingThread.submit(() -> processNotifications(event.getCorrelationId()));
         try {
             processingTask.get();
         } catch (InterruptedException e) {
@@ -62,7 +63,7 @@ public class NotificationReceivedEventHandler implements AlertEventHandler<Notif
         logger.info("Finished processing event {} for notifications.", event.getEventId());
     }
 
-    private void processNotifications() {
+    private void processNotifications(UUID correlationID) {
         AlertPagedModel<AlertNotificationModel> pageOfAlertNotificationModels = notificationAccessor.getFirstPageOfNotificationsNotProcessed(PAGE_SIZE);
         if (!CollectionUtils.isEmpty(pageOfAlertNotificationModels.getModels())) {
             List<AlertNotificationModel> notifications = pageOfAlertNotificationModels.getModels();
@@ -70,7 +71,7 @@ public class NotificationReceivedEventHandler implements AlertEventHandler<Notif
             notificationProcessor.processNotifications(notifications, List.of(FrequencyType.REAL_TIME));
             boolean hasMoreNotificationsToProcess = notificationAccessor.hasMoreNotificationsToProcess();
             if (hasMoreNotificationsToProcess) {
-                eventManager.sendEvent(new NotificationReceivedEvent());
+                eventManager.sendEvent(new NotificationReceivedEvent(correlationID));
             }
         }
         logger.info("Finished processing event for notifications.");
