@@ -6,6 +6,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,12 +41,12 @@ import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
 import com.synopsys.integration.alert.performance.utility.AlertRequestUtility;
 import com.synopsys.integration.alert.performance.utility.BlackDuckProviderService;
 import com.synopsys.integration.alert.performance.utility.ConfigurationManagerV2;
-import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunner;
 import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunnerV2;
 import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.test.common.TestTags;
 import com.synopsys.integration.alert.util.DescriptorMocker;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Tag(TestTags.DEFAULT_PERFORMANCE)
@@ -53,7 +54,7 @@ import com.synopsys.integration.exception.IntegrationException;
 @ContextConfiguration(classes = { Application.class, ApplicationConfiguration.class, DatabaseDataSource.class, DescriptorMocker.class })
 @TestPropertySource(locations = "classpath:spring-test.properties")
 @WebAppConfiguration
-class JiraServerPerformanceTest {
+class LargeNotificationTest {
     private static final String PERFORMANCE_JOB_NAME = "Jira Server Performance Job";
     private static final JiraServerChannelKey CHANNEL_KEY = new JiraServerChannelKey();
     private static final BlackDuckProviderKey PROVIDER_KEY = new BlackDuckProviderKey();
@@ -62,7 +63,7 @@ class JiraServerPerformanceTest {
     private WebApplicationContext webApplicationContext;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final Gson gson = IntegrationPerformanceTestRunner.createGson();
+    private final Gson gson = IntegrationPerformanceTestRunnerV2.createGson();
     private final DateTimeFormatter dateTimeFormatter = IntegrationPerformanceTestRunnerV2.createDateTimeFormatter();
 
     private AlertRequestUtility alertRequestUtility;
@@ -83,10 +84,34 @@ class JiraServerPerformanceTest {
 
     @Test
     @Disabled("Used for performance testing only.")
-    void jiraServerJobTest() throws Exception {
+    void createProjectsAndNotificationsTest() throws IntegrationException {
+        // Create Black Duck Global Provider configuration
+        LocalDateTime startingNotificationSearchDateTime = LocalDateTime.now();
+        blackDuckProviderService.setupBlackDuck();
+        logTimeElapsedWithMessage("Triggering the Black Duck notification took %s", startingNotificationSearchDateTime, LocalDateTime.now());
+
+        // create 10 blackduck projects
+        List<ProjectVersionView> projectVersionViews = createBlackDuckProjects(10);
+
+        //trigger a notification on each project
+        for (ProjectVersionView projectVersionView : projectVersionViews) {
+            triggerBlackDuckNotification(projectVersionView);
+        }
+    }
+
+    @Test
+    @Disabled("Used for performance testing only.")
+    void largeNotificationTest() throws IntegrationException, InterruptedException {
+        LocalDateTime startingTime = LocalDateTime.now();
         TestProperties testProperties = new TestProperties();
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel = createGlobalConfigModel(testProperties);
 
+        // Create Black Duck Global Provider configuration
+        LocalDateTime startingNotificationSearchDateTime = LocalDateTime.now();
+        String blackDuckProviderID = blackDuckProviderService.setupBlackDuck();
+        logTimeElapsedWithMessage("Triggering the Black Duck notification took %s", startingNotificationSearchDateTime, LocalDateTime.now());
+
+        // Create Jira Server global config
         ValidationResponseModel installPluginResponse = installPlugin(jiraServerGlobalConfigModel);
         if (installPluginResponse.hasErrors()) {
             fail("Unable to install the Alert plugin for Jira Server. Exiting test...");
@@ -97,7 +122,20 @@ class JiraServerPerformanceTest {
             fail("Global configuration missing.");
         }
 
+        // Create distribution job
+        // TODO: Look into adding this feature in IntegrationPerformanceTestRunnerV2
         Map<String, FieldValueModel> channelFieldsMap = createChannelFieldsMap(testProperties, globalConfiguration.get().getId());
+        /*
+        Map<String, FieldValueModel> channelFieldsMap = createChannelFieldsMap(testProperties, globalConfiguration.get().getId());
+        LocalDateTime jobStartingTime = LocalDateTime.now();
+        String jobName = "JiraServerPerformanceJob";
+        String jobId = configurationManager.createJob(channelFieldsMap, jobName, blackDuckProviderID, blackDuckProviderService.getBlackDuckProjectName());
+        String jobMessage = String.format("Creating the Job %s jobs took", jobName);
+        logTimeElapsedWithMessage(jobMessage + " %s", jobStartingTime, LocalDateTime.now());
+*/
+        // Create N number of blackduck projects
+        List<ProjectVersionView> projectVersionViews = createBlackDuckProjects(10);
+
         IntegrationPerformanceTestRunnerV2 testRunner = new IntegrationPerformanceTestRunnerV2(
             gson,
             dateTimeFormatter,
@@ -105,9 +143,84 @@ class JiraServerPerformanceTest {
             blackDuckProviderService,
             configurationManager
         );
-        testRunner.runTest(channelFieldsMap, PERFORMANCE_JOB_NAME);
+        //testRunner.runTestWithOneJob(jobId, projectVersionViews);
+        testRunner.runTestWithOneJob(channelFieldsMap, "performanceJob", projectVersionViews);
     }
 
+    private List<ProjectVersionView> createBlackDuckProjects(int numberOfProjects) throws IntegrationException {
+        LocalDateTime startingProjectCreationTime = LocalDateTime.now();
+        List<ProjectVersionView> projectVersionViews = new ArrayList<>();
+
+        for (int projectIndex = 0; projectIndex < numberOfProjects; projectIndex++) {
+            projectVersionViews.add(blackDuckProviderService.findOrCreateBlackDuckProjectAndVersion(String.format("AlertPerformanceProject-%s", projectIndex), "version1"));
+        }
+        logTimeElapsedWithMessage("Creating projects took %s", startingProjectCreationTime, LocalDateTime.now());
+        return projectVersionViews;
+    }
+
+    private void triggerBlackDuckNotification(ProjectVersionView projectVersionView) throws IntegrationException {
+        LocalDateTime startingNotificationTriggerDateTime = LocalDateTime.now();
+        blackDuckProviderService.triggerBlackDuckNotificationForProjectVersion(
+            projectVersionView,
+            BlackDuckProviderService.getDefaultExternalIdSupplier(),
+            BlackDuckProviderService.getDefaultBomComponentFilter()
+        );
+        logTimeElapsedWithMessage("Triggering the Black Duck notification took %s", startingNotificationTriggerDateTime, LocalDateTime.now());
+    }
+
+    //TODO: put into utility class
+    private Map<String, FieldValueModel> createChannelFieldsMap(TestProperties testProperties, String globalConfigId) {
+        Map<String, FieldValueModel> channelFieldsMap = new HashMap<>();
+        channelFieldsMap.put(ChannelDescriptor.KEY_ENABLED, createFieldValueModel("true"));
+        channelFieldsMap.put(ChannelDescriptor.KEY_CHANNEL_NAME, createFieldValueModel(CHANNEL_KEY.getUniversalKey()));
+        channelFieldsMap.put(ChannelDescriptor.KEY_NAME, createFieldValueModel(PERFORMANCE_JOB_NAME));
+        channelFieldsMap.put(ChannelDescriptor.KEY_FREQUENCY, createFieldValueModel(FrequencyType.REAL_TIME.name()));
+        channelFieldsMap.put(ChannelDescriptor.KEY_PROVIDER_TYPE, createFieldValueModel(PROVIDER_KEY.getUniversalKey()));
+        channelFieldsMap.put(ChannelDescriptor.KEY_CHANNEL_GLOBAL_CONFIG_ID, createFieldValueModel(globalConfigId));
+
+        channelFieldsMap
+            .put(JiraServerDescriptor.KEY_ADD_COMMENTS, createFieldValueModel(testProperties.getOptionalProperty(TestPropertyKey.TEST_JIRA_SERVER_ADD_COMMENTS).orElse("true")));
+        channelFieldsMap
+            .put(JiraServerDescriptor.KEY_ISSUE_CREATOR, createFieldValueModel(testProperties.getOptionalProperty(TestPropertyKey.TEST_JIRA_SERVER_ISSUE_CREATOR).orElse("")));
+        channelFieldsMap
+            .put(JiraServerDescriptor.KEY_JIRA_PROJECT_NAME, createFieldValueModel(testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_PROJECT_NAME)));
+        channelFieldsMap
+            .put(JiraServerDescriptor.KEY_ISSUE_TYPE, createFieldValueModel(testProperties.getOptionalProperty(TestPropertyKey.TEST_JIRA_SERVER_ISSUE_TYPE).orElse("Task")));
+        channelFieldsMap
+            .put(
+                JiraServerDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION,
+                createFieldValueModel(testProperties.getOptionalProperty(TestPropertyKey.TEST_JIRA_SERVER_RESOLVE_TRANSITION).orElse(""))
+            );
+        channelFieldsMap
+            .put(
+                JiraServerDescriptor.KEY_OPEN_WORKFLOW_TRANSITION,
+                createFieldValueModel(testProperties.getOptionalProperty(TestPropertyKey.TEST_JIRA_SERVER_REOPEN_TRANSITION).orElse(""))
+            );
+
+        return channelFieldsMap;
+    }
+
+    //TODO: put into utility class
+    private FieldValueModel createFieldValueModel(String value) {
+        return new FieldValueModel(List.of(value), true);
+    }
+
+    //TODO: put into utility class
+    private Optional<JiraServerGlobalConfigModel> createGlobalConfiguration(JiraServerGlobalConfigModel jiraServerGlobalConfigModel) {
+        String apiConfigurationPath = AlertRestConstants.JIRA_SERVER_CONFIGURATION_PATH;
+        if (null != jiraServerGlobalConfigModel) {
+            LocalDateTime startingTime = LocalDateTime.now();
+            String descriptorName = CHANNEL_KEY.getUniversalKey();
+            Optional<JiraServerGlobalConfigModel> globalConfigModel = configurationManager
+                .createGlobalConfiguration(apiConfigurationPath, jiraServerGlobalConfigModel, JiraServerGlobalConfigModel.class);
+            String globalConfigMessage = String.format("Creating the global Configuration for %s jobs took", descriptorName);
+            logTimeElapsedWithMessage(globalConfigMessage + " %s", startingTime, LocalDateTime.now());
+            return globalConfigModel;
+        }
+        return Optional.empty();
+    }
+
+    //TODO: put into utility class
     private JiraServerGlobalConfigModel createGlobalConfigModel(TestProperties testProperties) {
         String createdAt = OffsetDateTime.now().toString();
         String url = testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_URL);
@@ -130,52 +243,7 @@ class JiraServerPerformanceTest {
         );
     }
 
-    private Map<String, FieldValueModel> createChannelFieldsMap(TestProperties testProperties, String globalConfigId) {
-        Map<String, FieldValueModel> channelFieldsMap = new HashMap<>();
-        channelFieldsMap.put(ChannelDescriptor.KEY_ENABLED, createFieldValueModel("true"));
-        channelFieldsMap.put(ChannelDescriptor.KEY_CHANNEL_NAME, createFieldValueModel(CHANNEL_KEY.getUniversalKey()));
-        channelFieldsMap.put(ChannelDescriptor.KEY_NAME, createFieldValueModel(PERFORMANCE_JOB_NAME));
-        channelFieldsMap.put(ChannelDescriptor.KEY_FREQUENCY, createFieldValueModel(FrequencyType.REAL_TIME.name()));
-        channelFieldsMap.put(ChannelDescriptor.KEY_PROVIDER_TYPE, createFieldValueModel(PROVIDER_KEY.getUniversalKey()));
-        channelFieldsMap.put(ChannelDescriptor.KEY_CHANNEL_GLOBAL_CONFIG_ID, createFieldValueModel(globalConfigId));
-
-        channelFieldsMap
-            .put(JiraServerDescriptor.KEY_ADD_COMMENTS, createFieldValueModel(testProperties.getOptionalProperty(TestPropertyKey.TEST_JIRA_SERVER_ADD_COMMENTS).orElse("true")));
-        channelFieldsMap
-            .put(JiraServerDescriptor.KEY_ISSUE_CREATOR, createFieldValueModel(testProperties.getOptionalProperty(TestPropertyKey.TEST_JIRA_SERVER_ISSUE_CREATOR).orElse("")));
-        channelFieldsMap.put(JiraServerDescriptor.KEY_JIRA_PROJECT_NAME, createFieldValueModel(testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_PROJECT_NAME)));
-        channelFieldsMap
-            .put(JiraServerDescriptor.KEY_ISSUE_TYPE, createFieldValueModel(testProperties.getOptionalProperty(TestPropertyKey.TEST_JIRA_SERVER_ISSUE_TYPE).orElse("Task")));
-        channelFieldsMap.put(
-            JiraServerDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION,
-            createFieldValueModel(testProperties.getOptionalProperty(TestPropertyKey.TEST_JIRA_SERVER_RESOLVE_TRANSITION).orElse(""))
-        );
-        channelFieldsMap.put(
-            JiraServerDescriptor.KEY_OPEN_WORKFLOW_TRANSITION,
-            createFieldValueModel(testProperties.getOptionalProperty(TestPropertyKey.TEST_JIRA_SERVER_REOPEN_TRANSITION).orElse(""))
-        );
-
-        return channelFieldsMap;
-    }
-
-    private FieldValueModel createFieldValueModel(String value) {
-        return new FieldValueModel(List.of(value), true);
-    }
-
-    private Optional<JiraServerGlobalConfigModel> createGlobalConfiguration(JiraServerGlobalConfigModel jiraServerGlobalConfigModel) {
-        String apiConfigurationPath = AlertRestConstants.JIRA_SERVER_CONFIGURATION_PATH;
-        if (null != jiraServerGlobalConfigModel) {
-            LocalDateTime startingTime = LocalDateTime.now();
-            String descriptorName = CHANNEL_KEY.getUniversalKey();
-            Optional<JiraServerGlobalConfigModel> globalConfigModel = configurationManager
-                .createGlobalConfiguration(apiConfigurationPath, jiraServerGlobalConfigModel, JiraServerGlobalConfigModel.class);
-            String globalConfigMessage = String.format("Creating the global Configuration for %s jobs took", descriptorName);
-            logTimeElapsedWithMessage(globalConfigMessage + " %s", startingTime, LocalDateTime.now());
-            return globalConfigModel;
-        }
-        return Optional.empty();
-    }
-
+    //TODO: put into utility class
     private ValidationResponseModel installPlugin(JiraServerGlobalConfigModel jiraServerGlobalConfigModel) {
         try {
             String requestBody = gson.toJson(jiraServerGlobalConfigModel);
@@ -191,6 +259,7 @@ class JiraServerPerformanceTest {
         }
     }
 
+    //TODO: put into utility class
     public void logTimeElapsedWithMessage(String messageFormat, LocalDateTime start, LocalDateTime end) {
         //TODO log timing to a file
         Duration duration = Duration.between(start, end);

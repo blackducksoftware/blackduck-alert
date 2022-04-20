@@ -6,6 +6,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
@@ -86,6 +88,51 @@ public class IntegrationPerformanceTestRunnerV2 {
         boolean isComplete = waitForNotificationToBeProcessed.waitFor();
         intLogger.info("Finished waiting for the notification to be processed: " + isComplete);
         assertTrue(isComplete);
+    }
+
+    //public void runTestWithOneJob(String jobId, List<ProjectVersionView> projectVersionViews) throws IntegrationException, InterruptedException {
+    //test
+    public void runTestWithOneJob(Map<String, FieldValueModel> channelFields, String jobName, List<ProjectVersionView> projectVersionViews)
+        throws IntegrationException, InterruptedException {
+
+        String blackDuckProviderID = createBlackDuckConfiguration();
+
+        LocalDateTime jobStartingTime = LocalDateTime.now();
+        //String jobName = "JiraServerPerformanceJob";
+        String jobId = configurationManager.createJob(channelFields, jobName, blackDuckProviderID, blackDuckProviderService.getBlackDuckProjectName());
+        String jobMessage = String.format("Creating the Job %s jobs took", jobName);
+        logTimeElapsedWithMessage(jobMessage + " %s", jobStartingTime, LocalDateTime.now());
+
+        LocalDateTime startingSearchDateTime = LocalDateTime.now();
+        // trigger BD notifications
+        intLogger.info("Triggered the Black Duck notification.");
+        for (ProjectVersionView projectVersionView : projectVersionViews) {
+            triggerBlackDuckNotification(projectVersionView);
+        }
+        logTimeElapsedWithMessage("Triggering all Black Duck notifications took %s", startingSearchDateTime, LocalDateTime.now());
+
+        WaitJobConfig waitJobConfig = new WaitJobConfig(
+            intLogger,
+            "int performance test runner notification wait",
+            600,
+            startingSearchDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+            20
+        );
+        NotificationWaitJobTask notificationWaitJobTask = new NotificationWaitJobTask(intLogger, dateTimeFormatter, gson, alertRequestUtility, startingSearchDateTime, jobId);
+        WaitJob<Boolean> waitForNotificationToBeProcessed = WaitJob.createSimpleWait(waitJobConfig, notificationWaitJobTask);
+        boolean isComplete = waitForNotificationToBeProcessed.waitFor();
+        intLogger.info("Finished waiting for the notification to be processed: " + isComplete);
+        assertTrue(isComplete);
+    }
+
+    private void triggerBlackDuckNotification(ProjectVersionView projectVersionView) throws IntegrationException {
+        LocalDateTime startingNotificationTriggerDateTime = LocalDateTime.now();
+        blackDuckProviderService.triggerBlackDuckNotificationForProjectVersion(
+            projectVersionView,
+            BlackDuckProviderService.getDefaultExternalIdSupplier(),
+            BlackDuckProviderService.getDefaultBomComponentFilter()
+        );
+        logTimeElapsedWithMessage("Triggering the Black Duck notification took %s", startingNotificationTriggerDateTime, LocalDateTime.now());
     }
 
     private String createBlackDuckConfiguration() {
