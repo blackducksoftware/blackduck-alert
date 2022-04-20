@@ -135,7 +135,7 @@ public class BlackDuckProviderService {
         projectBomService.addComponentToProjectVersion(externalId, projectVersionView);
     }
 
-    public ProjectVersionView findOrCreateBlackDuckProjectAndVersion(String projectName, String projectVersionName) throws IntegrationException {
+    public ProjectVersionWrapper findOrCreateBlackDuckProjectAndVersion(String projectName, String projectVersionName) throws IntegrationException {
         setupBlackDuckServicesFactory();
         ProjectService projectService = blackDuckServicesFactory.createProjectService();
 
@@ -151,12 +151,10 @@ public class BlackDuckProviderService {
 
         Optional<ProjectVersionWrapper> existingProjectVersion = projectService.getProjectVersion(projectRequest.getName(), projectVersionRequest.getVersionName());
         if (existingProjectVersion.isPresent()) {
-            ProjectVersionView projectVersionView = existingProjectVersion.get().getProjectVersionView();
             intLogger.info(String.format("Project: %s Version %s already exists", projectName, projectVersionName));
-            return projectVersionView;
+            return existingProjectVersion.get();
         }
-        ProjectVersionWrapper projectVersion = projectService.createProject(projectRequest);
-        return projectVersion.getProjectVersionView();
+        return projectService.createProject(projectRequest);
     }
 
     public String setupBlackDuck() {

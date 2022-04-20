@@ -73,7 +73,20 @@ public class ConfigurationManagerV2 {
     }
 
     public String createJob(Map<String, FieldValueModel> channelFields, String jobName, String blackDuckProviderId, String blackDuckProjectName) throws IntegrationException {
-        return createJob(channelFields, jobName, blackDuckProviderId, blackDuckProjectName,
+        return createJob(channelFields, jobName, blackDuckProviderId, List.of(blackDuckProjectName),
+            List.of(
+                NotificationType.BOM_EDIT,
+                NotificationType.POLICY_OVERRIDE,
+                NotificationType.RULE_VIOLATION,
+                NotificationType.RULE_VIOLATION_CLEARED,
+                NotificationType.VULNERABILITY
+            )
+        );
+    }
+
+    public String createJob(Map<String, FieldValueModel> channelFields, String jobName, String blackDuckProviderId, List<String> blackDuckProjectNames)
+        throws IntegrationException {
+        return createJob(channelFields, jobName, blackDuckProviderId, blackDuckProjectNames,
             List.of(
                 NotificationType.BOM_EDIT,
                 NotificationType.POLICY_OVERRIDE,
@@ -88,7 +101,7 @@ public class ConfigurationManagerV2 {
         Map<String, FieldValueModel> channelFields,
         String jobName,
         String blackDuckProviderId,
-        String blackDuckProjectName,
+        List<String> blackDuckProjectNames,
         List<NotificationType> notificationTypes
     ) throws IntegrationException {
         List<String> notificationTypeNames = notificationTypes.stream()
@@ -99,15 +112,20 @@ public class ConfigurationManagerV2 {
         providerKeyToValues.put(ProviderDescriptor.KEY_NOTIFICATION_TYPES, new FieldValueModel(notificationTypeNames, true));
         providerKeyToValues.put(ProviderDescriptor.KEY_PROCESSING_TYPE, new FieldValueModel(List.of(ProcessingType.DEFAULT.name()), true));
         providerKeyToValues.put(ProviderDescriptor.KEY_FILTER_BY_PROJECT, new FieldValueModel(List.of("true"), true));
-        providerKeyToValues.put(ProviderDescriptor.KEY_CONFIGURED_PROJECT, new FieldValueModel(List.of(blackDuckProjectName), true));
+        providerKeyToValues.put(ProviderDescriptor.KEY_CONFIGURED_PROJECT, new FieldValueModel(blackDuckProjectNames, true));
         FieldModel jobProviderConfiguration = new FieldModel(blackDuckProviderKey, ConfigContextEnum.DISTRIBUTION.name(), providerKeyToValues);
 
         FieldModel jobConfiguration = new FieldModel(channelKey, ConfigContextEnum.DISTRIBUTION.name(), channelFields);
 
+        List<JobProviderProjectFieldModel> providerProjectModel = blackDuckProjectNames
+            .stream()
+            .map(name -> new JobProviderProjectFieldModel(name, "href", false))
+            .collect(Collectors.toList());
+
         JobFieldModel jobFieldModel = new JobFieldModel(
             null,
             Set.of(jobConfiguration, jobProviderConfiguration),
-            List.of(new JobProviderProjectFieldModel(blackDuckProjectName, "href", false))
+            providerProjectModel
         );
 
         String jobConfigBody = gson.toJson(jobFieldModel);

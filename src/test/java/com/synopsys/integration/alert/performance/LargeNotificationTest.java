@@ -47,6 +47,7 @@ import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.test.common.TestTags;
 import com.synopsys.integration.alert.util.DescriptorMocker;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
+import com.synopsys.integration.blackduck.service.model.ProjectVersionWrapper;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Tag(TestTags.DEFAULT_PERFORMANCE)
@@ -91,11 +92,11 @@ class LargeNotificationTest {
         logTimeElapsedWithMessage("Triggering the Black Duck notification took %s", startingNotificationSearchDateTime, LocalDateTime.now());
 
         // create 10 blackduck projects
-        List<ProjectVersionView> projectVersionViews = createBlackDuckProjects(10);
+        List<ProjectVersionWrapper> projectVersionWrappers = createBlackDuckProjects(10);
 
         //trigger a notification on each project
-        for (ProjectVersionView projectVersionView : projectVersionViews) {
-            triggerBlackDuckNotification(projectVersionView);
+        for (ProjectVersionWrapper projectVersionWrapper : projectVersionWrappers) {
+            triggerBlackDuckNotification(projectVersionWrapper.getProjectVersionView());
         }
     }
 
@@ -134,7 +135,7 @@ class LargeNotificationTest {
         logTimeElapsedWithMessage(jobMessage + " %s", jobStartingTime, LocalDateTime.now());
 */
         // Create N number of blackduck projects
-        List<ProjectVersionView> projectVersionViews = createBlackDuckProjects(10);
+        List<ProjectVersionWrapper> projectVersionWrappers = createBlackDuckProjects(10);
 
         IntegrationPerformanceTestRunnerV2 testRunner = new IntegrationPerformanceTestRunnerV2(
             gson,
@@ -144,18 +145,18 @@ class LargeNotificationTest {
             configurationManager
         );
         //testRunner.runTestWithOneJob(jobId, projectVersionViews);
-        testRunner.runTestWithOneJob(channelFieldsMap, "performanceJob", projectVersionViews);
+        testRunner.runTestWithOneJob(channelFieldsMap, "performanceJob", blackDuckProviderID, projectVersionWrappers);
     }
 
-    private List<ProjectVersionView> createBlackDuckProjects(int numberOfProjects) throws IntegrationException {
+    private List<ProjectVersionWrapper> createBlackDuckProjects(int numberOfProjects) throws IntegrationException {
         LocalDateTime startingProjectCreationTime = LocalDateTime.now();
-        List<ProjectVersionView> projectVersionViews = new ArrayList<>();
+        List<ProjectVersionWrapper> projectVersionWrappers = new ArrayList<>();
 
         for (int projectIndex = 0; projectIndex < numberOfProjects; projectIndex++) {
-            projectVersionViews.add(blackDuckProviderService.findOrCreateBlackDuckProjectAndVersion(String.format("AlertPerformanceProject-%s", projectIndex), "version1"));
+            projectVersionWrappers.add(blackDuckProviderService.findOrCreateBlackDuckProjectAndVersion(String.format("AlertPerformanceProject-%s", projectIndex), "version1"));
         }
         logTimeElapsedWithMessage("Creating projects took %s", startingProjectCreationTime, LocalDateTime.now());
-        return projectVersionViews;
+        return projectVersionWrappers;
     }
 
     private void triggerBlackDuckNotification(ProjectVersionView projectVersionView) throws IntegrationException {

@@ -8,6 +8,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.slf4j.LoggerFactory;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
@@ -19,6 +20,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
+import com.synopsys.integration.blackduck.service.model.ProjectVersionWrapper;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
@@ -92,22 +95,27 @@ public class IntegrationPerformanceTestRunnerV2 {
 
     //public void runTestWithOneJob(String jobId, List<ProjectVersionView> projectVersionViews) throws IntegrationException, InterruptedException {
     //test
-    public void runTestWithOneJob(Map<String, FieldValueModel> channelFields, String jobName, List<ProjectVersionView> projectVersionViews)
+    public void runTestWithOneJob(Map<String, FieldValueModel> channelFields, String jobName, String blackDuckProviderID, List<ProjectVersionWrapper> projectVersionWrappers)
         throws IntegrationException, InterruptedException {
 
-        String blackDuckProviderID = createBlackDuckConfiguration();
+        //String blackDuckProviderID = createBlackDuckConfiguration();
 
         LocalDateTime jobStartingTime = LocalDateTime.now();
         //String jobName = "JiraServerPerformanceJob";
-        String jobId = configurationManager.createJob(channelFields, jobName, blackDuckProviderID, blackDuckProviderService.getBlackDuckProjectName());
+        List<String> blackDuckProjectNames = projectVersionWrappers
+            .stream()
+            .map(ProjectVersionWrapper::getProjectView)
+            .map(ProjectView::getName)
+            .collect(Collectors.toList());
+        String jobId = configurationManager.createJob(channelFields, jobName, blackDuckProviderID, blackDuckProjectNames);
         String jobMessage = String.format("Creating the Job %s jobs took", jobName);
         logTimeElapsedWithMessage(jobMessage + " %s", jobStartingTime, LocalDateTime.now());
 
         LocalDateTime startingSearchDateTime = LocalDateTime.now();
         // trigger BD notifications
         intLogger.info("Triggered the Black Duck notification.");
-        for (ProjectVersionView projectVersionView : projectVersionViews) {
-            triggerBlackDuckNotification(projectVersionView);
+        for (ProjectVersionWrapper projectVersionWrapper : projectVersionWrappers) {
+            triggerBlackDuckNotification(projectVersionWrapper.getProjectVersionView());
         }
         logTimeElapsedWithMessage("Triggering all Black Duck notifications took %s", startingSearchDateTime, LocalDateTime.now());
 
