@@ -68,7 +68,7 @@ task helmPushChart(type: Exec) {
         }
     }
     doLast {
-        println standardOutput.toString()
+        logger.lifecycle(standardOutput.toString())
     }
 }
 
@@ -85,7 +85,7 @@ task helmPushChartBackup(type: Exec) {
         }
     }
     doLast {
-        println standardOutput.toString()
+        logger.lifecycle(standardOutput.toString())
     }
 }
 /**
