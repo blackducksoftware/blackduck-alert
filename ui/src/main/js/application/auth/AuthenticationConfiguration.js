@@ -3,7 +3,7 @@ import CommonGlobalConfigurationForm from 'common/configuration/global/CommonGlo
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import { CONTEXT_TYPE } from 'common/util/descriptorUtilities';
 import * as PropTypes from 'prop-types';
-import CommonGlobalConfiguration from 'common/configuration/global/CommonGlobalConfiguration';
+import PageHeader from '../../common/components/navigation/PageHeader';
 import TextInput from 'common/component/input/TextInput';
 import { AUTHENTICATION_INFO, AUTHENTICATION_LDAP_FIELD_KEYS, AUTHENTICATION_SAML_FIELD_KEYS, AUTHENTICATION_TEST_FIELD_KEYS } from 'application/auth/AuthenticationModel';
 import CheckboxInput from 'common/component/input/CheckboxInput';
@@ -85,11 +85,13 @@ const AuthenticationConfiguration = ({
     const importBlackDuckSSOConfigDescription = 'Fills in some of the form fields based on the SAML configuration from the chosen Black Duck server (if a SAML configuration exists).';
 
     return (
-        <CommonGlobalConfiguration
-            label={AUTHENTICATION_INFO.label}
-            description="This page allows you to configure user authentication for Alert."
-            lastUpdated={formData.lastUpdated}
-        >
+        <div>
+            <PageHeader
+                title={AUTHENTICATION_INFO.label}
+                description="This page allows you to configure user authentication for Alert."
+                lastUpdated={formData.lastUpdated}
+                icon="fingerprint"
+            />
             <CommonGlobalConfigurationForm
                 setErrors={(error) => setErrors(error)}
                 formData={formData}
@@ -382,7 +384,7 @@ const AuthenticationConfiguration = ({
                     updateSSOFieldData={(data) => setFormData(data)}
                 />
             </CommonGlobalConfigurationForm>
-        </CommonGlobalConfiguration>
+        </div>
     );
 };
 

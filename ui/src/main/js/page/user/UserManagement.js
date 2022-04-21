@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Tab, Tabs } from 'react-bootstrap';
-import ConfigurationLabel from 'common/component/ConfigurationLabel';
+import PageHeader from '../../common/components/navigation/PageHeader';
 import RoleTable from 'page/user/RoleTable';
 import UserTable from 'page/user/UserTable';
 import * as DescriptorUtilities from 'common/util/descriptorUtilities';
@@ -15,9 +15,10 @@ const UserManagement = ({ descriptors }) => {
 
     return (
         <div>
-            <ConfigurationLabel
-                configurationName={USER_MANAGEMENT_INFO.label}
+            <PageHeader
+                title={USER_MANAGEMENT_INFO.label}
                 description="This page allows you to configure users and roles for Alert."
+                icon="user"
             />
             <Tabs defaultActiveKey={1} id="user-management-tabs">
                 <Tab eventKey={1} title="Users">

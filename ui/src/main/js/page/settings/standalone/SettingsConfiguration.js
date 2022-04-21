@@ -1,7 +1,7 @@
 import React from 'react';
 import * as PropTypes from 'prop-types';
 import { Tab, Tabs } from 'react-bootstrap';
-import CommonGlobalConfiguration from 'common/configuration/global/CommonGlobalConfiguration';
+import PageHeader from '../../../common/components/navigation/PageHeader';
 import { SETTINGS_INFO } from 'page/settings/SettingsModel';
 import SettingsEncryptionConfiguration from 'page/settings/standalone/SettingsEncryptionConfiguration.js';
 import SettingsProxyConfiguration from 'page/settings/standalone/SettingsProxyConfiguration';
@@ -9,10 +9,12 @@ import SettingsProxyConfiguration from 'page/settings/standalone/SettingsProxyCo
 const SettingsConfiguration = ({
     csrfToken, errorHandler, readOnly, displayTest, displaySave, displayDelete
 }) => (
-    <CommonGlobalConfiguration
-        label={`${SETTINGS_INFO.label}`}
-        description="This page allows you to configure the global settings."
-    >
+    <div>
+        <PageHeader
+            title={`${SETTINGS_INFO.label}`}
+            description="This page allows you to configure the global settings."
+            icon="cog"
+        />
         <Tabs defaultActiveKey={1} id="settings-tabs">
             <Tab eventKey={1} title="Encryption">
                 <SettingsEncryptionConfiguration
@@ -33,7 +35,7 @@ const SettingsConfiguration = ({
                 />
             </Tab>
         </Tabs>
-    </CommonGlobalConfiguration>
+    </div>
 );
 
 SettingsConfiguration.propTypes = {

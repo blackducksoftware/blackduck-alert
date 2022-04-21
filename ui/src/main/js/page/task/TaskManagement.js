@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import ConfigurationLabel from 'common/component/ConfigurationLabel';
+import PageHeader from '../../common/components/navigation/PageHeader';
 import TableDisplay from 'common/component/table/TableDisplay';
 import ReadOnlyField from 'common/component/input/field/ReadOnlyField';
 import { fetchTasks } from 'store/actions/tasks';
@@ -143,9 +143,10 @@ class TaskManagement extends Component {
         } = this.props;
         return (
             <div>
-                <ConfigurationLabel
-                    configurationName={TASK_MANAGEMENT_INFO.label}
+                <PageHeader
+                    title={TASK_MANAGEMENT_INFO.label}
                     description="This page allows you to view the tasks running internally within Alert."
+                    icon="list"
                 />
                 <TableDisplay
                     id="task-management"

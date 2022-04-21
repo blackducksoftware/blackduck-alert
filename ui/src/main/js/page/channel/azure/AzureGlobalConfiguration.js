@@ -3,7 +3,7 @@ import * as PropTypes from 'prop-types';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
 import { CONTEXT_TYPE } from 'common/util/descriptorUtilities';
-import CommonGlobalConfiguration from 'common/configuration/global/CommonGlobalConfiguration';
+import PageHeader from '../../../common/components/navigation/PageHeader';
 import CommonGlobalConfigurationForm from 'common/configuration/global/CommonGlobalConfigurationForm';
 import PasswordInput from 'common/component/input/PasswordInput';
 import { AZURE_GLOBAL_FIELD_KEYS, AZURE_INFO } from 'page/channel/azure/AzureModel';
@@ -25,11 +25,12 @@ const AzureGlobalConfiguration = ({
     };
 
     return (
-        <CommonGlobalConfiguration
-            label={AZURE_INFO.label}
-            description="Configure the Azure Boards instance that Alert will send issue updates to."
-            lastUpdated={formData.lastUpdated}
-        >
+        <div>
+            <PageHeader
+                title={AZURE_INFO.label}
+                description="Configure the Azure Boards instance that Alert will send issue updates to."
+                lastUpdated={formData.lastUpdated}
+            />
             <CommonGlobalConfigurationForm
                 setErrors={(data) => setErrors(data)}
                 formData={formData}
@@ -102,7 +103,7 @@ const AzureGlobalConfiguration = ({
                     errorValue={errors.fieldErrors[AZURE_GLOBAL_FIELD_KEYS.configureOAuth]}
                 />
             </CommonGlobalConfigurationForm>
-        </CommonGlobalConfiguration>
+        </div>
     );
 };
 

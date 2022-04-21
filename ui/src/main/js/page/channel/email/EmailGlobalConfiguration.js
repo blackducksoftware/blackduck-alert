@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import * as PropTypes from 'prop-types';
-import CommonGlobalConfiguration from 'common/configuration/global/CommonGlobalConfiguration';
 import {
     EMAIL_GLOBAL_ADVANCED_FIELD_KEYS, EMAIL_GLOBAL_FIELD_KEYS, EMAIL_INFO, EMAIL_TEST_FIELD
 } from 'page/channel/email/EmailModels';
@@ -13,6 +12,7 @@ import * as ConfigurationRequestBuilder from 'common/util/configurationRequestBu
 import * as fieldModelUtilities from 'common/util/fieldModelUtilities';
 import FluidFieldMappingField from 'common/component/input/mapping/FluidFieldMappingField';
 import NumberInput from 'common/component/input/NumberInput';
+import PageHeader from '../../../common/components/navigation/PageHeader';
 
 const EmailGlobalConfiguration = ({
     csrfToken, errorHandler, readonly, displayTest, displaySave, displayDelete
@@ -50,11 +50,12 @@ const EmailGlobalConfiguration = ({
     };
 
     return (
-        <CommonGlobalConfiguration
-            label={`${EMAIL_INFO.label}`}
-            description="Configure the email server that Alert will send emails to."
-            lastUpdated={emailConfig.lastUpdated}
-        >
+        <div>
+            <PageHeader
+                title={`${EMAIL_INFO.label}`}
+                description="Configure the email server that Alert will send emails to."
+                lastUpdated={emailConfig.lastUpdated}
+            />
             <ConcreteConfigurationForm
                 csrfToken={csrfToken}
                 formDataId={emailConfig.id}
@@ -155,7 +156,7 @@ const EmailGlobalConfiguration = ({
                     errorValue={errors.fieldErrors[additionalPropertiesName]}
                 />
             </ConcreteConfigurationForm>
-        </CommonGlobalConfiguration>
+        </div>
     );
 };
 
