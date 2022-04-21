@@ -34,10 +34,6 @@ project.tasks.create(name: dockerSetupStagingAreaDirectory, type: Copy, group: '
     into('blackduck-alert') {
         from("${project.buildDir}/distributions/blackduck-alert-boot-${project.version}.tar")
     }
-
-    into('blackduck-alert-db') {
-        from('alert-database/src/main/resources/scripts/')
-    }
 }
 
 project.tasks.create(name: dockerBuildAllImages, group: 'Docker', description: 'Build docker images for project') {
