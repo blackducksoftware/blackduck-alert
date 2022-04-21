@@ -17,7 +17,7 @@ alertDatabaseSslMode="${ALERT_DB_SSL_MODE:-allow}"
 alertDatabaseSslKey=${ALERT_DB_SSL_KEY}
 alertDatabaseSslCert=${ALERT_DB_SSL_CERT}
 alertDatabaseSslRootCert=${ALERT_DB_SSL_ROOT_CERT}
-upgradeResourcesDir=$alertHome/alert-tar/upgradeResources
+upgradeResourcesDir=$alertHome/alert-tar/blackduck-alert-boot-$ALERT_SERVER_VERSION/upgradeResources
 
 serverCertName=$APPLICATION_NAME-server
 
