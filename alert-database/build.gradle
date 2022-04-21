@@ -1,22 +1,14 @@
-import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 
 buildscript {
     repositories {
         mavenCentral()
         maven { url 'https://plugins.gradle.org/m2/' }
     }
-
-    dependencies {
-        classpath 'com.bmuschko:gradle-docker-plugin:6.4.0'
-    }
 }
 
 ext {
     moduleName = 'com.synopsys.integration.alert.database'
-    alertDatabaseDockerImageVersion = '1.0.3-SNAPSHOT'
 }
-
-apply plugin: com.bmuschko.gradle.docker.DockerRemoteApiPlugin
 
 dependencies {
     implementation platform(project(':alert-platform'))
@@ -49,45 +41,6 @@ dependencies {
     testImplementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
 }
 
-//TODO: All these docker tasks here we should check if they can be replaced with applying the docker.gradle file.
-task dockerLogin(type: Exec) {
-    doFirst {
-        def password = "${System.env.DOCKER_INT_BLACKDUCK_PASSWORD}"
-        if (password?.trim()) {
-            standardInput = new ByteArrayInputStream(password.getBytes())
-        }
-    }
-    commandLine "docker", "login", "--username", "$System.env.DOCKER_INT_BLACKDUCK_USER", "--password-stdin"
+task buildAll(dependsOn: [build]) {
 }
 
-task stageDocker(type: Copy) {
-    into "${project.buildDir}/docker"
-    from("${project.projectDir}") {
-        include 'Dockerfile'
-        include 'src/main/resources/scripts/*'
-    }
-}
-
-task buildDockerImage(type: DockerBuildImage, dependsOn: [stageDocker]) {
-    inputDir = file("${project.buildDir}/docker")
-    buildArgs = ['VERSION': "${alertDatabaseDockerImageVersion}"]
-    images.add("blackducksoftware/${project.name}:${alertDatabaseDockerImageVersion}")
-}
-
-task cleanImage(type: Exec) {
-    commandLine "docker", "rmi", "blackducksoftware/${project.name}:${alertDatabaseDockerImageVersion}"
-}
-
-task pushImage(type: Exec, dependsOn: [buildDockerImage]) {
-    commandLine "docker", "push", "blackducksoftware/${project.name}:${alertDatabaseDockerImageVersion}"
-    finalizedBy cleanImage
-}
-
-task buildAll(dependsOn: [build, buildDockerImage]) {
-    buildDockerImage.mustRunAfter build
-}
-
-task publishDockerImage(dependsOn: [dockerLogin, pushImage]) {
-    pushImage.mustRunAfter dockerLogin
-    pushImage.mustRunAfter buildDockerImage
-}
