@@ -11,6 +11,8 @@ cat >> ${confFile} << EOL
 loopback_users.guest = false
 total_memory_available_override_value = 1GB
 log.console = true
+default_user = ${ALERT_RABBIT_USER:-sysadmin}
+default_pass = ${ALERT_RABBIT_PASSWORD:-blackduck}
 default_vhost = blackduck-alert
 queue_master_locator=min-masters
 prometheus.return_per_object_metrics = true
