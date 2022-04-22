@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { clearCertificateFieldErrors, deleteCertificate, fetchCertificates, saveCertificate, validateCertificate } from 'store/actions/certificates';
-import PageHeader from '../../common/components/navigation/PageHeader';
+import PageHeader from 'common/component/navigation/PageHeader';
 import TableDisplay from 'common/component/table/TableDisplay';
 import TextInput from 'common/component/input/TextInput';
 import TextArea from 'common/component/input/TextArea';

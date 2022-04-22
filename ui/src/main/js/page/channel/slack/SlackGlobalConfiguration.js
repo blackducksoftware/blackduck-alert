@@ -1,5 +1,5 @@
 import React from 'react';
-import PageHeader from '../../../common/components/navigation/PageHeader';
+import PageHeader from 'common/component/navigation/PageHeader';
 import { SLACK_INFO } from 'page/channel/slack/SlackModels';
 
 const SlackGlobalConfiguration = () => (

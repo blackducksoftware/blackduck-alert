@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Tab, Tabs } from 'react-bootstrap';
-import PageHeader from '../../common/components/navigation/PageHeader';
+import PageHeader from 'common/component/navigation/PageHeader';
 import RoleTable from 'page/user/RoleTable';
 import UserTable from 'page/user/UserTable';
 import * as DescriptorUtilities from 'common/util/descriptorUtilities';

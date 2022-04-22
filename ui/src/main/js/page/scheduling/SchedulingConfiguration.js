@@ -4,7 +4,7 @@ import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import { CONTEXT_TYPE } from 'common/util/descriptorUtilities';
 import { SCHEDULING_DIGEST_HOURS_OPTIONS, SCHEDULING_FIELD_KEYS, SCHEDULING_INFO, SCHEDULING_PURGE_FREQUENCY_OPTIONS } from 'page/scheduling/SchedulingModel';
 import * as PropTypes from 'prop-types';
-import PageHeader from '../../common/components/navigation/PageHeader';
+import PageHeader from 'common/component/navigation/PageHeader';
 import DynamicSelectInput from 'common/component/input/DynamicSelectInput';
 import ReadOnlyField from 'common/component/input/field/ReadOnlyField';
 import * as GlobalRequestHelper from 'common/configuration/global/GlobalRequestHelper';

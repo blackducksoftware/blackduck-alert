@@ -3,7 +3,7 @@ import CommonGlobalConfigurationForm from 'common/configuration/global/CommonGlo
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import { CONTEXT_TYPE } from 'common/util/descriptorUtilities';
 import * as PropTypes from 'prop-types';
-import PageHeader from '../../common/components/navigation/PageHeader';
+import PageHeader from 'common/component/navigation/PageHeader';
 import TextInput from 'common/component/input/TextInput';
 import { AUTHENTICATION_INFO, AUTHENTICATION_LDAP_FIELD_KEYS, AUTHENTICATION_SAML_FIELD_KEYS, AUTHENTICATION_TEST_FIELD_KEYS } from 'application/auth/AuthenticationModel';
 import CheckboxInput from 'common/component/input/CheckboxInput';

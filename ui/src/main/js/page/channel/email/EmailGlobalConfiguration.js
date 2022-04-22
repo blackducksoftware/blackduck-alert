@@ -12,7 +12,7 @@ import * as ConfigurationRequestBuilder from 'common/util/configurationRequestBu
 import * as fieldModelUtilities from 'common/util/fieldModelUtilities';
 import FluidFieldMappingField from 'common/component/input/mapping/FluidFieldMappingField';
 import NumberInput from 'common/component/input/NumberInput';
-import PageHeader from '../../../common/components/navigation/PageHeader';
+import PageHeader from 'common/component/navigation/PageHeader';
 
 const EmailGlobalConfiguration = ({
     csrfToken, errorHandler, readonly, displayTest, displaySave, displayDelete

@@ -1,7 +1,7 @@
 import React from 'react';
 import * as PropTypes from 'prop-types';
 import { Tab, Tabs } from 'react-bootstrap';
-import PageHeader from '../../../common/components/navigation/PageHeader';
+import PageHeader from 'common/component/navigation/PageHeader';
 import { SETTINGS_INFO } from 'page/settings/SettingsModel';
 import SettingsEncryptionConfiguration from 'page/settings/standalone/SettingsEncryptionConfiguration.js';
 import SettingsProxyConfiguration from 'page/settings/standalone/SettingsProxyConfiguration';

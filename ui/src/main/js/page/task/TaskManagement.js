@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import PageHeader from '../../common/components/navigation/PageHeader';
+import PageHeader from 'common/component/navigation/PageHeader';
 import TableDisplay from 'common/component/table/TableDisplay';
 import ReadOnlyField from 'common/component/input/field/ReadOnlyField';
 import { fetchTasks } from 'store/actions/tasks';

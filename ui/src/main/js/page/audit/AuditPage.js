@@ -10,7 +10,7 @@ import NotificationTypeLegend from 'page/audit/NotificationTypeLegend';
 import AuditDetails from 'page/audit/Details';
 import CheckboxInput from 'common/component/input/CheckboxInput';
 import * as DescriptorUtilities from 'common/util/descriptorUtilities';
-import PageHeader from '../../common/components/navigation/PageHeader';
+import PageHeader from 'common/component/navigation/PageHeader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import StatusMessage from 'common/component/StatusMessage';
 import '../../../css/audit.scss';

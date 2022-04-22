@@ -1,5 +1,5 @@
 import React from 'react';
-import PageHeader from '../../../common/components/navigation/PageHeader';
+import PageHeader from 'common/component/navigation/PageHeader';
 import { MSTEAMS_INFO } from 'page/channel/msteams/MSTeamsModel';
 
 const MSTeamsGlobalConfiguration = () => (
