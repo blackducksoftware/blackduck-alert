@@ -8,6 +8,7 @@ LABEL com.blackducksoftware.integration.alert.vendor="Black Duck Software, Inc."
 
 ENV JAVA_HOME /opt/java/openjdk
 
+ENV ALERT_SERVER_VERSION $VERSION
 ENV APPLICATION_NAME blackduck-alert
 ENV BLACKDUCK_HOME /opt/blackduck
 ENV CERTIFICATE_MANAGER_DIR $BLACKDUCK_HOME/alert/bin
@@ -17,7 +18,7 @@ ENV ALERT_CONFIG_HOME $ALERT_HOME/alert-config
 ENV SECURITY_DIR $ALERT_HOME/security
 ENV ALERT_TAR_HOME $ALERT_HOME/alert-tar
 ENV PATH $JAVA_HOME/bin:$PATH
-ENV PATH $ALERT_TAR_HOME/bin:$PATH
+ENV PATH $ALERT_TAR_HOME/blackduck-alert-boot-$ALERT_SERVER_VERSION/bin:$PATH
 ENV ALERT_DATA_DIR $ALERT_CONFIG_HOME/data
 ENV ALERT_LOG_DIR $ALERT_CONFIG_HOME/log
 ENV ALERT_IMAGES_DIR $ALERT_TAR_HOME/images
@@ -40,8 +41,9 @@ RUN mkdir -p -m 777 $SECURITY_DIR
 RUN mkdir -p -m 775 $ALERT_CONFIG_HOME
 RUN mkdir -p -m 775 $ALERT_DATA_DIR
 RUN mkdir -p -m 775 $ALERT_LOG_DIR
+RUN mkdir -p -m 775 $ALERT_TAR_HOME
 
-ADD blackduck-alert-boot-$VERSION.tar $ALERT_HOME/alert-tar
+ADD blackduck-alert-boot-$VERSION.tar $ALERT_TAR_HOME
 COPY --from=eclipse-temurin:11-jdk-alpine $JAVA_HOME $JAVA_HOME
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh

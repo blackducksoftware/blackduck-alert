@@ -3,7 +3,7 @@ services:
 #  alert-rabbitmq:
 #    environment:
 #      - ALERT_RABBIT_MQ_HOST=alert-rabbitmq
-#      - ALERT_RABBIT_MQ_PORT=5671
+#      - ALERT_RABBIT_MQ_PORT=5672
 #      - ALERT_RABBIT_VHOST=blackduck-alert
 #    secrets:
 #      - ALERT_RABBIT_USER
@@ -23,6 +23,11 @@ services:
 #      - ALERT_DB_PORT=5432
 #      - ALERT_DB_NAME=alertdb
 #      - ALERT_DB_SSL_MODE=require
+#
+#     # -- RabbitMQ Settings
+#      - ALERT_RABBIT_MQ_HOST=alert-rabbitmq
+#      - ALERT_RABBIT_MQ_PORT=5672
+#      - ALERT_RABBIT_VHOST=blackduck-alert
 #
 #     # -- ALERT RESET VARIABLES
 #      - ALERT_LDAP_DISABLED=false

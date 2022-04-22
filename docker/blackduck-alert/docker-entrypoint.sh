@@ -17,7 +17,7 @@ alertDatabaseSslMode="${ALERT_DB_SSL_MODE:-allow}"
 alertDatabaseSslKey=${ALERT_DB_SSL_KEY}
 alertDatabaseSslCert=${ALERT_DB_SSL_CERT}
 alertDatabaseSslRootCert=${ALERT_DB_SSL_ROOT_CERT}
-upgradeResourcesDir=$alertHome/alert-tar/upgradeResources
+upgradeResourcesDir=$alertHome/alert-tar/blackduck-alert-boot-$ALERT_SERVER_VERSION/upgradeResources
 
 serverCertName=$APPLICATION_NAME-server
 
@@ -46,6 +46,18 @@ if [ -e $dockerSecretDir/ALERT_KEY_STORE_PASSWORD ];
 then
   echo "Key Store secret set; using value from secret."
   keystorePassword=$(cat $dockerSecretDir/ALERT_KEY_STORE_PASSWORD | xargs echo)
+fi
+
+if [ -e $dockerSecretDir/ALERT_RABBIT_USER ];
+then
+  echo "RabbitMQ user secret set; using value from secret."
+  export ALERT_RABBIT_USER=$(cat $dockerSecretDir/ALERT_RABBIT_USER | xargs echo)
+fi
+
+if [ -e $dockerSecretDir/ALERT_RABBIT_PASSWORD ];
+then
+  echo "RabbitMQ password secret set; using value from secret."
+  export ALERT_RABBIT_PASSWORD=$(cat $dockerSecretDir/ALERT_RABBIT_PASSWORD | xargs echo)
 fi
 
 if [ -e $dockerSecretDir/ALERT_DB_USERNAME ];

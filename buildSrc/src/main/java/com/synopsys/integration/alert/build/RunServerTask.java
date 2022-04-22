@@ -25,7 +25,7 @@ public class RunServerTask extends Exec {
     private String externalDbPassword = "blackduck";
     private boolean externalRabbitmq = false;
     private String externalRabbitHost = "localhost";
-    private String externalRabbitPort = "5671";
+    private String externalRabbitPort = "5672";
     private String externalRabbitUser = "sysadmin";
     private String externalRabbitPassword = "blackduck";
     private String externalRabbitVirtualHost = "blackduck-alert";
