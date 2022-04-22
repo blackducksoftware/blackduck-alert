@@ -1,9 +1,12 @@
 import React from 'react';
-import EmptyGlobalConfiguration from 'common/configuration/global/EmptyGlobalConfiguration';
+import PageHeader from 'common/component/navigation/PageHeader';
 import { MSTEAMS_INFO } from 'page/channel/msteams/MSTeamsModel';
 
 const MSTeamsGlobalConfiguration = () => (
-    <EmptyGlobalConfiguration label={MSTEAMS_INFO.label} description="Configure MS Teams for Alert." />
+    <PageHeader
+        title={MSTEAMS_INFO.label}
+        description="Configure MS Teams for Alert."
+    />
 );
 
 export default MSTeamsGlobalConfiguration;
