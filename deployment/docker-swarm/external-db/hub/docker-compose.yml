@@ -2,7 +2,6 @@ version: '3.6'
 services:
   alert-rabbitmq:
     image: blackducksoftware/blackduck-alert-rabbitmq:ALERT_VERSION_TOKEN
-    ports: [ '5671' ]
     hostname: alert-rabbitmq
     healthcheck:
       test: [ CMD, rabbitmq-diagnostics, -q, status ]
