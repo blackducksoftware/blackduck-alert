@@ -37,27 +37,27 @@ public class IntegrationAlertRequestUtility implements AlertRequestUtility {
     @Override
     public String executePostRequest(String path, String requestBody, String error) throws IntegrationException {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(path)
-                                                           .content(requestBody)
-                                                           .contentType(contentType);
+            .content(requestBody)
+            .contentType(contentType);
         return executeRequest(HttpMethod.POST, requestBuilder, error);
     }
 
     @Override
     public String executePutRequest(String path, String requestBody, String error) throws IntegrationException {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(path)
-                                                           .content(requestBody)
-                                                           .contentType(contentType);
+            .content(requestBody)
+            .contentType(contentType);
         return executeRequest(HttpMethod.PUT, requestBuilder, error);
     }
 
     private String executeRequest(HttpMethod httpMethod, MockHttpServletRequestBuilder requestBuilder, String error) throws IntegrationException {
         MockHttpServletRequestBuilder request = requestBuilder
-                                                    .with(
-                                                        SecurityMockMvcRequestPostProcessors
-                                                            .user("admin")
-                                                            .roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
-                                                    )
-                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
+            .with(
+                SecurityMockMvcRequestPostProcessors
+                    .user("admin")
+                    .roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
+            )
+            .with(SecurityMockMvcRequestPostProcessors.csrf());
         try {
             MvcResult mvcResult = mockMvc.perform(request).andReturn();
             String responseContent = mvcResult.getResponse().getContentAsString();

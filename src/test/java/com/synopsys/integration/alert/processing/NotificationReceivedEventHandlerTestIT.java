@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
@@ -62,6 +63,8 @@ class NotificationReceivedEventHandlerTestIT {
     private ProviderMessageDistributor providerMessageDistributor;
     @Autowired
     private List<NotificationProcessingLifecycleCache> lifecycleCaches;
+    @Autowired
+    private TaskExecutor taskExecutor;
     private Long blackDuckGlobalConfigId;
     private TestProperties properties;
 
@@ -111,7 +114,12 @@ class NotificationReceivedEventHandlerTestIT {
         assertNotNull(savedModels);
 
         NotificationProcessor notificationProcessor = createNotificationProcessor();
-        NotificationReceivedEventHandler notificationReceivedEventHandler = new NotificationReceivedEventHandler(defaultNotificationAccessor, notificationProcessor, eventManager);
+        NotificationReceivedEventHandler notificationReceivedEventHandler = new NotificationReceivedEventHandler(
+            defaultNotificationAccessor,
+            notificationProcessor,
+            eventManager,
+            taskExecutor
+        );
         notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
 
         testAlertNotificationModels(savedModels);
@@ -128,7 +136,12 @@ class NotificationReceivedEventHandlerTestIT {
         assertEquals(0, defaultNotificationAccessor.getFirstPageOfNotificationsNotProcessed(pageSize).getModels().size());
 
         NotificationProcessor notificationProcessor = createNotificationProcessor();
-        NotificationReceivedEventHandler notificationReceivedEventHandler = new NotificationReceivedEventHandler(defaultNotificationAccessor, notificationProcessor, eventManager);
+        NotificationReceivedEventHandler notificationReceivedEventHandler = new NotificationReceivedEventHandler(
+            defaultNotificationAccessor,
+            notificationProcessor,
+            eventManager,
+            taskExecutor
+        );
         notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
 
         testAlertNotificationModels(savedModels);
@@ -144,7 +157,12 @@ class NotificationReceivedEventHandlerTestIT {
         assertNotNull(savedModels);
 
         NotificationProcessor notificationProcessor = createNotificationProcessor();
-        NotificationReceivedEventHandler notificationReceivedEventHandler = new NotificationReceivedEventHandler(defaultNotificationAccessor, notificationProcessor, eventManager);
+        NotificationReceivedEventHandler notificationReceivedEventHandler = new NotificationReceivedEventHandler(
+            defaultNotificationAccessor,
+            notificationProcessor,
+            eventManager,
+            taskExecutor
+        );
         notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
 
         testAlertNotificationModels(savedModels);
@@ -162,7 +180,12 @@ class NotificationReceivedEventHandlerTestIT {
         assertNotNull(savedModels);
 
         NotificationProcessor notificationProcessor = createNotificationProcessor();
-        NotificationReceivedEventHandler notificationReceivedEventHandler = new NotificationReceivedEventHandler(defaultNotificationAccessor, notificationProcessor, eventManagerSpy);
+        NotificationReceivedEventHandler notificationReceivedEventHandler = new NotificationReceivedEventHandler(
+            defaultNotificationAccessor,
+            notificationProcessor,
+            eventManagerSpy,
+            taskExecutor
+        );
         notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
 
         Mockito.verify(eventManagerSpy, Mockito.atLeastOnce()).sendEvent(Mockito.any());

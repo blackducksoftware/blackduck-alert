@@ -35,21 +35,26 @@ import com.synopsys.integration.rest.proxy.ProxyInfo;
 @ContextConfiguration(classes = { Application.class, ApplicationConfiguration.class, DatabaseDataSource.class, DescriptorMocker.class })
 @TestPropertySource(locations = "classpath:spring-test.properties")
 @WebAppConfiguration
-public class CopyJobPerformanceTest {
+class CopyJobPerformanceTest {
     private final Gson gson = IntegrationPerformanceTestRunner.createGson();
     private final IntLogger intLogger = new Slf4jIntLogger(LoggerFactory.getLogger(this.getClass()));
     private final IntHttpClient client = new IntHttpClient(intLogger, gson, 60, true, ProxyInfo.NO_PROXY_INFO);
     private final String alertURL = "https://localhost:8443/alert";
 
     @Test
-    @Ignore
+    @Ignore // performance test
     @Disabled
-    public void copyJobTest() throws IntegrationException {
+    void copyJobTest() throws IntegrationException {
         ExternalAlertRequestUtility alertRequestUtility = new ExternalAlertRequestUtility(intLogger, client, alertURL);
         // Create an authenticated connection to Alert
         alertRequestUtility.loginToExternalAlert();
         BlackDuckProviderService blackDuckProviderService = new BlackDuckProviderService(alertRequestUtility, gson);
-        ConfigurationManager configurationManager = new ConfigurationManager(gson, alertRequestUtility, blackDuckProviderService.getBlackDuckProviderKey(), ChannelKeys.SLACK.getUniversalKey());
+        ConfigurationManager configurationManager = new ConfigurationManager(
+            gson,
+            alertRequestUtility,
+            blackDuckProviderService.getBlackDuckProviderKey(),
+            ChannelKeys.SLACK.getUniversalKey()
+        );
         int count = 1000;
         String jobName = URLEncoder.encode("Jira Server", Charset.defaultCharset());
         for (int index = 1; index <= count; index++) {

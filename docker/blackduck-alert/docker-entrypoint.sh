@@ -48,6 +48,18 @@ then
   keystorePassword=$(cat $dockerSecretDir/ALERT_KEY_STORE_PASSWORD | xargs echo)
 fi
 
+if [ -e $dockerSecretDir/ALERT_RABBIT_USER ];
+then
+  echo "RabbitMQ user secret set; using value from secret."
+  export ALERT_RABBIT_USER=$(cat $dockerSecretDir/ALERT_RABBIT_USER | xargs echo)
+fi
+
+if [ -e $dockerSecretDir/ALERT_RABBIT_PASSWORD ];
+then
+  echo "RabbitMQ password secret set; using value from secret."
+  export ALERT_RABBIT_PASSWORD=$(cat $dockerSecretDir/ALERT_RABBIT_PASSWORD | xargs echo)
+fi
+
 if [ -e $dockerSecretDir/ALERT_DB_USERNAME ];
 then
   echo "Alert Database user secret set; using value from secret."

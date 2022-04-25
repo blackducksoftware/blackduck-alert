@@ -8,7 +8,6 @@ buildscript {
 
     dependencies {
         classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
-        classpath 'com.bmuschko:gradle-docker-plugin:6.4.0'
     }
 }
 
@@ -42,7 +41,7 @@ apply plugin: 'com.synopsys.integration.solution'
 apply from: 'buildSrc/buildTasks.gradle'
 apply from: 'buildSrc/runTasks.gradle'
 apply from: 'buildSrc/deploymentTasks.gradle'
-apply from: 'buildSrc/docker.gradle'
+apply from: 'buildSrc/docker-v2.gradle'
 
 allprojects {
     // disable the test task when running the alert server to speed up startup time.
@@ -126,25 +125,25 @@ dependencies {
     runtime 'org.slf4j:jul-to-slf4j'
 
     // Spring
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
     implementation 'org.springframework.boot:spring-boot-autoconfigure'
-    implementation 'org.springframework:spring-jms'
     implementation 'org.springframework.data:spring-data-jpa'
     implementation 'org.springframework.batch:spring-batch-core'
     implementation 'org.springframework.security:spring-security-core'
     implementation 'org.springframework.security:spring-security-web'
     implementation 'org.springframework.security:spring-security-config'
 
-    // Message Queue
-    implementation 'org.apache.activemq:activemq-broker'
-
     // =============
     // Test and Dev
     // =============
     testImplementation 'org.testcontainers:postgresql'
+    testImplementation 'org.testcontainers:rabbitmq'
     testRuntimeClasspath 'com.playtika.testcontainers:embedded-postgresql'
+    testRuntimeClasspath 'com.playtika.testcontainers:embedded-rabbitmq'
     testRuntimeClasspath 'org.springframework.cloud:spring-cloud-starter-bootstrap'
     if (getGradle().getStartParameter().taskNames.contains('runServer') && !getGradle().getStartParameter().taskNames.contains("--externaldb")) {
         runtimeClasspath 'com.playtika.testcontainers:embedded-postgresql'
+        runtimeClasspath 'com.playtika.testcontainers:embedded-rabbitmq'
         runtimeClasspath 'org.springframework.cloud:spring-cloud-starter-bootstrap'
         runtimeClasspath 'org.springframework.boot:spring-boot-devtools'
     }
@@ -200,24 +199,20 @@ artifactory {
     }
 }
 
-tasks.dockerLogin.mustRunAfter(helmPushChart)
+tasks.dockerLoginDockerHub.mustRunAfter(helmPushChart)
 
 tasks.helmPushChart.mustRunAfter(helmValidation)
 
 tasks.build.mustRunAfter(copyToTemplates)
 tasks.runServer.dependsOn copyToTemplates
-tasks.buildDockerImage.dependsOn copyToTemplates
+tasks.dockerBuildAllImages.dependsOn copyToTemplates
 tasks.test.dependsOn copyToTemplates
 
 
-task buildAll(dependsOn: [copyToTemplates, build, helmValidation, createDeploymentZip, buildDockerImage]) {
+task buildAll(dependsOn: [copyToTemplates, build, helmValidation, createDeploymentZip, dockerBuildAllImages]) {
     helmValidation.mustRunAfter build
     createDeploymentZip.mustRunAfter helmValidation
 
-    buildDockerImage.mustRunAfter createDeploymentZip
+    dockerBuildAllImages.mustRunAfter createDeploymentZip
 }
 
-task publishDockerImage(dependsOn: [dockerLogin, pushImage]) {
-    pushImage.mustRunAfter dockerLogin
-    pushImage.mustRunAfter buildDockerImage
-}
