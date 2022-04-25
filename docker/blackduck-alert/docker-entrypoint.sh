@@ -1,11 +1,15 @@
 #!/bin/sh
 
-certificateManagerDir=/opt/blackduck/alert/bin
-securityDir=/opt/blackduck/alert/security
-alertHome=/opt/blackduck/alert
-alertConfigHome=${alertHome}/alert-config
-alertDataDir=${alertConfigHome}/data
-alertDatabaseDir=${alertDataDir}/alertdb
+## VARIABLES FROM ENVIRONMENT ##
+certificateManagerDir=/opt/blackduck/alert/bin                ## ${CERTIFICATE_MANAGER_DIR}
+securityDir=/opt/blackduck/alert/security                     ## ${SECURITY_DIR}
+alertHome=/opt/blackduck/alert                                ## ${ALERT_HOME}
+alertConfigHome=${alertHome}/alert-config                     ## ${ALERT_CONFIG_HOME}
+alertDataDir=${alertConfigHome}/data                          ## ${ALERT_DATA_DIR}  ## Also change ${alertConfigHome}/data below
+alertDatabaseDir=${alertDataDir}/alertdb                      ## ${ALERT_DATA_DIR}/alertdb
+upgradeResourcesDir=$alertHome/alert-tar/upgradeResources     ## ${ALERT_TAR_HOME}/upgradeResources  ## Also change $alertHome/alert-tar below
+
+## ALERT DB VARIABLES ##
 alertDatabaseHost="${ALERT_DB_HOST:-alertdb}"
 alertDatabasePort="${ALERT_DB_PORT:-5432}"
 alertDatabaseName="${ALERT_DB_NAME:-alertdb}"
@@ -17,18 +21,17 @@ alertDatabaseSslMode="${ALERT_DB_SSL_MODE:-allow}"
 alertDatabaseSslKey=${ALERT_DB_SSL_KEY}
 alertDatabaseSslCert=${ALERT_DB_SSL_CERT}
 alertDatabaseSslRootCert=${ALERT_DB_SSL_ROOT_CERT}
-upgradeResourcesDir=$alertHome/alert-tar/upgradeResources
 
+## CERTIFICATE RELATED VARIABLES ##
 serverCertName=$APPLICATION_NAME-server
-
 dockerSecretDir=${RUN_SECRETS_DIR:-/run/secrets}
 keyStoreFile=$APPLICATION_NAME.keystore
 keystoreFilePath=$securityDir/$keyStoreFile
 keystorePassword="${ALERT_KEY_STORE_PASSWORD:-changeit}"
 truststoreFile=$securityDir/$APPLICATION_NAME.truststore
 truststorePassword="${ALERT_TRUST_STORE_PASSWORD:-changeit}"
-truststoreType="${ALERT_TRUST_STORE_TYPE:-JKS}"
 
+## OTHER VARIABLES ##
 alertHostName="${ALERT_HOSTNAME:-localhost}"
 targetCAHost="${HUB_CFSSL_HOST:-cfssl}"
 targetCAPort="${HUB_CFSSL_PORT:-8888}"
@@ -64,10 +67,10 @@ if [ -e $dockerSecretDir/ALERT_DB_USERNAME ];
 then
   echo "Alert Database user secret set; using value from secret."
   alertDatabaseUser=$(cat $dockerSecretDir/ALERT_DB_USERNAME | xargs echo)
-  export ALERT_DB_USERNAME=$alertDatabaseUser;
+  export ALERT_DB_USERNAME=$alertDatabaseUser
 
-  alertDatabaseAdminUser=$alertDatabaseUser;
-  export ALERT_DB_ADMIN_USERNAME=$alertDatabaseAdminUser;
+  alertDatabaseAdminUser=$alertDatabaseUser
+  export ALERT_DB_ADMIN_USERNAME=$alertDatabaseAdminUser
   echo "Alert Database user variable set to secret value."
 fi
 
@@ -75,10 +78,10 @@ if [ -e $dockerSecretDir/ALERT_DB_PASSWORD ];
 then
   echo "Alert Database password secret set; using value from secret."
   alertDatabasePassword=$(cat $dockerSecretDir/ALERT_DB_PASSWORD | xargs echo)
-  export ALERT_DB_PASSWORD=$alertDatabasePassword;
+  export ALERT_DB_PASSWORD=$alertDatabasePassword
 
-  alertDatabaseAdminPassword=$alertDatabasePassword;
-  export ALERT_DB_ADMIN_PASSWORD=$alertDatabaseAdminPassword;
+  alertDatabaseAdminPassword=$alertDatabasePassword
+  export ALERT_DB_ADMIN_PASSWORD=$alertDatabaseAdminPassword
   echo "Alert Database password variable set to secret value."
 fi
 
@@ -86,7 +89,7 @@ if [ -e $dockerSecretDir/ALERT_DB_ADMIN_USERNAME ];
 then
   echo "Alert Database admin user secret set; using value from secret."
   alertDatabaseAdminUser=$(cat $dockerSecretDir/ALERT_DB_ADMIN_USERNAME | xargs echo)
-  export ALERT_DB_ADMIN_USERNAME=$alertDatabaseAdminUser;
+  export ALERT_DB_ADMIN_USERNAME=$alertDatabaseAdminUser
   echo "Alert Database admin user variable set to secret value."
 fi
 
@@ -94,7 +97,7 @@ if [ -e $dockerSecretDir/ALERT_DB_ADMIN_PASSWORD ];
 then
   echo "Alert Database admin password secret set; using value from secret."
   alertDatabaseAdminPassword=$(cat $dockerSecretDir/ALERT_DB_ADMIN_PASSWORD | xargs echo)
-  export ALERT_DB_ADMIN_PASSWORD=$alertDatabaseAdminPassword;
+  export ALERT_DB_ADMIN_PASSWORD=$alertDatabaseAdminPassword
   echo "Alert Database admin password variable set to secret value."
 fi
 
@@ -118,16 +121,9 @@ if [ -e $dockerSecretDir/ALERT_DB_SSL_ROOT_CERT_PATH ];
 then
   echo "Alert Database SSL key set; using value from secret."
   alertDatabaseSslRootCert=$dockerSecretDir/ALERT_DB_SSL_ROOT_CERT_PATH
-  export ALERT_DB_SSL_ROOT_CERT_PATH=alertDatabaseSslRootCert
+  export ALERT_DB_SSL_ROOT_CERT_PATH=$alertDatabaseSslRootCert
   echo "Alert Database SSL root cert variable set to secret value."
 fi
-
-alertDatabaseAdminConfig="host=$alertDatabaseHost port=$alertDatabasePort dbname=$alertDatabaseName user=$alertDatabaseAdminUser password=$alertDatabaseAdminPassword sslmode=$alertDatabaseSslMode sslkey=$alertDatabaseSslKey sslcert=$alertDatabaseSslCert sslrootcert=$alertDatabaseSslRootCert"
-alertDatabaseConfig="host=$alertDatabaseHost port=$alertDatabasePort dbname=$alertDatabaseName user=$alertDatabaseUser password=$alertDatabasePassword sslmode=$alertDatabaseSslMode sslkey=$alertDatabaseSslKey sslcert=$alertDatabaseSslCert sslrootcert=$alertDatabaseSslRootCert"
-
-echo "Alert max heap size: $ALERT_MAX_HEAP_SIZE"
-echo "Certificate authority host: $targetCAHost"
-echo "Certificate authority port: $targetCAPort"
 
 createCertificateStoreDirectory() {
   echo "Checking certificate store directory"
@@ -222,12 +218,12 @@ createTruststore() {
     then
         echo "Custom jssecacerts file found."
         echo "Copying file jssecacerts to the certificate location"
-        cp $dockerSecretDir/jssecacerts $securityDir/$APPLICATION_NAME.truststore
+        cp $dockerSecretDir/jssecacerts $truststoreFile
     elif [ -f $dockerSecretDir/cacerts ];
     then
         echo "Custom cacerts file found."
         echo "Copying file cacerts to the certificate location"
-        cp $dockerSecretDir/cacerts $securityDir/$APPLICATION_NAME.truststore
+        cp $dockerSecretDir/cacerts $truststoreFile
     else
         echo "Attempting to copy Java cacerts to create truststore."
         $certificateManagerDir/certificate-manager.sh truststore --outputDirectory $securityDir --outputFile $APPLICATION_NAME.truststore
@@ -305,7 +301,7 @@ createKeystore() {
         certFile="${dockerSecretDir}/WEBSERVER_CUSTOM_CERT_FILE"
 
         echo "Custom webserver cert and key found"
-    	echo "Using $certFile and $certKey for webserver"
+        echo "Using $certFile and $certKey for webserver"
     fi
     # Create the keystore with given private key and certificate.
     echo "Attempting to create keystore."
@@ -342,11 +338,10 @@ importBlackDuckSystemCertificateIntoKeystore() {
         exit $exitCode
     fi
 }
-# Bootstrap will optionally configure the config volume if it hasnt been configured yet.
+# Bootstrap will optionally configure the config volume if it hasn't been configured yet.
 # After that we verify, and then launch the webserver.
 
-
-importDockerHubServerCertificate(){
+importDockerHubServerCertificate() {
     if keytool -list -keystore "$truststoreFile" -storepass $truststorePassword -alias "hub.docker.com"
     then
         echo "The Docker Hub certificate is already imported."
@@ -488,15 +483,22 @@ createPostgresExtensions() {
   psql "${alertDatabaseAdminConfig}" -f ${upgradeResourcesDir}/create_extension.sql
 }
 
+alertDatabaseAdminConfig="host=$alertDatabaseHost port=$alertDatabasePort dbname=$alertDatabaseName user=$alertDatabaseAdminUser password=$alertDatabaseAdminPassword sslmode=$alertDatabaseSslMode sslkey=$alertDatabaseSslKey sslcert=$alertDatabaseSslCert sslrootcert=$alertDatabaseSslRootCert"
+alertDatabaseConfig="host=$alertDatabaseHost port=$alertDatabasePort dbname=$alertDatabaseName user=$alertDatabaseUser password=$alertDatabasePassword sslmode=$alertDatabaseSslMode sslkey=$alertDatabaseSslKey sslcert=$alertDatabaseSslCert sslrootcert=$alertDatabaseSslRootCert"
+
+echo "Alert max heap size: $ALERT_MAX_HEAP_SIZE"
+echo "Certificate authority host: $targetCAHost"
+echo "Certificate authority port: $targetCAPort"
+
 if [ ! -f "$certificateManagerDir/certificate-manager.sh" ];
 then
   echo "ERROR: certificate management script is not present."
   sleep 10
-  exit 1;
+  exit 1
 else
   validatePostgresConnection
   createCertificateStoreDirectory
-  if [ -f $secretsMountPath/WEBSERVER_CUSTOM_CERT_FILE ] && [ -f $secretsMountPath/WEBSERVER_CUSTOM_KEY_FILE ];
+  if [ -f $dockerSecretDir/WEBSERVER_CUSTOM_CERT_FILE ] && [ -f $dockerSecretDir/WEBSERVER_CUSTOM_KEY_FILE ];
   then
     echo "Custom webserver cert and key found"
     manageRootCertificate
