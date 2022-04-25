@@ -118,6 +118,19 @@ then
   echo "Alert Database SSL root cert variable set to secret value."
 fi
 
+checkStatus() {
+  if [ "${1}" -ne 0 ];
+  then
+    echo "ERROR: ${2} (Code: ${1})."
+    sleep 20
+
+    # shellcheck disable=SC2086
+    exit ${1}
+  else
+    echo "SUCCESS: ${2}."
+  fi
+}
+
 createCertificateStoreDirectory() {
   echo "Checking certificate store directory"
   if [ -d ${SECURITY_DIR} ];
@@ -133,6 +146,7 @@ manageRootCertificate() {
         --ca $targetCAHost:$targetCAPort \
         --outputDirectory ${SECURITY_DIR} \
         --profile peer
+    checkStatus $? "Executing ${CERTIFICATE_MANAGER_DIR}/certificate-manager.sh"
 }
 
 manageSelfSignedServerCertificate() {
@@ -148,17 +162,11 @@ manageSelfSignedServerCertificate() {
         --san $alertHostName \
         --san localhost \
         --hostName $targetWebAppHost
-    exitCode=$?
-    if [ $exitCode -eq 0 ];
-    then
-      echo "Generated $APPLICATION_NAME self-signed server certificate and key."
-      chmod 644 ${SECURITY_DIR}/root.crt
-      chmod 400 ${SECURITY_DIR}/$serverCertName.key
-      chmod 644 ${SECURITY_DIR}/$serverCertName.crt
-    else
-      echo "ERROR: Unable to generate $APPLICATION_NAME self-signed server certificate and key (Code: $exitCode)."
-      exit $exitCode
-    fi
+    checkStatus $? "Generating ${APPLICATION_NAME} self-signed server certificate and key"
+
+    chmod 644 ${SECURITY_DIR}/root.crt
+    chmod 400 ${SECURITY_DIR}/$serverCertName.key
+    chmod 644 ${SECURITY_DIR}/$serverCertName.crt
 }
 
 manageBlackduckSystemClientCertificate() {
@@ -167,15 +175,10 @@ manageBlackduckSystemClientCertificate() {
         --ca $targetCAHost:$targetCAPort \
         --outputDirectory ${SECURITY_DIR} \
         --commonName blackduck_system
-    exitCode=$?
-    if [ $exitCode -eq 0 ];
-    then
-        chmod 400 ${SECURITY_DIR}/blackduck_system.key
-        chmod 644 ${SECURITY_DIR}/blackduck_system.crt
-    else
-        echo "ERROR: Unable to generate blackduck_system certificate and key (Code: $exitCode)."
-        exit $exitCode
-    fi
+    checkStatus $? "Generating blackduck_system certificate and key"
+
+    chmod 400 ${SECURITY_DIR}/blackduck_system.key
+    chmod 644 ${SECURITY_DIR}/blackduck_system.crt
 
     echo "Attempting to generate blackduck_system store."
     ${CERTIFICATE_MANAGER_DIR}/certificate-manager.sh keystore \
@@ -185,12 +188,7 @@ manageBlackduckSystemClientCertificate() {
         --keyAlias blackduck_system \
         --key ${SECURITY_DIR}/blackduck_system.key \
         --cert ${SECURITY_DIR}/blackduck_system.crt
-    exitCode=$?
-    if [ $exitCode -ne 0 ];
-    then
-        echo "ERROR: Unable to generate blackduck_system store (Code: $exitCode)."
-        exit $exitCode
-    fi
+    checkStatus $? "Generating ${SECURITY_DIR}/blackduck_system.keystore"
 
     echo "Attempting to trust root certificate within the blackduck_system store."
     ${CERTIFICATE_MANAGER_DIR}/certificate-manager.sh trust-java-cert \
@@ -198,12 +196,7 @@ manageBlackduckSystemClientCertificate() {
         --password changeit \
         --cert ${SECURITY_DIR}/root.crt \
         --certAlias blackduck_root
-    exitCode=$?
-    if [ $exitCode -ne 0 ];
-    then
-      echo "ERROR: Unable to trust root certificate within the blackduck_system store (Code: $exitCode)."
-      exit $exitCode
-    fi
+    checkStatus $? "Trust root certificate within ${SECURITY_DIR}/blackduck_system.keystore"
 }
 
 createTruststore() {
@@ -220,12 +213,7 @@ createTruststore() {
     else
         echo "Attempting to copy Java cacerts to create truststore."
         ${CERTIFICATE_MANAGER_DIR}/certificate-manager.sh truststore --outputDirectory ${SECURITY_DIR} --outputFile $APPLICATION_NAME.truststore
-        exitCode=$?
-        if [ ! $exitCode -eq 0 ];
-        then
-            echo "Unable to create truststore (Code: $exitCode)."
-            exit $exitCode
-        fi
+         checkStatus $? "Create $APPLICATION_NAME.truststore"
     fi
 }
 
@@ -235,32 +223,16 @@ trustRootCertificate() {
                         --password $truststorePassword \
                         --cert ${SECURITY_DIR}/root.crt \
                         --certAlias hub-root
-
-    exitCode=$?
-    if [ $exitCode -eq 0 ];
-    then
-        echo "Successfully imported BlackDuck root certificate into Java truststore."
-    else
-        echo "Unable to import BlackDuck root certificate into Java truststore (Code: $exitCode)."
-        exit $exitCode
-    fi
+    checkStatus $? "Import ${SECURITY_DIR}/root.crt into $truststoreFile"
 }
 
 trustBlackDuckSystemCertificate() {
-  ${CERTIFICATE_MANAGER_DIR}/certificate-manager.sh trust-java-cert \
+    ${CERTIFICATE_MANAGER_DIR}/certificate-manager.sh trust-java-cert \
                         --store $truststoreFile \
                         --password $truststorePassword \
                         --cert ${SECURITY_DIR}/blackduck_system.crt \
                         --certAlias blackduck_system
-
-    exitCode=$?
-    if [ $exitCode -eq 0 ];
-    then
-        echo "Successfully imported BlackDuck root certificate into Java truststore."
-    else
-        echo "Unable to import BlackDuck root certificate into Java truststore (Code: $exitCode)."
-        exit $exitCode
-    fi
+    checkStatus $? "Import ${SECURITY_DIR}/blackduck_system.crt into $truststoreFile"
 }
 
 trustProxyCertificate() {
@@ -305,31 +277,16 @@ createKeystore() {
                                              --keyAlias $APPLICATION_NAME \
                                              --key $certKey \
                                              --cert $certFile
-    exitCode=$?
-    if [ $exitCode -eq 0 ];
-    then
-        chmod 644 $keystoreFilePath
-    else
-        echo "Unable to create keystore (Code: $exitCode)."
-        exit $exitCode
-    fi
+    checkStatus $? "Create ${SECURITY_DIR}/$keyStoreFile"
 }
 
 importBlackDuckSystemCertificateIntoKeystore() {
-  ${CERTIFICATE_MANAGER_DIR}/certificate-manager.sh trust-java-cert \
+    ${CERTIFICATE_MANAGER_DIR}/certificate-manager.sh trust-java-cert \
                         --store $keystoreFilePath \
                         --password $keystorePassword \
                         --cert ${SECURITY_DIR}/blackduck_system.crt \
                         --certAlias blackduck_system
-
-    exitCode=$?
-    if [ $exitCode -eq 0 ];
-    then
-        echo "Successfully imported BlackDuck system certificate into Java keystore."
-    else
-        echo "Unable to import BlackDuck system certificate into Java keystore (Code: $exitCode)."
-        exit $exitCode
-    fi
+    checkStatus $? "Import ${SECURITY_DIR}/blackduck_system.crt into $keystoreFilePath"
 }
 # Bootstrap will optionally configure the config volume if it hasn't been configured yet.
 # After that we verify, and then launch the webserver.
@@ -362,59 +319,39 @@ liquibaseChangelockReset() {
 }
 
 validatePostgresConnection() {
-  # Since the database is now external to the alert container verify we can connect to the database before starting.
-  # https://stackoverflow.com/a/58784528/6921621
-    echo "Checking for postgres connectivity... "
-    if psql "${alertDatabaseConfig}" -c '\l' > /dev/null;
-    then
-      echo "Alert postgres database connection valid."
-    else
-      echo "Alert postgres connection cannot be made."
-      sleep 10
-      exit 1
-    fi
+    # Since the database is now external to the alert container verify we can connect to the database before starting.
+    # https://stackoverflow.com/a/58784528/6921621
+
+    psql "${alertDatabaseConfig}" -c '\l' > /dev/null
+    checkStatus $? "Validate postgres connection"
+}
+
+validateAlertDBExists() {
+    psql "${alertDatabaseConfig}" -c '\l' | grep -q "${alertDatabaseName}"
+    checkStatus $? "Validate database '${alertDatabaseName}' exists"
 }
 
 createPostgresDatabase() {
-  # Since the database is now external to the alert container check if the database, schema, and tables have been created for alert.
-  # https://stackoverflow.com/a/58784528/6921621
-    echo "Checking if $alertDatabaseName exists... "
-    if  psql "${alertDatabaseConfig}" -c '\l' |grep -q "$alertDatabaseName";
+    # Since the database is now external to the alert container check if the database, schema, and tables have been created for alert.
+    # https://stackoverflow.com/a/58784528/6921621
+
+    validateAlertDBExists
+
+    if psql "${alertDatabaseConfig}" -c '\dt ALERT.*' | grep -q 'field_values';
     then
-        echo "Alert postgres database exists."
-        if psql "${alertDatabaseConfig}" -c '\dt ALERT.*' |grep -q 'field_values';
-        then
-            echo "Alert postgres database tables have been successfully created."
-        else
-            echo "Alert postgres database tables have not been created. Creating database tables for database: $alertDatabaseName "
-            psql "${alertDatabaseConfig}" -f ${upgradeResourcesDir}/init_alert_db.sql
-        fi
+        echo "Alert postgres database tables have been successfully created."
     else
-        echo "Alert postgres database does not exist. Please create the database: $alertDatabaseName"
-        sleep 10
-        exit 1
+        echo "Alert postgres database tables have not been created. Creating database tables for database: $alertDatabaseName "
+        psql "${alertDatabaseConfig}" -f ${upgradeResourcesDir}/init_alert_db.sql
     fi
 }
 
 validatePostgresDatabase() {
     # https://stackoverflow.com/a/58784528/6921621
-    echo "Checking for postgres databases... "
-    if  psql "${alertDatabaseConfig}" -c '\l' | grep -q "$alertDatabaseName";
-    then
-        echo "Alert postgres database exists."
-        if psql "${alertDatabaseConfig}" -c '\dt ALERT.*' |grep -q 'field_values';
-        then
-            echo "Alert postgres database tables have been successfully created."
-        else
-            echo "Alert postgres database tables have not been created."
-            sleep 10
-            exit 1
-        fi
-    else
-        echo "Alert postgres database does not exist."
-        sleep 10
-        exit 1
-    fi
+
+    validateAlertDBExists
+    psql "${alertDatabaseConfig}" -c '\dt ALERT.*' | grep -q 'field_values'
+    checkStatus $? "Creating Alert postgres database tables"
 }
 
 postgresPrepare600Upgrade() {
@@ -484,9 +421,7 @@ echo "Certificate authority port: $targetCAPort"
 
 if [ ! -f "${CERTIFICATE_MANAGER_DIR}/certificate-manager.sh" ];
 then
-  echo "ERROR: certificate management script is not present."
-  sleep 10
-  exit 1
+  checkStatus 2 "File does not exist: ${CERTIFICATE_MANAGER_DIR}/certificate-manager.sh"
 else
   validatePostgresConnection
   createCertificateStoreDirectory
@@ -495,7 +430,7 @@ else
     echo "Custom webserver cert and key found"
     manageRootCertificate
   else
-      manageSelfSignedServerCertificate
+    manageSelfSignedServerCertificate
   fi
   manageBlackduckSystemClientCertificate
   createTruststore
