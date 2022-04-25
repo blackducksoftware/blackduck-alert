@@ -335,11 +335,11 @@ importBlackDuckSystemCertificateIntoKeystore() {
 # After that we verify, and then launch the webserver.
 
 importDockerHubServerCertificate() {
-    if keytool -list -keystore "$truststoreFile" -storepass $truststorePassword -alias "hub.docker.com"
+    if "${JAVA_HOME}/bin/keytool" -list -keystore "$truststoreFile" -storepass $truststorePassword -alias "hub.docker.com"
     then
         echo "The Docker Hub certificate is already imported."
     else
-        if keytool -printcert -rfc -sslserver "hub.docker.com" -v | keytool -importcert -keystore "$truststoreFile" -storepass $truststorePassword -alias "hub.docker.com" -noprompt
+        if "${JAVA_HOME}/bin/keytool" -printcert -rfc -sslserver "hub.docker.com" -v | "${JAVA_HOME}/bin/keytool" -importcert -keystore "$truststoreFile" -storepass $truststorePassword -alias "hub.docker.com" -noprompt
         then
             echo "Completed importing Docker Hub certificate."
         else
@@ -350,7 +350,7 @@ importDockerHubServerCertificate() {
 
 liquibaseChangelockReset() {
   echo "Begin releasing liquibase changeloglock."
-  $JAVA_HOME/bin/java -cp "${ALERT_TAR_HOME}/lib/liquibase/*" \
+  "${JAVA_HOME}/bin/java" -cp "${ALERT_TAR_HOME}/lib/liquibase/*" \
   liquibase.integration.commandline.Main \
   --url="jdbc:h2:file:${alertDatabaseDir}" \
   --username="sa" \
@@ -429,7 +429,7 @@ postgresPrepare600Upgrade() {
             echo "A previous database existed."
             liquibaseChangelockReset
             echo "Clearing old checksums for offline upgrade..."
-            ${JAVA_HOME}/bin/java -cp "${ALERT_TAR_HOME}/lib/liquibase/*" \
+            "${JAVA_HOME}/bin/java" -cp "${ALERT_TAR_HOME}/lib/liquibase/*" \
             liquibase.integration.commandline.Main \
             --url="jdbc:h2:file:${alertDatabaseDir}" \
             --username="sa" \
@@ -439,7 +439,7 @@ postgresPrepare600Upgrade() {
             clearCheckSums
 
             echo "Upgrading old database to 5.3.0 so that it can be properly exported..."
-            ${JAVA_HOME}/bin/java -cp "${ALERT_TAR_HOME}/lib/liquibase/*" \
+            "${JAVA_HOME}/bin/java" -cp "${ALERT_TAR_HOME}/lib/liquibase/*" \
             liquibase.integration.commandline.Main \
             --url="jdbc:h2:file:${alertDatabaseDir}" \
             --username="sa" \
@@ -452,7 +452,7 @@ postgresPrepare600Upgrade() {
             mkdir -m 766 ${ALERT_DATA_DIR}/temp
 
             echo "Exporting data from old database..."
-            $JAVA_HOME/bin/java -cp "${ALERT_TAR_HOME}/lib/liquibase/*" \
+            "${JAVA_HOME}/bin/java" -cp "${ALERT_TAR_HOME}/lib/liquibase/*" \
             org.h2.tools.RunScript \
             -url "jdbc:h2:${alertDatabaseDir}" \
             -user "sa" \
