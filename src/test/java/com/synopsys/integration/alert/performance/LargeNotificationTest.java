@@ -126,14 +126,7 @@ class LargeNotificationTest {
         // Create distribution job
         // TODO: Look into adding this feature in IntegrationPerformanceTestRunnerV2
         Map<String, FieldValueModel> channelFieldsMap = createChannelFieldsMap(testProperties, globalConfiguration.get().getId());
-        /*
-        Map<String, FieldValueModel> channelFieldsMap = createChannelFieldsMap(testProperties, globalConfiguration.get().getId());
-        LocalDateTime jobStartingTime = LocalDateTime.now();
-        String jobName = "JiraServerPerformanceJob";
-        String jobId = configurationManager.createJob(channelFieldsMap, jobName, blackDuckProviderID, blackDuckProviderService.getBlackDuckProjectName());
-        String jobMessage = String.format("Creating the Job %s jobs took", jobName);
-        logTimeElapsedWithMessage(jobMessage + " %s", jobStartingTime, LocalDateTime.now());
-*/
+
         // Create N number of blackduck projects
         List<ProjectVersionWrapper> projectVersionWrappers = createBlackDuckProjects(10);
 
@@ -144,7 +137,6 @@ class LargeNotificationTest {
             blackDuckProviderService,
             configurationManager
         );
-        //testRunner.runTestWithOneJob(jobId, projectVersionViews);
         testRunner.runTestWithOneJob(channelFieldsMap, "performanceJob", blackDuckProviderID, projectVersionWrappers);
     }
 

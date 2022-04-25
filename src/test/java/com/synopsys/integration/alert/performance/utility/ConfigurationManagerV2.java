@@ -25,6 +25,7 @@ import com.synopsys.integration.alert.common.rest.model.JobPagedModel;
 import com.synopsys.integration.alert.common.rest.model.JobProviderProjectFieldModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.synopsys.integration.blackduck.service.model.ProjectVersionWrapper;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
@@ -73,7 +74,8 @@ public class ConfigurationManagerV2 {
     }
 
     public String createJob(Map<String, FieldValueModel> channelFields, String jobName, String blackDuckProviderId, String blackDuckProjectName) throws IntegrationException {
-        return createJob(channelFields, jobName, blackDuckProviderId, List.of(blackDuckProjectName),
+        JobProviderProjectFieldModel providerProjectModel = new JobProviderProjectFieldModel(blackDuckProjectName, "href", false);
+        return createJob(channelFields, jobName, blackDuckProviderId, List.of(providerProjectModel),
             List.of(
                 NotificationType.BOM_EDIT,
                 NotificationType.POLICY_OVERRIDE,
@@ -84,9 +86,14 @@ public class ConfigurationManagerV2 {
         );
     }
 
-    public String createJob(Map<String, FieldValueModel> channelFields, String jobName, String blackDuckProviderId, List<String> blackDuckProjectNames)
+    public String createJob(Map<String, FieldValueModel> channelFields, String jobName, String blackDuckProviderId, List<ProjectVersionWrapper> projectVersionWrappers)
         throws IntegrationException {
-        return createJob(channelFields, jobName, blackDuckProviderId, blackDuckProjectNames,
+        List<JobProviderProjectFieldModel> providerProjectModels = projectVersionWrappers
+            .stream()
+            .map(ProjectVersionWrapper::getProjectView)
+            .map(projectView -> new JobProviderProjectFieldModel(projectView.getName(), projectView.getHref().toString(), false))
+            .collect(Collectors.toList());
+        return createJob(channelFields, jobName, blackDuckProviderId, providerProjectModels,
             List.of(
                 NotificationType.BOM_EDIT,
                 NotificationType.POLICY_OVERRIDE,
@@ -101,11 +108,15 @@ public class ConfigurationManagerV2 {
         Map<String, FieldValueModel> channelFields,
         String jobName,
         String blackDuckProviderId,
-        List<String> blackDuckProjectNames,
+        List<JobProviderProjectFieldModel> providerProjectModel,
         List<NotificationType> notificationTypes
     ) throws IntegrationException {
         List<String> notificationTypeNames = notificationTypes.stream()
             .map(Enum::name)
+            .collect(Collectors.toList());
+        List<String> blackDuckProjectNames = providerProjectModel
+            .stream()
+            .map(JobProviderProjectFieldModel::getName)
             .collect(Collectors.toList());
         Map<String, FieldValueModel> providerKeyToValues = new HashMap<>();
         providerKeyToValues.put(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID, new FieldValueModel(List.of(blackDuckProviderId), true));
@@ -116,11 +127,6 @@ public class ConfigurationManagerV2 {
         FieldModel jobProviderConfiguration = new FieldModel(blackDuckProviderKey, ConfigContextEnum.DISTRIBUTION.name(), providerKeyToValues);
 
         FieldModel jobConfiguration = new FieldModel(channelKey, ConfigContextEnum.DISTRIBUTION.name(), channelFields);
-
-        List<JobProviderProjectFieldModel> providerProjectModel = blackDuckProjectNames
-            .stream()
-            .map(name -> new JobProviderProjectFieldModel(name, "href", false))
-            .collect(Collectors.toList());
 
         JobFieldModel jobFieldModel = new JobFieldModel(
             null,
