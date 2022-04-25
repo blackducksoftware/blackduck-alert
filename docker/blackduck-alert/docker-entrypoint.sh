@@ -1,15 +1,8 @@
 #!/bin/sh
 
-## VARIABLES FROM ENVIRONMENT ##
-certificateManagerDir=/opt/blackduck/alert/bin                ## ${CERTIFICATE_MANAGER_DIR}
-securityDir=/opt/blackduck/alert/security                     ## ${SECURITY_DIR}
-alertHome=/opt/blackduck/alert                                ## ${ALERT_HOME}
-alertConfigHome=${alertHome}/alert-config                     ## ${ALERT_CONFIG_HOME}
-alertDataDir=${alertConfigHome}/data                          ## ${ALERT_DATA_DIR}  ## Also change ${alertConfigHome}/data below
-alertDatabaseDir=${alertDataDir}/alertdb                      ## ${ALERT_DATA_DIR}/alertdb
-upgradeResourcesDir=$alertHome/alert-tar/upgradeResources     ## ${ALERT_TAR_HOME}/upgradeResources  ## Also change $alertHome/alert-tar below
-
-## ALERT DB VARIABLES ##
+## ALERT VARIABLES ##
+alertDatabaseDir="${ALERT_DATA_DIR}/alertdb"
+upgradeResourcesDir="${ALERT_TAR_HOME}/upgradeResources"
 alertDatabaseHost="${ALERT_DB_HOST:-alertdb}"
 alertDatabasePort="${ALERT_DB_PORT:-5432}"
 alertDatabaseName="${ALERT_DB_NAME:-alertdb}"
@@ -21,18 +14,18 @@ alertDatabaseSslMode="${ALERT_DB_SSL_MODE:-allow}"
 alertDatabaseSslKey=${ALERT_DB_SSL_KEY}
 alertDatabaseSslCert=${ALERT_DB_SSL_CERT}
 alertDatabaseSslRootCert=${ALERT_DB_SSL_ROOT_CERT}
+alertHostName="${ALERT_HOSTNAME:-localhost}"
 
-## CERTIFICATE RELATED VARIABLES ##
+## CERTIFICATE VARIABLES ##
 serverCertName=$APPLICATION_NAME-server
 dockerSecretDir=${RUN_SECRETS_DIR:-/run/secrets}
 keyStoreFile=$APPLICATION_NAME.keystore
-keystoreFilePath=$securityDir/$keyStoreFile
+keystoreFilePath=${SECURITY_DIR}/$keyStoreFile
 keystorePassword="${ALERT_KEY_STORE_PASSWORD:-changeit}"
-truststoreFile=$securityDir/$APPLICATION_NAME.truststore
+truststoreFile=${SECURITY_DIR}/$APPLICATION_NAME.truststore
 truststorePassword="${ALERT_TRUST_STORE_PASSWORD:-changeit}"
 
 ## OTHER VARIABLES ##
-alertHostName="${ALERT_HOSTNAME:-localhost}"
 targetCAHost="${HUB_CFSSL_HOST:-cfssl}"
 targetCAPort="${HUB_CFSSL_PORT:-8888}"
 targetWebAppHost="${HUB_WEBAPP_HOST:-alert}"
@@ -127,29 +120,29 @@ fi
 
 createCertificateStoreDirectory() {
   echo "Checking certificate store directory"
-  if [ -d $securityDir ];
+  if [ -d ${SECURITY_DIR} ];
   then
-    echo "Certificate store directory $securityDir exists"
+    echo "Certificate store directory ${SECURITY_DIR} exists"
   else
-    mkdir -p -v $securityDir
+    mkdir -p -v ${SECURITY_DIR}
   fi
 }
 
 manageRootCertificate() {
-    $certificateManagerDir/certificate-manager.sh root \
+    ${CERTIFICATE_MANAGER_DIR}/certificate-manager.sh root \
         --ca $targetCAHost:$targetCAPort \
-        --outputDirectory $securityDir \
+        --outputDirectory ${SECURITY_DIR} \
         --profile peer
 }
 
 manageSelfSignedServerCertificate() {
     echo "Attempting to generate $APPLICATION_NAME self-signed server certificate and key."
-    $certificateManagerDir/certificate-manager.sh server-cert \
+    ${CERTIFICATE_MANAGER_DIR}/certificate-manager.sh server-cert \
         --ca $targetCAHost:$targetCAPort \
-        --rootcert $securityDir/root.crt \
-        --key $securityDir/$serverCertName.key \
-        --cert $securityDir/$serverCertName.crt \
-        --outputDirectory $securityDir \
+        --rootcert ${SECURITY_DIR}/root.crt \
+        --key ${SECURITY_DIR}/$serverCertName.key \
+        --cert ${SECURITY_DIR}/$serverCertName.crt \
+        --outputDirectory ${SECURITY_DIR} \
         --commonName $serverCertName \
         --san $targetWebAppHost \
         --san $alertHostName \
@@ -159,9 +152,9 @@ manageSelfSignedServerCertificate() {
     if [ $exitCode -eq 0 ];
     then
       echo "Generated $APPLICATION_NAME self-signed server certificate and key."
-      chmod 644 $securityDir/root.crt
-      chmod 400 $securityDir/$serverCertName.key
-      chmod 644 $securityDir/$serverCertName.crt
+      chmod 644 ${SECURITY_DIR}/root.crt
+      chmod 400 ${SECURITY_DIR}/$serverCertName.key
+      chmod 644 ${SECURITY_DIR}/$serverCertName.crt
     else
       echo "ERROR: Unable to generate $APPLICATION_NAME self-signed server certificate and key (Code: $exitCode)."
       exit $exitCode
@@ -170,28 +163,28 @@ manageSelfSignedServerCertificate() {
 
 manageBlackduckSystemClientCertificate() {
     echo "Attempting to generate blackduck_system client certificate and key."
-    $certificateManagerDir/certificate-manager.sh client-cert \
+    ${CERTIFICATE_MANAGER_DIR}/certificate-manager.sh client-cert \
         --ca $targetCAHost:$targetCAPort \
-        --outputDirectory $securityDir \
+        --outputDirectory ${SECURITY_DIR} \
         --commonName blackduck_system
     exitCode=$?
     if [ $exitCode -eq 0 ];
     then
-        chmod 400 $securityDir/blackduck_system.key
-        chmod 644 $securityDir/blackduck_system.crt
+        chmod 400 ${SECURITY_DIR}/blackduck_system.key
+        chmod 644 ${SECURITY_DIR}/blackduck_system.crt
     else
         echo "ERROR: Unable to generate blackduck_system certificate and key (Code: $exitCode)."
         exit $exitCode
     fi
 
     echo "Attempting to generate blackduck_system store."
-    $certificateManagerDir/certificate-manager.sh keystore \
-        --outputDirectory $securityDir \
+    ${CERTIFICATE_MANAGER_DIR}/certificate-manager.sh keystore \
+        --outputDirectory ${SECURITY_DIR} \
         --outputFile blackduck_system.keystore \
         --password changeit \
         --keyAlias blackduck_system \
-        --key $securityDir/blackduck_system.key \
-        --cert $securityDir/blackduck_system.crt
+        --key ${SECURITY_DIR}/blackduck_system.key \
+        --cert ${SECURITY_DIR}/blackduck_system.crt
     exitCode=$?
     if [ $exitCode -ne 0 ];
     then
@@ -200,10 +193,10 @@ manageBlackduckSystemClientCertificate() {
     fi
 
     echo "Attempting to trust root certificate within the blackduck_system store."
-    $certificateManagerDir/certificate-manager.sh trust-java-cert \
-        --store $securityDir/blackduck_system.keystore \
+    ${CERTIFICATE_MANAGER_DIR}/certificate-manager.sh trust-java-cert \
+        --store ${SECURITY_DIR}/blackduck_system.keystore \
         --password changeit \
-        --cert $securityDir/root.crt \
+        --cert ${SECURITY_DIR}/root.crt \
         --certAlias blackduck_root
     exitCode=$?
     if [ $exitCode -ne 0 ];
@@ -226,7 +219,7 @@ createTruststore() {
         cp $dockerSecretDir/cacerts $truststoreFile
     else
         echo "Attempting to copy Java cacerts to create truststore."
-        $certificateManagerDir/certificate-manager.sh truststore --outputDirectory $securityDir --outputFile $APPLICATION_NAME.truststore
+        ${CERTIFICATE_MANAGER_DIR}/certificate-manager.sh truststore --outputDirectory ${SECURITY_DIR} --outputFile $APPLICATION_NAME.truststore
         exitCode=$?
         if [ ! $exitCode -eq 0 ];
         then
@@ -237,10 +230,10 @@ createTruststore() {
 }
 
 trustRootCertificate() {
-    $certificateManagerDir/certificate-manager.sh trust-java-cert \
+    ${CERTIFICATE_MANAGER_DIR}/certificate-manager.sh trust-java-cert \
                         --store $truststoreFile \
                         --password $truststorePassword \
-                        --cert $securityDir/root.crt \
+                        --cert ${SECURITY_DIR}/root.crt \
                         --certAlias hub-root
 
     exitCode=$?
@@ -254,10 +247,10 @@ trustRootCertificate() {
 }
 
 trustBlackDuckSystemCertificate() {
-  $certificateManagerDir/certificate-manager.sh trust-java-cert \
+  ${CERTIFICATE_MANAGER_DIR}/certificate-manager.sh trust-java-cert \
                         --store $truststoreFile \
                         --password $truststorePassword \
-                        --cert $securityDir/blackduck_system.crt \
+                        --cert ${SECURITY_DIR}/blackduck_system.crt \
                         --certAlias blackduck_system
 
     exitCode=$?
@@ -277,7 +270,7 @@ trustProxyCertificate() {
     then
         echo "WARNING: Proxy certificate file is not found in secret. Skipping Proxy Certificate Import."
     else
-        $certificateManagerDir/certificate-manager.sh trust-java-cert \
+        ${CERTIFICATE_MANAGER_DIR}/certificate-manager.sh trust-java-cert \
                                 --store $truststoreFile \
                                 --password $truststorePassword \
                                 --cert $proxyCertificate \
@@ -293,8 +286,8 @@ trustProxyCertificate() {
 }
 
 createKeystore() {
-    certKey=$securityDir/$serverCertName.key
-    certFile=$securityDir/$serverCertName.crt
+    certKey=${SECURITY_DIR}/$serverCertName.key
+    certFile=${SECURITY_DIR}/$serverCertName.crt
     if [ -f $dockerSecretDir/WEBSERVER_CUSTOM_CERT_FILE ] && [ -f $dockerSecretDir/WEBSERVER_CUSTOM_KEY_FILE ];
     then
         certKey="${dockerSecretDir}/WEBSERVER_CUSTOM_KEY_FILE"
@@ -305,8 +298,8 @@ createKeystore() {
     fi
     # Create the keystore with given private key and certificate.
     echo "Attempting to create keystore."
-    $certificateManagerDir/certificate-manager.sh keystore \
-                                             --outputDirectory $securityDir \
+    ${CERTIFICATE_MANAGER_DIR}/certificate-manager.sh keystore \
+                                             --outputDirectory ${SECURITY_DIR} \
                                              --outputFile $keyStoreFile \
                                              --password $keystorePassword \
                                              --keyAlias $APPLICATION_NAME \
@@ -323,10 +316,10 @@ createKeystore() {
 }
 
 importBlackDuckSystemCertificateIntoKeystore() {
-  $certificateManagerDir/certificate-manager.sh trust-java-cert \
+  ${CERTIFICATE_MANAGER_DIR}/certificate-manager.sh trust-java-cert \
                         --store $keystoreFilePath \
                         --password $keystorePassword \
-                        --cert $securityDir/blackduck_system.crt \
+                        --cert ${SECURITY_DIR}/blackduck_system.crt \
                         --certAlias blackduck_system
 
     exitCode=$?
@@ -357,13 +350,13 @@ importDockerHubServerCertificate() {
 
 liquibaseChangelockReset() {
   echo "Begin releasing liquibase changeloglock."
-  $JAVA_HOME/bin/java -cp "$alertHome/alert-tar/lib/liquibase/*" \
+  $JAVA_HOME/bin/java -cp "${ALERT_TAR_HOME}/lib/liquibase/*" \
   liquibase.integration.commandline.Main \
-  --url="jdbc:h2:file:$alertDatabaseDir" \
+  --url="jdbc:h2:file:${alertDatabaseDir}" \
   --username="sa" \
   --password="" \
   --driver="org.h2.Driver" \
-  --changeLogFile="$upgradeResourcesDir/release-locks-changelog.xml" \
+  --changeLogFile="${upgradeResourcesDir}/release-locks-changelog.xml" \
   releaseLocks
   echo "End releasing liquibase changeloglock."
 }
@@ -431,12 +424,12 @@ postgresPrepare600Upgrade() {
         echo "Alert postgres database is initialized."
     else
         echo "Preparing the old Alert database to be upgraded to 6.0.0..."
-        if [ -f "${alertDataDir}/alertdb.mv.db" ];
+        if [ -f "${ALERT_DATA_DIR}/alertdb.mv.db" ];
         then
             echo "A previous database existed."
             liquibaseChangelockReset
             echo "Clearing old checksums for offline upgrade..."
-            ${JAVA_HOME}/bin/java -cp "$alertHome/alert-tar/lib/liquibase/*" \
+            ${JAVA_HOME}/bin/java -cp "${ALERT_TAR_HOME}/lib/liquibase/*" \
             liquibase.integration.commandline.Main \
             --url="jdbc:h2:file:${alertDatabaseDir}" \
             --username="sa" \
@@ -446,7 +439,7 @@ postgresPrepare600Upgrade() {
             clearCheckSums
 
             echo "Upgrading old database to 5.3.0 so that it can be properly exported..."
-            ${JAVA_HOME}/bin/java -cp "$alertHome/alert-tar/lib/liquibase/*" \
+            ${JAVA_HOME}/bin/java -cp "${ALERT_TAR_HOME}/lib/liquibase/*" \
             liquibase.integration.commandline.Main \
             --url="jdbc:h2:file:${alertDatabaseDir}" \
             --username="sa" \
@@ -456,11 +449,10 @@ postgresPrepare600Upgrade() {
             update
 
             echo "Creating temp directory for data migration..."
-            mkdir ${alertConfigHome}/data/temp
-            chmod 766 ${alertConfigHome}/data/temp
+            mkdir -m 766 ${ALERT_DATA_DIR}/temp
 
             echo "Exporting data from old database..."
-            $JAVA_HOME/bin/java -cp "${alertHome}/alert-tar/lib/liquibase/*" \
+            $JAVA_HOME/bin/java -cp "${ALERT_TAR_HOME}/lib/liquibase/*" \
             org.h2.tools.RunScript \
             -url "jdbc:h2:${alertDatabaseDir}" \
             -user "sa" \
@@ -468,7 +460,7 @@ postgresPrepare600Upgrade() {
             -driver "org.h2.Driver" \
             -script ${upgradeResourcesDir}/export_h2_tables.sql
 
-            chmod 766 ${alertConfigHome}/data/temp/*
+            chmod 766 ${ALERT_DATA_DIR}/temp/*
 
             echo "Importing data from old database into new database..."
             psql "${alertDatabaseConfig}" -f ${upgradeResourcesDir}/import_postgres_tables.sql
@@ -490,7 +482,7 @@ echo "Alert max heap size: $ALERT_MAX_HEAP_SIZE"
 echo "Certificate authority host: $targetCAHost"
 echo "Certificate authority port: $targetCAPort"
 
-if [ ! -f "$certificateManagerDir/certificate-manager.sh" ];
+if [ ! -f "${CERTIFICATE_MANAGER_DIR}/certificate-manager.sh" ];
 then
   echo "ERROR: certificate management script is not present."
   sleep 10
