@@ -30,94 +30,6 @@ targetCAHost="${HUB_CFSSL_HOST:-cfssl}"
 targetCAPort="${HUB_CFSSL_PORT:-8888}"
 targetWebAppHost="${HUB_WEBAPP_HOST:-alert}"
 
-[ -z "$ALERT_HOSTNAME" ] && echo "Alert Host: [$alertHostName]. Wrong host name? Restart the container with the right host name configured in blackduck-alert.env"
-
-if [ -e $dockerSecretDir/ALERT_TRUST_STORE_PASSWORD ];
-then
-  echo "Trust Store secret set; using value from secret."
-  truststorePassword=$(cat $dockerSecretDir/ALERT_TRUST_STORE_PASSWORD | xargs echo)
-fi
-
-if [ -e $dockerSecretDir/ALERT_KEY_STORE_PASSWORD ];
-then
-  echo "Key Store secret set; using value from secret."
-  keystorePassword=$(cat $dockerSecretDir/ALERT_KEY_STORE_PASSWORD | xargs echo)
-fi
-
-if [ -e $dockerSecretDir/ALERT_RABBIT_USER ];
-then
-  echo "RabbitMQ user secret set; using value from secret."
-  export ALERT_RABBIT_USER=$(cat $dockerSecretDir/ALERT_RABBIT_USER | xargs echo)
-fi
-
-if [ -e $dockerSecretDir/ALERT_RABBIT_PASSWORD ];
-then
-  echo "RabbitMQ password secret set; using value from secret."
-  export ALERT_RABBIT_PASSWORD=$(cat $dockerSecretDir/ALERT_RABBIT_PASSWORD | xargs echo)
-fi
-
-if [ -e $dockerSecretDir/ALERT_DB_USERNAME ];
-then
-  echo "Alert Database user secret set; using value from secret."
-  alertDatabaseUser=$(cat $dockerSecretDir/ALERT_DB_USERNAME | xargs echo)
-  export ALERT_DB_USERNAME=$alertDatabaseUser
-
-  alertDatabaseAdminUser=$alertDatabaseUser
-  export ALERT_DB_ADMIN_USERNAME=$alertDatabaseAdminUser
-  echo "Alert Database user variable set to secret value."
-fi
-
-if [ -e $dockerSecretDir/ALERT_DB_PASSWORD ];
-then
-  echo "Alert Database password secret set; using value from secret."
-  alertDatabasePassword=$(cat $dockerSecretDir/ALERT_DB_PASSWORD | xargs echo)
-  export ALERT_DB_PASSWORD=$alertDatabasePassword
-
-  alertDatabaseAdminPassword=$alertDatabasePassword
-  export ALERT_DB_ADMIN_PASSWORD=$alertDatabaseAdminPassword
-  echo "Alert Database password variable set to secret value."
-fi
-
-if [ -e $dockerSecretDir/ALERT_DB_ADMIN_USERNAME ];
-then
-  echo "Alert Database admin user secret set; using value from secret."
-  alertDatabaseAdminUser=$(cat $dockerSecretDir/ALERT_DB_ADMIN_USERNAME | xargs echo)
-  export ALERT_DB_ADMIN_USERNAME=$alertDatabaseAdminUser
-  echo "Alert Database admin user variable set to secret value."
-fi
-
-if [ -e $dockerSecretDir/ALERT_DB_ADMIN_PASSWORD ];
-then
-  echo "Alert Database admin password secret set; using value from secret."
-  alertDatabaseAdminPassword=$(cat $dockerSecretDir/ALERT_DB_ADMIN_PASSWORD | xargs echo)
-  export ALERT_DB_ADMIN_PASSWORD=$alertDatabaseAdminPassword
-  echo "Alert Database admin password variable set to secret value."
-fi
-
-if [ -e $dockerSecretDir/ALERT_DB_SSL_KEY_PATH ];
-then
-  echo "Alert Database SSL key set; using value from secret."
-  alertDatabaseSslKey=$dockerSecretDir/ALERT_DB_SSL_KEY_PATH
-  export ALERT_DB_SSL_KEY_PATH=$alertDatabaseSslKey
-  echo "Alert Database SSL key variable set to secret value."
-fi
-
-if [ -e $dockerSecretDir/ALERT_DB_SSL_CERT_PATH ];
-then
-  echo "Alert Database SSL key set; using value from secret."
-  alertDatabaseSslCert=$dockerSecretDir/ALERT_DB_SSL_CERT_PATH
-  export ALERT_DB_SSL_CERT_PATH=$alertDatabaseSslCert
-  echo "Alert Database SSL cert variable set to secret value."
-fi
-
-if [ -e $dockerSecretDir/ALERT_DB_SSL_ROOT_CERT_PATH ];
-then
-  echo "Alert Database SSL key set; using value from secret."
-  alertDatabaseSslRootCert=$dockerSecretDir/ALERT_DB_SSL_ROOT_CERT_PATH
-  export ALERT_DB_SSL_ROOT_CERT_PATH=$alertDatabaseSslRootCert
-  echo "Alert Database SSL root cert variable set to secret value."
-fi
-
 checkStatus() {
   if [ "${1}" -ne 0 ];
   then
@@ -411,6 +323,71 @@ createPostgresExtensions() {
   echo "Creating required postgres extensions."
   psql "${alertDatabaseAdminConfig}" -f ${upgradeResourcesDir}/create_extension.sql
 }
+
+setLocalVariableFromFileContents() {
+  filename="${1}"
+  localVariableName="${2}"
+  if [ -s "${filename}" ];
+  then
+    echo "${localVariableName} set with contents of ${filename}"
+    eval "${localVariableName}=$(cat "${filename}" | xargs echo)"
+  fi
+  unset filename localVariableName
+}
+
+setGlobalVariableFromFileContents() {
+  filename="${1}"
+  globalVariableName="${2}"
+  if [ -s "${filename}" ];
+  then
+    echo "${globalVariableName} set with contents of ${filename}"
+    eval "export ${globalVariableName}=$(cat "${filename}" | xargs echo)"
+  fi
+  unset filename globalVariableName
+}
+
+setVariablesFromFilePath() {
+  filename="${1}"
+  localVariableName="${2}"
+  globalVariableName="${2}"
+  if [ -s "${filename}" ];
+  then
+    echo "${globalVariableName} variables set from ${filename}"
+    eval "${localVariableName}=${filename}"
+    eval "export ${globalVariableName}=${filename}"
+  fi
+  unset filename localVariableName globalVariableName
+}
+
+setOverrideVariables() {
+    setLocalVariableFromFileContents "${dockerSecretDir}/ALERT_TRUST_STORE_PASSWORD" truststorePassword
+    setLocalVariableFromFileContents "${dockerSecretDir}/ALERT_KEY_STORE_PASSWORD" keystorePassword
+
+    setGlobalVariableFromFileContents "${dockerSecretDir}/ALERT_RABBIT_USER" ALERT_RABBIT_USER
+    setGlobalVariableFromFileContents "${dockerSecretDir}/ALERT_RABBIT_PASSWORD" ALERT_RABBIT_PASSWORD
+
+    setLocalVariableFromFileContents "${dockerSecretDir}/ALERT_DB_USERNAME" alertDatabaseUser
+    setGlobalVariableFromFileContents "${dockerSecretDir}/ALERT_DB_USERNAME" ALERT_DB_USERNAME
+    setLocalVariableFromFileContents "${dockerSecretDir}/ALERT_DB_USERNAME" alertDatabaseAdminUser
+    setGlobalVariableFromFileContents "${dockerSecretDir}/ALERT_DB_USERNAME" ALERT_DB_ADMIN_USERNAME
+    setLocalVariableFromFileContents "${dockerSecretDir}/ALERT_DB_ADMIN_USERNAME" alertDatabaseAdminUser
+    setGlobalVariableFromFileContents "${dockerSecretDir}/ALERT_DB_ADMIN_USERNAME" ALERT_DB_ADMIN_USERNAME
+
+    setLocalVariableFromFileContents "${dockerSecretDir}/ALERT_DB_PASSWORD" alertDatabasePassword
+    setGlobalVariableFromFileContents "${dockerSecretDir}/ALERT_DB_PASSWORD" ALERT_DB_PASSWORD
+    setLocalVariableFromFileContents "${dockerSecretDir}/ALERT_DB_PASSWORD" alertDatabaseAdminPassword
+    setGlobalVariableFromFileContents "${dockerSecretDir}/ALERT_DB_PASSWORD" ALERT_DB_ADMIN_PASSWORD
+    setLocalVariableFromFileContents "${dockerSecretDir}/ALERT_DB_ADMIN_PASSWORD" alertDatabaseAdminPassword
+    setGlobalVariableFromFileContents "${dockerSecretDir}/ALERT_DB_ADMIN_PASSWORD" ALERT_DB_ADMIN_PASSWORD
+
+    setVariablesFromFilePath "${dockerSecretDir}/ALERT_DB_SSL_KEY_PATH" alertDatabaseSslKey ALERT_DB_SSL_KEY_PATH
+    setVariablesFromFilePath "${dockerSecretDir}/ALERT_DB_SSL_CERT_PATH" alertDatabaseSslCert ALERT_DB_SSL_CERT_PATH
+    setVariablesFromFilePath "${dockerSecretDir}/ALERT_DB_SSL_ROOT_CERT_PATH" alertDatabaseSslRootCert ALERT_DB_SSL_ROOT_CERT_PATH
+}
+
+[ -z "$ALERT_HOSTNAME" ] && echo "Alert Host: [$alertHostName]. Wrong host name? Restart the container with the right host name configured in blackduck-alert.env"
+
+setOverrideVariables
 
 alertDatabaseAdminConfig="host=$alertDatabaseHost port=$alertDatabasePort dbname=$alertDatabaseName user=$alertDatabaseAdminUser password=$alertDatabaseAdminPassword sslmode=$alertDatabaseSslMode sslkey=$alertDatabaseSslKey sslcert=$alertDatabaseSslCert sslrootcert=$alertDatabaseSslRootCert"
 alertDatabaseConfig="host=$alertDatabaseHost port=$alertDatabasePort dbname=$alertDatabaseName user=$alertDatabaseUser password=$alertDatabasePassword sslmode=$alertDatabaseSslMode sslkey=$alertDatabaseSslKey sslcert=$alertDatabaseSslCert sslrootcert=$alertDatabaseSslRootCert"
