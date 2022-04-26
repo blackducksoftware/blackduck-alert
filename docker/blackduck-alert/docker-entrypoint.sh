@@ -1,5 +1,11 @@
 #!/bin/sh
 
+logIt() {
+  echo "$(date "+%F %T") :: ${1}"
+}
+
+logIt "Launching ${0}"
+
 ## ALERT VARIABLES ##
 alertDatabaseDir="${ALERT_DATA_DIR}/alertdb"
 upgradeResourcesDir="${ALERT_TAR_HOME}/upgradeResources"
@@ -33,11 +39,11 @@ targetWebAppHost="${HUB_WEBAPP_HOST:-alert}"
 checkStatus() {
   if [ "${1}" -ne 0 ];
   then
-    echo "ERROR: ${2} (Code: ${1})."
+    logIt "ERROR: ${2} (Code: ${1})."
     sleep 15
     exit ${1}
   fi
-  echo "SUCCESS: ${2}."
+  logIt "SUCCESS: ${2}."
 }
 
 createCertificateStoreDirectory() {
@@ -54,7 +60,7 @@ manageRootCertificate() {
 }
 
 manageSelfSignedServerCertificate() {
-    echo "Attempting to generate ${APPLICATION_NAME} self-signed server certificate and key."
+    logIt "Attempting to generate ${APPLICATION_NAME} self-signed server certificate and key."
     ${CERTIFICATE_MANAGER_DIR}/certificate-manager.sh server-cert \
         --ca $targetCAHost:$targetCAPort \
         --rootcert ${SECURITY_DIR}/root.crt \
@@ -76,7 +82,7 @@ manageSelfSignedServerCertificate() {
 manageCertificate() {
     if [ -f "${dockerSecretDir}/WEBSERVER_CUSTOM_CERT_FILE" ] && [ -f "${dockerSecretDir}/WEBSERVER_CUSTOM_KEY_FILE" ];
     then
-      echo "Custom webserver cert and key found"
+      logIt "Custom webserver cert and key found"
       manageRootCertificate
     else
       manageSelfSignedServerCertificate
@@ -84,7 +90,7 @@ manageCertificate() {
 }
 
 manageBlackduckSystemClientCertificate() {
-    echo "Attempting to generate blackduck_system client certificate and key."
+    logIt "Attempting to generate blackduck_system client certificate and key."
     ${CERTIFICATE_MANAGER_DIR}/certificate-manager.sh client-cert \
         --ca $targetCAHost:$targetCAPort \
         --outputDirectory ${SECURITY_DIR} \
@@ -94,7 +100,7 @@ manageBlackduckSystemClientCertificate() {
     chmod 400 ${SECURITY_DIR}/blackduck_system.key
     chmod 644 ${SECURITY_DIR}/blackduck_system.crt
 
-    echo "Attempting to generate blackduck_system store."
+    logIt "Attempting to generate blackduck_system store."
     ${CERTIFICATE_MANAGER_DIR}/certificate-manager.sh keystore \
         --outputDirectory ${SECURITY_DIR} \
         --outputFile blackduck_system.keystore \
@@ -104,7 +110,7 @@ manageBlackduckSystemClientCertificate() {
         --cert ${SECURITY_DIR}/blackduck_system.crt
     checkStatus $? "Generating ${SECURITY_DIR}/blackduck_system.keystore"
 
-    echo "Attempting to trust root certificate within the blackduck_system store."
+    logIt "Attempting to trust root certificate within the blackduck_system store."
     ${CERTIFICATE_MANAGER_DIR}/certificate-manager.sh trust-java-cert \
         --store ${SECURITY_DIR}/blackduck_system.keystore \
         --password changeit \
@@ -116,16 +122,16 @@ manageBlackduckSystemClientCertificate() {
 createTruststore() {
     if [ -f $dockerSecretDir/jssecacerts ];
     then
-        echo "Custom jssecacerts file found."
+        logIt "Custom jssecacerts file found."
         cp $dockerSecretDir/jssecacerts $truststoreFile
         checkStatus $? "Coping ${dockerSecretDir}/jssecacerts"
     elif [ -f $dockerSecretDir/cacerts ];
     then
-        echo "Custom cacerts file found."
+        logIt "Custom cacerts file found."
         cp $dockerSecretDir/cacerts $truststoreFile
         checkStatus $? "Coping ${dockerSecretDir}/cacerts"
     else
-        echo "Attempting to copy Java cacerts to create truststore."
+        logIt "Attempting to create ${APPLICATION_NAME}.truststore."
         ${CERTIFICATE_MANAGER_DIR}/certificate-manager.sh truststore --outputDirectory ${SECURITY_DIR} --outputFile ${APPLICATION_NAME}.truststore
         checkStatus $? "Create ${APPLICATION_NAME}.truststore"
     fi
@@ -154,7 +160,7 @@ trustProxyCertificate() {
 
     if [ ! -f "${proxyCertificate}" ];
     then
-        echo "WARNING: Proxy certificate file is not found in secret. Skipping Proxy Certificate Import."
+        logIt "WARNING: Proxy certificate file is not found in secret. Skipping Proxy Certificate Import."
     else
         ${CERTIFICATE_MANAGER_DIR}/certificate-manager.sh trust-java-cert \
                                 --store $truststoreFile \
@@ -164,9 +170,9 @@ trustProxyCertificate() {
         exitCode=$?
         if [ $exitCode -eq 0 ];
         then
-            echo "Successfully imported proxy certificate into Java truststore."
+            logIt "Successfully imported proxy certificate into Java truststore."
         else
-            echo "Unable to import proxy certificate into Java truststore (Code: $exitCode)."
+            logIt "Unable to import proxy certificate into Java truststore (Code: $exitCode)."
         fi
     fi
 }
@@ -179,11 +185,11 @@ createKeystore() {
         certKey="${dockerSecretDir}/WEBSERVER_CUSTOM_KEY_FILE"
         certFile="${dockerSecretDir}/WEBSERVER_CUSTOM_CERT_FILE"
 
-        echo "Custom webserver cert and key found"
-        echo "Using $certFile and $certKey for webserver"
+        logIt "Custom webserver cert and key found"
+        logIt "Using $certFile and $certKey for webserver"
     fi
     # Create the keystore with given private key and certificate.
-    echo "Attempting to create keystore."
+    logIt "Attempting to create keystore."
     ${CERTIFICATE_MANAGER_DIR}/certificate-manager.sh keystore \
                                              --outputDirectory ${SECURITY_DIR} \
                                              --outputFile $keyStoreFile \
@@ -208,19 +214,19 @@ importBlackDuckSystemCertificateIntoKeystore() {
 importDockerHubServerCertificate() {
     if "${JAVA_HOME}/bin/keytool" -list -keystore "$truststoreFile" -storepass $truststorePassword -alias "hub.docker.com";
     then
-        echo "The Docker Hub certificate is already imported."
+        logIt "The Docker Hub certificate is already imported."
     else
         if "${JAVA_HOME}/bin/keytool" -printcert -rfc -sslserver "hub.docker.com" -v | "${JAVA_HOME}/bin/keytool" -importcert -keystore "$truststoreFile" -storepass $truststorePassword -alias "hub.docker.com" -noprompt;
         then
-            echo "Completed importing Docker Hub certificate."
+            logIt "Completed importing Docker Hub certificate."
         else
-            echo "Unable to add the Docker Hub certificate. Please try to import the certificate manually."
+            logIt "Unable to add the Docker Hub certificate. Please try to import the certificate manually."
         fi
     fi
 }
 
 liquibaseChangelockReset() {
-  echo "Begin releasing liquibase changeloglock."
+  logIt "Begin releasing liquibase changeloglock."
   "${JAVA_HOME}/bin/java" -cp "${ALERT_TAR_HOME}/lib/liquibase/*" \
       liquibase.integration.commandline.Main \
       --url="jdbc:h2:file:${alertDatabaseDir}" \
@@ -229,7 +235,7 @@ liquibaseChangelockReset() {
       --driver="org.h2.Driver" \
       --changeLogFile="${upgradeResourcesDir}/release-locks-changelog.xml" \
       releaseLocks
-  echo "End releasing liquibase changeloglock."
+  logIt "End releasing liquibase changeloglock."
 }
 
 validatePostgresConnection() {
@@ -253,9 +259,9 @@ createPostgresDatabase() {
 
     if psql "${alertDatabaseConfig}" -c '\dt ALERT.*' | grep -q 'field_values';
     then
-        echo "Alert postgres database tables have been successfully created."
+        logIt "Alert postgres database tables have been successfully created."
     else
-        echo "Alert postgres database tables have not been created. Creating database tables for database: $alertDatabaseName "
+        logIt "Alert postgres database tables have not been created. Creating database tables for database: $alertDatabaseName "
         psql "${alertDatabaseConfig}" -f ${upgradeResourcesDir}/init_alert_db.sql
     fi
 }
@@ -269,17 +275,17 @@ validatePostgresDatabase() {
 }
 
 postgresPrepare600Upgrade() {
-    echo "Determining if preparation for 6.0.0 upgrade is necessary..."
+    logIt "Determining if preparation for 6.0.0 upgrade is necessary..."
     if psql "${alertDatabaseConfig}" -c 'SELECT COUNT(CONTEXT) FROM Alert.Config_Contexts;' | grep -q '2';
     then
-        echo "Alert postgres database is initialized."
+        logIt "Alert postgres database is initialized."
     else
-        echo "Preparing the old Alert database to be upgraded to 6.0.0..."
+        logIt "Preparing the old Alert database to be upgraded to 6.0.0..."
         if [ -f "${ALERT_DATA_DIR}/alertdb.mv.db" ];
         then
-            echo "A previous database existed."
+            logIt "A previous database existed."
             liquibaseChangelockReset
-            echo "Clearing old checksums for offline upgrade..."
+            logIt "Clearing old checksums for offline upgrade..."
             "${JAVA_HOME}/bin/java" -cp "${ALERT_TAR_HOME}/lib/liquibase/*" \
             liquibase.integration.commandline.Main \
             --url="jdbc:h2:file:${alertDatabaseDir}" \
@@ -289,7 +295,7 @@ postgresPrepare600Upgrade() {
             --changeLogFile="${upgradeResourcesDir}/changelog-master.xml" \
             clearCheckSums
 
-            echo "Upgrading old database to 5.3.0 so that it can be properly exported..."
+            logIt "Upgrading old database to 5.3.0 so that it can be properly exported..."
             "${JAVA_HOME}/bin/java" -cp "${ALERT_TAR_HOME}/lib/liquibase/*" \
             liquibase.integration.commandline.Main \
             --url="jdbc:h2:file:${alertDatabaseDir}" \
@@ -299,10 +305,10 @@ postgresPrepare600Upgrade() {
             --changeLogFile="${upgradeResourcesDir}/changelog-master.xml" \
             update
 
-            echo "Creating temp directory for data migration..."
+            logIt "Creating temp directory for data migration..."
             mkdir -m 766 ${ALERT_DATA_DIR}/temp
 
-            echo "Exporting data from old database..."
+            logIt "Exporting data from old database..."
             "${JAVA_HOME}/bin/java" -cp "${ALERT_TAR_HOME}/lib/liquibase/*" \
             org.h2.tools.RunScript \
             -url "jdbc:h2:${alertDatabaseDir}" \
@@ -313,16 +319,16 @@ postgresPrepare600Upgrade() {
 
             chmod 766 ${ALERT_DATA_DIR}/temp/*
 
-            echo "Importing data from old database into new database..."
+            logIt "Importing data from old database into new database..."
             psql "${alertDatabaseConfig}" -f ${upgradeResourcesDir}/import_postgres_tables.sql
         else
-            echo "No previous database existed."
+            logIt "No previous database existed."
         fi
     fi
 }
 
 createPostgresExtensions() {
-  echo "Creating required postgres extensions."
+  logIt "Creating required postgres extensions."
   psql "${alertDatabaseAdminConfig}" -f ${upgradeResourcesDir}/create_extension.sql
 }
 
@@ -331,7 +337,7 @@ setLocalVariableFromFileContents() {
   localVariableName="${2}"
   if [ -s "${filename}" ];
   then
-    echo "${localVariableName} set with contents of ${filename}"
+    logIt "${localVariableName} set with contents of ${filename}"
     eval "${localVariableName}=$(cat "${filename}" | xargs echo)"
   fi
   unset filename localVariableName
@@ -342,7 +348,7 @@ setGlobalVariableFromFileContents() {
   globalVariableName="${2}"
   if [ -s "${filename}" ];
   then
-    echo "${globalVariableName} set with contents of ${filename}"
+    logIt "${globalVariableName} set with contents of ${filename}"
     eval "export ${globalVariableName}=$(cat "${filename}" | xargs echo)"
   fi
   unset filename globalVariableName
@@ -354,7 +360,7 @@ setVariablesFromFilePath() {
   globalVariableName="${3}"
   if [ -s "${filename}" ];
   then
-    echo "${globalVariableName} variables set from ${filename}"
+    logIt "${globalVariableName} variables set from ${filename}"
     eval "${localVariableName}=${filename}"
     eval "export ${globalVariableName}=${filename}"
   fi
@@ -387,16 +393,16 @@ setOverrideVariables() {
     setVariablesFromFilePath "${dockerSecretDir}/ALERT_DB_SSL_ROOT_CERT_PATH" alertDatabaseSslRootCert ALERT_DB_SSL_ROOT_CERT_PATH
 }
 
-[ -z "${ALERT_HOSTNAME}" ] && echo "Alert Host: [$alertHostName]. Wrong host name? Restart the container with the right host name configured in blackduck-alert.env"
+[ -z "${ALERT_HOSTNAME}" ] && logIt "Alert Host: [$alertHostName]. Wrong host name? Restart the container with the right host name configured in blackduck-alert.env"
 
 setOverrideVariables
 
 alertDatabaseAdminConfig="host=$alertDatabaseHost port=$alertDatabasePort dbname=$alertDatabaseName user=$alertDatabaseAdminUser password=$alertDatabaseAdminPassword sslmode=$alertDatabaseSslMode sslkey=$alertDatabaseSslKey sslcert=$alertDatabaseSslCert sslrootcert=$alertDatabaseSslRootCert"
 alertDatabaseConfig="host=$alertDatabaseHost port=$alertDatabasePort dbname=$alertDatabaseName user=$alertDatabaseUser password=$alertDatabasePassword sslmode=$alertDatabaseSslMode sslkey=$alertDatabaseSslKey sslcert=$alertDatabaseSslCert sslrootcert=$alertDatabaseSslRootCert"
 
-echo "Alert max heap size: ${ALERT_MAX_HEAP_SIZE}"
-echo "Certificate authority host: $targetCAHost"
-echo "Certificate authority port: $targetCAPort"
+logIt "Alert max heap size: ${ALERT_MAX_HEAP_SIZE}"
+logIt "Certificate authority host: $targetCAHost"
+logIt "Certificate authority port: $targetCAPort"
 
 if [ ! -f "${CERTIFICATE_MANAGER_DIR}/certificate-manager.sh" ];
 then
@@ -422,8 +428,8 @@ liquibaseChangelockReset
 
 if [ -f "$truststoreFile" ];
 then
-    JAVA_OPTS="$JAVA_OPTS -Xmx${ALERT_MAX_HEAP_SIZE} -Djavax.net.ssl.trustStore=$truststoreFile"
-    export JAVA_OPTS
+    export JAVA_OPTS="$JAVA_OPTS -Xmx${ALERT_MAX_HEAP_SIZE} -Djavax.net.ssl.trustStore=$truststoreFile"
 fi
 
+logIt "Launching exec :: $@"
 exec "$@"
