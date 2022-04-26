@@ -77,12 +77,15 @@ class LargeNotificationTest {
     }
 
     @Test
-    @Disabled("Used for performance testing only.")
+    @Disabled("This test is used to populate a blackduck server with notifications and populate the blackduck database.")
     void createProjectsAndNotificationsTest() throws IntegrationException {
+        LocalDateTime startingTime = LocalDateTime.now();
+        logger.info(String.format("Starting time: %s", dateTimeFormatter.format(startingTime)));
+
         // Create Black Duck Global Provider configuration
-        LocalDateTime startingNotificationSearchDateTime = LocalDateTime.now();
+        LocalDateTime startingProviderCreateTime = LocalDateTime.now();
         blackDuckProviderService.setupBlackDuck();
-        logTimeElapsedWithMessage("Triggering the Black Duck notification took %s", startingNotificationSearchDateTime, LocalDateTime.now());
+        logTimeElapsedWithMessage("Setting up the Black Duck provider took %s", startingProviderCreateTime, LocalDateTime.now());
 
         // create 10 blackduck projects
         List<ProjectVersionWrapper> projectVersionWrappers = createBlackDuckProjects(10);
@@ -91,21 +94,25 @@ class LargeNotificationTest {
         for (ProjectVersionWrapper projectVersionWrapper : projectVersionWrappers) {
             triggerBlackDuckNotification(projectVersionWrapper.getProjectVersionView());
         }
+        logTimeElapsedWithMessage("Total test time: %s", startingTime, LocalDateTime.now());
     }
 
     @Test
     @Disabled("Used for performance testing only.")
     void largeNotificationTest() throws IntegrationException, InterruptedException {
         LocalDateTime startingTime = LocalDateTime.now();
+        logger.info(String.format("Starting time: %s", dateTimeFormatter.format(startingTime)));
+
         TestProperties testProperties = new TestProperties();
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel = jiraServerPerformanceUtility.createGlobalConfigModel(testProperties);
 
         // Create Black Duck Global Provider configuration
-        LocalDateTime startingNotificationSearchDateTime = LocalDateTime.now();
+        LocalDateTime startingProviderCreateTime = LocalDateTime.now();
         String blackDuckProviderID = blackDuckProviderService.setupBlackDuck();
-        logTimeElapsedWithMessage("Triggering the Black Duck notification took %s", startingNotificationSearchDateTime, LocalDateTime.now());
+        logTimeElapsedWithMessage("Setting up the Black Duck provider took %s", startingProviderCreateTime, LocalDateTime.now());
 
         // Create Jira Server global config
+        LocalDateTime startingCreateGlobalConfigTime = LocalDateTime.now();
         ValidationResponseModel installPluginResponse = jiraServerPerformanceUtility.installPlugin(jiraServerGlobalConfigModel);
         if (installPluginResponse.hasErrors()) {
             fail("Unable to install the Alert plugin for Jira Server. Exiting test...");
@@ -115,9 +122,9 @@ class LargeNotificationTest {
         if (globalConfiguration.isEmpty()) {
             fail("Global configuration missing.");
         }
+        logTimeElapsedWithMessage("Installing the jira server plugin and creating global configuration took %s", startingCreateGlobalConfigTime, LocalDateTime.now());
 
-        // Create distribution job
-        // TODO: Look into adding this feature in IntegrationPerformanceTestRunnerV2
+        // Create distribution job fields
         Map<String, FieldValueModel> channelFieldsMap = jiraServerPerformanceUtility.createChannelFieldsMap(testProperties, globalConfiguration.get().getId());
 
         // Create N number of blackduck projects
@@ -131,6 +138,8 @@ class LargeNotificationTest {
             configurationManager
         );
         testRunner.runTestWithOneJob(channelFieldsMap, "performanceJob", blackDuckProviderID, projectVersionWrappers);
+
+        logTimeElapsedWithMessage("Total test time: %s", startingTime, LocalDateTime.now());
     }
 
     private List<ProjectVersionWrapper> createBlackDuckProjects(int numberOfProjects) throws IntegrationException {
@@ -140,7 +149,8 @@ class LargeNotificationTest {
         for (int projectIndex = 0; projectIndex < numberOfProjects; projectIndex++) {
             projectVersionWrappers.add(blackDuckProviderService.findOrCreateBlackDuckProjectAndVersion(String.format("AlertPerformanceProject-%s", projectIndex), "version1"));
         }
-        logTimeElapsedWithMessage("Creating projects took %s", startingProjectCreationTime, LocalDateTime.now());
+        String createProjectsLogMessage = String.format("Creating %s projects took", numberOfProjects);
+        logTimeElapsedWithMessage(String.format("%s %s", createProjectsLogMessage, "%s"), startingProjectCreationTime, LocalDateTime.now());
         return projectVersionWrappers;
     }
 

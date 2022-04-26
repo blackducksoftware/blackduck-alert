@@ -98,22 +98,22 @@ public class IntegrationPerformanceTestRunnerV2 {
         String jobMessage = String.format("Creating the Job %s jobs took", jobName);
         logTimeElapsedWithMessage(jobMessage + " %s", jobStartingTime, LocalDateTime.now());
 
-        LocalDateTime startingSearchDateTime = LocalDateTime.now();
+        LocalDateTime startingNotificationTime = LocalDateTime.now();
         // trigger BD notifications
         intLogger.info("Triggered the Black Duck notification.");
         for (ProjectVersionWrapper projectVersionWrapper : projectVersionWrappers) {
             triggerBlackDuckNotification(projectVersionWrapper.getProjectVersionView());
         }
-        logTimeElapsedWithMessage("Triggering all Black Duck notifications took %s", startingSearchDateTime, LocalDateTime.now());
+        logTimeElapsedWithMessage("Triggering all Black Duck notifications took %s", startingNotificationTime, LocalDateTime.now());
 
         WaitJobConfig waitJobConfig = new WaitJobConfig(
             intLogger,
             "int performance test runner notification wait",
             600,
-            startingSearchDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+            startingNotificationTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
             20
         );
-        NotificationWaitJobTask notificationWaitJobTask = new NotificationWaitJobTask(intLogger, dateTimeFormatter, gson, alertRequestUtility, startingSearchDateTime, jobId);
+        NotificationWaitJobTask notificationWaitJobTask = new NotificationWaitJobTask(intLogger, dateTimeFormatter, gson, alertRequestUtility, startingNotificationTime, jobId);
         WaitJob<Boolean> waitForNotificationToBeProcessed = WaitJob.createSimpleWait(waitJobConfig, notificationWaitJobTask);
         boolean isComplete = waitForNotificationToBeProcessed.waitFor();
         intLogger.info("Finished waiting for the notification to be processed: " + isComplete);
