@@ -39,4 +39,4 @@ COPY --from=eclipse-temurin:11-jdk-alpine $JAVA_HOME $JAVA_HOME
 
 COPY blackduck-alert-boot-$VERSION $ALERT_TAR_HOME
 
-ENTRYPOINT [ "docker-entrypoint.sh", "$APPLICATION_NAME" ]
+ENTRYPOINT [ "docker-entrypoint.sh", "blackduck-alert" ]
