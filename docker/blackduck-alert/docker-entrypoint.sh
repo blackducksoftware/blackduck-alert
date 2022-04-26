@@ -17,12 +17,12 @@ alertDatabaseSslRootCert=${ALERT_DB_SSL_ROOT_CERT}
 alertHostName="${ALERT_HOSTNAME:-localhost}"
 
 ## CERTIFICATE VARIABLES ##
-serverCertName=$APPLICATION_NAME-server
+serverCertName=${APPLICATION_NAME}-server
 dockerSecretDir=${RUN_SECRETS_DIR:-/run/secrets}
-keyStoreFile=$APPLICATION_NAME.keystore
+keyStoreFile=${APPLICATION_NAME}.keystore
 keystoreFilePath=${SECURITY_DIR}/$keyStoreFile
 keystorePassword="${ALERT_KEY_STORE_PASSWORD:-changeit}"
-truststoreFile=${SECURITY_DIR}/$APPLICATION_NAME.truststore
+truststoreFile=${SECURITY_DIR}/${APPLICATION_NAME}.truststore
 truststorePassword="${ALERT_TRUST_STORE_PASSWORD:-changeit}"
 
 ## OTHER VARIABLES ##
@@ -34,23 +34,15 @@ checkStatus() {
   if [ "${1}" -ne 0 ];
   then
     echo "ERROR: ${2} (Code: ${1})."
-    sleep 20
-
-    # shellcheck disable=SC2086
+    sleep 15
     exit ${1}
-  else
-    echo "SUCCESS: ${2}."
   fi
+  echo "SUCCESS: ${2}."
 }
 
 createCertificateStoreDirectory() {
-  echo "Checking certificate store directory"
-  if [ -d ${SECURITY_DIR} ];
-  then
-    echo "Certificate store directory ${SECURITY_DIR} exists"
-  else
-    mkdir -p -v ${SECURITY_DIR}
-  fi
+  mkdir -p "${SECURITY_DIR}"
+  checkStatus $? "Making ${SECURITY_DIR}"
 }
 
 manageRootCertificate() {
@@ -62,7 +54,7 @@ manageRootCertificate() {
 }
 
 manageSelfSignedServerCertificate() {
-    echo "Attempting to generate $APPLICATION_NAME self-signed server certificate and key."
+    echo "Attempting to generate ${APPLICATION_NAME} self-signed server certificate and key."
     ${CERTIFICATE_MANAGER_DIR}/certificate-manager.sh server-cert \
         --ca $targetCAHost:$targetCAPort \
         --rootcert ${SECURITY_DIR}/root.crt \
@@ -79,6 +71,16 @@ manageSelfSignedServerCertificate() {
     chmod 644 ${SECURITY_DIR}/root.crt
     chmod 400 ${SECURITY_DIR}/$serverCertName.key
     chmod 644 ${SECURITY_DIR}/$serverCertName.crt
+}
+
+manageCertificate() {
+    if [ -f "${dockerSecretDir}/WEBSERVER_CUSTOM_CERT_FILE" ] && [ -f "${dockerSecretDir}/WEBSERVER_CUSTOM_KEY_FILE" ];
+    then
+      echo "Custom webserver cert and key found"
+      manageRootCertificate
+    else
+      manageSelfSignedServerCertificate
+    fi
 }
 
 manageBlackduckSystemClientCertificate() {
@@ -115,17 +117,17 @@ createTruststore() {
     if [ -f $dockerSecretDir/jssecacerts ];
     then
         echo "Custom jssecacerts file found."
-        echo "Copying file jssecacerts to the certificate location"
         cp $dockerSecretDir/jssecacerts $truststoreFile
+        checkStatus $? "Coping ${dockerSecretDir}/jssecacerts"
     elif [ -f $dockerSecretDir/cacerts ];
     then
         echo "Custom cacerts file found."
-        echo "Copying file cacerts to the certificate location"
         cp $dockerSecretDir/cacerts $truststoreFile
+        checkStatus $? "Coping ${dockerSecretDir}/cacerts"
     else
         echo "Attempting to copy Java cacerts to create truststore."
-        ${CERTIFICATE_MANAGER_DIR}/certificate-manager.sh truststore --outputDirectory ${SECURITY_DIR} --outputFile $APPLICATION_NAME.truststore
-         checkStatus $? "Create $APPLICATION_NAME.truststore"
+        ${CERTIFICATE_MANAGER_DIR}/certificate-manager.sh truststore --outputDirectory ${SECURITY_DIR} --outputFile ${APPLICATION_NAME}.truststore
+        checkStatus $? "Create ${APPLICATION_NAME}.truststore"
     fi
 }
 
@@ -150,7 +152,7 @@ trustBlackDuckSystemCertificate() {
 trustProxyCertificate() {
     proxyCertificate="$dockerSecretDir/HUB_PROXY_CERT_FILE"
 
-    if [ ! -f "$dockerSecretDir/HUB_PROXY_CERT_FILE" ];
+    if [ ! -f "${proxyCertificate}" ];
     then
         echo "WARNING: Proxy certificate file is not found in secret. Skipping Proxy Certificate Import."
     else
@@ -186,7 +188,7 @@ createKeystore() {
                                              --outputDirectory ${SECURITY_DIR} \
                                              --outputFile $keyStoreFile \
                                              --password $keystorePassword \
-                                             --keyAlias $APPLICATION_NAME \
+                                             --keyAlias ${APPLICATION_NAME} \
                                              --key $certKey \
                                              --cert $certFile
     checkStatus $? "Create ${SECURITY_DIR}/$keyStoreFile"
@@ -204,11 +206,11 @@ importBlackDuckSystemCertificateIntoKeystore() {
 # After that we verify, and then launch the webserver.
 
 importDockerHubServerCertificate() {
-    if "${JAVA_HOME}/bin/keytool" -list -keystore "$truststoreFile" -storepass $truststorePassword -alias "hub.docker.com"
+    if "${JAVA_HOME}/bin/keytool" -list -keystore "$truststoreFile" -storepass $truststorePassword -alias "hub.docker.com";
     then
         echo "The Docker Hub certificate is already imported."
     else
-        if "${JAVA_HOME}/bin/keytool" -printcert -rfc -sslserver "hub.docker.com" -v | "${JAVA_HOME}/bin/keytool" -importcert -keystore "$truststoreFile" -storepass $truststorePassword -alias "hub.docker.com" -noprompt
+        if "${JAVA_HOME}/bin/keytool" -printcert -rfc -sslserver "hub.docker.com" -v | "${JAVA_HOME}/bin/keytool" -importcert -keystore "$truststoreFile" -storepass $truststorePassword -alias "hub.docker.com" -noprompt;
         then
             echo "Completed importing Docker Hub certificate."
         else
@@ -220,13 +222,13 @@ importDockerHubServerCertificate() {
 liquibaseChangelockReset() {
   echo "Begin releasing liquibase changeloglock."
   "${JAVA_HOME}/bin/java" -cp "${ALERT_TAR_HOME}/lib/liquibase/*" \
-  liquibase.integration.commandline.Main \
-  --url="jdbc:h2:file:${alertDatabaseDir}" \
-  --username="sa" \
-  --password="" \
-  --driver="org.h2.Driver" \
-  --changeLogFile="${upgradeResourcesDir}/release-locks-changelog.xml" \
-  releaseLocks
+      liquibase.integration.commandline.Main \
+      --url="jdbc:h2:file:${alertDatabaseDir}" \
+      --username="sa" \
+      --password="" \
+      --driver="org.h2.Driver" \
+      --changeLogFile="${upgradeResourcesDir}/release-locks-changelog.xml" \
+      releaseLocks
   echo "End releasing liquibase changeloglock."
 }
 
@@ -349,7 +351,7 @@ setGlobalVariableFromFileContents() {
 setVariablesFromFilePath() {
   filename="${1}"
   localVariableName="${2}"
-  globalVariableName="${2}"
+  globalVariableName="${3}"
   if [ -s "${filename}" ];
   then
     echo "${globalVariableName} variables set from ${filename}"
@@ -385,49 +387,43 @@ setOverrideVariables() {
     setVariablesFromFilePath "${dockerSecretDir}/ALERT_DB_SSL_ROOT_CERT_PATH" alertDatabaseSslRootCert ALERT_DB_SSL_ROOT_CERT_PATH
 }
 
-[ -z "$ALERT_HOSTNAME" ] && echo "Alert Host: [$alertHostName]. Wrong host name? Restart the container with the right host name configured in blackduck-alert.env"
+[ -z "${ALERT_HOSTNAME}" ] && echo "Alert Host: [$alertHostName]. Wrong host name? Restart the container with the right host name configured in blackduck-alert.env"
 
 setOverrideVariables
 
 alertDatabaseAdminConfig="host=$alertDatabaseHost port=$alertDatabasePort dbname=$alertDatabaseName user=$alertDatabaseAdminUser password=$alertDatabaseAdminPassword sslmode=$alertDatabaseSslMode sslkey=$alertDatabaseSslKey sslcert=$alertDatabaseSslCert sslrootcert=$alertDatabaseSslRootCert"
 alertDatabaseConfig="host=$alertDatabaseHost port=$alertDatabasePort dbname=$alertDatabaseName user=$alertDatabaseUser password=$alertDatabasePassword sslmode=$alertDatabaseSslMode sslkey=$alertDatabaseSslKey sslcert=$alertDatabaseSslCert sslrootcert=$alertDatabaseSslRootCert"
 
-echo "Alert max heap size: $ALERT_MAX_HEAP_SIZE"
+echo "Alert max heap size: ${ALERT_MAX_HEAP_SIZE}"
 echo "Certificate authority host: $targetCAHost"
 echo "Certificate authority port: $targetCAPort"
 
 if [ ! -f "${CERTIFICATE_MANAGER_DIR}/certificate-manager.sh" ];
 then
   checkStatus 2 "File does not exist: ${CERTIFICATE_MANAGER_DIR}/certificate-manager.sh"
-else
-  validatePostgresConnection
-  createCertificateStoreDirectory
-  if [ -f $dockerSecretDir/WEBSERVER_CUSTOM_CERT_FILE ] && [ -f $dockerSecretDir/WEBSERVER_CUSTOM_KEY_FILE ];
-  then
-    echo "Custom webserver cert and key found"
-    manageRootCertificate
-  else
-    manageSelfSignedServerCertificate
-  fi
-  manageBlackduckSystemClientCertificate
-  createTruststore
-  trustRootCertificate
-  trustBlackDuckSystemCertificate
-  trustProxyCertificate
-  createKeystore
-  importBlackDuckSystemCertificateIntoKeystore
-  importDockerHubServerCertificate
-  createPostgresDatabase
-  validatePostgresDatabase
-  postgresPrepare600Upgrade
-  createPostgresExtensions
-  liquibaseChangelockReset
+fi
 
-  if [ -f "$truststoreFile" ];
-  then
-      JAVA_OPTS="$JAVA_OPTS -Xmx$ALERT_MAX_HEAP_SIZE -Djavax.net.ssl.trustStore=$truststoreFile"
-      export JAVA_OPTS
-  fi
+validatePostgresConnection
+createCertificateStoreDirectory
+manageCertificate
+manageBlackduckSystemClientCertificate
+createTruststore
+trustRootCertificate
+trustBlackDuckSystemCertificate
+trustProxyCertificate
+createKeystore
+importBlackDuckSystemCertificateIntoKeystore
+importDockerHubServerCertificate
+createPostgresDatabase
+validatePostgresDatabase
+postgresPrepare600Upgrade
+createPostgresExtensions
+liquibaseChangelockReset
+
+if [ -f "$truststoreFile" ];
+then
+    JAVA_OPTS="$JAVA_OPTS -Xmx${ALERT_MAX_HEAP_SIZE} -Djavax.net.ssl.trustStore=$truststoreFile"
+    export JAVA_OPTS
 fi
 
 exec "$@"
