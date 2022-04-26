@@ -7,7 +7,7 @@ task cleanBundles(type: Delete) {
     doLast {
         File staticResourcesDirectory = new File('src/main/static')
         if (staticResourcesDirectory.exists()) {
-            println "Deleting ${staticResourcesDirectory.canonicalPath}"
+            logger.lifecycle('Deleting ' + staticResourcesDirectory.canonicalPath)
             staticResourcesDirectory.deleteDir()
         }
     }

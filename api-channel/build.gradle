@@ -4,7 +4,7 @@ dependencies {
     api project(':api-environment')
     api project(':api-event')
     api project(':api-processor')
-    api 'jakarta.jms:jakarta.jms-api'
+    api 'org.springframework.amqp:spring-amqp'
     api 'org.springframework:spring-context'
 
     implementation platform(project(':alert-platform'))
@@ -13,8 +13,6 @@ dependencies {
     implementation project(':api-descriptor')
 
     implementation 'com.synopsys.integration:integration-rest'
-
-    implementation 'org.springframework:spring-jms'
 
     testImplementation project(':test-common')
 }

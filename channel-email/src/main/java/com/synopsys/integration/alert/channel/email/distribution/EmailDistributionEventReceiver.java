@@ -8,6 +8,7 @@
 package com.synopsys.integration.alert.channel.email.distribution;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -18,8 +19,8 @@ import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
 @Component
 public class EmailDistributionEventReceiver extends DistributionEventReceiver<EmailJobDetailsModel> {
     @Autowired
-    public EmailDistributionEventReceiver(Gson gson, EmailChannelKey channelKey, EmailDistributionEventHandler distributionEventHandler) {
-        super(gson, channelKey, distributionEventHandler);
+    public EmailDistributionEventReceiver(Gson gson, TaskExecutor taskExecutor, EmailChannelKey channelKey, EmailDistributionEventHandler distributionEventHandler) {
+        super(gson, taskExecutor, channelKey, distributionEventHandler);
     }
 
 }

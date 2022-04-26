@@ -40,9 +40,10 @@ RUN mkdir -p -m 777 $SECURITY_DIR
 RUN mkdir -p -m 775 $ALERT_CONFIG_HOME
 RUN mkdir -p -m 775 $ALERT_DATA_DIR
 RUN mkdir -p -m 775 $ALERT_LOG_DIR
+RUN mkdir -p -m 775 $ALERT_TAR_HOME
 
-COPY blackduck-alert-boot-$VERSION $ALERT_HOME/alert-tar
-COPY --from=eclipse-temurin:17-jdk-alpine $JAVA_HOME $JAVA_HOME
+COPY blackduck-alert-boot-$VERSION $ALERT_TAR_HOME
+COPY --from=eclipse-temurin:11-jdk-alpine $JAVA_HOME $JAVA_HOME
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 COPY --from=docker-common healthcheck.sh /usr/local/bin/docker-healthcheck.sh

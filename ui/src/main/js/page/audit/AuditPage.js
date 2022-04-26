@@ -10,10 +10,10 @@ import NotificationTypeLegend from 'page/audit/NotificationTypeLegend';
 import AuditDetails from 'page/audit/Details';
 import CheckboxInput from 'common/component/input/CheckboxInput';
 import * as DescriptorUtilities from 'common/util/descriptorUtilities';
-import ConfigurationLabel from 'common/component/ConfigurationLabel';
+import PageHeader from 'common/component/navigation/PageHeader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import StatusMessage from 'common/component/StatusMessage';
-import '../../../css/audit.scss';
+import 'css/audit.scss';
 import { AUDIT_INFO } from 'page/audit/AuditModel';
 import { EXISTING_CHANNELS, EXISTING_PROVIDERS } from 'common/DescriptorInfo';
 import { ProgressIcon } from 'common/component/table/ProgressIcon';
@@ -316,7 +316,11 @@ class AuditPage extends Component {
 
         return (
             <div>
-                <ConfigurationLabel configurationName={AUDIT_INFO.label} description="Audit tracks all distribution events that have been produced by Alert and displays whether the event was successful or not. If an event fails, this page offers the ability to resend that event and see why it failed." />
+                <PageHeader
+                    title={AUDIT_INFO.label}
+                    description="Audit tracks all distribution events that have been produced by Alert and displays whether the event was successful or not. If an event fails, this page offers the ability to resend that event and see why it failed."
+                    icon="check"
+                />
                 <div className="pull-right">
                     <AutoRefresh startAutoReload={this.reloadAuditEntries} autoRefresh={autoRefresh} isEnabled={shouldRefresh} />
                 </div>

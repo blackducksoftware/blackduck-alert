@@ -1,5 +1,13 @@
 version: '3.6'
 services:
+#  alert-rabbitmq:
+#    environment:
+#      - ALERT_RABBIT_MQ_HOST=alert-rabbitmq
+#      - ALERT_RABBIT_MQ_PORT=5672
+#      - ALERT_RABBIT_VHOST=blackduck-alert
+#    secrets:
+#      - ALERT_RABBIT_USER
+#      - ALERT_RABBIT_PASSWORD
 #  alert:
 #    # uncomment environment to set environment variables for the alert service.
 #    environment:
@@ -15,6 +23,11 @@ services:
 #      - ALERT_DB_PORT=5432
 #      - ALERT_DB_NAME=alertdb
 #      - ALERT_DB_SSL_MODE=require
+#
+#     # -- RabbitMQ Settings
+#      - ALERT_RABBIT_MQ_HOST=alert-rabbitmq
+#      - ALERT_RABBIT_MQ_PORT=5672
+#      - ALERT_RABBIT_VHOST=blackduck-alert
 #
 #     # -- ALERT RESET VARIABLES
 #      - ALERT_LDAP_DISABLED=false
@@ -133,6 +146,8 @@ services:
 #      - ALERT_DB_SSL_KEY_PATH
 #      - ALERT_DB_SSL_CERT_PATH
 #      - ALERT_DB_SSL_ROOT_CERT_PATH
+#      - ALERT_RABBIT_USER
+#      - ALERT_RABBIT_PASSWORD
 #      # -- Custom Certificate Usage
 #      - source: jssecacerts
 #        target: jssecacerts
@@ -186,3 +201,9 @@ services:
 #  ALERT_DB_SSL_ROOT_CERT_PATH:
 #    external: true
 #    name: "<STACK_NAME>_ALERT_DB_SSL_ROOT_CERT_PATH"
+#  ALERT_RABBIT_USER:
+#    external: true
+#    name: "<STACK_NAME>_ALERT_RABBIT_USER"
+#  ALERT_RABBIT_PASSWORD:
+#    external: true
+#    name: "<STACK_NAME>_ALERT_RABBIT_PASSWORD"

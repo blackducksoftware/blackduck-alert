@@ -8,6 +8,7 @@
 package com.synopsys.integration.alert.channel.slack.distribution;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -18,8 +19,8 @@ import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
 @Component
 public class SlackDistributionEventReceiver extends DistributionEventReceiver<SlackJobDetailsModel> {
     @Autowired
-    public SlackDistributionEventReceiver(Gson gson, SlackChannelKey channelKey, SlackDistributionEventHandler distributionEventHandler) {
-        super(gson, channelKey, distributionEventHandler);
+    public SlackDistributionEventReceiver(Gson gson, TaskExecutor taskExecutor, SlackChannelKey channelKey, SlackDistributionEventHandler distributionEventHandler) {
+        super(gson, taskExecutor, channelKey, distributionEventHandler);
     }
 
 }

@@ -14,7 +14,6 @@ import org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jms.annotation.EnableJms;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -29,7 +28,6 @@ import com.synopsys.integration.alert.component.authentication.security.database
 @EnableBatchProcessing
 @EnableScheduling
 @EnableAsync(proxyTargetClass = true)
-@EnableJms
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @SpringBootApplication(exclude = { BatchAutoConfiguration.class })
 public class Application {

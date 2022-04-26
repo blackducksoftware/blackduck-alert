@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { clearCertificateFieldErrors, deleteCertificate, fetchCertificates, saveCertificate, validateCertificate } from 'store/actions/certificates';
-import ConfigurationLabel from 'common/component/ConfigurationLabel';
+import PageHeader from 'common/component/navigation/PageHeader';
 import TableDisplay from 'common/component/table/TableDisplay';
 import TextInput from 'common/component/input/TextInput';
 import TextArea from 'common/component/input/TextArea';
@@ -195,7 +195,11 @@ class CertificatesPage extends Component {
         return (
             <div>
                 <div>
-                    <ConfigurationLabel configurationName={CERTIFICATE_INFO.label} description="This page allows you to configure certificates for Alert to establish secure communication." />
+                    <PageHeader
+                        title={CERTIFICATE_INFO.label}
+                        description="This page allows you to configure certificates for Alert to establish secure communication."
+                        icon="award"
+                    />
                 </div>
                 <div>
                     <TableDisplay

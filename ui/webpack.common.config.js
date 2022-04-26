@@ -10,13 +10,16 @@ const buildDir = path.resolve(__dirname, 'build', 'resources', 'main', 'static')
 module.exports = {
     resolve: {
         modules: [path.resolve(__dirname, 'src', 'main', 'js'), 'node_modules'],
-        extensions: ['.js']
+        alias: {
+            'css': path.resolve(srcDir, 'main', 'css')
+        },
+        extensions: ['.js', '.scss']
     },
     entry: ['@babel/polyfill', 'whatwg-fetch', path.resolve(jsDir, 'Index')],
     output: {
         path: buildDir,
         filename: 'js/bundle.js',
-        publicPath: '/alert/'
+        publicPath: '/'
     },
     module: {
         rules: [{
