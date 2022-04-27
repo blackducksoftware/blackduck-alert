@@ -13,7 +13,7 @@ import * as DescriptorUtilities from 'common/util/descriptorUtilities';
 import PageHeader from 'common/component/navigation/PageHeader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import StatusMessage from 'common/component/StatusMessage';
-import 'css/audit.scss';
+import '../../../css/audit.scss';
 import { AUDIT_INFO } from 'page/audit/AuditModel';
 import { EXISTING_CHANNELS, EXISTING_PROVIDERS } from 'common/DescriptorInfo';
 import { ProgressIcon } from 'common/component/table/ProgressIcon';
