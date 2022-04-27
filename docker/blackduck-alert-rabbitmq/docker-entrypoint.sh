@@ -94,7 +94,7 @@ if [ "${isSsl}" = 'true' ] ; then
 
   manageSelfSignedServerCertificate
 
-  export RABBITMQ_SSL_CACERTFILE="${SECURITY_DIR}/root.cr"
+  export RABBITMQ_SSL_CACERTFILE="${SECURITY_DIR}/root.crt"
   export RABBITMQ_SSL_CERTFILE="${SECURITY_DIR}/$blackduckRabbitMqServerCertName.crt"
   export RABBITMQ_SSL_KEYFILE="${SECURITY_DIR}/$blackduckRabbitMqServerCertName.key"
 fi
