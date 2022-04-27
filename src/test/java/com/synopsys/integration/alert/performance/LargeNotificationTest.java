@@ -1,14 +1,11 @@
 package com.synopsys.integration.alert.performance;
 
-import static org.junit.jupiter.api.Assertions.fail;
-
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -25,7 +22,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.Application;
-import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.configuration.ApplicationConfiguration;
@@ -59,22 +55,28 @@ class LargeNotificationTest {
     private final Gson gson = IntegrationPerformanceTestRunnerV2.createGson();
     private final DateTimeFormatter dateTimeFormatter = IntegrationPerformanceTestRunnerV2.createDateTimeFormatter();
 
-    private AlertRequestUtility alertRequestUtility;
     private BlackDuckProviderService blackDuckProviderService;
-    private ConfigurationManagerV2 configurationManager;
     private JiraServerPerformanceUtility jiraServerPerformanceUtility;
+    private IntegrationPerformanceTestRunnerV2 testRunner;
 
     @BeforeEach
     public void init() {
-        alertRequestUtility = IntegrationPerformanceTestRunnerV2.createAlertRequestUtility(webApplicationContext);
+        AlertRequestUtility alertRequestUtility = IntegrationPerformanceTestRunnerV2.createAlertRequestUtility(webApplicationContext);
         blackDuckProviderService = new BlackDuckProviderService(alertRequestUtility, gson);
-        configurationManager = new ConfigurationManagerV2(
+        ConfigurationManagerV2 configurationManager = new ConfigurationManagerV2(
             gson,
             alertRequestUtility,
             blackDuckProviderService.getBlackDuckProviderKey(),
             CHANNEL_KEY.getUniversalKey()
         );
         jiraServerPerformanceUtility = new JiraServerPerformanceUtility(alertRequestUtility, configurationManager);
+        testRunner = new IntegrationPerformanceTestRunnerV2(
+            gson,
+            dateTimeFormatter,
+            alertRequestUtility,
+            blackDuckProviderService,
+            configurationManager
+        );
     }
 
     @Test
@@ -114,32 +116,19 @@ class LargeNotificationTest {
 
         // Create Jira Server global config
         LocalDateTime startingCreateGlobalConfigTime = LocalDateTime.now();
-        ValidationResponseModel installPluginResponse = jiraServerPerformanceUtility.installPlugin(jiraServerGlobalConfigModel);
-        if (installPluginResponse.hasErrors()) {
-            fail("Unable to install the Alert plugin for Jira Server. Exiting test...");
-        }
-
-        Optional<JiraServerGlobalConfigModel> globalConfiguration = jiraServerPerformanceUtility.createGlobalConfiguration(jiraServerGlobalConfigModel);
-        if (globalConfiguration.isEmpty()) {
-            fail("Global configuration missing.");
-        }
+        JiraServerGlobalConfigModel globalConfiguration = jiraServerPerformanceUtility.createJiraGlobalConfiguration(jiraServerGlobalConfigModel);
         logTimeElapsedWithMessage("Installing the jira server plugin and creating global configuration took %s", startingCreateGlobalConfigTime, LocalDateTime.now());
 
         // Create distribution job fields
-        Map<String, FieldValueModel> channelFieldsMap = jiraServerPerformanceUtility.createChannelFieldsMap(testProperties, globalConfiguration.get().getId());
+        Map<String, FieldValueModel> channelFieldsMap = jiraServerPerformanceUtility.createChannelFieldsMap(testProperties, globalConfiguration.getId());
 
         // Create N number of blackduck projects
         List<ProjectVersionWrapper> projectVersionWrappers = createBlackDuckProjects(NUMBER_OF_PROJECTS_TO_CREATE);
 
-        IntegrationPerformanceTestRunnerV2 testRunner = new IntegrationPerformanceTestRunnerV2(
-            gson,
-            dateTimeFormatter,
-            alertRequestUtility,
-            blackDuckProviderService,
-            configurationManager
-        );
+        LocalDateTime executionStartTime = LocalDateTime.now();
         testRunner.runTestWithOneJob(channelFieldsMap, "performanceJob", blackDuckProviderID, projectVersionWrappers);
 
+        logTimeElapsedWithMessage("Execution and processing test time: %s", executionStartTime, LocalDateTime.now());
         logTimeElapsedWithMessage("Total test time: %s", startingTime, LocalDateTime.now());
     }
 

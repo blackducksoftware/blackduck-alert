@@ -1,5 +1,7 @@
 package com.synopsys.integration.alert.performance.utility.jira.server;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -101,18 +103,17 @@ public class JiraServerPerformanceUtility {
         return new FieldValueModel(List.of(value), true);
     }
 
-    public Optional<JiraServerGlobalConfigModel> createGlobalConfiguration(JiraServerGlobalConfigModel jiraServerGlobalConfigModel) {
-        String apiConfigurationPath = AlertRestConstants.JIRA_SERVER_CONFIGURATION_PATH;
-        if (null != jiraServerGlobalConfigModel) {
-            LocalDateTime startingTime = LocalDateTime.now();
-            String descriptorName = CHANNEL_KEY.getUniversalKey();
-            Optional<JiraServerGlobalConfigModel> globalConfigModel = configurationManager
-                .createGlobalConfiguration(apiConfigurationPath, jiraServerGlobalConfigModel, JiraServerGlobalConfigModel.class);
-            String globalConfigMessage = String.format("Creating the global Configuration for %s jobs took", descriptorName);
-            logTimeElapsedWithMessage(globalConfigMessage + " %s", startingTime, LocalDateTime.now());
-            return globalConfigModel;
+    public JiraServerGlobalConfigModel createJiraGlobalConfiguration(JiraServerGlobalConfigModel jiraServerGlobalConfigModel) {
+        ValidationResponseModel installPluginResponse = installPlugin(jiraServerGlobalConfigModel);
+        if (installPluginResponse.hasErrors()) {
+            fail("Unable to install the Alert plugin for Jira Server. Exiting test...");
         }
-        return Optional.empty();
+
+        Optional<JiraServerGlobalConfigModel> globalConfiguration = createGlobalConfiguration(jiraServerGlobalConfigModel);
+        if (globalConfiguration.isEmpty()) {
+            fail("Global configuration missing.");
+        }
+        return globalConfiguration.get();
     }
 
     public JiraServerGlobalConfigModel createGlobalConfigModel(TestProperties testProperties) {
@@ -137,7 +138,21 @@ public class JiraServerPerformanceUtility {
         );
     }
 
-    public ValidationResponseModel installPlugin(JiraServerGlobalConfigModel jiraServerGlobalConfigModel) {
+    private Optional<JiraServerGlobalConfigModel> createGlobalConfiguration(JiraServerGlobalConfigModel jiraServerGlobalConfigModel) {
+        String apiConfigurationPath = AlertRestConstants.JIRA_SERVER_CONFIGURATION_PATH;
+        if (null != jiraServerGlobalConfigModel) {
+            LocalDateTime startingTime = LocalDateTime.now();
+            String descriptorName = CHANNEL_KEY.getUniversalKey();
+            Optional<JiraServerGlobalConfigModel> globalConfigModel = configurationManager
+                .createGlobalConfiguration(apiConfigurationPath, jiraServerGlobalConfigModel, JiraServerGlobalConfigModel.class);
+            String globalConfigMessage = String.format("Creating the global Configuration for %s jobs took", descriptorName);
+            logTimeElapsedWithMessage(globalConfigMessage + " %s", startingTime, LocalDateTime.now());
+            return globalConfigModel;
+        }
+        return Optional.empty();
+    }
+
+    private ValidationResponseModel installPlugin(JiraServerGlobalConfigModel jiraServerGlobalConfigModel) {
         try {
             String requestBody = gson.toJson(jiraServerGlobalConfigModel);
             String installPluginResponseString = alertRequestUtility.executePostRequest(

@@ -1,10 +1,7 @@
 package com.synopsys.integration.alert.performance;
 
-import static org.junit.jupiter.api.Assertions.fail;
-
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
-import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -19,7 +16,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.Application;
-import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.configuration.ApplicationConfiguration;
@@ -50,22 +46,27 @@ class JiraServerPerformanceTest {
     private final Gson gson = IntegrationPerformanceTestRunner.createGson();
     private final DateTimeFormatter dateTimeFormatter = IntegrationPerformanceTestRunnerV2.createDateTimeFormatter();
 
-    private AlertRequestUtility alertRequestUtility;
-    private BlackDuckProviderService blackDuckProviderService;
-    private ConfigurationManagerV2 configurationManager;
     private JiraServerPerformanceUtility jiraServerPerformanceUtility;
+    private IntegrationPerformanceTestRunnerV2 testRunner;
 
     @BeforeEach
     public void init() {
-        alertRequestUtility = IntegrationPerformanceTestRunnerV2.createAlertRequestUtility(webApplicationContext);
-        blackDuckProviderService = new BlackDuckProviderService(alertRequestUtility, gson);
-        configurationManager = new ConfigurationManagerV2(
+        AlertRequestUtility alertRequestUtility = IntegrationPerformanceTestRunnerV2.createAlertRequestUtility(webApplicationContext);
+        BlackDuckProviderService blackDuckProviderService = new BlackDuckProviderService(alertRequestUtility, gson);
+        ConfigurationManagerV2 configurationManager = new ConfigurationManagerV2(
             gson,
             alertRequestUtility,
             blackDuckProviderService.getBlackDuckProviderKey(),
             CHANNEL_KEY.getUniversalKey()
         );
         jiraServerPerformanceUtility = new JiraServerPerformanceUtility(alertRequestUtility, configurationManager);
+        testRunner = new IntegrationPerformanceTestRunnerV2(
+            gson,
+            dateTimeFormatter,
+            alertRequestUtility,
+            blackDuckProviderService,
+            configurationManager
+        );
     }
 
     @Test
@@ -74,24 +75,10 @@ class JiraServerPerformanceTest {
         TestProperties testProperties = new TestProperties();
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel = jiraServerPerformanceUtility.createGlobalConfigModelFromProperties(testProperties);
 
-        ValidationResponseModel installPluginResponse = jiraServerPerformanceUtility.installPlugin(jiraServerGlobalConfigModel);
-        if (installPluginResponse.hasErrors()) {
-            fail("Unable to install the Alert plugin for Jira Server. Exiting test...");
-        }
+        JiraServerGlobalConfigModel globalConfiguration = jiraServerPerformanceUtility.createJiraGlobalConfiguration(jiraServerGlobalConfigModel);
 
-        Optional<JiraServerGlobalConfigModel> globalConfiguration = jiraServerPerformanceUtility.createGlobalConfiguration(jiraServerGlobalConfigModel);
-        if (globalConfiguration.isEmpty()) {
-            fail("Global configuration missing.");
-        }
+        Map<String, FieldValueModel> channelFieldsMap = jiraServerPerformanceUtility.createChannelFieldsMap(testProperties, globalConfiguration.getId());
 
-        Map<String, FieldValueModel> channelFieldsMap = jiraServerPerformanceUtility.createChannelFieldsMap(testProperties, globalConfiguration.get().getId());
-        IntegrationPerformanceTestRunnerV2 testRunner = new IntegrationPerformanceTestRunnerV2(
-            gson,
-            dateTimeFormatter,
-            alertRequestUtility,
-            blackDuckProviderService,
-            configurationManager
-        );
         testRunner.runTest(channelFieldsMap, PERFORMANCE_JOB_NAME);
     }
 }
