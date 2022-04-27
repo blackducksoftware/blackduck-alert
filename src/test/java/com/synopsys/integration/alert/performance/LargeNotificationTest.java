@@ -50,6 +50,7 @@ import com.synopsys.integration.exception.IntegrationException;
 @WebAppConfiguration
 class LargeNotificationTest {
     private static final JiraServerChannelKey CHANNEL_KEY = new JiraServerChannelKey();
+    private static final int NUMBER_OF_PROJECTS_TO_CREATE = 10;
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -88,7 +89,7 @@ class LargeNotificationTest {
         logTimeElapsedWithMessage("Setting up the Black Duck provider took %s", startingProviderCreateTime, LocalDateTime.now());
 
         // create 10 blackduck projects
-        List<ProjectVersionWrapper> projectVersionWrappers = createBlackDuckProjects(10);
+        List<ProjectVersionWrapper> projectVersionWrappers = createBlackDuckProjects(NUMBER_OF_PROJECTS_TO_CREATE);
 
         //trigger a notification on each project
         for (ProjectVersionWrapper projectVersionWrapper : projectVersionWrappers) {
@@ -128,7 +129,7 @@ class LargeNotificationTest {
         Map<String, FieldValueModel> channelFieldsMap = jiraServerPerformanceUtility.createChannelFieldsMap(testProperties, globalConfiguration.get().getId());
 
         // Create N number of blackduck projects
-        List<ProjectVersionWrapper> projectVersionWrappers = createBlackDuckProjects(10);
+        List<ProjectVersionWrapper> projectVersionWrappers = createBlackDuckProjects(NUMBER_OF_PROJECTS_TO_CREATE);
 
         IntegrationPerformanceTestRunnerV2 testRunner = new IntegrationPerformanceTestRunnerV2(
             gson,
