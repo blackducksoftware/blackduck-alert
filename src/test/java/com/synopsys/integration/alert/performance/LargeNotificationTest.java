@@ -46,7 +46,7 @@ import com.synopsys.integration.exception.IntegrationException;
 @WebAppConfiguration
 class LargeNotificationTest {
     private static final JiraServerChannelKey CHANNEL_KEY = new JiraServerChannelKey();
-    private static final int NUMBER_OF_PROJECTS_TO_CREATE = 10;
+    private static final int NUMBER_OF_PROJECTS_TO_CREATE = 1000;
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -101,7 +101,8 @@ class LargeNotificationTest {
     }
 
     @Test
-    @Disabled("Used for performance testing only.")
+        //@Disabled("Used for performance testing only.")
+        //TODO: Note, this test is enabled for overnight performance testing. It should be disabled again before merging into master
     void largeNotificationTest() throws IntegrationException, InterruptedException {
         LocalDateTime startingTime = LocalDateTime.now();
         logger.info(String.format("Starting time: %s", dateTimeFormatter.format(startingTime)));

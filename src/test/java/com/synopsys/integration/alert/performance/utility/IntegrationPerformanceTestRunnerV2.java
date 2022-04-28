@@ -109,7 +109,7 @@ public class IntegrationPerformanceTestRunnerV2 {
         WaitJobConfig waitJobConfig = new WaitJobConfig(
             intLogger,
             "int performance test runner notification wait",
-            600,
+            6000,
             startingNotificationTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
             20
         );
