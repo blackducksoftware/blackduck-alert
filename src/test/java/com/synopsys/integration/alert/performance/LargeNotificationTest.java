@@ -46,7 +46,7 @@ import com.synopsys.integration.exception.IntegrationException;
 @WebAppConfiguration
 class LargeNotificationTest {
     private static final JiraServerChannelKey CHANNEL_KEY = new JiraServerChannelKey();
-    private static final int NUMBER_OF_PROJECTS_TO_CREATE = 1000;
+    private static final int NUMBER_OF_PROJECTS_TO_CREATE = 5000;
 
     @Autowired
     private WebApplicationContext webApplicationContext;
