@@ -7,6 +7,7 @@ logIt() {
 logIt "Launching ${0}"
 
 ## ALERT VARIABLES ##
+export BLACKDUCK_ALERT_OPTS="${DEFAULT_BLACKDUCK_ALERT_OPTS} ${BLACKDUCK_ALERT_OPTS}"
 alertDatabaseDir="${ALERT_DATA_DIR}/alertdb"
 upgradeResourcesDir="${ALERT_TAR_HOME}/upgradeResources"
 alertDatabaseHost="${ALERT_DB_HOST:-alertdb}"
@@ -208,8 +209,6 @@ importBlackDuckSystemCertificateIntoKeystore() {
                         --certAlias blackduck_system
     checkStatus $? "Import ${SECURITY_DIR}/blackduck_system.crt into $keystoreFilePath"
 }
-# Bootstrap will optionally configure the config volume if it hasn't been configured yet.
-# After that we verify, and then launch the webserver.
 
 importDockerHubServerCertificate() {
     if "${JAVA_HOME}/bin/keytool" -list -keystore "$truststoreFile" -storepass $truststorePassword -alias "hub.docker.com";
@@ -261,8 +260,9 @@ createPostgresDatabase() {
     then
         logIt "Alert postgres database tables have been successfully created."
     else
-        logIt "Alert postgres database tables have not been created. Creating database tables for database: $alertDatabaseName "
+        logIt "Alert postgres database tables have not been created. Creating database tables for database: ${alertDatabaseName}"
         psql "${alertDatabaseConfig}" -f ${upgradeResourcesDir}/init_alert_db.sql
+        checkStatus $? "Creating database tables for database: ${alertDatabaseName}"
     fi
 }
 
