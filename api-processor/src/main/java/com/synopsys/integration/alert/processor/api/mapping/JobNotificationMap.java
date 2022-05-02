@@ -7,10 +7,12 @@
  */
 package com.synopsys.integration.alert.processor.api.mapping;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -23,6 +25,7 @@ public class JobNotificationMap {
     public void addMapping(UUID correlationId, UUID jobId, Long notificationId) {
         List<JobToNotificationRelation> relations = jobToNotificationMap.getOrDefault(correlationId, new LinkedList<>());
         relations.add(new JobToNotificationRelation(correlationId, jobId, notificationId));
+        jobToNotificationMap.put(correlationId, relations);
     }
 
     public List<Long> getNotificationsForJob(UUID correlationId, UUID jobId) {
@@ -31,5 +34,13 @@ public class JobNotificationMap {
             .filter(item -> item.getJobId() == jobId)
             .map(JobToNotificationRelation::getNotificationId)
             .collect(Collectors.toList());
+    }
+
+    public Set<UUID> getJobIds() {
+        List<JobToNotificationRelation> jobToNotificationRelations = jobToNotificationMap.values().stream()
+            .collect(ArrayList::new, ArrayList::addAll, ArrayList::addAll);
+        return jobToNotificationRelations.stream()
+            .map(JobToNotificationRelation::getJobId)
+            .collect(Collectors.toSet());
     }
 }

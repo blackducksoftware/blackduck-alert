@@ -33,6 +33,7 @@ import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.processor.api.NotificationContentProcessor;
 import com.synopsys.integration.alert.processor.api.NotificationProcessingLifecycleCache;
 import com.synopsys.integration.alert.processor.api.NotificationProcessor;
+import com.synopsys.integration.alert.processor.api.NotificationProcessor2;
 import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExtractionDelegator;
 import com.synopsys.integration.alert.processor.api.distribute.ProviderMessageDistributor;
 import com.synopsys.integration.alert.processor.api.filter.JobNotificationMapper;
@@ -114,11 +115,12 @@ class NotificationReceivedEventHandlerTestIT {
         assertNotNull(savedModels);
 
         NotificationProcessor notificationProcessor = createNotificationProcessor();
+        NotificationProcessor2 notificationProcessor2 = Mockito.mock(NotificationProcessor2.class);
         NotificationReceivedEventHandler notificationReceivedEventHandler = new NotificationReceivedEventHandler(
             defaultNotificationAccessor,
             notificationProcessor,
-            eventManager,
-            taskExecutor
+            notificationProcessor2,
+            eventManager
         );
         notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
 
@@ -136,11 +138,12 @@ class NotificationReceivedEventHandlerTestIT {
         assertEquals(0, defaultNotificationAccessor.getFirstPageOfNotificationsNotProcessed(pageSize).getModels().size());
 
         NotificationProcessor notificationProcessor = createNotificationProcessor();
+        NotificationProcessor2 notificationProcessor2 = Mockito.mock(NotificationProcessor2.class);
         NotificationReceivedEventHandler notificationReceivedEventHandler = new NotificationReceivedEventHandler(
             defaultNotificationAccessor,
             notificationProcessor,
-            eventManager,
-            taskExecutor
+            notificationProcessor2,
+            eventManager
         );
         notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
 
@@ -157,11 +160,12 @@ class NotificationReceivedEventHandlerTestIT {
         assertNotNull(savedModels);
 
         NotificationProcessor notificationProcessor = createNotificationProcessor();
+        NotificationProcessor2 notificationProcessor2 = Mockito.mock(NotificationProcessor2.class);
         NotificationReceivedEventHandler notificationReceivedEventHandler = new NotificationReceivedEventHandler(
             defaultNotificationAccessor,
             notificationProcessor,
-            eventManager,
-            taskExecutor
+            notificationProcessor2,
+            eventManager
         );
         notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
 
@@ -180,11 +184,12 @@ class NotificationReceivedEventHandlerTestIT {
         assertNotNull(savedModels);
 
         NotificationProcessor notificationProcessor = createNotificationProcessor();
+        NotificationProcessor2 notificationProcessor2 = Mockito.mock(NotificationProcessor2.class);
         NotificationReceivedEventHandler notificationReceivedEventHandler = new NotificationReceivedEventHandler(
             defaultNotificationAccessor,
             notificationProcessor,
-            eventManagerSpy,
-            taskExecutor
+            notificationProcessor2,
+            eventManagerSpy
         );
         notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
 

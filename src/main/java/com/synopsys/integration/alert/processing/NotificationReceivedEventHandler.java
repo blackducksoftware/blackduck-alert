@@ -13,7 +13,6 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -25,6 +24,8 @@ import com.synopsys.integration.alert.common.persistence.accessor.NotificationAc
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.processor.api.NotificationProcessor;
+import com.synopsys.integration.alert.processor.api.NotificationProcessor2;
+import com.synopsys.integration.alert.processor.api.event.JobNotificationMappedEvent;
 
 @Component
 public class NotificationReceivedEventHandler implements AlertEventHandler<NotificationReceivedEvent> {
@@ -34,20 +35,20 @@ public class NotificationReceivedEventHandler implements AlertEventHandler<Notif
 
     private final NotificationAccessor notificationAccessor;
     private final NotificationProcessor notificationProcessor;
+    private final NotificationProcessor2 notificationProcessor2;
     private final EventManager eventManager;
-    private final TaskExecutor taskExecutor;
 
     @Autowired
     public NotificationReceivedEventHandler(
         NotificationAccessor notificationAccessor,
         NotificationProcessor notificationProcessor,
-        EventManager eventManager,
-        TaskExecutor taskExecutor
+        NotificationProcessor2 notificationProcessor2,
+        EventManager eventManager
     ) {
         this.notificationAccessor = notificationAccessor;
         this.notificationProcessor = notificationProcessor;
+        this.notificationProcessor2 = notificationProcessor2;
         this.eventManager = eventManager;
-        this.taskExecutor = taskExecutor;
     }
 
     @Override
@@ -55,7 +56,7 @@ public class NotificationReceivedEventHandler implements AlertEventHandler<Notif
         logger.debug("Event {}", event);
         logger.info("Processing event {} for notifications.", event.getEventId());
         logger.info("Processing event for notifications.");
-        taskExecutor.execute(() -> processNotifications(event.getCorrelationId()));
+        processNotifications(event.getCorrelationId());
         logger.info("Finished processing event {} for notifications.", event.getEventId());
     }
 
@@ -65,9 +66,12 @@ public class NotificationReceivedEventHandler implements AlertEventHandler<Notif
             List<AlertNotificationModel> notifications = pageOfAlertNotificationModels.getModels();
             logger.info("Starting to process {} notifications.", notifications.size());
             notificationProcessor.processNotifications(notifications, List.of(FrequencyType.REAL_TIME));
+            notificationProcessor2.processNotifications(correlationID, notifications, List.of(FrequencyType.REAL_TIME));
             boolean hasMoreNotificationsToProcess = notificationAccessor.hasMoreNotificationsToProcess();
             if (hasMoreNotificationsToProcess) {
                 eventManager.sendEvent(new NotificationReceivedEvent(correlationID));
+            } else {
+                eventManager.sendEvent(new JobNotificationMappedEvent(correlationID));
             }
         }
         logger.info("Finished processing event for notifications.");
