@@ -7,15 +7,12 @@
  */
 package com.synopsys.integration.alert.component.authentication.security;
 
-import java.security.Provider;
-import java.security.Security;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.activemq.broker.BrokerService;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.velocity.app.VelocityEngine;
@@ -24,8 +21,6 @@ import org.opensaml.saml2.core.NameIDType;
 import org.opensaml.saml2.metadata.provider.MetadataProviderException;
 import org.opensaml.xml.parse.ParserPool;
 import org.opensaml.xml.parse.StaticBasicParserPool;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -100,7 +95,6 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     private final HttpPathManager httpPathManager;
     private final CsrfTokenRepository csrfTokenRepository;
     private final AlertProperties alertProperties;
-    private final Logger logger = LoggerFactory.getLogger(AuthenticationHandler.class);
     private final RoleAccessor roleAccessor;
 
     private final FilePersistenceUtil filePersistenceUtil;
@@ -131,7 +125,6 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        configureActiveMQProvider();
         configureWithSSL(http);
         http.authorizeRequests()
             .requestMatchers(createAllowedPathMatchers()).permitAll()
@@ -144,34 +137,9 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
             .and().logout().logoutSuccessUrl("/");
     }
 
-    private void configureActiveMQProvider() {
-        // Active MQ initializes the Bouncy Castle provider in a static constructor of the Broker Service
-        // static initialization of the Bouncy Castle provider breaks SAML support over SSL
-        // https://stackoverflow.com/questions/53906154/spring-boot-2-1-embedded-tomcat-keystore-password-was-incorrect
-        try {
-            ClassLoader loader = BrokerService.class.getClassLoader();
-            Class<?> clazz = loader.loadClass("org.bouncycastle.jce.provider.BouncyCastleProvider");
-            Provider bouncycastle = (Provider) clazz.getDeclaredConstructor().newInstance();
-            Security.removeProvider(bouncycastle.getName());
-            logger.info("Alert Application Configuration: Removing Bouncy Castle provider");
-            Security.addProvider(bouncycastle);
-            logger.info("Alert Application Configuration: Adding Bouncy Castle provider to the end of the provider list");
-        } catch (Exception e) {
-            // nothing needed here if that provider does not exist
-            logger.info("Alert Application Configuration: Bouncy Castle provider not found");
-        }
-    }
-
     private void configureWithSSL(HttpSecurity http) throws Exception {
         if (alertProperties.getSslEnabled()) {
             http.requiresChannel().anyRequest().requiresSecure();
-        }
-    }
-
-    private void ignorePaths(String... paths) {
-        for (String path : paths) {
-            httpPathManager.addAllowedPath(path);
-            httpPathManager.addSamlAllowedPath(path);
         }
     }
 

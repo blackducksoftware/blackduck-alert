@@ -5,8 +5,8 @@ dependencies {
     implementation project(':api-common-model')
 
     implementation 'org.springframework:spring-context'
-    implementation 'jakarta.jms:jakarta.jms-api'
-    implementation 'org.springframework:spring-jms'
+    implementation 'org.springframework.amqp:spring-amqp'
+    implementation 'org.springframework.amqp:spring-rabbit'
 
     testImplementation project(':test-common')
 }

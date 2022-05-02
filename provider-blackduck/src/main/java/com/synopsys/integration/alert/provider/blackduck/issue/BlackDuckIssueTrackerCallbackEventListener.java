@@ -8,6 +8,7 @@
 package com.synopsys.integration.alert.provider.blackduck.issue;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -16,8 +17,8 @@ import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerCa
 @Component
 public class BlackDuckIssueTrackerCallbackEventListener extends IssueTrackerCallbackEventListener {
     @Autowired
-    public BlackDuckIssueTrackerCallbackEventListener(Gson gson, BlackDuckIssueTrackerCallbackEventHandler callbackEventHandler) {
-        super(gson, callbackEventHandler);
+    public BlackDuckIssueTrackerCallbackEventListener(Gson gson, TaskExecutor taskExecutor, BlackDuckIssueTrackerCallbackEventHandler callbackEventHandler) {
+        super(gson, taskExecutor, callbackEventHandler);
     }
 
 }

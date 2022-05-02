@@ -58,13 +58,24 @@ public class MsTeamsPerformanceTest {
     }
 
     @Test
-    @Ignore
+    @Ignore // performance test
     @Disabled
-    public void testMsTeamsJob() throws Exception {
+    void testMsTeamsJob() throws Exception {
         AlertRequestUtility alertRequestUtility = IntegrationPerformanceTestRunner.createAlertRequestUtility(webApplicationContext);
         BlackDuckProviderService blackDuckProviderService = new BlackDuckProviderService(alertRequestUtility, gson);
-        ConfigurationManager configurationManager = new ConfigurationManager(gson, alertRequestUtility, blackDuckProviderService.getBlackDuckProviderKey(), ChannelKeys.MS_TEAMS.getUniversalKey());
-        IntegrationPerformanceTestRunner integrationPerformanceTestRunner = new IntegrationPerformanceTestRunner(gson, dateTimeFormatter, alertRequestUtility, blackDuckProviderService, configurationManager);
+        ConfigurationManager configurationManager = new ConfigurationManager(
+            gson,
+            alertRequestUtility,
+            blackDuckProviderService.getBlackDuckProviderKey(),
+            ChannelKeys.MS_TEAMS.getUniversalKey()
+        );
+        IntegrationPerformanceTestRunner integrationPerformanceTestRunner = new IntegrationPerformanceTestRunner(
+            gson,
+            dateTimeFormatter,
+            alertRequestUtility,
+            blackDuckProviderService,
+            configurationManager
+        );
 
         Map<String, FieldValueModel> msTeamsJobFields = new HashMap<>();
         msTeamsJobFields.put(ChannelDescriptor.KEY_ENABLED, new FieldValueModel(List.of("true"), true));

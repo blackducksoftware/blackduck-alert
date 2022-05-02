@@ -4,7 +4,7 @@ import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import { CONTEXT_TYPE } from 'common/util/descriptorUtilities';
 import { SCHEDULING_DIGEST_HOURS_OPTIONS, SCHEDULING_FIELD_KEYS, SCHEDULING_INFO, SCHEDULING_PURGE_FREQUENCY_OPTIONS } from 'page/scheduling/SchedulingModel';
 import * as PropTypes from 'prop-types';
-import CommonGlobalConfiguration from 'common/configuration/global/CommonGlobalConfiguration';
+import PageHeader from 'common/component/navigation/PageHeader';
 import DynamicSelectInput from 'common/component/input/DynamicSelectInput';
 import ReadOnlyField from 'common/component/input/field/ReadOnlyField';
 import * as GlobalRequestHelper from 'common/configuration/global/GlobalRequestHelper';
@@ -22,11 +22,13 @@ const SchedulingConfiguration = ({ csrfToken, errorHandler, readonly, displaySav
     };
 
     return (
-        <CommonGlobalConfiguration
-            label={SCHEDULING_INFO.label}
-            description="This page shows when system scheduled tasks will run next, as well as allow you to configure the frequency of the system tasks."
-            lastUpdated={formData.lastUpdated}
-        >
+        <div>
+            <PageHeader
+                title={SCHEDULING_INFO.label}
+                description="This page shows when system scheduled tasks will run next, as well as allow you to configure the frequency of the system tasks."
+                lastUpdated={formData.lastUpdated}
+                icon="calendar"
+            />
             <CommonGlobalConfigurationForm
                 setErrors={(error) => setErrors(error)}
                 formData={formData}
@@ -89,7 +91,7 @@ const SchedulingConfiguration = ({ csrfToken, errorHandler, readonly, displaySav
                     errorValue={errors.fieldErrors[SCHEDULING_FIELD_KEYS.purgeDataNextRun]}
                 />
             </CommonGlobalConfigurationForm>
-        </CommonGlobalConfiguration>
+        </div>
     );
 };
 

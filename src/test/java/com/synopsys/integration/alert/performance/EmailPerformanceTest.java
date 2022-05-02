@@ -70,13 +70,19 @@ public class EmailPerformanceTest {
     }
 
     @Test
-    @Ignore
+    @Ignore // performance test
     @Disabled
-    public void testEmailJob() throws Exception {
+    void testEmailJob() throws Exception {
         AlertRequestUtility alertRequestUtility = IntegrationPerformanceTestRunner.createAlertRequestUtility(webApplicationContext);
         BlackDuckProviderService blackDuckProviderService = new BlackDuckProviderService(alertRequestUtility, gson);
         ConfigurationManager configurationManager = new ConfigurationManager(gson, alertRequestUtility, blackDuckProviderService.getBlackDuckProviderKey(), EMAIL_CHANNEL_KEY);
-        IntegrationPerformanceTestRunner integrationPerformanceTestRunner = new IntegrationPerformanceTestRunner(gson, dateTimeFormatter, alertRequestUtility, blackDuckProviderService, configurationManager);
+        IntegrationPerformanceTestRunner integrationPerformanceTestRunner = new IntegrationPerformanceTestRunner(
+            gson,
+            dateTimeFormatter,
+            alertRequestUtility,
+            blackDuckProviderService,
+            configurationManager
+        );
 
         Map<String, FieldValueModel> emailGlobalConfigFields = new HashMap<>();
         emailGlobalConfigFields.put(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey(), new FieldValueModel(List.of(EMAIL_SMTP_HOST), true));

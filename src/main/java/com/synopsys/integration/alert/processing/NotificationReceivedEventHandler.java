@@ -9,14 +9,11 @@ package com.synopsys.integration.alert.processing;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -38,12 +35,19 @@ public class NotificationReceivedEventHandler implements AlertEventHandler<Notif
     private final NotificationAccessor notificationAccessor;
     private final NotificationProcessor notificationProcessor;
     private final EventManager eventManager;
+    private final TaskExecutor taskExecutor;
 
     @Autowired
-    public NotificationReceivedEventHandler(NotificationAccessor notificationAccessor, NotificationProcessor notificationProcessor, EventManager eventManager) {
+    public NotificationReceivedEventHandler(
+        NotificationAccessor notificationAccessor,
+        NotificationProcessor notificationProcessor,
+        EventManager eventManager,
+        TaskExecutor taskExecutor
+    ) {
         this.notificationAccessor = notificationAccessor;
         this.notificationProcessor = notificationProcessor;
         this.eventManager = eventManager;
+        this.taskExecutor = taskExecutor;
     }
 
     @Override
@@ -51,15 +55,7 @@ public class NotificationReceivedEventHandler implements AlertEventHandler<Notif
         logger.debug("Event {}", event);
         logger.info("Processing event {} for notifications.", event.getEventId());
         logger.info("Processing event for notifications.");
-        ExecutorService processingThread = Executors.newSingleThreadExecutor();
-        Future<?> processingTask = processingThread.submit(() -> processNotifications(event.getCorrelationId()));
-        try {
-            processingTask.get();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        } catch (ExecutionException e) {
-            logger.error("Error Processing notifications", e);
-        }
+        taskExecutor.execute(() -> processNotifications(event.getCorrelationId()));
         logger.info("Finished processing event {} for notifications.", event.getEventId());
     }
 

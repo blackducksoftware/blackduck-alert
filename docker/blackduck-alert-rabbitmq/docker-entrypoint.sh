@@ -10,6 +10,18 @@ clusterType=${ALERT_RABBIT_CLUSTER_TYPE:-compose}
 
 isSsl=${ALERT_RABBIT_SSL:-false}
 
+if [ -e $dockerSecretDir/ALERT_RABBIT_USER ];
+then
+  echo "RabbitMQ user secret set; using value from secret."
+  export ALERT_RABBIT_USER=$(cat $dockerSecretDir/ALERT_RABBIT_USER | xargs echo)
+fi
+
+if [ -e $dockerSecretDir/ALERT_RABBIT_PASSWORD ];
+then
+  echo "RabbitMQ password secret set; using value from secret."
+  export ALERT_RABBIT_PASSWORD=$(cat $dockerSecretDir/ALERT_RABBIT_PASSWORD | xargs echo)
+fi
+
 manageSelfSignedServerCertificate() {
     echo "Attempting to generate $APPLICATION_NAME self-signed server certificate and key."
     $CERTIFICATE_MANAGER_DIR/certificate-manager.sh server-cert \
