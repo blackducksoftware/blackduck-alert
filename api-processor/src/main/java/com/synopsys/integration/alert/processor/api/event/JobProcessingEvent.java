@@ -11,18 +11,25 @@ import java.util.UUID;
 
 import com.synopsys.integration.alert.api.event.AlertEvent;
 
-public class JobNotificationMappedEvent extends AlertEvent {
-    private static final long serialVersionUID = 98931335736424452L;
-    public static final String NOTIFICATION_MAPPED_EVENT_TYPE = "notification_mapped_event";
+public class JobProcessingEvent extends AlertEvent {
+    private static final long serialVersionUID = 2069118377239056038L;
+    public static final String JOB_PROCESSING_EVENT_TYPE = "job_processing_event";
 
-    private final UUID correlationId;
+    private UUID correlationId;
+    private UUID jobId;
 
-    public JobNotificationMappedEvent(UUID correlationId) {
-        super(NOTIFICATION_MAPPED_EVENT_TYPE);
+    public JobProcessingEvent(UUID correlationId, UUID jobId) {
+        super(JOB_PROCESSING_EVENT_TYPE);
         this.correlationId = correlationId;
+        this.jobId = jobId;
     }
 
     public UUID getCorrelationId() {
         return correlationId;
     }
+
+    public UUID getJobId() {
+        return jobId;
+    }
+
 }

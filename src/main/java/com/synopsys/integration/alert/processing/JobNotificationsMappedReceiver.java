@@ -14,11 +14,11 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.processor.api.event.JobNotificationMappedEvent;
 import com.synopsys.integration.alert.processor.api.event.NotificationProcessingReceiver;
 
-@Component(value = JobNotificationMappedReceiver.COMPONENT_NAME)
-public class JobNotificationMappedReceiver extends NotificationProcessingReceiver<JobNotificationMappedEvent> {
+@Component(value = JobNotificationsMappedReceiver.COMPONENT_NAME)
+public class JobNotificationsMappedReceiver extends NotificationProcessingReceiver<JobNotificationMappedEvent> {
     public static final String COMPONENT_NAME = "job_notification_mapping_receiver";
 
-    public JobNotificationMappedReceiver(
+    public JobNotificationsMappedReceiver(
         Gson gson,
         TaskExecutor taskExecutor,
         JobNotificationMappedEventHandler eventHandler

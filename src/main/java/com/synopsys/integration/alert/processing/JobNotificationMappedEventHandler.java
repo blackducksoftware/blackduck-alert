@@ -18,8 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.event.AlertEventHandler;
+import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
 import com.synopsys.integration.alert.processor.api.event.JobNotificationMappedEvent;
+import com.synopsys.integration.alert.processor.api.event.JobProcessingEvent;
 import com.synopsys.integration.alert.processor.api.mapping.JobNotificationMap;
 
 @Component
@@ -27,10 +29,12 @@ public class JobNotificationMappedEventHandler implements AlertEventHandler<JobN
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final Logger notificationLogger = AlertLoggerFactory.getNotificationLogger(getClass());
     private final JobNotificationMap jobNotificationMap;
+    private final EventManager eventManager;
 
     @Autowired
-    public JobNotificationMappedEventHandler(JobNotificationMap jobNotificationMap) {
+    public JobNotificationMappedEventHandler(JobNotificationMap jobNotificationMap, EventManager eventManager) {
         this.jobNotificationMap = jobNotificationMap;
+        this.eventManager = eventManager;
     }
 
     @Override
@@ -40,6 +44,7 @@ public class JobNotificationMappedEventHandler implements AlertEventHandler<JobN
         UUID correlationId = event.getCorrelationId();
         for (UUID job : jobIds) {
             List<Long> notificationIds = jobNotificationMap.getNotificationsForJob(event.getCorrelationId(), job);
+            eventManager.sendEvent(new JobProcessingEvent(correlationId, job));
             String joinedIds = StringUtils.join(notificationIds, ", ");
             notificationLogger.debug("Notifications mapped to job CorrelationID: {}, JobID: {}, Notifications: {}", correlationId, job, joinedIds);
         }

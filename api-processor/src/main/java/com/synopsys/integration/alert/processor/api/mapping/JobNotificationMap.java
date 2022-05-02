@@ -28,10 +28,23 @@ public class JobNotificationMap {
         jobToNotificationMap.put(correlationId, relations);
     }
 
+    public void removeMapping(UUID correlationId, UUID jobId) {
+        if (jobToNotificationMap.containsKey(correlationId)) {
+            List<JobToNotificationRelation> relations = jobToNotificationMap.getOrDefault(correlationId, new LinkedList<>());
+            relations.stream()
+                .filter(relation -> relation.getJobId().equals(jobId))
+                .findFirst()
+                .ifPresent(relations::remove);
+            if (relations.isEmpty()) {
+                jobToNotificationMap.remove(correlationId);
+            }
+        }
+    }
+
     public List<Long> getNotificationsForJob(UUID correlationId, UUID jobId) {
         List<JobToNotificationRelation> relations = jobToNotificationMap.getOrDefault(correlationId, new LinkedList<>());
         return relations.stream()
-            .filter(item -> item.getJobId() == jobId)
+            .filter(item -> item.getJobId().equals(jobId))
             .map(JobToNotificationRelation::getNotificationId)
             .collect(Collectors.toList());
     }

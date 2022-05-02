@@ -65,7 +65,7 @@ public class NotificationReceivedEventHandler implements AlertEventHandler<Notif
         if (!CollectionUtils.isEmpty(pageOfAlertNotificationModels.getModels())) {
             List<AlertNotificationModel> notifications = pageOfAlertNotificationModels.getModels();
             logger.info("Starting to process {} notifications.", notifications.size());
-            notificationProcessor.processNotifications(notifications, List.of(FrequencyType.REAL_TIME));
+            //notificationProcessor.processNotifications(notifications, List.of(FrequencyType.REAL_TIME));
             notificationProcessor2.processNotifications(correlationID, notifications, List.of(FrequencyType.REAL_TIME));
             boolean hasMoreNotificationsToProcess = notificationAccessor.hasMoreNotificationsToProcess();
             if (hasMoreNotificationsToProcess) {
