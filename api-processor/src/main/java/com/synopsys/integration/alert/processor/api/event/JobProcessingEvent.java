@@ -13,7 +13,7 @@ import com.synopsys.integration.alert.api.event.AlertEvent;
 
 public class JobProcessingEvent extends AlertEvent {
     private static final long serialVersionUID = 2069118377239056038L;
-    public static final String JOB_PROCESSING_EVENT_TYPE = "job_processing_event";
+    public static final String JOB_PROCESSING_EVENT_TYPE = "event_processing_job";
 
     private UUID correlationId;
     private UUID jobId;

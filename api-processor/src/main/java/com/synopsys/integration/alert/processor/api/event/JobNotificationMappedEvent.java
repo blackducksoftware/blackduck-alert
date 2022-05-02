@@ -13,7 +13,7 @@ import com.synopsys.integration.alert.api.event.AlertEvent;
 
 public class JobNotificationMappedEvent extends AlertEvent {
     private static final long serialVersionUID = 98931335736424452L;
-    public static final String NOTIFICATION_MAPPED_EVENT_TYPE = "notification_mapped_event";
+    public static final String NOTIFICATION_MAPPED_EVENT_TYPE = "event_notification_mapped";
 
     private final UUID correlationId;
 
