@@ -71,7 +71,7 @@ class NotificationReceivedEventHandlerTest {
         Mockito.doNothing().when(rabbitTemplate).convertAndSend(Mockito.anyString(), Mockito.any(Object.class));
         Gson gson = new Gson();
 
-        return new EventManager(gson, rabbitTemplate);
+        return new EventManager(gson, rabbitTemplate, new SyncTaskExecutor());
     }
 
 }
