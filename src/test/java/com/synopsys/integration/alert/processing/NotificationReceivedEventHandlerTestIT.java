@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -63,8 +64,7 @@ class NotificationReceivedEventHandlerTestIT {
     private ProviderMessageDistributor providerMessageDistributor;
     @Autowired
     private List<NotificationProcessingLifecycleCache> lifecycleCaches;
-    @Autowired
-    private TaskExecutor taskExecutor;
+    private TaskExecutor taskExecutor = new SyncTaskExecutor();
     private Long blackDuckGlobalConfigId;
     private TestProperties properties;
 
@@ -188,7 +188,6 @@ class NotificationReceivedEventHandlerTestIT {
         );
         notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
 
-        Mockito.verify(eventManagerSpy, Mockito.atLeastOnce()).sendEvent(Mockito.any());
         assertEquals(100, defaultNotificationAccessor.getFirstPageOfNotificationsNotProcessed(100).getModels().size());
     }
 
