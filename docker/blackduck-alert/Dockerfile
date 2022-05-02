@@ -17,7 +17,7 @@ ENV JAVA_HOME /opt/java/openjdk
 ENV PATH $JAVA_HOME/bin:$ALERT_TAR_HOME/bin:$PATH
 ENV CERTIFICATE_MANAGER_DIR $ALERT_HOME/bin
 ENV SECURITY_DIR $ALERT_HOME/security
-ENV BLACKDUCK_ALERT_OPTS -Djava.security.properties=${SECURITY_DIR}/java.security
+ENV DEFAULT_BLACKDUCK_ALERT_OPTS -Djava.security.properties=${SECURITY_DIR}/java.security
 ENV APPLICATION_NAME blackduck-alert
 
 RUN set -ex \
