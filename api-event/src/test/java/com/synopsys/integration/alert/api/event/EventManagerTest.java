@@ -8,10 +8,9 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.core.task.SyncTaskExecutor;
 
 import com.google.gson.Gson;
-
-public class EventManagerTest {
+class EventManagerTest {
     @Test
-    public void testSendEvents() {
+    void testSendEvents() {
         String testDestination = "destination";
         AlertEvent testEvent = new AlertEvent(testDestination);
 
