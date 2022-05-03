@@ -64,7 +64,7 @@ public class NotificationReceivedEventHandler implements AlertEventHandler<Notif
         AlertPagedModel<AlertNotificationModel> pageOfAlertNotificationModels = notificationAccessor.getFirstPageOfNotificationsNotProcessed(PAGE_SIZE);
         if (!CollectionUtils.isEmpty(pageOfAlertNotificationModels.getModels())) {
             List<AlertNotificationModel> notifications = pageOfAlertNotificationModels.getModels();
-            logger.info("Starting to process {} notifications.", notifications.size());
+            logger.info("Starting to process batch: {} = {} notifications.", correlationID, notifications.size());
             //notificationProcessor.processNotifications(notifications, List.of(FrequencyType.REAL_TIME));
             notificationProcessor2.processNotifications(correlationID, notifications, List.of(FrequencyType.REAL_TIME));
             boolean hasMoreNotificationsToProcess = notificationAccessor.hasMoreNotificationsToProcess();

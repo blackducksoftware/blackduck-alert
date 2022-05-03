@@ -46,7 +46,7 @@ public class JobNotificationMappedEventHandler implements AlertEventHandler<JobN
             List<Long> notificationIds = jobNotificationMap.getNotificationsForJob(event.getCorrelationId(), job);
             eventManager.sendEvent(new JobProcessingEvent(correlationId, job));
             String joinedIds = StringUtils.join(notificationIds, ", ");
-            notificationLogger.debug("Notifications mapped to job: CorrelationID: {}, JobID: {}, Notifications: {}", correlationId, job, joinedIds);
+            notificationLogger.debug("Notifications mapped to job: {}, batch: {}, Notifications: {}", job, correlationId, joinedIds);
         }
     }
 }
