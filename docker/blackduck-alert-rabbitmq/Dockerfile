@@ -14,13 +14,11 @@ ENV SECURITY_DIR $APPLICATION_HOME/security
 ENV CERTIFICATE_MANAGER_DIR $APPLICATION_HOME/bin
 
 RUN set -ex \
+    && mkdir -p -m 775 "$APPLICATION_HOME/bin" "$APPLICATION_HOME/security" "$APPLICATION_HOME/logs" \
     && apk add --no-cache --virtual .run-deps \
-    		curl \
-    		jq \
-        openssl \
-    && mkdir -p "$APPLICATION_HOME/bin" "$APPLICATION_HOME/security" "$APPLICATION_HOME/logs" \
-    && chmod -R 775 "$APPLICATION_HOME/security" "$APPLICATION_HOME/logs" "$APPLICATION_HOME/bin"
-
+           curl \
+           jq \
+           openssl
 
 COPY docker-entrypoint.sh generate-config.sh $APPLICATION_HOME/bin/
 COPY --from=docker-common healthcheck.sh /usr/local/bin/docker-healthcheck.sh
