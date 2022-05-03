@@ -64,8 +64,8 @@ public class ScalingPerformanceTest {
     }
 
     @Test
-    @Ignore // performance test
-    @Disabled
+    @Ignore("Used for performance testing only.")
+    @Disabled("Used for performance testing only.")
     void testAlertPerformance() throws Exception {
         LocalDateTime startingTime = LocalDateTime.now();
         intLogger.info(String.format("Starting time %s", dateTimeFormatter.format(startingTime)));
@@ -101,11 +101,26 @@ public class ScalingPerformanceTest {
         // TODO create 1000 more slack jobs for a total of 2000
     }
 
-    private void createAndTestJobs(AlertRequestUtility alertRequestUtility, BlackDuckProviderService blackDuckProviderService, ConfigurationManager configurationManager, LocalDateTime startingTime, List<String> jobIds,
+    private void createAndTestJobs(
+        AlertRequestUtility alertRequestUtility,
+        BlackDuckProviderService blackDuckProviderService,
+        ConfigurationManager configurationManager,
+        LocalDateTime startingTime,
+        List<String> jobIds,
         int numberOfJobsToCreate,
-        String blackDuckProviderID) throws Exception {
+        String blackDuckProviderID
+    ) throws Exception {
         // create slack jobs
-        createSlackJobs(configurationManager, startingTime, jobIds, numberOfJobsToCreate, 10, blackDuckProviderID, blackDuckProviderService.getBlackDuckProviderKey(), blackDuckProviderService.getBlackDuckProjectName());
+        createSlackJobs(
+            configurationManager,
+            startingTime,
+            jobIds,
+            numberOfJobsToCreate,
+            10,
+            blackDuckProviderID,
+            blackDuckProviderService.getBlackDuckProviderKey(),
+            blackDuckProviderService.getBlackDuckProjectName()
+        );
 
         LocalDateTime startingNotificationSearchDateTime = LocalDateTime.now();
         // trigger BD notification
@@ -115,8 +130,21 @@ public class ScalingPerformanceTest {
         LocalDateTime startingNotificationWaitForTenJobs = LocalDateTime.now();
 
         // check that all jobs have processed the notification successfully, log how long it took
-        WaitJobConfig waitJobConfig = new WaitJobConfig(intLogger, "scaling notification wait", 900, startingNotificationSearchDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), 30);
-        NotificationWaitJobTask notificationWaitJobTask = new NotificationWaitJobTask(intLogger, dateTimeFormatter, gson, alertRequestUtility, startingNotificationSearchDateTime, jobIds);
+        WaitJobConfig waitJobConfig = new WaitJobConfig(
+            intLogger,
+            "scaling notification wait",
+            900,
+            startingNotificationSearchDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+            30
+        );
+        NotificationWaitJobTask notificationWaitJobTask = new NotificationWaitJobTask(
+            intLogger,
+            dateTimeFormatter,
+            gson,
+            alertRequestUtility,
+            startingNotificationSearchDateTime,
+            jobIds
+        );
         notificationWaitJobTask.setFailOnJobFailure(false);
         WaitJob<Boolean> waitForNotificationToBeProcessed = WaitJob.createSimpleWait(waitJobConfig, notificationWaitJobTask);
         boolean isComplete = waitForNotificationToBeProcessed.waitFor();
@@ -126,8 +154,16 @@ public class ScalingPerformanceTest {
         assertTrue(isComplete);
     }
 
-    private void createSlackJobs(ConfigurationManager configurationManager, LocalDateTime startingTime, List<String> jobIds, int numberOfJobsToCreate, int intervalToLog, String blackDuckProviderID, String blackDuckProviderKey,
-        String blackDuckProjectName)
+    private void createSlackJobs(
+        ConfigurationManager configurationManager,
+        LocalDateTime startingTime,
+        List<String> jobIds,
+        int numberOfJobsToCreate,
+        int intervalToLog,
+        String blackDuckProviderID,
+        String blackDuckProviderKey,
+        String blackDuckProjectName
+    )
         throws Exception {
         int startingJobNum = jobIds.size();
 
