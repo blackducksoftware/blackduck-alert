@@ -141,11 +141,23 @@ dependencies {
     testRuntimeClasspath 'com.playtika.testcontainers:embedded-postgresql'
     testRuntimeClasspath 'com.playtika.testcontainers:embedded-rabbitmq'
     testRuntimeClasspath 'org.springframework.cloud:spring-cloud-starter-bootstrap'
-    if (getGradle().getStartParameter().taskNames.contains('runServer') && !getGradle().getStartParameter().taskNames.contains("--externaldb")) {
-        runtimeClasspath 'com.playtika.testcontainers:embedded-postgresql'
-        runtimeClasspath 'com.playtika.testcontainers:embedded-rabbitmq'
-        runtimeClasspath 'org.springframework.cloud:spring-cloud-starter-bootstrap'
-        runtimeClasspath 'org.springframework.boot:spring-boot-devtools'
+
+    if (getGradle().getStartParameter().taskNames.contains('runServer')) {
+        def containsExternalDbArg = getGradle().getStartParameter().taskNames.contains("--externaldb")
+        def containsExternalRabbitMqArg = getGradle().getStartParameter().taskNames.contains("--external-rabbit")
+
+        if (!containsExternalDbArg || !containsExternalRabbitMqArg) {
+            runtimeClasspath 'org.springframework.cloud:spring-cloud-starter-bootstrap'
+            runtimeClasspath 'org.springframework.boot:spring-boot-devtools'
+        }
+
+        if (!containsExternalDbArg) {
+            runtimeClasspath 'com.playtika.testcontainers:embedded-postgresql'
+        }
+
+        if (!containsExternalRabbitMqArg) {
+            runtimeClasspath 'com.playtika.testcontainers:embedded-rabbitmq'
+        }
     }
 
     testImplementation project(':api-channel-issue-tracker')
