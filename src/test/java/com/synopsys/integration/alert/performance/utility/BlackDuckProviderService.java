@@ -21,8 +21,12 @@ import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.bdio.model.Forge;
 import com.synopsys.integration.bdio.model.externalid.ExternalId;
+import com.synopsys.integration.blackduck.api.generated.enumeration.ProjectVersionDistributionType;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
+import com.synopsys.integration.blackduck.api.manual.temporary.component.ProjectRequest;
+import com.synopsys.integration.blackduck.api.manual.temporary.component.ProjectVersionRequest;
+import com.synopsys.integration.blackduck.api.manual.temporary.enumeration.ProjectVersionPhaseType;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfigBuilder;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
@@ -107,6 +111,78 @@ public class BlackDuckProviderService {
         projectBomService.addComponentToProjectVersion(externalId, projectVersionView);
     }
 
+    public void triggerBlackDuckNotificationForProjectVersion(
+        ProjectVersionView projectVersionView,
+        Supplier<ExternalId> externalIdSupplier,
+        Predicate<ProjectVersionComponentVersionView> componentFilter
+    ) throws IntegrationException {
+        setupBlackDuckServicesFactory();
+        BlackDuckApiClient blackDuckService = blackDuckServicesFactory.getBlackDuckApiClient();
+
+        //TODO: This code can be moved into its own shared private class.
+        List<ProjectVersionComponentVersionView> bomComponents = blackDuckService.getAllResponses(projectVersionView.metaComponentsLink());
+        Optional<ProjectVersionComponentVersionView> apacheCommonsFileUpload = bomComponents.stream()
+            .filter(componentFilter)
+            .findFirst();
+        if (apacheCommonsFileUpload.isPresent()) {
+            blackDuckService.delete(apacheCommonsFileUpload.get());
+            //Thread.currentThread().wait(1000);
+        }
+
+        ExternalId externalId = externalIdSupplier.get();
+
+        ProjectBomService projectBomService = blackDuckServicesFactory.createProjectBomService();
+        projectBomService.addComponentToProjectVersion(externalId, projectVersionView);
+    }
+
+    public ProjectVersionWrapper findOrCreateBlackDuckProjectAndVersion(String projectName, String projectVersionName) throws IntegrationException {
+        setupBlackDuckServicesFactory();
+        ProjectService projectService = blackDuckServicesFactory.createProjectService();
+
+        ProjectRequest projectRequest = new ProjectRequest();
+        projectRequest.setName(projectName);
+
+        ProjectVersionRequest projectVersionRequest = new ProjectVersionRequest();
+        projectVersionRequest.setVersionName(projectVersionName);
+        projectVersionRequest.setPhase(ProjectVersionPhaseType.DEVELOPMENT);
+        projectVersionRequest.setDistribution(ProjectVersionDistributionType.OPENSOURCE);
+
+        projectRequest.setVersionRequest(projectVersionRequest);
+
+        Optional<ProjectVersionWrapper> existingProjectVersion = projectService.getProjectVersion(projectRequest.getName(), projectVersionRequest.getVersionName());
+        if (existingProjectVersion.isPresent()) {
+            intLogger.info(String.format("Project: %s Version %s already exists", projectName, projectVersionName));
+            return existingProjectVersion.get();
+        }
+        intLogger.info(String.format("Creating project: %s", projectName));
+        return projectService.createProject(projectRequest);
+    }
+
+    public void deleteBlackDuckProjectAndVersion(String projectName, String projectVersionName) throws IntegrationException {
+        setupBlackDuckServicesFactory();
+        ProjectService projectService = blackDuckServicesFactory.createProjectService();
+
+        ProjectRequest projectRequest = new ProjectRequest();
+        projectRequest.setName(projectName);
+
+        ProjectVersionRequest projectVersionRequest = new ProjectVersionRequest();
+        projectVersionRequest.setVersionName(projectVersionName);
+        projectVersionRequest.setPhase(ProjectVersionPhaseType.DEVELOPMENT);
+        projectVersionRequest.setDistribution(ProjectVersionDistributionType.OPENSOURCE);
+
+        projectRequest.setVersionRequest(projectVersionRequest);
+
+        Optional<ProjectVersionWrapper> existingProjectVersion = projectService.getProjectVersion(projectRequest.getName(), projectVersionRequest.getVersionName());
+        if (existingProjectVersion.isPresent()) {
+            intLogger.info(String.format("Project: %s Version %s already exists", projectName, projectVersionName));
+            BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
+            blackDuckApiClient.delete(existingProjectVersion.get().getProjectVersionView());
+            blackDuckApiClient.delete(existingProjectVersion.get().getProjectView());
+            intLogger.info(String.format("Deleting project: %s", projectName));
+        }
+
+    }
+
     public String setupBlackDuck() {
         try {
             return findBlackDuckProvider();
@@ -122,9 +198,9 @@ public class BlackDuckProviderService {
 
         MultiFieldModel blackDuckConfigurations = gson.fromJson(response, MultiFieldModel.class);
         FieldModel blackDuckProviderConfiguration = blackDuckConfigurations.getFieldModels().stream()
-                                                        .filter(blackDuckConfiguration -> blackDuckConfiguration.getFieldValue("blackduck.url").filter(blackDuckProviderUrl::equals).isPresent())
-                                                        .findFirst()
-                                                        .orElseThrow(() -> new IntegrationException("Could not find the BlackDuck provider configuration."));
+            .filter(blackDuckConfiguration -> blackDuckConfiguration.getFieldValue("blackduck.url").filter(blackDuckProviderUrl::equals).isPresent())
+            .findFirst()
+            .orElseThrow(() -> new IntegrationException("Could not find the BlackDuck provider configuration."));
 
         String blackDuckProviderID = blackDuckProviderConfiguration.getId();
         String blackDuckConfigBody = gson.toJson(blackDuckProviderConfiguration);

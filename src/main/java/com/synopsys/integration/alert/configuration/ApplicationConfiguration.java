@@ -93,7 +93,6 @@ public class ApplicationConfiguration {
         threadPoolTaskScheduler.setPoolSize(Runtime.getRuntime().availableProcessors());
         return threadPoolTaskScheduler;
     }
-
     @Bean
     public HttpSessionCsrfTokenRepository csrfTokenRepository() {
         return new HttpSessionCsrfTokenRepository();
