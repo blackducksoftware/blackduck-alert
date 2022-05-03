@@ -101,6 +101,22 @@ class LargeNotificationTest {
     }
 
     @Test
+    @Disabled("This test is used to delete projects from a blackduck server after a test run")
+    void deleteProjectsAndVersionsTest() throws IntegrationException {
+        LocalDateTime startingTime = LocalDateTime.now();
+        logger.info(String.format("Starting time: %s", dateTimeFormatter.format(startingTime)));
+
+        // Create Black Duck Global Provider configuration
+        LocalDateTime startingProviderCreateTime = LocalDateTime.now();
+        blackDuckProviderService.setupBlackDuck();
+        logTimeElapsedWithMessage("Setting up the Black Duck provider took %s", startingProviderCreateTime, LocalDateTime.now());
+
+        // create  blackduck projects
+        deleteBlackDuckProjects(NUMBER_OF_PROJECTS_TO_CREATE);
+        logTimeElapsedWithMessage("Total test time: %s", startingTime, LocalDateTime.now());
+    }
+
+    @Test
     @Disabled("Used for performance testing only.")
     void largeNotificationTest() throws IntegrationException, InterruptedException {
         LocalDateTime startingTime = LocalDateTime.now();
@@ -135,13 +151,21 @@ class LargeNotificationTest {
     private List<ProjectVersionWrapper> createBlackDuckProjects(int numberOfProjects) throws IntegrationException {
         LocalDateTime startingProjectCreationTime = LocalDateTime.now();
         List<ProjectVersionWrapper> projectVersionWrappers = new ArrayList<>();
-
         for (int projectIndex = 0; projectIndex < numberOfProjects; projectIndex++) {
             projectVersionWrappers.add(blackDuckProviderService.findOrCreateBlackDuckProjectAndVersion(String.format("AlertPerformanceProject-%s", projectIndex), "version1"));
         }
         String createProjectsLogMessage = String.format("Creating %s projects took", numberOfProjects);
         logTimeElapsedWithMessage(String.format("%s %s", createProjectsLogMessage, "%s"), startingProjectCreationTime, LocalDateTime.now());
         return projectVersionWrappers;
+    }
+
+    private void deleteBlackDuckProjects(int numberOfProjects) throws IntegrationException {
+        LocalDateTime startingProjectCreationTime = LocalDateTime.now();
+        for (int projectIndex = 0; projectIndex < numberOfProjects; projectIndex++) {
+            blackDuckProviderService.deleteBlackDuckProjectAndVersion(String.format("AlertPerformanceProject-%s", projectIndex), "version1");
+        }
+        String createProjectsLogMessage = String.format("Deleting %s projects took", numberOfProjects);
+        logTimeElapsedWithMessage(String.format("%s %s", createProjectsLogMessage, "%s"), startingProjectCreationTime, LocalDateTime.now());
     }
 
     private void triggerBlackDuckNotification(ProjectVersionView projectVersionView) throws IntegrationException {
