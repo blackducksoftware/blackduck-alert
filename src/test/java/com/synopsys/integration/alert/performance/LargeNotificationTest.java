@@ -101,8 +101,7 @@ class LargeNotificationTest {
     }
 
     @Test
-        //@Disabled("Used for performance testing only.")
-        //TODO: Note, this test is enabled for overnight performance testing. It should be disabled again before merging into master
+    @Disabled("Used for performance testing only.")
     void largeNotificationTest() throws IntegrationException, InterruptedException {
         LocalDateTime startingTime = LocalDateTime.now();
         logger.info(String.format("Starting time: %s", dateTimeFormatter.format(startingTime)));
