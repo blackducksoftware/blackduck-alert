@@ -25,38 +25,38 @@
                 <primaryKeyExists schemaName="alert" primaryKeyName="PK_JOB_MAPPING_RELATION"/>
             </not>
         </preConditions>
-        <addPrimaryKey columnNames="correlation_id, job_id" constraintName="PK_JOB_MAPPING_RELATION" tableName="job_notification_relation" schemaName="ALERT"/>
+        <addPrimaryKey columnNames="correlation_id, job_id, notification_id" constraintName="PK_JOB_MAPPING_RELATION" tableName="job_notification_relation" schemaName="ALERT"/>
     </changeSet>
     <changeSet author="psantos" id="create-foreign-key-job-mapping-notification-id">
-        <preConditions>
+        <preConditions onFail="MARK_RAN">
             <not>
-                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="FK_JOB_MAPPING_NOTIFICATION_ID"/>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="job_mapping_notification_id_fk"/>
             </not>
         </preConditions>
         <addForeignKeyConstraint
                 baseTableSchemaName="alert"
-                baseTableName="raw_notification_content"
-                baseColumnNames="id"
-                constraintName="FK_JOB_MAPPING_NOTIFICATION_ID"
+                baseTableName="job_notification_relation"
+                baseColumnNames="notification_id"
+                constraintName="job_mapping_notification_id_fk"
                 referencedTableSchemaName="alert"
-                referencedTableName="job_notification_relation"
-                referencedColumnNames="notification_id"
+                referencedTableName="raw_notification_content"
+                referencedColumnNames="id"
                 onDelete="CASCADE"
         />
     </changeSet>
     <changeSet author="psantos" id="create-foreign-key-job-mapping-job-id">
-        <preConditions>
+        <preConditions onFail="MARK_RAN">
             <not>
-                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="FK_JOB_MAPPING_JOB_ID"/>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="job_mapping_job_id_fk"/>
             </not>
         </preConditions>
         <addForeignKeyConstraint
                 baseTableSchemaName="alert"
-                baseTableName="raw_notification_content"
-                baseColumnNames="id"
-                constraintName="FK_JOB_MAPPING_JOB_ID"
+                baseTableName="job_notification_relation"
+                baseColumnNames="job_id"
+                constraintName="job_mapping_job_id_fk"
                 referencedTableSchemaName="alert"
-                referencedTableName="job_notification_relation"
+                referencedTableName="distribution_jobs"
                 referencedColumnNames="job_id"
                 onDelete="CASCADE"
         />

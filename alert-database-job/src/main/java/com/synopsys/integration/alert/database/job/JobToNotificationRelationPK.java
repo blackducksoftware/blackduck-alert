@@ -15,14 +15,16 @@ public class JobToNotificationRelationPK implements Serializable {
 
     private UUID correlationId;
     private UUID jobId;
+    private Long notificationId;
 
     public JobToNotificationRelationPK() {
         // JPA requires default constructor definitions
     }
 
-    public JobToNotificationRelationPK(UUID correlationId, UUID jobId) {
+    public JobToNotificationRelationPK(UUID correlationId, UUID jobId, Long notificationId) {
         this.correlationId = correlationId;
         this.jobId = jobId;
+        this.notificationId = notificationId;
     }
 
     public UUID getCorrelationId() {
@@ -39,5 +41,13 @@ public class JobToNotificationRelationPK implements Serializable {
 
     public void setJobId(UUID jobId) {
         this.jobId = jobId;
+    }
+
+    public Long getNotificationId() {
+        return notificationId;
+    }
+
+    public void setNotificationId(Long notificationId) {
+        this.notificationId = notificationId;
     }
 }

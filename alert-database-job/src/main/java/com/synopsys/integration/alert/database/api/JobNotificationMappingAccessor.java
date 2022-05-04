@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.database.job.JobToNotificationRelation;
-import com.synopsys.integration.alert.database.job.JobToNotificationRelationPK;
 import com.synopsys.integration.alert.database.job.JobToNotificationRelationRepository;
 
 @Component
@@ -48,7 +47,6 @@ public class JobNotificationMappingAccessor {
 
     @Transactional
     public void removeJobMapping(UUID correlationId, UUID jobId) {
-        JobToNotificationRelationPK relationKey = new JobToNotificationRelationPK(correlationId, jobId);
-        jobToNotificationRelationRepository.deleteById(relationKey);
+        jobToNotificationRelationRepository.deleteAllByCorrelationIdAndJobId(correlationId, jobId);
     }
 }

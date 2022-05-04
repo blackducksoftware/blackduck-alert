@@ -16,4 +16,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface JobToNotificationRelationRepository extends JpaRepository<JobToNotificationRelation, JobToNotificationRelationPK> {
 
     Page<JobToNotificationRelation> findAllByCorrelationIdAndJobId(UUID correlationId, UUID jobId, Pageable pageable);
+
+    void deleteAllByCorrelationIdAndJobId(UUID correlationId, UUID jobId);
 }

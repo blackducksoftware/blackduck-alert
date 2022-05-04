@@ -29,6 +29,7 @@ public class JobToNotificationRelation extends DatabaseRelation {
     @Column(name = "job_id")
     private UUID jobId;
 
+    @Id
     @Column(name = "notification_id")
     private Long notificationId;
 
