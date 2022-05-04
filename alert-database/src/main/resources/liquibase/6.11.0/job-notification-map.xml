@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="psantos" id="create-job-notification-mapping-relation-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="job_notification_relation"/>
+            </not>
+        </preConditions>
+        <createTable tableName="job_notification_relation" schemaName="alert">
+            <column name="correlation_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="job_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="notification_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="psantos" id="create-job-notification-mapping-key">
+         <preConditions onFail="MARK_RAN">
+            <not>
+                <primaryKeyExists schemaName="alert" primaryKeyName="PK_JOB_MAPPING_RELATION"/>
+            </not>
+        </preConditions>
+        <addPrimaryKey columnNames="correlation_id, job_id" constraintName="PK_JOB_MAPPING_RELATION" tableName="job_notification_relation" schemaName="ALERT"/>
+    </changeSet>
+    <changeSet author="psantos" id="create-foreign-key-job-mapping-notification-id">
+        <preConditions>
+            <not>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="FK_JOB_MAPPING_NOTIFICATION_ID"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint
+                baseTableSchemaName="alert"
+                baseTableName="raw_notification_content"
+                baseColumnNames="id"
+                constraintName="FK_JOB_MAPPING_NOTIFICATION_ID"
+                referencedTableSchemaName="alert"
+                referencedTableName="job_notification_relation"
+                referencedColumnNames="notification_id"
+                onDelete="CASCADE"
+        />
+    </changeSet>
+    <changeSet author="psantos" id="create-foreign-key-job-mapping-job-id">
+        <preConditions>
+            <not>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="FK_JOB_MAPPING_JOB_ID"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint
+                baseTableSchemaName="alert"
+                baseTableName="raw_notification_content"
+                baseColumnNames="id"
+                constraintName="FK_JOB_MAPPING_JOB_ID"
+                referencedTableSchemaName="alert"
+                referencedTableName="job_notification_relation"
+                referencedColumnNames="job_id"
+                onDelete="CASCADE"
+        />
+    </changeSet>
+</databaseChangeLog>
