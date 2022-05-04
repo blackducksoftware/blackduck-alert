@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.processor.api.mapping;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,6 +19,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.JobNotificatio
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingJobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModel;
 import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
+import com.synopsys.integration.alert.common.persistence.model.job.JobToNotificationMappingModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedDetails;
 import com.synopsys.integration.alert.processor.api.detail.DetailedNotificationContent;
 import com.synopsys.integration.alert.processor.api.filter.JobNotificationFilterUtils;
@@ -74,16 +76,20 @@ public class JobNotificationMapper2 {
             pageNumber,
             pageSize
         );
+        //TODO try to improve this code. n^3 is bad
         while (jobs.getCurrentPage() <= jobs.getTotalPages()) {
+            List<JobToNotificationMappingModel> mappings = new LinkedList<>();
             for (FilteredDistributionJobResponseModel job : jobs.getModels()) {
                 for (DetailedNotificationContent notificationContent : detailedNotificationContents) {
                     if (JobNotificationFilterUtils.doesNotificationApplyToJob(job, notificationContent)
                         && notificationContent.getProviderConfigId().equals(filteredDistributionJobRequestModel.getProviderConfigId())) {
-                        jobNotificationMappingAccessor.addJobMapping(correlationId, job.getId(), notificationContent.getNotificationContentWrapper().getNotificationId());
+                        mappings.add(new JobToNotificationMappingModel(correlationId, job.getId(), notificationContent.getNotificationContentWrapper().getNotificationId()));
                     }
                 }
             }
-
+            if (!mappings.isEmpty()) {
+                jobNotificationMappingAccessor.addJobMappings(mappings);
+            }
             pageNumber++;
             jobs = processingJobAccessor.getMatchingEnabledJobsByFilteredNotifications(
                 filteredDistributionJobRequestModel,

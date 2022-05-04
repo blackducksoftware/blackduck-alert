@@ -88,27 +88,25 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
 
     private List<AlertNotificationModel> getNotifications(JobProcessingEvent event) {
         List<AlertNotificationModel> notifications = new LinkedList<>();
-        int currentPage = 0;
+        int pageNumber = 0;
         int pageSize = 100;
         UUID correlationId = event.getCorrelationId();
         UUID jobId = event.getJobId();
         AlertPagedModel<JobToNotificationMappingModel> jobNotificationMappings = jobNotificationMappingAccessor.getJobNotificationMappings(
             correlationId,
             jobId,
-            currentPage,
+            pageNumber,
             pageSize
         );
-        notifications.addAll(notificationAccessor.findByIds(extractNotificationIds(jobNotificationMappings)));
-        currentPage++;
-        while (currentPage < jobNotificationMappings.getTotalPages()) {
+        while (jobNotificationMappings.getCurrentPage() <= jobNotificationMappings.getTotalPages()) {
+            notifications.addAll(notificationAccessor.findByIds(extractNotificationIds(jobNotificationMappings)));
+            pageNumber++;
             jobNotificationMappings = jobNotificationMappingAccessor.getJobNotificationMappings(
                 correlationId,
                 jobId,
-                currentPage,
+                pageNumber,
                 pageSize
             );
-            notifications.addAll(notificationAccessor.findByIds(extractNotificationIds(jobNotificationMappings)));
-            currentPage++;
         }
 
         return notifications;

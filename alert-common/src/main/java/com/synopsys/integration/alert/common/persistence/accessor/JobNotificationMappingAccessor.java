@@ -1,5 +1,6 @@
 package com.synopsys.integration.alert.common.persistence.accessor;
 
+import java.util.List;
 import java.util.UUID;
 
 import com.synopsys.integration.alert.common.persistence.model.job.JobToNotificationMappingModel;
@@ -9,6 +10,8 @@ public interface JobNotificationMappingAccessor {
     AlertPagedModel<JobToNotificationMappingModel> getJobNotificationMappings(UUID correlationId, UUID jobId, int page, int pageSize);
 
     void addJobMapping(UUID correlationId, UUID jobId, Long notificationId);
+
+    void addJobMappings(List<JobToNotificationMappingModel> jobMappings);
 
     void removeJobMapping(UUID correlationId, UUID jobId);
 }

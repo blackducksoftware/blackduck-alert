@@ -38,7 +38,7 @@ public class DefaultJobNotificationMappingAccessor implements JobNotificationMap
         PageRequest pageRequest = PageRequest.of(page, pageSize);
         Page<JobToNotificationRelation> pageOfData = jobToNotificationRelationRepository.findAllByCorrelationIdAndJobId(correlationId, jobId, pageRequest);
         List<JobToNotificationMappingModel> models = pageOfData.get()
-            .map(this::convert)
+            .map(this::convertToModel)
             .collect(Collectors.toList());
         return new AlertPagedModel<>(
             pageOfData.getTotalPages(),
@@ -57,11 +57,24 @@ public class DefaultJobNotificationMappingAccessor implements JobNotificationMap
 
     @Override
     @Transactional
+    public void addJobMappings(List<JobToNotificationMappingModel> jobMappings) {
+        List<JobToNotificationRelation> entities = jobMappings.stream()
+            .map(this::convertToEntity)
+            .collect(Collectors.toList());
+        jobToNotificationRelationRepository.saveAllAndFlush(entities);
+    }
+
+    @Override
+    @Transactional
     public void removeJobMapping(UUID correlationId, UUID jobId) {
         jobToNotificationRelationRepository.deleteAllByCorrelationIdAndJobId(correlationId, jobId);
     }
 
-    private JobToNotificationMappingModel convert(JobToNotificationRelation relation) {
+    private JobToNotificationRelation convertToEntity(JobToNotificationMappingModel model) {
+        return new JobToNotificationRelation(model.getCorrelationId(), model.getJobId(), model.getNotificationId());
+    }
+
+    private JobToNotificationMappingModel convertToModel(JobToNotificationRelation relation) {
         return new JobToNotificationMappingModel(relation.getCorrelationId(), relation.getJobId(), relation.getNotificationId());
     }
 }
