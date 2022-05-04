@@ -10,9 +10,11 @@ package com.synopsys.integration.alert.processor.api.mapping;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.synopsys.integration.alert.common.persistence.accessor.JobNotificationMappingAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingJobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModel;
 import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
@@ -24,10 +26,17 @@ import com.synopsys.integration.alert.processor.api.filter.JobNotificationFilter
 public class JobNotificationMapper2 {
     private final JobNotificationMap jobNotificationMap;
     private final ProcessingJobAccessor processingJobAccessor;
+    private final JobNotificationMappingAccessor jobNotificationMappingAccessor;
 
-    public JobNotificationMapper2(JobNotificationMap jobNotificationMap, ProcessingJobAccessor processingJobAccessor) {
+    @Autowired
+    public JobNotificationMapper2(
+        JobNotificationMap jobNotificationMap,
+        ProcessingJobAccessor processingJobAccessor,
+        JobNotificationMappingAccessor jobNotificationMappingAccessor
+    ) {
         this.jobNotificationMap = jobNotificationMap;
         this.processingJobAccessor = processingJobAccessor;
+        this.jobNotificationMappingAccessor = jobNotificationMappingAccessor;
     }
 
     public void mapJobsToNotifications(
@@ -70,7 +79,7 @@ public class JobNotificationMapper2 {
                 for (DetailedNotificationContent notificationContent : detailedNotificationContents) {
                     if (JobNotificationFilterUtils.doesNotificationApplyToJob(job, notificationContent)
                         && notificationContent.getProviderConfigId().equals(filteredDistributionJobRequestModel.getProviderConfigId())) {
-                        jobNotificationMap.addMapping(correlationId, job.getId(), notificationContent.getNotificationContentWrapper().getNotificationId());
+                        jobNotificationMappingAccessor.addJobMapping(correlationId, job.getId(), notificationContent.getNotificationContentWrapper().getNotificationId());
                     }
                 }
             }

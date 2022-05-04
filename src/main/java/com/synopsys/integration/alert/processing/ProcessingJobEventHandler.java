@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.processing;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -21,9 +22,12 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.event.AlertEventHandler;
 import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.JobNotificationMappingAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.JobToNotificationMappingModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.processor.api.NotificationContentProcessor;
 import com.synopsys.integration.alert.processor.api.NotificationProcessingLifecycleCache;
 import com.synopsys.integration.alert.processor.api.detail.DetailedNotificationContent;
@@ -33,7 +37,6 @@ import com.synopsys.integration.alert.processor.api.distribute.ProviderMessageDi
 import com.synopsys.integration.alert.processor.api.event.JobProcessingEvent;
 import com.synopsys.integration.alert.processor.api.extract.model.ProcessedProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.filter.NotificationContentWrapper;
-import com.synopsys.integration.alert.processor.api.mapping.JobNotificationMap;
 
 @Component
 public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessingEvent> {
@@ -46,7 +49,7 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
     private final List<NotificationProcessingLifecycleCache> lifecycleCaches;
     private final NotificationAccessor notificationAccessor;
     private final JobAccessor jobAccessor;
-    private final JobNotificationMap jobNotificationMap;
+    private final JobNotificationMappingAccessor jobNotificationMappingAccessor;
 
     @Autowired
     public ProcessingJobEventHandler(
@@ -56,7 +59,7 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
         List<NotificationProcessingLifecycleCache> lifecycleCaches,
         NotificationAccessor notificationAccessor,
         JobAccessor jobAccessor,
-        JobNotificationMap jobNotificationMap
+        JobNotificationMappingAccessor jobNotificationMappingAccessor
     ) {
         this.notificationDetailExtractionDelegator = notificationDetailExtractionDelegator;
         this.notificationContentProcessor = notificationContentProcessor;
@@ -64,7 +67,7 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
         this.lifecycleCaches = lifecycleCaches;
         this.notificationAccessor = notificationAccessor;
         this.jobAccessor = jobAccessor;
-        this.jobNotificationMap = jobNotificationMap;
+        this.jobNotificationMappingAccessor = jobNotificationMappingAccessor;
     }
 
     @Override
@@ -79,13 +82,42 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
             logNotifications("Finished", event, notifications);
         } finally {
             clearCaches();
-            jobNotificationMap.removeMapping(correlationId, jobId);
+            jobNotificationMappingAccessor.removeJobMapping(correlationId, jobId);
         }
     }
 
     private List<AlertNotificationModel> getNotifications(JobProcessingEvent event) {
-        List<Long> notificationIds = jobNotificationMap.getNotificationsForJob(event.getCorrelationId(), event.getJobId());
-        return notificationAccessor.findByIds(notificationIds);
+        List<AlertNotificationModel> notifications = new LinkedList<>();
+        int currentPage = 0;
+        int pageSize = 100;
+        UUID correlationId = event.getCorrelationId();
+        UUID jobId = event.getJobId();
+        AlertPagedModel<JobToNotificationMappingModel> jobNotificationMappings = jobNotificationMappingAccessor.getJobNotificationMappings(
+            correlationId,
+            jobId,
+            currentPage,
+            pageSize
+        );
+        notifications.addAll(notificationAccessor.findByIds(extractNotificationIds(jobNotificationMappings)));
+        currentPage++;
+        while (currentPage < jobNotificationMappings.getTotalPages()) {
+            jobNotificationMappings = jobNotificationMappingAccessor.getJobNotificationMappings(
+                correlationId,
+                jobId,
+                currentPage,
+                pageSize
+            );
+            notifications.addAll(notificationAccessor.findByIds(extractNotificationIds(jobNotificationMappings)));
+            currentPage++;
+        }
+
+        return notifications;
+    }
+
+    private List<Long> extractNotificationIds(AlertPagedModel<JobToNotificationMappingModel> pageOfMappingData) {
+        return pageOfMappingData.getModels().stream()
+            .map(JobToNotificationMappingModel::getNotificationId)
+            .collect(Collectors.toList());
     }
 
     private void logNotifications(String messagePrefix, JobProcessingEvent event, List<AlertNotificationModel> notifications) {
