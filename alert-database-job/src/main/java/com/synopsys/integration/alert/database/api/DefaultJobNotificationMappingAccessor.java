@@ -8,6 +8,7 @@
 package com.synopsys.integration.alert.database.api;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -32,8 +33,8 @@ public class DefaultJobNotificationMappingAccessor implements JobNotificationMap
         this.jobToNotificationRelationRepository = jobToNotificationRelationRepository;
     }
 
-    @Transactional(readOnly = true)
     @Override
+    @Transactional(readOnly = true)
     public AlertPagedModel<JobToNotificationMappingModel> getJobNotificationMappings(UUID correlationId, UUID jobId, int page, int pageSize) {
         PageRequest pageRequest = PageRequest.of(page, pageSize);
         Page<JobToNotificationRelation> pageOfData = jobToNotificationRelationRepository.findAllByCorrelationIdAndJobId(correlationId, jobId, pageRequest);
@@ -49,10 +50,9 @@ public class DefaultJobNotificationMappingAccessor implements JobNotificationMap
     }
 
     @Override
-    @Transactional
-    public void addJobMapping(UUID correlationId, UUID jobId, Long notificationId) {
-        JobToNotificationRelation relation = new JobToNotificationRelation(correlationId, jobId, notificationId);
-        jobToNotificationRelationRepository.save(relation);
+    @Transactional(readOnly = true)
+    public Set<UUID> getUniqueJobIds(UUID correlationId) {
+        return jobToNotificationRelationRepository.findDistinctJobIdByCorrelationId(correlationId);
     }
 
     @Override
