@@ -46,7 +46,7 @@ import com.synopsys.integration.exception.IntegrationException;
 @WebAppConfiguration
 class LargeNotificationTest {
     private static final JiraServerChannelKey CHANNEL_KEY = new JiraServerChannelKey();
-    private static final int NUMBER_OF_PROJECTS_TO_CREATE = 5000;
+    private static final int NUMBER_OF_PROJECTS_TO_CREATE = 1000;
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -101,9 +101,8 @@ class LargeNotificationTest {
     }
 
     @Test
-        //@Disabled("Used for performance testing only.")
-        //TODO: Note, this test is enabled for overnight performance testing. It should be disabled again before merging into master
-    void largeNotificationTest() throws IntegrationException, InterruptedException {
+    @Disabled("Used for performance testing only.")
+    void largeVulnerabilityNotificationTest() throws IntegrationException, InterruptedException {
         LocalDateTime startingTime = LocalDateTime.now();
         logger.info(String.format("Starting time: %s", dateTimeFormatter.format(startingTime)));
 
@@ -128,6 +127,38 @@ class LargeNotificationTest {
 
         LocalDateTime executionStartTime = LocalDateTime.now();
         testRunner.runTestWithOneJob(channelFieldsMap, "performanceJob", blackDuckProviderID, projectVersionWrappers);
+
+        logTimeElapsedWithMessage("Execution and processing test time: %s", executionStartTime, LocalDateTime.now());
+        logTimeElapsedWithMessage("Total test time: %s", startingTime, LocalDateTime.now());
+    }
+
+    @Test
+    @Disabled("Used for performance testing only.")
+    void largePolicyNotificationTest() throws IntegrationException, InterruptedException {
+        LocalDateTime startingTime = LocalDateTime.now();
+        logger.info(String.format("Starting time: %s", dateTimeFormatter.format(startingTime)));
+
+        TestProperties testProperties = new TestProperties();
+        JiraServerGlobalConfigModel jiraServerGlobalConfigModel = jiraServerPerformanceUtility.createGlobalConfigModel(testProperties);
+
+        // Create Black Duck Global Provider configuration
+        LocalDateTime startingProviderCreateTime = LocalDateTime.now();
+        String blackDuckProviderID = blackDuckProviderService.setupBlackDuck();
+        logTimeElapsedWithMessage("Setting up the Black Duck provider took %s", startingProviderCreateTime, LocalDateTime.now());
+
+        // Create Jira Server global config
+        LocalDateTime startingCreateGlobalConfigTime = LocalDateTime.now();
+        JiraServerGlobalConfigModel globalConfiguration = jiraServerPerformanceUtility.createJiraGlobalConfiguration(jiraServerGlobalConfigModel);
+        logTimeElapsedWithMessage("Installing the jira server plugin and creating global configuration took %s", startingCreateGlobalConfigTime, LocalDateTime.now());
+
+        // Create distribution job fields
+        Map<String, FieldValueModel> channelFieldsMap = jiraServerPerformanceUtility.createChannelFieldsMap(testProperties, globalConfiguration.getId());
+
+        // Create N number of blackduck projects
+        createBlackDuckProjects(NUMBER_OF_PROJECTS_TO_CREATE);
+
+        LocalDateTime executionStartTime = LocalDateTime.now();
+        testRunner.runPolicyNotificationTest(channelFieldsMap, "performanceJob", blackDuckProviderID, "AlertPerformancePolicy");
 
         logTimeElapsedWithMessage("Execution and processing test time: %s", executionStartTime, LocalDateTime.now());
         logTimeElapsedWithMessage("Total test time: %s", startingTime, LocalDateTime.now());

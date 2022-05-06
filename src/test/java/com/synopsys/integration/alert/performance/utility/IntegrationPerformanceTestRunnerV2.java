@@ -8,6 +8,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.LoggerFactory;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
@@ -19,6 +20,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
+import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.service.model.ProjectVersionWrapper;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
@@ -113,7 +115,52 @@ public class IntegrationPerformanceTestRunnerV2 {
             startingNotificationTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
             20
         );
-        NotificationWaitJobTask notificationWaitJobTask = new NotificationWaitJobTask(intLogger, dateTimeFormatter, gson, alertRequestUtility, startingNotificationTime, jobId);
+        NotificationWaitJobTaskV2 notificationWaitJobTask = new NotificationWaitJobTaskV2(
+            intLogger,
+            dateTimeFormatter,
+            gson,
+            alertRequestUtility,
+            startingNotificationTime,
+            50,
+            NotificationType.VULNERABILITY,
+            Set.of(jobId)
+        );
+        WaitJob<Boolean> waitForNotificationToBeProcessed = WaitJob.createSimpleWait(waitJobConfig, notificationWaitJobTask);
+        boolean isComplete = waitForNotificationToBeProcessed.waitFor();
+        intLogger.info("Finished waiting for the notification to be processed: " + isComplete);
+        assertTrue(isComplete);
+    }
+
+    public void runPolicyNotificationTest(Map<String, FieldValueModel> channelFields, String jobName, String blackDuckProviderID, String policyName)
+        throws IntegrationException, InterruptedException {
+        LocalDateTime jobStartingTime = LocalDateTime.now();
+        String jobId = configurationManager.createPolicyViolationJob(channelFields, jobName, blackDuckProviderID);
+        String jobMessage = String.format("Creating the Job %s jobs took", jobName);
+        logTimeElapsedWithMessage(jobMessage + " %s", jobStartingTime, LocalDateTime.now());
+
+        LocalDateTime startingNotificationTime = LocalDateTime.now();
+        // trigger BD notifications
+        intLogger.info("Triggered the Black Duck notification.");
+        triggerBlackDuckPolicyNotification(policyName);
+        logTimeElapsedWithMessage("Triggering policy notification took %s", startingNotificationTime, LocalDateTime.now());
+
+        WaitJobConfig waitJobConfig = new WaitJobConfig(
+            intLogger,
+            "int performance test runner notification wait",
+            14400,
+            startingNotificationTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+            20
+        );
+        NotificationWaitJobTaskV2 notificationWaitJobTask = new NotificationWaitJobTaskV2(
+            intLogger,
+            dateTimeFormatter,
+            gson,
+            alertRequestUtility,
+            startingNotificationTime,
+            1000,
+            NotificationType.RULE_VIOLATION,
+            Set.of(jobId)
+        );
         WaitJob<Boolean> waitForNotificationToBeProcessed = WaitJob.createSimpleWait(waitJobConfig, notificationWaitJobTask);
         boolean isComplete = waitForNotificationToBeProcessed.waitFor();
         intLogger.info("Finished waiting for the notification to be processed: " + isComplete);
@@ -128,6 +175,12 @@ public class IntegrationPerformanceTestRunnerV2 {
             BlackDuckProviderService.getDefaultBomComponentFilter()
         );
         logTimeElapsedWithMessage("Triggering the Black Duck notification took %s", startingNotificationTriggerDateTime, LocalDateTime.now());
+    }
+
+    private void triggerBlackDuckPolicyNotification(String policyName) throws IntegrationException {
+        LocalDateTime startingNotificationTriggerDateTime = LocalDateTime.now();
+        blackDuckProviderService.triggerBlackDuckPolicyNotification(policyName, BlackDuckProviderService.getDefaultExternalIdSupplier());
+        logTimeElapsedWithMessage("Triggering the Black Duck policy notification took %s", startingNotificationTriggerDateTime, LocalDateTime.now());
     }
 
     private String createBlackDuckConfiguration() {
