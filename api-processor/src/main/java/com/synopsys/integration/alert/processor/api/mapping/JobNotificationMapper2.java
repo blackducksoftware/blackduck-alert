@@ -16,24 +16,23 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.persistence.accessor.JobNotificationMappingAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.ProcessingJobAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ProcessingJobAccessor2;
 import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModel;
-import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
 import com.synopsys.integration.alert.common.persistence.model.job.JobToNotificationMappingModel;
+import com.synopsys.integration.alert.common.persistence.model.job.SimpleFilteredDistributionJobResponseModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedDetails;
 import com.synopsys.integration.alert.processor.api.detail.DetailedNotificationContent;
-import com.synopsys.integration.alert.processor.api.filter.JobNotificationFilterUtils;
 
 @Component
 public class JobNotificationMapper2 {
     private final JobNotificationMap jobNotificationMap;
-    private final ProcessingJobAccessor processingJobAccessor;
+    private final ProcessingJobAccessor2 processingJobAccessor;
     private final JobNotificationMappingAccessor jobNotificationMappingAccessor;
 
     @Autowired
     public JobNotificationMapper2(
         JobNotificationMap jobNotificationMap,
-        ProcessingJobAccessor processingJobAccessor,
+        ProcessingJobAccessor2 processingJobAccessor,
         JobNotificationMappingAccessor jobNotificationMappingAccessor
     ) {
         this.jobNotificationMap = jobNotificationMap;
@@ -55,6 +54,7 @@ public class JobNotificationMapper2 {
     private FilteredDistributionJobRequestModel convertToRequest(DetailedNotificationContent detailedNotificationContent, List<FrequencyType> frequencies) {
         FilteredDistributionJobRequestModel filteredDistributionJobRequestModel = new FilteredDistributionJobRequestModel(
             detailedNotificationContent.getProviderConfigId(),
+            detailedNotificationContent.getNotificationContentWrapper().getNotificationId(),
             frequencies
         );
         detailedNotificationContent.getProjectName().ifPresent(filteredDistributionJobRequestModel::addProjectName);
@@ -71,27 +71,22 @@ public class JobNotificationMapper2 {
     ) {
         int pageNumber = 0;
         int pageSize = 1000;
-        AlertPagedDetails<FilteredDistributionJobResponseModel> jobs = processingJobAccessor.getMatchingEnabledJobsByFilteredNotifications(
+        AlertPagedDetails<SimpleFilteredDistributionJobResponseModel> jobs = processingJobAccessor.getMatchingEnabledJobsForNotifications(
             filteredDistributionJobRequestModel,
             pageNumber,
             pageSize
         );
-        //TODO try to improve this code. n^3 is bad
+        //TODO try to improve this code. n^3 is bad  Because this is executing inside another loop so really mapping is n^4 really bad...
         while (jobs.getCurrentPage() <= jobs.getTotalPages()) {
             List<JobToNotificationMappingModel> mappings = new LinkedList<>();
-            for (FilteredDistributionJobResponseModel job : jobs.getModels()) {
-                for (DetailedNotificationContent notificationContent : detailedNotificationContents) {
-                    if (JobNotificationFilterUtils.doesNotificationApplyToJob(job, notificationContent)
-                        && notificationContent.getProviderConfigId().equals(filteredDistributionJobRequestModel.getProviderConfigId())) {
-                        mappings.add(new JobToNotificationMappingModel(correlationId, job.getId(), notificationContent.getNotificationContentWrapper().getNotificationId()));
-                    }
-                }
+            for (SimpleFilteredDistributionJobResponseModel job : jobs.getModels()) {
+                mappings.add(new JobToNotificationMappingModel(correlationId, job.getJobId(), job.getNotificationId()));
             }
             if (!mappings.isEmpty()) {
                 jobNotificationMappingAccessor.addJobMappings(mappings);
             }
             pageNumber++;
-            jobs = processingJobAccessor.getMatchingEnabledJobsByFilteredNotifications(
+            jobs = processingJobAccessor.getMatchingEnabledJobsForNotifications(
                 filteredDistributionJobRequestModel,
                 pageNumber,
                 pageSize

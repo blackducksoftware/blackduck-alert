@@ -124,7 +124,14 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
                 .map(AlertNotificationModel::getId)
                 .collect(Collectors.toList());
             String joinedIds = StringUtils.join(notificationIds, ", ");
-            notificationLogger.debug("{} processing job: {} batch: {} notifications: {}", messagePrefix, event.getJobId(), event.getCorrelationId(), joinedIds);
+            notificationLogger.debug(
+                "{} processing job: {} batch: {} {} notifications: {}",
+                messagePrefix,
+                event.getJobId(),
+                event.getCorrelationId(),
+                notificationIds.size(),
+                joinedIds
+            );
         }
     }
 
