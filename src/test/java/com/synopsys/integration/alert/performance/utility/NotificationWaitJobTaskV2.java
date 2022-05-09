@@ -70,11 +70,12 @@ public class NotificationWaitJobTaskV2 implements WaitJobCondition {
             intLogger.info(String.format("Performance: Found %s audit entries, expected %s. ", totalNotificationsCreatedPageModel.getTotalPages(), numberOfExpectedNotifications));
             return false;
         }
+        intLogger.info(String.format("Performance: Found %s audit entries, expected %s. ", totalNotificationsCreatedPageModel.getTotalPages(), numberOfExpectedNotifications));
 
         Set<String> jobIds = getJobIdsFromAuditEntries();
 
-        intLogger.debug(String.format("Performance: Job IDs discovered in audit: %s", jobIds.toString()));
-        intLogger.debug(String.format("Performance: Expected Job Ids:            %s", expectedJobIds.toString()));
+        intLogger.info(String.format("Performance: Job IDs discovered in audit: %s", jobIds.toString()));
+        intLogger.info(String.format("Performance: Expected Job Ids:            %s", expectedJobIds.toString()));
         return expectedJobIds.size() == jobIds.size() && expectedJobIds.containsAll(jobIds);
     }
 
@@ -144,7 +145,7 @@ public class NotificationWaitJobTaskV2 implements WaitJobCondition {
 
     private String createAuditRequestString(int pageNumber, int pageSize, NotificationType notificationType) {
         return String.format(
-            "/api/audit?pageNumber=%s&pageSize=%s&searchTerm=%s&sortField=createdAt&sortOrder=desc&onlyShowSentNotifications=false",
+            "/api/audit?pageNumber=%s&pageSize=%s&searchTerm=\"%s\"&sortField=createdAt&sortOrder=desc&onlyShowSentNotifications=false",
             pageNumber,
             pageSize,
             notificationType.name()
