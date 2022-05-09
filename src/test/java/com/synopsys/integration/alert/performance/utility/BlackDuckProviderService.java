@@ -197,6 +197,30 @@ public class BlackDuckProviderService {
         return projectService.createProject(projectRequest);
     }
 
+    public void deleteBlackDuckProjectAndVersion(String projectName, String projectVersionName) throws IntegrationException {
+        setupBlackDuckServicesFactory();
+        ProjectService projectService = blackDuckServicesFactory.createProjectService();
+
+        ProjectRequest projectRequest = new ProjectRequest();
+        projectRequest.setName(projectName);
+
+        ProjectVersionRequest projectVersionRequest = new ProjectVersionRequest();
+        projectVersionRequest.setVersionName(projectVersionName);
+        projectVersionRequest.setPhase(ProjectVersionPhaseType.DEVELOPMENT);
+        projectVersionRequest.setDistribution(ProjectVersionDistributionType.OPENSOURCE);
+
+        projectRequest.setVersionRequest(projectVersionRequest);
+
+        Optional<ProjectVersionWrapper> existingProjectVersion = projectService.getProjectVersion(projectRequest.getName(), projectVersionRequest.getVersionName());
+        if (existingProjectVersion.isPresent()) {
+            intLogger.info(String.format("Project: %s Version %s already exists", projectName, projectVersionName));
+            BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
+            blackDuckApiClient.delete(existingProjectVersion.get().getProjectVersionView());
+            blackDuckApiClient.delete(existingProjectVersion.get().getProjectView());
+            intLogger.info(String.format("Deleting project: %s", projectName));
+        }
+    }
+
     public String setupBlackDuck() {
         try {
             return findBlackDuckProvider();
