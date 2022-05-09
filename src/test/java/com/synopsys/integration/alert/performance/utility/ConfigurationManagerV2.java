@@ -132,7 +132,6 @@ public class ConfigurationManagerV2 {
             null,
             Set.of(jobConfiguration, jobProviderConfiguration),
             providerProjectModel
-            providerProjectModel
         );
 
         String jobConfigBody = gson.toJson(jobFieldModel);

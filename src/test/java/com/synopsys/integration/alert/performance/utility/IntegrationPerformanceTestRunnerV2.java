@@ -131,7 +131,13 @@ public class IntegrationPerformanceTestRunnerV2 {
         assertTrue(isComplete);
     }
 
-    public void runPolicyNotificationTest(Map<String, FieldValueModel> channelFields, String jobName, String blackDuckProviderID, String policyName)
+    public void runPolicyNotificationTest(
+        Map<String, FieldValueModel> channelFields,
+        String jobName,
+        String blackDuckProviderID,
+        String policyName,
+        int numberOfExpectedNotifications
+    )
         throws IntegrationException, InterruptedException {
         LocalDateTime jobStartingTime = LocalDateTime.now();
         String jobId = configurationManager.createPolicyViolationJob(channelFields, jobName, blackDuckProviderID);
@@ -157,7 +163,7 @@ public class IntegrationPerformanceTestRunnerV2 {
             gson,
             alertRequestUtility,
             startingNotificationTime,
-            1000,
+            numberOfExpectedNotifications,
             NotificationType.RULE_VIOLATION,
             Set.of(jobId)
         );

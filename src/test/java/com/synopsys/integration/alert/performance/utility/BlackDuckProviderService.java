@@ -142,9 +142,8 @@ public class BlackDuckProviderService {
         projectBomService.addComponentToProjectVersion(externalId, projectVersionView);
     }
 
-    public void triggerBlackDuckPolicyNotification(String policyName, Supplier<ExternalId> externalIdSupplier) throws IntegrationException {
+    public PolicyRuleView createBlackDuckPolicyRuleView(String policyName, Supplier<ExternalId> externalIdSupplier) throws IntegrationException {
         setupBlackDuckServicesFactory();
-        PolicyRuleService policyRuleService = blackDuckServicesFactory.createPolicyRuleService();
         ComponentService componentService = blackDuckServicesFactory.createComponentService();
 
         ExternalId externalId = externalIdSupplier.get();
@@ -163,13 +162,29 @@ public class BlackDuckProviderService {
         policyRuleView.setOverridable(true);
         policyRuleView.setExpression(expressionSet);
 
-        Optional<PolicyRuleView> notificationPolicyOptional = policyRuleService.getPolicyRuleViewByName(policyRuleView.getName());
-        if (notificationPolicyOptional.isPresent()) {
-            PolicyRuleView notificationPolicy = notificationPolicyOptional.get();
+        return policyRuleView;
+    }
+
+    public void deleteExistingBlackDuckPolicy(PolicyRuleView policyRuleView) throws IntegrationException {
+        setupBlackDuckServicesFactory();
+        PolicyRuleService policyRuleService = blackDuckServicesFactory.createPolicyRuleService();
+
+        policyRuleService.getPolicyRuleViewByName(policyRuleView.getName());
+        Optional<PolicyRuleView> policyRuleViewOptional = policyRuleService.getPolicyRuleViewByName(policyRuleView.getName());
+        if (policyRuleViewOptional.isPresent()) {
+            PolicyRuleView notificationPolicy = policyRuleViewOptional.get();
             intLogger.info(String.format("Policy: %s already exists. Deleting the existing policy.", notificationPolicy.getName()));
             BlackDuckApiClient blackDuckService = blackDuckServicesFactory.getBlackDuckApiClient();
             blackDuckService.delete(notificationPolicy);
         }
+    }
+
+    public void triggerBlackDuckPolicyNotification(String policyName, Supplier<ExternalId> externalIdSupplier) throws IntegrationException {
+        PolicyRuleView policyRuleView = createBlackDuckPolicyRuleView(policyName, externalIdSupplier);
+        deleteExistingBlackDuckPolicy(policyRuleView);
+
+        PolicyRuleService policyRuleService = blackDuckServicesFactory.createPolicyRuleService();
+
         intLogger.info(String.format("Creating policy with the name: %s", policyRuleView.getName()));
         policyRuleService.createPolicyRule(policyRuleView);
     }

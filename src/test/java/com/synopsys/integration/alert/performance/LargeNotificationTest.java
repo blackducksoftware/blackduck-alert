@@ -35,6 +35,7 @@ import com.synopsys.integration.alert.performance.utility.jira.server.JiraServer
 import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestTags;
 import com.synopsys.integration.alert.util.DescriptorMocker;
+import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.service.model.ProjectVersionWrapper;
 import com.synopsys.integration.exception.IntegrationException;
@@ -47,6 +48,7 @@ import com.synopsys.integration.exception.IntegrationException;
 class LargeNotificationTest {
     private static final JiraServerChannelKey CHANNEL_KEY = new JiraServerChannelKey();
     private static final int NUMBER_OF_PROJECTS_TO_CREATE = 1000;
+    private static final String PERFORMANCE_POLICY_NAME = "PerformanceTestPolicy";
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -170,22 +172,37 @@ class LargeNotificationTest {
         // Create distribution job fields
         Map<String, FieldValueModel> channelFieldsMap = jiraServerPerformanceUtility.createChannelFieldsMap(testProperties, globalConfiguration.getId());
 
-        // Create N number of blackduck projects
-        createBlackDuckProjects(NUMBER_OF_PROJECTS_TO_CREATE);
+        // Clear existing policies
+        PolicyRuleView policyRuleView = blackDuckProviderService.createBlackDuckPolicyRuleView(PERFORMANCE_POLICY_NAME, BlackDuckProviderService.getDefaultExternalIdSupplier());
+        blackDuckProviderService.deleteExistingBlackDuckPolicy(policyRuleView);
 
+        // Create N number of blackduck projects and add a vulnerable component to each
+        /*
+        LocalDateTime startingProjectCreationTime = LocalDateTime.now();
+        for (int index = 1; index <= NUMBER_OF_PROJECTS_TO_CREATE; index++) {
+            ProjectVersionWrapper projectVersionWrapper = createBlackDuckProject(index);
+            triggerBlackDuckNotification(projectVersionWrapper.getProjectVersionView());
+        }
+        String createProjectsLogMessage = String.format("Creating %s projects took", NUMBER_OF_PROJECTS_TO_CREATE);
+        logTimeElapsedWithMessage(String.format("%s %s", createProjectsLogMessage, "%s"), startingProjectCreationTime, LocalDateTime.now());
+        */
         LocalDateTime executionStartTime = LocalDateTime.now();
-        testRunner.runPolicyNotificationTest(channelFieldsMap, "performanceJob", blackDuckProviderID, "AlertPerformancePolicy");
+        testRunner.runPolicyNotificationTest(channelFieldsMap, "performanceJob", blackDuckProviderID, PERFORMANCE_POLICY_NAME, NUMBER_OF_PROJECTS_TO_CREATE);
 
         logTimeElapsedWithMessage("Execution and processing test time: %s", executionStartTime, LocalDateTime.now());
         logTimeElapsedWithMessage("Total test time: %s", startingTime, LocalDateTime.now());
+    }
+
+    private ProjectVersionWrapper createBlackDuckProject(int index) throws IntegrationException {
+        return blackDuckProviderService.findOrCreateBlackDuckProjectAndVersion(String.format("AlertPerformanceProject-%s", index), "version1");
     }
 
     private List<ProjectVersionWrapper> createBlackDuckProjects(int numberOfProjects) throws IntegrationException {
         LocalDateTime startingProjectCreationTime = LocalDateTime.now();
         List<ProjectVersionWrapper> projectVersionWrappers = new ArrayList<>();
 
-        for (int projectIndex = 0; projectIndex < numberOfProjects; projectIndex++) {
-            projectVersionWrappers.add(blackDuckProviderService.findOrCreateBlackDuckProjectAndVersion(String.format("AlertPerformanceProject-%s", projectIndex), "version1"));
+        for (int projectIndex = 1; projectIndex <= numberOfProjects; projectIndex++) {
+            projectVersionWrappers.add(createBlackDuckProject(projectIndex));
         }
         String createProjectsLogMessage = String.format("Creating %s projects took", numberOfProjects);
         logTimeElapsedWithMessage(String.format("%s %s", createProjectsLogMessage, "%s"), startingProjectCreationTime, LocalDateTime.now());
@@ -194,7 +211,7 @@ class LargeNotificationTest {
 
     private void deleteBlackDuckProjects(int numberOfProjects) throws IntegrationException {
         LocalDateTime startingProjectCreationTime = LocalDateTime.now();
-        for (int projectIndex = 0; projectIndex < numberOfProjects; projectIndex++) {
+        for (int projectIndex = 1; projectIndex <= numberOfProjects; projectIndex++) {
             blackDuckProviderService.deleteBlackDuckProjectAndVersion(String.format("AlertPerformanceProject-%s", projectIndex), "version1");
         }
         String createProjectsLogMessage = String.format("Deleting %s projects took", numberOfProjects);
