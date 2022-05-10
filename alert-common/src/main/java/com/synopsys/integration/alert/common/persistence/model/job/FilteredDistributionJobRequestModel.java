@@ -17,6 +17,7 @@ import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 
 public class FilteredDistributionJobRequestModel extends AlertSerializableModel {
+    private static final long serialVersionUID = -8714694795622818776L;
     private final Long providerConfigId;
     private final Long notificationId;
     private final List<FrequencyType> frequencyTypes;

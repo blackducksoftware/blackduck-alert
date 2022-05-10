@@ -76,7 +76,6 @@ public class JobNotificationMapper2 {
             pageNumber,
             pageSize
         );
-        //TODO try to improve this code. n^3 is bad  Because this is executing inside another loop so really mapping is n^4 really bad...
         while (jobs.getCurrentPage() <= jobs.getTotalPages()) {
             List<JobToNotificationMappingModel> mappings = new LinkedList<>();
             for (SimpleFilteredDistributionJobResponseModel job : jobs.getModels()) {

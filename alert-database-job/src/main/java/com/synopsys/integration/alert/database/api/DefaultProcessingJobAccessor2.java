@@ -46,7 +46,6 @@ public class DefaultProcessingJobAccessor2 implements ProcessingJobAccessor2 {
             .collect(Collectors.toList());
 
         Set<String> projectNames = filteredDistributionJobRequestModel.getProjectName();
-        Set<String> notificationTypes = filteredDistributionJobRequestModel.getNotificationTypes();
 
         // If no policies and/or vulnerabilitySeverities exist the repository query expects a null to be passed
         Set<String> policyNames = filteredDistributionJobRequestModel.getPolicyNames().isEmpty() ? null : filteredDistributionJobRequestModel.getPolicyNames();
