@@ -33,6 +33,7 @@ import com.synopsys.integration.alert.performance.utility.ConfigurationManagerV2
 import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunnerV2;
 import com.synopsys.integration.alert.performance.utility.jira.server.JiraServerPerformanceUtility;
 import com.synopsys.integration.alert.test.common.TestProperties;
+import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.test.common.TestTags;
 import com.synopsys.integration.alert.util.DescriptorMocker;
 import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
@@ -47,7 +48,7 @@ import com.synopsys.integration.exception.IntegrationException;
 @WebAppConfiguration
 class LargeNotificationTest {
     private static final JiraServerChannelKey CHANNEL_KEY = new JiraServerChannelKey();
-    private static final int NUMBER_OF_PROJECTS_TO_CREATE = 1000;
+    private static final int DEFAULT_NUMBER_OF_PROJECTS_TO_CREATE = 10;
     private static final String PERFORMANCE_POLICY_NAME = "PerformanceTestPolicy";
 
     @Autowired
@@ -60,6 +61,9 @@ class LargeNotificationTest {
     private BlackDuckProviderService blackDuckProviderService;
     private JiraServerPerformanceUtility jiraServerPerformanceUtility;
     private IntegrationPerformanceTestRunnerV2 testRunner;
+
+    private TestProperties testProperties = new TestProperties();
+    private int numberOfProjectsToCreate;
 
     @BeforeEach
     public void init() {
@@ -79,6 +83,10 @@ class LargeNotificationTest {
             blackDuckProviderService,
             configurationManager
         );
+
+        numberOfProjectsToCreate = testProperties.getOptionalProperty(TestPropertyKey.TEST_PERFORMANCE_NUMBER_BLACKDUCK_PROJECTS_TO_CREATE)
+            .map(Integer::parseInt)
+            .orElse(DEFAULT_NUMBER_OF_PROJECTS_TO_CREATE);
     }
 
     @Test
@@ -93,7 +101,7 @@ class LargeNotificationTest {
         logTimeElapsedWithMessage("Setting up the Black Duck provider took %s", startingProviderCreateTime, LocalDateTime.now());
 
         // create 10 blackduck projects
-        List<ProjectVersionWrapper> projectVersionWrappers = createBlackDuckProjects(NUMBER_OF_PROJECTS_TO_CREATE);
+        List<ProjectVersionWrapper> projectVersionWrappers = createBlackDuckProjects(numberOfProjectsToCreate);
 
         //trigger a notification on each project
         for (ProjectVersionWrapper projectVersionWrapper : projectVersionWrappers) {
@@ -114,7 +122,7 @@ class LargeNotificationTest {
         logTimeElapsedWithMessage("Setting up the Black Duck provider took %s", startingProviderCreateTime, LocalDateTime.now());
 
         // create  blackduck projects
-        deleteBlackDuckProjects(NUMBER_OF_PROJECTS_TO_CREATE);
+        deleteBlackDuckProjects(numberOfProjectsToCreate);
         logTimeElapsedWithMessage("Total test time: %s", startingTime, LocalDateTime.now());
     }
 
@@ -124,7 +132,6 @@ class LargeNotificationTest {
         LocalDateTime startingTime = LocalDateTime.now();
         logger.info(String.format("Starting time: %s", dateTimeFormatter.format(startingTime)));
 
-        TestProperties testProperties = new TestProperties();
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel = jiraServerPerformanceUtility.createGlobalConfigModel(testProperties);
 
         // Create Black Duck Global Provider configuration
@@ -141,7 +148,7 @@ class LargeNotificationTest {
         Map<String, FieldValueModel> channelFieldsMap = jiraServerPerformanceUtility.createChannelFieldsMap(testProperties, globalConfiguration.getId());
 
         // Create N number of blackduck projects
-        List<ProjectVersionWrapper> projectVersionWrappers = createBlackDuckProjects(NUMBER_OF_PROJECTS_TO_CREATE);
+        List<ProjectVersionWrapper> projectVersionWrappers = createBlackDuckProjects(numberOfProjectsToCreate);
 
         LocalDateTime executionStartTime = LocalDateTime.now();
         testRunner.runTestWithOneJob(channelFieldsMap, "performanceJob", blackDuckProviderID, projectVersionWrappers);
@@ -156,7 +163,6 @@ class LargeNotificationTest {
         LocalDateTime startingTime = LocalDateTime.now();
         logger.info(String.format("Starting time: %s", dateTimeFormatter.format(startingTime)));
 
-        TestProperties testProperties = new TestProperties();
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel = jiraServerPerformanceUtility.createGlobalConfigModel(testProperties);
 
         // Create Black Duck Global Provider configuration
@@ -176,7 +182,9 @@ class LargeNotificationTest {
         PolicyRuleView policyRuleView = blackDuckProviderService.createBlackDuckPolicyRuleView(PERFORMANCE_POLICY_NAME, BlackDuckProviderService.getDefaultExternalIdSupplier());
         blackDuckProviderService.deleteExistingBlackDuckPolicy(policyRuleView);
 
-        // Create N number of blackduck projects and add a vulnerable component to each
+        // Create N number of Blackduck projects and add a vulnerable component to each
+        // Note: Setup for this test can take anywhere from 5-20 minutes depending on the instance of Blackduck. By pre-populating the server
+        //  with projects and components using 'createProjectsAndNotificationsTest' the code below can be skipped.
         /*
         LocalDateTime startingProjectCreationTime = LocalDateTime.now();
         for (int index = 1; index <= NUMBER_OF_PROJECTS_TO_CREATE; index++) {
@@ -187,7 +195,7 @@ class LargeNotificationTest {
         logTimeElapsedWithMessage(String.format("%s %s", createProjectsLogMessage, "%s"), startingProjectCreationTime, LocalDateTime.now());
         */
         LocalDateTime executionStartTime = LocalDateTime.now();
-        testRunner.runPolicyNotificationTest(channelFieldsMap, "performanceJob", blackDuckProviderID, PERFORMANCE_POLICY_NAME, NUMBER_OF_PROJECTS_TO_CREATE);
+        testRunner.runPolicyNotificationTest(channelFieldsMap, "performanceJob", blackDuckProviderID, PERFORMANCE_POLICY_NAME, numberOfProjectsToCreate);
 
         logTimeElapsedWithMessage("Execution and processing test time: %s", executionStartTime, LocalDateTime.now());
         logTimeElapsedWithMessage("Total test time: %s", startingTime, LocalDateTime.now());
