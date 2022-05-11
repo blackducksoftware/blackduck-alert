@@ -84,7 +84,7 @@ class LargeNotificationTest {
             configurationManager
         );
 
-        numberOfProjectsToCreate = testProperties.getOptionalProperty(TestPropertyKey.TEST_PERFORMANCE_NUMBER_BLACKDUCK_PROJECTS_TO_CREATE)
+        numberOfProjectsToCreate = testProperties.getOptionalProperty(TestPropertyKey.TEST_PERFORMANCE_BLACKDUCK_PROJECT_COUNT)
             .map(Integer::parseInt)
             .orElse(DEFAULT_NUMBER_OF_PROJECTS_TO_CREATE);
     }
