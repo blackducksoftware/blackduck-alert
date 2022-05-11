@@ -27,7 +27,7 @@ public enum TestPropertyKey {
     TEST_DAILY_DIGEST("alert.digest.daily.cron"),
     TEST_REALTIME_DIGEST("alert.digest.realtime.cron"),
 
-    TEST_PERFORMANCE_NUMBER_BLACKDUCK_PROJECTS_TO_CREATE("alert.performance.number.blackduck.projects.to.create"),
+    TEST_PERFORMANCE_BLACKDUCK_PROJECT_COUNT("alert.performance.blackduck.project.count"),
 
     TEST_SLACK_CHANNEL_NAME("slack.channel.name"),
     TEST_SLACK_USERNAME("slack.username"),
