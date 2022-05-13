@@ -21,10 +21,8 @@ import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
 import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageAccessor;
 import com.synopsys.integration.alert.common.system.BaseSystemValidator;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.log.IntLogger;
-import com.synopsys.integration.log.Slf4jIntLogger;
+import com.synopsys.integration.rest.response.Response;
 
 @Component
 public class BlackDuckSystemValidator extends BaseSystemValidator {
@@ -70,12 +68,15 @@ public class BlackDuckSystemValidator extends BaseSystemValidator {
                 if (localHostError) {
                     logger.warn("  -> {}", String.format(BLACKDUCK_LOCALHOST_ERROR_FORMAT, configName));
                 }
-                IntLogger intLogger = new Slf4jIntLogger(logger);
-                BlackDuckServerConfig blackDuckServerConfig = blackDuckProperties.createBlackDuckServerConfig(intLogger);
 
-                boolean canConnect = blackDuckServerConfig.canConnect(intLogger);
-                if (canConnect) {
+                BlackDuckApiTokenValidator blackDuckAPITokenValidator = new BlackDuckApiTokenValidator(blackDuckProperties);
+                if (canConnect(blackDuckProperties, blackDuckAPITokenValidator)) {
                     logger.info("  -> Black Duck configuration '{}' is Valid!", configName);
+
+                    if (!blackDuckAPITokenValidator.isApiTokenValid()) {
+                        connectivityWarning(blackDuckProperties, BLACKDUCK_API_PERMISSION_FORMAT);
+                        valid = false;
+                    }
                 } else {
                     String message = String.format("Can not connect to the Black Duck server with the configuration '%s'.", configName);
                     connectivityWarning(blackDuckProperties, message);
@@ -87,17 +88,34 @@ public class BlackDuckSystemValidator extends BaseSystemValidator {
                 valid = false;
             }
 
-            BlackDuckApiTokenValidator blackDuckAPITokenValidator = new BlackDuckApiTokenValidator(blackDuckProperties);
-            if (!blackDuckAPITokenValidator.isApiTokenValid()) {
-                connectivityWarning(blackDuckProperties, BLACKDUCK_API_PERMISSION_FORMAT);
-                valid = false;
-            }
-        } catch (MalformedURLException | IntegrationException | AlertRuntimeException ex) {
+        } catch (MalformedURLException | AlertRuntimeException ex) {
             logger.error("  -> Black Duck configuration '{}' is invalid; cause: {}", configName, ex.getMessage());
             logger.debug(String.format("  -> Black Duck configuration '%s' Stack Trace: ", configName), ex);
             valid = false;
         }
         return valid;
+    }
+
+    public boolean canConnect(BlackDuckProperties blackDuckProperties, BlackDuckApiTokenValidator blackDuckAPITokenValidator) {
+        String blackduckServerName = blackDuckProperties.getBlackDuckUrl().orElse(null);
+        Response authenticationResponse;
+
+        logger.info("  -> Attempting connection to {}", blackduckServerName);
+        try {
+            authenticationResponse = blackDuckAPITokenValidator.attemptAuthentication();
+        } catch (IntegrationException ex) {
+            logger.error("  -> Failed to make connection to {}; cause: {}", blackduckServerName, ex.getMessage());
+            logger.debug(String.format("  -> Black Duck server '%s' Stack Trace: ", blackduckServerName), ex);
+            return false;
+        }
+
+        if (authenticationResponse.isStatusCodeSuccess()) {
+            logger.info("  -> Successfully connected to {}", blackduckServerName);
+            return true;
+        } else {
+            logger.error("  -> Failed to make connection to {}; http status code: {}", blackduckServerName, authenticationResponse.getStatusCode());
+            return false;
+        }
     }
 
     private void removeOldConfigMessages(BlackDuckProperties properties, SystemMessageType... systemMessageTypes) {
