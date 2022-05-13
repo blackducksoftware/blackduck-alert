@@ -67,7 +67,7 @@ public class BomEditNotificationDetailExtractor extends NotificationDetailExtrac
             ProjectView projectView = blackDuckApiClient.getResponse(projectVersion.metaProjectLink());
             return Optional.of(new ProjectVersionWrapper(projectView, projectVersion));
         } catch (IntegrationException e) {
-            logger.error("Failed to connect to BlackDuck. Config ID: {}", blackDuckConfigId, e);
+            logger.error("Failed to connect to Black Duck. Config ID: {}", blackDuckConfigId, e);
         }
         return Optional.empty();
     }

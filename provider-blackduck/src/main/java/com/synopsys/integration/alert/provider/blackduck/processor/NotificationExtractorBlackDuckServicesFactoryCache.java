@@ -59,10 +59,10 @@ public class NotificationExtractorBlackDuckServicesFactoryCache implements Notif
                 BlackDuckHttpClient blackDuckHttpClient = blackDuckProperties.createBlackDuckCacheClient(intLogger);
                 return blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, intLogger);
             } catch (AlertException e) {
-                throw new AlertConfigurationException("The BlackDuck configuration is invalid", e);
+                throw new AlertConfigurationException("The Black Duck configuration is invalid", e);
             }
         }
-        throw new AlertConfigurationException(String.format("No BlackDuck configuration with id '%s' existed", blackDuckConfigId));
+        throw new AlertConfigurationException(String.format("No Black Duck configuration with id '%s' existed", blackDuckConfigId));
     }
 
     @Override

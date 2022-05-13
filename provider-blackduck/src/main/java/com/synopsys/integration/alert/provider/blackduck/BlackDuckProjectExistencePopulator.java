@@ -49,7 +49,7 @@ public class BlackDuckProjectExistencePopulator implements ProviderProjectExiste
         try {
             blackDuckApiClient = createBlackDuckApiClient(providerGlobalConfig);
         } catch (AlertException e) {
-            logger.debug("Failed to initialize BlackDuck services", e);
+            logger.debug("Failed to initialize Black Duck services", e);
             return;
         }
 
@@ -75,7 +75,7 @@ public class BlackDuckProjectExistencePopulator implements ProviderProjectExiste
                 return response.isStatusCodeSuccess();
             }
         } catch (Exception e) {
-            logger.debug("Could not determine if the BlackDuck project '{}' existed", project.getName(), e);
+            logger.debug("Could not determine if the Black Duck project '{}' existed", project.getName(), e);
         }
         return false;
     }

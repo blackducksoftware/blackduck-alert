@@ -61,8 +61,8 @@ public class ProjectMessageSummarizer {
                 return constructComponentStatusAndDescription(providerName, projectName, messageReason, projectMessage);
             default:
                 return Pair.of(
-                    String.format("%s had notifications in BlackDuck", projectMessage.getProject().getValue()),
-                    "Alert received an unrecognized notification from BlackDuck."
+                    String.format("%s had notifications in Black Duck", projectMessage.getProject().getValue()),
+                    "Alert received an unrecognized notification from Black Duck."
                 );
         }
     }
@@ -77,12 +77,12 @@ public class ProjectMessageSummarizer {
             String projectVersionName = optionalProjectVersionName.get();
             return Pair.of(
                 String.format("[%s] %s > %s %s", providerName, projectName, projectVersionName, operationString),
-                String.format("A project-version '%s' was %s was in the BlackDuck project '%s'.", projectVersionName, operationString, projectName)
+                String.format("A project-version '%s' was %s was in the Black Duck project '%s'.", projectVersionName, operationString, projectName)
             );
         } else {
             return Pair.of(
                 String.format("[%s] %s %s", providerName, projectName, operationString),
-                String.format("The project '%s' was %s in BlackDuck.", projectName, operationString)
+                String.format("The project '%s' was %s in Black Duck.", projectName, operationString)
             );
         }
     }
@@ -94,7 +94,7 @@ public class ProjectMessageSummarizer {
         String operationString = MessageReason.COMPONENT_CONCERN.equals(messageReason) ? "problems" : "updates";
         return Pair.of(
             String.format("[%s] %s > %s component %s", providerName, projectName, projectVersionName, operationString),
-            String.format("The project-version '%s > %s' had component %s in BlackDuck", projectName, projectVersionName, operationString)
+            String.format("The project-version '%s > %s' had component %s in Black Duck", projectName, projectVersionName, operationString)
         );
     }
 
