@@ -126,12 +126,9 @@ public class BlackDuckDistributionFieldModelTestAction extends FieldModelTestAct
             boolean foundResult = false;
             while (!foundResult && currentPage < projectsByProviderConfigId.getTotalPages()) {
                 List<String> providerProjects = projectsByProviderConfigId.getModels();
-                foundResult = providerProjects.stream().anyMatch(href ->
-                                                                     iteratePagesAndCheck(
-                                                                         versionCurrentPage -> blackDuckDataAccessor.getProjectVersionNamesByHref(providerConfigId, href, versionCurrentPage),
-                                                                         versionNames -> versionNames.stream().anyMatch(versionName -> compiledProjectVersionPattern.matcher(versionName).matches()),
-                                                                         Boolean.FALSE
-                                                                     ).isEmpty());
+                foundResult = providerProjects.stream().anyMatch(href -> iteratePagesAndCheck(versionCurrentPage -> blackDuckDataAccessor.getProjectVersionNamesByHref(providerConfigId, href, versionCurrentPage),
+                    versionNames -> versionNames.stream().anyMatch(versionName -> compiledProjectVersionPattern.matcher(versionName).matches()),
+                    Boolean.FALSE).isEmpty());
                 currentPage++;
                 projectsByProviderConfigId = filterAndMapHrefs(providerConfigId, currentPage, configuredProjects, compiledProjectNamePattern);
             }

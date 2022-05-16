@@ -50,8 +50,7 @@ public class BlackDuckAccumulatorTest {
         EventManager eventManager = Mockito.mock(EventManager.class);
         Mockito.doNothing().when(eventManager).sendEvent(Mockito.any(NotificationReceivedEvent.class));
 
-        BlackDuckAccumulator accumulator = new BlackDuckAccumulator(BLACK_DUCK_PROVIDER_KEY, null, notificationAccessor, taskPropertiesAccessor, blackDuckProperties, validator, eventManager,
-            notificationRetrieverFactory);
+        BlackDuckAccumulator accumulator = new BlackDuckAccumulator(BLACK_DUCK_PROVIDER_KEY, null, notificationAccessor, taskPropertiesAccessor, blackDuckProperties, validator, eventManager, notificationRetrieverFactory);
         accumulator.run();
 
         Mockito.verify(notificationAccessor, Mockito.times(1)).saveAllNotifications(Mockito.anyList());

@@ -296,6 +296,22 @@ public class SystemValidatorTest {
         assertTrue(outputLogger.isLineContainingText(String.format("Failed to make connection to %s; cause: ", LOCALHOST)));
     }
 
+    @Test
+    public void testCanConnectNullBDUrl() throws IOException, IntegrationException {
+        BlackDuckProperties blackDuckProperties = createMockBlackDuckProperties(Optional.empty());
+
+        DefaultSystemMessageAccessor mockDefaultSystemMessageAccessor = Mockito.mock(DefaultSystemMessageAccessor.class);
+        BlackDuckSystemValidator blackDuckSystemValidator = new BlackDuckSystemValidator(mockDefaultSystemMessageAccessor);
+
+        BlackDuckApiTokenValidator spiedBlackDuckApiTokenValidator = spy(new BlackDuckApiTokenValidator(blackDuckProperties));
+        Mockito.doThrow(IntegrationException.class).when(spiedBlackDuckApiTokenValidator).attemptAuthentication();
+
+        boolean canConnectResult = blackDuckSystemValidator.canConnect(blackDuckProperties, spiedBlackDuckApiTokenValidator);
+
+        assertFalse(canConnectResult);
+        assertTrue(outputLogger.isLineContainingText("Black Duck URL not configured."));
+    }
+
     private BlackDuckProperties createMockBlackDuckProperties(Optional<String> blackDuckUrl) {
         BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
         Mockito.when(blackDuckProperties.getBlackDuckUrl()).thenReturn(blackDuckUrl);

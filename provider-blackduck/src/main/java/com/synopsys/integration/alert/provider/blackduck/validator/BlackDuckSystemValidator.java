@@ -97,7 +97,12 @@ public class BlackDuckSystemValidator extends BaseSystemValidator {
     }
 
     public boolean canConnect(BlackDuckProperties blackDuckProperties, BlackDuckApiTokenValidator blackDuckAPITokenValidator) {
-        String blackduckServerName = blackDuckProperties.getBlackDuckUrl().orElse(null);
+        if (blackDuckProperties.getBlackDuckUrl().isEmpty()) {
+            logger.error("Black Duck URL not configured.");
+            return false;
+        }
+
+        String blackduckServerName = blackDuckProperties.getBlackDuckUrl().get();
         Response authenticationResponse;
 
         logger.info("  -> Attempting connection to {}", blackduckServerName);
