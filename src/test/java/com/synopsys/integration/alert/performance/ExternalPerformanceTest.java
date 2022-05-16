@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
@@ -75,8 +76,8 @@ class ExternalPerformanceTest {
     }
 
     @Test
-        //@Disabled("Used for performance testing only.")
-    void testNotificationsWithExternalAlertServer() throws Exception {
+    @Disabled("Used for performance testing only.")
+    void testPolicyNotificationsWithExternalAlertServer() throws Exception {
         LocalDateTime startingTime = LocalDateTime.now();
         intLogger.info(String.format("Starting time: %s", dateTimeFormatter.format(startingTime)));
 
