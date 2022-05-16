@@ -1,0 +1,3 @@
+# Testing Overview
+
+`blackduck-alert` uses [Jest](https://jestjs.io/) and [Enzyme](https://enzymejs.github.io/enzyme/) to test it's components.  At the time of writing this, both of these libraries work seemlessly within our app to provide accurate testing coverage mocking calls, performing user functions, and ensuring changes within our UI repo don't break between builds.  I will attempt to provide a testing best practices, with examples, in this document as I make my way through the code writing these tests.
