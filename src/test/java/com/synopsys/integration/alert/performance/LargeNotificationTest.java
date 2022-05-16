@@ -33,8 +33,10 @@ import com.synopsys.integration.alert.performance.utility.ConfigurationManagerV2
 import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunnerV2;
 import com.synopsys.integration.alert.performance.utility.jira.server.JiraServerPerformanceUtility;
 import com.synopsys.integration.alert.test.common.TestProperties;
+import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.test.common.TestTags;
 import com.synopsys.integration.alert.util.DescriptorMocker;
+import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.service.model.ProjectVersionWrapper;
 import com.synopsys.integration.exception.IntegrationException;
@@ -46,7 +48,8 @@ import com.synopsys.integration.exception.IntegrationException;
 @WebAppConfiguration
 class LargeNotificationTest {
     private static final JiraServerChannelKey CHANNEL_KEY = new JiraServerChannelKey();
-    private static final int NUMBER_OF_PROJECTS_TO_CREATE = 5000;
+    private static final int DEFAULT_NUMBER_OF_PROJECTS_TO_CREATE = 10;
+    private static final String PERFORMANCE_POLICY_NAME = "PerformanceTestPolicy";
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -58,6 +61,9 @@ class LargeNotificationTest {
     private BlackDuckProviderService blackDuckProviderService;
     private JiraServerPerformanceUtility jiraServerPerformanceUtility;
     private IntegrationPerformanceTestRunnerV2 testRunner;
+
+    private TestProperties testProperties = new TestProperties();
+    private int numberOfProjectsToCreate;
 
     @BeforeEach
     public void init() {
@@ -77,6 +83,10 @@ class LargeNotificationTest {
             blackDuckProviderService,
             configurationManager
         );
+
+        numberOfProjectsToCreate = testProperties.getOptionalProperty(TestPropertyKey.TEST_PERFORMANCE_BLACKDUCK_PROJECT_COUNT)
+            .map(Integer::parseInt)
+            .orElse(DEFAULT_NUMBER_OF_PROJECTS_TO_CREATE);
     }
 
     @Test
@@ -91,7 +101,7 @@ class LargeNotificationTest {
         logTimeElapsedWithMessage("Setting up the Black Duck provider took %s", startingProviderCreateTime, LocalDateTime.now());
 
         // create 10 blackduck projects
-        List<ProjectVersionWrapper> projectVersionWrappers = createBlackDuckProjects(NUMBER_OF_PROJECTS_TO_CREATE);
+        List<ProjectVersionWrapper> projectVersionWrappers = createBlackDuckProjects(numberOfProjectsToCreate);
 
         //trigger a notification on each project
         for (ProjectVersionWrapper projectVersionWrapper : projectVersionWrappers) {
@@ -112,17 +122,16 @@ class LargeNotificationTest {
         logTimeElapsedWithMessage("Setting up the Black Duck provider took %s", startingProviderCreateTime, LocalDateTime.now());
 
         // create  blackduck projects
-        deleteBlackDuckProjects(NUMBER_OF_PROJECTS_TO_CREATE);
+        deleteBlackDuckProjects(numberOfProjectsToCreate);
         logTimeElapsedWithMessage("Total test time: %s", startingTime, LocalDateTime.now());
     }
 
     @Test
     @Disabled("Used for performance testing only.")
-    void largeNotificationTest() throws IntegrationException, InterruptedException {
+    void largeVulnerabilityNotificationTest() throws IntegrationException, InterruptedException {
         LocalDateTime startingTime = LocalDateTime.now();
         logger.info(String.format("Starting time: %s", dateTimeFormatter.format(startingTime)));
 
-        TestProperties testProperties = new TestProperties();
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel = jiraServerPerformanceUtility.createGlobalConfigModel(testProperties);
 
         // Create Black Duck Global Provider configuration
@@ -139,7 +148,7 @@ class LargeNotificationTest {
         Map<String, FieldValueModel> channelFieldsMap = jiraServerPerformanceUtility.createChannelFieldsMap(testProperties, globalConfiguration.getId());
 
         // Create N number of blackduck projects
-        List<ProjectVersionWrapper> projectVersionWrappers = createBlackDuckProjects(NUMBER_OF_PROJECTS_TO_CREATE);
+        List<ProjectVersionWrapper> projectVersionWrappers = createBlackDuckProjects(numberOfProjectsToCreate);
 
         LocalDateTime executionStartTime = LocalDateTime.now();
         testRunner.runTestWithOneJob(channelFieldsMap, "performanceJob", blackDuckProviderID, projectVersionWrappers);
@@ -148,11 +157,60 @@ class LargeNotificationTest {
         logTimeElapsedWithMessage("Total test time: %s", startingTime, LocalDateTime.now());
     }
 
+    @Test
+    @Disabled("Used for performance testing only.")
+    void largePolicyNotificationTest() throws IntegrationException, InterruptedException {
+        LocalDateTime startingTime = LocalDateTime.now();
+        logger.info(String.format("Starting time: %s", dateTimeFormatter.format(startingTime)));
+
+        JiraServerGlobalConfigModel jiraServerGlobalConfigModel = jiraServerPerformanceUtility.createGlobalConfigModel(testProperties);
+
+        // Create Black Duck Global Provider configuration
+        LocalDateTime startingProviderCreateTime = LocalDateTime.now();
+        String blackDuckProviderID = blackDuckProviderService.setupBlackDuck();
+        logTimeElapsedWithMessage("Setting up the Black Duck provider took %s", startingProviderCreateTime, LocalDateTime.now());
+
+        // Create Jira Server global config
+        LocalDateTime startingCreateGlobalConfigTime = LocalDateTime.now();
+        JiraServerGlobalConfigModel globalConfiguration = jiraServerPerformanceUtility.createJiraGlobalConfiguration(jiraServerGlobalConfigModel);
+        logTimeElapsedWithMessage("Installing the jira server plugin and creating global configuration took %s", startingCreateGlobalConfigTime, LocalDateTime.now());
+
+        // Create distribution job fields
+        Map<String, FieldValueModel> channelFieldsMap = jiraServerPerformanceUtility.createChannelFieldsMap(testProperties, globalConfiguration.getId());
+
+        // Clear existing policies
+        PolicyRuleView policyRuleView = blackDuckProviderService.createBlackDuckPolicyRuleView(PERFORMANCE_POLICY_NAME, BlackDuckProviderService.getDefaultExternalIdSupplier());
+        blackDuckProviderService.deleteExistingBlackDuckPolicy(policyRuleView);
+
+        // Create N number of Blackduck projects and add a vulnerable component to each
+        // Note: Setup for this test can take anywhere from 5-20 minutes depending on the instance of Blackduck. By pre-populating the server
+        //  with projects and components using 'createProjectsAndNotificationsTest' the code below can be skipped.
+        /*
+        LocalDateTime startingProjectCreationTime = LocalDateTime.now();
+        for (int index = 1; index <= NUMBER_OF_PROJECTS_TO_CREATE; index++) {
+            ProjectVersionWrapper projectVersionWrapper = createBlackDuckProject(index);
+            triggerBlackDuckNotification(projectVersionWrapper.getProjectVersionView());
+        }
+        String createProjectsLogMessage = String.format("Creating %s projects took", NUMBER_OF_PROJECTS_TO_CREATE);
+        logTimeElapsedWithMessage(String.format("%s %s", createProjectsLogMessage, "%s"), startingProjectCreationTime, LocalDateTime.now());
+        */
+        LocalDateTime executionStartTime = LocalDateTime.now();
+        testRunner.runPolicyNotificationTest(channelFieldsMap, "performanceJob", blackDuckProviderID, PERFORMANCE_POLICY_NAME, numberOfProjectsToCreate);
+
+        logTimeElapsedWithMessage("Execution and processing test time: %s", executionStartTime, LocalDateTime.now());
+        logTimeElapsedWithMessage("Total test time: %s", startingTime, LocalDateTime.now());
+    }
+
+    private ProjectVersionWrapper createBlackDuckProject(int index) throws IntegrationException {
+        return blackDuckProviderService.findOrCreateBlackDuckProjectAndVersion(String.format("AlertPerformanceProject-%s", index), "version1");
+    }
+
     private List<ProjectVersionWrapper> createBlackDuckProjects(int numberOfProjects) throws IntegrationException {
         LocalDateTime startingProjectCreationTime = LocalDateTime.now();
         List<ProjectVersionWrapper> projectVersionWrappers = new ArrayList<>();
-        for (int projectIndex = 0; projectIndex < numberOfProjects; projectIndex++) {
-            projectVersionWrappers.add(blackDuckProviderService.findOrCreateBlackDuckProjectAndVersion(String.format("AlertPerformanceProject-%s", projectIndex), "version1"));
+
+        for (int projectIndex = 1; projectIndex <= numberOfProjects; projectIndex++) {
+            projectVersionWrappers.add(createBlackDuckProject(projectIndex));
         }
         String createProjectsLogMessage = String.format("Creating %s projects took", numberOfProjects);
         logTimeElapsedWithMessage(String.format("%s %s", createProjectsLogMessage, "%s"), startingProjectCreationTime, LocalDateTime.now());
@@ -161,7 +219,7 @@ class LargeNotificationTest {
 
     private void deleteBlackDuckProjects(int numberOfProjects) throws IntegrationException {
         LocalDateTime startingProjectCreationTime = LocalDateTime.now();
-        for (int projectIndex = 0; projectIndex < numberOfProjects; projectIndex++) {
+        for (int projectIndex = 1; projectIndex <= numberOfProjects; projectIndex++) {
             blackDuckProviderService.deleteBlackDuckProjectAndVersion(String.format("AlertPerformanceProject-%s", projectIndex), "version1");
         }
         String createProjectsLogMessage = String.format("Deleting %s projects took", numberOfProjects);
