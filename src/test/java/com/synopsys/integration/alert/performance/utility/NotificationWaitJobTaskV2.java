@@ -1,5 +1,7 @@
 package com.synopsys.integration.alert.performance.utility;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
@@ -145,10 +147,10 @@ public class NotificationWaitJobTaskV2 implements WaitJobCondition {
 
     private String createAuditRequestString(int pageNumber, int pageSize, NotificationType notificationType) {
         return String.format(
-            "/api/audit?pageNumber=%s&pageSize=%s&searchTerm=\"%s\"&sortField=createdAt&sortOrder=desc&onlyShowSentNotifications=false",
+            "/api/audit?pageNumber=%s&pageSize=%s&searchTerm=%s&sortField=createdAt&sortOrder=desc&onlyShowSentNotifications=false",
             pageNumber,
             pageSize,
-            notificationType.name()
+            URLEncoder.encode(String.format("\"%s\"", notificationType.name()), StandardCharsets.UTF_8)
         );
     }
 }
