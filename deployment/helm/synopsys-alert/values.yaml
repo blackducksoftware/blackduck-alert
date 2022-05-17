@@ -82,6 +82,33 @@ postgres:
   securityContext: {}
   resources: {}
 
+# rabbitmq - configurations for the rabbitMQ pod
+rabbitmq:
+  imageTag: ALERT_VERSION_TOKEN
+  registry: ""
+  isExternal: false # false for running RabbitMQ as a container and true for using External RabbitMQ instance\
+  host: "" # required only for external postgres, for postgres as a container, it will point to <name>-postgres
+  port: 5672
+  virtualHost: blackduck-alert
+  credential: #Secret that contains both the regular username & password
+    secretName: ""
+    usernameKey: "ALERT_RABBIT_USER"
+    passwordKey: "ALERT_RABBIT_PASSWORD"
+  ssl: false # If true, Alert uses SSL for external RAbbitMQ connection
+  sslSecrets: # Secret that contains all the ssl file paths
+  persistentVolumeClaimName:
+  claimSize: "2Gi" # PVC claim size
+  storageClass: "" # PVC storage class name
+  volumeName: "" # existing persistent volume name backing the PVC
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  podSecurityContext: {}
+  securityContext: {}
+  resources:
+    limits:
+      memory: "1024Mi"
+
 # image pull secret to download images (mostly applicable for air gapped customers)
 imagePullSecrets: [] # array of strings delimited by comma
 

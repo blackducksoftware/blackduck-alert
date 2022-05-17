@@ -1,0 +1,139 @@
+{{- if not .Values.rabbitmq.isExternal }}
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: alert
+    component: rabbitmq
+    name: {{ .Release.Name }}
+  name: {{ .Release.Name }}-rabbitmq
+  namespace: {{ .Release.Namespace }}
+spec:
+  ports:
+    - name: port-5432
+      port: {{ .Values.rabbitmq.port }}
+      protocol: TCP
+      targetPort: {{ .Values.rabbitmq.port }}
+  selector:
+    app: alert
+    component: rabbitmq
+  type: ClusterIP
+  {{- if and .Values.enablePersistentStorage (not .Values.rabbitmq.persistentVolumeClaimName) }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: alert
+    component: rabbitmq
+    name: {{ .Release.Name }}
+  name: {{ .Release.Name }}-rabbitmq
+  namespace: {{ .Release.Namespace }}
+spec:
+  {{- if .Values.rabbitmq.storageClass }}
+  storageClassName: {{ .Values.rabbitmq.storageClass }}
+  {{- else if .Values.storageClass }}
+  storageClassName: {{ .Values.storageClass }}
+  {{- end}}
+  {{ if .Values.alert.volumeName -}}
+  volumeName: {{ .Values.rabbitmq.volumeName }}
+  {{ end -}}
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.rabbitmq.claimSize }}
+  {{- end }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: alert
+    component: rabbitmq
+    name: {{ .Release.Name }}
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  {{- if eq .Values.status "Running" }}
+  replicas: 1
+  {{- else }}
+  replicas: 0
+  {{- end }}
+  selector:
+    matchLabels:
+      app: alert
+      component: rabbitmq
+      name: {{ .Release.Name }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: alert
+        component: rabbitmq
+        name: {{ .Release.Name }}
+      annotations:
+        checksum/rabbitmq-config: {{ include (print $.Template.BasePath "/rabbitmq-config.yaml") . | sha256sum }}
+      name: {{ .Release.Name }}
+    spec:
+      containers:
+      - env:
+      envFrom:
+      - configMapRef:
+          name: {{ .Release.Name}}-rabbitmq-config
+      - configMapRef:
+          name: {{ .Release.Name }}-environs
+      - secretRef:
+          name: {{ .Release.Name }}-environs-secret
+      {{- if .Values.rabbitmq.registry }}
+      image: {{ .Values.rabbitmq.registry }}/blackduck-alert-rabbitmq:{{ .Values.rabbitmq.imageTag }}
+      {{- else }}
+      image: {{ .Values.registry }}/blackduck-alert-rabbitmq:{{ .Values.rabbitmq.imageTag }}
+      {{- end }}
+      imagePullPolicy: Always
+      livenessProbe:
+        exec:
+          command:
+        failureThreshold: 5
+        initialDelaySeconds: 240
+        periodSeconds: 30
+        timeoutSeconds: 10
+      name: blackduck-alert-rabbitmq
+      ports:
+        - containerPort: {{ .Values.rabbitmq.port }}
+          protocol: TCP
+      resources:
+        {{- toYaml .Values.rabbitmq.resources | nindent 12 }}
+      {{- with .Values.rabbitmq.securityContext }}
+      securityContext:
+{{ toYaml . | indent 10 }}
+      {{- end }}
+      volumeMounts:
+    dnsPolicy: ClusterFirst
+    {{- include "alert.imagePullSecrets" . | nindent 6 -}}
+    {{- with .Values.rabbitmq.nodeSelector }}
+    nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.rabbitmq.affinity }}
+    affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.rabbitmq.tolerations }}
+    tolerations:
+{{ toYaml . | indent 6 }}
+    {{- end }}
+    {{- with .Values.rabbitmq.podSecurityContext }}
+    securityContext:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    volumes:
+    {{- if .Values.enablePersistentStorage }}
+    - name: dir-alert-rabbitmq
+      persistentVolumeClaim:
+        claimName: {{if .Values.rabbitmq.persistentVolumeClaimName}} {{.Values.rabbitmq.persistentVolumeClaimName}} {{else}} {{ .Release.Name }}-rabbitmq-pvc {{end}}
+    {{- else }}
+    - emptyDir: {}
+      name: dir-alert-rabbitmq
+    {{- end }}
