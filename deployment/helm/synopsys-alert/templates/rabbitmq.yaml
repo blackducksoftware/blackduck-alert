@@ -78,7 +78,19 @@ spec:
       name: {{ .Release.Name }}
     spec:
       containers:
+      {{- if .Values.rabbitmq.credential.secretName }}
       - env:
+        - name: ALERT_RABBIT_USER
+          valueFrom:
+            secretKeyRef:
+              key: {{ required ".Values.rabbitmq.credential.usernameKey is missing." .Values.rabbitmq.credential.usernameKey }}
+              name: {{ .Values.postgres.rabbitmq.credential.secretName }}
+        - name: ALERT_RABBIT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: {{ required ".Values.rabbitmq.credential.passwordKey is missing." .Values.rabbitmq.credential.passwordKey }}
+              name: {{ .Values.rabbitmq.credential.secretName }}
+      {{- end }}
       envFrom:
       - configMapRef:
           name: {{ .Release.Name}}-rabbitmq-config
@@ -137,3 +149,4 @@ spec:
     - emptyDir: {}
       name: dir-alert-rabbitmq
     {{- end }}
+{{- end -}}
