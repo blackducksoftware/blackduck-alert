@@ -30,7 +30,7 @@ spec:
         checksum/alert-environ-configmap: {{ include (print $.Template.BasePath "/alert-environ-configmap.yaml") . | sha256sum }}
         checksum/alert-environ-secret: {{ include (print $.Template.BasePath "/alert-environ-secret.yaml") . | sha256sum }}
         checksum/postgres-config: {{ include (print $.Template.BasePath "/postgres-config.yaml") . | sha256sum }}
-        checksum/rabbitmq-config: {{ include (print $.Template.BasePath "/rebbitmq-config.yaml") . | sha256sum }}
+        checksum/rabbitmq-config: {{ include (print $.Template.BasePath "/rabbitmq-config.yaml") . | sha256sum }}
       name: {{ .Release.Name }}
     spec:
       containers:

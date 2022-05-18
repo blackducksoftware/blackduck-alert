@@ -78,8 +78,8 @@ spec:
       name: {{ .Release.Name }}
     spec:
       containers:
-      {{- if .Values.rabbitmq.credential.secretName }}
       - env:
+        {{- if .Values.rabbitmq.credential.secretName }}
         - name: ALERT_RABBIT_USER
           valueFrom:
             secretKeyRef:
@@ -90,63 +90,70 @@ spec:
             secretKeyRef:
               key: {{ required ".Values.rabbitmq.credential.passwordKey is missing." .Values.rabbitmq.credential.passwordKey }}
               name: {{ .Values.rabbitmq.credential.secretName }}
-      {{- end }}
-      envFrom:
-      - configMapRef:
-          name: {{ .Release.Name}}-rabbitmq-config
-      - configMapRef:
-          name: {{ .Release.Name }}-environs
-      - secretRef:
-          name: {{ .Release.Name }}-environs-secret
-      {{- if .Values.rabbitmq.registry }}
-      image: {{ .Values.rabbitmq.registry }}/blackduck-alert-rabbitmq:{{ .Values.rabbitmq.imageTag }}
-      {{- else }}
-      image: {{ .Values.registry }}/blackduck-alert-rabbitmq:{{ .Values.rabbitmq.imageTag }}
-      {{- end }}
-      imagePullPolicy: Always
-      livenessProbe:
-        exec:
-          command:
-        failureThreshold: 5
-        initialDelaySeconds: 240
-        periodSeconds: 30
-        timeoutSeconds: 10
-      name: blackduck-alert-rabbitmq
-      ports:
-        - containerPort: {{ .Values.rabbitmq.port }}
-          protocol: TCP
-      resources:
-        {{- toYaml .Values.rabbitmq.resources | nindent 12 }}
-      {{- with .Values.rabbitmq.securityContext }}
-      securityContext:
+        {{- end }}
+        envFrom:
+        - configMapRef:
+            name: {{ .Release.Name}}-rabbitmq-config
+        - configMapRef:
+            name: {{ .Release.Name }}-environs
+        - secretRef:
+            name: {{ .Release.Name }}-environs-secret
+        {{- if .Values.rabbitmq.registry }}
+        image: {{ .Values.rabbitmq.registry }}/blackduck-alert-rabbitmq:{{ .Values.rabbitmq.imageTag }}
+        {{- else }}
+        image: {{ .Values.registry }}/blackduck-alert-rabbitmq:{{ .Values.rabbitmq.imageTag }}
+        {{- end }}
+        imagePullPolicy: Always
+        livenessProbe:
+          exec:
+            command:
+              - rabbitmq-diagnostics
+              - -q
+              - status
+          failureThreshold: 5
+          initialDelaySeconds: 240
+          periodSeconds: 30
+          timeoutSeconds: 10
+        name: blackduck-alert-rabbitmq
+        ports:
+          - containerPort: {{ .Values.rabbitmq.port }}
+            protocol: TCP
+        resources:
+          {{- toYaml .Values.rabbitmq.resources | nindent 12 }}
+        {{- with .Values.rabbitmq.securityContext }}
+        securityContext:
 {{ toYaml . | indent 10 }}
+        {{- end }}
+        volumeMounts:
+          - mountPath: /opt/blackduck/rabbitmq/logs
+            name: alert-rabbitmq-volume
+      dnsPolicy: ClusterFirst
+      {{- include "alert.imagePullSecrets" . | nindent 6 -}}
+      {{- with .Values.rabbitmq.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
       {{- end }}
-      volumeMounts:
-    dnsPolicy: ClusterFirst
-    {{- include "alert.imagePullSecrets" . | nindent 6 -}}
-    {{- with .Values.rabbitmq.nodeSelector }}
-    nodeSelector:
+      {{- with .Values.rabbitmq.affinity }}
+      affinity:
 {{ toYaml . | indent 8 }}
-    {{- end }}
-    {{- with .Values.rabbitmq.affinity }}
-    affinity:
-{{ toYaml . | indent 8 }}
-    {{- end }}
-    {{- with .Values.rabbitmq.tolerations }}
-    tolerations:
+      {{- end }}
+      {{- with .Values.rabbitmq.tolerations }}
+      tolerations:
 {{ toYaml . | indent 6 }}
-    {{- end }}
-    {{- with .Values.rabbitmq.podSecurityContext }}
-    securityContext:
+      {{- end }}
+      {{- with .Values.rabbitmq.podSecurityContext }}
+      securityContext:
 {{ toYaml . | indent 8 }}
-    {{- end }}
-    volumes:
-    {{- if .Values.enablePersistentStorage }}
-    - name: dir-alert-rabbitmq
-      persistentVolumeClaim:
-        claimName: {{if .Values.rabbitmq.persistentVolumeClaimName}} {{.Values.rabbitmq.persistentVolumeClaimName}} {{else}} {{ .Release.Name }}-rabbitmq-pvc {{end}}
-    {{- else }}
-    - emptyDir: {}
-      name: dir-alert-rabbitmq
-    {{- end }}
+      {{- end }}
+      serviceAccountName: {{ .Release.Name }}-service-account
+      restartPolicy: Always
+      volumes:
+      {{- if .Values.enablePersistentStorage }}
+        - name: alert-rabbitmq-volume
+          persistentVolumeClaim:
+            claimName: {{if .Values.rabbitmq.persistentVolumeClaimName}} {{.Values.rabbitmq.persistentVolumeClaimName}} {{else}} {{ .Release.Name }}-rabbitmq-pvc {{end}}
+      {{- else }}
+        - emptyDir: {}
+          name: alert-rabbitmq-volume
+      {{- end }}
 {{- end -}}
