@@ -99,7 +99,7 @@ public class IntegrationPerformanceTestRunnerV2 {
         String jobName,
         String blackDuckProviderID,
         List<ProjectVersionWrapper> projectVersionWrappers,
-        int numberOfExpectedNotifications
+        int numberOfExpectedAuditEntries
     )
         throws IntegrationException, InterruptedException {
         LocalDateTime jobStartingTime = LocalDateTime.now();
@@ -115,7 +115,7 @@ public class IntegrationPerformanceTestRunnerV2 {
         }
         loggingUtility.logTimeElapsedWithMessage("Triggering all Black Duck notifications took %s", startingNotificationTime, LocalDateTime.now());
 
-        waitForJobToFinish(Set.of(jobId), startingNotificationTime, numberOfExpectedNotifications, NotificationType.VULNERABILITY);
+        waitForJobToFinish(Set.of(jobId), startingNotificationTime, numberOfExpectedAuditEntries, NotificationType.VULNERABILITY);
     }
 
     public void runPolicyNotificationTest(
@@ -123,7 +123,7 @@ public class IntegrationPerformanceTestRunnerV2 {
         String jobName,
         String blackDuckProviderID,
         String policyName,
-        int numberOfExpectedNotifications
+        int numberOfExpectedAuditEntries
     )
         throws IntegrationException, InterruptedException {
         LocalDateTime jobStartingTime = LocalDateTime.now();
@@ -137,7 +137,22 @@ public class IntegrationPerformanceTestRunnerV2 {
         triggerBlackDuckPolicyNotification(policyName);
         loggingUtility.logTimeElapsedWithMessage("Triggering policy notification took %s", startingNotificationTime, LocalDateTime.now());
 
-        waitForJobToFinish(Set.of(jobId), startingNotificationTime, numberOfExpectedNotifications, NotificationType.RULE_VIOLATION);
+        waitForJobToFinish(Set.of(jobId), startingNotificationTime, numberOfExpectedAuditEntries, NotificationType.RULE_VIOLATION);
+    }
+
+    public void testManyPolicyJobsToManyProjects(
+        Set<String> jobIds,
+        String policyName,
+        int numberOfExpectedAuditEntries
+    )
+        throws IntegrationException, InterruptedException {
+        // trigger BD notifications
+        LocalDateTime startingNotificationTime = LocalDateTime.now();
+        intLogger.info("Triggered the Black Duck notification.");
+        triggerBlackDuckPolicyNotification(policyName);
+        loggingUtility.logTimeElapsedWithMessage("Triggering policy notification took %s", startingNotificationTime, LocalDateTime.now());
+
+        waitForJobToFinish(jobIds, startingNotificationTime, numberOfExpectedAuditEntries, NotificationType.RULE_VIOLATION);
     }
 
     private void triggerBlackDuckNotification(ProjectVersionView projectVersionView) throws IntegrationException {
@@ -163,7 +178,7 @@ public class IntegrationPerformanceTestRunnerV2 {
         return blackDuckProviderID;
     }
 
-    private void waitForJobToFinish(Set<String> jobIds, LocalDateTime startingNotificationTime, int numberOfExpectedNotifications, NotificationType notificationType)
+    private void waitForJobToFinish(Set<String> jobIds, LocalDateTime startingNotificationTime, int numberOfExpectedAuditEntries, NotificationType notificationType)
         throws IntegrationException, InterruptedException {
         WaitJobConfig waitJobConfig = new WaitJobConfig(
             intLogger,
@@ -178,7 +193,7 @@ public class IntegrationPerformanceTestRunnerV2 {
             gson,
             alertRequestUtility,
             startingNotificationTime,
-            numberOfExpectedNotifications,
+            numberOfExpectedAuditEntries,
             notificationType,
             jobIds
         );
