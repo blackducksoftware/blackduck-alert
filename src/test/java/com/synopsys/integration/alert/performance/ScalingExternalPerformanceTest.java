@@ -53,11 +53,13 @@ class ScalingExternalPerformanceTest {
     private IntegrationPerformanceTestRunnerV2 testRunner;
     private ConfigurationManagerV2 configurationManager;
 
+    private int numberOfProjectsToCreate;
     private int numberOfJobsToCreate;
 
     @BeforeEach
     public void init() throws IntegrationException {
         String alertURL = testProperties.getProperty(TestPropertyKey.TEST_PERFORMANCE_ALERT_SERVER_URL);
+        numberOfProjectsToCreate = Integer.parseInt(testProperties.getProperty(TestPropertyKey.TEST_PERFORMANCE_BLACKDUCK_PROJECT_COUNT));
         numberOfJobsToCreate = testProperties.getOptionalProperty(TestPropertyKey.TEST_PERFORMANCE_ALERT_DISTRIBUTION_JOB_COUNT)
             .map(Integer::parseInt)
             .orElse(DEFAULT_NUMBER_OF_JOBS_TO_CREATE);
@@ -109,6 +111,7 @@ class ScalingExternalPerformanceTest {
         Set<String> policyJobIds = new HashSet<>();
         for (int i = 1; i <= numberOfJobsToCreate; i++) {
             String jobName = String.format("JiraPerformanceJob-%s", i);
+            intLogger.info(String.format("Creating distribution job: %s", jobName));
             Map<String, FieldValueModel> channelFieldsMap = jiraServerPerformanceUtility.createChannelFieldsMap(testProperties, jobName, globalConfiguration.getId());
             policyJobIds.add(configurationManager.createPolicyViolationJob(channelFieldsMap, jobName, blackDuckProviderID));
         }
@@ -118,7 +121,7 @@ class ScalingExternalPerformanceTest {
 
         LocalDateTime executionStartTime = LocalDateTime.now();
         //Test with 10 policy jobs
-        testRunner.testManyPolicyJobsToManyProjects(policyJobIds, PERFORMANCE_POLICY_NAME, numberOfJobsToCreate);
+        testRunner.testManyPolicyJobsToManyProjects(policyJobIds, PERFORMANCE_POLICY_NAME, numberOfProjectsToCreate);
 
         loggingUtility.logTimeElapsedWithMessage("Execution and processing test time: %s", executionStartTime, LocalDateTime.now());
         loggingUtility.logTimeElapsedWithMessage("Total test time: %s", startingTime, LocalDateTime.now());
