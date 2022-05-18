@@ -2,16 +2,16 @@
 apiVersion: v1
 data:
   {{- if not .Values.rabbitmq.isExternal }}
-  ALERT_RABBIT_MQ_HOST: {{ .Release.Name }}-rabbitmq
+  ALERT_RABBITMQ_HOST: {{ .Release.Name }}-rabbitmq
   {{- else }}
-  ALERT_RABBIT_MQ_HOST: {{ required "must provide --set rabbitmq.host=\"\"" .Values.rabbitmq.host }}
+  ALERT_RABBITMQ_HOST: {{ required "must provide --set rabbitmq.host=\"\"" .Values.rabbitmq.host }}
   {{- end }}
-  ALERT_RABBIT_MQ_PORT: {{ required "must provide --set rabbitmq.port=\"\"" .Values.rabbitmq.port | quote }}
+  ALERT_RABBITMQ_PORT: {{ required "must provide --set rabbitmq.port=\"\"" .Values.rabbitmq.port | quote }}
   {{- if not .Values.rabbitmq.credential.secretName }}
-  ALERT_RABBIT_USER: sysadmin
-  ALERT_RABBIT_PASSWORD: blackduck
+  ALERT_RABBITMQ_USER: sysadmin
+  ALERT_RABBITMQ_PASSWORD: blackduck
   {{- end }}
-  ALERT_RABBIT_VHOST: {{ required "must provide --set rabbitmq.virtualHost=\"\"" .Values.rabbitmq.virtualHost}}
+  ALERT_RABBITMQ_VHOST: {{ required "must provide --set rabbitmq.virtualHost=\"\"" .Values.rabbitmq.virtualHost}}
 kind: ConfigMap
 metadata:
   labels:

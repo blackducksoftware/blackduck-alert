@@ -80,12 +80,12 @@ spec:
       containers:
       - env:
         {{- if .Values.rabbitmq.credential.secretName }}
-        - name: ALERT_RABBIT_USER
+        - name: ALERT_RABBITMQ_USER
           valueFrom:
             secretKeyRef:
               key: {{ required ".Values.rabbitmq.credential.usernameKey is missing." .Values.rabbitmq.credential.usernameKey }}
               name: {{ .Values.postgres.rabbitmq.credential.secretName }}
-        - name: ALERT_RABBIT_PASSWORD
+        - name: ALERT_RABBITMQ_PASSWORD
           valueFrom:
             secretKeyRef:
               key: {{ required ".Values.rabbitmq.credential.passwordKey is missing." .Values.rabbitmq.credential.passwordKey }}

@@ -92,8 +92,8 @@ rabbitmq:
   virtualHost: blackduck-alert
   credential: #Secret that contains both the regular username & password
     secretName: ""
-    usernameKey: "ALERT_RABBIT_USER"
-    passwordKey: "ALERT_RABBIT_PASSWORD"
+    usernameKey: "ALERT_RABBITMQ_USER"
+    passwordKey: "ALERT_RABBITMQ_PASSWORD"
   ssl: false # If true, Alert uses SSL for external RAbbitMQ connection
   sslSecrets: # Secret that contains all the ssl file paths
   persistentVolumeClaimName:
