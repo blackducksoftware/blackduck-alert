@@ -1,6 +1,8 @@
 package com.synopsys.integration.alert.performance.utility;
 
+import java.net.URLDecoder;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
@@ -30,13 +32,13 @@ public class IntegrationAlertRequestUtility implements AlertRequestUtility {
 
     @Override
     public String executeGetRequest(String path, String error) throws IntegrationException {
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(path);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(URLDecoder.decode(path, StandardCharsets.UTF_8));
         return executeRequest(HttpMethod.GET, requestBuilder, error);
     }
 
     @Override
     public String executePostRequest(String path, String requestBody, String error) throws IntegrationException {
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(path)
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(URLDecoder.decode(path, StandardCharsets.UTF_8))
             .content(requestBody)
             .contentType(contentType);
         return executeRequest(HttpMethod.POST, requestBuilder, error);
@@ -44,7 +46,7 @@ public class IntegrationAlertRequestUtility implements AlertRequestUtility {
 
     @Override
     public String executePutRequest(String path, String requestBody, String error) throws IntegrationException {
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(path)
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(URLDecoder.decode(path, StandardCharsets.UTF_8))
             .content(requestBody)
             .contentType(contentType);
         return executeRequest(HttpMethod.PUT, requestBuilder, error);

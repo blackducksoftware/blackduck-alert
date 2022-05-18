@@ -106,7 +106,7 @@ public class JiraServerPerformanceUtility {
     public JiraServerGlobalConfigModel createJiraGlobalConfiguration(JiraServerGlobalConfigModel jiraServerGlobalConfigModel) {
         ValidationResponseModel installPluginResponse = installPlugin(jiraServerGlobalConfigModel);
         if (installPluginResponse.hasErrors()) {
-            fail("Unable to install the Alert plugin for Jira Server. Exiting test...");
+            fail(String.format("Unable to install the Alert plugin for Jira Server. Error: %s", installPluginResponse.getErrors()));
         }
 
         Optional<JiraServerGlobalConfigModel> globalConfiguration = createGlobalConfiguration(jiraServerGlobalConfigModel);
