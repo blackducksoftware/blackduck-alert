@@ -2,7 +2,7 @@
 apiVersion: v1
 data:
   {{- if not .Values.rabbitmq.isExternal }}
-  ALERT_RABBIT_MQ_HOST: alert-rabbitmq
+  ALERT_RABBIT_MQ_HOST: {{ .Release.Name }}-rabbitmq
   {{- else }}
   ALERT_RABBIT_MQ_HOST: {{ required "must provide --set rabbitmq.host=\"\"" .Values.rabbitmq.host }}
   {{- end }}
