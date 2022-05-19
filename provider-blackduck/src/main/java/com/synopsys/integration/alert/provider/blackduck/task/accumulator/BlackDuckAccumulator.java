@@ -33,6 +33,7 @@ import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.processor.api.filter.StatefulAlertPage;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckApiTokenValidator;
 import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckSystemValidator;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.view.NotificationUserView;
@@ -81,7 +82,8 @@ public class BlackDuckAccumulator extends ProviderTask {
 
     @Override
     protected void runProviderTask() {
-        if (blackDuckSystemValidator.validate(getProviderProperties())) {
+        BlackDuckProperties blackDuckProperties = getProviderProperties();
+        if (blackDuckSystemValidator.canConnect(blackDuckProperties, new BlackDuckApiTokenValidator(blackDuckProperties))) {
             accumulateNotifications();
         }
     }

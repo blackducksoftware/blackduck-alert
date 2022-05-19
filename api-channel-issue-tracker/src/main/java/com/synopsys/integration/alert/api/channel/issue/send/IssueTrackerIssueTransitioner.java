@@ -77,7 +77,7 @@ public abstract class IssueTrackerIssueTransitioner<T extends Serializable> {
     }
 
     private void addTransitionFailureComment(IssueOperation issueOperation, ExistingIssueDetails<T> existingIssueDetails, IssueMissingTransitionException issueMissingTransitionException) {
-        String failureComment = String.format("The %s operation was performed on this component in BlackDuck, but Alert failed to transition the issue: %s", issueOperation.name(), issueMissingTransitionException.getMessage());
+        String failureComment = String.format("The %s operation was performed on this component in Black Duck, but Alert failed to transition the issue: %s", issueOperation.name(), issueMissingTransitionException.getMessage());
         IssueCommentModel<T> failureCommentRequestModel = new IssueCommentModel<>(existingIssueDetails, List.of(failureComment), null);
         try {
             commenter.commentOnIssue(failureCommentRequestModel);

@@ -24,6 +24,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
+import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckSystemValidator;
 import com.synopsys.integration.alert.test.common.TestTags;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -116,7 +117,8 @@ public class BlackDuckDistributionFieldModelTestActionTest {
     private BlackDuckDistributionFieldModelTestAction createTestAction() {
         ProviderDataAccessor providerDataAccessor = createProviderDataAccessor();
         ConfigurationModelConfigurationAccessor configurationAccessor = createConfigurationAccessor();
-        return new BlackDuckDistributionFieldModelTestAction(providerDataAccessor, null, configurationAccessor);
+        BlackDuckSystemValidator blackDuckSystemValidator = new BlackDuckSystemValidator(null);
+        return new BlackDuckDistributionFieldModelTestAction(providerDataAccessor, null, configurationAccessor, blackDuckSystemValidator);
     }
 
     private ProviderDataAccessor createProviderDataAccessor() {

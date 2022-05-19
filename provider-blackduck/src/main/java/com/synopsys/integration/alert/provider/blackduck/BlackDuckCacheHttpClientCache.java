@@ -48,7 +48,7 @@ public class BlackDuckCacheHttpClientCache {
         }
 
         BlackDuckProperties properties = blackDuckPropertiesFactory.createProperties(blackDuckConfigId)
-                                             .orElseThrow(() -> new AlertConfigurationException(String.format("No BlackDuck configuration with id %s", blackDuckConfigId)));
+            .orElseThrow(() -> new AlertConfigurationException(String.format("No Black Duck configuration with id %s", blackDuckConfigId)));
         BlackDuckHttpClient blackDuckCacheClient = properties.createBlackDuckCacheClient(new Slf4jIntLogger(logger));
         httpClientCache.put(blackDuckConfigId, blackDuckCacheClient);
         return blackDuckCacheClient;

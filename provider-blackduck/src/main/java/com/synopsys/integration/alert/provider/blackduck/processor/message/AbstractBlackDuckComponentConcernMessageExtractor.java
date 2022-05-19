@@ -60,10 +60,10 @@ public abstract class AbstractBlackDuckComponentConcernMessageExtractor<T extend
             providerUrl = blackDuckServicesFactory.getBlackDuckHttpClient().getBlackDuckUrl().string();
             bomComponentDetails = createBomComponentDetails(notificationContent, blackDuckServicesFactory);
         } catch (AlertConfigurationException e) {
-            logger.warn("Invalid BlackDuck configuration for notification. ID: {}. Name: {}", providerConfigId, notificationModel.getProviderConfigName(), e);
+            logger.warn("Invalid Black Duck configuration for notification. ID: {}. Name: {}", providerConfigId, notificationModel.getProviderConfigName(), e);
             return ProviderMessageHolder.empty();
         } catch (IntegrationException e) {
-            logger.warn("Failed to retrieve BOM Component(s) from BlackDuck", e);
+            logger.warn("Failed to retrieve BOM Component(s) from Black Duck", e);
             return ProviderMessageHolder.empty();
         }
 

@@ -52,7 +52,7 @@ public class ProjectNotificationMessageExtractor extends ProviderMessageExtracto
             BlackDuckServicesFactory blackDuckServicesFactory = servicesFactoryCache.retrieveBlackDuckServicesFactory(providerConfigId);
             providerUrl = blackDuckServicesFactory.getBlackDuckHttpClient().getBlackDuckUrl().string();
         } catch (AlertConfigurationException e) {
-            logger.warn("Invalid BlackDuck configuration for notification. ID: {}. Name: {}", providerConfigId, alertNotificationModel.getProviderConfigName(), e);
+            logger.warn("Invalid Black Duck configuration for notification. ID: {}. Name: {}", providerConfigId, alertNotificationModel.getProviderConfigName(), e);
             return ProviderMessageHolder.empty();
         }
         LinkableItem providerItem = new LinkableItem(blackDuckProviderKey.getDisplayName(), alertNotificationModel.getProviderConfigName(), providerUrl);

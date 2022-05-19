@@ -90,7 +90,7 @@ public class BlackDuckGlobalFieldModelTestAction extends FieldModelTestAction {
         if (!blackDuckAPITokenValidator.isApiTokenValid()) {
             throw AlertFieldException.singleFieldError(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, "User permission failed. Cannot read notifications from Black Duck.");
         }
-        return new MessageResult("Successfully connected to BlackDuck server.");
+        return new MessageResult("Successfully connected to Black Duck server.");
     }
 
     public void validateBlackDuckConfiguration(BlackDuckServerConfigBuilder blackDuckServerConfigBuilder) throws AlertException {
