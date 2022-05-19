@@ -104,9 +104,9 @@ public class BlackDuckDistributionFieldModelTestAction extends FieldModelTestAct
         }
 
         if (MessageResult.hasFieldStatusBySeverity(fieldStatuses, FieldStatusSeverity.ERROR)) {
-            return new MessageResult("There were errors with the BlackDuck provider fields", fieldStatuses);
+            return new MessageResult("There were errors with the Black Duck provider fields", fieldStatuses);
         }
-        return new MessageResult("Successfully tested BlackDuck provider fields", fieldStatuses);
+        return new MessageResult("Successfully tested Black Duck provider fields", fieldStatuses);
     }
 
     private Optional<AlertFieldStatus> validatePatternMatchesProjectVersion(

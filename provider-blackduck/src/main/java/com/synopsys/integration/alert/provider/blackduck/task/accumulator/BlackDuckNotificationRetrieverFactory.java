@@ -30,7 +30,7 @@ public class BlackDuckNotificationRetrieverFactory {
             BlackDuckNotificationRetriever notificationRetriever = new BlackDuckNotificationRetriever(blackDuckServicesFactory.getBlackDuckApiClient(), blackDuckServicesFactory.getApiDiscovery());
             return Optional.of(notificationRetriever);
         } else {
-            logger.warn("The BlackDuck configuration '{}' could not be used to retrieve notifications", blackDuckProperties.getConfigName());
+            logger.warn("The Black Duck configuration '{}' could not be used to retrieve notifications", blackDuckProperties.getConfigName());
         }
         return Optional.empty();
     }
