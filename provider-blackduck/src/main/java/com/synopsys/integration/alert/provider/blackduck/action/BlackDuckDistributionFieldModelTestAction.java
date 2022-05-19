@@ -40,6 +40,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckApiTokenValidator;
+import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckSystemValidator;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
@@ -49,16 +50,18 @@ public class BlackDuckDistributionFieldModelTestAction extends FieldModelTestAct
     private final ProviderDataAccessor blackDuckDataAccessor;
     private final BlackDuckProvider blackDuckProvider;
     private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
+    private final BlackDuckSystemValidator blackDuckSystemValidator;
 
     @Autowired
     public BlackDuckDistributionFieldModelTestAction(
         ProviderDataAccessor blackDuckDataAccessor,
         BlackDuckProvider blackDuckProvider,
-        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor
-    ) {
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor,
+        BlackDuckSystemValidator blackDuckSystemValidator) {
         this.blackDuckDataAccessor = blackDuckDataAccessor;
         this.blackDuckProvider = blackDuckProvider;
         this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
+        this.blackDuckSystemValidator = blackDuckSystemValidator;
     }
 
     @Override
@@ -94,9 +97,8 @@ public class BlackDuckDistributionFieldModelTestAction extends FieldModelTestAct
 
             }
             if (null != blackDuckProperties) {
-                BlackDuckApiTokenValidator blackDuckAPITokenValidator = new BlackDuckApiTokenValidator(blackDuckProperties);
-                if (!blackDuckAPITokenValidator.isApiTokenValid()) {
-                    fieldStatuses.add(AlertFieldStatus.error(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID, "User permission failed, cannot read notifications from Black Duck."));
+                if (!blackDuckSystemValidator.canConnect(blackDuckProperties, new BlackDuckApiTokenValidator(blackDuckProperties))) {
+                    fieldStatuses.add(AlertFieldStatus.error(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID, "Unable to establish connection with BlackDuck."));
                 }
             }
         } else {
@@ -124,12 +126,9 @@ public class BlackDuckDistributionFieldModelTestAction extends FieldModelTestAct
             boolean foundResult = false;
             while (!foundResult && currentPage < projectsByProviderConfigId.getTotalPages()) {
                 List<String> providerProjects = projectsByProviderConfigId.getModels();
-                foundResult = providerProjects.stream().anyMatch(href ->
-                    iteratePagesAndCheck(
-                        versionCurrentPage -> blackDuckDataAccessor.getProjectVersionNamesByHref(providerConfigId, href, versionCurrentPage),
-                        versionNames -> versionNames.stream().anyMatch(versionName -> compiledProjectVersionPattern.matcher(versionName).matches()),
-                        Boolean.FALSE
-                    ).isEmpty());
+                foundResult = providerProjects.stream().anyMatch(href -> iteratePagesAndCheck(versionCurrentPage -> blackDuckDataAccessor.getProjectVersionNamesByHref(providerConfigId, href, versionCurrentPage),
+                    versionNames -> versionNames.stream().anyMatch(versionName -> compiledProjectVersionPattern.matcher(versionName).matches()),
+                    Boolean.FALSE).isEmpty());
                 currentPage++;
                 projectsByProviderConfigId = filterAndMapHrefs(providerConfigId, currentPage, configuredProjects, compiledProjectNamePattern);
             }
