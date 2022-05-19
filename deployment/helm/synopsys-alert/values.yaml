@@ -87,20 +87,20 @@ rabbitmq:
   imageTag: ALERT_VERSION_TOKEN
   registry: ""
   isExternal: false # false for running RabbitMQ as a container and true for using External RabbitMQ instance\
-  host: "" # required only for external postgres, for postgres as a container, it will point to <name>-postgres
+  host: "" # required only for external RabbitMQ,  it will point to <name>-rabbitmq
   port: 5672
+  management:
+    port: 15672
   virtualHost: blackduck-alert
   credential: #Secret that contains both the regular username & password
     secretName: ""
     usernameKey: "ALERT_RABBITMQ_USER"
     passwordKey: "ALERT_RABBITMQ_PASSWORD"
-  ssl: false # If true, Alert uses SSL for external RAbbitMQ connection
-  sslSecrets: # Secret that contains all the ssl file paths
   persistentVolumeClaimName:
   claimSize: "2Gi" # PVC claim size
   storageClass: "" # PVC storage class name
   volumeName: "" # existing persistent volume name backing the PVC
-  nodeSelector: {}
+  nodeSelector: { }
   tolerations: []
   affinity: {}
   podSecurityContext: {}

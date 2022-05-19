@@ -4,6 +4,7 @@ services:
 #    environment:
 #      - ALERT_RABBITMQ_HOST=alert-rabbitmq
 #      - ALERT_RABBITMQ_PORT=5672
+#      - ALERT_RABBITMQ_MGMNT_PORT=15672
 #      - ALERT_RABBITMQ_VHOST=blackduck-alert
 #    secrets:
 #      - ALERT_RABBITMQ_USER

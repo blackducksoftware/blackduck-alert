@@ -84,7 +84,7 @@ spec:
           valueFrom:
             secretKeyRef:
               key: {{ required ".Values.rabbitmq.credential.usernameKey is missing." .Values.rabbitmq.credential.usernameKey }}
-              name: {{ .Values.postgres.rabbitmq.credential.secretName }}
+              name: {{ .Values.rabbitmq.credential.secretName }}
         - name: ALERT_RABBITMQ_PASSWORD
           valueFrom:
             secretKeyRef:

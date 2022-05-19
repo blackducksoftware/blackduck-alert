@@ -7,6 +7,7 @@ data:
   ALERT_RABBITMQ_HOST: {{ required "must provide --set rabbitmq.host=\"\"" .Values.rabbitmq.host }}
   {{- end }}
   ALERT_RABBITMQ_PORT: {{ required "must provide --set rabbitmq.port=\"\"" .Values.rabbitmq.port | quote }}
+  ALERT_RABBITMQ_MGMNT_PORT: {{ required "must provide --set rabbitmq.management.port=\"\"" .Values.rabbitmq.management.port | quote }}
   {{- if not .Values.rabbitmq.credential.secretName }}
   ALERT_RABBITMQ_USER: sysadmin
   ALERT_RABBITMQ_PASSWORD: blackduck
