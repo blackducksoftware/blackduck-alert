@@ -21,17 +21,18 @@ EOL
 
 if [ "$isSsl" = 'true' ] ; then
   cat  >> ${confFile} << EOL
-listeners.ssl.default = ${ALERT_RABBITMQ_PORT}
+listeners.ssl.default = ${ALERT_RABBITMQ_PORT:-5671}
 ssl_options.cacertfile = "${blackduckSecurityHome}/root.crt"
 ssl_options.certfile = "${blackduckSecurityHome}/rabbitmq-server.crt"
 ssl_options.fail_if_no_peer_cert = false
 ssl_options.keyfile = "${blackduckSecurityHome}/rabbitmq-server.key"
 ssl_options.verify = verify_peer
-management.ssl.port = 15671
+management.ssl.port = ${ALERT_RABBITMQ_MGMNT_PORT:-15671}
 EOL
 else
   cat >> ${confFile} << EOL
-listeners.tcp.default = ${ALERT_RABBITMQ_PORT}
+listeners.tcp.default = ${ALERT_RABBITMQ_PORT:-5672}
+management.tcp.port = ${ALERT_RABBITMQ_MGMNT_PORT:-15672}
 EOL
 fi
 
