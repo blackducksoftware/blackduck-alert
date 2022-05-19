@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,7 +91,7 @@ class LargeNotificationTest {
     }
 
     @Test
-    @Disabled("This test is used to populate a blackduck server with notifications and populate the blackduck database.")
+    @EnabledIfEnvironmentVariable(named = "ALERT_RUN_PERFORMANCE", matches = "true")
     void createProjectsAndNotificationsTest() throws IntegrationException {
         LocalDateTime startingTime = LocalDateTime.now();
         logger.info(String.format("Starting time: %s", dateTimeFormatter.format(startingTime)));
@@ -112,7 +112,7 @@ class LargeNotificationTest {
     }
 
     @Test
-    @Disabled("This test is used to delete projects from a blackduck server after a test run")
+    @EnabledIfEnvironmentVariable(named = "ALERT_RUN_PERFORMANCE", matches = "true")
     void deleteProjectsAndVersionsTest() throws IntegrationException {
         LocalDateTime startingTime = LocalDateTime.now();
         logger.info(String.format("Starting time: %s", dateTimeFormatter.format(startingTime)));
@@ -128,7 +128,7 @@ class LargeNotificationTest {
     }
 
     @Test
-    @Disabled("Used for performance testing only.")
+    @EnabledIfEnvironmentVariable(named = "ALERT_RUN_PERFORMANCE", matches = "true")
     void largeVulnerabilityNotificationTest() throws IntegrationException, InterruptedException {
         LocalDateTime startingTime = LocalDateTime.now();
         logger.info(String.format("Starting time: %s", dateTimeFormatter.format(startingTime)));
@@ -159,7 +159,7 @@ class LargeNotificationTest {
     }
 
     @Test
-    @Disabled("Used for performance testing only.")
+    @EnabledIfEnvironmentVariable(named = "ALERT_RUN_PERFORMANCE", matches = "true")
     void largePolicyNotificationTest() throws IntegrationException, InterruptedException {
         LocalDateTime startingTime = LocalDateTime.now();
         logger.info(String.format("Starting time: %s", dateTimeFormatter.format(startingTime)));
