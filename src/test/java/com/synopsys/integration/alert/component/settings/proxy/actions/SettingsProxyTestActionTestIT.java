@@ -42,7 +42,7 @@ class SettingsProxyTestActionTestIT {
     private SettingsProxyConfigAccessor settingsProxyConfigAccessor;
 
     private final TestProperties testProperties = new TestProperties();
-    private final String validTargetUrl = "https://google.com";
+    private final String validTargetUrl = "https://synopsys.com";
 
     private SettingsProxyTestAction settingsProxyTestAction;
 

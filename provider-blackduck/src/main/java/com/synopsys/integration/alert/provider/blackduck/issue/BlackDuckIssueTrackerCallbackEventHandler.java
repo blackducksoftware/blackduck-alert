@@ -76,7 +76,7 @@ public class BlackDuckIssueTrackerCallbackEventHandler implements AlertEventHand
             BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, intLogger);
             return Optional.of(blackDuckServicesFactory);
         } catch (AlertException e) {
-            logger.error("Failed to create a BlackDuck http client", e);
+            logger.error("Failed to create a Black Duck http client", e);
             return Optional.empty();
         }
     }
@@ -85,7 +85,7 @@ public class BlackDuckIssueTrackerCallbackEventHandler implements AlertEventHand
         try {
             blackDuckProviderIssueHandler.createOrUpdateBlackDuckIssue(issueModel, callbackInfo.getCallbackUrl(), callbackInfo.getBlackDuckProjectVersionUrl());
         } catch (IntegrationException e) {
-            logger.error("Failed to create or update BlackDuck issue: {}", issueModel, e);
+            logger.error("Failed to create or update Black Duck issue: {}", issueModel, e);
         }
     }
 
