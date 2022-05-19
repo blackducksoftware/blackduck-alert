@@ -70,11 +70,11 @@ public class JiraServerPerformanceUtility {
         );
     }
 
-    public Map<String, FieldValueModel> createChannelFieldsMap(TestProperties testProperties, String globalConfigId) {
+    public Map<String, FieldValueModel> createChannelFieldsMap(TestProperties testProperties, String jobName, String globalConfigId) {
         Map<String, FieldValueModel> channelFieldsMap = new HashMap<>();
         channelFieldsMap.put(ChannelDescriptor.KEY_ENABLED, createFieldValueModel("true"));
         channelFieldsMap.put(ChannelDescriptor.KEY_CHANNEL_NAME, createFieldValueModel(CHANNEL_KEY.getUniversalKey()));
-        channelFieldsMap.put(ChannelDescriptor.KEY_NAME, createFieldValueModel(PERFORMANCE_JOB_NAME));
+        channelFieldsMap.put(ChannelDescriptor.KEY_NAME, createFieldValueModel(jobName));
         channelFieldsMap.put(ChannelDescriptor.KEY_FREQUENCY, createFieldValueModel(FrequencyType.REAL_TIME.name()));
         channelFieldsMap.put(ChannelDescriptor.KEY_PROVIDER_TYPE, createFieldValueModel(PROVIDER_KEY.getUniversalKey()));
         channelFieldsMap.put(ChannelDescriptor.KEY_CHANNEL_GLOBAL_CONFIG_ID, createFieldValueModel(globalConfigId));

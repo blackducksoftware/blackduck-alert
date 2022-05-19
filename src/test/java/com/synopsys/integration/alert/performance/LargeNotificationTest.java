@@ -50,6 +50,7 @@ class LargeNotificationTest {
     private static final JiraServerChannelKey CHANNEL_KEY = new JiraServerChannelKey();
     private static final int DEFAULT_NUMBER_OF_PROJECTS_TO_CREATE = 10;
     private static final String PERFORMANCE_POLICY_NAME = "PerformanceTestPolicy";
+    private static final String DEFAULT_JOB_NAME = "JiraPerformanceJob";
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -145,13 +146,13 @@ class LargeNotificationTest {
         logTimeElapsedWithMessage("Installing the jira server plugin and creating global configuration took %s", startingCreateGlobalConfigTime, LocalDateTime.now());
 
         // Create distribution job fields
-        Map<String, FieldValueModel> channelFieldsMap = jiraServerPerformanceUtility.createChannelFieldsMap(testProperties, globalConfiguration.getId());
+        Map<String, FieldValueModel> channelFieldsMap = jiraServerPerformanceUtility.createChannelFieldsMap(testProperties, DEFAULT_JOB_NAME, globalConfiguration.getId());
 
         // Create N number of blackduck projects
         List<ProjectVersionWrapper> projectVersionWrappers = createBlackDuckProjects(numberOfProjectsToCreate);
 
         LocalDateTime executionStartTime = LocalDateTime.now();
-        testRunner.runTestWithOneJob(channelFieldsMap, "performanceJob", blackDuckProviderID, projectVersionWrappers);
+        testRunner.runTestWithOneJob(channelFieldsMap, "performanceJob", blackDuckProviderID, projectVersionWrappers, numberOfProjectsToCreate);
 
         logTimeElapsedWithMessage("Execution and processing test time: %s", executionStartTime, LocalDateTime.now());
         logTimeElapsedWithMessage("Total test time: %s", startingTime, LocalDateTime.now());
@@ -176,7 +177,7 @@ class LargeNotificationTest {
         logTimeElapsedWithMessage("Installing the jira server plugin and creating global configuration took %s", startingCreateGlobalConfigTime, LocalDateTime.now());
 
         // Create distribution job fields
-        Map<String, FieldValueModel> channelFieldsMap = jiraServerPerformanceUtility.createChannelFieldsMap(testProperties, globalConfiguration.getId());
+        Map<String, FieldValueModel> channelFieldsMap = jiraServerPerformanceUtility.createChannelFieldsMap(testProperties, DEFAULT_JOB_NAME, globalConfiguration.getId());
 
         // Clear existing policies
         PolicyRuleView policyRuleView = blackDuckProviderService.createBlackDuckPolicyRuleView(PERFORMANCE_POLICY_NAME, BlackDuckProviderService.getDefaultExternalIdSupplier());

@@ -38,6 +38,7 @@ import com.synopsys.integration.alert.util.DescriptorMocker;
 @WebAppConfiguration
 class JiraServerPerformanceTest {
     private static final String PERFORMANCE_JOB_NAME = "Jira Server Performance Job";
+    private static final String DEFAULT_JOB_NAME = "JiraPerformanceJob";
     private static final JiraServerChannelKey CHANNEL_KEY = new JiraServerChannelKey();
 
     @Autowired
@@ -77,7 +78,7 @@ class JiraServerPerformanceTest {
 
         JiraServerGlobalConfigModel globalConfiguration = jiraServerPerformanceUtility.createJiraGlobalConfiguration(jiraServerGlobalConfigModel);
 
-        Map<String, FieldValueModel> channelFieldsMap = jiraServerPerformanceUtility.createChannelFieldsMap(testProperties, globalConfiguration.getId());
+        Map<String, FieldValueModel> channelFieldsMap = jiraServerPerformanceUtility.createChannelFieldsMap(testProperties, DEFAULT_JOB_NAME, globalConfiguration.getId());
 
         testRunner.runTest(channelFieldsMap, PERFORMANCE_JOB_NAME);
     }
