@@ -105,8 +105,7 @@ class ScalingExternalPerformanceTest {
         // Clear existing policies
         PolicyRuleView policyRuleView = blackDuckProviderService.createBlackDuckPolicyRuleView(PERFORMANCE_POLICY_NAME, BlackDuckProviderService.getDefaultExternalIdSupplier());
         blackDuckProviderService.deleteExistingBlackDuckPolicy(policyRuleView);
-
-        // TODO: NEW Create distribution jobs
+        
         LocalDateTime jobStartingTime = LocalDateTime.now();
         Set<String> policyJobIds = new HashSet<>();
         for (int i = 1; i <= numberOfJobsToCreate; i++) {
