@@ -1,5 +1,7 @@
 package com.synopsys.integration.alert.provider.blackduck.task.accumulator;
 
+import static org.mockito.Mockito.spy;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +19,7 @@ import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.processor.api.filter.PageRetriever;
 import com.synopsys.integration.alert.processor.api.filter.StatefulAlertPage;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckApiTokenValidator;
 import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckSystemValidator;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.view.NotificationUserView;
@@ -29,7 +32,7 @@ public class BlackDuckAccumulatorTest {
      * This test should simulate a normal run of the accumulator with notifications present.
      */
     @Test
-    public void runTest() throws Exception {
+    public void runValidAccumulatorTest() throws Exception {
         ProviderTaskPropertiesAccessor taskPropertiesAccessor = Mockito.mock(ProviderTaskPropertiesAccessor.class);
         BlackDuckProperties blackDuckProperties = createBlackDuckProperties();
         BlackDuckSystemValidator validator = createBlackDuckValidator(blackDuckProperties, true);
@@ -103,9 +106,11 @@ public class BlackDuckAccumulatorTest {
     }
 
     private BlackDuckSystemValidator createBlackDuckValidator(BlackDuckProperties blackDuckProperties, boolean validationResult) {
-        BlackDuckSystemValidator validator = Mockito.mock(BlackDuckSystemValidator.class);
-        Mockito.when(validator.validate(Mockito.eq(blackDuckProperties))).thenReturn(validationResult);
-        return validator;
+        BlackDuckSystemValidator blackDuckSystemValidator = Mockito.mock(BlackDuckSystemValidator.class);
+        Mockito.when(blackDuckSystemValidator.validate(Mockito.eq(blackDuckProperties))).thenReturn(validationResult);
+        BlackDuckSystemValidator spiedBlackDuckSystemValidator = spy(blackDuckSystemValidator);
+        Mockito.doReturn(validationResult).when(spiedBlackDuckSystemValidator).canConnect(Mockito.eq(blackDuckProperties), Mockito.any(BlackDuckApiTokenValidator.class));
+        return spiedBlackDuckSystemValidator;
     }
 
     private BlackDuckNotificationRetrieverFactory createBlackDuckNotificationRetrieverFactory(BlackDuckProperties blackDuckProperties, @Nullable BlackDuckNotificationRetriever notificationRetriever) {
@@ -114,7 +119,7 @@ public class BlackDuckAccumulatorTest {
         return notificationRetrieverFactory;
     }
 
-    private StatefulAlertPage<NotificationUserView, IntegrationException> createMockNotificationPage(PageRetriever pageRetriever) throws IntegrationException {
+    private StatefulAlertPage<NotificationUserView, IntegrationException> createMockNotificationPage(PageRetriever pageRetriever) {
         NotificationUserView notificationView = createMockNotificationView();
         AlertPagedDetails<NotificationUserView> alertPagedDetails = new AlertPagedDetails<>(1, 0, 1, List.of(notificationView));
         return new StatefulAlertPage<>(alertPagedDetails, pageRetriever, BlackDuckNotificationRetriever.HAS_NEXT_PAGE);

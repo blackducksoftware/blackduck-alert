@@ -66,10 +66,10 @@ public class BlackDuckDataSyncTask extends ProviderTask {
                 Set<String> allRelevantBlackDuckUsers = getAllActiveBlackDuckUserEmailAddresses(blackDuckApiClient, apiDiscovery);
                 blackDuckDataAccessor.updateProjectAndUserData(providerProperties.getConfigId(), projectToEmailAddresses, allRelevantBlackDuckUsers);
             } else {
-                logger.error("Missing BlackDuck global configuration.");
+                logger.error("Missing Black Duck global configuration.");
             }
         } catch (IntegrationException | AlertRuntimeException e) {
-            logger.error(String.format("Could not retrieve the current data from the BlackDuck server: %s", e.getMessage()), e);
+            logger.error(String.format("Could not retrieve the current data from the Black Duck server: %s", e.getMessage()), e);
         }
     }
 
