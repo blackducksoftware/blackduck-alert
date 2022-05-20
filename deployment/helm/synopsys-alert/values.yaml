@@ -96,7 +96,7 @@ rabbitmq:
     secretName: ""
     usernameKey: "ALERT_RABBITMQ_USER"
     passwordKey: "ALERT_RABBITMQ_PASSWORD"
-  persistentVolumeClaimName:
+  persistentVolumeClaimName: ""
   claimSize: "2Gi" # PVC claim size
   storageClass: "" # PVC storage class name
   volumeName: "" # existing persistent volume name backing the PVC
