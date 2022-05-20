@@ -91,6 +91,13 @@ spec:
               key: {{ required ".Values.rabbitmq.credential.passwordKey is missing." .Values.rabbitmq.credential.passwordKey }}
               name: {{ .Values.rabbitmq.credential.secretName }}
         {{- end }}
+        {{- if .Values.rabbitmq.cluster.erlangCookie.secretName }}
+        - name: RABBITMQ_ERLANG_COOKIE
+          valueFrom:
+          secretKeyRef:
+            key: {{ required ".Values.rabbitmq.cluster.erlangCookie.cookieKey is missing." .Values.rabbitmq.cluster.erlangCookie.cookieKey }}
+            name: {{ .Values.rabbitmq.cluster.erlangCookie.secretName }}
+        {{- end }}
         envFrom:
         - configMapRef:
             name: {{ .Release.Name}}-rabbitmq-config

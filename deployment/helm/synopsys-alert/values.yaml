@@ -96,6 +96,10 @@ rabbitmq:
     secretName: ""
     usernameKey: "ALERT_RABBITMQ_USER"
     passwordKey: "ALERT_RABBITMQ_PASSWORD"
+  cluster:
+    erlangCookie:
+      secretName: ""
+      cookieKey: "RABBITMQ_ERLANG_COOKIE"
   persistentVolumeClaimName: ""
   claimSize: "2Gi" # PVC claim size
   storageClass: "" # PVC storage class name
