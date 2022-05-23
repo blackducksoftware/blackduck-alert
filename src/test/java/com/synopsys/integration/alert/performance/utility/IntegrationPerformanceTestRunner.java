@@ -21,8 +21,8 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
+import com.synopsys.integration.wait.ResilientJobConfig;
 import com.synopsys.integration.wait.WaitJob;
-import com.synopsys.integration.wait.WaitJobConfig;
 
 public class IntegrationPerformanceTestRunner {
     private static final IntLogger intLogger = new Slf4jIntLogger(LoggerFactory.getLogger(IntegrationPerformanceTestRunner.class));
@@ -77,11 +77,9 @@ public class IntegrationPerformanceTestRunner {
         // trigger BD notification
         blackDuckProviderService.triggerBlackDuckNotification();
         intLogger.info("Triggered the Black Duck notification.");
-
-        WaitJobConfig waitJobConfig = new WaitJobConfig(intLogger, "int performance test runner notification wait", 600, startingSearchDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), 20);
+        ResilientJobConfig resilientJobConfig = new ResilientJobConfig(intLogger, 600, startingSearchDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), 20);
         NotificationWaitJobTask notificationWaitJobTask = new NotificationWaitJobTask(intLogger, dateTimeFormatter, gson, alertRequestUtility, startingSearchDateTime, jobId);
-        WaitJob<Boolean> waitForNotificationToBeProcessed = WaitJob.createSimpleWait(waitJobConfig, notificationWaitJobTask);
-        boolean isComplete = waitForNotificationToBeProcessed.waitFor();
+        boolean isComplete = WaitJob.waitFor(resilientJobConfig, notificationWaitJobTask, "int performance test runner notification wait");
         intLogger.info("Finished waiting for the notification to be processed: " + isComplete);
         assertTrue(isComplete);
     }
