@@ -371,8 +371,8 @@ setOverrideVariables() {
     setLocalVariableFromFileContents "${dockerSecretDir}/ALERT_TRUST_STORE_PASSWORD" truststorePassword
     setLocalVariableFromFileContents "${dockerSecretDir}/ALERT_KEY_STORE_PASSWORD" keystorePassword
 
-    setGlobalVariableFromFileContents "${dockerSecretDir}/ALERT_RABBIT_USER" ALERT_RABBIT_USER
-    setGlobalVariableFromFileContents "${dockerSecretDir}/ALERT_RABBIT_PASSWORD" ALERT_RABBIT_PASSWORD
+    setGlobalVariableFromFileContents "${dockerSecretDir}/ALERT_RABBITMQ_USER" ALERT_RABBITMQ_USER
+    setGlobalVariableFromFileContents "${dockerSecretDir}/ALERT_RABBITMQ_PASSWORD" ALERT_RABBITMQ_PASSWORD
 
     setLocalVariableFromFileContents "${dockerSecretDir}/ALERT_DB_USERNAME" alertDatabaseUser
     setGlobalVariableFromFileContents "${dockerSecretDir}/ALERT_DB_USERNAME" ALERT_DB_USERNAME

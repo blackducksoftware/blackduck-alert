@@ -6,24 +6,24 @@ logIt() {
 
 logIt "Launching ${0}"
 
-targetRabbitMqHost="${ALERT_RABBIT_MQ_HOST:-rabbitmq}"
+targetRabbitMqHost="${ALERT_RABBITMQ_HOST:-rabbitmq}"
 blackduckRabbitMqServerCertName=${APPLICATION_NAME}-server
 erlangCookieFile="/var/lib/rabbitmq/.erlang.cookie"
-clusterSize=${ALERT_RABBIT_CLUSTER_SIZE:-1}
-clusterType=${ALERT_RABBIT_CLUSTER_TYPE:-compose}
+clusterSize=${ALERT_RABBITMQ_CLUSTER_SIZE:-1}
+clusterType=${ALERT_RABBITMQ_CLUSTER_TYPE:-compose}
 dockerSecretDir=${RUN_SECRETS_DIR:-/run/secrets}
-isSsl=${ALERT_RABBIT_SSL:-false}
+isSsl=${ALERT_RABBITMQ_SSL:-false}
 
-if [ -e $dockerSecretDir/ALERT_RABBIT_USER ];
+if [ -e $dockerSecretDir/ALERT_RABBITMQ_USER ];
 then
   logIt "RabbitMQ user secret set; using value from secret."
-  export ALERT_RABBIT_USER=$(cat $dockerSecretDir/ALERT_RABBIT_USER | xargs echo)
+  export ALERT_RABBITMQ_USER=$(cat $dockerSecretDir/ALERT_RABBITMQ_USER | xargs echo)
 fi
 
-if [ -e $dockerSecretDir/ALERT_RABBIT_PASSWORD ];
+if [ -e $dockerSecretDir/ALERT_RABBITMQ_PASSWORD ];
 then
   logIt "RabbitMQ password secret set; using value from secret."
-  export ALERT_RABBIT_PASSWORD=$(cat $dockerSecretDir/ALERT_RABBIT_PASSWORD | xargs echo)
+  export ALERT_RABBITMQ_PASSWORD=$(cat $dockerSecretDir/ALERT_RABBITMQ_PASSWORD | xargs echo)
 fi
 
 manageSelfSignedServerCertificate() {

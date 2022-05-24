@@ -30,6 +30,7 @@ spec:
         checksum/alert-environ-configmap: {{ include (print $.Template.BasePath "/alert-environ-configmap.yaml") . | sha256sum }}
         checksum/alert-environ-secret: {{ include (print $.Template.BasePath "/alert-environ-secret.yaml") . | sha256sum }}
         checksum/postgres-config: {{ include (print $.Template.BasePath "/postgres-config.yaml") . | sha256sum }}
+        checksum/rabbitmq-config: {{ include (print $.Template.BasePath "/rabbitmq-config.yaml") . | sha256sum }}
       name: {{ .Release.Name }}
     spec:
       containers:
@@ -89,9 +90,23 @@ spec:
               key: {{ required ".Values.postgres.sslSecrets.sslRootCertKey is missing." .Values.postgres.sslSecrets.sslRootCertKey }}
               name: {{ .Values.postgres.sslSecrets.secretName }}
         {{- end }}
+        {{- if .Values.rabbitmq.credential.secretName }}
+        - name: ALERT_RABBITMQ_USER
+          valueFrom:
+            secretKeyRef:
+              key: {{ required ".Values.rabbitmq.credential.usernameKey is missing." .Values.rabbitmq.credential.usernameKey }}
+              name: {{ .Values.rabbitmq.credential.secretName }}
+        - name: ALERT_RABBITMQ_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: {{ required ".Values.rabbitmq.credential.passwordKey is missing." .Values.rabbitmq.credential.passwordKey }}
+              name: {{ .Values.rabbitmq.credential.secretName }}
+        {{- end }}
         envFrom:
         - configMapRef:
             name: {{ .Release.Name}}-db-config
+        - configMapRef:
+            name: {{ .Release.Name}}-rabbitmq-config
         - configMapRef:
             name: {{ .Release.Name }}-environs
         - secretRef:
