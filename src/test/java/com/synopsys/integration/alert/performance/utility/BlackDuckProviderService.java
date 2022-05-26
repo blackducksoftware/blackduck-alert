@@ -1,5 +1,7 @@
 package com.synopsys.integration.alert.performance.utility;
 
+import static com.synopsys.integration.blackduck.configuration.BlackDuckServerConfigKeys.KEYS;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -288,7 +290,7 @@ public class BlackDuckProviderService {
     }
 
     private BlackDuckServicesFactory setupBlackDuckServicesFactory() {
-        BlackDuckServerConfigBuilder blackDuckServerConfigBuilder = new BlackDuckServerConfigBuilder();
+        BlackDuckServerConfigBuilder blackDuckServerConfigBuilder = new BlackDuckServerConfigBuilder(KEYS.apiToken);
         blackDuckServerConfigBuilder.setUrl(blackDuckProviderUrl)
             .setApiToken(blackDuckApiToken)
             .setTimeoutInSeconds(blackDuckTimeout)
