@@ -7,6 +7,8 @@
  */
 package com.synopsys.integration.alert.provider.blackduck;
 
+import static com.synopsys.integration.blackduck.configuration.BlackDuckServerConfigKeys.KEYS;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -147,7 +149,7 @@ public class BlackDuckProperties extends ProviderProperties {
     }
 
     public BlackDuckServerConfigBuilder createServerConfigBuilderWithoutAuthentication(IntLogger logger, int blackDuckTimeout) {
-        BlackDuckServerConfigBuilder blackDuckServerConfigBuilder = new BlackDuckServerConfigBuilder();
+        BlackDuckServerConfigBuilder blackDuckServerConfigBuilder = new BlackDuckServerConfigBuilder(KEYS.apiToken);
         String blackDuckUrl = getBlackDuckUrl().orElse("");
         blackDuckServerConfigBuilder.setProperties(createBlackDuckProperties(blackDuckUrl).entrySet());
         blackDuckServerConfigBuilder.setLogger(logger);

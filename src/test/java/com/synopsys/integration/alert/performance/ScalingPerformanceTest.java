@@ -37,8 +37,8 @@ import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.rest.client.IntHttpClient;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
+import com.synopsys.integration.wait.ResilientJobConfig;
 import com.synopsys.integration.wait.WaitJob;
-import com.synopsys.integration.wait.WaitJobConfig;
 
 @Tag(TestTags.DEFAULT_PERFORMANCE)
 public class ScalingPerformanceTest {
@@ -130,9 +130,8 @@ public class ScalingPerformanceTest {
         LocalDateTime startingNotificationWaitForTenJobs = LocalDateTime.now();
 
         // check that all jobs have processed the notification successfully, log how long it took
-        WaitJobConfig waitJobConfig = new WaitJobConfig(
+        ResilientJobConfig resilientJobConfig = new ResilientJobConfig(
             intLogger,
-            "scaling notification wait",
             900,
             startingNotificationSearchDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
             30
@@ -146,8 +145,7 @@ public class ScalingPerformanceTest {
             jobIds
         );
         notificationWaitJobTask.setFailOnJobFailure(false);
-        WaitJob<Boolean> waitForNotificationToBeProcessed = WaitJob.createSimpleWait(waitJobConfig, notificationWaitJobTask);
-        boolean isComplete = waitForNotificationToBeProcessed.waitFor();
+        boolean isComplete = WaitJob.waitFor(resilientJobConfig, notificationWaitJobTask, "scaling notification wait");
         logTimeElapsedWithMessage("Waiting for " + numberOfJobsToCreate + " jobs to process the notification took %s", startingNotificationWaitForTenJobs, LocalDateTime.now());
 
         intLogger.info("Finished waiting for the notification to be processed: " + isComplete);

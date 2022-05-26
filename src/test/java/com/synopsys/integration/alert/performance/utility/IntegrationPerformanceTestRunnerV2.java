@@ -24,8 +24,8 @@ import com.synopsys.integration.blackduck.service.model.ProjectVersionWrapper;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
+import com.synopsys.integration.wait.ResilientJobConfig;
 import com.synopsys.integration.wait.WaitJob;
-import com.synopsys.integration.wait.WaitJobConfig;
 
 public class IntegrationPerformanceTestRunnerV2 {
     private static final IntLogger intLogger = new Slf4jIntLogger(LoggerFactory.getLogger(IntegrationPerformanceTestRunnerV2.class));
@@ -80,16 +80,14 @@ public class IntegrationPerformanceTestRunnerV2 {
         blackDuckProviderService.triggerBlackDuckNotification();
         intLogger.info("Triggered the Black Duck notification.");
 
-        WaitJobConfig waitJobConfig = new WaitJobConfig(
+        ResilientJobConfig resilientJobConfig = new ResilientJobConfig(
             intLogger,
-            "int performance test runner notification wait",
             600,
             startingSearchDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
             20
         );
         NotificationWaitJobTask notificationWaitJobTask = new NotificationWaitJobTask(intLogger, dateTimeFormatter, gson, alertRequestUtility, startingSearchDateTime, jobId);
-        WaitJob<Boolean> waitForNotificationToBeProcessed = WaitJob.createSimpleWait(waitJobConfig, notificationWaitJobTask);
-        boolean isComplete = waitForNotificationToBeProcessed.waitFor();
+        boolean isComplete = WaitJob.waitFor(resilientJobConfig, notificationWaitJobTask, "int performance test runner notification wait");
         intLogger.info("Finished waiting for the notification to be processed: " + isComplete);
         assertTrue(isComplete);
     }
@@ -180,9 +178,8 @@ public class IntegrationPerformanceTestRunnerV2 {
 
     private void waitForJobToFinish(Set<String> jobIds, LocalDateTime startingNotificationTime, int numberOfExpectedAuditEntries, NotificationType notificationType)
         throws IntegrationException, InterruptedException {
-        WaitJobConfig waitJobConfig = new WaitJobConfig(
+        ResilientJobConfig resilientJobConfig = new ResilientJobConfig(
             intLogger,
-            "int performance test runner notification wait",
             14400,
             startingNotificationTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
             20
@@ -197,8 +194,7 @@ public class IntegrationPerformanceTestRunnerV2 {
             notificationType,
             jobIds
         );
-        WaitJob<Boolean> waitForNotificationToBeProcessed = WaitJob.createSimpleWait(waitJobConfig, notificationWaitJobTask);
-        boolean isComplete = waitForNotificationToBeProcessed.waitFor();
+        boolean isComplete = WaitJob.waitFor(resilientJobConfig, notificationWaitJobTask, "int performance test runner notification wait");
         intLogger.info("Finished waiting for the notification to be processed: " + isComplete);
         assertTrue(isComplete);
     }

@@ -56,9 +56,9 @@ import com.synopsys.integration.blackduck.api.manual.view.RuleViolationNotificat
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
+import com.synopsys.integration.wait.ResilientJobConfig;
 import com.synopsys.integration.wait.WaitJob;
 import com.synopsys.integration.wait.WaitJobCondition;
-import com.synopsys.integration.wait.WaitJobConfig;
 
 @Tag(TestTags.DEFAULT_PERFORMANCE)
 @AlertIntegrationTest
@@ -122,13 +122,16 @@ class NotificationRemovalTest {
         OffsetDateTime oldestNotificationCreationTime = notificationCreatedAtTime;
         purgeTask = new PurgeTask(schedulingDescriptorKey, taskScheduler, notificationAccessor, systemMessageAccessor, taskManager, configurationModelConfigurationAccessor);
         LocalDateTime startTime = LocalDateTime.now();
-        WaitJob<Boolean> waitJob = createWaitJob(startTime, () -> {
+        purgeTask.runTask();
+
+        WaitJobCondition waitJobCondition = () -> {
             List<AlertNotificationModel> notificationsInDatabase = getAllNotificationsInDatabase(oldestNotificationCreationTime, testStartTime);
             return notificationsInDatabase.size() == BATCH_SIZE && notificationsInDatabase.stream()
                 .allMatch(AlertNotificationModel::getProcessed);
-        });
-        purgeTask.runTask();
-        boolean isComplete = waitJob.waitFor();
+        };
+        ResilientJobConfig resilientJobConfig = new ResilientJobConfig(LOGGER, 600, startTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), 1);
+        boolean isComplete = WaitJob.waitFor(resilientJobConfig, waitJobCondition, "int performance test runner notification wait");
+
         logTimeElapsedWithMessage("Purge of notifications duration: %s", startTime, LocalDateTime.now());
         List<AlertNotificationModel> remainingNotifications = getAllNotificationsInDatabase(oldestNotificationCreationTime, testStartTime);
 
@@ -162,11 +165,6 @@ class NotificationRemovalTest {
             notifications.addAll(page.getModels());
         }
         return notifications;
-    }
-
-    private WaitJob<Boolean> createWaitJob(LocalDateTime startTime, WaitJobCondition waitCondition) {
-        WaitJobConfig waitJobConfig = new WaitJobConfig(LOGGER, "int performance test runner notification wait", 600, startTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), 1);
-        return WaitJob.createSimpleWait(waitJobConfig, waitCondition);
     }
 
     private void createABatchOfNotifications(ConfigurationModel providerConfig, OffsetDateTime notificationCreationTime, boolean batchOfProcessedNotifications) {
