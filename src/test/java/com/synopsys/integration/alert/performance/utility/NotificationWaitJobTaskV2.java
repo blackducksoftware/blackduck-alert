@@ -72,6 +72,7 @@ public class NotificationWaitJobTaskV2 implements WaitJobCondition {
             return false;
         }
         intLogger.info(String.format("Performance: Found %s audit entries, expected %s. ", totalNotificationsCreatedPageModel.getTotalPages(), numberOfExpectedNotifications));
+
         return true;
         //        Set<String> jobIds = getJobIdsFromAuditEntries();
         //
