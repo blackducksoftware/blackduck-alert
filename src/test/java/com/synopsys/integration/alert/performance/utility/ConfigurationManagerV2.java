@@ -58,7 +58,8 @@ public class ConfigurationManagerV2 {
             String testResponseString = alertRequestUtility
                 .executePostRequest(String.format("%s/test", apiConfigurationPath), requestBody, "Testing the global configuration failed.");
             ValidationResponseModel testResponse = gson.fromJson(testResponseString, ValidationResponseModel.class);
-            if (testResponse.hasErrors()) {
+            if (testResponse.hasErrors() && !ValidationResponseModel.VALIDATION_SUCCESS_MESSAGE.equals(validationResponse.getMessage())) {
+                intLogger.error(String.format("Testing the global config model error message: %s", validationResponse.getMessage()));
                 intLogger.error(String.format("Testing the global config model failed. Error: %s", validationResponse.getErrors()));
                 return Optional.empty();
             }
