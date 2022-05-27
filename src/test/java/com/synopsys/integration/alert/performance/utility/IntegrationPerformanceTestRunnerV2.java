@@ -182,7 +182,7 @@ public class IntegrationPerformanceTestRunnerV2 {
             intLogger,
             14400,
             startingNotificationTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
-            20
+            2
         );
         NotificationWaitJobTaskV2 notificationWaitJobTask = new NotificationWaitJobTaskV2(
             intLogger,
