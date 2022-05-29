@@ -8,6 +8,7 @@
 package com.synopsys.integration.alert.provider.blackduck.validator;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,19 +74,12 @@ public class BlackDuckApiTokenValidator {
         }
 
         try {
-            List<RoleAssignmentView> allRolesForCurrentUser = blackDuckApiClient.getAllResponses(currentUser.metaRolesLink());
-            return allRolesForCurrentUser
-                .stream()
-                .anyMatch(this::isPermittedRole);
+            Predicate<RoleAssignmentView> predicate = role -> PERMITTED_ROLE_NAMES.contains(role.getName());
+            return !blackDuckApiClient.getSomeMatchingResponses(currentUser.metaInheritedRolesLink(), predicate, 1).isEmpty();
         } catch (IntegrationException integrationException) {
             logger.error("Failed to GET the currently authenticated Black Duck user's roles", integrationException);
         }
         return false;
-    }
-
-    private boolean isPermittedRole(RoleAssignmentView role) {
-        String roleName = role.getName();
-        return PERMITTED_ROLE_NAMES.contains(roleName);
     }
 
 }
