@@ -131,7 +131,7 @@ class ProcessingJobAccessor2TestIT {
         notifications.add(createAlertNotificationModel(NotificationType.VULNERABILITY));
         notifications.add(createAlertNotificationModel(NotificationType.VULNERABILITY));
 
-        notificationAccessor.saveAllNotifications(notifications);
+        notifications = saveNotifications(notifications);
 
         Consumer<FilteredDistributionJobRequestModel> configureRequest = (request) -> {
             request.addProjectName(PROJECT_NAME_1);
@@ -164,7 +164,7 @@ class ProcessingJobAccessor2TestIT {
         notifications.add(createAlertNotificationModel(NotificationType.VULNERABILITY));
         notifications.add(createAlertNotificationModel(NotificationType.VULNERABILITY));
 
-        notificationAccessor.saveAllNotifications(notifications);
+        notifications = saveNotifications(notifications);
 
         Consumer<FilteredDistributionJobRequestModel> configureRequest = (request) -> {
             request.addProjectName(PROJECT_NAME_1);
@@ -196,7 +196,7 @@ class ProcessingJobAccessor2TestIT {
         notifications.add(createAlertNotificationModel(NotificationType.VULNERABILITY));
         notifications.add(createAlertNotificationModel(NotificationType.VULNERABILITY));
 
-        notificationAccessor.saveAllNotifications(notifications);
+        notifications = saveNotifications(notifications);
 
         Consumer<FilteredDistributionJobRequestModel> configureRequest = (request) -> {
             request.addProjectName(PROJECT_NAME_1);
@@ -267,6 +267,15 @@ class ProcessingJobAccessor2TestIT {
             }
         }
         return previousJobIdSet;
+    }
+
+    private List<AlertNotificationModel> saveNotifications(List<AlertNotificationModel> notifications) {
+        List<AlertNotificationModel> savedNotifications = notificationAccessor.saveAllNotifications(notifications);
+        savedNotifications.stream()
+            .map(AlertNotificationModel::getId)
+            .forEach(CREATED_NOTIFICATIONS::add);
+        return savedNotifications;
+
     }
 
     private AlertNotificationModel createAlertNotificationModel(NotificationType notificationType) {
