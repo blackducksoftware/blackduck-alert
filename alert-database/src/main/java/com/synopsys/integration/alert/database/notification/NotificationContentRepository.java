@@ -45,21 +45,21 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
     Page<NotificationEntity> findMatchingNotification(@Param("searchTerm") String searchTerm, Pageable pageable);
 
     @Query(value = "SELECT DISTINCT notificationRow "
-                       + "FROM NotificationEntity notificationRow "
-                       + "LEFT JOIN notificationRow.auditNotificationRelations relation ON notificationRow.id = relation.notificationId "
-                       + "LEFT JOIN relation.auditEntryEntity auditEntry ON auditEntry.id = relation.auditEntryId "
-                       + "LEFT JOIN DistributionJobEntity jobEntity ON auditEntry.commonConfigId = jobEntity.jobId "
-                       + "WHERE notificationRow.id IN (SELECT notificationId FROM notificationRow.auditNotificationRelations WHERE notificationRow.id = notificationId) AND "
-                       + "("
-                       + "LOWER(notificationRow.provider) LIKE %:searchTerm% OR "
-                       + "LOWER(notificationRow.notificationType) LIKE %:searchTerm% OR "
-                       + "LOWER(notificationRow.content) LIKE %:searchTerm% OR "
-                       + "COALESCE(to_char(notificationRow.createdAt, 'MM-DD-YYYY HH24:MI:SS'), '') LIKE %:searchTerm% OR "
-                       + "COALESCE(to_char(auditEntry.timeLastSent, 'MM-DD-YYYY HH24:MI:SS'), '') LIKE %:searchTerm% OR "
-                       + "LOWER(auditEntry.status) LIKE %:searchTerm% OR "
-                       + "LOWER(jobEntity.name) LIKE %:searchTerm% OR "
-                       + "LOWER(jobEntity.channelDescriptorName) LIKE %:searchTerm%"
-                       + ")"
+        + "FROM NotificationEntity notificationRow "
+        + "LEFT JOIN notificationRow.auditNotificationRelations relation ON notificationRow.id = relation.notificationId "
+        + "LEFT JOIN relation.auditEntryEntity auditEntry ON auditEntry.id = relation.auditEntryId "
+        + "LEFT JOIN DistributionJobEntity jobEntity ON auditEntry.commonConfigId = jobEntity.jobId "
+        + "WHERE notificationRow.id IN (SELECT notificationId FROM notificationRow.auditNotificationRelations WHERE notificationRow.id = notificationId) AND "
+        + "("
+        + "LOWER(notificationRow.provider) LIKE %:searchTerm% OR "
+        + "LOWER(notificationRow.notificationType) LIKE %:searchTerm% OR "
+        + "LOWER(notificationRow.content) LIKE %:searchTerm% OR "
+        + "COALESCE(to_char(notificationRow.createdAt, 'MM-DD-YYYY HH24:MI:SS'), '') LIKE %:searchTerm% OR "
+        + "COALESCE(to_char(auditEntry.timeLastSent, 'MM-DD-YYYY HH24:MI:SS'), '') LIKE %:searchTerm% OR "
+        + "LOWER(auditEntry.status) LIKE %:searchTerm% OR "
+        + "LOWER(jobEntity.name) LIKE %:searchTerm% OR "
+        + "LOWER(jobEntity.channelDescriptorName) LIKE %:searchTerm%"
+        + ")"
     )
     Page<NotificationEntity> findMatchingSentNotification(@Param("searchTerm") String searchTerm, Pageable pageable);
 
@@ -67,16 +67,20 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE NotificationEntity entity "
-               + "SET entity.processed = true "
-               + "WHERE entity.id IN :notificationIds"
+        + "SET entity.processed = true "
+        + "WHERE entity.id IN :notificationIds"
     )
     void setProcessedByIds(@Param("notificationIds") Set<Long> notificationIds);
 
     @Query("DELETE FROM NotificationEntity notification"
-               + " WHERE notification.createdAt < :date"
+        + " WHERE notification.createdAt < :date"
     )
     @Modifying
     int bulkDeleteCreatedAtBefore(@Param("date") OffsetDateTime date);
 
     boolean existsByProcessedFalse();
+
+    long countByProcessedIsFalse();
+
+    long countByProcessedIsTrue();
 }
