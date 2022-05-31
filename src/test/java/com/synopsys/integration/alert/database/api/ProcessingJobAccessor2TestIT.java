@@ -99,13 +99,14 @@ class ProcessingJobAccessor2TestIT {
 
     @AfterEach
     public void removeCreatedJobsIfExist() {
-        for (Long notificationId : CREATED_NOTIFICATIONS) {
-            Optional<AlertNotificationModel> notification = notificationAccessor.findById(notificationId);
-            notification.ifPresent(notificationAccessor::deleteNotification);
-        }
         for (UUID jobId : CREATED_JOBS) {
             jobNotificationMappingAccessor.removeJobMapping(CORRELATION_ID, jobId);
             jobAccessor.deleteJob(jobId);
+        }
+
+        for (Long notificationId : CREATED_NOTIFICATIONS) {
+            Optional<AlertNotificationModel> notification = notificationAccessor.findById(notificationId);
+            notification.ifPresent(notificationAccessor::deleteNotification);
         }
         CREATED_NOTIFICATIONS.clear();
         CREATED_JOBS.clear();
