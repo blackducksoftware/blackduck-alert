@@ -54,8 +54,8 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.rest.HttpUrl;
+import com.synopsys.integration.wait.ResilientJobConfig;
 import com.synopsys.integration.wait.WaitJob;
-import com.synopsys.integration.wait.WaitJobConfig;
 
 @Tag(TestTags.DEFAULT_INTEGRATION)
 @SpringBootTest
@@ -100,10 +100,9 @@ public class ComponentUnknownVersionNotificationSerializationTest {
         blackDuckProviderService.triggerBlackDuckNotification(() -> externalId, componentFilter);
 
         try {
-            WaitJobConfig waitJobConfig = new WaitJobConfig(intLogger, "notification serialization test notification wait", 300, searchStartTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), 20);
+            ResilientJobConfig resilientJobConfig = new ResilientJobConfig(intLogger, 300, searchStartTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), 20);
             NotificationReceivedWaitJobTask notificationWaitJobTask = new NotificationReceivedWaitJobTask(notificationAccessor, searchStartTime, "Apache Commons FileUpload", null, NotificationType.COMPONENT_UNKNOWN_VERSION);
-            WaitJob<Boolean> waitForNotificationToBeProcessed = WaitJob.createSimpleWait(waitJobConfig, notificationWaitJobTask);
-            boolean isComplete = waitForNotificationToBeProcessed.waitFor();
+            boolean isComplete = WaitJob.waitFor(resilientJobConfig, notificationWaitJobTask, "notification serialization test notification wait");
 
             if (isComplete) {
                 String notificationContent = notificationWaitJobTask.getNotificationContent().orElseThrow(() -> new IllegalStateException("Expected notification is missing."));

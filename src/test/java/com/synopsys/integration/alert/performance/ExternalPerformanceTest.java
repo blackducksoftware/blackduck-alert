@@ -6,9 +6,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
@@ -50,12 +50,18 @@ class ExternalPerformanceTest {
 
     private int numberOfProjectsToCreate;
 
+    private boolean disablePluginCheck;
+
     @BeforeEach
     public void init() throws IntegrationException {
         String alertURL = testProperties.getProperty(TestPropertyKey.TEST_PERFORMANCE_ALERT_SERVER_URL);
         numberOfProjectsToCreate = testProperties.getOptionalProperty(TestPropertyKey.TEST_PERFORMANCE_BLACKDUCK_PROJECT_COUNT)
             .map(Integer::parseInt)
             .orElse(DEFAULT_NUMBER_OF_PROJECTS_TO_CREATE);
+
+        disablePluginCheck = testProperties.getOptionalProperty(TestPropertyKey.TEST_JIRA_SERVER_DISABLE_PLUGIN_CHECK)
+            .map(Boolean::parseBoolean)
+            .orElse(Boolean.FALSE);
 
         ExternalAlertRequestUtility alertRequestUtility = new ExternalAlertRequestUtility(intLogger, client, alertURL);
         alertRequestUtility.loginToExternalAlert();
@@ -77,7 +83,7 @@ class ExternalPerformanceTest {
     }
 
     @Test
-    @Disabled("Used for performance testing only.")
+    @EnabledIfEnvironmentVariable(named = "ALERT_RUN_PERFORMANCE", matches = "true")
     void testPolicyNotificationsWithExternalAlertServer() throws Exception {
         LocalDateTime startingTime = LocalDateTime.now();
         intLogger.info(String.format("Starting time: %s", dateTimeFormatter.format(startingTime)));
@@ -91,7 +97,8 @@ class ExternalPerformanceTest {
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel = jiraServerPerformanceUtility.createGlobalConfigModel(testProperties);
 
         LocalDateTime startingCreateGlobalConfigTime = LocalDateTime.now();
-        JiraServerGlobalConfigModel globalConfiguration = jiraServerPerformanceUtility.createJiraGlobalConfiguration(jiraServerGlobalConfigModel);
+        boolean installPlugin = !disablePluginCheck;
+        JiraServerGlobalConfigModel globalConfiguration = jiraServerPerformanceUtility.createJiraGlobalConfiguration(installPlugin, jiraServerGlobalConfigModel);
         logTimeElapsedWithMessage("Installing the jira server plugin and creating global configuration took %s", startingCreateGlobalConfigTime, LocalDateTime.now());
 
         // Create distribution job fields

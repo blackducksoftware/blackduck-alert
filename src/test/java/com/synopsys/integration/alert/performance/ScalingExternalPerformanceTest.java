@@ -9,9 +9,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
@@ -84,7 +84,7 @@ class ScalingExternalPerformanceTest {
     }
 
     @Test
-    @Disabled("Used for performance testing only.")
+    @EnabledIfEnvironmentVariable(named = "ALERT_RUN_PERFORMANCE", matches = "true")
     void testScalingAlertPerformance() throws Exception {
         LocalDateTime startingTime = LocalDateTime.now();
         intLogger.info(String.format("Starting time: %s", dateTimeFormatter.format(startingTime)));
@@ -105,7 +105,7 @@ class ScalingExternalPerformanceTest {
         // Clear existing policies
         PolicyRuleView policyRuleView = blackDuckProviderService.createBlackDuckPolicyRuleView(PERFORMANCE_POLICY_NAME, BlackDuckProviderService.getDefaultExternalIdSupplier());
         blackDuckProviderService.deleteExistingBlackDuckPolicy(policyRuleView);
-        
+
         LocalDateTime jobStartingTime = LocalDateTime.now();
         Set<String> policyJobIds = new HashSet<>();
         for (int i = 1; i <= numberOfJobsToCreate; i++) {
