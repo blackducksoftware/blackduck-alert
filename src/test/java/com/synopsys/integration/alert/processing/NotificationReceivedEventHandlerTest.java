@@ -19,6 +19,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.NotificationAc
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.processor.api.NotificationProcessor;
+import com.synopsys.integration.alert.processor.api.NotificationProcessor2;
 import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExtractionDelegator;
 import com.synopsys.integration.alert.processor.api.filter.JobNotificationMapper;
 import com.synopsys.integration.alert.test.common.TestResourceUtils;
@@ -35,8 +36,9 @@ class NotificationReceivedEventHandlerTest {
         List<AlertNotificationModel> alertNotificationModels = List.of(alertNotificationModel);
         NotificationAccessor notificationAccessor = new MockNotificationAccessor(alertNotificationModels);
         NotificationProcessor notificationProcessor = mockNotificationProcessor(notificationAccessor);
+        NotificationProcessor2 notificationProcessor2 = Mockito.mock(NotificationProcessor2.class);
         EventManager eventManager = mockEventManager();
-        NotificationReceivedEventHandler eventHandler = new NotificationReceivedEventHandler(notificationAccessor, notificationProcessor, eventManager, taskExecutor);
+        NotificationReceivedEventHandler eventHandler = new NotificationReceivedEventHandler(notificationAccessor, notificationProcessor, notificationProcessor2, eventManager);
 
         try {
             eventHandler.handle(new NotificationReceivedEvent());

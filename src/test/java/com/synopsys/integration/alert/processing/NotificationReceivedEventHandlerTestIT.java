@@ -34,9 +34,11 @@ import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.processor.api.NotificationContentProcessor;
 import com.synopsys.integration.alert.processor.api.NotificationProcessingLifecycleCache;
 import com.synopsys.integration.alert.processor.api.NotificationProcessor;
+import com.synopsys.integration.alert.processor.api.NotificationProcessor2;
 import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExtractionDelegator;
 import com.synopsys.integration.alert.processor.api.distribute.ProviderMessageDistributor;
 import com.synopsys.integration.alert.processor.api.filter.JobNotificationMapper;
+import com.synopsys.integration.alert.processor.api.mapping.JobNotificationMapper2;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.test.common.TestProperties;
@@ -58,6 +60,9 @@ class NotificationReceivedEventHandlerTestIT {
     private EventManager eventManager;
     @Autowired
     private JobNotificationMapper jobNotificationMapper;
+    @Autowired
+    private JobNotificationMapper2 jobNotificationMapper2;
+
     @Autowired
     private NotificationContentProcessor notificationContentProcessor;
     @Autowired
@@ -114,11 +119,12 @@ class NotificationReceivedEventHandlerTestIT {
         assertNotNull(savedModels);
 
         NotificationProcessor notificationProcessor = createNotificationProcessor();
+        NotificationProcessor2 notificationProcessor2 = createNotificationProcessor2();
         NotificationReceivedEventHandler notificationReceivedEventHandler = new NotificationReceivedEventHandler(
             defaultNotificationAccessor,
             notificationProcessor,
-            eventManager,
-            taskExecutor
+            notificationProcessor2,
+            eventManager
         );
         notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
 
@@ -136,11 +142,12 @@ class NotificationReceivedEventHandlerTestIT {
         assertEquals(0, defaultNotificationAccessor.getFirstPageOfNotificationsNotProcessed(pageSize).getModels().size());
 
         NotificationProcessor notificationProcessor = createNotificationProcessor();
+        NotificationProcessor2 notificationProcessor2 = createNotificationProcessor2();
         NotificationReceivedEventHandler notificationReceivedEventHandler = new NotificationReceivedEventHandler(
             defaultNotificationAccessor,
             notificationProcessor,
-            eventManager,
-            taskExecutor
+            notificationProcessor2,
+            eventManager
         );
         notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
 
@@ -157,11 +164,12 @@ class NotificationReceivedEventHandlerTestIT {
         assertNotNull(savedModels);
 
         NotificationProcessor notificationProcessor = createNotificationProcessor();
+        NotificationProcessor2 notificationProcessor2 = createNotificationProcessor2();
         NotificationReceivedEventHandler notificationReceivedEventHandler = new NotificationReceivedEventHandler(
             defaultNotificationAccessor,
             notificationProcessor,
-            eventManager,
-            taskExecutor
+            notificationProcessor2,
+            eventManager
         );
         notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
 
@@ -180,11 +188,12 @@ class NotificationReceivedEventHandlerTestIT {
         assertNotNull(savedModels);
 
         NotificationProcessor notificationProcessor = createNotificationProcessor();
+        NotificationProcessor2 notificationProcessor2 = createNotificationProcessor2();
         NotificationReceivedEventHandler notificationReceivedEventHandler = new NotificationReceivedEventHandler(
             defaultNotificationAccessor,
             notificationProcessor,
-            eventManagerSpy,
-            taskExecutor
+            notificationProcessor2,
+            eventManagerSpy
         );
         notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
 
@@ -235,11 +244,23 @@ class NotificationReceivedEventHandlerTestIT {
         // We aren't testing the processor here since we have bad data.  We just want to make sure the processor marks the notifications as processed to test the paging in the handler.
         NotificationDetailExtractionDelegator notificationDetailExtractionDelegator = Mockito.mock(NotificationDetailExtractionDelegator.class);
         Mockito.when(notificationDetailExtractionDelegator.wrapNotification(Mockito.any())).thenReturn(List.of());
-        return new NotificationProcessor(notificationDetailExtractionDelegator,
+        return new NotificationProcessor(
+            notificationDetailExtractionDelegator,
             jobNotificationMapper,
             notificationContentProcessor,
             providerMessageDistributor,
             lifecycleCaches,
+            defaultNotificationAccessor
+        );
+    }
+
+    private NotificationProcessor2 createNotificationProcessor2() {
+        // We aren't testing the processor here since we have bad data.  We just want to make sure the processor marks the notifications as processed to test the paging in the handler.
+        NotificationDetailExtractionDelegator notificationDetailExtractionDelegator = Mockito.mock(NotificationDetailExtractionDelegator.class);
+        Mockito.when(notificationDetailExtractionDelegator.wrapNotification(Mockito.any())).thenReturn(List.of());
+        return new NotificationProcessor2(
+            notificationDetailExtractionDelegator,
+            jobNotificationMapper2,
             defaultNotificationAccessor
         );
     }
