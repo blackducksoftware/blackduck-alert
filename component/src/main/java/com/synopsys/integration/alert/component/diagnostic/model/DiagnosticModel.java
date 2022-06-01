@@ -1,5 +1,9 @@
 package com.synopsys.integration.alert.component.diagnostic.model;
 
+import java.util.Optional;
+
+import org.jetbrains.annotations.Nullable;
+
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.api.common.model.Obfuscated;
 
@@ -8,6 +12,12 @@ public class DiagnosticModel extends AlertSerializableModel implements Obfuscate
     private Long numberOfNotifications;
     private Long numberOfNotificationsProcessed;
     private Long numberOfNotificationsUnprocessed;
+    private Long numberOfAuditEntriesSuccessful;
+    private Long numberOfAuditEntriesFailed;
+    private Long numberOfAuditEntriesPending;
+
+    @Nullable
+    private String averageAuditTime;
 
     private String requestTimestamp;
 
@@ -19,12 +29,20 @@ public class DiagnosticModel extends AlertSerializableModel implements Obfuscate
         Long numberOfNotifications,
         Long numberOfNotificationsProcessed,
         Long numberOfNotificationsUnprocessed,
-        String requestTimestamp
+        Long numberOfAuditEntriesSuccessful,
+        Long numberOfAuditEntriesFailed,
+        Long numberOfAuditEntriesPending,
+        String requestTimestamp,
+        @Nullable String averageAuditTime
     ) {
         this.numberOfNotifications = numberOfNotifications;
         this.numberOfNotificationsProcessed = numberOfNotificationsProcessed;
         this.numberOfNotificationsUnprocessed = numberOfNotificationsUnprocessed;
+        this.numberOfAuditEntriesSuccessful = numberOfAuditEntriesSuccessful;
+        this.numberOfAuditEntriesFailed = numberOfAuditEntriesFailed;
+        this.numberOfAuditEntriesPending = numberOfAuditEntriesPending;
         this.requestTimestamp = requestTimestamp;
+        this.averageAuditTime = averageAuditTime;
     }
 
     public Long getNumberOfNotifications() {
@@ -39,13 +57,38 @@ public class DiagnosticModel extends AlertSerializableModel implements Obfuscate
         return numberOfNotificationsUnprocessed;
     }
 
+    public Long getNumberOfAuditEntriesSuccessful() {
+        return numberOfAuditEntriesSuccessful;
+    }
+
+    public Long getNumberOfAuditEntriesFailed() {
+        return numberOfAuditEntriesFailed;
+    }
+
+    public Long getNumberOfAuditEntriesPending() {
+        return numberOfAuditEntriesPending;
+    }
+
     public String getRequestTimestamp() {
         return requestTimestamp;
+    }
+
+    public Optional<String> getAverageAuditTime() {
+        return Optional.ofNullable(averageAuditTime);
     }
 
     @Override
     public DiagnosticModel obfuscate() {
         // Diagnostic model does not handle sensitive data and therefore does not need any fields to be obfuscated
-        return new DiagnosticModel(numberOfNotifications, numberOfNotificationsProcessed, numberOfNotificationsUnprocessed, requestTimestamp);
+        return new DiagnosticModel(
+            numberOfNotifications,
+            numberOfNotificationsProcessed,
+            numberOfNotificationsUnprocessed,
+            numberOfAuditEntriesSuccessful,
+            numberOfAuditEntriesFailed,
+            numberOfAuditEntriesPending,
+            requestTimestamp,
+            averageAuditTime
+        );
     }
 }
