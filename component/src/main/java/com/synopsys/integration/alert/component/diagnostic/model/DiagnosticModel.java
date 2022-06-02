@@ -9,13 +9,14 @@ import com.synopsys.integration.alert.api.common.model.Obfuscated;
 
 public class DiagnosticModel extends AlertSerializableModel implements Obfuscated<DiagnosticModel> {
     private static final long serialVersionUID = 6714869824373312126L;
+    private static final String NO_AUDIT_CONTENT_MESSAGE = "No audit content found";
+
     private Long numberOfNotifications;
     private Long numberOfNotificationsProcessed;
     private Long numberOfNotificationsUnprocessed;
     private Long numberOfAuditEntriesSuccessful;
     private Long numberOfAuditEntriesFailed;
     private Long numberOfAuditEntriesPending;
-
     @Nullable
     private String averageAuditTime;
 
@@ -88,7 +89,7 @@ public class DiagnosticModel extends AlertSerializableModel implements Obfuscate
             numberOfAuditEntriesFailed,
             numberOfAuditEntriesPending,
             requestTimestamp,
-            averageAuditTime
+            getAverageAuditTime().orElse(NO_AUDIT_CONTENT_MESSAGE)
         );
     }
 }
