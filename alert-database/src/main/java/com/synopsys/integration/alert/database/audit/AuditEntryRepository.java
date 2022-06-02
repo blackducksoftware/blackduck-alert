@@ -31,16 +31,27 @@ public interface AuditEntryRepository extends JpaRepository<AuditEntryEntity, Lo
     Optional<AuditEntryEntity> findFirstByCommonConfigIdOrderByTimeLastSentDesc(UUID commonConfigId);
 
     @Query("SELECT entity FROM AuditEntryEntity entity"
-               + " INNER JOIN entity.auditNotificationRelations relation ON entity.id = relation.auditEntryId"
-               + " WHERE entity.commonConfigId = ?2"
-               + " AND relation.notificationContent.id = ?1"
+        + " INNER JOIN entity.auditNotificationRelations relation ON entity.id = relation.auditEntryId"
+        + " WHERE entity.commonConfigId = ?2"
+        + " AND relation.notificationContent.id = ?1"
     )
     Optional<AuditEntryEntity> findMatchingAudit(Long notificationId, UUID commonConfigId);
 
     @Query("DELETE FROM AuditEntryEntity audit"
-               + " WHERE audit.id NOT IN (SELECT relation.auditEntryId FROM com.synopsys.integration.alert.database.audit.AuditNotificationRelation relation)"
+        + " WHERE audit.id NOT IN (SELECT relation.auditEntryId FROM com.synopsys.integration.alert.database.audit.AuditNotificationRelation relation)"
     )
     @Modifying
     void bulkDeleteOrphanedEntries();
 
+    long countByStatus(String status);
+
+    //TODO: Need to investigate if we can return a Duration object
+    @Query(
+        value = "SELECT CAST(AVG(audit.time_last_sent - audit.time_created) AS varchar)"
+            + " FROM alert.audit_entries AS audit"
+            + " WHERE audit.time_last_sent IS NOT NULL"
+            + " AND audit.time_created IS NOT NULL",
+        nativeQuery = true
+    )
+    Optional<String> getAverageAuditEntryCompletionTime();
 }
