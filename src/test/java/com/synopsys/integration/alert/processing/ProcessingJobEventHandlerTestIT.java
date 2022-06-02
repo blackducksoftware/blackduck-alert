@@ -1,17 +1,21 @@
 package com.synopsys.integration.alert.processing;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
@@ -30,6 +34,7 @@ import com.synopsys.integration.alert.channel.email.database.accessor.EmailGloba
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobNotificationMappingAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
@@ -38,6 +43,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.database.api.DefaultConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.database.api.DefaultNotificationAccessor;
@@ -49,14 +55,21 @@ import com.synopsys.integration.alert.processor.api.NotificationProcessor2;
 import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExtractionDelegator;
 import com.synopsys.integration.alert.processor.api.distribute.ProviderMessageDistributor;
 import com.synopsys.integration.alert.processor.api.event.JobProcessingEvent;
+import com.synopsys.integration.alert.processor.api.extract.model.ProcessedProviderMessage;
+import com.synopsys.integration.alert.processor.api.extract.model.ProcessedProviderMessageHolder;
+import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
+import com.synopsys.integration.alert.processor.api.filter.NotificationContentWrapper;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
+import com.synopsys.integration.alert.provider.blackduck.processor.message.BlackDuckMessageLabels;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.test.common.TestResourceUtils;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.synopsys.integration.blackduck.api.manual.view.VulnerabilityNotificationView;
 
 @AlertIntegrationTest
 class ProcessingJobEventHandlerTestIT {
@@ -70,8 +83,6 @@ class ProcessingJobEventHandlerTestIT {
     @Autowired
     private NotificationDetailExtractionDelegator notificationDetailExtractionDelegator;
     @Autowired
-    private NotificationContentProcessor notificationContentProcessor;
-    @Autowired
     private List<NotificationProcessingLifecycleCache> lifecycleCaches;
     @Autowired
     private DefaultNotificationAccessor notificationAccessor;
@@ -83,10 +94,12 @@ class ProcessingJobEventHandlerTestIT {
     private EmailGlobalConfigAccessor emailGlobalConfigAccessor;
     @Autowired
     private NotificationProcessor2 notificationProcessor;
+    @Autowired
     private Gson gson;
 
     private Long blackDuckGlobalConfigId;
     private UUID channelGlobalConfigId;
+    private NotificationContentProcessor notificationContentProcessor;
     private TestProperties properties;
 
     private Map<UUID, Set<Long>> notificationsDistributed = new HashMap<>();
@@ -117,13 +130,14 @@ class ProcessingJobEventHandlerTestIT {
             )
         );
         blackDuckGlobalConfigId = blackduckConfigurationModel.getConfigurationId();
-        EmailGlobalConfigModel channelConfig = new EmailGlobalConfigModel(UUID.randomUUID().toString(), "Email Channel Config",
+        EmailGlobalConfigModel channelConfig = new EmailGlobalConfigModel(UUID.randomUUID().toString(), AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
             properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM),
             properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST)
         );
 
         EmailGlobalConfigModel emailGlobalConfigModel = emailGlobalConfigAccessor.createConfiguration(channelConfig);
         channelGlobalConfigId = UUID.fromString(emailGlobalConfigModel.getId());
+        notificationContentProcessor = createContentProcessor();
     }
 
     @AfterEach
@@ -154,34 +168,34 @@ class ProcessingJobEventHandlerTestIT {
         assertFalse(notificationsDistributed.containsKey(jobId));
     }
 
-    //    @Test
-    //    void testNotificationsForJob() throws IOException {
-    //        DistributionJobModel distributionJobModel = jobAccessor.createJob(createDistributionJobRequest(NotificationType.VULNERABILITY));
-    //        UUID correlationId = UUID.randomUUID();
-    //        UUID jobId = distributionJobModel.getJobId();
-    //
-    //        List<AlertNotificationModel> notifications = new ArrayList<>();
-    //        notifications.add(createNotification());
-    //        notifications.add(createNotification());
-    //        notifications = notificationAccessor.saveAllNotifications(notifications);
-    //
-    //        notificationProcessor.processNotifications(correlationId, notifications, List.of(distributionJobModel.getDistributionFrequency()));
-    //
-    //        ProcessingJobEventHandler eventHandler = new ProcessingJobEventHandler(
-    //            notificationDetailExtractionDelegator,
-    //            notificationContentProcessor,
-    //            createMockMessageDistributor(),
-    //            lifecycleCaches,
-    //            notificationAccessor,
-    //            jobAccessor,
-    //            jobNotificationMappingAccessor
-    //        );
-    //        JobProcessingEvent event = new JobProcessingEvent(correlationId, jobId);
-    //        eventHandler.handle(event);
-    //        assertTrue(notificationsDistributed.containsKey(jobId));
-    //        List<Long> notificationIds = notifications.stream().map(AlertNotificationModel::getId).collect(Collectors.toList());
-    //        assertTrue(notificationsDistributed.get(jobId).containsAll(notificationIds));
-    //    }
+    @Test
+    void testNotificationsForJob() throws IOException {
+        DistributionJobModel distributionJobModel = jobAccessor.createJob(createDistributionJobRequest(NotificationType.VULNERABILITY));
+        UUID correlationId = UUID.randomUUID();
+        UUID jobId = distributionJobModel.getJobId();
+
+        List<AlertNotificationModel> notifications = new ArrayList<>();
+        notifications.add(createNotification());
+        notifications.add(createNotification());
+        notifications = notificationAccessor.saveAllNotifications(notifications);
+
+        notificationProcessor.processNotifications(correlationId, notifications, List.of(distributionJobModel.getDistributionFrequency()));
+
+        ProcessingJobEventHandler eventHandler = new ProcessingJobEventHandler(
+            notificationDetailExtractionDelegator,
+            notificationContentProcessor,
+            createMockMessageDistributor(),
+            lifecycleCaches,
+            notificationAccessor,
+            jobAccessor,
+            jobNotificationMappingAccessor
+        );
+        JobProcessingEvent event = new JobProcessingEvent(correlationId, jobId);
+        eventHandler.handle(event);
+        assertTrue(notificationsDistributed.containsKey(jobId));
+        List<Long> notificationIds = notifications.stream().map(AlertNotificationModel::getId).collect(Collectors.toList());
+        assertTrue(notificationsDistributed.get(jobId).containsAll(notificationIds));
+    }
 
     private DistributionJobRequestModel createDistributionJobRequest(NotificationType notificationType) {
         EmailJobDetailsModel emailJobDetailsModel = new EmailJobDetailsModel(null, null, false, false, null, List.of());
@@ -204,8 +218,42 @@ class ProcessingJobEventHandlerTestIT {
         );
     }
 
+    private NotificationContentProcessor createContentProcessor() {
+        NotificationContentProcessor notificationContentProcessor = Mockito.mock(NotificationContentProcessor.class);
+        Mockito.doAnswer(invocation -> {
+                List<NotificationContentWrapper> notifications = invocation.getArgument(1);
+                return createMessageHolder(notifications);
+            })
+            .when(notificationContentProcessor).processNotificationContent(Mockito.any(), Mockito.anyList());
+
+        return notificationContentProcessor;
+    }
+
+    private ProcessedProviderMessageHolder createMessageHolder(List<NotificationContentWrapper> notifications) {
+        return notifications.stream()
+            .map(this::createNotificationMessageHolder)
+            .reduce(ProcessedProviderMessageHolder::reduce)
+            .orElse(ProcessedProviderMessageHolder.empty());
+    }
+
+    private ProcessedProviderMessageHolder createNotificationMessageHolder(NotificationContentWrapper notificationContentWrapper) {
+        AlertNotificationModel notificationModel = notificationContentWrapper.getAlertNotificationModel();
+        LinkableItem providerItem = new LinkableItem(blackDuckProviderKey.getDisplayName(), notificationModel.getProviderConfigName());
+        ProviderDetails providerDetails = new ProviderDetails(notificationModel.getProviderConfigId(), providerItem);
+
+        LinkableItem project = new LinkableItem(BlackDuckMessageLabels.LABEL_PROJECT, "Test Project", null);
+        LinkableItem projectVersion = new LinkableItem(
+            BlackDuckMessageLabels.LABEL_PROJECT_VERSION,
+            "Project Version 1.0"
+        );
+        ProjectMessage projectMessage = ProjectMessage.componentConcern(providerDetails, project, projectVersion, List.of());
+        ProcessedProviderMessage<ProjectMessage> processedProviderMessage = ProcessedProviderMessage.singleSource(notificationModel.getId(), projectMessage);
+        return new ProcessedProviderMessageHolder(List.of(processedProviderMessage), List.of());
+    }
+
     private AlertNotificationModel createNotification() throws IOException {
-        String content = TestResourceUtils.readFileToString(VULNERABILITY_SIMPLE_JSON_PATH);
+        String content = createVulnerabilityContent();
+
         return new AlertNotificationModel(
             null,
             blackDuckGlobalConfigId,
@@ -217,6 +265,15 @@ class ProcessingJobEventHandlerTestIT {
             OffsetDateTime.now().minusMinutes(1),
             true
         );
+    }
+
+    private String createVulnerabilityContent() throws IOException {
+        String content = TestResourceUtils.readFileToString(VULNERABILITY_SIMPLE_JSON_PATH);
+        VulnerabilityNotificationView notificationContent = gson.fromJson(content, VulnerabilityNotificationView.class);
+        notificationContent.setCreatedAt(Date.from(OffsetDateTime.now(ZoneOffset.UTC).toInstant()));
+        notificationContent.setType(NotificationType.VULNERABILITY);
+
+        return gson.toJson(notificationContent);
     }
 
     private EventManager createMockEventManager() {
