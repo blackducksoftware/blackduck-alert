@@ -13,6 +13,7 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.wait.WaitJobCondition;
 
+//TODO: Refactor the duplicate code between this WaitJobCondition and AuditCompleteWaitJobTask
 public class AuditProcessingWaitJobTask implements WaitJobCondition {
     private static final String AUDIT_ERROR_RESPONSE_MESSAGE = "Could not get the Alert audit entries.";
 

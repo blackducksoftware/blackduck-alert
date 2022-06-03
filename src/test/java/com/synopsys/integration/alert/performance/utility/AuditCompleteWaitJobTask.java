@@ -182,8 +182,7 @@ public class AuditCompleteWaitJobTask implements WaitJobCondition {
         } while (auditEntryPageModel.getCurrentPage() < auditEntryPageModel.getTotalPages());
 
         OptionalDouble averageAuditTime = auditJobStatusModels.stream()
-            .map(this::calculateAuditTimeDifference)
-            .mapToDouble(a -> a)
+            .mapToDouble(this::calculateAuditTimeDifference)
             .average();
 
         if (averageAuditTime.isEmpty()) {
@@ -193,7 +192,7 @@ public class AuditCompleteWaitJobTask implements WaitJobCondition {
         intLogger.info(String.format("Performance: Average audit time: %s seconds.", averageAuditTime.getAsDouble()));
     }
 
-    private Long calculateAuditTimeDifference(AuditJobStatusModel auditJobStatusModel) {
+    private long calculateAuditTimeDifference(AuditJobStatusModel auditJobStatusModel) {
         try {
             OffsetDateTime timeCreated = DateUtils.parseDate(auditJobStatusModel.getTimeAuditCreated(), DateUtils.AUDIT_DATE_FORMAT);
             OffsetDateTime timeLastSent = DateUtils.parseDate(auditJobStatusModel.getTimeLastSent(), DateUtils.AUDIT_DATE_FORMAT);
@@ -201,7 +200,7 @@ public class AuditCompleteWaitJobTask implements WaitJobCondition {
         } catch (ParseException e) {
             intLogger.error(e.toString());
         }
-        return null;
+        return 0;
     }
 
 }
