@@ -26,6 +26,7 @@ import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.wait.ResilientJobConfig;
 import com.synopsys.integration.wait.WaitJob;
+import com.synopsys.integration.wait.WaitJobCondition;
 
 public class IntegrationPerformanceTestRunnerV2 {
     private static final IntLogger intLogger = new Slf4jIntLogger(LoggerFactory.getLogger(IntegrationPerformanceTestRunnerV2.class));
@@ -121,7 +122,8 @@ public class IntegrationPerformanceTestRunnerV2 {
         String jobName,
         String blackDuckProviderID,
         String policyName,
-        int numberOfExpectedAuditEntries
+        int numberOfExpectedAuditEntries,
+        boolean waitForAuditComplete
     )
         throws IntegrationException, InterruptedException {
         LocalDateTime jobStartingTime = LocalDateTime.now();
@@ -135,7 +137,13 @@ public class IntegrationPerformanceTestRunnerV2 {
         triggerBlackDuckPolicyNotification(policyName);
         loggingUtility.logTimeElapsedWithMessage("Triggering policy notification took %s", startingNotificationTime, LocalDateTime.now());
 
-        waitForJobToFinish(Set.of(jobId), startingNotificationTime, numberOfExpectedAuditEntries, NotificationType.RULE_VIOLATION);
+        WaitJobCondition waitJobCondition;
+        if (waitForAuditComplete) {
+            waitJobCondition = createAuditCompleteWaitTask(Set.of(jobId), startingNotificationTime, numberOfExpectedAuditEntries, NotificationType.RULE_VIOLATION);
+        } else {
+            waitJobCondition = createAuditProcessingWaitTask(Set.of(jobId), startingNotificationTime, numberOfExpectedAuditEntries, NotificationType.RULE_VIOLATION);
+        }
+        waitForJobToFinish(startingNotificationTime, waitJobCondition);
     }
 
     public void testManyPolicyJobsToManyProjects(
@@ -184,7 +192,7 @@ public class IntegrationPerformanceTestRunnerV2 {
             startingNotificationTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
             2
         );
-        NotificationWaitJobTaskV2 notificationWaitJobTask = new NotificationWaitJobTaskV2(
+        AuditProcessingWaitJobTask notificationWaitJobTask = new AuditProcessingWaitJobTask(
             intLogger,
             dateTimeFormatter,
             gson,
@@ -197,5 +205,54 @@ public class IntegrationPerformanceTestRunnerV2 {
         boolean isComplete = WaitJob.waitFor(resilientJobConfig, notificationWaitJobTask, "int performance test runner notification wait");
         intLogger.info("Finished waiting for the notification to be processed: " + isComplete);
         assertTrue(isComplete);
+    }
+
+    private void waitForJobToFinish(LocalDateTime startingNotificationTime, WaitJobCondition waitJobCondition)
+        throws IntegrationException, InterruptedException {
+        ResilientJobConfig resilientJobConfig = new ResilientJobConfig(
+            intLogger,
+            14400,
+            startingNotificationTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+            2
+        );
+        boolean isComplete = WaitJob.waitFor(resilientJobConfig, waitJobCondition, "int performance test runner notification wait");
+        intLogger.info("Finished waiting for the notification to be processed: " + isComplete);
+        assertTrue(isComplete);
+    }
+
+    private AuditCompleteWaitJobTask createAuditCompleteWaitTask(
+        Set<String> jobIds,
+        LocalDateTime startingNotificationTime,
+        int numberOfExpectedAuditEntries,
+        NotificationType notificationType
+    ) {
+        return new AuditCompleteWaitJobTask(
+            intLogger,
+            dateTimeFormatter,
+            gson,
+            alertRequestUtility,
+            startingNotificationTime,
+            numberOfExpectedAuditEntries,
+            notificationType,
+            jobIds
+        );
+    }
+
+    private AuditProcessingWaitJobTask createAuditProcessingWaitTask(
+        Set<String> jobIds,
+        LocalDateTime startingNotificationTime,
+        int numberOfExpectedAuditEntries,
+        NotificationType notificationType
+    ) {
+        return new AuditProcessingWaitJobTask(
+            intLogger,
+            dateTimeFormatter,
+            gson,
+            alertRequestUtility,
+            startingNotificationTime,
+            numberOfExpectedAuditEntries,
+            notificationType,
+            jobIds
+        );
     }
 }
