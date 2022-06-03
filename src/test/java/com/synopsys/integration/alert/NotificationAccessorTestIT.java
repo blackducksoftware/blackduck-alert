@@ -51,7 +51,7 @@ import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @Transactional
 @AlertIntegrationTest
-public class NotificationAccessorTestIT {
+class NotificationAccessorTestIT {
     private static final String NOTIFICATION_TYPE = "notificationType";
 
     @Autowired
@@ -125,7 +125,7 @@ public class NotificationAccessorTestIT {
     }
 
     @Test
-    public void testFindAllEmpty() {
+    void testFindAllEmpty() {
         PageRequest pageRequest = PageRequest.of(0, 10);
         Page<AlertNotificationModel> all = notificationManager.findAll(pageRequest, false);
         assertTrue(all.isEmpty());
@@ -135,7 +135,7 @@ public class NotificationAccessorTestIT {
     }
 
     @Test
-    public void testFindAll() {
+    void testFindAll() {
         NotificationEntity notificationContent = createNotificationContent();
         notificationContent = notificationContentRepository.save(notificationContent);
 
@@ -158,7 +158,7 @@ public class NotificationAccessorTestIT {
     }
 
     @Test
-    public void testFindAllWithSearchEmpty() {
+    void testFindAllWithSearchEmpty() {
         PageRequest pageRequest = PageRequest.of(0, 10);
         Page<AlertNotificationModel> all = notificationManager.findAllWithSearch(ChannelKeys.EMAIL.getUniversalKey(), pageRequest, false);
         assertTrue(all.isEmpty());
@@ -168,7 +168,7 @@ public class NotificationAccessorTestIT {
     }
 
     @Test
-    public void testFindAllWithSearch() {
+    void testFindAllWithSearch() {
         NotificationEntity notificationContent = createNotificationContent();
         notificationContent = notificationContentRepository.save(notificationContent);
 
@@ -198,17 +198,33 @@ public class NotificationAccessorTestIT {
     }
 
     @Test
-    public void testFindAllWithSearchByFieldValue() {
+    void testFindAllWithSearchByFieldValue() {
         NotificationEntity notificationContent = createNotificationContent();
         notificationContent = notificationContentRepository.save(notificationContent);
 
         OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
-        DistributionJobEntity distributionJobEntity = new DistributionJobEntity(null, "job_name", true, FrequencyType.REAL_TIME.name(), ProcessingType.DEFAULT.name(), ChannelKeys.EMAIL.getUniversalKey(), UUID.randomUUID(), currentTime,
-            null);
+        DistributionJobEntity distributionJobEntity = new DistributionJobEntity(
+            null,
+            "job_name",
+            true,
+            FrequencyType.REAL_TIME.name(),
+            ProcessingType.DEFAULT.name(),
+            ChannelKeys.EMAIL.getUniversalKey(),
+            UUID.randomUUID(),
+            currentTime,
+            null
+        );
         DistributionJobEntity savedJob = distributionJobRepository.save(distributionJobEntity);
 
         final String auditStatus = "audit status thing";
-        AuditEntryEntity auditEntryEntity = new AuditEntryEntity(savedJob.getJobId(), DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp(), auditStatus, "", "");
+        AuditEntryEntity auditEntryEntity = new AuditEntryEntity(
+            savedJob.getJobId(),
+            DateUtils.createCurrentDateTimestamp(),
+            DateUtils.createCurrentDateTimestamp(),
+            auditStatus,
+            "",
+            ""
+        );
         auditEntryEntity = auditEntryRepository.save(auditEntryEntity);
 
         AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(auditEntryEntity.getId(), notificationContent.getId());
@@ -221,7 +237,7 @@ public class NotificationAccessorTestIT {
     }
 
     @Test
-    public void testSave() {
+    void testSave() {
         AlertNotificationModel notificationContent = createNotificationModel();
         List<AlertNotificationModel> savedModels = notificationManager.saveAllNotifications(List.of(notificationContent));
         assertNotNull(savedModels);
@@ -232,17 +248,19 @@ public class NotificationAccessorTestIT {
     }
 
     @Test
-    public void testFindByIds() {
-        AlertNotificationModel notification = createNotificationModel();
-        List<AlertNotificationModel> savedModels = notificationManager.saveAllNotifications(List.of(notification));
+    void testFindByIds() {
+        AlertNotificationModel notification1 = createNotificationModel();
+        AlertNotificationModel notification2 = createNotificationModel();
+        AlertNotificationModel notification3 = createNotificationModel();
+        List<AlertNotificationModel> savedModels = notificationManager.saveAllNotifications(List.of(notification3, notification1, notification2));
         List<Long> notificationIds = savedModels.stream().map(AlertNotificationModel::getId).collect(Collectors.toList());
         List<AlertNotificationModel> notificationList = notificationManager.findByIds(notificationIds);
 
-        assertEquals(1, notificationList.size());
+        assertEquals(3, notificationList.size());
     }
 
     @Test
-    public void testFindByIdsInvalidIds() {
+    void testFindByIdsInvalidIds() {
         AlertNotificationModel model = createNotificationModel();
         model = notificationManager.saveAllNotifications(List.of(model)).get(0);
 
@@ -252,7 +270,7 @@ public class NotificationAccessorTestIT {
     }
 
     @Test
-    public void findByCreatedAtBetween() {
+    void findByCreatedAtBetween() {
         OffsetDateTime time = DateUtils.createCurrentDateTimestamp();
         OffsetDateTime startDate = time.minusHours(1);
         OffsetDateTime endDate = time.plusHours(1);
@@ -277,7 +295,7 @@ public class NotificationAccessorTestIT {
     }
 
     @Test
-    public void findByCreatedAtBetweenInvalidDate() {
+    void findByCreatedAtBetweenInvalidDate() {
         OffsetDateTime time = DateUtils.createCurrentDateTimestamp();
         OffsetDateTime startDate = time.minusHours(1);
         OffsetDateTime endDate = time.plusHours(1);
@@ -295,7 +313,7 @@ public class NotificationAccessorTestIT {
     }
 
     @Test
-    public void findByCreatedAtBefore() {
+    void findByCreatedAtBefore() {
         OffsetDateTime time = DateUtils.createCurrentDateTimestamp();
         OffsetDateTime searchDate = time.plusHours(1);
         OffsetDateTime createdAt = time.minusHours(5);
@@ -315,7 +333,7 @@ public class NotificationAccessorTestIT {
     }
 
     @Test
-    public void findByCreatedAtBeforeDayOffset() {
+    void findByCreatedAtBeforeDayOffset() {
         OffsetDateTime time = DateUtils.createCurrentDateTimestamp();
         OffsetDateTime createdAt = time.minusDays(5);
         AlertNotificationModel entity = createNotificationModel(createdAt);
@@ -333,7 +351,7 @@ public class NotificationAccessorTestIT {
     }
 
     @Test
-    public void deleteNotificationsCreatedBeforeTest() {
+    void deleteNotificationsCreatedBeforeTest() {
         OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
         OffsetDateTime oneHourAgo = currentTime.minusHours(1);
         OffsetDateTime oneAndAHalfHoursAgo = oneHourAgo.minusMinutes(30);
@@ -360,7 +378,7 @@ public class NotificationAccessorTestIT {
     }
 
     @Test
-    public void testDeleteNotification() {
+    void testDeleteNotification() {
         AlertNotificationModel notificationEntity = createNotificationModel();
         AlertNotificationModel savedModel = notificationManager.saveAllNotifications(List.of(notificationEntity)).get(0);
         assertEquals(1, notificationContentRepository.count());
@@ -371,7 +389,7 @@ public class NotificationAccessorTestIT {
     }
 
     @Test
-    public void setNotificationsProcessedTest() {
+    void setNotificationsProcessedTest() {
         AlertNotificationModel notificationModel = createNotificationModel();
 
         List<AlertNotificationModel> savedModels = notificationManager.saveAllNotifications(List.of(notificationModel));
@@ -385,7 +403,7 @@ public class NotificationAccessorTestIT {
     }
 
     @Test
-    public void setNotificationsProcessedByIdTest() {
+    void setNotificationsProcessedByIdTest() {
         AlertNotificationModel notificationModel = createNotificationModel();
 
         List<AlertNotificationModel> savedModels = notificationManager.saveAllNotifications(List.of(notificationModel));
