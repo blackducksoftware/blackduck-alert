@@ -121,7 +121,40 @@ class ExternalPerformanceTest {
         logTimeElapsedWithMessage(String.format("%s %s", createProjectsLogMessage, "%s"), startingProjectCreationTime, LocalDateTime.now());
         */
         LocalDateTime executionStartTime = LocalDateTime.now();
-        testRunner.runPolicyNotificationTest(channelFieldsMap, "performanceJob", blackDuckProviderID, PERFORMANCE_POLICY_NAME, numberOfProjectsToCreate);
+        testRunner.runPolicyNotificationTest(channelFieldsMap, "performanceJob", blackDuckProviderID, PERFORMANCE_POLICY_NAME, numberOfProjectsToCreate, false);
+
+        logTimeElapsedWithMessage("Execution and processing test time: %s", executionStartTime, LocalDateTime.now());
+        logTimeElapsedWithMessage("Total test time: %s", startingTime, LocalDateTime.now());
+    }
+
+    @Test
+    @EnabledIfEnvironmentVariable(named = "ALERT_RUN_PERFORMANCE", matches = "true")
+    void testPolicyNotificationsValidateAuditComplete() throws Exception {
+        LocalDateTime startingTime = LocalDateTime.now();
+        intLogger.info(String.format("Starting time: %s", dateTimeFormatter.format(startingTime)));
+
+        // Create Black Duck Global Provider configuration
+        LocalDateTime startingProviderCreateTime = LocalDateTime.now();
+        String blackDuckProviderID = blackDuckProviderService.setupBlackDuck();
+        logTimeElapsedWithMessage("Setting up the Black Duck provider took %s", startingProviderCreateTime, LocalDateTime.now());
+
+        // Create Jira Server global config
+        JiraServerGlobalConfigModel jiraServerGlobalConfigModel = jiraServerPerformanceUtility.createGlobalConfigModel(testProperties);
+
+        LocalDateTime startingCreateGlobalConfigTime = LocalDateTime.now();
+        boolean installPlugin = !disablePluginCheck;
+        JiraServerGlobalConfigModel globalConfiguration = jiraServerPerformanceUtility.createJiraGlobalConfiguration(installPlugin, jiraServerGlobalConfigModel);
+        logTimeElapsedWithMessage("Installing the jira server plugin and creating global configuration took %s", startingCreateGlobalConfigTime, LocalDateTime.now());
+
+        // Create distribution job fields
+        Map<String, FieldValueModel> channelFieldsMap = jiraServerPerformanceUtility.createChannelFieldsMap(testProperties, DEFAULT_JOB_NAME, globalConfiguration.getId());
+
+        // Clear existing policies
+        PolicyRuleView policyRuleView = blackDuckProviderService.createBlackDuckPolicyRuleView(PERFORMANCE_POLICY_NAME, BlackDuckProviderService.getDefaultExternalIdSupplier());
+        blackDuckProviderService.deleteExistingBlackDuckPolicy(policyRuleView);
+
+        LocalDateTime executionStartTime = LocalDateTime.now();
+        testRunner.runPolicyNotificationTest(channelFieldsMap, "performanceJob", blackDuckProviderID, PERFORMANCE_POLICY_NAME, numberOfProjectsToCreate, true);
 
         logTimeElapsedWithMessage("Execution and processing test time: %s", executionStartTime, LocalDateTime.now());
         logTimeElapsedWithMessage("Total test time: %s", startingTime, LocalDateTime.now());
