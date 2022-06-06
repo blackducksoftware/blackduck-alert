@@ -23,8 +23,7 @@ import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
-import com.synopsys.integration.alert.processor.api.NotificationProcessor;
-import com.synopsys.integration.alert.processor.api.NotificationProcessor2;
+import com.synopsys.integration.alert.processor.api.NotificationMappingProcessor;
 import com.synopsys.integration.alert.processor.api.event.JobNotificationMappedEvent;
 
 @Component
@@ -34,20 +33,17 @@ public class NotificationReceivedEventHandler implements AlertEventHandler<Notif
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final NotificationAccessor notificationAccessor;
-    private final NotificationProcessor notificationProcessor;
-    private final NotificationProcessor2 notificationProcessor2;
+    private final NotificationMappingProcessor notificationMappingProcessor;
     private final EventManager eventManager;
 
     @Autowired
     public NotificationReceivedEventHandler(
         NotificationAccessor notificationAccessor,
-        NotificationProcessor notificationProcessor,
-        NotificationProcessor2 notificationProcessor2,
+        NotificationMappingProcessor notificationMappingProcessor,
         EventManager eventManager
     ) {
         this.notificationAccessor = notificationAccessor;
-        this.notificationProcessor = notificationProcessor;
-        this.notificationProcessor2 = notificationProcessor2;
+        this.notificationMappingProcessor = notificationMappingProcessor;
         this.eventManager = eventManager;
     }
 
@@ -55,7 +51,6 @@ public class NotificationReceivedEventHandler implements AlertEventHandler<Notif
     public void handle(NotificationReceivedEvent event) {
         logger.debug("Event {}", event);
         logger.info("Processing event {} for notifications.", event.getEventId());
-        logger.info("Processing event for notifications.");
         processNotifications(event.getCorrelationId());
         logger.info("Finished processing event {} for notifications.", event.getEventId());
     }
@@ -65,8 +60,7 @@ public class NotificationReceivedEventHandler implements AlertEventHandler<Notif
         if (!CollectionUtils.isEmpty(pageOfAlertNotificationModels.getModels())) {
             List<AlertNotificationModel> notifications = pageOfAlertNotificationModels.getModels();
             logger.info("Starting to process batch: {} = {} notifications.", correlationID, notifications.size());
-            //notificationProcessor.processNotifications(notifications, List.of(FrequencyType.REAL_TIME));
-            notificationProcessor2.processNotifications(correlationID, notifications, List.of(FrequencyType.REAL_TIME));
+            notificationMappingProcessor.processNotifications(correlationID, notifications, List.of(FrequencyType.REAL_TIME));
             boolean hasMoreNotificationsToProcess = notificationAccessor.hasMoreNotificationsToProcess();
             if (hasMoreNotificationsToProcess) {
                 eventManager.sendEvent(new NotificationReceivedEvent(correlationID));
