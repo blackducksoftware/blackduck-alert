@@ -178,14 +178,14 @@ class NotificationReceivedEventHandlerTestIT {
 
     private AlertNotificationModel createAlertNotificationModel(boolean processed) {
         String bomEditContent = "{"
-                                    + "\"type\":\"" + NotificationType.BOM_EDIT.name() + "\","
-                                    + "\"content\": {"
-                                    + "\"projectVersion\": \"" + properties.getBlackDuckURL() + "/api/projects\","
-                                    + "\"bomComponent\": \"" + properties.getBlackDuckURL() + "\","
-                                    + "\"componentName\": \"test\","
-                                    + "\"componentVersionName\": \"test\""
-                                    + "}"
-                                    + "}";
+            + "\"type\":\"" + NotificationType.BOM_EDIT.name() + "\","
+            + "\"content\": {"
+            + "\"projectVersion\": \"" + properties.getBlackDuckURL() + "/api/projects\","
+            + "\"bomComponent\": \"" + properties.getBlackDuckURL() + "\","
+            + "\"componentName\": \"test\","
+            + "\"componentVersionName\": \"test\""
+            + "}"
+            + "}";
         MockNotificationContent notificationMocker = new MockNotificationContent(DateUtils.createCurrentDateTimestamp(), blackDuckProviderKey.getUniversalKey(), DateUtils.createCurrentDateTimestamp(), NotificationType.BOM_EDIT.name(),
             bomEditContent, null, blackDuckGlobalConfigId);
         NotificationEntity entity = notificationMocker.createEntity();
