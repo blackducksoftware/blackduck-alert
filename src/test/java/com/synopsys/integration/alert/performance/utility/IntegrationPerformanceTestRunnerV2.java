@@ -149,7 +149,8 @@ public class IntegrationPerformanceTestRunnerV2 {
     public void testManyPolicyJobsToManyProjects(
         Set<String> jobIds,
         String policyName,
-        int numberOfExpectedAuditEntries
+        int numberOfExpectedAuditEntries,
+        boolean waitForAuditComplete
     )
         throws IntegrationException, InterruptedException {
         // trigger BD notifications
@@ -158,7 +159,13 @@ public class IntegrationPerformanceTestRunnerV2 {
         triggerBlackDuckPolicyNotification(policyName);
         loggingUtility.logTimeElapsedWithMessage("Triggering policy notification took %s", startingNotificationTime, LocalDateTime.now());
 
-        waitForJobToFinish(jobIds, startingNotificationTime, numberOfExpectedAuditEntries, NotificationType.RULE_VIOLATION);
+        WaitJobCondition waitJobCondition;
+        if (waitForAuditComplete) {
+            waitJobCondition = createAuditCompleteWaitTask(jobIds, startingNotificationTime, numberOfExpectedAuditEntries, NotificationType.RULE_VIOLATION);
+        } else {
+            waitJobCondition = createAuditProcessingWaitTask(jobIds, startingNotificationTime, numberOfExpectedAuditEntries, NotificationType.RULE_VIOLATION);
+        }
+        waitForJobToFinish(startingNotificationTime, waitJobCondition);
     }
 
     private void triggerBlackDuckNotification(ProjectVersionView projectVersionView) throws IntegrationException {
