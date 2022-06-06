@@ -3,14 +3,15 @@ package com.synopsys.integration.alert.performance.utility;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -181,26 +182,31 @@ public class AuditCompleteWaitJobTask implements WaitJobCondition {
             auditEntryPageModel = getPageOfAuditEntries(pageNumber, 100);
         } while (auditEntryPageModel.getCurrentPage() < auditEntryPageModel.getTotalPages());
 
-        OptionalDouble averageAuditTime = auditJobStatusModels.stream()
-            .mapToDouble(this::calculateAuditTimeDifference)
+        OptionalDouble averageAuditTimeSeconds = auditJobStatusModels.stream()
+            .map(this::calculateAuditDuration)
+            .flatMap(Optional::stream)
+            .map(Duration::toSeconds)
+            .mapToLong(Long::valueOf)
             .average();
 
-        if (averageAuditTime.isEmpty()) {
+        if (averageAuditTimeSeconds.isEmpty()) {
             intLogger.info("Performance: Could not calculate average audit time.");
             return;
         }
-        intLogger.info(String.format("Performance: Average audit time: %s seconds.", averageAuditTime.getAsDouble()));
+        Duration duration = Duration.ofSeconds(Double.valueOf(averageAuditTimeSeconds.getAsDouble()).longValue());
+        String durationFormatted = String.format("%sH:%sm:%ss", duration.toHoursPart(), duration.toMinutesPart(), duration.toSecondsPart());
+        intLogger.info(String.format("Performance: Average audit time: %s.", durationFormatted));
     }
 
-    private long calculateAuditTimeDifference(AuditJobStatusModel auditJobStatusModel) {
+    private Optional<Duration> calculateAuditDuration(AuditJobStatusModel auditJobStatusModel) {
         try {
             OffsetDateTime timeCreated = DateUtils.parseDate(auditJobStatusModel.getTimeAuditCreated(), DateUtils.AUDIT_DATE_FORMAT);
             OffsetDateTime timeLastSent = DateUtils.parseDate(auditJobStatusModel.getTimeLastSent(), DateUtils.AUDIT_DATE_FORMAT);
-            return ChronoUnit.SECONDS.between(timeCreated, timeLastSent);
+            return Optional.of(Duration.between(timeCreated, timeLastSent));
         } catch (ParseException e) {
             intLogger.error(e.toString());
         }
-        return 0;
+        return Optional.empty();
     }
 
 }
