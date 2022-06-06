@@ -155,8 +155,15 @@ public class AuditCompleteWaitJobTask implements WaitJobCondition {
     }
 
     private boolean jobFinished(JobAuditModel jobAuditModel) {
-        return AuditEntryStatus.SUCCESS.getDisplayName().equals(jobAuditModel.getAuditJobStatusModel().getStatus()) ||
-            AuditEntryStatus.FAILURE.getDisplayName().equals(jobAuditModel.getAuditJobStatusModel().getStatus());
+        if (AuditEntryStatus.SUCCESS.getDisplayName().equals(jobAuditModel.getAuditJobStatusModel().getStatus())) {
+            return true;
+        }
+        if (AuditEntryStatus.FAILURE.getDisplayName().equals(jobAuditModel.getAuditJobStatusModel().getStatus())) {
+            intLogger.error(String.format("Audit job discovered with errors: %s", jobAuditModel.getName()));
+            intLogger.error(jobAuditModel.getErrorMessage());
+            return true;
+        }
+        return false;
     }
 
     private String createAuditRequestString(int pageNumber, int pageSize, NotificationType notificationType) {
