@@ -66,7 +66,8 @@ class JiraServerPerformanceTest {
             dateTimeFormatter,
             alertRequestUtility,
             blackDuckProviderService,
-            configurationManager
+            configurationManager,
+            14400
         );
     }
 
