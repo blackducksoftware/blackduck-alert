@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Tags;
 import org.junit.jupiter.api.Test;
@@ -152,6 +153,7 @@ class EmailGlobalTestActionTest {
     }
 
     @Test
+    @Disabled("Requires an SMTP server to test with")
     @Tags(value = {
         @Tag(TestTags.DEFAULT_INTEGRATION),
         @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
