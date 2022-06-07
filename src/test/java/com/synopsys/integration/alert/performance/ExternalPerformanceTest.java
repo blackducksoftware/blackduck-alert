@@ -63,6 +63,10 @@ class ExternalPerformanceTest {
             .map(Boolean::parseBoolean)
             .orElse(Boolean.FALSE);
 
+        int waitTimeoutSeconds = testProperties.getOptionalProperty(TestPropertyKey.TEST_PERFORMANCE_WAIT_TIMEOUT_SECONDS)
+            .map(Integer::parseInt)
+            .orElse(Integer.valueOf(14400));
+
         ExternalAlertRequestUtility alertRequestUtility = new ExternalAlertRequestUtility(intLogger, client, alertURL);
         alertRequestUtility.loginToExternalAlert();
         blackDuckProviderService = new BlackDuckProviderService(alertRequestUtility, gson);
@@ -78,7 +82,8 @@ class ExternalPerformanceTest {
             dateTimeFormatter,
             alertRequestUtility,
             blackDuckProviderService,
-            configurationManager
+            configurationManager,
+            waitTimeoutSeconds
         );
     }
 

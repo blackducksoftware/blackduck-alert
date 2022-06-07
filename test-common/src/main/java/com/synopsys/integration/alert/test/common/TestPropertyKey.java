@@ -30,6 +30,7 @@ public enum TestPropertyKey {
     TEST_PERFORMANCE_BLACKDUCK_PROJECT_COUNT("alert.performance.blackduck.project.count"),
     TEST_PERFORMANCE_ALERT_DISTRIBUTION_JOB_COUNT("alert.performance.alert.distribution.job.count"),
     TEST_PERFORMANCE_ALERT_SERVER_URL("alert.performance.alert.server.url"),
+    TEST_PERFORMANCE_WAIT_TIMEOUT_SECONDS("alert.performance.wait.timeout.seconds"),
 
     TEST_SLACK_CHANNEL_NAME("slack.channel.name"),
     TEST_SLACK_USERNAME("slack.username"),
