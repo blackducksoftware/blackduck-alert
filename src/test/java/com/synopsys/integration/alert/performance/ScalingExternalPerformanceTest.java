@@ -64,6 +64,10 @@ class ScalingExternalPerformanceTest {
             .map(Integer::parseInt)
             .orElse(DEFAULT_NUMBER_OF_JOBS_TO_CREATE);
 
+        int waitTimeoutSeconds = testProperties.getOptionalProperty(TestPropertyKey.TEST_PERFORMANCE_WAIT_TIMEOUT_SECONDS)
+            .map(Integer::parseInt)
+            .orElse(Integer.valueOf(14400));
+
         ExternalAlertRequestUtility alertRequestUtility = new ExternalAlertRequestUtility(intLogger, client, alertURL);
         alertRequestUtility.loginToExternalAlert();
         blackDuckProviderService = new BlackDuckProviderService(alertRequestUtility, gson);
@@ -79,7 +83,8 @@ class ScalingExternalPerformanceTest {
             dateTimeFormatter,
             alertRequestUtility,
             blackDuckProviderService,
-            configurationManager
+            configurationManager,
+            waitTimeoutSeconds
         );
     }
 
