@@ -50,8 +50,8 @@ import com.synopsys.integration.alert.database.api.DefaultNotificationAccessor;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.processor.api.NotificationContentProcessor;
+import com.synopsys.integration.alert.processor.api.NotificationMappingProcessor;
 import com.synopsys.integration.alert.processor.api.NotificationProcessingLifecycleCache;
-import com.synopsys.integration.alert.processor.api.NotificationProcessor2;
 import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExtractionDelegator;
 import com.synopsys.integration.alert.processor.api.distribute.ProviderMessageDistributor;
 import com.synopsys.integration.alert.processor.api.event.JobProcessingEvent;
@@ -93,7 +93,7 @@ class ProcessingJobEventHandlerTestIT {
     @Autowired
     private EmailGlobalConfigAccessor emailGlobalConfigAccessor;
     @Autowired
-    private NotificationProcessor2 notificationProcessor;
+    private NotificationMappingProcessor notificationProcessor;
     @Autowired
     private Gson gson;
 
