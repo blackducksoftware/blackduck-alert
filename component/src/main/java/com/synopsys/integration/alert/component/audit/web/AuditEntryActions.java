@@ -37,7 +37,7 @@ import com.synopsys.integration.alert.common.rest.model.JobIdsRequestModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.audit.AuditDescriptorKey;
 import com.synopsys.integration.alert.processor.api.JobNotificationProcessor;
-import com.synopsys.integration.alert.processor.api.NotificationProcessor;
+import com.synopsys.integration.alert.processor.api.NotificationMappingProcessor;
 import com.synopsys.integration.alert.processor.api.distribute.ProcessedNotificationDetails;
 
 @Component
@@ -50,7 +50,7 @@ public class AuditEntryActions {
     private final NotificationAccessor notificationAccessor;
     private final RestApiAuditAccessor auditAccessor;
     private final JobAccessor jobAccessor;
-    private final NotificationProcessor notificationProcessor;
+    private final NotificationMappingProcessor notificationMappingProcessor;
     private final JobNotificationProcessor jobNotificationProcessor;
 
     @Autowired
@@ -60,7 +60,7 @@ public class AuditEntryActions {
         RestApiAuditAccessor auditAccessor,
         NotificationAccessor notificationAccessor,
         JobAccessor jobAccessor,
-        NotificationProcessor notificationProcessor,
+        NotificationMappingProcessor notificationMappingProcessor,
         JobNotificationProcessor jobNotificationProcessor
     ) {
         this.authorizationManager = authorizationManager;
@@ -68,7 +68,7 @@ public class AuditEntryActions {
         this.auditAccessor = auditAccessor;
         this.notificationAccessor = notificationAccessor;
         this.jobAccessor = jobAccessor;
-        this.notificationProcessor = notificationProcessor;
+        this.notificationMappingProcessor = notificationMappingProcessor;
         this.jobNotificationProcessor = jobNotificationProcessor;
     }
 
@@ -159,7 +159,7 @@ public class AuditEntryActions {
                 return new ActionResponse<>(HttpStatus.BAD_REQUEST, message);
             }
         } else {
-            notificationProcessor.processNotifications(List.of(notificationContent), List.of(FrequencyType.DAILY, FrequencyType.REAL_TIME));
+            notificationMappingProcessor.processNotifications(UUID.randomUUID(), List.of(notificationContent), List.of(FrequencyType.DAILY, FrequencyType.REAL_TIME));
         }
         return get();
     }
