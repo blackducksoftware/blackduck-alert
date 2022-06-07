@@ -9,6 +9,7 @@ package com.synopsys.integration.alert.component.tasks;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,24 +24,24 @@ import com.synopsys.integration.alert.common.persistence.accessor.NotificationAc
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.processor.api.NotificationProcessor;
+import com.synopsys.integration.alert.processor.api.NotificationMappingProcessor;
 
 public abstract class ProcessingTask extends StartupScheduledTask {
     public static final int PAGE_SIZE = 100;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final NotificationAccessor notificationAccessor;
-    private final NotificationProcessor notificationProcessor;
+    private final NotificationMappingProcessor notificationMappingProcessor;
     private final JobAccessor jobAccessor;
     private final FrequencyType frequencyType;
 
     private OffsetDateTime lastRunTime;
 
-    public ProcessingTask(TaskScheduler taskScheduler, TaskManager taskManager, NotificationAccessor notificationAccessor, NotificationProcessor notificationProcessor,
+    public ProcessingTask(TaskScheduler taskScheduler, TaskManager taskManager, NotificationAccessor notificationAccessor, NotificationMappingProcessor notificationMappingProcessor,
         JobAccessor jobAccessor, FrequencyType frequencyType) {
         super(taskScheduler, taskManager);
         this.notificationAccessor = notificationAccessor;
-        this.notificationProcessor = notificationProcessor;
+        this.notificationMappingProcessor = notificationMappingProcessor;
         this.jobAccessor = jobAccessor;
         this.frequencyType = frequencyType;
         lastRunTime = DateUtils.createCurrentDateTimestamp();
@@ -61,9 +62,11 @@ public abstract class ProcessingTask extends StartupScheduledTask {
         boolean hasJobsByFrequency = jobAccessor.hasJobsByFrequency(frequencyType.name());
         String taskName = getTaskName();
         if (hasJobsByFrequency) {
+            // Need to capture time before processing so next iteration will begin with correct time
+            OffsetDateTime iterationTimeStamp = DateUtils.createCurrentDateTimestamp();
             logger.info("{} Jobs with Daily Frequency found.  Begin processing notifications", taskName);
             process();
-            lastRunTime = DateUtils.createCurrentDateTimestamp();
+            lastRunTime = iterationTimeStamp;
         } else {
             logger.info("{} Jobs with Daily Frequency not found.", taskName);
         }
@@ -77,7 +80,7 @@ public abstract class ProcessingTask extends StartupScheduledTask {
         while (!page.getModels().isEmpty() || currentPage < totalPages) {
             List<AlertNotificationModel> notificationList = page.getModels();
             logger.info("Processing page {} of {}. {} notifications to process.", currentPage, totalPages, notificationList.size());
-            notificationProcessor.processNotifications(notificationList, List.of(frequencyType));
+            notificationMappingProcessor.processNotifications(UUID.randomUUID(), notificationList, List.of(frequencyType));
             page = read(dateRange, currentPage + 1, PAGE_SIZE);
             currentPage = page.getCurrentPage();
             totalPages = page.getTotalPages();
