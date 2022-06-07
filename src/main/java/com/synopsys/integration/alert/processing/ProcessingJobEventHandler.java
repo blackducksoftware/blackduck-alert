@@ -7,7 +7,6 @@
  */
 package com.synopsys.integration.alert.processing;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -75,31 +74,46 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
         UUID correlationId = event.getCorrelationId();
         UUID jobId = event.getJobId();
         try {
-            //TODO have to use paging here.
-            List<AlertNotificationModel> notifications = getNotifications(event);
-            logNotifications("Start", event, notifications);
-            processAndDistribute(jobId, notifications);
-            logNotifications("Finished", event, notifications);
+            Optional<DistributionJobModel> jobModel = jobAccessor.getJobById(jobId);
+            if (jobModel.isPresent()) {
+                DistributionJobModel job = jobModel.get();
+                ProcessedProviderMessageHolder processedMessageHolder = processNotifications(event, job);
+                ProcessedNotificationDetails processedNotificationDetails = new ProcessedNotificationDetails(
+                    job.getJobId(),
+                    job.getChannelDescriptorName(),
+                    job.getName()
+                );
+                providerMessageDistributor.distribute(processedNotificationDetails, processedMessageHolder);
+            }
         } finally {
             clearCaches();
             jobNotificationMappingAccessor.removeJobMapping(correlationId, jobId);
         }
     }
 
-    private List<AlertNotificationModel> getNotifications(JobProcessingEvent event) {
-        List<AlertNotificationModel> notifications = new LinkedList<>();
-        int pageNumber = 0;
-        int pageSize = 100;
+    private ProcessedProviderMessageHolder processNotifications(JobProcessingEvent event, DistributionJobModel job) {
+        ProcessedProviderMessageHolder processedMessageHolder = null;
         UUID correlationId = event.getCorrelationId();
         UUID jobId = event.getJobId();
+        int pageNumber = 0;
+        int pageSize = 100;
         AlertPagedModel<JobToNotificationMappingModel> jobNotificationMappings = jobNotificationMappingAccessor.getJobNotificationMappings(
             correlationId,
             jobId,
             pageNumber,
             pageSize
         );
+
         while (jobNotificationMappings.getCurrentPage() <= jobNotificationMappings.getTotalPages()) {
-            notifications.addAll(notificationAccessor.findByIds(extractNotificationIds(jobNotificationMappings)));
+            List<Long> notificationIds = extractNotificationIds(jobNotificationMappings);
+            List<AlertNotificationModel> notifications = notificationAccessor.findByIds(notificationIds);
+            logNotifications("Start", event, notificationIds);
+            ProcessedProviderMessageHolder currentProcessedMessages = processNotifications(job, notifications);
+            if (null == processedMessageHolder) {
+                processedMessageHolder = currentProcessedMessages;
+            } else {
+                processedMessageHolder = ProcessedProviderMessageHolder.reduce(processedMessageHolder, currentProcessedMessages);
+            }
             pageNumber++;
             jobNotificationMappings = jobNotificationMappingAccessor.getJobNotificationMappings(
                 correlationId,
@@ -107,9 +121,10 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
                 pageNumber,
                 pageSize
             );
+            logNotifications("Finished", event, notificationIds);
         }
 
-        return notifications;
+        return processedMessageHolder;
     }
 
     private List<Long> extractNotificationIds(AlertPagedModel<JobToNotificationMappingModel> pageOfMappingData) {
@@ -118,11 +133,8 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
             .collect(Collectors.toList());
     }
 
-    private void logNotifications(String messagePrefix, JobProcessingEvent event, List<AlertNotificationModel> notifications) {
+    private void logNotifications(String messagePrefix, JobProcessingEvent event, List<Long> notificationIds) {
         if (logger.isDebugEnabled()) {
-            List<Long> notificationIds = notifications.stream()
-                .map(AlertNotificationModel::getId)
-                .collect(Collectors.toList());
             String joinedIds = StringUtils.join(notificationIds, ", ");
             notificationLogger.debug(
                 "{} processing job: {} batch: {} {} notifications: {}",
@@ -135,28 +147,17 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
         }
     }
 
-    private void processAndDistribute(UUID jobId, List<AlertNotificationModel> notifications) {
-        Optional<DistributionJobModel> jobModel = jobAccessor.getJobById(jobId);
-        if (jobModel.isPresent()) {
-            DistributionJobModel job = jobModel.get();
-            List<NotificationContentWrapper> notificationContentList = notifications
-                .stream()
-                .map(notificationDetailExtractionDelegator::wrapNotification)
-                .flatMap(List::stream)
-                .map(DetailedNotificationContent::getNotificationContentWrapper)
-                .collect(Collectors.toList());
-            ProcessedNotificationDetails processedNotificationDetails = new ProcessedNotificationDetails(
-                job.getJobId(),
-                job.getChannelDescriptorName(),
-                job.getName()
-            );
-            ProcessedProviderMessageHolder processedMessageHolder = notificationContentProcessor.processNotificationContent(
-                job.getProcessingType(),
-                notificationContentList
-            );
-
-            providerMessageDistributor.distribute(processedNotificationDetails, processedMessageHolder);
-        }
+    private ProcessedProviderMessageHolder processNotifications(DistributionJobModel jobModel, List<AlertNotificationModel> notifications) {
+        List<NotificationContentWrapper> notificationContentList = notifications
+            .stream()
+            .map(notificationDetailExtractionDelegator::wrapNotification)
+            .flatMap(List::stream)
+            .map(DetailedNotificationContent::getNotificationContentWrapper)
+            .collect(Collectors.toList());
+        return notificationContentProcessor.processNotificationContent(
+            jobModel.getProcessingType(),
+            notificationContentList
+        );
     }
 
     private void clearCaches() {
