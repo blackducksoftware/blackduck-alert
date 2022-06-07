@@ -37,18 +37,22 @@ public class IntegrationPerformanceTestRunnerV2 {
     private final ConfigurationManagerV2 configurationManager;
     private final PerformanceLoggingUtility loggingUtility;
 
+    private final int waitTimeoutInSeconds;
+
     public IntegrationPerformanceTestRunnerV2(
         Gson gson,
         DateTimeFormatter dateTimeFormatter,
         AlertRequestUtility alertRequestUtility,
         BlackDuckProviderService blackDuckProviderService,
-        ConfigurationManagerV2 configurationManager
+        ConfigurationManagerV2 configurationManager,
+        int waitTimeoutInSeconds
     ) {
         this.gson = gson;
         this.dateTimeFormatter = dateTimeFormatter;
         this.alertRequestUtility = alertRequestUtility;
         this.blackDuckProviderService = blackDuckProviderService;
         this.configurationManager = configurationManager;
+        this.waitTimeoutInSeconds = waitTimeoutInSeconds;
         loggingUtility = new PerformanceLoggingUtility(intLogger, dateTimeFormatter);
     }
 
@@ -83,7 +87,7 @@ public class IntegrationPerformanceTestRunnerV2 {
 
         ResilientJobConfig resilientJobConfig = new ResilientJobConfig(
             intLogger,
-            600,
+            waitTimeoutInSeconds,
             startingSearchDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
             20
         );
@@ -195,7 +199,7 @@ public class IntegrationPerformanceTestRunnerV2 {
         throws IntegrationException, InterruptedException {
         ResilientJobConfig resilientJobConfig = new ResilientJobConfig(
             intLogger,
-            14400,
+            waitTimeoutInSeconds,
             startingNotificationTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
             2
         );
@@ -218,7 +222,7 @@ public class IntegrationPerformanceTestRunnerV2 {
         throws IntegrationException, InterruptedException {
         ResilientJobConfig resilientJobConfig = new ResilientJobConfig(
             intLogger,
-            14400,
+            waitTimeoutInSeconds,
             startingNotificationTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
             2
         );

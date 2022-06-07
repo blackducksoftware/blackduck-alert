@@ -82,7 +82,8 @@ class LargeNotificationTest {
             dateTimeFormatter,
             alertRequestUtility,
             blackDuckProviderService,
-            configurationManager
+            configurationManager,
+            14400
         );
 
         numberOfProjectsToCreate = testProperties.getOptionalProperty(TestPropertyKey.TEST_PERFORMANCE_BLACKDUCK_PROJECT_COUNT)
