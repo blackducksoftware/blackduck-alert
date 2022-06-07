@@ -26,8 +26,7 @@ import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExt
 import com.synopsys.integration.alert.processor.api.mapping.JobNotificationMapper2;
 
 @Component
-public class NotificationProcessor2 {
-
+public class NotificationMappingProcessor {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final Logger notificationLogger = AlertLoggerFactory.getNotificationLogger(getClass());
     private final NotificationDetailExtractionDelegator notificationDetailExtractionDelegator;
@@ -35,7 +34,7 @@ public class NotificationProcessor2 {
     private final NotificationAccessor notificationAccessor;
 
     @Autowired
-    public NotificationProcessor2(
+    public NotificationMappingProcessor(
         NotificationDetailExtractionDelegator notificationDetailExtractionDelegator,
         JobNotificationMapper2 jobNotificationMapper,
         NotificationAccessor notificationAccessor
