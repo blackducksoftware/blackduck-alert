@@ -64,20 +64,33 @@ public class IssueTrackerSearcher<T extends Serializable> {
     }
 
     public final List<ActionableIssueSearchResult<T>> findIssues(ProjectMessage projectMessage) throws AlertException {
+        try {
+            boolean acquiredLock = channelLock.getLock(IssueTrackerChannelLock.DEFAULT_TIMEOUT_SECONDS);
+            if (acquiredLock) {
+                return findIssuesForProject(projectMessage);
+            } else {
+                return List.of();
+            }
+        } finally {
+            channelLock.release();
+        }
+    }
+
+    private List<ActionableIssueSearchResult<T>> findIssuesForProject(ProjectMessage projectMessage) throws AlertException {
         ProviderDetails providerDetails = projectMessage.getProviderDetails();
         LinkableItem project = projectMessage.getProject();
 
         MessageReason messageReason = projectMessage.getMessageReason();
         boolean isEntireBomDeleted = projectMessage.getOperation()
-                                         .filter(ProjectOperation.DELETE::equals)
-                                         .isPresent();
+            .filter(ProjectOperation.DELETE::equals)
+            .isPresent();
 
         if (MessageReason.PROJECT_STATUS.equals(messageReason)) {
             return findProjectIssues(isEntireBomDeleted, () -> projectIssueFinder.findProjectIssues(providerDetails, project));
         }
 
         LinkableItem projectVersion = projectMessage.getProjectVersion()
-                                          .orElseThrow(() -> new AlertRuntimeException("Missing project version"));
+            .orElseThrow(() -> new AlertRuntimeException("Missing project version"));
         if (MessageReason.PROJECT_VERSION_STATUS.equals(messageReason)) {
             return findProjectIssues(isEntireBomDeleted, () -> projectVersionIssueFinder.findProjectVersionIssues(providerDetails, project, projectVersion));
         }

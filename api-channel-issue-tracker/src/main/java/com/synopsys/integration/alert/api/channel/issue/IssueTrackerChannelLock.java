@@ -23,18 +23,13 @@ public class IssueTrackerChannelLock {
     private String lockName;
     private long timeoutSeconds;
     private Semaphore lock;
-
+    
     public IssueTrackerChannelLock(String lockName) {
-        this(lockName, DEFAULT_TIMEOUT_SECONDS);
-    }
-
-    public IssueTrackerChannelLock(String lockName, long timeoutSeconds) {
         this.lockName = lockName;
-        this.timeoutSeconds = timeoutSeconds;
         this.lock = new Semaphore(PERMITS, true);
     }
 
-    public boolean getLock() {
+    public boolean getLock(int timeoutSeconds) {
         boolean acquired = false;
         try {
             acquired = this.lock.tryAcquire(timeoutSeconds, TimeUnit.SECONDS);

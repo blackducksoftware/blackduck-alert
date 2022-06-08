@@ -56,7 +56,21 @@ public abstract class IssueTrackerIssueCreator<T extends Serializable> {
      * @return {@link IssueTrackerIssueResponseModel}
      * @throws AlertException Thrown if there is a problem connecting to the issue-tracker or if the issue-tracker server responds with an error.
      */
-    public final IssueTrackerIssueResponseModel<T> createIssueTrackerIssue(IssueCreationModel alertIssueCreationModel) throws AlertException {
+    public final Optional<IssueTrackerIssueResponseModel<T>> createIssueTrackerIssue(IssueCreationModel alertIssueCreationModel) throws AlertException {
+        try {
+            boolean acquiredLock = channelLock.getLock(IssueTrackerChannelLock.DEFAULT_TIMEOUT_SECONDS);
+            if (acquiredLock) {
+                return Optional.of(createIssue(alertIssueCreationModel));
+            } else {
+                logger.error("Could not create issue: {} ", alertIssueCreationModel);
+                return Optional.empty();
+            }
+        } finally {
+            channelLock.release();
+        }
+    }
+
+    private IssueTrackerIssueResponseModel<T> createIssue(IssueCreationModel alertIssueCreationModel) throws AlertException {
         ExistingIssueDetails<T> createdIssueDetails = createIssueAndExtractDetails(alertIssueCreationModel);
         logger.debug("Created new {} issue: {}", channelKey.getDisplayName(), createdIssueDetails);
 
