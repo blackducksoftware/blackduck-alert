@@ -1,6 +1,8 @@
 package com.synopsys.integration.alert.channel.jira.cloud;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.UUID;
@@ -48,24 +50,15 @@ public class JiraCloudSummaryFieldLengthTestIT {
     public void summaryLength254SucceedsTest() {
         IssueCreationModel issueCreationModel = createIssueCreationModel(254);
         IssueTrackerModelHolder<String> messages = new IssueTrackerModelHolder<>(List.of(issueCreationModel), List.of(), List.of());
-        try {
-            jiraCloudMessageSender.sendMessages(messages);
-        } catch (AlertException e) {
-            fail("Failed to send a message with a 254 character summary", e);
-        }
+        assertDoesNotThrow(() -> jiraCloudMessageSender.sendMessages(messages));
     }
 
     @Test
     public void summaryLength256FailsTest() {
         IssueCreationModel issueCreationModel = createIssueCreationModel(256);
         IssueTrackerModelHolder<String> messages = new IssueTrackerModelHolder<>(List.of(issueCreationModel), List.of(), List.of());
-        try {
-            jiraCloudMessageSender.sendMessages(messages);
-            fail("Successfully sent a message with a 256 character summary which is greater than the expected maximum");
-        } catch (AlertException e) {
-            // Pass
-            e.printStackTrace();
-        }
+        Throwable exception = assertThrows(AlertException.class, () -> jiraCloudMessageSender.sendMessages(messages));
+        assertTrue(exception.getMessage().contains("Summary can't exceed 255 characters"));
     }
 
     private IssueCreationModel createIssueCreationModel(int summaryLength) {
@@ -84,12 +77,15 @@ public class JiraCloudSummaryFieldLengthTestIT {
         TestProperties testProperties = new TestProperties();
         Gson gson = new GsonBuilder().create();
         IssueCategoryRetriever issueCategoryRetriever = new IssueCategoryRetriever();
+        JiraCloudPropertiesFactory jiraCloudPropertiesFactory = createJiraCloudPropertiesFactory(testProperties);
+
         JiraCloudMessageSenderFactory jiraCloudMessageSenderFactory = new JiraCloudMessageSenderFactory(
             gson,
             ChannelKeys.JIRA_CLOUD,
-            createJiraCloudPropertiesFactory(testProperties),
+            jiraCloudPropertiesFactory,
             new IssueTrackerCallbackInfoCreator(),
             issueCategoryRetriever);
+
         JiraCloudJobDetailsModel jiraCloudJobDetails = createJiraCloudJobDetails(testProperties);
         return jiraCloudMessageSenderFactory.createMessageSender(jiraCloudJobDetails, null);
     }
