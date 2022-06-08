@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.synopsys.integration.alert.api.channel.issue.IssueTrackerChannelLock;
 import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCallbackInfoCreator;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCommentModel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
@@ -30,14 +31,18 @@ public abstract class IssueTrackerIssueCreator<T extends Serializable> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final IssueTrackerChannelKey channelKey;
+    private final IssueTrackerChannelLock channelLock;
     private final IssueTrackerIssueCommenter<T> commenter;
     private final IssueTrackerCallbackInfoCreator callbackInfoCreator;
 
     protected IssueTrackerIssueCreator(
         IssueTrackerChannelKey channelKey,
+        IssueTrackerChannelLock channelLock,
         IssueTrackerIssueCommenter<T> commenter,
-        IssueTrackerCallbackInfoCreator callbackInfoCreator) {
+        IssueTrackerCallbackInfoCreator callbackInfoCreator
+    ) {
         this.channelKey = channelKey;
+        this.channelLock = channelLock;
         this.commenter = commenter;
         this.callbackInfoCreator = callbackInfoCreator;
     }

@@ -15,10 +15,18 @@ import org.slf4j.LoggerFactory;
 
 public class IssueTrackerChannelLock {
     private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    // TODO: make this configurable per channel.
+    // 30 minutes
+    public static final int DEFAULT_TIMEOUT_SECONDS = 1800;
     private static final int PERMITS = 1;
     private String lockName;
     private long timeoutSeconds;
     private Semaphore lock;
+
+    public IssueTrackerChannelLock(String lockName) {
+        this(lockName, DEFAULT_TIMEOUT_SECONDS);
+    }
 
     public IssueTrackerChannelLock(String lockName, long timeoutSeconds) {
         this.lockName = lockName;

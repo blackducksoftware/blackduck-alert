@@ -47,6 +47,7 @@ public class JiraServerProcessorFactory implements IssueTrackerProcessorFactory<
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final Gson gson;
+    private final JiraServerChannelLock jiraServerChannelLock;
     private final JiraMessageFormatter jiraMessageFormatter;
     private final JiraServerPropertiesFactory jiraServerPropertiesFactory;
     private final JiraServerMessageSenderFactory jiraServerMessageSenderFactory;
@@ -56,6 +57,7 @@ public class JiraServerProcessorFactory implements IssueTrackerProcessorFactory<
     @Autowired
     public JiraServerProcessorFactory(
         Gson gson,
+        JiraServerChannelLock jiraServerChannelLock,
         JiraMessageFormatter jiraMessageFormatter,
         JiraServerPropertiesFactory jiraServerPropertiesFactory,
         JiraServerMessageSenderFactory jiraServerMessageSenderFactory,
@@ -63,6 +65,7 @@ public class JiraServerProcessorFactory implements IssueTrackerProcessorFactory<
         IssueCategoryRetriever issueCategoryRetriever
     ) {
         this.gson = gson;
+        this.jiraServerChannelLock = jiraServerChannelLock;
         this.jiraMessageFormatter = jiraMessageFormatter;
         this.jiraServerPropertiesFactory = jiraServerPropertiesFactory;
         this.jiraServerMessageSenderFactory = jiraServerMessageSenderFactory;
@@ -89,7 +92,14 @@ public class JiraServerProcessorFactory implements IssueTrackerProcessorFactory<
 
         // Extractor Requirement
         JiraIssueStatusCreator jiraIssueStatusCreator = new JiraIssueStatusCreator(distributionDetails.getResolveTransition(), distributionDetails.getReopenTransition());
-        JiraSearcherFactory jiraSearcherFactory = new JiraSearcherFactory(issuePropertiesManager, jiraIssueStatusCreator, issueService::getTransitions, issueCategoryRetriever, modelTransformer);
+        JiraSearcherFactory jiraSearcherFactory = new JiraSearcherFactory(
+            jiraServerChannelLock,
+            issuePropertiesManager,
+            jiraIssueStatusCreator,
+            issueService::getTransitions,
+            issueCategoryRetriever,
+            modelTransformer
+        );
         JiraServerQueryExecutor jiraCloudQueryExecutor = new JiraServerQueryExecutor(issueSearchService);
         IssueTrackerSearcher<String> jiraSearcher = jiraSearcherFactory.createJiraSearcher(distributionDetails.getProjectNameOrKey(), jiraCloudQueryExecutor);
 

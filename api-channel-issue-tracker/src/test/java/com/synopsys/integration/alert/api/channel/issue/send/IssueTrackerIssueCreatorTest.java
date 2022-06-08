@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.synopsys.integration.alert.api.channel.issue.IssueTrackerChannelLock;
 import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCallbackInfoCreator;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerIssueResponseModel;
@@ -35,7 +36,7 @@ public class IssueTrackerIssueCreatorTest {
     }
 
     @Test
-    public void createIssueTrackerIssueTest() throws AlertException {
+    void createIssueTrackerIssueTest() throws AlertException {
         TestIssueCreator issueCreator = new TestIssueCreator(commenter, callbackInfoCreator);
         IssueCreationModel issueCreationModel = IssueCreationModel.simple("Test title", null, List.of("comment 1", "comment 2"), null);
         IssueTrackerIssueResponseModel<String> responseModel = issueCreator.createIssueTrackerIssue(issueCreationModel);
@@ -43,7 +44,7 @@ public class IssueTrackerIssueCreatorTest {
     }
 
     @Test
-    public void createIssueTrackerIssueWithSourceTest() throws AlertException {
+    void createIssueTrackerIssueWithSourceTest() throws AlertException {
         TestIssueCreator issueCreator = new TestIssueCreator(commenter, callbackInfoCreator);
         ProjectIssueModel projectIssueModel = Mockito.mock(ProjectIssueModel.class);
         IssueCreationModel issueCreationModel = IssueCreationModel.project("Test title", null, List.of("example comment"), projectIssueModel);
@@ -53,7 +54,7 @@ public class IssueTrackerIssueCreatorTest {
 
     private static class TestIssueCreator extends IssueTrackerIssueCreator<String> {
         public TestIssueCreator(IssueTrackerIssueCommenter<String> commenter, IssueTrackerCallbackInfoCreator callbackInfoCreator) {
-            super(ISSUE_TRACKER_CHANNEL_KEY, commenter, callbackInfoCreator);
+            super(ISSUE_TRACKER_CHANNEL_KEY, new IssueTrackerChannelLock(ISSUE_TRACKER_CHANNEL_KEY.getUniversalKey()), commenter, callbackInfoCreator);
         }
 
         @Override

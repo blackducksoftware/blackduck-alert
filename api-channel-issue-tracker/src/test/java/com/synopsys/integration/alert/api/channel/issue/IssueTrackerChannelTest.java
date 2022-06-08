@@ -22,10 +22,9 @@ import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.Is
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
-
-public class IssueTrackerChannelTest {
+class IssueTrackerChannelTest {
     @Test
-    public void distributeMessagesTest() throws AlertException {
+    void distributeMessagesTest() throws AlertException {
         IssueTrackerModelExtractor<String> modelExtractor = new IssueTrackerModelExtractor<>(createFormatter(), null);
         IssueTrackerMessageSender<String> messageSender = createMessageSender();
         IssueTrackerProcessor<String> processor = new IssueTrackerProcessor<>(modelExtractor, messageSender);
@@ -70,7 +69,8 @@ public class IssueTrackerChannelTest {
             protected void findAndPerformTransition(ExistingIssueDetails<String> existingIssueDetails, String transitionName) {
             }
         };
-        IssueTrackerIssueCreator<String> creator = new IssueTrackerIssueCreator<>(null, commenter, null) {
+        IssueTrackerChannelLock channelLock = new IssueTrackerChannelLock("channel_key");
+        IssueTrackerIssueCreator<String> creator = new IssueTrackerIssueCreator<>(null, channelLock, commenter, null) {
             @Override
             protected ExistingIssueDetails<String> createIssueAndExtractDetails(IssueCreationModel alertIssueCreationModel) {
                 return null;

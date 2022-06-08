@@ -43,6 +43,7 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
     private final Gson gson;
     private final IssueTrackerCallbackInfoCreator callbackInfoCreator;
     private final AzureBoardsChannelKey channelKey;
+    private final AzureBoardsChannelLock channelLock;
     private final AzureBoardsPropertiesFactory azureBoardsPropertiesFactory;
     private final ProxyManager proxyManager;
     private final AzureBoardsHttpExceptionMessageImprover exceptionMessageImprover;
@@ -53,6 +54,7 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
         Gson gson,
         IssueTrackerCallbackInfoCreator callbackInfoCreator,
         AzureBoardsChannelKey channelKey,
+        AzureBoardsChannelLock channelLock,
         AzureBoardsPropertiesFactory azureBoardsPropertiesFactory,
         ProxyManager proxyManager,
         AzureBoardsHttpExceptionMessageImprover exceptionMessageImprover,
@@ -61,6 +63,7 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
         this.gson = gson;
         this.callbackInfoCreator = callbackInfoCreator;
         this.channelKey = channelKey;
+        this.channelLock = channelLock;
         this.azureBoardsPropertiesFactory = azureBoardsPropertiesFactory;
         this.proxyManager = proxyManager;
         this.exceptionMessageImprover = exceptionMessageImprover;
@@ -105,9 +108,28 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
 
         // Message Sender Requirements
         AzureBoardsIssueCommenter commenter = new AzureBoardsIssueCommenter(issueResponseCreator, organizationName, distributionDetails, workItemCommentService);
-        AzureBoardsIssueTransitioner transitioner = new AzureBoardsIssueTransitioner(commenter, issueResponseCreator, gson, organizationName, distributionDetails, workItemService, workItemTypeStateRetriever, exceptionMessageImprover);
-        AzureBoardsIssueCreator creator = new AzureBoardsIssueCreator(channelKey, commenter, callbackInfoCreator, gson, organizationName, distributionDetails, workItemService, issuePropertiesManager, exceptionMessageImprover,
-            issueCategoryRetriever);
+        AzureBoardsIssueTransitioner transitioner = new AzureBoardsIssueTransitioner(
+            commenter,
+            issueResponseCreator,
+            gson,
+            organizationName,
+            distributionDetails,
+            workItemService,
+            workItemTypeStateRetriever,
+            exceptionMessageImprover
+        );
+        AzureBoardsIssueCreator creator = new AzureBoardsIssueCreator(channelKey,
+            channelLock,
+            commenter,
+            callbackInfoCreator,
+            gson,
+            organizationName,
+            distributionDetails,
+            workItemService,
+            issuePropertiesManager,
+            exceptionMessageImprover,
+            issueCategoryRetriever
+        );
 
         return new IssueTrackerMessageSender<>(creator, transitioner, commenter);
     }

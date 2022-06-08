@@ -22,6 +22,7 @@ import com.synopsys.integration.alert.api.channel.jira.distribution.delegate.Jir
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
+import com.synopsys.integration.alert.channel.jira.cloud.distribution.JiraCloudChannelLock;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.JiraCloudChannelKey;
 import com.synopsys.integration.exception.IntegrationException;
@@ -42,6 +43,7 @@ public class JiraCloudIssueCreator extends JiraIssueCreator<IssueCreationRequest
 
     public JiraCloudIssueCreator(
         JiraCloudChannelKey jiraCloudChannelKey,
+        JiraCloudChannelLock jiraCloudChannelLock,
         JiraCloudIssueCommenter jiraCloudIssueCommenter,
         IssueTrackerCallbackInfoCreator callbackInfoCreator,
         JiraCloudJobDetailsModel distributionDetails,
@@ -54,6 +56,7 @@ public class JiraCloudIssueCreator extends JiraIssueCreator<IssueCreationRequest
     ) {
         super(
             jiraCloudChannelKey,
+            jiraCloudChannelLock,
             jiraCloudIssueCommenter,
             callbackInfoCreator,
             jiraErrorMessageUtility,
