@@ -16,18 +16,18 @@ class IssueTrackerLockTest {
 
     @Test
     void testAcquireLockSuccess() {
-        IssueTrackerChannelLock lock = new IssueTrackerChannelLock("test_lock", 10);
-        assertTrue(lock.getLock());
+        IssueTrackerChannelLock lock = new IssueTrackerChannelLock("test_lock");
+        assertTrue(lock.getLock(10));
     }
 
     @Test
     void testAcquireLockWait() throws InterruptedException {
-        IssueTrackerChannelLock lock = new IssueTrackerChannelLock("test_lock", 10);
+        IssueTrackerChannelLock lock = new IssueTrackerChannelLock("test_lock");
         ExecutorService executorService = Executors.newFixedThreadPool(2);
         AtomicInteger acquisitions = new AtomicInteger(0);
         CompletionService<Void> completionService = new ExecutorCompletionService<>(executorService);
-        completionService.submit(this.createRunnableThatSleeps(lock, acquisitions, 500));
-        completionService.submit(this.createRunnable(lock, acquisitions));
+        completionService.submit(this.createRunnableThatSleeps(lock, 10, acquisitions, 500));
+        completionService.submit(this.createRunnable(lock, 10, acquisitions));
 
         assertTrue(completionService.take().isDone());
         assertTrue(completionService.take().isDone());
@@ -36,12 +36,12 @@ class IssueTrackerLockTest {
 
     @Test
     void testAcquireLockTimeout() throws InterruptedException {
-        IssueTrackerChannelLock lock = new IssueTrackerChannelLock("test_lock", 1);
+        IssueTrackerChannelLock lock = new IssueTrackerChannelLock("test_lock");
         ExecutorService executorService = Executors.newFixedThreadPool(2);
         AtomicInteger acquisitions = new AtomicInteger(0);
         CompletionService<Void> completionService = new ExecutorCompletionService<>(executorService);
-        completionService.submit(this.createRunnableThatSleeps(lock, acquisitions, 2000));
-        completionService.submit(this.createRunnable(lock, acquisitions));
+        completionService.submit(this.createRunnableThatSleeps(lock, 1, acquisitions, 2000));
+        completionService.submit(this.createRunnable(lock, 1, acquisitions));
 
         assertTrue(completionService.take().isDone());
         assertTrue(completionService.take().isDone());
@@ -50,7 +50,7 @@ class IssueTrackerLockTest {
 
     @Test
     void testAcquireLockThreadInterrupted() throws InterruptedException {
-        IssueTrackerChannelLock lock = new IssueTrackerChannelLock("test_lock", 10);
+        IssueTrackerChannelLock lock = new IssueTrackerChannelLock("test_lock");
         ExecutorService executorService = Executors.newFixedThreadPool(2);
         AtomicInteger acquisitions = new AtomicInteger(0);
         CompletionService<Void> completionService = new ExecutorCompletionService<>(executorService);
@@ -59,16 +59,16 @@ class IssueTrackerLockTest {
             Thread.currentThread().interrupt();
             throw new InterruptedException();
         });
-        completionService.submit(this.createRunnableThatSleeps(lock, acquisitions, 500));
+        completionService.submit(this.createRunnableThatSleeps(lock, 10, acquisitions, 500));
 
         completionService.take();
         completionService.take();
         assertEquals(1, acquisitions.get());
     }
 
-    private Callable<Void> createRunnableThatSleeps(IssueTrackerChannelLock lock, AtomicInteger acquisitionCounter, int sleepMilliseconds) {
+    private Callable<Void> createRunnableThatSleeps(IssueTrackerChannelLock lock, int timeoutInSeconds, AtomicInteger acquisitionCounter, int sleepMilliseconds) {
         return () -> {
-            boolean acquired = lock.getLock();
+            boolean acquired = lock.getLock(timeoutInSeconds);
             if (acquired) {
                 acquisitionCounter.incrementAndGet();
             }
@@ -84,9 +84,9 @@ class IssueTrackerLockTest {
         };
     }
 
-    private Callable<Void> createRunnable(IssueTrackerChannelLock lock, AtomicInteger acquisitionCounter) {
+    private Callable<Void> createRunnable(IssueTrackerChannelLock lock, int timeoutInSeconds, AtomicInteger acquisitionCounter) {
         return () -> {
-            boolean acquired = lock.getLock();
+            boolean acquired = lock.getLock(timeoutInSeconds);
             if (acquired) {
                 acquisitionCounter.incrementAndGet();
                 lock.release();

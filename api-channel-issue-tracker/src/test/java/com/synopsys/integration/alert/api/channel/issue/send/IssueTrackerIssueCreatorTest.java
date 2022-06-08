@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.api.channel.issue.send;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Optional;
@@ -39,8 +40,9 @@ public class IssueTrackerIssueCreatorTest {
     void createIssueTrackerIssueTest() throws AlertException {
         TestIssueCreator issueCreator = new TestIssueCreator(commenter, callbackInfoCreator);
         IssueCreationModel issueCreationModel = IssueCreationModel.simple("Test title", null, List.of("comment 1", "comment 2"), null);
-        IssueTrackerIssueResponseModel<String> responseModel = issueCreator.createIssueTrackerIssue(issueCreationModel);
-        assertEquals(issueCreationModel.getTitle(), responseModel.getIssueTitle());
+        Optional<IssueTrackerIssueResponseModel<String>> responseModel = issueCreator.createIssueTrackerIssue(issueCreationModel);
+        assertTrue(responseModel.isPresent());
+        assertEquals(issueCreationModel.getTitle(), responseModel.get().getIssueTitle());
     }
 
     @Test
@@ -48,8 +50,9 @@ public class IssueTrackerIssueCreatorTest {
         TestIssueCreator issueCreator = new TestIssueCreator(commenter, callbackInfoCreator);
         ProjectIssueModel projectIssueModel = Mockito.mock(ProjectIssueModel.class);
         IssueCreationModel issueCreationModel = IssueCreationModel.project("Test title", null, List.of("example comment"), projectIssueModel);
-        IssueTrackerIssueResponseModel<String> responseModel = issueCreator.createIssueTrackerIssue(issueCreationModel);
-        assertEquals(issueCreationModel.getTitle(), responseModel.getIssueTitle());
+        Optional<IssueTrackerIssueResponseModel<String>> responseModel = issueCreator.createIssueTrackerIssue(issueCreationModel);
+        assertTrue(responseModel.isPresent());
+        assertEquals(issueCreationModel.getTitle(), responseModel.get().getIssueTitle());
     }
 
     private static class TestIssueCreator extends IssueTrackerIssueCreator<String> {
