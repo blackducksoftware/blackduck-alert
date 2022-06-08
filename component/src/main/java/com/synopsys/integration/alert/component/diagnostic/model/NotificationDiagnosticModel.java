@@ -2,9 +2,9 @@ package com.synopsys.integration.alert.component.diagnostic.model;
 
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
-public class NotificationDiagnosticModel extends AlertSerializableModel implements DiagnosticComponentModel {
+public class NotificationDiagnosticModel extends AlertSerializableModel {
     private static final long serialVersionUID = -6054332942386217935L;
-    
+
     private final Long numberOfNotifications;
     private final Long numberOfNotificationsProcessed;
     private final Long numberOfNotificationsUnprocessed;

@@ -1,10 +1,12 @@
 package com.synopsys.integration.alert.component.diagnostic.model;
 
+import java.util.Optional;
+
 import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
-public class AuditDiagnosticModel extends AlertSerializableModel implements DiagnosticComponentModel {
+public class AuditDiagnosticModel extends AlertSerializableModel {
     private static final long serialVersionUID = 6608629673526467492L;
 
     public static final String NO_AUDIT_CONTENT_MESSAGE = "No audit content found";
@@ -39,7 +41,7 @@ public class AuditDiagnosticModel extends AlertSerializableModel implements Diag
         return numberOfAuditEntriesPending;
     }
 
-    public String getAverageAuditTime() {
-        return averageAuditTime;
+    public Optional<String> getAverageAuditTime() {
+        return Optional.ofNullable(averageAuditTime);
     }
 }
