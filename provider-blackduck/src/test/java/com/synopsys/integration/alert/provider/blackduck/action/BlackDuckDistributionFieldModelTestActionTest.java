@@ -16,27 +16,45 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.api.common.model.errors.FieldStatusSeverity;
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
+import com.synopsys.integration.alert.api.provider.state.StatefulProvider;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckSystemValidator;
 import com.synopsys.integration.alert.test.common.TestTags;
+import com.synopsys.integration.blackduck.http.client.ApiTokenBlackDuckHttpClient;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.rest.response.DefaultResponse;
 
-public class BlackDuckDistributionFieldModelTestActionTest {
+class BlackDuckDistributionFieldModelTestActionTest {
     private static final String PROJECT_1_HREF = "href";
     private static final String PROJECT_2_HREF = "project 2 href";
     private static final String PROJECT_3_HREF = "project 3 href";
     private static final String PROJECT_4_HREF = "project 4 href";
 
     @Test
-    public void testConfigWithOnlyProjectVersionNamePatternTest() throws IntegrationException {
+    void testCannotConnectToProvider() throws IntegrationException {
         FieldUtility fieldUtility = createFieldUtilityData(null, "1.0.*");
-        BlackDuckDistributionFieldModelTestAction testAction = createTestAction();
+        BlackDuckDistributionFieldModelTestAction testAction = createTestAction(false);
+        MessageResult messageResult = testAction.testConfig(null, null, fieldUtility);
+
+        assertNotNull(messageResult);
+        assertTrue(messageResult.hasErrors(), messageResult.getFieldStatusesBySeverity(FieldStatusSeverity.ERROR).toString());
+        assertFalse(messageResult.hasWarnings(), messageResult.getFieldStatusesBySeverity(FieldStatusSeverity.WARNING).toString());
+    }
+
+    @Test
+    void testConfigWithOnlyProjectVersionNamePatternTest() throws IntegrationException {
+        FieldUtility fieldUtility = createFieldUtilityData(null, "1.0.*");
+        BlackDuckDistributionFieldModelTestAction testAction = createTestAction(true);
         MessageResult messageResult = testAction.testConfig(null, null, fieldUtility);
 
         assertNotNull(messageResult);
@@ -45,9 +63,9 @@ public class BlackDuckDistributionFieldModelTestActionTest {
     }
 
     @Test
-    public void testConfigWithProjectVersionAndProjectNamePatternsTest() throws IntegrationException {
+    void testConfigWithProjectVersionAndProjectNamePatternsTest() throws IntegrationException {
         FieldUtility fieldUtility = createFieldUtilityData("na.*", "1.0.*");
-        BlackDuckDistributionFieldModelTestAction testAction = createTestAction();
+        BlackDuckDistributionFieldModelTestAction testAction = createTestAction(true);
         MessageResult messageResult = testAction.testConfig(null, null, fieldUtility);
 
         assertNotNull(messageResult);
@@ -56,9 +74,9 @@ public class BlackDuckDistributionFieldModelTestActionTest {
     }
 
     @Test
-    public void testConfigWithProjectVersionAndProjectNamePatternsNotMatchingTest() throws IntegrationException {
+    void testConfigWithProjectVersionAndProjectNamePatternsNotMatchingTest() throws IntegrationException {
         FieldUtility fieldUtility = createFieldUtilityData("fake*", "wrong");
-        BlackDuckDistributionFieldModelTestAction testAction = createTestAction();
+        BlackDuckDistributionFieldModelTestAction testAction = createTestAction(true);
         MessageResult messageResult = testAction.testConfig(null, null, fieldUtility);
 
         assertNotNull(messageResult);
@@ -68,9 +86,9 @@ public class BlackDuckDistributionFieldModelTestActionTest {
     }
 
     @Test
-    public void testConfigWithProjectVersionNamePatternNotMatchingTest() throws IntegrationException {
+    void testConfigWithProjectVersionNamePatternNotMatchingTest() throws IntegrationException {
         FieldUtility fieldUtility = createFieldUtilityData(null, "wrong");
-        BlackDuckDistributionFieldModelTestAction testAction = createTestAction();
+        BlackDuckDistributionFieldModelTestAction testAction = createTestAction(true);
         MessageResult messageResult = testAction.testConfig(null, null, fieldUtility);
 
         assertNotNull(messageResult);
@@ -80,9 +98,9 @@ public class BlackDuckDistributionFieldModelTestActionTest {
     }
 
     @Test
-    public void testConfigWithProjectNamePatternNotMatchingTest() throws IntegrationException {
+    void testConfigWithProjectNamePatternNotMatchingTest() throws IntegrationException {
         FieldUtility fieldUtility = createFieldUtilityData("fake*", null);
-        BlackDuckDistributionFieldModelTestAction testAction = createTestAction();
+        BlackDuckDistributionFieldModelTestAction testAction = createTestAction(true);
         MessageResult messageResult = testAction.testConfig(null, null, fieldUtility);
 
         assertNotNull(messageResult);
@@ -94,10 +112,10 @@ public class BlackDuckDistributionFieldModelTestActionTest {
     @Disabled
     @Test
     @Tag(TestTags.DEFAULT_PERFORMANCE)
-    public void verifyProjectNameVersionPatternCheckIsFasterWithMatchingProjectNamePatternTest() throws IntegrationException {
+    void verifyProjectNameVersionPatternCheckIsFasterWithMatchingProjectNamePatternTest() throws IntegrationException {
         FieldUtility fieldUtility = createFieldUtilityData(null, "0.0.*");
         FieldUtility fasterFieldUtility = createFieldUtilityData("project 2*", "0.0.*");
-        BlackDuckDistributionFieldModelTestAction testAction = createTestAction();
+        BlackDuckDistributionFieldModelTestAction testAction = createTestAction(true);
 
         long startTest1 = System.nanoTime();
         MessageResult messageResult = testAction.testConfig(null, null, fieldUtility);
@@ -113,10 +131,12 @@ public class BlackDuckDistributionFieldModelTestActionTest {
         assertTrue(fastTime < slowTime, "config with project name pattern should be faster: Fast time " + fastTime + " Slow time " + slowTime);
     }
 
-    private BlackDuckDistributionFieldModelTestAction createTestAction() {
+    private BlackDuckDistributionFieldModelTestAction createTestAction(boolean canConnectToProvider) throws IntegrationException {
         ProviderDataAccessor providerDataAccessor = createProviderDataAccessor();
         ConfigurationModelConfigurationAccessor configurationAccessor = createConfigurationAccessor();
-        return new BlackDuckDistributionFieldModelTestAction(providerDataAccessor, null, configurationAccessor);
+        BlackDuckSystemValidator blackDuckSystemValidator = new BlackDuckSystemValidator(null);
+        BlackDuckProvider blackDuckProvider = createBlackDuckProvider(canConnectToProvider);
+        return new BlackDuckDistributionFieldModelTestAction(providerDataAccessor, blackDuckProvider, configurationAccessor, blackDuckSystemValidator);
     }
 
     private ProviderDataAccessor createProviderDataAccessor() {
@@ -149,9 +169,25 @@ public class BlackDuckDistributionFieldModelTestActionTest {
     }
 
     private ConfigurationModelConfigurationAccessor createConfigurationAccessor() {
+        ConfigurationModel configurationModel = Mockito.mock(ConfigurationModel.class);
         ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
-        Mockito.when(configurationModelConfigurationAccessor.getConfigurationById(Mockito.anyLong())).thenReturn(Optional.empty());
+        Mockito.when(configurationModelConfigurationAccessor.getConfigurationById(Mockito.anyLong())).thenReturn(Optional.of(configurationModel));
         return configurationModelConfigurationAccessor;
+    }
+
+    private BlackDuckProvider createBlackDuckProvider(boolean canConnect) throws IntegrationException {
+        BlackDuckProvider blackDuckProvider = Mockito.mock(BlackDuckProvider.class);
+        StatefulProvider statefulProvider = Mockito.mock(StatefulProvider.class);
+        BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
+        ApiTokenBlackDuckHttpClient apiTokenBlackDuckHttpClient = Mockito.mock(ApiTokenBlackDuckHttpClient.class);
+        DefaultResponse httpResponse = Mockito.mock(DefaultResponse.class);
+        Mockito.when(blackDuckProvider.createStatefulProvider(Mockito.any())).thenReturn(statefulProvider);
+        Mockito.when(statefulProvider.getProperties()).thenReturn(blackDuckProperties);
+        Mockito.when(blackDuckProperties.createApiTokenBlackDuckHttpClient(Mockito.any())).thenReturn(apiTokenBlackDuckHttpClient);
+        Mockito.when(httpResponse.isStatusCodeSuccess()).thenReturn(canConnect);
+        Mockito.when(apiTokenBlackDuckHttpClient.attemptAuthentication()).thenReturn(httpResponse);
+        Mockito.when(blackDuckProperties.getBlackDuckUrl()).thenReturn(Optional.of("https://synopsys.com"));
+        return blackDuckProvider;
     }
 
     private FieldUtility createFieldUtilityData(String projectNamePattern, String projectVersionNamePattern) {

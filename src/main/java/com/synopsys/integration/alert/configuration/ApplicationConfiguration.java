@@ -96,6 +96,7 @@ public class ApplicationConfiguration {
         return threadPoolTaskScheduler;
     }
 
+    //TODO: Required during 6.11.0 performance investigation but should be removed in the future in favor of a thread pool
     @Bean
     public TaskExecutor taskExecutor() {
         return new SyncTaskExecutor();

@@ -8,6 +8,7 @@
 package com.synopsys.integration.alert.provider.blackduck.validator;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,10 +17,12 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.generated.view.RoleAssignmentView;
 import com.synopsys.integration.blackduck.api.generated.view.UserView;
+import com.synopsys.integration.blackduck.http.client.ApiTokenBlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.Slf4jIntLogger;
+import com.synopsys.integration.rest.response.Response;
 
 public class BlackDuckApiTokenValidator {
     public static final String ROLE_NAME_GLOBAL_PROJECT_VIEWER = "Global Project Viewer";
@@ -44,12 +47,18 @@ public class BlackDuckApiTokenValidator {
         this.blackDuckProperties = blackDuckProperties;
     }
 
+    public Response attemptAuthentication() throws IntegrationException {
+        Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
+        ApiTokenBlackDuckHttpClient apiTokenBlackDuckHttpClient = blackDuckProperties.createApiTokenBlackDuckHttpClient(intLogger);
+        return apiTokenBlackDuckHttpClient.attemptAuthentication();
+    }
+
     public boolean isApiTokenValid() {
         Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
         return blackDuckProperties.createBlackDuckHttpClientAndLogErrors(logger)
-                   .map(httpClient -> blackDuckProperties.createBlackDuckServicesFactory(httpClient, intLogger))
-                   .map(this::hasPermittedRole)
-                   .orElse(false);
+            .map(httpClient -> blackDuckProperties.createBlackDuckServicesFactory(httpClient, intLogger))
+            .map(this::hasPermittedRole)
+            .orElse(false);
     }
 
     private boolean hasPermittedRole(BlackDuckServicesFactory blackDuckServicesFactory) {
@@ -65,19 +74,12 @@ public class BlackDuckApiTokenValidator {
         }
 
         try {
-            List<RoleAssignmentView> allRolesForCurrentUser = blackDuckApiClient.getAllResponses(currentUser.metaRolesLink());
-            return allRolesForCurrentUser
-                       .stream()
-                       .anyMatch(this::isPermittedRole);
+            Predicate<RoleAssignmentView> predicate = role -> PERMITTED_ROLE_NAMES.contains(role.getName());
+            return !blackDuckApiClient.getSomeMatchingResponses(currentUser.metaInheritedRolesLink(), predicate, 1).isEmpty();
         } catch (IntegrationException integrationException) {
             logger.error("Failed to GET the currently authenticated Black Duck user's roles", integrationException);
         }
         return false;
-    }
-
-    private boolean isPermittedRole(RoleAssignmentView role) {
-        String roleName = role.getName();
-        return PERMITTED_ROLE_NAMES.contains(roleName);
     }
 
 }

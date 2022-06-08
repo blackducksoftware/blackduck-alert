@@ -310,6 +310,8 @@ Remove the stack and then re-deploy the stack. The steps in the upgrade procedur
 
 ### Upgrade
 
+Note: Alert only supports upgrading from 2 major versions of Alert prior to the current release.
+
 1. Run `docker stack rm <STACK_NAME>` replacing <STACK_NAME> with the name of the stack to be used in the deployment.
 2. Follow the [Installation](#installation) instructions.
 

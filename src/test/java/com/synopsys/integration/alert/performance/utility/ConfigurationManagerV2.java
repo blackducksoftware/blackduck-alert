@@ -25,6 +25,7 @@ import com.synopsys.integration.alert.common.rest.model.JobPagedModel;
 import com.synopsys.integration.alert.common.rest.model.JobProviderProjectFieldModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.synopsys.integration.blackduck.service.model.ProjectVersionWrapper;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
@@ -57,7 +58,8 @@ public class ConfigurationManagerV2 {
             String testResponseString = alertRequestUtility
                 .executePostRequest(String.format("%s/test", apiConfigurationPath), requestBody, "Testing the global configuration failed.");
             ValidationResponseModel testResponse = gson.fromJson(testResponseString, ValidationResponseModel.class);
-            if (testResponse.hasErrors()) {
+            if (testResponse.hasErrors() && !ValidationResponseModel.VALIDATION_SUCCESS_MESSAGE.equals(validationResponse.getMessage())) {
+                intLogger.error(String.format("Testing the global config model error message: %s", validationResponse.getMessage()));
                 intLogger.error(String.format("Testing the global config model failed. Error: %s", validationResponse.getErrors()));
                 return Optional.empty();
             }
@@ -73,7 +75,26 @@ public class ConfigurationManagerV2 {
     }
 
     public String createJob(Map<String, FieldValueModel> channelFields, String jobName, String blackDuckProviderId, String blackDuckProjectName) throws IntegrationException {
-        return createJob(channelFields, jobName, blackDuckProviderId, blackDuckProjectName,
+        JobProviderProjectFieldModel providerProjectModel = new JobProviderProjectFieldModel(blackDuckProjectName, "href", false);
+        return createJob(channelFields, jobName, blackDuckProviderId, List.of(providerProjectModel),
+            List.of(
+                NotificationType.BOM_EDIT,
+                NotificationType.POLICY_OVERRIDE,
+                NotificationType.RULE_VIOLATION,
+                NotificationType.RULE_VIOLATION_CLEARED,
+                NotificationType.VULNERABILITY
+            )
+        );
+    }
+
+    public String createJob(Map<String, FieldValueModel> channelFields, String jobName, String blackDuckProviderId, List<ProjectVersionWrapper> projectVersionWrappers)
+        throws IntegrationException {
+        List<JobProviderProjectFieldModel> providerProjectModels = projectVersionWrappers
+            .stream()
+            .map(ProjectVersionWrapper::getProjectView)
+            .map(projectView -> new JobProviderProjectFieldModel(projectView.getName(), projectView.getHref().toString(), false))
+            .collect(Collectors.toList());
+        return createJob(channelFields, jobName, blackDuckProviderId, providerProjectModels,
             List.of(
                 NotificationType.BOM_EDIT,
                 NotificationType.POLICY_OVERRIDE,
@@ -88,18 +109,22 @@ public class ConfigurationManagerV2 {
         Map<String, FieldValueModel> channelFields,
         String jobName,
         String blackDuckProviderId,
-        String blackDuckProjectName,
+        List<JobProviderProjectFieldModel> providerProjectModel,
         List<NotificationType> notificationTypes
     ) throws IntegrationException {
         List<String> notificationTypeNames = notificationTypes.stream()
             .map(Enum::name)
+            .collect(Collectors.toList());
+        List<String> blackDuckProjectNames = providerProjectModel
+            .stream()
+            .map(JobProviderProjectFieldModel::getName)
             .collect(Collectors.toList());
         Map<String, FieldValueModel> providerKeyToValues = new HashMap<>();
         providerKeyToValues.put(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID, new FieldValueModel(List.of(blackDuckProviderId), true));
         providerKeyToValues.put(ProviderDescriptor.KEY_NOTIFICATION_TYPES, new FieldValueModel(notificationTypeNames, true));
         providerKeyToValues.put(ProviderDescriptor.KEY_PROCESSING_TYPE, new FieldValueModel(List.of(ProcessingType.DEFAULT.name()), true));
         providerKeyToValues.put(ProviderDescriptor.KEY_FILTER_BY_PROJECT, new FieldValueModel(List.of("true"), true));
-        providerKeyToValues.put(ProviderDescriptor.KEY_CONFIGURED_PROJECT, new FieldValueModel(List.of(blackDuckProjectName), true));
+        providerKeyToValues.put(ProviderDescriptor.KEY_CONFIGURED_PROJECT, new FieldValueModel(blackDuckProjectNames, true));
         FieldModel jobProviderConfiguration = new FieldModel(blackDuckProviderKey, ConfigContextEnum.DISTRIBUTION.name(), providerKeyToValues);
 
         FieldModel jobConfiguration = new FieldModel(channelKey, ConfigContextEnum.DISTRIBUTION.name(), channelFields);
@@ -107,7 +132,37 @@ public class ConfigurationManagerV2 {
         JobFieldModel jobFieldModel = new JobFieldModel(
             null,
             Set.of(jobConfiguration, jobProviderConfiguration),
-            List.of(new JobProviderProjectFieldModel(blackDuckProjectName, "href", false))
+            providerProjectModel
+        );
+
+        String jobConfigBody = gson.toJson(jobFieldModel);
+
+        alertRequestUtility.executePostRequest("/api/configuration/job/validate", jobConfigBody, String.format("Validating the Job %s failed.", jobName));
+        alertRequestUtility.executePostRequest("/api/configuration/job/test", jobConfigBody, String.format("Testing the Job %s failed.", jobName));
+        String creationResponse = alertRequestUtility.executePostRequest("/api/configuration/job", jobConfigBody, String.format("Could not create the Job %s.", jobName));
+
+        JsonObject jsonObject = gson.fromJson(creationResponse, JsonObject.class);
+        return jsonObject.get("jobId").getAsString();
+    }
+
+    public String createPolicyViolationJob(
+        Map<String, FieldValueModel> channelFields,
+        String jobName,
+        String blackDuckProviderId
+    ) throws IntegrationException {
+        Map<String, FieldValueModel> providerKeyToValues = new HashMap<>();
+        providerKeyToValues.put(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID, new FieldValueModel(List.of(blackDuckProviderId), true));
+        providerKeyToValues.put(ProviderDescriptor.KEY_NOTIFICATION_TYPES, new FieldValueModel(List.of(NotificationType.RULE_VIOLATION.name()), true));
+        providerKeyToValues.put(ProviderDescriptor.KEY_PROCESSING_TYPE, new FieldValueModel(List.of(ProcessingType.DEFAULT.name()), true));
+        providerKeyToValues.put(ProviderDescriptor.KEY_FILTER_BY_PROJECT, new FieldValueModel(List.of("false"), true));
+        FieldModel jobProviderConfiguration = new FieldModel(blackDuckProviderKey, ConfigContextEnum.DISTRIBUTION.name(), providerKeyToValues);
+
+        FieldModel jobConfiguration = new FieldModel(channelKey, ConfigContextEnum.DISTRIBUTION.name(), channelFields);
+
+        JobFieldModel jobFieldModel = new JobFieldModel(
+            null,
+            Set.of(jobConfiguration, jobProviderConfiguration),
+            List.of()
         );
 
         String jobConfigBody = gson.toJson(jobFieldModel);

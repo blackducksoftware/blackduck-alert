@@ -1,6 +1,8 @@
 package com.synopsys.integration.alert.startup.component;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.spy;
 
 import java.io.IOException;
 import java.util.List;
@@ -22,17 +24,22 @@ import com.synopsys.integration.alert.component.users.UserSystemValidator;
 import com.synopsys.integration.alert.database.system.DefaultSystemMessageAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckApiTokenValidator;
 import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckSystemValidator;
 import com.synopsys.integration.alert.test.common.OutputLogger;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
+import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.rest.credentials.Credentials;
 import com.synopsys.integration.rest.credentials.CredentialsBuilder;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 import com.synopsys.integration.rest.proxy.ProxyInfoBuilder;
+import com.synopsys.integration.rest.response.Response;
 
 public class SystemValidatorTest {
     private static final String DEFAULT_CONFIG_NAME = "Default";
+    private static final String LOCALHOST = "https://localhost:443";
+
     private OutputLogger outputLogger;
 
     @BeforeEach
@@ -79,7 +86,7 @@ public class SystemValidatorTest {
     }
 
     @Test
-    public void testvalidateBlackDuckProviderNullURL() throws Exception {
+    public void testValidateBlackDuckProviderNullURL() throws Exception {
         long configId = 1L;
         BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
         Mockito.when(blackDuckProperties.getBlackDuckUrl()).thenReturn(Optional.empty());
@@ -102,12 +109,12 @@ public class SystemValidatorTest {
     }
 
     @Test
-    public void testvalidateBlackDuckProviderLocalhostURL() throws Exception {
+    public void testValidateBlackDuckProviderLocalhostURL() throws Exception {
         long configId = 1L;
         ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfoForHost(Mockito.anyString())).thenReturn(ProxyInfo.NO_PROXY_INFO);
         BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
-        Mockito.when(blackDuckProperties.getBlackDuckUrl()).thenReturn(Optional.of("https://localhost:443"));
+        Mockito.when(blackDuckProperties.getBlackDuckUrl()).thenReturn(Optional.of(LOCALHOST));
         Mockito.when(blackDuckProperties.getBlackDuckTimeout()).thenReturn(BlackDuckProperties.DEFAULT_TIMEOUT);
         Mockito.when(blackDuckProperties.getConfigName()).thenReturn(DEFAULT_CONFIG_NAME);
         Mockito.when(blackDuckProperties.getConfigId()).thenReturn(configId);
@@ -123,7 +130,10 @@ public class SystemValidatorTest {
 
         String localhostMessageType = BlackDuckSystemValidator.createProviderSystemMessageType(blackDuckProperties, SystemMessageType.BLACKDUCK_PROVIDER_LOCALHOST);
         BlackDuckSystemValidator blackDuckSystemValidator = new BlackDuckSystemValidator(defaultSystemMessageUtility);
-        blackDuckSystemValidator.validate(blackDuckProperties);
+        BlackDuckSystemValidator spiedBlackDuckSystemValidator = spy(blackDuckSystemValidator);
+        Mockito.doReturn(true).when(spiedBlackDuckSystemValidator).canConnect(Mockito.eq(blackDuckProperties), Mockito.any(BlackDuckApiTokenValidator.class));
+        spiedBlackDuckSystemValidator.validate(blackDuckProperties);
+
         Mockito.verify(defaultSystemMessageUtility)
             .addSystemMessage(Mockito.eq(String.format(BlackDuckSystemValidator.BLACKDUCK_LOCALHOST_ERROR_FORMAT, DEFAULT_CONFIG_NAME)), Mockito.eq(SystemMessageSeverity.WARNING), Mockito.eq(localhostMessageType));
     }
@@ -134,7 +144,7 @@ public class SystemValidatorTest {
         ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfoForHost(Mockito.anyString())).thenReturn(ProxyInfo.NO_PROXY_INFO);
         BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
-        Mockito.when(blackDuckProperties.getBlackDuckUrl()).thenReturn(Optional.of("https://localhost:443/alert"));
+        Mockito.when(blackDuckProperties.getBlackDuckUrl()).thenReturn(Optional.of(LOCALHOST));
         Mockito.when(blackDuckProperties.getApiToken()).thenReturn("Test Api Key");
         Mockito.when(blackDuckProperties.getBlackDuckTimeout()).thenReturn(BlackDuckProperties.DEFAULT_TIMEOUT);
         Mockito.when(blackDuckProperties.getConfigName()).thenReturn(DEFAULT_CONFIG_NAME);
@@ -154,7 +164,10 @@ public class SystemValidatorTest {
         String connectivityMessageType = BlackDuckSystemValidator.createProviderSystemMessageType(blackDuckProperties, SystemMessageType.BLACKDUCK_PROVIDER_CONNECTIVITY);
 
         BlackDuckSystemValidator blackDuckSystemValidator = new BlackDuckSystemValidator(defaultSystemMessageUtility);
-        blackDuckSystemValidator.validate(blackDuckProperties);
+        BlackDuckSystemValidator spiedBlackDuckSystemValidator = spy(blackDuckSystemValidator);
+        Mockito.doReturn(false).when(spiedBlackDuckSystemValidator).canConnect(Mockito.eq(blackDuckProperties), Mockito.any(BlackDuckApiTokenValidator.class));
+        spiedBlackDuckSystemValidator.validate(blackDuckProperties);
+
         Mockito.verify(defaultSystemMessageUtility)
             .addSystemMessage(Mockito.eq(String.format(BlackDuckSystemValidator.BLACKDUCK_LOCALHOST_ERROR_FORMAT, DEFAULT_CONFIG_NAME)), Mockito.eq(SystemMessageSeverity.WARNING), Mockito.eq(localhostMessageType));
         Mockito.verify(defaultSystemMessageUtility)
@@ -182,7 +195,10 @@ public class SystemValidatorTest {
         Mockito.when(statefulProvider.getProperties()).thenReturn(blackDuckProperties);
 
         BlackDuckSystemValidator blackDuckSystemValidator = new BlackDuckSystemValidator(defaultSystemMessageUtility);
-        blackDuckSystemValidator.validate(blackDuckProperties);
+        BlackDuckSystemValidator spiedBlackDuckSystemValidator = spy(blackDuckSystemValidator);
+        Mockito.doReturn(true).when(spiedBlackDuckSystemValidator).canConnect(Mockito.eq(blackDuckProperties), Mockito.any(BlackDuckApiTokenValidator.class));
+        spiedBlackDuckSystemValidator.validate(blackDuckProperties);
+
         Mockito.verify(defaultSystemMessageUtility, Mockito.times(0)).addSystemMessage(Mockito.anyString(), Mockito.any(SystemMessageSeverity.class), Mockito.any(SystemMessageType.class));
     }
 
@@ -223,4 +239,86 @@ public class SystemValidatorTest {
         Mockito.verify(defaultSystemMessageUtility, Mockito.times(0)).addSystemMessage(Mockito.anyString(), Mockito.any(SystemMessageSeverity.class), Mockito.any(SystemMessageType.class));
     }
 
+    @Test
+    public void testCanConnectTrue() throws IOException, IntegrationException {
+        BlackDuckProperties blackDuckProperties = createMockBlackDuckProperties(Optional.of(LOCALHOST));
+
+        DefaultSystemMessageAccessor defaultSystemMessageUtility = Mockito.mock(DefaultSystemMessageAccessor.class);
+        BlackDuckSystemValidator blackDuckSystemValidator = new BlackDuckSystemValidator(defaultSystemMessageUtility);
+
+        Response canConnectResponse = Mockito.mock(Response.class);
+        Mockito.when(canConnectResponse.isStatusCodeSuccess()).thenReturn(true);
+
+        BlackDuckApiTokenValidator spiedBlackDuckApiTokenValidator = spy(new BlackDuckApiTokenValidator(blackDuckProperties));
+        Mockito.doReturn(canConnectResponse).when(spiedBlackDuckApiTokenValidator).attemptAuthentication();
+
+        boolean canConnectResult = blackDuckSystemValidator.canConnect(blackDuckProperties, spiedBlackDuckApiTokenValidator);
+
+        assertTrue(canConnectResult);
+        assertTrue(outputLogger.isLineContainingText("Attempting connection to " + LOCALHOST));
+        assertTrue(outputLogger.isLineContainingText("Successfully connected to " + LOCALHOST));
+    }
+
+    @Test
+    public void testCanConnectFalse() throws IOException, IntegrationException {
+        int httpResponseCode = 409;
+        BlackDuckProperties blackDuckProperties = createMockBlackDuckProperties(Optional.of(LOCALHOST));
+
+        DefaultSystemMessageAccessor mockDefaultSystemMessageAccessor = Mockito.mock(DefaultSystemMessageAccessor.class);
+        BlackDuckSystemValidator blackDuckSystemValidator = new BlackDuckSystemValidator(mockDefaultSystemMessageAccessor);
+
+        Response mockResponse = Mockito.mock(Response.class);
+        Mockito.when(mockResponse.isStatusCodeSuccess()).thenReturn(false);
+        Mockito.when(mockResponse.getStatusCode()).thenReturn(httpResponseCode);
+
+        BlackDuckApiTokenValidator spiedBlackDuckApiTokenValidator = spy(new BlackDuckApiTokenValidator(blackDuckProperties));
+        Mockito.doReturn(mockResponse).when(spiedBlackDuckApiTokenValidator).attemptAuthentication();
+
+        boolean canConnectResult = blackDuckSystemValidator.canConnect(blackDuckProperties, spiedBlackDuckApiTokenValidator);
+
+        assertFalse(canConnectResult);
+        assertTrue(outputLogger.isLineContainingText(String.format("Failed to make connection to %s; http status code: %d", LOCALHOST, httpResponseCode)));
+    }
+
+    @Test
+    public void testCanConnectThrowException() throws IOException, IntegrationException {
+        BlackDuckProperties blackDuckProperties = createMockBlackDuckProperties(Optional.of(LOCALHOST));
+
+        DefaultSystemMessageAccessor mockDefaultSystemMessageAccessor = Mockito.mock(DefaultSystemMessageAccessor.class);
+        BlackDuckSystemValidator blackDuckSystemValidator = new BlackDuckSystemValidator(mockDefaultSystemMessageAccessor);
+
+        BlackDuckApiTokenValidator spiedBlackDuckApiTokenValidator = spy(new BlackDuckApiTokenValidator(blackDuckProperties));
+        Mockito.doThrow(IntegrationException.class).when(spiedBlackDuckApiTokenValidator).attemptAuthentication();
+
+        boolean canConnectResult = blackDuckSystemValidator.canConnect(blackDuckProperties, spiedBlackDuckApiTokenValidator);
+
+        assertFalse(canConnectResult);
+        assertTrue(outputLogger.isLineContainingText(String.format("Failed to make connection to %s; cause: ", LOCALHOST)));
+    }
+
+    @Test
+    public void testCanConnectNullBDUrl() throws IOException, IntegrationException {
+        BlackDuckProperties blackDuckProperties = createMockBlackDuckProperties(Optional.empty());
+
+        DefaultSystemMessageAccessor mockDefaultSystemMessageAccessor = Mockito.mock(DefaultSystemMessageAccessor.class);
+        BlackDuckSystemValidator blackDuckSystemValidator = new BlackDuckSystemValidator(mockDefaultSystemMessageAccessor);
+
+        BlackDuckApiTokenValidator spiedBlackDuckApiTokenValidator = spy(new BlackDuckApiTokenValidator(blackDuckProperties));
+        Mockito.doThrow(IntegrationException.class).when(spiedBlackDuckApiTokenValidator).attemptAuthentication();
+
+        boolean canConnectResult = blackDuckSystemValidator.canConnect(blackDuckProperties, spiedBlackDuckApiTokenValidator);
+
+        assertFalse(canConnectResult);
+        assertTrue(outputLogger.isLineContainingText("Black Duck URL not configured."));
+    }
+
+    private BlackDuckProperties createMockBlackDuckProperties(Optional<String> blackDuckUrl) {
+        BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
+        Mockito.when(blackDuckProperties.getBlackDuckUrl()).thenReturn(blackDuckUrl);
+        Mockito.when(blackDuckProperties.getBlackDuckTimeout()).thenReturn(BlackDuckProperties.DEFAULT_TIMEOUT);
+        Mockito.when(blackDuckProperties.getConfigName()).thenReturn(DEFAULT_CONFIG_NAME);
+        Mockito.when(blackDuckProperties.getConfigId()).thenReturn(1L);
+
+        return blackDuckProperties;
+    }
 }

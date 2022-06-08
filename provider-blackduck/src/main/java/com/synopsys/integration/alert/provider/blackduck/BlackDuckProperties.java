@@ -7,6 +7,8 @@
  */
 package com.synopsys.integration.alert.provider.blackduck;
 
+import static com.synopsys.integration.blackduck.configuration.BlackDuckServerConfigKeys.KEYS;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -26,6 +28,7 @@ import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfigBuilder;
+import com.synopsys.integration.blackduck.http.client.ApiTokenBlackDuckHttpClient;
 import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.log.IntLogger;
@@ -55,19 +58,19 @@ public class BlackDuckProperties extends ProviderProperties {
         this.alertProperties = alertProperties;
         this.proxyManager = proxyManager;
         this.url = fieldUtility
-                       .getString(BlackDuckDescriptor.KEY_BLACKDUCK_URL)
-                       .filter(StringUtils::isNotBlank)
-                       .orElse(null);
+            .getString(BlackDuckDescriptor.KEY_BLACKDUCK_URL)
+            .filter(StringUtils::isNotBlank)
+            .orElse(null);
         this.timeout = fieldUtility
-                           .getInteger(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT)
-                           .orElse(DEFAULT_TIMEOUT);
+            .getInteger(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT)
+            .orElse(DEFAULT_TIMEOUT);
         this.apiToken = fieldUtility.getStringOrNull(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY);
     }
 
     private static FieldUtility createFieldUtility(ConfigurationModel configurationModel) {
         return Optional.ofNullable(configurationModel)
-                   .map(config -> new FieldUtility(config.getCopyOfKeyToFieldMap()))
-                   .orElse(new FieldUtility(Map.of()));
+            .map(config -> new FieldUtility(config.getCopyOfKeyToFieldMap()))
+            .orElse(new FieldUtility(Map.of()));
     }
 
     public Optional<String> getBlackDuckUrl() {
@@ -146,7 +149,7 @@ public class BlackDuckProperties extends ProviderProperties {
     }
 
     public BlackDuckServerConfigBuilder createServerConfigBuilderWithoutAuthentication(IntLogger logger, int blackDuckTimeout) {
-        BlackDuckServerConfigBuilder blackDuckServerConfigBuilder = new BlackDuckServerConfigBuilder();
+        BlackDuckServerConfigBuilder blackDuckServerConfigBuilder = new BlackDuckServerConfigBuilder(KEYS.apiToken);
         String blackDuckUrl = getBlackDuckUrl().orElse("");
         blackDuckServerConfigBuilder.setProperties(createBlackDuckProperties(blackDuckUrl).entrySet());
         blackDuckServerConfigBuilder.setLogger(logger);
@@ -154,6 +157,10 @@ public class BlackDuckProperties extends ProviderProperties {
         blackDuckServerConfigBuilder.setUrl(blackDuckUrl);
 
         return blackDuckServerConfigBuilder;
+    }
+
+    public ApiTokenBlackDuckHttpClient createApiTokenBlackDuckHttpClient(IntLogger logger) throws AlertException {
+        return createBlackDuckServerConfig(logger).createApiTokenBlackDuckHttpClient(logger);
     }
 
     private Map<String, String> createBlackDuckProperties(String blackDuckUrl) {

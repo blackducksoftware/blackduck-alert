@@ -1,5 +1,7 @@
 package com.synopsys.integration.alert.performance.utility;
 
+import static com.synopsys.integration.blackduck.configuration.BlackDuckServerConfigKeys.KEYS;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,14 +23,26 @@ import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.bdio.model.Forge;
 import com.synopsys.integration.bdio.model.externalid.ExternalId;
+import com.synopsys.integration.blackduck.api.enumeration.PolicyRuleConditionOperatorType;
+import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionView;
+import com.synopsys.integration.blackduck.api.generated.enumeration.ProjectVersionDistributionType;
+import com.synopsys.integration.blackduck.api.generated.response.ComponentsView;
+import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionView;
+import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
+import com.synopsys.integration.blackduck.api.manual.temporary.component.ProjectRequest;
+import com.synopsys.integration.blackduck.api.manual.temporary.component.ProjectVersionRequest;
+import com.synopsys.integration.blackduck.api.manual.temporary.enumeration.ProjectVersionPhaseType;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfigBuilder;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+import com.synopsys.integration.blackduck.service.dataservice.ComponentService;
+import com.synopsys.integration.blackduck.service.dataservice.PolicyRuleService;
 import com.synopsys.integration.blackduck.service.dataservice.ProjectBomService;
 import com.synopsys.integration.blackduck.service.dataservice.ProjectService;
+import com.synopsys.integration.blackduck.service.model.PolicyRuleExpressionSetBuilder;
 import com.synopsys.integration.blackduck.service.model.ProjectVersionWrapper;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
@@ -66,7 +80,7 @@ public class BlackDuckProviderService {
         this.blackDuckServicesFactory = setupBlackDuckServicesFactory();
     }
 
-    public static final Supplier<ExternalId> getDefaultExternalIdSupplier() {
+    public static Supplier<ExternalId> getDefaultExternalIdSupplier() {
         return () -> {
             ExternalId commonsFileUploadExternalId = new ExternalId(Forge.MAVEN);
             commonsFileUploadExternalId.setGroup("commons-fileupload");
@@ -76,7 +90,7 @@ public class BlackDuckProviderService {
         };
     }
 
-    public static final Predicate<ProjectVersionComponentVersionView> getDefaultBomComponentFilter() {
+    public static Predicate<ProjectVersionComponentVersionView> getDefaultBomComponentFilter() {
         return (component) -> component.getComponentName().equals("Apache Commons FileUpload") && component.getComponentVersionName().equals("1.2.1");
     }
 
@@ -107,6 +121,123 @@ public class BlackDuckProviderService {
         projectBomService.addComponentToProjectVersion(externalId, projectVersionView);
     }
 
+    public void triggerBlackDuckNotificationForProjectVersion(
+        ProjectVersionView projectVersionView,
+        Supplier<ExternalId> externalIdSupplier,
+        Predicate<ProjectVersionComponentVersionView> componentFilter
+    ) throws IntegrationException {
+        setupBlackDuckServicesFactory();
+        BlackDuckApiClient blackDuckService = blackDuckServicesFactory.getBlackDuckApiClient();
+
+        List<ProjectVersionComponentVersionView> bomComponents = blackDuckService.getAllResponses(projectVersionView.metaComponentsLink());
+        Optional<ProjectVersionComponentVersionView> apacheCommonsFileUpload = bomComponents.stream()
+            .filter(componentFilter)
+            .findFirst();
+        if (apacheCommonsFileUpload.isPresent()) {
+            blackDuckService.delete(apacheCommonsFileUpload.get());
+            //Thread.currentThread().wait(1000);
+        }
+
+        ExternalId externalId = externalIdSupplier.get();
+
+        ProjectBomService projectBomService = blackDuckServicesFactory.createProjectBomService();
+        projectBomService.addComponentToProjectVersion(externalId, projectVersionView);
+    }
+
+    public PolicyRuleView createBlackDuckPolicyRuleView(String policyName, Supplier<ExternalId> externalIdSupplier) throws IntegrationException {
+        setupBlackDuckServicesFactory();
+        ComponentService componentService = blackDuckServicesFactory.createComponentService();
+
+        ExternalId externalId = externalIdSupplier.get();
+        ComponentsView searchResult = componentService.getSingleOrEmptyResult(externalId)
+            .orElseThrow(() -> new IntegrationException(String.format("Could not find the ComponentsView for component: %s", externalId.getName())));
+        ComponentVersionView componentVersionView = componentService.getComponentVersionView(searchResult)
+            .orElseThrow(() -> new IntegrationException(String.format("Could not find the ComponentVersionView for component: %s", searchResult.getComponentName())));
+
+        PolicyRuleExpressionSetBuilder builder = new PolicyRuleExpressionSetBuilder();
+        builder.addComponentVersionCondition(PolicyRuleConditionOperatorType.EQ, componentVersionView);
+        PolicyRuleExpressionView expressionSet = builder.createPolicyRuleExpressionView();
+
+        PolicyRuleView policyRuleView = new PolicyRuleView();
+        policyRuleView.setName(policyName);
+        policyRuleView.setEnabled(true);
+        policyRuleView.setOverridable(true);
+        policyRuleView.setExpression(expressionSet);
+
+        return policyRuleView;
+    }
+
+    public void deleteExistingBlackDuckPolicy(PolicyRuleView policyRuleView) throws IntegrationException {
+        setupBlackDuckServicesFactory();
+        PolicyRuleService policyRuleService = blackDuckServicesFactory.createPolicyRuleService();
+
+        policyRuleService.getPolicyRuleViewByName(policyRuleView.getName());
+        Optional<PolicyRuleView> policyRuleViewOptional = policyRuleService.getPolicyRuleViewByName(policyRuleView.getName());
+        if (policyRuleViewOptional.isPresent()) {
+            PolicyRuleView notificationPolicy = policyRuleViewOptional.get();
+            intLogger.info(String.format("Policy: %s already exists. Deleting the existing policy.", notificationPolicy.getName()));
+            BlackDuckApiClient blackDuckService = blackDuckServicesFactory.getBlackDuckApiClient();
+            blackDuckService.delete(notificationPolicy);
+        }
+    }
+
+    public void triggerBlackDuckPolicyNotification(String policyName, Supplier<ExternalId> externalIdSupplier) throws IntegrationException {
+        PolicyRuleView policyRuleView = createBlackDuckPolicyRuleView(policyName, externalIdSupplier);
+        deleteExistingBlackDuckPolicy(policyRuleView);
+
+        PolicyRuleService policyRuleService = blackDuckServicesFactory.createPolicyRuleService();
+
+        intLogger.info(String.format("Creating policy with the name: %s", policyRuleView.getName()));
+        policyRuleService.createPolicyRule(policyRuleView);
+    }
+
+    public ProjectVersionWrapper findOrCreateBlackDuckProjectAndVersion(String projectName, String projectVersionName) throws IntegrationException {
+        setupBlackDuckServicesFactory();
+        ProjectService projectService = blackDuckServicesFactory.createProjectService();
+
+        ProjectRequest projectRequest = new ProjectRequest();
+        projectRequest.setName(projectName);
+
+        ProjectVersionRequest projectVersionRequest = new ProjectVersionRequest();
+        projectVersionRequest.setVersionName(projectVersionName);
+        projectVersionRequest.setPhase(ProjectVersionPhaseType.DEVELOPMENT);
+        projectVersionRequest.setDistribution(ProjectVersionDistributionType.OPENSOURCE);
+
+        projectRequest.setVersionRequest(projectVersionRequest);
+
+        Optional<ProjectVersionWrapper> existingProjectVersion = projectService.getProjectVersion(projectRequest.getName(), projectVersionRequest.getVersionName());
+        if (existingProjectVersion.isPresent()) {
+            intLogger.info(String.format("Project: %s Version %s already exists", projectName, projectVersionName));
+            return existingProjectVersion.get();
+        }
+        intLogger.info(String.format("Creating project: %s", projectName));
+        return projectService.createProject(projectRequest);
+    }
+
+    public void deleteBlackDuckProjectAndVersion(String projectName, String projectVersionName) throws IntegrationException {
+        setupBlackDuckServicesFactory();
+        ProjectService projectService = blackDuckServicesFactory.createProjectService();
+
+        ProjectRequest projectRequest = new ProjectRequest();
+        projectRequest.setName(projectName);
+
+        ProjectVersionRequest projectVersionRequest = new ProjectVersionRequest();
+        projectVersionRequest.setVersionName(projectVersionName);
+        projectVersionRequest.setPhase(ProjectVersionPhaseType.DEVELOPMENT);
+        projectVersionRequest.setDistribution(ProjectVersionDistributionType.OPENSOURCE);
+
+        projectRequest.setVersionRequest(projectVersionRequest);
+
+        Optional<ProjectVersionWrapper> existingProjectVersion = projectService.getProjectVersion(projectRequest.getName(), projectVersionRequest.getVersionName());
+        if (existingProjectVersion.isPresent()) {
+            intLogger.info(String.format("Project: %s Version %s already exists", projectName, projectVersionName));
+            BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
+            blackDuckApiClient.delete(existingProjectVersion.get().getProjectVersionView());
+            blackDuckApiClient.delete(existingProjectVersion.get().getProjectView());
+            intLogger.info(String.format("Deleting project: %s", projectName));
+        }
+    }
+
     public String setupBlackDuck() {
         try {
             return findBlackDuckProvider();
@@ -122,9 +253,9 @@ public class BlackDuckProviderService {
 
         MultiFieldModel blackDuckConfigurations = gson.fromJson(response, MultiFieldModel.class);
         FieldModel blackDuckProviderConfiguration = blackDuckConfigurations.getFieldModels().stream()
-                                                        .filter(blackDuckConfiguration -> blackDuckConfiguration.getFieldValue("blackduck.url").filter(blackDuckProviderUrl::equals).isPresent())
-                                                        .findFirst()
-                                                        .orElseThrow(() -> new IntegrationException("Could not find the BlackDuck provider configuration."));
+            .filter(blackDuckConfiguration -> blackDuckConfiguration.getFieldValue("blackduck.url").filter(blackDuckProviderUrl::equals).isPresent())
+            .findFirst()
+            .orElseThrow(() -> new IntegrationException("Could not find the BlackDuck provider configuration."));
 
         String blackDuckProviderID = blackDuckProviderConfiguration.getId();
         String blackDuckConfigBody = gson.toJson(blackDuckProviderConfiguration);
@@ -159,7 +290,7 @@ public class BlackDuckProviderService {
     }
 
     private BlackDuckServicesFactory setupBlackDuckServicesFactory() {
-        BlackDuckServerConfigBuilder blackDuckServerConfigBuilder = new BlackDuckServerConfigBuilder();
+        BlackDuckServerConfigBuilder blackDuckServerConfigBuilder = new BlackDuckServerConfigBuilder(KEYS.apiToken);
         blackDuckServerConfigBuilder.setUrl(blackDuckProviderUrl)
             .setApiToken(blackDuckApiToken)
             .setTimeoutInSeconds(blackDuckTimeout)

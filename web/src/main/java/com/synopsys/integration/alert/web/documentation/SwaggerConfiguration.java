@@ -59,7 +59,7 @@ public class SwaggerConfiguration {
 
     private ApiInfo apiEndpointInfo() {
         return new ApiInfoBuilder()
-                   .title("BlackDuck Alert - REST API")
+                   .title("Synopsys Alert - REST API")
                    .description(
                        "The production REST endpoints used by the Alert UI."
                            + " Currently, these are all subject to change between versions."
