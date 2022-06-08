@@ -1,5 +1,7 @@
 package com.synopsys.integration.alert.component.diagnostic.database;
 
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,10 +30,7 @@ public class DefaultDiagnosticAccessor implements DiagnosticAccessor {
     public DiagnosticModel getDiagnosticInfo() {
         NotificationDiagnosticModel notificationDiagnosticModel = getNotificationDiagnosticInfo();
         AuditDiagnosticModel auditDiagnosticModel = getAuditDiagnosticInfo();
-        return new DiagnosticModel.Builder()
-            .notificationDiagnosticModel(notificationDiagnosticModel)
-            .auditDiagnosticModel(auditDiagnosticModel)
-            .build();
+        return new DiagnosticModel(LocalDateTime.now().toString(), notificationDiagnosticModel, auditDiagnosticModel);
     }
 
     private NotificationDiagnosticModel getNotificationDiagnosticInfo() {
