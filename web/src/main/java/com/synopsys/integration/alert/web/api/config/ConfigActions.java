@@ -220,6 +220,7 @@ public class ConfigActions extends AbstractConfigResourceActions {
         } else {
             status = HttpStatus.BAD_REQUEST;
             responseModel = ValidationResponseModel.fromStatusCollection("There were problems with the configuration", fieldStatuses);
+            logger.error("Validation error: {}", responseModel);
         }
         return new ValidationActionResponse(status, responseModel);
     }

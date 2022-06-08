@@ -74,23 +74,37 @@ public class BlackDuckGlobalConfigurationFieldModelValidatorTest {
 
     @Test
     public void invalidUrl() {
-        BlackDuckGlobalConfigurationFieldModelValidator blackDuckGlobalConfigurationValidator = new BlackDuckGlobalConfigurationFieldModelValidator(createDefaultConfigurationAccessor());
-        GlobalConfigurationValidatorAsserter globalConfigurationValidatorAsserter = new GlobalConfigurationValidatorAsserter(new BlackDuckProviderKey().getUniversalKey(), blackDuckGlobalConfigurationValidator, createDefaultKeyToValues());
+        BlackDuckGlobalConfigurationFieldModelValidator blackDuckGlobalConfigurationValidator = new BlackDuckGlobalConfigurationFieldModelValidator(
+            createDefaultConfigurationAccessor());
+        GlobalConfigurationValidatorAsserter globalConfigurationValidatorAsserter = new GlobalConfigurationValidatorAsserter(
+            new BlackDuckProviderKey().getUniversalKey(),
+            blackDuckGlobalConfigurationValidator,
+            createDefaultKeyToValues()
+        );
         globalConfigurationValidatorAsserter.assertInvalidValue(BlackDuckDescriptor.KEY_BLACKDUCK_URL, "badUrl");
     }
 
-    @Test
-    public void givesTimeoutWarning() {
-        BlackDuckGlobalConfigurationFieldModelValidator blackDuckGlobalConfigurationValidator = new BlackDuckGlobalConfigurationFieldModelValidator(createDefaultConfigurationAccessor());
-        GlobalConfigurationValidatorAsserter globalConfigurationValidatorAsserter = new GlobalConfigurationValidatorAsserter(new BlackDuckProviderKey().getUniversalKey(), blackDuckGlobalConfigurationValidator, createDefaultKeyToValues());
-        globalConfigurationValidatorAsserter.assertInvalidValue(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, "500", (fieldStatus) -> assertEquals(FieldStatusSeverity.WARNING, fieldStatus.getSeverity()));
-    }
+    //    @Test
+    //    public void givesTimeoutWarning() {
+    //        BlackDuckGlobalConfigurationFieldModelValidator blackDuckGlobalConfigurationValidator = new BlackDuckGlobalConfigurationFieldModelValidator(createDefaultConfigurationAccessor());
+    //        GlobalConfigurationValidatorAsserter globalConfigurationValidatorAsserter = new GlobalConfigurationValidatorAsserter(new BlackDuckProviderKey().getUniversalKey(), blackDuckGlobalConfigurationValidator, createDefaultKeyToValues());
+    //        globalConfigurationValidatorAsserter.assertInvalidValue(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, "500", (fieldStatus) -> assertEquals(FieldStatusSeverity.WARNING, fieldStatus.getSeverity()));
+    //    }
 
     @Test
     public void givesTimeoutError() {
-        BlackDuckGlobalConfigurationFieldModelValidator blackDuckGlobalConfigurationValidator = new BlackDuckGlobalConfigurationFieldModelValidator(createDefaultConfigurationAccessor());
-        GlobalConfigurationValidatorAsserter globalConfigurationValidatorAsserter = new GlobalConfigurationValidatorAsserter(new BlackDuckProviderKey().getUniversalKey(), blackDuckGlobalConfigurationValidator, createDefaultKeyToValues());
-        globalConfigurationValidatorAsserter.assertInvalidValue(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, "0", (fieldStatus) -> assertEquals(FieldStatusSeverity.ERROR, fieldStatus.getSeverity()));
+        BlackDuckGlobalConfigurationFieldModelValidator blackDuckGlobalConfigurationValidator = new BlackDuckGlobalConfigurationFieldModelValidator(
+            createDefaultConfigurationAccessor());
+        GlobalConfigurationValidatorAsserter globalConfigurationValidatorAsserter = new GlobalConfigurationValidatorAsserter(
+            new BlackDuckProviderKey().getUniversalKey(),
+            blackDuckGlobalConfigurationValidator,
+            createDefaultKeyToValues()
+        );
+        globalConfigurationValidatorAsserter.assertInvalidValue(
+            BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT,
+            "0",
+            (fieldStatus) -> assertEquals(FieldStatusSeverity.ERROR, fieldStatus.getSeverity())
+        );
     }
 
     @Test
