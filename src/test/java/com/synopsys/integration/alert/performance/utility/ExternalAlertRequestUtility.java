@@ -69,9 +69,8 @@ public class ExternalAlertRequestUtility implements AlertRequestUtility {
         Response response = client.execute(request);
         if (response.isStatusCodeError()) {
             intLogger.error(error);
-            if (response.getContentLength() > 0) {
-                intLogger.error(String.format("Error Response: %s", response.getContentString()));
-            }
+            String responseContent = response.getContentString();
+            intLogger.error(String.format("Error Response: %s", responseContent));
             response.throwExceptionForError();
         }
         return response.getContentString();
