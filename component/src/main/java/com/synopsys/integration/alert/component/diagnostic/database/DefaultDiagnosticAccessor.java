@@ -8,7 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.persistence.accessor.DiagnosticAccessor;
+import com.synopsys.integration.alert.component.diagnostic.model.AuditDiagnosticModel;
 import com.synopsys.integration.alert.component.diagnostic.model.DiagnosticModel;
+import com.synopsys.integration.alert.component.diagnostic.model.NotificationDiagnosticModel;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
 
@@ -26,23 +28,27 @@ public class DefaultDiagnosticAccessor implements DiagnosticAccessor {
     @Override
     @Transactional(readOnly = true)
     public DiagnosticModel getDiagnosticInfo() {
+        NotificationDiagnosticModel notificationDiagnosticModel = getNotificationDiagnosticInfo();
+        AuditDiagnosticModel auditDiagnosticModel = getAuditDiagnosticInfo();
+        return new DiagnosticModel(LocalDateTime.now().toString(), notificationDiagnosticModel, auditDiagnosticModel);
+    }
+
+    private NotificationDiagnosticModel getNotificationDiagnosticInfo() {
         long numberOfNotifications = notificationContentRepository.count();
         long numberOfNotificationsProcessed = notificationContentRepository.countByProcessed(true);
         long numberOfNotificationsUnprocessed = notificationContentRepository.countByProcessed(false);
+        return new NotificationDiagnosticModel(numberOfNotifications, numberOfNotificationsProcessed, numberOfNotificationsUnprocessed);
+    }
 
+    private AuditDiagnosticModel getAuditDiagnosticInfo() {
         long numberOfAuditEntriesSuccessful = auditEntryRepository.countByStatus(AuditEntryStatus.SUCCESS.name());
         long numberOfAuditEntriesFailed = auditEntryRepository.countByStatus(AuditEntryStatus.FAILURE.name());
         long numberOfAuditEntriesPending = auditEntryRepository.countByStatus(AuditEntryStatus.PENDING.name());
-
-        return new DiagnosticModel(
-            numberOfNotifications,
-            numberOfNotificationsProcessed,
-            numberOfNotificationsUnprocessed,
+        return new AuditDiagnosticModel(
             numberOfAuditEntriesSuccessful,
             numberOfAuditEntriesFailed,
             numberOfAuditEntriesPending,
-            LocalDateTime.now().toString(),
-            auditEntryRepository.getAverageAuditEntryCompletionTime().orElse(null)
+            auditEntryRepository.getAverageAuditEntryCompletionTime().orElse(AuditDiagnosticModel.NO_AUDIT_CONTENT_MESSAGE)
         );
     }
 }

@@ -30,7 +30,7 @@ import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationTyp
 
 @AlertIntegrationTest
 @Tag(TestTags.DEFAULT_INTEGRATION)
-public class NotificationContentRepositoryTestIT {
+class NotificationContentRepositoryTestIT {
     private static final BlackDuckProviderKey BLACK_DUCK_PROVIDER_KEY = new BlackDuckProviderKey();
 
     @Autowired
@@ -49,7 +49,7 @@ public class NotificationContentRepositoryTestIT {
 
     @Test
     @Transactional
-    public void findByProcessedFalseOrderByProviderCreationTimeAscTestIT() {
+    void findByProcessedFalseOrderByProviderCreationTimeAscTestIT() {
         // Create provider config (required for FK constraint)
         DescriptorConfigEntity providerConfig = createProviderConfig();
         Long providerConfigId = providerConfig.getId();
@@ -85,6 +85,22 @@ public class NotificationContentRepositoryTestIT {
         assertTime(firstElement, lastElement);
     }
 
+    @Test
+    @Transactional
+    void countByProcessedTest() {
+        DescriptorConfigEntity providerConfig = createProviderConfig();
+        Long providerConfigId = providerConfig.getId();
+
+        NotificationEntity entity1 = createNotification(providerConfigId, OffsetDateTime.now(), true);
+        NotificationEntity entity2 = createNotification(providerConfigId, OffsetDateTime.now(), false);
+        NotificationEntity entity3 = createNotification(providerConfigId, OffsetDateTime.now(), false);
+
+        notificationContentRepository.saveAll(List.of(entity1, entity2, entity3));
+
+        assertEquals(1, notificationContentRepository.countByProcessed(true));
+        assertEquals(2, notificationContentRepository.countByProcessed(false));
+    }
+
     private DescriptorConfigEntity createProviderConfig() {
         RegisteredDescriptorEntity providerDescriptor = registeredDescriptorRepository.findFirstByName(BLACK_DUCK_PROVIDER_KEY.getUniversalKey()).orElseThrow();
         ConfigContextEntity context = configContextRepository.findFirstByContext(ConfigContextEnum.GLOBAL.name()).orElseThrow();
@@ -93,6 +109,10 @@ public class NotificationContentRepositoryTestIT {
     }
 
     private NotificationEntity createNotification(Long providerConfigId, OffsetDateTime providerCreationTime) {
+        return createNotification(providerConfigId, providerCreationTime, false);
+    }
+
+    private NotificationEntity createNotification(Long providerConfigId, OffsetDateTime providerCreationTime, boolean processed) {
         return new NotificationEntity(
             OffsetDateTime.now(),
             BLACK_DUCK_PROVIDER_KEY.getUniversalKey(),
@@ -100,7 +120,7 @@ public class NotificationContentRepositoryTestIT {
             providerCreationTime,
             NotificationType.VULNERABILITY.name(),
             "{\"content\": {}}",
-            false
+            processed
         );
     }
 
