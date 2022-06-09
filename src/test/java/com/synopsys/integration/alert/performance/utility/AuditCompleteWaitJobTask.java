@@ -34,6 +34,7 @@ import com.synopsys.integration.blackduck.api.manual.component.VulnerabilityNoti
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
+import com.synopsys.integration.rest.exception.IntegrationRestException;
 import com.synopsys.integration.wait.WaitJobCondition;
 
 public class AuditCompleteWaitJobTask implements WaitJobCondition {
@@ -209,7 +210,7 @@ public class AuditCompleteWaitJobTask implements WaitJobCondition {
         }
         Duration duration = Duration.ofSeconds(Double.valueOf(averageAuditTimeSeconds.getAsDouble()).longValue());
         String durationFormatted = String.format("%sH:%sm:%ss", duration.toHoursPart(), duration.toMinutesPart(), duration.toSecondsPart());
-        intLogger.info(String.format("Performance: Average audit time: %s.", durationFormatted));
+        intLogger.info(String.format("Performance: Average audit time: %s", durationFormatted));
     }
 
     private Optional<Duration> calculateAuditDuration(AuditJobStatusModel auditJobStatusModel) {
@@ -225,12 +226,14 @@ public class AuditCompleteWaitJobTask implements WaitJobCondition {
 
     private Optional<DiagnosticModel> findDiagnosticsIfAvailable() throws IntegrationException {
         // Diagnostic information is unavailable prior to 6.11.0 Alert. When testing against external Alert servers prior to 6.11.0 this will ignore printing Diagnostic info.
-        String diagnosticResponse = alertRequestUtility.executeGetRequest("/api/diagnostic", DIAGNOSTIC_ERROR_RESPONSE_MESSAGE);
-        DiagnosticModel diagnosticModel = gson.fromJson(diagnosticResponse, DiagnosticModel.class);
-        if (diagnosticResponse.equals(DIAGNOSTIC_ERROR_RESPONSE_MESSAGE)) {
+        DiagnosticModel diagnosticModel;
+        try {
+            String diagnosticResponse = alertRequestUtility.executeGetRequest("/api/diagnostic", DIAGNOSTIC_ERROR_RESPONSE_MESSAGE);
+            diagnosticModel = gson.fromJson(diagnosticResponse, DiagnosticModel.class);
+        } catch (IntegrationRestException e) {
             return Optional.empty();
         }
-        return Optional.of(diagnosticModel);
+        return Optional.ofNullable(diagnosticModel);
     }
 
     private void logDiagnostics(DiagnosticModel diagnosticModel) {
