@@ -27,6 +27,9 @@ import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusMod
 import com.synopsys.integration.alert.common.rest.model.JobAuditModel;
 import com.synopsys.integration.alert.common.rest.model.NotificationConfig;
 import com.synopsys.integration.alert.common.util.DateUtils;
+import com.synopsys.integration.alert.component.diagnostic.model.AuditDiagnosticModel;
+import com.synopsys.integration.alert.component.diagnostic.model.DiagnosticModel;
+import com.synopsys.integration.alert.component.diagnostic.model.NotificationDiagnosticModel;
 import com.synopsys.integration.blackduck.api.manual.component.VulnerabilityNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.exception.IntegrationException;
@@ -35,6 +38,7 @@ import com.synopsys.integration.wait.WaitJobCondition;
 
 public class AuditCompleteWaitJobTask implements WaitJobCondition {
     private static final String AUDIT_ERROR_RESPONSE_MESSAGE = "Could not get the Alert audit entries.";
+    private static final String DIAGNOSTIC_ERROR_RESPONSE_MESSAGE = "Diagnostic unavailable";
 
     private final IntLogger intLogger;
     private final DateTimeFormatter dateTimeFormatter;
@@ -71,6 +75,9 @@ public class AuditCompleteWaitJobTask implements WaitJobCondition {
     }
 
     private boolean waitForNotificationToBeProcessedByAllJobs() throws IntegrationException {
+        Optional<DiagnosticModel> diagnosticModel = findDiagnosticsIfAvailable();
+        diagnosticModel.ifPresent(this::logDiagnostics);
+
         String allNotificationsCreatedResponse = alertRequestUtility.executeGetRequest(
             createAuditRequestString(0, 1, notificationType),
             AUDIT_ERROR_RESPONSE_MESSAGE
@@ -216,4 +223,30 @@ public class AuditCompleteWaitJobTask implements WaitJobCondition {
         return Optional.empty();
     }
 
+    private Optional<DiagnosticModel> findDiagnosticsIfAvailable() throws IntegrationException {
+        // Diagnostic information is unavailable prior to 6.11.0 Alert. When testing against external Alert servers prior to 6.11.0 this will ignore printing Diagnostic info.
+        String diagnosticResponse = alertRequestUtility.executeGetRequest("/api/diagnostic", DIAGNOSTIC_ERROR_RESPONSE_MESSAGE);
+        DiagnosticModel diagnosticModel = gson.fromJson(diagnosticResponse, DiagnosticModel.class);
+        if (diagnosticResponse.equals(DIAGNOSTIC_ERROR_RESPONSE_MESSAGE)) {
+            return Optional.empty();
+        }
+        return Optional.of(diagnosticModel);
+    }
+
+    private void logDiagnostics(DiagnosticModel diagnosticModel) {
+        NotificationDiagnosticModel notificationDiagnosticModel = diagnosticModel.getNotificationDiagnosticModel();
+        AuditDiagnosticModel auditDiagnosticModel = diagnosticModel.getAuditDiagnosticModel();
+
+        intLogger.info(String.format("Diagnostic Info: %s", diagnosticModel.getRequestTimestamp()));
+        intLogger.info("Performance: Notification Diagnostics");
+        intLogger.info(String.format("Total # Notifications: %s", notificationDiagnosticModel.getNumberOfNotifications()));
+        intLogger.info(String.format("Notifications Processed: %s", notificationDiagnosticModel.getNumberOfNotificationsProcessed()));
+        intLogger.info(String.format("Notifications Unprocessed: %s", notificationDiagnosticModel.getNumberOfNotificationsUnprocessed()));
+
+        intLogger.info("Performance: Audit Diagnostics");
+        intLogger.info(String.format("Audit Entries Successful: %s", auditDiagnosticModel.getNumberOfAuditEntriesSuccessful()));
+        intLogger.info(String.format("Audit Entries Failed: %s", auditDiagnosticModel.getNumberOfAuditEntriesFailed()));
+        intLogger.info(String.format("Audit Entries Pending: %s", auditDiagnosticModel.getNumberOfAuditEntriesPending()));
+        auditDiagnosticModel.getAverageAuditTime().ifPresent(auditTime -> intLogger.info(String.format("Average audit time: %s", auditTime)));
+    }
 }
