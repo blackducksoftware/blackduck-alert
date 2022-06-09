@@ -28,6 +28,7 @@ public enum TestPropertyKey {
     TEST_REALTIME_DIGEST("alert.digest.realtime.cron"),
 
     TEST_PERFORMANCE_BLACKDUCK_PROJECT_COUNT("alert.performance.blackduck.project.count"),
+    TEST_PERFORMANCE_BLACKDUCK_START_PROJECT_NUMBER("alert.performance.blackduck.start.project.number"),
     TEST_PERFORMANCE_ALERT_DISTRIBUTION_JOB_COUNT("alert.performance.alert.distribution.job.count"),
     TEST_PERFORMANCE_ALERT_SERVER_URL("alert.performance.alert.server.url"),
     TEST_PERFORMANCE_WAIT_TIMEOUT_SECONDS("alert.performance.wait.timeout.seconds"),
