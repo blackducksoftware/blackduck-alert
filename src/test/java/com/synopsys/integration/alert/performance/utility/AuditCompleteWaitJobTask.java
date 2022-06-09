@@ -214,9 +214,14 @@ public class AuditCompleteWaitJobTask implements WaitJobCondition {
     }
 
     private Optional<Duration> calculateAuditDuration(AuditJobStatusModel auditJobStatusModel) {
+        String timeSent = auditJobStatusModel.getTimeLastSent();
+        if (timeSent == null) {
+            intLogger.error(String.format("Could not find timeSent for job: %s", auditJobStatusModel.getJobId()));
+            return Optional.empty();
+        }
         try {
             OffsetDateTime timeCreated = DateUtils.parseDate(auditJobStatusModel.getTimeAuditCreated(), DateUtils.AUDIT_DATE_FORMAT);
-            OffsetDateTime timeLastSent = DateUtils.parseDate(auditJobStatusModel.getTimeLastSent(), DateUtils.AUDIT_DATE_FORMAT);
+            OffsetDateTime timeLastSent = DateUtils.parseDate(timeSent, DateUtils.AUDIT_DATE_FORMAT);
             return Optional.of(Duration.between(timeCreated, timeLastSent));
         } catch (ParseException e) {
             intLogger.error(e.toString());
