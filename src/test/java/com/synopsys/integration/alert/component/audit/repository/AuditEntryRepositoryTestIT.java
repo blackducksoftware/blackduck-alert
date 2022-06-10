@@ -18,26 +18,34 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @Transactional
 @AlertIntegrationTest
-public class AuditEntryRepositoryTestIT {
+class AuditEntryRepositoryTestIT {
     @Autowired
     private AuditEntryRepository auditEntryRepository;
 
+    @AfterEach
+    public void cleanup() {
+        auditEntryRepository.deleteAll();
+    }
+
     @Test
     @Transactional
-    public void findFirstByCommonConfigIdOrderByTimeLastSentDescTestIT() {
+    void findFirstByCommonConfigIdOrderByTimeLastSentDescTestIT() {
         UUID commonConfigId = UUID.randomUUID();
 
         OffsetDateTime leastRecent = OffsetDateTime.ofInstant(Instant.ofEpochMilli(100), ZoneOffset.UTC);
@@ -57,4 +65,59 @@ public class AuditEntryRepositoryTestIT {
         assertEquals(mostRecentEntity, foundEntity.get());
     }
 
+    @Test
+    @Transactional
+    void countByStatusTest() {
+        UUID commonConfigId = UUID.randomUUID();
+
+        AuditEntryEntity statusPending = new AuditEntryEntity(commonConfigId, null, null, AuditEntryStatus.PENDING.name(), null, null);
+        AuditEntryEntity statusSuccess1 = new AuditEntryEntity(commonConfigId, null, null, AuditEntryStatus.SUCCESS.name(), null, null);
+        AuditEntryEntity statusSuccess2 = new AuditEntryEntity(commonConfigId, null, null, AuditEntryStatus.SUCCESS.name(), null, null);
+        AuditEntryEntity statusFailure = new AuditEntryEntity(commonConfigId, null, null, AuditEntryStatus.FAILURE.name(), null, null);
+        auditEntryRepository.saveAll(List.of(statusPending, statusFailure, statusSuccess1, statusSuccess2));
+
+        assertEquals(1, auditEntryRepository.countByStatus(AuditEntryStatus.PENDING.name()));
+        assertEquals(2, auditEntryRepository.countByStatus(AuditEntryStatus.SUCCESS.name()));
+        assertEquals(1, auditEntryRepository.countByStatus(AuditEntryStatus.FAILURE.name()));
+    }
+
+    @Test
+    @Transactional
+    void getAverageAuditEntryCompletionTime() {
+        UUID commonConfigId = UUID.randomUUID();
+
+        OffsetDateTime startingTime = OffsetDateTime.now(ZoneOffset.UTC);
+        OffsetDateTime fiveSecondsOffset = startingTime.plusSeconds(5);
+        OffsetDateTime tenSecondsOffset = startingTime.plusSeconds(10);
+        OffsetDateTime fifteenSecondsOffset = startingTime.plusSeconds(15);
+
+        AuditEntryEntity entity1 = new AuditEntryEntity(commonConfigId, startingTime, fiveSecondsOffset, AuditEntryStatus.SUCCESS.name(), null, null);
+        AuditEntryEntity entity2 = new AuditEntryEntity(commonConfigId, startingTime, tenSecondsOffset, AuditEntryStatus.SUCCESS.name(), null, null);
+        AuditEntryEntity entity3 = new AuditEntryEntity(commonConfigId, startingTime, fifteenSecondsOffset, AuditEntryStatus.SUCCESS.name(), null, null);
+        auditEntryRepository.saveAll(List.of(entity1, entity2, entity3));
+
+        Optional<String> averageAuditEntryCompletionTime = auditEntryRepository.getAverageAuditEntryCompletionTime();
+        assertTrue(averageAuditEntryCompletionTime.isPresent());
+        assertEquals("00:00:10", averageAuditEntryCompletionTime.get());
+    }
+
+    @Test
+    @Transactional
+    void getAverageAuditEntryTimeNoEntities() {
+        Optional<String> averageAuditEntryCompletionTime = auditEntryRepository.getAverageAuditEntryCompletionTime();
+        assertTrue(averageAuditEntryCompletionTime.isEmpty());
+    }
+
+    @Test
+    @Transactional
+    void getAverageAuditEntryTimeUnsetNotifications() {
+        UUID commonConfigId = UUID.randomUUID();
+
+        OffsetDateTime startingTime = OffsetDateTime.now(ZoneOffset.UTC);
+        AuditEntryEntity entity = new AuditEntryEntity(commonConfigId, startingTime, null, AuditEntryStatus.PENDING.name(), null, null);
+        auditEntryRepository.save(entity);
+
+        Optional<String> averageAuditEntryCompletionTime = auditEntryRepository.getAverageAuditEntryCompletionTime();
+        assertTrue(averageAuditEntryCompletionTime.isEmpty());
+    }
 }
