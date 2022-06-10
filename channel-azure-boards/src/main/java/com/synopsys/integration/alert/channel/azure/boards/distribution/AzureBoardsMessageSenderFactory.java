@@ -43,7 +43,6 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
     private final Gson gson;
     private final IssueTrackerCallbackInfoCreator callbackInfoCreator;
     private final AzureBoardsChannelKey channelKey;
-    private final AzureBoardsChannelLock channelLock;
     private final AzureBoardsPropertiesFactory azureBoardsPropertiesFactory;
     private final ProxyManager proxyManager;
     private final AzureBoardsHttpExceptionMessageImprover exceptionMessageImprover;
@@ -54,7 +53,6 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
         Gson gson,
         IssueTrackerCallbackInfoCreator callbackInfoCreator,
         AzureBoardsChannelKey channelKey,
-        AzureBoardsChannelLock channelLock,
         AzureBoardsPropertiesFactory azureBoardsPropertiesFactory,
         ProxyManager proxyManager,
         AzureBoardsHttpExceptionMessageImprover exceptionMessageImprover,
@@ -63,7 +61,6 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
         this.gson = gson;
         this.callbackInfoCreator = callbackInfoCreator;
         this.channelKey = channelKey;
-        this.channelLock = channelLock;
         this.azureBoardsPropertiesFactory = azureBoardsPropertiesFactory;
         this.proxyManager = proxyManager;
         this.exceptionMessageImprover = exceptionMessageImprover;
@@ -119,7 +116,6 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
             exceptionMessageImprover
         );
         AzureBoardsIssueCreator creator = new AzureBoardsIssueCreator(channelKey,
-            channelLock,
             commenter,
             callbackInfoCreator,
             gson,

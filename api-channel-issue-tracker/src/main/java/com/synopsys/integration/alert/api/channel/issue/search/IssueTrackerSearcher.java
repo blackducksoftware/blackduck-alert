@@ -18,7 +18,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.synopsys.integration.alert.api.channel.issue.IssueTrackerChannelLock;
 import com.synopsys.integration.alert.api.channel.issue.convert.ProjectMessageToIssueModelTransformer;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueComponentUnknownVersionDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.IssuePolicyDetails;
@@ -39,8 +38,6 @@ import com.synopsys.integration.function.ThrowingSupplier;
 public class IssueTrackerSearcher<T extends Serializable> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final IssueTrackerChannelLock channelLock;
-
     private final ProjectIssueFinder<T> projectIssueFinder;
     private final ProjectVersionIssueFinder<T> projectVersionIssueFinder;
     private final ProjectVersionComponentIssueFinder<T> projectVersionComponentIssueFinder;
@@ -48,14 +45,12 @@ public class IssueTrackerSearcher<T extends Serializable> {
     private final ProjectMessageToIssueModelTransformer modelTransformer;
 
     public IssueTrackerSearcher(
-        IssueTrackerChannelLock channelLock,
         ProjectIssueFinder<T> projectIssueFinder,
         ProjectVersionIssueFinder<T> projectVersionIssueFinder,
         ProjectVersionComponentIssueFinder<T> projectVersionComponentIssueFinder,
         ExactIssueFinder<T> exactIssueFinder,
         ProjectMessageToIssueModelTransformer modelTransformer
     ) {
-        this.channelLock = channelLock;
         this.projectIssueFinder = projectIssueFinder;
         this.projectVersionIssueFinder = projectVersionIssueFinder;
         this.projectVersionComponentIssueFinder = projectVersionComponentIssueFinder;
@@ -64,19 +59,6 @@ public class IssueTrackerSearcher<T extends Serializable> {
     }
 
     public final List<ActionableIssueSearchResult<T>> findIssues(ProjectMessage projectMessage) throws AlertException {
-        try {
-            boolean acquiredLock = channelLock.getLock(IssueTrackerChannelLock.DEFAULT_TIMEOUT_SECONDS);
-            if (acquiredLock) {
-                return findIssuesForProject(projectMessage);
-            } else {
-                return List.of();
-            }
-        } finally {
-            channelLock.release();
-        }
-    }
-
-    private List<ActionableIssueSearchResult<T>> findIssuesForProject(ProjectMessage projectMessage) throws AlertException {
         ProviderDetails providerDetails = projectMessage.getProviderDetails();
         LinkableItem project = projectMessage.getProject();
 

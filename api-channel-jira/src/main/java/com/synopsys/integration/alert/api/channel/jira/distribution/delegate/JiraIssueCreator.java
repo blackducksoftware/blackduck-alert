@@ -11,7 +11,6 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.synopsys.integration.alert.api.channel.issue.IssueTrackerChannelLock;
 import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCallbackInfoCreator;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
@@ -55,7 +54,6 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
 
     protected JiraIssueCreator(
         IssueTrackerChannelKey channelKey,
-        IssueTrackerChannelLock channelLock,
         IssueTrackerIssueCommenter<String> commenter,
         IssueTrackerCallbackInfoCreator callbackInfoCreator,
         JiraErrorMessageUtility jiraErrorMessageUtility,
@@ -63,7 +61,7 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
         String issueCreatorDescriptorKey,
         IssueCategoryRetriever issueCategoryRetriever
     ) {
-        super(channelKey, channelLock, commenter, callbackInfoCreator);
+        super(channelKey, commenter, callbackInfoCreator);
         this.jiraErrorMessageUtility = jiraErrorMessageUtility;
         this.issuePropertiesManager = issuePropertiesManager;
         this.issueCreatorDescriptorKey = issueCreatorDescriptorKey;

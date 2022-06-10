@@ -128,7 +128,6 @@ public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory
         AzureBoardsProjectAndVersionIssueFinder projectAndVersionIssueFinder = new AzureBoardsProjectAndVersionIssueFinder(gson, issueDetailsCreator, workItemFinder);
         AzureBoardsComponentIssueFinder componentIssueFinder = new AzureBoardsComponentIssueFinder(gson, workItemFinder, issueDetailsCreator);
         IssueTrackerSearcher<Integer> azureBoardsSearcher = new IssueTrackerSearcher<>(
-            channelLock,
             projectAndVersionIssueFinder,
             projectAndVersionIssueFinder,
             componentIssueFinder,
@@ -150,7 +149,7 @@ public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory
             distributionDetails
         );
 
-        return new IssueTrackerProcessor<>(extractor, messageSender);
+        return new IssueTrackerProcessor<>(channelLock, extractor, messageSender);
     }
 
     private void installCustomFieldsIfNecessary(String organizationName, String projectName, String issueType, AzureProjectService projectService, AzureProcessService processService) throws AlertException {

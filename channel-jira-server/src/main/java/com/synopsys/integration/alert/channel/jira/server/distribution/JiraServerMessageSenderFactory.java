@@ -44,7 +44,6 @@ public class JiraServerMessageSenderFactory implements IssueTrackerMessageSender
 
     private final Gson gson;
     private final JiraServerChannelKey channelKey;
-    private final JiraServerChannelLock channelLock;
     private final JiraServerPropertiesFactory jiraServerPropertiesFactory;
     private final IssueTrackerCallbackInfoCreator callbackInfoCreator;
     private final IssueCategoryRetriever issueCategoryRetriever;
@@ -53,14 +52,12 @@ public class JiraServerMessageSenderFactory implements IssueTrackerMessageSender
     public JiraServerMessageSenderFactory(
         Gson gson,
         JiraServerChannelKey channelKey,
-        JiraServerChannelLock channelLock,
         JiraServerPropertiesFactory jiraServerPropertiesFactory,
         IssueTrackerCallbackInfoCreator callbackInfoCreator,
         IssueCategoryRetriever issueCategoryRetriever
     ) {
         this.gson = gson;
         this.channelKey = channelKey;
-        this.channelLock = channelLock;
         this.jiraServerPropertiesFactory = jiraServerPropertiesFactory;
         this.callbackInfoCreator = callbackInfoCreator;
         this.issueCategoryRetriever = issueCategoryRetriever;
@@ -103,7 +100,6 @@ public class JiraServerMessageSenderFactory implements IssueTrackerMessageSender
         JiraServerIssueTransitioner transitioner = new JiraServerIssueTransitioner(commenter, issueResponseCreator, distributionDetails, issueService);
         JiraServerIssueCreator creator = new JiraServerIssueCreator(
             channelKey,
-            channelLock,
             commenter,
             callbackInfoCreator,
             distributionDetails,

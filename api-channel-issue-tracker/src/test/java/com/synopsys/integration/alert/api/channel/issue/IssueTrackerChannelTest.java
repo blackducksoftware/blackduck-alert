@@ -27,7 +27,7 @@ class IssueTrackerChannelTest {
     void distributeMessagesTest() throws AlertException {
         IssueTrackerModelExtractor<String> modelExtractor = new IssueTrackerModelExtractor<>(createFormatter(), null);
         IssueTrackerMessageSender<String> messageSender = createMessageSender();
-        IssueTrackerProcessor<String> processor = new IssueTrackerProcessor<>(modelExtractor, messageSender);
+        IssueTrackerProcessor<String> processor = new IssueTrackerProcessor<>(new IssueTrackerChannelLock("channel_key_name"), modelExtractor, messageSender);
 
         IssueTrackerProcessorFactory<DistributionJobDetailsModel, String> processorFactory = x -> processor;
         IssueTrackerResponsePostProcessor postProcessor = new IssueTrackerResponsePostProcessor() {
@@ -69,8 +69,7 @@ class IssueTrackerChannelTest {
             protected void findAndPerformTransition(ExistingIssueDetails<String> existingIssueDetails, String transitionName) {
             }
         };
-        IssueTrackerChannelLock channelLock = new IssueTrackerChannelLock("channel_key");
-        IssueTrackerIssueCreator<String> creator = new IssueTrackerIssueCreator<>(null, channelLock, commenter, null) {
+        IssueTrackerIssueCreator<String> creator = new IssueTrackerIssueCreator<>(null, commenter, null) {
             @Override
             protected ExistingIssueDetails<String> createIssueAndExtractDetails(IssueCreationModel alertIssueCreationModel) {
                 return null;

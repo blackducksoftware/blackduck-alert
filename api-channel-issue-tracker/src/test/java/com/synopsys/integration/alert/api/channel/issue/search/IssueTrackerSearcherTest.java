@@ -8,7 +8,6 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.api.channel.issue.IssueTrackerChannelLock;
 import com.synopsys.integration.alert.api.channel.issue.convert.ProjectMessageToIssueModelTransformer;
 import com.synopsys.integration.alert.api.channel.issue.model.IssuePolicyDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueVulnerabilityDetails;
@@ -41,16 +40,14 @@ class IssueTrackerSearcherTest {
 
     @Test
     void findIssuesProject() throws AlertException {
-        IssueTrackerChannelLock channelLock = new IssueTrackerChannelLock("channel_key");
         ProjectMessage projectMessage = ProjectMessage.projectStatusInfo(PROVIDER_DETAILS, PROJECT_ITEM, ProjectOperation.CREATE);
-        IssueTrackerSearcher<String> searcher = new IssueTrackerSearcher<>(channelLock, null, null, null, null, modelTransformer);
+        IssueTrackerSearcher<String> searcher = new IssueTrackerSearcher<>(null, null, null, null, modelTransformer);
         List<ActionableIssueSearchResult<String>> foundIssues = searcher.findIssues(projectMessage);
         assertEquals(0, foundIssues.size());
     }
 
     @Test
     void findIssuesProjectBomDeleted() throws AlertException {
-        IssueTrackerChannelLock channelLock = new IssueTrackerChannelLock("channel_key");
         ProjectMessage projectMessage = ProjectMessage.projectStatusInfo(PROVIDER_DETAILS, PROJECT_ITEM, ProjectOperation.DELETE);
         ProjectIssueModel projectIssueModel = Mockito.mock(ProjectIssueModel.class);
         ProjectIssueSearchResult<String> projectIssueSearchResult = new ProjectIssueSearchResult<>(EXISTING_ISSUE_DETAILS, projectIssueModel);
@@ -58,7 +55,7 @@ class IssueTrackerSearcherTest {
         ProjectIssueFinder<String> projectIssueFinder = Mockito.mock(ProjectIssueFinder.class);
         Mockito.when(projectIssueFinder.findProjectIssues(PROVIDER_DETAILS, PROJECT_ITEM)).thenReturn(List.of(projectIssueSearchResult));
 
-        IssueTrackerSearcher<String> searcher = new IssueTrackerSearcher<>(channelLock, projectIssueFinder, null, null, null, modelTransformer);
+        IssueTrackerSearcher<String> searcher = new IssueTrackerSearcher<>(projectIssueFinder, null, null, null, modelTransformer);
         List<ActionableIssueSearchResult<String>> foundIssues = searcher.findIssues(projectMessage);
         assertEquals(1, foundIssues.size());
         assertSearchResult(foundIssues.get(0), projectIssueModel, ItemOperation.DELETE);
@@ -66,7 +63,6 @@ class IssueTrackerSearcherTest {
 
     @Test
     void findIssuesProjectVersion() throws AlertException {
-        IssueTrackerChannelLock channelLock = new IssueTrackerChannelLock("channel_key");
         ProjectMessage projectMessage = ProjectMessage.projectVersionStatusInfo(PROVIDER_DETAILS, PROJECT_ITEM, PROJECT_VERSION_ITEM, ProjectOperation.DELETE);
         ProjectIssueModel projectIssueModel = Mockito.mock(ProjectIssueModel.class);
         ProjectIssueSearchResult<String> projectIssueSearchResult = new ProjectIssueSearchResult<>(EXISTING_ISSUE_DETAILS, projectIssueModel);
@@ -75,7 +71,7 @@ class IssueTrackerSearcherTest {
         Mockito.when(projectVersionIssueFinder.findProjectVersionIssues(PROVIDER_DETAILS, PROJECT_ITEM, PROJECT_VERSION_ITEM))
             .thenReturn(List.of(projectIssueSearchResult));
 
-        IssueTrackerSearcher<String> searcher = new IssueTrackerSearcher<>(channelLock, null, projectVersionIssueFinder, null, null, modelTransformer);
+        IssueTrackerSearcher<String> searcher = new IssueTrackerSearcher<>(null, projectVersionIssueFinder, null, null, modelTransformer);
         List<ActionableIssueSearchResult<String>> foundIssues = searcher.findIssues(projectMessage);
         assertEquals(1, foundIssues.size());
         assertSearchResult(foundIssues.get(0), projectIssueModel, ItemOperation.DELETE);
@@ -83,7 +79,6 @@ class IssueTrackerSearcherTest {
 
     @Test
     void findIssuesComponentUpdate() throws AlertException {
-        IssueTrackerChannelLock channelLock = new IssueTrackerChannelLock("channel_key");
         BomComponentDetails bomComponentDetails = Mockito.mock(BomComponentDetails.class);
         ProjectMessage projectMessage = ProjectMessage.componentUpdate(PROVIDER_DETAILS, PROJECT_ITEM, PROJECT_VERSION_ITEM, List.of(bomComponentDetails));
         ProjectIssueModel projectIssueModel = Mockito.mock(ProjectIssueModel.class);
@@ -93,7 +88,7 @@ class IssueTrackerSearcherTest {
         Mockito.when(componentIssueFinder.findIssuesByComponent(PROVIDER_DETAILS, PROJECT_ITEM, PROJECT_VERSION_ITEM, bomComponentDetails))
             .thenReturn(List.of(projectIssueSearchResult));
 
-        IssueTrackerSearcher<String> searcher = new IssueTrackerSearcher<>(channelLock, null, null, componentIssueFinder, null, modelTransformer);
+        IssueTrackerSearcher<String> searcher = new IssueTrackerSearcher<>(null, null, componentIssueFinder, null, modelTransformer);
         List<ActionableIssueSearchResult<String>> foundIssues = searcher.findIssues(projectMessage);
         assertEquals(1, foundIssues.size());
         assertSearchResult(foundIssues.get(0), projectIssueModel, ItemOperation.UPDATE);
@@ -101,7 +96,6 @@ class IssueTrackerSearcherTest {
 
     @Test
     void findIssuesProjectIssueModel() throws AlertException {
-        IssueTrackerChannelLock channelLock = new IssueTrackerChannelLock("channel_key");
         BomComponentDetails bomComponentDetails = Mockito.mock(BomComponentDetails.class);
         ProjectMessage projectMessage = ProjectMessage.componentConcern(PROVIDER_DETAILS, PROJECT_ITEM, PROJECT_VERSION_ITEM, List.of(bomComponentDetails));
 
@@ -123,7 +117,7 @@ class IssueTrackerSearcherTest {
         ProjectMessageToIssueModelTransformer mockModelTransformer = Mockito.mock(ProjectMessageToIssueModelTransformer.class);
         Mockito.when(mockModelTransformer.convertToIssueModels(projectMessage)).thenReturn(List.of(projectIssueModel1, projectIssueModel2, projectIssueModel3));
 
-        IssueTrackerSearcher<String> searcher = new IssueTrackerSearcher<>(channelLock, null, null, null, exactIssueFinder, mockModelTransformer);
+        IssueTrackerSearcher<String> searcher = new IssueTrackerSearcher<>(null, null, null, exactIssueFinder, mockModelTransformer);
         List<ActionableIssueSearchResult<String>> foundIssues = searcher.findIssues(projectMessage);
         assertEquals(1, foundIssues.size());
         ActionableIssueSearchResult<String> foundIssue = foundIssues.get(0);

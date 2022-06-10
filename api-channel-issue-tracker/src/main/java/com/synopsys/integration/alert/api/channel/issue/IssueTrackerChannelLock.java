@@ -21,18 +21,18 @@ public class IssueTrackerChannelLock {
     public static final int DEFAULT_TIMEOUT_SECONDS = 1800;
     private static final int PERMITS = 1;
     private String lockName;
-    private long timeoutSeconds;
     private Semaphore lock;
-    
+
     public IssueTrackerChannelLock(String lockName) {
         this.lockName = lockName;
-        this.lock = new Semaphore(PERMITS, true);
+        this.lock = new Semaphore(PERMITS, false);
     }
 
     public boolean getLock(int timeoutSeconds) {
         boolean acquired = false;
         try {
-            acquired = this.lock.tryAcquire(timeoutSeconds, TimeUnit.SECONDS);
+            acquired = lock.tryAcquire(timeoutSeconds, TimeUnit.SECONDS);
+            logger.info("number of permits after acquired {}", lock.availablePermits());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } finally {
@@ -45,5 +45,6 @@ public class IssueTrackerChannelLock {
 
     public void release() {
         this.lock.release();
+        logger.info("number of permits after release {}", lock.availablePermits());
     }
 }

@@ -1,7 +1,6 @@
 package com.synopsys.integration.alert.api.channel.issue.send;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,7 +9,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.api.channel.issue.IssueTrackerChannelLock;
 import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCallbackInfoCreator;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerIssueResponseModel;
@@ -40,9 +38,8 @@ public class IssueTrackerIssueCreatorTest {
     void createIssueTrackerIssueTest() throws AlertException {
         TestIssueCreator issueCreator = new TestIssueCreator(commenter, callbackInfoCreator);
         IssueCreationModel issueCreationModel = IssueCreationModel.simple("Test title", null, List.of("comment 1", "comment 2"), null);
-        Optional<IssueTrackerIssueResponseModel<String>> responseModel = issueCreator.createIssueTrackerIssue(issueCreationModel);
-        assertTrue(responseModel.isPresent());
-        assertEquals(issueCreationModel.getTitle(), responseModel.get().getIssueTitle());
+        IssueTrackerIssueResponseModel<String> responseModel = issueCreator.createIssueTrackerIssue(issueCreationModel);
+        assertEquals(issueCreationModel.getTitle(), responseModel.getIssueTitle());
     }
 
     @Test
@@ -50,14 +47,13 @@ public class IssueTrackerIssueCreatorTest {
         TestIssueCreator issueCreator = new TestIssueCreator(commenter, callbackInfoCreator);
         ProjectIssueModel projectIssueModel = Mockito.mock(ProjectIssueModel.class);
         IssueCreationModel issueCreationModel = IssueCreationModel.project("Test title", null, List.of("example comment"), projectIssueModel);
-        Optional<IssueTrackerIssueResponseModel<String>> responseModel = issueCreator.createIssueTrackerIssue(issueCreationModel);
-        assertTrue(responseModel.isPresent());
-        assertEquals(issueCreationModel.getTitle(), responseModel.get().getIssueTitle());
+        IssueTrackerIssueResponseModel<String> responseModel = issueCreator.createIssueTrackerIssue(issueCreationModel);
+        assertEquals(issueCreationModel.getTitle(), responseModel.getIssueTitle());
     }
 
     private static class TestIssueCreator extends IssueTrackerIssueCreator<String> {
         public TestIssueCreator(IssueTrackerIssueCommenter<String> commenter, IssueTrackerCallbackInfoCreator callbackInfoCreator) {
-            super(ISSUE_TRACKER_CHANNEL_KEY, new IssueTrackerChannelLock(ISSUE_TRACKER_CHANNEL_KEY.getUniversalKey()), commenter, callbackInfoCreator);
+            super(ISSUE_TRACKER_CHANNEL_KEY, commenter, callbackInfoCreator);
         }
 
         @Override

@@ -93,7 +93,6 @@ public class JiraServerProcessorFactory implements IssueTrackerProcessorFactory<
         // Extractor Requirement
         JiraIssueStatusCreator jiraIssueStatusCreator = new JiraIssueStatusCreator(distributionDetails.getResolveTransition(), distributionDetails.getReopenTransition());
         JiraSearcherFactory jiraSearcherFactory = new JiraSearcherFactory(
-            jiraServerChannelLock,
             issuePropertiesManager,
             jiraIssueStatusCreator,
             issueService::getTransitions,
@@ -114,7 +113,7 @@ public class JiraServerProcessorFactory implements IssueTrackerProcessorFactory<
 
         IssueTrackerMessageSender<String> messageSender = jiraServerMessageSenderFactory.createMessageSender(issueService, distributionDetails, projectService, issueCreationRequestCreator, issuePropertiesManager, jiraErrorMessageUtility);
 
-        return new IssueTrackerProcessor<>(extractor, messageSender);
+        return new IssueTrackerProcessor<>(jiraServerChannelLock, extractor, messageSender);
     }
 
     private void checkIfAlertPluginIsInstalled(PluginManagerService jiraAppService) throws IssueTrackerException {

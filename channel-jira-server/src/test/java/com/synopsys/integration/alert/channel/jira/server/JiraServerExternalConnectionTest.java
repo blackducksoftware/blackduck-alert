@@ -70,7 +70,6 @@ class JiraServerExternalConnectionTest {
         IssueCategoryRetriever issueCategoryRetriever = new IssueCategoryRetriever();
         JiraServerMessageSenderFactory jiraServerMessageSenderFactory = new JiraServerMessageSenderFactory(gson,
             jiraServerChannelKey,
-            channelLock,
             jiraServerPropertiesFactory,
             issueTrackerCallbackInfoCreator,
             issueCategoryRetriever

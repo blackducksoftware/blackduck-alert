@@ -22,7 +22,6 @@ import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetr
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerChannelLock;
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerMessageSenderFactory;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
@@ -83,7 +82,6 @@ public class JiraServerSummaryFieldLengthTestIT {
         JiraServerMessageSenderFactory jiraServerMessageSenderFactory = new JiraServerMessageSenderFactory(
             gson,
             ChannelKeys.JIRA_SERVER,
-            new JiraServerChannelLock(ChannelKeys.JIRA_SERVER),
             jiraServerPropertiesFactory,
             new IssueTrackerCallbackInfoCreator(),
             issueCategoryRetriever

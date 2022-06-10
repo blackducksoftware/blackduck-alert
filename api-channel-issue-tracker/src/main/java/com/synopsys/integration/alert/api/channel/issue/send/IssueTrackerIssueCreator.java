@@ -15,7 +15,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.synopsys.integration.alert.api.channel.issue.IssueTrackerChannelLock;
 import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCallbackInfoCreator;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCommentModel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
@@ -31,18 +30,15 @@ public abstract class IssueTrackerIssueCreator<T extends Serializable> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final IssueTrackerChannelKey channelKey;
-    private final IssueTrackerChannelLock channelLock;
     private final IssueTrackerIssueCommenter<T> commenter;
     private final IssueTrackerCallbackInfoCreator callbackInfoCreator;
 
     protected IssueTrackerIssueCreator(
         IssueTrackerChannelKey channelKey,
-        IssueTrackerChannelLock channelLock,
         IssueTrackerIssueCommenter<T> commenter,
         IssueTrackerCallbackInfoCreator callbackInfoCreator
     ) {
         this.channelKey = channelKey;
-        this.channelLock = channelLock;
         this.commenter = commenter;
         this.callbackInfoCreator = callbackInfoCreator;
     }
@@ -56,21 +52,7 @@ public abstract class IssueTrackerIssueCreator<T extends Serializable> {
      * @return {@link IssueTrackerIssueResponseModel}
      * @throws AlertException Thrown if there is a problem connecting to the issue-tracker or if the issue-tracker server responds with an error.
      */
-    public final Optional<IssueTrackerIssueResponseModel<T>> createIssueTrackerIssue(IssueCreationModel alertIssueCreationModel) throws AlertException {
-        try {
-            boolean acquiredLock = channelLock.getLock(IssueTrackerChannelLock.DEFAULT_TIMEOUT_SECONDS);
-            if (acquiredLock) {
-                return Optional.of(createIssue(alertIssueCreationModel));
-            } else {
-                logger.error("Could not create issue: {} ", alertIssueCreationModel);
-                return Optional.empty();
-            }
-        } finally {
-            channelLock.release();
-        }
-    }
-
-    private IssueTrackerIssueResponseModel<T> createIssue(IssueCreationModel alertIssueCreationModel) throws AlertException {
+    public final IssueTrackerIssueResponseModel<T> createIssueTrackerIssue(IssueCreationModel alertIssueCreationModel) throws AlertException {
         ExistingIssueDetails<T> createdIssueDetails = createIssueAndExtractDetails(alertIssueCreationModel);
         logger.debug("Created new {} issue: {}", channelKey.getDisplayName(), createdIssueDetails);
 

@@ -26,7 +26,7 @@ public class IssueTrackerMessageSenderTest {
     @BeforeAll
     public static void init() throws AlertException {
         creator = Mockito.mock(IssueTrackerIssueCreator.class);
-        Mockito.when(creator.createIssueTrackerIssue(Mockito.any())).thenReturn(Optional.of(DEFAULT_RESPONSE_MODEL));
+        Mockito.when(creator.createIssueTrackerIssue(Mockito.any())).thenReturn(DEFAULT_RESPONSE_MODEL);
 
         transitioner = Mockito.mock(IssueTrackerIssueTransitioner.class);
         Mockito.when(transitioner.transitionIssue(Mockito.any())).thenReturn(Optional.empty());

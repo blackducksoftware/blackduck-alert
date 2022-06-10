@@ -24,7 +24,6 @@ import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueCo
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueCreator;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsHttpExceptionMessageImprover;
-import com.synopsys.integration.alert.channel.azure.boards.distribution.AzureBoardsChannelLock;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.search.AzureBoardsAlertIssuePropertiesManager;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.util.AzureBoardsUILinkUtils;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
@@ -50,7 +49,6 @@ public class AzureBoardsIssueCreator extends IssueTrackerIssueCreator<Integer> {
 
     public AzureBoardsIssueCreator(
         AzureBoardsChannelKey channelKey,
-        AzureBoardsChannelLock channelLock,
         IssueTrackerIssueCommenter<Integer> commenter,
         IssueTrackerCallbackInfoCreator callbackInfoCreator,
         Gson gson,
@@ -61,7 +59,7 @@ public class AzureBoardsIssueCreator extends IssueTrackerIssueCreator<Integer> {
         AzureBoardsHttpExceptionMessageImprover exceptionMessageImprover,
         IssueCategoryRetriever issueCategoryRetriever
     ) {
-        super(channelKey, channelLock, commenter, callbackInfoCreator);
+        super(channelKey, commenter, callbackInfoCreator);
         this.gson = gson;
         this.organizationName = organizationName;
         this.distributionDetails = distributionDetails;
