@@ -8,16 +8,23 @@ public class DiagnosticModel extends AlertSerializableModel implements Obfuscate
 
     private NotificationDiagnosticModel notificationDiagnosticModel;
     private AuditDiagnosticModel auditDiagnosticModel;
+    private SystemDiagnosticModel systemDiagnosticModel;
     private String requestTimestamp;
 
     public DiagnosticModel() {
         // For serialization
     }
 
-    public DiagnosticModel(String requestTimestamp, NotificationDiagnosticModel notificationDiagnosticModel, AuditDiagnosticModel auditDiagnosticModel) {
+    public DiagnosticModel(
+        String requestTimestamp,
+        NotificationDiagnosticModel notificationDiagnosticModel,
+        AuditDiagnosticModel auditDiagnosticModel,
+        SystemDiagnosticModel systemDiagnosticModel
+    ) {
         this.requestTimestamp = requestTimestamp;
         this.notificationDiagnosticModel = notificationDiagnosticModel;
         this.auditDiagnosticModel = auditDiagnosticModel;
+        this.systemDiagnosticModel = systemDiagnosticModel;
     }
 
     public NotificationDiagnosticModel getNotificationDiagnosticModel() {
@@ -28,12 +35,16 @@ public class DiagnosticModel extends AlertSerializableModel implements Obfuscate
         return auditDiagnosticModel;
     }
 
+    public SystemDiagnosticModel getSystemDiagnosticModel() {
+        return systemDiagnosticModel;
+    }
+
     public String getRequestTimestamp() {
         return requestTimestamp;
     }
 
     @Override
     public DiagnosticModel obfuscate() {
-        return new DiagnosticModel(requestTimestamp, notificationDiagnosticModel, auditDiagnosticModel);
+        return new DiagnosticModel(requestTimestamp, notificationDiagnosticModel, auditDiagnosticModel, systemDiagnosticModel);
     }
 }

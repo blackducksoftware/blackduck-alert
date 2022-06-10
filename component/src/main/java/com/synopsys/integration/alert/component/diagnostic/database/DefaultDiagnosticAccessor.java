@@ -11,6 +11,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.DiagnosticAcce
 import com.synopsys.integration.alert.component.diagnostic.model.AuditDiagnosticModel;
 import com.synopsys.integration.alert.component.diagnostic.model.DiagnosticModel;
 import com.synopsys.integration.alert.component.diagnostic.model.NotificationDiagnosticModel;
+import com.synopsys.integration.alert.component.diagnostic.model.SystemDiagnosticModel;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
 
@@ -30,7 +31,8 @@ public class DefaultDiagnosticAccessor implements DiagnosticAccessor {
     public DiagnosticModel getDiagnosticInfo() {
         NotificationDiagnosticModel notificationDiagnosticModel = getNotificationDiagnosticInfo();
         AuditDiagnosticModel auditDiagnosticModel = getAuditDiagnosticInfo();
-        return new DiagnosticModel(LocalDateTime.now().toString(), notificationDiagnosticModel, auditDiagnosticModel);
+        SystemDiagnosticModel systemDiagnosticModel = getSystemInfo();
+        return new DiagnosticModel(LocalDateTime.now().toString(), notificationDiagnosticModel, auditDiagnosticModel, systemDiagnosticModel);
     }
 
     private NotificationDiagnosticModel getNotificationDiagnosticInfo() {
@@ -50,5 +52,10 @@ public class DefaultDiagnosticAccessor implements DiagnosticAccessor {
             numberOfAuditEntriesPending,
             auditEntryRepository.getAverageAuditEntryCompletionTime().orElse(AuditDiagnosticModel.NO_AUDIT_CONTENT_MESSAGE)
         );
+    }
+
+    private SystemDiagnosticModel getSystemInfo() {
+        Runtime runtime = Runtime.getRuntime();
+        return new SystemDiagnosticModel(runtime.availableProcessors(), runtime.maxMemory(), runtime.totalMemory(), runtime.freeMemory());
     }
 }
