@@ -113,7 +113,7 @@ class LargeNotificationTest {
         logTimeElapsedWithMessage("Setting up the Black Duck provider took %s", startingProviderCreateTime, LocalDateTime.now());
 
         // create blackduck projects
-        createBlackDuckProjects(numberOfProjectsToCreate, startingProjectNumber);
+        createProjectAndTriggerNotification(numberOfProjectsToCreate, startingProjectNumber);
 
         logTimeElapsedWithMessage("Total test time: %s", startingTime, LocalDateTime.now());
     }
@@ -251,6 +251,17 @@ class LargeNotificationTest {
 
     private void createBlackDuckProjects(int numberOfProjects) throws IntegrationException {
         createBlackDuckProjects(numberOfProjects, DEFAULT_STARTING_PROJECT_NUMBER);
+    }
+
+    private void createProjectAndTriggerNotification(int numberOfProjects, int startingProjectNumber) throws IntegrationException {
+        logger.info(String.format("Creating and triggering a notification for %s projects, starting with project number %s", numberOfProjects, startingProjectNumber));
+        LocalDateTime startingProjectCreationTime = LocalDateTime.now();
+        for (int projectIndex = startingProjectNumber; projectIndex < (numberOfProjects + startingProjectNumber); projectIndex++) {
+            ProjectVersionWrapper projectVersionWrapper = findOrCreateBlackDuckProject(projectIndex);
+            triggerBlackDuckNotification(projectVersionWrapper.getProjectVersionView());
+        }
+        String createProjectsLogMessage = String.format("Creating and triggering a notification for %s projects took", numberOfProjects);
+        logTimeElapsedWithMessage(String.format("%s %s", createProjectsLogMessage, "%s"), startingProjectCreationTime, LocalDateTime.now());
     }
 
     private void deleteBlackDuckProjects(int numberOfProjects, int startingProjectNumber) throws IntegrationException {
