@@ -35,7 +35,7 @@ public class IssueTrackerIssueCreatorTest {
     }
 
     @Test
-    public void createIssueTrackerIssueTest() throws AlertException {
+    void createIssueTrackerIssueTest() throws AlertException {
         TestIssueCreator issueCreator = new TestIssueCreator(commenter, callbackInfoCreator);
         IssueCreationModel issueCreationModel = IssueCreationModel.simple("Test title", null, List.of("comment 1", "comment 2"), null);
         IssueTrackerIssueResponseModel<String> responseModel = issueCreator.createIssueTrackerIssue(issueCreationModel);
@@ -43,7 +43,7 @@ public class IssueTrackerIssueCreatorTest {
     }
 
     @Test
-    public void createIssueTrackerIssueWithSourceTest() throws AlertException {
+    void createIssueTrackerIssueWithSourceTest() throws AlertException {
         TestIssueCreator issueCreator = new TestIssueCreator(commenter, callbackInfoCreator);
         ProjectIssueModel projectIssueModel = Mockito.mock(ProjectIssueModel.class);
         IssueCreationModel issueCreationModel = IssueCreationModel.project("Test title", null, List.of("example comment"), projectIssueModel);

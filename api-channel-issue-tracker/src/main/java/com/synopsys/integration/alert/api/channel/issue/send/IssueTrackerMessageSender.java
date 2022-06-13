@@ -43,11 +43,13 @@ public class IssueTrackerMessageSender<T extends Serializable> {
         return responses;
     }
 
-    private <U> List<IssueTrackerIssueResponseModel<T>> sendMessages(List<U> messages, ThrowingFunction<U, IssueTrackerIssueResponseModel<T>, AlertException> sendMessage) throws AlertException {
+    private <U> List<IssueTrackerIssueResponseModel<T>> sendMessages(List<U> messages, ThrowingFunction<U, IssueTrackerIssueResponseModel<T>, AlertException> sendMessage)
+        throws AlertException {
         List<IssueTrackerIssueResponseModel<T>> responses = new LinkedList<>();
         for (U message : messages) {
             IssueTrackerIssueResponseModel<T> response = sendMessage.apply(message);
             responses.add(response);
+
         }
         return responses;
     }

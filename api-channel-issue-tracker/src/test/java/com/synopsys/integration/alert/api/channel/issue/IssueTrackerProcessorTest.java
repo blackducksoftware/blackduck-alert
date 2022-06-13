@@ -37,7 +37,7 @@ public class IssueTrackerProcessorTest {
             projectMessageResponses
         );
 
-        IssueTrackerProcessor<String> processor = new IssueTrackerProcessor<>(extractor, sender);
+        IssueTrackerProcessor<String> processor = new IssueTrackerProcessor<>(new IssueTrackerChannelLock("channel_key_name"), extractor, sender);
 
         ProjectMessage projectMessage = Mockito.mock(ProjectMessage.class);
         ProviderMessageHolder providerMessageHolder = new ProviderMessageHolder(List.of(projectMessage), List.of());

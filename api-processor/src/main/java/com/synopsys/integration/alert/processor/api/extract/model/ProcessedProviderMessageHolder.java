@@ -19,6 +19,7 @@ import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 
 public class ProcessedProviderMessageHolder extends AlertSerializableModel {
+    private static final long serialVersionUID = 1994864679048391315L;
     private final List<ProcessedProviderMessage<ProjectMessage>> processedProjectMessages;
     private final List<ProcessedProviderMessage<SimpleMessage>> processedSimpleMessages;
 

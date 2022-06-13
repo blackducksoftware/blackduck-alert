@@ -22,6 +22,7 @@ import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetr
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraMessageFormatter;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
+import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerChannelLock;
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerMessageSenderFactory;
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerProcessorFactory;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
@@ -35,6 +36,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.JiraJ
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
@@ -43,15 +45,16 @@ import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.test.common.TestTags;
 
 @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
-public class JiraServerExternalConnectionTest {
+class JiraServerExternalConnectionTest {
     private final TestProperties testProperties = new TestProperties();
 
     //This test is @Disabled since it requires a running Jira Server instance. In order to run this test, you must deploy a Jira Server and
     // add the Jira Server environment values into test.properties
     @Test
     @Disabled
-    public void sendJiraServerMessageTest() throws AlertException {
+    void sendJiraServerMessageTest() throws AlertException {
         Gson gson = new Gson();
+        JiraServerChannelLock channelLock = new JiraServerChannelLock(ChannelKeys.JIRA_SERVER);
         JiraMessageFormatter jiraMessageFormatter = new JiraMessageFormatter();
 
         JiraServerChannelKey jiraServerChannelKey = new JiraServerChannelKey();
@@ -65,11 +68,23 @@ public class JiraServerExternalConnectionTest {
 
         IssueTrackerCallbackInfoCreator issueTrackerCallbackInfoCreator = new IssueTrackerCallbackInfoCreator();
         IssueCategoryRetriever issueCategoryRetriever = new IssueCategoryRetriever();
-        JiraServerMessageSenderFactory jiraServerMessageSenderFactory = new JiraServerMessageSenderFactory(gson, jiraServerChannelKey, jiraServerPropertiesFactory, issueTrackerCallbackInfoCreator,
-            issueCategoryRetriever);
+        JiraServerMessageSenderFactory jiraServerMessageSenderFactory = new JiraServerMessageSenderFactory(gson,
+            jiraServerChannelKey,
+            jiraServerPropertiesFactory,
+            issueTrackerCallbackInfoCreator,
+            issueCategoryRetriever
+        );
 
         ProjectMessageToIssueModelTransformer modelTransformer = new ProjectMessageToIssueModelTransformer();
-        JiraServerProcessorFactory jiraServerProcessorFactory = new JiraServerProcessorFactory(gson, jiraMessageFormatter, jiraServerPropertiesFactory, jiraServerMessageSenderFactory, modelTransformer, issueCategoryRetriever);
+        JiraServerProcessorFactory jiraServerProcessorFactory = new JiraServerProcessorFactory(
+            gson,
+            channelLock,
+            jiraMessageFormatter,
+            jiraServerPropertiesFactory,
+            jiraServerMessageSenderFactory,
+            modelTransformer,
+            issueCategoryRetriever
+        );
         IssueTrackerProcessor<String> processor = jiraServerProcessorFactory.createProcessor(createDistributionDetails());
 
         IssueTrackerResponse<String> response = processor.processMessages(createMessage(), "jobName");

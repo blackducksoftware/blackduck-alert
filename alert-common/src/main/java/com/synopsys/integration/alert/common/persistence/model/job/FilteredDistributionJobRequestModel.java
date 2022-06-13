@@ -10,13 +10,16 @@ package com.synopsys.integration.alert.common.persistence.model.job;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 
 public class FilteredDistributionJobRequestModel extends AlertSerializableModel {
+    private static final long serialVersionUID = -8714694795622818776L;
     private final Long providerConfigId;
+    private final Long notificationId;
     private final List<FrequencyType> frequencyTypes;
     private final Set<String> projectNames = new HashSet<>();
     private final Set<String> notificationTypes = new HashSet<>();
@@ -24,7 +27,12 @@ public class FilteredDistributionJobRequestModel extends AlertSerializableModel 
     private final Set<String> policyNames = new HashSet<>();
 
     public FilteredDistributionJobRequestModel(Long providerConfigId, List<FrequencyType> frequencyTypes) {
+        this(providerConfigId, null, frequencyTypes);
+    }
+
+    public FilteredDistributionJobRequestModel(Long providerConfigId, Long notificationId, List<FrequencyType> frequencyTypes) {
         this.providerConfigId = providerConfigId;
+        this.notificationId = notificationId;
         this.frequencyTypes = frequencyTypes;
     }
 
@@ -46,6 +54,11 @@ public class FilteredDistributionJobRequestModel extends AlertSerializableModel 
 
     public Long getProviderConfigId() {
         return providerConfigId;
+    }
+
+    //TODO remove optional when notification processing is replaced.
+    public Optional<Long> getNotificationId() {
+        return Optional.ofNullable(notificationId);
     }
 
     public Collection<FrequencyType> getFrequencyTypes() {
