@@ -3,6 +3,7 @@ package com.synopsys.integration.alert.component.diagnostic.database;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -10,32 +11,39 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
+import com.synopsys.integration.alert.component.diagnostic.model.AlertQueueInformation;
 import com.synopsys.integration.alert.component.diagnostic.model.AuditDiagnosticModel;
 import com.synopsys.integration.alert.component.diagnostic.model.DiagnosticModel;
 import com.synopsys.integration.alert.component.diagnostic.model.NotificationDiagnosticModel;
+import com.synopsys.integration.alert.component.diagnostic.model.RabbitMQDiagnosticModel;
 import com.synopsys.integration.alert.component.diagnostic.model.SystemDiagnosticModel;
+import com.synopsys.integration.alert.component.diagnostic.utility.RabbitMQDiagnosticUtility;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
 
 class DefaultDiagnosticAccessorTest {
     private NotificationContentRepository notificationContentRepository;
     private AuditEntryRepository auditEntryRepository;
+    private RabbitMQDiagnosticUtility rabbitMQDiagnosticUtility;
 
     @BeforeEach
     public void init() {
         notificationContentRepository = Mockito.mock(NotificationContentRepository.class);
         auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
+        rabbitMQDiagnosticUtility = Mockito.mock(RabbitMQDiagnosticUtility.class);
     }
 
     @Test
     void testGetDiagnosticInfo() {
-        DefaultDiagnosticAccessor diagnosticAccessor = new DefaultDiagnosticAccessor(notificationContentRepository, auditEntryRepository);
+        DefaultDiagnosticAccessor diagnosticAccessor = new DefaultDiagnosticAccessor(notificationContentRepository, auditEntryRepository, rabbitMQDiagnosticUtility);
         NotificationDiagnosticModel notificationDiagnosticModel = createNotificationDiagnosticModel();
         AuditDiagnosticModel auditDiagnosticModel = createAuditDiagnosticModel();
+        RabbitMQDiagnosticModel rabbitMQDiagnosticModel = createRabbitMQDiagnosticModel();
         DiagnosticModel diagnosticModel = diagnosticAccessor.getDiagnosticInfo();
 
         assertEquals(notificationDiagnosticModel, diagnosticModel.getNotificationDiagnosticModel());
         assertEquals(auditDiagnosticModel, diagnosticModel.getAuditDiagnosticModel());
+        assertEquals(rabbitMQDiagnosticModel, diagnosticModel.getRabbitMQDiagnosticModel());
         assertSystemDiagnostics(diagnosticModel.getSystemDiagnosticModel());
     }
 
@@ -59,6 +67,14 @@ class DefaultDiagnosticAccessorTest {
         Mockito.when(auditEntryRepository.countByStatus(AuditEntryStatus.PENDING.name())).thenReturn(numberOfAuditEntriesPending);
         Mockito.when(auditEntryRepository.getAverageAuditEntryCompletionTime()).thenReturn(Optional.of(averageAuditProcessingTime));
         return new AuditDiagnosticModel(numberOfAuditEntriesSuccessful, numberOfAuditEntriesFailed, numberOfAuditEntriesPending, averageAuditProcessingTime);
+    }
+
+    private RabbitMQDiagnosticModel createRabbitMQDiagnosticModel() {
+        AlertQueueInformation queue1 = new AlertQueueInformation("queue1", 50, 1);
+        AlertQueueInformation queue2 = new AlertQueueInformation("queue2", 0, 50);
+        RabbitMQDiagnosticModel rabbitMQDiagnosticModel = new RabbitMQDiagnosticModel(List.of(queue1, queue2));
+        Mockito.when(rabbitMQDiagnosticUtility.getRabbitMQDiagnostics()).thenReturn(rabbitMQDiagnosticModel);
+        return rabbitMQDiagnosticModel;
     }
 
     private void assertSystemDiagnostics(SystemDiagnosticModel systemDiagnosticModel) {
