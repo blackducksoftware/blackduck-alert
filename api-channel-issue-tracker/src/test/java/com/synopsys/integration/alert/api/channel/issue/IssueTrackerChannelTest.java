@@ -22,13 +22,12 @@ import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.Is
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
-
-public class IssueTrackerChannelTest {
+class IssueTrackerChannelTest {
     @Test
-    public void distributeMessagesTest() throws AlertException {
+    void distributeMessagesTest() throws AlertException {
         IssueTrackerModelExtractor<String> modelExtractor = new IssueTrackerModelExtractor<>(createFormatter(), null);
         IssueTrackerMessageSender<String> messageSender = createMessageSender();
-        IssueTrackerProcessor<String> processor = new IssueTrackerProcessor<>(modelExtractor, messageSender);
+        IssueTrackerProcessor<String> processor = new IssueTrackerProcessor<>(new IssueTrackerChannelLock("channel_key_name"), modelExtractor, messageSender);
 
         IssueTrackerProcessorFactory<DistributionJobDetailsModel, String> processorFactory = x -> processor;
         IssueTrackerResponsePostProcessor postProcessor = new IssueTrackerResponsePostProcessor() {

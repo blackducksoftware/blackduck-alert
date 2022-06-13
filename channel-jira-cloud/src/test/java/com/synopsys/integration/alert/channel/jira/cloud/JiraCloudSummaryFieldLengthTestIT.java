@@ -84,7 +84,8 @@ public class JiraCloudSummaryFieldLengthTestIT {
             ChannelKeys.JIRA_CLOUD,
             jiraCloudPropertiesFactory,
             new IssueTrackerCallbackInfoCreator(),
-            issueCategoryRetriever);
+            issueCategoryRetriever
+        );
 
         JiraCloudJobDetailsModel jiraCloudJobDetails = createJiraCloudJobDetails(testProperties);
         return jiraCloudMessageSenderFactory.createMessageSender(jiraCloudJobDetails, null);

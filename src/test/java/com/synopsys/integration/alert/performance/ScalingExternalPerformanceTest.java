@@ -125,7 +125,7 @@ class ScalingExternalPerformanceTest {
 
         LocalDateTime executionStartTime = LocalDateTime.now();
         //Test with 10 policy jobs
-        testRunner.testManyPolicyJobsToManyProjects(policyJobIds, PERFORMANCE_POLICY_NAME, numberOfProjectsToCreate);
+        testRunner.testManyPolicyJobsToManyProjects(policyJobIds, PERFORMANCE_POLICY_NAME, numberOfProjectsToCreate, true);
 
         loggingUtility.logTimeElapsedWithMessage("Execution and processing test time: %s", executionStartTime, LocalDateTime.now());
         loggingUtility.logTimeElapsedWithMessage("Total test time: %s", startingTime, LocalDateTime.now());
