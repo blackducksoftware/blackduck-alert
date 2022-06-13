@@ -25,14 +25,13 @@ public class IssueTrackerChannelLock {
 
     public IssueTrackerChannelLock(String lockName) {
         this.lockName = lockName;
-        this.lock = new Semaphore(PERMITS, false);
+        this.lock = new Semaphore(PERMITS, true);
     }
 
     public boolean getLock(int timeoutSeconds) {
         boolean acquired = false;
         try {
             acquired = lock.tryAcquire(timeoutSeconds, TimeUnit.SECONDS);
-            logger.info("number of permits after acquired {}", lock.availablePermits());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } finally {
@@ -45,6 +44,5 @@ public class IssueTrackerChannelLock {
 
     public void release() {
         this.lock.release();
-        logger.info("number of permits after release {}", lock.availablePermits());
     }
 }
