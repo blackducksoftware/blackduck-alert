@@ -111,13 +111,23 @@ public class BlackDuckAccumulator extends ProviderTask {
     }
 
     private void retrieveAndStoreNotifications(BlackDuckNotificationRetriever notificationRetriever, DateRange dateRange) throws IntegrationException {
-        StatefulAlertPage<NotificationUserView, IntegrationException> notificationPage = notificationRetriever.retrievePageOfFilteredNotifications(dateRange, SUPPORTED_NOTIFICATION_TYPES);
-        while (!notificationPage.isCurrentPageEmpty()) {
-            List<NotificationUserView> currentNotifications = notificationPage.getCurrentModels();
-            logger.debug("Retrieved a page of {} notifications", currentNotifications.size());
-            storeNotifications(currentNotifications);
+        StatefulAlertPage<NotificationUserView, IntegrationException> notificationPage = notificationRetriever.retrievePageOfFilteredNotifications(
+            dateRange,
+            SUPPORTED_NOTIFICATION_TYPES
+        );
+        boolean emptyPage = notificationPage.isCurrentPageEmpty();
+        try {
+            while (!notificationPage.isCurrentPageEmpty()) {
+                List<NotificationUserView> currentNotifications = notificationPage.getCurrentModels();
+                logger.debug("Retrieved a page of {} notifications", currentNotifications.size());
+                storeNotifications(currentNotifications);
 
-            notificationPage = notificationPage.retrieveNextPage();
+                notificationPage = notificationPage.retrieveNextPage();
+            }
+        } finally {
+            if (!emptyPage) {
+                eventManager.sendEvent(new NotificationReceivedEvent());
+            }
         }
     }
 
@@ -151,7 +161,6 @@ public class BlackDuckAccumulator extends ProviderTask {
             String joinedIds = StringUtils.join(notificationIds, ", ");
             notificationLogger.debug("Saved notifications: {}", joinedIds);
         }
-        eventManager.sendEvent(new NotificationReceivedEvent());
     }
 
     private AlertNotificationModel convertToAlertNotificationModel(NotificationView notification) {

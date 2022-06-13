@@ -9,6 +9,7 @@ dependencies {
 
     implementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
     implementation 'org.springframework:spring-context'
+    implementation 'org.springframework.amqp:spring-amqp'
 
     testImplementation project(':test-common-blackduck')
     testImplementation project(':provider-blackduck')

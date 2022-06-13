@@ -65,6 +65,8 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
 
     Page<NotificationEntity> findByProcessedFalseOrderByProviderCreationTimeAsc(Pageable pageable);
 
+    List<NotificationEntity> findAllByIdInOrderByProviderCreationTimeAsc(List<Long> notificationIds);
+
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE NotificationEntity entity "
         + "SET entity.processed = true "

@@ -73,10 +73,14 @@ public class BlackDuckGlobalConfigurationFieldModelValidator implements GlobalCo
                 .map(NumberUtils::toInt)
                 .orElse(BlackDuckProperties.DEFAULT_TIMEOUT);
             if (timeoutInt < 1) {
-                configurationFieldValidator.addValidationResults(AlertFieldStatus.error(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, "Invalid timeout: The timeout must be a positive integer"));
-            } else if (timeoutInt > 300) {
-                configurationFieldValidator.addValidationResults(AlertFieldStatus.warning(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, "The provided timeout is greater than five minutes. Please ensure this is the desired behavior."));
+                configurationFieldValidator.addValidationResults(AlertFieldStatus.error(
+                    BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT,
+                    "Invalid timeout: The timeout must be a positive integer"
+                ));
             }
+            //            else if (timeoutInt > 300) {
+            //                configurationFieldValidator.addValidationResults(AlertFieldStatus.warning(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, "The provided timeout is greater than five minutes. Please ensure this is the desired behavior."));
+            //            }
         } else {
             configurationFieldValidator.addValidationResults(AlertFieldStatus.error(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, ConfigurationFieldValidator.NOT_AN_INTEGER_VALUE));
         }

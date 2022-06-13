@@ -35,6 +35,7 @@ import org.springframework.retry.support.RetryTemplate;
 import com.synopsys.integration.alert.api.channel.DistributionEventReceiver;
 import com.synopsys.integration.alert.api.event.AlertMessageListener;
 import com.synopsys.integration.alert.api.event.DeadLetterListener;
+import com.synopsys.integration.alert.processor.api.event.NotificationProcessingReceiver;
 
 @Configuration
 public class EventListenerConfigurer implements RabbitListenerConfigurer {
@@ -42,6 +43,7 @@ public class EventListenerConfigurer implements RabbitListenerConfigurer {
 
     private final List<AlertMessageListener<?>> allAlertMessageListeners;
     private final Set<String> distributionEventDestinationNames;
+    private final Set<String> processingEventDestinationNames;
     private final CachingConnectionFactory cachingConnectionFactory;
     private final RetryTemplate rabbitmqRetryTemplate;
     private final AmqpAdmin amqpAdmin;
@@ -52,6 +54,7 @@ public class EventListenerConfigurer implements RabbitListenerConfigurer {
     public EventListenerConfigurer(
         List<AlertMessageListener<?>> allAlertMessageListeners,
         List<DistributionEventReceiver<?>> distributionEventReceivers,
+        List<NotificationProcessingReceiver<?>> processingEventReceivers,
         CachingConnectionFactory cachingConnectionFactory,
         RetryTemplate rabbitmqRetryTemplate,
         AmqpAdmin amqpAdmin,
@@ -61,6 +64,9 @@ public class EventListenerConfigurer implements RabbitListenerConfigurer {
         this.allAlertMessageListeners = allAlertMessageListeners;
         this.distributionEventDestinationNames = distributionEventReceivers
             .stream()
+            .map(AlertMessageListener::getDestinationName)
+            .collect(Collectors.toSet());
+        this.processingEventDestinationNames = processingEventReceivers.stream()
             .map(AlertMessageListener::getDestinationName)
             .collect(Collectors.toSet());
         this.cachingConnectionFactory = cachingConnectionFactory;
@@ -78,9 +84,12 @@ public class EventListenerConfigurer implements RabbitListenerConfigurer {
         MessageListenerContainer alertDefaultMessageListenerContainer = createMessageListenerContainer();
         logger.debug("Registering JMS Listeners");
         for (AlertMessageListener<?> messageListener : allAlertMessageListeners) {
-            if (distributionEventDestinationNames.contains(messageListener.getDestinationName())) {
-                MessageListenerContainer distributionChannelMessageListenerContainer = createMessageListenerContainer();
-                registerListenerEndpoint(registrar, messageListener, distributionChannelMessageListenerContainer);
+            String destinationName = messageListener.getDestinationName();
+            boolean createMessageListenerContainer = distributionEventDestinationNames.contains(destinationName)
+                || processingEventDestinationNames.contains(destinationName);
+            if (createMessageListenerContainer) {
+                MessageListenerContainer messageListenerContainer = createMessageListenerContainer();
+                registerListenerEndpoint(registrar, messageListener, messageListenerContainer);
             } else {
                 registerListenerEndpoint(registrar, messageListener, alertDefaultMessageListenerContainer);
             }
