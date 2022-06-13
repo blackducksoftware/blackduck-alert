@@ -9,6 +9,7 @@ public class DiagnosticModel extends AlertSerializableModel implements Obfuscate
     private NotificationDiagnosticModel notificationDiagnosticModel;
     private AuditDiagnosticModel auditDiagnosticModel;
     private SystemDiagnosticModel systemDiagnosticModel;
+    private RabbitMQDiagnosticModel rabbitMQDiagnosticModel;
     private String requestTimestamp;
 
     public DiagnosticModel() {
@@ -19,12 +20,14 @@ public class DiagnosticModel extends AlertSerializableModel implements Obfuscate
         String requestTimestamp,
         NotificationDiagnosticModel notificationDiagnosticModel,
         AuditDiagnosticModel auditDiagnosticModel,
-        SystemDiagnosticModel systemDiagnosticModel
+        SystemDiagnosticModel systemDiagnosticModel,
+        RabbitMQDiagnosticModel rabbitMQDiagnosticModel
     ) {
         this.requestTimestamp = requestTimestamp;
         this.notificationDiagnosticModel = notificationDiagnosticModel;
         this.auditDiagnosticModel = auditDiagnosticModel;
         this.systemDiagnosticModel = systemDiagnosticModel;
+        this.rabbitMQDiagnosticModel = rabbitMQDiagnosticModel;
     }
 
     public NotificationDiagnosticModel getNotificationDiagnosticModel() {
@@ -39,12 +42,16 @@ public class DiagnosticModel extends AlertSerializableModel implements Obfuscate
         return systemDiagnosticModel;
     }
 
+    public RabbitMQDiagnosticModel getRabbitMQDiagnosticModel() {
+        return rabbitMQDiagnosticModel;
+    }
+
     public String getRequestTimestamp() {
         return requestTimestamp;
     }
 
     @Override
     public DiagnosticModel obfuscate() {
-        return new DiagnosticModel(requestTimestamp, notificationDiagnosticModel, auditDiagnosticModel, systemDiagnosticModel);
+        return new DiagnosticModel(requestTimestamp, notificationDiagnosticModel, auditDiagnosticModel, systemDiagnosticModel, rabbitMQDiagnosticModel);
     }
 }

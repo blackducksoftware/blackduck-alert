@@ -11,7 +11,9 @@ import com.synopsys.integration.alert.common.persistence.accessor.DiagnosticAcce
 import com.synopsys.integration.alert.component.diagnostic.model.AuditDiagnosticModel;
 import com.synopsys.integration.alert.component.diagnostic.model.DiagnosticModel;
 import com.synopsys.integration.alert.component.diagnostic.model.NotificationDiagnosticModel;
+import com.synopsys.integration.alert.component.diagnostic.model.RabbitMQDiagnosticModel;
 import com.synopsys.integration.alert.component.diagnostic.model.SystemDiagnosticModel;
+import com.synopsys.integration.alert.component.diagnostic.utility.RabbitMQDiagnosticUtility;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
 
@@ -19,11 +21,17 @@ import com.synopsys.integration.alert.database.notification.NotificationContentR
 public class DefaultDiagnosticAccessor implements DiagnosticAccessor {
     private final NotificationContentRepository notificationContentRepository;
     private final AuditEntryRepository auditEntryRepository;
+    private final RabbitMQDiagnosticUtility rabbitMQDiagnosticUtility;
 
     @Autowired
-    public DefaultDiagnosticAccessor(NotificationContentRepository notificationContentRepository, AuditEntryRepository auditEntryRepository) {
+    public DefaultDiagnosticAccessor(
+        NotificationContentRepository notificationContentRepository,
+        AuditEntryRepository auditEntryRepository,
+        RabbitMQDiagnosticUtility rabbitMQDiagnosticUtility
+    ) {
         this.notificationContentRepository = notificationContentRepository;
         this.auditEntryRepository = auditEntryRepository;
+        this.rabbitMQDiagnosticUtility = rabbitMQDiagnosticUtility;
     }
 
     @Override
@@ -32,7 +40,8 @@ public class DefaultDiagnosticAccessor implements DiagnosticAccessor {
         NotificationDiagnosticModel notificationDiagnosticModel = getNotificationDiagnosticInfo();
         AuditDiagnosticModel auditDiagnosticModel = getAuditDiagnosticInfo();
         SystemDiagnosticModel systemDiagnosticModel = getSystemInfo();
-        return new DiagnosticModel(LocalDateTime.now().toString(), notificationDiagnosticModel, auditDiagnosticModel, systemDiagnosticModel);
+        RabbitMQDiagnosticModel rabbitMQDiagnosticModel = getRabbitMQDiagnosticInfo();
+        return new DiagnosticModel(LocalDateTime.now().toString(), notificationDiagnosticModel, auditDiagnosticModel, systemDiagnosticModel, rabbitMQDiagnosticModel);
     }
 
     private NotificationDiagnosticModel getNotificationDiagnosticInfo() {
@@ -57,5 +66,9 @@ public class DefaultDiagnosticAccessor implements DiagnosticAccessor {
     private SystemDiagnosticModel getSystemInfo() {
         Runtime runtime = Runtime.getRuntime();
         return new SystemDiagnosticModel(runtime.availableProcessors(), runtime.maxMemory(), runtime.totalMemory(), runtime.freeMemory());
+    }
+
+    private RabbitMQDiagnosticModel getRabbitMQDiagnosticInfo() {
+        return rabbitMQDiagnosticUtility.getRabbitMQDiagnostics();
     }
 }
