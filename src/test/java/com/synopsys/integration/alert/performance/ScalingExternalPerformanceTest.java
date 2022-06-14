@@ -38,6 +38,7 @@ import com.synopsys.integration.rest.proxy.ProxyInfo;
 class ScalingExternalPerformanceTest {
     private static final JiraServerChannelKey CHANNEL_KEY = new JiraServerChannelKey();
     private static final int DEFAULT_NUMBER_OF_JOBS_TO_CREATE = 10;
+    private static final int DEFAULT_TIMEOUT_SECONDS = 14400;
     private static final String PERFORMANCE_POLICY_NAME = "PerformanceTestPolicy";
 
     private final IntLogger intLogger = new Slf4jIntLogger(LoggerFactory.getLogger(this.getClass()));
@@ -66,7 +67,7 @@ class ScalingExternalPerformanceTest {
 
         int waitTimeoutSeconds = testProperties.getOptionalProperty(TestPropertyKey.TEST_PERFORMANCE_WAIT_TIMEOUT_SECONDS)
             .map(Integer::parseInt)
-            .orElse(Integer.valueOf(14400));
+            .orElse(DEFAULT_TIMEOUT_SECONDS);
 
         ExternalAlertRequestUtility alertRequestUtility = new ExternalAlertRequestUtility(intLogger, client, alertURL);
         alertRequestUtility.loginToExternalAlert();
