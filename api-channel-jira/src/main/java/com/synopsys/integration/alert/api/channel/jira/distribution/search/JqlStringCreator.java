@@ -18,7 +18,7 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Compon
 
 public final class JqlStringCreator {
     private static final String SEARCH_CONJUNCTION = "AND";
-    private static final Set<Character> CHARACTERS_TO_ESCAPE = Set.of('\'');
+    private static final Set<Character> CHARACTERS_TO_ESCAPE = Set.of('\'', '\\');
 
     public static String createBlackDuckProjectIssuesSearchString(
         String jiraProjectKey,
