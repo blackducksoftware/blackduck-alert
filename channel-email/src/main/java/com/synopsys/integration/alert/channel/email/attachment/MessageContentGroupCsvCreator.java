@@ -125,14 +125,14 @@ public class MessageContentGroupCsvCreator {
 
     private List<String> createColumnValues(String providerName, String providerValue, String topicValue, String subTopicValue, ComponentItem componentItem) {
         List<String> columnValues = new ArrayList<>();
-        columnValues.add(providerName);
-        columnValues.add(providerValue);
-        columnValues.add(topicValue);
-        columnValues.add(subTopicValue);
+        addWithEscapeQuotes(columnValues, providerName);
+        addWithEscapeQuotes(columnValues, providerValue);
+        addWithEscapeQuotes(columnValues, topicValue);
+        addWithEscapeQuotes(columnValues, subTopicValue);
 
-        columnValues.add(componentItem.getComponent().getValue());
+        addWithEscapeQuotes(columnValues, componentItem.getComponent().getValue());
         String subComponentString = createOptionalValueString(componentItem.getSubComponent(), LinkableItem::getValue);
-        columnValues.add(subComponentString);
+        addWithEscapeQuotes(columnValues, subComponentString);
         String componentUrl;
         if (UNDEFINED_VALUE.equals(subComponentString)) {
             componentUrl = componentItem.getComponent().getUrl().orElse(null);
@@ -148,11 +148,15 @@ public class MessageContentGroupCsvCreator {
         columnValues.add(categoryGroupingAttribute);
 
         String additionalAttributes = createFlattenedItemsString(componentItem.getComponentAttributes());
-        columnValues.add(String.format("\"%s\"", additionalAttributes));
+        addWithEscapeQuotes(columnValues, additionalAttributes);
 
         String categoryItemUrl = componentItem.getCategoryItem().getUrl().orElse(UNDEFINED_VALUE);
         columnValues.add(categoryItemUrl);
         return columnValues;
+    }
+
+    private void addWithEscapeQuotes(List<String> columnValues, String field) {
+        columnValues.add(String.format("\"%s\"", field));
     }
 
     private <T> String createOptionalColumnNameString(List<T> objects, Function<T, Optional<LinkableItem>> linkableItemMapper) {
