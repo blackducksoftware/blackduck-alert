@@ -47,7 +47,7 @@ public class DefaultDiagnosticAccessor implements DiagnosticAccessor {
         NotificationDiagnosticModel notificationDiagnosticModel = getNotificationDiagnosticInfo();
         AuditDiagnosticModel auditDiagnosticModel = getAuditDiagnosticInfo();
         SystemDiagnosticModel systemDiagnosticModel = getSystemInfo();
-        RabbitMQDiagnosticModel rabbitMQDiagnosticModel = getRabbitMQDiagnosticInfo();
+        RabbitMQDiagnosticModel rabbitMQDiagnosticModel = rabbitMQDiagnosticUtility.getRabbitMQDiagnostics();
         return new DiagnosticModel(LocalDateTime.now().toString(), notificationDiagnosticModel, auditDiagnosticModel, systemDiagnosticModel, rabbitMQDiagnosticModel);
     }
 
@@ -73,9 +73,5 @@ public class DefaultDiagnosticAccessor implements DiagnosticAccessor {
     private SystemDiagnosticModel getSystemInfo() {
         Runtime runtime = Runtime.getRuntime();
         return new SystemDiagnosticModel(runtime.availableProcessors(), runtime.maxMemory(), runtime.totalMemory(), runtime.freeMemory());
-    }
-
-    private RabbitMQDiagnosticModel getRabbitMQDiagnosticInfo() {
-        return rabbitMQDiagnosticUtility.getRabbitMQDiagnostics();
     }
 }
