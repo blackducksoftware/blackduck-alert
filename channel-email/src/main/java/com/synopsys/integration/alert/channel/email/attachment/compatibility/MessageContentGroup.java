@@ -19,7 +19,7 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 public class MessageContentGroup extends AlertSerializableModel {
     private final List<ProviderMessageContent> subContent;
 
-    private LinkableItem comonProvider;
+    private LinkableItem commonProvider;
     private LinkableItem commonTopic;
 
     public MessageContentGroup() {
@@ -29,10 +29,11 @@ public class MessageContentGroup extends AlertSerializableModel {
 
     public void add(ProviderMessageContent message) {
         if (null == commonTopic) {
-            comonProvider = message.getProvider();
+            commonProvider = message.getProvider();
             commonTopic = message.getTopic();
         } else if (!commonTopic.getValue().equals(message.getTopic().getValue())) {
-            throw new IllegalArgumentException(String.format("The topic of this message did not match the group topic. Expected: %s. Actual: %s.", commonTopic.getValue(), message.getTopic().getValue()));
+            throw new IllegalArgumentException(String
+                .format("The topic of this message did not match the group topic. Expected: %s. Actual: %s.", commonTopic.getValue(), message.getTopic().getValue()));
         }
 
         if (commonTopic.getUrl().isEmpty() && message.getTopic().getUrl().isPresent()) {
@@ -51,7 +52,7 @@ public class MessageContentGroup extends AlertSerializableModel {
     }
 
     public LinkableItem getCommonProvider() {
-        return comonProvider;
+        return commonProvider;
     }
 
     public LinkableItem getCommonTopic() {

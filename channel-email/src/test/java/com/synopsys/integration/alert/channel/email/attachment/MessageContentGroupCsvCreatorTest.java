@@ -10,9 +10,9 @@ import com.synopsys.integration.alert.channel.email.attachment.compatibility.Mes
 import com.synopsys.integration.alert.channel.email.attachment.compatibility.ProviderMessageContent;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 
-public class MessageContentGroupCsvCreatorTest {
+class MessageContentGroupCsvCreatorTest {
     @Test
-    public void createCsvStringTest() throws AlertException {
+    void createCsvStringTest() throws AlertException {
         MessageContentGroup messageContentGroup = new MessageContentGroup();
 
         ProviderMessageContent.Builder providerMessageBuilder = new ProviderMessageContent.Builder();
@@ -36,4 +36,28 @@ public class MessageContentGroupCsvCreatorTest {
         assertNotNull(csvString);
     }
 
+    @Test
+    void createCsvStringWithCommasTest() throws AlertException {
+        MessageContentGroup messageContentGroup = new MessageContentGroup();
+
+        ProviderMessageContent.Builder providerMessageBuilder = new ProviderMessageContent.Builder();
+        providerMessageBuilder.applyProvider("Example Provider", 1L, "Example Config");
+        providerMessageBuilder.applyTopic("Example Topic Name", "Example Topic Value");
+
+        ComponentItem.Builder componentItemBuilder = new ComponentItem.Builder();
+        componentItemBuilder.applyNotificationId(1L);
+        componentItemBuilder.applyOperation(ItemOperation.INFO);
+        componentItemBuilder.applyCategory("Category");
+        componentItemBuilder.applyComponentData("Component", "Component,With,Commas", "https://google.com");
+        componentItemBuilder.applySubComponent("SubComponent", "SubComponent,With,Commas", "https://google.com");
+        componentItemBuilder.applyCategoryItem("Example Category Item Name", "Example Category Item Value");
+        componentItemBuilder.applyCategoryGroupingAttribute("CategoryGroupingAttributeName", "testGroupingName");
+
+        providerMessageBuilder.applyComponentItem(componentItemBuilder.build());
+        messageContentGroup.add(providerMessageBuilder.build());
+
+        MessageContentGroupCsvCreator messageContentGroupCsvCreator = new MessageContentGroupCsvCreator();
+        String csvString = messageContentGroupCsvCreator.createCsvString(messageContentGroup);
+        assertNotNull(csvString);
+    }
 }
