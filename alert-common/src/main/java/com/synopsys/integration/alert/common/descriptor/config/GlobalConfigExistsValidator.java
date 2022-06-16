@@ -8,7 +8,10 @@
 package com.synopsys.integration.alert.common.descriptor.config;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +29,18 @@ public class GlobalConfigExistsValidator {
 
     private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     private final List<Descriptor> descriptors;
+    private final Map<DescriptorKey, ConcreteGlobalConfigExistsValidator> concreteGlobalConfigModelValidatorMap;
 
     @Autowired
-    public GlobalConfigExistsValidator(ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor, List<Descriptor> descriptors) {
+    public GlobalConfigExistsValidator(
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor,
+        List<Descriptor> descriptors,
+        List<ConcreteGlobalConfigExistsValidator> concreteGlobalConfigExistsValidators
+    ) {
         this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
         this.descriptors = descriptors;
+        this.concreteGlobalConfigModelValidatorMap = concreteGlobalConfigExistsValidators.stream()
+            .collect(Collectors.toMap(ConcreteGlobalConfigExistsValidator::getDescriptorKey, Function.identity()));
     }
 
     /**
@@ -51,17 +61,27 @@ public class GlobalConfigExistsValidator {
             return Optional.empty();
         }
 
+        if (doesValidGlobalModelExists(descriptorName, optionalDescriptorKey.get())) {
+            return Optional.empty();
+        }
+
         String descriptorDisplayName = optionalDescriptorKey
             .map(DescriptorKey::getDisplayName)
             .orElse(descriptorName);
-        List<ConfigurationModel> configurations = configurationModelConfigurationAccessor.getConfigurationsByDescriptorNameAndContext(descriptorName, ConfigContextEnum.GLOBAL);
-        boolean configurationsAreEmpty = configurations
-            .stream()
-            .allMatch(ConfigurationModel::isConfiguredFieldsEmpty);
-        if (configurationsAreEmpty) {
-            return Optional.of(String.format(GLOBAL_CONFIG_MISSING, descriptorDisplayName));
-        }
-        return Optional.empty();
+        return Optional.of(String.format(GLOBAL_CONFIG_MISSING, descriptorDisplayName));
     }
 
+    private boolean doesValidGlobalModelExists(String descriptorName, DescriptorKey descriptorKey) {
+        if (concreteGlobalConfigModelValidatorMap.containsKey(descriptorKey)) {
+            ConcreteGlobalConfigExistsValidator validator = concreteGlobalConfigModelValidatorMap.get(descriptorKey);
+            if (validator.exists()) {
+                return true;
+            }
+        }
+
+        List<ConfigurationModel> configurations = configurationModelConfigurationAccessor.getConfigurationsByDescriptorNameAndContext(descriptorName, ConfigContextEnum.GLOBAL);
+        return !configurations
+            .stream()
+            .allMatch(ConfigurationModel::isConfiguredFieldsEmpty);
+    }
 }
