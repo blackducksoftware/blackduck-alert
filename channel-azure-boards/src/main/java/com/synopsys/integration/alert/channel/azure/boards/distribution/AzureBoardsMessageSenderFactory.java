@@ -105,9 +105,27 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
 
         // Message Sender Requirements
         AzureBoardsIssueCommenter commenter = new AzureBoardsIssueCommenter(issueResponseCreator, organizationName, distributionDetails, workItemCommentService);
-        AzureBoardsIssueTransitioner transitioner = new AzureBoardsIssueTransitioner(commenter, issueResponseCreator, gson, organizationName, distributionDetails, workItemService, workItemTypeStateRetriever, exceptionMessageImprover);
-        AzureBoardsIssueCreator creator = new AzureBoardsIssueCreator(channelKey, commenter, callbackInfoCreator, gson, organizationName, distributionDetails, workItemService, issuePropertiesManager, exceptionMessageImprover,
-            issueCategoryRetriever);
+        AzureBoardsIssueTransitioner transitioner = new AzureBoardsIssueTransitioner(
+            commenter,
+            issueResponseCreator,
+            gson,
+            organizationName,
+            distributionDetails,
+            workItemService,
+            workItemTypeStateRetriever,
+            exceptionMessageImprover
+        );
+        AzureBoardsIssueCreator creator = new AzureBoardsIssueCreator(channelKey,
+            commenter,
+            callbackInfoCreator,
+            gson,
+            organizationName,
+            distributionDetails,
+            workItemService,
+            issuePropertiesManager,
+            exceptionMessageImprover,
+            issueCategoryRetriever
+        );
 
         return new IssueTrackerMessageSender<>(creator, transitioner, commenter);
     }

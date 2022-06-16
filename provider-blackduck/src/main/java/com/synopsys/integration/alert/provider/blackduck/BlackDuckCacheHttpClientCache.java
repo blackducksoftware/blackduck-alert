@@ -20,10 +20,12 @@ import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
+//TODO replace the usage of the class the cach client stored here isn't used at all.
 /**
  * Caches a BlackDuckHttpClient for 2 minutes unless the cache is invalidated.
  */
 @Component
+@Deprecated
 public class BlackDuckCacheHttpClientCache {
     private static final Long TIME_TO_LIVE_MINUTES = 2L;
 

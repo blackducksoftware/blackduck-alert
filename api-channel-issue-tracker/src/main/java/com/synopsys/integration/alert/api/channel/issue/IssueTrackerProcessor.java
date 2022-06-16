@@ -20,10 +20,12 @@ import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessag
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 
 public class IssueTrackerProcessor<T extends Serializable> {
+    private final IssueTrackerChannelLock issueTrackerLock;
     private final IssueTrackerModelExtractor<T> modelExtractor;
     private final IssueTrackerMessageSender<T> messageSender;
 
-    public IssueTrackerProcessor(IssueTrackerModelExtractor<T> modelExtractor, IssueTrackerMessageSender<T> messageSender) {
+    public IssueTrackerProcessor(IssueTrackerChannelLock issueTrackerLock, IssueTrackerModelExtractor<T> modelExtractor, IssueTrackerMessageSender<T> messageSender) {
+        this.issueTrackerLock = issueTrackerLock;
         this.modelExtractor = modelExtractor;
         this.messageSender = messageSender;
     }
@@ -31,14 +33,21 @@ public class IssueTrackerProcessor<T extends Serializable> {
     public final IssueTrackerResponse<T> processMessages(ProviderMessageHolder messages, String jobName) throws AlertException {
         List<IssueTrackerIssueResponseModel<T>> issueResponseModels = new LinkedList<>();
 
-        IssueTrackerModelHolder<T> simpleMessageHolder = modelExtractor.extractSimpleMessageIssueModels(messages.getSimpleMessages(), jobName);
-        List<IssueTrackerIssueResponseModel<T>> simpleMessageResponseModels = messageSender.sendMessages(simpleMessageHolder);
-        issueResponseModels.addAll(simpleMessageResponseModels);
+        try {
+            boolean acquired = issueTrackerLock.getLock(IssueTrackerChannelLock.DEFAULT_TIMEOUT_SECONDS);
+            if (acquired) {
+                IssueTrackerModelHolder<T> simpleMessageHolder = modelExtractor.extractSimpleMessageIssueModels(messages.getSimpleMessages(), jobName);
+                List<IssueTrackerIssueResponseModel<T>> simpleMessageResponseModels = messageSender.sendMessages(simpleMessageHolder);
+                issueResponseModels.addAll(simpleMessageResponseModels);
 
-        for (ProjectMessage projectMessage : messages.getProjectMessages()) {
-            IssueTrackerModelHolder<T> projectMessageHolder = modelExtractor.extractProjectMessageIssueModels(projectMessage, jobName);
-            List<IssueTrackerIssueResponseModel<T>> projectMessageResponseModels = messageSender.sendMessages(projectMessageHolder);
-            issueResponseModels.addAll(projectMessageResponseModels);
+                for (ProjectMessage projectMessage : messages.getProjectMessages()) {
+                    IssueTrackerModelHolder<T> projectMessageHolder = modelExtractor.extractProjectMessageIssueModels(projectMessage, jobName);
+                    List<IssueTrackerIssueResponseModel<T>> projectMessageResponseModels = messageSender.sendMessages(projectMessageHolder);
+                    issueResponseModels.addAll(projectMessageResponseModels);
+                }
+            }
+        } finally {
+            issueTrackerLock.release();
         }
 
         return new IssueTrackerResponse<>("Success", issueResponseModels);

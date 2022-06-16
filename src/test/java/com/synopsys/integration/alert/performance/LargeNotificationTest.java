@@ -3,7 +3,7 @@ package com.synopsys.integration.alert.performance;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -49,6 +49,7 @@ import com.synopsys.integration.exception.IntegrationException;
 class LargeNotificationTest {
     private static final JiraServerChannelKey CHANNEL_KEY = new JiraServerChannelKey();
     private static final int DEFAULT_NUMBER_OF_PROJECTS_TO_CREATE = 10;
+    private static final int DEFAULT_STARTING_PROJECT_NUMBER = 1;
     private static final String PERFORMANCE_POLICY_NAME = "PerformanceTestPolicy";
     private static final String DEFAULT_JOB_NAME = "JiraPerformanceJob";
 
@@ -82,12 +83,39 @@ class LargeNotificationTest {
             dateTimeFormatter,
             alertRequestUtility,
             blackDuckProviderService,
-            configurationManager
+            configurationManager,
+            14400
         );
 
         numberOfProjectsToCreate = testProperties.getOptionalProperty(TestPropertyKey.TEST_PERFORMANCE_BLACKDUCK_PROJECT_COUNT)
             .map(Integer::parseInt)
             .orElse(DEFAULT_NUMBER_OF_PROJECTS_TO_CREATE);
+    }
+
+    @Test
+    @EnabledIfEnvironmentVariable(named = "ALERT_RUN_PERFORMANCE", matches = "true")
+    void createTestProjects() throws IntegrationException {
+        int startingProjectNumber = testProperties.getOptionalProperty(TestPropertyKey.TEST_PERFORMANCE_BLACKDUCK_START_PROJECT_NUMBER)
+            .map(Integer::parseInt)
+            .orElse(DEFAULT_STARTING_PROJECT_NUMBER);
+
+        if (startingProjectNumber < DEFAULT_STARTING_PROJECT_NUMBER) {
+            logger.info(String.format("Starting project number invalid. Setting to default: %s", DEFAULT_STARTING_PROJECT_NUMBER));
+            startingProjectNumber = DEFAULT_STARTING_PROJECT_NUMBER;
+        }
+
+        LocalDateTime startingTime = LocalDateTime.now();
+        logger.info(String.format("Starting time: %s", dateTimeFormatter.format(startingTime)));
+
+        // Create Black Duck Global Provider configuration
+        LocalDateTime startingProviderCreateTime = LocalDateTime.now();
+        blackDuckProviderService.setupBlackDuck();
+        logTimeElapsedWithMessage("Setting up the Black Duck provider took %s", startingProviderCreateTime, LocalDateTime.now());
+
+        // create blackduck projects
+        createProjectAndTriggerNotification(numberOfProjectsToCreate, startingProjectNumber);
+
+        logTimeElapsedWithMessage("Total test time: %s", startingTime, LocalDateTime.now());
     }
 
     @Test
@@ -101,11 +129,12 @@ class LargeNotificationTest {
         blackDuckProviderService.setupBlackDuck();
         logTimeElapsedWithMessage("Setting up the Black Duck provider took %s", startingProviderCreateTime, LocalDateTime.now());
 
-        // create 10 blackduck projects
-        List<ProjectVersionWrapper> projectVersionWrappers = createBlackDuckProjects(numberOfProjectsToCreate);
+        // create blackduck projects
+        createBlackDuckProjects(numberOfProjectsToCreate);
 
         //trigger a notification on each project
-        for (ProjectVersionWrapper projectVersionWrapper : projectVersionWrappers) {
+        for (int index = 0; index < numberOfProjectsToCreate; index++) {
+            ProjectVersionWrapper projectVersionWrapper = findOrCreateBlackDuckProject(index);
             triggerBlackDuckNotification(projectVersionWrapper.getProjectVersionView());
         }
         logTimeElapsedWithMessage("Total test time: %s", startingTime, LocalDateTime.now());
@@ -149,7 +178,11 @@ class LargeNotificationTest {
         Map<String, FieldValueModel> channelFieldsMap = jiraServerPerformanceUtility.createChannelFieldsMap(testProperties, DEFAULT_JOB_NAME, globalConfiguration.getId());
 
         // Create N number of blackduck projects
-        List<ProjectVersionWrapper> projectVersionWrappers = createBlackDuckProjects(numberOfProjectsToCreate);
+        createBlackDuckProjects(numberOfProjectsToCreate);
+        List<ProjectVersionWrapper> projectVersionWrappers = new LinkedList<>();
+        for (int index = 0; index < numberOfProjectsToCreate; index++) {
+            projectVersionWrappers.add(findOrCreateBlackDuckProject(index));
+        }
 
         LocalDateTime executionStartTime = LocalDateTime.now();
         testRunner.runTestWithOneJob(channelFieldsMap, "performanceJob", blackDuckProviderID, projectVersionWrappers, numberOfProjectsToCreate);
@@ -196,35 +229,52 @@ class LargeNotificationTest {
         logTimeElapsedWithMessage(String.format("%s %s", createProjectsLogMessage, "%s"), startingProjectCreationTime, LocalDateTime.now());
         */
         LocalDateTime executionStartTime = LocalDateTime.now();
-        testRunner.runPolicyNotificationTest(channelFieldsMap, "performanceJob", blackDuckProviderID, PERFORMANCE_POLICY_NAME, numberOfProjectsToCreate);
+        testRunner.runPolicyNotificationTest(channelFieldsMap, "performanceJob", blackDuckProviderID, PERFORMANCE_POLICY_NAME, numberOfProjectsToCreate, true);
 
         logTimeElapsedWithMessage("Execution and processing test time: %s", executionStartTime, LocalDateTime.now());
         logTimeElapsedWithMessage("Total test time: %s", startingTime, LocalDateTime.now());
     }
 
-    private ProjectVersionWrapper createBlackDuckProject(int index) throws IntegrationException {
+    private ProjectVersionWrapper findOrCreateBlackDuckProject(int index) throws IntegrationException {
         return blackDuckProviderService.findOrCreateBlackDuckProjectAndVersion(String.format("AlertPerformanceProject-%s", index), "version1");
     }
 
-    private List<ProjectVersionWrapper> createBlackDuckProjects(int numberOfProjects) throws IntegrationException {
+    private void createBlackDuckProjects(int numberOfProjects, int startingProjectNumber) throws IntegrationException {
+        logger.info(String.format("Creating %s projects, starting with project number %s", numberOfProjects, startingProjectNumber));
         LocalDateTime startingProjectCreationTime = LocalDateTime.now();
-        List<ProjectVersionWrapper> projectVersionWrappers = new ArrayList<>();
-
-        for (int projectIndex = 1; projectIndex <= numberOfProjects; projectIndex++) {
-            projectVersionWrappers.add(createBlackDuckProject(projectIndex));
+        for (int projectIndex = startingProjectNumber; projectIndex < (numberOfProjects + startingProjectNumber); projectIndex++) {
+            findOrCreateBlackDuckProject(projectIndex);
         }
         String createProjectsLogMessage = String.format("Creating %s projects took", numberOfProjects);
         logTimeElapsedWithMessage(String.format("%s %s", createProjectsLogMessage, "%s"), startingProjectCreationTime, LocalDateTime.now());
-        return projectVersionWrappers;
     }
 
-    private void deleteBlackDuckProjects(int numberOfProjects) throws IntegrationException {
+    private void createBlackDuckProjects(int numberOfProjects) throws IntegrationException {
+        createBlackDuckProjects(numberOfProjects, DEFAULT_STARTING_PROJECT_NUMBER);
+    }
+
+    private void createProjectAndTriggerNotification(int numberOfProjects, int startingProjectNumber) throws IntegrationException {
+        logger.info(String.format("Creating and triggering a notification for %s projects, starting with project number %s", numberOfProjects, startingProjectNumber));
         LocalDateTime startingProjectCreationTime = LocalDateTime.now();
-        for (int projectIndex = 1; projectIndex <= numberOfProjects; projectIndex++) {
+        for (int projectIndex = startingProjectNumber; projectIndex < (numberOfProjects + startingProjectNumber); projectIndex++) {
+            ProjectVersionWrapper projectVersionWrapper = findOrCreateBlackDuckProject(projectIndex);
+            triggerBlackDuckNotification(projectVersionWrapper.getProjectVersionView());
+        }
+        String createProjectsLogMessage = String.format("Creating and triggering a notification for %s projects took", numberOfProjects);
+        logTimeElapsedWithMessage(String.format("%s %s", createProjectsLogMessage, "%s"), startingProjectCreationTime, LocalDateTime.now());
+    }
+
+    private void deleteBlackDuckProjects(int numberOfProjects, int startingProjectNumber) throws IntegrationException {
+        LocalDateTime startingProjectCreationTime = LocalDateTime.now();
+        for (int projectIndex = startingProjectNumber; projectIndex < (numberOfProjects + startingProjectNumber); projectIndex++) {
             blackDuckProviderService.deleteBlackDuckProjectAndVersion(String.format("AlertPerformanceProject-%s", projectIndex), "version1");
         }
         String createProjectsLogMessage = String.format("Deleting %s projects took", numberOfProjects);
         logTimeElapsedWithMessage(String.format("%s %s", createProjectsLogMessage, "%s"), startingProjectCreationTime, LocalDateTime.now());
+    }
+
+    private void deleteBlackDuckProjects(int numberOfProjects) throws IntegrationException {
+        deleteBlackDuckProjects(numberOfProjects, DEFAULT_STARTING_PROJECT_NUMBER);
     }
 
     private void triggerBlackDuckNotification(ProjectVersionView projectVersionView) throws IntegrationException {

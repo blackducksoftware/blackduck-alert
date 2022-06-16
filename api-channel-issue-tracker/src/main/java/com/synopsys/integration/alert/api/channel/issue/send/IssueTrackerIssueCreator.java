@@ -36,7 +36,8 @@ public abstract class IssueTrackerIssueCreator<T extends Serializable> {
     protected IssueTrackerIssueCreator(
         IssueTrackerChannelKey channelKey,
         IssueTrackerIssueCommenter<T> commenter,
-        IssueTrackerCallbackInfoCreator callbackInfoCreator) {
+        IssueTrackerCallbackInfoCreator callbackInfoCreator
+    ) {
         this.channelKey = channelKey;
         this.commenter = commenter;
         this.callbackInfoCreator = callbackInfoCreator;

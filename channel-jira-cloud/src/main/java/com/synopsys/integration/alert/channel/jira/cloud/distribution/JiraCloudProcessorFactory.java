@@ -56,6 +56,7 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
     private final Gson gson;
     private final JiraMessageFormatter jiraMessageFormatter;
     private final JiraCloudChannelKey jiraCloudChannelKey;
+    private final JiraCloudChannelLock jiraCloudChannelLock;
     private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     private final ProxyManager proxyManager;
     private final JiraCloudMessageSenderFactory messageSenderFactory;
@@ -67,6 +68,7 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
         Gson gson,
         JiraMessageFormatter jiraMessageFormatter,
         JiraCloudChannelKey jiraCloudChannelKey,
+        JiraCloudChannelLock jiraCloudChannelLock,
         ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor,
         ProxyManager proxyManager,
         JiraCloudMessageSenderFactory messageSenderFactory,
@@ -76,6 +78,7 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
         this.gson = gson;
         this.jiraMessageFormatter = jiraMessageFormatter;
         this.jiraCloudChannelKey = jiraCloudChannelKey;
+        this.jiraCloudChannelLock = jiraCloudChannelLock;
         this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
         this.proxyManager = proxyManager;
         this.messageSenderFactory = messageSenderFactory;
@@ -102,7 +105,13 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
 
         // Extractor Requirement
         JiraIssueStatusCreator jiraIssueStatusCreator = new JiraIssueStatusCreator(distributionDetails.getResolveTransition(), distributionDetails.getReopenTransition());
-        JiraSearcherFactory jiraSearcherFactory = new JiraSearcherFactory(issuePropertiesManager, jiraIssueStatusCreator, issueService::getTransitions, issueCategoryRetriever, modelTransformer);
+        JiraSearcherFactory jiraSearcherFactory = new JiraSearcherFactory(
+            issuePropertiesManager,
+            jiraIssueStatusCreator,
+            issueService::getTransitions,
+            issueCategoryRetriever,
+            modelTransformer
+        );
         JiraCloudQueryExecutor jiraCloudQueryExecutor = new JiraCloudQueryExecutor(issueSearchService);
         IssueTrackerSearcher<String> jiraSearcher = jiraSearcherFactory.createJiraSearcher(distributionDetails.getProjectNameOrKey(), jiraCloudQueryExecutor);
 
@@ -117,7 +126,7 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
 
         IssueTrackerMessageSender<String> messageSender = messageSenderFactory.createMessageSender(issueService, distributionDetails, projectService, issueCreationRequestCreator, issuePropertiesManager, jiraErrorMessageUtility);
 
-        return new IssueTrackerProcessor<>(extractor, messageSender);
+        return new IssueTrackerProcessor<>(jiraCloudChannelLock, extractor, messageSender);
     }
 
     private JiraCloudProperties createJiraCloudProperties() throws AlertConfigurationException {

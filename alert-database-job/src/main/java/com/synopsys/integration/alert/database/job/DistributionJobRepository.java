@@ -19,6 +19,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.synopsys.integration.alert.common.persistence.model.job.SimpleFilteredDistributionJobResponseModel;
+
 public interface DistributionJobRepository extends JpaRepository<DistributionJobEntity, UUID> {
     boolean existsByDistributionFrequency(String distributionFrequency);
 
@@ -70,6 +72,45 @@ public interface DistributionJobRepository extends JpaRepository<DistributionJob
         @Param("blackDuckConfigId") Long blackDuckConfigId,
         @Param("frequencies") Collection<String> frequencies,
         @Param("notificationTypeSet") Set<String> notificationTypeSet,
+        @Param("projectNames") Set<String> projectNames,
+        @Param("policyNames") Set<String> policyNames,
+        @Param("vulnerabilitySeverities") Set<String> vulnerabilitySeverities,
+        Pageable pageable
+    );
+
+    @Query(value =
+        "SELECT new com.synopsys.integration.alert.common.persistence.model.job.SimpleFilteredDistributionJobResponseModel(notification.id, jobEntity.jobId)  FROM DistributionJobEntity jobEntity "
+            + "    LEFT JOIN jobEntity.blackDuckJobDetails blackDuckDetails ON jobEntity.jobId = blackDuckDetails.jobId "
+            + "    LEFT JOIN blackDuckDetails.blackDuckJobNotificationTypes notificationTypes ON jobEntity.jobId = notificationTypes.jobId "
+            + "    LEFT JOIN blackDuckDetails.blackDuckJobPolicyFilters policyFilters ON jobEntity.jobId = policyFilters.jobId "
+            + "    LEFT JOIN blackDuckDetails.blackDuckJobVulnerabilitySeverityFilters vulnerabilitySeverityFilters ON jobEntity.jobId = vulnerabilitySeverityFilters.jobId "
+            + "    LEFT JOIN blackDuckDetails.blackDuckJobProjects projects ON jobEntity.jobId = projects.jobId "
+            + "    LEFT JOIN NotificationEntity notification ON blackDuckDetails.globalConfigId = notification.providerConfigId "
+            + "    WHERE jobEntity.enabled = true"
+            + "    AND blackDuckDetails.globalConfigId = :blackDuckConfigId"
+            + "    AND notification.providerConfigId = :blackDuckConfigId "
+            + "    AND notification.id = :notificationId "
+            + "    AND notificationTypes.notificationType IN (notification.notificationType)"
+            + "    AND jobEntity.distributionFrequency IN (:frequencies)"
+            + "    AND (blackDuckDetails.filterByProject = false OR blackDuckDetails.projectNamePattern IS NOT NULL OR blackDuckDetails.projectVersionNamePattern IS NOT NULL OR projects.projectName IN (:projectNames))"
+            + "    AND ("
+            + "          ("
+            + "            coalesce(:vulnerabilitySeverities, NULL) IS NULL"
+            + "            OR vulnerabilitySeverityFilters.severityName IS NULL"
+            + "            OR vulnerabilitySeverityFilters.severityName IN (:vulnerabilitySeverities)"
+            + "          ) OR ("
+            + "            coalesce(:policyNames, NULL) IS NULL"
+            + "            OR policyFilters.policyName IS NULL"
+            + "            OR policyFilters.policyName IN (:policyNames)"
+            + "          )"
+            + "    )"
+            + " GROUP BY jobEntity.jobId, notification.id"
+            + " ORDER BY jobEntity.createdAt ASC"
+    )
+    Page<SimpleFilteredDistributionJobResponseModel> findAndSortMatchingEnabledJobsByFilteredNotification(
+        @Param("notificationId") Long notificationId,
+        @Param("blackDuckConfigId") Long blackDuckConfigId,
+        @Param("frequencies") Collection<String> frequencies,
         @Param("projectNames") Set<String> projectNames,
         @Param("policyNames") Set<String> policyNames,
         @Param("vulnerabilitySeverities") Set<String> vulnerabilitySeverities,

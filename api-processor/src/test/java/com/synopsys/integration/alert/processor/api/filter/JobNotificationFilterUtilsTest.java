@@ -196,7 +196,8 @@ class JobNotificationFilterUtilsTest {
         );
         assertTrue(JobNotificationFilterUtils.doesProjectApplyToJob(jobResponseModel, PROJECT_NAME, PROJECT_VERSION_NAME));
 
-        FilteredDistributionJobResponseModel jobResponseModelFilterByNamePattern = createFilteredDistributionJobResponseModel(List.of(NotificationType.VULNERABILITY.name()),
+        FilteredDistributionJobResponseModel jobResponseModelFilterByNamePattern = createFilteredDistributionJobResponseModel(
+            List.of(NotificationType.VULNERABILITY.name()),
             List.of(PROJECT_NAME),
             List.of(),
             List.of(),
@@ -206,6 +207,17 @@ class JobNotificationFilterUtilsTest {
         );
         assertTrue(JobNotificationFilterUtils.doesProjectApplyToJob(jobResponseModelFilterByNamePattern, PROJECT_NAME, PROJECT_VERSION_NAME));
         assertFalse(JobNotificationFilterUtils.doesProjectApplyToJob(jobResponseModelFilterByNamePattern, "nonMatchingName", PROJECT_VERSION_NAME));
+
+        jobResponseModelFilterByNamePattern = createFilteredDistributionJobResponseModel(
+            List.of(NotificationType.VULNERABILITY.name()),
+            List.of("AlertPerformanceProject-100"),
+            List.of(),
+            List.of(),
+            true,
+            "Alert\\w*Project*-\\d+",
+            ""
+        );
+        assertTrue(JobNotificationFilterUtils.doesProjectApplyToJob(jobResponseModelFilterByNamePattern, "AlertPerformanceProject-100", PROJECT_VERSION_NAME));
     }
 
     @Test
