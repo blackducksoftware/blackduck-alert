@@ -23,16 +23,23 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Compon
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectOperation;
 
-public class IssueTrackerSearcherTest {
+class IssueTrackerSearcherTest {
     private static final ProviderDetails PROVIDER_DETAILS = new ProviderDetails(0L, new LinkableItem("Black Duck", "a-black-duck-config", "https://a-server"));
     private static final LinkableItem PROJECT_ITEM = new LinkableItem("Project", "A Project", "https://a-project-url");
     private static final LinkableItem PROJECT_VERSION_ITEM = new LinkableItem("Project Version", "A Version", "https://a-project-version-url");
-    private static final ExistingIssueDetails<String> EXISTING_ISSUE_DETAILS = new ExistingIssueDetails<>("issue-id", "issue-key", "issue summary", "https://issue-link", IssueStatus.RESOLVABLE, IssueCategory.BOM);
+    private static final ExistingIssueDetails<String> EXISTING_ISSUE_DETAILS = new ExistingIssueDetails<>(
+        "issue-id",
+        "issue-key",
+        "issue summary",
+        "https://issue-link",
+        IssueStatus.RESOLVABLE,
+        IssueCategory.BOM
+    );
 
     private final ProjectMessageToIssueModelTransformer modelTransformer = new ProjectMessageToIssueModelTransformer();
 
     @Test
-    public void findIssuesProject() throws AlertException {
+    void findIssuesProject() throws AlertException {
         ProjectMessage projectMessage = ProjectMessage.projectStatusInfo(PROVIDER_DETAILS, PROJECT_ITEM, ProjectOperation.CREATE);
         IssueTrackerSearcher<String> searcher = new IssueTrackerSearcher<>(null, null, null, null, modelTransformer);
         List<ActionableIssueSearchResult<String>> foundIssues = searcher.findIssues(projectMessage);
@@ -40,13 +47,13 @@ public class IssueTrackerSearcherTest {
     }
 
     @Test
-    public void findIssuesProjectBomDeleted() throws AlertException {
+    void findIssuesProjectBomDeleted() throws AlertException {
         ProjectMessage projectMessage = ProjectMessage.projectStatusInfo(PROVIDER_DETAILS, PROJECT_ITEM, ProjectOperation.DELETE);
         ProjectIssueModel projectIssueModel = Mockito.mock(ProjectIssueModel.class);
         ProjectIssueSearchResult<String> projectIssueSearchResult = new ProjectIssueSearchResult<>(EXISTING_ISSUE_DETAILS, projectIssueModel);
 
         ProjectIssueFinder<String> projectIssueFinder = Mockito.mock(ProjectIssueFinder.class);
-        Mockito.when(projectIssueFinder.findProjectIssues(Mockito.eq(PROVIDER_DETAILS), Mockito.eq(PROJECT_ITEM))).thenReturn(List.of(projectIssueSearchResult));
+        Mockito.when(projectIssueFinder.findProjectIssues(PROVIDER_DETAILS, PROJECT_ITEM)).thenReturn(List.of(projectIssueSearchResult));
 
         IssueTrackerSearcher<String> searcher = new IssueTrackerSearcher<>(projectIssueFinder, null, null, null, modelTransformer);
         List<ActionableIssueSearchResult<String>> foundIssues = searcher.findIssues(projectMessage);
@@ -55,13 +62,14 @@ public class IssueTrackerSearcherTest {
     }
 
     @Test
-    public void findIssuesProjectVersion() throws AlertException {
+    void findIssuesProjectVersion() throws AlertException {
         ProjectMessage projectMessage = ProjectMessage.projectVersionStatusInfo(PROVIDER_DETAILS, PROJECT_ITEM, PROJECT_VERSION_ITEM, ProjectOperation.DELETE);
         ProjectIssueModel projectIssueModel = Mockito.mock(ProjectIssueModel.class);
         ProjectIssueSearchResult<String> projectIssueSearchResult = new ProjectIssueSearchResult<>(EXISTING_ISSUE_DETAILS, projectIssueModel);
 
         ProjectVersionIssueFinder<String> projectVersionIssueFinder = Mockito.mock(ProjectVersionIssueFinder.class);
-        Mockito.when(projectVersionIssueFinder.findProjectVersionIssues(Mockito.eq(PROVIDER_DETAILS), Mockito.eq(PROJECT_ITEM), Mockito.eq(PROJECT_VERSION_ITEM))).thenReturn(List.of(projectIssueSearchResult));
+        Mockito.when(projectVersionIssueFinder.findProjectVersionIssues(PROVIDER_DETAILS, PROJECT_ITEM, PROJECT_VERSION_ITEM))
+            .thenReturn(List.of(projectIssueSearchResult));
 
         IssueTrackerSearcher<String> searcher = new IssueTrackerSearcher<>(null, projectVersionIssueFinder, null, null, modelTransformer);
         List<ActionableIssueSearchResult<String>> foundIssues = searcher.findIssues(projectMessage);
@@ -70,14 +78,15 @@ public class IssueTrackerSearcherTest {
     }
 
     @Test
-    public void findIssuesComponentUpdate() throws AlertException {
+    void findIssuesComponentUpdate() throws AlertException {
         BomComponentDetails bomComponentDetails = Mockito.mock(BomComponentDetails.class);
         ProjectMessage projectMessage = ProjectMessage.componentUpdate(PROVIDER_DETAILS, PROJECT_ITEM, PROJECT_VERSION_ITEM, List.of(bomComponentDetails));
         ProjectIssueModel projectIssueModel = Mockito.mock(ProjectIssueModel.class);
         ProjectIssueSearchResult<String> projectIssueSearchResult = new ProjectIssueSearchResult<>(EXISTING_ISSUE_DETAILS, projectIssueModel);
 
         ProjectVersionComponentIssueFinder<String> componentIssueFinder = Mockito.mock(ProjectVersionComponentIssueFinder.class);
-        Mockito.when(componentIssueFinder.findIssuesByComponent(Mockito.eq(PROVIDER_DETAILS), Mockito.eq(PROJECT_ITEM), Mockito.eq(PROJECT_VERSION_ITEM), Mockito.eq(bomComponentDetails))).thenReturn(List.of(projectIssueSearchResult));
+        Mockito.when(componentIssueFinder.findIssuesByComponent(PROVIDER_DETAILS, PROJECT_ITEM, PROJECT_VERSION_ITEM, bomComponentDetails))
+            .thenReturn(List.of(projectIssueSearchResult));
 
         IssueTrackerSearcher<String> searcher = new IssueTrackerSearcher<>(null, null, componentIssueFinder, null, modelTransformer);
         List<ActionableIssueSearchResult<String>> foundIssues = searcher.findIssues(projectMessage);
@@ -86,7 +95,7 @@ public class IssueTrackerSearcherTest {
     }
 
     @Test
-    public void findIssuesProjectIssueModel() throws AlertException {
+    void findIssuesProjectIssueModel() throws AlertException {
         BomComponentDetails bomComponentDetails = Mockito.mock(BomComponentDetails.class);
         ProjectMessage projectMessage = ProjectMessage.componentConcern(PROVIDER_DETAILS, PROJECT_ITEM, PROJECT_VERSION_ITEM, List.of(bomComponentDetails));
 
@@ -106,7 +115,7 @@ public class IssueTrackerSearcherTest {
         Mockito.when(exactIssueFinder.findExistingIssuesByProjectIssueModel(projectIssueModel2)).thenReturn(List.of());
 
         ProjectMessageToIssueModelTransformer mockModelTransformer = Mockito.mock(ProjectMessageToIssueModelTransformer.class);
-        Mockito.when(mockModelTransformer.convertToIssueModels(Mockito.eq(projectMessage))).thenReturn(List.of(projectIssueModel1, projectIssueModel2, projectIssueModel3));
+        Mockito.when(mockModelTransformer.convertToIssueModels(projectMessage)).thenReturn(List.of(projectIssueModel1, projectIssueModel2, projectIssueModel3));
 
         IssueTrackerSearcher<String> searcher = new IssueTrackerSearcher<>(null, null, null, exactIssueFinder, mockModelTransformer);
         List<ActionableIssueSearchResult<String>> foundIssues = searcher.findIssues(projectMessage);

@@ -64,15 +64,15 @@ public class IssueTrackerSearcher<T extends Serializable> {
 
         MessageReason messageReason = projectMessage.getMessageReason();
         boolean isEntireBomDeleted = projectMessage.getOperation()
-                                         .filter(ProjectOperation.DELETE::equals)
-                                         .isPresent();
+            .filter(ProjectOperation.DELETE::equals)
+            .isPresent();
 
         if (MessageReason.PROJECT_STATUS.equals(messageReason)) {
             return findProjectIssues(isEntireBomDeleted, () -> projectIssueFinder.findProjectIssues(providerDetails, project));
         }
 
         LinkableItem projectVersion = projectMessage.getProjectVersion()
-                                          .orElseThrow(() -> new AlertRuntimeException("Missing project version"));
+            .orElseThrow(() -> new AlertRuntimeException("Missing project version"));
         if (MessageReason.PROJECT_VERSION_STATUS.equals(messageReason)) {
             return findProjectIssues(isEntireBomDeleted, () -> projectVersionIssueFinder.findProjectVersionIssues(providerDetails, project, projectVersion));
         }

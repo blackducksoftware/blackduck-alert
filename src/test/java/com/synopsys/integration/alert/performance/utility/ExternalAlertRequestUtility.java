@@ -1,5 +1,9 @@
 package com.synopsys.integration.alert.performance.utility;
 
+import java.io.IOException;
+
+import org.apache.commons.lang3.StringUtils;
+
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.rest.HttpMethod;
@@ -66,14 +70,18 @@ public class ExternalAlertRequestUtility implements AlertRequestUtility {
             requestBuilder.bodyContent(requestBodyContent);
         }
         Request request = requestBuilder.build();
-        Response response = client.execute(request);
-        if (response.isStatusCodeError()) {
-            intLogger.error(error);
-            String responseContent = response.getContentString();
-            intLogger.error(String.format("Error Response: %s", responseContent));
-            response.throwExceptionForError();
+        try (Response response = client.execute(request)) {
+            if (response.isStatusCodeError()) {
+                intLogger.error(error);
+                String responseContent = response.getContentString();
+                intLogger.error(String.format("Error Response: %s", responseContent));
+                response.throwExceptionForError();
+            }
+            return response.getContentString();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return response.getContentString();
+        return StringUtils.EMPTY;
     }
 
     public Request.Builder createRequestBuilder(String path) throws IntegrationException {

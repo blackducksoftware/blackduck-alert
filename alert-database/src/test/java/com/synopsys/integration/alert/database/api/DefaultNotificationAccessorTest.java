@@ -156,13 +156,22 @@ class DefaultNotificationAccessorTest {
 
     @Test
     void findByIdsTest() {
-        NotificationEntity notificationEntity = new NotificationEntity(id, DateUtils.createCurrentDateTimestamp(), provider, providerConfigId, DateUtils.createCurrentDateTimestamp(), notificationType, content, false);
+        NotificationEntity notificationEntity1 = new NotificationEntity(
+            id,
+            DateUtils.createCurrentDateTimestamp(),
+            provider,
+            providerConfigId,
+            DateUtils.createCurrentDateTimestamp(),
+            notificationType,
+            content,
+            false
+        );
         ConfigurationModel configurationModel = createConfigurationModel();
 
         NotificationContentRepository notificationContentRepository = Mockito.mock(NotificationContentRepository.class);
         ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
 
-        Mockito.when(notificationContentRepository.findAllById(Mockito.any())).thenReturn(List.of(notificationEntity));
+        Mockito.when(notificationContentRepository.findAllByIdInOrderByProviderCreationTimeAsc(Mockito.any())).thenReturn(List.of(notificationEntity1));
         Mockito.when(configurationModelConfigurationAccessor.getConfigurationById(Mockito.any())).thenReturn(Optional.of(configurationModel));
 
         DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(notificationContentRepository, null, configurationModelConfigurationAccessor);

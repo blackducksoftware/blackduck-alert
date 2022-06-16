@@ -93,7 +93,7 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<AlertNotificationModel> findByIds(List<Long> notificationIds) {
-        return toModels(notificationContentRepository.findAllById(notificationIds));
+        return toModels(notificationContentRepository.findAllByIdInOrderByProviderCreationTimeAsc(notificationIds));
     }
 
     @Override
