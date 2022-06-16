@@ -157,7 +157,7 @@ class NotificationReceivedEventHandlerTestIT {
     @Test
     void testHandleEventProcessedNotificationsWithPages() {
         EventManager eventManagerSpy = Mockito.spy(eventManager);
-        int totalNotifications = 200;
+        int totalNotifications = 2000;
         List<AlertNotificationModel> notificationContent = new ArrayList<>();
         for (int index = 0; index < totalNotifications; index++) {
             notificationContent.add(createAlertNotificationModel(false));
@@ -173,7 +173,7 @@ class NotificationReceivedEventHandlerTestIT {
         );
         notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
 
-        assertEquals(100, defaultNotificationAccessor.getFirstPageOfNotificationsNotProcessed(100).getModels().size());
+        assertEquals(1000, defaultNotificationAccessor.getFirstPageOfNotificationsNotProcessed(1000).getModels().size());
     }
 
     private AlertNotificationModel createAlertNotificationModel(boolean processed) {

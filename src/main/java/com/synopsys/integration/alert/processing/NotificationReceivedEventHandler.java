@@ -28,7 +28,7 @@ import com.synopsys.integration.alert.processor.api.event.JobNotificationMappedE
 
 @Component
 public class NotificationReceivedEventHandler implements AlertEventHandler<NotificationReceivedEvent> {
-    private static final int PAGE_SIZE = 100;
+    private static final int PAGE_SIZE = 1000;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -51,21 +51,21 @@ public class NotificationReceivedEventHandler implements AlertEventHandler<Notif
     public void handle(NotificationReceivedEvent event) {
         logger.debug("Event {}", event);
         logger.info("Processing event {} for notifications.", event.getEventId());
-        processNotifications(event.getCorrelationId());
+        processNotifications();
         logger.info("Finished processing event {} for notifications.", event.getEventId());
     }
 
-    private void processNotifications(UUID correlationID) {
+    private void processNotifications() {
+        UUID correlationID = UUID.randomUUID();
         AlertPagedModel<AlertNotificationModel> pageOfAlertNotificationModels = notificationAccessor.getFirstPageOfNotificationsNotProcessed(PAGE_SIZE);
         if (!CollectionUtils.isEmpty(pageOfAlertNotificationModels.getModels())) {
             List<AlertNotificationModel> notifications = pageOfAlertNotificationModels.getModels();
             logger.info("Starting to process batch: {} = {} notifications.", correlationID, notifications.size());
             notificationMappingProcessor.processNotifications(correlationID, notifications, List.of(FrequencyType.REAL_TIME));
+            eventManager.sendEvent(new JobNotificationMappedEvent(correlationID));
             boolean hasMoreNotificationsToProcess = notificationAccessor.hasMoreNotificationsToProcess();
             if (hasMoreNotificationsToProcess) {
-                eventManager.sendEvent(new NotificationReceivedEvent(correlationID));
-            } else {
-                eventManager.sendEvent(new JobNotificationMappedEvent(correlationID));
+                eventManager.sendEvent(new NotificationReceivedEvent());
             }
         }
         logger.info("Finished processing event for notifications.");
