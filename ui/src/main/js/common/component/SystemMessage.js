@@ -1,47 +1,53 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
+import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import '../../../css/messages.scss';
+import classNames from 'classnames';
 
-class SystemMessage extends Component {
-    getIcon() {
-        const { severity } = this.props;
-        const errorIcon = 'exclamation-triangle';
-        if (severity === 'ERROR') {
-            return `${errorIcon}`;
-        } if (severity === 'WARNING') {
-            return `${errorIcon}`;
-        }
-        return 'check-circle';
+const useStyles = createUseStyles({
+    alertIcon: {
+        padding: '3px'
+    },
+    errorStatus: {
+        color: '#E03C31'
+    },
+    warningStatus: {
+        color: '#E07C05'
+    },
+    validStatus: {
+        color: '#3B7D3C'
+    }
+});
+
+const SystemMessage = ({ createdAt, content, severity, id }) => {
+    const classes = useStyles();
+
+    function getIcon(severity) {        
+        return (severity === 'ERROR' || severity === 'WARNING') ? 'exclamation-triangle' : 'check-circle';
     }
 
-    getClassName() {
-        const { severity } = this.props;
-        if (severity === 'ERROR') {
-            return 'errorStatus';
-        } if (severity === 'WARNING') {
-            return 'warningStatus';
-        }
-        return 'validStatus';
+    function getClassName(severity) {
+        return classNames({
+            [classes.alertIcon]: true,
+            [classes.errorStatus]: (severity === 'ERROR'),
+            [classes.warningStatus]: (severity === 'WARNING'),
+            [classes.validStatus]: (severity !== 'ERROR' && severity !== 'WARNING'),
+        })
     }
 
-    render() {
-        const {
-            createdAt, content, severity, id
-        } = this.props;
-        return (
-            <div id={id} className="messageHeader">
-                <FontAwesomeIcon
-                    icon={this.getIcon()}
-                    className={`alert-icon ${this.getClassName()}`}
-                    size="lg"
-                    title={severity}
-                />
-                <span className="messageDate">{createdAt}</span>
-                <div>{content}</div>
-            </div>
-        );
-    }
+    return (
+        <div id={id} className="messageHeader">
+            <FontAwesomeIcon
+                icon={getIcon(severity)}
+                className={getClassName(severity)}
+                size="lg"
+                title={severity}
+            />
+            <span className="messageDate">{createdAt}</span>
+            <div>{content}</div>
+        </div>
+    );
+
 }
 
 SystemMessage.propTypes = {
