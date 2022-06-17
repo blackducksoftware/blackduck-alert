@@ -1,5 +1,7 @@
 package com.synopsys.integration.alert.performance;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
@@ -14,6 +16,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
+import com.synopsys.integration.alert.performance.model.PerformanceExecutionStatusModel;
 import com.synopsys.integration.alert.performance.utility.BlackDuckProviderService;
 import com.synopsys.integration.alert.performance.utility.ConfigurationManagerV2;
 import com.synopsys.integration.alert.performance.utility.ExternalAlertRequestUtility;
@@ -163,10 +166,17 @@ class ExternalPerformanceTest {
         blackDuckProviderService.deleteExistingBlackDuckPolicy(policyRuleView);
 
         LocalDateTime executionStartTime = LocalDateTime.now();
-        testRunner.runPolicyNotificationTest(channelFieldsMap, "performanceJob", blackDuckProviderID, PERFORMANCE_POLICY_NAME, numberOfProjectsToCreate, true);
-
+        PerformanceExecutionStatusModel performanceExecutionStatusModel;
+        try {
+            testRunner.runPolicyNotificationTest(channelFieldsMap, "performanceJob", blackDuckProviderID, PERFORMANCE_POLICY_NAME, numberOfProjectsToCreate, true);
+            performanceExecutionStatusModel = PerformanceExecutionStatusModel.succcess();
+        } catch (Exception e) {
+            performanceExecutionStatusModel = PerformanceExecutionStatusModel.failure(e.getMessage());
+        }
         loggingUtility.logTimeElapsedWithMessage("Execution and processing test time: %s", executionStartTime, LocalDateTime.now());
         loggingUtility.logTimeElapsedWithMessage("Total test time: %s", startingTime, LocalDateTime.now());
+
+        assertTrue(performanceExecutionStatusModel.isSuccess());
     }
 }
 
