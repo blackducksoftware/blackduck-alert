@@ -32,10 +32,14 @@ public class IssueTrackerChannelLock {
         boolean acquired = false;
         try {
             acquired = lock.tryAcquire(timeoutSeconds, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
+        } catch (InterruptedException ex) {
+            logger.error("Interrupted Exception acquiring {} lock.", lockName);
+            logger.error("Cause: ", ex);
             Thread.currentThread().interrupt();
         } finally {
-            if (!acquired) {
+            if (acquired) {
+                logger.debug("Acquired {} lock.", lockName);
+            } else {
                 logger.error("Could not acquire {} lock.", lockName);
             }
         }
@@ -43,6 +47,7 @@ public class IssueTrackerChannelLock {
     }
 
     public void release() {
+        logger.debug("Releasing {} lock.", lockName);
         this.lock.release();
     }
 }

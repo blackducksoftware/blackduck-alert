@@ -32,9 +32,9 @@ public class IssueTrackerProcessor<T extends Serializable> {
 
     public final IssueTrackerResponse<T> processMessages(ProviderMessageHolder messages, String jobName) throws AlertException {
         List<IssueTrackerIssueResponseModel<T>> issueResponseModels = new LinkedList<>();
-
+        boolean acquired = false;
         try {
-            boolean acquired = issueTrackerLock.getLock(IssueTrackerChannelLock.DEFAULT_TIMEOUT_SECONDS);
+            acquired = issueTrackerLock.getLock(IssueTrackerChannelLock.DEFAULT_TIMEOUT_SECONDS);
             if (acquired) {
                 IssueTrackerModelHolder<T> simpleMessageHolder = modelExtractor.extractSimpleMessageIssueModels(messages.getSimpleMessages(), jobName);
                 List<IssueTrackerIssueResponseModel<T>> simpleMessageResponseModels = messageSender.sendMessages(simpleMessageHolder);
@@ -47,7 +47,9 @@ public class IssueTrackerProcessor<T extends Serializable> {
                 }
             }
         } finally {
-            issueTrackerLock.release();
+            if (acquired) {
+                issueTrackerLock.release();
+            }
         }
 
         return new IssueTrackerResponse<>("Success", issueResponseModels);

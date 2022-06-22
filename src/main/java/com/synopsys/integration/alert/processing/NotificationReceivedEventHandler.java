@@ -28,7 +28,7 @@ import com.synopsys.integration.alert.processor.api.event.JobNotificationMappedE
 
 @Component
 public class NotificationReceivedEventHandler implements AlertEventHandler<NotificationReceivedEvent> {
-    private static final int PAGE_SIZE = 1000;
+    private static final int PAGE_SIZE = 100;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
