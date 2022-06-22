@@ -2,6 +2,7 @@ package com.synopsys.integration.alert.database.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -144,6 +145,7 @@ class ProcessingJobAccessor2TestIT {
         createJobMappings(CORRELATION_ID, requests);
         Set<UUID> previousJobIdSet = processJobMappings(requests);
         assertEquals(expectedNumOfJobs, previousJobIdSet.size());
+        assertTrue(jobNotificationMappingAccessor.hasJobMappings(CORRELATION_ID));
     }
 
     @Test
@@ -176,6 +178,7 @@ class ProcessingJobAccessor2TestIT {
         createJobMappings(CORRELATION_ID, requests);
         Set<UUID> previousJobIdSet = processJobMappings(requests);
         assertEquals(expectedNumOfJobs, previousJobIdSet.size());
+        assertTrue(jobNotificationMappingAccessor.hasJobMappings(CORRELATION_ID));
     }
 
     @Test
@@ -211,7 +214,9 @@ class ProcessingJobAccessor2TestIT {
 
         Set<UUID> previousJobIdSet = processJobMappings(requests);
         assertEquals(0, jobNotificationMappingAccessor.getUniqueJobIds(nonMappedCorrelationId).size());
+        assertFalse(jobNotificationMappingAccessor.hasJobMappings(nonMappedCorrelationId));
         assertEquals(expectedNumOfJobs, jobNotificationMappingAccessor.getUniqueJobIds(CORRELATION_ID).size());
+        assertTrue(jobNotificationMappingAccessor.hasJobMappings(CORRELATION_ID));
         assertEquals(expectedNumOfJobs, previousJobIdSet.size());
     }
 
