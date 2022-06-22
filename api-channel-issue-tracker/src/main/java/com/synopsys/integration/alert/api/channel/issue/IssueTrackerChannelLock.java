@@ -38,7 +38,7 @@ public class IssueTrackerChannelLock {
             Thread.currentThread().interrupt();
         } finally {
             if (acquired) {
-                logger.debug("Acquired {} lock.", lockName);
+                logger.info("Acquired {} lock.", lockName);
             } else {
                 logger.error("Could not acquire {} lock.", lockName);
             }
@@ -47,7 +47,7 @@ public class IssueTrackerChannelLock {
     }
 
     public void release() {
-        logger.debug("Releasing {} lock.", lockName);
+        logger.info("Releasing {} lock.", lockName);
         this.lock.release();
     }
 }
