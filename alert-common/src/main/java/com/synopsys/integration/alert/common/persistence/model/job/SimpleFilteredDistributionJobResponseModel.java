@@ -16,9 +16,32 @@ public class SimpleFilteredDistributionJobResponseModel extends AlertSerializabl
     private final Long notificationId;
     private final UUID jobId;
 
-    public SimpleFilteredDistributionJobResponseModel(Long notificationId, UUID jobId) {
+    private final boolean projectsConfigured;
+    private final String projectNamePattern;
+    private final String projectVersionNamePattern;
+
+    public SimpleFilteredDistributionJobResponseModel(
+        Long notificationId,
+        UUID jobId,
+        int numberOfConfiguredProjects,
+        String projectNamePattern,
+        String projectVersionNamePattern
+    ) {
+        this(notificationId, jobId, numberOfConfiguredProjects > 0, projectNamePattern, projectVersionNamePattern);
+    }
+
+    public SimpleFilteredDistributionJobResponseModel(
+        Long notificationId,
+        UUID jobId,
+        boolean projectsConfigured,
+        String projectNamePattern,
+        String projectVersionNamePattern
+    ) {
         this.notificationId = notificationId;
         this.jobId = jobId;
+        this.projectsConfigured = projectsConfigured;
+        this.projectNamePattern = projectNamePattern;
+        this.projectVersionNamePattern = projectVersionNamePattern;
     }
 
     public Long getNotificationId() {
@@ -27,5 +50,17 @@ public class SimpleFilteredDistributionJobResponseModel extends AlertSerializabl
 
     public UUID getJobId() {
         return jobId;
+    }
+
+    public boolean hasProjectsConfigured() {
+        return projectsConfigured;
+    }
+
+    public String getProjectNamePattern() {
+        return projectNamePattern;
+    }
+
+    public String getProjectVersionNamePattern() {
+        return projectVersionNamePattern;
     }
 }

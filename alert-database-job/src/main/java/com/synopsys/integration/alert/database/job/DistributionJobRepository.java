@@ -79,7 +79,7 @@ public interface DistributionJobRepository extends JpaRepository<DistributionJob
     );
 
     @Query(value =
-        "SELECT new com.synopsys.integration.alert.common.persistence.model.job.SimpleFilteredDistributionJobResponseModel(notification.id, jobEntity.jobId)  FROM DistributionJobEntity jobEntity "
+        "SELECT new com.synopsys.integration.alert.common.persistence.model.job.SimpleFilteredDistributionJobResponseModel(notification.id, jobEntity.jobId, projects.size, blackDuckDetails.projectNamePattern, blackDuckDetails.projectVersionNamePattern)  FROM DistributionJobEntity jobEntity "
             + "    LEFT JOIN jobEntity.blackDuckJobDetails blackDuckDetails ON jobEntity.jobId = blackDuckDetails.jobId "
             + "    LEFT JOIN blackDuckDetails.blackDuckJobNotificationTypes notificationTypes ON jobEntity.jobId = notificationTypes.jobId "
             + "    LEFT JOIN blackDuckDetails.blackDuckJobPolicyFilters policyFilters ON jobEntity.jobId = policyFilters.jobId "
