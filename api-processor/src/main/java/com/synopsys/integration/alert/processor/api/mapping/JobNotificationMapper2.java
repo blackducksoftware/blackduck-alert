@@ -27,17 +27,14 @@ import com.synopsys.integration.alert.processor.api.filter.JobNotificationFilter
 
 @Component
 public class JobNotificationMapper2 {
-    private final JobNotificationMap jobNotificationMap;
     private final ProcessingJobAccessor2 processingJobAccessor;
     private final JobNotificationMappingAccessor jobNotificationMappingAccessor;
 
     @Autowired
     public JobNotificationMapper2(
-        JobNotificationMap jobNotificationMap,
         ProcessingJobAccessor2 processingJobAccessor,
         JobNotificationMappingAccessor jobNotificationMappingAccessor
     ) {
-        this.jobNotificationMap = jobNotificationMap;
         this.processingJobAccessor = processingJobAccessor;
         this.jobNotificationMappingAccessor = jobNotificationMappingAccessor;
     }
