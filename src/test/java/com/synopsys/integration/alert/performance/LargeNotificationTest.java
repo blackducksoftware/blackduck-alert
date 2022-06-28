@@ -135,7 +135,7 @@ class LargeNotificationTest {
 
     @Test
     @EnabledIfEnvironmentVariable(named = "ALERT_RUN_PERFORMANCE", matches = "true")
-    void largeVulnerabilityNotificationTest() throws IntegrationException, InterruptedException {
+    void largeVulnerabilityNotificationTest() throws IntegrationException {
         LocalDateTime startingTime = LocalDateTime.now();
         logger.info(String.format("Starting time: %s", dateTimeFormatter.format(startingTime)));
 
@@ -162,10 +162,16 @@ class LargeNotificationTest {
         }
 
         LocalDateTime executionStartTime = LocalDateTime.now();
-        testRunner.runTestWithOneJob(channelFieldsMap, "performanceJob", blackDuckProviderID, projectVersionWrappers, numberOfProjectsToCreate);
+        PerformanceExecutionStatusModel performanceExecutionStatusModel = testRunner
+            .runTestWithOneJob(channelFieldsMap, "performanceJob", blackDuckProviderID, projectVersionWrappers, numberOfProjectsToCreate);
 
         logTimeElapsedWithMessage("Execution and processing test time: %s", executionStartTime, LocalDateTime.now());
         logTimeElapsedWithMessage("Total test time: %s", startingTime, LocalDateTime.now());
+
+        if (performanceExecutionStatusModel.isFailure()) {
+            logger.info(String.format("An error occurred while testing: %s", performanceExecutionStatusModel.getMessage()));
+        }
+        assertTrue(performanceExecutionStatusModel.isSuccess());
     }
 
     @Test

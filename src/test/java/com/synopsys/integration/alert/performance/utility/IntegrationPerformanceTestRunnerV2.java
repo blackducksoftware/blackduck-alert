@@ -97,27 +97,43 @@ public class IntegrationPerformanceTestRunnerV2 {
         assertTrue(isComplete);
     }
 
-    public void runTestWithOneJob(
+    public PerformanceExecutionStatusModel runTestWithOneJob(
         Map<String, FieldValueModel> channelFields,
         String jobName,
         String blackDuckProviderID,
         List<ProjectVersionWrapper> projectVersionWrappers,
         int numberOfExpectedAuditEntries
-    ) throws IntegrationException, InterruptedException {
+    ) {
         LocalDateTime jobStartingTime = LocalDateTime.now();
-        String jobId = configurationManager.createJob(channelFields, jobName, blackDuckProviderID, projectVersionWrappers);
-        String jobMessage = String.format("Creating the Job %s jobs took", jobName);
-        loggingUtility.logTimeElapsedWithMessage(jobMessage + " %s", jobStartingTime, LocalDateTime.now());
+        LocalDateTime startingNotificationTime;
+        String jobId;
+        try {
+            jobId = configurationManager.createJob(channelFields, jobName, blackDuckProviderID, projectVersionWrappers);
+            String jobMessage = String.format("Creating the Job %s jobs took", jobName);
+            loggingUtility.logTimeElapsedWithMessage(jobMessage + " %s", jobStartingTime, LocalDateTime.now());
 
-        LocalDateTime startingNotificationTime = LocalDateTime.now();
-        // trigger BD notifications
-        intLogger.info("Triggered the Black Duck notification.");
-        for (ProjectVersionWrapper projectVersionWrapper : projectVersionWrappers) {
-            triggerBlackDuckNotification(projectVersionWrapper.getProjectVersionView());
+            startingNotificationTime = LocalDateTime.now();
+            // trigger BD notifications
+            intLogger.info("Triggered the Black Duck notification.");
+            for (ProjectVersionWrapper projectVersionWrapper : projectVersionWrappers) {
+                triggerBlackDuckNotification(projectVersionWrapper.getProjectVersionView());
+            }
+            loggingUtility.logTimeElapsedWithMessage("Triggering all Black Duck notifications took %s", startingNotificationTime, LocalDateTime.now());
+        } catch (IntegrationException e) {
+            return PerformanceExecutionStatusModel.failure(String.format("Failed to create and trigger notification: %s", e));
         }
-        loggingUtility.logTimeElapsedWithMessage("Triggering all Black Duck notifications took %s", startingNotificationTime, LocalDateTime.now());
 
-        waitForJobToFinish(Set.of(jobId), startingNotificationTime, numberOfExpectedAuditEntries, NotificationType.VULNERABILITY);
+        AuditProcessingWaitJobTask notificationWaitJobTask = new AuditProcessingWaitJobTask(
+            intLogger,
+            dateTimeFormatter,
+            gson,
+            alertRequestUtility,
+            startingNotificationTime,
+            numberOfExpectedAuditEntries,
+            NotificationType.VULNERABILITY,
+            Set.of(jobId)
+        );
+        return waitForJobToFinish(startingNotificationTime, notificationWaitJobTask);
     }
 
     public PerformanceExecutionStatusModel runPolicyNotificationTest(
@@ -152,14 +168,7 @@ public class IntegrationPerformanceTestRunnerV2 {
             numberOfExpectedAuditEntries,
             NotificationType.RULE_VIOLATION
         );
-        try {
-            waitForJobToFinish(startingNotificationTime, waitJobCondition);
-            return PerformanceExecutionStatusModel.success();
-        } catch (IntegrationException e) {
-            return PerformanceExecutionStatusModel.failure(String.format("An error occurred while waiting for jobs to complete: %s", e));
-        } catch (InterruptedException e) {
-            return PerformanceExecutionStatusModel.failure(String.format("Performance job interrupted with error: %s", e));
-        }
+        return waitForJobToFinish(startingNotificationTime, waitJobCondition);
     }
 
     public PerformanceExecutionStatusModel testManyPolicyJobsToManyProjects(
@@ -185,14 +194,7 @@ public class IntegrationPerformanceTestRunnerV2 {
             numberOfExpectedAuditEntries,
             NotificationType.RULE_VIOLATION
         );
-        try {
-            waitForJobToFinish(startingNotificationTime, waitJobCondition);
-            return PerformanceExecutionStatusModel.success();
-        } catch (IntegrationException e) {
-            return PerformanceExecutionStatusModel.failure(String.format("An error occurred while waiting for jobs to complete: %s", e));
-        } catch (InterruptedException e) {
-            return PerformanceExecutionStatusModel.failure(String.format("Performance job interrupted with error: %s", e));
-        }
+        return waitForJobToFinish(startingNotificationTime, waitJobCondition);
     }
 
     private void triggerBlackDuckNotification(ProjectVersionView projectVersionView) throws IntegrationException {
@@ -218,40 +220,47 @@ public class IntegrationPerformanceTestRunnerV2 {
         return blackDuckProviderID;
     }
 
-    private void waitForJobToFinish(
-        Set<String> jobIds, LocalDateTime startingNotificationTime, int numberOfExpectedAuditEntries, NotificationType notificationType
-    ) throws IntegrationException, InterruptedException {
+    /*
+    private PerformanceExecutionStatusModel waitForJobToFinish(
+        Set<String> jobIds,
+        LocalDateTime startingNotificationTime,
+        int numberOfExpectedAuditEntries,
+        NotificationType notificationType
+    ) {
         ResilientJobConfig resilientJobConfig = new ResilientJobConfig(
             intLogger,
             waitTimeoutInSeconds,
             startingNotificationTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
             2
         );
-        AuditProcessingWaitJobTask notificationWaitJobTask = new AuditProcessingWaitJobTask(
-            intLogger,
-            dateTimeFormatter,
-            gson,
-            alertRequestUtility,
-            startingNotificationTime,
-            numberOfExpectedAuditEntries,
-            notificationType,
-            jobIds
-        );
-        boolean isComplete = WaitJob.waitFor(resilientJobConfig, notificationWaitJobTask, "int performance test runner notification wait");
-        intLogger.info("Finished waiting for the notification to be processed: " + isComplete);
-        assertTrue(isComplete);
-    }
+        try {
+            boolean isComplete = WaitJob.waitFor(resilientJobConfig, notificationWaitJobTask, "int performance test runner notification wait");
+            intLogger.info("Finished waiting for the notification to be processed: " + isComplete);
+            assertTrue(isComplete);
+        } catch (IntegrationException e) {
+            return PerformanceExecutionStatusModel.failure(String.format("An error occurred while waiting for jobs to complete: %s", e));
+        } catch (InterruptedException e) {
+            return PerformanceExecutionStatusModel.failure(String.format("Performance job interrupted with error: %s", e));
+        }
+    }*/
 
-    private void waitForJobToFinish(LocalDateTime startingNotificationTime, WaitJobCondition waitJobCondition) throws IntegrationException, InterruptedException {
+    private PerformanceExecutionStatusModel waitForJobToFinish(LocalDateTime startingNotificationTime, WaitJobCondition waitJobCondition) {
         ResilientJobConfig resilientJobConfig = new ResilientJobConfig(
             intLogger,
             waitTimeoutInSeconds,
             startingNotificationTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
             2
         );
-        boolean isComplete = WaitJob.waitFor(resilientJobConfig, waitJobCondition, "int performance test runner notification wait");
-        intLogger.info("Finished waiting for the notification to be processed: " + isComplete);
-        assertTrue(isComplete);
+        try {
+            boolean isComplete = WaitJob.waitFor(resilientJobConfig, waitJobCondition, "int performance test runner notification wait");
+            intLogger.info("Finished waiting for the notification to be processed: " + isComplete);
+            assertTrue(isComplete);
+            return PerformanceExecutionStatusModel.success();
+        } catch (IntegrationException e) {
+            return PerformanceExecutionStatusModel.failure(String.format("An error occurred while waiting for jobs to complete: %s", e));
+        } catch (InterruptedException e) {
+            return PerformanceExecutionStatusModel.failure(String.format("Performance job interrupted with error: %s", e));
+        }
     }
 
     private AuditCompleteWaitJobTask createAuditCompleteWaitTask(
@@ -291,7 +300,11 @@ public class IntegrationPerformanceTestRunnerV2 {
     }
 
     private WaitJobCondition createWaitJobCondition(
-        boolean waitForAuditComplete, Set<String> jobIds, LocalDateTime startingNotificationTime, int numberOfExpectedAuditEntries, NotificationType notificationType
+        boolean waitForAuditComplete,
+        Set<String> jobIds,
+        LocalDateTime startingNotificationTime,
+        int numberOfExpectedAuditEntries,
+        NotificationType notificationType
     ) {
         WaitJobCondition waitJobCondition;
         if (waitForAuditComplete) {
