@@ -1,4 +1,4 @@
-FROM postgres:12.2-alpine
+FROM postgres:12.11-alpine
 
 ARG VERSION
 
