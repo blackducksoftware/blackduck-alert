@@ -19,8 +19,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.synopsys.integration.alert.common.persistence.model.job.SimpleFilteredDistributionJobResponseModel;
-
 public interface DistributionJobRepository extends JpaRepository<DistributionJobEntity, UUID> {
     boolean existsByDistributionFrequency(String distributionFrequency);
 
@@ -79,7 +77,7 @@ public interface DistributionJobRepository extends JpaRepository<DistributionJob
     );
 
     @Query(value =
-        "SELECT new com.synopsys.integration.alert.common.persistence.model.job.SimpleFilteredDistributionJobResponseModel(notification.id, jobEntity.jobId, projects.size, blackDuckDetails.projectNamePattern, blackDuckDetails.projectVersionNamePattern)  FROM DistributionJobEntity jobEntity "
+        "SELECT new com.synopsys.integration.alert.database.job.FilteredDistributionJob(jobEntity.jobId, notification.id, blackDuckDetails.projectNamePattern, blackDuckDetails.projectVersionNamePattern)  FROM DistributionJobEntity jobEntity "
             + "    LEFT JOIN jobEntity.blackDuckJobDetails blackDuckDetails ON jobEntity.jobId = blackDuckDetails.jobId "
             + "    LEFT JOIN blackDuckDetails.blackDuckJobNotificationTypes notificationTypes ON jobEntity.jobId = notificationTypes.jobId "
             + "    LEFT JOIN blackDuckDetails.blackDuckJobPolicyFilters policyFilters ON jobEntity.jobId = policyFilters.jobId "
@@ -104,10 +102,10 @@ public interface DistributionJobRepository extends JpaRepository<DistributionJob
             + "            OR policyFilters.policyName IN (:policyNames)"
             + "          )"
             + "    )"
-            + " GROUP BY jobEntity.jobId, notification.id"
+            + " GROUP BY jobEntity.jobId, notification.id, blackDuckDetails.projectNamePattern, blackDuckDetails.projectVersionNamePattern"
             + " ORDER BY jobEntity.createdAt ASC"
     )
-    Page<SimpleFilteredDistributionJobResponseModel> findAndSortMatchingEnabledJobsByFilteredNotification(
+    Page<FilteredDistributionJob> findAndSortMatchingEnabledJobsByFilteredNotification(
         @Param("notificationId") Long notificationId,
         @Param("blackDuckConfigId") Long blackDuckConfigId,
         @Param("frequencies") Collection<String> frequencies,
@@ -116,5 +114,10 @@ public interface DistributionJobRepository extends JpaRepository<DistributionJob
         @Param("vulnerabilitySeverities") Set<String> vulnerabilitySeverities,
         Pageable pageable
     );
+
+    @Query(value =
+        "SELECT COUNT(projects.jobId) FROM BlackDuckJobProjectEntity projects WHERE projects.jobId = :jobId AND projects.projectName IN (:projectNames)"
+    )
+    int countConfiguredProjectsForJob(@Param("jobId") UUID jobId, @Param("projectNames") Set<String> projectNames);
 
 }
