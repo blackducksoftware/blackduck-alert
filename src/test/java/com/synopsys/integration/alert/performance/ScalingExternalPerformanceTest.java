@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.performance;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -18,6 +19,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
+import com.synopsys.integration.alert.performance.model.PerformanceExecutionStatusModel;
 import com.synopsys.integration.alert.performance.utility.BlackDuckProviderService;
 import com.synopsys.integration.alert.performance.utility.ConfigurationManagerV2;
 import com.synopsys.integration.alert.performance.utility.ExternalAlertRequestUtility;
@@ -125,10 +127,15 @@ class ScalingExternalPerformanceTest {
         loggingUtility.logTimeElapsedWithMessage(jobMessage + " %s", jobStartingTime, LocalDateTime.now());
 
         LocalDateTime executionStartTime = LocalDateTime.now();
-        //Test with 10 policy jobs
-        testRunner.testManyPolicyJobsToManyProjects(policyJobIds, PERFORMANCE_POLICY_NAME, numberOfProjectsToCreate, true);
+        PerformanceExecutionStatusModel performanceExecutionStatusModel = testRunner
+            .testManyPolicyJobsToManyProjects(policyJobIds, PERFORMANCE_POLICY_NAME, numberOfProjectsToCreate, true);
 
         loggingUtility.logTimeElapsedWithMessage("Execution and processing test time: %s", executionStartTime, LocalDateTime.now());
         loggingUtility.logTimeElapsedWithMessage("Total test time: %s", startingTime, LocalDateTime.now());
+
+        if (performanceExecutionStatusModel.isFailure()) {
+            intLogger.info(String.format("An error occurred while testing: %s", performanceExecutionStatusModel.getMessage()));
+        }
+        assertTrue(performanceExecutionStatusModel.isSuccess());
     }
 }

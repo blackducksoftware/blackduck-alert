@@ -132,10 +132,16 @@ class ExternalPerformanceTest {
         logTimeElapsedWithMessage(String.format("%s %s", createProjectsLogMessage, "%s"), startingProjectCreationTime, LocalDateTime.now());
         */
         LocalDateTime executionStartTime = LocalDateTime.now();
-        testRunner.runPolicyNotificationTest(channelFieldsMap, "performanceJob", blackDuckProviderID, PERFORMANCE_POLICY_NAME, numberOfProjectsToCreate, false);
+        PerformanceExecutionStatusModel performanceExecutionStatusModel = testRunner
+            .runPolicyNotificationTest(channelFieldsMap, "performanceJob", blackDuckProviderID, PERFORMANCE_POLICY_NAME, numberOfProjectsToCreate, false);
 
         loggingUtility.logTimeElapsedWithMessage("Execution and processing test time: %s", executionStartTime, LocalDateTime.now());
         loggingUtility.logTimeElapsedWithMessage("Total test time: %s", startingTime, LocalDateTime.now());
+
+        if (performanceExecutionStatusModel.isFailure()) {
+            intLogger.info(String.format("An error occurred while testing: %s", performanceExecutionStatusModel.getMessage()));
+        }
+        assertTrue(performanceExecutionStatusModel.isSuccess());
     }
 
     @Test
@@ -166,16 +172,15 @@ class ExternalPerformanceTest {
         blackDuckProviderService.deleteExistingBlackDuckPolicy(policyRuleView);
 
         LocalDateTime executionStartTime = LocalDateTime.now();
-        PerformanceExecutionStatusModel performanceExecutionStatusModel;
-        try {
-            testRunner.runPolicyNotificationTest(channelFieldsMap, "performanceJob", blackDuckProviderID, PERFORMANCE_POLICY_NAME, numberOfProjectsToCreate, true);
-            performanceExecutionStatusModel = PerformanceExecutionStatusModel.succcess();
-        } catch (Exception e) {
-            performanceExecutionStatusModel = PerformanceExecutionStatusModel.failure(e.getMessage());
-        }
+        PerformanceExecutionStatusModel performanceExecutionStatusModel = testRunner
+            .runPolicyNotificationTest(channelFieldsMap, "performanceJob", blackDuckProviderID, PERFORMANCE_POLICY_NAME, numberOfProjectsToCreate, true);
+
         loggingUtility.logTimeElapsedWithMessage("Execution and processing test time: %s", executionStartTime, LocalDateTime.now());
         loggingUtility.logTimeElapsedWithMessage("Total test time: %s", startingTime, LocalDateTime.now());
 
+        if (performanceExecutionStatusModel.isFailure()) {
+            intLogger.info(String.format("An error occurred while testing: %s", performanceExecutionStatusModel.getMessage()));
+        }
         assertTrue(performanceExecutionStatusModel.isSuccess());
     }
 }

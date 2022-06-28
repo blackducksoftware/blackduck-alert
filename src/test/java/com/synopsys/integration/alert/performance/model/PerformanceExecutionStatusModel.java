@@ -6,8 +6,8 @@ public class PerformanceExecutionStatusModel {
     private final ExecutionStatus status;
     private final String message;
 
-    public static PerformanceExecutionStatusModel succcess() {
-        return success("");
+    public static PerformanceExecutionStatusModel success() {
+        return success("Performance Test finished successfully.");
     }
 
     public static PerformanceExecutionStatusModel success(String message) {
@@ -29,6 +29,10 @@ public class PerformanceExecutionStatusModel {
 
     public boolean isSuccess() {
         return status.equals(ExecutionStatus.SUCCESS);
+    }
+
+    public boolean isFailure() {
+        return status.equals(ExecutionStatus.FAILURE);
     }
 
     public String getMessage() {

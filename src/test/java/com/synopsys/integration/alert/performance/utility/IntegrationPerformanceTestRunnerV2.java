@@ -18,6 +18,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.performance.model.PerformanceExecutionStatusModel;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.service.model.ProjectVersionWrapper;
@@ -69,8 +70,7 @@ public class IntegrationPerformanceTestRunnerV2 {
         return DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
     }
 
-    public void runTest(Map<String, FieldValueModel> channelFields, String jobName)
-        throws IntegrationException, InterruptedException {
+    public void runTest(Map<String, FieldValueModel> channelFields, String jobName) throws IntegrationException, InterruptedException {
         intLogger.info(String.format("Starting time %s", dateTimeFormatter.format(LocalDateTime.now())));
 
         String blackDuckProviderID = createBlackDuckConfiguration();
@@ -103,8 +103,7 @@ public class IntegrationPerformanceTestRunnerV2 {
         String blackDuckProviderID,
         List<ProjectVersionWrapper> projectVersionWrappers,
         int numberOfExpectedAuditEntries
-    )
-        throws IntegrationException, InterruptedException {
+    ) throws IntegrationException, InterruptedException {
         LocalDateTime jobStartingTime = LocalDateTime.now();
         String jobId = configurationManager.createJob(channelFields, jobName, blackDuckProviderID, projectVersionWrappers);
         String jobMessage = String.format("Creating the Job %s jobs took", jobName);
@@ -121,55 +120,79 @@ public class IntegrationPerformanceTestRunnerV2 {
         waitForJobToFinish(Set.of(jobId), startingNotificationTime, numberOfExpectedAuditEntries, NotificationType.VULNERABILITY);
     }
 
-    public void runPolicyNotificationTest(
+    public PerformanceExecutionStatusModel runPolicyNotificationTest(
         Map<String, FieldValueModel> channelFields,
         String jobName,
         String blackDuckProviderID,
         String policyName,
         int numberOfExpectedAuditEntries,
         boolean waitForAuditComplete
-    )
-        throws IntegrationException, InterruptedException {
+    ) {
         LocalDateTime jobStartingTime = LocalDateTime.now();
-        String jobId = configurationManager.createPolicyViolationJob(channelFields, jobName, blackDuckProviderID);
-        String jobMessage = String.format("Creating the Job %s jobs took", jobName);
-        loggingUtility.logTimeElapsedWithMessage(jobMessage + " %s", jobStartingTime, LocalDateTime.now());
+        LocalDateTime startingNotificationTime;
+        String jobId;
+        try {
+            jobId = configurationManager.createPolicyViolationJob(channelFields, jobName, blackDuckProviderID);
+            String jobMessage = String.format("Creating the Job %s jobs took", jobName);
+            loggingUtility.logTimeElapsedWithMessage(jobMessage + " %s", jobStartingTime, LocalDateTime.now());
 
-        LocalDateTime startingNotificationTime = LocalDateTime.now();
-        // trigger BD notifications
-        intLogger.info("Triggered the Black Duck notification.");
-        triggerBlackDuckPolicyNotification(policyName);
-        loggingUtility.logTimeElapsedWithMessage("Triggering policy notification took %s", startingNotificationTime, LocalDateTime.now());
-
-        WaitJobCondition waitJobCondition;
-        if (waitForAuditComplete) {
-            waitJobCondition = createAuditCompleteWaitTask(Set.of(jobId), startingNotificationTime, numberOfExpectedAuditEntries, NotificationType.RULE_VIOLATION);
-        } else {
-            waitJobCondition = createAuditProcessingWaitTask(Set.of(jobId), startingNotificationTime, numberOfExpectedAuditEntries, NotificationType.RULE_VIOLATION);
+            startingNotificationTime = LocalDateTime.now();
+            // trigger BD notifications
+            intLogger.info("Triggered the Black Duck notification.");
+            triggerBlackDuckPolicyNotification(policyName);
+            loggingUtility.logTimeElapsedWithMessage("Triggering policy notification took %s", startingNotificationTime, LocalDateTime.now());
+        } catch (IntegrationException e) {
+            return PerformanceExecutionStatusModel.failure(String.format("Failed to create and trigger notification: %s", e));
         }
-        waitForJobToFinish(startingNotificationTime, waitJobCondition);
+
+        WaitJobCondition waitJobCondition = createWaitJobCondition(
+            waitForAuditComplete,
+            Set.of(jobId),
+            startingNotificationTime,
+            numberOfExpectedAuditEntries,
+            NotificationType.RULE_VIOLATION
+        );
+        try {
+            waitForJobToFinish(startingNotificationTime, waitJobCondition);
+            return PerformanceExecutionStatusModel.success();
+        } catch (IntegrationException e) {
+            return PerformanceExecutionStatusModel.failure(String.format("An error waiting for jobs to complete: %s", e));
+        } catch (InterruptedException e) {
+            return PerformanceExecutionStatusModel.failure(String.format("Performance job interrupted with error: %s", e));
+        }
     }
 
-    public void testManyPolicyJobsToManyProjects(
+    public PerformanceExecutionStatusModel testManyPolicyJobsToManyProjects(
         Set<String> jobIds,
         String policyName,
         int numberOfExpectedAuditEntries,
         boolean waitForAuditComplete
-    )
-        throws IntegrationException, InterruptedException {
+    ) {
         // trigger BD notifications
         LocalDateTime startingNotificationTime = LocalDateTime.now();
-        intLogger.info("Triggered the Black Duck notification.");
-        triggerBlackDuckPolicyNotification(policyName);
-        loggingUtility.logTimeElapsedWithMessage("Triggering policy notification took %s", startingNotificationTime, LocalDateTime.now());
-
-        WaitJobCondition waitJobCondition;
-        if (waitForAuditComplete) {
-            waitJobCondition = createAuditCompleteWaitTask(jobIds, startingNotificationTime, numberOfExpectedAuditEntries, NotificationType.RULE_VIOLATION);
-        } else {
-            waitJobCondition = createAuditProcessingWaitTask(jobIds, startingNotificationTime, numberOfExpectedAuditEntries, NotificationType.RULE_VIOLATION);
+        try {
+            intLogger.info("Triggered the Black Duck notification.");
+            triggerBlackDuckPolicyNotification(policyName);
+            loggingUtility.logTimeElapsedWithMessage("Triggering policy notification took %s", startingNotificationTime, LocalDateTime.now());
+        } catch (IntegrationException e) {
+            return PerformanceExecutionStatusModel.failure(String.format("Failed trigger notification: %s", e));
         }
-        waitForJobToFinish(startingNotificationTime, waitJobCondition);
+
+        WaitJobCondition waitJobCondition = createWaitJobCondition(
+            waitForAuditComplete,
+            jobIds,
+            startingNotificationTime,
+            numberOfExpectedAuditEntries,
+            NotificationType.RULE_VIOLATION
+        );
+        try {
+            waitForJobToFinish(startingNotificationTime, waitJobCondition);
+            return PerformanceExecutionStatusModel.success();
+        } catch (IntegrationException e) {
+            return PerformanceExecutionStatusModel.failure(String.format("An error waiting for jobs to complete: %s", e));
+        } catch (InterruptedException e) {
+            return PerformanceExecutionStatusModel.failure(String.format("Performance job interrupted with error: %s", e));
+        }
     }
 
     private void triggerBlackDuckNotification(ProjectVersionView projectVersionView) throws IntegrationException {
@@ -195,8 +218,9 @@ public class IntegrationPerformanceTestRunnerV2 {
         return blackDuckProviderID;
     }
 
-    private void waitForJobToFinish(Set<String> jobIds, LocalDateTime startingNotificationTime, int numberOfExpectedAuditEntries, NotificationType notificationType)
-        throws IntegrationException, InterruptedException {
+    private void waitForJobToFinish(
+        Set<String> jobIds, LocalDateTime startingNotificationTime, int numberOfExpectedAuditEntries, NotificationType notificationType
+    ) throws IntegrationException, InterruptedException {
         ResilientJobConfig resilientJobConfig = new ResilientJobConfig(
             intLogger,
             waitTimeoutInSeconds,
@@ -218,8 +242,7 @@ public class IntegrationPerformanceTestRunnerV2 {
         assertTrue(isComplete);
     }
 
-    private void waitForJobToFinish(LocalDateTime startingNotificationTime, WaitJobCondition waitJobCondition)
-        throws IntegrationException, InterruptedException {
+    private void waitForJobToFinish(LocalDateTime startingNotificationTime, WaitJobCondition waitJobCondition) throws IntegrationException, InterruptedException {
         ResilientJobConfig resilientJobConfig = new ResilientJobConfig(
             intLogger,
             waitTimeoutInSeconds,
@@ -265,5 +288,17 @@ public class IntegrationPerformanceTestRunnerV2 {
             notificationType,
             jobIds
         );
+    }
+
+    private WaitJobCondition createWaitJobCondition(
+        boolean waitForAuditComplete, Set<String> jobIds, LocalDateTime startingNotificationTime, int numberOfExpectedAuditEntries, NotificationType notificationType
+    ) {
+        WaitJobCondition waitJobCondition;
+        if (waitForAuditComplete) {
+            waitJobCondition = createAuditCompleteWaitTask(jobIds, startingNotificationTime, numberOfExpectedAuditEntries, notificationType);
+        } else {
+            waitJobCondition = createAuditProcessingWaitTask(jobIds, startingNotificationTime, numberOfExpectedAuditEntries, notificationType);
+        }
+        return waitJobCondition;
     }
 }
