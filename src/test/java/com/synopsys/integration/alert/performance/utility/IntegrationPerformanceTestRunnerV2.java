@@ -156,7 +156,7 @@ public class IntegrationPerformanceTestRunnerV2 {
             waitForJobToFinish(startingNotificationTime, waitJobCondition);
             return PerformanceExecutionStatusModel.success();
         } catch (IntegrationException e) {
-            return PerformanceExecutionStatusModel.failure(String.format("An error waiting for jobs to complete: %s", e));
+            return PerformanceExecutionStatusModel.failure(String.format("An error occurred while waiting for jobs to complete: %s", e));
         } catch (InterruptedException e) {
             return PerformanceExecutionStatusModel.failure(String.format("Performance job interrupted with error: %s", e));
         }
@@ -189,7 +189,7 @@ public class IntegrationPerformanceTestRunnerV2 {
             waitForJobToFinish(startingNotificationTime, waitJobCondition);
             return PerformanceExecutionStatusModel.success();
         } catch (IntegrationException e) {
-            return PerformanceExecutionStatusModel.failure(String.format("An error waiting for jobs to complete: %s", e));
+            return PerformanceExecutionStatusModel.failure(String.format("An error occurred while waiting for jobs to complete: %s", e));
         } catch (InterruptedException e) {
             return PerformanceExecutionStatusModel.failure(String.format("Performance job interrupted with error: %s", e));
         }
