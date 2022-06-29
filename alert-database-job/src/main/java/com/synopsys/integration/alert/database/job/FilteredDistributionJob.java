@@ -12,12 +12,21 @@ import java.util.UUID;
 public class FilteredDistributionJob {
     private final UUID jobId;
     private final Long notificationId;
+
+    private final Boolean filterByProject;
     private final String projectNamePattern;
     private final String projectVersionNamePattern;
 
-    public FilteredDistributionJob(UUID jobId, Long notificationId, String projectNamePattern, String projectVersionNamePattern) {
+    public FilteredDistributionJob(
+        UUID jobId,
+        Long notificationId,
+        Boolean filterByProject,
+        String projectNamePattern,
+        String projectVersionNamePattern
+    ) {
         this.jobId = jobId;
         this.notificationId = notificationId;
+        this.filterByProject = filterByProject;
         this.projectNamePattern = projectNamePattern;
         this.projectVersionNamePattern = projectVersionNamePattern;
     }
@@ -28,6 +37,10 @@ public class FilteredDistributionJob {
 
     public Long getNotificationId() {
         return notificationId;
+    }
+
+    public Boolean getFilterByProject() {
+        return filterByProject;
     }
 
     public String getProjectNamePattern() {

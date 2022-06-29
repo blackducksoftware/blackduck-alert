@@ -16,6 +16,7 @@ public class SimpleFilteredDistributionJobResponseModel extends AlertSerializabl
     private final Long notificationId;
     private final UUID jobId;
 
+    private final boolean filterByProject;
     private final boolean projectsConfigured;
     private final String projectNamePattern;
     private final String projectVersionNamePattern;
@@ -23,25 +24,28 @@ public class SimpleFilteredDistributionJobResponseModel extends AlertSerializabl
     public SimpleFilteredDistributionJobResponseModel(
         Long notificationId,
         UUID jobId,
-        int numberOfConfiguredProjects,
+        boolean filterByProject,
         String projectNamePattern,
-        String projectVersionNamePattern
+        String projectVersionNamePattern,
+        int numberOfConfiguredProjects
     ) {
-        this(notificationId, jobId, numberOfConfiguredProjects > 0, projectNamePattern, projectVersionNamePattern);
+        this(notificationId, jobId, filterByProject, projectNamePattern, projectVersionNamePattern, numberOfConfiguredProjects > 0);
     }
 
     public SimpleFilteredDistributionJobResponseModel(
         Long notificationId,
         UUID jobId,
-        boolean projectsConfigured,
+        boolean filterByProject,
         String projectNamePattern,
-        String projectVersionNamePattern
+        String projectVersionNamePattern,
+        boolean projectsConfigured
     ) {
         this.notificationId = notificationId;
         this.jobId = jobId;
-        this.projectsConfigured = projectsConfigured;
+        this.filterByProject = filterByProject;
         this.projectNamePattern = projectNamePattern;
         this.projectVersionNamePattern = projectVersionNamePattern;
+        this.projectsConfigured = projectsConfigured;
     }
 
     public Long getNotificationId() {
@@ -50,6 +54,10 @@ public class SimpleFilteredDistributionJobResponseModel extends AlertSerializabl
 
     public UUID getJobId() {
         return jobId;
+    }
+
+    public boolean isFilterByProject() {
+        return filterByProject;
     }
 
     public boolean hasProjectsConfigured() {
