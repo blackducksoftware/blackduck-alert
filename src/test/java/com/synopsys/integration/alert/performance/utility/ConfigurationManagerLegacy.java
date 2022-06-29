@@ -24,6 +24,8 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.exception.IntegrationException;
 
+//TODO: Implementaions of this class should be replaced with ConfigurationManager
+@Deprecated(forRemoval = true)
 public class ConfigurationManagerLegacy {
     private final AlertRequestUtility alertRequestUtility;
     private final Gson gson;

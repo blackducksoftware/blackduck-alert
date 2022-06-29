@@ -24,6 +24,8 @@ import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.wait.ResilientJobConfig;
 import com.synopsys.integration.wait.WaitJob;
 
+//TODO: Implementaions of this class should be replaced with IntegrationPerformanceTestRunner
+@Deprecated(forRemoval = true)
 public class IntegrationPerformanceTestRunnerLegacy {
     private static final IntLogger intLogger = new Slf4jIntLogger(LoggerFactory.getLogger(IntegrationPerformanceTestRunnerLegacy.class));
     private final Gson gson;
