@@ -19,7 +19,7 @@ import com.synopsys.integration.alert.configuration.ApplicationConfiguration;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.performance.utility.BlackDuckProviderService;
-import com.synopsys.integration.alert.performance.utility.ConfigurationManager;
+import com.synopsys.integration.alert.performance.utility.ConfigurationManagerLegacy;
 import com.synopsys.integration.alert.performance.utility.ExternalAlertRequestUtility;
 import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunnerLegacy;
 import com.synopsys.integration.alert.test.common.TestTags;
@@ -49,7 +49,7 @@ class CopyJobPerformanceTest {
         // Create an authenticated connection to Alert
         alertRequestUtility.loginToExternalAlert();
         BlackDuckProviderService blackDuckProviderService = new BlackDuckProviderService(alertRequestUtility, gson);
-        ConfigurationManager configurationManager = new ConfigurationManager(
+        ConfigurationManagerLegacy configurationManager = new ConfigurationManagerLegacy(
             gson,
             alertRequestUtility,
             blackDuckProviderService.getBlackDuckProviderKey(),

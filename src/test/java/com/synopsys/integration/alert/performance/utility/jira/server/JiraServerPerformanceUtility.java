@@ -25,7 +25,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
 import com.synopsys.integration.alert.performance.utility.AlertRequestUtility;
-import com.synopsys.integration.alert.performance.utility.ConfigurationManagerV2;
+import com.synopsys.integration.alert.performance.utility.ConfigurationManager;
 import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunner;
 import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
@@ -41,9 +41,9 @@ public class JiraServerPerformanceUtility {
     private final DateTimeFormatter dateTimeFormatter = IntegrationPerformanceTestRunner.createDateTimeFormatter();
 
     private final AlertRequestUtility alertRequestUtility;
-    private final ConfigurationManagerV2 configurationManager;
+    private final ConfigurationManager configurationManager;
 
-    public JiraServerPerformanceUtility(AlertRequestUtility alertRequestUtility, ConfigurationManagerV2 configurationManager) {
+    public JiraServerPerformanceUtility(AlertRequestUtility alertRequestUtility, ConfigurationManager configurationManager) {
         this.alertRequestUtility = alertRequestUtility;
         this.configurationManager = configurationManager;
     }

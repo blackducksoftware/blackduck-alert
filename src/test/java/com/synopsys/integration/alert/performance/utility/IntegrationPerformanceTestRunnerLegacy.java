@@ -30,14 +30,14 @@ public class IntegrationPerformanceTestRunnerLegacy {
     private final DateTimeFormatter dateTimeFormatter;
     private final AlertRequestUtility alertRequestUtility;
     private final BlackDuckProviderService blackDuckProviderService;
-    private final ConfigurationManager configurationManager;
+    private final ConfigurationManagerLegacy configurationManager;
 
     public IntegrationPerformanceTestRunnerLegacy(
         Gson gson,
         DateTimeFormatter dateTimeFormatter,
         AlertRequestUtility alertRequestUtility,
         BlackDuckProviderService blackDuckProviderService,
-        ConfigurationManager configurationManager
+        ConfigurationManagerLegacy configurationManager
     ) {
         this.gson = gson;
         this.dateTimeFormatter = dateTimeFormatter;

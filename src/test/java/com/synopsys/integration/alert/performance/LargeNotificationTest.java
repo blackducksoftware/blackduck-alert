@@ -32,7 +32,7 @@ import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
 import com.synopsys.integration.alert.performance.model.PerformanceExecutionStatusModel;
 import com.synopsys.integration.alert.performance.utility.AlertRequestUtility;
 import com.synopsys.integration.alert.performance.utility.BlackDuckProviderService;
-import com.synopsys.integration.alert.performance.utility.ConfigurationManagerV2;
+import com.synopsys.integration.alert.performance.utility.ConfigurationManager;
 import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunner;
 import com.synopsys.integration.alert.performance.utility.jira.server.JiraServerPerformanceUtility;
 import com.synopsys.integration.alert.test.common.TestProperties;
@@ -74,7 +74,7 @@ class LargeNotificationTest {
     public void init() {
         AlertRequestUtility alertRequestUtility = IntegrationPerformanceTestRunner.createAlertRequestUtility(webApplicationContext);
         blackDuckProviderService = new BlackDuckProviderService(alertRequestUtility, gson);
-        ConfigurationManagerV2 configurationManager = new ConfigurationManagerV2(
+        ConfigurationManager configurationManager = new ConfigurationManager(
             gson,
             alertRequestUtility,
             blackDuckProviderService.getBlackDuckProviderKey(),

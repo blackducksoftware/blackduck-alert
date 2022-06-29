@@ -37,7 +37,7 @@ import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.performance.utility.AlertRequestUtility;
 import com.synopsys.integration.alert.performance.utility.BlackDuckProviderService;
-import com.synopsys.integration.alert.performance.utility.ConfigurationManager;
+import com.synopsys.integration.alert.performance.utility.ConfigurationManagerLegacy;
 import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunnerLegacy;
 import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
@@ -130,7 +130,7 @@ public class ComponentUnknownVersionNotificationSerializationTest {
 
     private void configureJob(AlertRequestUtility alertRequestUtility, BlackDuckProviderService blackDuckProviderService) throws IntegrationException {
         String blackDuckProviderID = blackDuckProviderService.setupBlackDuck();
-        ConfigurationManager configurationManager = new ConfigurationManager(
+        ConfigurationManagerLegacy configurationManager = new ConfigurationManagerLegacy(
             gson,
             alertRequestUtility,
             blackDuckProviderService.getBlackDuckProviderKey(),
@@ -148,7 +148,8 @@ public class ComponentUnknownVersionNotificationSerializationTest {
         slackJobFields.put(SlackDescriptor.KEY_CHANNEL_NAME, new FieldValueModel(List.of(SLACK_CHANNEL_NAME), true));
         slackJobFields.put(SlackDescriptor.KEY_CHANNEL_USERNAME, new FieldValueModel(List.of(SLACK_CHANNEL_USERNAME), true));
 
-        configurationManager.createJob(slackJobFields,
+        configurationManager.createJob(
+            slackJobFields,
             SLACK_JOB_NAME,
             blackDuckProviderID,
             blackDuckProviderService.getBlackDuckProjectName(),

@@ -18,7 +18,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
 import com.synopsys.integration.alert.performance.model.PerformanceExecutionStatusModel;
 import com.synopsys.integration.alert.performance.utility.BlackDuckProviderService;
-import com.synopsys.integration.alert.performance.utility.ConfigurationManagerV2;
+import com.synopsys.integration.alert.performance.utility.ConfigurationManager;
 import com.synopsys.integration.alert.performance.utility.ExternalAlertRequestUtility;
 import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunner;
 import com.synopsys.integration.alert.performance.utility.PerformanceLoggingUtility;
@@ -75,7 +75,7 @@ class ExternalPerformanceTest {
         ExternalAlertRequestUtility alertRequestUtility = new ExternalAlertRequestUtility(intLogger, client, alertURL);
         alertRequestUtility.loginToExternalAlert();
         blackDuckProviderService = new BlackDuckProviderService(alertRequestUtility, gson);
-        ConfigurationManagerV2 configurationManager = new ConfigurationManagerV2(
+        ConfigurationManager configurationManager = new ConfigurationManager(
             gson,
             alertRequestUtility,
             blackDuckProviderService.getBlackDuckProviderKey(),

@@ -26,7 +26,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.performance.utility.AlertRequestUtility;
 import com.synopsys.integration.alert.performance.utility.BlackDuckProviderService;
-import com.synopsys.integration.alert.performance.utility.ConfigurationManager;
+import com.synopsys.integration.alert.performance.utility.ConfigurationManagerLegacy;
 import com.synopsys.integration.alert.performance.utility.ExternalAlertRequestUtility;
 import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunnerLegacy;
 import com.synopsys.integration.alert.performance.utility.NotificationWaitJobTask;
@@ -76,7 +76,7 @@ public class ScalingPerformanceTest {
         logTimeElapsedWithMessage("Logging in took %s", startingTime, LocalDateTime.now());
 
         BlackDuckProviderService blackDuckProviderService = new BlackDuckProviderService(alertRequestUtility, gson);
-        ConfigurationManager configurationManager = new ConfigurationManager(
+        ConfigurationManagerLegacy configurationManager = new ConfigurationManagerLegacy(
             gson,
             alertRequestUtility,
             blackDuckProviderService.getBlackDuckProviderKey(),
@@ -104,7 +104,7 @@ public class ScalingPerformanceTest {
     private void createAndTestJobs(
         AlertRequestUtility alertRequestUtility,
         BlackDuckProviderService blackDuckProviderService,
-        ConfigurationManager configurationManager,
+        ConfigurationManagerLegacy configurationManager,
         LocalDateTime startingTime,
         List<String> jobIds,
         int numberOfJobsToCreate,
@@ -153,7 +153,7 @@ public class ScalingPerformanceTest {
     }
 
     private void createSlackJobs(
-        ConfigurationManager configurationManager,
+        ConfigurationManagerLegacy configurationManager,
         LocalDateTime startingTime,
         List<String> jobIds,
         int numberOfJobsToCreate,

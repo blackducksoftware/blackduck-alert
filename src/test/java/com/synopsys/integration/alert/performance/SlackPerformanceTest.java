@@ -28,7 +28,7 @@ import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.performance.utility.AlertRequestUtility;
 import com.synopsys.integration.alert.performance.utility.BlackDuckProviderService;
-import com.synopsys.integration.alert.performance.utility.ConfigurationManager;
+import com.synopsys.integration.alert.performance.utility.ConfigurationManagerLegacy;
 import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunnerLegacy;
 import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
@@ -67,7 +67,7 @@ public class SlackPerformanceTest {
     void testSlackJob() throws Exception {
         AlertRequestUtility alertRequestUtility = IntegrationPerformanceTestRunnerLegacy.createAlertRequestUtility(webApplicationContext);
         BlackDuckProviderService blackDuckProviderService = new BlackDuckProviderService(alertRequestUtility, gson);
-        ConfigurationManager configurationManager = new ConfigurationManager(
+        ConfigurationManagerLegacy configurationManager = new ConfigurationManagerLegacy(
             gson,
             alertRequestUtility,
             blackDuckProviderService.getBlackDuckProviderKey(),

@@ -35,7 +35,7 @@ public class IntegrationPerformanceTestRunner {
     private final DateTimeFormatter dateTimeFormatter;
     private final AlertRequestUtility alertRequestUtility;
     private final BlackDuckProviderService blackDuckProviderService;
-    private final ConfigurationManagerV2 configurationManager;
+    private final ConfigurationManager configurationManager;
     private final PerformanceLoggingUtility loggingUtility;
 
     private final int waitTimeoutInSeconds;
@@ -45,7 +45,7 @@ public class IntegrationPerformanceTestRunner {
         DateTimeFormatter dateTimeFormatter,
         AlertRequestUtility alertRequestUtility,
         BlackDuckProviderService blackDuckProviderService,
-        ConfigurationManagerV2 configurationManager,
+        ConfigurationManager configurationManager,
         int waitTimeoutInSeconds
     ) {
         this.gson = gson;
