@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,20 +23,18 @@ import com.synopsys.integration.alert.common.persistence.model.job.JobToNotifica
 import com.synopsys.integration.alert.common.persistence.model.job.SimpleFilteredDistributionJobResponseModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedDetails;
 import com.synopsys.integration.alert.processor.api.detail.DetailedNotificationContent;
+import com.synopsys.integration.alert.processor.api.filter.JobNotificationFilterUtils;
 
 @Component
 public class JobNotificationMapper2 {
-    private final JobNotificationMap jobNotificationMap;
     private final ProcessingJobAccessor2 processingJobAccessor;
     private final JobNotificationMappingAccessor jobNotificationMappingAccessor;
 
     @Autowired
     public JobNotificationMapper2(
-        JobNotificationMap jobNotificationMap,
         ProcessingJobAccessor2 processingJobAccessor,
         JobNotificationMappingAccessor jobNotificationMappingAccessor
     ) {
-        this.jobNotificationMap = jobNotificationMap;
         this.processingJobAccessor = processingJobAccessor;
         this.jobNotificationMappingAccessor = jobNotificationMappingAccessor;
     }
@@ -48,7 +47,7 @@ public class JobNotificationMapper2 {
         detailedContents
             .stream()
             .map(content -> convertToRequest(content, frequencies))
-            .forEach(jobRequestModel -> retrieveResponse(correlationID, jobRequestModel, detailedContents));
+            .forEach(jobRequestModel -> retrieveResponse(correlationID, jobRequestModel));
     }
 
     private FilteredDistributionJobRequestModel convertToRequest(DetailedNotificationContent detailedNotificationContent, List<FrequencyType> frequencies) {
@@ -58,6 +57,7 @@ public class JobNotificationMapper2 {
             frequencies
         );
         detailedNotificationContent.getProjectName().ifPresent(filteredDistributionJobRequestModel::addProjectName);
+        detailedNotificationContent.getProjectVersionName().ifPresent(filteredDistributionJobRequestModel::addProjectVersionName);
         filteredDistributionJobRequestModel.addNotificationType(detailedNotificationContent.getNotificationContentWrapper().extractNotificationType());
         filteredDistributionJobRequestModel.addVulnerabilitySeverities(detailedNotificationContent.getVulnerabilitySeverities());
         detailedNotificationContent.getPolicyName().ifPresent(filteredDistributionJobRequestModel::addPolicyName);
@@ -66,11 +66,14 @@ public class JobNotificationMapper2 {
 
     private void retrieveResponse(
         UUID correlationId,
-        FilteredDistributionJobRequestModel filteredDistributionJobRequestModel,
-        List<DetailedNotificationContent> detailedNotificationContents
+        FilteredDistributionJobRequestModel filteredDistributionJobRequestModel
     ) {
         int pageNumber = 0;
-        int pageSize = 1000;
+        int pageSize = 200;
+
+        String projectName = filteredDistributionJobRequestModel.getProjectName().stream().findFirst().orElse(StringUtils.EMPTY);
+        String projectVersionName = filteredDistributionJobRequestModel.getProjectVersionNames().stream().findFirst().orElse(StringUtils.EMPTY);
+
         AlertPagedDetails<SimpleFilteredDistributionJobResponseModel> jobs = processingJobAccessor.getMatchingEnabledJobsForNotifications(
             filteredDistributionJobRequestModel,
             pageNumber,
@@ -79,7 +82,9 @@ public class JobNotificationMapper2 {
         while (jobs.getCurrentPage() <= jobs.getTotalPages()) {
             List<JobToNotificationMappingModel> mappings = new LinkedList<>();
             for (SimpleFilteredDistributionJobResponseModel job : jobs.getModels()) {
-                mappings.add(new JobToNotificationMappingModel(correlationId, job.getJobId(), job.getNotificationId()));
+                if (JobNotificationFilterUtils.doesProjectApplyToJob(job, projectName, projectVersionName)) {
+                    mappings.add(new JobToNotificationMappingModel(correlationId, job.getJobId(), job.getNotificationId()));
+                }
             }
             if (!mappings.isEmpty()) {
                 jobNotificationMappingAccessor.addJobMappings(mappings);

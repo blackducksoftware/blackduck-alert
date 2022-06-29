@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.database.api;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -22,6 +23,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistr
 import com.synopsys.integration.alert.common.persistence.model.job.SimpleFilteredDistributionJobResponseModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.database.job.DistributionJobRepository;
+import com.synopsys.integration.alert.database.job.FilteredDistributionJob;
 
 @Component
 public class DefaultProcessingJobAccessor2 implements ProcessingJobAccessor2 {
@@ -54,7 +56,7 @@ public class DefaultProcessingJobAccessor2 implements ProcessingJobAccessor2 {
             filteredDistributionJobRequestModel.getVulnerabilitySeverities();
 
         PageRequest pageRequest = PageRequest.of(pageNumber, pageLimit);
-        Page<SimpleFilteredDistributionJobResponseModel> pageOfDistributionJobEntities = distributionJobRepository.findAndSortMatchingEnabledJobsByFilteredNotification(
+        Page<FilteredDistributionJob> pageOfDistributionJobEntities = distributionJobRepository.findAndSortMatchingEnabledJobsByFilteredNotification(
             filteredDistributionJobRequestModel.getNotificationId().orElse(null),
             filteredDistributionJobRequestModel.getProviderConfigId(),
             frequencyTypes,
@@ -63,8 +65,17 @@ public class DefaultProcessingJobAccessor2 implements ProcessingJobAccessor2 {
             vulnerabilitySeverities,
             pageRequest
         );
-
-        List<SimpleFilteredDistributionJobResponseModel> distributionJobResponseModels = pageOfDistributionJobEntities.getContent();
+        List<SimpleFilteredDistributionJobResponseModel> distributionJobResponseModels = new ArrayList<>(pageOfDistributionJobEntities.getNumberOfElements());
+        for (FilteredDistributionJob filteredJob : pageOfDistributionJobEntities.getContent()) {
+            int projectCount = distributionJobRepository.countConfiguredProjectsForJob(filteredJob.getJobId(), projectNames);
+            distributionJobResponseModels.add(new SimpleFilteredDistributionJobResponseModel(
+                filteredJob.getNotificationId(),
+                filteredJob.getJobId(),
+                projectCount,
+                filteredJob.getProjectNamePattern(),
+                filteredJob.getProjectVersionNamePattern()
+            ));
+        }
         return new AlertPagedModel<>(pageOfDistributionJobEntities.getTotalPages(), pageNumber, pageLimit, distributionJobResponseModels);
 
     }

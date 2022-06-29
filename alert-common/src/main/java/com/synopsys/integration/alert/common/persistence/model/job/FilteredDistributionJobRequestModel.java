@@ -22,6 +22,7 @@ public class FilteredDistributionJobRequestModel extends AlertSerializableModel 
     private final Long notificationId;
     private final List<FrequencyType> frequencyTypes;
     private final Set<String> projectNames = new HashSet<>();
+    private final Set<String> projectVersionNames = new HashSet<>();
     private final Set<String> notificationTypes = new HashSet<>();
     private final Set<String> vulnerabilitySeverities = new HashSet<>();
     private final Set<String> policyNames = new HashSet<>();
@@ -38,6 +39,10 @@ public class FilteredDistributionJobRequestModel extends AlertSerializableModel 
 
     public void addProjectName(String projectName) {
         projectNames.add(projectName);
+    }
+
+    public void addProjectVersionName(String projectName) {
+        projectVersionNames.add(projectName);
     }
 
     public void addNotificationType(String notificationType) {
@@ -67,6 +72,10 @@ public class FilteredDistributionJobRequestModel extends AlertSerializableModel 
 
     public Set<String> getProjectName() {
         return projectNames;
+    }
+
+    public Set<String> getProjectVersionNames() {
+        return projectVersionNames;
     }
 
     public Set<String> getNotificationTypes() {
