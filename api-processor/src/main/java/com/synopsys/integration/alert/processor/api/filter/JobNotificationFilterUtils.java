@@ -93,7 +93,7 @@ public class JobNotificationFilterUtils {
             return projectMatchedOrNoneSelected && Pattern.matches(projectVersionNamePattern, projectVersionName);
         }
 
-        return matchingProjectNamePattern || filteredDistributionJobResponseModel.hasProjectsConfigured();
+        return matchingProjectNamePattern || !filteredDistributionJobResponseModel.hasProjectsConfigured();
     }
 
     public static boolean doVulnerabilitySeveritiesApplyToJob(FilteredDistributionJobResponseModel filteredDistributionJobResponseModel, List<String> notificationSeverities) {
