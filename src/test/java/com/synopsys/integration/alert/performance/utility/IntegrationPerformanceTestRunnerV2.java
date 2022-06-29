@@ -220,30 +220,6 @@ public class IntegrationPerformanceTestRunnerV2 {
         return blackDuckProviderID;
     }
 
-    /*
-    private PerformanceExecutionStatusModel waitForJobToFinish(
-        Set<String> jobIds,
-        LocalDateTime startingNotificationTime,
-        int numberOfExpectedAuditEntries,
-        NotificationType notificationType
-    ) {
-        ResilientJobConfig resilientJobConfig = new ResilientJobConfig(
-            intLogger,
-            waitTimeoutInSeconds,
-            startingNotificationTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
-            2
-        );
-        try {
-            boolean isComplete = WaitJob.waitFor(resilientJobConfig, notificationWaitJobTask, "int performance test runner notification wait");
-            intLogger.info("Finished waiting for the notification to be processed: " + isComplete);
-            assertTrue(isComplete);
-        } catch (IntegrationException e) {
-            return PerformanceExecutionStatusModel.failure(String.format("An error occurred while waiting for jobs to complete: %s", e));
-        } catch (InterruptedException e) {
-            return PerformanceExecutionStatusModel.failure(String.format("Performance job interrupted with error: %s", e));
-        }
-    }*/
-
     private PerformanceExecutionStatusModel waitForJobToFinish(LocalDateTime startingNotificationTime, WaitJobCondition waitJobCondition) {
         ResilientJobConfig resilientJobConfig = new ResilientJobConfig(
             intLogger,
