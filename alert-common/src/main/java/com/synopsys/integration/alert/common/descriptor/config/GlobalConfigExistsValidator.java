@@ -74,9 +74,7 @@ public class GlobalConfigExistsValidator {
     private boolean doesValidGlobalModelExists(String descriptorName, DescriptorKey descriptorKey) {
         if (concreteGlobalConfigModelValidatorMap.containsKey(descriptorKey)) {
             ConcreteGlobalConfigExistsValidator validator = concreteGlobalConfigModelValidatorMap.get(descriptorKey);
-            if (validator.exists()) {
-                return true;
-            }
+            return validator.exists();
         }
 
         List<ConfigurationModel> configurations = configurationModelConfigurationAccessor.getConfigurationsByDescriptorNameAndContext(descriptorName, ConfigContextEnum.GLOBAL);
