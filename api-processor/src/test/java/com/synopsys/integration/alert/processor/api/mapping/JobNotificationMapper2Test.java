@@ -64,11 +64,43 @@ class JobNotificationMapper2Test {
     }
 
     @Test
-    void testMappingJobs() {
+    void testMappingJobsWithoutProjectFilter() {
         UUID correlationId = UUID.randomUUID();
         String project = "project-1";
         String projectVersion = "version-1";
-        ProcessingJobAccessor2 processingJobAccessor = createProcessingAccessor(List.of(createFilteredJobResponse(true, "", "")));
+        ProcessingJobAccessor2 processingJobAccessor = createProcessingAccessor(List.of(createFilteredJobResponse(false, false, "", "")));
+        JobNotificationMappingAccessor jobNotificationMappingAccessor = createJobNotificationMappingAccessor();
+        JobNotificationMapper2 jobNotificationMapper = new JobNotificationMapper2(processingJobAccessor, jobNotificationMappingAccessor);
+
+        AlertNotificationModel notificationModel = new AlertNotificationModel(
+            1L,
+            1L,
+            "provider",
+            "providerConfigName",
+            NotificationType.PROJECT.name(),
+            "",
+            OffsetDateTime.now(),
+            OffsetDateTime.now(),
+            false
+        );
+        ProjectVersionNotificationContent projectVersionNotificationContent = new ProjectVersionNotificationContent();
+
+        jobNotificationMapper.mapJobsToNotifications(
+            correlationId,
+            List.of(DetailedNotificationContent.project(notificationModel, projectVersionNotificationContent, project, projectVersion)),
+            List.of(FrequencyType.REAL_TIME)
+        );
+
+        assertTrue(jobNotificationMappingAccessor.hasJobMappings(correlationId));
+        assertEquals(1, jobNotificationMappingAccessor.getUniqueJobIds(correlationId).size());
+    }
+
+    @Test
+    void testMappingJobsWithProjectFilter() {
+        UUID correlationId = UUID.randomUUID();
+        String project = "project-1";
+        String projectVersion = "version-1";
+        ProcessingJobAccessor2 processingJobAccessor = createProcessingAccessor(List.of(createFilteredJobResponse(true, true, "", "")));
         JobNotificationMappingAccessor jobNotificationMappingAccessor = createJobNotificationMappingAccessor();
         JobNotificationMapper2 jobNotificationMapper = new JobNotificationMapper2(processingJobAccessor, jobNotificationMappingAccessor);
 
@@ -101,7 +133,7 @@ class JobNotificationMapper2Test {
         String goodProjectPattern = "^project-\\d$";
         String project = "project-1";
         String projectVersion = "version-1";
-        ProcessingJobAccessor2 processingJobAccessor = createProcessingAccessor(List.of(createFilteredJobResponse(false, goodProjectPattern, "")));
+        ProcessingJobAccessor2 processingJobAccessor = createProcessingAccessor(List.of(createFilteredJobResponse(true, false, goodProjectPattern, "")));
         JobNotificationMappingAccessor jobNotificationMappingAccessor = createJobNotificationMappingAccessor();
         JobNotificationMapper2 jobNotificationMapper = new JobNotificationMapper2(processingJobAccessor, jobNotificationMappingAccessor);
 
@@ -134,7 +166,7 @@ class JobNotificationMapper2Test {
         String goodProjectVersionPattern = "^version-\\d$";
         String project = "project-1";
         String projectVersion = "version-1";
-        ProcessingJobAccessor2 processingJobAccessor = createProcessingAccessor(List.of(createFilteredJobResponse(true, "", goodProjectVersionPattern)));
+        ProcessingJobAccessor2 processingJobAccessor = createProcessingAccessor(List.of(createFilteredJobResponse(true, true, "", goodProjectVersionPattern)));
         JobNotificationMappingAccessor jobNotificationMappingAccessor = createJobNotificationMappingAccessor();
         JobNotificationMapper2 jobNotificationMapper = new JobNotificationMapper2(processingJobAccessor, jobNotificationMappingAccessor);
 
@@ -175,28 +207,21 @@ class JobNotificationMapper2Test {
         };
     }
 
-    private SimpleFilteredDistributionJobResponseModel createFilteredJobResponse(boolean matchedProjectNames, String projectNamePattern, String projectVersionPattern) {
+    private SimpleFilteredDistributionJobResponseModel createFilteredJobResponse(
+        boolean filterByProject,
+        boolean matchedProjectNames,
+        String projectNamePattern,
+        String projectVersionPattern
+    ) {
         UUID jobId = UUID.randomUUID();
 
         SimpleFilteredDistributionJobResponseModel jobResponseModel = new SimpleFilteredDistributionJobResponseModel(
             notificationId.incrementAndGet(),
             jobId,
-            matchedProjectNames,
+            filterByProject,
             projectNamePattern,
-            projectVersionPattern
-        );
-        return jobResponseModel;
-    }
-
-    private SimpleFilteredDistributionJobResponseModel createNoProjectsFilteredJobResponse(String projectName, String projectVersion) {
-        UUID jobId = UUID.randomUUID();
-
-        SimpleFilteredDistributionJobResponseModel jobResponseModel = new SimpleFilteredDistributionJobResponseModel(
-            notificationId.incrementAndGet(),
-            jobId,
-            0,
-            projectName,
-            projectVersion
+            projectVersionPattern,
+            matchedProjectNames
         );
         return jobResponseModel;
     }
