@@ -16,6 +16,7 @@ This document describes how to install and upgrade Alert in Docker Swarm.
   - [Editing the Overrides File](#editing-the-overrides-file)
   - [Alert Hostname Variable](#alert-hostname-variable)
   - [Alert Database Variables](#alert-database-variables)
+  - [Alert RabbitMQ Variables](#alert-rabbitmq-variables)
   - [Alert Logging Level Variable](#alert-logging-level-variable)
   - [Email Channel Environment Variables](#email-channel-environment-variables)
   - [Environment Variable Classifications](#environment-variable-classifications)
@@ -56,9 +57,11 @@ This section will walk through the instructions to install Alert in a standalone
 2. Create ALERT_ENCRYPTION_GLOBAL_SALT secret.
 3. Create ALERT_DB_USERNAME secret.
 4. Create ALERT_DB_PASSWORD secret.
-5. Manage certificates.
-6. Modify environment variables.
-7. Deploy the stack.
+5. Create ALERT_RABBITMQ_USER secret.
+6. Create ALERT_RABBITMQ_PASSWORD secret.
+7. Manage certificates.
+8. Modify environment variables.
+9. Deploy the stack.
 
 **Please Note:**
 If you are installing with Black Duck and upgrading Alert from a 4.x version to 5.x, please use the docker-compose.local-overrides.yml bundled with Alert. Please remove any Alert configuration from the docker-compose.local-overrides.yml
@@ -236,15 +239,89 @@ cannot switch to using the ALERT_DB_PASSWORD secret. The Alert database containe
             
     ```
   - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
+##### 5. Create ALERT_RABBITMQ_USER secret.
+- Create a docker secret containing the username of the RabbitMQ user for Alert.
+    ```bash
+    docker secret create <STACK_NAME>_ALERT_RABBITMQ_USER <FILE_CONTAINING_USERNAME>
+    ```
+    - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
+    - Replace <FILE_CONTAINING_USERNAME> with the path to the file containing the username text.
 
-##### 5. Manage certificates.
+- Make sure the alert-rabbitmq service is uncommented from the docker-compose.local-overrides.yml file.
+- Uncomment the following from the docker-compose.local-overrides.yml file alert-rabbitmq service section.
+    ```yaml
+        alert-rabbitmq:
+            secrets:
+                - ALERT_RABBITMQ_USER
+                - ALERT_RABBITMQ_PASSWORD
+    ```
+- Make sure the alert service is uncommented from the docker-compose.local-overrides.yml file.
+- Uncomment the following from the docker-compose.local-overrides.yml file alert service section.
+    ```yaml
+        alert:
+            secrets:
+                - ALERT_RABBITMQ_USER
+                - ALERT_RABBITMQ_PASSWORD
+    ```
+- Uncomment the following from the secrets section of the docker-compose.local-overrides.yml file.
+    ```yaml
+        secrets:
+            ALERT_RABBITMQ_USER:
+              external: true
+              name: "<STACK_NAME>_ALERT_RABBITMQ_USER"
+            ALERT_RABBITMQ_PASSWORD:
+              external: true
+              name: "<STACK_NAME>_ALERT_RABBITMQ_PASSWORD"
+            
+    ```
+    - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
+  
+##### 6. Create ALERT_RABBITMQ_PASSWORD secret.
+
+- Create a docker secret containing the password of the RabbitMQ user for Alert.
+    ```bash
+    docker secret create <STACK_NAME>_ALERT_RABBITMQ_PASSWORD <FILE_CONTAINING_PASSWORD>
+    ```
+    - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
+    - Replace <FILE_CONTAINING_PASSWORD> with the path to the file containing the password text.
+
+- Make sure the alert-rabbitmq service is uncommented from the docker-compose.local-overrides.yml file.
+- Uncomment the following from the docker-compose.local-overrides.yml file alert-rabbitmq service section.
+    ```yaml
+        alert-rabbitmq:
+            secrets:
+                - ALERT_RABBITMQ_USER
+                - ALERT_RABBITMQ_PASSWORD
+    ```
+- Make sure the alert service is uncommented from the docker-compose.local-overrides.yml file.
+- Uncomment the following from the docker-compose.local-overrides.yml file alert service section.
+    ```yaml
+        alert:
+            secrets:
+                - ALERT_RABBITMQ_USER
+                - ALERT_RABBITMQ_PASSWORD
+    ```
+- Uncomment the following from the secrets section of the docker-compose.local-overrides.yml file.
+    ```yaml
+        secrets:
+            ALERT_RABBITMQ_USER:
+              external: true
+              name: "<STACK_NAME>_ALERT_RABBITMQ_USER"
+            ALERT_RABBITMQ_PASSWORD:
+              external: true
+              name: "<STACK_NAME>_ALERT_RABBITMQ_PASSWORD"
+            
+    ```
+    - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
+  
+##### 7. Manage certificates.
 
 This is an optional step. Confirm if custom certificates or certificate store need to be used.
 
 - Using custom certificate for Alert web server. See [Using Custom Certificates](#using-custom-certificates)
 - Using custom trust store to trust certificates of external servers. See [Using Custom Certificate TrustStore](#using-custom-certificate-truststore)
 
-#### 6. Modify environment variables.
+#### 8. Modify environment variables.
 
 Please see [Environment Variables](#environment-variables)
 
@@ -252,7 +329,7 @@ Please see [Environment Variables](#environment-variables)
 - Set the optional environment variables for database connectivity. See [Alert Database Variables](#alert-database-variables)
 - Set any other optional environment variables as needed.
 
-##### 7. Deploy the stack.
+##### 9. Deploy the stack.
 
 This step has some variation in how a user accesses Alert depending on the installation you are trying to perform.  
 There are the Standalone and Installing with Black Duck variations.
@@ -523,7 +600,96 @@ The following variables in the overrides file are under the comment in the alert
         ```
     - Replace <DB_NAME> with the name of the database created in Postgres to store Alert data
     - <DB_NAME> Should match the value in the POSTGRES_DB variable of the alertdb service
-        
+
+### Alert RabbitMQ Variables
+There are additional environment variables to control how Alert connects to a RabbitMQ messaging system independent of the user and password secrets.
+These include the following in the alert-rabbitmq service:
+ALERT_RABBITMQ_HOST, ALERT_RABBITMQ_PORT, ALERT_RABBITMQ_MGMNT_PORT, and ALERT_RABBITMQ_VHOST
+
+Also the following in the alert service:
+ALERT_RABBITMQ_HOST, ALERT_RABBITMQ_PORT, and ALERT_RABBITMQ_VHOST
+
+The following variables in the overrides file are under the commented environment section in the alert-rabbitmq service section.
+
+- Add the ALERT_RABBITMQ_HOST environment variable only if the alert-rabbitmq service is using a different hostname (The value must be the hostname only of the RabbitMQ server.)
+    - Editing overrides file:
+        ```yaml
+        alert-rabbitmq:
+            environment:
+                - ALERT_RABBITMQ_HOST=<RABBITMQ_HOST_NAME>
+        ```
+    - Replace <RABBITMQ_HOST_NAME> with the hostname of the machine where RabbitMQ is installed.
+    - Do not add the protocol a.k.a scheme to the value of the variable.
+        - Good: `ALERT_RABBITMQ_HOST=myhost.example.com`
+        - Bad: `ALERT_RABBITMQ_HOST=https://myhost.example.com`
+
+- Add the ALERT_RABBITMQ_PORT environment variable if the alert-rabbitmq service is running on a different port than the default
+    - Editing overrides file:
+        ```yaml
+        alert-rabbitmq:
+            environment:
+                - ALERT_RABBITMQ_PORT=<RABBITMQ_PORT>
+        ```
+    - Replace <RABBITMQ_PORT> with the port used by the RabbitMQ server (default is 5672)
+  
+- Add the ALERT_RABBITMQ_MGMNT_PORT environment variable if the alert-rabbitmq service is running on a different port than the default
+    - Editing overrides file:
+        ```yaml
+        alert-rabbitmq:
+            environment:
+                - ALERT_RABBITMQ_MGMNT_PORT=<RABBITMQ_MANAGEMENT_PORT>
+        ```
+    - Replace <RABBITMQ_MANAGEMENT_PORT> with the port used by the RabbitMQ server (default is 15672)
+
+- Add the ALERT_RABBITMQ_VHOST environment variable only if the alert-rabbitmq service is using a different virtual hostname.
+    - Editing overrides file:
+        ```yaml
+        alert-rabbitmq:
+            environment:
+                - ALERT_RABBITMQ_VHOST=<RABBITMQ_VIRTUAL_HOSTNAME>
+        ```
+    - Replace <RABBITMQ_VIRTUAL_HOSTNAME> with the hostname for RabbitMQ to host the queues for the Alert application.
+    - Do not add the protocol a.k.a scheme to the value of the variable.
+        - Good: `ALERT_RABBITMQ_VHOST=myhost.example.com`
+        - Bad: `ALERT_RABBITMQ_VHOST=https://myhost.example.com`
+
+The following variables in the overrides file are under the comment in the alert service section.
+    ```yaml
+    # -- RabbitMQ Settings
+    ```
+- Add the ALERT_RABBITMQ_HOST environment variable only if the alert service is using a different hostname (The value must be the hostname only of the RabbitMQ server.)
+    - Editing overrides file:
+        ```yaml
+        alert:
+            environment:
+                - ALERT_RABBITMQ_HOST=<RABBITMQ_HOST_NAME>
+        ```
+    - Replace <RABBITMQ_HOST_NAME> with the hostname of the machine where RabbitMQ is installed.
+    - Do not add the protocol a.k.a scheme to the value of the variable.
+        - Good: `ALERT_RABBITMQ_HOST=myhost.example.com`
+        - Bad: `ALERT_RABBITMQ_HOST=https://myhost.example.com`
+
+- Add the ALERT_RABBITMQ_PORT environment variable if the alert service is running on a different port than the default
+    - Editing overrides file:
+        ```yaml
+        alert:
+            environment:
+                - ALERT_RABBITMQ_PORT=<RABBITMQ_PORT>
+        ```
+    - Replace <RABBITMQ_PORT> with the port used by the RabbitMQ server (default is 5672)
+
+- Add the ALERT_RABBITMQ_VHOST environment variable only if the alert service is using a different virtual hostname.
+    - Editing overrides file:
+        ```yaml
+        alert:
+            environment:
+                - ALERT_RABBITMQ_VHOST=<RABBITMQ_VIRTUAL_HOSTNAME>
+        ```
+    - Replace <RABBITMQ_VIRTUAL_HOSTNAME> with the hostname for RabbitMQ to host the queues for the Alert application.
+    - Do not add the protocol a.k.a scheme to the value of the variable.
+        - Good: `ALERT_RABBITMQ_VHOST=myhost.example.com`
+        - Bad: `ALERT_RABBITMQ_VHOST=https://myhost.example.com`
+
 ### Alert Logging Level Variable
 To change the logging level of Alert add the following environment variable to the deployment. 
 

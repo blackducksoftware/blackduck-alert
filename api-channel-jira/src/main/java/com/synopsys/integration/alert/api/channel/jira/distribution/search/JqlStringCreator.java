@@ -18,7 +18,7 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Compon
 
 public final class JqlStringCreator {
     private static final String SEARCH_CONJUNCTION = "AND";
-    private static final Set<Character> CHARACTERS_TO_ESCAPE = Set.of('\'');
+    private static final Set<Character> CHARACTERS_TO_ESCAPE = Set.of('\'', '\\');
 
     public static String createBlackDuckProjectIssuesSearchString(
         String jiraProjectKey,
@@ -102,7 +102,13 @@ public final class JqlStringCreator {
         }
     }
 
-    private static void appendBlackDuckProjectVersionSearchStrings(StringBuilder jqlBuilder, String jiraProjectKey, LinkableItem provider, LinkableItem project, LinkableItem projectVersion) {
+    private static void appendBlackDuckProjectVersionSearchStrings(
+        StringBuilder jqlBuilder,
+        String jiraProjectKey,
+        LinkableItem provider,
+        LinkableItem project,
+        LinkableItem projectVersion
+    ) {
         appendBlackDuckProjectSearchStrings(jqlBuilder, jiraProjectKey, provider, project);
 
         appendPropertySearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROJECT_VERSION_LABEL, projectVersion.getLabel());

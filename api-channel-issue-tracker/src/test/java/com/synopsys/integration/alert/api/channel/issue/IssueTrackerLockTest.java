@@ -40,7 +40,7 @@ class IssueTrackerLockTest {
         ExecutorService executorService = Executors.newFixedThreadPool(2);
         AtomicInteger acquisitions = new AtomicInteger(0);
         CompletionService<Void> completionService = new ExecutorCompletionService<>(executorService);
-        completionService.submit(this.createRunnableThatSleeps(lock, 1, acquisitions, 2000));
+        completionService.submit(this.createRunnableThatSleeps(lock, 1, acquisitions, 5000));
         completionService.submit(this.createRunnable(lock, 1, acquisitions));
 
         assertTrue(completionService.take().isDone());

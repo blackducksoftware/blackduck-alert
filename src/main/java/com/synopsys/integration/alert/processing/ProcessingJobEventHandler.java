@@ -86,7 +86,7 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
                 providerMessageDistributor.distribute(processedNotificationDetails, processedMessageHolder);
             }
         } finally {
-            clearCaches();
+            clearCaches(correlationId);
             jobNotificationMappingAccessor.removeJobMapping(correlationId, jobId);
         }
     }
@@ -160,10 +160,11 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
         );
     }
 
-    private void clearCaches() {
-        // TODO add a task to periodically clean the lifecycle cache if the notification job map is empty
-        for (NotificationProcessingLifecycleCache lifecycleCache : lifecycleCaches) {
-            lifecycleCache.clear();
+    private void clearCaches(UUID correlationId) {
+        if (!jobNotificationMappingAccessor.hasJobMappings(correlationId)) {
+            for (NotificationProcessingLifecycleCache lifecycleCache : lifecycleCaches) {
+                lifecycleCache.clear();
+            }
         }
     }
 }

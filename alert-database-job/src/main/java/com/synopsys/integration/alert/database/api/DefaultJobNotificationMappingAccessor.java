@@ -56,6 +56,11 @@ public class DefaultJobNotificationMappingAccessor implements JobNotificationMap
     }
 
     @Override
+    public boolean hasJobMappings(UUID correlationId) {
+        return jobToNotificationRelationRepository.countAllByCorrelationId(correlationId) > 0;
+    }
+
+    @Override
     @Transactional
     public void addJobMappings(List<JobToNotificationMappingModel> jobMappings) {
         List<JobToNotificationRelation> entities = jobMappings.stream()

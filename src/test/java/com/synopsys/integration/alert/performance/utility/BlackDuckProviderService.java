@@ -210,7 +210,7 @@ public class BlackDuckProviderService {
             intLogger.info(String.format("Project: %s Version %s already exists", projectName, projectVersionName));
             return existingProjectVersion.get();
         }
-        intLogger.info(String.format("Creating project: %s", projectName));
+        intLogger.info(String.format("Creating project: %s with version: %s", projectName, projectVersionName));
         return projectService.createProject(projectRequest);
     }
 

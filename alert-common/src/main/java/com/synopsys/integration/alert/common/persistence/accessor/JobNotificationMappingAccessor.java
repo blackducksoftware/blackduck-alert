@@ -19,6 +19,8 @@ public interface JobNotificationMappingAccessor {
 
     Set<UUID> getUniqueJobIds(UUID correlationId);
 
+    boolean hasJobMappings(UUID correlationId);
+
     void addJobMappings(List<JobToNotificationMappingModel> jobMappings);
 
     void removeJobMapping(UUID correlationId, UUID jobId);

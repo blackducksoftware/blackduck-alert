@@ -32,6 +32,10 @@ dependencies {
 
     implementation 'org.springframework.security.extensions:spring-security-saml2-core'
 
+    //rabbitmq
+    implementation 'org.springframework.amqp:spring-amqp'
+    implementation 'org.springframework.amqp:spring-rabbit'
+
     testImplementation 'org.springframework.data:spring-data-commons'
     testImplementation project(':test-common-channel')
     testImplementation project(':provider-blackduck')
