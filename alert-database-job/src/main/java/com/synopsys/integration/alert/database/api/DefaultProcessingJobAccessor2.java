@@ -71,9 +71,10 @@ public class DefaultProcessingJobAccessor2 implements ProcessingJobAccessor2 {
             distributionJobResponseModels.add(new SimpleFilteredDistributionJobResponseModel(
                 filteredJob.getNotificationId(),
                 filteredJob.getJobId(),
-                projectCount,
+                filteredJob.getFilterByProject(),
                 filteredJob.getProjectNamePattern(),
-                filteredJob.getProjectVersionNamePattern()
+                filteredJob.getProjectVersionNamePattern(),
+                projectCount
             ));
         }
         return new AlertPagedModel<>(pageOfDistributionJobEntities.getTotalPages(), pageNumber, pageLimit, distributionJobResponseModels);

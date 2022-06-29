@@ -376,9 +376,78 @@ class JobNotificationFilterUtilsTest {
     }
 
     @Test
+    void verifyJobDoesNotFilterByProjectSimpleResponseTest() {
+        SimpleFilteredDistributionJobResponseModel filteredDistributionJobResponseModel = createSimpleFilteredDistributionJobResponseModel(
+            false,
+            false,
+            "",
+            ""
+        );
+
+        boolean doesProjectApplyToJob = JobNotificationFilterUtils.doesProjectApplyToJob(filteredDistributionJobResponseModel, "projectName", "1.0.0");
+
+        assertTrue(doesProjectApplyToJob);
+    }
+
+    @Test
+    void verifyJobDoesNotMatchProjectAndPatternsEmptySimpleResponseTest() {
+        SimpleFilteredDistributionJobResponseModel filteredDistributionJobResponseModel = createSimpleFilteredDistributionJobResponseModel(
+            true,
+            false,
+            "",
+            ""
+        );
+
+        boolean doesProjectApplyToJob = JobNotificationFilterUtils.doesProjectApplyToJob(filteredDistributionJobResponseModel, "projectName", "1.0.0");
+
+        assertFalse(doesProjectApplyToJob);
+    }
+
+    @Test
+    void verifyJobDoesNotMatchProjectNamePatternSimpleResponseTest() {
+        SimpleFilteredDistributionJobResponseModel filteredDistributionJobResponseModel = createSimpleFilteredDistributionJobResponseModel(
+            true,
+            false,
+            "BM.*",
+            "^a\\d$"
+        );
+
+        boolean doesProjectApplyToJob = JobNotificationFilterUtils.doesProjectApplyToJob(filteredDistributionJobResponseModel, "Won'tMatch", "a1");
+
+        assertFalse(doesProjectApplyToJob);
+    }
+
+    @Test
+    void doesProjectNameMatchWithProjectSimpleResponseTest() {
+        SimpleFilteredDistributionJobResponseModel jobResponseModel = createSimpleFilteredDistributionJobResponseModel(
+            true,
+            true,
+            "projectN*",
+            ""
+        );
+        boolean doesProjectApplyToJob = JobNotificationFilterUtils.doesProjectApplyToJob(jobResponseModel, "projectName", "1.0.0");
+
+        assertTrue(doesProjectApplyToJob);
+    }
+
+    @Test
+    void doesProjectNameMatchNoProjectSimpleResponseTest() {
+        SimpleFilteredDistributionJobResponseModel jobResponseModel = createSimpleFilteredDistributionJobResponseModel(
+            true,
+            false,
+            "projectN.*",
+            ""
+        );
+        boolean doesProjectApplyToJob = JobNotificationFilterUtils.doesProjectApplyToJob(jobResponseModel, "projectName", "1.0.0");
+
+        assertTrue(doesProjectApplyToJob);
+    }
+
+    @Test
     void doesProjectVersionNameMatchSimpleResponseTest() {
         SimpleFilteredDistributionJobResponseModel jobResponseModel = createSimpleFilteredDistributionJobResponseModel(
             true,
+            false,
             "",
             "1.0.*"
         );
@@ -391,6 +460,7 @@ class JobNotificationFilterUtilsTest {
     void doesProjectVersionNameNotMatchSimpleResponseTest() {
         SimpleFilteredDistributionJobResponseModel jobResponseModel = createSimpleFilteredDistributionJobResponseModel(
             true,
+            false,
             "",
             "1.0.*"
         );
@@ -400,33 +470,9 @@ class JobNotificationFilterUtilsTest {
     }
 
     @Test
-    void doesProjectVersionNameMatchWithWrongProjectSimpleResponseTest() {
-        SimpleFilteredDistributionJobResponseModel jobResponseModel = createSimpleFilteredDistributionJobResponseModel(
-            false,
-            "",
-            "1.0.*"
-        );
-        boolean doesProjectApplyToJob = JobNotificationFilterUtils.doesProjectApplyToJob(jobResponseModel, "projectName", "1.0.0");
-
-        assertFalse(doesProjectApplyToJob);
-    }
-
-    @Test
     void doesProjectVersionNameMatchWithProjectSimpleResponseTest() {
-        String validProject = "projectName";
         SimpleFilteredDistributionJobResponseModel jobResponseModel = createSimpleFilteredDistributionJobResponseModel(
             true,
-            "",
-            "1.0.*"
-        );
-        boolean doesProjectApplyToJob = JobNotificationFilterUtils.doesProjectApplyToJob(jobResponseModel, "projectName", "1.0.0");
-
-        assertTrue(doesProjectApplyToJob);
-    }
-
-    @Test
-    void doesProjectVersionNameMatchWithNoProjectSimpleResponseTest() {
-        SimpleFilteredDistributionJobResponseModel jobResponseModel = createSimpleFilteredDistributionJobResponseModel(
             true,
             "",
             "1.0.*"
@@ -440,6 +486,7 @@ class JobNotificationFilterUtilsTest {
     void doesProjectVersionNameMatchWithProjectPatternMatchSimpleResponseTest() {
         SimpleFilteredDistributionJobResponseModel jobResponseModel = createSimpleFilteredDistributionJobResponseModel(
             true,
+            false,
             "projectN.*",
             "1.0.*"
         );
@@ -450,21 +497,8 @@ class JobNotificationFilterUtilsTest {
 
     @Test
     void doesProjectVersionNameMatchWithInvalidProjectPatternMatchSimpleResponseTest() {
-        SimpleFilteredDistributionJobResponseModel jobResponseModel = createSimpleFilteredDistributionJobResponseModel(false, "projectN.*", "1.0.*");
+        SimpleFilteredDistributionJobResponseModel jobResponseModel = createSimpleFilteredDistributionJobResponseModel(true, false, "projectN.*", "1.0.*");
         boolean doesProjectApplyToJob = JobNotificationFilterUtils.doesProjectApplyToJob(jobResponseModel, "wrong", "1.0.0");
-
-        assertFalse(doesProjectApplyToJob);
-    }
-
-    @Test
-    void verifyJobDoesNotMatchProjectNamePatternSimpleResponseTest() {
-        SimpleFilteredDistributionJobResponseModel filteredDistributionJobResponseModel = createSimpleFilteredDistributionJobResponseModel(
-            false,
-            "BM.*",
-            "^a\\d$"
-        );
-
-        boolean doesProjectApplyToJob = JobNotificationFilterUtils.doesProjectApplyToJob(filteredDistributionJobResponseModel, "Won'tMatch", "a1");
 
         assertFalse(doesProjectApplyToJob);
     }
@@ -497,6 +531,7 @@ class JobNotificationFilterUtilsTest {
     }
 
     private SimpleFilteredDistributionJobResponseModel createSimpleFilteredDistributionJobResponseModel(
+        boolean filterByProject,
         boolean hasProjects,
         String projectNamePattern,
         String projectNameVersionPattern
@@ -504,9 +539,10 @@ class JobNotificationFilterUtilsTest {
         return new SimpleFilteredDistributionJobResponseModel(
             1L,
             UUID.randomUUID(),
-            hasProjects,
+            filterByProject,
             projectNamePattern,
-            projectNameVersionPattern
+            projectNameVersionPattern,
+            hasProjects
         );
     }
 

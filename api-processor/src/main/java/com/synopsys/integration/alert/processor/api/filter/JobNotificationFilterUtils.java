@@ -81,19 +81,24 @@ public class JobNotificationFilterUtils {
 
     public static boolean doesProjectApplyToJob(SimpleFilteredDistributionJobResponseModel filteredDistributionJobResponseModel, String projectName, String projectVersionName) {
         String projectNamePattern = filteredDistributionJobResponseModel.getProjectNamePattern();
+        String projectVersionNamePattern = filteredDistributionJobResponseModel.getProjectVersionNamePattern();
+
+        // The project name matches on of the jobs selected project names.
+        if (filteredDistributionJobResponseModel.hasProjectsConfigured()
+            || !filteredDistributionJobResponseModel.isFilterByProject()) {
+            return true;
+        }
         boolean matchingProjectNamePattern = (StringUtils.isNotBlank(projectNamePattern)) ? Pattern.matches(projectNamePattern, projectName) : false;
 
-        String projectVersionNamePattern = filteredDistributionJobResponseModel.getProjectVersionNamePattern();
         if (StringUtils.isNotBlank(projectVersionNamePattern)) {
             // Project version pattern has to always be valid and if something else exists (Selected project or project name pattern), that also needs to be valid
-            boolean projectMatchedOrNoneSelected = filteredDistributionJobResponseModel.hasProjectsConfigured() || matchingProjectNamePattern;
-            if (!projectMatchedOrNoneSelected && StringUtils.isNotBlank(projectNamePattern)) {
+            if (!matchingProjectNamePattern && StringUtils.isNotBlank(projectNamePattern)) {
                 return false;
             }
-            return projectMatchedOrNoneSelected && Pattern.matches(projectVersionNamePattern, projectVersionName);
+            return matchingProjectNamePattern || Pattern.matches(projectVersionNamePattern, projectVersionName);
         }
 
-        return matchingProjectNamePattern || !filteredDistributionJobResponseModel.hasProjectsConfigured();
+        return matchingProjectNamePattern;
     }
 
     public static boolean doVulnerabilitySeveritiesApplyToJob(FilteredDistributionJobResponseModel filteredDistributionJobResponseModel, List<String> notificationSeverities) {
