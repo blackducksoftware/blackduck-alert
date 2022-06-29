@@ -26,7 +26,7 @@ import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
 import com.synopsys.integration.alert.performance.utility.AlertRequestUtility;
 import com.synopsys.integration.alert.performance.utility.ConfigurationManagerV2;
-import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunnerV2;
+import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunner;
 import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.exception.IntegrationException;
@@ -37,8 +37,8 @@ public class JiraServerPerformanceUtility {
     private static final BlackDuckProviderKey PROVIDER_KEY = new BlackDuckProviderKey();
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final Gson gson = IntegrationPerformanceTestRunnerV2.createGson();
-    private final DateTimeFormatter dateTimeFormatter = IntegrationPerformanceTestRunnerV2.createDateTimeFormatter();
+    private final Gson gson = IntegrationPerformanceTestRunner.createGson();
+    private final DateTimeFormatter dateTimeFormatter = IntegrationPerformanceTestRunner.createDateTimeFormatter();
 
     private final AlertRequestUtility alertRequestUtility;
     private final ConfigurationManagerV2 configurationManager;

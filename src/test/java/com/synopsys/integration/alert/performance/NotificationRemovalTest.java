@@ -41,7 +41,7 @@ import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptorKey;
 import com.synopsys.integration.alert.component.scheduling.workflow.PurgeTask;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
-import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunner;
+import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunnerLegacy;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.test.common.TestTags;
@@ -89,7 +89,7 @@ class NotificationRemovalTest {
 
     private PurgeTask purgeTask;
     private ConfigurationModel providerConfig;
-    private final DateTimeFormatter dateTimeFormatter = IntegrationPerformanceTestRunner.createDateTimeFormatter();
+    private final DateTimeFormatter dateTimeFormatter = IntegrationPerformanceTestRunnerLegacy.createDateTimeFormatter();
 
     @AfterEach
     public void cleanup() {
@@ -154,7 +154,8 @@ class NotificationRemovalTest {
     private List<AlertNotificationModel> getAllNotificationsInDatabase(OffsetDateTime oldestNotificationCreationTime, OffsetDateTime testStartTime) {
         List<AlertNotificationModel> notifications = new LinkedList<>();
         int pageSize = 100;
-        AlertPagedModel<AlertNotificationModel> page = notificationAccessor.findByCreatedAtBetween(oldestNotificationCreationTime, testStartTime, AlertPagedModel.DEFAULT_PAGE_NUMBER, pageSize);
+        AlertPagedModel<AlertNotificationModel> page = notificationAccessor
+            .findByCreatedAtBetween(oldestNotificationCreationTime, testStartTime, AlertPagedModel.DEFAULT_PAGE_NUMBER, pageSize);
         int currentPage = page.getCurrentPage();
         int totalPages = page.getTotalPages();
         notifications.addAll(page.getModels());
@@ -176,7 +177,12 @@ class NotificationRemovalTest {
             RuleViolationNotificationView ruleViolationNotificationView = createRuleViolationNotificationView(PROJECT_NAME);
 
             String notificationContentString = GSON.toJson(ruleViolationNotificationView);
-            notifications.add(createNotification(providerDetails, NotificationType.RULE_VIOLATION.name(), notificationContentString, notificationCreationTime, batchOfProcessedNotifications));
+            notifications.add(createNotification(providerDetails,
+                NotificationType.RULE_VIOLATION.name(),
+                notificationContentString,
+                notificationCreationTime,
+                batchOfProcessedNotifications
+            ));
         }
         notifications = notificationAccessor.saveAllNotifications(notifications);
         createAuditEntries(notifications);
@@ -193,7 +199,8 @@ class NotificationRemovalTest {
         blackDuckTimeoutField.setFieldValue("300");
 
         BlackDuckProviderKey blackDuckProviderKey = new BlackDuckProviderKey();
-        return configurationModelConfigurationAccessor.createConfiguration(blackDuckProviderKey, ConfigContextEnum.GLOBAL, List.of(blackDuckURLField, blackDuckAPITokenField, blackDuckTimeoutField));
+        return configurationModelConfigurationAccessor
+            .createConfiguration(blackDuckProviderKey, ConfigContextEnum.GLOBAL, List.of(blackDuckURLField, blackDuckAPITokenField, blackDuckTimeoutField));
     }
 
     private void createAuditEntries(List<AlertNotificationModel> notifications) {
@@ -234,8 +241,15 @@ class NotificationRemovalTest {
         return notificationView;
     }
 
-    private AlertNotificationModel createNotification(ProviderDetails providerDetails, String notificationType, String notificationContent, OffsetDateTime notificationCreationTime, boolean processed) {
-        return new AlertNotificationModel(null,
+    private AlertNotificationModel createNotification(
+        ProviderDetails providerDetails,
+        String notificationType,
+        String notificationContent,
+        OffsetDateTime notificationCreationTime,
+        boolean processed
+    ) {
+        return new AlertNotificationModel(
+            null,
             providerDetails.getProviderConfigId(),
             providerDetails.getProvider().getLabel(),
             providerDetails.getProvider().getValue(),

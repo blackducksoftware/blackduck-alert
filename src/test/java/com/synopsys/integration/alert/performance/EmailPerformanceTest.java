@@ -32,7 +32,7 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.performance.utility.AlertRequestUtility;
 import com.synopsys.integration.alert.performance.utility.BlackDuckProviderService;
 import com.synopsys.integration.alert.performance.utility.ConfigurationManager;
-import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunner;
+import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunnerLegacy;
 import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
@@ -50,8 +50,8 @@ public class EmailPerformanceTest {
     @Autowired
     private WebApplicationContext webApplicationContext;
 
-    private final Gson gson = IntegrationPerformanceTestRunner.createGson();
-    private final DateTimeFormatter dateTimeFormatter = IntegrationPerformanceTestRunner.createDateTimeFormatter();
+    private final Gson gson = IntegrationPerformanceTestRunnerLegacy.createGson();
+    private final DateTimeFormatter dateTimeFormatter = IntegrationPerformanceTestRunnerLegacy.createDateTimeFormatter();
 
     private static String EMAIL_CHANNEL_KEY;
 
@@ -73,10 +73,10 @@ public class EmailPerformanceTest {
     @Ignore // performance test
     @Disabled
     void testEmailJob() throws Exception {
-        AlertRequestUtility alertRequestUtility = IntegrationPerformanceTestRunner.createAlertRequestUtility(webApplicationContext);
+        AlertRequestUtility alertRequestUtility = IntegrationPerformanceTestRunnerLegacy.createAlertRequestUtility(webApplicationContext);
         BlackDuckProviderService blackDuckProviderService = new BlackDuckProviderService(alertRequestUtility, gson);
         ConfigurationManager configurationManager = new ConfigurationManager(gson, alertRequestUtility, blackDuckProviderService.getBlackDuckProviderKey(), EMAIL_CHANNEL_KEY);
-        IntegrationPerformanceTestRunner integrationPerformanceTestRunner = new IntegrationPerformanceTestRunner(
+        IntegrationPerformanceTestRunnerLegacy integrationPerformanceTestRunner = new IntegrationPerformanceTestRunnerLegacy(
             gson,
             dateTimeFormatter,
             alertRequestUtility,

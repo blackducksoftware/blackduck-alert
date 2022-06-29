@@ -25,7 +25,7 @@ import com.synopsys.integration.alert.performance.utility.AlertRequestUtility;
 import com.synopsys.integration.alert.performance.utility.BlackDuckProviderService;
 import com.synopsys.integration.alert.performance.utility.ConfigurationManagerV2;
 import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunner;
-import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunnerV2;
+import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunnerLegacy;
 import com.synopsys.integration.alert.performance.utility.jira.server.JiraServerPerformanceUtility;
 import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestTags;
@@ -44,15 +44,15 @@ class JiraServerPerformanceTest {
     @Autowired
     private WebApplicationContext webApplicationContext;
 
-    private final Gson gson = IntegrationPerformanceTestRunner.createGson();
-    private final DateTimeFormatter dateTimeFormatter = IntegrationPerformanceTestRunnerV2.createDateTimeFormatter();
+    private final Gson gson = IntegrationPerformanceTestRunnerLegacy.createGson();
+    private final DateTimeFormatter dateTimeFormatter = IntegrationPerformanceTestRunner.createDateTimeFormatter();
 
     private JiraServerPerformanceUtility jiraServerPerformanceUtility;
-    private IntegrationPerformanceTestRunnerV2 testRunner;
+    private IntegrationPerformanceTestRunner testRunner;
 
     @BeforeEach
     public void init() {
-        AlertRequestUtility alertRequestUtility = IntegrationPerformanceTestRunnerV2.createAlertRequestUtility(webApplicationContext);
+        AlertRequestUtility alertRequestUtility = IntegrationPerformanceTestRunner.createAlertRequestUtility(webApplicationContext);
         BlackDuckProviderService blackDuckProviderService = new BlackDuckProviderService(alertRequestUtility, gson);
         ConfigurationManagerV2 configurationManager = new ConfigurationManagerV2(
             gson,
@@ -61,7 +61,7 @@ class JiraServerPerformanceTest {
             CHANNEL_KEY.getUniversalKey()
         );
         jiraServerPerformanceUtility = new JiraServerPerformanceUtility(alertRequestUtility, configurationManager);
-        testRunner = new IntegrationPerformanceTestRunnerV2(
+        testRunner = new IntegrationPerformanceTestRunner(
             gson,
             dateTimeFormatter,
             alertRequestUtility,

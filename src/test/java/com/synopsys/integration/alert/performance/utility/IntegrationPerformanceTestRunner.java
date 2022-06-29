@@ -2,11 +2,12 @@ package com.synopsys.integration.alert.performance.utility;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.LoggerFactory;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
@@ -16,13 +17,17 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.performance.model.PerformanceExecutionStatusModel;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
+import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.synopsys.integration.blackduck.service.model.ProjectVersionWrapper;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.wait.ResilientJobConfig;
 import com.synopsys.integration.wait.WaitJob;
+import com.synopsys.integration.wait.WaitJobCondition;
 
 public class IntegrationPerformanceTestRunner {
     private static final IntLogger intLogger = new Slf4jIntLogger(LoggerFactory.getLogger(IntegrationPerformanceTestRunner.class));
@@ -30,14 +35,26 @@ public class IntegrationPerformanceTestRunner {
     private final DateTimeFormatter dateTimeFormatter;
     private final AlertRequestUtility alertRequestUtility;
     private final BlackDuckProviderService blackDuckProviderService;
-    private final ConfigurationManager configurationManager;
+    private final ConfigurationManagerV2 configurationManager;
+    private final PerformanceLoggingUtility loggingUtility;
 
-    public IntegrationPerformanceTestRunner(Gson gson, DateTimeFormatter dateTimeFormatter, AlertRequestUtility alertRequestUtility, BlackDuckProviderService blackDuckProviderService, ConfigurationManager configurationManager) {
+    private final int waitTimeoutInSeconds;
+
+    public IntegrationPerformanceTestRunner(
+        Gson gson,
+        DateTimeFormatter dateTimeFormatter,
+        AlertRequestUtility alertRequestUtility,
+        BlackDuckProviderService blackDuckProviderService,
+        ConfigurationManagerV2 configurationManager,
+        int waitTimeoutInSeconds
+    ) {
         this.gson = gson;
         this.dateTimeFormatter = dateTimeFormatter;
         this.alertRequestUtility = alertRequestUtility;
         this.blackDuckProviderService = blackDuckProviderService;
         this.configurationManager = configurationManager;
+        this.waitTimeoutInSeconds = waitTimeoutInSeconds;
+        loggingUtility = new PerformanceLoggingUtility(intLogger, dateTimeFormatter);
     }
 
     public static AlertRequestUtility createAlertRequestUtility(WebApplicationContext webApplicationContext) {
@@ -53,60 +70,224 @@ public class IntegrationPerformanceTestRunner {
         return DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
     }
 
-    public void runTest(FieldModel channelGlobalConfig, Map<String, FieldValueModel> channelFields, String jobName) throws IntegrationException, InterruptedException {
-        runTest(() -> createGlobalConfiguration(channelGlobalConfig), channelFields, jobName);
-    }
-
     public void runTest(Map<String, FieldValueModel> channelFields, String jobName) throws IntegrationException, InterruptedException {
-        runTest(() -> {}, channelFields, jobName);
-    }
-
-    public void runTest(Runnable createGlobalConfigFunction, Map<String, FieldValueModel> channelFields, String jobName) throws IntegrationException, InterruptedException {
         intLogger.info(String.format("Starting time %s", dateTimeFormatter.format(LocalDateTime.now())));
 
         String blackDuckProviderID = createBlackDuckConfiguration();
 
-        createGlobalConfigFunction.run();
-
         LocalDateTime jobStartingTime = LocalDateTime.now();
         String jobId = configurationManager.createJob(channelFields, jobName, blackDuckProviderID, blackDuckProviderService.getBlackDuckProjectName());
         String jobMessage = String.format("Creating the Job %s jobs took", jobName);
-        logTimeElapsedWithMessage(jobMessage + " %s", jobStartingTime, LocalDateTime.now());
+        loggingUtility.logTimeElapsedWithMessage(jobMessage + " %s", jobStartingTime, LocalDateTime.now());
 
         LocalDateTime startingSearchDateTime = LocalDateTime.now();
         // trigger BD notification
         blackDuckProviderService.triggerBlackDuckNotification();
         intLogger.info("Triggered the Black Duck notification.");
-        ResilientJobConfig resilientJobConfig = new ResilientJobConfig(intLogger, 600, startingSearchDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), 20);
+
+        ResilientJobConfig resilientJobConfig = new ResilientJobConfig(
+            intLogger,
+            waitTimeoutInSeconds,
+            startingSearchDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+            20
+        );
         NotificationWaitJobTask notificationWaitJobTask = new NotificationWaitJobTask(intLogger, dateTimeFormatter, gson, alertRequestUtility, startingSearchDateTime, jobId);
         boolean isComplete = WaitJob.waitFor(resilientJobConfig, notificationWaitJobTask, "int performance test runner notification wait");
         intLogger.info("Finished waiting for the notification to be processed: " + isComplete);
         assertTrue(isComplete);
     }
 
+    public PerformanceExecutionStatusModel runTestWithOneJob(
+        Map<String, FieldValueModel> channelFields,
+        String jobName,
+        String blackDuckProviderID,
+        List<ProjectVersionWrapper> projectVersionWrappers,
+        int numberOfExpectedAuditEntries
+    ) {
+        LocalDateTime jobStartingTime = LocalDateTime.now();
+        LocalDateTime startingNotificationTime;
+        String jobId;
+        try {
+            jobId = configurationManager.createJob(channelFields, jobName, blackDuckProviderID, projectVersionWrappers);
+            String jobMessage = String.format("Creating the Job %s jobs took", jobName);
+            loggingUtility.logTimeElapsedWithMessage(jobMessage + " %s", jobStartingTime, LocalDateTime.now());
+
+            startingNotificationTime = LocalDateTime.now();
+            // trigger BD notifications
+            intLogger.info("Triggered the Black Duck notification.");
+            for (ProjectVersionWrapper projectVersionWrapper : projectVersionWrappers) {
+                triggerBlackDuckNotification(projectVersionWrapper.getProjectVersionView());
+            }
+            loggingUtility.logTimeElapsedWithMessage("Triggering all Black Duck notifications took %s", startingNotificationTime, LocalDateTime.now());
+        } catch (IntegrationException e) {
+            return PerformanceExecutionStatusModel.failure(jobStartingTime, String.format("Failed to create and trigger notification: %s", e));
+        }
+
+        AuditProcessingWaitJobTask notificationWaitJobTask = new AuditProcessingWaitJobTask(
+            intLogger,
+            dateTimeFormatter,
+            gson,
+            alertRequestUtility,
+            startingNotificationTime,
+            numberOfExpectedAuditEntries,
+            NotificationType.VULNERABILITY,
+            Set.of(jobId)
+        );
+        return waitForJobToFinish(startingNotificationTime, notificationWaitJobTask);
+    }
+
+    public PerformanceExecutionStatusModel runPolicyNotificationTest(
+        Map<String, FieldValueModel> channelFields,
+        String jobName,
+        String blackDuckProviderID,
+        String policyName,
+        int numberOfExpectedAuditEntries,
+        boolean waitForAuditComplete
+    ) {
+        LocalDateTime jobStartingTime = LocalDateTime.now();
+        LocalDateTime startingNotificationTime;
+        String jobId;
+        try {
+            jobId = configurationManager.createPolicyViolationJob(channelFields, jobName, blackDuckProviderID);
+            String jobMessage = String.format("Creating the Job %s jobs took", jobName);
+            loggingUtility.logTimeElapsedWithMessage(jobMessage + " %s", jobStartingTime, LocalDateTime.now());
+
+            startingNotificationTime = LocalDateTime.now();
+            // trigger BD notifications
+            intLogger.info("Triggered the Black Duck notification.");
+            triggerBlackDuckPolicyNotification(policyName);
+            loggingUtility.logTimeElapsedWithMessage("Triggering policy notification took %s", startingNotificationTime, LocalDateTime.now());
+        } catch (IntegrationException e) {
+            return PerformanceExecutionStatusModel.failure(jobStartingTime, String.format("Failed to create and trigger notification: %s", e));
+        }
+
+        WaitJobCondition waitJobCondition = createWaitJobCondition(
+            waitForAuditComplete,
+            Set.of(jobId),
+            startingNotificationTime,
+            numberOfExpectedAuditEntries,
+            NotificationType.RULE_VIOLATION
+        );
+        return waitForJobToFinish(startingNotificationTime, waitJobCondition);
+    }
+
+    public PerformanceExecutionStatusModel testManyPolicyJobsToManyProjects(
+        Set<String> jobIds,
+        String policyName,
+        int numberOfExpectedAuditEntries,
+        boolean waitForAuditComplete
+    ) {
+        // trigger BD notifications
+        LocalDateTime startingNotificationTime = LocalDateTime.now();
+        try {
+            intLogger.info("Triggered the Black Duck notification.");
+            triggerBlackDuckPolicyNotification(policyName);
+            loggingUtility.logTimeElapsedWithMessage("Triggering policy notification took %s", startingNotificationTime, LocalDateTime.now());
+        } catch (IntegrationException e) {
+            return PerformanceExecutionStatusModel.failure(startingNotificationTime, String.format("Failed trigger notification: %s", e));
+        }
+
+        WaitJobCondition waitJobCondition = createWaitJobCondition(
+            waitForAuditComplete,
+            jobIds,
+            startingNotificationTime,
+            numberOfExpectedAuditEntries,
+            NotificationType.RULE_VIOLATION
+        );
+        return waitForJobToFinish(startingNotificationTime, waitJobCondition);
+    }
+
+    private void triggerBlackDuckNotification(ProjectVersionView projectVersionView) throws IntegrationException {
+        LocalDateTime startingNotificationTriggerDateTime = LocalDateTime.now();
+        blackDuckProviderService.triggerBlackDuckNotificationForProjectVersion(
+            projectVersionView,
+            BlackDuckProviderService.getDefaultExternalIdSupplier(),
+            BlackDuckProviderService.getDefaultBomComponentFilter()
+        );
+        loggingUtility.logTimeElapsedWithMessage("Triggering the Black Duck notification took %s", startingNotificationTriggerDateTime, LocalDateTime.now());
+    }
+
+    private void triggerBlackDuckPolicyNotification(String policyName) throws IntegrationException {
+        LocalDateTime startingNotificationTriggerDateTime = LocalDateTime.now();
+        blackDuckProviderService.triggerBlackDuckPolicyNotification(policyName, BlackDuckProviderService.getDefaultExternalIdSupplier());
+        loggingUtility.logTimeElapsedWithMessage("Triggering the Black Duck policy notification took %s", startingNotificationTriggerDateTime, LocalDateTime.now());
+    }
+
     private String createBlackDuckConfiguration() {
         LocalDateTime startingTime = LocalDateTime.now();
         String blackDuckProviderID = blackDuckProviderService.setupBlackDuck();
-        logTimeElapsedWithMessage("Configuring the Black Duck provider took %s", startingTime, LocalDateTime.now());
+        loggingUtility.logTimeElapsedWithMessage("Configuring the Black Duck provider took %s", startingTime, LocalDateTime.now());
         return blackDuckProviderID;
     }
 
-    private void createGlobalConfiguration(FieldModel channelGlobalConfig) {
-        if (null != channelGlobalConfig) {
-            LocalDateTime startingTime = LocalDateTime.now();
-            String descriptorName = channelGlobalConfig.getDescriptorName();
-            configurationManager.createGlobalConfiguration(channelGlobalConfig);
-            String globalConfigMessage = String.format("Creating the global Configuration for %s jobs took", descriptorName);
-            logTimeElapsedWithMessage(globalConfigMessage + " %s", startingTime, LocalDateTime.now());
+    private PerformanceExecutionStatusModel waitForJobToFinish(LocalDateTime startingNotificationTime, WaitJobCondition waitJobCondition) {
+        ResilientJobConfig resilientJobConfig = new ResilientJobConfig(
+            intLogger,
+            waitTimeoutInSeconds,
+            startingNotificationTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+            2
+        );
+        try {
+            boolean isComplete = WaitJob.waitFor(resilientJobConfig, waitJobCondition, "int performance test runner notification wait");
+            intLogger.info("Finished waiting for the notification to be processed: " + isComplete);
+            assertTrue(isComplete);
+            return PerformanceExecutionStatusModel.success(startingNotificationTime);
+        } catch (IntegrationException e) {
+            return PerformanceExecutionStatusModel.failure(startingNotificationTime, String.format("An error occurred while waiting for jobs to complete: %s", e));
+        } catch (InterruptedException e) {
+            return PerformanceExecutionStatusModel.failure(startingNotificationTime, String.format("Performance job interrupted with error: %s", e));
         }
     }
 
-    public void logTimeElapsedWithMessage(String messageFormat, LocalDateTime start, LocalDateTime end) {
-        //TODO log timing to a file
-        Duration duration = Duration.between(start, end);
-        String durationFormatted = String.format("%sH:%sm:%ss", duration.toHoursPart(), duration.toMinutesPart(), duration.toSecondsPart());
-        intLogger.info(String.format(messageFormat, durationFormatted));
-        intLogger.info(String.format("Current time %s.", dateTimeFormatter.format(end)));
+    private AuditCompleteWaitJobTask createAuditCompleteWaitTask(
+        Set<String> jobIds,
+        LocalDateTime startingNotificationTime,
+        int numberOfExpectedAuditEntries,
+        NotificationType notificationType
+    ) {
+        return new AuditCompleteWaitJobTask(
+            intLogger,
+            dateTimeFormatter,
+            gson,
+            alertRequestUtility,
+            startingNotificationTime,
+            numberOfExpectedAuditEntries,
+            notificationType,
+            jobIds
+        );
     }
 
+    private AuditProcessingWaitJobTask createAuditProcessingWaitTask(
+        Set<String> jobIds,
+        LocalDateTime startingNotificationTime,
+        int numberOfExpectedAuditEntries,
+        NotificationType notificationType
+    ) {
+        return new AuditProcessingWaitJobTask(
+            intLogger,
+            dateTimeFormatter,
+            gson,
+            alertRequestUtility,
+            startingNotificationTime,
+            numberOfExpectedAuditEntries,
+            notificationType,
+            jobIds
+        );
+    }
+
+    private WaitJobCondition createWaitJobCondition(
+        boolean waitForAuditComplete,
+        Set<String> jobIds,
+        LocalDateTime startingNotificationTime,
+        int numberOfExpectedAuditEntries,
+        NotificationType notificationType
+    ) {
+        WaitJobCondition waitJobCondition;
+        if (waitForAuditComplete) {
+            waitJobCondition = createAuditCompleteWaitTask(jobIds, startingNotificationTime, numberOfExpectedAuditEntries, notificationType);
+        } else {
+            waitJobCondition = createAuditProcessingWaitTask(jobIds, startingNotificationTime, numberOfExpectedAuditEntries, notificationType);
+        }
+        return waitJobCondition;
+    }
 }
