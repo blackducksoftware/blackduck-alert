@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.performance;
 
-import java.time.Duration;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
@@ -15,10 +16,12 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
+import com.synopsys.integration.alert.performance.model.PerformanceExecutionStatusModel;
 import com.synopsys.integration.alert.performance.utility.BlackDuckProviderService;
 import com.synopsys.integration.alert.performance.utility.ConfigurationManagerV2;
 import com.synopsys.integration.alert.performance.utility.ExternalAlertRequestUtility;
 import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunnerV2;
+import com.synopsys.integration.alert.performance.utility.PerformanceLoggingUtility;
 import com.synopsys.integration.alert.performance.utility.jira.server.JiraServerPerformanceUtility;
 import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
@@ -34,12 +37,14 @@ import com.synopsys.integration.rest.proxy.ProxyInfo;
 class ExternalPerformanceTest {
     private static final JiraServerChannelKey CHANNEL_KEY = new JiraServerChannelKey();
     private static final int DEFAULT_NUMBER_OF_PROJECTS_TO_CREATE = 10;
+    private static final int DEFAULT_TIMEOUT_SECONDS = 14400;
     private static final String PERFORMANCE_POLICY_NAME = "PerformanceTestPolicy";
     private static final String DEFAULT_JOB_NAME = "JiraPerformanceJob";
 
     private final IntLogger intLogger = new Slf4jIntLogger(LoggerFactory.getLogger(this.getClass()));
     private final Gson gson = IntegrationPerformanceTestRunnerV2.createGson();
     private final DateTimeFormatter dateTimeFormatter = IntegrationPerformanceTestRunnerV2.createDateTimeFormatter();
+    private final PerformanceLoggingUtility loggingUtility = new PerformanceLoggingUtility(intLogger, dateTimeFormatter);
 
     private final IntHttpClient client = new IntHttpClient(intLogger, gson, 60, true, ProxyInfo.NO_PROXY_INFO);
     private final TestProperties testProperties = new TestProperties();
@@ -65,7 +70,7 @@ class ExternalPerformanceTest {
 
         int waitTimeoutSeconds = testProperties.getOptionalProperty(TestPropertyKey.TEST_PERFORMANCE_WAIT_TIMEOUT_SECONDS)
             .map(Integer::parseInt)
-            .orElse(Integer.valueOf(14400));
+            .orElse(DEFAULT_TIMEOUT_SECONDS);
 
         ExternalAlertRequestUtility alertRequestUtility = new ExternalAlertRequestUtility(intLogger, client, alertURL);
         alertRequestUtility.loginToExternalAlert();
@@ -96,7 +101,7 @@ class ExternalPerformanceTest {
         // Create Black Duck Global Provider configuration
         LocalDateTime startingProviderCreateTime = LocalDateTime.now();
         String blackDuckProviderID = blackDuckProviderService.setupBlackDuck();
-        logTimeElapsedWithMessage("Setting up the Black Duck provider took %s", startingProviderCreateTime, LocalDateTime.now());
+        loggingUtility.logTimeElapsedWithMessage("Setting up the Black Duck provider took %s", startingProviderCreateTime, LocalDateTime.now());
 
         // Create Jira Server global config
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel = jiraServerPerformanceUtility.createGlobalConfigModel(testProperties);
@@ -104,7 +109,8 @@ class ExternalPerformanceTest {
         LocalDateTime startingCreateGlobalConfigTime = LocalDateTime.now();
         boolean installPlugin = !disablePluginCheck;
         JiraServerGlobalConfigModel globalConfiguration = jiraServerPerformanceUtility.createJiraGlobalConfiguration(installPlugin, jiraServerGlobalConfigModel);
-        logTimeElapsedWithMessage("Installing the jira server plugin and creating global configuration took %s", startingCreateGlobalConfigTime, LocalDateTime.now());
+        loggingUtility
+            .logTimeElapsedWithMessage("Installing the jira server plugin and creating global configuration took %s", startingCreateGlobalConfigTime, LocalDateTime.now());
 
         // Create distribution job fields
         Map<String, FieldValueModel> channelFieldsMap = jiraServerPerformanceUtility.createChannelFieldsMap(testProperties, DEFAULT_JOB_NAME, globalConfiguration.getId());
@@ -126,10 +132,16 @@ class ExternalPerformanceTest {
         logTimeElapsedWithMessage(String.format("%s %s", createProjectsLogMessage, "%s"), startingProjectCreationTime, LocalDateTime.now());
         */
         LocalDateTime executionStartTime = LocalDateTime.now();
-        testRunner.runPolicyNotificationTest(channelFieldsMap, "performanceJob", blackDuckProviderID, PERFORMANCE_POLICY_NAME, numberOfProjectsToCreate, false);
+        PerformanceExecutionStatusModel performanceExecutionStatusModel = testRunner
+            .runPolicyNotificationTest(channelFieldsMap, "performanceJob", blackDuckProviderID, PERFORMANCE_POLICY_NAME, numberOfProjectsToCreate, false);
 
-        logTimeElapsedWithMessage("Execution and processing test time: %s", executionStartTime, LocalDateTime.now());
-        logTimeElapsedWithMessage("Total test time: %s", startingTime, LocalDateTime.now());
+        loggingUtility.logTimeElapsedWithMessage("Execution and processing test time: %s", executionStartTime, LocalDateTime.now());
+        loggingUtility.logTimeElapsedWithMessage("Total test time: %s", startingTime, LocalDateTime.now());
+
+        if (performanceExecutionStatusModel.isFailure()) {
+            intLogger.info(String.format("An error occurred while testing: %s", performanceExecutionStatusModel.getMessage()));
+        }
+        assertTrue(performanceExecutionStatusModel.isSuccess());
     }
 
     @Test
@@ -141,7 +153,7 @@ class ExternalPerformanceTest {
         // Create Black Duck Global Provider configuration
         LocalDateTime startingProviderCreateTime = LocalDateTime.now();
         String blackDuckProviderID = blackDuckProviderService.setupBlackDuck();
-        logTimeElapsedWithMessage("Setting up the Black Duck provider took %s", startingProviderCreateTime, LocalDateTime.now());
+        loggingUtility.logTimeElapsedWithMessage("Setting up the Black Duck provider took %s", startingProviderCreateTime, LocalDateTime.now());
 
         // Create Jira Server global config
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel = jiraServerPerformanceUtility.createGlobalConfigModel(testProperties);
@@ -149,7 +161,8 @@ class ExternalPerformanceTest {
         LocalDateTime startingCreateGlobalConfigTime = LocalDateTime.now();
         boolean installPlugin = !disablePluginCheck;
         JiraServerGlobalConfigModel globalConfiguration = jiraServerPerformanceUtility.createJiraGlobalConfiguration(installPlugin, jiraServerGlobalConfigModel);
-        logTimeElapsedWithMessage("Installing the jira server plugin and creating global configuration took %s", startingCreateGlobalConfigTime, LocalDateTime.now());
+        loggingUtility
+            .logTimeElapsedWithMessage("Installing the jira server plugin and creating global configuration took %s", startingCreateGlobalConfigTime, LocalDateTime.now());
 
         // Create distribution job fields
         Map<String, FieldValueModel> channelFieldsMap = jiraServerPerformanceUtility.createChannelFieldsMap(testProperties, DEFAULT_JOB_NAME, globalConfiguration.getId());
@@ -159,18 +172,16 @@ class ExternalPerformanceTest {
         blackDuckProviderService.deleteExistingBlackDuckPolicy(policyRuleView);
 
         LocalDateTime executionStartTime = LocalDateTime.now();
-        testRunner.runPolicyNotificationTest(channelFieldsMap, "performanceJob", blackDuckProviderID, PERFORMANCE_POLICY_NAME, numberOfProjectsToCreate, true);
+        PerformanceExecutionStatusModel performanceExecutionStatusModel = testRunner
+            .runPolicyNotificationTest(channelFieldsMap, "performanceJob", blackDuckProviderID, PERFORMANCE_POLICY_NAME, numberOfProjectsToCreate, true);
 
-        logTimeElapsedWithMessage("Execution and processing test time: %s", executionStartTime, LocalDateTime.now());
-        logTimeElapsedWithMessage("Total test time: %s", startingTime, LocalDateTime.now());
-    }
+        loggingUtility.logTimeElapsedWithMessage("Execution and processing test time: %s", executionStartTime, LocalDateTime.now());
+        loggingUtility.logTimeElapsedWithMessage("Total test time: %s", startingTime, LocalDateTime.now());
 
-    public void logTimeElapsedWithMessage(String messageFormat, LocalDateTime start, LocalDateTime end) {
-        //TODO log timing to a file
-        Duration duration = Duration.between(start, end);
-        String durationFormatted = String.format("%sH:%sm:%ss", duration.toHoursPart(), duration.toMinutesPart(), duration.toSecondsPart());
-        intLogger.info(String.format(messageFormat, durationFormatted));
-        intLogger.info(String.format("Current time %s.", dateTimeFormatter.format(end)));
+        if (performanceExecutionStatusModel.isFailure()) {
+            intLogger.info(String.format("An error occurred while testing: %s", performanceExecutionStatusModel.getMessage()));
+        }
+        assertTrue(performanceExecutionStatusModel.isSuccess());
     }
 }
 
