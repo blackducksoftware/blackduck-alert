@@ -26,9 +26,9 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.performance.utility.AlertRequestUtility;
 import com.synopsys.integration.alert.performance.utility.BlackDuckProviderService;
-import com.synopsys.integration.alert.performance.utility.ConfigurationManager;
+import com.synopsys.integration.alert.performance.utility.ConfigurationManagerLegacy;
 import com.synopsys.integration.alert.performance.utility.ExternalAlertRequestUtility;
-import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunner;
+import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunnerLegacy;
 import com.synopsys.integration.alert.performance.utility.NotificationWaitJobTask;
 import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
@@ -43,13 +43,13 @@ import com.synopsys.integration.wait.WaitJob;
 @Tag(TestTags.DEFAULT_PERFORMANCE)
 public class ScalingPerformanceTest {
     private final IntLogger intLogger = new Slf4jIntLogger(LoggerFactory.getLogger(this.getClass()));
-    private final Gson gson = IntegrationPerformanceTestRunner.createGson();
+    private final Gson gson = IntegrationPerformanceTestRunnerLegacy.createGson();
     private final static String SLACK_SCALING_PERFORMANCE_JOB_NAME = "Slack Scaling Performance Job";
 
     private final IntHttpClient client = new IntHttpClient(intLogger, gson, 60, true, ProxyInfo.NO_PROXY_INFO);
     private final String alertURL = "https://localhost:8443/alert";
 
-    private final DateTimeFormatter dateTimeFormatter = IntegrationPerformanceTestRunner.createDateTimeFormatter();
+    private final DateTimeFormatter dateTimeFormatter = IntegrationPerformanceTestRunnerLegacy.createDateTimeFormatter();
 
     private static String SLACK_CHANNEL_WEBHOOK;
     private static String SLACK_CHANNEL_NAME;
@@ -76,7 +76,7 @@ public class ScalingPerformanceTest {
         logTimeElapsedWithMessage("Logging in took %s", startingTime, LocalDateTime.now());
 
         BlackDuckProviderService blackDuckProviderService = new BlackDuckProviderService(alertRequestUtility, gson);
-        ConfigurationManager configurationManager = new ConfigurationManager(
+        ConfigurationManagerLegacy configurationManager = new ConfigurationManagerLegacy(
             gson,
             alertRequestUtility,
             blackDuckProviderService.getBlackDuckProviderKey(),
@@ -104,7 +104,7 @@ public class ScalingPerformanceTest {
     private void createAndTestJobs(
         AlertRequestUtility alertRequestUtility,
         BlackDuckProviderService blackDuckProviderService,
-        ConfigurationManager configurationManager,
+        ConfigurationManagerLegacy configurationManager,
         LocalDateTime startingTime,
         List<String> jobIds,
         int numberOfJobsToCreate,
@@ -153,7 +153,7 @@ public class ScalingPerformanceTest {
     }
 
     private void createSlackJobs(
-        ConfigurationManager configurationManager,
+        ConfigurationManagerLegacy configurationManager,
         LocalDateTime startingTime,
         List<String> jobIds,
         int numberOfJobsToCreate,

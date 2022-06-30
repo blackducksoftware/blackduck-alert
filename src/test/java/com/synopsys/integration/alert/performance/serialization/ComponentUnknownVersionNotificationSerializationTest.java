@@ -37,8 +37,8 @@ import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.performance.utility.AlertRequestUtility;
 import com.synopsys.integration.alert.performance.utility.BlackDuckProviderService;
-import com.synopsys.integration.alert.performance.utility.ConfigurationManager;
-import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunner;
+import com.synopsys.integration.alert.performance.utility.ConfigurationManagerLegacy;
+import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunnerLegacy;
 import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.test.common.TestTags;
@@ -70,7 +70,7 @@ public class ComponentUnknownVersionNotificationSerializationTest {
     @Autowired
     private NotificationAccessor notificationAccessor;
 
-    private final Gson gson = IntegrationPerformanceTestRunner.createGson();
+    private final Gson gson = IntegrationPerformanceTestRunnerLegacy.createGson();
 
     private static String SLACK_CHANNEL_WEBHOOK;
     private static String SLACK_CHANNEL_NAME;
@@ -89,7 +89,7 @@ public class ComponentUnknownVersionNotificationSerializationTest {
     @Disabled
     void testNotificationSerialization() throws IntegrationException, InterruptedException {
         LocalDateTime searchStartTime = LocalDateTime.now().minusMinutes(1);
-        AlertRequestUtility alertRequestUtility = IntegrationPerformanceTestRunner.createAlertRequestUtility(webApplicationContext);
+        AlertRequestUtility alertRequestUtility = IntegrationPerformanceTestRunnerLegacy.createAlertRequestUtility(webApplicationContext);
         BlackDuckProviderService blackDuckProviderService = new BlackDuckProviderService(alertRequestUtility, gson);
         configureJob(alertRequestUtility, blackDuckProviderService);
 
@@ -101,7 +101,13 @@ public class ComponentUnknownVersionNotificationSerializationTest {
 
         try {
             ResilientJobConfig resilientJobConfig = new ResilientJobConfig(intLogger, 300, searchStartTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), 20);
-            NotificationReceivedWaitJobTask notificationWaitJobTask = new NotificationReceivedWaitJobTask(notificationAccessor, searchStartTime, "Apache Commons FileUpload", null, NotificationType.COMPONENT_UNKNOWN_VERSION);
+            NotificationReceivedWaitJobTask notificationWaitJobTask = new NotificationReceivedWaitJobTask(
+                notificationAccessor,
+                searchStartTime,
+                "Apache Commons FileUpload",
+                null,
+                NotificationType.COMPONENT_UNKNOWN_VERSION
+            );
             boolean isComplete = WaitJob.waitFor(resilientJobConfig, notificationWaitJobTask, "notification serialization test notification wait");
 
             if (isComplete) {
@@ -124,7 +130,12 @@ public class ComponentUnknownVersionNotificationSerializationTest {
 
     private void configureJob(AlertRequestUtility alertRequestUtility, BlackDuckProviderService blackDuckProviderService) throws IntegrationException {
         String blackDuckProviderID = blackDuckProviderService.setupBlackDuck();
-        ConfigurationManager configurationManager = new ConfigurationManager(gson, alertRequestUtility, blackDuckProviderService.getBlackDuckProviderKey(), ChannelKeys.SLACK.getUniversalKey());
+        ConfigurationManagerLegacy configurationManager = new ConfigurationManagerLegacy(
+            gson,
+            alertRequestUtility,
+            blackDuckProviderService.getBlackDuckProviderKey(),
+            ChannelKeys.SLACK.getUniversalKey()
+        );
 
         Map<String, FieldValueModel> slackJobFields = new HashMap<>();
         slackJobFields.put(ChannelDescriptor.KEY_ENABLED, new FieldValueModel(List.of("true"), true));
@@ -137,6 +148,12 @@ public class ComponentUnknownVersionNotificationSerializationTest {
         slackJobFields.put(SlackDescriptor.KEY_CHANNEL_NAME, new FieldValueModel(List.of(SLACK_CHANNEL_NAME), true));
         slackJobFields.put(SlackDescriptor.KEY_CHANNEL_USERNAME, new FieldValueModel(List.of(SLACK_CHANNEL_USERNAME), true));
 
-        configurationManager.createJob(slackJobFields, SLACK_JOB_NAME, blackDuckProviderID, blackDuckProviderService.getBlackDuckProjectName(), List.of(NotificationType.COMPONENT_UNKNOWN_VERSION));
+        configurationManager.createJob(
+            slackJobFields,
+            SLACK_JOB_NAME,
+            blackDuckProviderID,
+            blackDuckProviderService.getBlackDuckProjectName(),
+            List.of(NotificationType.COMPONENT_UNKNOWN_VERSION)
+        );
     }
 }
