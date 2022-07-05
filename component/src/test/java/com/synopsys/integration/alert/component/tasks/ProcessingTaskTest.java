@@ -21,6 +21,7 @@ import org.mockito.stubbing.Answer;
 import org.springframework.scheduling.TaskScheduler;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.api.task.TaskManager;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.message.model.DateRange;
@@ -245,7 +246,7 @@ class ProcessingTaskTest {
         TaskManager taskManager,
         JobAccessor jobAccessor
     ) {
-        return new ProcessingTask(taskScheduler, taskManager, notificationManager, notificationMappingProcessor, jobAccessor, FrequencyType.DAILY) {
+        return new ProcessingTask(taskScheduler, taskManager, notificationManager, notificationMappingProcessor, jobAccessor, FrequencyType.DAILY, createEventManager()) {
             @Override
             public String scheduleCronExpression() {
                 return null;
@@ -256,5 +257,9 @@ class ProcessingTaskTest {
                 return DateRange.of(getLastRunTime(), DateUtils.createCurrentDateTimestamp());
             }
         };
+    }
+
+    private EventManager createEventManager() {
+        return Mockito.mock(EventManager.class);
     }
 }

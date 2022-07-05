@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.api.task.TaskManager;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.message.model.DateRange;
@@ -42,9 +43,10 @@ public class DailyTask extends ProcessingTask {
         NotificationMappingProcessor notificationMappingProcessor,
         TaskManager taskManager,
         ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor,
-        JobAccessor jobAccessor
+        JobAccessor jobAccessor,
+        EventManager eventManager
     ) {
-        super(taskScheduler, taskManager, notificationAccessor, notificationMappingProcessor, jobAccessor, FrequencyType.DAILY);
+        super(taskScheduler, taskManager, notificationAccessor, notificationMappingProcessor, jobAccessor, FrequencyType.DAILY, eventManager);
         this.schedulingDescriptorKey = schedulingDescriptorKey;
         this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
     }
@@ -62,9 +64,15 @@ public class DailyTask extends ProcessingTask {
 
     @Override
     public DateRange getDateRange() {
-        OffsetDateTime endDate = DateUtils.createCurrentDateTimestamp();
-        OffsetDateTime startDate = endDate.minusDays(1);
+        OffsetDateTime endDate = DateUtils.createCurrentDateTimestamp()
+            .withMinute(0)
+            .withSecond(0)
+            .withNano(0);
+        OffsetDateTime startDate = endDate.minusDays(1)
+            .withMinute(0)
+            .withSecond(0)
+            .withNano(0);
+
         return DateRange.of(startDate, endDate);
     }
-
 }

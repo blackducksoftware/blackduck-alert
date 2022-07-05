@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.TaskScheduler;
 
+import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.api.task.StartupScheduledTask;
 import com.synopsys.integration.alert.api.task.TaskManager;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
@@ -25,6 +26,7 @@ import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.processor.api.NotificationMappingProcessor;
+import com.synopsys.integration.alert.processor.api.event.JobNotificationMappedEvent;
 
 public abstract class ProcessingTask extends StartupScheduledTask {
     public static final int PAGE_SIZE = 100;
@@ -34,19 +36,21 @@ public abstract class ProcessingTask extends StartupScheduledTask {
     private final NotificationMappingProcessor notificationMappingProcessor;
     private final JobAccessor jobAccessor;
     private final FrequencyType frequencyType;
+    private final EventManager eventManager;
 
     private OffsetDateTime lastRunTime;
 
     protected ProcessingTask(
         TaskScheduler taskScheduler, TaskManager taskManager, NotificationAccessor notificationAccessor, NotificationMappingProcessor notificationMappingProcessor,
-        JobAccessor jobAccessor, FrequencyType frequencyType
+        JobAccessor jobAccessor, FrequencyType frequencyType, EventManager eventManager
     ) {
         super(taskScheduler, taskManager);
         this.notificationAccessor = notificationAccessor;
         this.notificationMappingProcessor = notificationMappingProcessor;
         this.jobAccessor = jobAccessor;
         this.frequencyType = frequencyType;
-        this.lastRunTime = DateUtils.createCurrentDateTimestamp();
+        this.eventManager = eventManager;
+        lastRunTime = DateUtils.createCurrentDateTimestamp();
     }
 
     public OffsetDateTime getLastRunTime() {
@@ -54,7 +58,6 @@ public abstract class ProcessingTask extends StartupScheduledTask {
     }
 
     public abstract DateRange getDateRange();
-
     @Override
     public void runTask() {
         boolean hasJobsByFrequency = jobAccessor.hasJobsByFrequency(frequencyType.name());
@@ -75,10 +78,12 @@ public abstract class ProcessingTask extends StartupScheduledTask {
         AlertPagedModel<AlertNotificationModel> page = read(dateRange, AlertPagedModel.DEFAULT_PAGE_NUMBER, PAGE_SIZE);
         int currentPage = page.getCurrentPage();
         int totalPages = page.getTotalPages();
+        UUID correlationId = UUID.randomUUID();
         while (!page.getModels().isEmpty() || currentPage < totalPages) {
             List<AlertNotificationModel> notificationList = page.getModels();
             logger.info("Processing page {} of {}. {} notifications to process.", currentPage, totalPages, notificationList.size());
-            notificationMappingProcessor.processNotifications(UUID.randomUUID(), notificationList, List.of(frequencyType));
+            notificationMappingProcessor.processNotifications(correlationId, notificationList, List.of(frequencyType));
+            eventManager.sendEvent(new JobNotificationMappedEvent(correlationId));
             page = read(dateRange, currentPage + 1, PAGE_SIZE);
             currentPage = page.getCurrentPage();
             totalPages = page.getTotalPages();
