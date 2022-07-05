@@ -251,6 +251,10 @@ class ProcessingTaskTest {
                 return null;
             }
 
+            @Override
+            public DateRange getDateRange() {
+                return DateRange.of(getLastRunTime(), DateUtils.createCurrentDateTimestamp());
+            }
         };
     }
 }
