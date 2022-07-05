@@ -64,6 +64,7 @@ public class DailyTask extends ProcessingTask {
 
     @Override
     public DateRange getDateRange() {
+        // the hour of the daily task is configurable so zero out the minutes, seconds, and nanoseconds.
         OffsetDateTime endDate = DateUtils.createCurrentDateTimestamp()
             .withMinute(0)
             .withSecond(0)
