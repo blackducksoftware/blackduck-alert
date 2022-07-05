@@ -37,25 +37,23 @@ public abstract class ProcessingTask extends StartupScheduledTask {
 
     private OffsetDateTime lastRunTime;
 
-    public ProcessingTask(TaskScheduler taskScheduler, TaskManager taskManager, NotificationAccessor notificationAccessor, NotificationMappingProcessor notificationMappingProcessor,
-        JobAccessor jobAccessor, FrequencyType frequencyType) {
+    protected ProcessingTask(
+        TaskScheduler taskScheduler, TaskManager taskManager, NotificationAccessor notificationAccessor, NotificationMappingProcessor notificationMappingProcessor,
+        JobAccessor jobAccessor, FrequencyType frequencyType
+    ) {
         super(taskScheduler, taskManager);
         this.notificationAccessor = notificationAccessor;
         this.notificationMappingProcessor = notificationMappingProcessor;
         this.jobAccessor = jobAccessor;
         this.frequencyType = frequencyType;
-        lastRunTime = DateUtils.createCurrentDateTimestamp();
+        this.lastRunTime = DateUtils.createCurrentDateTimestamp();
     }
 
     public OffsetDateTime getLastRunTime() {
         return lastRunTime;
     }
 
-    public DateRange getDateRange() {
-        OffsetDateTime startDate = lastRunTime;
-        OffsetDateTime endDate = DateUtils.createCurrentDateTimestamp();
-        return DateRange.of(startDate, endDate);
-    }
+    public abstract DateRange getDateRange();
 
     @Override
     public void runTask() {
