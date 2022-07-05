@@ -80,25 +80,26 @@ public class JobNotificationFilterUtils {
     }
 
     public static boolean doesProjectApplyToJob(SimpleFilteredDistributionJobResponseModel filteredDistributionJobResponseModel, String projectName, String projectVersionName) {
+        // not filtering by project so all projects apply.
+        if (!filteredDistributionJobResponseModel.isFilterByProject()) {
+            return true;
+        }
         String projectNamePattern = filteredDistributionJobResponseModel.getProjectNamePattern();
         String projectVersionNamePattern = filteredDistributionJobResponseModel.getProjectVersionNamePattern();
 
-        // The project name matches on of the jobs selected project names.
-        if (filteredDistributionJobResponseModel.hasProjectsConfigured()
-            || !filteredDistributionJobResponseModel.isFilterByProject()) {
-            return true;
-        }
         boolean matchingProjectNamePattern = (StringUtils.isNotBlank(projectNamePattern)) ? Pattern.matches(projectNamePattern, projectName) : false;
-
+        boolean hasMatchingProjects = filteredDistributionJobResponseModel.hasProjectsConfigured();
         if (StringUtils.isNotBlank(projectVersionNamePattern)) {
             // Project version pattern has to always be valid and if something else exists (Selected project or project name pattern), that also needs to be valid
-            if (!matchingProjectNamePattern && StringUtils.isNotBlank(projectNamePattern)) {
+            boolean selectedProjectsOrNamePatternMatches = hasMatchingProjects || matchingProjectNamePattern;
+            if (!selectedProjectsOrNamePatternMatches && StringUtils.isNotBlank(projectNamePattern)) {
                 return false;
             }
-            return matchingProjectNamePattern || Pattern.matches(projectVersionNamePattern, projectVersionName);
+            // project name pattern is blank, match version pattern
+            return Pattern.matches(projectVersionNamePattern, projectVersionName);
         }
 
-        return matchingProjectNamePattern;
+        return matchingProjectNamePattern || hasMatchingProjects;
     }
 
     public static boolean doVulnerabilitySeveritiesApplyToJob(FilteredDistributionJobResponseModel filteredDistributionJobResponseModel, List<String> notificationSeverities) {
