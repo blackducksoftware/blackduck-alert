@@ -95,7 +95,7 @@ public class JobNotificationFilterUtils {
             if (!selectedProjectsOrNamePatternMatches && StringUtils.isNotBlank(projectNamePattern)) {
                 return false;
             }
-            // project name pattern is blank, match version pattern
+            // match version pattern because project pattern matches or the project was selected
             return Pattern.matches(projectVersionNamePattern, projectVersionName);
         }
 
