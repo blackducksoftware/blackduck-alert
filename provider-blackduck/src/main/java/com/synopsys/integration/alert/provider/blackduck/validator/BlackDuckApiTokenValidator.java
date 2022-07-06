@@ -27,7 +27,10 @@ import com.synopsys.integration.rest.response.Response;
 public class BlackDuckApiTokenValidator {
     public static final String ROLE_NAME_GLOBAL_PROJECT_VIEWER = "Global Project Viewer";
     public static final String ROLE_NAME_SYSTEM_ADMINISTRATOR = "System Administrator";
+    // As of Blackduck 2022.7.0 Super User has been removed and replaced with a combination of the roles below. See IALERT-3105 for more info.
     public static final String ROLE_NAME_SUPER_USER = "Super User";
+    public static final String ROLE_NAME_GLOBAL_PROJECT_ADMINISTRATOR = "Global Project Administrator";
+    public static final String ROLE_NAME_GLOBAL_GROUP_ADMINISTRATOR = "Global Project Group Administrator";
 
     // FIXME use these when RoleAssignmentView is deserialized correctly (requires blackduck-common-api support)
     public static final String ROLE_KEY_GLOBAL_PROJECT_VIEWER = "globalprojectviewer";
@@ -37,7 +40,9 @@ public class BlackDuckApiTokenValidator {
     private static final List<String> PERMITTED_ROLE_NAMES = List.of(
         ROLE_NAME_GLOBAL_PROJECT_VIEWER,
         ROLE_NAME_SYSTEM_ADMINISTRATOR,
-        ROLE_NAME_SUPER_USER
+        ROLE_NAME_SUPER_USER,
+        ROLE_NAME_GLOBAL_PROJECT_ADMINISTRATOR,
+        ROLE_NAME_GLOBAL_GROUP_ADMINISTRATOR
     );
 
     private final BlackDuckProperties blackDuckProperties;
