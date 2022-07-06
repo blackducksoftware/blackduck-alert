@@ -7,6 +7,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.api.task.ScheduledTask;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
@@ -23,7 +24,8 @@ class DailyTaskTest {
 
     @Test
     void testGetTaskName() {
-        DailyTask task = new DailyTask(SCHEDULING_DESCRIPTOR_KEY, null, null, null, null, null, null);
+        EventManager eventManager = Mockito.mock(EventManager.class);
+        DailyTask task = new DailyTask(SCHEDULING_DESCRIPTOR_KEY, null, null, null, null, null, null, eventManager);
         assertEquals(ScheduledTask.computeTaskName(task.getClass()), task.getTaskName());
     }
 
@@ -39,8 +41,8 @@ class DailyTaskTest {
         StaticJobAccessor jobAccessor = Mockito.mock(StaticJobAccessor.class);
         Mockito.when(jobAccessor.hasJobsByFrequency(Mockito.any())).thenReturn(true);
 
-
-        DailyTask task = new DailyTask(SCHEDULING_DESCRIPTOR_KEY, null, null, null, null, configurationModelConfigurationAccessor, jobAccessor);
+        EventManager eventManager = Mockito.mock(EventManager.class);
+        DailyTask task = new DailyTask(SCHEDULING_DESCRIPTOR_KEY, null, null, null, null, configurationModelConfigurationAccessor, jobAccessor, eventManager);
         String cronWithNotDefault = task.scheduleCronExpression();
         String expectedCron = String.format(DailyTask.CRON_FORMAT, notDefaultValue);
 
