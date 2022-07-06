@@ -41,8 +41,13 @@ public abstract class ProcessingTask extends StartupScheduledTask {
     private OffsetDateTime lastRunTime;
 
     protected ProcessingTask(
-        TaskScheduler taskScheduler, TaskManager taskManager, NotificationAccessor notificationAccessor, NotificationMappingProcessor notificationMappingProcessor,
-        JobAccessor jobAccessor, FrequencyType frequencyType, EventManager eventManager
+        TaskScheduler taskScheduler,
+        TaskManager taskManager,
+        NotificationAccessor notificationAccessor,
+        NotificationMappingProcessor notificationMappingProcessor,
+        JobAccessor jobAccessor,
+        FrequencyType frequencyType,
+        EventManager eventManager
     ) {
         super(taskScheduler, taskManager);
         this.notificationAccessor = notificationAccessor;
