@@ -183,6 +183,13 @@ class ExternalPerformanceTest {
         }
         assertTrue(performanceExecutionStatusModel.isSuccess());
     }
+
+    @Test
+    @EnabledIfEnvironmentVariable(named = "ALERT_RUN_PERFORMANCE", matches = "true")
+    void testDeleteExistingPolicy() throws IntegrationException {
+        PolicyRuleView policyRuleView = blackDuckProviderService.createBlackDuckPolicyRuleView(PERFORMANCE_POLICY_NAME, BlackDuckProviderService.getDefaultExternalIdSupplier());
+        blackDuckProviderService.deleteExistingBlackDuckPolicy(policyRuleView);
+    }
 }
 
 
