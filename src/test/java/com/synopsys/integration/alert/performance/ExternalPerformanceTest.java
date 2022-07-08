@@ -52,6 +52,7 @@ class ExternalPerformanceTest {
     private BlackDuckProviderService blackDuckProviderService;
     private JiraServerPerformanceUtility jiraServerPerformanceUtility;
     private IntegrationPerformanceTestRunner testRunner;
+    private ExternalAlertRequestUtility alertRequestUtility;
 
     private int numberOfProjectsToCreate;
 
@@ -72,8 +73,7 @@ class ExternalPerformanceTest {
             .map(Integer::parseInt)
             .orElse(DEFAULT_TIMEOUT_SECONDS);
 
-        ExternalAlertRequestUtility alertRequestUtility = new ExternalAlertRequestUtility(intLogger, client, alertURL);
-        alertRequestUtility.loginToExternalAlert();
+        alertRequestUtility = new ExternalAlertRequestUtility(intLogger, client, alertURL);
         blackDuckProviderService = new BlackDuckProviderService(alertRequestUtility, gson);
         ConfigurationManager configurationManager = new ConfigurationManager(
             gson,
@@ -95,6 +95,8 @@ class ExternalPerformanceTest {
     @Test
     @EnabledIfEnvironmentVariable(named = "ALERT_RUN_PERFORMANCE", matches = "true")
     void testPolicyNotificationsWithExternalAlertServer() throws Exception {
+        alertRequestUtility.loginToExternalAlert();
+
         LocalDateTime startingTime = LocalDateTime.now();
         intLogger.info(String.format("Starting time: %s", dateTimeFormatter.format(startingTime)));
 
@@ -147,6 +149,8 @@ class ExternalPerformanceTest {
     @Test
     @EnabledIfEnvironmentVariable(named = "ALERT_RUN_PERFORMANCE", matches = "true")
     void testPolicyNotificationsValidateAuditComplete() throws Exception {
+        alertRequestUtility.loginToExternalAlert();
+
         LocalDateTime startingTime = LocalDateTime.now();
         intLogger.info(String.format("Starting time: %s", dateTimeFormatter.format(startingTime)));
 
