@@ -1,23 +1,25 @@
 package com.synopsys.integration.alert.api.channel.issue.callback;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.core.task.SyncTaskExecutor;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerResponse;
-import com.synopsys.integration.alert.api.event.AlertEventHandler;
-import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerCallbackEvent;
+import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerCallbackInfo;
 
-public class ProviderCallbackIssueTrackerResponsePostProcessorTest {
+class ProviderCallbackIssueTrackerResponsePostProcessorTest {
     private static final Gson GSON = new GsonBuilder().create();
     private static final IssueTrackerIssueResponseModel<String> ISSUE_RESPONSE_MODEL = new IssueTrackerIssueResponseModel<>(
         "issue-id",
@@ -28,45 +30,39 @@ public class ProviderCallbackIssueTrackerResponsePostProcessorTest {
         new IssueTrackerCallbackInfo(0L, "https://callback-info", "https://project-version-url")
     );
 
-    private static TestIssueTrackHandler EVENT_HANDLER;
+    private static RabbitTemplate MOCK_RABBIT_TEMPLATE;
+    private static EventManager EVENT_MANAGER;
+    private static AtomicInteger SEND_COUNTER = new AtomicInteger(0);
 
     @BeforeAll
     public static void init() {
-        EVENT_HANDLER = new TestIssueTrackHandler();
+        MOCK_RABBIT_TEMPLATE = Mockito.mock(RabbitTemplate.class);
+        Mockito.doAnswer((answer -> {
+            SEND_COUNTER.incrementAndGet();
+            return null;
+        })).when(MOCK_RABBIT_TEMPLATE).convertAndSend(Mockito.anyString(), Mockito.any(Object.class));
+
+        EVENT_MANAGER = new EventManager(GSON, MOCK_RABBIT_TEMPLATE, new SyncTaskExecutor());
     }
 
     @Test
-    public void postProcessNoResultsTest() {
-        ProviderCallbackIssueTrackerResponsePostProcessor postProcessor = new ProviderCallbackIssueTrackerResponsePostProcessor(EVENT_HANDLER);
+    void postProcessNoResultsTest() {
+        ProviderCallbackIssueTrackerResponsePostProcessor postProcessor = new ProviderCallbackIssueTrackerResponsePostProcessor(EVENT_MANAGER);
 
         IssueTrackerResponse<String> emptyResponse = new IssueTrackerResponse<>("Example Status Message", List.of());
         postProcessor.postProcess(emptyResponse);
 
-        assertFalse(EVENT_HANDLER.isHandleEventCalled());
+        assertEquals(0, SEND_COUNTER.get());
     }
 
     @Test
-    public void postProcessWithResultsTest() {
-        ProviderCallbackIssueTrackerResponsePostProcessor postProcessor = new ProviderCallbackIssueTrackerResponsePostProcessor(EVENT_HANDLER);
+    void postProcessWithResultsTest() {
+        ProviderCallbackIssueTrackerResponsePostProcessor postProcessor = new ProviderCallbackIssueTrackerResponsePostProcessor(EVENT_MANAGER);
 
         List<IssueTrackerIssueResponseModel<String>> responseModels = List.of(ISSUE_RESPONSE_MODEL);
         IssueTrackerResponse<String> populatedResponse = new IssueTrackerResponse<>("Example Status Message", responseModels);
         postProcessor.postProcess(populatedResponse);
 
-        assertTrue(EVENT_HANDLER.isHandleEventCalled());
+        assertEquals(1, SEND_COUNTER.get());
     }
-
-    private static class TestIssueTrackHandler implements AlertEventHandler<IssueTrackerCallbackEvent> {
-        private boolean handleEventCalled = false;
-
-        @Override
-        public void handle(IssueTrackerCallbackEvent event) {
-            this.handleEventCalled = true;
-        }
-
-        public boolean isHandleEventCalled() {
-            return handleEventCalled;
-        }
-    }
-
 }
