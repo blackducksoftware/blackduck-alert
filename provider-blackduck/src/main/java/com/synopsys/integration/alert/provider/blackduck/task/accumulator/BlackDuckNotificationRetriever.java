@@ -27,7 +27,7 @@ import com.synopsys.integration.exception.IntegrationException;
 
 public class BlackDuckNotificationRetriever {
     public static final String PAGE_SORT_FIELD = "notification.createdOn";
-    public static final int DEFAULT_PAGE_SIZE = 100;
+    public static final int DEFAULT_PAGE_SIZE = 200;
     public static final int INITIAL_PAGE_OFFSET = 0;
 
     // (offset + limit) < total
