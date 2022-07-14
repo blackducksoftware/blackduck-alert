@@ -30,7 +30,7 @@ task copyDeploymentFiles(type: Copy) {
 task createDeploymentZip(type: Zip, dependsOn: [copyDeploymentFiles]) {
     from "${project.buildDir}/deployment"
     into "${project.name}-${project.version}-deployment"
-    archiveBaseName = "${project.name}"
+    baseName "${project.name}"
     classifier 'deployment'
 }
 

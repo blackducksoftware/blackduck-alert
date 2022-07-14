@@ -35,6 +35,7 @@ task updateNpmVersion(type: Task) {
     }
 }
 
+
 task npmInstallFromCache(type: Exec) {
     inputs.files('package.json', 'package-lock.json')
     outputs.dir('node_modules')
@@ -51,7 +52,7 @@ task npmCacheClean(type: Exec, dependsOn: [npmInstallFromCache]) {
     outputs.cacheIf { true }
     onlyIf {
         // don't run this if the npmInstallFromCache succeeded
-        npmInstallFromCache.getExecutionResult().get()?.getExitValue() ?: 0 != 0
+        tasks.npmInstallFromCache?.getExecResult()?.exitValue ?: 0 != 0
     }
 
     commandLine 'npm', 'cache', 'clean', '--force', '--cache', "${project.buildDir}/npm_cache"
@@ -64,7 +65,7 @@ task npmInstallFromCacheRetry(type: Exec, dependsOn: [npmCacheClean]) {
     outputs.cacheIf { true }
     onlyIf {
         // don't run this if the npmInstall succeeded
-        npmInstallFromCache.getExecutionResult().get()?.getExitValue() ?: 0 != 0
+        tasks.npmInstallFromCache?.getExecResult()?.exitValue ?: 0 != 0
     }
     doFirst {
         logger.error('The initial npm install failed. Trying to run the npm install again.')
