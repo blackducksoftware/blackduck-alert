@@ -1,0 +1,14 @@
+ext.moduleName = 'com.synopsys.integration.alert.alert-telemetry'
+
+dependencies {
+    implementation platform(project(':alert-platform'))
+
+    implementation project(':alert-common')
+    implementation project(':alert-database')
+    implementation project(':api-common-model')
+    implementation project(':api-descriptor')
+
+    implementation 'com.synopsys.integration:integration-rest'
+
+    testImplementation project(':test-common')
+}

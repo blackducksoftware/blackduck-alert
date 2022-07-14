@@ -88,6 +88,7 @@ dependencies {
     implementation project(':alert-common')
     implementation project(':alert-database')
     implementation project(':alert-database-job')
+    implementation project(':alert-telemetry')
 
     implementation project(':api-common-model')
     implementation project(':api-channel')

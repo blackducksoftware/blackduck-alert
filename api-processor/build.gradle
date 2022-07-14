@@ -6,6 +6,7 @@ dependencies {
     implementation project(':api-common-model')
     implementation project(':api-descriptor')
     implementation project(':api-event')
+    implementation project(':alert-telemetry')
 
     implementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
     implementation 'org.springframework:spring-context'
