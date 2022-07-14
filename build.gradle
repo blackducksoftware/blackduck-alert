@@ -4,12 +4,10 @@ buildscript {
     }
 
     apply from: 'https://raw.githubusercontent.com/blackducksoftware/integration-resources/master/gradle_common/buildscript-repositories.gradle', to: buildscript
-
-    apply from: 'https://raw.githubusercontent.com/blackducksoftware/integration-resources/master/gradle_common/buildscript-cgp-version.gradle'
+    apply from: 'https://raw.githubusercontent.com/blackducksoftware/integration-resources/master/gradle_common/buildscript-dependencies.gradle', to: buildscript
 
     dependencies {
         classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
-        classpath "com.synopsys.integration:common-gradle-plugin:${managedCgpVersion}"
     }
 }
 
@@ -59,6 +57,10 @@ subprojects {
     if (project.name != 'alert-platform') {
         version = rootProject.version
         apply plugin: 'com.synopsys.integration.simple'
+
+        license {
+            header rootProject.file('LICENSE')
+        }
 
         dependencies {
             implementation platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
@@ -116,11 +118,11 @@ dependencies {
     implementation 'org.apache.tomcat.embed:tomcat-embed-core'
 
     // Logging
-    runtimeOnly 'ch.qos.logback:logback-classic'
-    runtimeOnly 'ch.qos.logback:logback-core'
+    runtime 'ch.qos.logback:logback-classic'
+    runtime 'ch.qos.logback:logback-core'
     // Tomcat messages use these loggers.
-    runtimeOnly 'org.slf4j:jcl-over-slf4j'
-    runtimeOnly 'org.slf4j:jul-to-slf4j'
+    runtime 'org.slf4j:jcl-over-slf4j'
+    runtime 'org.slf4j:jul-to-slf4j'
 
     // Spring
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
@@ -136,9 +138,9 @@ dependencies {
     // =============
     testImplementation 'org.testcontainers:postgresql'
     testImplementation 'org.testcontainers:rabbitmq'
-    testRuntimeOnly 'com.playtika.testcontainers:embedded-postgresql'
-    testRuntimeOnly 'com.playtika.testcontainers:embedded-rabbitmq'
-    testRuntimeOnly 'org.springframework.cloud:spring-cloud-starter-bootstrap'
+    testRuntimeClasspath 'com.playtika.testcontainers:embedded-postgresql'
+    testRuntimeClasspath 'com.playtika.testcontainers:embedded-rabbitmq'
+    testRuntimeClasspath 'org.springframework.cloud:spring-cloud-starter-bootstrap'
 
     if (getGradle().getStartParameter().taskNames.contains('runServer')) {
         def containsExternalDbArg = getGradle().getStartParameter().taskNames.contains("--externaldb")
