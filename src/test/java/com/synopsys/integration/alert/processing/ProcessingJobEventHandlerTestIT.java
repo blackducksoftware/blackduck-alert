@@ -64,6 +64,7 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.BlackDuckMessageLabels;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
+import com.synopsys.integration.alert.telemetry.database.TelemetryAccessor;
 import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.test.common.TestResourceUtils;
@@ -94,6 +95,8 @@ class ProcessingJobEventHandlerTestIT {
     private EmailGlobalConfigAccessor emailGlobalConfigAccessor;
     @Autowired
     private NotificationMappingProcessor notificationProcessor;
+    @Autowired
+    private TelemetryAccessor telemetryAccessor;
     @Autowired
     private Gson gson;
 
@@ -161,7 +164,8 @@ class ProcessingJobEventHandlerTestIT {
             lifecycleCaches,
             notificationAccessor,
             jobAccessor,
-            jobNotificationMappingAccessor
+            jobNotificationMappingAccessor,
+            telemetryAccessor
         );
         JobProcessingEvent event = new JobProcessingEvent(correlationId, jobId);
         eventHandler.handle(event);
@@ -188,7 +192,8 @@ class ProcessingJobEventHandlerTestIT {
             lifecycleCaches,
             notificationAccessor,
             jobAccessor,
-            jobNotificationMappingAccessor
+            jobNotificationMappingAccessor,
+            telemetryAccessor
         );
         JobProcessingEvent event = new JobProcessingEvent(correlationId, jobId);
         eventHandler.handle(event);
@@ -221,9 +226,9 @@ class ProcessingJobEventHandlerTestIT {
     private NotificationContentProcessor createContentProcessor() {
         NotificationContentProcessor notificationContentProcessor = Mockito.mock(NotificationContentProcessor.class);
         Mockito.doAnswer(invocation -> {
-                List<NotificationContentWrapper> notifications = invocation.getArgument(1);
-                return createMessageHolder(notifications);
-            })
+            List<NotificationContentWrapper> notifications = invocation.getArgument(1);
+            return createMessageHolder(notifications);
+        })
             .when(notificationContentProcessor).processNotificationContent(Mockito.any(), Mockito.anyList());
 
         return notificationContentProcessor;

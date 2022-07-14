@@ -36,6 +36,7 @@ import com.synopsys.integration.alert.processor.api.distribute.ProviderMessageDi
 import com.synopsys.integration.alert.processor.api.event.JobProcessingEvent;
 import com.synopsys.integration.alert.processor.api.extract.model.ProcessedProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.filter.NotificationContentWrapper;
+import com.synopsys.integration.alert.telemetry.database.TelemetryAccessor;
 
 @Component
 public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessingEvent> {
@@ -49,6 +50,7 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
     private final NotificationAccessor notificationAccessor;
     private final JobAccessor jobAccessor;
     private final JobNotificationMappingAccessor jobNotificationMappingAccessor;
+    private final TelemetryAccessor telemetryAccessor;
 
     @Autowired
     public ProcessingJobEventHandler(
@@ -58,7 +60,8 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
         List<NotificationProcessingLifecycleCache> lifecycleCaches,
         NotificationAccessor notificationAccessor,
         JobAccessor jobAccessor,
-        JobNotificationMappingAccessor jobNotificationMappingAccessor
+        JobNotificationMappingAccessor jobNotificationMappingAccessor,
+        TelemetryAccessor telemetryAccessor
     ) {
         this.notificationDetailExtractionDelegator = notificationDetailExtractionDelegator;
         this.notificationContentProcessor = notificationContentProcessor;
@@ -67,6 +70,7 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
         this.notificationAccessor = notificationAccessor;
         this.jobAccessor = jobAccessor;
         this.jobNotificationMappingAccessor = jobNotificationMappingAccessor;
+        this.telemetryAccessor = telemetryAccessor;
     }
 
     @Override
@@ -107,7 +111,9 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
         while (jobNotificationMappings.getCurrentPage() <= jobNotificationMappings.getTotalPages()) {
             List<Long> notificationIds = extractNotificationIds(jobNotificationMappings);
             List<AlertNotificationModel> notifications = notificationAccessor.findByIds(notificationIds);
+            //TODO
             logNotifications("Start", event, notificationIds);
+            telemetryAccessor.createNotificationProcessingTelemetryTask(correlationId, jobId);
             ProcessedProviderMessageHolder currentProcessedMessages = processNotifications(job, notifications);
             if (null == processedMessageHolder) {
                 processedMessageHolder = currentProcessedMessages;
@@ -121,7 +127,9 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
                 pageNumber,
                 pageSize
             );
+            //TODO
             logNotifications("Finished", event, notificationIds);
+            telemetryAccessor.completeNotificationProcessingTelemetryTask(correlationId);
         }
 
         return processedMessageHolder;
