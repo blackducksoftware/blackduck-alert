@@ -142,9 +142,9 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
     }
 
     private void logNotifications(String messagePrefix, JobProcessingEvent event, List<Long> notificationIds) {
-        if (logger.isDebugEnabled()) {
+        if (logger.isTraceEnabled()) {
             String joinedIds = StringUtils.join(notificationIds, ", ");
-            notificationLogger.debug(
+            notificationLogger.trace(
                 "{} processing job: {} batch: {} {} notifications: {}",
                 messagePrefix,
                 event.getJobId(),

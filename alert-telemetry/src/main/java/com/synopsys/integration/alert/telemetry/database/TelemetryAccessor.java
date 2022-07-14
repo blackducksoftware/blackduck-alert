@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.util.DateUtils;
+import com.synopsys.integration.alert.telemetry.model.DistributionTelemetryModel;
 import com.synopsys.integration.alert.telemetry.model.NotificationMappingTelemetryModel;
 import com.synopsys.integration.alert.telemetry.model.NotificationProcessingTelemetryModel;
 
@@ -61,5 +62,20 @@ public class TelemetryAccessor {
             DateUtils.createCurrentDateTimestamp()
         );
         return telemetryRepository.saveProcessing(correlationId, completedNotificationProcessingTelemetryTask);
+    }
+
+    public DistributionTelemetryModel createDistributionTelemetryTask(UUID eventId) {
+        DistributionTelemetryModel distributionTelemetryModel = new DistributionTelemetryModel(eventId, DateUtils.createCurrentDateTimestamp(), null);
+        return telemetryRepository.saveDistributionEvent(eventId, distributionTelemetryModel);
+    }
+
+    public DistributionTelemetryModel completeDistributionTelemetryTask(UUID eventId) {
+        DistributionTelemetryModel distributionTelemetryModel = telemetryRepository.getOneDistributionEvent(eventId);
+        DistributionTelemetryModel completeDistributionTelemetryTask = new DistributionTelemetryModel(
+            eventId,
+            distributionTelemetryModel.getStartTaskTime(),
+            DateUtils.createCurrentDateTimestamp()
+        );
+        return telemetryRepository.saveDistributionEvent(eventId, completeDistributionTelemetryTask);
     }
 }

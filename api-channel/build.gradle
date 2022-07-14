@@ -4,11 +4,13 @@ dependencies {
     api project(':api-environment')
     api project(':api-event')
     api project(':api-processor')
+    api project(':alert-telemetry')
     api 'org.springframework.amqp:spring-amqp'
     api 'org.springframework:spring-context'
 
     implementation platform(project(':alert-platform'))
     implementation project(':alert-common')
+    //implementation project(':alert-telemetry')
     implementation project(':api-common-model')
     implementation project(':api-descriptor')
 

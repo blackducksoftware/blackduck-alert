@@ -13,6 +13,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.telemetry.model.DistributionTelemetryModel;
 import com.synopsys.integration.alert.telemetry.model.NotificationMappingTelemetryModel;
 import com.synopsys.integration.alert.telemetry.model.NotificationProcessingTelemetryModel;
 
@@ -20,9 +21,12 @@ import com.synopsys.integration.alert.telemetry.model.NotificationProcessingTele
 //  When implementing in the future, use an interface extending JpaRepository<TelemetryEntity, UUID>
 @Component
 public class TelemetryRepository {
+    //PK = correlationID
     Map<UUID, NotificationMappingTelemetryModel> jobMapping = new HashMap<>();
+    //PK = correlationID & jobID, FK = correlationID, jobID
     Map<UUID, NotificationProcessingTelemetryModel> processingMapping = new HashMap<>();
-    Map<UUID, String> distributionEvent = new HashMap<>();
+    //PK = jobID
+    Map<UUID, DistributionTelemetryModel> distributionEvent = new HashMap<>();
 
     public NotificationMappingTelemetryModel getOneMapping(UUID uuid) {
         return jobMapping.get(uuid);
@@ -38,5 +42,13 @@ public class TelemetryRepository {
 
     public NotificationProcessingTelemetryModel saveProcessing(UUID uuid, NotificationProcessingTelemetryModel notificationProcessingTelemetryModel) {
         return processingMapping.put(uuid, notificationProcessingTelemetryModel);
+    }
+
+    public DistributionTelemetryModel getOneDistributionEvent(UUID uuid) {
+        return distributionEvent.get(uuid);
+    }
+
+    public DistributionTelemetryModel saveDistributionEvent(UUID uuid, DistributionTelemetryModel distributionTelemetryModel) {
+        return distributionEvent.put(uuid, distributionTelemetryModel);
     }
 }

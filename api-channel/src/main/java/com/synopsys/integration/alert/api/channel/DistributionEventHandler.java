@@ -18,6 +18,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAcce
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.processor.api.distribute.DistributionEvent;
+import com.synopsys.integration.alert.telemetry.database.TelemetryAccessor;
 
 public class DistributionEventHandler<D extends DistributionJobDetailsModel> implements AlertEventHandler<DistributionEvent> {
     private final Logger notificationLogger = AlertLoggerFactory.getNotificationLogger(getClass());
@@ -25,11 +26,18 @@ public class DistributionEventHandler<D extends DistributionJobDetailsModel> imp
     private final DistributionChannel<D> channel;
     private final JobDetailsAccessor<D> jobDetailsAccessor;
     private final ProcessingAuditAccessor auditAccessor;
+    private final TelemetryAccessor telemetryAccessor;
 
-    public DistributionEventHandler(DistributionChannel<D> channel, JobDetailsAccessor<D> jobDetailsAccessor, ProcessingAuditAccessor auditAccessor) {
+    public DistributionEventHandler(
+        DistributionChannel<D> channel,
+        JobDetailsAccessor<D> jobDetailsAccessor,
+        ProcessingAuditAccessor auditAccessor,
+        TelemetryAccessor telemetryAccessor
+    ) {
         this.channel = channel;
         this.jobDetailsAccessor = jobDetailsAccessor;
         this.auditAccessor = auditAccessor;
+        this.telemetryAccessor = telemetryAccessor;
     }
 
     @Override
@@ -37,10 +45,14 @@ public class DistributionEventHandler<D extends DistributionJobDetailsModel> imp
         Optional<D> details = jobDetailsAccessor.retrieveDetails(event.getJobId());
         if (details.isPresent()) {
             try {
-                notificationLogger.debug("Channel: {} is processing event: {}", channel.getClass(), event.getEventId());
+                //TODO
+                notificationLogger.trace("Channel: {} is processing event: {}", channel.getClass(), event.getEventId());
+                telemetryAccessor.createDistributionTelemetryTask(event.getJobId());
                 channel.distributeMessages(details.get(), event.getProviderMessages(), event.getJobName());
                 auditAccessor.setAuditEntrySuccess(event.getJobId(), event.getNotificationIds());
-                notificationLogger.debug("Channel: {} successfully processed event: {}", channel.getClass(), event.getEventId());
+                //TODO
+                notificationLogger.trace("Channel: {} successfully processed event: {}", channel.getClass(), event.getEventId());
+                telemetryAccessor.completeDistributionTelemetryTask(event.getJobId());
             } catch (AlertException alertException) {
                 handleAlertException(alertException, event);
             } catch (Exception unknownException) {
@@ -58,7 +70,12 @@ public class DistributionEventHandler<D extends DistributionJobDetailsModel> imp
 
     protected void handleUnknownException(Exception e, DistributionEvent event) {
         notificationLogger.error("An unexpected error occurred while handling the following event: {}.", event.getEventId(), e);
-        auditAccessor.setAuditEntryFailure(event.getJobId(), event.getNotificationIds(), "An unexpected error occurred during message distribution. Please refer to the logs for more details.", null);
+        auditAccessor.setAuditEntryFailure(
+            event.getJobId(),
+            event.getNotificationIds(),
+            "An unexpected error occurred during message distribution. Please refer to the logs for more details.",
+            null
+        );
     }
 
     protected void handleJobDetailsMissing(DistributionEvent event) {

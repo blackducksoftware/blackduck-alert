@@ -13,12 +13,14 @@ import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAudi
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.processor.api.distribute.DistributionEvent;
+import com.synopsys.integration.alert.telemetry.database.TelemetryAccessor;
 
-public class DistributionEventHandlerTest {
+class DistributionEventHandlerTest {
     private final ChannelKey channelKey = new ChannelKey("test universal key", "Test Universal Key");
+    TelemetryAccessor telemetryAccessor = Mockito.mock(TelemetryAccessor.class);
 
     @Test
-    public void handleEventSuccessTest() {
+    void handleEventSuccessTest() {
         ProcessingAuditAccessor auditAccessor = Mockito.mock(ProcessingAuditAccessor.class);
         Mockito.doNothing().when(auditAccessor).setAuditEntrySuccess(Mockito.any(), Mockito.anySet());
 
@@ -27,7 +29,7 @@ public class DistributionEventHandlerTest {
 
         DistributionChannel<DistributionJobDetailsModel> channel = (x, y, z) -> null;
 
-        DistributionEventHandler<DistributionJobDetailsModel> eventHandler = new DistributionEventHandler<>(channel, jobDetailsAccessor, auditAccessor);
+        DistributionEventHandler<DistributionJobDetailsModel> eventHandler = new DistributionEventHandler<>(channel, jobDetailsAccessor, auditAccessor, telemetryAccessor);
 
         UUID testJobId = UUID.randomUUID();
         Set<Long> testNotificationIds = Set.of(1L, 3L, 5L);
@@ -39,7 +41,7 @@ public class DistributionEventHandlerTest {
     }
 
     @Test
-    public void handleEventExceptionTest() {
+    void handleEventExceptionTest() {
         ProcessingAuditAccessor auditAccessor = Mockito.mock(ProcessingAuditAccessor.class);
         Mockito.doNothing().when(auditAccessor).setAuditEntryFailure(Mockito.any(), Mockito.anySet(), Mockito.anyString(), Mockito.any());
 
@@ -51,7 +53,7 @@ public class DistributionEventHandlerTest {
             throw testException;
         };
 
-        DistributionEventHandler<DistributionJobDetailsModel> eventHandler = new DistributionEventHandler<>(channel, jobDetailsAccessor, auditAccessor);
+        DistributionEventHandler<DistributionJobDetailsModel> eventHandler = new DistributionEventHandler<>(channel, jobDetailsAccessor, auditAccessor, telemetryAccessor);
 
         UUID testJobId = UUID.randomUUID();
         Set<Long> testNotificationIds = Set.of(1L, 3L, 5L);
@@ -63,12 +65,12 @@ public class DistributionEventHandlerTest {
     }
 
     @Test
-    public void handleEventJobDetailsMissingTest() {
+    void handleEventJobDetailsMissingTest() {
         ProcessingAuditAccessor auditAccessor = Mockito.mock(ProcessingAuditAccessor.class);
         Mockito.doNothing().when(auditAccessor).setAuditEntryFailure(Mockito.any(), Mockito.anySet(), Mockito.anyString(), Mockito.any());
 
         JobDetailsAccessor<DistributionJobDetailsModel> jobDetailsAccessor = x -> Optional.empty();
-        DistributionEventHandler<DistributionJobDetailsModel> eventHandler = new DistributionEventHandler<>(null, jobDetailsAccessor, auditAccessor);
+        DistributionEventHandler<DistributionJobDetailsModel> eventHandler = new DistributionEventHandler<>(null, jobDetailsAccessor, auditAccessor, telemetryAccessor);
 
         UUID testJobId = UUID.randomUUID();
         Set<Long> testNotificationIds = Set.of(1L, 3L, 5L);

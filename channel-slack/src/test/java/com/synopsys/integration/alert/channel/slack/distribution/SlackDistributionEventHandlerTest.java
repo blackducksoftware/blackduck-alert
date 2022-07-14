@@ -28,6 +28,7 @@ import com.synopsys.integration.alert.processor.api.distribute.DistributionEvent
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
+import com.synopsys.integration.alert.telemetry.database.TelemetryAccessor;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
@@ -42,6 +43,7 @@ public class SlackDistributionEventHandlerTest {
 
     private SlackDistributionEventHandler distributionEventHandler;
     private final MockProcessingAuditAccessor processingAuditAccessor = new MockProcessingAuditAccessor();
+    private final TelemetryAccessor telemetryAccessor = Mockito.mock(TelemetryAccessor.class);
     private final MockWebServer mockSlackServer = new MockWebServer();
 
     private final Gson gson = new Gson();
@@ -61,7 +63,7 @@ public class SlackDistributionEventHandlerTest {
 
         SlackJobDetailsAccessor slackJobDetailsAccessor = jobId -> Optional.of(slackJobDetailsModel);
 
-        distributionEventHandler = new SlackDistributionEventHandler(slackChannel, slackJobDetailsAccessor, processingAuditAccessor);
+        distributionEventHandler = new SlackDistributionEventHandler(slackChannel, slackJobDetailsAccessor, processingAuditAccessor, telemetryAccessor);
     }
 
     @AfterEach

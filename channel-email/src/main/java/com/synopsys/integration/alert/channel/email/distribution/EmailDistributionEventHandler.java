@@ -14,12 +14,18 @@ import com.synopsys.integration.alert.api.channel.DistributionEventHandler;
 import com.synopsys.integration.alert.common.persistence.accessor.EmailJobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
+import com.synopsys.integration.alert.telemetry.database.TelemetryAccessor;
 
 @Component
 public class EmailDistributionEventHandler extends DistributionEventHandler<EmailJobDetailsModel> {
     @Autowired
-    public EmailDistributionEventHandler(EmailChannel channel, EmailJobDetailsAccessor jobDetailsAccessor, ProcessingAuditAccessor auditAccessor) {
-        super(channel, jobDetailsAccessor, auditAccessor);
+    public EmailDistributionEventHandler(
+        EmailChannel channel,
+        EmailJobDetailsAccessor jobDetailsAccessor,
+        ProcessingAuditAccessor auditAccessor,
+        TelemetryAccessor telemetryAccessor
+    ) {
+        super(channel, jobDetailsAccessor, auditAccessor, telemetryAccessor);
     }
 
 }

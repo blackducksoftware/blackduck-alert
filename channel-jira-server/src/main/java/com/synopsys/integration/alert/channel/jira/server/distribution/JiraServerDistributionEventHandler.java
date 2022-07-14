@@ -14,12 +14,18 @@ import com.synopsys.integration.alert.api.channel.DistributionEventHandler;
 import com.synopsys.integration.alert.common.persistence.accessor.JiraServerJobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
+import com.synopsys.integration.alert.telemetry.database.TelemetryAccessor;
 
 @Component
 public class JiraServerDistributionEventHandler extends DistributionEventHandler<JiraServerJobDetailsModel> {
     @Autowired
-    public JiraServerDistributionEventHandler(JiraServerChannel channel, JiraServerJobDetailsAccessor jobDetailsAccessor, ProcessingAuditAccessor auditAccessor) {
-        super(channel, jobDetailsAccessor, auditAccessor);
+    public JiraServerDistributionEventHandler(
+        JiraServerChannel channel,
+        JiraServerJobDetailsAccessor jobDetailsAccessor,
+        ProcessingAuditAccessor auditAccessor,
+        TelemetryAccessor telemetryAccessor
+    ) {
+        super(channel, jobDetailsAccessor, auditAccessor, telemetryAccessor);
     }
 
 }
