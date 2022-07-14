@@ -11,5 +11,7 @@ dependencies {
     implementation 'com.synopsys.integration:integration-rest'
     implementation 'org.springframework.amqp:spring-amqp'
 
+    implementation 'com.google.code.findbugs:jsr305'
+
     testImplementation project(':test-common')
 }
