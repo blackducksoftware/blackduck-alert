@@ -34,6 +34,7 @@ import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExt
 import com.synopsys.integration.alert.processor.api.mapping.JobNotificationMapper2;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
+import com.synopsys.integration.alert.telemetry.database.TelemetryAccessor;
 import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
@@ -53,6 +54,8 @@ class NotificationReceivedEventHandlerTestIT {
     private EventManager eventManager;
     @Autowired
     private JobNotificationMapper2 jobNotificationMapper2;
+    @Autowired
+    private TelemetryAccessor telemetryAccessor;
 
     private Long blackDuckGlobalConfigId;
     private TestProperties properties;
@@ -178,14 +181,14 @@ class NotificationReceivedEventHandlerTestIT {
 
     private AlertNotificationModel createAlertNotificationModel(boolean processed) {
         String bomEditContent = "{"
-            + "\"type\":\"" + NotificationType.BOM_EDIT.name() + "\","
-            + "\"content\": {"
-            + "\"projectVersion\": \"" + properties.getBlackDuckURL() + "/api/projects\","
-            + "\"bomComponent\": \"" + properties.getBlackDuckURL() + "\","
-            + "\"componentName\": \"test\","
-            + "\"componentVersionName\": \"test\""
-            + "}"
-            + "}";
+                                    + "\"type\":\"" + NotificationType.BOM_EDIT.name() + "\","
+                                    + "\"content\": {"
+                                    + "\"projectVersion\": \"" + properties.getBlackDuckURL() + "/api/projects\","
+                                    + "\"bomComponent\": \"" + properties.getBlackDuckURL() + "\","
+                                    + "\"componentName\": \"test\","
+                                    + "\"componentVersionName\": \"test\""
+                                    + "}"
+                                    + "}";
         MockNotificationContent notificationMocker = new MockNotificationContent(DateUtils.createCurrentDateTimestamp(), blackDuckProviderKey.getUniversalKey(), DateUtils.createCurrentDateTimestamp(), NotificationType.BOM_EDIT.name(),
             bomEditContent, null, blackDuckGlobalConfigId);
         NotificationEntity entity = notificationMocker.createEntity();
@@ -223,8 +226,8 @@ class NotificationReceivedEventHandlerTestIT {
         return new NotificationMappingProcessor(
             notificationDetailExtractionDelegator,
             jobNotificationMapper2,
-            defaultNotificationAccessor
-        );
+            defaultNotificationAccessor,
+            telemetryAccessor);
     }
 
 }

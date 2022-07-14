@@ -119,7 +119,7 @@ class ProcessingTaskTest {
         Mockito.when(jobAccessor.hasJobsByFrequency(Mockito.any())).thenReturn(true);
 
         NotificationDetailExtractionDelegator extractionDelegator = new NotificationDetailExtractionDelegator(blackDuckResponseResolver, List.of());
-        NotificationMappingProcessor notificationMappingProcessor = new NotificationMappingProcessor(extractionDelegator, null, null);
+        NotificationMappingProcessor notificationMappingProcessor = new NotificationMappingProcessor(extractionDelegator, null, null, null);
 
         ProcessingTask task = createTask(taskScheduler, notificationManager, notificationMappingProcessor, taskManager, jobAccessor);
         DateRange dateRange = task.getDateRange();
@@ -138,7 +138,7 @@ class ProcessingTaskTest {
         Mockito.when(jobAccessor.hasJobsByFrequency(Mockito.any())).thenReturn(false);
 
         NotificationDetailExtractionDelegator extractionDelegator = new NotificationDetailExtractionDelegator(blackDuckResponseResolver, List.of());
-        NotificationMappingProcessor notificationMappingProcessor = new NotificationMappingProcessor(extractionDelegator, null, null);
+        NotificationMappingProcessor notificationMappingProcessor = new NotificationMappingProcessor(extractionDelegator, null, null, null);
 
         ProcessingTask task = createTask(taskScheduler, notificationManager, notificationMappingProcessor, taskManager, jobAccessor);
         DateRange dateRange = task.getDateRange();
@@ -155,7 +155,7 @@ class ProcessingTaskTest {
         StaticJobAccessor jobAccessor = Mockito.mock(StaticJobAccessor.class);
 
         NotificationDetailExtractionDelegator extractionDelegator = new NotificationDetailExtractionDelegator(blackDuckResponseResolver, List.of());
-        NotificationMappingProcessor notificationMappingProcessor = new NotificationMappingProcessor(extractionDelegator, null, null);
+        NotificationMappingProcessor notificationMappingProcessor = new NotificationMappingProcessor(extractionDelegator, null, null, null);
 
         ProcessingTask task = createTask(taskScheduler, notificationManager, notificationMappingProcessor, taskManager, jobAccessor);
         DateRange dateRange = task.getDateRange();
@@ -175,7 +175,7 @@ class ProcessingTaskTest {
         Mockito.when(jobAccessor.hasJobsByFrequency(Mockito.any())).thenReturn(true);
 
         NotificationDetailExtractionDelegator extractionDelegator = new NotificationDetailExtractionDelegator(blackDuckResponseResolver, List.of());
-        NotificationMappingProcessor notificationMappingProcessor = new NotificationMappingProcessor(extractionDelegator, null, null);
+        NotificationMappingProcessor notificationMappingProcessor = new NotificationMappingProcessor(extractionDelegator, null, null, null);
 
         ProcessingTask task = createTask(taskScheduler, notificationManager, notificationMappingProcessor, taskManager, jobAccessor);
         int count = 20;

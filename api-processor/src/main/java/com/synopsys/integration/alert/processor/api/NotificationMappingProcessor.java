@@ -24,6 +24,7 @@ import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.processor.api.detail.DetailedNotificationContent;
 import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExtractionDelegator;
 import com.synopsys.integration.alert.processor.api.mapping.JobNotificationMapper2;
+import com.synopsys.integration.alert.telemetry.database.TelemetryAccessor;
 
 @Component
 public class NotificationMappingProcessor {
@@ -32,20 +33,24 @@ public class NotificationMappingProcessor {
     private final NotificationDetailExtractionDelegator notificationDetailExtractionDelegator;
     private final JobNotificationMapper2 jobNotificationMapper;
     private final NotificationAccessor notificationAccessor;
+    private final TelemetryAccessor telemetryAccessor;
 
     @Autowired
     public NotificationMappingProcessor(
         NotificationDetailExtractionDelegator notificationDetailExtractionDelegator,
         JobNotificationMapper2 jobNotificationMapper,
-        NotificationAccessor notificationAccessor
+        NotificationAccessor notificationAccessor,
+        TelemetryAccessor telemetryAccessor
     ) {
         this.notificationDetailExtractionDelegator = notificationDetailExtractionDelegator;
         this.jobNotificationMapper = jobNotificationMapper;
         this.notificationAccessor = notificationAccessor;
+        this.telemetryAccessor = telemetryAccessor;
     }
 
     public void processNotifications(UUID correlationID, List<AlertNotificationModel> notifications, List<FrequencyType> frequencies) {
         logNotifications("Start mapping notifications: {}", notifications);
+        telemetryAccessor.createNotificationMappingTelemetryTask(correlationID);
         List<DetailedNotificationContent> filterableNotifications = notifications
             .stream()
             .map(notificationDetailExtractionDelegator::wrapNotification)
@@ -54,6 +59,7 @@ public class NotificationMappingProcessor {
         jobNotificationMapper.mapJobsToNotifications(correlationID, filterableNotifications, frequencies);
         notificationAccessor.setNotificationsProcessed(notifications);
         logNotifications("Finished mapping notifications: {}", notifications);
+        telemetryAccessor.completeNotificationMappingTelemetryTask(correlationID);
     }
 
     private void logNotifications(String messageFormat, List<AlertNotificationModel> notifications) {
