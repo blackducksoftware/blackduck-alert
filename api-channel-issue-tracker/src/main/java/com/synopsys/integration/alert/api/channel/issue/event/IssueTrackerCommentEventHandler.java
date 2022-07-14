@@ -7,18 +7,8 @@
  */
 package com.synopsys.integration.alert.api.channel.issue.event;
 
-import java.io.Serializable;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.synopsys.integration.alert.api.event.AlertEvent;
 import com.synopsys.integration.alert.api.event.AlertEventHandler;
 
-public class IssueTrackerCommentEventHandler<T extends Serializable> implements AlertEventHandler<IssueTrackerCommentEvent<T>> {
-    private Logger logger = LoggerFactory.getLogger(getClass());
-
-    @Override
-    public void handle(IssueTrackerCommentEvent<T> event) {
-        logger.info("issue tracker comment event handler called.");
-    }
+public interface IssueTrackerCommentEventHandler<T extends AlertEvent> extends AlertEventHandler<T> {
 }

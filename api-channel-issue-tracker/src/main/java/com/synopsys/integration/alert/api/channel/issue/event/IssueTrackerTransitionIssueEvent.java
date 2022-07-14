@@ -18,7 +18,7 @@ public class IssueTrackerTransitionIssueEvent<T extends Serializable> extends Al
     private static final long serialVersionUID = 2225961487898754563L;
 
     public static String createDefaultEventDestination(ChannelKey channelKey) {
-        return String.format("%s_issue_transition_queue", channelKey.getUniversalKey());
+        return String.format("%s_issue_transition", channelKey.getUniversalKey());
     }
 
     private final UUID jobId;

@@ -17,7 +17,7 @@ public class IssueTrackerCreateIssueEvent extends AlertEvent {
     private static final long serialVersionUID = 9165621968176192549L;
 
     public static String createDefaultEventDestination(ChannelKey channelKey) {
-        return String.format("%s_issue_create_queue", channelKey.getUniversalKey());
+        return String.format("%s_issue_create", channelKey.getUniversalKey());
     }
 
     private final UUID jobId;

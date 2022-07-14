@@ -43,6 +43,21 @@ public class IssueTrackerMessageSender<T extends Serializable> {
         return responses;
     }
 
+    public final List<IssueTrackerIssueResponseModel<T>> sendAsyncMessages(IssueTrackerModelHolder<T> issueTrackerMessage) throws AlertException {
+        List<IssueTrackerIssueResponseModel<T>> responses = new LinkedList<>();
+
+        List<IssueTrackerIssueResponseModel<T>> creationResponses = sendMessages(issueTrackerMessage.getIssueCreationModels(), issueCreator::createIssueTrackerIssue);
+        responses.addAll(creationResponses);
+
+        List<IssueTrackerIssueResponseModel<T>> transitionResponses = sendOptionalMessages(issueTrackerMessage.getIssueTransitionModels(), issueTransitioner::transitionIssue);
+        responses.addAll(transitionResponses);
+
+        List<IssueTrackerIssueResponseModel<T>> commentResponses = sendOptionalMessages(issueTrackerMessage.getIssueCommentModels(), issueCommenter::commentOnIssue);
+        responses.addAll(commentResponses);
+
+        return responses;
+    }
+
     private <U> List<IssueTrackerIssueResponseModel<T>> sendMessages(List<U> messages, ThrowingFunction<U, IssueTrackerIssueResponseModel<T>, AlertException> sendMessage)
         throws AlertException {
         List<IssueTrackerIssueResponseModel<T>> responses = new LinkedList<>();

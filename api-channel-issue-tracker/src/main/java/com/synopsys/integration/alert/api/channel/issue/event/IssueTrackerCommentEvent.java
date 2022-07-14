@@ -18,9 +18,9 @@ public class IssueTrackerCommentEvent<T extends Serializable> extends AlertEvent
     private static final long serialVersionUID = 867746168597376739L;
 
     public static String createDefaultEventDestination(ChannelKey channelKey) {
-        return String.format("%s_issue_comment_queue", channelKey.getUniversalKey());
+        return String.format("%s_issue_comment", channelKey.getUniversalKey());
     }
-
+    
     private final UUID jobId;
     private IssueCommentModel<T> commentModel;
 

@@ -7,20 +7,19 @@
  */
 package com.synopsys.integration.alert.api.channel.issue.event;
 
-import java.io.Serializable;
-
 import org.springframework.core.task.TaskExecutor;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.event.AlertEvent;
 import com.synopsys.integration.alert.api.event.AlertMessageListener;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
-public abstract class IssueTrackerTransitionEventListener<T extends Serializable> extends AlertMessageListener<IssueTrackerTransitionIssueEvent<T>> {
+public abstract class IssueTrackerTransitionEventListener<T extends AlertEvent> extends AlertMessageListener<T> {
     protected IssueTrackerTransitionEventListener(
         Gson gson,
         TaskExecutor taskExecutor,
         ChannelKey channelKey,
-        Class<IssueTrackerTransitionIssueEvent<T>> eventClass,
+        Class<T> eventClass,
         IssueTrackerTransitionEventHandler<T> eventHandler
     ) {
         super(gson, taskExecutor, IssueTrackerTransitionIssueEvent.createDefaultEventDestination(channelKey), eventClass, eventHandler);

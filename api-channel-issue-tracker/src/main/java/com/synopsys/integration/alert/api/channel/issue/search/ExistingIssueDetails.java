@@ -14,6 +14,7 @@ import com.synopsys.integration.alert.api.channel.issue.search.enumeration.Issue
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
 public class ExistingIssueDetails<T extends Serializable> extends AlertSerializableModel {
+    private static final long serialVersionUID = 4683457270197617111L;
     private final T issueId;
     private final String issueKey;
     private final String issueSummary;
