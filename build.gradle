@@ -31,6 +31,16 @@ ext {
     blackduckCommonExcludes = {
         exclude group: 'com.blackducksoftware.bdio', module: 'bdio2'
     }
+
+    // Docker Variables
+    dockerStagingDirectory = project.buildDir.toString() + '/docker-staging'
+    baseDockerDirectory = project.projectDir.toString() + '/docker'
+    dockerCleanStagingAreaDirectoryStageName = 'dockerCleanStagingAreaDirectory'
+    dockerRemoveAllImagesStageName = 'dockerRemoveAllImages'
+    dockerSetupStagingAreaDirectoryStageName = 'dockerSetupStagingAreaDirectory'
+    dockerBuildAllImagesStageName = 'dockerBuildAllImages'
+    dockerLoginDockerHubStageName = 'dockerLoginDockerHub'
+    dockerPublishAllImagesStageName = 'dockerPublishAllImages'
 }
 
 mainClassName = 'com.synopsys.integration.alert.Application'
@@ -210,20 +220,20 @@ artifactory {
     }
 }
 
-tasks.dockerLoginDockerHub.mustRunAfter(helmPushChart)
-
 tasks.helmPushChart.mustRunAfter(helmValidation)
-
 tasks.build.mustRunAfter(copyToTemplates)
 tasks.runServer.dependsOn copyToTemplates
-tasks.dockerBuildAllImages.dependsOn copyToTemplates
 tasks.test.dependsOn copyToTemplates
 
-
-task buildAll(dependsOn: [copyToTemplates, build, helmValidation, createDeploymentZip, dockerBuildAllImages]) {
+task buildAll(dependsOn: [copyToTemplates, build, helmValidation, createDeploymentZip]) {
     helmValidation.mustRunAfter build
     createDeploymentZip.mustRunAfter helmValidation
-
-    dockerBuildAllImages.mustRunAfter createDeploymentZip
 }
 
+tasks.getByName(ext.dockerLoginDockerHubStageName).mustRunAfter(helmPushChart)
+tasks.getByName(ext.dockerLoginDockerHubStageName).mustRunAfter(tasks.getByName(ext.dockerBuildAllImagesStageName))
+tasks.getByName(ext.dockerBuildAllImagesStageName).mustRunAfter(buildAll)
+tasks.getByName(ext.dockerBuildAllImagesStageName).mustRunAfter(tasks.getByName(ext.dockerSetupStagingAreaDirectoryStageName))
+tasks.getByName(ext.dockerSetupStagingAreaDirectoryStageName).mustRunAfter(buildAll)
+tasks.getByName(ext.dockerPublishAllImagesStageName).mustRunAfter(buildAll)
+tasks.getByName(ext.dockerPublishAllImagesStageName).mustRunAfter(tasks.getByName(ext.dockerLoginDockerHubStageName))
