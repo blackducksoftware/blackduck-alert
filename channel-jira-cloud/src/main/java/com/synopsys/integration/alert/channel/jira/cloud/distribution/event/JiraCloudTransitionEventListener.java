@@ -1,29 +1,29 @@
 /*
- * channel-jira-server
+ * channel-jira-cloud
  *
  * Copyright (c) 2022 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.channel.jira.server.distribution.event;
+package com.synopsys.integration.alert.channel.jira.cloud.distribution.event;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCreateIssueEventListener;
+import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerTransitionEventListener;
 import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
 
 @Component
-public class JiraServerCreateIssueEventListener extends IssueTrackerCreateIssueEventListener {
+public class JiraCloudTransitionEventListener extends IssueTrackerTransitionEventListener<JiraCloudTransitionEvent> {
     @Autowired
-    public JiraServerCreateIssueEventListener(
+    public JiraCloudTransitionEventListener(
         Gson gson,
         TaskExecutor taskExecutor,
         JiraServerChannelKey channelKey,
-        JiraServerCreateIssueEventHandler eventHandler
+        JiraCloudTransitionEventHandler eventHandler
     ) {
-        super(gson, taskExecutor, channelKey, eventHandler);
+        super(gson, taskExecutor, channelKey, JiraCloudTransitionEvent.class, eventHandler);
     }
 }

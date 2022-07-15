@@ -69,9 +69,12 @@ public class IssueTrackerMessageSender<T extends Serializable> {
     }
 
     public final void sendAsyncMessages(IssueTrackerModelHolder<T> issueTrackerMessage) {
-        sendAsyncMessages(issueTrackerMessage.getIssueCreationModels(), issueCreateEventGenerator::generateEvent);
-        sendAsyncMessages(issueTrackerMessage.getIssueTransitionModels(), issueTrackerTransitionEventGenerator::generateEvent);
-        sendAsyncMessages(issueTrackerMessage.getIssueCommentModels(), issueTrackerCommentEventGenerator::generateEvent);
+        //TODO: Remove this if statement when all issue tracker channels are converted to use this method.
+        if (null != eventManager) {
+            sendAsyncMessages(issueTrackerMessage.getIssueCreationModels(), issueCreateEventGenerator::generateEvent);
+            sendAsyncMessages(issueTrackerMessage.getIssueTransitionModels(), issueTrackerTransitionEventGenerator::generateEvent);
+            sendAsyncMessages(issueTrackerMessage.getIssueCommentModels(), issueTrackerCommentEventGenerator::generateEvent);
+        }
     }
 
     private <U> List<IssueTrackerIssueResponseModel<T>> sendMessages(List<U> messages, ThrowingFunction<U, IssueTrackerIssueResponseModel<T>, AlertException> sendMessage)

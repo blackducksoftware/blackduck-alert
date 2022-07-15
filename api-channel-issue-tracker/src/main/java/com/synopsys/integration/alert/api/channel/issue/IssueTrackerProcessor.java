@@ -38,11 +38,13 @@ public class IssueTrackerProcessor<T extends Serializable> {
             if (acquired) {
                 IssueTrackerModelHolder<T> simpleMessageHolder = modelExtractor.extractSimpleMessageIssueModels(messages.getSimpleMessages(), jobName);
                 List<IssueTrackerIssueResponseModel<T>> simpleMessageResponseModels = messageSender.sendMessages(simpleMessageHolder);
+                messageSender.sendAsyncMessages(simpleMessageHolder);
                 issueResponseModels.addAll(simpleMessageResponseModels);
 
                 for (ProjectMessage projectMessage : messages.getProjectMessages()) {
                     IssueTrackerModelHolder<T> projectMessageHolder = modelExtractor.extractProjectMessageIssueModels(projectMessage, jobName);
                     List<IssueTrackerIssueResponseModel<T>> projectMessageResponseModels = messageSender.sendMessages(projectMessageHolder);
+                    messageSender.sendAsyncMessages(simpleMessageHolder);
                     issueResponseModels.addAll(projectMessageResponseModels);
                 }
             }
