@@ -11,10 +11,13 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerModelHolder;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.event.AlertEvent;
+import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.function.ThrowingFunction;
 
 public class IssueTrackerMessageSender<T extends Serializable> {
@@ -22,10 +25,32 @@ public class IssueTrackerMessageSender<T extends Serializable> {
     private final IssueTrackerIssueTransitioner<T> issueTransitioner;
     private final IssueTrackerIssueCommenter<T> issueCommenter;
 
+    private final IssueTrackerCreationEventGenerator issueCreateEventGenerator;
+    private final IssueTrackerTransitionEventGenerator<T> issueTrackerTransitionEventGenerator;
+    private final IssueTrackerCommentEventGenerator<T> issueTrackerCommentEventGenerator;
+    private final EventManager eventManager;
+
+    // TODO: Remove after all channels implement these changes;
     public IssueTrackerMessageSender(IssueTrackerIssueCreator<T> issueCreator, IssueTrackerIssueTransitioner<T> issueTransitioner, IssueTrackerIssueCommenter<T> issueCommenter) {
+        this(issueCreator, issueTransitioner, issueCommenter, null, null, null, null);
+    }
+
+    public IssueTrackerMessageSender(
+        IssueTrackerIssueCreator<T> issueCreator,
+        IssueTrackerIssueTransitioner<T> issueTransitioner,
+        IssueTrackerIssueCommenter<T> issueCommenter,
+        IssueTrackerCreationEventGenerator issueCreateEventGenerator,
+        IssueTrackerTransitionEventGenerator<T> issueTrackerTransitionEventGenerator,
+        IssueTrackerCommentEventGenerator<T> issueTrackerCommentEventGenerator,
+        EventManager eventManager
+    ) {
         this.issueCreator = issueCreator;
         this.issueTransitioner = issueTransitioner;
         this.issueCommenter = issueCommenter;
+        this.issueCreateEventGenerator = issueCreateEventGenerator;
+        this.issueTrackerTransitionEventGenerator = issueTrackerTransitionEventGenerator;
+        this.issueTrackerCommentEventGenerator = issueTrackerCommentEventGenerator;
+        this.eventManager = eventManager;
     }
 
     public final List<IssueTrackerIssueResponseModel<T>> sendMessages(IssueTrackerModelHolder<T> issueTrackerMessage) throws AlertException {
@@ -43,19 +68,10 @@ public class IssueTrackerMessageSender<T extends Serializable> {
         return responses;
     }
 
-    public final List<IssueTrackerIssueResponseModel<T>> sendAsyncMessages(IssueTrackerModelHolder<T> issueTrackerMessage) throws AlertException {
-        List<IssueTrackerIssueResponseModel<T>> responses = new LinkedList<>();
-
-        List<IssueTrackerIssueResponseModel<T>> creationResponses = sendMessages(issueTrackerMessage.getIssueCreationModels(), issueCreator::createIssueTrackerIssue);
-        responses.addAll(creationResponses);
-
-        List<IssueTrackerIssueResponseModel<T>> transitionResponses = sendOptionalMessages(issueTrackerMessage.getIssueTransitionModels(), issueTransitioner::transitionIssue);
-        responses.addAll(transitionResponses);
-
-        List<IssueTrackerIssueResponseModel<T>> commentResponses = sendOptionalMessages(issueTrackerMessage.getIssueCommentModels(), issueCommenter::commentOnIssue);
-        responses.addAll(commentResponses);
-
-        return responses;
+    public final void sendAsyncMessages(IssueTrackerModelHolder<T> issueTrackerMessage) {
+        sendAsyncMessages(issueTrackerMessage.getIssueCreationModels(), issueCreateEventGenerator::generateEvent);
+        sendAsyncMessages(issueTrackerMessage.getIssueTransitionModels(), issueTrackerTransitionEventGenerator::generateEvent);
+        sendAsyncMessages(issueTrackerMessage.getIssueCommentModels(), issueTrackerCommentEventGenerator::generateEvent);
     }
 
     private <U> List<IssueTrackerIssueResponseModel<T>> sendMessages(List<U> messages, ThrowingFunction<U, IssueTrackerIssueResponseModel<T>, AlertException> sendMessage)
@@ -69,7 +85,10 @@ public class IssueTrackerMessageSender<T extends Serializable> {
         return responses;
     }
 
-    private <U> List<IssueTrackerIssueResponseModel<T>> sendOptionalMessages(List<U> messages, ThrowingFunction<U, Optional<IssueTrackerIssueResponseModel<T>>, AlertException> sendMessage) throws AlertException {
+    private <U> List<IssueTrackerIssueResponseModel<T>> sendOptionalMessages(
+        List<U> messages,
+        ThrowingFunction<U, Optional<IssueTrackerIssueResponseModel<T>>, AlertException> sendMessage
+    ) throws AlertException {
         List<IssueTrackerIssueResponseModel<T>> responses = new LinkedList<>();
         for (U message : messages) {
             sendMessage
@@ -79,4 +98,10 @@ public class IssueTrackerMessageSender<T extends Serializable> {
         return responses;
     }
 
+    private <U> void sendAsyncMessages(List<U> messages, Function<U, AlertEvent> eventGenerator) {
+        for (U message : messages) {
+            AlertEvent event = eventGenerator.apply(message);
+            eventManager.sendEvent(event);
+        }
+    }
 }

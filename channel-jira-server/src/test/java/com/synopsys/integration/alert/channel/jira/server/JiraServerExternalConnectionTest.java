@@ -21,6 +21,7 @@ import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerRespon
 import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraMessageFormatter;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerChannelLock;
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerMessageSenderFactory;
@@ -58,6 +59,7 @@ class JiraServerExternalConnectionTest {
         JiraMessageFormatter jiraMessageFormatter = new JiraMessageFormatter();
 
         JiraServerChannelKey jiraServerChannelKey = new JiraServerChannelKey();
+        EventManager eventManager = Mockito.mock(EventManager.class);
         JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
         Mockito.when(jiraServerGlobalConfigAccessor.getConfigurationByName(Mockito.anyString())).thenReturn(Optional.of(createJiraServerConfigModel()));
         ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
@@ -68,11 +70,13 @@ class JiraServerExternalConnectionTest {
 
         IssueTrackerCallbackInfoCreator issueTrackerCallbackInfoCreator = new IssueTrackerCallbackInfoCreator();
         IssueCategoryRetriever issueCategoryRetriever = new IssueCategoryRetriever();
-        JiraServerMessageSenderFactory jiraServerMessageSenderFactory = new JiraServerMessageSenderFactory(gson,
+        JiraServerMessageSenderFactory jiraServerMessageSenderFactory = new JiraServerMessageSenderFactory(
+            gson,
             jiraServerChannelKey,
             jiraServerPropertiesFactory,
             issueTrackerCallbackInfoCreator,
-            issueCategoryRetriever
+            issueCategoryRetriever,
+            eventManager
         );
 
         ProjectMessageToIssueModelTransformer modelTransformer = new ProjectMessageToIssueModelTransformer();
