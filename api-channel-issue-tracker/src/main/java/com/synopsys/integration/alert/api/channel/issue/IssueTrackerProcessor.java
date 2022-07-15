@@ -44,7 +44,7 @@ public class IssueTrackerProcessor<T extends Serializable> {
                 for (ProjectMessage projectMessage : messages.getProjectMessages()) {
                     IssueTrackerModelHolder<T> projectMessageHolder = modelExtractor.extractProjectMessageIssueModels(projectMessage, jobName);
                     List<IssueTrackerIssueResponseModel<T>> projectMessageResponseModels = messageSender.sendMessages(projectMessageHolder);
-                    messageSender.sendAsyncMessages(simpleMessageHolder);
+                    messageSender.sendAsyncMessages(projectMessageHolder);
                     issueResponseModels.addAll(projectMessageResponseModels);
                 }
             }

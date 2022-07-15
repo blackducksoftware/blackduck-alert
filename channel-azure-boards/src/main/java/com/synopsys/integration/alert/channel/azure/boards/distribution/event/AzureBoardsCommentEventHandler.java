@@ -19,6 +19,6 @@ public class AzureBoardsCommentEventHandler implements IssueTrackerCommentEventH
 
     @Override
     public void handle(AzureBoardsCommentEvent event) {
-        logger.info("Jira Server comment handler");
+        logger.info("Azure Boards comment handler");
     }
 }

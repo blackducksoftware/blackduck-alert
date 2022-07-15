@@ -20,7 +20,7 @@ public class AzureBoardsCreateIssueEventHandler implements IssueTrackerCreateIss
 
     @Override
     public void handle(IssueTrackerCreateIssueEvent event) {
-        logger.info("Jira server create issue event");
+        logger.info("Azure Boards create issue event");
 
     }
 

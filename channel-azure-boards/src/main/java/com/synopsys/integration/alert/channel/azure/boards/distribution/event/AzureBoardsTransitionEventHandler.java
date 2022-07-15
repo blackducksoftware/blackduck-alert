@@ -19,7 +19,7 @@ public class AzureBoardsTransitionEventHandler implements IssueTrackerTransition
 
     @Override
     public void handle(AzureBoardsTransitionEvent event) {
-        logger.info("Jira server transition event");
+        logger.info("Azure Boards transition event");
 
     }
 }

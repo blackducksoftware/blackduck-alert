@@ -19,6 +19,6 @@ public class JiraCloudCommentEventHandler implements IssueTrackerCommentEventHan
 
     @Override
     public void handle(JiraCloudCommentEvent event) {
-        logger.info("Jira Server comment handler");
+        logger.info("Jira Cloud comment handler");
     }
 }

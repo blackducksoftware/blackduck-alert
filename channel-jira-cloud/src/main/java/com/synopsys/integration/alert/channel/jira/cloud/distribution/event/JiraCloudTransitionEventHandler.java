@@ -19,7 +19,7 @@ public class JiraCloudTransitionEventHandler implements IssueTrackerTransitionEv
 
     @Override
     public void handle(JiraCloudTransitionEvent event) {
-        logger.info("Jira server transition event");
+        logger.info("Jira Cloud transition event");
 
     }
 }

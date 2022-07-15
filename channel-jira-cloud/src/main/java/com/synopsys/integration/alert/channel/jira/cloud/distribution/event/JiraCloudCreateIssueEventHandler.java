@@ -20,7 +20,7 @@ public class JiraCloudCreateIssueEventHandler implements IssueTrackerCreateIssue
 
     @Override
     public void handle(IssueTrackerCreateIssueEvent event) {
-        logger.info("Jira server create issue event");
+        logger.info("Jira Cloud create issue event");
 
     }
 
