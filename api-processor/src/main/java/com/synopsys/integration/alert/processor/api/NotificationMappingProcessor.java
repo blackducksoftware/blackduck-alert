@@ -63,12 +63,12 @@ public class NotificationMappingProcessor {
     }
 
     private void logNotifications(String messageFormat, List<AlertNotificationModel> notifications) {
-        if (logger.isDebugEnabled()) {
+        if (logger.isTraceEnabled()) {
             List<Long> notificationIds = notifications.stream()
                 .map(AlertNotificationModel::getId)
                 .collect(Collectors.toList());
             String joinedIds = StringUtils.join(notificationIds, ", ");
-            notificationLogger.debug(messageFormat, joinedIds);
+            notificationLogger.trace(messageFormat, joinedIds);
         }
     }
 }
