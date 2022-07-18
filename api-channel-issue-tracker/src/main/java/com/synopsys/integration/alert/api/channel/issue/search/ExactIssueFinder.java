@@ -14,6 +14,6 @@ import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 
 public interface ExactIssueFinder<T extends Serializable> {
-    List<ExistingIssueDetails<T>> findExistingIssuesByProjectIssueModel(ProjectIssueModel projectIssueModel) throws AlertException;
+    List<ProjectIssueSearchResult<T>> findExistingIssuesByProjectIssueModel(ProjectIssueModel projectIssueModel) throws AlertException;
 
 }

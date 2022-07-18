@@ -15,10 +15,16 @@ import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 public class ProjectIssueSearchResult<T extends Serializable> extends AlertSerializableModel {
     private final ExistingIssueDetails<T> existingIssueDetails;
     private final ProjectIssueModel projectIssueModel;
+    private final String queryString;
 
-    public ProjectIssueSearchResult(ExistingIssueDetails<T> existingIssueDetails, ProjectIssueModel projectIssueModel) {
+    public ProjectIssueSearchResult(String queryString, ExistingIssueDetails<T> existingIssueDetails, ProjectIssueModel projectIssueModel) {
+        this.queryString = queryString;
         this.existingIssueDetails = existingIssueDetails;
         this.projectIssueModel = projectIssueModel;
+    }
+
+    public String getQueryString() {
+        return queryString;
     }
 
     public ExistingIssueDetails<T> getExistingIssueDetails() {
@@ -28,5 +34,4 @@ public class ProjectIssueSearchResult<T extends Serializable> extends AlertSeria
     public ProjectIssueModel getProjectIssueModel() {
         return projectIssueModel;
     }
-
 }

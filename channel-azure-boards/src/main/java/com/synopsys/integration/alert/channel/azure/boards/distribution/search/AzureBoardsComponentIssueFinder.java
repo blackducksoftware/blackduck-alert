@@ -51,14 +51,14 @@ public class AzureBoardsComponentIssueFinder implements ProjectVersionComponentI
             ProjectIssueModel projectIssueModel = ProjectIssueModel.bom(providerDetails, project, projectVersion, issueBomComponent);
             ExistingIssueDetails<Integer> issueDetails = issueDetailsCreator.createIssueDetails(workItem, workItem.createFieldsWrapper(gson), projectIssueModel);
 
-            ProjectIssueSearchResult<Integer> searchResult = new ProjectIssueSearchResult<>(issueDetails, projectIssueModel);
+            ProjectIssueSearchResult<Integer> searchResult = new ProjectIssueSearchResult<>("", issueDetails, projectIssueModel);
             searchResults.add(searchResult);
         }
         return searchResults;
     }
 
     @Override
-    public List<ExistingIssueDetails<Integer>> findExistingIssuesByProjectIssueModel(ProjectIssueModel projectIssueModel) throws AlertException {
+    public List<ProjectIssueSearchResult<Integer>> findExistingIssuesByProjectIssueModel(ProjectIssueModel projectIssueModel) throws AlertException {
         LinkableItem projectVersion = projectIssueModel.getProjectVersion()
             .orElseThrow(() -> new AlertRuntimeException("Missing project-version"));
 
@@ -98,8 +98,8 @@ public class AzureBoardsComponentIssueFinder implements ProjectVersionComponentI
         return azureSearchFieldMappingBuilder;
     }
 
-    private ExistingIssueDetails<Integer> createIssueDetails(WorkItemResponseModel workItem, ProjectIssueModel projectIssueModel) {
-        return issueDetailsCreator.createIssueDetails(workItem, workItem.createFieldsWrapper(gson), projectIssueModel);
+    private ProjectIssueSearchResult<Integer> createIssueDetails(WorkItemResponseModel workItem, ProjectIssueModel projectIssueModel) {
+        return new ProjectIssueSearchResult<>("", issueDetailsCreator.createIssueDetails(workItem, workItem.createFieldsWrapper(gson), projectIssueModel), projectIssueModel);
     }
 
 }

@@ -17,6 +17,7 @@ import com.synopsys.integration.alert.api.channel.issue.model.IssuePolicyDetails
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
+import com.synopsys.integration.alert.api.channel.issue.search.ProjectIssueSearchResult;
 import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueCategory;
 import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueStatus;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
@@ -64,10 +65,10 @@ public class AzureBoardsComponentIssueFinderTest {
         WorkItemResponseModel workItemResponseModel = createWorkItemResponseModel(workItemReopenState);
         Mockito.when(queryManager.executeQueryAndRetrieveWorkItems(Mockito.any())).thenReturn(List.of(workItemResponseModel));
 
-        List<ExistingIssueDetails<Integer>> existingIssueDetailsList = componentIssueFinder.findExistingIssuesByProjectIssueModel(projectIssueModel);
+        List<ProjectIssueSearchResult<Integer>> existingIssueDetailsList = componentIssueFinder.findExistingIssuesByProjectIssueModel(projectIssueModel);
 
         assertEquals(1, existingIssueDetailsList.size());
-        ExistingIssueDetails<Integer> existingIssueDetails = existingIssueDetailsList.get(0);
+        ExistingIssueDetails<Integer> existingIssueDetails = existingIssueDetailsList.get(0).getExistingIssueDetails();
         assertEquals(IssueStatus.RESOLVABLE, existingIssueDetails.getIssueStatus());
         assertEquals(IssueCategory.POLICY, existingIssueDetails.getIssueCategory());
     }
@@ -90,10 +91,10 @@ public class AzureBoardsComponentIssueFinderTest {
         WorkItemResponseModel workItemResponseModel = createWorkItemResponseModel(workItemReopenState);
         Mockito.when(queryManager.executeQueryAndRetrieveWorkItems(Mockito.any())).thenReturn(List.of(workItemResponseModel));
 
-        List<ExistingIssueDetails<Integer>> existingIssueDetailsList = componentIssueFinder.findExistingIssuesByProjectIssueModel(projectIssueModel);
+        List<ProjectIssueSearchResult<Integer>> existingIssueDetailsList = componentIssueFinder.findExistingIssuesByProjectIssueModel(projectIssueModel);
 
         assertEquals(1, existingIssueDetailsList.size());
-        ExistingIssueDetails<Integer> existingIssueDetails = existingIssueDetailsList.get(0);
+        ExistingIssueDetails<Integer> existingIssueDetails = existingIssueDetailsList.get(0).getExistingIssueDetails();
         assertEquals(IssueStatus.RESOLVABLE, existingIssueDetails.getIssueStatus());
         assertEquals(IssueCategory.BOM, existingIssueDetails.getIssueCategory());
     }

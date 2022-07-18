@@ -66,7 +66,7 @@ public class AzureBoardsProjectAndVersionIssueFinder implements ProjectIssueFind
             WorkItemFieldsWrapper workItemFields = workItem.createFieldsWrapper(gson);
             ProjectIssueModel projectIssueModel = createProjectIssueModel(providerDetails, project, projectVersion, workItemFields);
             ExistingIssueDetails<Integer> issueDetails = issueDetailsCreator.createIssueDetails(workItem, workItemFields, projectIssueModel);
-            ProjectIssueSearchResult<Integer> searchResult = new ProjectIssueSearchResult<>(issueDetails, projectIssueModel);
+            ProjectIssueSearchResult<Integer> searchResult = new ProjectIssueSearchResult<>("", issueDetails, projectIssueModel);
             searchResults.add(searchResult);
         }
         return searchResults;

@@ -76,7 +76,7 @@ public class JiraIssueSearchResultCreator {
     public ProjectIssueSearchResult<String> createIssueResult(JiraSearcherResponseModel issue, ProjectIssueModel projectIssueModel) {
         IssueCategory issueCategory = issueCategoryRetriever.retrieveIssueCategoryFromProjectIssueModel(projectIssueModel);
         ExistingIssueDetails<String> issueDetails = createExistingIssueDetails(issue, issueCategory);
-        return new ProjectIssueSearchResult<>(issueDetails, projectIssueModel);
+        return new ProjectIssueSearchResult<>("", issueDetails, projectIssueModel);
     }
 
     public ExistingIssueDetails<String> createExistingIssueDetails(JiraSearcherResponseModel issue, IssueCategory issueCategory) {

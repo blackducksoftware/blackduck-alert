@@ -50,7 +50,7 @@ class IssueTrackerSearcherTest {
     void findIssuesProjectBomDeleted() throws AlertException {
         ProjectMessage projectMessage = ProjectMessage.projectStatusInfo(PROVIDER_DETAILS, PROJECT_ITEM, ProjectOperation.DELETE);
         ProjectIssueModel projectIssueModel = Mockito.mock(ProjectIssueModel.class);
-        ProjectIssueSearchResult<String> projectIssueSearchResult = new ProjectIssueSearchResult<>(EXISTING_ISSUE_DETAILS, projectIssueModel);
+        ProjectIssueSearchResult<String> projectIssueSearchResult = new ProjectIssueSearchResult<>("", EXISTING_ISSUE_DETAILS, projectIssueModel);
 
         ProjectIssueFinder<String> projectIssueFinder = Mockito.mock(ProjectIssueFinder.class);
         Mockito.when(projectIssueFinder.findProjectIssues(PROVIDER_DETAILS, PROJECT_ITEM)).thenReturn(List.of(projectIssueSearchResult));
@@ -65,7 +65,7 @@ class IssueTrackerSearcherTest {
     void findIssuesProjectVersion() throws AlertException {
         ProjectMessage projectMessage = ProjectMessage.projectVersionStatusInfo(PROVIDER_DETAILS, PROJECT_ITEM, PROJECT_VERSION_ITEM, ProjectOperation.DELETE);
         ProjectIssueModel projectIssueModel = Mockito.mock(ProjectIssueModel.class);
-        ProjectIssueSearchResult<String> projectIssueSearchResult = new ProjectIssueSearchResult<>(EXISTING_ISSUE_DETAILS, projectIssueModel);
+        ProjectIssueSearchResult<String> projectIssueSearchResult = new ProjectIssueSearchResult<>("", EXISTING_ISSUE_DETAILS, projectIssueModel);
 
         ProjectVersionIssueFinder<String> projectVersionIssueFinder = Mockito.mock(ProjectVersionIssueFinder.class);
         Mockito.when(projectVersionIssueFinder.findProjectVersionIssues(PROVIDER_DETAILS, PROJECT_ITEM, PROJECT_VERSION_ITEM))
@@ -82,7 +82,7 @@ class IssueTrackerSearcherTest {
         BomComponentDetails bomComponentDetails = Mockito.mock(BomComponentDetails.class);
         ProjectMessage projectMessage = ProjectMessage.componentUpdate(PROVIDER_DETAILS, PROJECT_ITEM, PROJECT_VERSION_ITEM, List.of(bomComponentDetails));
         ProjectIssueModel projectIssueModel = Mockito.mock(ProjectIssueModel.class);
-        ProjectIssueSearchResult<String> projectIssueSearchResult = new ProjectIssueSearchResult<>(EXISTING_ISSUE_DETAILS, projectIssueModel);
+        ProjectIssueSearchResult<String> projectIssueSearchResult = new ProjectIssueSearchResult<>("", EXISTING_ISSUE_DETAILS, projectIssueModel);
 
         ProjectVersionComponentIssueFinder<String> componentIssueFinder = Mockito.mock(ProjectVersionComponentIssueFinder.class);
         Mockito.when(componentIssueFinder.findIssuesByComponent(PROVIDER_DETAILS, PROJECT_ITEM, PROJECT_VERSION_ITEM, bomComponentDetails))
@@ -111,7 +111,8 @@ class IssueTrackerSearcherTest {
         Mockito.when(projectIssueModel3.getVulnerabilityDetails()).thenReturn(Optional.of(vulnerabilityDetails));
 
         ExactIssueFinder<String> exactIssueFinder = Mockito.mock(ExactIssueFinder.class);
-        Mockito.when(exactIssueFinder.findExistingIssuesByProjectIssueModel(projectIssueModel1)).thenReturn(List.of(issue1));
+        Mockito.when(exactIssueFinder.findExistingIssuesByProjectIssueModel(projectIssueModel1))
+            .thenReturn(List.of(new ProjectIssueSearchResult<>("", issue1, projectIssueModel1)));
         Mockito.when(exactIssueFinder.findExistingIssuesByProjectIssueModel(projectIssueModel2)).thenReturn(List.of());
 
         ProjectMessageToIssueModelTransformer mockModelTransformer = Mockito.mock(ProjectMessageToIssueModelTransformer.class);

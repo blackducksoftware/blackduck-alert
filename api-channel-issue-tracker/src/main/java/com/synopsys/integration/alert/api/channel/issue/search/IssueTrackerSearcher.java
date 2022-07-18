@@ -111,11 +111,11 @@ public class IssueTrackerSearcher<T extends Serializable> {
         ExistingIssueDetails<T> existingIssue = null;
         ItemOperation searchResultOperation = ItemOperation.UPDATE;
 
-        List<ExistingIssueDetails<T>> existingIssues = exactIssueFinder.findExistingIssuesByProjectIssueModel(projectIssueModel);
+        List<ProjectIssueSearchResult<T>> existingIssues = exactIssueFinder.findExistingIssuesByProjectIssueModel(projectIssueModel);
         int foundIssuesCount = existingIssues.size();
 
         if (foundIssuesCount == 1) {
-            existingIssue = existingIssues.get(0);
+            existingIssue = existingIssues.get(0).getExistingIssueDetails();
 
             Optional<ItemOperation> policyOperation = projectIssueModel.getPolicyDetails().map(IssuePolicyDetails::getOperation);
             Optional<IssueVulnerabilityDetails> optionalVulnerabilityDetails = projectIssueModel.getVulnerabilityDetails();
@@ -129,13 +129,16 @@ public class IssueTrackerSearcher<T extends Serializable> {
                 searchResultOperation = componentUnknownOperation.get();
             }
         } else if (foundIssuesCount > 1) {
-            Set<String> issueKeys = existingIssues.stream().map(ExistingIssueDetails::getIssueKey).collect(Collectors.toSet());
+            Set<String> issueKeys = existingIssues.stream()
+                .map(ProjectIssueSearchResult::getExistingIssueDetails)
+                .map(ExistingIssueDetails::getIssueKey)
+                .collect(Collectors.toSet());
             String issueKeyString = StringUtils.join(issueKeys, ", ");
             throw new AlertException("Expected to find a unique issue, but more than one was found. " + issueKeyString);
         } else {
             searchResultOperation = ItemOperation.ADD;
         }
-        return new ActionableIssueSearchResult<>(existingIssue, projectIssueModel, searchResultOperation);
+        return new ActionableIssueSearchResult<>(existingIssue, projectIssueModel, "", searchResultOperation);
     }
 
     private ItemOperation findVulnerabilitySearchResultOperation(ExistingIssueDetails<T> existingIssue, IssueVulnerabilityDetails issueVulnerabilityDetails) {
@@ -172,7 +175,12 @@ public class IssueTrackerSearcher<T extends Serializable> {
     }
 
     private ActionableIssueSearchResult<T> convertToOperationResult(ProjectIssueSearchResult<T> projectIssueSearchResult, ItemOperation operation) {
-        return new ActionableIssueSearchResult<>(projectIssueSearchResult.getExistingIssueDetails(), projectIssueSearchResult.getProjectIssueModel(), operation);
+        return new ActionableIssueSearchResult<>(
+            projectIssueSearchResult.getExistingIssueDetails(),
+            projectIssueSearchResult.getProjectIssueModel(),
+            projectIssueSearchResult.getQueryString(),
+            operation
+        );
     }
 
     private boolean isOnlyDeleteOperation(ProjectIssueModel projectIssueModel) {
