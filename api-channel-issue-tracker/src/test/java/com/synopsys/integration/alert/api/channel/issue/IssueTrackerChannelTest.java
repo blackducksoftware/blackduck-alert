@@ -7,17 +7,29 @@ import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.core.task.SyncTaskExecutor;
 
+import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.issue.convert.IssueTrackerMessageFormatter;
+import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCommentEvent;
+import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCreateIssueEvent;
+import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerTransitionIssueEvent;
+import com.synopsys.integration.alert.api.channel.issue.model.IssueCommentModel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerResponse;
+import com.synopsys.integration.alert.api.channel.issue.model.IssueTransitionModel;
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
+import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerCommentEventGenerator;
+import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerCreationEventGenerator;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueCommenter;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueCreator;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueTransitioner;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
+import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerTransitionEventGenerator;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
@@ -79,7 +91,31 @@ class IssueTrackerChannelTest {
             protected void assignAlertSearchProperties(ExistingIssueDetails<String> createdIssueDetails, ProjectIssueModel alertIssueSource) {
             }
         };
-        return new IssueTrackerMessageSender<>(creator, transitioner, commenter);
+
+        IssueTrackerCreationEventGenerator creationEventGenerator = new IssueTrackerCreationEventGenerator() {
+            @Override
+            public IssueTrackerCreateIssueEvent generateEvent(IssueCreationModel model) {
+                return null;
+            }
+        };
+
+        IssueTrackerTransitionEventGenerator<String> transitionEventGenerator = new IssueTrackerTransitionEventGenerator<>() {
+            @Override
+            public IssueTrackerTransitionIssueEvent<String> generateEvent(IssueTransitionModel<String> model) {
+                return null;
+            }
+        };
+
+        IssueTrackerCommentEventGenerator<String> commentEventGenerator = new IssueTrackerCommentEventGenerator<>() {
+            @Override
+            public IssueTrackerCommentEvent<String> generateEvent(IssueCommentModel<String> model) {
+                return null;
+            }
+        };
+
+        RabbitTemplate rabbitTemplate = new RabbitTemplate();
+        EventManager eventManager = new EventManager(new Gson(), rabbitTemplate, new SyncTaskExecutor());
+        return new IssueTrackerMessageSender<>(creator, transitioner, commenter, creationEventGenerator, transitionEventGenerator, commentEventGenerator, eventManager);
     }
 
     private IssueTrackerMessageFormatter createFormatter() {

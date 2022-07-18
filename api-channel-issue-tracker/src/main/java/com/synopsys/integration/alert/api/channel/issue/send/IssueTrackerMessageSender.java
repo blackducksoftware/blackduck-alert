@@ -13,8 +13,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
+import com.synopsys.integration.alert.api.channel.issue.model.IssueCommentModel;
+import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerModelHolder;
+import com.synopsys.integration.alert.api.channel.issue.model.IssueTransitionModel;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.event.AlertEvent;
 import com.synopsys.integration.alert.api.event.EventManager;
@@ -29,11 +32,6 @@ public class IssueTrackerMessageSender<T extends Serializable> {
     private final IssueTrackerTransitionEventGenerator<T> issueTrackerTransitionEventGenerator;
     private final IssueTrackerCommentEventGenerator<T> issueTrackerCommentEventGenerator;
     private final EventManager eventManager;
-
-    // TODO: Remove after all channels implement these changes;
-    public IssueTrackerMessageSender(IssueTrackerIssueCreator<T> issueCreator, IssueTrackerIssueTransitioner<T> issueTransitioner, IssueTrackerIssueCommenter<T> issueCommenter) {
-        this(issueCreator, issueTransitioner, issueCommenter, null, null, null, null);
-    }
 
     public IssueTrackerMessageSender(
         IssueTrackerIssueCreator<T> issueCreator,
@@ -69,12 +67,21 @@ public class IssueTrackerMessageSender<T extends Serializable> {
     }
 
     public final void sendAsyncMessages(IssueTrackerModelHolder<T> issueTrackerMessage) {
-        //TODO: Remove this if statement when all issue tracker channels are converted to use this method.
-        if (null != eventManager) {
-            sendAsyncMessages(issueTrackerMessage.getIssueCreationModels(), issueCreateEventGenerator::generateEvent);
-            sendAsyncMessages(issueTrackerMessage.getIssueTransitionModels(), issueTrackerTransitionEventGenerator::generateEvent);
-            sendAsyncMessages(issueTrackerMessage.getIssueCommentModels(), issueTrackerCommentEventGenerator::generateEvent);
-        }
+        sendAsyncMessages(issueTrackerMessage.getIssueCreationModels(), issueCreateEventGenerator::generateEvent);
+        sendAsyncMessages(issueTrackerMessage.getIssueTransitionModels(), issueTrackerTransitionEventGenerator::generateEvent);
+        sendAsyncMessages(issueTrackerMessage.getIssueCommentModels(), issueTrackerCommentEventGenerator::generateEvent);
+    }
+
+    public final List<IssueTrackerIssueResponseModel<T>> sendMessage(IssueCreationModel model) throws AlertException {
+        return sendMessages(List.of(model), issueCreator::createIssueTrackerIssue);
+    }
+
+    public final List<IssueTrackerIssueResponseModel<T>> sendMessage(IssueTransitionModel<T> model) throws AlertException {
+        return sendOptionalMessages(List.of(model), issueTransitioner::transitionIssue);
+    }
+
+    public final List<IssueTrackerIssueResponseModel<T>> sendMessage(IssueCommentModel<T> model) throws AlertException {
+        return sendOptionalMessages(List.of(model), issueCommenter::commentOnIssue);
     }
 
     private <U> List<IssueTrackerIssueResponseModel<T>> sendMessages(List<U> messages, ThrowingFunction<U, IssueTrackerIssueResponseModel<T>, AlertException> sendMessage)
