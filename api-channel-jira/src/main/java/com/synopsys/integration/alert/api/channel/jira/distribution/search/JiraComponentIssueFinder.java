@@ -42,7 +42,7 @@ public class JiraComponentIssueFinder implements ProjectVersionComponentIssueFin
         for (JiraSearcherResponseModel model : issueResponseModels) {
             IssueBomComponentDetails issueBomComponentDetails = IssueBomComponentDetails.fromBomComponentDetails(originalBomComponent);
             ProjectIssueModel projectIssueModel = ProjectIssueModel.bom(providerDetails, project, projectVersion, issueBomComponentDetails);
-            ProjectIssueSearchResult<String> resultFromExistingIssue = searchResultCreator.createIssueResult(model, projectIssueModel);
+            ProjectIssueSearchResult<String> resultFromExistingIssue = searchResultCreator.createIssueResult(jqlString, model, projectIssueModel);
             searchResults.add(resultFromExistingIssue);
         }
         return searchResults;

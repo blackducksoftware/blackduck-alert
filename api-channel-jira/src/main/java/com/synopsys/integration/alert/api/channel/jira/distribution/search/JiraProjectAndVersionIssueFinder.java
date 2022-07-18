@@ -41,7 +41,7 @@ public class JiraProjectAndVersionIssueFinder implements ProjectIssueFinder<Stri
 
     private List<ProjectIssueSearchResult<String>> findIssues(String jqlString, ProviderDetails providerDetails, LinkableItem project) throws AlertException {
         List<JiraSearcherResponseModel> issueResponseModels = jqlQueryExecutor.executeQuery(jqlString);
-        return searchResultCreator.createResultsFromExistingIssues(providerDetails, project, issueResponseModels);
+        return searchResultCreator.createResultsFromExistingIssues(jqlString, providerDetails, project, issueResponseModels);
     }
 
 }

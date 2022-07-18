@@ -43,16 +43,22 @@ public class JiraIssueSearchResultCreator {
         this.issueCategoryRetriever = issueCategoryRetriever;
     }
 
-    public List<ProjectIssueSearchResult<String>> createResultsFromExistingIssues(ProviderDetails providerDetails, LinkableItem project, List<JiraSearcherResponseModel> issueResponseModels) throws AlertException {
+    public List<ProjectIssueSearchResult<String>> createResultsFromExistingIssues(
+        String jqlString,
+        ProviderDetails providerDetails,
+        LinkableItem project,
+        List<JiraSearcherResponseModel> issueResponseModels
+    ) throws AlertException {
         List<ProjectIssueSearchResult<String>> searchResults = new ArrayList<>();
         for (JiraSearcherResponseModel model : issueResponseModels) {
-            ProjectIssueSearchResult<String> resultFromExistingIssue = createResultFromProjectIssue(model, providerDetails, project);
+            ProjectIssueSearchResult<String> resultFromExistingIssue = createResultFromProjectIssue(jqlString, model, providerDetails, project);
             searchResults.add(resultFromExistingIssue);
         }
         return searchResults;
     }
 
-    public ProjectIssueSearchResult<String> createResultFromProjectIssue(JiraSearcherResponseModel issue, ProviderDetails providerDetails, LinkableItem project) throws AlertException {
+    public ProjectIssueSearchResult<String> createResultFromProjectIssue(String jqlString, JiraSearcherResponseModel issue, ProviderDetails providerDetails, LinkableItem project)
+        throws AlertException {
         JiraIssueSearchProperties issueProperties = issuePropertiesManager.retrieveIssueProperties(issue.getIssueKey());
 
         String nullableSubComponentName = issueProperties.getSubComponentName();
@@ -70,13 +76,13 @@ public class JiraIssueSearchResultCreator {
         );
 
         ProjectIssueModel projectIssueModel = ProjectIssueModel.bom(providerDetails, project, projectVersion, bomComponentDetails);
-        return createIssueResult(issue, projectIssueModel);
+        return createIssueResult(jqlString, issue, projectIssueModel);
     }
 
-    public ProjectIssueSearchResult<String> createIssueResult(JiraSearcherResponseModel issue, ProjectIssueModel projectIssueModel) {
+    public ProjectIssueSearchResult<String> createIssueResult(String jqlString, JiraSearcherResponseModel issue, ProjectIssueModel projectIssueModel) {
         IssueCategory issueCategory = issueCategoryRetriever.retrieveIssueCategoryFromProjectIssueModel(projectIssueModel);
         ExistingIssueDetails<String> issueDetails = createExistingIssueDetails(issue, issueCategory);
-        return new ProjectIssueSearchResult<>("", issueDetails, projectIssueModel);
+        return new ProjectIssueSearchResult<>(jqlString, issueDetails, projectIssueModel);
     }
 
     public ExistingIssueDetails<String> createExistingIssueDetails(JiraSearcherResponseModel issue, IssueCategory issueCategory) {

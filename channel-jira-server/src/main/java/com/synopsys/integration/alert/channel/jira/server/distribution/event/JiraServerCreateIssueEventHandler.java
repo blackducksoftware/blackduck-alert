@@ -10,6 +10,7 @@ package com.synopsys.integration.alert.channel.jira.server.distribution.event;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCreateIssueEvent;
 import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCreateIssueEventHandler;
+import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraErrorMessageUtility;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraIssueCreationRequestCreator;
@@ -92,11 +94,11 @@ public class JiraServerCreateIssueEventHandler implements IssueTrackerCreateIssu
                     issuePropertiesManager,
                     jiraErrorMessageUtility
                 );
-
-                String jqlQuery = "";
-                boolean issueExists = false; //jiraServerQueryExecutor.executeQuery(jqlQuery);
-                if (!issueExists) {
-                    messageSender.sendMessage(event.getCreationModel());
+                IssueCreationModel creationModel = event.getCreationModel();
+                String jqlQuery = creationModel.getQueryString().orElse(null);
+                boolean issueDoesNotExist = checkIfIssueDoesNotExist(jiraServerQueryExecutor, jqlQuery);
+                if (issueDoesNotExist) {
+                    messageSender.sendMessage(creationModel);
                 }
             } catch (AlertException ex) {
                 logger.error("Cannot create issue for job {}", jobId);
@@ -104,5 +106,20 @@ public class JiraServerCreateIssueEventHandler implements IssueTrackerCreateIssu
         } else {
             logger.error("No Jira Server job found with id {}", jobId);
         }
+    }
+
+    private boolean checkIfIssueDoesNotExist(JiraServerQueryExecutor executor, String query) {
+        logger.debug("Check if issue exists query: {}", query);
+        if (StringUtils.isBlank(query)) {
+            return true;
+        }
+
+        try {
+            return executor.executeQuery(query).isEmpty();
+        } catch (AlertException ex) {
+            logger.error("Couldn't execute query to see if issue exists.", ex);
+            logger.debug("query executed: {}", query);
+        }
+        return true;
     }
 }

@@ -115,7 +115,7 @@ public class JiraCloudIssueCreatorTest {
     private IssueCreationModel createIssueCreationModel() {
         ProviderDetails providerDetails = new ProviderDetails(1L, null);
         ProjectIssueModel policy = ProjectIssueModel.policy(providerDetails, null, null, null, null);
-        return IssueCreationModel.project("title", "description", List.of(), policy);
+        return IssueCreationModel.project("title", "description", List.of(), policy, null);
     }
 
     private String getSummary(IssueCreationRequestModel issueCreationRequest) {
