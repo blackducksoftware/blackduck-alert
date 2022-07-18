@@ -37,7 +37,5 @@ dependencies {
     // Documentation
     implementation 'io.springfox:springfox-boot-starter'
 
-    implementation 'com.google.code.findbugs:jsr305'
-
     testImplementation project(':test-common')
 }

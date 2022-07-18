@@ -16,8 +16,6 @@ dependencies {
     implementation 'org.springframework:spring-web'
     implementation 'org.springframework.amqp:spring-amqp'
 
-    implementation 'com.google.code.findbugs:jsr305'
-
     implementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
 
     testImplementation project(':test-common-channel')
