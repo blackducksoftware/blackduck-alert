@@ -4,6 +4,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
+
+import org.springframework.data.domain.Example;
+import org.springframework.data.repository.query.FluentQuery;
 
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.system.SystemStatusEntity;
@@ -63,8 +67,19 @@ public class MockSystemStatusRepository extends DefaultMockJPARepository<SystemS
     }
 
     @Override
+    public SystemStatusEntity getReferenceById(Long aLong) {
+        return getById(aLong);
+    }
+
+    @Override
     public void deleteAllById(Iterable<? extends Long> longs) {
         longs.forEach(this::deleteById);
     }
 
+    @Override
+    public <S extends SystemStatusEntity, R> R findBy(
+        Example<S> example, Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction
+    ) {
+        return null;
+    }
 }

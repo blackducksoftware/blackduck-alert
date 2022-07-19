@@ -8,6 +8,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+
+import org.springframework.data.domain.Example;
+import org.springframework.data.repository.query.FluentQuery;
 
 import com.synopsys.integration.alert.database.certificates.CustomCertificateEntity;
 import com.synopsys.integration.alert.database.certificates.CustomCertificateRepository;
@@ -91,7 +95,19 @@ public class MockCustomCertificateRepository extends DefaultMockJPARepository<Cu
     }
 
     @Override
+    public CustomCertificateEntity getReferenceById(Long aLong) {
+        return getById(aLong);
+    }
+
+    @Override
     public void deleteAllById(Iterable<? extends Long> longs) {
         longs.forEach(this::deleteById);
+    }
+
+    @Override
+    public <S extends CustomCertificateEntity, R> R findBy(
+        Example<S> example, Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction
+    ) {
+        return null;
     }
 }
