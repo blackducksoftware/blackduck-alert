@@ -8,6 +8,7 @@
 package com.synopsys.integration.alert.api.channel.issue.search;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -96,22 +97,24 @@ public class IssueTrackerSearcher<T extends Serializable> {
     }
 
     private List<ActionableIssueSearchResult<T>> findIssuesByAllComponents(ProviderDetails providerDetails, LinkableItem project, LinkableItem projectVersion, List<BomComponentDetails> bomComponents) throws AlertException {
-        List<ProjectIssueSearchResult<T>> componentIssues = new LinkedList<>();
+        List<IssueTrackerSearchResult<T>> componentIssues = new LinkedList<>();
         for (BomComponentDetails bomComponent : bomComponents) {
-            List<ProjectIssueSearchResult<T>> issuesByComponent = projectVersionComponentIssueFinder.findIssuesByComponent(providerDetails, project, projectVersion, bomComponent);
-            componentIssues.addAll(issuesByComponent);
+            IssueTrackerSearchResult<T> issuesByComponent = projectVersionComponentIssueFinder.findIssuesByComponent(providerDetails, project, projectVersion, bomComponent);
+            componentIssues.add(issuesByComponent);
         }
         return componentIssues
-                   .stream()
-                   .map(this::convertToUpdateResult)
-                   .collect(Collectors.toList());
+            .stream()
+            .map(this::convertToUpdateResult)
+            .flatMap(Collection::stream)
+            .collect(Collectors.toList());
     }
 
     private ActionableIssueSearchResult<T> findIssueByProjectIssueModel(ProjectIssueModel projectIssueModel) throws AlertException {
         ExistingIssueDetails<T> existingIssue = null;
         ItemOperation searchResultOperation = ItemOperation.UPDATE;
 
-        List<ProjectIssueSearchResult<T>> existingIssues = exactIssueFinder.findExistingIssuesByProjectIssueModel(projectIssueModel);
+        IssueTrackerSearchResult<T> searchResponse = exactIssueFinder.findExistingIssuesByProjectIssueModel(projectIssueModel);
+        List<ProjectIssueSearchResult<T>> existingIssues = searchResponse.getSearchResults();
         int foundIssuesCount = existingIssues.size();
 
         if (foundIssuesCount == 1) {
@@ -138,7 +141,7 @@ public class IssueTrackerSearcher<T extends Serializable> {
         } else {
             searchResultOperation = ItemOperation.ADD;
         }
-        return new ActionableIssueSearchResult<>(existingIssue, projectIssueModel, "", searchResultOperation);
+        return new ActionableIssueSearchResult<>(existingIssue, projectIssueModel, searchResponse.getSearchQuery(), searchResultOperation);
     }
 
     private ItemOperation findVulnerabilitySearchResultOperation(ExistingIssueDetails<T> existingIssue, IssueVulnerabilityDetails issueVulnerabilityDetails) {
@@ -155,30 +158,32 @@ public class IssueTrackerSearcher<T extends Serializable> {
         return searchResultOperation;
     }
 
-    private List<ActionableIssueSearchResult<T>> findProjectIssues(boolean isEntireBomDeleted, ThrowingSupplier<List<ProjectIssueSearchResult<T>>, AlertException> find) throws AlertException {
+    private List<ActionableIssueSearchResult<T>> findProjectIssues(boolean isEntireBomDeleted, ThrowingSupplier<IssueTrackerSearchResult<T>, AlertException> find)
+        throws AlertException {
         if (isEntireBomDeleted) {
-            return find.get()
-                .stream()
-                .map(this::convertToDeleteResult)
-                .collect(Collectors.toList());
+            return convertToDeleteResult(find.get());
         }
         logger.debug("Ignoring project-level notification for issue-tracker because no action would be taken");
         return List.of();
     }
 
-    private ActionableIssueSearchResult<T> convertToDeleteResult(ProjectIssueSearchResult<T> projectIssueSearchResult) {
-        return convertToOperationResult(projectIssueSearchResult, ItemOperation.DELETE);
+    private List<ActionableIssueSearchResult<T>> convertToDeleteResult(IssueTrackerSearchResult<T> searchResponse) {
+        return searchResponse.getSearchResults().stream()
+            .map(projectIssueSearchResult -> convertToOperationResult(searchResponse.getSearchQuery(), projectIssueSearchResult, ItemOperation.DELETE))
+            .collect(Collectors.toList());
     }
 
-    private ActionableIssueSearchResult<T> convertToUpdateResult(ProjectIssueSearchResult<T> projectIssueSearchResult) {
-        return convertToOperationResult(projectIssueSearchResult, ItemOperation.UPDATE);
+    private List<ActionableIssueSearchResult<T>> convertToUpdateResult(IssueTrackerSearchResult<T> searchResponse) {
+        return searchResponse.getSearchResults().stream()
+            .map(projectIssueSearchResult -> convertToOperationResult(searchResponse.getSearchQuery(), projectIssueSearchResult, ItemOperation.UPDATE))
+            .collect(Collectors.toList());
     }
 
-    private ActionableIssueSearchResult<T> convertToOperationResult(ProjectIssueSearchResult<T> projectIssueSearchResult, ItemOperation operation) {
+    private ActionableIssueSearchResult<T> convertToOperationResult(String searchQuery, ProjectIssueSearchResult<T> projectIssueSearchResult, ItemOperation operation) {
         return new ActionableIssueSearchResult<>(
             projectIssueSearchResult.getExistingIssueDetails(),
             projectIssueSearchResult.getProjectIssueModel(),
-            projectIssueSearchResult.getQueryString(),
+            searchQuery,
             operation
         );
     }

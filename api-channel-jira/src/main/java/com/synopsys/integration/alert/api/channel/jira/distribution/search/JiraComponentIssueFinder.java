@@ -12,6 +12,7 @@ import java.util.List;
 
 import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
+import com.synopsys.integration.alert.api.channel.issue.search.IssueTrackerSearchResult;
 import com.synopsys.integration.alert.api.channel.issue.search.ProjectIssueSearchResult;
 import com.synopsys.integration.alert.api.channel.issue.search.ProjectVersionComponentIssueFinder;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
@@ -31,11 +32,23 @@ public class JiraComponentIssueFinder implements ProjectVersionComponentIssueFin
     }
 
     @Override
-    public List<ProjectIssueSearchResult<String>> findIssuesByComponent(ProviderDetails providerDetails, LinkableItem project, LinkableItem projectVersion, BomComponentDetails originalBomComponent) throws AlertException {
+    public IssueTrackerSearchResult<String> findIssuesByComponent(
+        ProviderDetails providerDetails,
+        LinkableItem project,
+        LinkableItem projectVersion,
+        BomComponentDetails originalBomComponent
+    ) throws AlertException {
         LinkableItem component = originalBomComponent.getComponent();
         LinkableItem nullableComponentVersion = originalBomComponent.getComponentVersion().orElse(null);
 
-        String jqlString = JqlStringCreator.createBlackDuckComponentIssuesSearchString(jiraProjectKey, providerDetails.getProvider(), project, projectVersion, component, nullableComponentVersion);
+        String jqlString = JqlStringCreator.createBlackDuckComponentIssuesSearchString(
+            jiraProjectKey,
+            providerDetails.getProvider(),
+            project,
+            projectVersion,
+            component,
+            nullableComponentVersion
+        );
         List<JiraSearcherResponseModel> issueResponseModels = jqlQueryExecutor.executeQuery(jqlString);
 
         List<ProjectIssueSearchResult<String>> searchResults = new ArrayList<>();
@@ -45,7 +58,7 @@ public class JiraComponentIssueFinder implements ProjectVersionComponentIssueFin
             ProjectIssueSearchResult<String> resultFromExistingIssue = searchResultCreator.createIssueResult(jqlString, model, projectIssueModel);
             searchResults.add(resultFromExistingIssue);
         }
-        return searchResults;
+        return new IssueTrackerSearchResult<>(jqlString, searchResults);
     }
 
 }

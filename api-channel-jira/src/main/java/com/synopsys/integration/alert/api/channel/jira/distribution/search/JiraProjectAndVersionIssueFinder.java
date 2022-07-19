@@ -9,6 +9,7 @@ package com.synopsys.integration.alert.api.channel.jira.distribution.search;
 
 import java.util.List;
 
+import com.synopsys.integration.alert.api.channel.issue.search.IssueTrackerSearchResult;
 import com.synopsys.integration.alert.api.channel.issue.search.ProjectIssueFinder;
 import com.synopsys.integration.alert.api.channel.issue.search.ProjectIssueSearchResult;
 import com.synopsys.integration.alert.api.channel.issue.search.ProjectVersionIssueFinder;
@@ -28,20 +29,21 @@ public class JiraProjectAndVersionIssueFinder implements ProjectIssueFinder<Stri
     }
 
     @Override
-    public List<ProjectIssueSearchResult<String>> findProjectIssues(ProviderDetails providerDetails, LinkableItem project) throws AlertException {
+    public IssueTrackerSearchResult<String> findProjectIssues(ProviderDetails providerDetails, LinkableItem project) throws AlertException {
         String jqlString = JqlStringCreator.createBlackDuckProjectIssuesSearchString(jiraProjectKey, providerDetails.getProvider(), project);
         return findIssues(jqlString, providerDetails, project);
     }
 
     @Override
-    public List<ProjectIssueSearchResult<String>> findProjectVersionIssues(ProviderDetails providerDetails, LinkableItem project, LinkableItem projectVersion) throws AlertException {
+    public IssueTrackerSearchResult<String> findProjectVersionIssues(ProviderDetails providerDetails, LinkableItem project, LinkableItem projectVersion) throws AlertException {
         String jqlString = JqlStringCreator.createBlackDuckProjectVersionIssuesSearchString(jiraProjectKey, providerDetails.getProvider(), project, projectVersion);
         return findIssues(jqlString, providerDetails, project);
     }
 
-    private List<ProjectIssueSearchResult<String>> findIssues(String jqlString, ProviderDetails providerDetails, LinkableItem project) throws AlertException {
+    private IssueTrackerSearchResult<String> findIssues(String jqlString, ProviderDetails providerDetails, LinkableItem project) throws AlertException {
         List<JiraSearcherResponseModel> issueResponseModels = jqlQueryExecutor.executeQuery(jqlString);
-        return searchResultCreator.createResultsFromExistingIssues(jqlString, providerDetails, project, issueResponseModels);
+        List<ProjectIssueSearchResult<String>> searchResults = searchResultCreator.createResultsFromExistingIssues(jqlString, providerDetails, project, issueResponseModels);
+        return new IssueTrackerSearchResult<>(jqlString, searchResults);
     }
 
 }

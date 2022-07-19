@@ -19,6 +19,7 @@ import com.synopsys.integration.alert.api.channel.issue.model.IssuePolicyDetails
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.search.ExactIssueFinder;
 import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
+import com.synopsys.integration.alert.api.channel.issue.search.IssueTrackerSearchResult;
 import com.synopsys.integration.alert.api.channel.issue.search.ProjectIssueSearchResult;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
@@ -39,7 +40,7 @@ public class JiraExactIssueFinder implements ExactIssueFinder<String> {
     }
 
     @Override
-    public List<ProjectIssueSearchResult<String>> findExistingIssuesByProjectIssueModel(ProjectIssueModel projectIssueModel) throws AlertException {
+    public IssueTrackerSearchResult<String> findExistingIssuesByProjectIssueModel(ProjectIssueModel projectIssueModel) throws AlertException {
         LinkableItem provider = projectIssueModel.getProvider();
         LinkableItem project = projectIssueModel.getProject();
         IssueBomComponentDetails bomComponent = projectIssueModel.getBomComponentDetails();
@@ -69,10 +70,11 @@ public class JiraExactIssueFinder implements ExactIssueFinder<String> {
             policyName
         );
         logger.debug("Searching for Jira issues with this Query: {}", jqlString);
-        return jqlQueryExecutor.executeQuery(jqlString)
+        List<ProjectIssueSearchResult<String>> searchResults = jqlQueryExecutor.executeQuery(jqlString)
             .stream()
             .map(jiraSearcherResponseModel -> searchResultCreator.createIssueResult(jqlString, jiraSearcherResponseModel, projectIssueModel))
             .collect(Collectors.toList());
+        return new IssueTrackerSearchResult<>(jqlString, searchResults);
     }
 
 }

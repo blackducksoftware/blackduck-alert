@@ -25,9 +25,13 @@ public class AzureWorkItemQueryService {
     }
 
     public WorkItemQueryResultResponseModel queryForWorkItems(String organizationName, String projectIdOrName, WorkItemQuery query) throws HttpServiceException {
+        return queryForWorkItems(organizationName, projectIdOrName, query.rawQuery());
+    }
+
+    public WorkItemQueryResultResponseModel queryForWorkItems(String organizationName, String projectIdOrName, String query) throws HttpServiceException {
         String requestSpec = String.format("/%s/%s/_apis/wit/wiql", organizationName, projectIdOrName);
         requestSpec = azureApiVersionAppender.appendApiVersion5_0(requestSpec);
-        WorkItemQueryRequestModel requestModel = new WorkItemQueryRequestModel(query.rawQuery());
+        WorkItemQueryRequestModel requestModel = new WorkItemQueryRequestModel(query);
         return azureHttpService.post(requestSpec, requestModel, WorkItemQueryResultResponseModel.class);
     }
 
