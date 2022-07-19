@@ -13,7 +13,6 @@ dependencies {
     implementation 'org.springframework:spring-context'
     implementation 'javax.mail:javax.mail-api'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
-    implementation 'jakarta.activation:jakarta.activation-api'
 
     testImplementation project(':test-common')
 }
