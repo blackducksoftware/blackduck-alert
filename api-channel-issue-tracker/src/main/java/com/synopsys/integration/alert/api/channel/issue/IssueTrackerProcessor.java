@@ -30,6 +30,7 @@ public class IssueTrackerProcessor<T extends Serializable> {
         this.messageSender = messageSender;
     }
 
+    //TODO Remove this method
     public final IssueTrackerResponse<T> processMessages(ProviderMessageHolder messages, String jobName) throws AlertException {
         List<IssueTrackerIssueResponseModel<T>> issueResponseModels = new LinkedList<>();
         boolean acquired = false;
@@ -55,6 +56,17 @@ public class IssueTrackerProcessor<T extends Serializable> {
         }
 
         return new IssueTrackerResponse<>("Success", issueResponseModels);
+    }
+
+    public final IssueTrackerResponse<T> processMessagesAsync(ProviderMessageHolder messages, String jobName) throws AlertException {
+        IssueTrackerModelHolder<T> simpleMessageHolder = modelExtractor.extractSimpleMessageIssueModels(messages.getSimpleMessages(), jobName);
+        messageSender.sendAsyncMessages(simpleMessageHolder);
+
+        for (ProjectMessage projectMessage : messages.getProjectMessages()) {
+            IssueTrackerModelHolder<T> projectMessageHolder = modelExtractor.extractProjectMessageIssueModels(projectMessage, jobName);
+            messageSender.sendAsyncMessages(projectMessageHolder);
+        }
+        return new IssueTrackerResponse<>("Success", List.of());
     }
 
 }
