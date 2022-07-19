@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '2.7.1'
+        springBootVersion = '2.5.12'
     }
 
     apply from: 'https://raw.githubusercontent.com/blackducksoftware/integration-resources/master/gradle_common/buildscript-repositories.gradle', to: buildscript
@@ -123,6 +123,7 @@ dependencies {
     testImplementation project(':test-common-channel')
 
     implementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
+    implementation 'org.apache.tomcat.embed:tomcat-embed-core'
 
     // Logging
     runtimeOnly 'ch.qos.logback:logback-classic'
