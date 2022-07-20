@@ -72,7 +72,7 @@ public class JiraExactIssueFinder implements ExactIssueFinder<String> {
         logger.debug("Searching for Jira issues with this Query: {}", jqlString);
         List<ProjectIssueSearchResult<String>> searchResults = jqlQueryExecutor.executeQuery(jqlString)
             .stream()
-            .map(jiraSearcherResponseModel -> searchResultCreator.createIssueResult(jqlString, jiraSearcherResponseModel, projectIssueModel))
+            .map(jiraSearcherResponseModel -> searchResultCreator.createIssueResult(jiraSearcherResponseModel, projectIssueModel))
             .collect(Collectors.toList());
         return new IssueTrackerSearchResult<>(jqlString, searchResults);
     }

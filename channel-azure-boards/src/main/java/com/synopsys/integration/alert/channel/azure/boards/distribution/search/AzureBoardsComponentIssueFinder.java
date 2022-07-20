@@ -58,7 +58,7 @@ public class AzureBoardsComponentIssueFinder implements ProjectVersionComponentI
             ProjectIssueModel projectIssueModel = ProjectIssueModel.bom(providerDetails, project, projectVersion, issueBomComponent);
             ExistingIssueDetails<Integer> issueDetails = issueDetailsCreator.createIssueDetails(workItem, workItem.createFieldsWrapper(gson), projectIssueModel);
 
-            ProjectIssueSearchResult<Integer> searchResult = new ProjectIssueSearchResult<>("", issueDetails, projectIssueModel);
+            ProjectIssueSearchResult<Integer> searchResult = new ProjectIssueSearchResult<>(issueDetails, projectIssueModel);
             searchResults.add(searchResult);
         }
         return new IssueTrackerSearchResult<>(result.getQuery().rawQuery(), searchResults);
@@ -108,7 +108,7 @@ public class AzureBoardsComponentIssueFinder implements ProjectVersionComponentI
     }
 
     private ProjectIssueSearchResult<Integer> createIssueDetails(WorkItemResponseModel workItem, ProjectIssueModel projectIssueModel) {
-        return new ProjectIssueSearchResult<>("", issueDetailsCreator.createIssueDetails(workItem, workItem.createFieldsWrapper(gson), projectIssueModel), projectIssueModel);
+        return new ProjectIssueSearchResult<>(issueDetailsCreator.createIssueDetails(workItem, workItem.createFieldsWrapper(gson), projectIssueModel), projectIssueModel);
     }
 
 }
