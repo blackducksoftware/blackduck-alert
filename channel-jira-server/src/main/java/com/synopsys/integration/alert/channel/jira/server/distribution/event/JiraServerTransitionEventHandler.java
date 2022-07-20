@@ -58,7 +58,6 @@ public class JiraServerTransitionEventHandler implements IssueTrackerTransitionE
 
     @Override
     public void handle(JiraServerTransitionEvent event) {
-        logger.info("Jira server transition event");
         UUID jobId = event.getJobId();
         Optional<JiraServerJobDetailsModel> details = jobDetailsAccessor.retrieveDetails(event.getJobId());
         if (details.isPresent()) {

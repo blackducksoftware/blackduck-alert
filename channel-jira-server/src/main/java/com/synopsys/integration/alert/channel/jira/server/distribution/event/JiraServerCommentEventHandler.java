@@ -58,7 +58,6 @@ public class JiraServerCommentEventHandler implements IssueTrackerCommentEventHa
 
     @Override
     public void handle(JiraServerCommentEvent event) {
-        logger.info("Jira Server comment handler");
         UUID jobId = event.getJobId();
         Optional<JiraServerJobDetailsModel> details = jobDetailsAccessor.retrieveDetails(event.getJobId());
         if (details.isPresent()) {

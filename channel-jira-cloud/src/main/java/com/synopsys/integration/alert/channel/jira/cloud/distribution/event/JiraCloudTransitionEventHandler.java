@@ -60,7 +60,6 @@ public class JiraCloudTransitionEventHandler implements IssueTrackerTransitionEv
 
     @Override
     public void handle(JiraCloudTransitionEvent event) {
-        logger.info("Jira Cloud transition event");
         UUID jobId = event.getJobId();
         Optional<JiraCloudJobDetailsModel> details = jobDetailsAccessor.retrieveDetails(event.getJobId());
         if (details.isPresent()) {
@@ -93,7 +92,7 @@ public class JiraCloudTransitionEventHandler implements IssueTrackerTransitionEv
                 IssueTransitionModel<String> commentModel = event.getTransitionModel();
                 messageSender.sendMessage(commentModel);
             } catch (AlertException ex) {
-                logger.error("Cannot create issue for job {}", jobId);
+                logger.error("Cannot transition issue for job {}", jobId);
             }
         } else {
             logger.error("No Jira Cloud job found with id {}", jobId);

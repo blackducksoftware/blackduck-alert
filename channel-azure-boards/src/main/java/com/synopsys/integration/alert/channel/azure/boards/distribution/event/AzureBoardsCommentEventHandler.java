@@ -61,8 +61,6 @@ public class AzureBoardsCommentEventHandler implements IssueTrackerCommentEventH
 
     @Override
     public void handle(AzureBoardsCommentEvent event) {
-        logger.info("Azure Boards comment handler");
-
         UUID jobId = event.getJobId();
         Optional<AzureBoardsJobDetailsModel> details = jobDetailsAccessor.retrieveDetails(event.getJobId());
         if (details.isPresent()) {

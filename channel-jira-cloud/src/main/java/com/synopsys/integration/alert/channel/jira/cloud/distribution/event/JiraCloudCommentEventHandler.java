@@ -60,7 +60,6 @@ public class JiraCloudCommentEventHandler implements IssueTrackerCommentEventHan
 
     @Override
     public void handle(JiraCloudCommentEvent event) {
-        logger.info("Jira Cloud comment handler");
         UUID jobId = event.getJobId();
         Optional<JiraCloudJobDetailsModel> details = jobDetailsAccessor.retrieveDetails(event.getJobId());
         if (details.isPresent()) {
@@ -93,7 +92,7 @@ public class JiraCloudCommentEventHandler implements IssueTrackerCommentEventHan
                 IssueCommentModel<String> commentModel = event.getCommentModel();
                 messageSender.sendMessage(commentModel);
             } catch (AlertException ex) {
-                logger.error("Cannot create issue for job {}", jobId);
+                logger.error("Cannot comment on issue for job {}", jobId);
             }
         } else {
             logger.error("No Jira Cloud job found with id {}", jobId);

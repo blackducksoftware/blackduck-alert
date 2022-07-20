@@ -62,8 +62,8 @@ public class JiraServerCreateIssueEventHandler implements IssueTrackerCreateIssu
 
     @Override
     public void handle(IssueTrackerCreateIssueEvent event) {
-        logger.info("Jira server create issue event");
         UUID jobId = event.getJobId();
+        IssueCreationModel creationModel = event.getCreationModel();
         Optional<JiraServerJobDetailsModel> details = jobDetailsAccessor.retrieveDetails(event.getJobId());
         if (details.isPresent()) {
             try {
@@ -94,7 +94,7 @@ public class JiraServerCreateIssueEventHandler implements IssueTrackerCreateIssu
                     issuePropertiesManager,
                     jiraErrorMessageUtility
                 );
-                IssueCreationModel creationModel = event.getCreationModel();
+
                 String jqlQuery = creationModel.getQueryString().orElse(null);
                 boolean issueDoesNotExist = checkIfIssueDoesNotExist(jiraServerQueryExecutor, jqlQuery);
                 if (issueDoesNotExist) {
@@ -102,6 +102,8 @@ public class JiraServerCreateIssueEventHandler implements IssueTrackerCreateIssu
                 }
             } catch (AlertException ex) {
                 logger.error("Cannot create issue for job {}", jobId);
+                logger.error("Query: {}", creationModel.getQueryString());
+                logger.error("Cause: ", ex);
             }
         } else {
             logger.error("No Jira Server job found with id {}", jobId);
@@ -109,7 +111,6 @@ public class JiraServerCreateIssueEventHandler implements IssueTrackerCreateIssu
     }
 
     private boolean checkIfIssueDoesNotExist(JiraServerQueryExecutor executor, String query) {
-        logger.debug("Check if issue exists query: {}", query);
         if (StringUtils.isBlank(query)) {
             return true;
         }
@@ -117,8 +118,8 @@ public class JiraServerCreateIssueEventHandler implements IssueTrackerCreateIssu
         try {
             return executor.executeQuery(query).isEmpty();
         } catch (AlertException ex) {
+            logger.error("Query executed: {}", query);
             logger.error("Couldn't execute query to see if issue exists.", ex);
-            logger.debug("query executed: {}", query);
         }
         return true;
     }

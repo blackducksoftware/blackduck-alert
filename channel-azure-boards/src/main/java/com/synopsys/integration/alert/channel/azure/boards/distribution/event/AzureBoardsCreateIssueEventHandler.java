@@ -65,7 +65,6 @@ public class AzureBoardsCreateIssueEventHandler implements IssueTrackerCreateIss
 
     @Override
     public void handle(IssueTrackerCreateIssueEvent event) {
-        logger.info("Azure Boards create issue event");
         UUID jobId = event.getJobId();
         Optional<AzureBoardsJobDetailsModel> details = jobDetailsAccessor.retrieveDetails(event.getJobId());
         if (details.isPresent()) {
@@ -106,6 +105,7 @@ public class AzureBoardsCreateIssueEventHandler implements IssueTrackerCreateIss
                 }
             } catch (AlertException ex) {
                 logger.error("Cannot create issue for job {}", jobId);
+                logger.error("Query: {}", event.getCreationModel().getQueryString());
                 logger.error("Cause: ", ex);
             }
         } else {
@@ -114,7 +114,6 @@ public class AzureBoardsCreateIssueEventHandler implements IssueTrackerCreateIss
     }
 
     private boolean checkIfIssueDoesNotExist(AzureWorkItemQueryService queryService, String organizationName, String projectIdOrName, String query) {
-        logger.debug("Check if issue exists query: {}", query);
         if (StringUtils.isBlank(query)) {
             return true;
         }
@@ -122,8 +121,8 @@ public class AzureBoardsCreateIssueEventHandler implements IssueTrackerCreateIss
         try {
             return queryService.queryForWorkItems(organizationName, projectIdOrName, query).getWorkItems().isEmpty();
         } catch (HttpServiceException ex) {
+            logger.error("Query executed: {}", query);
             logger.error("Couldn't execute query to see if issue exists.", ex);
-            logger.debug("query executed: {}", query);
         }
         return true;
     }

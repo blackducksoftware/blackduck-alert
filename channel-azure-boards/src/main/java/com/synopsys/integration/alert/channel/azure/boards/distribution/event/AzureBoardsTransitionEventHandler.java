@@ -61,7 +61,6 @@ public class AzureBoardsTransitionEventHandler implements IssueTrackerTransition
 
     @Override
     public void handle(AzureBoardsTransitionEvent event) {
-        logger.info("Azure Boards transition event");
         UUID jobId = event.getJobId();
         Optional<AzureBoardsJobDetailsModel> details = jobDetailsAccessor.retrieveDetails(event.getJobId());
         if (details.isPresent()) {
