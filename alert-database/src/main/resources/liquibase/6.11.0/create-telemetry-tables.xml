@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
+    <changeSet author="martinch" id="create-notification-mapping-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="telemetry_notification_mapping"/>
+            </not>
+        </preConditions>
+        <createTable schemaName="alert" tableName="telemetry_notification_mapping">
+            <column name="correlation_id" type="UUID">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="start_task_time" type="TIMESTAMP WITH TIMEZONE" defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="complete_task_time" type="TIMESTAMP WITH TIMEZONE">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="martinch" id="create-distribution-channel-handling-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="telemetry_distribution_channel_handling"/>
+            </not>
+        </preConditions>
+        <createTable schemaName="alert" tableName="telemetry_distribution_channel_handling">
+            <column name="job_id" type="UUID">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="start_task_time" type="TIMESTAMP WITH TIMEZONE" defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="complete_task_time" type="TIMESTAMP WITH TIMEZONE">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="martinch" id="create-notification-processing-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="telemetry_notification_processing"/>
+            </not>
+        </preConditions>
+        <createTable schemaName="alert" tableName="telemetry_notification_processing">
+            <column name="correlation_id" type="UUID">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="job_id" type="UUID">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="start_task_time" type="TIMESTAMP WITH TIMEZONE" defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="complete_task_time" type="TIMESTAMP WITH TIMEZONE">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="martinch" id="create-foreign-key-correlation-id">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="correlation_id_fk"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint
+                baseTableSchemaName="alert"
+                baseTableName="telemetry_notification_processing"
+                baseColumnNames="correlation_id"
+                constraintName="correlation_id_fk"
+                referencedTableSchemaName="alert"
+                referencedTableName="telemetry_notification_mapping"
+                referencedColumnNames="correlation_id"
+        />
+    </changeSet>
+
+    <changeSet author="martinch" id="create-foreign-key-job-id">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="job_id_fk"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint
+                baseTableSchemaName="alert"
+                baseTableName="telemetry_notification_processing"
+                baseColumnNames="job_id"
+                constraintName="job_id_fk"
+                referencedTableSchemaName="alert"
+                referencedTableName="telemetry_distribution_channel_handling"
+                referencedColumnNames="job_id"
+        />
+    </changeSet>
+</databaseChangeLog>
