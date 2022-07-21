@@ -10,18 +10,18 @@ import com.synopsys.integration.alert.api.common.model.Obfuscated;
 
 public class DistributionTelemetryModel extends AlertSerializableModel implements Obfuscated<DistributionTelemetryModel> {
     private static final long serialVersionUID = 233853562743312832L;
-    private UUID eventId;
+    private UUID jobId;
     private OffsetDateTime startTaskTime;
     private OffsetDateTime completeTaskTime;
 
-    public DistributionTelemetryModel(UUID eventId, OffsetDateTime startTaskTime, @Nullable OffsetDateTime completeTaskTime) {
-        this.eventId = eventId;
+    public DistributionTelemetryModel(UUID jobId, OffsetDateTime startTaskTime, @Nullable OffsetDateTime completeTaskTime) {
+        this.jobId = jobId;
         this.startTaskTime = startTaskTime;
         this.completeTaskTime = completeTaskTime;
     }
 
-    public UUID getEventId() {
-        return eventId;
+    public UUID getJobId() {
+        return jobId;
     }
 
     public OffsetDateTime getStartTaskTime() {

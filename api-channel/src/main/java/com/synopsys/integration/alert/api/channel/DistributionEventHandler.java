@@ -52,11 +52,12 @@ public class DistributionEventHandler<D extends DistributionJobDetailsModel> imp
                 auditAccessor.setAuditEntrySuccess(event.getJobId(), event.getNotificationIds());
                 //TODO
                 notificationLogger.trace("Channel: {} successfully processed event: {}", channel.getClass(), event.getEventId());
-                telemetryAccessor.completeDistributionTelemetryTask(event.getJobId());
             } catch (AlertException alertException) {
                 handleAlertException(alertException, event);
             } catch (Exception unknownException) {
                 handleUnknownException(unknownException, event);
+            } finally {
+                telemetryAccessor.completeDistributionTelemetryTask(event.getJobId());
             }
         } else {
             handleJobDetailsMissing(event);

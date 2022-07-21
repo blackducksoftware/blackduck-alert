@@ -57,25 +57,25 @@ public class TelemetryAccessor {
         NotificationProcessingTelemetryModel notificationProcessingTelemetryModel = telemetryRepository.getOneProcessing(correlationId);
         NotificationProcessingTelemetryModel completedNotificationProcessingTelemetryTask = new NotificationProcessingTelemetryModel(
             correlationId,
-            notificationProcessingTelemetryModel.getEventId(),
+            notificationProcessingTelemetryModel.getJobId(),
             notificationProcessingTelemetryModel.getStartTaskTime(),
             DateUtils.createCurrentDateTimestamp()
         );
         return telemetryRepository.saveProcessing(correlationId, completedNotificationProcessingTelemetryTask);
     }
 
-    public DistributionTelemetryModel createDistributionTelemetryTask(UUID eventId) {
-        DistributionTelemetryModel distributionTelemetryModel = new DistributionTelemetryModel(eventId, DateUtils.createCurrentDateTimestamp(), null);
-        return telemetryRepository.saveDistributionEvent(eventId, distributionTelemetryModel);
+    public DistributionTelemetryModel createDistributionTelemetryTask(UUID jobId) {
+        DistributionTelemetryModel distributionTelemetryModel = new DistributionTelemetryModel(jobId, DateUtils.createCurrentDateTimestamp(), null);
+        return telemetryRepository.saveDistributionEvent(jobId, distributionTelemetryModel);
     }
 
-    public DistributionTelemetryModel completeDistributionTelemetryTask(UUID eventId) {
-        DistributionTelemetryModel distributionTelemetryModel = telemetryRepository.getOneDistributionEvent(eventId);
+    public DistributionTelemetryModel completeDistributionTelemetryTask(UUID jobId) {
+        DistributionTelemetryModel distributionTelemetryModel = telemetryRepository.getOneDistributionEvent(jobId);
         DistributionTelemetryModel completeDistributionTelemetryTask = new DistributionTelemetryModel(
-            eventId,
+            jobId,
             distributionTelemetryModel.getStartTaskTime(),
             DateUtils.createCurrentDateTimestamp()
         );
-        return telemetryRepository.saveDistributionEvent(eventId, completeDistributionTelemetryTask);
+        return telemetryRepository.saveDistributionEvent(jobId, completeDistributionTelemetryTask);
     }
 }
