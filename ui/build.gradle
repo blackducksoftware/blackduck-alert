@@ -41,7 +41,7 @@ task npmInstallFromCache(type: Exec) {
     outputs.cacheIf { true }
     ignoreExitValue = true
 
-    commandLine 'npm', 'install', '--cache', "${project.buildDir}/npm_cache"
+    commandLine 'npm', 'install', '--force', '--cache', "${project.buildDir}/npm_cache"
 }
 
 task npmCacheClean(type: Exec, dependsOn: [npmInstallFromCache]) {
