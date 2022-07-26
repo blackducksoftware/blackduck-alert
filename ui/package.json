@@ -1,6 +1,6 @@
 {
     "name": "blackduck-alert",
-    "version": "6.11.0-SIGQA3",
+    "version": "6.11.0-SIGQA4-SNAPSHOT",
     "description": "Alert UI",
     "keywords": [
         "blackduck",
@@ -44,8 +44,8 @@
         "lint": "eslint src/main/js"
     },
     "engines": {
-      "node": "16.15.1",
-      "npm": "8.11.0"
+        "node": "16.15.1",
+        "npm": "8.11.0"
     },
     "devDependencies": {
         "@babel/core": "^7.11.6",
