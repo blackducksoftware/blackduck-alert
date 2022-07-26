@@ -1,15 +1,17 @@
-String dockerStagingDirectory = project.buildDir.toString() + '/docker-staging'
-String baseDockerDirectory = project.projectDir.toString() + '/docker'
+String dockerStagingDirectory = rootProject.ext.dockerStagingDirectory
+String baseDockerDirectory = rootProject.ext.baseDockerDirectory
 
 // Names of non-image specific Docker tasks
-String dockerCleanStagingAreaDirectory = 'dockerCleanStagingAreaDirectory'
-String dockerRemoveAllImages = 'dockerRemoveAllImages'
-String dockerSetupStagingAreaDirectory = 'dockerSetupStagingAreaDirectory'
-String dockerBuildAllImages = 'dockerBuildAllImages'
-String dockerLoginDockerHub = 'dockerLoginDockerHub'
-String dockerPublishAllImages = 'dockerPublishAllImages'
+String dockerCleanStagingAreaDirectory = rootProject.ext.dockerCleanStagingAreaDirectoryStageName
+String dockerRemoveAllImages = rootProject.ext.dockerRemoveAllImagesStageName
+String dockerSetupStagingAreaDirectory = rootProject.ext.dockerSetupStagingAreaDirectoryStageName
+String dockerBuildAllImages = rootProject.ext.dockerBuildAllImagesStageName
+String dockerLoginDockerHub = rootProject.ext.dockerLoginDockerHubStageName
+String dockerPublishAllImages = rootProject.ext.dockerPublishAllImagesStageName
+ArrayList<String> dockerTasksCreated = []
 
 project.tasks.create(name: dockerCleanStagingAreaDirectory, group: 'Docker', description: 'Remove staging area used for creating Docker images') {
+    dockerTasksCreated.add(dockerCleanStagingAreaDirectory)
     doFirst {
         logger.lifecycle('Removing Docker staging area:: ' + dockerStagingDirectory)
     }
@@ -18,11 +20,13 @@ project.tasks.create(name: dockerCleanStagingAreaDirectory, group: 'Docker', des
 }
 clean.finalizedBy(project.tasks.findByName(dockerCleanStagingAreaDirectory))
 
-project.tasks.create(name: dockerRemoveAllImages, group: 'Docker', description: 'Remove docker images and staging area for project') {}
+project.tasks.create(name: dockerRemoveAllImages, group: 'Docker', description: 'Remove docker images and staging area for project') {
+    dockerTasksCreated.add(dockerRemoveAllImages)
+}
 
 project.tasks.create(name: dockerSetupStagingAreaDirectory, type: Copy, group: 'Docker', description: 'Populate staging area used for creating Docker images') {
+    dockerTasksCreated.add(dockerSetupStagingAreaDirectory)
     dependsOn project.tasks.findByName(dockerCleanStagingAreaDirectory)
-    dependsOn build
 
     doFirst {
         logger.lifecycle('Setting up docker staging area')
@@ -37,10 +41,12 @@ project.tasks.create(name: dockerSetupStagingAreaDirectory, type: Copy, group: '
 }
 
 project.tasks.create(name: dockerBuildAllImages, group: 'Docker', description: 'Build docker images for project') {
+    dockerTasksCreated.add(dockerBuildAllImages)
     dependsOn project.tasks.findByName(dockerSetupStagingAreaDirectory)
 }
 
 project.tasks.create(name: dockerLoginDockerHub, type: Exec, group: 'Docker', description: 'Login to hub.docker.com prior to publish image') {
+    dockerTasksCreated.add(dockerLoginDockerHub)
     String dockerLoginUsername = System.env.DOCKER_INT_BLACKDUCK_USER ?: '<Not Set>'
 
     doFirst {
@@ -58,6 +64,7 @@ project.tasks.create(name: dockerLoginDockerHub, type: Exec, group: 'Docker', de
 }
 
 project.tasks.create(name: dockerPublishAllImages, group: 'Docker', description: 'Publish docker images for project to hub.docker.com') {
+    dockerTasksCreated.add(dockerPublishAllImages)
     dependsOn project.tasks.findByName(dockerLoginDockerHub), project.tasks.findByName(dockerBuildAllImages)
 
     onlyIf {
@@ -87,20 +94,22 @@ dockerImagesToBuild.each { imageName ->
         imageTaskNameSuffix += token.substring(0, 1).toUpperCase() + token.substring(1).toLowerCase()
     }
 
-    String imageRemoveTaskName = "dockerRemove${imageTaskNameSuffix}"
-    String imageBuildTaskName = "dockerBuild${imageTaskNameSuffix}"
-    String imagePublishTaskName = "dockerPublish${imageTaskNameSuffix}"
+    String dockerImageRemoveTaskName = "dockerRemove${imageTaskNameSuffix}"
+    String dockerImageBuildTaskName = "dockerBuild${imageTaskNameSuffix}"
+    String dockerImagePublishTaskName = "dockerPublish${imageTaskNameSuffix}"
 
-    project.tasks.create(name: imageRemoveTaskName, type: Exec, group: 'Docker', description: "Remove ${fullDockerImageName} docker image") {
+    project.tasks.create(name: dockerImageRemoveTaskName, type: Exec, group: 'Docker', description: "Remove ${fullDockerImageName} docker image") {
+        dockerTasksCreated.add(dockerImageRemoveTaskName)
         doFirst {
             logger.lifecycle('Removing docker image:: ' + fullDockerImageName)
         }
 
         commandLine 'docker', 'image', 'rm', fullDockerImageName
     }
-    project.tasks.findByName(dockerRemoveAllImages).dependsOn imageRemoveTaskName
+    project.tasks.findByName(dockerRemoveAllImages).dependsOn dockerImageRemoveTaskName
 
-    project.tasks.create(name: imageBuildTaskName, type: Exec, group: 'Docker', description: "Build ${imageName} docker image") {
+    project.tasks.create(name: dockerImageBuildTaskName, type: Exec, group: 'Docker', description: "Build ${imageName} docker image") {
+        dockerTasksCreated.add(dockerImageBuildTaskName)
         dependsOn project.tasks.findByName(dockerSetupStagingAreaDirectory)
         def buildCommand = ['docker', 'build', '.', '-t', fullDockerImageName, '--build-arg', "VERSION=${project.version}", '--pull', '--force-rm']
 
@@ -112,19 +121,21 @@ dockerImagesToBuild.each { imageName ->
         workingDir "${dockerStagingDirectory}/${imageName}"
         commandLine buildCommand
     }
-    project.tasks.findByName(dockerBuildAllImages).dependsOn imageBuildTaskName
+    project.tasks.findByName(dockerBuildAllImages).dependsOn dockerImageBuildTaskName
 
-    project.tasks.create(name: imagePublishTaskName, type: Exec, group: 'Docker', description: "Publish ${imageName} docker image to hub.docker.com") {
+    project.tasks.create(name: dockerImagePublishTaskName, type: Exec, group: 'Docker', description: "Publish ${imageName} docker image to hub.docker.com") {
+        dockerTasksCreated.add(dockerImagePublishTaskName)
         dependsOn project.tasks.findByName(dockerLoginDockerHub)
-        finalizedBy project.tasks.findByName(imageRemoveTaskName)
+        finalizedBy project.tasks.findByName(dockerImageRemoveTaskName)
 
         doFirst {
             logger.lifecycle('Publishing docker image:: ' + fullDockerImageName)
         }
 
         commandLine 'docker', 'push', fullDockerImageName
-        finalizedBy imageRemoveTaskName
+        finalizedBy dockerImageRemoveTaskName
     }
-    project.tasks.findByName(dockerPublishAllImages).dependsOn imagePublishTaskName
-
+    project.tasks.findByName(dockerPublishAllImages).dependsOn dockerImagePublishTaskName
 }
+
+logger.lifecycle('The following Docker specific tasks were added --> ' + dockerTasksCreated)
