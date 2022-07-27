@@ -52,8 +52,7 @@ import com.synopsys.integration.rest.proxy.ProxyInfo;
 @Component
 public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory<AzureBoardsJobDetailsModel, Integer> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-
-    private final AzureBoardsChannelLock channelLock;
+    
     private final Gson gson;
     private final AzureBoardsMessageFormatter formatter;
     private final AzureBoardsPropertiesFactory azureBoardsPropertiesFactory;
@@ -64,7 +63,6 @@ public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory
 
     @Autowired
     public AzureBoardsProcessorFactory(
-        AzureBoardsChannelLock channelLock,
         Gson gson,
         AzureBoardsMessageFormatter formatter,
         AzureBoardsPropertiesFactory azureBoardsPropertiesFactory,
@@ -73,7 +71,6 @@ public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory
         ProjectMessageToIssueModelTransformer modelTransformer,
         IssueCategoryRetriever issueCategoryRetriever
     ) {
-        this.channelLock = channelLock;
         this.gson = gson;
         this.formatter = formatter;
         this.azureBoardsPropertiesFactory = azureBoardsPropertiesFactory;
@@ -149,7 +146,7 @@ public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory
             distributionDetails
         );
 
-        return new IssueTrackerProcessor<>(channelLock, extractor, messageSender);
+        return new IssueTrackerProcessor<>(extractor, messageSender);
     }
 
     private void installCustomFieldsIfNecessary(String organizationName, String projectName, String issueType, AzureProjectService projectService, AzureProcessService processService) throws AlertException {

@@ -23,7 +23,6 @@ import com.synopsys.integration.alert.api.channel.jira.distribution.JiraMessageF
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
-import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerChannelLock;
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerMessageSenderFactory;
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerProcessorFactory;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
@@ -37,7 +36,6 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.JiraJ
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
@@ -55,7 +53,6 @@ class JiraServerExternalConnectionTest {
     @Disabled
     void sendJiraServerMessageTest() throws AlertException {
         Gson gson = new Gson();
-        JiraServerChannelLock channelLock = new JiraServerChannelLock(ChannelKeys.JIRA_SERVER);
         JiraMessageFormatter jiraMessageFormatter = new JiraMessageFormatter();
 
         JiraServerChannelKey jiraServerChannelKey = new JiraServerChannelKey();
@@ -82,7 +79,6 @@ class JiraServerExternalConnectionTest {
         ProjectMessageToIssueModelTransformer modelTransformer = new ProjectMessageToIssueModelTransformer();
         JiraServerProcessorFactory jiraServerProcessorFactory = new JiraServerProcessorFactory(
             gson,
-            channelLock,
             jiraMessageFormatter,
             jiraServerPropertiesFactory,
             jiraServerMessageSenderFactory,
