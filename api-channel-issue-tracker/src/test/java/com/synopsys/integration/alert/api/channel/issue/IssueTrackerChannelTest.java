@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.Serializable;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
@@ -15,10 +16,8 @@ import com.synopsys.integration.alert.api.channel.issue.convert.IssueTrackerMess
 import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCommentEvent;
 import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCreateIssueEvent;
 import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerTransitionIssueEvent;
-import com.synopsys.integration.alert.api.channel.issue.model.IssueCommentModel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerResponse;
-import com.synopsys.integration.alert.api.channel.issue.model.IssueTransitionModel;
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerCommentEventGenerator;
@@ -51,7 +50,7 @@ class IssueTrackerChannelTest {
 
         MessageResult testResult = issueTrackerChannel.distributeMessages(null, ProviderMessageHolder.empty(), null);
 
-        IssueTrackerResponse<?> processorResponse = processor.processMessages(ProviderMessageHolder.empty(), "jobName");
+        IssueTrackerResponse<?> processorResponse = processor.processMessagesAsync(ProviderMessageHolder.empty(), "jobName");
         assertEquals(processorResponse.getStatusMessage(), testResult.getStatusMessage());
     }
 
@@ -92,26 +91,11 @@ class IssueTrackerChannelTest {
             }
         };
 
-        IssueTrackerCreationEventGenerator creationEventGenerator = new IssueTrackerCreationEventGenerator() {
-            @Override
-            public IssueTrackerCreateIssueEvent generateEvent(IssueCreationModel model) {
-                return null;
-            }
-        };
+        IssueTrackerCreationEventGenerator creationEventGenerator = model -> new IssueTrackerCreateIssueEvent("", UUID.randomUUID(), null);
 
-        IssueTrackerTransitionEventGenerator<String> transitionEventGenerator = new IssueTrackerTransitionEventGenerator<>() {
-            @Override
-            public IssueTrackerTransitionIssueEvent<String> generateEvent(IssueTransitionModel<String> model) {
-                return null;
-            }
-        };
+        IssueTrackerTransitionEventGenerator<String> transitionEventGenerator = model -> new IssueTrackerTransitionIssueEvent<>("", UUID.randomUUID(), null);
 
-        IssueTrackerCommentEventGenerator<String> commentEventGenerator = new IssueTrackerCommentEventGenerator<>() {
-            @Override
-            public IssueTrackerCommentEvent<String> generateEvent(IssueCommentModel<String> model) {
-                return null;
-            }
-        };
+        IssueTrackerCommentEventGenerator<String> commentEventGenerator = model -> new IssueTrackerCommentEvent<>("", UUID.randomUUID(), null);
 
         RabbitTemplate rabbitTemplate = new RabbitTemplate();
         EventManager eventManager = new EventManager(new Gson(), rabbitTemplate, new SyncTaskExecutor());

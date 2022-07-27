@@ -8,10 +8,8 @@
 package com.synopsys.integration.alert.api.channel.issue;
 
 import java.io.Serializable;
-import java.util.LinkedList;
 import java.util.List;
 
-import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerModelHolder;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerResponse;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
@@ -26,24 +24,6 @@ public class IssueTrackerProcessor<T extends Serializable> {
     public IssueTrackerProcessor(IssueTrackerModelExtractor<T> modelExtractor, IssueTrackerMessageSender<T> messageSender) {
         this.modelExtractor = modelExtractor;
         this.messageSender = messageSender;
-    }
-
-    //TODO Remove this method
-    public final IssueTrackerResponse<T> processMessages(ProviderMessageHolder messages, String jobName) throws AlertException {
-        List<IssueTrackerIssueResponseModel<T>> issueResponseModels = new LinkedList<>();
-        IssueTrackerModelHolder<T> simpleMessageHolder = modelExtractor.extractSimpleMessageIssueModels(messages.getSimpleMessages(), jobName);
-        List<IssueTrackerIssueResponseModel<T>> simpleMessageResponseModels = messageSender.sendMessages(simpleMessageHolder);
-        messageSender.sendAsyncMessages(simpleMessageHolder);
-        issueResponseModels.addAll(simpleMessageResponseModels);
-
-        for (ProjectMessage projectMessage : messages.getProjectMessages()) {
-            IssueTrackerModelHolder<T> projectMessageHolder = modelExtractor.extractProjectMessageIssueModels(projectMessage, jobName);
-            List<IssueTrackerIssueResponseModel<T>> projectMessageResponseModels = messageSender.sendMessages(projectMessageHolder);
-            messageSender.sendAsyncMessages(projectMessageHolder);
-            issueResponseModels.addAll(projectMessageResponseModels);
-        }
-
-        return new IssueTrackerResponse<>("Success", issueResponseModels);
     }
 
     public final IssueTrackerResponse<T> processMessagesAsync(ProviderMessageHolder messages, String jobName) throws AlertException {
