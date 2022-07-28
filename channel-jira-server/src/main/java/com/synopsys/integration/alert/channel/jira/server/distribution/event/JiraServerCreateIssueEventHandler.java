@@ -7,8 +7,10 @@
  */
 package com.synopsys.integration.alert.channel.jira.server.distribution.event;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -20,6 +22,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCreateIssueEvent;
 import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCreateIssueEventHandler;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
+import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraErrorMessageUtility;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraIssueCreationRequestCreator;
@@ -98,7 +101,11 @@ public class JiraServerCreateIssueEventHandler implements IssueTrackerCreateIssu
                 String jqlQuery = creationModel.getQueryString().orElse(null);
                 boolean issueDoesNotExist = checkIfIssueDoesNotExist(jiraServerQueryExecutor, jqlQuery);
                 if (issueDoesNotExist) {
-                    messageSender.sendMessage(creationModel);
+                    List<IssueTrackerIssueResponseModel<String>> responses = messageSender.sendMessage(creationModel);
+                    List<String> issueKeys = responses.stream()
+                        .map(IssueTrackerIssueResponseModel::getIssueKey)
+                        .collect(Collectors.toList());
+                    logger.info("Created issues: {}", issueKeys);
                 }
             } catch (AlertException ex) {
                 logger.error("Cannot create issue for job {}", jobId);

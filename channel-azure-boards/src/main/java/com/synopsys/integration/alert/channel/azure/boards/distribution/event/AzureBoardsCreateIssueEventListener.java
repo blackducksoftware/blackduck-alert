@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.channel.azure.boards.distribution.event;
 
-import org.springframework.core.task.TaskExecutor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -16,12 +16,12 @@ import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
 
 @Component
 public class AzureBoardsCreateIssueEventListener extends IssueTrackerCreateIssueEventListener {
+    @Autowired
     public AzureBoardsCreateIssueEventListener(
         Gson gson,
-        TaskExecutor taskExecutor,
         AzureBoardsChannelKey channelKey,
         AzureBoardsCreateIssueEventHandler eventHandler
     ) {
-        super(gson, taskExecutor, channelKey, eventHandler);
+        super(gson, channelKey, eventHandler);
     }
 }

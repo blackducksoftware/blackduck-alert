@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.channel.jira.cloud.distribution.event;
 
-import org.springframework.core.task.TaskExecutor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -16,12 +16,12 @@ import com.synopsys.integration.alert.descriptor.api.JiraCloudChannelKey;
 
 @Component
 public class JiraCloudCreateIssueEventListener extends IssueTrackerCreateIssueEventListener {
+    @Autowired
     public JiraCloudCreateIssueEventListener(
         Gson gson,
-        TaskExecutor taskExecutor,
         JiraCloudChannelKey channelKey,
         JiraCloudCreateIssueEventHandler eventHandler
     ) {
-        super(gson, taskExecutor, channelKey, eventHandler);
+        super(gson, channelKey, eventHandler);
     }
 }
