@@ -20,7 +20,7 @@ import com.synopsys.integration.alert.telemetry.model.NotificationProcessingTele
 //TODO: This class is set up as a mockup of what the future database tables should look like.
 //  When implementing in the future, use an interface extending JpaRepository<TelemetryEntity, UUID>
 @Component
-public class TelemetryRepository {
+public class MockTelemetryRepository {
     //PK = correlationID
     Map<UUID, NotificationMappingTelemetryModel> jobMapping = new HashMap<>();
     //PK = correlationID & jobID, FK = correlationID, jobID
