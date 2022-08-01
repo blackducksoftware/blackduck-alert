@@ -14,7 +14,7 @@ import com.synopsys.integration.alert.api.channel.DistributionEventHandler;
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.SlackJobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
-import com.synopsys.integration.alert.telemetry.database.TelemetryAccessor;
+import com.synopsys.integration.alert.telemetry.database.DefaultTelemetryAccessor;
 
 @Component
 public class SlackDistributionEventHandler extends DistributionEventHandler<SlackJobDetailsModel> {
@@ -23,7 +23,7 @@ public class SlackDistributionEventHandler extends DistributionEventHandler<Slac
         SlackChannel channel,
         SlackJobDetailsAccessor jobDetailsAccessor,
         ProcessingAuditAccessor auditAccessor,
-        TelemetryAccessor telemetryAccessor
+        DefaultTelemetryAccessor telemetryAccessor
     ) {
         super(channel, jobDetailsAccessor, auditAccessor, telemetryAccessor);
     }

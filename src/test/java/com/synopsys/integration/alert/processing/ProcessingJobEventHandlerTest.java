@@ -16,7 +16,7 @@ import com.synopsys.integration.alert.processor.api.NotificationProcessingLifecy
 import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExtractionDelegator;
 import com.synopsys.integration.alert.processor.api.distribute.ProviderMessageDistributor;
 import com.synopsys.integration.alert.processor.api.event.JobProcessingEvent;
-import com.synopsys.integration.alert.telemetry.database.TelemetryAccessor;
+import com.synopsys.integration.alert.telemetry.database.DefaultTelemetryAccessor;
 
 class ProcessingJobEventHandlerTest {
     @Test
@@ -30,7 +30,7 @@ class ProcessingJobEventHandlerTest {
         NotificationAccessor notificationAccessor = Mockito.mock(NotificationAccessor.class);
         JobAccessor jobAccessor = Mockito.mock(JobAccessor.class);
         JobNotificationMappingAccessor jobNotificationMappingAccessor = Mockito.mock(JobNotificationMappingAccessor.class);
-        TelemetryAccessor telemetryAccessor = Mockito.mock(TelemetryAccessor.class);
+        DefaultTelemetryAccessor telemetryAccessor = Mockito.mock(DefaultTelemetryAccessor.class);
         ProcessingJobEventHandler eventHandler = new ProcessingJobEventHandler(
             notificationDetailExtractionDelegator,
             notificationContentProcessor,

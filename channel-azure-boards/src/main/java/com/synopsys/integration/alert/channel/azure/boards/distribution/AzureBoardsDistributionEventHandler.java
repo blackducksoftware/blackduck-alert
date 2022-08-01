@@ -14,7 +14,7 @@ import com.synopsys.integration.alert.api.channel.DistributionEventHandler;
 import com.synopsys.integration.alert.common.persistence.accessor.AzureBoardsJobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
-import com.synopsys.integration.alert.telemetry.database.TelemetryAccessor;
+import com.synopsys.integration.alert.telemetry.database.DefaultTelemetryAccessor;
 
 @Component
 public class AzureBoardsDistributionEventHandler extends DistributionEventHandler<AzureBoardsJobDetailsModel> {
@@ -23,7 +23,7 @@ public class AzureBoardsDistributionEventHandler extends DistributionEventHandle
         AzureBoardsChannel channel,
         AzureBoardsJobDetailsAccessor jobDetailsAccessor,
         ProcessingAuditAccessor auditAccessor,
-        TelemetryAccessor telemetryAccessor
+        DefaultTelemetryAccessor telemetryAccessor
     ) {
         super(channel, jobDetailsAccessor, auditAccessor, telemetryAccessor);
     }

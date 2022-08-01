@@ -14,7 +14,7 @@ import com.synopsys.integration.alert.api.channel.DistributionEventHandler;
 import com.synopsys.integration.alert.common.persistence.accessor.MSTeamsJobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
-import com.synopsys.integration.alert.telemetry.database.TelemetryAccessor;
+import com.synopsys.integration.alert.telemetry.database.DefaultTelemetryAccessor;
 
 @Component
 public class MSTeamsDistributionEventHandler extends DistributionEventHandler<MSTeamsJobDetailsModel> {
@@ -23,7 +23,7 @@ public class MSTeamsDistributionEventHandler extends DistributionEventHandler<MS
         MSTeamsChannel channel,
         MSTeamsJobDetailsAccessor jobDetailsAccessor,
         ProcessingAuditAccessor auditAccessor,
-        TelemetryAccessor telemetryAccessor
+        DefaultTelemetryAccessor telemetryAccessor
     ) {
         super(channel, jobDetailsAccessor, auditAccessor, telemetryAccessor);
     }

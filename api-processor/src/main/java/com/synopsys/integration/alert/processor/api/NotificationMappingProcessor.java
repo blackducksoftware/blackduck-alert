@@ -24,7 +24,7 @@ import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.processor.api.detail.DetailedNotificationContent;
 import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExtractionDelegator;
 import com.synopsys.integration.alert.processor.api.mapping.JobNotificationMapper2;
-import com.synopsys.integration.alert.telemetry.database.TelemetryAccessor;
+import com.synopsys.integration.alert.telemetry.database.DefaultTelemetryAccessor;
 
 @Component
 public class NotificationMappingProcessor {
@@ -33,14 +33,14 @@ public class NotificationMappingProcessor {
     private final NotificationDetailExtractionDelegator notificationDetailExtractionDelegator;
     private final JobNotificationMapper2 jobNotificationMapper;
     private final NotificationAccessor notificationAccessor;
-    private final TelemetryAccessor telemetryAccessor;
+    private final DefaultTelemetryAccessor telemetryAccessor;
 
     @Autowired
     public NotificationMappingProcessor(
         NotificationDetailExtractionDelegator notificationDetailExtractionDelegator,
         JobNotificationMapper2 jobNotificationMapper,
         NotificationAccessor notificationAccessor,
-        TelemetryAccessor telemetryAccessor
+        DefaultTelemetryAccessor telemetryAccessor
     ) {
         this.notificationDetailExtractionDelegator = notificationDetailExtractionDelegator;
         this.jobNotificationMapper = jobNotificationMapper;

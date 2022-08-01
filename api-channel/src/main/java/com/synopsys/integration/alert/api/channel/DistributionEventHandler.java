@@ -18,7 +18,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAcce
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.processor.api.distribute.DistributionEvent;
-import com.synopsys.integration.alert.telemetry.database.TelemetryAccessor;
+import com.synopsys.integration.alert.telemetry.database.DefaultTelemetryAccessor;
 
 public class DistributionEventHandler<D extends DistributionJobDetailsModel> implements AlertEventHandler<DistributionEvent> {
     private final Logger notificationLogger = AlertLoggerFactory.getNotificationLogger(getClass());
@@ -26,13 +26,13 @@ public class DistributionEventHandler<D extends DistributionJobDetailsModel> imp
     private final DistributionChannel<D> channel;
     private final JobDetailsAccessor<D> jobDetailsAccessor;
     private final ProcessingAuditAccessor auditAccessor;
-    private final TelemetryAccessor telemetryAccessor;
+    private final DefaultTelemetryAccessor telemetryAccessor;
 
     public DistributionEventHandler(
         DistributionChannel<D> channel,
         JobDetailsAccessor<D> jobDetailsAccessor,
         ProcessingAuditAccessor auditAccessor,
-        TelemetryAccessor telemetryAccessor
+        DefaultTelemetryAccessor telemetryAccessor
     ) {
         this.channel = channel;
         this.jobDetailsAccessor = jobDetailsAccessor;

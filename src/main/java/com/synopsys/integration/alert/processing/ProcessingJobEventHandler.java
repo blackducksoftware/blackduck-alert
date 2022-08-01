@@ -36,7 +36,7 @@ import com.synopsys.integration.alert.processor.api.distribute.ProviderMessageDi
 import com.synopsys.integration.alert.processor.api.event.JobProcessingEvent;
 import com.synopsys.integration.alert.processor.api.extract.model.ProcessedProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.filter.NotificationContentWrapper;
-import com.synopsys.integration.alert.telemetry.database.TelemetryAccessor;
+import com.synopsys.integration.alert.telemetry.database.DefaultTelemetryAccessor;
 
 @Component
 public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessingEvent> {
@@ -50,7 +50,7 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
     private final NotificationAccessor notificationAccessor;
     private final JobAccessor jobAccessor;
     private final JobNotificationMappingAccessor jobNotificationMappingAccessor;
-    private final TelemetryAccessor telemetryAccessor;
+    private final DefaultTelemetryAccessor telemetryAccessor;
 
     @Autowired
     public ProcessingJobEventHandler(
@@ -61,7 +61,7 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
         NotificationAccessor notificationAccessor,
         JobAccessor jobAccessor,
         JobNotificationMappingAccessor jobNotificationMappingAccessor,
-        TelemetryAccessor telemetryAccessor
+        DefaultTelemetryAccessor telemetryAccessor
     ) {
         this.notificationDetailExtractionDelegator = notificationDetailExtractionDelegator;
         this.notificationContentProcessor = notificationContentProcessor;

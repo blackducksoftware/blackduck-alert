@@ -34,7 +34,7 @@ import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExt
 import com.synopsys.integration.alert.processor.api.mapping.JobNotificationMapper2;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
-import com.synopsys.integration.alert.telemetry.database.TelemetryAccessor;
+import com.synopsys.integration.alert.telemetry.database.DefaultTelemetryAccessor;
 import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
@@ -55,7 +55,7 @@ class NotificationReceivedEventHandlerTestIT {
     @Autowired
     private JobNotificationMapper2 jobNotificationMapper2;
     @Autowired
-    private TelemetryAccessor telemetryAccessor;
+    private DefaultTelemetryAccessor telemetryAccessor;
 
     private Long blackDuckGlobalConfigId;
     private TestProperties properties;

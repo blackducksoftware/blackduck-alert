@@ -14,7 +14,7 @@ import com.synopsys.integration.alert.api.channel.DistributionEventHandler;
 import com.synopsys.integration.alert.common.persistence.accessor.JiraCloudJobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
-import com.synopsys.integration.alert.telemetry.database.TelemetryAccessor;
+import com.synopsys.integration.alert.telemetry.database.DefaultTelemetryAccessor;
 
 @Component
 public class JiraCloudDistributionEventHandler extends DistributionEventHandler<JiraCloudJobDetailsModel> {
@@ -23,7 +23,7 @@ public class JiraCloudDistributionEventHandler extends DistributionEventHandler<
         JiraCloudChannel channel,
         JiraCloudJobDetailsAccessor jobDetailsAccessor,
         ProcessingAuditAccessor auditAccessor,
-        TelemetryAccessor telemetryAccessor
+        DefaultTelemetryAccessor telemetryAccessor
     ) {
         super(channel, jobDetailsAccessor, auditAccessor, telemetryAccessor);
     }

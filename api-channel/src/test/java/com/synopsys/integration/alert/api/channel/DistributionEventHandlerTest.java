@@ -13,11 +13,11 @@ import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAudi
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.processor.api.distribute.DistributionEvent;
-import com.synopsys.integration.alert.telemetry.database.TelemetryAccessor;
+import com.synopsys.integration.alert.telemetry.database.DefaultTelemetryAccessor;
 
 class DistributionEventHandlerTest {
     private final ChannelKey channelKey = new ChannelKey("test universal key", "Test Universal Key");
-    TelemetryAccessor telemetryAccessor = Mockito.mock(TelemetryAccessor.class);
+    DefaultTelemetryAccessor telemetryAccessor = Mockito.mock(DefaultTelemetryAccessor.class);
 
     @Test
     void handleEventSuccessTest() {

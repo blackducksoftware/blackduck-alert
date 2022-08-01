@@ -64,7 +64,7 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.BlackDuckMessageLabels;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
-import com.synopsys.integration.alert.telemetry.database.TelemetryAccessor;
+import com.synopsys.integration.alert.telemetry.database.DefaultTelemetryAccessor;
 import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.test.common.TestResourceUtils;
@@ -96,7 +96,7 @@ class ProcessingJobEventHandlerTestIT {
     @Autowired
     private NotificationMappingProcessor notificationProcessor;
     @Autowired
-    private TelemetryAccessor telemetryAccessor;
+    private DefaultTelemetryAccessor telemetryAccessor;
     @Autowired
     private Gson gson;
 
