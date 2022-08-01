@@ -111,7 +111,6 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
         while (jobNotificationMappings.getCurrentPage() <= jobNotificationMappings.getTotalPages()) {
             List<Long> notificationIds = extractNotificationIds(jobNotificationMappings);
             List<AlertNotificationModel> notifications = notificationAccessor.findByIds(notificationIds);
-            //TODO
             logNotifications("Start", event, notificationIds);
             telemetryAccessor.createNotificationProcessingTelemetryTask(correlationId, jobId);
             ProcessedProviderMessageHolder currentProcessedMessages = processNotifications(job, notifications);
@@ -127,7 +126,6 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
                 pageNumber,
                 pageSize
             );
-            //TODO
             logNotifications("Finished", event, notificationIds);
             telemetryAccessor.completeNotificationProcessingTelemetryTask(correlationId);
         }

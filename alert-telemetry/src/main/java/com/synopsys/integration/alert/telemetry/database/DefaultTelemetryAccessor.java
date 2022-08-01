@@ -24,11 +24,17 @@ import com.synopsys.integration.alert.telemetry.model.NotificationProcessingTele
 public class DefaultTelemetryAccessor implements TelemetryAccessor {
     private final MockTelemetryRepository mockTelemetryRepository;
     private final TelemetryNotificationMappingRepository telemetryNotificationMappingRepository;
+    private final TelemetryNotificationProcessingRepository telemetryNotificationProcessingRepository;
 
     @Autowired
-    public DefaultTelemetryAccessor(TelemetryNotificationMappingRepository telemetryNotificationMappingRepository, MockTelemetryRepository mockTelemetryRepository) {
+    public DefaultTelemetryAccessor(
+        TelemetryNotificationMappingRepository telemetryNotificationMappingRepository,
+        MockTelemetryRepository mockTelemetryRepository,
+        TelemetryNotificationProcessingRepository telemetryNotificationProcessingRepository
+    ) {
         this.mockTelemetryRepository = mockTelemetryRepository;
         this.telemetryNotificationMappingRepository = telemetryNotificationMappingRepository;
+        this.telemetryNotificationProcessingRepository = telemetryNotificationProcessingRepository;
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
@@ -58,25 +64,39 @@ public class DefaultTelemetryAccessor implements TelemetryAccessor {
         );
     }
 
-    public NotificationProcessingTelemetryModel createNotificationProcessingTelemetryTask(UUID correlationId, UUID eventId) {
-        NotificationProcessingTelemetryModel notificationProcessingTelemetryModel = new NotificationProcessingTelemetryModel(
+    @Transactional(propagation = Propagation.REQUIRED)
+    public NotificationProcessingTelemetryModel createNotificationProcessingTelemetryTask(UUID correlationId, UUID jobId) {
+        NotificationProcessingTelemetryEntity notificationProcessingTelemetryEntity = new NotificationProcessingTelemetryEntity(
             correlationId,
-            eventId,
+            jobId,
             DateUtils.createCurrentDateTimestamp(),
             null
         );
-        return mockTelemetryRepository.saveProcessing(correlationId, notificationProcessingTelemetryModel);
+        NotificationProcessingTelemetryEntity savedTelemetryEntity = telemetryNotificationProcessingRepository.save(notificationProcessingTelemetryEntity);
+        return new NotificationProcessingTelemetryModel(
+            savedTelemetryEntity.getCorrelationId(),
+            savedTelemetryEntity.getJobId(),
+            savedTelemetryEntity.getStartTaskTime(),
+            savedTelemetryEntity.getCompleteTaskTime()
+        );
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     public NotificationProcessingTelemetryModel completeNotificationProcessingTelemetryTask(UUID correlationId) {
-        NotificationProcessingTelemetryModel notificationProcessingTelemetryModel = mockTelemetryRepository.getOneProcessing(correlationId);
-        NotificationProcessingTelemetryModel completedNotificationProcessingTelemetryTask = new NotificationProcessingTelemetryModel(
+        NotificationProcessingTelemetryEntity savedTelemetryEntity = telemetryNotificationProcessingRepository.getById(correlationId);
+        NotificationProcessingTelemetryEntity updatedTelemetryEntity = new NotificationProcessingTelemetryEntity(
             correlationId,
-            notificationProcessingTelemetryModel.getJobId(),
-            notificationProcessingTelemetryModel.getStartTaskTime(),
+            savedTelemetryEntity.getJobId(),
+            savedTelemetryEntity.getStartTaskTime(),
             DateUtils.createCurrentDateTimestamp()
         );
-        return mockTelemetryRepository.saveProcessing(correlationId, completedNotificationProcessingTelemetryTask);
+        updatedTelemetryEntity = telemetryNotificationProcessingRepository.save(updatedTelemetryEntity);
+        return new NotificationProcessingTelemetryModel(
+            updatedTelemetryEntity.getCorrelationId(),
+            updatedTelemetryEntity.getJobId(),
+            updatedTelemetryEntity.getStartTaskTime(),
+            updatedTelemetryEntity.getCompleteTaskTime()
+        );
     }
 
     public DistributionTelemetryModel createDistributionTelemetryTask(UUID jobId) {
