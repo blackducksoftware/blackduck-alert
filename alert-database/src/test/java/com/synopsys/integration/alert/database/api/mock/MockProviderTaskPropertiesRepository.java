@@ -6,6 +6,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+
+import org.springframework.data.domain.Example;
+import org.springframework.data.repository.query.FluentQuery;
 
 import com.synopsys.integration.alert.database.provider.task.ProviderTaskPropertiesEntity;
 import com.synopsys.integration.alert.database.provider.task.ProviderTaskPropertiesRepository;
@@ -61,7 +65,19 @@ public class MockProviderTaskPropertiesRepository extends DefaultMockJPAReposito
     }
 
     @Override
+    public ProviderTaskPropertiesEntity getReferenceById(Long aLong) {
+        return getById(aLong);
+    }
+
+    @Override
     public void deleteAllById(Iterable<? extends Long> longs) {
         longs.forEach(this::deleteById);
+    }
+
+    @Override
+    public <S extends ProviderTaskPropertiesEntity, R> R findBy(
+        Example<S> example, Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction
+    ) {
+        return null;
     }
 }

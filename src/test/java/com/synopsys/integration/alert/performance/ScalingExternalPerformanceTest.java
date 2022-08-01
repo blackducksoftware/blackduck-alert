@@ -21,9 +21,9 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
 import com.synopsys.integration.alert.performance.model.PerformanceExecutionStatusModel;
 import com.synopsys.integration.alert.performance.utility.BlackDuckProviderService;
-import com.synopsys.integration.alert.performance.utility.ConfigurationManagerV2;
+import com.synopsys.integration.alert.performance.utility.ConfigurationManager;
 import com.synopsys.integration.alert.performance.utility.ExternalAlertRequestUtility;
-import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunnerV2;
+import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunner;
 import com.synopsys.integration.alert.performance.utility.PerformanceLoggingUtility;
 import com.synopsys.integration.alert.performance.utility.jira.server.JiraServerPerformanceUtility;
 import com.synopsys.integration.alert.test.common.TestProperties;
@@ -44,8 +44,8 @@ class ScalingExternalPerformanceTest {
     private static final String PERFORMANCE_POLICY_NAME = "PerformanceTestPolicy";
 
     private final IntLogger intLogger = new Slf4jIntLogger(LoggerFactory.getLogger(this.getClass()));
-    private final Gson gson = IntegrationPerformanceTestRunnerV2.createGson();
-    private final DateTimeFormatter dateTimeFormatter = IntegrationPerformanceTestRunnerV2.createDateTimeFormatter();
+    private final Gson gson = IntegrationPerformanceTestRunner.createGson();
+    private final DateTimeFormatter dateTimeFormatter = IntegrationPerformanceTestRunner.createDateTimeFormatter();
     private final PerformanceLoggingUtility loggingUtility = new PerformanceLoggingUtility(intLogger, dateTimeFormatter);
 
     private final IntHttpClient client = new IntHttpClient(intLogger, gson, 60, true, ProxyInfo.NO_PROXY_INFO);
@@ -53,8 +53,8 @@ class ScalingExternalPerformanceTest {
 
     private BlackDuckProviderService blackDuckProviderService;
     private JiraServerPerformanceUtility jiraServerPerformanceUtility;
-    private IntegrationPerformanceTestRunnerV2 testRunner;
-    private ConfigurationManagerV2 configurationManager;
+    private IntegrationPerformanceTestRunner testRunner;
+    private ConfigurationManager configurationManager;
 
     private int numberOfProjectsToCreate;
     private int numberOfJobsToCreate;
@@ -74,14 +74,14 @@ class ScalingExternalPerformanceTest {
         ExternalAlertRequestUtility alertRequestUtility = new ExternalAlertRequestUtility(intLogger, client, alertURL);
         alertRequestUtility.loginToExternalAlert();
         blackDuckProviderService = new BlackDuckProviderService(alertRequestUtility, gson);
-        configurationManager = new ConfigurationManagerV2(
+        configurationManager = new ConfigurationManager(
             gson,
             alertRequestUtility,
             blackDuckProviderService.getBlackDuckProviderKey(),
             CHANNEL_KEY.getUniversalKey()
         );
         jiraServerPerformanceUtility = new JiraServerPerformanceUtility(alertRequestUtility, configurationManager);
-        testRunner = new IntegrationPerformanceTestRunnerV2(
+        testRunner = new IntegrationPerformanceTestRunner(
             gson,
             dateTimeFormatter,
             alertRequestUtility,

@@ -96,7 +96,7 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
         UUID correlationId = event.getCorrelationId();
         UUID jobId = event.getJobId();
         int pageNumber = 0;
-        int pageSize = 100;
+        int pageSize = 200;
         AlertPagedModel<JobToNotificationMappingModel> jobNotificationMappings = jobNotificationMappingAccessor.getJobNotificationMappings(
             correlationId,
             jobId,

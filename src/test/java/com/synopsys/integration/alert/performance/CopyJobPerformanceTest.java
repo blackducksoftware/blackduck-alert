@@ -19,9 +19,9 @@ import com.synopsys.integration.alert.configuration.ApplicationConfiguration;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.performance.utility.BlackDuckProviderService;
-import com.synopsys.integration.alert.performance.utility.ConfigurationManager;
+import com.synopsys.integration.alert.performance.utility.ConfigurationManagerLegacy;
 import com.synopsys.integration.alert.performance.utility.ExternalAlertRequestUtility;
-import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunner;
+import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunnerLegacy;
 import com.synopsys.integration.alert.test.common.TestTags;
 import com.synopsys.integration.alert.util.DescriptorMocker;
 import com.synopsys.integration.exception.IntegrationException;
@@ -36,7 +36,7 @@ import com.synopsys.integration.rest.proxy.ProxyInfo;
 @TestPropertySource(locations = "classpath:spring-test.properties")
 @WebAppConfiguration
 class CopyJobPerformanceTest {
-    private final Gson gson = IntegrationPerformanceTestRunner.createGson();
+    private final Gson gson = IntegrationPerformanceTestRunnerLegacy.createGson();
     private final IntLogger intLogger = new Slf4jIntLogger(LoggerFactory.getLogger(this.getClass()));
     private final IntHttpClient client = new IntHttpClient(intLogger, gson, 60, true, ProxyInfo.NO_PROXY_INFO);
     private final String alertURL = "https://localhost:8443/alert";
@@ -49,7 +49,7 @@ class CopyJobPerformanceTest {
         // Create an authenticated connection to Alert
         alertRequestUtility.loginToExternalAlert();
         BlackDuckProviderService blackDuckProviderService = new BlackDuckProviderService(alertRequestUtility, gson);
-        ConfigurationManager configurationManager = new ConfigurationManager(
+        ConfigurationManagerLegacy configurationManager = new ConfigurationManagerLegacy(
             gson,
             alertRequestUtility,
             blackDuckProviderService.getBlackDuckProviderKey(),

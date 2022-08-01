@@ -18,9 +18,9 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
 import com.synopsys.integration.alert.performance.model.PerformanceExecutionStatusModel;
 import com.synopsys.integration.alert.performance.utility.BlackDuckProviderService;
-import com.synopsys.integration.alert.performance.utility.ConfigurationManagerV2;
+import com.synopsys.integration.alert.performance.utility.ConfigurationManager;
 import com.synopsys.integration.alert.performance.utility.ExternalAlertRequestUtility;
-import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunnerV2;
+import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunner;
 import com.synopsys.integration.alert.performance.utility.PerformanceLoggingUtility;
 import com.synopsys.integration.alert.performance.utility.jira.server.JiraServerPerformanceUtility;
 import com.synopsys.integration.alert.test.common.TestProperties;
@@ -42,8 +42,8 @@ class ExternalPerformanceTest {
     private static final String DEFAULT_JOB_NAME = "JiraPerformanceJob";
 
     private final IntLogger intLogger = new Slf4jIntLogger(LoggerFactory.getLogger(this.getClass()));
-    private final Gson gson = IntegrationPerformanceTestRunnerV2.createGson();
-    private final DateTimeFormatter dateTimeFormatter = IntegrationPerformanceTestRunnerV2.createDateTimeFormatter();
+    private final Gson gson = IntegrationPerformanceTestRunner.createGson();
+    private final DateTimeFormatter dateTimeFormatter = IntegrationPerformanceTestRunner.createDateTimeFormatter();
     private final PerformanceLoggingUtility loggingUtility = new PerformanceLoggingUtility(intLogger, dateTimeFormatter);
 
     private final IntHttpClient client = new IntHttpClient(intLogger, gson, 60, true, ProxyInfo.NO_PROXY_INFO);
@@ -51,7 +51,8 @@ class ExternalPerformanceTest {
 
     private BlackDuckProviderService blackDuckProviderService;
     private JiraServerPerformanceUtility jiraServerPerformanceUtility;
-    private IntegrationPerformanceTestRunnerV2 testRunner;
+    private IntegrationPerformanceTestRunner testRunner;
+    private ExternalAlertRequestUtility alertRequestUtility;
 
     private int numberOfProjectsToCreate;
 
@@ -72,17 +73,16 @@ class ExternalPerformanceTest {
             .map(Integer::parseInt)
             .orElse(DEFAULT_TIMEOUT_SECONDS);
 
-        ExternalAlertRequestUtility alertRequestUtility = new ExternalAlertRequestUtility(intLogger, client, alertURL);
-        alertRequestUtility.loginToExternalAlert();
+        alertRequestUtility = new ExternalAlertRequestUtility(intLogger, client, alertURL);
         blackDuckProviderService = new BlackDuckProviderService(alertRequestUtility, gson);
-        ConfigurationManagerV2 configurationManager = new ConfigurationManagerV2(
+        ConfigurationManager configurationManager = new ConfigurationManager(
             gson,
             alertRequestUtility,
             blackDuckProviderService.getBlackDuckProviderKey(),
             CHANNEL_KEY.getUniversalKey()
         );
         jiraServerPerformanceUtility = new JiraServerPerformanceUtility(alertRequestUtility, configurationManager);
-        testRunner = new IntegrationPerformanceTestRunnerV2(
+        testRunner = new IntegrationPerformanceTestRunner(
             gson,
             dateTimeFormatter,
             alertRequestUtility,
@@ -95,6 +95,8 @@ class ExternalPerformanceTest {
     @Test
     @EnabledIfEnvironmentVariable(named = "ALERT_RUN_PERFORMANCE", matches = "true")
     void testPolicyNotificationsWithExternalAlertServer() throws Exception {
+        alertRequestUtility.loginToExternalAlert();
+
         LocalDateTime startingTime = LocalDateTime.now();
         intLogger.info(String.format("Starting time: %s", dateTimeFormatter.format(startingTime)));
 
@@ -147,6 +149,8 @@ class ExternalPerformanceTest {
     @Test
     @EnabledIfEnvironmentVariable(named = "ALERT_RUN_PERFORMANCE", matches = "true")
     void testPolicyNotificationsValidateAuditComplete() throws Exception {
+        alertRequestUtility.loginToExternalAlert();
+
         LocalDateTime startingTime = LocalDateTime.now();
         intLogger.info(String.format("Starting time: %s", dateTimeFormatter.format(startingTime)));
 
@@ -182,6 +186,13 @@ class ExternalPerformanceTest {
             intLogger.info(String.format("An error occurred while testing: %s", performanceExecutionStatusModel.getMessage()));
         }
         assertTrue(performanceExecutionStatusModel.isSuccess());
+    }
+
+    @Test
+    @EnabledIfEnvironmentVariable(named = "ALERT_RUN_PERFORMANCE", matches = "true")
+    void testDeleteExistingPolicy() throws IntegrationException {
+        PolicyRuleView policyRuleView = blackDuckProviderService.createBlackDuckPolicyRuleView(PERFORMANCE_POLICY_NAME, BlackDuckProviderService.getDefaultExternalIdSupplier());
+        blackDuckProviderService.deleteExistingBlackDuckPolicy(policyRuleView);
     }
 }
 

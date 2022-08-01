@@ -32,8 +32,8 @@ import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
 import com.synopsys.integration.alert.performance.model.PerformanceExecutionStatusModel;
 import com.synopsys.integration.alert.performance.utility.AlertRequestUtility;
 import com.synopsys.integration.alert.performance.utility.BlackDuckProviderService;
-import com.synopsys.integration.alert.performance.utility.ConfigurationManagerV2;
-import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunnerV2;
+import com.synopsys.integration.alert.performance.utility.ConfigurationManager;
+import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunner;
 import com.synopsys.integration.alert.performance.utility.jira.server.JiraServerPerformanceUtility;
 import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
@@ -60,28 +60,28 @@ class LargeNotificationTest {
     private WebApplicationContext webApplicationContext;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final Gson gson = IntegrationPerformanceTestRunnerV2.createGson();
-    private final DateTimeFormatter dateTimeFormatter = IntegrationPerformanceTestRunnerV2.createDateTimeFormatter();
+    private final Gson gson = IntegrationPerformanceTestRunner.createGson();
+    private final DateTimeFormatter dateTimeFormatter = IntegrationPerformanceTestRunner.createDateTimeFormatter();
 
     private BlackDuckProviderService blackDuckProviderService;
     private JiraServerPerformanceUtility jiraServerPerformanceUtility;
-    private IntegrationPerformanceTestRunnerV2 testRunner;
+    private IntegrationPerformanceTestRunner testRunner;
 
     private TestProperties testProperties = new TestProperties();
     private int numberOfProjectsToCreate;
 
     @BeforeEach
     public void init() {
-        AlertRequestUtility alertRequestUtility = IntegrationPerformanceTestRunnerV2.createAlertRequestUtility(webApplicationContext);
+        AlertRequestUtility alertRequestUtility = IntegrationPerformanceTestRunner.createAlertRequestUtility(webApplicationContext);
         blackDuckProviderService = new BlackDuckProviderService(alertRequestUtility, gson);
-        ConfigurationManagerV2 configurationManager = new ConfigurationManagerV2(
+        ConfigurationManager configurationManager = new ConfigurationManager(
             gson,
             alertRequestUtility,
             blackDuckProviderService.getBlackDuckProviderKey(),
             CHANNEL_KEY.getUniversalKey()
         );
         jiraServerPerformanceUtility = new JiraServerPerformanceUtility(alertRequestUtility, configurationManager);
-        testRunner = new IntegrationPerformanceTestRunnerV2(
+        testRunner = new IntegrationPerformanceTestRunner(
             gson,
             dateTimeFormatter,
             alertRequestUtility,

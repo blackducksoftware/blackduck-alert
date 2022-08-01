@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.gradle.api.Project;
 import org.gradle.api.tasks.Exec;
+import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.options.Option;
 
 public class RunServerTask extends Exec {
@@ -144,6 +145,7 @@ public class RunServerTask extends Exec {
         super.exec();
     }
 
+    @Internal
     public List<String> getDebugVariables() {
         return List.of(
             "-Xdebug",
@@ -182,6 +184,7 @@ public class RunServerTask extends Exec {
         return variables;
     }
 
+    @Internal
     public List<String> getDatabaseVariables() {
         if (externalDb) {
             return List.of(
@@ -213,6 +216,7 @@ public class RunServerTask extends Exec {
         );
     }
 
+    @Internal
     public List<String> getMessageQueueVariables() {
         if (externalRabbitmq) {
             return List.of(

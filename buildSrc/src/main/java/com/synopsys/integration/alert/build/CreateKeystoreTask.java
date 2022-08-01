@@ -3,6 +3,7 @@ package com.synopsys.integration.alert.build;
 import java.util.List;
 
 import org.gradle.api.tasks.Exec;
+import org.gradle.api.tasks.Internal;
 
 public class CreateKeystoreTask extends Exec {
 
@@ -14,6 +15,7 @@ public class CreateKeystoreTask extends Exec {
         super.exec();
     }
 
+    @Internal
     public List<String> getKeytoolVariables() {
         return List.of(
             "keytool",

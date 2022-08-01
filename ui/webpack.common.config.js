@@ -1,5 +1,4 @@
 const path = require('path');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const srcDir = path.resolve(__dirname, 'src');
@@ -19,7 +18,12 @@ module.exports = {
         publicPath: '/alert/'
     },
     module: {
-        rules: [{
+        rules: [{ 
+            test: /\.m?js/, 
+            resolve: {
+                fullySpecified: false
+              }
+        }, {
             test: /\.js$/,
             exclude: /(node_modules)/,
             loader: 'babel-loader'
@@ -31,18 +35,34 @@ module.exports = {
                 name: '[path][name].[ext]'
             }
         }, {
-            test: /\.scss$/,
-            loader: ExtractTextPlugin.extract('css-loader!sass-loader')
-        }, {
-            test: /\.css$/,
-            include: /(node_modules)/,
-            loader: ExtractTextPlugin.extract('css-loader')
+            test: /\.s[ac]ss$/i,
+            use: ["style-loader", "css-loader", "sass-loader"],
         }, {
             test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-            loader: 'url-loader?limit=10000&mimetype=application/font-woff&name=fonts/[name].[ext]'
+            use: [
+                {
+                    loader: 'url-loader',
+                    options: {
+                        limit: 10000,
+                        mimetype: 'application/font-woff',
+                        name : 'fonts/[name].[ext]'
+                    }
+                }
+            ]
         }, {
             test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-            loader: 'url-loader?limit=10000&name=fonts/[name].[ext]'
+            use: [
+                {
+                    loader: 'url-loader',
+                    options: {
+                        limit: 10000,
+                        name : 'fonts/[name].[ext]'
+                    }
+                }
+            ]
+        }, {
+          test: /\.(ttf|eot|svg|otf)(\?v=[0-9]\.[0-9]\.[0-9])?$/i,
+          loader: 'file-loader'
         }]
     },
     plugins: [
@@ -50,9 +70,6 @@ module.exports = {
             favicon: 'src/main/resources/favicon.ico',
             template: 'src/main/js/index.html',
             xhtml: true
-        }),
-        new ExtractTextPlugin('css/style.css', {
-            allChunks: true
         })
     ]
 };
