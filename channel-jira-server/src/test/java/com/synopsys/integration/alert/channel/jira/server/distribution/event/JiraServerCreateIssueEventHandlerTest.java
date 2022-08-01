@@ -48,17 +48,13 @@ class JiraServerCreateIssueEventHandlerTest {
 
     public static final String ISSUE_KEY = "JP-1";
     private Gson gson = new Gson();
-    private AtomicInteger eventCounter;
+    private AtomicInteger issueCounter;
     private EventManager eventManager;
 
     @BeforeEach
     public void init() {
-        eventCounter = new AtomicInteger(0);
+        issueCounter = new AtomicInteger(0);
         eventManager = Mockito.mock(EventManager.class);
-        Mockito.doAnswer(invocation -> {
-            eventCounter.incrementAndGet();
-            return null;
-        }).when(eventManager).sendEvent(Mockito.any());
     }
 
     @Test
@@ -88,7 +84,7 @@ class JiraServerCreateIssueEventHandlerTest {
         );
 
         handler.handle(event);
-        assertEquals(0, eventCounter.get());
+        assertEquals(0, issueCounter.get());
     }
 
     @Test
@@ -104,7 +100,7 @@ class JiraServerCreateIssueEventHandlerTest {
         ProjectService projectService = Mockito.mock(ProjectService.class);
 
         Mockito.doAnswer(invocation -> {
-            eventCounter.incrementAndGet();
+            issueCounter.incrementAndGet();
             return new IssueCreationResponseModel(ISSUE_KEY, "", ISSUE_KEY);
         }).when(issueService).createIssue(Mockito.any(IssueCreationRequestModel.class));
         Mockito.when(issueService.getIssue(Mockito.anyString())).thenReturn(createIssueResponseModel());
@@ -141,7 +137,7 @@ class JiraServerCreateIssueEventHandlerTest {
         );
 
         handler.handle(event);
-        assertEquals(1, eventCounter.get());
+        assertEquals(1, issueCounter.get());
     }
 
     @Test
@@ -158,7 +154,7 @@ class JiraServerCreateIssueEventHandlerTest {
         IssuePropertyService issuePropertyService = Mockito.mock(IssuePropertyService.class);
 
         Mockito.doAnswer(invocation -> {
-            eventCounter.incrementAndGet();
+            issueCounter.incrementAndGet();
             return new IssueCreationResponseModel(ISSUE_KEY, "", ISSUE_KEY);
         }).when(issueService).createIssue(Mockito.any(IssueCreationRequestModel.class));
         Mockito.when(issueService.getIssue(Mockito.anyString())).thenReturn(createIssueResponseModel());
@@ -203,7 +199,7 @@ class JiraServerCreateIssueEventHandlerTest {
         );
 
         handler.handle(event);
-        assertEquals(1, eventCounter.get());
+        assertEquals(1, issueCounter.get());
     }
 
     @Test
@@ -219,7 +215,7 @@ class JiraServerCreateIssueEventHandlerTest {
         ProjectService projectService = Mockito.mock(ProjectService.class);
 
         Mockito.doAnswer(invocation -> {
-            eventCounter.incrementAndGet();
+            issueCounter.incrementAndGet();
             return new IssueCreationResponseModel(ISSUE_KEY, "", ISSUE_KEY);
         }).when(issueService).createIssue(Mockito.any(IssueCreationRequestModel.class));
         Mockito.when(issueService.getIssue(Mockito.anyString())).thenReturn(createIssueResponseModel());
@@ -258,7 +254,7 @@ class JiraServerCreateIssueEventHandlerTest {
         );
 
         handler.handle(event);
-        assertEquals(0, eventCounter.get());
+        assertEquals(0, issueCounter.get());
     }
 
     private JiraServerJobDetailsModel createJobDetails(UUID jobId) {
