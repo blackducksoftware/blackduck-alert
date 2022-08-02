@@ -106,6 +106,8 @@ public class JiraServerCreateIssueEventHandler implements IssueTrackerCreateIssu
                         .map(IssueTrackerIssueResponseModel::getIssueKey)
                         .collect(Collectors.toList());
                     logger.info("Created issues: {}", issueKeys);
+                } else {
+                    logger.debug("Issue already exists for query: {}", jqlQuery);
                 }
             } catch (AlertException ex) {
                 logger.error("Cannot create issue for job {}", jobId);

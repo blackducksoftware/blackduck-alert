@@ -51,6 +51,7 @@ public class IssueTrackerMessageSender<T extends Serializable> {
         this.eventManager = eventManager;
     }
 
+    // This method is used for testing issue tracker channels to get the issue that was created.
     public final List<IssueTrackerIssueResponseModel<T>> sendMessages(IssueTrackerModelHolder<T> issueTrackerMessage) throws AlertException {
         List<IssueTrackerIssueResponseModel<T>> responses = new LinkedList<>();
 
