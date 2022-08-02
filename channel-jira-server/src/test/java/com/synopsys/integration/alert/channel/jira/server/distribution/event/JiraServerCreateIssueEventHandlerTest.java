@@ -14,6 +14,7 @@ import org.mockito.Mockito;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCallbackInfoCreator;
+import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCreateIssueEvent;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
@@ -78,7 +79,7 @@ class JiraServerCreateIssueEventHandlerTest {
         LinkableItem provider = new LinkableItem("provider", "test-provider");
         IssueCreationModel issueCreationModel = IssueCreationModel.simple("title", "description", List.of(), provider);
         JiraServerCreateIssueEvent event = new JiraServerCreateIssueEvent(
-            JiraServerCreateIssueEvent.createDefaultEventDestination(ChannelKeys.JIRA_SERVER),
+            IssueTrackerCreateIssueEvent.createDefaultEventDestination(ChannelKeys.JIRA_SERVER),
             jobId,
             issueCreationModel
         );
@@ -131,7 +132,7 @@ class JiraServerCreateIssueEventHandlerTest {
         LinkableItem provider = new LinkableItem("provider", "test-provider");
         IssueCreationModel issueCreationModel = IssueCreationModel.simple("title", "description", List.of(), provider);
         JiraServerCreateIssueEvent event = new JiraServerCreateIssueEvent(
-            JiraServerCreateIssueEvent.createDefaultEventDestination(ChannelKeys.JIRA_SERVER),
+            IssueTrackerCreateIssueEvent.createDefaultEventDestination(ChannelKeys.JIRA_SERVER),
             jobId,
             issueCreationModel
         );
@@ -193,7 +194,7 @@ class JiraServerCreateIssueEventHandlerTest {
         ProjectIssueModel projectIssueModel = ProjectIssueModel.bom(providerDetails, project, projectVersion, bomComponent);
         IssueCreationModel issueCreationModel = IssueCreationModel.project("title", "description", List.of(), projectIssueModel, "JQL Query String");
         JiraServerCreateIssueEvent event = new JiraServerCreateIssueEvent(
-            JiraServerCreateIssueEvent.createDefaultEventDestination(ChannelKeys.JIRA_SERVER),
+            IssueTrackerCreateIssueEvent.createDefaultEventDestination(ChannelKeys.JIRA_SERVER),
             jobId,
             issueCreationModel
         );
@@ -248,7 +249,7 @@ class JiraServerCreateIssueEventHandlerTest {
         ProjectIssueModel projectIssueModel = ProjectIssueModel.bom(providerDetails, null, null, null);
         IssueCreationModel issueCreationModel = IssueCreationModel.project("title", "description", List.of(), projectIssueModel, "JQL Query String");
         JiraServerCreateIssueEvent event = new JiraServerCreateIssueEvent(
-            JiraServerCreateIssueEvent.createDefaultEventDestination(ChannelKeys.JIRA_SERVER),
+            IssueTrackerCreateIssueEvent.createDefaultEventDestination(ChannelKeys.JIRA_SERVER),
             jobId,
             issueCreationModel
         );
