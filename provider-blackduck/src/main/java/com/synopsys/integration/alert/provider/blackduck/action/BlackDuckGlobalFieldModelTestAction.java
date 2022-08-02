@@ -77,18 +77,34 @@ public class BlackDuckGlobalFieldModelTestAction extends FieldModelTestAction {
             Exception errorException = connectionResult.getException().orElse(null);
             if (RestConstants.UNAUTHORIZED_401 == connectionResult.getHttpStatusCode()) {
                 throw AlertFieldException
-                          .singleFieldError(String.format("Invalid credential(s) for: %s. %s", url, failureMessage), BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, "This API Key isn't valid, try a different one.");
+                    .singleFieldError(
+                        String.format("Invalid credential(s) for: %s. %s", url, failureMessage),
+                        BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY,
+                        "This API Key isn't valid, try a different one."
+                    );
             } else if (connectionResult.getHttpStatusCode() > 0) {
                 // TODO why are we throwing a non-alert exception?
                 HttpUrl connectionUrl = new HttpUrl(url);
-                throw new IntegrationRestException(HttpMethod.GET, connectionUrl, connectionResult.getHttpStatusCode(), String.format("Could not connect to: %s", url), failureMessage, errorException);
+                throw new IntegrationRestException(
+                    HttpMethod.GET,
+                    connectionUrl,
+                    connectionResult.getHttpStatusCode(),
+                    String.format("Could not connect to: %s", url),
+                    failureMessage,
+                    errorException
+                );
             }
             throw new AlertException(String.format("Could not connect to: %s. %s", url, failureMessage), errorException);
         }
 
         BlackDuckApiTokenValidator blackDuckAPITokenValidator = new BlackDuckApiTokenValidator(blackDuckProperties);
         if (!blackDuckAPITokenValidator.isApiTokenValid()) {
-            throw AlertFieldException.singleFieldError(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, "User permission failed. Cannot read notifications from Black Duck.");
+            throw AlertFieldException
+                .singleFieldError(
+                    "User permission failed. Cannot read notifications from Black Duck.",
+                    BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY,
+                    "User permission failed. Cannot read notifications from Black Duck."
+                );
         }
         return new MessageResult("Successfully connected to Black Duck server.");
     }
