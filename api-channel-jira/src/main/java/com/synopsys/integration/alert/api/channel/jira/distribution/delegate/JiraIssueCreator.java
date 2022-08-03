@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCallbackInfoCreator;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentDetails;
@@ -49,7 +47,6 @@ import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<String> {
-    private Logger logger = LoggerFactory.getLogger(getClass());
     private static final String FAILED_TO_CREATE_ISSUE_MESSAGE = "Failed to create an issue in Jira.";
 
     private final JiraErrorMessageUtility jiraErrorMessageUtility;
@@ -76,28 +73,30 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
     @Override
     protected final ExistingIssueDetails<String> createIssueAndExtractDetails(IssueCreationModel alertIssueCreationModel) throws AlertException {
         Optional<ExistingIssueDetails<String>> existingIssue = doesIssueExist(alertIssueCreationModel);
+        if (existingIssue.isPresent()) {
+            return existingIssue.get();
+        }
         ExistingIssueDetails<String> existingIssueDetails;
-        if (existingIssue.isEmpty()) {
-            MessageReplacementValues replacementValues = alertIssueCreationModel.getSource()
-                .map(this::createCustomFieldReplacementValues)
-                .orElse(new MessageReplacementValues.Builder(
-                    alertIssueCreationModel.getProvider().getLabel(),
-                    MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE
-                ).build());
-            T creationRequest = createIssueCreationRequest(alertIssueCreationModel, replacementValues);
-            try {
-                IssueCreationResponseModel issueCreationResponseModel = createIssue(creationRequest);
-                IssueResponseModel createdIssue = fetchIssue(issueCreationResponseModel.getKey());
-                IssueFieldsComponent createdIssueFields = createdIssue.getFields();
+        MessageReplacementValues replacementValues = alertIssueCreationModel.getSource()
+            .map(this::createCustomFieldReplacementValues)
+            .orElse(new MessageReplacementValues.Builder(
+                alertIssueCreationModel.getProvider().getLabel(),
+                MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE
+            ).build());
+        T creationRequest = createIssueCreationRequest(alertIssueCreationModel, replacementValues);
+        try {
+            IssueCreationResponseModel issueCreationResponseModel = createIssue(creationRequest);
+            IssueResponseModel createdIssue = fetchIssue(issueCreationResponseModel.getKey());
+            IssueFieldsComponent createdIssueFields = createdIssue.getFields();
 
-                String issueUILink = JiraCallbackUtils.createUILink(createdIssue);
+            String issueUILink = JiraCallbackUtils.createUILink(createdIssue);
 
-                IssueCategory issueCategory = alertIssueCreationModel.getSource()
-                    .map(issueCategoryRetriever::retrieveIssueCategoryFromProjectIssueModel)
-                    .orElse(IssueCategory.BOM);
+            IssueCategory issueCategory = alertIssueCreationModel.getSource()
+                .map(issueCategoryRetriever::retrieveIssueCategoryFromProjectIssueModel)
+                .orElse(IssueCategory.BOM);
 
-                existingIssueDetails = new ExistingIssueDetails<>(
-                    createdIssue.getId(),
+            existingIssueDetails = new ExistingIssueDetails<>(
+                createdIssue.getId(),
                     createdIssue.getKey(),
                     createdIssueFields.getSummary(),
                     issueUILink,
@@ -112,9 +111,6 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
             } catch (IntegrationException intException) {
                 throw new AlertException(FAILED_TO_CREATE_ISSUE_MESSAGE, intException);
             }
-        } else {
-            existingIssueDetails = existingIssue.get();
-        }
         return existingIssueDetails;
     }
 

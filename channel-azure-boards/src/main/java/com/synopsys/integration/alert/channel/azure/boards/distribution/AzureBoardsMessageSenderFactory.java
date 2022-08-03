@@ -41,6 +41,7 @@ import com.synopsys.integration.azure.boards.common.http.AzureHttpRequestCreator
 import com.synopsys.integration.azure.boards.common.http.AzureHttpRequestCreatorFactory;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.service.comment.AzureWorkItemCommentService;
+import com.synopsys.integration.azure.boards.common.service.query.AzureWorkItemQueryService;
 import com.synopsys.integration.azure.boards.common.service.state.AzureWorkItemTypeStateService;
 import com.synopsys.integration.azure.boards.common.service.workitem.AzureWorkItemService;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
@@ -92,13 +93,15 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
         AzureWorkItemService workItemService = new AzureWorkItemService(azureHttpService, azureHttpRequestCreator);
         AzureWorkItemTypeStateService workItemTypeStateService = new AzureWorkItemTypeStateService(azureHttpService, apiVersionAppender);
         AzureWorkItemCommentService workItemCommentService = new AzureWorkItemCommentService(azureHttpService, apiVersionAppender);
+        AzureWorkItemQueryService workItemQueryService = new AzureWorkItemQueryService(azureHttpService, apiVersionAppender);
 
         return createMessageSender(
             workItemService,
             workItemTypeStateService,
             workItemCommentService,
             azureBoardsProperties.getOrganizationName(),
-            distributionDetails
+            distributionDetails,
+            workItemQueryService
         );
     }
 
@@ -107,12 +110,13 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
         AzureWorkItemTypeStateService workItemTypeStateService,
         AzureWorkItemCommentService workItemCommentService,
         String organizationName,
-        AzureBoardsJobDetailsModel distributionDetails
+        AzureBoardsJobDetailsModel distributionDetails,
+        AzureWorkItemQueryService workItemQueryService
     ) {
         IssueTrackerIssueResponseCreator issueResponseCreator = new IssueTrackerIssueResponseCreator(callbackInfoCreator);
         AzureBoardsWorkItemTypeStateRetriever workItemTypeStateRetriever = new AzureBoardsWorkItemTypeStateRetriever(gson, workItemService, workItemTypeStateService);
         AzureBoardsAlertIssuePropertiesManager issuePropertiesManager = new AzureBoardsAlertIssuePropertiesManager();
-
+        
         // Message Sender Requirements
         AzureBoardsIssueCommenter commenter = new AzureBoardsIssueCommenter(issueResponseCreator, organizationName, distributionDetails, workItemCommentService);
         AzureBoardsIssueTransitioner transitioner = new AzureBoardsIssueTransitioner(
@@ -125,7 +129,8 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
             workItemTypeStateRetriever,
             exceptionMessageImprover
         );
-        AzureBoardsIssueCreator creator = new AzureBoardsIssueCreator(channelKey,
+        AzureBoardsIssueCreator creator = new AzureBoardsIssueCreator(
+            channelKey,
             commenter,
             callbackInfoCreator,
             gson,
@@ -134,7 +139,8 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
             workItemService,
             issuePropertiesManager,
             exceptionMessageImprover,
-            issueCategoryRetriever
+            issueCategoryRetriever,
+            workItemQueryService
         );
 
         UUID jobId = distributionDetails.getJobId();
