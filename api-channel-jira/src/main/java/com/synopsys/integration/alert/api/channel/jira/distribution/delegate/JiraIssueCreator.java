@@ -7,9 +7,12 @@
  */
 package com.synopsys.integration.alert.api.channel.jira.distribution.delegate;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCallbackInfoCreator;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentDetails;
@@ -29,6 +32,7 @@ import com.synopsys.integration.alert.api.channel.jira.distribution.custom.Messa
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesUrlCorrector;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueSearchPropertyStringCompatibilityUtils;
+import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraSearcherResponseModel;
 import com.synopsys.integration.alert.api.channel.jira.util.JiraCallbackUtils;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
@@ -45,6 +49,7 @@ import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<String> {
+    private Logger logger = LoggerFactory.getLogger(getClass());
     private static final String FAILED_TO_CREATE_ISSUE_MESSAGE = "Failed to create an issue in Jira.";
 
     private final JiraErrorMessageUtility jiraErrorMessageUtility;
@@ -119,7 +124,19 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
         issuePropertiesManager.assignIssueProperties(createdIssueDetails.getIssueKey(), searchProperties);
     }
 
-    protected abstract Optional<ExistingIssueDetails<String>> doesIssueExist(IssueCreationModel alertIssueCreationModel);
+    protected Optional<ExistingIssueDetails<String>> doesIssueExist(IssueCreationModel alertIssueCreationModel) {
+        String query = alertIssueCreationModel.getQueryString().orElse(null);
+        if (StringUtils.isBlank(query)) {
+            return Optional.empty();
+        }
+
+        List<JiraSearcherResponseModel> response = searchForIssue(alertIssueCreationModel);
+        return response.stream()
+            .findFirst()
+            .map(searchResponse -> convertSearchResponse(alertIssueCreationModel, searchResponse));
+    }
+
+    protected abstract List<JiraSearcherResponseModel> searchForIssue(IssueCreationModel alertIssueCreationModel);
 
     protected abstract T createIssueCreationRequest(IssueCreationModel alertIssueCreationModel, MessageReplacementValues replacementValues) throws AlertException;
 
@@ -128,6 +145,21 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
     protected abstract IssueResponseModel fetchIssue(String createdIssueKey) throws IntegrationException;
 
     protected abstract String extractReporter(T creationRequest);
+
+    private ExistingIssueDetails<String> convertSearchResponse(IssueCreationModel alertIssueCreationModel, JiraSearcherResponseModel searchResponse) {
+        IssueCategory issueCategory = alertIssueCreationModel.getSource()
+            .map(issueCategoryRetriever::retrieveIssueCategoryFromProjectIssueModel)
+            .orElse(IssueCategory.BOM);
+        String uiLink = JiraCallbackUtils.createUILink(searchResponse);
+        return new ExistingIssueDetails<>(
+            searchResponse.getIssueId(),
+            searchResponse.getIssueKey(),
+            searchResponse.getSummaryField(),
+            uiLink,
+            IssueStatus.RESOLVABLE,
+            issueCategory
+        );
+    }
 
     protected MessageReplacementValues createCustomFieldReplacementValues(ProjectIssueModel alertIssueSource) {
         IssueBomComponentDetails bomComponent = alertIssueSource.getBomComponentDetails();

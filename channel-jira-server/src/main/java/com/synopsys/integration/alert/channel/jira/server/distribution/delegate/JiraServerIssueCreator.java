@@ -8,7 +8,6 @@
 package com.synopsys.integration.alert.channel.jira.server.distribution.delegate;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -111,22 +110,16 @@ public class JiraServerIssueCreator extends JiraIssueCreator<IssueCreationReques
     }
 
     @Override
-    protected Optional<ExistingIssueDetails<String>> doesIssueExist(IssueCreationModel alertIssueCreationModel) {
+    protected List<JiraSearcherResponseModel> searchForIssue(IssueCreationModel alertIssueCreationModel) {
         String query = alertIssueCreationModel.getQueryString().orElse(null);
-        if (StringUtils.isBlank(query)) {
-            return Optional.empty();
-        }
-
+        List<JiraSearcherResponseModel> response = List.of();
         try {
-            List<JiraSearcherResponseModel> response = jiraServerQueryExecutor.executeQuery(query);
-            return response.stream()
-                .findFirst()
-                .map(searchResponse -> convertSearchResponse(alertIssueCreationModel, searchResponse));
+            response = jiraServerQueryExecutor.executeQuery(query);
         } catch (AlertException ex) {
             logger.error("Query executed: {}", query);
             logger.error("Couldn't execute query to see if issue exists.", ex);
         }
-        return Optional.empty();
+        return response;
     }
 
     @Override

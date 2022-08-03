@@ -27,9 +27,11 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudProperties;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudPropertiesFactory;
 import com.synopsys.integration.alert.channel.jira.cloud.distribution.JiraCloudMessageSenderFactory;
+import com.synopsys.integration.alert.channel.jira.cloud.distribution.JiraCloudQueryExecutor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.synopsys.integration.jira.common.cloud.service.FieldService;
+import com.synopsys.integration.jira.common.cloud.service.IssueSearchService;
 import com.synopsys.integration.jira.common.cloud.service.IssueService;
 import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
 import com.synopsys.integration.jira.common.cloud.service.ProjectService;
@@ -70,8 +72,10 @@ public class JiraCloudTransitionEventHandler implements IssueTrackerTransitionEv
                 // Jira Services
                 IssueService issueService = jiraCloudServiceFactory.createIssueService();
                 IssuePropertyService issuePropertyService = jiraCloudServiceFactory.createIssuePropertyService();
+                IssueSearchService issueSearchService = jiraCloudServiceFactory.createIssueSearchService();
 
                 // Common Helpers
+                JiraCloudQueryExecutor jiraCloudQueryExecutor = new JiraCloudQueryExecutor(issueSearchService);
                 JiraIssueAlertPropertiesManager issuePropertiesManager = new JiraIssueAlertPropertiesManager(gson, issuePropertyService);
 
                 ProjectService projectService = jiraCloudServiceFactory.createProjectService();
@@ -87,7 +91,8 @@ public class JiraCloudTransitionEventHandler implements IssueTrackerTransitionEv
                     projectService,
                     issueCreationRequestCreator,
                     issuePropertiesManager,
-                    jiraErrorMessageUtility
+                    jiraErrorMessageUtility,
+                    jiraCloudQueryExecutor
                 );
                 IssueTransitionModel<String> commentModel = event.getTransitionModel();
                 messageSender.sendMessage(commentModel);
