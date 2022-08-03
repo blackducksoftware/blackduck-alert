@@ -8,6 +8,7 @@
 package com.synopsys.integration.alert.channel.jira.server.distribution.delegate;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -111,10 +112,12 @@ public class JiraServerIssueCreator extends JiraIssueCreator<IssueCreationReques
 
     @Override
     protected List<JiraSearcherResponseModel> searchForIssue(IssueCreationModel alertIssueCreationModel) {
-        String query = alertIssueCreationModel.getQueryString().orElse(null);
+        Optional<String> query = alertIssueCreationModel.getQueryString();
         List<JiraSearcherResponseModel> response = List.of();
         try {
-            response = jiraServerQueryExecutor.executeQuery(query);
+            if (query.isPresent()) {
+                response = jiraServerQueryExecutor.executeQuery(query.get());
+            }
         } catch (AlertException ex) {
             logger.error("Query executed: {}", query);
             logger.error("Couldn't execute query to see if issue exists.", ex);
