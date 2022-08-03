@@ -1,6 +1,6 @@
 {
     "name": "blackduck-alert",
-    "version": "6.11.0-SIGQA4",
+    "version": "6.11.0-SIGQA4-SNAPSHOT",
     "description": "Alert UI",
     "keywords": [
         "blackduck",
@@ -82,6 +82,7 @@
         "webpack-dev-server": "^4.9.3",
         "webpack-merge": "^4.2.2",
         "webpack-sources": "^1.4.3",
-        "whatwg-fetch": "^3.4.0"
+        "whatwg-fetch": "^3.4.0",
+        "ws": "^8.8.1"
     }
 }
