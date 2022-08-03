@@ -12,6 +12,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCallbackInfoCreator;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
@@ -29,7 +33,9 @@ import com.synopsys.integration.alert.channel.azure.boards.distribution.util.Azu
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
+import com.synopsys.integration.azure.boards.common.service.query.AzureWorkItemQueryService;
 import com.synopsys.integration.azure.boards.common.service.workitem.AzureWorkItemService;
+import com.synopsys.integration.azure.boards.common.service.workitem.WorkItemReferenceModel;
 import com.synopsys.integration.azure.boards.common.service.workitem.request.WorkItemElementOperation;
 import com.synopsys.integration.azure.boards.common.service.workitem.request.WorkItemElementOperationModel;
 import com.synopsys.integration.azure.boards.common.service.workitem.request.WorkItemRequest;
@@ -39,6 +45,7 @@ import com.synopsys.integration.azure.boards.common.service.workitem.response.Wo
 import com.synopsys.integration.azure.boards.common.util.AzureFieldDefinition;
 
 public class AzureBoardsIssueCreator extends IssueTrackerIssueCreator<Integer> {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final Gson gson;
     private final String organizationName;
     private final AzureBoardsJobDetailsModel distributionDetails;
@@ -46,6 +53,7 @@ public class AzureBoardsIssueCreator extends IssueTrackerIssueCreator<Integer> {
     private final AzureBoardsAlertIssuePropertiesManager issuePropertiesManager;
     private final AzureBoardsHttpExceptionMessageImprover exceptionMessageImprover;
     private final IssueCategoryRetriever issueCategoryRetriever;
+    private final AzureWorkItemQueryService workItemQueryService;
 
     public AzureBoardsIssueCreator(
         AzureBoardsChannelKey channelKey,
@@ -57,7 +65,8 @@ public class AzureBoardsIssueCreator extends IssueTrackerIssueCreator<Integer> {
         AzureWorkItemService workItemService,
         AzureBoardsAlertIssuePropertiesManager issuePropertiesManager,
         AzureBoardsHttpExceptionMessageImprover exceptionMessageImprover,
-        IssueCategoryRetriever issueCategoryRetriever
+        IssueCategoryRetriever issueCategoryRetriever,
+        AzureWorkItemQueryService workItemQueryService
     ) {
         super(channelKey, commenter, callbackInfoCreator);
         this.gson = gson;
@@ -67,14 +76,26 @@ public class AzureBoardsIssueCreator extends IssueTrackerIssueCreator<Integer> {
         this.issuePropertiesManager = issuePropertiesManager;
         this.exceptionMessageImprover = exceptionMessageImprover;
         this.issueCategoryRetriever = issueCategoryRetriever;
+        this.workItemQueryService = workItemQueryService;
     }
 
     @Override
     protected ExistingIssueDetails<Integer> createIssueAndExtractDetails(IssueCreationModel alertIssueCreationModel) throws AlertException {
+        Optional<ExistingIssueDetails<Integer>> existingIssue = doesIssueExist(alertIssueCreationModel);
+
+        if (existingIssue.isEmpty()) {
+            return existingIssue.get();
+        }
+        ExistingIssueDetails<Integer> existingIssueDetails;
         WorkItemRequest workItemCreationRequest = createWorkItemCreationRequest(alertIssueCreationModel);
         try {
-            WorkItemResponseModel workItem = workItemService.createWorkItem(organizationName, distributionDetails.getProjectNameOrId(), distributionDetails.getWorkItemType(), workItemCreationRequest);
-            return extractIssueDetails(workItem, alertIssueCreationModel);
+            WorkItemResponseModel workItem = workItemService.createWorkItem(
+                organizationName,
+                distributionDetails.getProjectNameOrId(),
+                distributionDetails.getWorkItemType(),
+                workItemCreationRequest
+            );
+            existingIssueDetails = extractIssueDetails(workItem, alertIssueCreationModel);
         } catch (HttpServiceException e) {
             Optional<String> improvedExceptionMessage = exceptionMessageImprover.extractImprovedMessage(e);
             if (improvedExceptionMessage.isPresent()) {
@@ -82,12 +103,37 @@ public class AzureBoardsIssueCreator extends IssueTrackerIssueCreator<Integer> {
             }
             throw new AlertException("Failed to create a work item in Azure Boards", e);
         }
+
+        return existingIssueDetails;
     }
 
     @Override
     protected void assignAlertSearchProperties(ExistingIssueDetails<Integer> createdIssueDetails, ProjectIssueModel alertIssueSource) {
         // Although we can make this request here, it is more efficient to do this while creating the issue.
         // See the note in the method that creates the WorkItemRequest for more details.
+    }
+
+    protected Optional<ExistingIssueDetails<Integer>> doesIssueExist(IssueCreationModel alertIssueCreationModel) {
+        String query = alertIssueCreationModel.getQueryString().orElse(null);
+        if (StringUtils.isBlank(query)) {
+            return Optional.empty();
+        }
+        Optional<ExistingIssueDetails<Integer>> existingIssueDetails = Optional.empty();
+        String projectNameOrId = distributionDetails.getProjectNameOrId();
+        try {
+            Optional<WorkItemReferenceModel> workItemReference = workItemQueryService.queryForWorkItems(organizationName, projectNameOrId, query)
+                .getWorkItems().stream()
+                .findFirst();
+            if (workItemReference.isPresent()) {
+                WorkItemResponseModel workItemResponseModel = workItemService.getWorkItem(organizationName, projectNameOrId, workItemReference.get().getId());
+                existingIssueDetails = Optional.ofNullable(extractIssueDetails(workItemResponseModel, alertIssueCreationModel));
+            }
+        } catch (HttpServiceException ex) {
+            logger.error("Query executed: {}", query);
+            logger.error("Couldn't execute query to see if issue exists.", ex);
+        }
+
+        return existingIssueDetails;
     }
 
     private WorkItemRequest createWorkItemCreationRequest(IssueCreationModel alertIssueCreationModel) {

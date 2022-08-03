@@ -27,10 +27,12 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerMessageSenderFactory;
+import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerQueryExecutor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.synopsys.integration.jira.common.rest.service.IssuePropertyService;
 import com.synopsys.integration.jira.common.server.service.FieldService;
+import com.synopsys.integration.jira.common.server.service.IssueSearchService;
 import com.synopsys.integration.jira.common.server.service.IssueService;
 import com.synopsys.integration.jira.common.server.service.JiraServerServiceFactory;
 import com.synopsys.integration.jira.common.server.service.ProjectService;
@@ -68,8 +70,10 @@ public class JiraServerTransitionEventHandler implements IssueTrackerTransitionE
                 // Jira Services
                 IssueService issueService = jiraServerServiceFactory.createIssueService();
                 IssuePropertyService issuePropertyService = jiraServerServiceFactory.createIssuePropertyService();
+                IssueSearchService issueSearchService = jiraServerServiceFactory.createIssueSearchService();
 
                 // Common Helpers
+                JiraServerQueryExecutor jiraServerQueryExecutor = new JiraServerQueryExecutor(issueSearchService);
                 JiraIssueAlertPropertiesManager issuePropertiesManager = new JiraIssueAlertPropertiesManager(gson, issuePropertyService);
 
                 ProjectService projectService = jiraServerServiceFactory.createProjectService();
@@ -85,7 +89,8 @@ public class JiraServerTransitionEventHandler implements IssueTrackerTransitionE
                     projectService,
                     issueCreationRequestCreator,
                     issuePropertiesManager,
-                    jiraErrorMessageUtility
+                    jiraErrorMessageUtility,
+                    jiraServerQueryExecutor
                 );
                 IssueTransitionModel<String> transitionModel = event.getTransitionModel();
                 messageSender.sendMessage(transitionModel);

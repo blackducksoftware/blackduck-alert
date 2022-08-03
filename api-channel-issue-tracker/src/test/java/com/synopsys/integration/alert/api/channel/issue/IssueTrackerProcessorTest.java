@@ -28,14 +28,14 @@ class IssueTrackerProcessorTest {
         Mockito.doAnswer(invocation -> {
             messageCounter.incrementAndGet();
             return null;
-        }).when(sender).sendAsyncMessages(Mockito.any());
+        }).when(sender).sendMessages(Mockito.any());
 
         IssueTrackerProcessor<String> processor = new IssueTrackerProcessor<>(extractor, sender);
 
         ProjectMessage projectMessage = Mockito.mock(ProjectMessage.class);
         List<ProjectMessage> projectMessages = List.of(projectMessage, projectMessage, projectMessage);
         ProviderMessageHolder providerMessageHolder = new ProviderMessageHolder(projectMessages, List.of());
-        IssueTrackerResponse<String> issueTrackerResponse = processor.processMessagesAsync(providerMessageHolder, "jobName");
+        IssueTrackerResponse<String> issueTrackerResponse = processor.processMessages(providerMessageHolder, "jobName");
         assertEquals("Success", issueTrackerResponse.getStatusMessage());
         assertEquals(1 + projectMessages.size(), messageCounter.get());
     }

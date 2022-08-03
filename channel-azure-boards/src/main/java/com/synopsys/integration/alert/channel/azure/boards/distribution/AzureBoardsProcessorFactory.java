@@ -52,7 +52,7 @@ import com.synopsys.integration.rest.proxy.ProxyInfo;
 @Component
 public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory<AzureBoardsJobDetailsModel, Integer> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    
+
     private final Gson gson;
     private final AzureBoardsMessageFormatter formatter;
     private final AzureBoardsPropertiesFactory azureBoardsPropertiesFactory;
@@ -143,7 +143,8 @@ public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory
             workItemTypeStateService,
             workItemCommentService,
             organizationName,
-            distributionDetails
+            distributionDetails,
+            workItemQueryService
         );
 
         return new IssueTrackerProcessor<>(extractor, messageSender);

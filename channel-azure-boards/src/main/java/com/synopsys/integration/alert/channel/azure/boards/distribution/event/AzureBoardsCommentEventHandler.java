@@ -31,6 +31,7 @@ import com.synopsys.integration.azure.boards.common.http.AzureHttpRequestCreator
 import com.synopsys.integration.azure.boards.common.http.AzureHttpRequestCreatorFactory;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.service.comment.AzureWorkItemCommentService;
+import com.synopsys.integration.azure.boards.common.service.query.AzureWorkItemQueryService;
 import com.synopsys.integration.azure.boards.common.service.state.AzureWorkItemTypeStateService;
 import com.synopsys.integration.azure.boards.common.service.workitem.AzureWorkItemService;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
@@ -78,7 +79,7 @@ public class AzureBoardsCommentEventHandler implements IssueTrackerCommentEventH
                 // Common Azure Boards Services
                 AzureApiVersionAppender apiVersionAppender = new AzureApiVersionAppender();
                 AzureWorkItemService workItemService = new AzureWorkItemService(azureHttpService, azureHttpRequestCreator);
-
+                AzureWorkItemQueryService workItemQueryService = new AzureWorkItemQueryService(azureHttpService, apiVersionAppender);
                 // Message Sender Requirements
                 AzureWorkItemTypeStateService workItemTypeStateService = new AzureWorkItemTypeStateService(azureHttpService, apiVersionAppender);
                 AzureWorkItemCommentService workItemCommentService = new AzureWorkItemCommentService(azureHttpService, apiVersionAppender);
@@ -88,7 +89,8 @@ public class AzureBoardsCommentEventHandler implements IssueTrackerCommentEventH
                     workItemTypeStateService,
                     workItemCommentService,
                     organizationName,
-                    distributionDetails
+                    distributionDetails,
+                    workItemQueryService
                 );
                 IssueCommentModel<Integer> commentModel = event.getCommentModel();
                 messageSender.sendMessage(commentModel);

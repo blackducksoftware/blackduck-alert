@@ -95,7 +95,8 @@ public class AzureBoardsCreateIssueEventHandler implements IssueTrackerCreateIss
                     workItemTypeStateService,
                     workItemCommentService,
                     organizationName,
-                    distributionDetails
+                    distributionDetails,
+                    workItemQueryService
                 );
                 IssueCreationModel creationModel = event.getCreationModel();
                 String query = creationModel.getQueryString().orElse(null);

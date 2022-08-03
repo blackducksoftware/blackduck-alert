@@ -41,6 +41,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.JiraS
 import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
 import com.synopsys.integration.jira.common.rest.service.IssuePropertyService;
 import com.synopsys.integration.jira.common.server.service.FieldService;
+import com.synopsys.integration.jira.common.server.service.IssueSearchService;
 import com.synopsys.integration.jira.common.server.service.IssueService;
 import com.synopsys.integration.jira.common.server.service.JiraServerServiceFactory;
 import com.synopsys.integration.jira.common.server.service.ProjectService;
@@ -82,6 +83,7 @@ public class JiraServerMessageSenderFactory implements IssueTrackerMessageSender
         // Jira Services
         IssueService issueService = jiraServerServiceFactory.createIssueService();
         IssuePropertyService issuePropertyService = jiraServerServiceFactory.createIssuePropertyService();
+        IssueSearchService issueSearchService = jiraServerServiceFactory.createIssueSearchService();
 
         // Common Helpers
         JiraIssueAlertPropertiesManager issuePropertiesManager = new JiraIssueAlertPropertiesManager(gson, issuePropertyService);
@@ -89,11 +91,20 @@ public class JiraServerMessageSenderFactory implements IssueTrackerMessageSender
         ProjectService projectService = jiraServerServiceFactory.createProjectService();
         FieldService fieldService = jiraServerServiceFactory.createFieldService();
 
+        JiraServerQueryExecutor jiraServerQueryExecutor = new JiraServerQueryExecutor(issueSearchService);
         JiraCustomFieldResolver customFieldResolver = new JiraCustomFieldResolver(fieldService::getUserVisibleFields);
         JiraIssueCreationRequestCreator issueCreationRequestCreator = new JiraIssueCreationRequestCreator(customFieldResolver);
         JiraErrorMessageUtility jiraErrorMessageUtility = new JiraErrorMessageUtility(gson, customFieldResolver);
 
-        return createMessageSender(issueService, distributionDetails, projectService, issueCreationRequestCreator, issuePropertiesManager, jiraErrorMessageUtility);
+        return createMessageSender(
+            issueService,
+            distributionDetails,
+            projectService,
+            issueCreationRequestCreator,
+            issuePropertiesManager,
+            jiraErrorMessageUtility,
+            jiraServerQueryExecutor
+        );
     }
 
     public IssueTrackerMessageSender<String> createMessageSender(
@@ -102,7 +113,8 @@ public class JiraServerMessageSenderFactory implements IssueTrackerMessageSender
         ProjectService projectService,
         JiraIssueCreationRequestCreator issueCreationRequestCreator,
         JiraIssueAlertPropertiesManager issuePropertiesManager,
-        JiraErrorMessageUtility jiraErrorMessageUtility
+        JiraErrorMessageUtility jiraErrorMessageUtility,
+        JiraServerQueryExecutor jiraServerQueryExecutor
     ) {
         IssueTrackerIssueResponseCreator issueResponseCreator = new IssueTrackerIssueResponseCreator(callbackInfoCreator);
 
@@ -119,7 +131,8 @@ public class JiraServerMessageSenderFactory implements IssueTrackerMessageSender
             issueCreationRequestCreator,
             issuePropertiesManager,
             jiraErrorMessageUtility,
-            issueCategoryRetriever
+            issueCategoryRetriever,
+            jiraServerQueryExecutor
         );
         UUID jobId = distributionDetails.getJobId();
         IssueTrackerCommentEventGenerator<String> commentEventGenerator = new JiraServerCommentGenerator(channelKey, jobId);

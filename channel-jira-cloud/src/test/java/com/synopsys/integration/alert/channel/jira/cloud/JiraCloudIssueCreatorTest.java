@@ -138,7 +138,8 @@ public class JiraCloudIssueCreatorTest {
                 jiraIssueCreationRequestCreator,
                 null,
                 null,
-                issueCategoryRetriever
+                issueCategoryRetriever,
+                null
             );
         }
 

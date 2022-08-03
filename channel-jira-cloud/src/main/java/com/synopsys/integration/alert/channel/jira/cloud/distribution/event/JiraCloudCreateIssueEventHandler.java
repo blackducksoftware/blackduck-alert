@@ -78,7 +78,7 @@ public class JiraCloudCreateIssueEventHandler implements IssueTrackerCreateIssue
 
                 // Common Helpers
                 JiraIssueAlertPropertiesManager issuePropertiesManager = new JiraIssueAlertPropertiesManager(gson, issuePropertyService);
-                JiraCloudQueryExecutor jiraServerQueryExecutor = new JiraCloudQueryExecutor(issueSearchService);
+                JiraCloudQueryExecutor jiraCloudQueryExecutor = new JiraCloudQueryExecutor(issueSearchService);
 
                 ProjectService projectService = jiraCloudServiceFactory.createProjectService();
                 FieldService fieldService = jiraCloudServiceFactory.createFieldService();
@@ -93,11 +93,12 @@ public class JiraCloudCreateIssueEventHandler implements IssueTrackerCreateIssue
                     projectService,
                     issueCreationRequestCreator,
                     issuePropertiesManager,
-                    jiraErrorMessageUtility
+                    jiraErrorMessageUtility,
+                    jiraCloudQueryExecutor
                 );
 
                 String jqlQuery = creationModel.getQueryString().orElse(null);
-                boolean issueDoesNotExist = checkIfIssueDoesNotExist(jiraServerQueryExecutor, jqlQuery);
+                boolean issueDoesNotExist = checkIfIssueDoesNotExist(jiraCloudQueryExecutor, jqlQuery);
                 if (issueDoesNotExist) {
                     messageSender.sendMessage(creationModel);
                 }

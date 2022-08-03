@@ -121,7 +121,15 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
         JiraIssueCreationRequestCreator issueCreationRequestCreator = new JiraIssueCreationRequestCreator(customFieldResolver);
         JiraErrorMessageUtility jiraErrorMessageUtility = new JiraErrorMessageUtility(gson, customFieldResolver);
 
-        IssueTrackerMessageSender<String> messageSender = messageSenderFactory.createMessageSender(issueService, distributionDetails, projectService, issueCreationRequestCreator, issuePropertiesManager, jiraErrorMessageUtility);
+        IssueTrackerMessageSender<String> messageSender = messageSenderFactory.createMessageSender(
+            issueService,
+            distributionDetails,
+            projectService,
+            issueCreationRequestCreator,
+            issuePropertiesManager,
+            jiraErrorMessageUtility,
+            jiraCloudQueryExecutor
+        );
 
         return new IssueTrackerProcessor<>(extractor, messageSender);
     }
