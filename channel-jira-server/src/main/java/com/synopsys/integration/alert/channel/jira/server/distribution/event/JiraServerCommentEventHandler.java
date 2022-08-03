@@ -27,10 +27,12 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerMessageSenderFactory;
+import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerQueryExecutor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.synopsys.integration.jira.common.rest.service.IssuePropertyService;
 import com.synopsys.integration.jira.common.server.service.FieldService;
+import com.synopsys.integration.jira.common.server.service.IssueSearchService;
 import com.synopsys.integration.jira.common.server.service.IssueService;
 import com.synopsys.integration.jira.common.server.service.JiraServerServiceFactory;
 import com.synopsys.integration.jira.common.server.service.ProjectService;
@@ -68,6 +70,7 @@ public class JiraServerCommentEventHandler implements IssueTrackerCommentEventHa
                 // Jira Services
                 IssueService issueService = jiraServerServiceFactory.createIssueService();
                 IssuePropertyService issuePropertyService = jiraServerServiceFactory.createIssuePropertyService();
+                IssueSearchService issueSearchService = jiraServerServiceFactory.createIssueSearchService();
 
                 // Common Helpers
                 JiraIssueAlertPropertiesManager issuePropertiesManager = new JiraIssueAlertPropertiesManager(gson, issuePropertyService);
@@ -75,6 +78,7 @@ public class JiraServerCommentEventHandler implements IssueTrackerCommentEventHa
                 ProjectService projectService = jiraServerServiceFactory.createProjectService();
                 FieldService fieldService = jiraServerServiceFactory.createFieldService();
 
+                JiraServerQueryExecutor jiraServerQueryExecutor = new JiraServerQueryExecutor(issueSearchService);
                 JiraCustomFieldResolver customFieldResolver = new JiraCustomFieldResolver(fieldService::getUserVisibleFields);
                 JiraIssueCreationRequestCreator issueCreationRequestCreator = new JiraIssueCreationRequestCreator(customFieldResolver);
                 JiraErrorMessageUtility jiraErrorMessageUtility = new JiraErrorMessageUtility(gson, customFieldResolver);
@@ -85,7 +89,8 @@ public class JiraServerCommentEventHandler implements IssueTrackerCommentEventHa
                     projectService,
                     issueCreationRequestCreator,
                     issuePropertiesManager,
-                    jiraErrorMessageUtility
+                    jiraErrorMessageUtility,
+                    jiraServerQueryExecutor
                 );
                 IssueCommentModel<String> commentModel = event.getCommentModel();
                 messageSender.sendMessage(commentModel);

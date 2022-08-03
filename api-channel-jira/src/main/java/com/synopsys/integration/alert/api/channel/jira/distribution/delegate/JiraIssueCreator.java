@@ -70,30 +70,47 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
 
     @Override
     protected final ExistingIssueDetails<String> createIssueAndExtractDetails(IssueCreationModel alertIssueCreationModel) throws AlertException {
-        MessageReplacementValues replacementValues = alertIssueCreationModel.getSource()
-                                                         .map(this::createCustomFieldReplacementValues)
-                                                         .orElse(new MessageReplacementValues.Builder(alertIssueCreationModel.getProvider().getLabel(), MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE).build());
-        T creationRequest = createIssueCreationRequest(alertIssueCreationModel, replacementValues);
-        try {
-            IssueCreationResponseModel issueCreationResponseModel = createIssue(creationRequest);
-            IssueResponseModel createdIssue = fetchIssue(issueCreationResponseModel.getKey());
-            IssueFieldsComponent createdIssueFields = createdIssue.getFields();
+        Optional<ExistingIssueDetails<String>> existingIssue = doesIssueExist(alertIssueCreationModel);
+        ExistingIssueDetails<String> existingIssueDetails;
+        if (existingIssue.isEmpty()) {
+            MessageReplacementValues replacementValues = alertIssueCreationModel.getSource()
+                .map(this::createCustomFieldReplacementValues)
+                .orElse(new MessageReplacementValues.Builder(
+                    alertIssueCreationModel.getProvider().getLabel(),
+                    MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE
+                ).build());
+            T creationRequest = createIssueCreationRequest(alertIssueCreationModel, replacementValues);
+            try {
+                IssueCreationResponseModel issueCreationResponseModel = createIssue(creationRequest);
+                IssueResponseModel createdIssue = fetchIssue(issueCreationResponseModel.getKey());
+                IssueFieldsComponent createdIssueFields = createdIssue.getFields();
 
-            String issueUILink = JiraCallbackUtils.createUILink(createdIssue);
+                String issueUILink = JiraCallbackUtils.createUILink(createdIssue);
 
-            IssueCategory issueCategory = alertIssueCreationModel.getSource()
-                                              .map(issueCategoryRetriever::retrieveIssueCategoryFromProjectIssueModel)
-                                              .orElse(IssueCategory.BOM);
+                IssueCategory issueCategory = alertIssueCreationModel.getSource()
+                    .map(issueCategoryRetriever::retrieveIssueCategoryFromProjectIssueModel)
+                    .orElse(IssueCategory.BOM);
 
-            return new ExistingIssueDetails<>(createdIssue.getId(), createdIssue.getKey(), createdIssueFields.getSummary(), issueUILink, IssueStatus.RESOLVABLE, issueCategory);
-        } catch (IntegrationRestException restException) {
-            throw jiraErrorMessageUtility.improveRestException(restException, issueCreatorDescriptorKey, extractReporter(creationRequest));
-        } catch (JiraPreconditionNotMetException jiraException) {
-            String message = StringUtils.join(FAILED_TO_CREATE_ISSUE_MESSAGE, jiraException.getMessage(), " ");
-            throw new AlertException(message, jiraException);
-        } catch (IntegrationException intException) {
-            throw new AlertException(FAILED_TO_CREATE_ISSUE_MESSAGE, intException);
+                existingIssueDetails = new ExistingIssueDetails<>(
+                    createdIssue.getId(),
+                    createdIssue.getKey(),
+                    createdIssueFields.getSummary(),
+                    issueUILink,
+                    IssueStatus.RESOLVABLE,
+                    issueCategory
+                );
+            } catch (IntegrationRestException restException) {
+                throw jiraErrorMessageUtility.improveRestException(restException, issueCreatorDescriptorKey, extractReporter(creationRequest));
+            } catch (JiraPreconditionNotMetException jiraException) {
+                String message = StringUtils.join(FAILED_TO_CREATE_ISSUE_MESSAGE, jiraException.getMessage(), " ");
+                throw new AlertException(message, jiraException);
+            } catch (IntegrationException intException) {
+                throw new AlertException(FAILED_TO_CREATE_ISSUE_MESSAGE, intException);
+            }
+        } else {
+            existingIssueDetails = existingIssue.get();
         }
+        return existingIssueDetails;
     }
 
     @Override
@@ -101,6 +118,8 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
         JiraIssueSearchProperties searchProperties = createSearchProperties(alertIssueSource);
         issuePropertiesManager.assignIssueProperties(createdIssueDetails.getIssueKey(), searchProperties);
     }
+
+    protected abstract Optional<ExistingIssueDetails<String>> doesIssueExist(IssueCreationModel alertIssueCreationModel);
 
     protected abstract T createIssueCreationRequest(IssueCreationModel alertIssueCreationModel, MessageReplacementValues replacementValues) throws AlertException;
 

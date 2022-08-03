@@ -95,7 +95,8 @@ public class JiraServerCreateIssueEventHandler implements IssueTrackerCreateIssu
                     projectService,
                     issueCreationRequestCreator,
                     issuePropertiesManager,
-                    jiraErrorMessageUtility
+                    jiraErrorMessageUtility,
+                    jiraServerQueryExecutor
                 );
 
                 String jqlQuery = creationModel.getQueryString().orElse(null);

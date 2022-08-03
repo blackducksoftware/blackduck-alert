@@ -8,11 +8,13 @@
 package com.synopsys.integration.alert.channel.jira.cloud.distribution.delegate;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCallbackInfoCreator;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
+import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraErrorMessageUtility;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraIssueCreationRequestCreator;
@@ -65,6 +67,11 @@ public class JiraCloudIssueCreator extends JiraIssueCreator<IssueCreationRequest
         this.issueService = issueService;
         this.projectService = projectService;
         this.jiraIssueCreationRequestCreator = jiraIssueCreationRequestCreator;
+    }
+
+    @Override
+    protected Optional<ExistingIssueDetails<String>> doesIssueExist(IssueCreationModel alertIssueCreationModel) {
+        return Optional.empty();
     }
 
     @Override

@@ -26,13 +26,13 @@ public class IssueTrackerProcessor<T extends Serializable> {
         this.messageSender = messageSender;
     }
 
-    public final IssueTrackerResponse<T> processMessagesAsync(ProviderMessageHolder messages, String jobName) throws AlertException {
+    public final IssueTrackerResponse<T> processMessages(ProviderMessageHolder messages, String jobName) throws AlertException {
         IssueTrackerModelHolder<T> simpleMessageHolder = modelExtractor.extractSimpleMessageIssueModels(messages.getSimpleMessages(), jobName);
-        messageSender.sendAsyncMessages(simpleMessageHolder);
+        messageSender.sendMessages(simpleMessageHolder);
 
         for (ProjectMessage projectMessage : messages.getProjectMessages()) {
             IssueTrackerModelHolder<T> projectMessageHolder = modelExtractor.extractProjectMessageIssueModels(projectMessage, jobName);
-            messageSender.sendAsyncMessages(projectMessageHolder);
+            messageSender.sendMessages(projectMessageHolder);
         }
         return new IssueTrackerResponse<>("Success", List.of());
     }

@@ -87,7 +87,7 @@ class JiraServerExternalConnectionTest {
         );
         IssueTrackerProcessor<String> processor = jiraServerProcessorFactory.createProcessor(createDistributionDetails());
 
-        IssueTrackerResponse<String> response = processor.processMessagesAsync(createMessage(), "jobName");
+        IssueTrackerResponse<String> response = processor.processMessages(createMessage(), "jobName");
 
         assertEquals("Success", response.getStatusMessage());
     }
