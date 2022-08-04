@@ -15,10 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCallbackInfoCreator;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
-import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
-import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueCategory;
-import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueStatus;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraErrorMessageUtility;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraIssueCreationRequestCreator;
 import com.synopsys.integration.alert.api.channel.jira.distribution.custom.MessageReplacementValues;
@@ -26,7 +23,6 @@ import com.synopsys.integration.alert.api.channel.jira.distribution.custom.Messa
 import com.synopsys.integration.alert.api.channel.jira.distribution.delegate.JiraIssueCreator;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraSearcherResponseModel;
-import com.synopsys.integration.alert.api.channel.jira.util.JiraCallbackUtils;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.channel.jira.cloud.distribution.JiraCloudQueryExecutor;
@@ -150,21 +146,6 @@ public class JiraCloudIssueCreator extends JiraIssueCreator<IssueCreationRequest
             .filter(project -> jiraProjectName.equals(project.getName()) || jiraProjectName.equals(project.getKey()))
             .findAny()
             .orElseThrow(() -> new AlertException(String.format("Unable to find project matching '%s'", jiraProjectName)));
-    }
-
-    private ExistingIssueDetails<String> convertSearchResponse(IssueCreationModel alertIssueCreationModel, JiraSearcherResponseModel searchResponse) {
-        IssueCategory issueCategory = alertIssueCreationModel.getSource()
-            .map(issueCategoryRetriever::retrieveIssueCategoryFromProjectIssueModel)
-            .orElse(IssueCategory.BOM);
-        String uiLink = JiraCallbackUtils.createUILink(searchResponse);
-        return new ExistingIssueDetails<>(
-            searchResponse.getIssueId(),
-            searchResponse.getIssueKey(),
-            searchResponse.getSummaryField(),
-            uiLink,
-            IssueStatus.RESOLVABLE,
-            issueCategory
-        );
     }
 
 }
