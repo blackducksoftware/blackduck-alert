@@ -47,7 +47,6 @@ public class JiraServerProcessorFactory implements IssueTrackerProcessorFactory<
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final Gson gson;
-    private final JiraServerChannelLock jiraServerChannelLock;
     private final JiraMessageFormatter jiraMessageFormatter;
     private final JiraServerPropertiesFactory jiraServerPropertiesFactory;
     private final JiraServerMessageSenderFactory jiraServerMessageSenderFactory;
@@ -57,7 +56,6 @@ public class JiraServerProcessorFactory implements IssueTrackerProcessorFactory<
     @Autowired
     public JiraServerProcessorFactory(
         Gson gson,
-        JiraServerChannelLock jiraServerChannelLock,
         JiraMessageFormatter jiraMessageFormatter,
         JiraServerPropertiesFactory jiraServerPropertiesFactory,
         JiraServerMessageSenderFactory jiraServerMessageSenderFactory,
@@ -65,7 +63,6 @@ public class JiraServerProcessorFactory implements IssueTrackerProcessorFactory<
         IssueCategoryRetriever issueCategoryRetriever
     ) {
         this.gson = gson;
-        this.jiraServerChannelLock = jiraServerChannelLock;
         this.jiraMessageFormatter = jiraMessageFormatter;
         this.jiraServerPropertiesFactory = jiraServerPropertiesFactory;
         this.jiraServerMessageSenderFactory = jiraServerMessageSenderFactory;
@@ -99,8 +96,8 @@ public class JiraServerProcessorFactory implements IssueTrackerProcessorFactory<
             issueCategoryRetriever,
             modelTransformer
         );
-        JiraServerQueryExecutor jiraCloudQueryExecutor = new JiraServerQueryExecutor(issueSearchService);
-        IssueTrackerSearcher<String> jiraSearcher = jiraSearcherFactory.createJiraSearcher(distributionDetails.getProjectNameOrKey(), jiraCloudQueryExecutor);
+        JiraServerQueryExecutor jiraServerQueryExecutor = new JiraServerQueryExecutor(issueSearchService);
+        IssueTrackerSearcher<String> jiraSearcher = jiraSearcherFactory.createJiraSearcher(distributionDetails.getProjectNameOrKey(), jiraServerQueryExecutor);
 
         IssueTrackerModelExtractor<String> extractor = new IssueTrackerModelExtractor<>(jiraMessageFormatter, jiraSearcher);
 
@@ -111,9 +108,17 @@ public class JiraServerProcessorFactory implements IssueTrackerProcessorFactory<
         JiraIssueCreationRequestCreator issueCreationRequestCreator = new JiraIssueCreationRequestCreator(customFieldResolver);
         JiraErrorMessageUtility jiraErrorMessageUtility = new JiraErrorMessageUtility(gson, customFieldResolver);
 
-        IssueTrackerMessageSender<String> messageSender = jiraServerMessageSenderFactory.createMessageSender(issueService, distributionDetails, projectService, issueCreationRequestCreator, issuePropertiesManager, jiraErrorMessageUtility);
+        IssueTrackerMessageSender<String> messageSender = jiraServerMessageSenderFactory.createMessageSender(
+            issueService,
+            distributionDetails,
+            projectService,
+            issueCreationRequestCreator,
+            issuePropertiesManager,
+            jiraErrorMessageUtility,
+            jiraServerQueryExecutor
+        );
 
-        return new IssueTrackerProcessor<>(jiraServerChannelLock, extractor, messageSender);
+        return new IssueTrackerProcessor<>(extractor, messageSender);
     }
 
     private void checkIfAlertPluginIsInstalled(PluginManagerService jiraAppService) throws IssueTrackerException {

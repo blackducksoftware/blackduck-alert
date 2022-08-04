@@ -53,7 +53,7 @@ class IssueTrackerSearcherTest {
         ProjectIssueSearchResult<String> projectIssueSearchResult = new ProjectIssueSearchResult<>(EXISTING_ISSUE_DETAILS, projectIssueModel);
 
         ProjectIssueFinder<String> projectIssueFinder = Mockito.mock(ProjectIssueFinder.class);
-        Mockito.when(projectIssueFinder.findProjectIssues(PROVIDER_DETAILS, PROJECT_ITEM)).thenReturn(List.of(projectIssueSearchResult));
+        Mockito.when(projectIssueFinder.findProjectIssues(PROVIDER_DETAILS, PROJECT_ITEM)).thenReturn(new IssueTrackerSearchResult<>("", List.of(projectIssueSearchResult)));
 
         IssueTrackerSearcher<String> searcher = new IssueTrackerSearcher<>(projectIssueFinder, null, null, null, modelTransformer);
         List<ActionableIssueSearchResult<String>> foundIssues = searcher.findIssues(projectMessage);
@@ -69,7 +69,7 @@ class IssueTrackerSearcherTest {
 
         ProjectVersionIssueFinder<String> projectVersionIssueFinder = Mockito.mock(ProjectVersionIssueFinder.class);
         Mockito.when(projectVersionIssueFinder.findProjectVersionIssues(PROVIDER_DETAILS, PROJECT_ITEM, PROJECT_VERSION_ITEM))
-            .thenReturn(List.of(projectIssueSearchResult));
+            .thenReturn(new IssueTrackerSearchResult<>("", List.of(projectIssueSearchResult)));
 
         IssueTrackerSearcher<String> searcher = new IssueTrackerSearcher<>(null, projectVersionIssueFinder, null, null, modelTransformer);
         List<ActionableIssueSearchResult<String>> foundIssues = searcher.findIssues(projectMessage);
@@ -86,7 +86,7 @@ class IssueTrackerSearcherTest {
 
         ProjectVersionComponentIssueFinder<String> componentIssueFinder = Mockito.mock(ProjectVersionComponentIssueFinder.class);
         Mockito.when(componentIssueFinder.findIssuesByComponent(PROVIDER_DETAILS, PROJECT_ITEM, PROJECT_VERSION_ITEM, bomComponentDetails))
-            .thenReturn(List.of(projectIssueSearchResult));
+            .thenReturn(new IssueTrackerSearchResult<>("", List.of(projectIssueSearchResult)));
 
         IssueTrackerSearcher<String> searcher = new IssueTrackerSearcher<>(null, null, componentIssueFinder, null, modelTransformer);
         List<ActionableIssueSearchResult<String>> foundIssues = searcher.findIssues(projectMessage);
@@ -111,8 +111,10 @@ class IssueTrackerSearcherTest {
         Mockito.when(projectIssueModel3.getVulnerabilityDetails()).thenReturn(Optional.of(vulnerabilityDetails));
 
         ExactIssueFinder<String> exactIssueFinder = Mockito.mock(ExactIssueFinder.class);
-        Mockito.when(exactIssueFinder.findExistingIssuesByProjectIssueModel(projectIssueModel1)).thenReturn(List.of(issue1));
-        Mockito.when(exactIssueFinder.findExistingIssuesByProjectIssueModel(projectIssueModel2)).thenReturn(List.of());
+        Mockito.when(exactIssueFinder.findExistingIssuesByProjectIssueModel(projectIssueModel1))
+            .thenReturn(new IssueTrackerSearchResult<>("", List.of(new ProjectIssueSearchResult<>(issue1, projectIssueModel1))));
+        Mockito.when(exactIssueFinder.findExistingIssuesByProjectIssueModel(projectIssueModel2)).thenReturn(new IssueTrackerSearchResult<>("", List.of()));
+        Mockito.when(exactIssueFinder.findExistingIssuesByProjectIssueModel(projectIssueModel3)).thenReturn(new IssueTrackerSearchResult<>("", List.of()));
 
         ProjectMessageToIssueModelTransformer mockModelTransformer = Mockito.mock(ProjectMessageToIssueModelTransformer.class);
         Mockito.when(mockModelTransformer.convertToIssueModels(projectMessage)).thenReturn(List.of(projectIssueModel1, projectIssueModel2, projectIssueModel3));

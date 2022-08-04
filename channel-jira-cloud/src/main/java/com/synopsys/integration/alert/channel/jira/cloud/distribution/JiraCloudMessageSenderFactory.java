@@ -17,22 +17,30 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCallbackInfoCreator;
 import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
+import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerCommentEventGenerator;
+import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerCreationEventGenerator;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueResponseCreator;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSenderFactory;
+import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerTransitionEventGenerator;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraErrorMessageUtility;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraIssueCreationRequestCreator;
 import com.synopsys.integration.alert.api.channel.jira.distribution.custom.JiraCustomFieldResolver;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudProperties;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudPropertiesFactory;
+import com.synopsys.integration.alert.channel.jira.cloud.distribution.delegate.JiraCloudCommentGenerator;
+import com.synopsys.integration.alert.channel.jira.cloud.distribution.delegate.JiraCloudCreateEventGenerator;
 import com.synopsys.integration.alert.channel.jira.cloud.distribution.delegate.JiraCloudIssueCommenter;
 import com.synopsys.integration.alert.channel.jira.cloud.distribution.delegate.JiraCloudIssueCreator;
 import com.synopsys.integration.alert.channel.jira.cloud.distribution.delegate.JiraCloudIssueTransitioner;
+import com.synopsys.integration.alert.channel.jira.cloud.distribution.delegate.JiraCloudTransitionGenerator;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.JiraCloudChannelKey;
 import com.synopsys.integration.jira.common.cloud.service.FieldService;
+import com.synopsys.integration.jira.common.cloud.service.IssueSearchService;
 import com.synopsys.integration.jira.common.cloud.service.IssueService;
 import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
 import com.synopsys.integration.jira.common.cloud.service.ProjectService;
@@ -47,6 +55,7 @@ public class JiraCloudMessageSenderFactory implements IssueTrackerMessageSenderF
     private final JiraCloudPropertiesFactory jiraCloudPropertiesFactory;
     private final IssueTrackerCallbackInfoCreator callbackInfoCreator;
     private final IssueCategoryRetriever issueCategoryRetriever;
+    private final EventManager eventManager;
 
     @Autowired
     public JiraCloudMessageSenderFactory(
@@ -54,13 +63,15 @@ public class JiraCloudMessageSenderFactory implements IssueTrackerMessageSenderF
         JiraCloudChannelKey channelKey,
         JiraCloudPropertiesFactory jiraCloudPropertiesFactory,
         IssueTrackerCallbackInfoCreator callbackInfoCreator,
-        IssueCategoryRetriever issueCategoryRetriever
+        IssueCategoryRetriever issueCategoryRetriever,
+        EventManager eventManager
     ) {
         this.gson = gson;
         this.channelKey = channelKey;
         this.jiraCloudPropertiesFactory = jiraCloudPropertiesFactory;
         this.callbackInfoCreator = callbackInfoCreator;
         this.issueCategoryRetriever = issueCategoryRetriever;
+        this.eventManager = eventManager;
     }
 
     @Override
@@ -71,8 +82,9 @@ public class JiraCloudMessageSenderFactory implements IssueTrackerMessageSenderF
         // Jira Services
         IssueService issueService = jiraCloudServiceFactory.createIssueService();
         IssuePropertyService issuePropertyService = jiraCloudServiceFactory.createIssuePropertyService();
-
+        IssueSearchService issueSearchService = jiraCloudServiceFactory.createIssueSearchService();
         // Common Helpers
+        JiraCloudQueryExecutor jiraCloudQueryExecutor = new JiraCloudQueryExecutor(issueSearchService);
         JiraIssueAlertPropertiesManager issuePropertiesManager = new JiraIssueAlertPropertiesManager(gson, issuePropertyService);
 
         ProjectService projectService = jiraCloudServiceFactory.createProjectService();
@@ -82,7 +94,15 @@ public class JiraCloudMessageSenderFactory implements IssueTrackerMessageSenderF
         JiraIssueCreationRequestCreator issueCreationRequestCreator = new JiraIssueCreationRequestCreator(customFieldResolver);
         JiraErrorMessageUtility jiraErrorMessageUtility = new JiraErrorMessageUtility(gson, customFieldResolver);
 
-        return createMessageSender(issueService, distributionDetails, projectService, issueCreationRequestCreator, issuePropertiesManager, jiraErrorMessageUtility);
+        return createMessageSender(
+            issueService,
+            distributionDetails,
+            projectService,
+            issueCreationRequestCreator,
+            issuePropertiesManager,
+            jiraErrorMessageUtility,
+            jiraCloudQueryExecutor
+        );
     }
 
     public IssueTrackerMessageSender<String> createMessageSender(
@@ -91,7 +111,8 @@ public class JiraCloudMessageSenderFactory implements IssueTrackerMessageSenderF
         ProjectService projectService,
         JiraIssueCreationRequestCreator issueCreationRequestCreator,
         JiraIssueAlertPropertiesManager issuePropertiesManager,
-        JiraErrorMessageUtility jiraErrorMessageUtility
+        JiraErrorMessageUtility jiraErrorMessageUtility,
+        JiraCloudQueryExecutor jiraCloudQueryExecutor
     ) {
         // Jira Services
         IssueTrackerIssueResponseCreator issueResponseCreator = new IssueTrackerIssueResponseCreator(callbackInfoCreator);
@@ -109,10 +130,24 @@ public class JiraCloudMessageSenderFactory implements IssueTrackerMessageSenderF
             issueCreationRequestCreator,
             issuePropertiesManager,
             jiraErrorMessageUtility,
-            issueCategoryRetriever
+            issueCategoryRetriever,
+            jiraCloudQueryExecutor
+        );
+        UUID jobId = distributionDetails.getJobId();
+        IssueTrackerCommentEventGenerator<String> commentEventGenerator = new JiraCloudCommentGenerator(channelKey, jobId);
+        IssueTrackerCreationEventGenerator createEventGenerator = new JiraCloudCreateEventGenerator(channelKey, jobId);
+        IssueTrackerTransitionEventGenerator<String> transitionEventGenerator = new JiraCloudTransitionGenerator(channelKey, jobId);
+
+        return new IssueTrackerMessageSender<>(
+            issueCreator,
+            issueTransitioner,
+            issueCommenter,
+            createEventGenerator,
+            transitionEventGenerator,
+            commentEventGenerator,
+            eventManager
         );
 
-        return new IssueTrackerMessageSender<>(issueCreator, issueTransitioner, issueCommenter);
     }
 
 }

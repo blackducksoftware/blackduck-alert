@@ -151,7 +151,7 @@ public class EventListenerConfigurer implements RabbitListenerConfigurer {
         String destinationName = listener.getDestinationName();
         String listenerId = createListenerId(destinationName);
         initQueue(destinationName);
-        logger.debug("Registering JMS Listener: {}", listenerId);
+        logger.debug("Registering Listener: {}", listenerId);
         SimpleRabbitListenerEndpoint endpoint = new SimpleRabbitListenerEndpoint();
         endpoint.setId(listenerId);
         endpoint.setQueueNames(destinationName);

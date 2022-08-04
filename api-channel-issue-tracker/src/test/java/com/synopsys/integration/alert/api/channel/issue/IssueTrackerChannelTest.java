@@ -4,20 +4,31 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.Serializable;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.core.task.SyncTaskExecutor;
 
+import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.issue.convert.IssueTrackerMessageFormatter;
+import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCommentEvent;
+import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCreateIssueEvent;
+import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerTransitionIssueEvent;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerResponse;
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
+import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerCommentEventGenerator;
+import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerCreationEventGenerator;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueCommenter;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueCreator;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueTransitioner;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
+import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerTransitionEventGenerator;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
@@ -27,7 +38,7 @@ class IssueTrackerChannelTest {
     void distributeMessagesTest() throws AlertException {
         IssueTrackerModelExtractor<String> modelExtractor = new IssueTrackerModelExtractor<>(createFormatter(), null);
         IssueTrackerMessageSender<String> messageSender = createMessageSender();
-        IssueTrackerProcessor<String> processor = new IssueTrackerProcessor<>(new IssueTrackerChannelLock("channel_key_name"), modelExtractor, messageSender);
+        IssueTrackerProcessor<String> processor = new IssueTrackerProcessor<>(modelExtractor, messageSender);
 
         IssueTrackerProcessorFactory<DistributionJobDetailsModel, String> processorFactory = x -> processor;
         IssueTrackerResponsePostProcessor postProcessor = new IssueTrackerResponsePostProcessor() {
@@ -79,7 +90,16 @@ class IssueTrackerChannelTest {
             protected void assignAlertSearchProperties(ExistingIssueDetails<String> createdIssueDetails, ProjectIssueModel alertIssueSource) {
             }
         };
-        return new IssueTrackerMessageSender<>(creator, transitioner, commenter);
+
+        IssueTrackerCreationEventGenerator creationEventGenerator = model -> new IssueTrackerCreateIssueEvent("", UUID.randomUUID(), null);
+
+        IssueTrackerTransitionEventGenerator<String> transitionEventGenerator = model -> new IssueTrackerTransitionIssueEvent<>("", UUID.randomUUID(), null);
+
+        IssueTrackerCommentEventGenerator<String> commentEventGenerator = model -> new IssueTrackerCommentEvent<>("", UUID.randomUUID(), null);
+
+        RabbitTemplate rabbitTemplate = new RabbitTemplate();
+        EventManager eventManager = new EventManager(new Gson(), rabbitTemplate, new SyncTaskExecutor());
+        return new IssueTrackerMessageSender<>(creator, transitioner, commenter, creationEventGenerator, transitionEventGenerator, commentEventGenerator, eventManager);
     }
 
     private IssueTrackerMessageFormatter createFormatter() {

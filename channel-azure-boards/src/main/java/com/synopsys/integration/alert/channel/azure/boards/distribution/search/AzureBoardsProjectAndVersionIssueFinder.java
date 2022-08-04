@@ -17,6 +17,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
+import com.synopsys.integration.alert.api.channel.issue.search.IssueTrackerSearchResult;
 import com.synopsys.integration.alert.api.channel.issue.search.ProjectIssueFinder;
 import com.synopsys.integration.alert.api.channel.issue.search.ProjectIssueSearchResult;
 import com.synopsys.integration.alert.api.channel.issue.search.ProjectVersionIssueFinder;
@@ -41,25 +42,26 @@ public class AzureBoardsProjectAndVersionIssueFinder implements ProjectIssueFind
     }
 
     @Override
-    public List<ProjectIssueSearchResult<Integer>> findProjectIssues(ProviderDetails providerDetails, LinkableItem project) throws AlertException {
+    public IssueTrackerSearchResult<Integer> findProjectIssues(ProviderDetails providerDetails, LinkableItem project) throws AlertException {
         return findWorkItemsAndConvertToSearchResults(providerDetails, project, null, AzureSearchFieldMappingBuilder.create());
     }
 
     @Override
-    public List<ProjectIssueSearchResult<Integer>> findProjectVersionIssues(ProviderDetails providerDetails, LinkableItem project, LinkableItem projectVersion) throws AlertException {
+    public IssueTrackerSearchResult<Integer> findProjectVersionIssues(ProviderDetails providerDetails, LinkableItem project, LinkableItem projectVersion) throws AlertException {
         String projectVersionItemKey = AzureBoardsSearchPropertiesUtils.createNullableLinkableItemKey(projectVersion);
         AzureSearchFieldMappingBuilder azureSearchFieldMappingBuilder = AzureSearchFieldMappingBuilder.create();
         azureSearchFieldMappingBuilder.addSubTopic(projectVersionItemKey);
         return findWorkItemsAndConvertToSearchResults(providerDetails, project, projectVersion, azureSearchFieldMappingBuilder);
     }
 
-    private List<ProjectIssueSearchResult<Integer>> findWorkItemsAndConvertToSearchResults(
+    private IssueTrackerSearchResult<Integer> findWorkItemsAndConvertToSearchResults(
         ProviderDetails providerDetails,
         LinkableItem project,
         @Nullable LinkableItem projectVersion,
         AzureSearchFieldMappingBuilder fieldReferenceNameToExpectedValue
     ) throws AlertException {
-        List<WorkItemResponseModel> workItems = workItemFinder.findWorkItems(providerDetails.getProvider(), project, fieldReferenceNameToExpectedValue);
+        AzureBoardsWorkItemSearchResult result = workItemFinder.findWorkItems(providerDetails.getProvider(), project, fieldReferenceNameToExpectedValue);
+        List<WorkItemResponseModel> workItems = result.getSearchResults();
 
         List<ProjectIssueSearchResult<Integer>> searchResults = new ArrayList<>(workItems.size());
         for (WorkItemResponseModel workItem : workItems) {
@@ -69,7 +71,7 @@ public class AzureBoardsProjectAndVersionIssueFinder implements ProjectIssueFind
             ProjectIssueSearchResult<Integer> searchResult = new ProjectIssueSearchResult<>(issueDetails, projectIssueModel);
             searchResults.add(searchResult);
         }
-        return searchResults;
+        return new IssueTrackerSearchResult<>(result.getQuery().rawQuery(), searchResults);
     }
 
     private ProjectIssueModel createProjectIssueModel(ProviderDetails providerDetails, LinkableItem project, @Nullable LinkableItem nullableProjectVersion, WorkItemFieldsWrapper workItemFields) {

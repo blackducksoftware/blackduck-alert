@@ -15,16 +15,23 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCallbackInfoCreator;
 import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
+import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerCommentEventGenerator;
+import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerCreationEventGenerator;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueResponseCreator;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSenderFactory;
+import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerTransitionEventGenerator;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsHttpExceptionMessageImprover;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesFactory;
+import com.synopsys.integration.alert.channel.azure.boards.distribution.delegate.AzureBoardsCommentGenerator;
+import com.synopsys.integration.alert.channel.azure.boards.distribution.delegate.AzureBoardsCreateEventGenerator;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.delegate.AzureBoardsIssueCommenter;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.delegate.AzureBoardsIssueCreator;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.delegate.AzureBoardsIssueTransitioner;
+import com.synopsys.integration.alert.channel.azure.boards.distribution.delegate.AzureBoardsTransitionGenerator;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.search.AzureBoardsAlertIssuePropertiesManager;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
@@ -34,6 +41,7 @@ import com.synopsys.integration.azure.boards.common.http.AzureHttpRequestCreator
 import com.synopsys.integration.azure.boards.common.http.AzureHttpRequestCreatorFactory;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.service.comment.AzureWorkItemCommentService;
+import com.synopsys.integration.azure.boards.common.service.query.AzureWorkItemQueryService;
 import com.synopsys.integration.azure.boards.common.service.state.AzureWorkItemTypeStateService;
 import com.synopsys.integration.azure.boards.common.service.workitem.AzureWorkItemService;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
@@ -47,6 +55,7 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
     private final ProxyManager proxyManager;
     private final AzureBoardsHttpExceptionMessageImprover exceptionMessageImprover;
     private final IssueCategoryRetriever issueCategoryRetriever;
+    private final EventManager eventManager;
 
     @Autowired
     public AzureBoardsMessageSenderFactory(
@@ -56,7 +65,8 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
         AzureBoardsPropertiesFactory azureBoardsPropertiesFactory,
         ProxyManager proxyManager,
         AzureBoardsHttpExceptionMessageImprover exceptionMessageImprover,
-        IssueCategoryRetriever issueCategoryRetriever
+        IssueCategoryRetriever issueCategoryRetriever,
+        EventManager eventManager
     ) {
         this.gson = gson;
         this.callbackInfoCreator = callbackInfoCreator;
@@ -65,6 +75,7 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
         this.proxyManager = proxyManager;
         this.exceptionMessageImprover = exceptionMessageImprover;
         this.issueCategoryRetriever = issueCategoryRetriever;
+        this.eventManager = eventManager;
     }
 
     @Override
@@ -82,13 +93,15 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
         AzureWorkItemService workItemService = new AzureWorkItemService(azureHttpService, azureHttpRequestCreator);
         AzureWorkItemTypeStateService workItemTypeStateService = new AzureWorkItemTypeStateService(azureHttpService, apiVersionAppender);
         AzureWorkItemCommentService workItemCommentService = new AzureWorkItemCommentService(azureHttpService, apiVersionAppender);
+        AzureWorkItemQueryService workItemQueryService = new AzureWorkItemQueryService(azureHttpService, apiVersionAppender);
 
         return createMessageSender(
             workItemService,
             workItemTypeStateService,
             workItemCommentService,
             azureBoardsProperties.getOrganizationName(),
-            distributionDetails
+            distributionDetails,
+            workItemQueryService
         );
     }
 
@@ -97,12 +110,13 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
         AzureWorkItemTypeStateService workItemTypeStateService,
         AzureWorkItemCommentService workItemCommentService,
         String organizationName,
-        AzureBoardsJobDetailsModel distributionDetails
+        AzureBoardsJobDetailsModel distributionDetails,
+        AzureWorkItemQueryService workItemQueryService
     ) {
         IssueTrackerIssueResponseCreator issueResponseCreator = new IssueTrackerIssueResponseCreator(callbackInfoCreator);
         AzureBoardsWorkItemTypeStateRetriever workItemTypeStateRetriever = new AzureBoardsWorkItemTypeStateRetriever(gson, workItemService, workItemTypeStateService);
         AzureBoardsAlertIssuePropertiesManager issuePropertiesManager = new AzureBoardsAlertIssuePropertiesManager();
-
+        
         // Message Sender Requirements
         AzureBoardsIssueCommenter commenter = new AzureBoardsIssueCommenter(issueResponseCreator, organizationName, distributionDetails, workItemCommentService);
         AzureBoardsIssueTransitioner transitioner = new AzureBoardsIssueTransitioner(
@@ -115,7 +129,8 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
             workItemTypeStateRetriever,
             exceptionMessageImprover
         );
-        AzureBoardsIssueCreator creator = new AzureBoardsIssueCreator(channelKey,
+        AzureBoardsIssueCreator creator = new AzureBoardsIssueCreator(
+            channelKey,
             commenter,
             callbackInfoCreator,
             gson,
@@ -124,10 +139,24 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
             workItemService,
             issuePropertiesManager,
             exceptionMessageImprover,
-            issueCategoryRetriever
+            issueCategoryRetriever,
+            workItemQueryService
         );
 
-        return new IssueTrackerMessageSender<>(creator, transitioner, commenter);
+        UUID jobId = distributionDetails.getJobId();
+        IssueTrackerCommentEventGenerator<Integer> commentEventGenerator = new AzureBoardsCommentGenerator(channelKey, jobId);
+        IssueTrackerCreationEventGenerator createEventGenerator = new AzureBoardsCreateEventGenerator(channelKey, jobId);
+        IssueTrackerTransitionEventGenerator<Integer> transitionEventGenerator = new AzureBoardsTransitionGenerator(channelKey, jobId);
+
+        return new IssueTrackerMessageSender<>(
+            creator,
+            transitioner,
+            commenter,
+            createEventGenerator,
+            transitionEventGenerator,
+            commentEventGenerator,
+            eventManager
+        );
     }
 
 }

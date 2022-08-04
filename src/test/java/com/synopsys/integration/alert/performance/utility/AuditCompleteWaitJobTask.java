@@ -27,9 +27,11 @@ import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusMod
 import com.synopsys.integration.alert.common.rest.model.JobAuditModel;
 import com.synopsys.integration.alert.common.rest.model.NotificationConfig;
 import com.synopsys.integration.alert.common.util.DateUtils;
+import com.synopsys.integration.alert.component.diagnostic.model.AlertQueueInformation;
 import com.synopsys.integration.alert.component.diagnostic.model.AuditDiagnosticModel;
 import com.synopsys.integration.alert.component.diagnostic.model.DiagnosticModel;
 import com.synopsys.integration.alert.component.diagnostic.model.NotificationDiagnosticModel;
+import com.synopsys.integration.alert.component.diagnostic.model.RabbitMQDiagnosticModel;
 import com.synopsys.integration.blackduck.api.manual.component.VulnerabilityNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.exception.IntegrationException;
@@ -97,8 +99,21 @@ public class AuditCompleteWaitJobTask implements WaitJobCondition {
 
         boolean expectedJobIdsDiscovered = expectedJobIds.size() == jobIds.size() && expectedJobIds.containsAll(jobIds);
         if (expectedJobIdsDiscovered) {
-            logAverageAuditTime();
-            return true;
+            boolean allQueuesEmpty = diagnosticModel
+                .map(DiagnosticModel::getRabbitMQDiagnosticModel)
+                .map(RabbitMQDiagnosticModel::getQueues)
+                .stream()
+                .flatMap(List::stream)
+                .map(AlertQueueInformation::getMessageCount)
+                .allMatch(count -> count == 0);
+
+            if (diagnosticModel.isEmpty() || allQueuesEmpty) {
+                logAverageAuditTime();
+                return true;
+            } else {
+                return false;
+            }
+
         }
         return false;
     }
@@ -244,17 +259,25 @@ public class AuditCompleteWaitJobTask implements WaitJobCondition {
     private void logDiagnostics(DiagnosticModel diagnosticModel) {
         NotificationDiagnosticModel notificationDiagnosticModel = diagnosticModel.getNotificationDiagnosticModel();
         AuditDiagnosticModel auditDiagnosticModel = diagnosticModel.getAuditDiagnosticModel();
+        RabbitMQDiagnosticModel rabbitMQDiagnosticModel = diagnosticModel.getRabbitMQDiagnosticModel();
 
         intLogger.info(String.format("Diagnostic Info: %s", diagnosticModel.getRequestTimestamp()));
         intLogger.info("Performance: Notification Diagnostics");
         intLogger.info(String.format("Total # Notifications: %s", notificationDiagnosticModel.getNumberOfNotifications()));
         intLogger.info(String.format("Notifications Processed: %s", notificationDiagnosticModel.getNumberOfNotificationsProcessed()));
         intLogger.info(String.format("Notifications Unprocessed: %s", notificationDiagnosticModel.getNumberOfNotificationsUnprocessed()));
+        intLogger.info("Performance: RabbitMQ Diagnostics");
+        for (AlertQueueInformation queueInformation : rabbitMQDiagnosticModel.getQueues()) {
+            intLogger.info(String.format("Queue Name: %s, Message Count: %s", queueInformation.getName(), queueInformation.getMessageCount()));
 
+        }
+        intLogger.info("Performance: RabbitMQ Diagnostics");
         intLogger.info("Performance: Audit Diagnostics");
         intLogger.info(String.format("Audit Entries Successful: %s", auditDiagnosticModel.getNumberOfAuditEntriesSuccessful()));
         intLogger.info(String.format("Audit Entries Failed: %s", auditDiagnosticModel.getNumberOfAuditEntriesFailed()));
         intLogger.info(String.format("Audit Entries Pending: %s", auditDiagnosticModel.getNumberOfAuditEntriesPending()));
+        intLogger.info("Performance: Audit Diagnostics");
+
         auditDiagnosticModel.getAverageAuditTime().ifPresent(auditTime -> intLogger.info(String.format("Average audit time: %s", auditTime)));
     }
 }
