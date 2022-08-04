@@ -8,7 +8,7 @@
 package com.synopsys.integration.alert.channel.jira.cloud.distribution;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.task.TaskExecutor;
+import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -19,8 +19,8 @@ import com.synopsys.integration.alert.descriptor.api.JiraCloudChannelKey;
 @Component
 public class JiraCloudDistributionEventReceiver extends DistributionEventReceiver<JiraCloudJobDetailsModel> {
     @Autowired
-    public JiraCloudDistributionEventReceiver(Gson gson, TaskExecutor taskExecutor, JiraCloudChannelKey channelKey, JiraCloudDistributionEventHandler distributionEventHandler) {
-        super(gson, taskExecutor, channelKey, distributionEventHandler);
+    public JiraCloudDistributionEventReceiver(Gson gson, JiraCloudChannelKey channelKey, JiraCloudDistributionEventHandler distributionEventHandler) {
+        super(gson, new SyncTaskExecutor(), channelKey, distributionEventHandler);
     }
 
 }
