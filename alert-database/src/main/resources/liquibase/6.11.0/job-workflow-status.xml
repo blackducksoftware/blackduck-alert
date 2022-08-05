@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="psantos" id="create-job-sub-task-status-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="job_sub_task_status"/>
+            </not>
+        </preConditions>
+        <createTable tableName="job_sub_task_status" schemaName="alert">
+            <column name="parent_event_id" type="UUID">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="job_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="remaining_event_count" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="audit_correlation_id" type="UUID">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="psantos" id="create-audit-correlation-to-entry-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="audit_correlation_to_entry_relation"/>
+            </not>
+        </preConditions>
+        <createTable tableName="audit_correlation_to_entry_relation" schemaName="alert">
+            <column name="audit_correlation_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="audit_entry_id" type="BIGINT">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="psantos" id="create-audit-correlation-to-entry-key">
+         <preConditions onFail="MARK_RAN">
+            <not>
+                <primaryKeyExists schemaName="alert" primaryKeyName="PK_AUDIT_CORRELATION_TO_ENTRY_RELATION"/>
+            </not>
+        </preConditions>
+        <addPrimaryKey columnNames="audit_correlation_id, audit_entry_id"
+                       constraintName="PK_AUDIT_CORRELATION_TO_ENTRY_RELATION"
+                       tableName="audit_correlation_to_entry_relation"
+                       schemaName="ALERT"/>
+    </changeSet>
+    <changeSet author="psantos" id="create-foreign-key-job-sub-task-audit-correlation-id">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="job_sub_task_audit_correlation_id_fk"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint
+                baseTableSchemaName="alert"
+                baseTableName="audit_correlation_to_entry_relation"
+                baseColumnNames="audit_correlation_id"
+                constraintName="job_sub_task_audit_correlation_id_fk"
+                referencedTableSchemaName="alert"
+                referencedTableName="job_sub_task_status"
+                referencedColumnNames="audit_correlation_id"
+                onDelete="CASCADE"
+        />
+    </changeSet>
+     <changeSet author="psantos" id="create-foreign-key-audit-entry-id">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="job_sub_task_audit_entry_id_fk"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint
+                baseTableSchemaName="alert"
+                baseTableName="audit_correlation_to_entry_relation"
+                baseColumnNames="audit_entry_id"
+                constraintName="job_sub_task_audit_entry_id_fk"
+                referencedTableSchemaName="alert"
+                referencedTableName="audit_entries"
+                referencedColumnNames="id"
+                onDelete="CASCADE"
+        />
+    </changeSet>
+</databaseChangeLog>
