@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import LabeledField, { LabelFieldPropertyDefaults } from 'common/component/input/field/LabeledField';
 
 const PasswordInput = ({
-    id, description, errorName, errorValue, inputClass, isSet, label, labelClass, name, onChange, readOnly, required, showDescriptionPlaceHolder, value
+    id, description, errorName, errorValue, inputClass, isSet, label, labelClass, 
+    name, onChange, readOnly, required, showDescriptionPlaceHolder, value, placeholder
 }) => {
     const placeholderText = (isSet) ? '***********' : null;
     const onChangeHandler = readOnly ? null : onChange;
@@ -19,7 +20,15 @@ const PasswordInput = ({
             required={required}
         >
             <div className="d-inline-flex flex-column p-2 col-sm-8">
-                <input id={id} type="password" className={inputClass} readOnly={readOnly} name={name} value={value} onChange={onChangeHandler} placeholder={placeholderText} />
+                <input 
+                    id={id} 
+                    type="password" 
+                    className={inputClass} 
+                    readOnly={readOnly} name={name} 
+                    value={value} 
+                    onChange={onChangeHandler} 
+                    placeholder={placeholderText ? placeholderText : placeholder} 
+                />
             </div>
         </LabeledField>
     );

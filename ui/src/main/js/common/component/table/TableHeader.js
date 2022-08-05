@@ -27,7 +27,12 @@ const TableHeader = ({ columns, multiSelect, selected, onSelected, tableData  })
                 ) : null }
                 
                 { columns.map(column => (
-                    <TableHeaderCell key={column.key} label={column.label} sortable={column.sortable} settings={column.settings} />
+                    <TableHeaderCell 
+                        key={column.key} 
+                        label={column.label} 
+                        sortable={column.sortable} 
+                        settings={column.settings} 
+                    />
                 ))}
             </tr>
         </thead>

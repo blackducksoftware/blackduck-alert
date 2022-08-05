@@ -3,7 +3,9 @@ import PropTypes from 'prop-types';
 import LabeledField, { LabelFieldPropertyDefaults } from 'common/component/input/field/LabeledField';
 
 const TextInput = ({
-    id, autoFocus, description, errorName, errorValue, inputClass, label, labelClass, name, onChange, optionList, readOnly, required, showDescriptionPlaceHolder, value
+    id, autoFocus, description, errorName, errorValue, inputClass, label, labelClass, 
+    name, onChange, optionList, readOnly, required, showDescriptionPlaceHolder, value,
+    placeholder
 }) => {
     const listId = optionList ? 'listOptions' : null;
     const dataListOptionObjects = !optionList ? null : optionList.map((currentOption) => (<option key={`${currentOption}Key`} value={currentOption} />));
@@ -26,6 +28,7 @@ const TextInput = ({
                     readOnly={readOnly}
                     autoFocus={autoFocus}
                     className={inputClass}
+                    placeholder={placeholder}
                     name={name}
                     value={value}
                     onChange={onChange}
@@ -57,7 +60,8 @@ TextInput.propTypes = {
     label: PropTypes.string.isRequired,
     labelClass: PropTypes.string,
     required: PropTypes.bool,
-    showDescriptionPlaceHolder: PropTypes.bool
+    showDescriptionPlaceHolder: PropTypes.bool,
+    placeholder: PropTypes.string
 
 };
 
@@ -75,7 +79,7 @@ TextInput.defaultProps = {
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
     labelClass: LabelFieldPropertyDefaults.LABEL_CLASS_DEFAULT,
     required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
-    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT
+    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT,
 };
 
 export default TextInput;
