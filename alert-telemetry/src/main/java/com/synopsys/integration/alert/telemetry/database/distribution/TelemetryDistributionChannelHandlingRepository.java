@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.telemetry.database;
+package com.synopsys.integration.alert.telemetry.database.distribution;
 
 import java.util.UUID;
 

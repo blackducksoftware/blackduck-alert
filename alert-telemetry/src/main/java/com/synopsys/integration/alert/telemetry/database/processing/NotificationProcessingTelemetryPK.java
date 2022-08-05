@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.telemetry.database;
+package com.synopsys.integration.alert.telemetry.database.processing;
 
 import java.io.Serializable;
 import java.util.UUID;

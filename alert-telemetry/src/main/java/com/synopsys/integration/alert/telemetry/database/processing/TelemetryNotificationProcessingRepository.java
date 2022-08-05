@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.telemetry.database;
+package com.synopsys.integration.alert.telemetry.database.processing;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

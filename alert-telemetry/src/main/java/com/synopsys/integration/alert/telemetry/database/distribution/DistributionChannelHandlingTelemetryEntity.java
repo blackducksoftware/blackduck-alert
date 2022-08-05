@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.telemetry.database;
+package com.synopsys.integration.alert.telemetry.database.distribution;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -14,7 +14,7 @@ import com.synopsys.integration.alert.database.BaseEntity;
 @Table(schema = "alert", name = "telemetry_distribution_channel_handling")
 public class DistributionChannelHandlingTelemetryEntity extends BaseEntity {
     private static final long serialVersionUID = -2951336014837421817L;
-    
+
     @Id
     @Column(name = "event_id")
     private UUID eventId;

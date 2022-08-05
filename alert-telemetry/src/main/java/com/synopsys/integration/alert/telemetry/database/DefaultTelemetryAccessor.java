@@ -16,6 +16,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.persistence.accessor.TelemetryAccessor;
 import com.synopsys.integration.alert.common.util.DateUtils;
+import com.synopsys.integration.alert.telemetry.database.distribution.DistributionChannelHandlingTelemetryEntity;
+import com.synopsys.integration.alert.telemetry.database.distribution.TelemetryDistributionChannelHandlingRepository;
+import com.synopsys.integration.alert.telemetry.database.mapping.NotificationMappingTelemetryEntity;
+import com.synopsys.integration.alert.telemetry.database.mapping.TelemetryNotificationMappingRepository;
+import com.synopsys.integration.alert.telemetry.database.processing.NotificationProcessingTelemetryEntity;
+import com.synopsys.integration.alert.telemetry.database.processing.NotificationProcessingTelemetryPK;
+import com.synopsys.integration.alert.telemetry.database.processing.TelemetryNotificationProcessingRepository;
 import com.synopsys.integration.alert.telemetry.model.DistributionTelemetryModel;
 import com.synopsys.integration.alert.telemetry.model.NotificationMappingTelemetryModel;
 import com.synopsys.integration.alert.telemetry.model.NotificationProcessingTelemetryModel;

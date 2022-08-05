@@ -12,35 +12,23 @@ import java.util.UUID;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.api.common.model.Obfuscated;
 
-public class NotificationMappingTelemetryModel extends AlertSerializableModel implements Obfuscated<NotificationMappingTelemetryModel> {
+public class NotificationMappingTelemetryModel extends BaseTelemetryModel implements Obfuscated<NotificationMappingTelemetryModel> {
     private static final long serialVersionUID = 1131364695726016688L;
     private UUID correlationId;
-    private OffsetDateTime startTaskTime;
-    private OffsetDateTime completeTaskTime;
 
     public NotificationMappingTelemetryModel() {
         // For serialization
     }
 
     public NotificationMappingTelemetryModel(UUID correlationId, OffsetDateTime startTaskTime, @Nullable OffsetDateTime completeTaskTime) {
+        super(startTaskTime, completeTaskTime);
         this.correlationId = correlationId;
-        this.startTaskTime = startTaskTime;
-        this.completeTaskTime = completeTaskTime;
     }
 
     public UUID getCorrelationId() {
         return correlationId;
-    }
-
-    public OffsetDateTime getStartTaskTime() {
-        return startTaskTime;
-    }
-
-    public OffsetDateTime getCompleteTaskTime() {
-        return completeTaskTime;
     }
 
     @Override
