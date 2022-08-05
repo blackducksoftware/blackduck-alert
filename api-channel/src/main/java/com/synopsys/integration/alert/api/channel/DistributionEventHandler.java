@@ -8,6 +8,7 @@
 package com.synopsys.integration.alert.api.channel;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 
@@ -45,19 +46,17 @@ public class DistributionEventHandler<D extends DistributionJobDetailsModel> imp
         Optional<D> details = jobDetailsAccessor.retrieveDetails(event.getJobId());
         if (details.isPresent()) {
             try {
-                //TODO
                 notificationLogger.trace("Channel: {} is processing event: {}", channel.getClass(), event.getEventId());
-                telemetryAccessor.createDistributionTelemetryTask(event.getJobId());
+                telemetryAccessor.createDistributionTelemetryTask(UUID.fromString(event.getEventId()), event.getJobId(), event.getDestination());
                 channel.distributeMessages(details.get(), event.getProviderMessages(), event.getJobName());
                 auditAccessor.setAuditEntrySuccess(event.getJobId(), event.getNotificationIds());
-                //TODO
                 notificationLogger.trace("Channel: {} successfully processed event: {}", channel.getClass(), event.getEventId());
             } catch (AlertException alertException) {
                 handleAlertException(alertException, event);
             } catch (Exception unknownException) {
                 handleUnknownException(unknownException, event);
             } finally {
-                telemetryAccessor.completeDistributionTelemetryTask(event.getJobId());
+                telemetryAccessor.completeDistributionTelemetryTask(UUID.fromString(event.getEventId()));
             }
         } else {
             handleJobDetailsMissing(event);
