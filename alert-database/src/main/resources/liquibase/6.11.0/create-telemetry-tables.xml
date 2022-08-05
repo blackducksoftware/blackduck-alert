@@ -21,15 +21,18 @@
         </createTable>
     </changeSet>
 
-    <changeSet author="martinch" id="create-distribution-channel-handling-table">
+    <changeSet author="martinch" id="create-notification-processing-table">
         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists schemaName="alert" tableName="telemetry_distribution_channel_handling"/>
+                <tableExists schemaName="alert" tableName="telemetry_notification_processing"/>
             </not>
         </preConditions>
-        <createTable schemaName="alert" tableName="telemetry_distribution_channel_handling">
+        <createTable schemaName="alert" tableName="telemetry_notification_processing">
+            <column name="correlation_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
             <column name="job_id" type="UUID">
-                <constraints primaryKey="true"/>
+                <constraints nullable="false"/>
             </column>
             <column name="start_task_time" type="TIMESTAMP WITH TIMEZONE" defaultValueComputed="now()">
                 <constraints nullable="false"/>
@@ -40,18 +43,30 @@
         </createTable>
     </changeSet>
 
-    <changeSet author="martinch" id="create-notification-processing-table">
-        <preConditions onFail="MARK_RAN">
+    <changeSet author="martinch" id="create-processing-distribution-mapping-key">
+         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists schemaName="alert" tableName="telemetry_notification_processing"/>
+                <primaryKeyExists schemaName="alert" primaryKeyName="PK_NOTIFICATION_PROCESSING_TELEMETRY"/>
             </not>
         </preConditions>
-        <createTable schemaName="alert" tableName="telemetry_notification_processing">
-            <column name="correlation_id" type="UUID">
+        <addPrimaryKey columnNames="correlation_id, job_id" constraintName="PK_NOTIFICATION_PROCESSING_TELEMETRY" tableName="telemetry_notification_processing" schemaName="ALERT"/>
+    </changeSet>
+
+    <changeSet author="martinch" id="create-distribution-channel-handling-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="telemetry_distribution_channel_handling"/>
+            </not>
+        </preConditions>
+        <createTable schemaName="alert" tableName="telemetry_distribution_channel_handling">
+            <column name="event_id" type="UUID">
                 <constraints primaryKey="true"/>
             </column>
             <column name="job_id" type="UUID">
-                <constraints primaryKey="true"/>
+                <constraints nullable="false"/>
+            </column>
+            <column name="event_destination" type="VARCHAR">
+                <constraints nullable="false"/>
             </column>
             <column name="start_task_time" type="TIMESTAMP WITH TIMEZONE" defaultValueComputed="now()">
                 <constraints nullable="false"/>
@@ -76,23 +91,6 @@
                 referencedTableSchemaName="alert"
                 referencedTableName="telemetry_notification_mapping"
                 referencedColumnNames="correlation_id"
-        />
-    </changeSet>
-
-    <changeSet author="martinch" id="create-foreign-key-job-id">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="job_id_fk"/>
-            </not>
-        </preConditions>
-        <addForeignKeyConstraint
-                baseTableSchemaName="alert"
-                baseTableName="telemetry_notification_processing"
-                baseColumnNames="job_id"
-                constraintName="job_id_fk"
-                referencedTableSchemaName="alert"
-                referencedTableName="telemetry_distribution_channel_handling"
-                referencedColumnNames="job_id"
         />
     </changeSet>
 </databaseChangeLog>

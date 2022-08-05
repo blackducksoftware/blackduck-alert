@@ -127,7 +127,7 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
                 pageSize
             );
             logNotifications("Finished", event, notificationIds);
-            telemetryAccessor.completeNotificationProcessingTelemetryTask(correlationId);
+            telemetryAccessor.completeNotificationProcessingTelemetryTask(correlationId, jobId);
         }
 
         return processedMessageHolder;

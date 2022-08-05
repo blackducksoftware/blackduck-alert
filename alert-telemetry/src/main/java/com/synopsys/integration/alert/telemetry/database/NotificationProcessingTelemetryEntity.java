@@ -6,17 +6,20 @@ import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 
 import com.synopsys.integration.alert.database.BaseEntity;
 
 @Entity
+@IdClass(NotificationProcessingTelemetryPK.class)
 @Table(schema = "alert", name = "telemetry_notification_processing")
 public class NotificationProcessingTelemetryEntity extends BaseEntity {
     private static final long serialVersionUID = -2972703802600332023L;
     @Id
     @Column(name = "correlation_id")
     private UUID correlationId;
+    @Id
     @Column(name = "job_id")
     private UUID jobId;
     @Column(name = "start_task_time")
