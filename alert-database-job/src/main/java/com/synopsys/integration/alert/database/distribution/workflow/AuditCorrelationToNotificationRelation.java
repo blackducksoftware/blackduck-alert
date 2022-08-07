@@ -11,31 +11,31 @@ import javax.persistence.Table;
 import com.synopsys.integration.alert.database.DatabaseRelation;
 
 @Entity
-@IdClass(AuditCorrelationToEntityRelationPK.class)
-@Table(schema = "alert", name = "audit_correlation_to_entry_relation")
-public class AuditCorrelationToEntityRelation extends DatabaseRelation {
+@IdClass(AuditCorrelationToNotificationRelationPK.class)
+@Table(schema = "alert", name = "audit_correlation_to_notification_relation")
+public class AuditCorrelationToNotificationRelation extends DatabaseRelation {
 
     @Id
     @Column(name = "audit_correlation_id")
     private UUID auditCorrelationId;
 
     @Id
-    @Column(name = "audit_entry_id")
-    private Long auditEntryId;
+    @Column(name = "notification_id")
+    private Long notificationId;
 
-    public AuditCorrelationToEntityRelation() {
+    public AuditCorrelationToNotificationRelation() {
     }
 
-    public AuditCorrelationToEntityRelation(UUID auditCorrelationId, Long auditEntryId) {
+    public AuditCorrelationToNotificationRelation(UUID auditCorrelationId, Long notificationId) {
         this.auditCorrelationId = auditCorrelationId;
-        this.auditEntryId = auditEntryId;
+        this.notificationId = notificationId;
     }
 
     public UUID getAuditCorrelationId() {
         return auditCorrelationId;
     }
 
-    public Long getAuditEntryId() {
-        return auditEntryId;
+    public Long getNotificationId() {
+        return notificationId;
     }
 }

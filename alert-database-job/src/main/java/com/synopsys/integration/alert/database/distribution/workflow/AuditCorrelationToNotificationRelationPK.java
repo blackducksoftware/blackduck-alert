@@ -3,17 +3,17 @@ package com.synopsys.integration.alert.database.distribution.workflow;
 import java.io.Serializable;
 import java.util.UUID;
 
-public class AuditCorrelationToEntityRelationPK implements Serializable {
+public class AuditCorrelationToNotificationRelationPK implements Serializable {
     private static final long serialVersionUID = 5371783708376637560L;
     private UUID auditCorrelationId;
-    private Long auditEntryId;
+    private Long notificationId;
 
-    public AuditCorrelationToEntityRelationPK() {
+    public AuditCorrelationToNotificationRelationPK() {
     }
 
-    public AuditCorrelationToEntityRelationPK(UUID auditCorrelationId, Long auditEntryId) {
+    public AuditCorrelationToNotificationRelationPK(UUID auditCorrelationId, Long notificationId) {
         this.auditCorrelationId = auditCorrelationId;
-        this.auditEntryId = auditEntryId;
+        this.notificationId = notificationId;
     }
 
     public UUID getAuditCorrelationId() {
@@ -24,11 +24,11 @@ public class AuditCorrelationToEntityRelationPK implements Serializable {
         this.auditCorrelationId = auditCorrelationId;
     }
 
-    public Long getAuditEntryId() {
-        return auditEntryId;
+    public Long getNotificationId() {
+        return notificationId;
     }
 
-    public void setAuditEntryId(Long auditEntryId) {
-        this.auditEntryId = auditEntryId;
+    public void setNotificationId(Long auditEntryId) {
+        this.notificationId = auditEntryId;
     }
 }

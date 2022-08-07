@@ -14,26 +14,26 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.workflow.JobSubTaskStatusModel;
-import com.synopsys.integration.alert.database.distribution.workflow.AuditCorrelationToEntityRelation;
-import com.synopsys.integration.alert.database.distribution.workflow.AuditCorrelationToEntityRelationRepository;
+import com.synopsys.integration.alert.database.distribution.workflow.AuditCorrelationToNotificationRelation;
+import com.synopsys.integration.alert.database.distribution.workflow.AuditCorrelationToNotificationRelationRepository;
 import com.synopsys.integration.alert.database.distribution.workflow.JobSubTaskRepository;
 import com.synopsys.integration.alert.database.distribution.workflow.JobSubTaskStatusEntity;
 
 @Component
 public class DefaultJobSubTaskAccessor implements JobSubTaskAccessor {
     private JobSubTaskRepository jobSubTaskRepository;
-    private AuditCorrelationToEntityRelationRepository auditCorrelationToEntityRelationRepository;
+    private AuditCorrelationToNotificationRelationRepository auditCorrelationToNotificationRelationRepository;
 
     private ProcessingAuditAccessor processingAuditAccessor;
 
     @Autowired
     public DefaultJobSubTaskAccessor(
         JobSubTaskRepository jobSubTaskRepository,
-        AuditCorrelationToEntityRelationRepository auditCorrelationToEntityRelationRepository,
+        AuditCorrelationToNotificationRelationRepository auditCorrelationToNotificationRelationRepository,
         ProcessingAuditAccessor processingAuditAccessor
     ) {
         this.jobSubTaskRepository = jobSubTaskRepository;
-        this.auditCorrelationToEntityRelationRepository = auditCorrelationToEntityRelationRepository;
+        this.auditCorrelationToNotificationRelationRepository = auditCorrelationToNotificationRelationRepository;
         this.processingAuditAccessor = processingAuditAccessor;
     }
 
@@ -51,7 +51,7 @@ public class DefaultJobSubTaskAccessor implements JobSubTaskAccessor {
 
         for (Long notificationId : notificationIds) {
             //TODO fix the table and entity to use the notification ID
-            auditCorrelationToEntityRelationRepository.save(new AuditCorrelationToEntityRelation(auditCorrelationId, notificationId));
+            auditCorrelationToNotificationRelationRepository.save(new AuditCorrelationToNotificationRelation(auditCorrelationId, notificationId));
         }
         return convertEntity(entity);
     }
@@ -75,19 +75,19 @@ public class DefaultJobSubTaskAccessor implements JobSubTaskAccessor {
             UUID jobId = entity.get().getJobId();
             UUID auditCorrelationId = entity.get().getAuditCorrelationId();
             PageRequest pageRequest = PageRequest.of(0, 200);
-            Page<AuditCorrelationToEntityRelation> pageOfItems;
-            pageOfItems = auditCorrelationToEntityRelationRepository.findAllByAuditCorrelationId(auditCorrelationId, pageRequest);
+            Page<AuditCorrelationToNotificationRelation> pageOfItems;
+            pageOfItems = auditCorrelationToNotificationRelationRepository.findAllByAuditCorrelationId(auditCorrelationId, pageRequest);
             int currentPage = pageOfItems.getNumber();
             while (currentPage <= pageOfItems.getTotalPages()) {
                 Set<Long> notificationIds = pageOfItems.getContent().stream()
-                    .map(AuditCorrelationToEntityRelation::getAuditEntryId)
+                    .map(AuditCorrelationToNotificationRelation::getNotificationId)
                     .collect(Collectors.toSet());
 
                 processingAuditAccessor.setAuditEntryFailure(jobId, notificationIds, message, exception);
 
                 currentPage = pageOfItems.getNumber() + 1;
                 pageRequest = PageRequest.of(currentPage, 200);
-                pageOfItems = auditCorrelationToEntityRelationRepository.findAllByAuditCorrelationId(auditCorrelationId, pageRequest);
+                pageOfItems = auditCorrelationToNotificationRelationRepository.findAllByAuditCorrelationId(auditCorrelationId, pageRequest);
             }
         }
     }
@@ -99,19 +99,19 @@ public class DefaultJobSubTaskAccessor implements JobSubTaskAccessor {
             UUID jobId = entity.get().getJobId();
             UUID auditCorrelationId = entity.get().getAuditCorrelationId();
             PageRequest pageRequest = PageRequest.of(0, 200);
-            Page<AuditCorrelationToEntityRelation> pageOfItems;
-            pageOfItems = auditCorrelationToEntityRelationRepository.findAllByAuditCorrelationId(auditCorrelationId, pageRequest);
+            Page<AuditCorrelationToNotificationRelation> pageOfItems;
+            pageOfItems = auditCorrelationToNotificationRelationRepository.findAllByAuditCorrelationId(auditCorrelationId, pageRequest);
             int currentPage = pageOfItems.getNumber();
             while (currentPage < pageOfItems.getTotalPages()) {
                 Set<Long> notificationIds = pageOfItems.getContent().stream()
-                    .map(AuditCorrelationToEntityRelation::getAuditEntryId)
+                    .map(AuditCorrelationToNotificationRelation::getNotificationId)
                     .collect(Collectors.toSet());
 
                 processingAuditAccessor.setAuditEntrySuccess(jobId, notificationIds);
 
                 currentPage = pageOfItems.getNumber() + 1;
                 pageRequest = PageRequest.of(currentPage, 200);
-                pageOfItems = auditCorrelationToEntityRelationRepository.findAllByAuditCorrelationId(auditCorrelationId, pageRequest);
+                pageOfItems = auditCorrelationToNotificationRelationRepository.findAllByAuditCorrelationId(auditCorrelationId, pageRequest);
             }
         }
     }

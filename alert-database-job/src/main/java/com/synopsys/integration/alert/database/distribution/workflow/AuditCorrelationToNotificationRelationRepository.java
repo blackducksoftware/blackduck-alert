@@ -6,9 +6,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface AuditCorrelationToEntityRelationRepository extends JpaRepository<AuditCorrelationToEntityRelation, AuditCorrelationToEntityRelationPK> {
+public interface AuditCorrelationToNotificationRelationRepository extends JpaRepository<AuditCorrelationToNotificationRelation, AuditCorrelationToNotificationRelationPK> {
 
-    Page<AuditCorrelationToEntityRelation> findAllByAuditCorrelationId(UUID auditCorrelationId, Pageable pageable);
+    Page<AuditCorrelationToNotificationRelation> findAllByAuditCorrelationId(UUID auditCorrelationId, Pageable pageable);
 
     void deleteAllByAuditCorrelationId(UUID auditCorrelationId);
 

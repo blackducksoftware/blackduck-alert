@@ -31,7 +31,7 @@ public class JobSubTaskStatusEntity extends BaseEntity {
 
     @OneToMany
     @JoinColumn(name = "audit_correlation_id", referencedColumnName = "audit_correlation_id", insertable = false, updatable = false)
-    private List<AuditCorrelationToEntityRelation> auditCorrelationToEntityRelationList;
+    private List<AuditCorrelationToNotificationRelation> auditCorrelationToNotificationRelationList;
 
     public JobSubTaskStatusEntity() {
     }
@@ -59,7 +59,7 @@ public class JobSubTaskStatusEntity extends BaseEntity {
         return auditCorrelationId;
     }
 
-    public List<AuditCorrelationToEntityRelation> getAuditCorrelationToEntityRelationList() {
-        return auditCorrelationToEntityRelationList;
+    public List<AuditCorrelationToNotificationRelation> getAuditCorrelationToNotificationRelationList() {
+        return auditCorrelationToNotificationRelationList;
     }
 }
