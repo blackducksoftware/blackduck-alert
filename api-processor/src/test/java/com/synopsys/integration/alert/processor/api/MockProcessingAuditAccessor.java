@@ -27,6 +27,11 @@ public class MockProcessingAuditAccessor implements ProcessingAuditAccessor {
         //Do Nothing
     }
 
+    @Override
+    public void setAuditEntryFailure(UUID jobId, Set<Long> notificationIds, String errorMessage, @Nullable String stackTrace) {
+        // Do Nothing
+    }
+
     public Map<UUID, Set<Long>> getAuditEntries() {
         return auditEntries;
     }

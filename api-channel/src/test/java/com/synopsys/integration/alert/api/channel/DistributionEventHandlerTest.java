@@ -41,7 +41,7 @@ public class DistributionEventHandlerTest {
     @Test
     public void handleEventExceptionTest() {
         ProcessingAuditAccessor auditAccessor = Mockito.mock(ProcessingAuditAccessor.class);
-        Mockito.doNothing().when(auditAccessor).setAuditEntryFailure(Mockito.any(), Mockito.anySet(), Mockito.anyString(), Mockito.any());
+        Mockito.doNothing().when(auditAccessor).setAuditEntryFailure(Mockito.any(), Mockito.anySet(), Mockito.anyString(), Mockito.any(Throwable.class));
 
         DistributionJobDetailsModel details = new DistributionJobDetailsModel(null, null) {};
         JobDetailsAccessor<DistributionJobDetailsModel> jobDetailsAccessor = x -> Optional.of(details);
@@ -59,13 +59,14 @@ public class DistributionEventHandlerTest {
         DistributionEvent testEvent = new DistributionEvent(channelKey, testJobId, "jobName", testNotificationIds, null);
         eventHandler.handle(testEvent);
 
-        Mockito.verify(auditAccessor, Mockito.times(1)).setAuditEntryFailure(Mockito.eq(testJobId), Mockito.eq(testNotificationIds), Mockito.anyString(), Mockito.any());
+        Mockito.verify(auditAccessor, Mockito.times(1))
+            .setAuditEntryFailure(Mockito.eq(testJobId), Mockito.eq(testNotificationIds), Mockito.anyString(), Mockito.any(Throwable.class));
     }
 
     @Test
     public void handleEventJobDetailsMissingTest() {
         ProcessingAuditAccessor auditAccessor = Mockito.mock(ProcessingAuditAccessor.class);
-        Mockito.doNothing().when(auditAccessor).setAuditEntryFailure(Mockito.any(), Mockito.anySet(), Mockito.anyString(), Mockito.any());
+        Mockito.doNothing().when(auditAccessor).setAuditEntryFailure(Mockito.any(), Mockito.anySet(), Mockito.anyString(), Mockito.any(Throwable.class));
 
         JobDetailsAccessor<DistributionJobDetailsModel> jobDetailsAccessor = x -> Optional.empty();
         DistributionEventHandler<DistributionJobDetailsModel> eventHandler = new DistributionEventHandler<>(null, jobDetailsAccessor, auditAccessor);
@@ -76,7 +77,8 @@ public class DistributionEventHandlerTest {
         DistributionEvent testEvent = new DistributionEvent(channelKey, testJobId, "jobName", testNotificationIds, null);
         eventHandler.handle(testEvent);
 
-        Mockito.verify(auditAccessor, Mockito.times(1)).setAuditEntryFailure(Mockito.eq(testJobId), Mockito.eq(testNotificationIds), Mockito.anyString(), Mockito.any());
+        Mockito.verify(auditAccessor, Mockito.times(1))
+            .setAuditEntryFailure(Mockito.eq(testJobId), Mockito.eq(testNotificationIds), Mockito.anyString(), Mockito.any(Throwable.class));
     }
 
 }

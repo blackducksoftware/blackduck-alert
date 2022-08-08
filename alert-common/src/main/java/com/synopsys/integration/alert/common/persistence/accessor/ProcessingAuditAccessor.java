@@ -19,4 +19,6 @@ public interface ProcessingAuditAccessor {
 
     void setAuditEntryFailure(UUID jobId, Set<Long> notificationIds, String errorMessage, @Nullable Throwable exception);
 
+    void setAuditEntryFailure(UUID jobId, Set<Long> notificationIds, String errorMessage, @Nullable String stackTrace);
+
 }

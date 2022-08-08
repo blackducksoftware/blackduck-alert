@@ -299,6 +299,11 @@ class ProcessingJobEventHandlerTestIT {
             public void setAuditEntryFailure(UUID jobId, Set<Long> notificationIds, String errorMessage, @Nullable Throwable exception) {
                 // not used at this point only at the channel level.
             }
+
+            @Override
+            public void setAuditEntryFailure(UUID jobId, Set<Long> notificationIds, String errorMessage, @Nullable String stackTrace) {
+                // not used at this point only at the channel level.
+            }
         };
     }
 

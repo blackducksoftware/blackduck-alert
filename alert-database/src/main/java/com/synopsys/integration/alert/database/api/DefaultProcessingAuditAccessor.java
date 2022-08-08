@@ -17,7 +17,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
+import com.synopsys.integration.alert.common.persistence.util.AuditStackTraceUtil;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryNotificationView;
@@ -89,12 +89,22 @@ public class DefaultProcessingAuditAccessor implements ProcessingAuditAccessor {
     @Override
     @Transactional
     public void setAuditEntryFailure(UUID jobId, Set<Long> notificationIds, String errorMessage, @Nullable Throwable exception) {
+        String stackTraceString = null;
+        if (null != exception) {
+            stackTraceString = AuditStackTraceUtil.createStackTraceString(exception);
+        }
+
+        setAuditEntryFailure(jobId, notificationIds, errorMessage, stackTraceString);
+    }
+
+    @Override
+    @Transactional
+    public void setAuditEntryFailure(UUID jobId, Set<Long> notificationIds, String errorMessage, @Nullable String stackTrace) {
         updateAuditEntries(jobId, notificationIds, auditEntry -> {
             auditEntry.setStatus(AuditEntryStatus.FAILURE.name());
             auditEntry.setErrorMessage(errorMessage);
-            if (null != exception) {
-                String stackTraceString = createStackTraceString(exception);
-                auditEntry.setErrorStackTrace(stackTraceString);
+            if (null != stackTrace) {
+                auditEntry.setErrorStackTrace(stackTrace);
             }
         });
     }
@@ -121,19 +131,6 @@ public class DefaultProcessingAuditAccessor implements ProcessingAuditAccessor {
         AuditEntryEntity auditEntry = new AuditEntryEntity(view.getJobId(), view.getTimeCreated(), view.getTimeLastSent(), view.getStatus(), view.getErrorMessage(), view.getErrorStackTrace());
         auditEntry.setId(view.getId());
         return auditEntry;
-    }
-
-    private String createStackTraceString(Throwable exception) {
-        String[] rootCause = ExceptionUtils.getRootCauseStackTrace(exception);
-        String exceptionStackTrace = "";
-        for (String line : rootCause) {
-            if (exceptionStackTrace.length() + line.length() < AuditEntryEntity.STACK_TRACE_CHAR_LIMIT) {
-                exceptionStackTrace = String.format("%s%s%s", exceptionStackTrace, line, System.lineSeparator());
-            } else {
-                break;
-            }
-        }
-        return exceptionStackTrace;
     }
 
 }

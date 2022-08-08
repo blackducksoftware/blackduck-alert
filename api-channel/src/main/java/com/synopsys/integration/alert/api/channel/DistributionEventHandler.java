@@ -58,13 +58,20 @@ public class DistributionEventHandler<D extends DistributionJobDetailsModel> imp
 
     protected void handleUnknownException(Exception e, DistributionEvent event) {
         notificationLogger.error("An unexpected error occurred while handling the following event: {}.", event.getEventId(), e);
-        auditAccessor.setAuditEntryFailure(event.getJobId(), event.getNotificationIds(), "An unexpected error occurred during message distribution. Please refer to the logs for more details.", null);
+        Exception ex = null;
+        auditAccessor.setAuditEntryFailure(
+            event.getJobId(),
+            event.getNotificationIds(),
+            "An unexpected error occurred during message distribution. Please refer to the logs for more details.",
+            ex
+        );
     }
 
     protected void handleJobDetailsMissing(DistributionEvent event) {
         String failureMessage = "Received a distribution event for a Job that no longer exists";
         notificationLogger.warn("{}. Destination: {}. Event: {}. Job: {}", failureMessage, event.getDestination(), event.getEventId(), event.getJobId());
-        auditAccessor.setAuditEntryFailure(event.getJobId(), event.getNotificationIds(), failureMessage, null);
+        Exception ex = null;
+        auditAccessor.setAuditEntryFailure(event.getJobId(), event.getNotificationIds(), failureMessage, ex);
     }
 
 }
