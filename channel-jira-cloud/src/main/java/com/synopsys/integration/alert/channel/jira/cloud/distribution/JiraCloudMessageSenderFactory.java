@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.channel.jira.cloud.distribution;
 
+import java.util.Set;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -101,7 +102,9 @@ public class JiraCloudMessageSenderFactory implements IssueTrackerMessageSenderF
             issueCreationRequestCreator,
             issuePropertiesManager,
             jiraErrorMessageUtility,
-            jiraCloudQueryExecutor
+            jiraCloudQueryExecutor,
+            null,
+            Set.of()
         );
     }
 
@@ -112,7 +115,9 @@ public class JiraCloudMessageSenderFactory implements IssueTrackerMessageSenderF
         JiraIssueCreationRequestCreator issueCreationRequestCreator,
         JiraIssueAlertPropertiesManager issuePropertiesManager,
         JiraErrorMessageUtility jiraErrorMessageUtility,
-        JiraCloudQueryExecutor jiraCloudQueryExecutor
+        JiraCloudQueryExecutor jiraCloudQueryExecutor,
+        UUID parentEventId,
+        Set<Long> notificationIds
     ) {
         // Jira Services
         IssueTrackerIssueResponseCreator issueResponseCreator = new IssueTrackerIssueResponseCreator(callbackInfoCreator);
@@ -134,9 +139,9 @@ public class JiraCloudMessageSenderFactory implements IssueTrackerMessageSenderF
             jiraCloudQueryExecutor
         );
         UUID jobId = distributionDetails.getJobId();
-        IssueTrackerCommentEventGenerator<String> commentEventGenerator = new JiraCloudCommentGenerator(channelKey, jobId);
-        IssueTrackerCreationEventGenerator createEventGenerator = new JiraCloudCreateEventGenerator(channelKey, jobId);
-        IssueTrackerTransitionEventGenerator<String> transitionEventGenerator = new JiraCloudTransitionGenerator(channelKey, jobId);
+        IssueTrackerCommentEventGenerator<String> commentEventGenerator = new JiraCloudCommentGenerator(channelKey, parentEventId, jobId, notificationIds);
+        IssueTrackerCreationEventGenerator createEventGenerator = new JiraCloudCreateEventGenerator(channelKey, parentEventId, jobId, notificationIds);
+        IssueTrackerTransitionEventGenerator<String> transitionEventGenerator = new JiraCloudTransitionGenerator(channelKey, parentEventId, jobId, notificationIds);
 
         return new IssueTrackerMessageSender<>(
             issueCreator,

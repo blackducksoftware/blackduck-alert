@@ -14,11 +14,11 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Distr
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.processor.api.distribute.DistributionEvent;
 
-public class DistributionEventHandlerTest {
+class DistributionEventHandlerTest {
     private final ChannelKey channelKey = new ChannelKey("test universal key", "Test Universal Key");
 
     @Test
-    public void handleEventSuccessTest() {
+    void handleEventSuccessTest() {
         ProcessingAuditAccessor auditAccessor = Mockito.mock(ProcessingAuditAccessor.class);
         Mockito.doNothing().when(auditAccessor).setAuditEntrySuccess(Mockito.any(), Mockito.anySet());
 
@@ -39,7 +39,7 @@ public class DistributionEventHandlerTest {
     }
 
     @Test
-    public void handleEventExceptionTest() {
+    void handleEventExceptionTest() {
         ProcessingAuditAccessor auditAccessor = Mockito.mock(ProcessingAuditAccessor.class);
         Mockito.doNothing().when(auditAccessor).setAuditEntryFailure(Mockito.any(), Mockito.anySet(), Mockito.anyString(), Mockito.any(Throwable.class));
 
@@ -60,11 +60,11 @@ public class DistributionEventHandlerTest {
         eventHandler.handle(testEvent);
 
         Mockito.verify(auditAccessor, Mockito.times(1))
-            .setAuditEntryFailure(Mockito.eq(testJobId), Mockito.eq(testNotificationIds), Mockito.anyString(), Mockito.any(Throwable.class));
+            .setAuditEntryFailure(Mockito.eq(testJobId), Mockito.eq(testNotificationIds), Mockito.anyString(), Mockito.nullable(Throwable.class));
     }
 
     @Test
-    public void handleEventJobDetailsMissingTest() {
+    void handleEventJobDetailsMissingTest() {
         ProcessingAuditAccessor auditAccessor = Mockito.mock(ProcessingAuditAccessor.class);
         Mockito.doNothing().when(auditAccessor).setAuditEntryFailure(Mockito.any(), Mockito.anySet(), Mockito.anyString(), Mockito.any(Throwable.class));
 
@@ -78,7 +78,7 @@ public class DistributionEventHandlerTest {
         eventHandler.handle(testEvent);
 
         Mockito.verify(auditAccessor, Mockito.times(1))
-            .setAuditEntryFailure(Mockito.eq(testJobId), Mockito.eq(testNotificationIds), Mockito.anyString(), Mockito.any(Throwable.class));
+            .setAuditEntryFailure(Mockito.eq(testJobId), Mockito.eq(testNotificationIds), Mockito.anyString(), Mockito.nullable(Throwable.class));
     }
 
 }

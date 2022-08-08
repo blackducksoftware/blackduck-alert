@@ -7,13 +7,22 @@
  */
 package com.synopsys.integration.alert.channel.jira.cloud.distribution.event;
 
+import java.util.Set;
 import java.util.UUID;
 
 import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerTransitionIssueEvent;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTransitionModel;
 
 public class JiraCloudTransitionEvent extends IssueTrackerTransitionIssueEvent<String> {
-    public JiraCloudTransitionEvent(String destination, UUID jobId, IssueTransitionModel<String> transitionModel) {
-        super(destination, jobId, transitionModel);
+    private static final long serialVersionUID = -5217352371581221553L;
+
+    public JiraCloudTransitionEvent(
+        String destination,
+        UUID parentEventId,
+        UUID jobId,
+        Set<Long> notificationIds,
+        IssueTransitionModel<String> transitionModel
+    ) {
+        super(destination, parentEventId, jobId, notificationIds, transitionModel);
     }
 }

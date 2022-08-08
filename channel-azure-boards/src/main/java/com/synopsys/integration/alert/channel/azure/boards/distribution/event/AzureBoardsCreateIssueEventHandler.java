@@ -22,10 +22,12 @@ import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCreate
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesFactory;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.AzureBoardsMessageSenderFactory;
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.azure.boards.common.http.AzureApiVersionAppender;
@@ -40,7 +42,7 @@ import com.synopsys.integration.azure.boards.common.service.workitem.AzureWorkIt
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 @Component
-public class AzureBoardsCreateIssueEventHandler implements IssueTrackerCreateIssueEventHandler {
+public class AzureBoardsCreateIssueEventHandler extends IssueTrackerCreateIssueEventHandler {
     private Logger logger = LoggerFactory.getLogger(getClass());
     private final Gson gson;
     private final AzureBoardsPropertiesFactory azureBoardsPropertiesFactory;
@@ -50,12 +52,15 @@ public class AzureBoardsCreateIssueEventHandler implements IssueTrackerCreateIss
 
     @Autowired
     public AzureBoardsCreateIssueEventHandler(
+        EventManager eventManager,
+        JobSubTaskAccessor jobSubTaskAccessor,
         Gson gson,
         AzureBoardsPropertiesFactory azureBoardsPropertiesFactory,
         AzureBoardsMessageSenderFactory azureBoardsMessageSenderFactory,
         ProxyManager proxyManager,
         JobDetailsAccessor<AzureBoardsJobDetailsModel> jobDetailsAccessor
     ) {
+        super(eventManager, jobSubTaskAccessor);
         this.gson = gson;
         this.azureBoardsPropertiesFactory = azureBoardsPropertiesFactory;
         this.azureBoardsMessageSenderFactory = azureBoardsMessageSenderFactory;
@@ -64,7 +69,7 @@ public class AzureBoardsCreateIssueEventHandler implements IssueTrackerCreateIss
     }
 
     @Override
-    public void handle(IssueTrackerCreateIssueEvent event) {
+    public void handleEvent(IssueTrackerCreateIssueEvent event) {
         UUID jobId = event.getJobId();
         Optional<AzureBoardsJobDetailsModel> details = jobDetailsAccessor.retrieveDetails(event.getJobId());
         if (details.isPresent()) {
@@ -96,7 +101,9 @@ public class AzureBoardsCreateIssueEventHandler implements IssueTrackerCreateIss
                     workItemCommentService,
                     organizationName,
                     distributionDetails,
-                    workItemQueryService
+                    workItemQueryService,
+                    event.getParentEventId(),
+                    event.getNotificationIds()
                 );
                 IssueCreationModel creationModel = event.getCreationModel();
                 String query = creationModel.getQueryString().orElse(null);

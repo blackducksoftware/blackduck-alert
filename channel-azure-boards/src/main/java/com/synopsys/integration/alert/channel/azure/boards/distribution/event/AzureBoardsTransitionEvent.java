@@ -7,13 +7,20 @@
  */
 package com.synopsys.integration.alert.channel.azure.boards.distribution.event;
 
+import java.util.Set;
 import java.util.UUID;
 
 import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerTransitionIssueEvent;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTransitionModel;
 
 public class AzureBoardsTransitionEvent extends IssueTrackerTransitionIssueEvent<Integer> {
-    public AzureBoardsTransitionEvent(String destination, UUID jobId, IssueTransitionModel<Integer> transitionModel) {
-        super(destination, jobId, transitionModel);
+    public AzureBoardsTransitionEvent(
+        String destination,
+        UUID parentEventId,
+        UUID jobId,
+        Set<Long> notificationIds,
+        IssueTransitionModel<Integer> transitionModel
+    ) {
+        super(destination, parentEventId, jobId, notificationIds, transitionModel);
     }
 }

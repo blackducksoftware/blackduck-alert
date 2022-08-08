@@ -24,11 +24,13 @@ import com.synopsys.integration.alert.api.channel.jira.distribution.JiraIssueCre
 import com.synopsys.integration.alert.api.channel.jira.distribution.custom.JiraCustomFieldResolver;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerMessageSenderFactory;
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerQueryExecutor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.synopsys.integration.jira.common.rest.service.IssuePropertyService;
 import com.synopsys.integration.jira.common.server.service.FieldService;
@@ -38,7 +40,7 @@ import com.synopsys.integration.jira.common.server.service.JiraServerServiceFact
 import com.synopsys.integration.jira.common.server.service.ProjectService;
 
 @Component
-public class JiraServerTransitionEventHandler implements IssueTrackerTransitionEventHandler<JiraServerTransitionEvent> {
+public class JiraServerTransitionEventHandler extends IssueTrackerTransitionEventHandler<JiraServerTransitionEvent> {
     private Logger logger = LoggerFactory.getLogger(getClass());
     private final Gson gson;
     private final JiraServerPropertiesFactory jiraServerPropertiesFactory;
@@ -47,11 +49,14 @@ public class JiraServerTransitionEventHandler implements IssueTrackerTransitionE
 
     @Autowired
     public JiraServerTransitionEventHandler(
+        EventManager eventManager,
+        JobSubTaskAccessor jobSubTaskAccessor,
         Gson gson,
         JiraServerPropertiesFactory jiraServerPropertiesFactory,
         JiraServerMessageSenderFactory jiraServerMessageSenderFactory,
         JobDetailsAccessor<JiraServerJobDetailsModel> jobDetailsAccessor
     ) {
+        super(eventManager, jobSubTaskAccessor);
         this.gson = gson;
         this.jiraServerPropertiesFactory = jiraServerPropertiesFactory;
         this.jiraServerMessageSenderFactory = jiraServerMessageSenderFactory;
@@ -59,7 +64,7 @@ public class JiraServerTransitionEventHandler implements IssueTrackerTransitionE
     }
 
     @Override
-    public void handle(JiraServerTransitionEvent event) {
+    public void handleEvent(JiraServerTransitionEvent event) {
         UUID jobId = event.getJobId();
         Optional<JiraServerJobDetailsModel> details = jobDetailsAccessor.retrieveDetails(event.getJobId());
         if (details.isPresent()) {
@@ -90,7 +95,9 @@ public class JiraServerTransitionEventHandler implements IssueTrackerTransitionE
                     issueCreationRequestCreator,
                     issuePropertiesManager,
                     jiraErrorMessageUtility,
-                    jiraServerQueryExecutor
+                    jiraServerQueryExecutor,
+                    event.getParentEventId(),
+                    event.getNotificationIds()
                 );
                 IssueTransitionModel<String> transitionModel = event.getTransitionModel();
                 messageSender.sendMessage(transitionModel);

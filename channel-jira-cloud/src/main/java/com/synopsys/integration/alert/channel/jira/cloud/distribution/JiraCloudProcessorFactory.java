@@ -7,6 +7,8 @@
  */
 package com.synopsys.integration.alert.channel.jira.cloud.distribution;
 
+import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,7 +130,9 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
             issueCreationRequestCreator,
             issuePropertiesManager,
             jiraErrorMessageUtility,
-            jiraCloudQueryExecutor
+            jiraCloudQueryExecutor,
+            null,
+            Set.of()
         );
 
         return new IssueTrackerProcessor<>(extractor, messageSender);

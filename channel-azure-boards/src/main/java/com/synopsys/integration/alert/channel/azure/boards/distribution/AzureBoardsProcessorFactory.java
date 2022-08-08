@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.channel.azure.boards.distribution;
 
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -144,7 +145,9 @@ public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory
             workItemCommentService,
             organizationName,
             distributionDetails,
-            workItemQueryService
+            workItemQueryService,
+            null,
+            Set.of()
         );
 
         return new IssueTrackerProcessor<>(extractor, messageSender);

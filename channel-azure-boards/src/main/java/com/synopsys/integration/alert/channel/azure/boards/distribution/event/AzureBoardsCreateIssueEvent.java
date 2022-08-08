@@ -7,13 +7,20 @@
  */
 package com.synopsys.integration.alert.channel.azure.boards.distribution.event;
 
+import java.util.Set;
 import java.util.UUID;
 
 import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCreateIssueEvent;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
 
 public class AzureBoardsCreateIssueEvent extends IssueTrackerCreateIssueEvent {
-    public AzureBoardsCreateIssueEvent(String destination, UUID jobId, IssueCreationModel creationModel) {
-        super(destination, jobId, creationModel);
+    public AzureBoardsCreateIssueEvent(
+        String destination,
+        UUID parentEventId,
+        UUID jobId,
+        Set<Long> notificationIds,
+        IssueCreationModel creationModel
+    ) {
+        super(destination, parentEventId, jobId, notificationIds, creationModel);
     }
 }

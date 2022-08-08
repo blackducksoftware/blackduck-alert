@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -24,6 +25,7 @@ import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerMessageSenderFactory;
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.exception.IntegrationException;
@@ -39,16 +41,20 @@ class JiraServerCommentEventHandlerTest {
     private Gson gson = new Gson();
     private AtomicInteger issueCounter;
     private EventManager eventManager;
+    private JobSubTaskAccessor jobSubTaskAccessor;
 
     @BeforeEach
     public void init() {
         issueCounter = new AtomicInteger(0);
         eventManager = Mockito.mock(EventManager.class);
+        jobSubTaskAccessor = Mockito.mock(JobSubTaskAccessor.class);
     }
 
     @Test
     void handleUnknownJobTest() {
+        UUID parentEventId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
+        Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
 
         JiraServerPropertiesFactory propertiesFactory = Mockito.mock(JiraServerPropertiesFactory.class);
         IssueTrackerCallbackInfoCreator callbackInfoCreator = new IssueTrackerCallbackInfoCreator();
@@ -63,17 +69,32 @@ class JiraServerCommentEventHandlerTest {
         );
         JobDetailsAccessor<JiraServerJobDetailsModel> jobDetailsAccessor = jobId1 -> Optional.empty();
 
-        JiraServerCommentEventHandler handler = new JiraServerCommentEventHandler(gson, propertiesFactory, messageSenderFactory, jobDetailsAccessor);
+        JiraServerCommentEventHandler handler = new JiraServerCommentEventHandler(
+            eventManager,
+            jobSubTaskAccessor,
+            gson,
+            propertiesFactory,
+            messageSenderFactory,
+            jobDetailsAccessor
+        );
         ExistingIssueDetails<String> existingIssueDetails = new ExistingIssueDetails<>("id", "key", "summary", "link", IssueStatus.UNKNOWN, IssueCategory.BOM);
         IssueCommentModel<String> model = new IssueCommentModel<>(existingIssueDetails, List.of(), null);
-        JiraServerCommentEvent event = new JiraServerCommentEvent(IssueTrackerCommentEvent.createDefaultEventDestination(ChannelKeys.JIRA_SERVER), jobId, model);
+        JiraServerCommentEvent event = new JiraServerCommentEvent(
+            IssueTrackerCommentEvent.createDefaultEventDestination(ChannelKeys.JIRA_SERVER),
+            parentEventId,
+            jobId,
+            notificationIds,
+            model
+        );
         handler.handle(event);
         assertEquals(0, issueCounter.get());
     }
 
     @Test
     void handleCommentTest() throws IntegrationException {
+        UUID parentEventId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
+        Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
 
         JiraServerPropertiesFactory propertiesFactory = Mockito.mock(JiraServerPropertiesFactory.class);
         JiraServerProperties jiraProperties = Mockito.mock(JiraServerProperties.class);
@@ -107,10 +128,23 @@ class JiraServerCommentEventHandlerTest {
         );
         JobDetailsAccessor<JiraServerJobDetailsModel> jobDetailsAccessor = jobId1 -> Optional.of(createJobDetails(jobId));
 
-        JiraServerCommentEventHandler handler = new JiraServerCommentEventHandler(gson, propertiesFactory, messageSenderFactory, jobDetailsAccessor);
+        JiraServerCommentEventHandler handler = new JiraServerCommentEventHandler(
+            eventManager,
+            jobSubTaskAccessor,
+            gson,
+            propertiesFactory,
+            messageSenderFactory,
+            jobDetailsAccessor
+        );
         ExistingIssueDetails<String> existingIssueDetails = new ExistingIssueDetails<>("id", "key", "summary", "link", IssueStatus.UNKNOWN, IssueCategory.BOM);
         IssueCommentModel<String> model = new IssueCommentModel<>(existingIssueDetails, List.of("A comment"), null);
-        JiraServerCommentEvent event = new JiraServerCommentEvent(IssueTrackerCommentEvent.createDefaultEventDestination(ChannelKeys.JIRA_SERVER), jobId, model);
+        JiraServerCommentEvent event = new JiraServerCommentEvent(
+            IssueTrackerCommentEvent.createDefaultEventDestination(ChannelKeys.JIRA_SERVER),
+            parentEventId,
+            jobId,
+            notificationIds,
+            model
+        );
         handler.handle(event);
         assertEquals(1, issueCounter.get());
     }

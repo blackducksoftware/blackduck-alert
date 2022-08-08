@@ -10,11 +10,11 @@ package com.synopsys.integration.alert.api.channel.issue.event;
 import org.springframework.core.task.TaskExecutor;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.event.AlertEvent;
-import com.synopsys.integration.alert.api.event.AlertMessageListener;
+import com.synopsys.integration.alert.api.channel.issue.event.distribution.JobSubTaskMessageListener;
+import com.synopsys.integration.alert.api.event.distribution.JobSubTaskEvent;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
-public abstract class IssueTrackerCommentEventListener<T extends AlertEvent> extends AlertMessageListener<T> {
+public abstract class IssueTrackerCommentEventListener<T extends JobSubTaskEvent> extends JobSubTaskMessageListener<T> {
     protected IssueTrackerCommentEventListener(
         Gson gson,
         TaskExecutor taskExecutor,

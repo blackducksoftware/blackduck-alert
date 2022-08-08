@@ -7,8 +7,16 @@
  */
 package com.synopsys.integration.alert.api.channel.issue.event;
 
-import com.synopsys.integration.alert.api.event.AlertEvent;
-import com.synopsys.integration.alert.api.event.AlertEventHandler;
+import com.synopsys.integration.alert.api.channel.issue.event.distribution.JobSubTaskEventHandler;
+import com.synopsys.integration.alert.api.event.EventManager;
+import com.synopsys.integration.alert.api.event.distribution.JobSubTaskEvent;
+import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 
-public interface IssueTrackerCommentEventHandler<T extends AlertEvent> extends AlertEventHandler<T> {
+public abstract class IssueTrackerCommentEventHandler<T extends JobSubTaskEvent> extends JobSubTaskEventHandler<T> {
+    protected IssueTrackerCommentEventHandler(
+        EventManager eventManager,
+        JobSubTaskAccessor jobSubTaskAccessor
+    ) {
+        super(eventManager, jobSubTaskAccessor);
+    }
 }

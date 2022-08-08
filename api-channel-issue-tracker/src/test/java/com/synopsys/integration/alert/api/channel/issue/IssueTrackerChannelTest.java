@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.Serializable;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.jetbrains.annotations.Nullable;
@@ -91,11 +92,17 @@ class IssueTrackerChannelTest {
             }
         };
 
-        IssueTrackerCreationEventGenerator creationEventGenerator = model -> new IssueTrackerCreateIssueEvent("", UUID.randomUUID(), null);
+        IssueTrackerCreationEventGenerator creationEventGenerator = model -> new IssueTrackerCreateIssueEvent("", UUID.randomUUID(), UUID.randomUUID(), Set.of(), null);
 
-        IssueTrackerTransitionEventGenerator<String> transitionEventGenerator = model -> new IssueTrackerTransitionIssueEvent<>("", UUID.randomUUID(), null);
+        IssueTrackerTransitionEventGenerator<String> transitionEventGenerator = model -> new IssueTrackerTransitionIssueEvent<>(
+            "",
+            UUID.randomUUID(),
+            UUID.randomUUID(),
+            Set.of(),
+            null
+        );
 
-        IssueTrackerCommentEventGenerator<String> commentEventGenerator = model -> new IssueTrackerCommentEvent<>("", UUID.randomUUID(), null);
+        IssueTrackerCommentEventGenerator<String> commentEventGenerator = model -> new IssueTrackerCommentEvent<>("", UUID.randomUUID(), UUID.randomUUID(), Set.of(), null);
 
         RabbitTemplate rabbitTemplate = new RabbitTemplate();
         EventManager eventManager = new EventManager(new Gson(), rabbitTemplate, new SyncTaskExecutor());

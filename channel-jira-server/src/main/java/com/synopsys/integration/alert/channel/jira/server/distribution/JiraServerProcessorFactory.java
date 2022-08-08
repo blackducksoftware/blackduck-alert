@@ -7,6 +7,8 @@
  */
 package com.synopsys.integration.alert.channel.jira.server.distribution;
 
+import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -115,7 +117,9 @@ public class JiraServerProcessorFactory implements IssueTrackerProcessorFactory<
             issueCreationRequestCreator,
             issuePropertiesManager,
             jiraErrorMessageUtility,
-            jiraServerQueryExecutor
+            jiraServerQueryExecutor,
+            null,
+            Set.of()
         );
 
         return new IssueTrackerProcessor<>(extractor, messageSender);

@@ -14,4 +14,6 @@ public interface JobSubTaskAccessor {
 
     Optional<JobSubTaskStatusModel> decrementTaskCount(UUID parentEventId);
 
+    Optional<JobSubTaskStatusModel> removeSubTaskStatus(UUID parentEventId);
+
 }

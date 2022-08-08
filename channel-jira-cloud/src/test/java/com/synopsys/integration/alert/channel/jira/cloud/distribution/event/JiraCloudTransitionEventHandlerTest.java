@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -26,6 +27,7 @@ import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudPropertiesFact
 import com.synopsys.integration.alert.channel.jira.cloud.distribution.JiraCloudMessageSenderFactory;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.exception.IntegrationException;
@@ -45,16 +47,20 @@ class JiraCloudTransitionEventHandlerTest {
     private Gson gson = new Gson();
     private AtomicInteger issueCounter;
     private EventManager eventManager;
+    private JobSubTaskAccessor jobSubTaskAccessor;
 
     @BeforeEach
     public void init() {
         issueCounter = new AtomicInteger(0);
         eventManager = Mockito.mock(EventManager.class);
+        jobSubTaskAccessor = Mockito.mock(JobSubTaskAccessor.class);
     }
 
     @Test
     void handleUnknownJobTest() {
+        UUID parentEventId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
+        Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
 
         JiraCloudPropertiesFactory propertiesFactory = Mockito.mock(JiraCloudPropertiesFactory.class);
         IssueTrackerCallbackInfoCreator callbackInfoCreator = new IssueTrackerCallbackInfoCreator();
@@ -69,17 +75,32 @@ class JiraCloudTransitionEventHandlerTest {
         );
         JobDetailsAccessor<JiraCloudJobDetailsModel> jobDetailsAccessor = jobId1 -> Optional.empty();
 
-        JiraCloudTransitionEventHandler handler = new JiraCloudTransitionEventHandler(gson, propertiesFactory, messageSenderFactory, jobDetailsAccessor);
+        JiraCloudTransitionEventHandler handler = new JiraCloudTransitionEventHandler(
+            eventManager,
+            jobSubTaskAccessor,
+            gson,
+            propertiesFactory,
+            messageSenderFactory,
+            jobDetailsAccessor
+        );
         ExistingIssueDetails<String> existingIssueDetails = new ExistingIssueDetails<>("id", "key", "summary", "link", IssueStatus.UNKNOWN, IssueCategory.BOM);
         IssueTransitionModel<String> model = new IssueTransitionModel<>(existingIssueDetails, IssueOperation.RESOLVE, List.of(), null);
-        JiraCloudTransitionEvent event = new JiraCloudTransitionEvent(IssueTrackerTransitionIssueEvent.createDefaultEventDestination(ChannelKeys.JIRA_CLOUD), jobId, model);
+        JiraCloudTransitionEvent event = new JiraCloudTransitionEvent(
+            IssueTrackerTransitionIssueEvent.createDefaultEventDestination(ChannelKeys.JIRA_CLOUD),
+            parentEventId,
+            jobId,
+            notificationIds,
+            model
+        );
         handler.handle(event);
         assertEquals(0, issueCounter.get());
     }
 
     @Test
     void handleTransitionTest() throws IntegrationException {
+        UUID parentEventId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
+        Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
 
         JiraCloudPropertiesFactory propertiesFactory = Mockito.mock(JiraCloudPropertiesFactory.class);
         JiraCloudProperties jiraProperties = Mockito.mock(JiraCloudProperties.class);
@@ -115,10 +136,23 @@ class JiraCloudTransitionEventHandlerTest {
         );
         JobDetailsAccessor<JiraCloudJobDetailsModel> jobDetailsAccessor = jobId1 -> Optional.of(createJobDetails(jobId));
 
-        JiraCloudTransitionEventHandler handler = new JiraCloudTransitionEventHandler(gson, propertiesFactory, messageSenderFactory, jobDetailsAccessor);
+        JiraCloudTransitionEventHandler handler = new JiraCloudTransitionEventHandler(
+            eventManager,
+            jobSubTaskAccessor,
+            gson,
+            propertiesFactory,
+            messageSenderFactory,
+            jobDetailsAccessor
+        );
         ExistingIssueDetails<String> existingIssueDetails = new ExistingIssueDetails<>("id", "key", "summary", "link", IssueStatus.UNKNOWN, IssueCategory.BOM);
         IssueTransitionModel<String> model = new IssueTransitionModel<>(existingIssueDetails, IssueOperation.RESOLVE, List.of(), null);
-        JiraCloudTransitionEvent event = new JiraCloudTransitionEvent(IssueTrackerTransitionIssueEvent.createDefaultEventDestination(ChannelKeys.JIRA_CLOUD), jobId, model);
+        JiraCloudTransitionEvent event = new JiraCloudTransitionEvent(
+            IssueTrackerTransitionIssueEvent.createDefaultEventDestination(ChannelKeys.JIRA_CLOUD),
+            parentEventId,
+            jobId,
+            notificationIds,
+            model
+        );
         handler.handle(event);
         assertEquals(1, issueCounter.get());
     }

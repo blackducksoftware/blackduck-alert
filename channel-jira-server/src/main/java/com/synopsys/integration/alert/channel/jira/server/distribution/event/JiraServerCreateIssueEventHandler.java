@@ -29,11 +29,13 @@ import com.synopsys.integration.alert.api.channel.jira.distribution.JiraIssueCre
 import com.synopsys.integration.alert.api.channel.jira.distribution.custom.JiraCustomFieldResolver;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerMessageSenderFactory;
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerQueryExecutor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.synopsys.integration.jira.common.rest.service.IssuePropertyService;
 import com.synopsys.integration.jira.common.server.service.FieldService;
@@ -43,7 +45,7 @@ import com.synopsys.integration.jira.common.server.service.JiraServerServiceFact
 import com.synopsys.integration.jira.common.server.service.ProjectService;
 
 @Component
-public class JiraServerCreateIssueEventHandler implements IssueTrackerCreateIssueEventHandler {
+public class JiraServerCreateIssueEventHandler extends IssueTrackerCreateIssueEventHandler {
     private Logger logger = LoggerFactory.getLogger(getClass());
     private final Gson gson;
     private final JiraServerPropertiesFactory jiraServerPropertiesFactory;
@@ -52,11 +54,14 @@ public class JiraServerCreateIssueEventHandler implements IssueTrackerCreateIssu
 
     @Autowired
     public JiraServerCreateIssueEventHandler(
+        EventManager eventManager,
+        JobSubTaskAccessor jobSubTaskAccessor,
         Gson gson,
         JiraServerPropertiesFactory jiraServerPropertiesFactory,
         JiraServerMessageSenderFactory jiraServerMessageSenderFactory,
         JobDetailsAccessor<JiraServerJobDetailsModel> jobDetailsAccessor
     ) {
+        super(eventManager, jobSubTaskAccessor);
         this.gson = gson;
         this.jiraServerPropertiesFactory = jiraServerPropertiesFactory;
         this.jiraServerMessageSenderFactory = jiraServerMessageSenderFactory;
@@ -64,7 +69,7 @@ public class JiraServerCreateIssueEventHandler implements IssueTrackerCreateIssu
     }
 
     @Override
-    public void handle(IssueTrackerCreateIssueEvent event) {
+    public void handleEvent(IssueTrackerCreateIssueEvent event) {
         UUID jobId = event.getJobId();
         IssueCreationModel creationModel = event.getCreationModel();
         Optional<JiraServerJobDetailsModel> details = jobDetailsAccessor.retrieveDetails(event.getJobId());
@@ -96,7 +101,9 @@ public class JiraServerCreateIssueEventHandler implements IssueTrackerCreateIssu
                     issueCreationRequestCreator,
                     issuePropertiesManager,
                     jiraErrorMessageUtility,
-                    jiraServerQueryExecutor
+                    jiraServerQueryExecutor,
+                    event.getParentEventId(),
+                    event.getNotificationIds()
                 );
 
                 String jqlQuery = creationModel.getQueryString().orElse(null);

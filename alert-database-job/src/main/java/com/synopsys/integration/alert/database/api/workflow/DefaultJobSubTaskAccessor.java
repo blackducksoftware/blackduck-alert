@@ -62,6 +62,17 @@ public class DefaultJobSubTaskAccessor implements JobSubTaskAccessor {
         return entity.map(this::convertEntity);
     }
 
+    @Override
+    public Optional<JobSubTaskStatusModel> removeSubTaskStatus(UUID parentEventId) {
+        Optional<JobSubTaskStatusEntity> entity = jobSubTaskRepository.findById(parentEventId);
+        Optional<JobSubTaskStatusModel> model = Optional.empty();
+        if (entity.isPresent()) {
+            jobSubTaskRepository.deleteById(parentEventId);
+            model = entity.map(this::convertEntity);
+        }
+        return model;
+    }
+
     private JobSubTaskStatusModel convertEntity(JobSubTaskStatusEntity entity) {
         return new JobSubTaskStatusModel(entity.getParentEventId(), entity.getJobId(), entity.getRemainingEvents(), entity.getAuditCorrelationId());
     }

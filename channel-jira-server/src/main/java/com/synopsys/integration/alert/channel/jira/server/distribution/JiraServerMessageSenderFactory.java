@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.channel.jira.server.distribution;
 
+import java.util.Set;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -103,7 +104,9 @@ public class JiraServerMessageSenderFactory implements IssueTrackerMessageSender
             issueCreationRequestCreator,
             issuePropertiesManager,
             jiraErrorMessageUtility,
-            jiraServerQueryExecutor
+            jiraServerQueryExecutor,
+            null,
+            Set.of()
         );
     }
 
@@ -114,7 +117,9 @@ public class JiraServerMessageSenderFactory implements IssueTrackerMessageSender
         JiraIssueCreationRequestCreator issueCreationRequestCreator,
         JiraIssueAlertPropertiesManager issuePropertiesManager,
         JiraErrorMessageUtility jiraErrorMessageUtility,
-        JiraServerQueryExecutor jiraServerQueryExecutor
+        JiraServerQueryExecutor jiraServerQueryExecutor,
+        UUID parentEventId,
+        Set<Long> notificationIds
     ) {
         IssueTrackerIssueResponseCreator issueResponseCreator = new IssueTrackerIssueResponseCreator(callbackInfoCreator);
 
@@ -135,9 +140,9 @@ public class JiraServerMessageSenderFactory implements IssueTrackerMessageSender
             jiraServerQueryExecutor
         );
         UUID jobId = distributionDetails.getJobId();
-        IssueTrackerCommentEventGenerator<String> commentEventGenerator = new JiraServerCommentGenerator(channelKey, jobId);
-        IssueTrackerCreationEventGenerator createEventGenerator = new JiraServerCreateEventGenerator(channelKey, jobId);
-        IssueTrackerTransitionEventGenerator<String> transitionEventGenerator = new JiraServerTransitionGenerator(channelKey, jobId);
+        IssueTrackerCommentEventGenerator<String> commentEventGenerator = new JiraServerCommentGenerator(channelKey, parentEventId, jobId, notificationIds);
+        IssueTrackerCreationEventGenerator createEventGenerator = new JiraServerCreateEventGenerator(channelKey, parentEventId, jobId, notificationIds);
+        IssueTrackerTransitionEventGenerator<String> transitionEventGenerator = new JiraServerTransitionGenerator(channelKey, parentEventId, jobId, notificationIds);
 
         return new IssueTrackerMessageSender<>(creator, transitioner, commenter, createEventGenerator, transitionEventGenerator, commentEventGenerator, eventManager);
 

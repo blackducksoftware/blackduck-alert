@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.channel.azure.boards.distribution;
 
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,7 +102,9 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
             workItemCommentService,
             azureBoardsProperties.getOrganizationName(),
             distributionDetails,
-            workItemQueryService
+            workItemQueryService,
+            null,
+            Set.of()
         );
     }
 
@@ -111,12 +114,14 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
         AzureWorkItemCommentService workItemCommentService,
         String organizationName,
         AzureBoardsJobDetailsModel distributionDetails,
-        AzureWorkItemQueryService workItemQueryService
+        AzureWorkItemQueryService workItemQueryService,
+        UUID parentEventId,
+        Set<Long> notificationIds
     ) {
         IssueTrackerIssueResponseCreator issueResponseCreator = new IssueTrackerIssueResponseCreator(callbackInfoCreator);
         AzureBoardsWorkItemTypeStateRetriever workItemTypeStateRetriever = new AzureBoardsWorkItemTypeStateRetriever(gson, workItemService, workItemTypeStateService);
         AzureBoardsAlertIssuePropertiesManager issuePropertiesManager = new AzureBoardsAlertIssuePropertiesManager();
-        
+
         // Message Sender Requirements
         AzureBoardsIssueCommenter commenter = new AzureBoardsIssueCommenter(issueResponseCreator, organizationName, distributionDetails, workItemCommentService);
         AzureBoardsIssueTransitioner transitioner = new AzureBoardsIssueTransitioner(
@@ -144,9 +149,9 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
         );
 
         UUID jobId = distributionDetails.getJobId();
-        IssueTrackerCommentEventGenerator<Integer> commentEventGenerator = new AzureBoardsCommentGenerator(channelKey, jobId);
-        IssueTrackerCreationEventGenerator createEventGenerator = new AzureBoardsCreateEventGenerator(channelKey, jobId);
-        IssueTrackerTransitionEventGenerator<Integer> transitionEventGenerator = new AzureBoardsTransitionGenerator(channelKey, jobId);
+        IssueTrackerCommentEventGenerator<Integer> commentEventGenerator = new AzureBoardsCommentGenerator(channelKey, parentEventId, jobId, notificationIds);
+        IssueTrackerCreationEventGenerator createEventGenerator = new AzureBoardsCreateEventGenerator(channelKey, parentEventId, jobId, notificationIds);
+        IssueTrackerTransitionEventGenerator<Integer> transitionEventGenerator = new AzureBoardsTransitionGenerator(channelKey, parentEventId, jobId, notificationIds);
 
         return new IssueTrackerMessageSender<>(
             creator,
