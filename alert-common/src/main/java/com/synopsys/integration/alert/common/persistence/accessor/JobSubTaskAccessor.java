@@ -14,8 +14,4 @@ public interface JobSubTaskAccessor {
 
     Optional<JobSubTaskStatusModel> decrementTaskCount(UUID parentEventId);
 
-    void updateAuditEntryStatusFailed(UUID parentEventId, String message, Throwable exception);
-
-    void updateAuditEntryStatusSucceeded(UUID parentEventId);
-
 }
