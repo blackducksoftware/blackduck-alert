@@ -8,12 +8,14 @@ import com.synopsys.integration.alert.common.persistence.model.job.workflow.JobS
 
 public interface JobSubTaskAccessor {
 
-    Optional<JobSubTaskStatusModel> getSubTaskStatus(UUID parentEventId);
+    Optional<JobSubTaskStatusModel> getSubTaskStatus(UUID id);
 
-    JobSubTaskStatusModel createSubTaskStatus(UUID parentEventId, UUID jobId, Long remainingTaskCount, List<Long> notificationIds);
+    JobSubTaskStatusModel createSubTaskStatus(UUID id, UUID jobId, Long remainingTaskCount, List<Long> notificationIds);
 
-    Optional<JobSubTaskStatusModel> decrementTaskCount(UUID parentEventId);
+    Optional<JobSubTaskStatusModel> updateTaskCount(UUID id, Long remainingTaskCount);
 
-    Optional<JobSubTaskStatusModel> removeSubTaskStatus(UUID parentEventId);
+    Optional<JobSubTaskStatusModel> decrementTaskCount(UUID id);
+
+    Optional<JobSubTaskStatusModel> removeSubTaskStatus(UUID id);
 
 }

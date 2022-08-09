@@ -31,16 +31,16 @@ public class DefaultJobSubTaskAccessor implements JobSubTaskAccessor {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<JobSubTaskStatusModel> getSubTaskStatus(UUID parentEventId) {
-        return jobSubTaskRepository.findById(parentEventId)
+    public Optional<JobSubTaskStatusModel> getSubTaskStatus(UUID id) {
+        return jobSubTaskRepository.findById(id)
             .map(this::convertEntity);
     }
 
     @Override
     @Transactional
-    public JobSubTaskStatusModel createSubTaskStatus(UUID parentEventId, UUID jobId, Long remainingTaskCount, List<Long> notificationIds) {
+    public JobSubTaskStatusModel createSubTaskStatus(UUID id, UUID jobId, Long remainingTaskCount, List<Long> notificationIds) {
         UUID auditCorrelationId = UUID.randomUUID();
-        JobSubTaskStatusEntity entity = new JobSubTaskStatusEntity(parentEventId, jobId, remainingTaskCount, auditCorrelationId);
+        JobSubTaskStatusEntity entity = new JobSubTaskStatusEntity(id, jobId, remainingTaskCount, auditCorrelationId);
         entity = jobSubTaskRepository.save(entity);
 
         for (Long notificationId : notificationIds) {
@@ -51,29 +51,46 @@ public class DefaultJobSubTaskAccessor implements JobSubTaskAccessor {
 
     @Override
     @Transactional
-    public Optional<JobSubTaskStatusModel> decrementTaskCount(UUID parentEventId) {
-        Optional<JobSubTaskStatusEntity> entity = jobSubTaskRepository.findById(parentEventId);
+    public Optional<JobSubTaskStatusModel> updateTaskCount(UUID id, Long remainingTaskCount) {
+        Optional<JobSubTaskStatusEntity> entity = jobSubTaskRepository.findById(id);
+        if (entity.isPresent()) {
+            JobSubTaskStatusEntity currentEntity = entity.get();
+            JobSubTaskStatusEntity updatedEntity = new JobSubTaskStatusEntity(
+                currentEntity.getId(),
+                currentEntity.getJobId(),
+                remainingTaskCount,
+                currentEntity.getAuditCorrelationId()
+            );
+            entity = Optional.of(jobSubTaskRepository.save(updatedEntity));
+        }
+        return entity.map(this::convertEntity);
+    }
+
+    @Override
+    @Transactional
+    public Optional<JobSubTaskStatusModel> decrementTaskCount(UUID id) {
+        Optional<JobSubTaskStatusEntity> entity = jobSubTaskRepository.findById(id);
         if (entity.isPresent()) {
             JobSubTaskStatusEntity item = entity.get();
             Long remainingTaskCount = item.getRemainingEvents() - 1;
-            item = jobSubTaskRepository.save(new JobSubTaskStatusEntity(item.getParentEventId(), item.getJobId(), remainingTaskCount, item.getAuditCorrelationId()));
+            item = jobSubTaskRepository.save(new JobSubTaskStatusEntity(item.getId(), item.getJobId(), remainingTaskCount, item.getAuditCorrelationId()));
             entity = Optional.of(item);
         }
         return entity.map(this::convertEntity);
     }
 
     @Override
-    public Optional<JobSubTaskStatusModel> removeSubTaskStatus(UUID parentEventId) {
-        Optional<JobSubTaskStatusEntity> entity = jobSubTaskRepository.findById(parentEventId);
+    public Optional<JobSubTaskStatusModel> removeSubTaskStatus(UUID id) {
+        Optional<JobSubTaskStatusEntity> entity = jobSubTaskRepository.findById(id);
         Optional<JobSubTaskStatusModel> model = Optional.empty();
         if (entity.isPresent()) {
-            jobSubTaskRepository.deleteById(parentEventId);
+            jobSubTaskRepository.deleteById(id);
             model = entity.map(this::convertEntity);
         }
         return model;
     }
 
     private JobSubTaskStatusModel convertEntity(JobSubTaskStatusEntity entity) {
-        return new JobSubTaskStatusModel(entity.getParentEventId(), entity.getJobId(), entity.getRemainingEvents(), entity.getAuditCorrelationId());
+        return new JobSubTaskStatusModel(entity.getId(), entity.getJobId(), entity.getRemainingEvents(), entity.getAuditCorrelationId());
     }
 }

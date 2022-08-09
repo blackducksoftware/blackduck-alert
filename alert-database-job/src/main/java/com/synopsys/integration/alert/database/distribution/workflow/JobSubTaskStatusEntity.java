@@ -17,8 +17,8 @@ import com.synopsys.integration.alert.database.BaseEntity;
 public class JobSubTaskStatusEntity extends BaseEntity {
     private static final long serialVersionUID = -6039296175355842298L;
     @Id
-    @Column(name = "parent_event_id")
-    private UUID parentEventId;
+    @Column(name = "id")
+    private UUID id;
 
     @Column(name = "job_id")
     private UUID jobId;
@@ -36,15 +36,15 @@ public class JobSubTaskStatusEntity extends BaseEntity {
     public JobSubTaskStatusEntity() {
     }
 
-    public JobSubTaskStatusEntity(UUID parentEventId, UUID jobId, Long remainingEvents, UUID auditCorrelationId) {
-        this.parentEventId = parentEventId;
+    public JobSubTaskStatusEntity(UUID id, UUID jobId, Long remainingEvents, UUID auditCorrelationId) {
+        this.id = id;
         this.jobId = jobId;
         this.remainingEvents = remainingEvents;
         this.auditCorrelationId = auditCorrelationId;
     }
 
-    public UUID getParentEventId() {
-        return parentEventId;
+    public UUID getId() {
+        return id;
     }
 
     public UUID getJobId() {

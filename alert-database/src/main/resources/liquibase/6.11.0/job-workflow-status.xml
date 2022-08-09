@@ -8,7 +8,7 @@
             </not>
         </preConditions>
         <createTable tableName="job_sub_task_status" schemaName="alert">
-            <column name="parent_event_id" type="UUID">
+            <column name="id" type="UUID">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <column name="job_id" type="UUID">
