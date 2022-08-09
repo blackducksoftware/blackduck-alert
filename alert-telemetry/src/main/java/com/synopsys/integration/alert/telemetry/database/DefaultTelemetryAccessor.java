@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.telemetry.database;
 
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +72,11 @@ public class DefaultTelemetryAccessor implements TelemetryAccessor {
         );
     }
 
+    @Transactional
+    public long countNotificationMappingTelemetryTasks() {
+        return telemetryNotificationMappingRepository.count();
+    }
+
     @Transactional(propagation = Propagation.REQUIRED)
     public NotificationProcessingTelemetryModel createNotificationProcessingTelemetryTask(UUID correlationId, UUID jobId) {
         NotificationProcessingTelemetryEntity notificationProcessingTelemetryEntity = new NotificationProcessingTelemetryEntity(
@@ -105,6 +111,11 @@ public class DefaultTelemetryAccessor implements TelemetryAccessor {
             updatedTelemetryEntity.getStartTaskTime(),
             updatedTelemetryEntity.getCompleteTaskTime()
         );
+    }
+
+    @Transactional
+    public long countNotificationProcessingTelemetryTasks() {
+        return telemetryNotificationProcessingRepository.count();
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
@@ -144,5 +155,22 @@ public class DefaultTelemetryAccessor implements TelemetryAccessor {
             updatedTelemetryEntity.getStartTaskTime(),
             updatedTelemetryEntity.getCompleteTaskTime()
         );
+    }
+
+    @Transactional
+    public long countDistributionHandlingTelemetryTasks() {
+        return telemetryDistributionChannelHandlingRepository.count();
+    }
+
+    @Override
+    @Transactional
+    public int deleteNotificationMappingTelemetryCreatedBefore(OffsetDateTime date) {
+        return telemetryNotificationMappingRepository.bulkDeleteCreatedAtBefore(date);
+    }
+
+    @Override
+    @Transactional
+    public int deleteDistributionTelemetryCreatedBefore(OffsetDateTime date) {
+        return telemetryDistributionChannelHandlingRepository.bulkDeleteCreatedAtBefore(date);
     }
 }

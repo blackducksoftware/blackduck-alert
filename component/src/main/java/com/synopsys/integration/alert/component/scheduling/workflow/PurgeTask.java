@@ -24,6 +24,7 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.TelemetryAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
@@ -42,16 +43,25 @@ public class PurgeTask extends StartupScheduledTask {
     private final NotificationAccessor notificationAccessor;
     private final SystemMessageAccessor systemMessageAccessor;
     private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
+    private final TelemetryAccessor telemetryAccessor;
     private int dayOffset;
 
     @Autowired
-    public PurgeTask(SchedulingDescriptorKey schedulingDescriptorKey, TaskScheduler taskScheduler, NotificationAccessor notificationAccessor, SystemMessageAccessor systemMessageAccessor, TaskManager taskManager,
-        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor) {
+    public PurgeTask(
+        SchedulingDescriptorKey schedulingDescriptorKey,
+        TaskScheduler taskScheduler,
+        NotificationAccessor notificationAccessor,
+        SystemMessageAccessor systemMessageAccessor,
+        TaskManager taskManager,
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor,
+        TelemetryAccessor telemetryAccessor
+    ) {
         super(taskScheduler, taskManager);
         this.schedulingDescriptorKey = schedulingDescriptorKey;
         this.notificationAccessor = notificationAccessor;
         this.systemMessageAccessor = systemMessageAccessor;
         this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
+        this.telemetryAccessor = telemetryAccessor;
         this.dayOffset = 1;
     }
 
@@ -60,6 +70,7 @@ public class PurgeTask extends StartupScheduledTask {
         OffsetDateTime date = createNotificationOlderThanSearchDate();
         purgeNotifications(date);
         purgeSystemMessages(date);
+        purgeTelemetryInformation(date);
     }
 
     @Override
@@ -105,6 +116,17 @@ public class PurgeTask extends StartupScheduledTask {
         }
     }
 
+    private void purgeTelemetryInformation(OffsetDateTime date) {
+        try {
+            int mappingDeletedCount = telemetryAccessor.deleteNotificationMappingTelemetryCreatedBefore(date);
+            logger.debug("Purged {} telemetry mapping events.", mappingDeletedCount);
+            int distributionDeletedCount = telemetryAccessor.deleteDistributionTelemetryCreatedBefore(date);
+            logger.debug("Purged {} telemetry distribution events.", distributionDeletedCount);
+        } catch (Exception ex) {
+            logger.error("Error purging telemetry events", ex);
+        }
+    }
+
     public OffsetDateTime createNotificationOlderThanSearchDate() {
         return DateUtils.createCurrentDateTimestamp()
             .minusDays(dayOffset)
@@ -114,7 +136,8 @@ public class PurgeTask extends StartupScheduledTask {
     private Boolean purgeOldData() {
         try {
             logger.info("Begin startup purge of old data");
-            Optional<ConfigurationModel> configurationModel = configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(schedulingDescriptorKey, ConfigContextEnum.GLOBAL).stream().findFirst();
+            Optional<ConfigurationModel> configurationModel = configurationModelConfigurationAccessor
+                .getConfigurationsByDescriptorKeyAndContext(schedulingDescriptorKey, ConfigContextEnum.GLOBAL).stream().findFirst();
             if (configurationModel.isPresent()) {
                 Integer purgeDataFrequencyDays = configurationModel.map(SchedulingConfiguration::new)
                     .map(SchedulingConfiguration::getDataFrequencyDays)

@@ -91,6 +91,7 @@
                 referencedTableSchemaName="alert"
                 referencedTableName="telemetry_notification_mapping"
                 referencedColumnNames="correlation_id"
+                onDelete="CASCADE"
         />
     </changeSet>
 </databaseChangeLog>

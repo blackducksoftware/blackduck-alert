@@ -7,7 +7,10 @@
  */
 package com.synopsys.integration.alert.common.persistence.accessor;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import java.time.OffsetDateTime;
 
-public interface TelemetryAccessor<T extends AlertSerializableModel> {
+public interface TelemetryAccessor {
+    int deleteNotificationMappingTelemetryCreatedBefore(OffsetDateTime date);
+
+    int deleteDistributionTelemetryCreatedBefore(OffsetDateTime date);
 }
