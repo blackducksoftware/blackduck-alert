@@ -16,10 +16,10 @@ import com.synopsys.integration.alert.component.scheduling.descriptor.Scheduling
 import com.synopsys.integration.alert.component.scheduling.workflow.PurgeTask;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
-public class PurgeTaskTest {
+class PurgeTaskTest {
 
     @Test
-    public void cronExpressionNotDefault() {
+    void cronExpressionNotDefault() {
         final String notDefaultValue = "44";
         ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
         ConfigurationModelMutable configurationModel = new ConfigurationModelMutable(1L, 1L, null, null, ConfigContextEnum.GLOBAL);
@@ -27,7 +27,7 @@ public class PurgeTaskTest {
         configurationFieldModel.setFieldValue(notDefaultValue);
         configurationModel.put(configurationFieldModel);
         Mockito.when(configurationModelConfigurationAccessor.getConfigurationsByDescriptorKey(Mockito.any(DescriptorKey.class))).thenReturn(List.of(configurationModel));
-        PurgeTask task = new PurgeTask(new SchedulingDescriptorKey(), null, null, null, null, configurationModelConfigurationAccessor);
+        PurgeTask task = new PurgeTask(new SchedulingDescriptorKey(), null, null, null, null, configurationModelConfigurationAccessor, null);
         String cronWithNotDefault = task.scheduleCronExpression();
         String expectedCron = String.format(PurgeTask.CRON_FORMAT, notDefaultValue);
 

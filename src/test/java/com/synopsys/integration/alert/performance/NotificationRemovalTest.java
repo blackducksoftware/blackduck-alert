@@ -44,6 +44,7 @@ import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunnerLegacy;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
+import com.synopsys.integration.alert.telemetry.database.DefaultTelemetryAccessor;
 import com.synopsys.integration.alert.test.common.TestTags;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.blackduck.api.generated.enumeration.PolicyRuleSeverityType;
@@ -85,6 +86,8 @@ class NotificationRemovalTest {
     @Autowired
     private ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     @Autowired
+    private DefaultTelemetryAccessor telemetryAccessor;
+    @Autowired
     private EventManager eventManager;
 
     private PurgeTask purgeTask;
@@ -97,6 +100,8 @@ class NotificationRemovalTest {
             taskManager.unregisterTask(purgeTask.getTaskName());
         }
         notificationAccessor.deleteNotificationsCreatedBefore(OffsetDateTime.now());
+        telemetryAccessor.deleteNotificationMappingTelemetryCreatedBefore(OffsetDateTime.now());
+        telemetryAccessor.deleteDistributionTelemetryCreatedBefore(OffsetDateTime.now());
 
         if (providerConfig != null) {
             configurationModelConfigurationAccessor.deleteConfiguration(providerConfig.getConfigurationId());
@@ -120,7 +125,15 @@ class NotificationRemovalTest {
             createABatchOfNotifications(providerConfig, notificationCreatedAtTime, processed);
         }
         OffsetDateTime oldestNotificationCreationTime = notificationCreatedAtTime;
-        purgeTask = new PurgeTask(schedulingDescriptorKey, taskScheduler, notificationAccessor, systemMessageAccessor, taskManager, configurationModelConfigurationAccessor);
+        purgeTask = new PurgeTask(
+            schedulingDescriptorKey,
+            taskScheduler,
+            notificationAccessor,
+            systemMessageAccessor,
+            taskManager,
+            configurationModelConfigurationAccessor,
+            telemetryAccessor
+        );
         LocalDateTime startTime = LocalDateTime.now();
         purgeTask.runTask();
 
@@ -177,7 +190,8 @@ class NotificationRemovalTest {
             RuleViolationNotificationView ruleViolationNotificationView = createRuleViolationNotificationView(PROJECT_NAME);
 
             String notificationContentString = GSON.toJson(ruleViolationNotificationView);
-            notifications.add(createNotification(providerDetails,
+            notifications.add(createNotification(
+                providerDetails,
                 NotificationType.RULE_VIOLATION.name(),
                 notificationContentString,
                 notificationCreationTime,
