@@ -9,6 +9,8 @@ import org.jetbrains.annotations.Nullable;
 import com.synopsys.integration.alert.api.event.AlertEvent;
 
 public class AuditFailedEvent extends AlertEvent {
+    private static final long serialVersionUID = 7700792205184047256L;
+    public static final String DEFAULT_DESTINATION_NAME = "audit_failed_event";
     private final UUID jobId;
     private final Set<Long> notificationIds;
     private final String errorMessage;

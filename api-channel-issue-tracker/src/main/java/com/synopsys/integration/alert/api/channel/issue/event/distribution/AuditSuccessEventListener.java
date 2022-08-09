@@ -9,15 +9,13 @@ import com.synopsys.integration.alert.api.event.AlertMessageListener;
 
 @Component
 public class AuditSuccessEventListener extends AlertMessageListener<AuditSuccessEvent> {
-    public static final String DEFAULT_DESTINATION_NAME = "audit_success_event";
 
     @Autowired
     public AuditSuccessEventListener(
         Gson gson,
         TaskExecutor taskExecutor,
-        Class<AuditSuccessEvent> eventClass,
         AuditSuccessHandler eventHandler
     ) {
-        super(gson, taskExecutor, DEFAULT_DESTINATION_NAME, eventClass, eventHandler);
+        super(gson, taskExecutor, AuditSuccessEvent.DEFAULT_DESTINATION_NAME, AuditSuccessEvent.class, eventHandler);
     }
 }
