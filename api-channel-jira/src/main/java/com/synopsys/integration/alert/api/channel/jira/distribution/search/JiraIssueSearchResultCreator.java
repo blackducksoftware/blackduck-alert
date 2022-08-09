@@ -43,7 +43,11 @@ public class JiraIssueSearchResultCreator {
         this.issueCategoryRetriever = issueCategoryRetriever;
     }
 
-    public List<ProjectIssueSearchResult<String>> createResultsFromExistingIssues(ProviderDetails providerDetails, LinkableItem project, List<JiraSearcherResponseModel> issueResponseModels) throws AlertException {
+    public List<ProjectIssueSearchResult<String>> createResultsFromExistingIssues(
+        ProviderDetails providerDetails,
+        LinkableItem project,
+        List<JiraSearcherResponseModel> issueResponseModels
+    ) throws AlertException {
         List<ProjectIssueSearchResult<String>> searchResults = new ArrayList<>();
         for (JiraSearcherResponseModel model : issueResponseModels) {
             ProjectIssueSearchResult<String> resultFromExistingIssue = createResultFromProjectIssue(model, providerDetails, project);
@@ -52,7 +56,8 @@ public class JiraIssueSearchResultCreator {
         return searchResults;
     }
 
-    public ProjectIssueSearchResult<String> createResultFromProjectIssue(JiraSearcherResponseModel issue, ProviderDetails providerDetails, LinkableItem project) throws AlertException {
+    public ProjectIssueSearchResult<String> createResultFromProjectIssue(JiraSearcherResponseModel issue, ProviderDetails providerDetails, LinkableItem project)
+        throws AlertException {
         JiraIssueSearchProperties issueProperties = issuePropertiesManager.retrieveIssueProperties(issue.getIssueKey());
 
         String nullableSubComponentName = issueProperties.getSubComponentName();

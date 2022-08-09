@@ -65,7 +65,7 @@ public class IssueTrackerModelExtractor<T extends Serializable> {
         if (existingIssueDetails.isPresent()) {
             return convertExistingIssue(existingIssueDetails.get(), projectIssueModel, searchResult.getRequiredOperation());
         } else {
-            IssueCreationModel issueCreationModel = projectIssueModelConverter.toIssueCreationModel(projectIssueModel, jobName);
+            IssueCreationModel issueCreationModel = projectIssueModelConverter.toIssueCreationModel(projectIssueModel, jobName, searchResult.getSearchQuery());
             return new IssueTrackerModelHolder<>(List.of(issueCreationModel), List.of(), List.of());
         }
     }

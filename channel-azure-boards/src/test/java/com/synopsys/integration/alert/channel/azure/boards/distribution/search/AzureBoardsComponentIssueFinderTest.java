@@ -17,6 +17,7 @@ import com.synopsys.integration.alert.api.channel.issue.model.IssuePolicyDetails
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
+import com.synopsys.integration.alert.api.channel.issue.search.IssueTrackerSearchResult;
 import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueCategory;
 import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueStatus;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
@@ -32,14 +33,19 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Compon
 import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemResponseFields;
 import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemResponseModel;
 
-public class AzureBoardsComponentIssueFinderTest {
+class AzureBoardsComponentIssueFinderTest {
     private static final ProviderDetails PROVIDER_DETAILS = new ProviderDetails(15L, new LinkableItem("Provider", "A provider", "https://provider-url"));
     private static final LinkableItem PROJECT_ITEM = new LinkableItem("Project", "A project", "https://project-url");
     private static final LinkableItem PROJECT_VERSION_ITEM = new LinkableItem("Project Version", "2.3.4-RC", "https://project-version-url");
     private static final LinkableItem COMPONENT_ITEM = new LinkableItem("Component", "A BOM component");
     private static final LinkableItem COMPONENT_VERSION_ITEM = new LinkableItem("Component Version", "1.0.0-SNAPSHOT");
     private static final ComponentPolicy COMPONENT_POLICY = new ComponentPolicy("A policy", ComponentConcernSeverity.UNSPECIFIED_UNKNOWN, false, false, null, "Uncategorized");
-    private static final ComponentVulnerabilities COMPONENT_VULNERABILITIES = new ComponentVulnerabilities(List.of(), List.of(), List.of(), List.of(new LinkableItem("Vulnerability", "CVE-007")));
+    private static final ComponentVulnerabilities COMPONENT_VULNERABILITIES = new ComponentVulnerabilities(
+        List.of(),
+        List.of(),
+        List.of(),
+        List.of(new LinkableItem("Vulnerability", "CVE-007"))
+    );
     private static final AbstractBomComponentDetails BOM_COMPONENT_DETAILS = createBomComponentDetailsWithComponentVulnerabilities(COMPONENT_VULNERABILITIES);
     private static final IssueBomComponentDetails ISSUE_BOM_COMPONENT_DETAILS = IssueBomComponentDetails.fromBomComponentDetails(BOM_COMPONENT_DETAILS);
 
@@ -48,13 +54,17 @@ public class AzureBoardsComponentIssueFinderTest {
     private final AzureBoardsIssueStatusResolver azureBoardsIssueStatusResolver = new AzureBoardsIssueStatusResolver(workItemCompletedState, workItemReopenState);
 
     @Test
-    public void findExistingIssuesByProjectIssueModelTest() throws AlertException {
+    void findExistingIssuesByProjectIssueModelTest() throws AlertException {
         Gson gson = new Gson();
         String organizationName = "orgName";
         AzureBoardsIssueTrackerQueryManager queryManager = Mockito.mock(AzureBoardsIssueTrackerQueryManager.class);
         IssueCategoryRetriever issueCategoryRetriever = new IssueCategoryRetriever();
 
-        AzureBoardsExistingIssueDetailsCreator issueDetailsCreator = new AzureBoardsExistingIssueDetailsCreator(organizationName, issueCategoryRetriever, azureBoardsIssueStatusResolver);
+        AzureBoardsExistingIssueDetailsCreator issueDetailsCreator = new AzureBoardsExistingIssueDetailsCreator(
+            organizationName,
+            issueCategoryRetriever,
+            azureBoardsIssueStatusResolver
+        );
         AzureBoardsWorkItemFinder workItemFinder = new AzureBoardsWorkItemFinder(queryManager, "test proj");
         AzureBoardsComponentIssueFinder componentIssueFinder = new AzureBoardsComponentIssueFinder(gson, workItemFinder, issueDetailsCreator);
 
@@ -64,36 +74,46 @@ public class AzureBoardsComponentIssueFinderTest {
         WorkItemResponseModel workItemResponseModel = createWorkItemResponseModel(workItemReopenState);
         Mockito.when(queryManager.executeQueryAndRetrieveWorkItems(Mockito.any())).thenReturn(List.of(workItemResponseModel));
 
-        List<ExistingIssueDetails<Integer>> existingIssueDetailsList = componentIssueFinder.findExistingIssuesByProjectIssueModel(projectIssueModel);
+        IssueTrackerSearchResult<Integer> existingIssueDetailsList = componentIssueFinder.findExistingIssuesByProjectIssueModel(projectIssueModel);
 
-        assertEquals(1, existingIssueDetailsList.size());
-        ExistingIssueDetails<Integer> existingIssueDetails = existingIssueDetailsList.get(0);
+        assertEquals(1, existingIssueDetailsList.getSearchResults().size());
+        ExistingIssueDetails<Integer> existingIssueDetails = existingIssueDetailsList.getSearchResults().get(0).getExistingIssueDetails();
         assertEquals(IssueStatus.RESOLVABLE, existingIssueDetails.getIssueStatus());
         assertEquals(IssueCategory.POLICY, existingIssueDetails.getIssueCategory());
     }
 
     @Test
-    public void findExistingIssuesByProjectIssueModelForUnknownVersionTest() throws AlertException {
+    void findExistingIssuesByProjectIssueModelForUnknownVersionTest() throws AlertException {
         Gson gson = new Gson();
         String organizationName = "orgName";
         AzureBoardsIssueTrackerQueryManager queryManager = Mockito.mock(AzureBoardsIssueTrackerQueryManager.class);
         IssueCategoryRetriever issueCategoryRetriever = new IssueCategoryRetriever();
 
-        AzureBoardsExistingIssueDetailsCreator issueDetailsCreator = new AzureBoardsExistingIssueDetailsCreator(organizationName, issueCategoryRetriever, azureBoardsIssueStatusResolver);
+        AzureBoardsExistingIssueDetailsCreator issueDetailsCreator = new AzureBoardsExistingIssueDetailsCreator(
+            organizationName,
+            issueCategoryRetriever,
+            azureBoardsIssueStatusResolver
+        );
         AzureBoardsWorkItemFinder workItemFinder = new AzureBoardsWorkItemFinder(queryManager, "test proj");
         AzureBoardsComponentIssueFinder componentIssueFinder = new AzureBoardsComponentIssueFinder(gson, workItemFinder, issueDetailsCreator);
 
         IssueComponentUnknownVersionDetails componentUnknownVersionDetails = new IssueComponentUnknownVersionDetails(ItemOperation.ADD, createRiskModels());
         IssuePolicyDetails testPolicy = new IssuePolicyDetails("Test Policy", ItemOperation.ADD, ComponentConcernSeverity.UNSPECIFIED_UNKNOWN);
-        ProjectIssueModel projectIssueModel = ProjectIssueModel.componentUnknownVersion(PROVIDER_DETAILS, PROJECT_ITEM, PROJECT_VERSION_ITEM, ISSUE_BOM_COMPONENT_DETAILS, componentUnknownVersionDetails);
+        ProjectIssueModel projectIssueModel = ProjectIssueModel.componentUnknownVersion(
+            PROVIDER_DETAILS,
+            PROJECT_ITEM,
+            PROJECT_VERSION_ITEM,
+            ISSUE_BOM_COMPONENT_DETAILS,
+            componentUnknownVersionDetails
+        );
 
         WorkItemResponseModel workItemResponseModel = createWorkItemResponseModel(workItemReopenState);
         Mockito.when(queryManager.executeQueryAndRetrieveWorkItems(Mockito.any())).thenReturn(List.of(workItemResponseModel));
 
-        List<ExistingIssueDetails<Integer>> existingIssueDetailsList = componentIssueFinder.findExistingIssuesByProjectIssueModel(projectIssueModel);
+        IssueTrackerSearchResult<Integer> existingIssueDetailsList = componentIssueFinder.findExistingIssuesByProjectIssueModel(projectIssueModel);
 
-        assertEquals(1, existingIssueDetailsList.size());
-        ExistingIssueDetails<Integer> existingIssueDetails = existingIssueDetailsList.get(0);
+        assertEquals(1, existingIssueDetailsList.getSearchResults().size());
+        ExistingIssueDetails<Integer> existingIssueDetails = existingIssueDetailsList.getSearchResults().get(0).getExistingIssueDetails();
         assertEquals(IssueStatus.RESOLVABLE, existingIssueDetails.getIssueStatus());
         assertEquals(IssueCategory.BOM, existingIssueDetails.getIssueCategory());
     }

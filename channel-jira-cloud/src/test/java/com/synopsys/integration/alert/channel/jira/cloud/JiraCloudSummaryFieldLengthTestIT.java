@@ -22,6 +22,7 @@ import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetr
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.jira.cloud.distribution.JiraCloudMessageSenderFactory;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
@@ -78,13 +79,15 @@ public class JiraCloudSummaryFieldLengthTestIT {
         Gson gson = new GsonBuilder().create();
         IssueCategoryRetriever issueCategoryRetriever = new IssueCategoryRetriever();
         JiraCloudPropertiesFactory jiraCloudPropertiesFactory = createJiraCloudPropertiesFactory(testProperties);
+        EventManager eventManager = Mockito.mock(EventManager.class);
 
         JiraCloudMessageSenderFactory jiraCloudMessageSenderFactory = new JiraCloudMessageSenderFactory(
             gson,
             ChannelKeys.JIRA_CLOUD,
             jiraCloudPropertiesFactory,
             new IssueTrackerCallbackInfoCreator(),
-            issueCategoryRetriever
+            issueCategoryRetriever,
+            eventManager
         );
 
         JiraCloudJobDetailsModel jiraCloudJobDetails = createJiraCloudJobDetails(testProperties);

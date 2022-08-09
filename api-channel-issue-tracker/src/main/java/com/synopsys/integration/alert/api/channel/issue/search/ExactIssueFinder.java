@@ -8,12 +8,11 @@
 package com.synopsys.integration.alert.api.channel.issue.search;
 
 import java.io.Serializable;
-import java.util.List;
 
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 
 public interface ExactIssueFinder<T extends Serializable> {
-    List<ExistingIssueDetails<T>> findExistingIssuesByProjectIssueModel(ProjectIssueModel projectIssueModel) throws AlertException;
+    IssueTrackerSearchResult<T> findExistingIssuesByProjectIssueModel(ProjectIssueModel projectIssueModel) throws AlertException;
 
 }

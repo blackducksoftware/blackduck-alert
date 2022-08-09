@@ -56,7 +56,6 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
     private final Gson gson;
     private final JiraMessageFormatter jiraMessageFormatter;
     private final JiraCloudChannelKey jiraCloudChannelKey;
-    private final JiraCloudChannelLock jiraCloudChannelLock;
     private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     private final ProxyManager proxyManager;
     private final JiraCloudMessageSenderFactory messageSenderFactory;
@@ -68,7 +67,6 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
         Gson gson,
         JiraMessageFormatter jiraMessageFormatter,
         JiraCloudChannelKey jiraCloudChannelKey,
-        JiraCloudChannelLock jiraCloudChannelLock,
         ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor,
         ProxyManager proxyManager,
         JiraCloudMessageSenderFactory messageSenderFactory,
@@ -78,7 +76,6 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
         this.gson = gson;
         this.jiraMessageFormatter = jiraMessageFormatter;
         this.jiraCloudChannelKey = jiraCloudChannelKey;
-        this.jiraCloudChannelLock = jiraCloudChannelLock;
         this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
         this.proxyManager = proxyManager;
         this.messageSenderFactory = messageSenderFactory;
@@ -124,9 +121,17 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
         JiraIssueCreationRequestCreator issueCreationRequestCreator = new JiraIssueCreationRequestCreator(customFieldResolver);
         JiraErrorMessageUtility jiraErrorMessageUtility = new JiraErrorMessageUtility(gson, customFieldResolver);
 
-        IssueTrackerMessageSender<String> messageSender = messageSenderFactory.createMessageSender(issueService, distributionDetails, projectService, issueCreationRequestCreator, issuePropertiesManager, jiraErrorMessageUtility);
+        IssueTrackerMessageSender<String> messageSender = messageSenderFactory.createMessageSender(
+            issueService,
+            distributionDetails,
+            projectService,
+            issueCreationRequestCreator,
+            issuePropertiesManager,
+            jiraErrorMessageUtility,
+            jiraCloudQueryExecutor
+        );
 
-        return new IssueTrackerProcessor<>(jiraCloudChannelLock, extractor, messageSender);
+        return new IssueTrackerProcessor<>(extractor, messageSender);
     }
 
     private JiraCloudProperties createJiraCloudProperties() throws AlertConfigurationException {

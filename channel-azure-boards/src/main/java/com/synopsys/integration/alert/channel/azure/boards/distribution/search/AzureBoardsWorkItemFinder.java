@@ -28,7 +28,8 @@ public class AzureBoardsWorkItemFinder {
         this.teamProjectName = teamProjectName;
     }
 
-    public List<WorkItemResponseModel> findWorkItems(LinkableItem provider, LinkableItem project, AzureSearchFieldMappingBuilder fieldReferenceNameToExpectedValue) throws AlertException {
+    public AzureBoardsWorkItemSearchResult findWorkItems(LinkableItem provider, LinkableItem project, AzureSearchFieldMappingBuilder fieldReferenceNameToExpectedValue)
+        throws AlertException {
         String providerKey = AzureBoardsSearchPropertiesUtils.createProviderKey(provider.getLabel(), provider.getUrl().orElse(null));
         String topicKey = AzureBoardsSearchPropertiesUtils.createNullableLinkableItemKey(project);
 
@@ -46,7 +47,8 @@ public class AzureBoardsWorkItemFinder {
         }
 
         WorkItemQuery query = queryBuilder.orderBy(systemIdFieldName).build();
-        return queryManager.executeQueryAndRetrieveWorkItems(query);
+        List<WorkItemResponseModel> searchResults = queryManager.executeQueryAndRetrieveWorkItems(query);
+        return new AzureBoardsWorkItemSearchResult(query, searchResults);
     }
 
 }

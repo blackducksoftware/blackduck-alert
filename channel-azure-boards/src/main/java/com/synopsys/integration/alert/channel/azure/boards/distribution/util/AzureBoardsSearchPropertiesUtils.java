@@ -34,7 +34,9 @@ public final class AzureBoardsSearchPropertiesUtils {
         StringBuilder linkableItemBuilder = new StringBuilder();
         linkableItemBuilder.append(linkableItem.getLabel());
         linkableItemBuilder.append(LINKABLE_ITEM_DELIMITER);
-        linkableItemBuilder.append(linkableItem.getValue());
+        // Single quotes need to be escaped with an additional single quote for Azure OData queries
+        linkableItemBuilder.append(linkableItem.getValue().replace("'", "''"));
+
         linkableItem.getUrl()
             .ifPresent(url -> {
                 linkableItemBuilder.append(URL_DELIMITER);

@@ -12,6 +12,8 @@ This application provides the ability to send notifications from a provider to v
 ### Build Steps ###
 #### Requirements ####
  - JDK 11
+ - NPM 8.11.0 (Recommended)
+ - NVM 16.15.1 (Recommended)
 
 To compile the UI and create the jar file run:
 

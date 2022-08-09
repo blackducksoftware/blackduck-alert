@@ -61,7 +61,7 @@ public class ProjectIssueModelConverter {
         this.linkableItemConverter = new LinkableItemConverter(formatter);
     }
 
-    public IssueCreationModel toIssueCreationModel(ProjectIssueModel projectIssueModel, String jobName) {
+    public IssueCreationModel toIssueCreationModel(ProjectIssueModel projectIssueModel, String jobName, String queryString) {
         String title = createTruncatedTitle(projectIssueModel);
 
         ChunkedStringBuilder descriptionBuilder = new ChunkedStringBuilder(formatter.getMaxDescriptionLength());
@@ -101,7 +101,7 @@ public class ProjectIssueModelConverter {
             .map(comment -> String.format("%s%s%s", DESCRIPTION_CONTINUED_TEXT, formatter.getLineSeparator(), comment))
             .collect(Collectors.toList());
 
-        return IssueCreationModel.project(title, rechunkedDescription.getFirstChunk(), postCreateComments, projectIssueModel);
+        return IssueCreationModel.project(title, rechunkedDescription.getFirstChunk(), postCreateComments, projectIssueModel, queryString);
     }
 
     public <T extends Serializable> IssueTransitionModel<T> toIssueTransitionModel(ExistingIssueDetails<T> existingIssueDetails, ProjectIssueModel projectIssueModel, ItemOperation requiredOperation) {

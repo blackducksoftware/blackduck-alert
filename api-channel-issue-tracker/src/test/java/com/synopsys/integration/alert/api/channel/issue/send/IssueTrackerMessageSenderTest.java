@@ -15,13 +15,19 @@ import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerModelHolder;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.event.EventManager;
 
-public class IssueTrackerMessageSenderTest {
+class IssueTrackerMessageSenderTest {
     private static final AlertException TEST_EXCEPTION = new AlertException("Test exception");
     private static final IssueTrackerIssueResponseModel<String> DEFAULT_RESPONSE_MODEL = Mockito.mock(IssueTrackerIssueResponseModel.class);
     private static IssueTrackerIssueCreator<String> creator;
     private static IssueTrackerIssueTransitioner<String> transitioner;
     private static IssueTrackerIssueCommenter<String> commenter;
+
+    private static IssueTrackerCreationEventGenerator createEventGenerator;
+    private static IssueTrackerTransitionEventGenerator transitionEventGenerator;
+    private static IssueTrackerCommentEventGenerator commentEventGenerator;
+    private static EventManager eventManager;
 
     @BeforeAll
     public static void init() throws AlertException {
@@ -33,13 +39,26 @@ public class IssueTrackerMessageSenderTest {
 
         commenter = Mockito.mock(IssueTrackerIssueCommenter.class);
         Mockito.when(commenter.commentOnIssue(Mockito.any())).thenReturn(Optional.of(DEFAULT_RESPONSE_MODEL));
+
+        createEventGenerator = Mockito.mock(IssueTrackerCreationEventGenerator.class);
+        transitionEventGenerator = Mockito.mock(IssueTrackerTransitionEventGenerator.class);
+        commentEventGenerator = Mockito.mock(IssueTrackerCommentEventGenerator.class);
+        eventManager = Mockito.mock(EventManager.class);
     }
 
     @Test
-    public void sendMessagesTest() throws AlertException {
+    void sendMessagesTest() throws AlertException {
         IssueTrackerModelHolder<String> messages = createModelHolder();
 
-        IssueTrackerMessageSender<String> messageSender = new IssueTrackerMessageSender<>(creator, transitioner, commenter);
+        IssueTrackerMessageSender<String> messageSender = new IssueTrackerMessageSender<>(
+            creator,
+            transitioner,
+            commenter,
+            createEventGenerator,
+            transitionEventGenerator,
+            commentEventGenerator,
+            eventManager
+        );
         List<IssueTrackerIssueResponseModel<String>> responseModels = messageSender.sendMessages(messages);
         assertEquals(
             messages.getIssueCreationModels().size() + messages.getIssueTransitionModels().size() + messages.getIssueCommentModels().size(),
@@ -48,19 +67,35 @@ public class IssueTrackerMessageSenderTest {
     }
 
     @Test
-    public void sendMessagesThrowsExceptionTest() throws AlertException {
+    void sendMessagesThrowsExceptionTest() throws AlertException {
         IssueTrackerModelHolder<String> messages = createModelHolder();
 
         IssueTrackerIssueCreator<String> exceptionCreator = Mockito.mock(IssueTrackerIssueCreator.class);
         Mockito.when(exceptionCreator.createIssueTrackerIssue(Mockito.any())).thenThrow(TEST_EXCEPTION);
 
-        IssueTrackerMessageSender<String> messageSender1 = new IssueTrackerMessageSender<>(exceptionCreator, transitioner, commenter);
+        IssueTrackerMessageSender<String> messageSender1 = new IssueTrackerMessageSender<>(
+            exceptionCreator,
+            transitioner,
+            commenter,
+            createEventGenerator,
+            transitionEventGenerator,
+            commentEventGenerator,
+            eventManager
+        );
         assertExceptionThrown(messageSender1, messages);
 
         IssueTrackerIssueCommenter<String> exceptionCommenter = Mockito.mock(IssueTrackerIssueCommenter.class);
         Mockito.when(exceptionCommenter.commentOnIssue(Mockito.any())).thenThrow(TEST_EXCEPTION);
 
-        IssueTrackerMessageSender<String> messageSender2 = new IssueTrackerMessageSender<>(creator, transitioner, exceptionCommenter);
+        IssueTrackerMessageSender<String> messageSender2 = new IssueTrackerMessageSender<>(
+            creator,
+            transitioner,
+            exceptionCommenter,
+            createEventGenerator,
+            transitionEventGenerator,
+            commentEventGenerator,
+            eventManager
+        );
         assertExceptionThrown(messageSender2, messages);
     }
 

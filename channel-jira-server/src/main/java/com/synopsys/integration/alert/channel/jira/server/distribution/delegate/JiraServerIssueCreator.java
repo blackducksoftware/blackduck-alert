@@ -8,8 +8,11 @@
 package com.synopsys.integration.alert.channel.jira.server.distribution.delegate;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCallbackInfoCreator;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
@@ -20,8 +23,10 @@ import com.synopsys.integration.alert.api.channel.jira.distribution.custom.Messa
 import com.synopsys.integration.alert.api.channel.jira.distribution.custom.MessageValueReplacementResolver;
 import com.synopsys.integration.alert.api.channel.jira.distribution.delegate.JiraIssueCreator;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
+import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraSearcherResponseModel;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
+import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerQueryExecutor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
 import com.synopsys.integration.exception.IntegrationException;
@@ -34,10 +39,13 @@ import com.synopsys.integration.jira.common.server.service.IssueService;
 import com.synopsys.integration.jira.common.server.service.ProjectService;
 
 public class JiraServerIssueCreator extends JiraIssueCreator<IssueCreationRequestModel> {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final JiraServerJobDetailsModel distributionDetails;
     private final IssueService issueService;
     private final ProjectService projectService;
     private final JiraIssueCreationRequestCreator jiraIssueCreationRequestCreator;
+    private JiraServerQueryExecutor jiraServerQueryExecutor;
+    private IssueCategoryRetriever issueCategoryRetriever;
 
     public JiraServerIssueCreator(
         JiraServerChannelKey jiraServerChannelKey,
@@ -49,7 +57,8 @@ public class JiraServerIssueCreator extends JiraIssueCreator<IssueCreationReques
         JiraIssueCreationRequestCreator jiraIssueCreationRequestCreator,
         JiraIssueAlertPropertiesManager issuePropertiesManager,
         JiraErrorMessageUtility jiraErrorMessageUtility,
-        IssueCategoryRetriever issueCategoryRetriever
+        IssueCategoryRetriever issueCategoryRetriever,
+        JiraServerQueryExecutor jiraServerQueryExecutor
     ) {
         super(
             jiraServerChannelKey,
@@ -64,6 +73,9 @@ public class JiraServerIssueCreator extends JiraIssueCreator<IssueCreationReques
         this.issueService = issueService;
         this.projectService = projectService;
         this.jiraIssueCreationRequestCreator = jiraIssueCreationRequestCreator;
+        this.jiraServerQueryExecutor = jiraServerQueryExecutor;
+        this.issueCategoryRetriever = issueCategoryRetriever;
+
     }
 
     @Override
@@ -95,6 +107,21 @@ public class JiraServerIssueCreator extends JiraIssueCreator<IssueCreationReques
     }
 
     @Override
+    protected List<JiraSearcherResponseModel> searchForIssue(IssueCreationModel alertIssueCreationModel) {
+        Optional<String> query = alertIssueCreationModel.getQueryString();
+        List<JiraSearcherResponseModel> response = List.of();
+        try {
+            if (query.isPresent()) {
+                response = jiraServerQueryExecutor.executeQuery(query.get());
+            }
+        } catch (AlertException ex) {
+            logger.error("Query executed: {}", query);
+            logger.error("Couldn't execute query to see if issue exists.", ex);
+        }
+        return response;
+    }
+
+    @Override
     protected IssueCreationResponseModel createIssue(IssueCreationRequestModel alertIssueCreationModel) throws IntegrationException {
         return issueService.createIssue(alertIssueCreationModel);
     }
@@ -119,9 +146,9 @@ public class JiraServerIssueCreator extends JiraIssueCreator<IssueCreationReques
         }
 
         return foundProjectComponents
-                   .stream()
-                   .findAny()
-                   .orElseThrow(() -> new AlertException(String.format("Unable to find project matching '%s'", jiraProjectName)));
+            .stream()
+            .findAny()
+            .orElseThrow(() -> new AlertException(String.format("Unable to find project matching '%s'", jiraProjectName)));
     }
 
 }

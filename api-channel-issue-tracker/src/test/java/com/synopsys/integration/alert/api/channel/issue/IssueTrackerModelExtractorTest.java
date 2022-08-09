@@ -33,7 +33,7 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Compon
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentVulnerabilities;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 
-public class IssueTrackerModelExtractorTest {
+class IssueTrackerModelExtractorTest {
     private static final ProviderDetails PROVIDER_DETAILS = new ProviderDetails(0L, new LinkableItem("Provider", "Provider Config Name", "https://provider-url"));
 
     private static final LinkableItem PROJECT = new LinkableItem("Project", "A Black Duck project");
@@ -45,12 +45,22 @@ public class IssueTrackerModelExtractorTest {
     private static final String USAGE = "Some generic usage";
     private static final String ISSUES_URL = "https://issues-url";
 
-    private static final AbstractBomComponentDetails BOM_COMPONENT_DETAILS = new BomComponentDetails(COMPONENT, COMPONENT_VERSION, ComponentVulnerabilities.none(), List.of(), List.of(), LICENSE, USAGE, ComponentUpgradeGuidance.none(),
-        List.of(), ISSUES_URL);
+    private static final AbstractBomComponentDetails BOM_COMPONENT_DETAILS = new BomComponentDetails(
+        COMPONENT,
+        COMPONENT_VERSION,
+        ComponentVulnerabilities.none(),
+        List.of(),
+        List.of(),
+        LICENSE,
+        USAGE,
+        ComponentUpgradeGuidance.none(),
+        List.of(),
+        ISSUES_URL
+    );
     private static final IssueBomComponentDetails ISSUE_BOM_COMPONENT_DETAILS = IssueBomComponentDetails.fromBomComponentDetails(BOM_COMPONENT_DETAILS);
 
     @Test
-    public void extractSimpleMessageIssueModelsTest() {
+    void extractSimpleMessageIssueModelsTest() {
         String testSummary = "A test summary";
         String testDescription = "A description for the test";
         LinkableItem additionalDetail = new LinkableItem("A label", "A value");
@@ -69,15 +79,18 @@ public class IssueTrackerModelExtractorTest {
         assertEquals(PROVIDER_DETAILS.getProvider(), issueCreationModel.getProvider());
         assertTrue(issueCreationModel.getTitle().contains(testSummary), "Expected the issue title to contain the simple message's summary");
         assertTrue(issueCreationModel.getDescription().contains(testDescription), "Expected the issue description to contain the simple message's description");
-        assertTrue(issueCreationModel.getDescription().contains(additionalDetail.getValue()), "Expected the issue description to contain the simple message's additional detail(s)");
+        assertTrue(
+            issueCreationModel.getDescription().contains(additionalDetail.getValue()),
+            "Expected the issue description to contain the simple message's additional detail(s)"
+        );
     }
 
     @Test
-    public void extractProjectMessageIssueModelsCreateTest() throws AlertException {
+    void extractProjectMessageIssueModelsCreateTest() throws AlertException {
         ProjectMessage projectMessage = Mockito.mock(ProjectMessage.class);
         IssuePolicyDetails policyDetails = new IssuePolicyDetails("A policy", ItemOperation.ADD, ComponentConcernSeverity.UNSPECIFIED_UNKNOWN);
         ProjectIssueModel projectIssueModel = ProjectIssueModel.policy(PROVIDER_DETAILS, PROJECT, PROJECT_VERSION, ISSUE_BOM_COMPONENT_DETAILS, policyDetails);
-        ActionableIssueSearchResult<String> searchResult = new ActionableIssueSearchResult<>(null, projectIssueModel, ItemOperation.ADD);
+        ActionableIssueSearchResult<String> searchResult = new ActionableIssueSearchResult<>(null, projectIssueModel, "", ItemOperation.ADD);
 
         MockIssueTrackerMessageFormatter formatter = MockIssueTrackerMessageFormatter.withIntegerMaxValueLength();
 
@@ -97,12 +110,19 @@ public class IssueTrackerModelExtractorTest {
     }
 
     @Test
-    public void extractProjectMessageIssueModelsCommentTest() throws AlertException {
+    void extractProjectMessageIssueModelsCommentTest() throws AlertException {
         ProjectMessage projectMessage = Mockito.mock(ProjectMessage.class);
-        ExistingIssueDetails<String> existingIssueDetails = new ExistingIssueDetails<>("issue-id", "issue-key", "issue summary", "https://ui-link", IssueStatus.UNKNOWN, IssueCategory.POLICY);
+        ExistingIssueDetails<String> existingIssueDetails = new ExistingIssueDetails<>(
+            "issue-id",
+            "issue-key",
+            "issue summary",
+            "https://ui-link",
+            IssueStatus.UNKNOWN,
+            IssueCategory.POLICY
+        );
         IssuePolicyDetails policyDetails = new IssuePolicyDetails("A policy", ItemOperation.UPDATE, ComponentConcernSeverity.UNSPECIFIED_UNKNOWN);
         ProjectIssueModel projectIssueModel = ProjectIssueModel.policy(PROVIDER_DETAILS, PROJECT, PROJECT_VERSION, ISSUE_BOM_COMPONENT_DETAILS, policyDetails);
-        ActionableIssueSearchResult<String> searchResult = new ActionableIssueSearchResult<>(existingIssueDetails, projectIssueModel, ItemOperation.UPDATE);
+        ActionableIssueSearchResult<String> searchResult = new ActionableIssueSearchResult<>(existingIssueDetails, projectIssueModel, "", ItemOperation.UPDATE);
 
         MockIssueTrackerMessageFormatter formatter = MockIssueTrackerMessageFormatter.withIntegerMaxValueLength();
 
@@ -118,14 +138,21 @@ public class IssueTrackerModelExtractorTest {
     }
 
     @Test
-    public void extractProjectMessageIssueModelsTransitionTest() throws AlertException {
+    void extractProjectMessageIssueModelsTransitionTest() throws AlertException {
         ItemOperation itemOperation = ItemOperation.DELETE;
         IssueOperation issueOperation = IssueOperation.RESOLVE;
         ProjectMessage projectMessage = Mockito.mock(ProjectMessage.class);
-        ExistingIssueDetails<String> existingIssueDetails = new ExistingIssueDetails<>("issue-id", "issue-key", "issue summary", "https://ui-link", IssueStatus.UNKNOWN, IssueCategory.POLICY);
+        ExistingIssueDetails<String> existingIssueDetails = new ExistingIssueDetails<>(
+            "issue-id",
+            "issue-key",
+            "issue summary",
+            "https://ui-link",
+            IssueStatus.UNKNOWN,
+            IssueCategory.POLICY
+        );
         IssuePolicyDetails policyDetails = new IssuePolicyDetails("A policy", itemOperation, ComponentConcernSeverity.UNSPECIFIED_UNKNOWN);
         ProjectIssueModel projectIssueModel = ProjectIssueModel.policy(PROVIDER_DETAILS, PROJECT, PROJECT_VERSION, ISSUE_BOM_COMPONENT_DETAILS, policyDetails);
-        ActionableIssueSearchResult<String> searchResult = new ActionableIssueSearchResult<>(existingIssueDetails, projectIssueModel, itemOperation);
+        ActionableIssueSearchResult<String> searchResult = new ActionableIssueSearchResult<>(existingIssueDetails, projectIssueModel, "", itemOperation);
 
         MockIssueTrackerMessageFormatter formatter = MockIssueTrackerMessageFormatter.withIntegerMaxValueLength();
 

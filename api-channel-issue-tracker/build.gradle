@@ -12,4 +12,5 @@ dependencies {
     implementation 'org.springframework.amqp:spring-amqp'
 
     testImplementation project(':test-common')
+    testImplementation 'org.springframework.amqp:spring-rabbit'
 }

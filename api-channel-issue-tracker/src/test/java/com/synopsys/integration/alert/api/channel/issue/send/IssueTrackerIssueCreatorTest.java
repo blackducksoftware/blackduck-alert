@@ -46,7 +46,7 @@ public class IssueTrackerIssueCreatorTest {
     void createIssueTrackerIssueWithSourceTest() throws AlertException {
         TestIssueCreator issueCreator = new TestIssueCreator(commenter, callbackInfoCreator);
         ProjectIssueModel projectIssueModel = Mockito.mock(ProjectIssueModel.class);
-        IssueCreationModel issueCreationModel = IssueCreationModel.project("Test title", null, List.of("example comment"), projectIssueModel);
+        IssueCreationModel issueCreationModel = IssueCreationModel.project("Test title", null, List.of("example comment"), projectIssueModel, null);
         IssueTrackerIssueResponseModel<String> responseModel = issueCreator.createIssueTrackerIssue(issueCreationModel);
         assertEquals(issueCreationModel.getTitle(), responseModel.getIssueTitle());
     }

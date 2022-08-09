@@ -8,7 +8,7 @@
 package com.synopsys.integration.alert.channel.azure.boards.distribution;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.task.TaskExecutor;
+import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -21,11 +21,10 @@ public class AzureBoardsDistributionEventReceiver extends DistributionEventRecei
     @Autowired
     public AzureBoardsDistributionEventReceiver(
         Gson gson,
-        TaskExecutor taskExecutor,
         AzureBoardsChannelKey channelKey,
         AzureBoardsDistributionEventHandler distributionEventHandler
     ) {
-        super(gson, taskExecutor, channelKey, distributionEventHandler);
+        super(gson, new SyncTaskExecutor(), channelKey, distributionEventHandler);
     }
 
 }
