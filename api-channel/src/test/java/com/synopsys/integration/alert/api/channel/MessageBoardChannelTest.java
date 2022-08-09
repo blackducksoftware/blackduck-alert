@@ -3,6 +3,8 @@ package com.synopsys.integration.alert.api.channel;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
@@ -25,7 +27,7 @@ public class MessageBoardChannelTest {
         ChannelMessageSender<DistributionJobDetailsModel, Object, MessageResult> sender = (x, y) -> expectedResult;
         MessageBoardChannel<DistributionJobDetailsModel, Object> messageBoardChannel = new MessageBoardChannel<>(converter, sender) {};
 
-        MessageResult testResult = messageBoardChannel.distributeMessages(testDetails, ProviderMessageHolder.empty(), "jobName");
+        MessageResult testResult = messageBoardChannel.distributeMessages(testDetails, ProviderMessageHolder.empty(), "jobName", UUID.randomUUID(), Set.of());
         assertEquals(expectedResult, testResult);
     }
 

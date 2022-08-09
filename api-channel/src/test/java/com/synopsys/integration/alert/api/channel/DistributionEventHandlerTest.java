@@ -25,7 +25,7 @@ class DistributionEventHandlerTest {
         DistributionJobDetailsModel details = new DistributionJobDetailsModel(null, null) {};
         JobDetailsAccessor<DistributionJobDetailsModel> jobDetailsAccessor = x -> Optional.of(details);
 
-        DistributionChannel<DistributionJobDetailsModel> channel = (x, y, z) -> null;
+        DistributionChannel<DistributionJobDetailsModel> channel = (v, w, x, y, z) -> null;
 
         DistributionEventHandler<DistributionJobDetailsModel> eventHandler = new DistributionEventHandler<>(channel, jobDetailsAccessor, auditAccessor);
 
@@ -47,7 +47,7 @@ class DistributionEventHandlerTest {
         JobDetailsAccessor<DistributionJobDetailsModel> jobDetailsAccessor = x -> Optional.of(details);
 
         AlertException testException = new AlertException("Test exception");
-        DistributionChannel<DistributionJobDetailsModel> channel = (x, y, z) -> {
+        DistributionChannel<DistributionJobDetailsModel> channel = (v, w, x, y, z) -> {
             throw testException;
         };
 

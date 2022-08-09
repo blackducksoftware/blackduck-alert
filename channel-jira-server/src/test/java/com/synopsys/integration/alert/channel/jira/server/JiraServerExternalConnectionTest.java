@@ -6,6 +6,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Disabled;
@@ -85,7 +86,7 @@ class JiraServerExternalConnectionTest {
             modelTransformer,
             issueCategoryRetriever
         );
-        IssueTrackerProcessor<String> processor = jiraServerProcessorFactory.createProcessor(createDistributionDetails());
+        IssueTrackerProcessor<String> processor = jiraServerProcessorFactory.createProcessor(createDistributionDetails(), UUID.randomUUID(), Set.of());
 
         IssueTrackerResponse<String> response = processor.processMessages(createMessage(), "jobName");
 

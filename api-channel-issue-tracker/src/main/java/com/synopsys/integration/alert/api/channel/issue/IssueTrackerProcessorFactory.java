@@ -8,11 +8,13 @@
 package com.synopsys.integration.alert.api.channel.issue;
 
 import java.io.Serializable;
+import java.util.Set;
+import java.util.UUID;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 
 public interface IssueTrackerProcessorFactory<D extends DistributionJobDetailsModel, T extends Serializable> {
-    IssueTrackerProcessor<T> createProcessor(D distributionDetails) throws AlertException;
+    IssueTrackerProcessor<T> createProcessor(D distributionDetails, UUID eventId, Set<Long> notificationIds) throws AlertException;
 
 }

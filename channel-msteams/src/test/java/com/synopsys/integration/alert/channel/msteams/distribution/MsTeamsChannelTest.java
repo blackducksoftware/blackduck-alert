@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.channel.msteams.distribution;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Assertions;
@@ -65,7 +66,7 @@ public class MsTeamsChannelTest {
 
         MessageResult messageResult = null;
         try {
-            messageResult = msTeamsChannel.distributeMessages(msTeamsJobDetailsModel, TEST_MESSAGE_HOLDER, "jobName");
+            messageResult = msTeamsChannel.distributeMessages(msTeamsJobDetailsModel, TEST_MESSAGE_HOLDER, "jobName", UUID.randomUUID(), Set.of());
         } catch (AlertException e) {
             Assertions.fail("Failed to distribute simple channel message due to an exception", e);
         }

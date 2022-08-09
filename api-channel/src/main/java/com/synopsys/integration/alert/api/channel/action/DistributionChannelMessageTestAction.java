@@ -9,6 +9,8 @@ package com.synopsys.integration.alert.api.channel.action;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -42,7 +44,7 @@ public abstract class DistributionChannelMessageTestAction<D extends Distributio
 
         D distributionJobDetails = resolveTestDistributionDetails(testJobModel);
         ProviderMessageHolder messages = createTestMessageHolder(testJobModel, topicString, messageString);
-        return distributionChannel.distributeMessages(distributionJobDetails, messages, jobName);
+        return distributionChannel.distributeMessages(distributionJobDetails, messages, jobName, UUID.randomUUID(), Set.of());
     }
 
     protected D resolveTestDistributionDetails(DistributionJobModel testJobModel) throws AlertException {

@@ -8,6 +8,8 @@
 package com.synopsys.integration.alert.api.channel;
 
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 import com.synopsys.integration.alert.api.channel.convert.AbstractChannelMessageConverter;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
@@ -30,7 +32,8 @@ public abstract class MessageBoardChannel<D extends DistributionJobDetailsModel,
     }
 
     @Override
-    public MessageResult distributeMessages(D distributionDetails, ProviderMessageHolder messages, String jobName) throws AlertException {
+    public MessageResult distributeMessages(D distributionDetails, ProviderMessageHolder messages, String jobName, UUID eventId, Set<Long> notificationIds)
+        throws AlertException {
         List<T> channelMessages = channelMessageConverter.convertToChannelMessages(distributionDetails, messages, jobName);
         return channelMessageSender.sendMessages(distributionDetails, channelMessages);
     }

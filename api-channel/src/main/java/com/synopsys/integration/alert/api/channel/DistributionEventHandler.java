@@ -8,6 +8,7 @@
 package com.synopsys.integration.alert.api.channel;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 
@@ -38,7 +39,7 @@ public class DistributionEventHandler<D extends DistributionJobDetailsModel> imp
         if (details.isPresent()) {
             try {
                 notificationLogger.debug("Channel: {} is processing event: {}", channel.getClass(), event.getEventId());
-                channel.distributeMessages(details.get(), event.getProviderMessages(), event.getJobName());
+                channel.distributeMessages(details.get(), event.getProviderMessages(), event.getJobName(), UUID.fromString(event.getEventId()), event.getNotificationIds());
                 auditAccessor.setAuditEntrySuccess(event.getJobId(), event.getNotificationIds());
                 notificationLogger.debug("Channel: {} successfully processed event: {}", channel.getClass(), event.getEventId());
             } catch (AlertException alertException) {

@@ -8,6 +8,8 @@
 package com.synopsys.integration.alert.api.channel.issue;
 
 import java.io.Serializable;
+import java.util.Set;
+import java.util.UUID;
 
 import com.synopsys.integration.alert.api.channel.DistributionChannel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerResponse;
@@ -30,8 +32,9 @@ public abstract class IssueTrackerChannel<D extends DistributionJobDetailsModel,
     }
 
     @Override
-    public MessageResult distributeMessages(D distributionDetails, ProviderMessageHolder messages, String jobName) throws AlertException {
-        IssueTrackerProcessor<T> processor = processorFactory.createProcessor(distributionDetails);
+    public MessageResult distributeMessages(D distributionDetails, ProviderMessageHolder messages, String jobName, UUID eventId, Set<Long> notificationIds)
+        throws AlertException {
+        IssueTrackerProcessor<T> processor = processorFactory.createProcessor(distributionDetails, eventId, notificationIds);
         IssueTrackerResponse<T> issueTrackerResponse = processor.processMessages(messages, jobName);
 
         responsePostProcessor.postProcess(issueTrackerResponse);

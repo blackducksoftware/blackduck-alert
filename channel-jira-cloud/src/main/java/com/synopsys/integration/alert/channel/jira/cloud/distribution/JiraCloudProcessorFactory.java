@@ -8,6 +8,7 @@
 package com.synopsys.integration.alert.channel.jira.cloud.distribution;
 
 import java.util.Set;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,7 +87,7 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
     }
 
     @Override
-    public IssueTrackerProcessor<String> createProcessor(JiraCloudJobDetailsModel distributionDetails) throws AlertException {
+    public IssueTrackerProcessor<String> createProcessor(JiraCloudJobDetailsModel distributionDetails, UUID eventId, Set<Long> notificationIds) throws AlertException {
         JiraCloudProperties jiraProperties = createJiraCloudProperties();
         JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
 
@@ -131,8 +132,8 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
             issuePropertiesManager,
             jiraErrorMessageUtility,
             jiraCloudQueryExecutor,
-            null,
-            Set.of()
+            eventId,
+            notificationIds
         );
 
         return new IssueTrackerProcessor<>(extractor, messageSender);

@@ -41,7 +41,7 @@ class IssueTrackerChannelTest {
         IssueTrackerMessageSender<String> messageSender = createMessageSender();
         IssueTrackerProcessor<String> processor = new IssueTrackerProcessor<>(modelExtractor, messageSender);
 
-        IssueTrackerProcessorFactory<DistributionJobDetailsModel, String> processorFactory = x -> processor;
+        IssueTrackerProcessorFactory<DistributionJobDetailsModel, String> processorFactory = (x, y, z) -> processor;
         IssueTrackerResponsePostProcessor postProcessor = new IssueTrackerResponsePostProcessor() {
             @Override
             public <T extends Serializable> void postProcess(IssueTrackerResponse<T> response) {
@@ -49,7 +49,7 @@ class IssueTrackerChannelTest {
         };
         IssueTrackerChannel<DistributionJobDetailsModel, String> issueTrackerChannel = new IssueTrackerChannel<>(processorFactory, postProcessor) {};
 
-        MessageResult testResult = issueTrackerChannel.distributeMessages(null, ProviderMessageHolder.empty(), null);
+        MessageResult testResult = issueTrackerChannel.distributeMessages(null, ProviderMessageHolder.empty(), null, UUID.randomUUID(), Set.of());
 
         IssueTrackerResponse<?> processorResponse = processor.processMessages(ProviderMessageHolder.empty(), "jobName");
         assertEquals(processorResponse.getStatusMessage(), testResult.getStatusMessage());
