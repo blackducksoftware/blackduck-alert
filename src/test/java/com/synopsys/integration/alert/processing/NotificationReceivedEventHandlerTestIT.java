@@ -76,13 +76,17 @@ class NotificationReceivedEventHandlerTestIT {
         ConfigurationFieldModel blackduckTimeout = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT);
         blackduckTimeout.setFieldValue(String.valueOf(BlackDuckProperties.DEFAULT_TIMEOUT));
 
-        ConfigurationModel blackduckConfigurationModel = defaultConfigurationAccessor.createConfiguration(blackDuckProviderKey,
+        ConfigurationModel blackduckConfigurationModel = defaultConfigurationAccessor.createConfiguration(
+            blackDuckProviderKey,
             ConfigContextEnum.GLOBAL,
-            List.of(providerConfigEnabled,
+            List.of(
+                providerConfigEnabled,
                 providerConfigName,
                 blackduckUrl,
                 blackduckApiKey,
-                blackduckTimeout));
+                blackduckTimeout
+            )
+        );
         blackDuckGlobalConfigId = blackduckConfigurationModel.getConfigurationId();
     }
 
@@ -181,16 +185,22 @@ class NotificationReceivedEventHandlerTestIT {
 
     private AlertNotificationModel createAlertNotificationModel(boolean processed) {
         String bomEditContent = "{"
-                                    + "\"type\":\"" + NotificationType.BOM_EDIT.name() + "\","
-                                    + "\"content\": {"
-                                    + "\"projectVersion\": \"" + properties.getBlackDuckURL() + "/api/projects\","
-                                    + "\"bomComponent\": \"" + properties.getBlackDuckURL() + "\","
-                                    + "\"componentName\": \"test\","
-                                    + "\"componentVersionName\": \"test\""
-                                    + "}"
-                                    + "}";
-        MockNotificationContent notificationMocker = new MockNotificationContent(DateUtils.createCurrentDateTimestamp(), blackDuckProviderKey.getUniversalKey(), DateUtils.createCurrentDateTimestamp(), NotificationType.BOM_EDIT.name(),
-            bomEditContent, null, blackDuckGlobalConfigId);
+            + "\"type\":\"" + NotificationType.BOM_EDIT.name() + "\","
+            + "\"content\": {"
+            + "\"projectVersion\": \"" + properties.getBlackDuckURL() + "/api/projects\","
+            + "\"bomComponent\": \"" + properties.getBlackDuckURL() + "\","
+            + "\"componentName\": \"test\","
+            + "\"componentVersionName\": \"test\""
+            + "}"
+            + "}";
+        MockNotificationContent notificationMocker = new MockNotificationContent(DateUtils.createCurrentDateTimestamp(),
+            blackDuckProviderKey.getUniversalKey(),
+            DateUtils.createCurrentDateTimestamp(),
+            NotificationType.BOM_EDIT.name(),
+            bomEditContent,
+            null,
+            blackDuckGlobalConfigId
+        );
         NotificationEntity entity = notificationMocker.createEntity();
         return new AlertNotificationModel(
             null,
@@ -227,7 +237,8 @@ class NotificationReceivedEventHandlerTestIT {
             notificationDetailExtractionDelegator,
             jobNotificationMapper2,
             defaultNotificationAccessor,
-            telemetryAccessor);
+            telemetryAccessor
+        );
     }
 
 }

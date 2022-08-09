@@ -10,7 +10,6 @@ dependencies {
 
     implementation platform(project(':alert-platform'))
     implementation project(':alert-common')
-    //implementation project(':alert-telemetry')
     implementation project(':api-common-model')
     implementation project(':api-descriptor')
 
