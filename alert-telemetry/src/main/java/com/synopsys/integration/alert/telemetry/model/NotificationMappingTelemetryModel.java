@@ -33,7 +33,6 @@ public class NotificationMappingTelemetryModel extends BaseTelemetryModel implem
 
     @Override
     public NotificationMappingTelemetryModel obfuscate() {
-        //TODO: Implement
-        return null;
+        return new NotificationMappingTelemetryModel(correlationId, getStartTaskTime(), getCompleteTaskTime());
     }
 }

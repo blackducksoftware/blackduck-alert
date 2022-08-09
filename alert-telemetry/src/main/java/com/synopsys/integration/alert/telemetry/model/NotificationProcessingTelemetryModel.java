@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.api.common.model.Obfuscated;
 
-public class NotificationProcessingTelemetryModel extends BaseTelemetryModel implements Obfuscated<NotificationMappingTelemetryModel> {
+public class NotificationProcessingTelemetryModel extends BaseTelemetryModel implements Obfuscated<NotificationProcessingTelemetryModel> {
     private static final long serialVersionUID = -6704891387608183164L;
     private UUID correlationId;
     private UUID jobId;
@@ -38,8 +38,7 @@ public class NotificationProcessingTelemetryModel extends BaseTelemetryModel imp
     }
 
     @Override
-    public NotificationMappingTelemetryModel obfuscate() {
-        //TODO: Implement
-        return null;
+    public NotificationProcessingTelemetryModel obfuscate() {
+        return new NotificationProcessingTelemetryModel(correlationId, jobId, getStartTaskTime(), getCompleteTaskTime());
     }
 }
