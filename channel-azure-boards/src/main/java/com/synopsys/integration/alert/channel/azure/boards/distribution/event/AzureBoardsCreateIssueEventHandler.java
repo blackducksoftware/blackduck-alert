@@ -101,9 +101,7 @@ public class AzureBoardsCreateIssueEventHandler extends IssueTrackerCreateIssueE
                     workItemCommentService,
                     organizationName,
                     distributionDetails,
-                    workItemQueryService,
-                    event.getParentEventId(),
-                    event.getNotificationIds()
+                    workItemQueryService
                 );
                 IssueCreationModel creationModel = event.getCreationModel();
                 String query = creationModel.getQueryString().orElse(null);

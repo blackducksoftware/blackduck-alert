@@ -97,9 +97,7 @@ public class JiraCloudCommentEventHandler extends IssueTrackerCommentEventHandle
                     issueCreationRequestCreator,
                     issuePropertiesManager,
                     jiraErrorMessageUtility,
-                    jiraCloudQueryExecutor,
-                    event.getParentEventId(),
-                    event.getNotificationIds()
+                    jiraCloudQueryExecutor
                 );
                 IssueCommentModel<String> commentModel = event.getCommentModel();
                 messageSender.sendMessage(commentModel);

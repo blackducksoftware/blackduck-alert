@@ -9,27 +9,17 @@ import java.util.UUID;
 
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.core.task.SyncTaskExecutor;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.issue.convert.IssueTrackerMessageFormatter;
-import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCommentEvent;
-import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCreateIssueEvent;
-import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerTransitionIssueEvent;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerResponse;
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
-import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerCommentEventGenerator;
-import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerCreationEventGenerator;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueCommenter;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueCreator;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueTransitioner;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
-import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerTransitionEventGenerator;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
@@ -130,29 +120,10 @@ class IssueTrackerChannelTest {
             }
         };
 
-        IssueTrackerCreationEventGenerator creationEventGenerator = model -> new IssueTrackerCreateIssueEvent("", UUID.randomUUID(), UUID.randomUUID(), Set.of(), null);
-
-        IssueTrackerTransitionEventGenerator<String> transitionEventGenerator = model -> new IssueTrackerTransitionIssueEvent<>(
-            "",
-            UUID.randomUUID(),
-            UUID.randomUUID(),
-            Set.of(),
-            null
-        );
-
-        IssueTrackerCommentEventGenerator<String> commentEventGenerator = model -> new IssueTrackerCommentEvent<>("", UUID.randomUUID(), UUID.randomUUID(), Set.of(), null);
-
-        RabbitTemplate rabbitTemplate = new RabbitTemplate();
-        EventManager eventManager = new EventManager(new Gson(), rabbitTemplate, new SyncTaskExecutor());
         return new IssueTrackerMessageSender<>(
             creator,
             transitioner,
-            commenter,
-            creationEventGenerator,
-            transitionEventGenerator,
-            commentEventGenerator,
-            eventManager,
-            jobSubTaskAccessor
+            commenter
         );
     }
 

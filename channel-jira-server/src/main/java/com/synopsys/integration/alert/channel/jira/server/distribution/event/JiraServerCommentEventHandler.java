@@ -95,9 +95,7 @@ public class JiraServerCommentEventHandler extends IssueTrackerCommentEventHandl
                     issueCreationRequestCreator,
                     issuePropertiesManager,
                     jiraErrorMessageUtility,
-                    jiraServerQueryExecutor,
-                    event.getParentEventId(),
-                    event.getNotificationIds()
+                    jiraServerQueryExecutor
                 );
                 IssueCommentModel<String> commentModel = event.getCommentModel();
                 messageSender.sendMessage(commentModel);

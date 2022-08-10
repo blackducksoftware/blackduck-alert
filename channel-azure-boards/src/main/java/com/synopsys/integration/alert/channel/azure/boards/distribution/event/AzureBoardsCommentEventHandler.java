@@ -94,9 +94,7 @@ public class AzureBoardsCommentEventHandler extends IssueTrackerCommentEventHand
                     workItemCommentService,
                     organizationName,
                     distributionDetails,
-                    workItemQueryService,
-                    event.getParentEventId(),
-                    event.getNotificationIds()
+                    workItemQueryService
                 );
                 IssueCommentModel<Integer> commentModel = event.getCommentModel();
                 messageSender.sendMessage(commentModel);

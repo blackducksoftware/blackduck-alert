@@ -145,9 +145,7 @@ public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory
             workItemCommentService,
             organizationName,
             distributionDetails,
-            workItemQueryService,
-            eventId,
-            notificationIds
+            workItemQueryService
         );
 
         return new IssueTrackerProcessor<>(extractor, messageSender);

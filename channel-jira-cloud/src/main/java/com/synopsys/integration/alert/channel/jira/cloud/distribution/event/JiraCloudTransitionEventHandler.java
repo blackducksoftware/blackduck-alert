@@ -97,9 +97,7 @@ public class JiraCloudTransitionEventHandler extends IssueTrackerTransitionEvent
                     issueCreationRequestCreator,
                     issuePropertiesManager,
                     jiraErrorMessageUtility,
-                    jiraCloudQueryExecutor,
-                    event.getParentEventId(),
-                    event.getNotificationIds()
+                    jiraCloudQueryExecutor
                 );
                 IssueTransitionModel<String> commentModel = event.getTransitionModel();
                 messageSender.sendMessage(commentModel);

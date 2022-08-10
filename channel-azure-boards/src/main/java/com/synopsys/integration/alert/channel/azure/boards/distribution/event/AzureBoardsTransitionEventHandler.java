@@ -95,9 +95,7 @@ public class AzureBoardsTransitionEventHandler extends IssueTrackerTransitionEve
                     workItemCommentService,
                     organizationName,
                     distributionDetails,
-                    workItemQueryService,
-                    event.getParentEventId(),
-                    event.getNotificationIds()
+                    workItemQueryService
                 );
                 IssueTransitionModel<Integer> transitionModel = event.getTransitionModel();
                 messageSender.sendMessage(transitionModel);
