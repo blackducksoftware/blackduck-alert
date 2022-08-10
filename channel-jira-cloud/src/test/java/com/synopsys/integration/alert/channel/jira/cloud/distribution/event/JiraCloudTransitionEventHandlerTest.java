@@ -71,7 +71,8 @@ class JiraCloudTransitionEventHandlerTest {
             propertiesFactory,
             callbackInfoCreator,
             issueCategoryRetriever,
-            eventManager
+            eventManager,
+            jobSubTaskAccessor
         );
         JobDetailsAccessor<JiraCloudJobDetailsModel> jobDetailsAccessor = jobId1 -> Optional.empty();
 
@@ -132,7 +133,8 @@ class JiraCloudTransitionEventHandlerTest {
             propertiesFactory,
             callbackInfoCreator,
             issueCategoryRetriever,
-            eventManager
+            eventManager,
+            jobSubTaskAccessor
         );
         JobDetailsAccessor<JiraCloudJobDetailsModel> jobDetailsAccessor = jobId1 -> Optional.of(createJobDetails(jobId));
 

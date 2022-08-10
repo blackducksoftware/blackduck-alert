@@ -25,6 +25,7 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerMessageSenderFactory;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.test.common.TestProperties;
@@ -80,6 +81,7 @@ public class JiraServerSummaryFieldLengthTestIT {
         IssueCategoryRetriever issueCategoryRetriever = new IssueCategoryRetriever();
         JiraServerPropertiesFactory jiraServerPropertiesFactory = createJiraServerPropertiesFactory(testProperties);
         EventManager eventManager = Mockito.mock(EventManager.class);
+        JobSubTaskAccessor jobSubTaskAccessor = Mockito.mock(JobSubTaskAccessor.class);
 
         JiraServerMessageSenderFactory jiraServerMessageSenderFactory = new JiraServerMessageSenderFactory(
             gson,
@@ -87,7 +89,8 @@ public class JiraServerSummaryFieldLengthTestIT {
             jiraServerPropertiesFactory,
             new IssueTrackerCallbackInfoCreator(),
             issueCategoryRetriever,
-            eventManager
+            eventManager,
+            jobSubTaskAccessor
         );
 
         JiraServerJobDetailsModel jiraServerJobDetails = createJiraServerJobDetails(testProperties);

@@ -77,7 +77,8 @@ class JiraServerCreateIssueEventHandlerTest {
             propertiesFactory,
             callbackInfoCreator,
             issueCategoryRetriever,
-            eventManager
+            eventManager,
+            jobSubTaskAccessor
         );
         JobDetailsAccessor<JiraServerJobDetailsModel> jobDetailsAccessor = jobId1 -> Optional.empty();
         JiraServerCreateIssueEventHandler handler = new JiraServerCreateIssueEventHandler(
@@ -141,7 +142,8 @@ class JiraServerCreateIssueEventHandlerTest {
             propertiesFactory,
             callbackInfoCreator,
             issueCategoryRetriever,
-            eventManager
+            eventManager,
+            jobSubTaskAccessor
         );
         JobDetailsAccessor<JiraServerJobDetailsModel> jobDetailsAccessor = jobId1 -> Optional.of(createJobDetails(jobId));
         JiraServerCreateIssueEventHandler handler = new JiraServerCreateIssueEventHandler(
@@ -207,7 +209,8 @@ class JiraServerCreateIssueEventHandlerTest {
             propertiesFactory,
             callbackInfoCreator,
             issueCategoryRetriever,
-            eventManager
+            eventManager,
+            jobSubTaskAccessor
         );
         JobDetailsAccessor<JiraServerJobDetailsModel> jobDetailsAccessor = jobId1 -> Optional.of(createJobDetails(jobId));
         JiraServerCreateIssueEventHandler handler = new JiraServerCreateIssueEventHandler(
@@ -278,7 +281,8 @@ class JiraServerCreateIssueEventHandlerTest {
             propertiesFactory,
             callbackInfoCreator,
             issueCategoryRetriever,
-            eventManager
+            eventManager,
+            jobSubTaskAccessor
         );
         JobDetailsAccessor<JiraServerJobDetailsModel> jobDetailsAccessor = jobId1 -> Optional.of(createJobDetails(jobId));
         JiraServerCreateIssueEventHandler handler = new JiraServerCreateIssueEventHandler(

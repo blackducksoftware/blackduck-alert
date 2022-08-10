@@ -11,7 +11,9 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCommentModel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
@@ -21,6 +23,7 @@ import com.synopsys.integration.alert.api.channel.issue.model.IssueTransitionMod
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.event.AlertEvent;
 import com.synopsys.integration.alert.api.event.EventManager;
+import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 import com.synopsys.integration.function.ThrowingFunction;
 
 public class IssueTrackerMessageSender<T extends Serializable> {
@@ -32,7 +35,9 @@ public class IssueTrackerMessageSender<T extends Serializable> {
     private final IssueTrackerTransitionEventGenerator<T> issueTrackerTransitionEventGenerator;
     private final IssueTrackerCommentEventGenerator<T> issueTrackerCommentEventGenerator;
     private final EventManager eventManager;
+    private final JobSubTaskAccessor jobSubTaskAccessor;
 
+    //TODO Need to split this into two message senders.  IssueTrackerMessageSender for synchronous and IssueTrackerAsycMessageSender for asynchronous
     public IssueTrackerMessageSender(
         IssueTrackerIssueCreator<T> issueCreator,
         IssueTrackerIssueTransitioner<T> issueTransitioner,
@@ -40,7 +45,8 @@ public class IssueTrackerMessageSender<T extends Serializable> {
         IssueTrackerCreationEventGenerator issueCreateEventGenerator,
         IssueTrackerTransitionEventGenerator<T> issueTrackerTransitionEventGenerator,
         IssueTrackerCommentEventGenerator<T> issueTrackerCommentEventGenerator,
-        EventManager eventManager
+        EventManager eventManager,
+        JobSubTaskAccessor jobSubTaskAccessor
     ) {
         this.issueCreator = issueCreator;
         this.issueTransitioner = issueTransitioner;
@@ -49,6 +55,7 @@ public class IssueTrackerMessageSender<T extends Serializable> {
         this.issueTrackerTransitionEventGenerator = issueTrackerTransitionEventGenerator;
         this.issueTrackerCommentEventGenerator = issueTrackerCommentEventGenerator;
         this.eventManager = eventManager;
+        this.jobSubTaskAccessor = jobSubTaskAccessor;
     }
 
     // This method is used for testing issue tracker channels to get the issue that was created.
@@ -67,10 +74,13 @@ public class IssueTrackerMessageSender<T extends Serializable> {
         return responses;
     }
 
-    public final void sendAsyncMessages(IssueTrackerModelHolder<T> issueTrackerMessage) {
-        sendAsyncMessages(issueTrackerMessage.getIssueCreationModels(), issueCreateEventGenerator::generateEvent);
-        sendAsyncMessages(issueTrackerMessage.getIssueTransitionModels(), issueTrackerTransitionEventGenerator::generateEvent);
-        sendAsyncMessages(issueTrackerMessage.getIssueCommentModels(), issueTrackerCommentEventGenerator::generateEvent);
+    public final void sendAsyncMessages(UUID parentEventId, IssueTrackerModelHolder<T> issueTrackerMessage) {
+        List<AlertEvent> eventList = new LinkedList<>();
+        eventList.addAll(createMessages(issueTrackerMessage.getIssueCreationModels(), issueCreateEventGenerator::generateEvent));
+        eventList.addAll(createMessages(issueTrackerMessage.getIssueTransitionModels(), issueTrackerTransitionEventGenerator::generateEvent));
+        eventList.addAll(createMessages(issueTrackerMessage.getIssueCommentModels(), issueTrackerCommentEventGenerator::generateEvent));
+        jobSubTaskAccessor.updateTaskCount(parentEventId, (long) eventList.size());
+        eventManager.sendEvents(eventList);
     }
 
     public final List<IssueTrackerIssueResponseModel<T>> sendMessage(IssueCreationModel model) throws AlertException {
@@ -109,10 +119,9 @@ public class IssueTrackerMessageSender<T extends Serializable> {
         return responses;
     }
 
-    private <U> void sendAsyncMessages(List<U> messages, Function<U, AlertEvent> eventGenerator) {
-        for (U message : messages) {
-            AlertEvent event = eventGenerator.apply(message);
-            eventManager.sendEvent(event);
-        }
+    private <U> List<AlertEvent> createMessages(List<U> messages, Function<U, AlertEvent> eventGenerator) {
+        return messages.stream()
+            .map(eventGenerator::apply)
+            .collect(Collectors.toList());
     }
 }

@@ -75,7 +75,8 @@ class JiraCloudCreateIssueEventHandlerTest {
             propertiesFactory,
             callbackInfoCreator,
             issueCategoryRetriever,
-            eventManager
+            eventManager,
+            jobSubTaskAccessor
         );
         JobDetailsAccessor<JiraCloudJobDetailsModel> jobDetailsAccessor = jobId1 -> Optional.empty();
         JiraCloudCreateIssueEventHandler handler = new JiraCloudCreateIssueEventHandler(
@@ -139,7 +140,8 @@ class JiraCloudCreateIssueEventHandlerTest {
             propertiesFactory,
             callbackInfoCreator,
             issueCategoryRetriever,
-            eventManager
+            eventManager,
+            jobSubTaskAccessor
         );
         JobDetailsAccessor<JiraCloudJobDetailsModel> jobDetailsAccessor = jobId1 -> Optional.of(createJobDetails(jobId));
         JiraCloudCreateIssueEventHandler handler = new JiraCloudCreateIssueEventHandler(
@@ -205,7 +207,8 @@ class JiraCloudCreateIssueEventHandlerTest {
             propertiesFactory,
             callbackInfoCreator,
             issueCategoryRetriever,
-            eventManager
+            eventManager,
+            jobSubTaskAccessor
         );
         JobDetailsAccessor<JiraCloudJobDetailsModel> jobDetailsAccessor = jobId1 -> Optional.of(createJobDetails(jobId));
         JiraCloudCreateIssueEventHandler handler = new JiraCloudCreateIssueEventHandler(
@@ -276,7 +279,8 @@ class JiraCloudCreateIssueEventHandlerTest {
             propertiesFactory,
             callbackInfoCreator,
             issueCategoryRetriever,
-            eventManager
+            eventManager,
+            jobSubTaskAccessor
         );
         JobDetailsAccessor<JiraCloudJobDetailsModel> jobDetailsAccessor = jobId1 -> Optional.of(createJobDetails(jobId));
         JiraCloudCreateIssueEventHandler handler = new JiraCloudCreateIssueEventHandler(

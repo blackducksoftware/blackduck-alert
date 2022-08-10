@@ -65,7 +65,8 @@ class JiraCloudCommentEventHandlerTest {
             propertiesFactory,
             callbackInfoCreator,
             issueCategoryRetriever,
-            eventManager
+            eventManager,
+            jobSubTaskAccessor
         );
         JobDetailsAccessor<JiraCloudJobDetailsModel> jobDetailsAccessor = jobId1 -> Optional.empty();
 
@@ -124,7 +125,8 @@ class JiraCloudCommentEventHandlerTest {
             propertiesFactory,
             callbackInfoCreator,
             issueCategoryRetriever,
-            eventManager
+            eventManager,
+            jobSubTaskAccessor
         );
         JobDetailsAccessor<JiraCloudJobDetailsModel> jobDetailsAccessor = jobId1 -> Optional.of(createJobDetails(jobId));
 

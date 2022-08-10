@@ -38,6 +38,7 @@ import com.synopsys.integration.alert.channel.jira.cloud.distribution.delegate.J
 import com.synopsys.integration.alert.channel.jira.cloud.distribution.delegate.JiraCloudIssueCreator;
 import com.synopsys.integration.alert.channel.jira.cloud.distribution.delegate.JiraCloudIssueTransitioner;
 import com.synopsys.integration.alert.channel.jira.cloud.distribution.delegate.JiraCloudTransitionGenerator;
+import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.JiraCloudChannelKey;
 import com.synopsys.integration.jira.common.cloud.service.FieldService;
@@ -57,6 +58,7 @@ public class JiraCloudMessageSenderFactory implements IssueTrackerMessageSenderF
     private final IssueTrackerCallbackInfoCreator callbackInfoCreator;
     private final IssueCategoryRetriever issueCategoryRetriever;
     private final EventManager eventManager;
+    private final JobSubTaskAccessor jobSubTaskAccessor;
 
     @Autowired
     public JiraCloudMessageSenderFactory(
@@ -65,7 +67,8 @@ public class JiraCloudMessageSenderFactory implements IssueTrackerMessageSenderF
         JiraCloudPropertiesFactory jiraCloudPropertiesFactory,
         IssueTrackerCallbackInfoCreator callbackInfoCreator,
         IssueCategoryRetriever issueCategoryRetriever,
-        EventManager eventManager
+        EventManager eventManager,
+        JobSubTaskAccessor jobSubTaskAccessor
     ) {
         this.gson = gson;
         this.channelKey = channelKey;
@@ -73,6 +76,7 @@ public class JiraCloudMessageSenderFactory implements IssueTrackerMessageSenderF
         this.callbackInfoCreator = callbackInfoCreator;
         this.issueCategoryRetriever = issueCategoryRetriever;
         this.eventManager = eventManager;
+        this.jobSubTaskAccessor = jobSubTaskAccessor;
     }
 
     @Override
@@ -150,7 +154,8 @@ public class JiraCloudMessageSenderFactory implements IssueTrackerMessageSenderF
             createEventGenerator,
             transitionEventGenerator,
             commentEventGenerator,
-            eventManager
+            eventManager,
+            jobSubTaskAccessor
         );
 
     }

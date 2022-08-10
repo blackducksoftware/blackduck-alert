@@ -1,7 +1,7 @@
 package com.synopsys.integration.alert.database.api.workflow;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +38,7 @@ public class DefaultJobSubTaskAccessor implements JobSubTaskAccessor {
 
     @Override
     @Transactional
-    public JobSubTaskStatusModel createSubTaskStatus(UUID id, UUID jobId, Long remainingTaskCount, List<Long> notificationIds) {
+    public JobSubTaskStatusModel createSubTaskStatus(UUID id, UUID jobId, Long remainingTaskCount, Set<Long> notificationIds) {
         UUID auditCorrelationId = UUID.randomUUID();
         JobSubTaskStatusEntity entity = new JobSubTaskStatusEntity(id, jobId, remainingTaskCount, auditCorrelationId);
         entity = jobSubTaskRepository.save(entity);

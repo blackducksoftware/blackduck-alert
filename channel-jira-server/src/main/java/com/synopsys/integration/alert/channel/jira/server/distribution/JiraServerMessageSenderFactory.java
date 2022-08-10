@@ -38,6 +38,7 @@ import com.synopsys.integration.alert.channel.jira.server.distribution.delegate.
 import com.synopsys.integration.alert.channel.jira.server.distribution.delegate.JiraServerIssueCreator;
 import com.synopsys.integration.alert.channel.jira.server.distribution.delegate.JiraServerIssueTransitioner;
 import com.synopsys.integration.alert.channel.jira.server.distribution.delegate.JiraServerTransitionGenerator;
+import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
 import com.synopsys.integration.jira.common.rest.service.IssuePropertyService;
@@ -59,6 +60,8 @@ public class JiraServerMessageSenderFactory implements IssueTrackerMessageSender
 
     private final EventManager eventManager;
 
+    private final JobSubTaskAccessor jobSubTaskAccessor;
+
     @Autowired
     public JiraServerMessageSenderFactory(
         Gson gson,
@@ -66,7 +69,8 @@ public class JiraServerMessageSenderFactory implements IssueTrackerMessageSender
         JiraServerPropertiesFactory jiraServerPropertiesFactory,
         IssueTrackerCallbackInfoCreator callbackInfoCreator,
         IssueCategoryRetriever issueCategoryRetriever,
-        EventManager eventManager
+        EventManager eventManager,
+        JobSubTaskAccessor jobSubTaskAccessor
     ) {
         this.gson = gson;
         this.channelKey = channelKey;
@@ -74,6 +78,7 @@ public class JiraServerMessageSenderFactory implements IssueTrackerMessageSender
         this.callbackInfoCreator = callbackInfoCreator;
         this.issueCategoryRetriever = issueCategoryRetriever;
         this.eventManager = eventManager;
+        this.jobSubTaskAccessor = jobSubTaskAccessor;
     }
 
     @Override
@@ -144,7 +149,16 @@ public class JiraServerMessageSenderFactory implements IssueTrackerMessageSender
         IssueTrackerCreationEventGenerator createEventGenerator = new JiraServerCreateEventGenerator(channelKey, parentEventId, jobId, notificationIds);
         IssueTrackerTransitionEventGenerator<String> transitionEventGenerator = new JiraServerTransitionGenerator(channelKey, parentEventId, jobId, notificationIds);
 
-        return new IssueTrackerMessageSender<>(creator, transitioner, commenter, createEventGenerator, transitionEventGenerator, commentEventGenerator, eventManager);
+        return new IssueTrackerMessageSender<>(
+            creator,
+            transitioner,
+            commenter,
+            createEventGenerator,
+            transitionEventGenerator,
+            commentEventGenerator,
+            eventManager,
+            jobSubTaskAccessor
+        );
 
     }
 

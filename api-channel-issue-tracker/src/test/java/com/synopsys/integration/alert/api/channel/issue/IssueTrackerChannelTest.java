@@ -32,30 +32,68 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
+import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.workflow.JobSubTaskStatusModel;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 class IssueTrackerChannelTest {
     @Test
     void distributeMessagesTest() throws AlertException {
+        UUID jobId = UUID.randomUUID();
+        DistributionJobDetailsModel distributionJobDetailsModel = new DistributionJobDetailsModel(ChannelKeys.SLACK, jobId) {
+            private static final long serialVersionUID = 5355069038110415471L;
+        };
         IssueTrackerModelExtractor<String> modelExtractor = new IssueTrackerModelExtractor<>(createFormatter(), null);
-        IssueTrackerMessageSender<String> messageSender = createMessageSender();
+        JobSubTaskAccessor jobSubTaskAccessor = createJobSubTaskAccessor();
+        IssueTrackerMessageSender<String> messageSender = createMessageSender(jobSubTaskAccessor);
         IssueTrackerProcessor<String> processor = new IssueTrackerProcessor<>(modelExtractor, messageSender);
 
         IssueTrackerProcessorFactory<DistributionJobDetailsModel, String> processorFactory = (x, y, z) -> processor;
+
         IssueTrackerResponsePostProcessor postProcessor = new IssueTrackerResponsePostProcessor() {
             @Override
             public <T extends Serializable> void postProcess(IssueTrackerResponse<T> response) {
             }
         };
-        IssueTrackerChannel<DistributionJobDetailsModel, String> issueTrackerChannel = new IssueTrackerChannel<>(processorFactory, postProcessor) {};
+        IssueTrackerChannel<DistributionJobDetailsModel, String> issueTrackerChannel = new IssueTrackerChannel<>(processorFactory, postProcessor, jobSubTaskAccessor) {};
 
-        MessageResult testResult = issueTrackerChannel.distributeMessages(null, ProviderMessageHolder.empty(), null, UUID.randomUUID(), Set.of());
+        MessageResult testResult = issueTrackerChannel.distributeMessages(distributionJobDetailsModel, ProviderMessageHolder.empty(), null, UUID.randomUUID(), Set.of());
 
         IssueTrackerResponse<?> processorResponse = processor.processMessages(ProviderMessageHolder.empty(), "jobName");
         assertEquals(processorResponse.getStatusMessage(), testResult.getStatusMessage());
     }
 
-    private IssueTrackerMessageSender<String> createMessageSender() {
+    private JobSubTaskAccessor createJobSubTaskAccessor() {
+        return new JobSubTaskAccessor() {
+            @Override
+            public Optional<JobSubTaskStatusModel> getSubTaskStatus(UUID id) {
+                return Optional.empty();
+            }
+
+            @Override
+            public JobSubTaskStatusModel createSubTaskStatus(UUID id, UUID jobId, Long remainingTaskCount, Set<Long> notificationIds) {
+                return null;
+            }
+
+            @Override
+            public Optional<JobSubTaskStatusModel> updateTaskCount(UUID id, Long remainingTaskCount) {
+                return Optional.empty();
+            }
+
+            @Override
+            public Optional<JobSubTaskStatusModel> decrementTaskCount(UUID id) {
+                return Optional.empty();
+            }
+
+            @Override
+            public Optional<JobSubTaskStatusModel> removeSubTaskStatus(UUID id) {
+                return Optional.empty();
+            }
+        };
+    }
+
+    private IssueTrackerMessageSender<String> createMessageSender(JobSubTaskAccessor jobSubTaskAccessor) {
         IssueTrackerIssueCommenter<String> commenter = new IssueTrackerIssueCommenter<>(null) {
             @Override
             protected boolean isCommentingEnabled() {
@@ -106,7 +144,16 @@ class IssueTrackerChannelTest {
 
         RabbitTemplate rabbitTemplate = new RabbitTemplate();
         EventManager eventManager = new EventManager(new Gson(), rabbitTemplate, new SyncTaskExecutor());
-        return new IssueTrackerMessageSender<>(creator, transitioner, commenter, creationEventGenerator, transitionEventGenerator, commentEventGenerator, eventManager);
+        return new IssueTrackerMessageSender<>(
+            creator,
+            transitioner,
+            commenter,
+            creationEventGenerator,
+            transitionEventGenerator,
+            commentEventGenerator,
+            eventManager,
+            jobSubTaskAccessor
+        );
     }
 
     private IssueTrackerMessageFormatter createFormatter() {

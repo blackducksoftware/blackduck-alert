@@ -16,6 +16,7 @@ import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerIssueR
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerModelHolder;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.event.EventManager;
+import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 
 class IssueTrackerMessageSenderTest {
     private static final AlertException TEST_EXCEPTION = new AlertException("Test exception");
@@ -28,6 +29,7 @@ class IssueTrackerMessageSenderTest {
     private static IssueTrackerTransitionEventGenerator transitionEventGenerator;
     private static IssueTrackerCommentEventGenerator commentEventGenerator;
     private static EventManager eventManager;
+    private static JobSubTaskAccessor jobSubTaskAccessor;
 
     @BeforeAll
     public static void init() throws AlertException {
@@ -44,6 +46,7 @@ class IssueTrackerMessageSenderTest {
         transitionEventGenerator = Mockito.mock(IssueTrackerTransitionEventGenerator.class);
         commentEventGenerator = Mockito.mock(IssueTrackerCommentEventGenerator.class);
         eventManager = Mockito.mock(EventManager.class);
+        jobSubTaskAccessor = Mockito.mock(JobSubTaskAccessor.class);
     }
 
     @Test
@@ -57,7 +60,8 @@ class IssueTrackerMessageSenderTest {
             createEventGenerator,
             transitionEventGenerator,
             commentEventGenerator,
-            eventManager
+            eventManager,
+            jobSubTaskAccessor
         );
         List<IssueTrackerIssueResponseModel<String>> responseModels = messageSender.sendMessages(messages);
         assertEquals(
@@ -80,7 +84,8 @@ class IssueTrackerMessageSenderTest {
             createEventGenerator,
             transitionEventGenerator,
             commentEventGenerator,
-            eventManager
+            eventManager,
+            jobSubTaskAccessor
         );
         assertExceptionThrown(messageSender1, messages);
 
@@ -94,7 +99,8 @@ class IssueTrackerMessageSenderTest {
             createEventGenerator,
             transitionEventGenerator,
             commentEventGenerator,
-            eventManager
+            eventManager,
+            jobSubTaskAccessor
         );
         assertExceptionThrown(messageSender2, messages);
     }

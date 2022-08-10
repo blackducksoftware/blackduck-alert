@@ -34,6 +34,7 @@ import com.synopsys.integration.alert.channel.azure.boards.distribution.delegate
 import com.synopsys.integration.alert.channel.azure.boards.distribution.delegate.AzureBoardsIssueTransitioner;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.delegate.AzureBoardsTransitionGenerator;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.search.AzureBoardsAlertIssuePropertiesManager;
+import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
@@ -57,6 +58,7 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
     private final AzureBoardsHttpExceptionMessageImprover exceptionMessageImprover;
     private final IssueCategoryRetriever issueCategoryRetriever;
     private final EventManager eventManager;
+    private final JobSubTaskAccessor jobSubTaskAccessor;
 
     @Autowired
     public AzureBoardsMessageSenderFactory(
@@ -67,7 +69,8 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
         ProxyManager proxyManager,
         AzureBoardsHttpExceptionMessageImprover exceptionMessageImprover,
         IssueCategoryRetriever issueCategoryRetriever,
-        EventManager eventManager
+        EventManager eventManager,
+        JobSubTaskAccessor jobSubTaskAccessor
     ) {
         this.gson = gson;
         this.callbackInfoCreator = callbackInfoCreator;
@@ -77,6 +80,7 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
         this.exceptionMessageImprover = exceptionMessageImprover;
         this.issueCategoryRetriever = issueCategoryRetriever;
         this.eventManager = eventManager;
+        this.jobSubTaskAccessor = jobSubTaskAccessor;
     }
 
     @Override
@@ -160,7 +164,8 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
             createEventGenerator,
             transitionEventGenerator,
             commentEventGenerator,
-            eventManager
+            eventManager,
+            jobSubTaskAccessor
         );
     }
 
