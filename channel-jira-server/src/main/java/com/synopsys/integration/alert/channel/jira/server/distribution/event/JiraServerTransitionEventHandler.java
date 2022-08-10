@@ -95,9 +95,7 @@ public class JiraServerTransitionEventHandler extends IssueTrackerTransitionEven
                     issueCreationRequestCreator,
                     issuePropertiesManager,
                     jiraErrorMessageUtility,
-                    jiraServerQueryExecutor,
-                    event.getParentEventId(),
-                    event.getNotificationIds()
+                    jiraServerQueryExecutor
                 );
                 IssueTransitionModel<String> transitionModel = event.getTransitionModel();
                 messageSender.sendMessage(transitionModel);

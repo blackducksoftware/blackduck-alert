@@ -101,9 +101,7 @@ public class JiraServerCreateIssueEventHandler extends IssueTrackerCreateIssueEv
                     issueCreationRequestCreator,
                     issuePropertiesManager,
                     jiraErrorMessageUtility,
-                    jiraServerQueryExecutor,
-                    event.getParentEventId(),
-                    event.getNotificationIds()
+                    jiraServerQueryExecutor
                 );
 
                 String jqlQuery = creationModel.getQueryString().orElse(null);

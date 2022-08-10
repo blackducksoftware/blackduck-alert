@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCallbackInfoCreator;
 import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
+import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerAsyncMessageSender;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerCommentEventGenerator;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerCreationEventGenerator;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueResponseCreator;
@@ -106,10 +107,16 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
             workItemCommentService,
             azureBoardsProperties.getOrganizationName(),
             distributionDetails,
-            workItemQueryService,
-            null,
-            Set.of()
+            workItemQueryService
         );
+    }
+
+    @Override
+    public IssueTrackerAsyncMessageSender<Integer> createAsyncMessageSender(
+        AzureBoardsJobDetailsModel distributionDetails, UUID globalId, UUID parentEventId,
+        Set<Long> notificationIds
+    ) throws AlertException {
+        return createAsyncMessageSender(distributionDetails, globalId, parentEventId, notificationIds);
     }
 
     public IssueTrackerMessageSender<Integer> createMessageSender(
@@ -118,9 +125,7 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
         AzureWorkItemCommentService workItemCommentService,
         String organizationName,
         AzureBoardsJobDetailsModel distributionDetails,
-        AzureWorkItemQueryService workItemQueryService,
-        UUID parentEventId,
-        Set<Long> notificationIds
+        AzureWorkItemQueryService workItemQueryService
     ) {
         IssueTrackerIssueResponseCreator issueResponseCreator = new IssueTrackerIssueResponseCreator(callbackInfoCreator);
         AzureBoardsWorkItemTypeStateRetriever workItemTypeStateRetriever = new AzureBoardsWorkItemTypeStateRetriever(gson, workItemService, workItemTypeStateService);
@@ -152,20 +157,30 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
             workItemQueryService
         );
 
+        return new IssueTrackerMessageSender<>(
+            creator,
+            transitioner,
+            commenter
+        );
+    }
+
+    public IssueTrackerAsyncMessageSender<Integer> createAsyncMessageSender(
+        AzureBoardsJobDetailsModel distributionDetails,
+        UUID parentEventId,
+        Set<Long> notificationIds
+    ) {
         UUID jobId = distributionDetails.getJobId();
         IssueTrackerCommentEventGenerator<Integer> commentEventGenerator = new AzureBoardsCommentGenerator(channelKey, parentEventId, jobId, notificationIds);
         IssueTrackerCreationEventGenerator createEventGenerator = new AzureBoardsCreateEventGenerator(channelKey, parentEventId, jobId, notificationIds);
         IssueTrackerTransitionEventGenerator<Integer> transitionEventGenerator = new AzureBoardsTransitionGenerator(channelKey, parentEventId, jobId, notificationIds);
 
-        return new IssueTrackerMessageSender<>(
-            creator,
-            transitioner,
-            commenter,
+        return new IssueTrackerAsyncMessageSender<>(
             createEventGenerator,
             transitionEventGenerator,
             commentEventGenerator,
             eventManager,
-            jobSubTaskAccessor
+            jobSubTaskAccessor,
+            parentEventId
         );
     }
 

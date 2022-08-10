@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import org.mockito.Mockito;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerModelHolder;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTransitionModel;
+import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerAsyncMessageSender;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSenderFactory;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
@@ -24,7 +26,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.DistributionJ
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.model.IssueTrackerChannelKey;
 
-public class IssueTrackerFieldModelTestActionTest {
+class IssueTrackerFieldModelTestActionTest {
     private static final String CLASS_NAME = IssueTrackerFieldModelTestActionTest.class.getSimpleName();
     private static final IssueTrackerChannelKey ISSUE_TRACKER_KEY = new IssueTrackerChannelKey(CLASS_NAME, CLASS_NAME) {};
 
@@ -36,12 +38,28 @@ public class IssueTrackerFieldModelTestActionTest {
     private final IssueTrackerIssueResponseModel<String> TEST_ISSUE_RESPONSE_MODEL = createIssueResponseModel();
 
     @Test
-    public void testConfigSendMessagesThrowsException() throws AlertException {
+    void testConfigSendMessagesThrowsException() throws AlertException {
         String testExceptionMessage = "test exception message";
         IssueTrackerMessageSender<String> messageSender = Mockito.mock(IssueTrackerMessageSender.class);
         Mockito.when(messageSender.sendMessages(Mockito.any())).thenThrow(new AlertException(testExceptionMessage));
 
-        IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = (distributionDetails, id) -> messageSender;
+        IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = new IssueTrackerMessageSenderFactory<>() {
+            @Override
+            public IssueTrackerMessageSender<String> createMessageSender(TestJobDetails distributionDetails, UUID globalId) throws AlertException {
+                return messageSender;
+            }
+
+            @Override
+            public IssueTrackerAsyncMessageSender<String> createAsyncMessageSender(
+                TestJobDetails distributionDetails,
+                UUID globalId,
+                UUID parentEventId,
+                Set<Long> notificationIds
+            )
+                throws AlertException {
+                return null;
+            }
+        };
         TestIssueTrackerTestAction issueTrackerTestAction = new TestIssueTrackerTestAction(messageSenderFactory);
 
         MessageResult messageResult = issueTrackerTestAction.testConfig(TEST_JOB_MODEL, "jobName", null, null);
@@ -49,11 +67,27 @@ public class IssueTrackerFieldModelTestActionTest {
     }
 
     @Test
-    public void testConfigSendMessagesReturnsNoIssues() throws AlertException {
+    void testConfigSendMessagesReturnsNoIssues() throws AlertException {
         IssueTrackerMessageSender<String> messageSender = Mockito.mock(IssueTrackerMessageSender.class);
         Mockito.when(messageSender.sendMessages(Mockito.any())).thenReturn(List.of());
 
-        IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = (distributionDetails, id) -> messageSender;
+        IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = new IssueTrackerMessageSenderFactory<>() {
+            @Override
+            public IssueTrackerMessageSender<String> createMessageSender(TestJobDetails distributionDetails, UUID globalId) throws AlertException {
+                return messageSender;
+            }
+
+            @Override
+            public IssueTrackerAsyncMessageSender<String> createAsyncMessageSender(
+                TestJobDetails distributionDetails,
+                UUID globalId,
+                UUID parentEventId,
+                Set<Long> notificationIds
+            )
+                throws AlertException {
+                return null;
+            }
+        };
         TestIssueTrackerTestAction issueTrackerTestAction = new TestIssueTrackerTestAction(messageSenderFactory);
 
         MessageResult messageResult = issueTrackerTestAction.testConfig(TEST_JOB_MODEL, "jobName", null, null);
@@ -61,11 +95,27 @@ public class IssueTrackerFieldModelTestActionTest {
     }
 
     @Test
-    public void testConfigNoResolveTransition() throws AlertException {
+    void testConfigNoResolveTransition() throws AlertException {
         IssueTrackerMessageSender<String> messageSender = Mockito.mock(IssueTrackerMessageSender.class);
         Mockito.when(messageSender.sendMessages(Mockito.any())).thenReturn(List.of(TEST_ISSUE_RESPONSE_MODEL));
 
-        IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = (distributionDetails, id) -> messageSender;
+        IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = new IssueTrackerMessageSenderFactory<>() {
+            @Override
+            public IssueTrackerMessageSender<String> createMessageSender(TestJobDetails distributionDetails, UUID globalId) throws AlertException {
+                return messageSender;
+            }
+
+            @Override
+            public IssueTrackerAsyncMessageSender<String> createAsyncMessageSender(
+                TestJobDetails distributionDetails,
+                UUID globalId,
+                UUID parentEventId,
+                Set<Long> notificationIds
+            )
+                throws AlertException {
+                return null;
+            }
+        };
         TestIssueTrackerTestAction issueTrackerTestAction = new TestIssueTrackerTestAction(messageSenderFactory);
 
         MessageResult messageResult = issueTrackerTestAction.testConfig(TEST_JOB_MODEL, "jobName", null, null);
@@ -74,7 +124,7 @@ public class IssueTrackerFieldModelTestActionTest {
     }
 
     @Test
-    public void testConfigResolveFailure() throws AlertException {
+    void testConfigResolveFailure() throws AlertException {
         IssueTrackerMessageSender<String> messageSender = Mockito.mock(IssueTrackerMessageSender.class);
         Mockito.when(messageSender.sendMessages(Mockito.any())).thenAnswer(invocation -> {
             IssueTrackerModelHolder<String> argument = invocation.getArgument(0);
@@ -84,7 +134,23 @@ public class IssueTrackerFieldModelTestActionTest {
             return List.of();
         });
 
-        IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = (distributionDetails, id) -> messageSender;
+        IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = new IssueTrackerMessageSenderFactory<>() {
+            @Override
+            public IssueTrackerMessageSender<String> createMessageSender(TestJobDetails distributionDetails, UUID globalId) throws AlertException {
+                return messageSender;
+            }
+
+            @Override
+            public IssueTrackerAsyncMessageSender<String> createAsyncMessageSender(
+                TestJobDetails distributionDetails,
+                UUID globalId,
+                UUID parentEventId,
+                Set<Long> notificationIds
+            )
+                throws AlertException {
+                return null;
+            }
+        };
         TestIssueTrackerTestAction issueTrackerTestAction = new TestIssueTrackerTestAction(messageSenderFactory, true, false);
 
         MessageResult messageResult = issueTrackerTestAction.testConfig(TEST_JOB_MODEL, "jobName", null, null);
@@ -92,11 +158,27 @@ public class IssueTrackerFieldModelTestActionTest {
     }
 
     @Test
-    public void testConfigNoReopen() throws AlertException {
+    void testConfigNoReopen() throws AlertException {
         IssueTrackerMessageSender<String> messageSender = Mockito.mock(IssueTrackerMessageSender.class);
         Mockito.when(messageSender.sendMessages(Mockito.any())).thenReturn(List.of(TEST_ISSUE_RESPONSE_MODEL));
 
-        IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = (distributionDetails, id) -> messageSender;
+        IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = new IssueTrackerMessageSenderFactory<>() {
+            @Override
+            public IssueTrackerMessageSender<String> createMessageSender(TestJobDetails distributionDetails, UUID globalId) throws AlertException {
+                return messageSender;
+            }
+
+            @Override
+            public IssueTrackerAsyncMessageSender<String> createAsyncMessageSender(
+                TestJobDetails distributionDetails,
+                UUID globalId,
+                UUID parentEventId,
+                Set<Long> notificationIds
+            )
+                throws AlertException {
+                return null;
+            }
+        };
         TestIssueTrackerTestAction issueTrackerTestAction = new TestIssueTrackerTestAction(messageSenderFactory, true, false);
 
         MessageResult messageResult = issueTrackerTestAction.testConfig(TEST_JOB_MODEL, "jobName", null, null);
@@ -120,7 +202,23 @@ public class IssueTrackerFieldModelTestActionTest {
             return List.of(TEST_ISSUE_RESPONSE_MODEL);
         });
 
-        IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = (distributionDetails, id) -> messageSender;
+        IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = new IssueTrackerMessageSenderFactory<>() {
+            @Override
+            public IssueTrackerMessageSender<String> createMessageSender(TestJobDetails distributionDetails, UUID globalId) throws AlertException {
+                return messageSender;
+            }
+
+            @Override
+            public IssueTrackerAsyncMessageSender<String> createAsyncMessageSender(
+                TestJobDetails distributionDetails,
+                UUID globalId,
+                UUID parentEventId,
+                Set<Long> notificationIds
+            )
+                throws AlertException {
+                return null;
+            }
+        };
         TestIssueTrackerTestAction issueTrackerTestAction = new TestIssueTrackerTestAction(messageSenderFactory, true, true);
 
         MessageResult messageResult = issueTrackerTestAction.testConfig(TEST_JOB_MODEL, "jobName", null, null);

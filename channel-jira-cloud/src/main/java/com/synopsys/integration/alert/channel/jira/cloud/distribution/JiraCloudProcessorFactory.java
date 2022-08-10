@@ -131,9 +131,7 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
             issueCreationRequestCreator,
             issuePropertiesManager,
             jiraErrorMessageUtility,
-            jiraCloudQueryExecutor,
-            eventId,
-            notificationIds
+            jiraCloudQueryExecutor
         );
 
         return new IssueTrackerProcessor<>(extractor, messageSender);

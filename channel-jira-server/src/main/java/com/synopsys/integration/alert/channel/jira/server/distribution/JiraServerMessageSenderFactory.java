@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCallbackInfoCreator;
 import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
+import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerAsyncMessageSender;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerCommentEventGenerator;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerCreationEventGenerator;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueResponseCreator;
@@ -109,10 +110,18 @@ public class JiraServerMessageSenderFactory implements IssueTrackerMessageSender
             issueCreationRequestCreator,
             issuePropertiesManager,
             jiraErrorMessageUtility,
-            jiraServerQueryExecutor,
-            null,
-            Set.of()
+            jiraServerQueryExecutor
         );
+    }
+
+    @Override
+    public IssueTrackerAsyncMessageSender<String> createAsyncMessageSender(
+        JiraServerJobDetailsModel distributionDetails,
+        UUID globalId,
+        UUID parentEventId,
+        Set<Long> notificationIds
+    ) throws AlertException {
+        return createAsyncMessageSender(distributionDetails, parentEventId, notificationIds);
     }
 
     public IssueTrackerMessageSender<String> createMessageSender(
@@ -122,9 +131,7 @@ public class JiraServerMessageSenderFactory implements IssueTrackerMessageSender
         JiraIssueCreationRequestCreator issueCreationRequestCreator,
         JiraIssueAlertPropertiesManager issuePropertiesManager,
         JiraErrorMessageUtility jiraErrorMessageUtility,
-        JiraServerQueryExecutor jiraServerQueryExecutor,
-        UUID parentEventId,
-        Set<Long> notificationIds
+        JiraServerQueryExecutor jiraServerQueryExecutor
     ) {
         IssueTrackerIssueResponseCreator issueResponseCreator = new IssueTrackerIssueResponseCreator(callbackInfoCreator);
 
@@ -144,20 +151,32 @@ public class JiraServerMessageSenderFactory implements IssueTrackerMessageSender
             issueCategoryRetriever,
             jiraServerQueryExecutor
         );
+
+        return new IssueTrackerMessageSender<>(
+            creator,
+            transitioner,
+            commenter
+        );
+
+    }
+
+    public IssueTrackerAsyncMessageSender<String> createAsyncMessageSender(
+        JiraServerJobDetailsModel distributionDetails,
+        UUID parentEventId,
+        Set<Long> notificationIds
+    ) {
         UUID jobId = distributionDetails.getJobId();
         IssueTrackerCommentEventGenerator<String> commentEventGenerator = new JiraServerCommentGenerator(channelKey, parentEventId, jobId, notificationIds);
         IssueTrackerCreationEventGenerator createEventGenerator = new JiraServerCreateEventGenerator(channelKey, parentEventId, jobId, notificationIds);
         IssueTrackerTransitionEventGenerator<String> transitionEventGenerator = new JiraServerTransitionGenerator(channelKey, parentEventId, jobId, notificationIds);
 
-        return new IssueTrackerMessageSender<>(
-            creator,
-            transitioner,
-            commenter,
+        return new IssueTrackerAsyncMessageSender<>(
             createEventGenerator,
             transitionEventGenerator,
             commentEventGenerator,
             eventManager,
-            jobSubTaskAccessor
+            jobSubTaskAccessor,
+            parentEventId
         );
 
     }
