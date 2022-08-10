@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.channel.jira.cloud.distribution.event;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -16,8 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.channel.issue.IssueTrackerResponsePostProcessor;
 import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCommentEventHandler;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCommentModel;
+import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerIssueResponseModel;
+import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerResponse;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraErrorMessageUtility;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraIssueCreationRequestCreator;
@@ -56,9 +60,10 @@ public class JiraCloudCommentEventHandler extends IssueTrackerCommentEventHandle
         Gson gson,
         JiraCloudPropertiesFactory jiraCloudPropertiesFactory,
         JiraCloudMessageSenderFactory messageSenderFactory,
-        JobDetailsAccessor<JiraCloudJobDetailsModel> jobDetailsAccessor
+        JobDetailsAccessor<JiraCloudJobDetailsModel> jobDetailsAccessor,
+        IssueTrackerResponsePostProcessor responsePostProcessor
     ) {
-        super(eventManager, jobSubTaskAccessor);
+        super(eventManager, jobSubTaskAccessor, responsePostProcessor);
         this.gson = gson;
         this.jiraCloudPropertiesFactory = jiraCloudPropertiesFactory;
         this.messageSenderFactory = messageSenderFactory;
@@ -100,7 +105,8 @@ public class JiraCloudCommentEventHandler extends IssueTrackerCommentEventHandle
                     jiraCloudQueryExecutor
                 );
                 IssueCommentModel<String> commentModel = event.getCommentModel();
-                messageSender.sendMessage(commentModel);
+                List<IssueTrackerIssueResponseModel<String>> responses = messageSender.sendMessage(commentModel);
+                postProcess(new IssueTrackerResponse<>("Success", responses));
             } catch (AlertException ex) {
                 logger.error("Cannot comment on issue for job {}", jobId);
             }

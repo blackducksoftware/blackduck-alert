@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.channel.issue.IssueTrackerResponsePostProcessor;
 import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCallbackInfoCreator;
 import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCreateIssueEvent;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentDetails;
@@ -54,12 +55,14 @@ class JiraServerCreateIssueEventHandlerTest {
     private AtomicInteger issueCounter;
     private EventManager eventManager;
     private JobSubTaskAccessor jobSubTaskAccessor;
+    private IssueTrackerResponsePostProcessor responsePostProcessor;
 
     @BeforeEach
     public void init() {
         issueCounter = new AtomicInteger(0);
         eventManager = Mockito.mock(EventManager.class);
         jobSubTaskAccessor = Mockito.mock(JobSubTaskAccessor.class);
+        responsePostProcessor = Mockito.mock(IssueTrackerResponsePostProcessor.class);
     }
 
     @Test
@@ -87,7 +90,8 @@ class JiraServerCreateIssueEventHandlerTest {
             gson,
             propertiesFactory,
             messageSenderFactory,
-            jobDetailsAccessor
+            jobDetailsAccessor,
+            responsePostProcessor
         );
 
         LinkableItem provider = new LinkableItem("provider", "test-provider");
@@ -152,7 +156,8 @@ class JiraServerCreateIssueEventHandlerTest {
             gson,
             propertiesFactory,
             messageSenderFactory,
-            jobDetailsAccessor
+            jobDetailsAccessor,
+            responsePostProcessor
         );
 
         LinkableItem provider = new LinkableItem("provider", "test-provider");
@@ -219,7 +224,8 @@ class JiraServerCreateIssueEventHandlerTest {
             gson,
             propertiesFactory,
             messageSenderFactory,
-            jobDetailsAccessor
+            jobDetailsAccessor,
+            responsePostProcessor
         );
 
         LinkableItem provider = new LinkableItem("provider", "test-provider");
@@ -291,7 +297,8 @@ class JiraServerCreateIssueEventHandlerTest {
             gson,
             propertiesFactory,
             messageSenderFactory,
-            jobDetailsAccessor
+            jobDetailsAccessor,
+            responsePostProcessor
         );
 
         LinkableItem provider = new LinkableItem("provider", "test-provider");

@@ -7,20 +7,19 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.core.task.SyncTaskExecutor;
 
+import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.issue.convert.IssueTrackerMessageFormatter;
-import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerResponse;
-import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
-import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
-import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueCommenter;
-import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueCreator;
-import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueTransitioner;
-import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
+import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerAsyncMessageSender;
+import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerCommentEventGenerator;
+import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerCreationEventGenerator;
+import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerTransitionEventGenerator;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
+import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
@@ -36,7 +35,7 @@ class IssueTrackerChannelTest {
         };
         IssueTrackerModelExtractor<String> modelExtractor = new IssueTrackerModelExtractor<>(createFormatter(), null);
         JobSubTaskAccessor jobSubTaskAccessor = createJobSubTaskAccessor();
-        IssueTrackerMessageSender<String> messageSender = createMessageSender(jobSubTaskAccessor);
+        IssueTrackerAsyncMessageSender<String> messageSender = createMessageSender(jobSubTaskAccessor);
         IssueTrackerProcessor<String> processor = new IssueTrackerProcessor<>(modelExtractor, messageSender);
 
         IssueTrackerProcessorFactory<DistributionJobDetailsModel, String> processorFactory = (x, y, z) -> processor;
@@ -83,47 +82,19 @@ class IssueTrackerChannelTest {
         };
     }
 
-    private IssueTrackerMessageSender<String> createMessageSender(JobSubTaskAccessor jobSubTaskAccessor) {
-        IssueTrackerIssueCommenter<String> commenter = new IssueTrackerIssueCommenter<>(null) {
-            @Override
-            protected boolean isCommentingEnabled() {
-                return false;
-            }
+    private IssueTrackerAsyncMessageSender<String> createMessageSender(JobSubTaskAccessor jobSubTaskAccessor) {
+        IssueTrackerCommentEventGenerator<String> commenter = (model) -> null;
+        IssueTrackerTransitionEventGenerator<String> transitioner = (model) -> null;
+        IssueTrackerCreationEventGenerator creator = (model) -> null;
+        EventManager eventManager = new EventManager(new Gson(), new RabbitTemplate(), new SyncTaskExecutor());
 
-            @Override
-            protected void addComment(String comment, ExistingIssueDetails<String> existingIssueDetails, @Nullable ProjectIssueModel source) {
-            }
-        };
-        IssueTrackerIssueTransitioner<String> transitioner = new IssueTrackerIssueTransitioner<>(commenter, null) {
-            @Override
-            protected Optional<String> retrieveJobTransitionName(IssueOperation issueOperation) {
-                return Optional.empty();
-            }
-
-            @Override
-            protected boolean isTransitionRequired(ExistingIssueDetails<String> existingIssueDetails, IssueOperation issueOperation) {
-                return false;
-            }
-
-            @Override
-            protected void findAndPerformTransition(ExistingIssueDetails<String> existingIssueDetails, String transitionName) {
-            }
-        };
-        IssueTrackerIssueCreator<String> creator = new IssueTrackerIssueCreator<>(null, commenter, null) {
-            @Override
-            protected ExistingIssueDetails<String> createIssueAndExtractDetails(IssueCreationModel alertIssueCreationModel) {
-                return null;
-            }
-
-            @Override
-            protected void assignAlertSearchProperties(ExistingIssueDetails<String> createdIssueDetails, ProjectIssueModel alertIssueSource) {
-            }
-        };
-
-        return new IssueTrackerMessageSender<>(
+        return new IssueTrackerAsyncMessageSender<>(
             creator,
             transitioner,
-            commenter
+            commenter,
+            eventManager,
+            jobSubTaskAccessor,
+            UUID.randomUUID()
         );
     }
 

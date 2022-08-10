@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.channel.azure.boards.distribution.event;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -16,8 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.channel.issue.IssueTrackerResponsePostProcessor;
 import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCommentEventHandler;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCommentModel;
+import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerIssueResponseModel;
+import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerResponse;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.event.EventManager;
@@ -55,9 +59,10 @@ public class AzureBoardsCommentEventHandler extends IssueTrackerCommentEventHand
         AzureBoardsPropertiesFactory azureBoardsPropertiesFactory,
         AzureBoardsMessageSenderFactory azureBoardsMessageSenderFactory,
         ProxyManager proxyManager,
-        JobDetailsAccessor<AzureBoardsJobDetailsModel> jobDetailsAccessor
+        JobDetailsAccessor<AzureBoardsJobDetailsModel> jobDetailsAccessor,
+        IssueTrackerResponsePostProcessor responsePostProcessor
     ) {
-        super(eventManager, jobSubTaskAccessor);
+        super(eventManager, jobSubTaskAccessor, responsePostProcessor);
         this.gson = gson;
         this.azureBoardsPropertiesFactory = azureBoardsPropertiesFactory;
         this.azureBoardsMessageSenderFactory = azureBoardsMessageSenderFactory;
@@ -88,16 +93,17 @@ public class AzureBoardsCommentEventHandler extends IssueTrackerCommentEventHand
                 AzureWorkItemTypeStateService workItemTypeStateService = new AzureWorkItemTypeStateService(azureHttpService, apiVersionAppender);
                 AzureWorkItemCommentService workItemCommentService = new AzureWorkItemCommentService(azureHttpService, apiVersionAppender);
 
-                IssueTrackerMessageSender<Integer> messageSender = azureBoardsMessageSenderFactory.createMessageSender(
-                    workItemService,
-                    workItemTypeStateService,
-                    workItemCommentService,
-                    organizationName,
-                    distributionDetails,
-                    workItemQueryService
-                );
-                IssueCommentModel<Integer> commentModel = event.getCommentModel();
-                messageSender.sendMessage(commentModel);
+            IssueTrackerMessageSender<Integer> messageSender = azureBoardsMessageSenderFactory.createMessageSender(
+                workItemService,
+                workItemTypeStateService,
+                workItemCommentService,
+                organizationName,
+                distributionDetails,
+                workItemQueryService
+            );
+            IssueCommentModel<Integer> commentModel = event.getCommentModel();
+            List<IssueTrackerIssueResponseModel<Integer>> responses = messageSender.sendMessage(commentModel);
+            postProcess(new IssueTrackerResponse<>("Success", responses));
         } else {
             logger.error("No Azure Boards job found with id {}", jobId);
         }

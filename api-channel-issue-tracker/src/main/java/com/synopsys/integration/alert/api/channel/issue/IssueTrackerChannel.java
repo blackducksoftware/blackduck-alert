@@ -45,7 +45,7 @@ public abstract class IssueTrackerChannel<D extends DistributionJobDetailsModel,
         IssueTrackerProcessor<T> processor = processorFactory.createProcessor(distributionDetails, eventId, notificationIds);
         IssueTrackerResponse<T> issueTrackerResponse = processor.processMessages(messages, jobName);
 
-        responsePostProcessor.postProcess(issueTrackerResponse);
+        //responsePostProcessor.postProcess(issueTrackerResponse);
         return new MessageResult(issueTrackerResponse.getStatusMessage());
     }
 

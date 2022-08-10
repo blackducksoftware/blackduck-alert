@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.channel.issue.IssueTrackerResponsePostProcessor;
 import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCallbackInfoCreator;
 import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCommentEvent;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCommentModel;
@@ -42,12 +43,14 @@ class JiraCloudCommentEventHandlerTest {
     private AtomicInteger issueCounter;
     private EventManager eventManager;
     private JobSubTaskAccessor jobSubTaskAccessor;
+    private IssueTrackerResponsePostProcessor responsePostProcessor;
 
     @BeforeEach
     public void init() {
         issueCounter = new AtomicInteger(0);
         eventManager = Mockito.mock(EventManager.class);
         jobSubTaskAccessor = Mockito.mock(JobSubTaskAccessor.class);
+        responsePostProcessor = Mockito.mock(IssueTrackerResponsePostProcessor.class);
     }
 
     @Test
@@ -76,7 +79,8 @@ class JiraCloudCommentEventHandlerTest {
             gson,
             propertiesFactory,
             messageSenderFactory,
-            jobDetailsAccessor
+            jobDetailsAccessor,
+            responsePostProcessor
         );
         ExistingIssueDetails<String> existingIssueDetails = new ExistingIssueDetails<>("id", "key", "summary", "link", IssueStatus.UNKNOWN, IssueCategory.BOM);
         IssueCommentModel<String> model = new IssueCommentModel<>(existingIssueDetails, List.of(), null);
@@ -136,7 +140,8 @@ class JiraCloudCommentEventHandlerTest {
             gson,
             propertiesFactory,
             messageSenderFactory,
-            jobDetailsAccessor
+            jobDetailsAccessor,
+            responsePostProcessor
         );
         ExistingIssueDetails<String> existingIssueDetails = new ExistingIssueDetails<>("id", "key", "summary", "link", IssueStatus.UNKNOWN, IssueCategory.BOM);
         IssueCommentModel<String> model = new IssueCommentModel<>(existingIssueDetails, List.of("A comment"), null);

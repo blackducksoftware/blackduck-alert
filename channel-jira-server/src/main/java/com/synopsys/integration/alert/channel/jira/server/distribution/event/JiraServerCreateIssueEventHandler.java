@@ -19,10 +19,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.channel.issue.IssueTrackerResponsePostProcessor;
 import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCreateIssueEvent;
 import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCreateIssueEventHandler;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerIssueResponseModel;
+import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerResponse;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraErrorMessageUtility;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraIssueCreationRequestCreator;
@@ -59,9 +61,10 @@ public class JiraServerCreateIssueEventHandler extends IssueTrackerCreateIssueEv
         Gson gson,
         JiraServerPropertiesFactory jiraServerPropertiesFactory,
         JiraServerMessageSenderFactory jiraServerMessageSenderFactory,
-        JobDetailsAccessor<JiraServerJobDetailsModel> jobDetailsAccessor
+        JobDetailsAccessor<JiraServerJobDetailsModel> jobDetailsAccessor,
+        IssueTrackerResponsePostProcessor issueTrackerResponsePostProcessor
     ) {
-        super(eventManager, jobSubTaskAccessor);
+        super(eventManager, jobSubTaskAccessor, issueTrackerResponsePostProcessor);
         this.gson = gson;
         this.jiraServerPropertiesFactory = jiraServerPropertiesFactory;
         this.jiraServerMessageSenderFactory = jiraServerMessageSenderFactory;
@@ -108,8 +111,9 @@ public class JiraServerCreateIssueEventHandler extends IssueTrackerCreateIssueEv
                 boolean issueDoesNotExist = checkIfIssueDoesNotExist(jiraServerQueryExecutor, jqlQuery);
                 if (issueDoesNotExist) {
                     List<IssueTrackerIssueResponseModel<String>> responses = messageSender.sendMessage(creationModel);
+                    postProcess(new IssueTrackerResponse<>("Success", responses));
                     List<String> issueKeys = responses.stream()
-                        .map(IssueTrackerIssueResponseModel::getIssueKey)
+                        .map(IssueTrackerIssueResponseModel::getIssueId)
                         .collect(Collectors.toList());
                     logger.info("Created issues: {}", issueKeys);
                 } else {

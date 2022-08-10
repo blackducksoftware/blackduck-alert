@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.channel.jira.server.distribution.event;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -16,7 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.channel.issue.IssueTrackerResponsePostProcessor;
 import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerTransitionEventHandler;
+import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerIssueResponseModel;
+import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerResponse;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTransitionModel;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraErrorMessageUtility;
@@ -54,9 +58,10 @@ public class JiraServerTransitionEventHandler extends IssueTrackerTransitionEven
         Gson gson,
         JiraServerPropertiesFactory jiraServerPropertiesFactory,
         JiraServerMessageSenderFactory jiraServerMessageSenderFactory,
-        JobDetailsAccessor<JiraServerJobDetailsModel> jobDetailsAccessor
+        JobDetailsAccessor<JiraServerJobDetailsModel> jobDetailsAccessor,
+        IssueTrackerResponsePostProcessor responsePostProcessor
     ) {
-        super(eventManager, jobSubTaskAccessor);
+        super(eventManager, jobSubTaskAccessor, responsePostProcessor);
         this.gson = gson;
         this.jiraServerPropertiesFactory = jiraServerPropertiesFactory;
         this.jiraServerMessageSenderFactory = jiraServerMessageSenderFactory;
@@ -98,7 +103,8 @@ public class JiraServerTransitionEventHandler extends IssueTrackerTransitionEven
                     jiraServerQueryExecutor
                 );
                 IssueTransitionModel<String> transitionModel = event.getTransitionModel();
-                messageSender.sendMessage(transitionModel);
+                List<IssueTrackerIssueResponseModel<String>> responses = messageSender.sendMessage(transitionModel);
+                postProcess(new IssueTrackerResponse<>("Success", responses));
             } catch (AlertException ex) {
                 logger.error("Cannot transition issue for job {}", jobId);
             }
