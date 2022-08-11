@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.api.channel.issue.event.distribution;
+package com.synopsys.inegration.alert.api.distribution;
 
 import java.util.Set;
 import java.util.UUID;
@@ -12,8 +12,8 @@ public class AuditSuccessEvent extends AlertEvent {
     private final UUID jobId;
     private final Set<Long> notificationIds;
 
-    public AuditSuccessEvent(String destination, UUID jobId, Set<Long> notificationIds) {
-        super(destination);
+    public AuditSuccessEvent(UUID jobId, Set<Long> notificationIds) {
+        super(DEFAULT_DESTINATION_NAME);
         this.jobId = jobId;
         this.notificationIds = notificationIds;
     }

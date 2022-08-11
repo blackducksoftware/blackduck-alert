@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.api.channel.issue.event.distribution;
+package com.synopsys.inegration.alert.api.distribution;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.task.TaskExecutor;

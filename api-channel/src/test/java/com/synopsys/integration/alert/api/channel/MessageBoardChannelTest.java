@@ -7,25 +7,28 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.api.channel.convert.AbstractChannelMessageConverter;
 import com.synopsys.integration.alert.api.channel.convert.ChannelMessageFormatter;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 
-public class MessageBoardChannelTest {
+class MessageBoardChannelTest {
     @Test
-    public void distributeMessagesTest() throws AlertException {
+    void distributeMessagesTest() throws AlertException {
         MessageResult expectedResult = new MessageResult("Test result");
+        EventManager eventManager = Mockito.mock(EventManager.class);
         DistributionJobDetailsModel testDetails = new DistributionJobDetailsModel(null, null) {};
 
         AbstractChannelMessageConverter<DistributionJobDetailsModel, Object> converter = createConverter();
         ChannelMessageSender<DistributionJobDetailsModel, Object, MessageResult> sender = (x, y) -> expectedResult;
-        MessageBoardChannel<DistributionJobDetailsModel, Object> messageBoardChannel = new MessageBoardChannel<>(converter, sender) {};
+        MessageBoardChannel<DistributionJobDetailsModel, Object> messageBoardChannel = new MessageBoardChannel<>(converter, sender, eventManager) {};
 
         MessageResult testResult = messageBoardChannel.distributeMessages(testDetails, ProviderMessageHolder.empty(), "jobName", UUID.randomUUID(), Set.of());
         assertEquals(expectedResult, testResult);

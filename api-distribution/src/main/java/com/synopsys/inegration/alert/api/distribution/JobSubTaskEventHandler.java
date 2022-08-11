@@ -1,9 +1,11 @@
-package com.synopsys.integration.alert.api.channel.issue.event.distribution;
+package com.synopsys.inegration.alert.api.distribution;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.event.AlertEvent;
 import com.synopsys.integration.alert.api.event.AlertEventHandler;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.api.event.distribution.JobSubTaskEvent;
@@ -30,12 +32,11 @@ public abstract class JobSubTaskEventHandler<T extends JobSubTaskEvent> implemen
             subTaskStatus.map(JobSubTaskStatusModel::getRemainingTaskCount)
                 .filter(remainingCount -> remainingCount < 1)
                 .ifPresent((ignored) -> {
-                    eventManager.sendEvent(new AuditSuccessEvent(AuditFailedEvent.DEFAULT_DESTINATION_NAME, event.getJobId(), event.getNotificationIds()));
+                    eventManager.sendEvent(new AuditSuccessEvent(event.getJobId(), event.getNotificationIds()));
                     jobSubTaskAccessor.removeSubTaskStatus(parentEventId);
                 });
         } catch (AlertException exception) {
             eventManager.sendEvent(new AuditFailedEvent(
-                AuditFailedEvent.DEFAULT_DESTINATION_NAME,
                 event.getJobId(),
                 event.getNotificationIds(),
                 exception.getMessage(),
@@ -47,4 +48,8 @@ public abstract class JobSubTaskEventHandler<T extends JobSubTaskEvent> implemen
     }
 
     protected abstract void handleEvent(T event) throws AlertException;
+
+    protected void postEvents(List<AlertEvent> alertEvent) {
+        eventManager.sendEvents(alertEvent);
+    }
 }

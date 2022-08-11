@@ -9,8 +9,8 @@ package com.synopsys.integration.alert.api.channel.issue.event;
 
 import java.io.Serializable;
 
+import com.synopsys.inegration.alert.api.distribution.JobSubTaskEventHandler;
 import com.synopsys.integration.alert.api.channel.issue.IssueTrackerResponsePostProcessor;
-import com.synopsys.integration.alert.api.channel.issue.event.distribution.JobSubTaskEventHandler;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerResponse;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.api.event.distribution.JobSubTaskEvent;
@@ -27,7 +27,7 @@ public abstract class IssueTrackerCommentEventHandler<T extends JobSubTaskEvent>
         super(eventManager, jobSubTaskAccessor);
         this.responsePostProcessor = responsePostProcessor;
     }
-    
+
     protected <T extends Serializable> void postProcess(IssueTrackerResponse<T> response) {
         responsePostProcessor.postProcess(response);
     }

@@ -11,8 +11,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import com.synopsys.inegration.alert.api.distribution.AuditSuccessEvent;
 import com.synopsys.integration.alert.api.channel.convert.AbstractChannelMessageConverter;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
@@ -25,17 +27,25 @@ import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessag
 public abstract class MessageBoardChannel<D extends DistributionJobDetailsModel, T> implements DistributionChannel<D> {
     private final AbstractChannelMessageConverter<D, T> channelMessageConverter;
     private final ChannelMessageSender<D, T, MessageResult> channelMessageSender;
+    private final EventManager eventManager;
 
-    protected MessageBoardChannel(AbstractChannelMessageConverter<D, T> channelMessageConverter, ChannelMessageSender<D, T, MessageResult> channelMessageSender) {
+    protected MessageBoardChannel(
+        AbstractChannelMessageConverter<D, T> channelMessageConverter,
+        ChannelMessageSender<D, T, MessageResult> channelMessageSender,
+        EventManager eventManager
+    ) {
         this.channelMessageConverter = channelMessageConverter;
         this.channelMessageSender = channelMessageSender;
+        this.eventManager = eventManager;
     }
 
     @Override
     public MessageResult distributeMessages(D distributionDetails, ProviderMessageHolder messages, String jobName, UUID eventId, Set<Long> notificationIds)
         throws AlertException {
         List<T> channelMessages = channelMessageConverter.convertToChannelMessages(distributionDetails, messages, jobName);
-        return channelMessageSender.sendMessages(distributionDetails, channelMessages);
+        MessageResult messageResult = channelMessageSender.sendMessages(distributionDetails, channelMessages);
+        eventManager.sendEvent(new AuditSuccessEvent(distributionDetails.getJobId(), notificationIds));
+        return messageResult;
     }
 
 }

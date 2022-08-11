@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.api.channel.issue.event.distribution;
+package com.synopsys.inegration.alert.api.distribution;
 
 import java.util.Optional;
 import java.util.Set;
@@ -16,8 +16,8 @@ public class AuditFailedEvent extends AlertEvent {
     private final String errorMessage;
     private final String stackTrace;
 
-    public AuditFailedEvent(String destination, UUID jobId, Set<Long> notificationIds, String errorMessage, @Nullable String stackTrace) {
-        super(destination);
+    public AuditFailedEvent(UUID jobId, Set<Long> notificationIds, String errorMessage, @Nullable String stackTrace) {
+        super(DEFAULT_DESTINATION_NAME);
         this.jobId = jobId;
         this.notificationIds = notificationIds;
         this.errorMessage = errorMessage;

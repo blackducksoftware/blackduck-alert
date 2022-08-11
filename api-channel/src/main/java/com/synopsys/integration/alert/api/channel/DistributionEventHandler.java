@@ -40,7 +40,7 @@ public class DistributionEventHandler<D extends DistributionJobDetailsModel> imp
             try {
                 notificationLogger.debug("Channel: {} is processing event: {}", channel.getClass(), event.getEventId());
                 channel.distributeMessages(details.get(), event.getProviderMessages(), event.getJobName(), UUID.fromString(event.getEventId()), event.getNotificationIds());
-                auditAccessor.setAuditEntrySuccess(event.getJobId(), event.getNotificationIds());
+                //auditAccessor.setAuditEntrySuccess(event.getJobId(), event.getNotificationIds());
                 notificationLogger.debug("Channel: {} successfully processed event: {}", channel.getClass(), event.getEventId());
             } catch (AlertException alertException) {
                 handleAlertException(alertException, event);
