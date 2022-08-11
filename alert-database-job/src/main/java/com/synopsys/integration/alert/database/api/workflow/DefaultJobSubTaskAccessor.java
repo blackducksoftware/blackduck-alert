@@ -10,23 +10,23 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.workflow.JobSubTaskStatusModel;
-import com.synopsys.integration.alert.database.distribution.workflow.AuditCorrelationToNotificationRelation;
-import com.synopsys.integration.alert.database.distribution.workflow.AuditCorrelationToNotificationRelationRepository;
 import com.synopsys.integration.alert.database.distribution.workflow.JobSubTaskRepository;
 import com.synopsys.integration.alert.database.distribution.workflow.JobSubTaskStatusEntity;
+import com.synopsys.integration.alert.database.distribution.workflow.NotificationCorrelationToNotificationRelation;
+import com.synopsys.integration.alert.database.distribution.workflow.NotificationCorrelationToNotificationRelationRepository;
 
 @Component
 public class DefaultJobSubTaskAccessor implements JobSubTaskAccessor {
     private JobSubTaskRepository jobSubTaskRepository;
-    private AuditCorrelationToNotificationRelationRepository auditCorrelationToNotificationRelationRepository;
+    private NotificationCorrelationToNotificationRelationRepository notificationCorrelationToNotificationRelationRepository;
 
     @Autowired
     public DefaultJobSubTaskAccessor(
         JobSubTaskRepository jobSubTaskRepository,
-        AuditCorrelationToNotificationRelationRepository auditCorrelationToNotificationRelationRepository
+        NotificationCorrelationToNotificationRelationRepository notificationCorrelationToNotificationRelationRepository
     ) {
         this.jobSubTaskRepository = jobSubTaskRepository;
-        this.auditCorrelationToNotificationRelationRepository = auditCorrelationToNotificationRelationRepository;
+        this.notificationCorrelationToNotificationRelationRepository = notificationCorrelationToNotificationRelationRepository;
     }
 
     @Override
@@ -44,7 +44,7 @@ public class DefaultJobSubTaskAccessor implements JobSubTaskAccessor {
         entity = jobSubTaskRepository.save(entity);
 
         for (Long notificationId : notificationIds) {
-            auditCorrelationToNotificationRelationRepository.save(new AuditCorrelationToNotificationRelation(auditCorrelationId, notificationId));
+            notificationCorrelationToNotificationRelationRepository.save(new NotificationCorrelationToNotificationRelation(auditCorrelationId, notificationId));
         }
         return convertEntity(entity);
     }
@@ -59,7 +59,7 @@ public class DefaultJobSubTaskAccessor implements JobSubTaskAccessor {
                 currentEntity.getId(),
                 currentEntity.getJobId(),
                 remainingTaskCount,
-                currentEntity.getAuditCorrelationId()
+                currentEntity.getNotificationCorrelationId()
             );
             entity = Optional.of(jobSubTaskRepository.save(updatedEntity));
         }
@@ -73,7 +73,7 @@ public class DefaultJobSubTaskAccessor implements JobSubTaskAccessor {
         if (entity.isPresent()) {
             JobSubTaskStatusEntity item = entity.get();
             Long remainingTaskCount = item.getRemainingEvents() - 1;
-            item = jobSubTaskRepository.save(new JobSubTaskStatusEntity(item.getId(), item.getJobId(), remainingTaskCount, item.getAuditCorrelationId()));
+            item = jobSubTaskRepository.save(new JobSubTaskStatusEntity(item.getId(), item.getJobId(), remainingTaskCount, item.getNotificationCorrelationId()));
             entity = Optional.of(item);
         }
         return entity.map(this::convertEntity);
@@ -91,6 +91,6 @@ public class DefaultJobSubTaskAccessor implements JobSubTaskAccessor {
     }
 
     private JobSubTaskStatusModel convertEntity(JobSubTaskStatusEntity entity) {
-        return new JobSubTaskStatusModel(entity.getId(), entity.getJobId(), entity.getRemainingEvents(), entity.getAuditCorrelationId());
+        return new JobSubTaskStatusModel(entity.getId(), entity.getJobId(), entity.getRemainingEvents(), entity.getNotificationCorrelationId());
     }
 }

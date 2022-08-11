@@ -26,21 +26,21 @@ public class JobSubTaskStatusEntity extends BaseEntity {
     @Column(name = "remaining_event_count")
     private Long remainingEvents;
 
-    @Column(name = "audit_correlation_id")
-    private UUID auditCorrelationId;
+    @Column(name = "notification_correlation_id")
+    private UUID notificationCorrelationId;
 
     @OneToMany
-    @JoinColumn(name = "audit_correlation_id", referencedColumnName = "audit_correlation_id", insertable = false, updatable = false)
-    private List<AuditCorrelationToNotificationRelation> auditCorrelationToNotificationRelationList;
+    @JoinColumn(name = "notification_correlation_id", referencedColumnName = "notification_correlation_id", insertable = false, updatable = false)
+    private List<NotificationCorrelationToNotificationRelation> notificationCorrelationToNotificationRelationList;
 
     public JobSubTaskStatusEntity() {
     }
 
-    public JobSubTaskStatusEntity(UUID id, UUID jobId, Long remainingEvents, UUID auditCorrelationId) {
+    public JobSubTaskStatusEntity(UUID id, UUID jobId, Long remainingEvents, UUID notificationCorrelationId) {
         this.id = id;
         this.jobId = jobId;
         this.remainingEvents = remainingEvents;
-        this.auditCorrelationId = auditCorrelationId;
+        this.notificationCorrelationId = notificationCorrelationId;
     }
 
     public UUID getId() {
@@ -55,11 +55,11 @@ public class JobSubTaskStatusEntity extends BaseEntity {
         return remainingEvents;
     }
 
-    public UUID getAuditCorrelationId() {
-        return auditCorrelationId;
+    public UUID getNotificationCorrelationId() {
+        return notificationCorrelationId;
     }
 
-    public List<AuditCorrelationToNotificationRelation> getAuditCorrelationToNotificationRelationList() {
-        return auditCorrelationToNotificationRelationList;
+    public List<NotificationCorrelationToNotificationRelation> getNotificationCorrelationToNotificationRelationList() {
+        return notificationCorrelationToNotificationRelationList;
     }
 }

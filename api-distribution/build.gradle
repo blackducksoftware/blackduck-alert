@@ -1,4 +1,4 @@
-ext.moduleName = 'com.synopsys.integration.alert.distribution.api'
+ext.moduleName = 'com.synopsys.integration.alert.api.distribution'
 
 dependencies {
     api 'org.springframework.amqp:spring-amqp'

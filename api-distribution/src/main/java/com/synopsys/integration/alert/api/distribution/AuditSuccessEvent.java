@@ -1,4 +1,4 @@
-package com.synopsys.inegration.alert.api.distribution;
+package com.synopsys.integration.alert.api.distribution;
 
 import java.util.Set;
 import java.util.UUID;

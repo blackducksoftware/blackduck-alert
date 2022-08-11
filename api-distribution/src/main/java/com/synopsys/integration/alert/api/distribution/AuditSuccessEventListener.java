@@ -1,4 +1,4 @@
-package com.synopsys.inegration.alert.api.distribution;
+package com.synopsys.integration.alert.api.distribution;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.task.TaskExecutor;
@@ -8,14 +8,14 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.event.AlertMessageListener;
 
 @Component
-public class AuditFailedEventListener extends AlertMessageListener<AuditFailedEvent> {
+public class AuditSuccessEventListener extends AlertMessageListener<AuditSuccessEvent> {
 
     @Autowired
-    public AuditFailedEventListener(
+    public AuditSuccessEventListener(
         Gson gson,
         TaskExecutor taskExecutor,
-        AuditFailedHandler eventHandler
+        AuditSuccessHandler eventHandler
     ) {
-        super(gson, taskExecutor, AuditFailedEvent.DEFAULT_DESTINATION_NAME, AuditFailedEvent.class, eventHandler);
+        super(gson, taskExecutor, AuditSuccessEvent.DEFAULT_DESTINATION_NAME, AuditSuccessEvent.class, eventHandler);
     }
 }
