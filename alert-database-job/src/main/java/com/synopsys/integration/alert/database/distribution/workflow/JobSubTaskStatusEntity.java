@@ -1,13 +1,10 @@
 package com.synopsys.integration.alert.database.distribution.workflow;
 
-import java.util.List;
 import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.synopsys.integration.alert.database.BaseEntity;
@@ -28,10 +25,6 @@ public class JobSubTaskStatusEntity extends BaseEntity {
 
     @Column(name = "notification_correlation_id")
     private UUID notificationCorrelationId;
-
-    @OneToMany
-    @JoinColumn(name = "notification_correlation_id", referencedColumnName = "notification_correlation_id", insertable = false, updatable = false)
-    private List<NotificationCorrelationToNotificationRelation> notificationCorrelationToNotificationRelationList;
 
     public JobSubTaskStatusEntity() {
     }
@@ -57,9 +50,5 @@ public class JobSubTaskStatusEntity extends BaseEntity {
 
     public UUID getNotificationCorrelationId() {
         return notificationCorrelationId;
-    }
-
-    public List<NotificationCorrelationToNotificationRelation> getNotificationCorrelationToNotificationRelationList() {
-        return notificationCorrelationToNotificationRelationList;
     }
 }

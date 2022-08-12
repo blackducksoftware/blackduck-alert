@@ -33,7 +33,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="notification_id" type="BIGINT">
-                <constraints nullable="false" unique="true"/>
+                <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>

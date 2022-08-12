@@ -17,6 +17,7 @@ import com.synopsys.integration.alert.database.distribution.workflow.Notificatio
 
 @Component
 public class DefaultJobSubTaskAccessor implements JobSubTaskAccessor {
+
     private JobSubTaskRepository jobSubTaskRepository;
     private NotificationCorrelationToNotificationRelationRepository notificationCorrelationToNotificationRelationRepository;
 
@@ -39,12 +40,12 @@ public class DefaultJobSubTaskAccessor implements JobSubTaskAccessor {
     @Override
     @Transactional
     public JobSubTaskStatusModel createSubTaskStatus(UUID id, UUID jobId, Long remainingTaskCount, Set<Long> notificationIds) {
-        UUID auditCorrelationId = UUID.randomUUID();
-        JobSubTaskStatusEntity entity = new JobSubTaskStatusEntity(id, jobId, remainingTaskCount, auditCorrelationId);
+        UUID notificationCorrelationId = UUID.randomUUID();
+        JobSubTaskStatusEntity entity = new JobSubTaskStatusEntity(id, jobId, remainingTaskCount, notificationCorrelationId);
         entity = jobSubTaskRepository.save(entity);
 
         for (Long notificationId : notificationIds) {
-            notificationCorrelationToNotificationRelationRepository.save(new NotificationCorrelationToNotificationRelation(auditCorrelationId, notificationId));
+            notificationCorrelationToNotificationRelationRepository.save(new NotificationCorrelationToNotificationRelation(notificationCorrelationId, notificationId));
         }
         return convertEntity(entity);
     }
