@@ -6,30 +6,17 @@ import java.util.UUID;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.synopsys.integration.alert.api.event.AlertEvent;
-
-public class AuditFailedEvent extends AlertEvent {
+public class AuditFailedEvent extends AuditEvent {
     private static final long serialVersionUID = 7700792205184047256L;
     public static final String DEFAULT_DESTINATION_NAME = "audit_failed_event";
-    private final UUID jobId;
-    private final Set<Long> notificationIds;
+
     private final String errorMessage;
     private final String stackTrace;
 
     public AuditFailedEvent(UUID jobId, Set<Long> notificationIds, String errorMessage, @Nullable String stackTrace) {
-        super(DEFAULT_DESTINATION_NAME);
-        this.jobId = jobId;
-        this.notificationIds = notificationIds;
+        super(DEFAULT_DESTINATION_NAME, jobId, notificationIds);
         this.errorMessage = errorMessage;
         this.stackTrace = stackTrace;
-    }
-
-    public UUID getJobId() {
-        return jobId;
-    }
-
-    public Set<Long> getNotificationIds() {
-        return notificationIds;
     }
 
     public String getErrorMessage() {

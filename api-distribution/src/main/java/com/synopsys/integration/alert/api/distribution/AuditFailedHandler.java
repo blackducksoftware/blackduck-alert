@@ -17,6 +17,12 @@ public class AuditFailedHandler implements AlertEventHandler<AuditFailedEvent> {
 
     @Override
     public void handle(AuditFailedEvent event) {
-        processingAuditAccessor.setAuditEntryFailure(event.getJobId(), event.getNotificationIds(), event.getErrorMessage(), event.getStackTrace().orElse(null));
+        processingAuditAccessor.setAuditEntryFailure(
+            event.getJobId(),
+            event.getNotificationIds(),
+            event.getCreatedTimestamp(),
+            event.getErrorMessage(),
+            event.getStackTrace().orElse(null)
+        );
     }
 }

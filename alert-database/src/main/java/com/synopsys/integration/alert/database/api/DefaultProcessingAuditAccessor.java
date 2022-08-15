@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.database.api;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -88,6 +89,17 @@ public class DefaultProcessingAuditAccessor implements ProcessingAuditAccessor {
 
     @Override
     @Transactional
+    public void setAuditEntrySuccess(UUID jobId, Set<Long> notificationIds, OffsetDateTime successTimestamp) {
+        updateAuditEntries(jobId, notificationIds, auditEntry -> {
+            auditEntry.setStatus(AuditEntryStatus.SUCCESS.name());
+            auditEntry.setTimeLastSent(successTimestamp);
+            auditEntry.setErrorMessage(null);
+            auditEntry.setErrorStackTrace(null);
+        });
+    }
+
+    @Override
+    @Transactional
     public void setAuditEntryFailure(UUID jobId, Set<Long> notificationIds, String errorMessage, @Nullable Throwable exception) {
         String stackTraceString = null;
         if (null != exception) {
@@ -101,6 +113,25 @@ public class DefaultProcessingAuditAccessor implements ProcessingAuditAccessor {
     @Transactional
     public void setAuditEntryFailure(UUID jobId, Set<Long> notificationIds, String errorMessage, @Nullable String stackTrace) {
         updateAuditEntries(jobId, notificationIds, auditEntry -> {
+            auditEntry.setStatus(AuditEntryStatus.FAILURE.name());
+            auditEntry.setErrorMessage(errorMessage);
+            if (null != stackTrace) {
+                auditEntry.setErrorStackTrace(stackTrace);
+            }
+        });
+    }
+
+    @Override
+    @Transactional
+    public void setAuditEntryFailure(
+        UUID jobId,
+        Set<Long> notificationIds,
+        OffsetDateTime failureTimestamp,
+        String errorMessage,
+        @Nullable String stackTrace
+    ) {
+        updateAuditEntries(jobId, notificationIds, auditEntry -> {
+            auditEntry.setTimeLastSent(failureTimestamp);
             auditEntry.setStatus(AuditEntryStatus.FAILURE.name());
             auditEntry.setErrorMessage(errorMessage);
             if (null != stackTrace) {

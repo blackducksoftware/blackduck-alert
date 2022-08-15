@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.common.persistence.accessor;
 
+import java.time.OffsetDateTime;
 import java.util.Set;
 import java.util.UUID;
 
@@ -17,8 +18,12 @@ public interface ProcessingAuditAccessor {
 
     void setAuditEntrySuccess(UUID jobId, Set<Long> notificationIds);
 
+    void setAuditEntrySuccess(UUID jobId, Set<Long> notificationIds, OffsetDateTime successTimestamp);
+
     void setAuditEntryFailure(UUID jobId, Set<Long> notificationIds, String errorMessage, @Nullable Throwable exception);
 
     void setAuditEntryFailure(UUID jobId, Set<Long> notificationIds, String errorMessage, @Nullable String stackTrace);
+
+    void setAuditEntryFailure(UUID jobId, Set<Long> notificationIds, OffsetDateTime failureTimestamp, String errorMessage, @Nullable String stackTrace);
 
 }
