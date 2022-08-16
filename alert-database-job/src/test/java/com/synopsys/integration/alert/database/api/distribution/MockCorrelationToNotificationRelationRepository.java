@@ -2,10 +2,10 @@ package com.synopsys.integration.alert.database.api.distribution;
 
 import java.util.function.Function;
 
-import com.synopsys.integration.alert.database.distribution.workflow.MockRepositoryContainer;
 import com.synopsys.integration.alert.database.distribution.workflow.NotificationCorrelationToNotificationRelation;
 import com.synopsys.integration.alert.database.distribution.workflow.NotificationCorrelationToNotificationRelationPK;
 import com.synopsys.integration.alert.database.distribution.workflow.NotificationCorrelationToNotificationRelationRepository;
+import com.synopsys.integration.alert.test.common.database.MockRepositoryContainer;
 
 public class MockCorrelationToNotificationRelationRepository
     extends MockRepositoryContainer<NotificationCorrelationToNotificationRelationPK, NotificationCorrelationToNotificationRelation>

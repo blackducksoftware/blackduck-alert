@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.database.distribution.workflow;
+package com.synopsys.integration.alert.test.common.database;
 
 import java.io.Serializable;
 import java.util.ArrayList;
