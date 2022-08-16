@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.database.api.distribution.workflow;
+package com.synopsys.integration.alert.database.distribution.workflow;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -6,8 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
-
-import com.synopsys.integration.alert.database.distribution.workflow.NotificationCorrelationToNotificationRelationPK;
 
 class NotificationCorrelationToNotificationRelationPKTest {
     @Test
