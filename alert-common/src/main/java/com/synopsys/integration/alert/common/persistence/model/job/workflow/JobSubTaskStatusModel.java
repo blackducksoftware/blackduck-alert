@@ -9,13 +9,13 @@ public class JobSubTaskStatusModel extends AlertSerializableModel {
     private final UUID parentEventId;
     private final UUID jobId;
     private final Long remainingTaskCount;
-    private final UUID auditCorrelationId;
+    private final UUID notificationCorrelationId;
 
-    public JobSubTaskStatusModel(UUID parentEventId, UUID jobId, Long remainingTaskCount, UUID auditCorrelationId) {
+    public JobSubTaskStatusModel(UUID parentEventId, UUID jobId, Long remainingTaskCount, UUID notificationCorrelationId) {
         this.parentEventId = parentEventId;
         this.jobId = jobId;
         this.remainingTaskCount = remainingTaskCount;
-        this.auditCorrelationId = auditCorrelationId;
+        this.notificationCorrelationId = notificationCorrelationId;
     }
 
     public UUID getParentEventId() {
@@ -30,7 +30,7 @@ public class JobSubTaskStatusModel extends AlertSerializableModel {
         return remainingTaskCount;
     }
 
-    public UUID getAuditCorrelationId() {
-        return auditCorrelationId;
+    public UUID getNotificationCorrelationId() {
+        return notificationCorrelationId;
     }
 }
