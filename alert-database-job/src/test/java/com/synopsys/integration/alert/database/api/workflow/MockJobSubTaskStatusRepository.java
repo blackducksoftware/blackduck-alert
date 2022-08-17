@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.database.api.distribution;
+package com.synopsys.integration.alert.database.api.workflow;
 
 import java.util.UUID;
 
