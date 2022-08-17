@@ -179,6 +179,8 @@ public class MockRepositoryContainer<ID extends Serializable, T extends Serializ
         return dataMap.get(id);
     }
 
+    // The methods using examples aren't implemented.  Alert doesn't have repositories that take advantage of examples.
+
     @Override
     public <S extends T> @NotNull Optional<S> findOne(@NotNull Example<S> example) {
         return Optional.empty();
