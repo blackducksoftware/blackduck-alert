@@ -8,32 +8,37 @@
 package com.synopsys.integration.alert.api.channel.issue;
 
 import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerModelHolder;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerResponse;
-import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
+import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerAsyncMessageSender;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 
 public class IssueTrackerProcessor<T extends Serializable> {
     private final IssueTrackerModelExtractor<T> modelExtractor;
-    private final IssueTrackerMessageSender<T> messageSender;
+    private final IssueTrackerAsyncMessageSender<T> messageSender;
 
-    public IssueTrackerProcessor(IssueTrackerModelExtractor<T> modelExtractor, IssueTrackerMessageSender<T> messageSender) {
+    public IssueTrackerProcessor(IssueTrackerModelExtractor<T> modelExtractor, IssueTrackerAsyncMessageSender<T> messageSender) {
         this.modelExtractor = modelExtractor;
         this.messageSender = messageSender;
     }
 
     public final IssueTrackerResponse<T> processMessages(ProviderMessageHolder messages, String jobName) throws AlertException {
+        List<IssueTrackerModelHolder<T>> issueTrackerModels = new LinkedList<>();
         IssueTrackerModelHolder<T> simpleMessageHolder = modelExtractor.extractSimpleMessageIssueModels(messages.getSimpleMessages(), jobName);
-        messageSender.sendMessages(simpleMessageHolder);
+        issueTrackerModels.add(simpleMessageHolder);
 
         for (ProjectMessage projectMessage : messages.getProjectMessages()) {
             IssueTrackerModelHolder<T> projectMessageHolder = modelExtractor.extractProjectMessageIssueModels(projectMessage, jobName);
-            messageSender.sendMessages(projectMessageHolder);
+            issueTrackerModels.add(projectMessageHolder);
         }
+
+        messageSender.sendAsyncMessages(issueTrackerModels);
+
         return new IssueTrackerResponse<>("Success", List.of());
     }
 

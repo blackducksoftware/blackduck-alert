@@ -15,4 +15,6 @@ public interface AuditNotificationRepository extends JpaRepository<AuditNotifica
     List<AuditNotificationRelation> findByAuditEntryId(Long auditEntryId);
 
     List<AuditNotificationRelation> findByNotificationId(Long notificationId);
+
+    List<AuditNotificationRelation> findAllByNotificationIdIn(List<Long> notificationIds);
 }

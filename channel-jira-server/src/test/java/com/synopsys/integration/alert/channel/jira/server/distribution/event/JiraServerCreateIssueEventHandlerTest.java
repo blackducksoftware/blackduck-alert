@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.channel.issue.IssueTrackerResponsePostProcessor;
 import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCallbackInfoCreator;
 import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCreateIssueEvent;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentDetails;
@@ -25,6 +27,7 @@ import com.synopsys.integration.alert.channel.jira.server.JiraServerPropertiesFa
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerMessageSenderFactory;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
@@ -51,16 +54,22 @@ class JiraServerCreateIssueEventHandlerTest {
     private Gson gson = new Gson();
     private AtomicInteger issueCounter;
     private EventManager eventManager;
+    private JobSubTaskAccessor jobSubTaskAccessor;
+    private IssueTrackerResponsePostProcessor responsePostProcessor;
 
     @BeforeEach
     public void init() {
         issueCounter = new AtomicInteger(0);
         eventManager = Mockito.mock(EventManager.class);
+        jobSubTaskAccessor = Mockito.mock(JobSubTaskAccessor.class);
+        responsePostProcessor = Mockito.mock(IssueTrackerResponsePostProcessor.class);
     }
 
     @Test
     void handleUnknownJobTest() {
+        UUID parentEventId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
+        Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
 
         JiraServerPropertiesFactory propertiesFactory = Mockito.mock(JiraServerPropertiesFactory.class);
         IssueTrackerCallbackInfoCreator callbackInfoCreator = new IssueTrackerCallbackInfoCreator();
@@ -71,16 +80,27 @@ class JiraServerCreateIssueEventHandlerTest {
             propertiesFactory,
             callbackInfoCreator,
             issueCategoryRetriever,
-            eventManager
+            eventManager,
+            jobSubTaskAccessor
         );
         JobDetailsAccessor<JiraServerJobDetailsModel> jobDetailsAccessor = jobId1 -> Optional.empty();
-        JiraServerCreateIssueEventHandler handler = new JiraServerCreateIssueEventHandler(gson, propertiesFactory, messageSenderFactory, jobDetailsAccessor);
+        JiraServerCreateIssueEventHandler handler = new JiraServerCreateIssueEventHandler(
+            eventManager,
+            jobSubTaskAccessor,
+            gson,
+            propertiesFactory,
+            messageSenderFactory,
+            jobDetailsAccessor,
+            responsePostProcessor
+        );
 
         LinkableItem provider = new LinkableItem("provider", "test-provider");
         IssueCreationModel issueCreationModel = IssueCreationModel.simple("title", "description", List.of(), provider);
         JiraServerCreateIssueEvent event = new JiraServerCreateIssueEvent(
             IssueTrackerCreateIssueEvent.createDefaultEventDestination(ChannelKeys.JIRA_SERVER),
+            parentEventId,
             jobId,
+            notificationIds,
             issueCreationModel
         );
 
@@ -90,7 +110,9 @@ class JiraServerCreateIssueEventHandlerTest {
 
     @Test
     void handleIssueQueryBlankTest() throws IntegrationException {
+        UUID parentEventId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
+        Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
 
         JiraServerPropertiesFactory propertiesFactory = Mockito.mock(JiraServerPropertiesFactory.class);
         JiraServerProperties jiraProperties = Mockito.mock(JiraServerProperties.class);
@@ -124,16 +146,27 @@ class JiraServerCreateIssueEventHandlerTest {
             propertiesFactory,
             callbackInfoCreator,
             issueCategoryRetriever,
-            eventManager
+            eventManager,
+            jobSubTaskAccessor
         );
         JobDetailsAccessor<JiraServerJobDetailsModel> jobDetailsAccessor = jobId1 -> Optional.of(createJobDetails(jobId));
-        JiraServerCreateIssueEventHandler handler = new JiraServerCreateIssueEventHandler(gson, propertiesFactory, messageSenderFactory, jobDetailsAccessor);
+        JiraServerCreateIssueEventHandler handler = new JiraServerCreateIssueEventHandler(
+            eventManager,
+            jobSubTaskAccessor,
+            gson,
+            propertiesFactory,
+            messageSenderFactory,
+            jobDetailsAccessor,
+            responsePostProcessor
+        );
 
         LinkableItem provider = new LinkableItem("provider", "test-provider");
         IssueCreationModel issueCreationModel = IssueCreationModel.simple("title", "description", List.of(), provider);
         JiraServerCreateIssueEvent event = new JiraServerCreateIssueEvent(
             IssueTrackerCreateIssueEvent.createDefaultEventDestination(ChannelKeys.JIRA_SERVER),
+            parentEventId,
             jobId,
+            notificationIds,
             issueCreationModel
         );
 
@@ -143,7 +176,9 @@ class JiraServerCreateIssueEventHandlerTest {
 
     @Test
     void handleIssueIssueDoesNotExistTest() throws IntegrationException {
+        UUID parentEventId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
+        Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
 
         JiraServerPropertiesFactory propertiesFactory = Mockito.mock(JiraServerPropertiesFactory.class);
         JiraServerProperties jiraProperties = Mockito.mock(JiraServerProperties.class);
@@ -179,10 +214,19 @@ class JiraServerCreateIssueEventHandlerTest {
             propertiesFactory,
             callbackInfoCreator,
             issueCategoryRetriever,
-            eventManager
+            eventManager,
+            jobSubTaskAccessor
         );
         JobDetailsAccessor<JiraServerJobDetailsModel> jobDetailsAccessor = jobId1 -> Optional.of(createJobDetails(jobId));
-        JiraServerCreateIssueEventHandler handler = new JiraServerCreateIssueEventHandler(gson, propertiesFactory, messageSenderFactory, jobDetailsAccessor);
+        JiraServerCreateIssueEventHandler handler = new JiraServerCreateIssueEventHandler(
+            eventManager,
+            jobSubTaskAccessor,
+            gson,
+            propertiesFactory,
+            messageSenderFactory,
+            jobDetailsAccessor,
+            responsePostProcessor
+        );
 
         LinkableItem provider = new LinkableItem("provider", "test-provider");
         ProviderDetails providerDetails = new ProviderDetails(1L, provider);
@@ -195,7 +239,9 @@ class JiraServerCreateIssueEventHandlerTest {
         IssueCreationModel issueCreationModel = IssueCreationModel.project("title", "description", List.of(), projectIssueModel, "JQL Query String");
         JiraServerCreateIssueEvent event = new JiraServerCreateIssueEvent(
             IssueTrackerCreateIssueEvent.createDefaultEventDestination(ChannelKeys.JIRA_SERVER),
+            parentEventId,
             jobId,
+            notificationIds,
             issueCreationModel
         );
 
@@ -205,7 +251,9 @@ class JiraServerCreateIssueEventHandlerTest {
 
     @Test
     void handleIssueIssueExistsTest() throws IntegrationException {
+        UUID parentEventId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
+        Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
 
         JiraServerPropertiesFactory propertiesFactory = Mockito.mock(JiraServerPropertiesFactory.class);
         JiraServerProperties jiraProperties = Mockito.mock(JiraServerProperties.class);
@@ -239,10 +287,19 @@ class JiraServerCreateIssueEventHandlerTest {
             propertiesFactory,
             callbackInfoCreator,
             issueCategoryRetriever,
-            eventManager
+            eventManager,
+            jobSubTaskAccessor
         );
         JobDetailsAccessor<JiraServerJobDetailsModel> jobDetailsAccessor = jobId1 -> Optional.of(createJobDetails(jobId));
-        JiraServerCreateIssueEventHandler handler = new JiraServerCreateIssueEventHandler(gson, propertiesFactory, messageSenderFactory, jobDetailsAccessor);
+        JiraServerCreateIssueEventHandler handler = new JiraServerCreateIssueEventHandler(
+            eventManager,
+            jobSubTaskAccessor,
+            gson,
+            propertiesFactory,
+            messageSenderFactory,
+            jobDetailsAccessor,
+            responsePostProcessor
+        );
 
         LinkableItem provider = new LinkableItem("provider", "test-provider");
         ProviderDetails providerDetails = new ProviderDetails(1L, provider);
@@ -250,7 +307,9 @@ class JiraServerCreateIssueEventHandlerTest {
         IssueCreationModel issueCreationModel = IssueCreationModel.project("title", "description", List.of(), projectIssueModel, "JQL Query String");
         JiraServerCreateIssueEvent event = new JiraServerCreateIssueEvent(
             IssueTrackerCreateIssueEvent.createDefaultEventDestination(ChannelKeys.JIRA_SERVER),
+            parentEventId,
             jobId,
+            notificationIds,
             issueCreationModel
         );
 

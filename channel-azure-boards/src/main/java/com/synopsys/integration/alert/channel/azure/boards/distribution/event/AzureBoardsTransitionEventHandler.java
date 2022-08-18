@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.channel.azure.boards.distribution.event;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -16,14 +17,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.channel.issue.IssueTrackerResponsePostProcessor;
 import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerTransitionEventHandler;
+import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerIssueResponseModel;
+import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerResponse;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTransitionModel;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesFactory;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.AzureBoardsMessageSenderFactory;
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.azure.boards.common.http.AzureApiVersionAppender;
@@ -37,7 +43,7 @@ import com.synopsys.integration.azure.boards.common.service.workitem.AzureWorkIt
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 @Component
-public class AzureBoardsTransitionEventHandler implements IssueTrackerTransitionEventHandler<AzureBoardsTransitionEvent> {
+public class AzureBoardsTransitionEventHandler extends IssueTrackerTransitionEventHandler<AzureBoardsTransitionEvent> {
     private Logger logger = LoggerFactory.getLogger(getClass());
     private final Gson gson;
     private final AzureBoardsPropertiesFactory azureBoardsPropertiesFactory;
@@ -47,12 +53,16 @@ public class AzureBoardsTransitionEventHandler implements IssueTrackerTransition
 
     @Autowired
     public AzureBoardsTransitionEventHandler(
+        EventManager eventManager,
+        JobSubTaskAccessor jobSubTaskAccessor,
         Gson gson,
         AzureBoardsPropertiesFactory azureBoardsPropertiesFactory,
         AzureBoardsMessageSenderFactory azureBoardsMessageSenderFactory,
         ProxyManager proxyManager,
-        JobDetailsAccessor<AzureBoardsJobDetailsModel> jobDetailsAccessor
+        JobDetailsAccessor<AzureBoardsJobDetailsModel> jobDetailsAccessor,
+        IssueTrackerResponsePostProcessor responsePostProcessor
     ) {
+        super(eventManager, jobSubTaskAccessor, responsePostProcessor);
         this.gson = gson;
         this.azureBoardsPropertiesFactory = azureBoardsPropertiesFactory;
         this.azureBoardsMessageSenderFactory = azureBoardsMessageSenderFactory;
@@ -61,44 +71,40 @@ public class AzureBoardsTransitionEventHandler implements IssueTrackerTransition
     }
 
     @Override
-    public void handle(AzureBoardsTransitionEvent event) {
+    public void handleEvent(AzureBoardsTransitionEvent event) throws AlertException {
         UUID jobId = event.getJobId();
         Optional<AzureBoardsJobDetailsModel> details = jobDetailsAccessor.retrieveDetails(event.getJobId());
         if (details.isPresent()) {
-            try {
-                AzureBoardsJobDetailsModel distributionDetails = details.get();
-                AzureBoardsProperties azureBoardsProperties = azureBoardsPropertiesFactory.createAzureBoardsProperties();
-                String organizationName = azureBoardsProperties.getOrganizationName();
-                azureBoardsProperties.validateProperties();
+            AzureBoardsJobDetailsModel distributionDetails = details.get();
+            AzureBoardsProperties azureBoardsProperties = azureBoardsPropertiesFactory.createAzureBoardsProperties();
+            String organizationName = azureBoardsProperties.getOrganizationName();
+            azureBoardsProperties.validateProperties();
 
-                // Initialize Http Service
-                ProxyInfo proxy = proxyManager.createProxyInfoForHost(AzureHttpRequestCreatorFactory.DEFAULT_BASE_URL);
-                AzureHttpRequestCreator azureHttpRequestCreator = azureBoardsProperties.createAzureHttpRequestCreator(proxy, gson);
-                AzureHttpService azureHttpService = new AzureHttpService(gson, azureHttpRequestCreator);
+            // Initialize Http Service
+            ProxyInfo proxy = proxyManager.createProxyInfoForHost(AzureHttpRequestCreatorFactory.DEFAULT_BASE_URL);
+            AzureHttpRequestCreator azureHttpRequestCreator = azureBoardsProperties.createAzureHttpRequestCreator(proxy, gson);
+            AzureHttpService azureHttpService = new AzureHttpService(gson, azureHttpRequestCreator);
 
-                // Common Azure Boards Services
-                AzureApiVersionAppender apiVersionAppender = new AzureApiVersionAppender();
-                AzureWorkItemService workItemService = new AzureWorkItemService(azureHttpService, azureHttpRequestCreator);
-                AzureWorkItemQueryService workItemQueryService = new AzureWorkItemQueryService(azureHttpService, apiVersionAppender);
+            // Common Azure Boards Services
+            AzureApiVersionAppender apiVersionAppender = new AzureApiVersionAppender();
+            AzureWorkItemService workItemService = new AzureWorkItemService(azureHttpService, azureHttpRequestCreator);
+            AzureWorkItemQueryService workItemQueryService = new AzureWorkItemQueryService(azureHttpService, apiVersionAppender);
 
-                // Message Sender Requirements
-                AzureWorkItemTypeStateService workItemTypeStateService = new AzureWorkItemTypeStateService(azureHttpService, apiVersionAppender);
+            // Message Sender Requirements
+            AzureWorkItemTypeStateService workItemTypeStateService = new AzureWorkItemTypeStateService(azureHttpService, apiVersionAppender);
                 AzureWorkItemCommentService workItemCommentService = new AzureWorkItemCommentService(azureHttpService, apiVersionAppender);
 
-                IssueTrackerMessageSender<Integer> messageSender = azureBoardsMessageSenderFactory.createMessageSender(
-                    workItemService,
-                    workItemTypeStateService,
-                    workItemCommentService,
-                    organizationName,
-                    distributionDetails,
-                    workItemQueryService
-                );
-                IssueTransitionModel<Integer> transitionModel = event.getTransitionModel();
-                messageSender.sendMessage(transitionModel);
-            } catch (AlertException ex) {
-                logger.error("Cannot transition issue for job {}", jobId);
-                logger.error("Cause: ", ex);
-            }
+            IssueTrackerMessageSender<Integer> messageSender = azureBoardsMessageSenderFactory.createMessageSender(
+                workItemService,
+                workItemTypeStateService,
+                workItemCommentService,
+                organizationName,
+                distributionDetails,
+                workItemQueryService
+            );
+            IssueTransitionModel<Integer> transitionModel = event.getTransitionModel();
+            List<IssueTrackerIssueResponseModel<Integer>> responses = messageSender.sendMessage(transitionModel);
+            postProcess(new IssueTrackerResponse<>("Success", responses));
         } else {
             logger.error("No Azure Boards job found with id {}", jobId);
         }

@@ -8,30 +8,31 @@
 package com.synopsys.integration.alert.api.channel.issue.event;
 
 import java.io.Serializable;
+import java.util.Set;
 import java.util.UUID;
 
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCommentModel;
-import com.synopsys.integration.alert.api.event.AlertEvent;
+import com.synopsys.integration.alert.api.event.distribution.JobSubTaskEvent;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
-public class IssueTrackerCommentEvent<T extends Serializable> extends AlertEvent {
+public class IssueTrackerCommentEvent<T extends Serializable> extends JobSubTaskEvent {
     private static final long serialVersionUID = 867746168597376739L;
 
     public static String createDefaultEventDestination(ChannelKey channelKey) {
         return String.format("%s_issue_comment", channelKey.getUniversalKey());
     }
-    
-    private final UUID jobId;
+
     private IssueCommentModel<T> commentModel;
 
-    public IssueTrackerCommentEvent(String destination, UUID jobId, IssueCommentModel<T> commentModel) {
-        super(destination);
-        this.jobId = jobId;
+    public IssueTrackerCommentEvent(
+        String destination,
+        UUID parentEventId,
+        UUID jobId,
+        Set<Long> notificationIds,
+        IssueCommentModel<T> commentModel
+    ) {
+        super(destination, parentEventId, jobId, notificationIds);
         this.commentModel = commentModel;
-    }
-
-    public UUID getJobId() {
-        return jobId;
     }
 
     public IssueCommentModel<T> getCommentModel() {

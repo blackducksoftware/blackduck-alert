@@ -1,5 +1,6 @@
 package com.synopsys.integration.alert.processor.api;
 
+import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -23,7 +24,28 @@ public class MockProcessingAuditAccessor implements ProcessingAuditAccessor {
     }
 
     @Override
+    public void setAuditEntrySuccess(UUID jobId, Set<Long> notificationIds, OffsetDateTime successTimestamp) {
+        //Do Nothing
+    }
+
+    @Override
     public void setAuditEntryFailure(UUID jobId, Set<Long> notificationIds, String errorMessage, @Nullable Throwable exception) {
+        //Do Nothing
+    }
+
+    @Override
+    public void setAuditEntryFailure(UUID jobId, Set<Long> notificationIds, String errorMessage, @Nullable String stackTrace) {
+        //Do Nothing
+    }
+
+    @Override
+    public void setAuditEntryFailure(
+        UUID jobId,
+        Set<Long> notificationIds,
+        OffsetDateTime failureTimestamp,
+        String errorMessage,
+        @Nullable String stackTrace
+    ) {
         //Do Nothing
     }
 

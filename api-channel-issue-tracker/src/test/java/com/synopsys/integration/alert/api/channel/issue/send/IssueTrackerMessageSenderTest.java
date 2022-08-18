@@ -15,7 +15,6 @@ import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerModelHolder;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.api.event.EventManager;
 
 class IssueTrackerMessageSenderTest {
     private static final AlertException TEST_EXCEPTION = new AlertException("Test exception");
@@ -23,11 +22,6 @@ class IssueTrackerMessageSenderTest {
     private static IssueTrackerIssueCreator<String> creator;
     private static IssueTrackerIssueTransitioner<String> transitioner;
     private static IssueTrackerIssueCommenter<String> commenter;
-
-    private static IssueTrackerCreationEventGenerator createEventGenerator;
-    private static IssueTrackerTransitionEventGenerator transitionEventGenerator;
-    private static IssueTrackerCommentEventGenerator commentEventGenerator;
-    private static EventManager eventManager;
 
     @BeforeAll
     public static void init() throws AlertException {
@@ -39,11 +33,7 @@ class IssueTrackerMessageSenderTest {
 
         commenter = Mockito.mock(IssueTrackerIssueCommenter.class);
         Mockito.when(commenter.commentOnIssue(Mockito.any())).thenReturn(Optional.of(DEFAULT_RESPONSE_MODEL));
-
-        createEventGenerator = Mockito.mock(IssueTrackerCreationEventGenerator.class);
-        transitionEventGenerator = Mockito.mock(IssueTrackerTransitionEventGenerator.class);
-        commentEventGenerator = Mockito.mock(IssueTrackerCommentEventGenerator.class);
-        eventManager = Mockito.mock(EventManager.class);
+        
     }
 
     @Test
@@ -53,11 +43,7 @@ class IssueTrackerMessageSenderTest {
         IssueTrackerMessageSender<String> messageSender = new IssueTrackerMessageSender<>(
             creator,
             transitioner,
-            commenter,
-            createEventGenerator,
-            transitionEventGenerator,
-            commentEventGenerator,
-            eventManager
+            commenter
         );
         List<IssueTrackerIssueResponseModel<String>> responseModels = messageSender.sendMessages(messages);
         assertEquals(
@@ -76,11 +62,7 @@ class IssueTrackerMessageSenderTest {
         IssueTrackerMessageSender<String> messageSender1 = new IssueTrackerMessageSender<>(
             exceptionCreator,
             transitioner,
-            commenter,
-            createEventGenerator,
-            transitionEventGenerator,
-            commentEventGenerator,
-            eventManager
+            commenter
         );
         assertExceptionThrown(messageSender1, messages);
 
@@ -90,11 +72,7 @@ class IssueTrackerMessageSenderTest {
         IssueTrackerMessageSender<String> messageSender2 = new IssueTrackerMessageSender<>(
             creator,
             transitioner,
-            exceptionCommenter,
-            createEventGenerator,
-            transitionEventGenerator,
-            commentEventGenerator,
-            eventManager
+            exceptionCommenter
         );
         assertExceptionThrown(messageSender2, messages);
     }

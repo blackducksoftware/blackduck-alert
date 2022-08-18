@@ -7,13 +7,22 @@
  */
 package com.synopsys.integration.alert.channel.jira.cloud.distribution.event;
 
+import java.util.Set;
 import java.util.UUID;
 
 import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCreateIssueEvent;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
 
 public class JiraCloudCreateIssueEvent extends IssueTrackerCreateIssueEvent {
-    public JiraCloudCreateIssueEvent(String destination, UUID jobId, IssueCreationModel creationModel) {
-        super(destination, jobId, creationModel);
+    private static final long serialVersionUID = -8590565054074040050L;
+
+    public JiraCloudCreateIssueEvent(
+        String destination,
+        UUID parentEventId,
+        UUID jobId,
+        Set<Long> notificationIds,
+        IssueCreationModel creationModel
+    ) {
+        super(destination, parentEventId, jobId, notificationIds, creationModel);
     }
 }
