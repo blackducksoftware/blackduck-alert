@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.api.channel.issue;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -10,7 +11,7 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerModelHolder;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerResponse;
-import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
+import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerAsyncMessageSender;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
@@ -23,12 +24,12 @@ class IssueTrackerProcessorTest {
         Mockito.when(extractor.extractSimpleMessageIssueModels(Mockito.anyList(), Mockito.any())).thenReturn(simpleMessageResponses);
         IssueTrackerModelHolder<String> projectMessageResponses = new IssueTrackerModelHolder<>(List.of(), List.of(), List.of());
 
-        IssueTrackerMessageSender<String> sender = Mockito.mock(IssueTrackerMessageSender.class);
+        IssueTrackerAsyncMessageSender<String> sender = Mockito.mock(IssueTrackerAsyncMessageSender.class);
         AtomicInteger messageCounter = new AtomicInteger(0);
         Mockito.doAnswer(invocation -> {
             messageCounter.incrementAndGet();
             return null;
-        }).when(sender).sendMessages(Mockito.any());
+        }).when(sender).sendAsyncMessages(Mockito.any());
 
         IssueTrackerProcessor<String> processor = new IssueTrackerProcessor<>(extractor, sender);
 
@@ -37,7 +38,7 @@ class IssueTrackerProcessorTest {
         ProviderMessageHolder providerMessageHolder = new ProviderMessageHolder(projectMessages, List.of());
         IssueTrackerResponse<String> issueTrackerResponse = processor.processMessages(providerMessageHolder, "jobName");
         assertEquals("Success", issueTrackerResponse.getStatusMessage());
-        assertEquals(1 + projectMessages.size(), messageCounter.get());
+        assertTrue(issueTrackerResponse.getUpdatedIssues().isEmpty());
     }
 
 }

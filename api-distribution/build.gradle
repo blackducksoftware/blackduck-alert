@@ -1,0 +1,13 @@
+ext.moduleName = 'com.synopsys.integration.alert.api.distribution'
+
+dependencies {
+    api 'org.springframework.amqp:spring-amqp'
+    api 'org.springframework:spring-context'
+    implementation platform(project(':alert-platform'))
+
+    implementation project(':alert-common')
+    implementation project(':api-common-model')
+    implementation project(':api-event')
+
+    testImplementation project(':test-common')
+}

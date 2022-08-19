@@ -8,30 +8,31 @@
 package com.synopsys.integration.alert.api.channel.issue.event;
 
 import java.io.Serializable;
+import java.util.Set;
 import java.util.UUID;
 
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTransitionModel;
-import com.synopsys.integration.alert.api.event.AlertEvent;
+import com.synopsys.integration.alert.api.event.distribution.JobSubTaskEvent;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
-public class IssueTrackerTransitionIssueEvent<T extends Serializable> extends AlertEvent {
+public class IssueTrackerTransitionIssueEvent<T extends Serializable> extends JobSubTaskEvent {
     private static final long serialVersionUID = 2225961487898754563L;
 
     public static String createDefaultEventDestination(ChannelKey channelKey) {
         return String.format("%s_issue_transition", channelKey.getUniversalKey());
     }
 
-    private final UUID jobId;
     private IssueTransitionModel<T> transitionModel;
 
-    public IssueTrackerTransitionIssueEvent(String destination, UUID jobId, IssueTransitionModel<T> transitionModel) {
-        super(destination);
-        this.jobId = jobId;
+    public IssueTrackerTransitionIssueEvent(
+        String destination,
+        UUID parentEventId,
+        UUID jobId,
+        Set<Long> notificationIds,
+        IssueTransitionModel<T> transitionModel
+    ) {
+        super(destination, parentEventId, jobId, notificationIds);
         this.transitionModel = transitionModel;
-    }
-
-    public UUID getJobId() {
-        return jobId;
     }
 
     public IssueTransitionModel<T> getTransitionModel() {

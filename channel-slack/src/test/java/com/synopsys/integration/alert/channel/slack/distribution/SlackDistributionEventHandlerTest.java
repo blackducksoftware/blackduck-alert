@@ -16,6 +16,8 @@ import org.mockito.Mockito;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.rest.ChannelRestConnectionFactory;
+import com.synopsys.integration.alert.api.distribution.AuditSuccessEvent;
+import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.slack.distribution.mock.MockProcessingAuditAccessor;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.persistence.accessor.SlackJobDetailsAccessor;
@@ -34,7 +36,7 @@ import com.synopsys.integration.rest.proxy.ProxyInfo;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 
-public class SlackDistributionEventHandlerTest {
+class SlackDistributionEventHandlerTest {
     private static final Set<Long> FIRST_MESSAGE_NOTIFICATION_IDS = Set.of(1L, 2L, 3L);
     private static final Set<Long> SECOND_MESSAGE_NOTIFICATION_IDS = Set.of(4L, 5L, 6L);
 
@@ -45,14 +47,16 @@ public class SlackDistributionEventHandlerTest {
     private final MockWebServer mockSlackServer = new MockWebServer();
 
     private final Gson gson = new Gson();
+    private EventManager eventManager;
 
     @BeforeEach
     public void init() throws IOException {
+        eventManager = Mockito.mock(EventManager.class);
         MarkupEncoderUtil markupEncoderUtil = new MarkupEncoderUtil();
         SlackChannelMessageFormatter slackChannelMessageFormatter = new SlackChannelMessageFormatter(markupEncoderUtil);
         SlackChannelMessageConverter slackChannelMessageConverter = new SlackChannelMessageConverter(slackChannelMessageFormatter);
         SlackChannelMessageSender slackChannelMessageSender = new SlackChannelMessageSender(ChannelKeys.SLACK, createConnectionFactory());
-        SlackChannel slackChannel = new SlackChannel(slackChannelMessageConverter, slackChannelMessageSender);
+        SlackChannel slackChannel = new SlackChannel(slackChannelMessageConverter, slackChannelMessageSender, eventManager);
 
         mockSlackServer.start();
         String url = mockSlackServer.url("/").toString();
@@ -70,7 +74,7 @@ public class SlackDistributionEventHandlerTest {
     }
 
     @Test
-    public void testNotificationsWithinMessageAfterFailureAreFailures() {
+    void testNotificationsWithinMessageAfterFailureAreFailures() {
         mockSlackServer.enqueue(new MockResponse().setResponseCode(200));
         mockSlackServer.enqueue(new MockResponse().setResponseCode(429));
 
@@ -78,15 +82,16 @@ public class SlackDistributionEventHandlerTest {
 
         distributionEventHandler.handle(createSlackDistributionEvent(FIRST_MESSAGE_NOTIFICATION_IDS, createTwoMessages()));
 
-        assertEquals(0, processingAuditAccessor.getSuccessfulIds().size());
+        //assertEquals(0, processingAuditAccessor.getSuccessfulIds().size());
         assertEquals(3, processingAuditAccessor.getFailureIds().size());
         assertTrue(processingAuditAccessor.getFailureIds().containsAll(FIRST_MESSAGE_NOTIFICATION_IDS));
 
         assertEquals(2, mockSlackServer.getRequestCount());
+        Mockito.verify(eventManager, Mockito.times(0)).sendEvent(Mockito.any(AuditSuccessEvent.class));
     }
 
     @Test
-    public void testMessagesAfterFailureAreSuccesses() {
+    void testMessagesAfterFailureAreSuccesses() {
         mockSlackServer.enqueue(new MockResponse().setResponseCode(200));
         mockSlackServer.enqueue(new MockResponse().setResponseCode(429));
         mockSlackServer.enqueue(new MockResponse().setResponseCode(200));
@@ -97,12 +102,11 @@ public class SlackDistributionEventHandlerTest {
         distributionEventHandler.handle(createSlackDistributionEvent(FIRST_MESSAGE_NOTIFICATION_IDS, createTwoMessages()));
         distributionEventHandler.handle(createSlackDistributionEvent(SECOND_MESSAGE_NOTIFICATION_IDS, createTwoMessages()));
 
-        assertEquals(3, processingAuditAccessor.getSuccessfulIds().size());
         assertEquals(3, processingAuditAccessor.getFailureIds().size());
         assertTrue(processingAuditAccessor.getFailureIds().containsAll(FIRST_MESSAGE_NOTIFICATION_IDS));
-        assertTrue(processingAuditAccessor.getSuccessfulIds().containsAll(SECOND_MESSAGE_NOTIFICATION_IDS));
 
         assertEquals(4, mockSlackServer.getRequestCount());
+        Mockito.verify(eventManager, Mockito.times(1)).sendEvent(Mockito.any(AuditSuccessEvent.class));
     }
 
     private ChannelRestConnectionFactory createConnectionFactory() {

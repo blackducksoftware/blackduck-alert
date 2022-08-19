@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.channel.jira.cloud.distribution.delegate;
 
+import java.util.Set;
 import java.util.UUID;
 
 import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerTransitionIssueEvent;
@@ -17,15 +18,20 @@ import com.synopsys.integration.alert.descriptor.api.JiraCloudChannelKey;
 
 public class JiraCloudTransitionGenerator implements IssueTrackerTransitionEventGenerator<String> {
     private JiraCloudChannelKey channelKey;
+    private UUID parentEventId;
     private UUID jobId;
 
-    public JiraCloudTransitionGenerator(JiraCloudChannelKey channelKey, UUID jobId) {
+    private Set<Long> notificationIds;
+
+    public JiraCloudTransitionGenerator(JiraCloudChannelKey channelKey, UUID parentEventId, UUID jobId, Set<Long> notificationIds) {
         this.channelKey = channelKey;
+        this.parentEventId = parentEventId;
         this.jobId = jobId;
+        this.notificationIds = notificationIds;
     }
 
     @Override
     public IssueTrackerTransitionIssueEvent<String> generateEvent(IssueTransitionModel<String> model) {
-        return new JiraCloudTransitionEvent(IssueTrackerTransitionIssueEvent.createDefaultEventDestination(channelKey), jobId, model);
+        return new JiraCloudTransitionEvent(IssueTrackerTransitionIssueEvent.createDefaultEventDestination(channelKey), parentEventId, jobId, notificationIds, model);
     }
 }

@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.channel.azure.boards.distribution.event;
 
+import java.util.Set;
 import java.util.UUID;
 
 import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCommentEvent;
@@ -16,7 +17,13 @@ public class AzureBoardsCommentEvent extends IssueTrackerCommentEvent<Integer> {
 
     private static final long serialVersionUID = 6009574433460787684L;
 
-    public AzureBoardsCommentEvent(String destination, UUID jobId, IssueCommentModel<Integer> commentModel) {
-        super(destination, jobId, commentModel);
+    public AzureBoardsCommentEvent(
+        String destination,
+        UUID parentEventId,
+        UUID jobId,
+        Set<Long> notificationIds,
+        IssueCommentModel<Integer> commentModel
+    ) {
+        super(destination, parentEventId, jobId, notificationIds, commentModel);
     }
 }

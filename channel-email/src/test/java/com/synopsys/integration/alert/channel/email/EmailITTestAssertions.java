@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Assertions;
@@ -35,7 +37,7 @@ public final class EmailITTestAssertions {
     public static <D extends DistributionJobDetailsModel> void assertSendSimpleMessageSuccess(DistributionChannel<D> channel, D distributionDetails) {
         MessageResult messageResult = null;
         try {
-            messageResult = channel.distributeMessages(distributionDetails, TEST_MESSAGE_HOLDER, "jobName");
+            messageResult = channel.distributeMessages(distributionDetails, TEST_MESSAGE_HOLDER, "jobName", UUID.randomUUID(), Set.of());
         } catch (AlertException e) {
             Assertions.fail("Failed to distribute simple channel message due to an exception", e);
         }
@@ -50,7 +52,7 @@ public final class EmailITTestAssertions {
 
     public static <D extends DistributionJobDetailsModel> void assertSendSimpleMessageException(DistributionChannel<D> channel, D distributionDetails, @Nullable String expectedExceptionMessage) {
         try {
-            channel.distributeMessages(distributionDetails, TEST_MESSAGE_HOLDER, "jobName");
+            channel.distributeMessages(distributionDetails, TEST_MESSAGE_HOLDER, "jobName", UUID.randomUUID(), Set.of());
             Assertions.fail("Expected an exception to be thrown");
         } catch (AlertException e) {
             if (null != expectedExceptionMessage) {
