@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.api.distribution;
+package com.synopsys.integration.alert.api.distribution.audit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.task.TaskExecutor;
