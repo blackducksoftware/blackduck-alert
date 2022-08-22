@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.channel.jira.server.distribution.event;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import org.mockito.Mockito;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.issue.IssueTrackerResponsePostProcessor;
 import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCallbackInfoCreator;
+import com.synopsys.integration.alert.api.channel.issue.callback.ProviderCallbackIssueTrackerResponsePostProcessor;
 import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCreateIssueEvent;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
@@ -24,11 +26,16 @@ import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetr
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
+import com.synopsys.integration.alert.channel.jira.server.database.accessor.DefaultJiraServerJobDetailsAccessor;
+import com.synopsys.integration.alert.channel.jira.server.database.accessor.mock.MockJiraServerJobCustomFieldRepository;
+import com.synopsys.integration.alert.channel.jira.server.database.accessor.mock.MockJiraServerJobDetailsRepository;
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerMessageSenderFactory;
+import com.synopsys.integration.alert.channel.jira.server.distribution.event.mock.MockCorrelationToNotificationRelationRepository;
+import com.synopsys.integration.alert.channel.jira.server.distribution.event.mock.MockJobSubTaskStatusRepository;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.workflow.JobSubTaskStatusModel;
+import com.synopsys.integration.alert.database.api.workflow.DefaultJobSubTaskAccessor;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.exception.IntegrationException;
@@ -54,15 +61,27 @@ class JiraServerCreateIssueEventHandlerTest {
     private Gson gson = new Gson();
     private AtomicInteger issueCounter;
     private EventManager eventManager;
-    private JobSubTaskAccessor jobSubTaskAccessor;
+    private DefaultJobSubTaskAccessor jobSubTaskAccessor;
     private IssueTrackerResponsePostProcessor responsePostProcessor;
+    private DefaultJiraServerJobDetailsAccessor jobDetailsAccessor;
 
     @BeforeEach
     public void init() {
         issueCounter = new AtomicInteger(0);
         eventManager = Mockito.mock(EventManager.class);
-        jobSubTaskAccessor = Mockito.mock(JobSubTaskAccessor.class);
-        responsePostProcessor = Mockito.mock(IssueTrackerResponsePostProcessor.class);
+        responsePostProcessor = new ProviderCallbackIssueTrackerResponsePostProcessor(eventManager);
+
+        MockJobSubTaskStatusRepository subTaskRepository = new MockJobSubTaskStatusRepository();
+        MockCorrelationToNotificationRelationRepository relationRepository = new MockCorrelationToNotificationRelationRepository();
+        jobSubTaskAccessor = new DefaultJobSubTaskAccessor(subTaskRepository, relationRepository);
+
+        MockJiraServerJobDetailsRepository jiraServerJobDetailsRepository = new MockJiraServerJobDetailsRepository();
+        MockJiraServerJobCustomFieldRepository jiraServerJobCustomFieldRepository = new MockJiraServerJobCustomFieldRepository();
+        jobDetailsAccessor = new DefaultJiraServerJobDetailsAccessor(
+            ChannelKeys.JIRA_SERVER,
+            jiraServerJobDetailsRepository,
+            jiraServerJobCustomFieldRepository
+        );
     }
 
     @Test
@@ -83,7 +102,7 @@ class JiraServerCreateIssueEventHandlerTest {
             eventManager,
             jobSubTaskAccessor
         );
-        JobDetailsAccessor<JiraServerJobDetailsModel> jobDetailsAccessor = jobId1 -> Optional.empty();
+
         JiraServerCreateIssueEventHandler handler = new JiraServerCreateIssueEventHandler(
             eventManager,
             jobSubTaskAccessor,
@@ -104,7 +123,7 @@ class JiraServerCreateIssueEventHandlerTest {
             issueCreationModel
         );
 
-        handler.handle(event);
+        handler.handleEvent(event);
         assertEquals(0, issueCounter.get());
     }
 
@@ -121,6 +140,10 @@ class JiraServerCreateIssueEventHandlerTest {
         IssueSearchService issueSearchService = Mockito.mock(IssueSearchService.class);
         FieldService fieldService = Mockito.mock(FieldService.class);
         ProjectService projectService = Mockito.mock(ProjectService.class);
+        IssuePropertyService issuePropertyService = Mockito.mock(IssuePropertyService.class);
+
+        JiraServerJobDetailsModel jobDetailsModel = createJobDetails(jobId);
+        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobDetailsModel.getJobId(), 1L, notificationIds);
 
         Mockito.doAnswer(invocation -> {
             issueCounter.incrementAndGet();
@@ -135,6 +158,7 @@ class JiraServerCreateIssueEventHandlerTest {
         Mockito.when(jiraServiceFactory.createIssueService()).thenReturn(issueService);
         Mockito.when(jiraServiceFactory.createIssueSearchService()).thenReturn(issueSearchService);
         Mockito.when(jiraServiceFactory.createProjectService()).thenReturn(projectService);
+        Mockito.when(jiraServiceFactory.createIssuePropertyService()).thenReturn(issuePropertyService);
         Mockito.when(jiraProperties.createJiraServicesServerFactory(Mockito.any(), Mockito.any())).thenReturn(jiraServiceFactory);
         Mockito.when(propertiesFactory.createJiraPropertiesWithJobId(jobId)).thenReturn(jiraProperties);
 
@@ -149,7 +173,8 @@ class JiraServerCreateIssueEventHandlerTest {
             eventManager,
             jobSubTaskAccessor
         );
-        JobDetailsAccessor<JiraServerJobDetailsModel> jobDetailsAccessor = jobId1 -> Optional.of(createJobDetails(jobId));
+
+        jobDetailsAccessor.saveConcreteJobDetails(jobId, jobDetailsModel);
         JiraServerCreateIssueEventHandler handler = new JiraServerCreateIssueEventHandler(
             eventManager,
             jobSubTaskAccessor,
@@ -172,6 +197,8 @@ class JiraServerCreateIssueEventHandlerTest {
 
         handler.handle(event);
         assertEquals(1, issueCounter.get());
+        Optional<JobSubTaskStatusModel> jobSubTaskStatusModelOptional = jobSubTaskAccessor.getSubTaskStatus(parentEventId);
+        assertFalse(jobSubTaskStatusModelOptional.isPresent());
     }
 
     @Test
@@ -188,6 +215,9 @@ class JiraServerCreateIssueEventHandlerTest {
         FieldService fieldService = Mockito.mock(FieldService.class);
         ProjectService projectService = Mockito.mock(ProjectService.class);
         IssuePropertyService issuePropertyService = Mockito.mock(IssuePropertyService.class);
+
+        JiraServerJobDetailsModel jobDetailsModel = createJobDetails(jobId);
+        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobDetailsModel.getJobId(), 1L, notificationIds);
 
         Mockito.doAnswer(invocation -> {
             issueCounter.incrementAndGet();
@@ -217,7 +247,8 @@ class JiraServerCreateIssueEventHandlerTest {
             eventManager,
             jobSubTaskAccessor
         );
-        JobDetailsAccessor<JiraServerJobDetailsModel> jobDetailsAccessor = jobId1 -> Optional.of(createJobDetails(jobId));
+
+        jobDetailsAccessor.saveConcreteJobDetails(jobId, jobDetailsModel);
         JiraServerCreateIssueEventHandler handler = new JiraServerCreateIssueEventHandler(
             eventManager,
             jobSubTaskAccessor,
@@ -247,6 +278,8 @@ class JiraServerCreateIssueEventHandlerTest {
 
         handler.handle(event);
         assertEquals(1, issueCounter.get());
+        Optional<JobSubTaskStatusModel> jobSubTaskStatusModelOptional = jobSubTaskAccessor.getSubTaskStatus(parentEventId);
+        assertFalse(jobSubTaskStatusModelOptional.isPresent());
     }
 
     @Test
@@ -262,6 +295,9 @@ class JiraServerCreateIssueEventHandlerTest {
         IssueSearchService issueSearchService = Mockito.mock(IssueSearchService.class);
         FieldService fieldService = Mockito.mock(FieldService.class);
         ProjectService projectService = Mockito.mock(ProjectService.class);
+
+        JiraServerJobDetailsModel jobDetailsModel = createJobDetails(jobId);
+        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobDetailsModel.getJobId(), 1L, notificationIds);
 
         Mockito.doAnswer(invocation -> {
             issueCounter.incrementAndGet();
@@ -290,7 +326,8 @@ class JiraServerCreateIssueEventHandlerTest {
             eventManager,
             jobSubTaskAccessor
         );
-        JobDetailsAccessor<JiraServerJobDetailsModel> jobDetailsAccessor = jobId1 -> Optional.of(createJobDetails(jobId));
+
+        jobDetailsAccessor.saveConcreteJobDetails(jobId, jobDetailsModel);
         JiraServerCreateIssueEventHandler handler = new JiraServerCreateIssueEventHandler(
             eventManager,
             jobSubTaskAccessor,
@@ -315,7 +352,11 @@ class JiraServerCreateIssueEventHandlerTest {
 
         handler.handle(event);
         assertEquals(0, issueCounter.get());
+        Optional<JobSubTaskStatusModel> jobSubTaskStatusModelOptional = jobSubTaskAccessor.getSubTaskStatus(parentEventId);
+        assertFalse(jobSubTaskStatusModelOptional.isPresent());
     }
+
+    // Helper Methods
 
     private JiraServerJobDetailsModel createJobDetails(UUID jobId) {
         return new JiraServerJobDetailsModel(
@@ -370,5 +411,4 @@ class JiraServerCreateIssueEventHandlerTest {
 
         return new IssueSearchResponseModel("", List.of(searchIssueComponent));
     }
-
 }
