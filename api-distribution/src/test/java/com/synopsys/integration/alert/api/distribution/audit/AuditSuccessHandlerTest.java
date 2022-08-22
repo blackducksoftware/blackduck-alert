@@ -73,4 +73,19 @@ class AuditSuccessHandlerTest {
             assertNull(entity.getErrorStackTrace());
         }
     }
+
+    @Test
+    void handleEventAuditMissingTest() {
+        UUID jobId = UUID.randomUUID();
+        Set<Long> notificationIds = Set.of(1L, 2L, 3L);
+
+        AuditSuccessHandler handler = new AuditSuccessHandler(processingAuditAccessor);
+        AuditSuccessEvent event = new AuditSuccessEvent(jobId, notificationIds);
+        handler.handle(event);
+
+        for (Long notificationId : notificationIds) {
+            Optional<AuditEntryEntity> entry = auditEntryRepository.findMatchingAudit(notificationId, jobId);
+            assertTrue(entry.isEmpty());
+        }
+    }
 }
