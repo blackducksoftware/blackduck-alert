@@ -83,7 +83,7 @@ public class AzureBoardsIssueCreator extends IssueTrackerIssueCreator<Integer> {
     protected ExistingIssueDetails<Integer> createIssueAndExtractDetails(IssueCreationModel alertIssueCreationModel) throws AlertException {
         Optional<ExistingIssueDetails<Integer>> existingIssue = doesIssueExist(alertIssueCreationModel);
 
-        if (existingIssue.isEmpty()) {
+        if (existingIssue.isPresent()) {
             return existingIssue.get();
         }
         ExistingIssueDetails<Integer> existingIssueDetails;
@@ -166,8 +166,8 @@ public class AzureBoardsIssueCreator extends IssueTrackerIssueCreator<Integer> {
         String workItemUILink = AzureBoardsUILinkUtils.extractUILink(organizationName, workItem);
 
         IssueCategory issueCategory = alertIssueCreationModel.getSource()
-                                          .map(issueCategoryRetriever::retrieveIssueCategoryFromProjectIssueModel)
-                                          .orElse(IssueCategory.BOM);
+            .map(issueCategoryRetriever::retrieveIssueCategoryFromProjectIssueModel)
+            .orElse(IssueCategory.BOM);
 
         return new ExistingIssueDetails<>(workItem.getId(), workItemKey, workItemTitle, workItemUILink, IssueStatus.RESOLVABLE, issueCategory);
     }
