@@ -11,4 +11,5 @@ dependencies {
 
     testImplementation project(':test-common')
     testImplementation project(':alert-database')
+    testImplementation project(':alert-database-job')
 }
