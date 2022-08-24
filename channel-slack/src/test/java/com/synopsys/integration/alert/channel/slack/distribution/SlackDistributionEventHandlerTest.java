@@ -16,7 +16,7 @@ import org.mockito.Mockito;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.rest.ChannelRestConnectionFactory;
-import com.synopsys.integration.alert.api.distribution.AuditSuccessEvent;
+import com.synopsys.integration.alert.api.distribution.audit.AuditSuccessEvent;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.slack.distribution.mock.MockProcessingAuditAccessor;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;

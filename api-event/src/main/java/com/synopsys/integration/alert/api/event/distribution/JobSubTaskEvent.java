@@ -6,6 +6,7 @@ import java.util.UUID;
 import com.synopsys.integration.alert.api.event.AlertEvent;
 
 public class JobSubTaskEvent extends AlertEvent {
+    private static final long serialVersionUID = 2328435266614582583L;
     private final UUID parentEventId;
     private final UUID jobId;
     private final Set<Long> notificationIds;
