@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
 
 class IssueTrackerCreateIssueEventTest {
 
@@ -28,5 +29,22 @@ class IssueTrackerCreateIssueEventTest {
         assertEquals(destination, event.getDestination());
         assertEquals(jobId, event.getJobId());
         assertEquals(notificationIds, event.getNotificationIds());
+    }
+
+    @Test
+    void createDefaultEventDestinationTest() {
+        JiraServerChannelKey channelKey = new JiraServerChannelKey();
+        String defaultEventDestination = IssueTrackerCreateIssueEvent.createDefaultEventDestination(channelKey);
+
+        assertEquals("channel_jira_server_issue_create", defaultEventDestination);
+    }
+
+    @Test
+    void getCreationModelTest() {
+        IssueCreationModel model = IssueCreationModel.simple("title", "description", List.of(), new LinkableItem("providerLabel", "provider"));
+        IssueTrackerCreateIssueEvent event = new IssueTrackerCreateIssueEvent(null, null, null, null, model);
+
+        IssueCreationModel testModel = event.getCreationModel();
+        assertEquals(model, testModel);
     }
 }
