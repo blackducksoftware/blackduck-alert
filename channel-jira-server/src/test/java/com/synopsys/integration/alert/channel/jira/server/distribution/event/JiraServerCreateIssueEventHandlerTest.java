@@ -2,6 +2,7 @@ package com.synopsys.integration.alert.channel.jira.server.distribution.event;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Map;
@@ -103,6 +104,9 @@ class JiraServerCreateIssueEventHandlerTest {
             jobSubTaskAccessor
         );
 
+        JiraServerJobDetailsModel jobDetailsModel = createJobDetails(jobId);
+        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobDetailsModel.getJobId(), 1L, notificationIds);
+
         JiraServerCreateIssueEventHandler handler = new JiraServerCreateIssueEventHandler(
             eventManager,
             jobSubTaskAccessor,
@@ -125,6 +129,8 @@ class JiraServerCreateIssueEventHandlerTest {
 
         handler.handleEvent(event);
         assertEquals(0, issueCounter.get());
+        Optional<JobSubTaskStatusModel> jobSubTaskStatusModelOptional = jobSubTaskAccessor.getSubTaskStatus(parentEventId);
+        assertTrue(jobSubTaskStatusModelOptional.isPresent());
     }
 
     @Test
