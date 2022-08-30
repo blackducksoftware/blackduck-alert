@@ -1,6 +1,8 @@
 package com.synopsys.integration.alert.channel.jira.server.distribution.event;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +17,7 @@ import org.mockito.Mockito;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.issue.IssueTrackerResponsePostProcessor;
 import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCallbackInfoCreator;
+import com.synopsys.integration.alert.api.channel.issue.callback.ProviderCallbackIssueTrackerResponsePostProcessor;
 import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCommentEvent;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCommentModel;
 import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
@@ -24,10 +27,16 @@ import com.synopsys.integration.alert.api.channel.issue.search.enumeration.Issue
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
+import com.synopsys.integration.alert.channel.jira.server.database.accessor.DefaultJiraServerJobDetailsAccessor;
+import com.synopsys.integration.alert.channel.jira.server.database.accessor.mock.MockJiraServerJobCustomFieldRepository;
+import com.synopsys.integration.alert.channel.jira.server.database.accessor.mock.MockJiraServerJobDetailsRepository;
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerMessageSenderFactory;
-import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
+import com.synopsys.integration.alert.channel.jira.server.distribution.event.mock.MockCorrelationToNotificationRelationRepository;
+import com.synopsys.integration.alert.channel.jira.server.distribution.event.mock.MockJobSubTaskStatusRepository;
 import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.workflow.JobSubTaskStatusModel;
+import com.synopsys.integration.alert.database.api.workflow.DefaultJobSubTaskAccessor;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.model.request.IssueCommentRequestModel;
@@ -44,13 +53,25 @@ class JiraServerCommentEventHandlerTest {
     private EventManager eventManager;
     private JobSubTaskAccessor jobSubTaskAccessor;
     private IssueTrackerResponsePostProcessor responsePostProcessor;
+    private DefaultJiraServerJobDetailsAccessor jobDetailsAccessor;
 
     @BeforeEach
     public void init() {
         issueCounter = new AtomicInteger(0);
         eventManager = Mockito.mock(EventManager.class);
-        jobSubTaskAccessor = Mockito.mock(JobSubTaskAccessor.class);
-        responsePostProcessor = Mockito.mock(IssueTrackerResponsePostProcessor.class);
+        responsePostProcessor = new ProviderCallbackIssueTrackerResponsePostProcessor(eventManager);
+
+        MockJobSubTaskStatusRepository subTaskRepository = new MockJobSubTaskStatusRepository();
+        MockCorrelationToNotificationRelationRepository relationRepository = new MockCorrelationToNotificationRelationRepository();
+        jobSubTaskAccessor = new DefaultJobSubTaskAccessor(subTaskRepository, relationRepository);
+
+        MockJiraServerJobDetailsRepository jiraServerJobDetailsRepository = new MockJiraServerJobDetailsRepository();
+        MockJiraServerJobCustomFieldRepository jiraServerJobCustomFieldRepository = new MockJiraServerJobCustomFieldRepository();
+        jobDetailsAccessor = new DefaultJiraServerJobDetailsAccessor(
+            ChannelKeys.JIRA_SERVER,
+            jiraServerJobDetailsRepository,
+            jiraServerJobCustomFieldRepository
+        );
     }
 
     @Test
@@ -71,7 +92,9 @@ class JiraServerCommentEventHandlerTest {
             eventManager,
             jobSubTaskAccessor
         );
-        JobDetailsAccessor<JiraServerJobDetailsModel> jobDetailsAccessor = jobId1 -> Optional.empty();
+
+        JiraServerJobDetailsModel jobDetailsModel = createJobDetails(jobId);
+        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobDetailsModel.getJobId(), 1L, notificationIds);
 
         JiraServerCommentEventHandler handler = new JiraServerCommentEventHandler(
             eventManager,
@@ -93,6 +116,8 @@ class JiraServerCommentEventHandlerTest {
         );
         handler.handle(event);
         assertEquals(0, issueCounter.get());
+        Optional<JobSubTaskStatusModel> jobSubTaskStatusModelOptional = jobSubTaskAccessor.getSubTaskStatus(parentEventId);
+        assertTrue(jobSubTaskStatusModelOptional.isEmpty());
     }
 
     @Test
@@ -100,6 +125,9 @@ class JiraServerCommentEventHandlerTest {
         UUID parentEventId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
+
+        JiraServerJobDetailsModel jobDetailsModel = createJobDetails(jobId);
+        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobDetailsModel.getJobId(), 1L, notificationIds);
 
         JiraServerPropertiesFactory propertiesFactory = Mockito.mock(JiraServerPropertiesFactory.class);
         JiraServerProperties jiraProperties = Mockito.mock(JiraServerProperties.class);
@@ -132,8 +160,8 @@ class JiraServerCommentEventHandlerTest {
             eventManager,
             jobSubTaskAccessor
         );
-        JobDetailsAccessor<JiraServerJobDetailsModel> jobDetailsAccessor = jobId1 -> Optional.of(createJobDetails(jobId));
 
+        jobDetailsAccessor.saveConcreteJobDetails(jobId, jobDetailsModel);
         JiraServerCommentEventHandler handler = new JiraServerCommentEventHandler(
             eventManager,
             jobSubTaskAccessor,
@@ -154,6 +182,8 @@ class JiraServerCommentEventHandlerTest {
         );
         handler.handle(event);
         assertEquals(1, issueCounter.get());
+        Optional<JobSubTaskStatusModel> jobSubTaskStatusModelOptional = jobSubTaskAccessor.getSubTaskStatus(parentEventId);
+        assertFalse(jobSubTaskStatusModelOptional.isPresent());
     }
 
     private JiraServerJobDetailsModel createJobDetails(UUID jobId) {
