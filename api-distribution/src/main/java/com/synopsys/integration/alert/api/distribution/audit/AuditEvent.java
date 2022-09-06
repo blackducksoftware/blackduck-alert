@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.api.distribution;
+package com.synopsys.integration.alert.api.distribution.audit;
 
 import java.time.OffsetDateTime;
 import java.util.Set;
@@ -11,7 +11,7 @@ public class AuditEvent extends AlertEvent {
     private static final long serialVersionUID = 8821840075948290969L;
     private final UUID jobId;
     private final Set<Long> notificationIds;
-    private OffsetDateTime createdTimestamp;
+    private final OffsetDateTime createdTimestamp;
 
     public AuditEvent(String destination, UUID jobId, Set<Long> notificationIds) {
         this(destination, jobId, notificationIds, DateUtils.createCurrentDateTimestamp());

@@ -10,6 +10,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCommentModel;
+import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
 
 class IssueTrackerCommentEventTest {
     @Test
@@ -27,5 +28,22 @@ class IssueTrackerCommentEventTest {
         assertEquals(jobId, event.getJobId());
         assertEquals(notificationIds, event.getNotificationIds());
         assertEquals(model, event.getCommentModel());
+    }
+
+    @Test
+    void createDefaultEventDestinationTest() {
+        JiraServerChannelKey channelKey = new JiraServerChannelKey();
+        String defaultEventDestination = IssueTrackerCommentEvent.createDefaultEventDestination(channelKey);
+
+        assertEquals("channel_jira_server_issue_comment", defaultEventDestination);
+    }
+
+    @Test
+    void getCommentModelTest() {
+        IssueCommentModel<String> model = new IssueCommentModel<>(null, List.of(), null);
+        IssueTrackerCommentEvent<String> event = new IssueTrackerCommentEvent<>(null, null, null, null, model);
+
+        IssueCommentModel<String> testModel = event.getCommentModel();
+        assertEquals(model, testModel);
     }
 }

@@ -19,7 +19,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.FluentQuery;
 
-public class MockRepositoryContainer<ID extends Serializable, T extends Serializable> implements JpaRepository<T, ID> {
+public class MockRepositoryContainer<ID extends Serializable, T> implements JpaRepository<T, ID> {
     private Map<ID, T> dataMap;
     private Function<T, ID> idGenerator;
 

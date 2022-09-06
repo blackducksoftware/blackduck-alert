@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTransitionModel;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
+import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
 
 class IssueTrackerTransitionIssueEventTest {
 
@@ -29,5 +30,22 @@ class IssueTrackerTransitionIssueEventTest {
         assertEquals(jobId, event.getJobId());
         assertEquals(notificationIds, event.getNotificationIds());
         assertEquals(model, event.getTransitionModel());
+    }
+
+    @Test
+    void createDefaultEventDestinationTest() {
+        JiraServerChannelKey channelKey = new JiraServerChannelKey();
+        String defaultEventDestination = IssueTrackerTransitionIssueEvent.createDefaultEventDestination(channelKey);
+
+        assertEquals("channel_jira_server_issue_transition", defaultEventDestination);
+    }
+
+    @Test
+    void getTransitionModelTest() {
+        IssueTransitionModel<String> model = new IssueTransitionModel<>(null, IssueOperation.UPDATE, List.of(), null);
+        IssueTrackerTransitionIssueEvent<String> event = new IssueTrackerTransitionIssueEvent<>(null, null, null, null, model);
+
+        IssueTransitionModel<String> testModel = event.getTransitionModel();
+        assertEquals(model, testModel);
     }
 }
