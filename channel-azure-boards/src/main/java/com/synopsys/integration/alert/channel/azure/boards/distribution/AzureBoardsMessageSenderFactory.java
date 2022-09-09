@@ -116,7 +116,7 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
         AzureBoardsJobDetailsModel distributionDetails, UUID globalId, UUID parentEventId,
         Set<Long> notificationIds
     ) throws AlertException {
-        return createAsyncMessageSender(distributionDetails, globalId, parentEventId, notificationIds);
+        return createAsyncMessageSender(distributionDetails, parentEventId, notificationIds);
     }
 
     public IssueTrackerMessageSender<Integer> createMessageSender(
