@@ -189,8 +189,10 @@ public class DefaultConfigurationModelConfigurationAccessor implements Configura
         DescriptorConfigEntity descriptorConfigEntity = descriptorConfigsRepository.findById(descriptorConfigId)
             .orElseThrow(() -> new AlertConfigurationException(String.format("Config with id '%d' did not exist", descriptorConfigId)));
         List<FieldValueEntity> oldValues = fieldValueRepository.findByConfigId(descriptorConfigId);
-        fieldValueRepository.deleteAll(oldValues);
-        fieldValueRepository.flush();
+        if (!oldValues.isEmpty()) {
+            fieldValueRepository.deleteAll(oldValues);
+            fieldValueRepository.flush();
+        }
 
         ConfigurationModelMutable updatedConfig = createEmptyConfigModel(descriptorConfigEntity.getDescriptorId(), descriptorConfigEntity.getId(),
             descriptorConfigEntity.getCreatedAt(), descriptorConfigEntity.getLastUpdated(), descriptorConfigEntity.getContextId()
