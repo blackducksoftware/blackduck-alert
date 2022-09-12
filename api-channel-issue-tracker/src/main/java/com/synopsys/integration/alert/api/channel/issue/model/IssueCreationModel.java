@@ -16,6 +16,8 @@ import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
 public class IssueCreationModel extends AlertSerializableModel {
+    private static final long serialVersionUID = -3568919050386494416L;
+    private final String queryString;
     private final String title;
     private final String description;
     private final List<String> postCreateComments;
@@ -24,19 +26,31 @@ public class IssueCreationModel extends AlertSerializableModel {
     private final ProjectIssueModel source;
 
     public static IssueCreationModel simple(String title, String description, List<String> postCreateComments, LinkableItem provider) {
-        return new IssueCreationModel(title, description, postCreateComments, provider, null);
+        return new IssueCreationModel(title, description, postCreateComments, provider, null, null);
     }
 
-    public static IssueCreationModel project(String title, String description, List<String> postCreateComments, ProjectIssueModel source) {
-        return new IssueCreationModel(title, description, postCreateComments, source.getProvider(), source);
+    public static IssueCreationModel project(String title, String description, List<String> postCreateComments, ProjectIssueModel source, @Nullable String queryString) {
+        return new IssueCreationModel(title, description, postCreateComments, source.getProvider(), source, queryString);
     }
 
-    private IssueCreationModel(String title, String description, List<String> postCreateComments, LinkableItem provider, @Nullable ProjectIssueModel source) {
+    private IssueCreationModel(
+        String title,
+        String description,
+        List<String> postCreateComments,
+        LinkableItem provider,
+        @Nullable ProjectIssueModel source,
+        @Nullable String queryString
+    ) {
         this.title = title;
         this.description = description;
         this.postCreateComments = postCreateComments;
         this.provider = provider;
         this.source = source;
+        this.queryString = queryString;
+    }
+
+    public Optional<String> getQueryString() {
+        return Optional.ofNullable(queryString);
     }
 
     public String getTitle() {

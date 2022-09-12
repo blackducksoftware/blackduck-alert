@@ -22,8 +22,10 @@ import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetr
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.jira.cloud.distribution.JiraCloudMessageSenderFactory;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.test.common.TestProperties;
@@ -47,14 +49,14 @@ public class JiraCloudSummaryFieldLengthTestIT {
     }
 
     @Test
-    public void summaryLength254SucceedsTest() {
+    void summaryLength254SucceedsTest() {
         IssueCreationModel issueCreationModel = createIssueCreationModel(254);
         IssueTrackerModelHolder<String> messages = new IssueTrackerModelHolder<>(List.of(issueCreationModel), List.of(), List.of());
         assertDoesNotThrow(() -> jiraCloudMessageSender.sendMessages(messages));
     }
 
     @Test
-    public void summaryLength256FailsTest() {
+    void summaryLength256FailsTest() {
         IssueCreationModel issueCreationModel = createIssueCreationModel(256);
         IssueTrackerModelHolder<String> messages = new IssueTrackerModelHolder<>(List.of(issueCreationModel), List.of(), List.of());
         Throwable exception = assertThrows(AlertException.class, () -> jiraCloudMessageSender.sendMessages(messages));
@@ -78,13 +80,17 @@ public class JiraCloudSummaryFieldLengthTestIT {
         Gson gson = new GsonBuilder().create();
         IssueCategoryRetriever issueCategoryRetriever = new IssueCategoryRetriever();
         JiraCloudPropertiesFactory jiraCloudPropertiesFactory = createJiraCloudPropertiesFactory(testProperties);
+        EventManager eventManager = Mockito.mock(EventManager.class);
+        JobSubTaskAccessor jobSubTaskAccessor = Mockito.mock(JobSubTaskAccessor.class);
 
         JiraCloudMessageSenderFactory jiraCloudMessageSenderFactory = new JiraCloudMessageSenderFactory(
             gson,
             ChannelKeys.JIRA_CLOUD,
             jiraCloudPropertiesFactory,
             new IssueTrackerCallbackInfoCreator(),
-            issueCategoryRetriever
+            issueCategoryRetriever,
+            eventManager,
+            jobSubTaskAccessor
         );
 
         JiraCloudJobDetailsModel jiraCloudJobDetails = createJiraCloudJobDetails(testProperties);

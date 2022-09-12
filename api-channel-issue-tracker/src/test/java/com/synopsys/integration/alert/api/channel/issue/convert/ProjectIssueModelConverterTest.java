@@ -85,14 +85,19 @@ public class ProjectIssueModelConverterTest {
             List.of(new LinkableItem("VulnerabilityCritical", "CVE-004")),
             List.of(new LinkableItem("VulnerabilityHigh", "CVE-005")),
             List.of(new LinkableItem("VulnerabilityMedium", "CVE-006")),
-            List.of(new LinkableItem("VulnerabilityLow", "CVE-007")));
+            List.of(new LinkableItem("VulnerabilityLow", "CVE-007"))
+        );
         AbstractBomComponentDetails vulnerableBomComponentDetails = createBomComponentDetailsWithComponentVulnerabilities(componentVulnerabilities);
         IssueBomComponentDetails issueBomComponentDetails = IssueBomComponentDetails.fromBomComponentDetails(vulnerableBomComponentDetails);
 
         ProjectIssueModel projectIssueModel = ProjectIssueModel.vulnerability(PROVIDER_DETAILS, PROJECT_ITEM, PROJECT_VERSION_ITEM, issueBomComponentDetails, vulnerabilityDetails);
-        IssueCreationModel issueCreationModel = converter.toIssueCreationModel(projectIssueModel, "jobName");
+        IssueCreationModel issueCreationModel = converter.toIssueCreationModel(projectIssueModel, "jobName", null);
 
-        assertTrue(issueCreationModel.getDescription().contains(ComponentConcernSeverity.CRITICAL.getVulnerabilityLabel()), "Expected highest vulnerability severity in the description to be CRITICAL");
+        assertTrue(
+            issueCreationModel.getDescription().contains(ComponentConcernSeverity.CRITICAL.getVulnerabilityLabel()),
+            "Expected highest vulnerability severity in the description to be CRITICAL"
+        );
+        assertTrue(issueCreationModel.getQueryString().isEmpty());
     }
 
     @Test
@@ -166,7 +171,7 @@ public class ProjectIssueModelConverterTest {
         MockIssueTrackerMessageFormatter formatter = MockIssueTrackerMessageFormatter.withIntegerMaxValueLength();
         ProjectIssueModelConverter converter = new ProjectIssueModelConverter(formatter);
 
-        IssueCreationModel issueCreationModel = converter.toIssueCreationModel(projectIssueModel, "jobName");
+        IssueCreationModel issueCreationModel = converter.toIssueCreationModel(projectIssueModel, "jobName", null);
         assertEquals(projectIssueModel, issueCreationModel.getSource().orElse(null));
 
         String issueCreationModelTitle = issueCreationModel.getTitle();
@@ -175,6 +180,7 @@ public class ProjectIssueModelConverterTest {
         assertTrue(issueCreationModelTitle.contains(PROJECT_VERSION_ITEM.getValue()), "Expected project-version value to be present in the title");
         assertTrue(issueCreationModelTitle.contains(COMPONENT_ITEM.getValue()), "Expected component value to be present in the title");
         assertTrue(issueCreationModelTitle.contains(COMPONENT_VERSION_ITEM.getValue()), "Expected component-version value to be present in the title");
+        assertTrue(issueCreationModel.getQueryString().isEmpty());
         return issueCreationModel;
     }
 

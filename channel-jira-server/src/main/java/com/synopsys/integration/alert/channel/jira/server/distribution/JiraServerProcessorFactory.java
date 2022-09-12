@@ -7,6 +7,9 @@
  */
 package com.synopsys.integration.alert.channel.jira.server.distribution;
 
+import java.util.Set;
+import java.util.UUID;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +22,9 @@ import com.synopsys.integration.alert.api.channel.issue.IssueTrackerProcessorFac
 import com.synopsys.integration.alert.api.channel.issue.convert.ProjectMessageToIssueModelTransformer;
 import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
 import com.synopsys.integration.alert.api.channel.issue.search.IssueTrackerSearcher;
-import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
+import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerAsyncMessageSender;
 import com.synopsys.integration.alert.api.channel.jira.JiraConstants;
-import com.synopsys.integration.alert.api.channel.jira.distribution.JiraErrorMessageUtility;
-import com.synopsys.integration.alert.api.channel.jira.distribution.JiraIssueCreationRequestCreator;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraMessageFormatter;
-import com.synopsys.integration.alert.api.channel.jira.distribution.custom.JiraCustomFieldResolver;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueStatusCreator;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraSearcherFactory;
@@ -36,18 +36,15 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.JiraS
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.rest.service.IssuePropertyService;
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
-import com.synopsys.integration.jira.common.server.service.FieldService;
 import com.synopsys.integration.jira.common.server.service.IssueSearchService;
 import com.synopsys.integration.jira.common.server.service.IssueService;
 import com.synopsys.integration.jira.common.server.service.JiraServerServiceFactory;
-import com.synopsys.integration.jira.common.server.service.ProjectService;
 
 @Component
 public class JiraServerProcessorFactory implements IssueTrackerProcessorFactory<JiraServerJobDetailsModel, String> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final Gson gson;
-    private final JiraServerChannelLock jiraServerChannelLock;
     private final JiraMessageFormatter jiraMessageFormatter;
     private final JiraServerPropertiesFactory jiraServerPropertiesFactory;
     private final JiraServerMessageSenderFactory jiraServerMessageSenderFactory;
@@ -57,7 +54,6 @@ public class JiraServerProcessorFactory implements IssueTrackerProcessorFactory<
     @Autowired
     public JiraServerProcessorFactory(
         Gson gson,
-        JiraServerChannelLock jiraServerChannelLock,
         JiraMessageFormatter jiraMessageFormatter,
         JiraServerPropertiesFactory jiraServerPropertiesFactory,
         JiraServerMessageSenderFactory jiraServerMessageSenderFactory,
@@ -65,7 +61,6 @@ public class JiraServerProcessorFactory implements IssueTrackerProcessorFactory<
         IssueCategoryRetriever issueCategoryRetriever
     ) {
         this.gson = gson;
-        this.jiraServerChannelLock = jiraServerChannelLock;
         this.jiraMessageFormatter = jiraMessageFormatter;
         this.jiraServerPropertiesFactory = jiraServerPropertiesFactory;
         this.jiraServerMessageSenderFactory = jiraServerMessageSenderFactory;
@@ -74,7 +69,7 @@ public class JiraServerProcessorFactory implements IssueTrackerProcessorFactory<
     }
 
     @Override
-    public IssueTrackerProcessor<String> createProcessor(JiraServerJobDetailsModel distributionDetails) throws AlertException {
+    public IssueTrackerProcessor<String> createProcessor(JiraServerJobDetailsModel distributionDetails, UUID eventId, Set<Long> notificationIds) throws AlertException {
         JiraServerProperties jiraProperties = jiraServerPropertiesFactory.createJiraPropertiesWithJobId(distributionDetails.getJobId());
         JiraServerServiceFactory jiraServerServiceFactory = jiraProperties.createJiraServicesServerFactory(logger, gson);
 
@@ -99,21 +94,18 @@ public class JiraServerProcessorFactory implements IssueTrackerProcessorFactory<
             issueCategoryRetriever,
             modelTransformer
         );
-        JiraServerQueryExecutor jiraCloudQueryExecutor = new JiraServerQueryExecutor(issueSearchService);
-        IssueTrackerSearcher<String> jiraSearcher = jiraSearcherFactory.createJiraSearcher(distributionDetails.getProjectNameOrKey(), jiraCloudQueryExecutor);
+        JiraServerQueryExecutor jiraServerQueryExecutor = new JiraServerQueryExecutor(issueSearchService);
+        IssueTrackerSearcher<String> jiraSearcher = jiraSearcherFactory.createJiraSearcher(distributionDetails.getProjectNameOrKey(), jiraServerQueryExecutor);
 
         IssueTrackerModelExtractor<String> extractor = new IssueTrackerModelExtractor<>(jiraMessageFormatter, jiraSearcher);
+        
+        IssueTrackerAsyncMessageSender<String> messageSender = jiraServerMessageSenderFactory.createAsyncMessageSender(
+            distributionDetails,
+            eventId,
+            notificationIds
+        );
 
-        ProjectService projectService = jiraServerServiceFactory.createProjectService();
-        FieldService fieldService = jiraServerServiceFactory.createFieldService();
-
-        JiraCustomFieldResolver customFieldResolver = new JiraCustomFieldResolver(fieldService::getUserVisibleFields);
-        JiraIssueCreationRequestCreator issueCreationRequestCreator = new JiraIssueCreationRequestCreator(customFieldResolver);
-        JiraErrorMessageUtility jiraErrorMessageUtility = new JiraErrorMessageUtility(gson, customFieldResolver);
-
-        IssueTrackerMessageSender<String> messageSender = jiraServerMessageSenderFactory.createMessageSender(issueService, distributionDetails, projectService, issueCreationRequestCreator, issuePropertiesManager, jiraErrorMessageUtility);
-
-        return new IssueTrackerProcessor<>(jiraServerChannelLock, extractor, messageSender);
+        return new IssueTrackerProcessor<>(extractor, messageSender);
     }
 
     private void checkIfAlertPluginIsInstalled(PluginManagerService jiraAppService) throws IssueTrackerException {

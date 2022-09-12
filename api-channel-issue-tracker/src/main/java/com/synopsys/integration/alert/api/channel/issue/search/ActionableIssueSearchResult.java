@@ -20,10 +20,17 @@ public class ActionableIssueSearchResult<T extends Serializable> extends AlertSe
     private final ExistingIssueDetails<T> existingIssueDetails;
     private final ProjectIssueModel projectIssueModel;
     private final ItemOperation requiredOperation;
+    private final String searchQuery;
 
-    public ActionableIssueSearchResult(@Nullable ExistingIssueDetails<T> existingIssueDetails, ProjectIssueModel projectIssueModel, ItemOperation requiredOperation) {
+    public ActionableIssueSearchResult(
+        @Nullable ExistingIssueDetails<T> existingIssueDetails,
+        ProjectIssueModel projectIssueModel,
+        String searchQuery,
+        ItemOperation requiredOperation
+    ) {
         this.existingIssueDetails = existingIssueDetails;
         this.projectIssueModel = projectIssueModel;
+        this.searchQuery = searchQuery;
         this.requiredOperation = requiredOperation;
     }
 
@@ -39,4 +46,7 @@ public class ActionableIssueSearchResult<T extends Serializable> extends AlertSe
         return requiredOperation;
     }
 
+    public String getSearchQuery() {
+        return searchQuery;
+    }
 }

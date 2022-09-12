@@ -8,7 +8,6 @@
 package com.synopsys.integration.alert.api.channel.issue.search;
 
 import java.io.Serializable;
-import java.util.List;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
@@ -16,6 +15,7 @@ import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetail
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 
 public interface ProjectVersionComponentIssueFinder<T extends Serializable> {
-    List<ProjectIssueSearchResult<T>> findIssuesByComponent(ProviderDetails providerDetails, LinkableItem project, LinkableItem projectVersion, BomComponentDetails bomComponent) throws AlertException;
+    IssueTrackerSearchResult<T> findIssuesByComponent(ProviderDetails providerDetails, LinkableItem project, LinkableItem projectVersion, BomComponentDetails bomComponent)
+        throws AlertException;
 
 }

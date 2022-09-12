@@ -18,6 +18,7 @@ import com.synopsys.integration.alert.api.channel.issue.model.IssuePolicyDetails
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.search.ExactIssueFinder;
 import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
+import com.synopsys.integration.alert.api.channel.issue.search.IssueTrackerSearchResult;
 import com.synopsys.integration.alert.api.channel.issue.search.ProjectIssueSearchResult;
 import com.synopsys.integration.alert.api.channel.issue.search.ProjectVersionComponentIssueFinder;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
@@ -41,9 +42,15 @@ public class AzureBoardsComponentIssueFinder implements ProjectVersionComponentI
     }
 
     @Override
-    public List<ProjectIssueSearchResult<Integer>> findIssuesByComponent(ProviderDetails providerDetails, LinkableItem project, LinkableItem projectVersion, BomComponentDetails bomComponent) throws AlertException {
+    public IssueTrackerSearchResult<Integer> findIssuesByComponent(
+        ProviderDetails providerDetails,
+        LinkableItem project,
+        LinkableItem projectVersion,
+        BomComponentDetails bomComponent
+    ) throws AlertException {
         AzureSearchFieldMappingBuilder fieldRefNameToValue = createBomFieldReferenceToValueMap(projectVersion, bomComponent);
-        List<WorkItemResponseModel> workItems = workItemFinder.findWorkItems(providerDetails.getProvider(), project, fieldRefNameToValue);
+        AzureBoardsWorkItemSearchResult result = workItemFinder.findWorkItems(providerDetails.getProvider(), project, fieldRefNameToValue);
+        List<WorkItemResponseModel> workItems = result.getSearchResults();
 
         List<ProjectIssueSearchResult<Integer>> searchResults = new ArrayList<>(workItems.size());
         for (WorkItemResponseModel workItem : workItems) {
@@ -54,11 +61,11 @@ public class AzureBoardsComponentIssueFinder implements ProjectVersionComponentI
             ProjectIssueSearchResult<Integer> searchResult = new ProjectIssueSearchResult<>(issueDetails, projectIssueModel);
             searchResults.add(searchResult);
         }
-        return searchResults;
+        return new IssueTrackerSearchResult<>(result.getQuery().rawQuery(), searchResults);
     }
 
     @Override
-    public List<ExistingIssueDetails<Integer>> findExistingIssuesByProjectIssueModel(ProjectIssueModel projectIssueModel) throws AlertException {
+    public IssueTrackerSearchResult<Integer> findExistingIssuesByProjectIssueModel(ProjectIssueModel projectIssueModel) throws AlertException {
         LinkableItem projectVersion = projectIssueModel.getProjectVersion()
             .orElseThrow(() -> new AlertRuntimeException("Missing project-version"));
 
@@ -80,10 +87,12 @@ public class AzureBoardsComponentIssueFinder implements ProjectVersionComponentI
 
         fieldRefNameToValue.addCategoryKey(categoryKey);
 
-        return workItemFinder.findWorkItems(projectIssueModel.getProvider(), projectIssueModel.getProject(), fieldRefNameToValue)
+        AzureBoardsWorkItemSearchResult result = workItemFinder.findWorkItems(projectIssueModel.getProvider(), projectIssueModel.getProject(), fieldRefNameToValue);
+        List<ProjectIssueSearchResult<Integer>> searchResults = result.getSearchResults()
             .stream()
             .map(workItemResponseModel -> createIssueDetails(workItemResponseModel, projectIssueModel))
             .collect(Collectors.toList());
+        return new IssueTrackerSearchResult<>(result.getQuery().rawQuery(), searchResults);
     }
 
     private AzureSearchFieldMappingBuilder createBomFieldReferenceToValueMap(LinkableItem projectVersion, AbstractBomComponentDetails bomComponent) {
@@ -98,8 +107,8 @@ public class AzureBoardsComponentIssueFinder implements ProjectVersionComponentI
         return azureSearchFieldMappingBuilder;
     }
 
-    private ExistingIssueDetails<Integer> createIssueDetails(WorkItemResponseModel workItem, ProjectIssueModel projectIssueModel) {
-        return issueDetailsCreator.createIssueDetails(workItem, workItem.createFieldsWrapper(gson), projectIssueModel);
+    private ProjectIssueSearchResult<Integer> createIssueDetails(WorkItemResponseModel workItem, ProjectIssueModel projectIssueModel) {
+        return new ProjectIssueSearchResult<>(issueDetailsCreator.createIssueDetails(workItem, workItem.createFieldsWrapper(gson), projectIssueModel), projectIssueModel);
     }
 
 }

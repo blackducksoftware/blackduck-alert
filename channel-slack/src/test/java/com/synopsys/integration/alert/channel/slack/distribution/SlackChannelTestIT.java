@@ -18,6 +18,7 @@ import org.mockito.Mockito;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.rest.ChannelRestConnectionFactory;
+import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.slack.ChannelITTestAssertions;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
@@ -29,20 +30,22 @@ import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.test.common.TestTags;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
-public class SlackChannelTestIT {
+class SlackChannelTestIT {
     private Gson gson;
     private TestProperties properties;
+    private EventManager eventManager;
 
     @BeforeEach
     public void init() {
         gson = new Gson();
         properties = new TestProperties();
+        eventManager = Mockito.mock(EventManager.class);
     }
 
     @Test
     @Tag(TestTags.DEFAULT_INTEGRATION)
     @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
-    public void sendMessageTestIT() {
+    void sendMessageTestIT() {
         MarkupEncoderUtil markupEncoderUtil = new MarkupEncoderUtil();
         SlackChannelMessageFormatter slackChannelMessageFormatter = new SlackChannelMessageFormatter(markupEncoderUtil);
         SlackChannelMessageConverter slackChannelMessageConverter = new SlackChannelMessageConverter(slackChannelMessageFormatter);
@@ -50,7 +53,7 @@ public class SlackChannelTestIT {
         ChannelRestConnectionFactory connectionFactory = createConnectionFactory();
         SlackChannelMessageSender slackChannelMessageSender = new SlackChannelMessageSender(ChannelKeys.SLACK, connectionFactory);
 
-        SlackChannel slackChannel = new SlackChannel(slackChannelMessageConverter, slackChannelMessageSender);
+        SlackChannel slackChannel = new SlackChannel(slackChannelMessageConverter, slackChannelMessageSender, eventManager);
 
         SlackJobDetailsModel distributionDetails = new SlackJobDetailsModel(
             null,

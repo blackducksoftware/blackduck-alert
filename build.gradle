@@ -44,7 +44,7 @@ ext {
 }
 
 mainClassName = 'com.synopsys.integration.alert.Application'
-version = '6.11.0-SIGQA4-SNAPSHOT'
+version = '6.12.0-SNAPSHOT'
 
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
@@ -100,6 +100,7 @@ dependencies {
     implementation project(':api-common-model')
     implementation project(':api-channel')
     implementation project(':api-descriptor')
+    implementation project(':api-distribution')
     implementation project(':api-environment')
     implementation project(':api-event')
     implementation project(':api-processor')

@@ -28,5 +28,4 @@ public class ProjectIssueSearchResult<T extends Serializable> extends AlertSeria
     public ProjectIssueModel getProjectIssueModel() {
         return projectIssueModel;
     }
-
 }

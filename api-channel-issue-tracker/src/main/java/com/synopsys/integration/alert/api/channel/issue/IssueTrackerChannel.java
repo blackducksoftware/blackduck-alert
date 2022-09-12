@@ -8,11 +8,14 @@
 package com.synopsys.integration.alert.api.channel.issue;
 
 import java.io.Serializable;
+import java.util.Set;
+import java.util.UUID;
 
 import com.synopsys.integration.alert.api.channel.DistributionChannel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerResponse;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
+import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 
@@ -23,18 +26,27 @@ import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessag
 public abstract class IssueTrackerChannel<D extends DistributionJobDetailsModel, T extends Serializable> implements DistributionChannel<D> {
     private final IssueTrackerProcessorFactory<D, T> processorFactory;
     private final IssueTrackerResponsePostProcessor responsePostProcessor;
+    private final JobSubTaskAccessor jobSubTaskAccessor;
 
-    protected IssueTrackerChannel(IssueTrackerProcessorFactory<D, T> processorFactory, IssueTrackerResponsePostProcessor responsePostProcessor) {
+    protected IssueTrackerChannel(
+        IssueTrackerProcessorFactory<D, T> processorFactory,
+        IssueTrackerResponsePostProcessor responsePostProcessor,
+        JobSubTaskAccessor jobSubTaskAccessor
+    ) {
         this.processorFactory = processorFactory;
         this.responsePostProcessor = responsePostProcessor;
+        this.jobSubTaskAccessor = jobSubTaskAccessor;
     }
 
     @Override
-    public MessageResult distributeMessages(D distributionDetails, ProviderMessageHolder messages, String jobName) throws AlertException {
-        IssueTrackerProcessor<T> processor = processorFactory.createProcessor(distributionDetails);
+    public MessageResult distributeMessages(D distributionDetails, ProviderMessageHolder messages, String jobName, UUID eventId, Set<Long> notificationIds)
+        throws AlertException {
+        
+        jobSubTaskAccessor.createSubTaskStatus(eventId, distributionDetails.getJobId(), 0L, notificationIds);
+        IssueTrackerProcessor<T> processor = processorFactory.createProcessor(distributionDetails, eventId, notificationIds);
         IssueTrackerResponse<T> issueTrackerResponse = processor.processMessages(messages, jobName);
 
-        responsePostProcessor.postProcess(issueTrackerResponse);
+        //responsePostProcessor.postProcess(issueTrackerResponse);
         return new MessageResult(issueTrackerResponse.getStatusMessage());
     }
 

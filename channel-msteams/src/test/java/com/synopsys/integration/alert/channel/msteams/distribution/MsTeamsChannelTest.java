@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.channel.msteams.distribution;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Assertions;
@@ -12,6 +13,7 @@ import org.mockito.Mockito;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.rest.ChannelRestConnectionFactory;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
@@ -27,7 +29,7 @@ import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.test.common.TestTags;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
-public class MsTeamsChannelTest {
+class MsTeamsChannelTest {
     private static final LinkableItem TEST_PROVIDER = new LinkableItem("Test Provider Label", "Test Provider Config Name");
     private static final ProviderDetails TEST_PROVIDER_DETAILS = new ProviderDetails(0L, TEST_PROVIDER);
 
@@ -43,29 +45,31 @@ public class MsTeamsChannelTest {
 
     protected Gson gson;
     protected TestProperties properties;
+    private EventManager eventManager;
 
     @BeforeEach
     public void init() {
         gson = new Gson();
         properties = new TestProperties();
+        eventManager = Mockito.mock(EventManager.class);
     }
 
     @Test
     @Tag(TestTags.DEFAULT_INTEGRATION)
     @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
-    public void sendMessageTestIT() {
+    void sendMessageTestIT() {
         ChannelRestConnectionFactory connectionFactory = createConnectionFactory();
         MarkupEncoderUtil markupEncoderUtil = new MarkupEncoderUtil();
 
         MSTeamsChannelMessageConverter messageConverter = new MSTeamsChannelMessageConverter(new MSTeamsChannelMessageFormatter(markupEncoderUtil));
         MSTeamsChannelMessageSender messageSender = new MSTeamsChannelMessageSender(ChannelKeys.MS_TEAMS, connectionFactory);
 
-        MSTeamsChannel msTeamsChannel = new MSTeamsChannel(messageConverter, messageSender);
+        MSTeamsChannel msTeamsChannel = new MSTeamsChannel(messageConverter, messageSender, eventManager);
         MSTeamsJobDetailsModel msTeamsJobDetailsModel = new MSTeamsJobDetailsModel(UUID.randomUUID(), properties.getProperty(TestPropertyKey.TEST_MSTEAMS_WEBHOOK));
 
         MessageResult messageResult = null;
         try {
-            messageResult = msTeamsChannel.distributeMessages(msTeamsJobDetailsModel, TEST_MESSAGE_HOLDER, "jobName");
+            messageResult = msTeamsChannel.distributeMessages(msTeamsJobDetailsModel, TEST_MESSAGE_HOLDER, "jobName", UUID.randomUUID(), Set.of());
         } catch (AlertException e) {
             Assertions.fail("Failed to distribute simple channel message due to an exception", e);
         }
