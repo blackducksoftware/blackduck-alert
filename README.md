@@ -21,10 +21,10 @@ To compile the UI and create the jar file run:
 ```bash
 ./gradlew clean build
 ```
-To build the docker image:
+To build the docker images:
 
 ```bash
-./gradlew buildDockerImage
+./gradlew dockerBuildAllImages
 ```
 To build the zip file containing the orchestration files for deployment:
 
