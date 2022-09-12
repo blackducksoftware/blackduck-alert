@@ -8,22 +8,25 @@ const jsDir = path.resolve(srcDir, 'main', 'js');
 module.exports = merge.smart(commonConfig, {
     mode: 'development',
     devtool: 'source-map',
+    output: {
+        publicPath: '/'
+    },
     devServer: {
-        static: [jsDir, path.resolve(srcDir, 'css'), path.resolve(srcDir, 'img')],
+        static: [
+            { directory: jsDir, publicPath: '/alert/' },
+            { directory: path.resolve(srcDir, 'css'), publicPath: '/alert/' },
+            { directory: path.resolve(srcDir, 'img'), publicPath: '/alert/' }
+        ],
         https: true,
         hot: true,
         port: 9000,
         compress: true,
         historyApiFallback: true,
         allowedHosts: "all",
-        devMiddleware: {
-            publicPath: '/alert/',
-        },
         proxy: [{
             context: ['/alert/api/**'],
             target: 'https://localhost:8443',
             secure: false,
-            changeOrigin: true,
             cookieDomainRewrite: {
                 '*': ''
             },
