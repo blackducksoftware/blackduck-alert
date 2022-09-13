@@ -3,56 +3,64 @@ package com.synopsys.integration.alert.channel.email.attachment.compatibility;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
+import java.util.LinkedHashSet;
+
 import org.junit.jupiter.api.Test;
 
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
+
 public class MessageContentKeyTest {
+    public static final String TOPIC_NAME = "test-topicName";
+    public static final String TOPIC_VALUE = "test-topicValue";
+    public static final String SUB_TOPIC_NAME = "test-subTopicName";
+    public static final String SUB_TOPIC_VALUE = "test-subTopicValue";
+
     @Test
     public void getKeyNoSubTopicTest() {
-        final String topicName = "Topic";
-        final String topicValue = "My Topic";
-        MessageContentKey contentKey = MessageContentKey.from(topicName, topicValue);
-
-        assertEquals(String.format("%s_%s", topicName, topicValue), contentKey.getKey());
+        MessageContentKey contentKey = MessageContentKey.from(TOPIC_NAME, TOPIC_VALUE);
+        assertEquals(String.format("%s_%s", TOPIC_NAME, TOPIC_VALUE), contentKey.getKey());
     }
 
     @Test
     public void getKeyNullSubTopicTest() {
-        final String topicName = "Topic";
-        final String topicValue = "My Topic";
-        final String notNull = "not null";
+        MessageContentKey contentKey1 = MessageContentKey.from(TOPIC_NAME, TOPIC_VALUE, null, SUB_TOPIC_VALUE);
+        assertEquals(String.format("%s_%s", TOPIC_NAME, TOPIC_VALUE), contentKey1.getKey());
 
-        MessageContentKey contentKey1 = MessageContentKey.from(topicName, topicValue, null, notNull);
-        assertEquals(String.format("%s_%s", topicName, topicValue), contentKey1.getKey());
-
-        MessageContentKey contentKey2 = MessageContentKey.from(topicName, topicValue, notNull, null);
-        assertEquals(String.format("%s_%s", topicName, topicValue), contentKey2.getKey());
+        MessageContentKey contentKey2 = MessageContentKey.from(TOPIC_NAME, TOPIC_VALUE, SUB_TOPIC_NAME, null);
+        assertEquals(String.format("%s_%s", TOPIC_NAME, TOPIC_VALUE), contentKey2.getKey());
     }
 
     @Test
     public void getKeyWithSubTopicTest() {
-        final String topicName = "Topic";
-        final String topicValue = "My Topic";
-        final String subTopicName = "Sub Topic";
-        final String subTopicValue = "A Sub Topic";
-        MessageContentKey contentKey = MessageContentKey.from(topicName, topicValue, subTopicName, subTopicValue);
-
-        assertEquals(String.format("%s_%s_%s_%s", topicName, topicValue, subTopicName, subTopicValue), contentKey.getKey());
+        MessageContentKey contentKey = MessageContentKey.from(TOPIC_NAME, TOPIC_VALUE, SUB_TOPIC_NAME, SUB_TOPIC_VALUE);
+        assertEquals(String.format("%s_%s_%s_%s", TOPIC_NAME, TOPIC_VALUE, SUB_TOPIC_NAME, SUB_TOPIC_VALUE), contentKey.getKey());
     }
 
     @Test
     public void equalsTest() {
-        final String topicName = "Topic";
-        final String topicValue = "My Topic";
-        final String subTopicName = "Sub Topic";
-        final String subTopicValue = "A Sub Topic";
-        MessageContentKey contentKey1 = MessageContentKey.from(topicName, topicValue);
-        MessageContentKey contentKey2 = MessageContentKey.from(topicName, topicValue);
-        MessageContentKey contentKey3 = MessageContentKey.from(topicName, topicValue, subTopicName, subTopicValue);
-        MessageContentKey contentKey4 = MessageContentKey.from(topicName, topicValue, subTopicName, subTopicValue);
+        MessageContentKey contentKey1 = MessageContentKey.from(TOPIC_NAME, TOPIC_VALUE);
+        MessageContentKey contentKey2 = MessageContentKey.from(TOPIC_NAME, TOPIC_VALUE);
+        MessageContentKey contentKey3 = MessageContentKey.from(TOPIC_NAME, TOPIC_VALUE, SUB_TOPIC_NAME, SUB_TOPIC_VALUE);
+        MessageContentKey contentKey4 = MessageContentKey.from(TOPIC_NAME, TOPIC_VALUE, SUB_TOPIC_NAME, SUB_TOPIC_VALUE);
 
         assertEquals(contentKey1, contentKey2);
         assertNotEquals(contentKey1, contentKey3);
         assertEquals(contentKey3, contentKey4);
+    }
+
+    @Test
+    public void getKeyWithLinkableItemTest() {
+        MessageContentKey contentKey1 = MessageContentKey.from(TOPIC_NAME, TOPIC_VALUE, null);
+        assertEquals(String.format("%s_%s", TOPIC_NAME, TOPIC_VALUE), contentKey1.getKey());
+
+        LinkedHashSet<LinkableItem> subTopics = new LinkedHashSet<>();
+        MessageContentKey contentKey2 = MessageContentKey.from(TOPIC_NAME, TOPIC_VALUE, subTopics);
+        assertEquals(String.format("%s_%s", TOPIC_NAME, TOPIC_VALUE), contentKey2.getKey());
+
+        LinkableItem linkableItem = new LinkableItem(SUB_TOPIC_NAME, SUB_TOPIC_VALUE);
+        subTopics.add(linkableItem);
+        MessageContentKey contentKey3 = MessageContentKey.from(TOPIC_NAME, TOPIC_VALUE, subTopics);
+        assertEquals(String.format("%s_%s_%s_%s", TOPIC_NAME, TOPIC_VALUE, SUB_TOPIC_NAME, SUB_TOPIC_VALUE), contentKey3.getKey());
     }
 
 }
