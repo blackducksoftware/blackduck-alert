@@ -17,17 +17,17 @@ import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
 public class MessageContentGroupTest {
-    public static final String PROVIDER_NAME = "test-providerName";
-    public static final String PROVIDER_CONFIG_NAME = "test-providerConfigName";
-    public static final String PROVIDER_URL = "test-providerUrl";
-    public static final LinkableItem PROVIDER_LINKABLE_ITEM = new LinkableItem(PROVIDER_NAME, PROVIDER_CONFIG_NAME, PROVIDER_URL);
+    private static final String PROVIDER_NAME = "test-providerName";
+    private static final String PROVIDER_CONFIG_NAME = "test-providerConfigName";
+    private static final String PROVIDER_URL = "test-providerUrl";
+    private static final LinkableItem PROVIDER_LINKABLE_ITEM = new LinkableItem(PROVIDER_NAME, PROVIDER_CONFIG_NAME, PROVIDER_URL);
 
-    public static final String TOPIC_NAME = "test-topicName";
-    public static final String TOPIC_VALUE = "test-topicValue";
-    public static final String TOPIC_URL = "test-topicUrl";
-    public static final LinkableItem TOPIC_LINKABLE_ITEM = new LinkableItem(TOPIC_NAME, TOPIC_VALUE, TOPIC_URL);
+    private static final String TOPIC_NAME = "test-topicName";
+    private static final String TOPIC_VALUE = "test-topicValue";
+    private static final String TOPIC_URL = "test-topicUrl";
+    private static final LinkableItem TOPIC_LINKABLE_ITEM = new LinkableItem(TOPIC_NAME, TOPIC_VALUE, TOPIC_URL);
 
-    public final ProviderMessageContent.Builder validBuilder = new ProviderMessageContent.Builder();
+    private final ProviderMessageContent.Builder validBuilder = new ProviderMessageContent.Builder();
 
     @BeforeEach
     public void init() {

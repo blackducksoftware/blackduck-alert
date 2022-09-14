@@ -10,10 +10,10 @@ import org.junit.jupiter.api.Test;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
 public class MessageContentKeyTest {
-    public static final String TOPIC_NAME = "test-topicName";
-    public static final String TOPIC_VALUE = "test-topicValue";
-    public static final String SUB_TOPIC_NAME = "test-subTopicName";
-    public static final String SUB_TOPIC_VALUE = "test-subTopicValue";
+    private static final String TOPIC_NAME = "test-topicName";
+    private static final String TOPIC_VALUE = "test-topicValue";
+    private static final String SUB_TOPIC_NAME = "test-subTopicName";
+    private static final String SUB_TOPIC_VALUE = "test-subTopicValue";
 
     @Test
     public void getKeyNoSubTopicTest() {

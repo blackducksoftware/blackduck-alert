@@ -22,29 +22,28 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.datastructure.SetMap;
 
 public class ProviderMessageContentTest {
-    public static final String PROVIDER_NAME = "test-providerName";
-    public static final String PROVIDER_CONFIG_NAME = "test-providerConfigName";
-    public static final String PROVIDER_URL = "test-providerUrl";
-    public static final LinkableItem PROVIDER_LINKABLE_ITEM = new LinkableItem(PROVIDER_NAME, PROVIDER_CONFIG_NAME, PROVIDER_URL);
+    private static final String PROVIDER_NAME = "test-providerName";
+    private static final String PROVIDER_CONFIG_NAME = "test-providerConfigName";
+    private static final String PROVIDER_URL = "test-providerUrl";
+    private static final LinkableItem PROVIDER_LINKABLE_ITEM = new LinkableItem(PROVIDER_NAME, PROVIDER_CONFIG_NAME, PROVIDER_URL);
 
-    public static final String TOPIC_NAME = "test-topicName";
-    public static final String TOPIC_VALUE = "test-topicValue";
-    public static final String TOPIC_URL = "test-topicUrl";
-    public static final LinkableItem TOPIC_LINKABLE_ITEM = new LinkableItem(TOPIC_NAME, TOPIC_VALUE, TOPIC_URL);
+    private static final String TOPIC_NAME = "test-topicName";
+    private static final String TOPIC_VALUE = "test-topicValue";
+    private static final String TOPIC_URL = "test-topicUrl";
+    private static final LinkableItem TOPIC_LINKABLE_ITEM = new LinkableItem(TOPIC_NAME, TOPIC_VALUE, TOPIC_URL);
 
-    public static final String SUB_TOPIC_NAME = "test-subTopicName";
-    public static final String SUB_TOPIC_VALUE = "test-subTopicValue";
-    public static final String SUB_TOPIC_URL = "test-subTopicUrl";
-    public static final LinkableItem SUB_TOPIC_LINKABLE_ITEM = new LinkableItem(SUB_TOPIC_NAME, SUB_TOPIC_VALUE, SUB_TOPIC_URL);
+    private static final String SUB_TOPIC_NAME = "test-subTopicName";
+    private static final String SUB_TOPIC_VALUE = "test-subTopicValue";
+    private static final String SUB_TOPIC_URL = "test-subTopicUrl";
+    private static final LinkableItem SUB_TOPIC_LINKABLE_ITEM = new LinkableItem(SUB_TOPIC_NAME, SUB_TOPIC_VALUE, SUB_TOPIC_URL);
 
-    public static final Long PROVIDER_CONFIG_ID = 1234567890L;
-    public static final ItemOperation ITEM_OPERATION_1 = ItemOperation.ADD;
-    public static final ItemOperation ITEM_OPERATION_2 = ItemOperation.UPDATE;
-    public static final Long NOTIFICATION_ID = 9876543210L;
+    private static final Long PROVIDER_CONFIG_ID = 1234567890L;
+    private static final ItemOperation ITEM_OPERATION_1 = ItemOperation.ADD;
+    private static final Long NOTIFICATION_ID = 9876543210L;
 
-    public final ProviderMessageContent.Builder validBuilder = new ProviderMessageContent.Builder();
-    public final ComponentItem.Builder validComponentItemBuilder1 = new ComponentItem.Builder();
-    public final ComponentItem.Builder validComponentItemBuilder2 = new ComponentItem.Builder();
+    private final ProviderMessageContent.Builder validBuilder = new ProviderMessageContent.Builder();
+    private final ComponentItem.Builder validComponentItemBuilder1 = new ComponentItem.Builder();
+    private final ComponentItem.Builder validComponentItemBuilder2 = new ComponentItem.Builder();
 
     @BeforeEach
     public void init() {
@@ -57,7 +56,7 @@ public class ProviderMessageContentTest {
             .applyCategoryItem("label1", "value1");
 
         validComponentItemBuilder2.applyCategory("category2")
-            .applyOperation(ITEM_OPERATION_2)
+            .applyOperation(ItemOperation.UPDATE)
             .applyComponentData("label2", "value2")
             .applyCategoryItem("label2", "value2");
     }

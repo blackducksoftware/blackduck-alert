@@ -20,38 +20,34 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 
 public class ComponentItemTest {
-    public static final String CATEGORY = "test-category";
+    private static final String CATEGORY = "test-category";
 
-    public static final String COMPONENT_LABEL = "test-componentLabel";
-    public static final String COMPONENT_VALUE = "test-componentValue";
-    public static final String COMPONENT_URL = "test-componentUrl";
-    public static final LinkableItem COMPONENT_LINKABLE_ITEM = new LinkableItem(COMPONENT_LABEL, COMPONENT_VALUE, COMPONENT_URL);
+    private static final String COMPONENT_LABEL = "test-componentLabel";
+    private static final String COMPONENT_VALUE = "test-componentValue";
+    private static final String COMPONENT_URL = "test-componentUrl";
+    private static final LinkableItem COMPONENT_LINKABLE_ITEM = new LinkableItem(COMPONENT_LABEL, COMPONENT_VALUE, COMPONENT_URL);
 
-    public static final String SUB_COMPONENT_LABEL = "test-subComponentLabel";
-    public static final String SUB_COMPONENT_VALUE = "test-subComponentValue";
-    public static final String SUB_COMPONENT_URL = "test-subComponentUrl";
-    public static final LinkableItem SUB_COMPONENT_LINKABLE_ITEM = new LinkableItem(SUB_COMPONENT_LABEL, SUB_COMPONENT_VALUE, SUB_COMPONENT_URL);
+    private static final String SUB_COMPONENT_LABEL = "test-subComponentLabel";
+    private static final String SUB_COMPONENT_VALUE = "test-subComponentValue";
+    private static final String SUB_COMPONENT_URL = "test-subComponentUrl";
+    private static final LinkableItem SUB_COMPONENT_LINKABLE_ITEM = new LinkableItem(SUB_COMPONENT_LABEL, SUB_COMPONENT_VALUE, SUB_COMPONENT_URL);
 
-    public static final String CATEGORY_ITEM_LABEL = "test-categoryItemLabel";
-    public static final String CATEGORY_ITEM_VALUE = "test-categoryItemValue";
-    public static final String CATEGORY_ITEM_URL = "test-categoryItemUrl";
-    public static final LinkableItem CATEGORY_ITEM_LINKABLE_ITEM = new LinkableItem(CATEGORY_ITEM_LABEL, CATEGORY_ITEM_VALUE, CATEGORY_ITEM_URL);
+    private static final String CATEGORY_ITEM_LABEL = "test-categoryItemLabel";
+    private static final String CATEGORY_ITEM_VALUE = "test-categoryItemValue";
+    private static final String CATEGORY_ITEM_URL = "test-categoryItemUrl";
+    private static final LinkableItem CATEGORY_ITEM_LINKABLE_ITEM = new LinkableItem(CATEGORY_ITEM_LABEL, CATEGORY_ITEM_VALUE, CATEGORY_ITEM_URL);
 
-    public static final String CATEGORY_ITEM_ATTR_LABEL = "test-categoryGroupingAttributeLabel";
-    public static final String CATEGORY_ITEM_ATTR_VALUE = "test-categoryGroupingAttributeValue";
-    public static final LinkableItem SUB_CATEGORY_ITEM_LINKABLE_ITEM = new LinkableItem(CATEGORY_ITEM_ATTR_LABEL, CATEGORY_ITEM_ATTR_VALUE);
+    private static final String CATEGORY_ITEM_ATTR_LABEL = "test-categoryGroupingAttributeLabel";
+    private static final LinkableItem SUB_CATEGORY_ITEM_LINKABLE_ITEM = new LinkableItem(CATEGORY_ITEM_ATTR_LABEL, "test-categoryGroupingAttributeValue");
 
-    public static final ItemOperation ITEM_OPERATION = ItemOperation.DELETE;
-    public static final ComponentItemPriority COMPONENT_ITEM_PRIORITY = ComponentItemPriority.MEDIUM;
+    private static final ItemOperation ITEM_OPERATION = ItemOperation.DELETE;
+    private static final ComponentItemPriority COMPONENT_ITEM_PRIORITY = ComponentItemPriority.MEDIUM;
 
-    public static final String COMPONENT_CALLBACK_URL = "test-componentCallbackUrl";
-    public static final String UNIVERSAL_KEY = "universalKey";
-    public static final String DISPLAY_NAME = "displayName";
-    public static final ProviderKey PROVIDER_KEY = new ProviderKey(UNIVERSAL_KEY, DISPLAY_NAME);
-    public static final String COMPONENT_CALLBACK_NOTIFICATION_TYPE = "test-componentCallbackNotificationType";
-    public static final ComponentItemCallbackInfo CALL_BACK_INFO = new ComponentItemCallbackInfo(COMPONENT_CALLBACK_URL, PROVIDER_KEY, COMPONENT_CALLBACK_NOTIFICATION_TYPE);
+    private static final String COMPONENT_CALLBACK_URL = "test-componentCallbackUrl";
+    private static final ProviderKey PROVIDER_KEY = new ProviderKey("universalKey", "displayName");
+    private static final ComponentItemCallbackInfo CALL_BACK_INFO = new ComponentItemCallbackInfo(COMPONENT_CALLBACK_URL, PROVIDER_KEY, "test-componentCallbackNotificationType");
 
-    public final ComponentItem.Builder validBuilder = new ComponentItem.Builder();
+    private final ComponentItem.Builder validBuilder = new ComponentItem.Builder();
 
     @BeforeEach
     public void init() {
@@ -66,12 +62,8 @@ public class ComponentItemTest {
         ComponentItem componentItem = assertDoesNotThrow(validBuilder::build);
         assertEquals(CATEGORY, componentItem.getCategory());
         assertEquals(ITEM_OPERATION, componentItem.getOperation());
-        assertEquals(COMPONENT_LINKABLE_ITEM.getLabel(), componentItem.getComponent().getLabel());
-        assertEquals(COMPONENT_LINKABLE_ITEM.getValue(), componentItem.getComponent().getValue());
-        assertEquals(COMPONENT_LINKABLE_ITEM.getUrl().get(), componentItem.getComponent().getUrl().orElse(null));
-        assertEquals(CATEGORY_ITEM_LINKABLE_ITEM.getLabel(), componentItem.getCategoryItem().getLabel());
-        assertEquals(CATEGORY_ITEM_LINKABLE_ITEM.getValue(), componentItem.getCategoryItem().getValue());
-        assertEquals(CATEGORY_ITEM_LINKABLE_ITEM.getUrl().get(), componentItem.getCategoryItem().getUrl().orElse(null));
+        assertEquals(COMPONENT_LINKABLE_ITEM, componentItem.getComponent());
+        assertEquals(CATEGORY_ITEM_LINKABLE_ITEM, componentItem.getCategoryItem());
     }
 
     @Test
@@ -127,9 +119,7 @@ public class ComponentItemTest {
         validBuilder.applySubComponent(SUB_COMPONENT_LINKABLE_ITEM);
         componentItem = assertDoesNotThrow(validBuilder::build);
         assertTrue(componentItem.getSubComponent().isPresent());
-        assertEquals(SUB_COMPONENT_LINKABLE_ITEM.getLabel(), componentItem.getSubComponent().get().getLabel());
-        assertEquals(SUB_COMPONENT_LINKABLE_ITEM.getValue(), componentItem.getSubComponent().get().getValue());
-        assertEquals(SUB_COMPONENT_LINKABLE_ITEM.getUrl().get(), componentItem.getSubComponent().get().getUrl().orElse(null));
+        assertEquals(Optional.of(SUB_COMPONENT_LINKABLE_ITEM), componentItem.getSubComponent());
     }
 
     @Test
@@ -149,9 +139,7 @@ public class ComponentItemTest {
         validBuilder.applyCategoryGroupingAttribute(SUB_CATEGORY_ITEM_LINKABLE_ITEM);
         componentItem = assertDoesNotThrow(validBuilder::build);
         assertTrue(componentItem.getCategoryGroupingAttribute().isPresent());
-        assertEquals(SUB_CATEGORY_ITEM_LINKABLE_ITEM.getLabel(), componentItem.getCategoryGroupingAttribute().get().getLabel());
-        assertEquals(SUB_CATEGORY_ITEM_LINKABLE_ITEM.getValue(), componentItem.getCategoryGroupingAttribute().get().getValue());
-        assertEquals(Optional.empty(), componentItem.getCategoryGroupingAttribute().get().getUrl());
+        assertEquals(Optional.of(SUB_CATEGORY_ITEM_LINKABLE_ITEM), componentItem.getCategoryGroupingAttribute());
     }
 
     @Test
@@ -175,11 +163,7 @@ public class ComponentItemTest {
         validBuilder.applyComponentItemCallbackInfo(CALL_BACK_INFO);
         componentItem = assertDoesNotThrow(validBuilder::build);
         assertTrue(componentItem.getCallbackInfo().isPresent());
-        assertEquals(CALL_BACK_INFO.getCallbackUrl(), componentItem.getCallbackInfo().get().getCallbackUrl());
-        assertEquals(CALL_BACK_INFO.getProviderKey(), componentItem.getCallbackInfo().get().getProviderKey());
-        assertEquals(CALL_BACK_INFO.getProviderKey().getUniversalKey(), componentItem.getCallbackInfo().get().getProviderKey().getUniversalKey());
-        assertEquals(CALL_BACK_INFO.getProviderKey().getDisplayName(), componentItem.getCallbackInfo().get().getProviderKey().getDisplayName());
-        assertEquals(CALL_BACK_INFO.getNotificationType(), componentItem.getCallbackInfo().get().getNotificationType());
+        assertEquals(Optional.of(CALL_BACK_INFO), componentItem.getCallbackInfo());
     }
 
     @Test

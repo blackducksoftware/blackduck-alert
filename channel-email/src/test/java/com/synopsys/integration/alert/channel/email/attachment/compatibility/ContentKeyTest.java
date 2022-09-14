@@ -13,13 +13,13 @@ import org.junit.jupiter.api.Test;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 
 public class ContentKeyTest {
-    public static final String PROVIDER_NAME = "test-providerName";
-    public static final Long PROVIDER_CONFIG_ID = 1234567890L;
-    public static final String TOPIC_NAME = "test-topicName";
-    public static final String TOPIC_VALUE = "test-topicValue";
-    public static final String SUB_TOPIC_NAME = "test-subTopicName";
-    public static final String SUB_TOPIC_VALUE = "test-subTopicValue";
-    public static final ItemOperation ITEM_OPERATION = ItemOperation.DELETE;
+    private static final String PROVIDER_NAME = "test-providerName";
+    private static final Long PROVIDER_CONFIG_ID = 1234567890L;
+    private static final String TOPIC_NAME = "test-topicName";
+    private static final String TOPIC_VALUE = "test-topicValue";
+    private static final String SUB_TOPIC_NAME = "test-subTopicName";
+    private static final String SUB_TOPIC_VALUE = "test-subTopicValue";
+    private static final ItemOperation ITEM_OPERATION = ItemOperation.DELETE;
 
     @Test
     public void noNullDataTest() {
