@@ -180,7 +180,9 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
             commentEventGenerator,
             eventManager,
             jobSubTaskAccessor,
-            parentEventId
+            parentEventId,
+            jobId,
+            notificationIds
         );
     }
 
