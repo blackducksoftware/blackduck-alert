@@ -19,7 +19,7 @@ import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 
-public class ComponentItemTest {
+class ComponentItemTest {
     private static final String CATEGORY = "test-category";
 
     private static final String COMPONENT_LABEL = "test-componentLabel";
@@ -50,7 +50,7 @@ public class ComponentItemTest {
     private final ComponentItem.Builder validBuilder = new ComponentItem.Builder();
 
     @BeforeEach
-    public void init() {
+    void init() {
         validBuilder.applyCategory(CATEGORY)
             .applyOperation(ITEM_OPERATION)
             .applyComponentData(COMPONENT_LINKABLE_ITEM)
@@ -58,7 +58,7 @@ public class ComponentItemTest {
     }
 
     @Test
-    public void validateRequiredFieldsPresentTest() {
+    void validateRequiredFieldsPresentTest() {
         ComponentItem componentItem = assertDoesNotThrow(validBuilder::build);
         assertEquals(CATEGORY, componentItem.getCategory());
         assertEquals(ITEM_OPERATION, componentItem.getOperation());
@@ -67,7 +67,7 @@ public class ComponentItemTest {
     }
 
     @Test
-    public void validateRequiredFieldsMissingTest() {
+    void validateRequiredFieldsMissingTest() {
         // Test category null
         ComponentItem.Builder builder = new ComponentItem.Builder();
         assertThrows(AlertException.class, builder::build);
@@ -103,7 +103,7 @@ public class ComponentItemTest {
     }
 
     @Test
-    public void validateSubcomponentTest() {
+    void validateSubcomponentTest() {
         validBuilder.applySubComponent(null);
         ComponentItem componentItem = assertDoesNotThrow(validBuilder::build);
         assertTrue(componentItem.getSubComponent().isEmpty());
@@ -123,7 +123,7 @@ public class ComponentItemTest {
     }
 
     @Test
-    public void validateSubCategoryTest() {
+    void validateSubCategoryTest() {
         validBuilder.applyCategoryGroupingAttribute(null);
         ComponentItem componentItem = assertDoesNotThrow(validBuilder::build);
         assertTrue(componentItem.getCategoryGroupingAttribute().isEmpty());
@@ -143,7 +143,7 @@ public class ComponentItemTest {
     }
 
     @Test
-    public void validateCallBackTest() {
+    void validateCallBackTest() {
         validBuilder.applyComponentItemCallbackInfo(null);
         ComponentItem componentItem = assertDoesNotThrow(validBuilder::build);
         assertTrue(componentItem.getCallbackInfo().isEmpty());
@@ -167,14 +167,14 @@ public class ComponentItemTest {
     }
 
     @Test
-    public void validatePriorityTest() {
+    void validatePriorityTest() {
         validBuilder.applyPriority(COMPONENT_ITEM_PRIORITY);
         ComponentItem componentItem = assertDoesNotThrow(validBuilder::build);
         assertEquals(COMPONENT_ITEM_PRIORITY, componentItem.getPriority());
     }
 
     @Test
-    public void validateCollapseOnCategoryTest() {
+    void validateCollapseOnCategoryTest() {
         validBuilder.applyCollapseOnCategory(true);
         ComponentItem componentItem = assertDoesNotThrow(validBuilder::build);
         assertTrue(componentItem.collapseOnCategory());
@@ -182,7 +182,7 @@ public class ComponentItemTest {
     }
 
     @Test
-    public void validateNotificationIdTest() {
+    void validateNotificationIdTest() {
         Set<Long> expectedNotificationIds = new LinkedHashSet<>();
         expectedNotificationIds.add(123456789L);
         expectedNotificationIds.add(987654321L);
@@ -199,7 +199,7 @@ public class ComponentItemTest {
     }
 
     @Test
-    public void validateComponentAttributesTest() {
+    void validateComponentAttributesTest() {
         LinkableItem linkableItem1 = new LinkableItem("label1", "value1");
         LinkableItem linkableItem2 = new LinkableItem("label2", "value2");
         LinkedHashSet<LinkableItem> expectedComponentAttributes = new LinkedHashSet<>();
@@ -218,7 +218,7 @@ public class ComponentItemTest {
     }
 
     @Test
-    public void validateEqualsTest() {
+    void validateEqualsTest() {
         ComponentItem componentItem1 = assertDoesNotThrow(validBuilder::build);
         ComponentItem componentItem2 = assertDoesNotThrow(validBuilder::build);
 
@@ -227,7 +227,7 @@ public class ComponentItemTest {
     }
 
     @Test
-    public void validateCompareOptionalItemsTest() {
+    void validateCompareOptionalItemsTest() {
         ComponentItem.Builder builderNoSubComponent = validBuilder;
         ComponentItem componentItemNoSubComponent1 = assertDoesNotThrow(builderNoSubComponent::build);
         ComponentItem componentItemNoSubComponent2 = assertDoesNotThrow(builderNoSubComponent::build);
@@ -244,7 +244,7 @@ public class ComponentItemTest {
     }
 
     @Test
-    public void validateCreateKeyCollapseTrueTest() {
+    void validateCreateKeyCollapseTrueTest() {
         validBuilder.applyCollapseOnCategory(true);
         validBuilder.applySubComponent(SUB_COMPONENT_LINKABLE_ITEM);
         ComponentItem componentItem = assertDoesNotThrow(validBuilder::build);
@@ -275,7 +275,7 @@ public class ComponentItemTest {
     }
 
     @Test
-    public void validateCreateKeyCollapseFalseTest() {
+    void validateCreateKeyCollapseFalseTest() {
         validBuilder.applyCollapseOnCategory(false);
         ComponentItem componentItem = assertDoesNotThrow(validBuilder::build);
         String key = componentItem.createKey(true, false);

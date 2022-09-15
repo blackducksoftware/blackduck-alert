@@ -9,20 +9,20 @@ import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
-public class MessageContentKeyTest {
+class MessageContentKeyTest {
     private static final String TOPIC_NAME = "test-topicName";
     private static final String TOPIC_VALUE = "test-topicValue";
     private static final String SUB_TOPIC_NAME = "test-subTopicName";
     private static final String SUB_TOPIC_VALUE = "test-subTopicValue";
 
     @Test
-    public void getKeyNoSubTopicTest() {
+    void getKeyNoSubTopicTest() {
         MessageContentKey contentKey = MessageContentKey.from(TOPIC_NAME, TOPIC_VALUE);
         assertEquals(String.format("%s_%s", TOPIC_NAME, TOPIC_VALUE), contentKey.getKey());
     }
 
     @Test
-    public void getKeyNullSubTopicTest() {
+    void getKeyNullSubTopicTest() {
         MessageContentKey contentKey1 = MessageContentKey.from(TOPIC_NAME, TOPIC_VALUE, null, SUB_TOPIC_VALUE);
         assertEquals(String.format("%s_%s", TOPIC_NAME, TOPIC_VALUE), contentKey1.getKey());
 
@@ -31,13 +31,13 @@ public class MessageContentKeyTest {
     }
 
     @Test
-    public void getKeyWithSubTopicTest() {
+    void getKeyWithSubTopicTest() {
         MessageContentKey contentKey = MessageContentKey.from(TOPIC_NAME, TOPIC_VALUE, SUB_TOPIC_NAME, SUB_TOPIC_VALUE);
         assertEquals(String.format("%s_%s_%s_%s", TOPIC_NAME, TOPIC_VALUE, SUB_TOPIC_NAME, SUB_TOPIC_VALUE), contentKey.getKey());
     }
 
     @Test
-    public void equalsTest() {
+    void equalsTest() {
         MessageContentKey contentKey1 = MessageContentKey.from(TOPIC_NAME, TOPIC_VALUE);
         MessageContentKey contentKey2 = MessageContentKey.from(TOPIC_NAME, TOPIC_VALUE);
         MessageContentKey contentKey3 = MessageContentKey.from(TOPIC_NAME, TOPIC_VALUE, SUB_TOPIC_NAME, SUB_TOPIC_VALUE);
@@ -49,7 +49,7 @@ public class MessageContentKeyTest {
     }
 
     @Test
-    public void getKeyWithLinkableItemTest() {
+    void getKeyWithLinkableItemTest() {
         MessageContentKey contentKey1 = MessageContentKey.from(TOPIC_NAME, TOPIC_VALUE, null);
         assertEquals(String.format("%s_%s", TOPIC_NAME, TOPIC_VALUE), contentKey1.getKey());
 

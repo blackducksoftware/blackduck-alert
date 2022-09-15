@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 
-public class ContentKeyTest {
+class ContentKeyTest {
     private static final String PROVIDER_NAME = "test-providerName";
     private static final Long PROVIDER_CONFIG_ID = 1234567890L;
     private static final String TOPIC_NAME = "test-topicName";
@@ -22,7 +22,7 @@ public class ContentKeyTest {
     private static final ItemOperation ITEM_OPERATION = ItemOperation.DELETE;
 
     @Test
-    public void noNullDataTest() {
+    void noNullDataTest() {
         ContentKey contentKey = ContentKey.of(PROVIDER_NAME, PROVIDER_CONFIG_ID, TOPIC_NAME, TOPIC_VALUE, SUB_TOPIC_NAME, SUB_TOPIC_VALUE, ITEM_OPERATION);
         String contentKeyValue = contentKey.getValue();
         assertEquals(PROVIDER_NAME, contentKey.getProviderName());
@@ -42,7 +42,7 @@ public class ContentKeyTest {
     }
 
     @Test
-    public void nullDataTest() {
+    void nullDataTest() {
         List<String> keyParts = new ArrayList<>();
         keyParts.add(PROVIDER_NAME);
         keyParts.add(TOPIC_NAME);

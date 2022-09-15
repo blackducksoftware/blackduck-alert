@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
-public class MessageContentGroupTest {
+class MessageContentGroupTest {
     private static final String PROVIDER_NAME = "test-providerName";
     private static final String PROVIDER_CONFIG_NAME = "test-providerConfigName";
     private static final String PROVIDER_URL = "test-providerUrl";
@@ -30,13 +30,13 @@ public class MessageContentGroupTest {
     private final ProviderMessageContent.Builder validBuilder = new ProviderMessageContent.Builder();
 
     @BeforeEach
-    public void init() {
+    void init() {
         validBuilder.applyProvider(PROVIDER_NAME, 12345L, PROVIDER_CONFIG_NAME, PROVIDER_URL)
             .applyTopic(TOPIC_NAME, TOPIC_VALUE, TOPIC_URL);
     }
 
     @Test
-    public void addOneValidProviderMessageTest() {
+    void addOneValidProviderMessageTest() {
         MessageContentGroup messageContentGroup = new MessageContentGroup();
         assertNull(messageContentGroup.getCommonProvider());
         assertNull(messageContentGroup.getCommonTopic());
@@ -53,7 +53,7 @@ public class MessageContentGroupTest {
     }
 
     @Test
-    public void addMultipleProviderMessageGoodValueTest() {
+    void addMultipleProviderMessageGoodValueTest() {
         ProviderMessageContent providerMessageContent1 = assertDoesNotThrow(validBuilder::build);
         validBuilder.applyAction(ItemOperation.ADD);
         ProviderMessageContent providerMessageContent2 = assertDoesNotThrow(validBuilder::build);
@@ -68,7 +68,7 @@ public class MessageContentGroupTest {
     }
 
     @Test
-    public void addMultipleProviderMessageBadValueTest() {
+    void addMultipleProviderMessageBadValueTest() {
         ProviderMessageContent providerMessageContent1 = assertDoesNotThrow(validBuilder::build);
         validBuilder.applyTopic(TOPIC_NAME, "cause failure", TOPIC_URL);
         ProviderMessageContent providerMessageContent2 = assertDoesNotThrow(validBuilder::build);
@@ -79,7 +79,7 @@ public class MessageContentGroupTest {
     }
 
     @Test
-    public void commonTopicUrlBothNullTest() {
+    void commonTopicUrlBothNullTest() {
         validBuilder.applyTopicUrl(null);
         ProviderMessageContent providerMessageContent1 = assertDoesNotThrow(validBuilder::build);
         validBuilder.applyTopicUrl(null);
@@ -93,7 +93,7 @@ public class MessageContentGroupTest {
     }
 
     @Test
-    public void commonTopicUrlBothPresentTest() {
+    void commonTopicUrlBothPresentTest() {
         validBuilder.applyTopicUrl(TOPIC_URL);
         ProviderMessageContent providerMessageContent1 = assertDoesNotThrow(validBuilder::build);
         validBuilder.applyTopicUrl("valid url");
@@ -107,7 +107,7 @@ public class MessageContentGroupTest {
     }
 
     @Test
-    public void commonTopicUrlSecondNullTest() {
+    void commonTopicUrlSecondNullTest() {
         validBuilder.applyTopicUrl(TOPIC_URL);
         ProviderMessageContent providerMessageContent1 = assertDoesNotThrow(validBuilder::build);
         validBuilder.applyTopicUrl(null);
@@ -121,7 +121,7 @@ public class MessageContentGroupTest {
     }
 
     @Test
-    public void commonTopicUrlFirstNullTest() {
+    void commonTopicUrlFirstNullTest() {
         validBuilder.applyTopicUrl(null);
         ProviderMessageContent providerMessageContent1 = assertDoesNotThrow(validBuilder::build);
         String topicUrl = "should see this";

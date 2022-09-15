@@ -21,7 +21,7 @@ import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.datastructure.SetMap;
 
-public class ProviderMessageContentTest {
+class ProviderMessageContentTest {
     private static final String PROVIDER_NAME = "test-providerName";
     private static final String PROVIDER_CONFIG_NAME = "test-providerConfigName";
     private static final String PROVIDER_URL = "test-providerUrl";
@@ -46,7 +46,7 @@ public class ProviderMessageContentTest {
     private final ComponentItem.Builder validComponentItemBuilder2 = new ComponentItem.Builder();
 
     @BeforeEach
-    public void init() {
+    void init() {
         validBuilder.applyProvider(PROVIDER_NAME, PROVIDER_CONFIG_ID, PROVIDER_CONFIG_NAME, PROVIDER_URL)
             .applyTopic(TOPIC_NAME, TOPIC_VALUE, TOPIC_URL);
 
@@ -62,7 +62,7 @@ public class ProviderMessageContentTest {
     }
 
     @Test
-    public void validateRequiredFieldsPresentTest() {
+    void validateRequiredFieldsPresentTest() {
         ProviderMessageContent providerMessageContent = assertDoesNotThrow(validBuilder::build);
         assertEquals(PROVIDER_LINKABLE_ITEM, providerMessageContent.getProvider());
         assertEquals(PROVIDER_CONFIG_ID, providerMessageContent.getProviderConfigId());
@@ -76,7 +76,7 @@ public class ProviderMessageContentTest {
     }
 
     @Test
-    public void validateRequiredFieldsMissingTest() {
+    void validateRequiredFieldsMissingTest() {
         ProviderMessageContent.Builder builder = new ProviderMessageContent.Builder();
         assertEquals("__", builder.getCurrentContentKey().getValue());
 
@@ -103,7 +103,7 @@ public class ProviderMessageContentTest {
     }
 
     @Test
-    public void validateSubTopicTest() {
+    void validateSubTopicTest() {
         ProviderMessageContent providerMessageContent = assertDoesNotThrow(validBuilder::build);
         assertEquals(Optional.empty(), providerMessageContent.getSubTopic());
 
@@ -131,7 +131,7 @@ public class ProviderMessageContentTest {
     }
 
     @Test
-    public void validateActionTest() {
+    void validateActionTest() {
         ProviderMessageContent providerMessageContent = assertDoesNotThrow(validBuilder::build);
         assertEquals(Optional.empty(), providerMessageContent.getAction());
         assertFalse(providerMessageContent.getContentKey().getValue().contains(ITEM_OPERATION_1.toString()));
@@ -145,7 +145,7 @@ public class ProviderMessageContentTest {
     }
 
     @Test
-    public void validateNotificationIdTest() {
+    void validateNotificationIdTest() {
         ProviderMessageContent providerMessageContent = assertDoesNotThrow(validBuilder::build);
         assertEquals(Optional.empty(), providerMessageContent.getNotificationId());
 
@@ -155,7 +155,7 @@ public class ProviderMessageContentTest {
     }
 
     @Test
-    public void validateComponentItemTest() {
+    void validateComponentItemTest() {
         ComponentItem componentItem1 = assertDoesNotThrow(validComponentItemBuilder1::build);
         ComponentItem componentItem2 = assertDoesNotThrow(validComponentItemBuilder2::build);
         Set<ComponentItem> componentItems = new LinkedHashSet<>();
@@ -174,7 +174,7 @@ public class ProviderMessageContentTest {
     }
 
     @Test
-    public void validateProviderCreationTimeTest() {
+    void validateProviderCreationTimeTest() {
         ProviderMessageContent providerMessageContent = assertDoesNotThrow(validBuilder::build);
         assertNull(providerMessageContent.getProviderCreationTime());
 
@@ -185,7 +185,7 @@ public class ProviderMessageContentTest {
     }
 
     @Test
-    public void validateApplyEarliestProviderCreationTimeTest() {
+    void validateApplyEarliestProviderCreationTimeTest() {
         OffsetDateTime currentOffsetDateTime = OffsetDateTime.now();
         OffsetDateTime pastOffsetDateTime = OffsetDateTime.of(1966, 9, 8, 0, 0, 1, 1, ZoneOffset.of("-04:00"));
         OffsetDateTime futureOffsetDateTime = OffsetDateTime.of(2233, 3, 22, 0, 0, 1, 1, ZoneOffset.of("-04:00"));
@@ -204,7 +204,7 @@ public class ProviderMessageContentTest {
     }
 
     @Test
-    public void validateIsTopLevelActionOnlyTest() {
+    void validateIsTopLevelActionOnlyTest() {
         // Test action null
         validBuilder.applyAction(null)
             .applyNotificationId(null);
@@ -235,7 +235,7 @@ public class ProviderMessageContentTest {
     }
 
     @Test
-    public void validateGroupRelatedComponentItemsFalseTest() {
+    void validateGroupRelatedComponentItemsFalseTest() {
         boolean includeOperation = false;
         ProviderMessageContent providerMessageContent = assertDoesNotThrow(validBuilder::build);
         assertTrue(providerMessageContent.groupRelatedComponentItems().isEmpty());
@@ -258,7 +258,7 @@ public class ProviderMessageContentTest {
     }
 
     @Test
-    public void validateGroupRelatedComponentItemsTrueTest() {
+    void validateGroupRelatedComponentItemsTrueTest() {
         boolean includeOperation = true;
         ProviderMessageContent providerMessageContent = assertDoesNotThrow(validBuilder::build);
         assertTrue(providerMessageContent.groupRelatedComponentItems().isEmpty());
