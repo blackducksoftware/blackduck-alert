@@ -70,7 +70,7 @@ public class JiraServerCustomFunctionAction extends CustomFunctionAction<String>
             if (configurationID.isEmpty()) {
                 return new ActionResponse<>(
                     HttpStatus.NOT_FOUND,
-                    String.format("Jira Server configuration not found.  Please include the Jira Server configuration id in the request body.")
+                    "Jira Server configuration not found. Please include the Jira Server configuration id in the request body."
                 );
             }
             JiraServerProperties jiraProperties = jiraServerPropertiesFactory.createJiraProperties(configurationID.get());
