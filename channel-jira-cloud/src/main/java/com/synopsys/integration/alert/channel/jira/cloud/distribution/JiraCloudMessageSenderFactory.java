@@ -173,7 +173,9 @@ public class JiraCloudMessageSenderFactory implements IssueTrackerMessageSenderF
             commentEventGenerator,
             eventManager,
             jobSubTaskAccessor,
-            parentEventId
+            parentEventId,
+            jobId,
+            notificationIds
         );
 
     }

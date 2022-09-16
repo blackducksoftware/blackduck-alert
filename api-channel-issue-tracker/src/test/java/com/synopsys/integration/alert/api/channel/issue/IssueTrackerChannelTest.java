@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.core.task.SyncTaskExecutor;
 
@@ -86,7 +87,8 @@ class IssueTrackerChannelTest {
         IssueTrackerCommentEventGenerator<String> commenter = (model) -> null;
         IssueTrackerTransitionEventGenerator<String> transitioner = (model) -> null;
         IssueTrackerCreationEventGenerator creator = (model) -> null;
-        EventManager eventManager = new EventManager(new Gson(), new RabbitTemplate(), new SyncTaskExecutor());
+        RabbitTemplate rabbitTemplate = Mockito.mock(RabbitTemplate.class);
+        EventManager eventManager = new EventManager(new Gson(), rabbitTemplate, new SyncTaskExecutor());
 
         return new IssueTrackerAsyncMessageSender<>(
             creator,
@@ -94,7 +96,9 @@ class IssueTrackerChannelTest {
             commenter,
             eventManager,
             jobSubTaskAccessor,
-            UUID.randomUUID()
+            UUID.randomUUID(),
+            UUID.randomUUID(),
+            Set.of(1L, 2L, 3L)
         );
     }
 
