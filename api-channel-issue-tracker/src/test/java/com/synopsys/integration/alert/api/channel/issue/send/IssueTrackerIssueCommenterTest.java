@@ -20,10 +20,17 @@ import com.synopsys.integration.alert.api.channel.issue.search.enumeration.Issue
 import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueStatus;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 
-public class IssueTrackerIssueCommenterTest {
+class IssueTrackerIssueCommenterTest {
     private static final AlertException TEST_EXCEPTION = new AlertException("Test exception");
 
-    private static final ExistingIssueDetails<String> EXISTING_ISSUE_DETAILS = new ExistingIssueDetails<>("id", "key", "summary", "https://ui-link", IssueStatus.UNKNOWN, IssueCategory.BOM);
+    private static final ExistingIssueDetails<String> EXISTING_ISSUE_DETAILS = new ExistingIssueDetails<>(
+        "id",
+        "key",
+        "summary",
+        "https://ui-link",
+        IssueStatus.UNKNOWN,
+        IssueCategory.BOM
+    );
     private static final IssueCommentModel<String> COMMENT_MODEL = new IssueCommentModel<>(EXISTING_ISSUE_DETAILS, List.of("Comment 1", "Comment 2"), null);
     private static final IssueTrackerIssueResponseModel<String> ISSUE_RESPONSE_MODEL = new IssueTrackerIssueResponseModel<>(
         EXISTING_ISSUE_DETAILS.getIssueId(),
@@ -43,7 +50,7 @@ public class IssueTrackerIssueCommenterTest {
     }
 
     @Test
-    public void commentOnIssueTest() throws AlertException {
+    void commentOnIssueTest() throws AlertException {
         TestCommenter commenter = new TestCommenter(responseCreator, true, false);
         Optional<IssueTrackerIssueResponseModel<String>> optionalResponseModel = commenter.commentOnIssue(COMMENT_MODEL);
         assertTrue(optionalResponseModel.isPresent(), "Expected response model to be present");
@@ -56,14 +63,14 @@ public class IssueTrackerIssueCommenterTest {
     }
 
     @Test
-    public void commentOnIssueDisabledTest() throws AlertException {
+    void commentOnIssueDisabledTest() throws AlertException {
         TestCommenter commenter = new TestCommenter(responseCreator, false, false);
         Optional<IssueTrackerIssueResponseModel<String>> responseModel = commenter.commentOnIssue(COMMENT_MODEL);
         assertTrue(responseModel.isEmpty(), "Expected response model to be empty");
     }
 
     @Test
-    public void commentOnIssueThrowsExceptionTest() {
+    void commentOnIssueThrowsExceptionTest() {
         TestCommenter commenter = new TestCommenter(responseCreator, true, true);
         try {
             commenter.commentOnIssue(COMMENT_MODEL);

@@ -60,7 +60,7 @@ import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 @Tag(TestTags.CUSTOM_BLACKDUCK_CONNECTION)
 @Transactional
 @AlertIntegrationTest
-public class AuthenticationActionsTestIT {
+class AuthenticationActionsTestIT {
     private final MockLoginRestModel mockLoginRestModel = new MockLoginRestModel();
     private final TestProperties properties = new TestProperties();
     @Autowired
@@ -80,7 +80,7 @@ public class AuthenticationActionsTestIT {
     }
 
     @Test
-    public void testAuthenticateDBUserIT() {
+    void testAuthenticateDBUserIT() {
         HttpServletRequest servletRequest = new MockHttpServletRequest();
         HttpServletResponse servletResponse = new MockHttpServletResponse();
         AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, csrfTokenRepository);
@@ -91,7 +91,7 @@ public class AuthenticationActionsTestIT {
     }
 
     @Test
-    public void testAuthenticateDBUserFailIT() {
+    void testAuthenticateDBUserFailIT() {
         HttpServletRequest servletRequest = new MockHttpServletRequest();
         HttpServletResponse servletResponse = new MockHttpServletResponse();
         mockLoginRestModel.setAlertUsername(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_ACTIVE_USER));
@@ -104,7 +104,7 @@ public class AuthenticationActionsTestIT {
     }
 
     @Test
-    public void testAuthenticateDBUserRoleFailIT() throws AlertForbiddenOperationException, AlertConfigurationException {
+    void testAuthenticateDBUserRoleFailIT() throws AlertForbiddenOperationException, AlertConfigurationException {
         HttpServletRequest servletRequest = new MockHttpServletRequest();
         HttpServletResponse servletResponse = new MockHttpServletResponse();
         // add a user test then delete a user.
@@ -125,7 +125,7 @@ public class AuthenticationActionsTestIT {
     }
 
     @Test
-    public void testAuthenticationLDAPUserIT() throws Exception {
+    void testAuthenticationLDAPUserIT() throws Exception {
         HttpServletRequest servletRequest = new MockHttpServletRequest();
         HttpServletResponse servletResponse = new MockHttpServletResponse();
         Authentication authentication = Mockito.mock(Authentication.class);
@@ -143,7 +143,7 @@ public class AuthenticationActionsTestIT {
     }
 
     @Test
-    public void testAuthenticationLDAPExceptionIT() throws Exception {
+    void testAuthenticationLDAPExceptionIT() throws Exception {
         HttpServletRequest servletRequest = new MockHttpServletRequest();
         HttpServletResponse servletResponse = new MockHttpServletResponse();
         Authentication authentication = Mockito.mock(Authentication.class);
@@ -170,7 +170,7 @@ public class AuthenticationActionsTestIT {
     }
 
     @Test
-    public void userLogoutWithValidSessionTest() {
+    void userLogoutWithValidSessionTest() {
         AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, csrfTokenRepository);
         MockHttpServletRequest servletRequest = new MockHttpServletRequest();
         MockHttpServletResponse servletResponse = new MockHttpServletResponse();
@@ -183,7 +183,7 @@ public class AuthenticationActionsTestIT {
     }
 
     @Test
-    public void userLogoutWithInvalidSessionTest() {
+    void userLogoutWithInvalidSessionTest() {
         AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, csrfTokenRepository);
         HttpServletRequest servletRequest = new MockHttpServletRequest();
         MockHttpServletResponse servletResponse = new MockHttpServletResponse();
@@ -192,7 +192,7 @@ public class AuthenticationActionsTestIT {
     }
 
     @Test
-    public void userLoginWithBadCredentialsTest() {
+    void userLoginWithBadCredentialsTest() {
         AlertAuthenticationProvider authenticationProvider = Mockito.mock(AlertAuthenticationProvider.class);
         Mockito.when(authenticationProvider.authenticate(Mockito.any())).thenThrow(new BadCredentialsException("Bad credentials test"));
         AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, csrfTokenRepository);

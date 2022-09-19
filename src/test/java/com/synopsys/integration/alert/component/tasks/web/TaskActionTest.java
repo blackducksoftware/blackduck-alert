@@ -21,15 +21,15 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.tasks.TaskManagementDescriptorKey;
 
-public class TaskActionTest {
+class TaskActionTest {
 
     @Test
-    public void testReadTasks() {
+    void testReadTasks() {
         Long expectedDelay = 1000L;
         TaskScheduler scheduler = Mockito.mock(TaskScheduler.class);
         ScheduledFuture scheduledFuture = Mockito.mock(ScheduledFuture.class);
         Mockito.when(scheduledFuture.isDone()).thenReturn(Boolean.FALSE);
-        Mockito.when(scheduledFuture.getDelay(Mockito.eq(TimeUnit.MILLISECONDS))).thenReturn(expectedDelay);
+        Mockito.when(scheduledFuture.getDelay(TimeUnit.MILLISECONDS)).thenReturn(expectedDelay);
         Mockito.when(scheduler.scheduleAtFixedRate(Mockito.any(), Mockito.anyLong())).thenReturn(scheduledFuture);
         ScheduledTask task = new ScheduledTask(scheduler) {
             @Override
@@ -45,7 +45,7 @@ public class TaskActionTest {
 
         TaskManagementDescriptorKey descriptorKey = new TaskManagementDescriptorKey();
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
-        Mockito.when(authorizationManager.hasReadPermission(Mockito.eq(ConfigContextEnum.GLOBAL), Mockito.eq(descriptorKey)))
+        Mockito.when(authorizationManager.hasReadPermission(ConfigContextEnum.GLOBAL, descriptorKey))
             .thenReturn(Boolean.TRUE);
 
         TaskManager taskManager = new TaskManager();
@@ -65,10 +65,10 @@ public class TaskActionTest {
     }
 
     @Test
-    public void testReadForbiddenTasks() {
+    void testReadForbiddenTasks() {
         TaskManagementDescriptorKey descriptorKey = new TaskManagementDescriptorKey();
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
-        Mockito.when(authorizationManager.hasReadPermission(Mockito.eq(ConfigContextEnum.GLOBAL), Mockito.eq(descriptorKey)))
+        Mockito.when(authorizationManager.hasReadPermission(ConfigContextEnum.GLOBAL, descriptorKey))
             .thenReturn(Boolean.FALSE);
 
         TaskManager taskManager = new TaskManager();

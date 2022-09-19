@@ -21,16 +21,16 @@ import com.synopsys.integration.alert.database.audit.AuditEntryNotificationView;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
 
-public class DefaultProcessingAuditAccessorTest {
+class DefaultProcessingAuditAccessorTest {
     private static final Random RANDOM = new Random();
 
     @Test
-    public void createOrUpdatePendingAuditEntryForJobTest() {
+    void createOrUpdatePendingAuditEntryForJobTest() {
         UUID testJobId = UUID.randomUUID();
         Set<Long> testNotificationIds = Set.of(1L, 2L, 10L);
 
         AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
-        Mockito.when(auditEntryRepository.findByJobIdAndNotificationIds(Mockito.eq(testJobId), Mockito.eq(testNotificationIds))).thenReturn(List.of());
+        Mockito.when(auditEntryRepository.findByJobIdAndNotificationIds(testJobId, testNotificationIds)).thenReturn(List.of());
         Mockito.when(auditEntryRepository.save(Mockito.any())).then(invocation -> {
             AuditEntryEntity auditEntry = invocation.getArgument(0);
             auditEntry.setId(RANDOM.nextLong());
@@ -47,7 +47,7 @@ public class DefaultProcessingAuditAccessorTest {
     }
 
     @Test
-    public void setAuditEntrySuccessTest() {
+    void setAuditEntrySuccessTest() {
         setAuditEntryStatusTest(
             AuditEntryStatus.SUCCESS,
             ProcessingAuditAccessor::setAuditEntrySuccess
@@ -55,7 +55,7 @@ public class DefaultProcessingAuditAccessorTest {
     }
 
     @Test
-    public void setAuditEntryFailureTest() {
+    void setAuditEntryFailureTest() {
         String testErrorMessage = "Uh oh, an error occurred!";
         String testExceptionMessage = "Something bad happened. Yikes...";
         Throwable testThrowable = new AlertException(testExceptionMessage);
@@ -65,7 +65,10 @@ public class DefaultProcessingAuditAccessorTest {
         );
         assertEquals(testErrorMessage, testResultEntry.getErrorMessage());
         assertNotNull(testResultEntry.getErrorStackTrace(), "Expected the audit entry to contain an error stack trace");
-        assertTrue(testResultEntry.getErrorStackTrace().contains(testExceptionMessage), "Expected the error stack trace to contain a specific message, but that message was missing");
+        assertTrue(
+            testResultEntry.getErrorStackTrace().contains(testExceptionMessage),
+            "Expected the error stack trace to contain a specific message, but that message was missing"
+        );
     }
 
     private AuditEntryEntity setAuditEntryStatusTest(AuditEntryStatus expectedStatus, AuditAccessorStatusSetter statusSetter) {
