@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ExtendWith(SpringExtension.class)
 public class JiraServerGlobalConfigExistsValidatorTest {
     @Mock
-    JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor;
+    private JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor;
 
     @Test
     void existsReturnsTrueOnAtLeastOneConfiguration() {

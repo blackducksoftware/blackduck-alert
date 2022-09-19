@@ -18,7 +18,7 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(SpringExtension.class)
 public class JiraPluginCheckUtilsTest {
     @Mock
-    PluginManagerService pluginManagerService;
+    private PluginManagerService pluginManagerService;
 
     @Test
     void checkReturnsTrueIfAppInstalled() throws IntegrationException, InterruptedException {

@@ -27,15 +27,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
 public class JiraServerGlobalValidationActionTest {
-    AuthenticationTestUtils authenticationTestUtils;
-    DescriptorKey descriptorKey = ChannelKeys.JIRA_SERVER;
-    PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
+    private AuthenticationTestUtils authenticationTestUtils;
+    private DescriptorKey descriptorKey = ChannelKeys.JIRA_SERVER;
+    private PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
 
     @Mock
-    JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor;
+    private JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor;
 
-    JiraServerGlobalConfigModel model;
-    JiraServerGlobalConfigurationValidator validator;
+    private JiraServerGlobalConfigModel model;
+    private JiraServerGlobalConfigurationValidator validator;
 
     @BeforeEach
     void init() {

@@ -11,10 +11,10 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class JiraCallbackUtilsTest {
-    static final String ISSUE_BASE_URL = "https://www.some-url.com/beforePath";
-    static final String ISSUE_URL = ISSUE_BASE_URL + "/rest/api/afterPath";
-    static final String KEY = "JP-1";
-    static final String EXPECTED_UI_LINK = ISSUE_BASE_URL + "/browse/" + KEY;
+    private static final String ISSUE_BASE_URL = "https://www.some-url.com/beforePath";
+    private static final String ISSUE_URL = ISSUE_BASE_URL + "/rest/api/afterPath";
+    private static final String KEY = "JP-1";
+    private static final String EXPECTED_UI_LINK = ISSUE_BASE_URL + "/browse/" + KEY;
 
     @Test
     void createUILinkReturnsCorrectLink() {
