@@ -27,12 +27,12 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 
 class EmailDistributionConfigurationValidatorTest {
-    static final Set<AlertFieldStatus> REQUIRED_FIELDS_ERRORS = new HashSet<>(List.of(
+    static final Set<AlertFieldStatus> REQUIRED_FIELDS_ERRORS = Set.of(
         AlertFieldStatus.error(ChannelDescriptor.KEY_CHANNEL_NAME, ConfigurationFieldValidator.REQUIRED_FIELD_MISSING_MESSAGE),
         AlertFieldStatus.error(ChannelDescriptor.KEY_NAME, ConfigurationFieldValidator.REQUIRED_FIELD_MISSING_MESSAGE),
         AlertFieldStatus.error(ChannelDescriptor.KEY_FREQUENCY, ConfigurationFieldValidator.REQUIRED_FIELD_MISSING_MESSAGE),
         AlertFieldStatus.error(ChannelDescriptor.KEY_PROVIDER_TYPE, ConfigurationFieldValidator.REQUIRED_FIELD_MISSING_MESSAGE)
-    ));
+    );
 
     static final AlertFieldStatus KEY_FREQUENCY_INVALID_OPTION_ERROR = AlertFieldStatus.error(
         ChannelDescriptor.KEY_FREQUENCY,
