@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,6 +26,8 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 
 class EmailDistributionConfigurationValidatorTest {
+    static final FieldValueModel DEFAULT_FIELD_VALUE_MODEL = new FieldValueModel(Set.of("true"), true);
+
     static final Set<AlertFieldStatus> REQUIRED_FIELDS_ERRORS = Set.of(
         AlertFieldStatus.error(ChannelDescriptor.KEY_CHANNEL_NAME, ConfigurationFieldValidator.REQUIRED_FIELD_MISSING_MESSAGE),
         AlertFieldStatus.error(ChannelDescriptor.KEY_NAME, ConfigurationFieldValidator.REQUIRED_FIELD_MISSING_MESSAGE),
@@ -91,7 +92,7 @@ class EmailDistributionConfigurationValidatorTest {
     @Test
     void additionalEmailsOnlyTrueErrorTest() {
         Map<String, FieldValueModel> keyToValues = getRequiredKeyToVales(VALID_FREQUENCY_TYPES);
-        keyToValues.put(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY, new FieldValueModel(new HashSet<>(List.of("true")), true));
+        keyToValues.put(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY, DEFAULT_FIELD_VALUE_MODEL);
 
         JobFieldModel jobFieldModel = createJobFieldModel(keyToValues);
         Set<AlertFieldStatus> validate = getValidateData(jobFieldModel);
@@ -103,9 +104,9 @@ class EmailDistributionConfigurationValidatorTest {
     @Test
     void additionalEmailsOnlyTrueNoErrorTest() {
         Map<String, FieldValueModel> keyToValues = getRequiredKeyToVales(VALID_FREQUENCY_TYPES);
-        keyToValues.put(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY, new FieldValueModel(new HashSet<>(List.of("true")), true));
-        keyToValues.put(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES, new FieldValueModel(new HashSet<>(List.of("true")), true));
-        keyToValues.put(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID, new FieldValueModel(new HashSet<>(List.of("true")), true));
+        keyToValues.put(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY, DEFAULT_FIELD_VALUE_MODEL);
+        keyToValues.put(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES, DEFAULT_FIELD_VALUE_MODEL);
+        keyToValues.put(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID, DEFAULT_FIELD_VALUE_MODEL);
 
         JobFieldModel jobFieldModel = createJobFieldModel(keyToValues);
         Set<AlertFieldStatus> validate = getValidateData(jobFieldModel);
@@ -116,19 +117,19 @@ class EmailDistributionConfigurationValidatorTest {
 
     @Test
     void projectOwnerOnlyAlsoTrueTest() {
-        Set<AlertFieldStatus> expectedValidationErrors = new HashSet<>(List.of(
+        Set<AlertFieldStatus> expectedValidationErrors = Set.of(
             AlertFieldStatus.error(
                 EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY,
                 String.format("Cannot be set if %s is already set", EmailDescriptor.LABEL_PROJECT_OWNER_ONLY)
             ),
             AlertFieldStatus.error(EmailDescriptor.KEY_PROJECT_OWNER_ONLY, String.format("Cannot be set if %s is already set", EmailDescriptor.LABEL_ADDITIONAL_ADDRESSES_ONLY))
-        ));
+        );
 
         Map<String, FieldValueModel> keyToValues = getRequiredKeyToVales(VALID_FREQUENCY_TYPES);
-        keyToValues.put(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY, new FieldValueModel(new HashSet<>(List.of("true")), true));
-        keyToValues.put(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES, new FieldValueModel(new HashSet<>(List.of("true")), true));
-        keyToValues.put(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID, new FieldValueModel(new HashSet<>(List.of("true")), true));
-        keyToValues.put(EmailDescriptor.KEY_PROJECT_OWNER_ONLY, new FieldValueModel(new HashSet<>(List.of("true")), true));
+        keyToValues.put(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY, DEFAULT_FIELD_VALUE_MODEL);
+        keyToValues.put(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES, DEFAULT_FIELD_VALUE_MODEL);
+        keyToValues.put(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID, DEFAULT_FIELD_VALUE_MODEL);
+        keyToValues.put(EmailDescriptor.KEY_PROJECT_OWNER_ONLY, DEFAULT_FIELD_VALUE_MODEL);
 
         JobFieldModel jobFieldModel = createJobFieldModel(keyToValues);
         Set<AlertFieldStatus> validate = getValidateData(jobFieldModel);
@@ -142,10 +143,8 @@ class EmailDistributionConfigurationValidatorTest {
 
     private JobFieldModel createJobFieldModel(Map<String, FieldValueModel> keyToValues) {
         FieldModel fieldModel = new FieldModel("test-configId", "test-descriptorName", "test-context", "test-createdAt", "test-lastUpdated", keyToValues);
-        Set<FieldModel> fieldModels = new HashSet<>();
-        fieldModels.add(fieldModel);
 
-        return new JobFieldModel("test-jobId", fieldModels, null);
+        return new JobFieldModel("test-jobId", Set.of(fieldModel), null);
     }
 
     private Map<String, FieldValueModel> getRequiredKeyToVales(List<String> values) {
