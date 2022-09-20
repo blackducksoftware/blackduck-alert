@@ -24,7 +24,7 @@ public class JiraCallbackUtilsTest {
     }
 
     @Test
-    void createUILinkFromIssueResponseModelReturnsCorrectLink() {
+    void createUILinkFromIssueReturnsCorrectLink() {
         IssueFieldsComponent issueFieldsComponent = new IssueFieldsComponent(List.of(), null, null, "summary", "description", List.of(), null, List.of(), null, null, null, null);
         IssueResponseModel responseModel = new IssueResponseModel("", "JP-1", ISSUE_URL, KEY, Map.of(), Map.of(), Map.of(), Map.of(), List.of(), null, null, null, null, null, issueFieldsComponent);
         String output = JiraCallbackUtils.createUILink(responseModel);
@@ -33,7 +33,7 @@ public class JiraCallbackUtilsTest {
     }
 
     @Test
-    void createUILinkFromJiraSearcherResponseModelReturnsCorrectLink() {
+    void createUILinkFromJiraSearcherReturnsCorrectLink() {
         JiraSearcherResponseModel jiraSearcherResponseModel = new JiraSearcherResponseModel(ISSUE_URL, KEY, null, null);
         String output = JiraCallbackUtils.createUILink(jiraSearcherResponseModel);
 
