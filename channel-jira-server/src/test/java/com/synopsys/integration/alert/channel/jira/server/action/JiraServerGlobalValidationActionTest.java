@@ -1,7 +1,6 @@
 package com.synopsys.integration.alert.channel.jira.server.action;
 
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
-import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
 import com.synopsys.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationValidator;
@@ -28,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(SpringExtension.class)
 public class JiraServerGlobalValidationActionTest {
     private AuthenticationTestUtils authenticationTestUtils;
-    private DescriptorKey descriptorKey = ChannelKeys.JIRA_SERVER;
+    private final DescriptorKey descriptorKey = ChannelKeys.JIRA_SERVER;
     private PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
 
     @Mock
@@ -59,7 +58,7 @@ public class JiraServerGlobalValidationActionTest {
     }
 
     @Test
-    void validateReturnsForbiddenOnNoPermissions() throws AlertConfigurationException {
+    void validateReturnsForbiddenOnNoPermissions() {
         Map<PermissionKey, Integer> permissions = Map.of(permissionKey, AuthenticationTestUtils.NO_PERMISSIONS);
         AuthorizationManager authManager = authenticationTestUtils
                 .createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
