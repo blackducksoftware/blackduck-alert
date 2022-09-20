@@ -156,10 +156,8 @@ public class ProviderMessageContent extends AlertSerializableModel implements Bu
         }
 
         public Builder applyProvider(String providerName, Long providerConfigId, String providerConfigName, String providerUrl) {
-            this.providerName = providerName;
-            this.providerConfigId = providerConfigId;
-            this.providerConfigName = providerConfigName;
-            this.providerUrl = providerUrl;
+            applyProvider(providerName, providerConfigId, providerConfigName);
+            applyProviderUrl(providerUrl);
             return this;
         }
 
@@ -175,9 +173,8 @@ public class ProviderMessageContent extends AlertSerializableModel implements Bu
         }
 
         public Builder applyTopic(String topicName, String topicValue, String topicUrl) {
-            this.topicName = topicName;
-            this.topicValue = topicValue;
-            this.topicUrl = topicUrl;
+            applyTopic(topicName, topicValue);
+            applyTopicUrl(topicUrl);
             return this;
         }
 
@@ -193,9 +190,8 @@ public class ProviderMessageContent extends AlertSerializableModel implements Bu
         }
 
         public Builder applySubTopic(String subTopicName, String subTopicValue, String subTopicUrl) {
-            this.subTopicName = subTopicName;
-            this.subTopicValue = subTopicValue;
-            this.subTopicUrl = subTopicUrl;
+            applySubTopic(subTopicName, subTopicValue);
+            applySubTopicUrl(subTopicUrl);
             return this;
         }
 
