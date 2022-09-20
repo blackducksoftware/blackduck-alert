@@ -44,7 +44,7 @@ public class JiraPluginCheckUtilsTest {
     // TODO: IALERT-3165
     @Test
     @Disabled
-    void checkReturnFalseIfAppNotInstalled() throws IntegrationException, InterruptedException {
+    void checkReturnsFalseIfAppNotInstalled() throws IntegrationException, InterruptedException {
         Mockito.when(pluginManagerService.isAppInstalled(JiraConstants.JIRA_APP_KEY)).thenReturn(false);
 
         assertFalse(JiraPluginCheckUtils.checkIsAppInstalledAndRetryIfNecessary(pluginManagerService));

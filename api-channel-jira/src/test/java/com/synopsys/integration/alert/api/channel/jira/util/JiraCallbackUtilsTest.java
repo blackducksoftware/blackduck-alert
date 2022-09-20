@@ -17,14 +17,14 @@ public class JiraCallbackUtilsTest {
     private static final String EXPECTED_UI_LINK = ISSUE_BASE_URL + "/browse/" + KEY;
 
     @Test
-    void createUILinkReturnsCorrectLink() {
+    void createUILinkReturnsExpected() {
         String output = JiraCallbackUtils.createUILink(ISSUE_URL, KEY);
 
         assertEquals(EXPECTED_UI_LINK, output);
     }
 
     @Test
-    void createUILinkFromIssueReturnsCorrectLink() {
+    void createUILinkFromIssueReturnsExpected() {
         IssueFieldsComponent issueFieldsComponent = new IssueFieldsComponent(List.of(), null, null, "summary", "description", List.of(), null, List.of(), null, null, null, null);
         IssueResponseModel responseModel = new IssueResponseModel("", "JP-1", ISSUE_URL, KEY, Map.of(), Map.of(), Map.of(), Map.of(), List.of(), null, null, null, null, null, issueFieldsComponent);
         String output = JiraCallbackUtils.createUILink(responseModel);
@@ -33,7 +33,7 @@ public class JiraCallbackUtilsTest {
     }
 
     @Test
-    void createUILinkFromJiraSearcherReturnsCorrectLink() {
+    void createUILinkFromJiraSearcherReturnsExpected() {
         JiraSearcherResponseModel jiraSearcherResponseModel = new JiraSearcherResponseModel(ISSUE_URL, KEY, null, null);
         String output = JiraCallbackUtils.createUILink(jiraSearcherResponseModel);
 
