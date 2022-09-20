@@ -55,11 +55,7 @@ class EmailDistributionConfigurationValidatorTest {
         JobFieldModel jobFieldModel = createJobFieldModel(keyToValues);
         Set<AlertFieldStatus> validate = getValidateData(jobFieldModel);
 
-        REQUIRED_FIELDS_ERRORS.forEach(error ->
-            assertFalse(validate.contains(error), String.format("Should not contain error for: %s", error.getFieldName())
-            ));
-        assertFalse(validate.contains(KEY_FREQUENCY_INVALID_OPTION_ERROR));
-        assertEquals(0, validate.size());
+        assertTrue(validate.isEmpty());
     }
 
     @Test
@@ -111,8 +107,7 @@ class EmailDistributionConfigurationValidatorTest {
         JobFieldModel jobFieldModel = createJobFieldModel(keyToValues);
         Set<AlertFieldStatus> validate = getValidateData(jobFieldModel);
 
-        assertFalse(validate.contains(KEY_EMAIL_ADDITIONAL_ADDRESSES_ERROR));
-        assertEquals(0, validate.size());
+        assertTrue(validate.isEmpty());
     }
 
     @Test
