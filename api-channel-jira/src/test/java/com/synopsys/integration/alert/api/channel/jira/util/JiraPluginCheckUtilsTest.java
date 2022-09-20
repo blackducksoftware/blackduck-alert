@@ -4,6 +4,7 @@ import com.synopsys.integration.alert.api.channel.jira.JiraConstants;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -29,7 +30,9 @@ public class JiraPluginCheckUtilsTest {
         verify(pluginManagerService, times(1)).isAppInstalled(JiraConstants.JIRA_APP_KEY);
     }
 
+    // TODO: IALERT-3165
     @Test
+    @Disabled
     void checkReturnsTrueOnNthAttempt() throws IntegrationException, InterruptedException {
         Mockito.when(pluginManagerService.isAppInstalled(JiraConstants.JIRA_APP_KEY)).thenReturn(false, false, true);
 
@@ -38,7 +41,9 @@ public class JiraPluginCheckUtilsTest {
         verify(pluginManagerService, times(3)).isAppInstalled(JiraConstants.JIRA_APP_KEY);
     }
 
+    // TODO: IALERT-3165
     @Test
+    @Disabled
     void checkReturnFalseIfAppNotInstalled() throws IntegrationException, InterruptedException {
         Mockito.when(pluginManagerService.isAppInstalled(JiraConstants.JIRA_APP_KEY)).thenReturn(false);
 
