@@ -210,7 +210,9 @@ public class DefaultConfigurationModelConfigurationAccessor implements Configura
                 updatedConfig.put(configFieldModel);
             }
             fieldValueRepository.saveAll(fieldValuesToSave);
-            fieldValueRepository.flush();
+            if (!fieldValuesToSave.isEmpty()) {
+                fieldValueRepository.flush();
+            }
         }
         descriptorConfigEntity.setLastUpdated(DateUtils.createCurrentDateTimestamp());
         descriptorConfigsRepository.save(descriptorConfigEntity);
