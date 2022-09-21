@@ -25,14 +25,14 @@ import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationTyp
 import com.synopsys.integration.blackduck.api.manual.view.NotificationUserView;
 import com.synopsys.integration.exception.IntegrationException;
 
-public class BlackDuckAccumulatorTest {
+class BlackDuckAccumulatorTest {
     private static final BlackDuckProviderKey BLACK_DUCK_PROVIDER_KEY = new BlackDuckProviderKey();
 
     /**
      * This test should simulate a normal run of the accumulator with notifications present.
      */
     @Test
-    public void runValidAccumulatorTest() throws Exception {
+    void runValidAccumulatorTest() throws Exception {
         ProviderTaskPropertiesAccessor taskPropertiesAccessor = Mockito.mock(ProviderTaskPropertiesAccessor.class);
         BlackDuckProperties blackDuckProperties = createBlackDuckProperties();
         BlackDuckSystemValidator validator = createBlackDuckValidator(blackDuckProperties, true);
@@ -57,7 +57,7 @@ public class BlackDuckAccumulatorTest {
     }
 
     @Test
-    public void runValidateFalseTest() {
+    void runValidateFalseTest() {
         BlackDuckProperties invalidProperties = createBlackDuckProperties();
         BlackDuckSystemValidator validator = createBlackDuckValidator(invalidProperties, false);
         BlackDuckNotificationRetrieverFactory notificationRetrieverFactory = Mockito.mock(BlackDuckNotificationRetrieverFactory.class);
@@ -69,20 +69,29 @@ public class BlackDuckAccumulatorTest {
     }
 
     @Test
-    public void runCreateNotificationRetrieverEmptyTest() {
+    void runCreateNotificationRetrieverEmptyTest() {
         ProviderTaskPropertiesAccessor taskPropertiesAccessor = Mockito.mock(ProviderTaskPropertiesAccessor.class);
         BlackDuckProperties blackDuckProperties = createBlackDuckProperties();
         BlackDuckSystemValidator validator = createBlackDuckValidator(blackDuckProperties, true);
         BlackDuckNotificationRetrieverFactory notificationRetrieverFactory = createBlackDuckNotificationRetrieverFactory(blackDuckProperties, null);
 
-        BlackDuckAccumulator accumulator = new BlackDuckAccumulator(BLACK_DUCK_PROVIDER_KEY, null, null, taskPropertiesAccessor, blackDuckProperties, validator, null, notificationRetrieverFactory);
+        BlackDuckAccumulator accumulator = new BlackDuckAccumulator(
+            BLACK_DUCK_PROVIDER_KEY,
+            null,
+            null,
+            taskPropertiesAccessor,
+            blackDuckProperties,
+            validator,
+            null,
+            notificationRetrieverFactory
+        );
         accumulator.run();
 
         Mockito.verify(taskPropertiesAccessor, Mockito.times(0)).getTaskProperty(Mockito.anyString(), Mockito.anyString());
     }
 
     @Test
-    public void runNotificationRetrieverThrowsException() throws IntegrationException {
+    void runNotificationRetrieverThrowsException() throws IntegrationException {
         ProviderTaskPropertiesAccessor taskPropertiesAccessor = Mockito.mock(ProviderTaskPropertiesAccessor.class);
         BlackDuckProperties blackDuckProperties = createBlackDuckProperties();
         BlackDuckSystemValidator validator = createBlackDuckValidator(blackDuckProperties, true);
@@ -107,7 +116,7 @@ public class BlackDuckAccumulatorTest {
 
     private BlackDuckSystemValidator createBlackDuckValidator(BlackDuckProperties blackDuckProperties, boolean validationResult) {
         BlackDuckSystemValidator blackDuckSystemValidator = Mockito.mock(BlackDuckSystemValidator.class);
-        Mockito.when(blackDuckSystemValidator.validate(Mockito.eq(blackDuckProperties))).thenReturn(validationResult);
+        Mockito.when(blackDuckSystemValidator.validate(blackDuckProperties)).thenReturn(validationResult);
         BlackDuckSystemValidator spiedBlackDuckSystemValidator = spy(blackDuckSystemValidator);
         Mockito.doReturn(validationResult).when(spiedBlackDuckSystemValidator).canConnect(Mockito.eq(blackDuckProperties), Mockito.any(BlackDuckApiTokenValidator.class));
         return spiedBlackDuckSystemValidator;

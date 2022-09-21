@@ -23,7 +23,7 @@ class EventManagerTest {
         EventManager eventManager = new EventManager(gson, rabbitTemplate, new SyncTaskExecutor());
         eventManager.sendEvents(List.of(testEvent));
 
-        Mockito.verify(rabbitTemplate, Mockito.times(1)).convertAndSend(Mockito.eq(testDestination), Mockito.eq(testEventJson));
+        Mockito.verify(rabbitTemplate, Mockito.times(1)).convertAndSend(testDestination, testEventJson);
     }
 
 }
