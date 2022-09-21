@@ -4,9 +4,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCommentEvent;
 import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCreateIssueEvent;
@@ -20,15 +22,12 @@ import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.Is
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 
+@ExtendWith(SpringExtension.class)
 class IssueTrackerAsyncMessageSenderTest {
-    private EventManager eventManager;
-    private JobSubTaskAccessor jobSubTaskAccessor;
-
-    @BeforeEach
-    void init() {
-        eventManager = Mockito.mock(EventManager.class);
-        jobSubTaskAccessor = Mockito.mock(JobSubTaskAccessor.class);
-    }
+    @Mock
+    private EventManager mockEventManager;
+    @Mock
+    private JobSubTaskAccessor mockJobSubTaskAccessor;
 
     @Test
     void sendAsyncMessagesNoEventsTest() {
@@ -44,16 +43,16 @@ class IssueTrackerAsyncMessageSenderTest {
             createEventGenerator,
             transitionEventGenerator,
             commentEventGenerator,
-            eventManager,
-            jobSubTaskAccessor,
+            mockEventManager,
+            mockJobSubTaskAccessor,
             parentId,
             jobId,
             Set.of(1L, 2L, 3L)
         );
 
         sender.sendAsyncMessages(List.of(modelHolder));
-        Mockito.verify(eventManager).sendEvent(Mockito.any());
-        Mockito.verify(jobSubTaskAccessor, Mockito.times(0)).updateTaskCount(Mockito.eq(parentId), Mockito.anyLong());
+        Mockito.verify(mockEventManager).sendEvent(Mockito.any());
+        Mockito.verify(mockJobSubTaskAccessor, Mockito.times(0)).updateTaskCount(Mockito.eq(parentId), Mockito.anyLong());
     }
 
     @Test
@@ -73,15 +72,15 @@ class IssueTrackerAsyncMessageSenderTest {
             createEventGenerator,
             transitionEventGenerator,
             commentEventGenerator,
-            eventManager,
-            jobSubTaskAccessor,
+            mockEventManager,
+            mockJobSubTaskAccessor,
             parentId,
             jobId,
             Set.of(1L, 2L, 3L)
         );
 
         sender.sendAsyncMessages(List.of(modelHolder));
-        Mockito.verify(eventManager).sendEvents(Mockito.any());
-        Mockito.verify(jobSubTaskAccessor, Mockito.times(1)).updateTaskCount(Mockito.eq(parentId), Mockito.anyLong());
+        Mockito.verify(mockEventManager).sendEvents(Mockito.any());
+        Mockito.verify(mockJobSubTaskAccessor, Mockito.times(1)).updateTaskCount(Mockito.eq(parentId), Mockito.anyLong());
     }
 }
