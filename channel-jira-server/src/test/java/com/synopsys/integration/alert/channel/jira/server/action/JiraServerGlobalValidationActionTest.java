@@ -31,7 +31,7 @@ public class JiraServerGlobalValidationActionTest {
     private PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
 
     @Mock
-    private JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor;
+    private JiraServerGlobalConfigAccessor mockJiraServerGlobalConfigAccessor;
 
     private JiraServerGlobalConfigModel model;
     private JiraServerGlobalConfigurationValidator validator;
@@ -42,7 +42,7 @@ public class JiraServerGlobalValidationActionTest {
         permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
 
         model = new JiraServerGlobalConfigModel();
-        validator = new JiraServerGlobalConfigurationValidator(jiraServerGlobalConfigAccessor);
+        validator = new JiraServerGlobalConfigurationValidator(mockJiraServerGlobalConfigAccessor);
     }
 
     @Test

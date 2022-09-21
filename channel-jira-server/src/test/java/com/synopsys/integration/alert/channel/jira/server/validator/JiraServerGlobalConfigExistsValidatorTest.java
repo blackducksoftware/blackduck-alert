@@ -14,30 +14,30 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ExtendWith(SpringExtension.class)
 public class JiraServerGlobalConfigExistsValidatorTest {
     @Mock
-    private JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor;
+    private JiraServerGlobalConfigAccessor mockJiraServerGlobalConfigAccessor;
 
     @Test
     void existsReturnsTrueOnAtLeastOneConfiguration() {
-        Mockito.when(jiraServerGlobalConfigAccessor.getConfigurationCount()).thenReturn(1L);
+        Mockito.when(mockJiraServerGlobalConfigAccessor.getConfigurationCount()).thenReturn(1L);
 
         JiraServerGlobalConfigExistsValidator validator = new JiraServerGlobalConfigExistsValidator(
                 ChannelKeys.JIRA_SERVER,
-                jiraServerGlobalConfigAccessor
+                mockJiraServerGlobalConfigAccessor
         );
 
         assertTrue(validator.exists());
 
-        Mockito.when(jiraServerGlobalConfigAccessor.getConfigurationCount()).thenReturn(5L);
+        Mockito.when(mockJiraServerGlobalConfigAccessor.getConfigurationCount()).thenReturn(5L);
         assertTrue(validator.exists());
     }
 
     @Test
     void existsReturnsFalseOnNoConfiguration() {
-        Mockito.when(jiraServerGlobalConfigAccessor.getConfigurationCount()).thenReturn(0L);
+        Mockito.when(mockJiraServerGlobalConfigAccessor.getConfigurationCount()).thenReturn(0L);
 
         JiraServerGlobalConfigExistsValidator validator = new JiraServerGlobalConfigExistsValidator(
                 ChannelKeys.JIRA_SERVER,
-                jiraServerGlobalConfigAccessor
+                mockJiraServerGlobalConfigAccessor
         );
 
         assertFalse(validator.exists());
