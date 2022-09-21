@@ -14,10 +14,11 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 
 public final class JiraPluginCheckUtils {
+    public static final long MAX_TIME_FOR_CHECKS = 5L;
+
     public static boolean checkIsAppInstalledAndRetryIfNecessary(PluginManagerService pluginManagerService) throws IntegrationException, InterruptedException {
-        long maxTimeForChecks = 5L;
         long checkAgain = 1L;
-        while (checkAgain <= maxTimeForChecks) {
+        while (checkAgain <= MAX_TIME_FOR_CHECKS) {
             boolean isAppInstalled = pluginManagerService.isAppInstalled(JiraConstants.JIRA_APP_KEY);
             if (isAppInstalled) {
                 return true;
