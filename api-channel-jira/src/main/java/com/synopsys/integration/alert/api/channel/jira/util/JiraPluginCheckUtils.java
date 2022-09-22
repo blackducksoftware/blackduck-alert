@@ -14,16 +14,21 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 
 public final class JiraPluginCheckUtils {
-    public static final long MAX_TIME_FOR_CHECKS = 5L;
+    public static final long MAX_NUMBER_OF_RETRIES = 5L;
+    public static final long RETRY_SLEEP_TIME = 3L;
 
     public static boolean checkIsAppInstalledAndRetryIfNecessary(PluginManagerService pluginManagerService) throws IntegrationException, InterruptedException {
+        return checkIsAppInstalledAndRetryIfNecessary(pluginManagerService, RETRY_SLEEP_TIME);
+    }
+
+    public static boolean checkIsAppInstalledAndRetryIfNecessary(PluginManagerService pluginManagerService, long retrySleepTime) throws IntegrationException, InterruptedException {
         long checkAgain = 1L;
-        while (checkAgain <= MAX_TIME_FOR_CHECKS) {
+        while (checkAgain <= MAX_NUMBER_OF_RETRIES) {
             boolean isAppInstalled = pluginManagerService.isAppInstalled(JiraConstants.JIRA_APP_KEY);
             if (isAppInstalled) {
                 return true;
             }
-            TimeUnit.SECONDS.sleep(checkAgain);
+            TimeUnit.SECONDS.sleep(retrySleepTime);
             checkAgain++;
         }
         return false;
