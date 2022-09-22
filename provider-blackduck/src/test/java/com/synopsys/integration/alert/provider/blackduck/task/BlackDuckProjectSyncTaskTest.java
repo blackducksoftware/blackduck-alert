@@ -26,9 +26,9 @@ import com.synopsys.integration.blackduck.service.request.BlackDuckRequest;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.HttpUrl;
 
-public class BlackDuckProjectSyncTaskTest {
+class BlackDuckProjectSyncTaskTest {
     @Test
-    public void testRun() throws Exception {
+    void testRun() throws Exception {
         MockProviderDataAccessor providerDataAccessor = new MockProviderDataAccessor();
 
         ApiDiscovery apiDiscovery = new ApiDiscovery(new HttpUrl("https://someblackduckserver"));
@@ -50,7 +50,7 @@ public class BlackDuckProjectSyncTaskTest {
         ProjectView projectView2 = createProjectView("project2", "description2", "https://projectUrl2");
         ProjectView projectView3 = createProjectView("project3", "description3", "https://projectUrl3");
 
-        Mockito.when(blackDuckApiClient.getAllResponses(Mockito.eq(apiDiscovery.metaProjectsLink()))).thenReturn(List.of(projectView, projectView2, projectView3));
+        Mockito.when(blackDuckApiClient.getAllResponses(apiDiscovery.metaProjectsLink())).thenReturn(List.of(projectView, projectView2, projectView3));
         Mockito.doReturn(null).when(blackDuckApiClient).getResponse(Mockito.any(BlackDuckRequest.class));
 
         String email1 = "user1@email.com";
@@ -62,7 +62,7 @@ public class BlackDuckProjectSyncTaskTest {
         UserView user3 = createUserView(email3, true);
         UserView user4 = createUserView(email4, true);
 
-        Mockito.when(blackDuckApiClient.getAllResponses(Mockito.eq(apiDiscovery.metaUsersLink()))).thenReturn(List.of(user1, user2, user3, user4));
+        Mockito.when(blackDuckApiClient.getAllResponses(apiDiscovery.metaUsersLink())).thenReturn(List.of(user1, user2, user3, user4));
 
         Mockito.when(projectUsersService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView))).thenReturn(new HashSet<>(List.of(user2, user4)));
         Mockito.when(projectUsersService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView2))).thenReturn(new HashSet<>(List.of(user3)));
@@ -73,7 +73,7 @@ public class BlackDuckProjectSyncTaskTest {
         projectSyncTask.run();
 
         assertEquals(3, providerDataAccessor.getProjectsByProviderConfigId(providerConfigId).size());
-        Mockito.when(blackDuckApiClient.getAllResponses(Mockito.eq(apiDiscovery.metaProjectsLink()))).thenReturn(List.of(projectView, projectView2));
+        Mockito.when(blackDuckApiClient.getAllResponses(apiDiscovery.metaProjectsLink())).thenReturn(List.of(projectView, projectView2));
 
         Mockito.when(projectUsersService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView))).thenReturn(new HashSet<>(List.of(user2, user4)));
         Mockito.when(projectUsersService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView2))).thenReturn(new HashSet<>(List.of(user3)));

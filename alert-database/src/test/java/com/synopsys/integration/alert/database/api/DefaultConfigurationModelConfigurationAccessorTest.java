@@ -29,26 +29,21 @@ import com.synopsys.integration.alert.database.configuration.RegisteredDescripto
 import com.synopsys.integration.alert.database.configuration.repository.ConfigContextRepository;
 import com.synopsys.integration.alert.database.configuration.repository.DefinedFieldRepository;
 import com.synopsys.integration.alert.database.configuration.repository.DescriptorConfigRepository;
-import com.synopsys.integration.alert.database.configuration.repository.DescriptorTypeRepository;
 import com.synopsys.integration.alert.database.configuration.repository.FieldValueRepository;
 import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
-public class DefaultConfigurationModelConfigurationAccessorTest {
+class DefaultConfigurationModelConfigurationAccessorTest {
     private static final String TEST_PASSWORD = "testPassword";
     private static final String TEST_SALT = "testSalt";
     private static final String TEST_DIRECTORY = "./testDB";
     private static final String TEST_SECRETS_DIRECTORY = "./testDB/run/secrets";
-
-    private AlertProperties alertProperties;
-    private FilePersistenceUtil filePersistenceUtil;
 
     private DescriptorConfigRepository descriptorConfigRepository;
     private ConfigContextRepository configContextRepository;
     private FieldValueRepository fieldValueRepository;
     private DefinedFieldRepository definedFieldRepository;
     private RegisteredDescriptorRepository registeredDescriptorRepository;
-    private DescriptorTypeRepository descriptorTypeRepository;
     private EncryptionUtility encryptionUtility;
 
     private final ConfigContextEnum configContextEnum = ConfigContextEnum.GLOBAL;
@@ -62,12 +57,11 @@ public class DefaultConfigurationModelConfigurationAccessorTest {
         fieldValueRepository = Mockito.mock(FieldValueRepository.class);
         definedFieldRepository = Mockito.mock(DefinedFieldRepository.class);
         registeredDescriptorRepository = Mockito.mock(RegisteredDescriptorRepository.class);
-        descriptorTypeRepository = Mockito.mock(DescriptorTypeRepository.class);
         encryptionUtility = createEncryptionUtility();
     }
 
     @Test
-    public void getProviderConfigurationByNameTest() {
+    void getProviderConfigurationByNameTest() {
         final String providerConfigName = "provider-config-name-test";
         final String emptyProviderConfigName = "bad-config-name";
         final Long fieldId = 1L;
@@ -77,7 +71,12 @@ public class DefaultConfigurationModelConfigurationAccessorTest {
         DefinedFieldEntity definedFieldEntity = new DefinedFieldEntity(fieldKey, false);
         definedFieldEntity.setId(fieldId);
         FieldValueEntity fieldValueEntity = new FieldValueEntity(2L, 3L, fieldValue);
-        DescriptorConfigEntity descriptorConfigEntity = new DescriptorConfigEntity(descriptorId, 5L, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
+        DescriptorConfigEntity descriptorConfigEntity = new DescriptorConfigEntity(
+            descriptorId,
+            5L,
+            DateUtils.createCurrentDateTimestamp(),
+            DateUtils.createCurrentDateTimestamp()
+        );
         descriptorConfigEntity.setId(configurationId);
         ConfigContextEntity configContextEntity = new ConfigContextEntity(configContextEnum.name());
 
@@ -86,7 +85,14 @@ public class DefaultConfigurationModelConfigurationAccessorTest {
         Mockito.when(fieldValueRepository.findAllByFieldIdAndValue(fieldId, emptyProviderConfigName)).thenReturn(List.of());
         setupGetJobMocks(descriptorConfigEntity, configContextEntity, fieldValueEntity, definedFieldEntity);
 
-        DefaultConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = new DefaultConfigurationModelConfigurationAccessor(null, definedFieldRepository, descriptorConfigRepository, configContextRepository, fieldValueRepository, encryptionUtility);
+        DefaultConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = new DefaultConfigurationModelConfigurationAccessor(
+            null,
+            definedFieldRepository,
+            descriptorConfigRepository,
+            configContextRepository,
+            fieldValueRepository,
+            encryptionUtility
+        );
         Optional<ConfigurationModel> configurationModelOptional = configurationModelConfigurationAccessor.getProviderConfigurationByName(providerConfigName);
         Optional<ConfigurationModel> configurationModelProviderConfigsEmpty = configurationModelConfigurationAccessor.getProviderConfigurationByName(emptyProviderConfigName);
 
@@ -98,17 +104,24 @@ public class DefaultConfigurationModelConfigurationAccessorTest {
     }
 
     @Test
-    public void getConfigurationByIdEmptyTest() {
+    void getConfigurationByIdEmptyTest() {
         Mockito.when(descriptorConfigRepository.findById(Mockito.any())).thenReturn(Optional.empty());
 
-        DefaultConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = new DefaultConfigurationModelConfigurationAccessor(null, null, descriptorConfigRepository, null, null, null);
+        DefaultConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = new DefaultConfigurationModelConfigurationAccessor(
+            null,
+            null,
+            descriptorConfigRepository,
+            null,
+            null,
+            null
+        );
         Optional<ConfigurationModel> configurationModelOptional = configurationModelConfigurationAccessor.getConfigurationById(1L);
 
         assertFalse(configurationModelOptional.isPresent());
     }
 
     @Test
-    public void getConfigurationsByDescriptorKeyTest() {
+    void getConfigurationsByDescriptorKeyTest() {
         final Long descriptorId = 3L;
         final Long configurationId = 5L;
 
@@ -116,7 +129,12 @@ public class DefaultConfigurationModelConfigurationAccessorTest {
         DescriptorKey badDescriptorKey = createDescriptorKey("bad-descriptorKey");
         RegisteredDescriptorEntity registeredDescriptorEntity = new RegisteredDescriptorEntity("name-test", 1L);
         registeredDescriptorEntity.setId(2L);
-        DescriptorConfigEntity descriptorConfigEntity = new DescriptorConfigEntity(descriptorId, 4L, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
+        DescriptorConfigEntity descriptorConfigEntity = new DescriptorConfigEntity(
+            descriptorId,
+            4L,
+            DateUtils.createCurrentDateTimestamp(),
+            DateUtils.createCurrentDateTimestamp()
+        );
         descriptorConfigEntity.setId(configurationId);
         ConfigContextEntity configContextEntity = new ConfigContextEntity(configContextEnum.name());
         FieldValueEntity fieldValueEntity = new FieldValueEntity(6L, 7L, fieldValue);
@@ -145,7 +163,7 @@ public class DefaultConfigurationModelConfigurationAccessorTest {
     }
 
     @Test
-    public void getConfigurationsByDescriptorTypeTest() {
+    void getConfigurationsByDescriptorTypeTest() {
         final Long descriptorId = 3L;
         final Long configurationId = 5L;
         DescriptorType descriptorType = DescriptorType.CHANNEL;
@@ -154,14 +172,19 @@ public class DefaultConfigurationModelConfigurationAccessorTest {
         descriptorTypeEntity.setId(1L);
         RegisteredDescriptorEntity registeredDescriptorEntity = new RegisteredDescriptorEntity("name-test", 1L);
         registeredDescriptorEntity.setId(2L);
-        DescriptorConfigEntity descriptorConfigEntity = new DescriptorConfigEntity(descriptorId, 4L, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
+        DescriptorConfigEntity descriptorConfigEntity = new DescriptorConfigEntity(
+            descriptorId,
+            4L,
+            DateUtils.createCurrentDateTimestamp(),
+            DateUtils.createCurrentDateTimestamp()
+        );
         descriptorConfigEntity.setId(configurationId);
         ConfigContextEntity configContextEntity = new ConfigContextEntity(configContextEnum.name());
         FieldValueEntity fieldValueEntity = new FieldValueEntity(6L, 7L, fieldValue);
         DefinedFieldEntity definedFieldEntity = new DefinedFieldEntity(fieldKey, false);
         definedFieldEntity.setId(8L);
 
-        Mockito.when(descriptorConfigRepository.findByDescriptorType(Mockito.eq(descriptorType.name()))).thenReturn(List.of(descriptorConfigEntity));
+        Mockito.when(descriptorConfigRepository.findByDescriptorType(descriptorType.name())).thenReturn(List.of(descriptorConfigEntity));
         setupCreatConfigMocks(descriptorConfigEntity, configContextEntity, fieldValueEntity, definedFieldEntity);
 
         DefaultConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = new DefaultConfigurationModelConfigurationAccessor(
@@ -180,12 +203,17 @@ public class DefaultConfigurationModelConfigurationAccessorTest {
     }
 
     @Test
-    public void getConfigurationsByDescriptorKeyAndContextTest() {
+    void getConfigurationsByDescriptorKeyAndContextTest() {
         final Long descriptorId = 3L;
         final Long configurationId = 5L;
 
         DescriptorKey descriptorKey = createDescriptorKey("descriptorKeyName");
-        DescriptorConfigEntity descriptorConfigEntity = new DescriptorConfigEntity(descriptorId, 4L, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
+        DescriptorConfigEntity descriptorConfigEntity = new DescriptorConfigEntity(
+            descriptorId,
+            4L,
+            DateUtils.createCurrentDateTimestamp(),
+            DateUtils.createCurrentDateTimestamp()
+        );
         descriptorConfigEntity.setId(configurationId);
         ConfigContextEntity configContextEntity = new ConfigContextEntity(configContextEnum.name());
         configContextEntity.setId(3L);
@@ -213,7 +241,7 @@ public class DefaultConfigurationModelConfigurationAccessorTest {
     }
 
     @Test
-    public void createConfigurationTest() {
+    void createConfigurationTest() {
         final Long descriptorId = 3L;
         final Long configurationId = 5L;
 
@@ -244,14 +272,19 @@ public class DefaultConfigurationModelConfigurationAccessorTest {
     }
 
     @Test
-    public void updateConfigurationTest() throws Exception {
+    void updateConfigurationTest() throws Exception {
         Long configurationId = 2L;
         Long descriptorId = 3L;
 
         ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create("channel.common.name");
         configurationFieldModel.setFieldValue(fieldValue);
         List<ConfigurationFieldModel> configuredFields = List.of(configurationFieldModel);
-        DescriptorConfigEntity descriptorConfigEntity = new DescriptorConfigEntity(descriptorId, 4L, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
+        DescriptorConfigEntity descriptorConfigEntity = new DescriptorConfigEntity(
+            descriptorId,
+            4L,
+            DateUtils.createCurrentDateTimestamp(),
+            DateUtils.createCurrentDateTimestamp()
+        );
         descriptorConfigEntity.setId(configurationId);
         FieldValueEntity fieldValueEntity = new FieldValueEntity(5L, 6L, fieldValue);
         ConfigContextEntity configContextEntity = new ConfigContextEntity(configContextEnum.name());
@@ -274,17 +307,24 @@ public class DefaultConfigurationModelConfigurationAccessorTest {
     }
 
     @Test
-    public void deleteConfigurationTest() {
+    void deleteConfigurationTest() {
         ConfigurationModel configurationModel = new ConfigurationModel(1L, 2L, "dateCreated", "lastUpdated", configContextEnum);
 
-        DefaultConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = new DefaultConfigurationModelConfigurationAccessor(null, null, descriptorConfigRepository, null, null, null);
+        DefaultConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = new DefaultConfigurationModelConfigurationAccessor(
+            null,
+            null,
+            descriptorConfigRepository,
+            null,
+            null,
+            null
+        );
         configurationModelConfigurationAccessor.deleteConfiguration(configurationModel);
 
         Mockito.verify(descriptorConfigRepository).deleteById(Mockito.any());
     }
 
     @Test
-    public void decryptTest() {
+    void decryptTest() {
         final String decryptedString = "decryptedString";
         final String providerConfigName = "provider-config-name-test";
         final String emptyProviderConfigName = "bad-config-name";
@@ -338,18 +378,17 @@ public class DefaultConfigurationModelConfigurationAccessorTest {
     }
 
     private EncryptionUtility createEncryptionUtility() {
-        alertProperties = Mockito.mock(AlertProperties.class);
+        AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
         Mockito.when(alertProperties.getAlertEncryptionPassword()).thenReturn(Optional.of(TEST_PASSWORD));
         Mockito.when(alertProperties.getAlertEncryptionGlobalSalt()).thenReturn(Optional.of(TEST_SALT));
         Mockito.when(alertProperties.getAlertConfigHome()).thenReturn(TEST_DIRECTORY);
         Mockito.when(alertProperties.getAlertSecretsDir()).thenReturn(TEST_SECRETS_DIRECTORY);
-        filePersistenceUtil = new FilePersistenceUtil(alertProperties, new Gson());
+        FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, new Gson());
         return new EncryptionUtility(alertProperties, filePersistenceUtil);
     }
 
     private DescriptorKey createDescriptorKey(String key) {
-        DescriptorKey testDescriptorKey = new DescriptorKey(key, key) {};
-        return testDescriptorKey;
+        return new DescriptorKey(key, key) {};
     }
 
 }

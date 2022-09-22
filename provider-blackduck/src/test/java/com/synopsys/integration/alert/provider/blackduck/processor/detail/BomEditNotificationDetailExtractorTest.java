@@ -24,13 +24,13 @@ import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.HttpUrl;
 
-public class BomEditNotificationDetailExtractorTest {
-    public static final String BOM_EDIT_JSON_PATH = "json/bomEditNotification.json";
+class BomEditNotificationDetailExtractorTest {
+    static final String BOM_EDIT_JSON_PATH = "json/bomEditNotification.json";
 
     private final Gson gson = new Gson();
 
     @Test
-    public void extractDetailedContentTest() throws IOException, IntegrationException {
+    void extractDetailedContentTest() throws IOException, IntegrationException {
         String projectName = "project-name";
         String projectVersionName = "project-version-name";
         Long blackDuckConfigId = 0L;
@@ -57,14 +57,15 @@ public class BomEditNotificationDetailExtractorTest {
     }
 
     @Test
-    public void extractDetailedContentErrorTest() throws IOException, IntegrationException {
+    void extractDetailedContentErrorTest() throws IOException, IntegrationException {
         Long blackDuckConfigId = 0L;
 
         String notificationString = TestResourceUtils.readFileToString(BOM_EDIT_JSON_PATH);
         BomEditNotificationView notificationView = gson.fromJson(notificationString, BomEditNotificationView.class);
 
         NotificationExtractorBlackDuckServicesFactoryCache cache = Mockito.mock(NotificationExtractorBlackDuckServicesFactoryCache.class);
-        Mockito.doThrow(new AlertConfigurationException("Expected Exception thrown creating BlackDuckServicesFactory")).when(cache).retrieveBlackDuckServicesFactory(Mockito.anyLong());
+        Mockito.doThrow(new AlertConfigurationException("Expected Exception thrown creating BlackDuckServicesFactory")).when(cache)
+            .retrieveBlackDuckServicesFactory(Mockito.anyLong());
 
         BomEditNotificationDetailExtractor extractor = new BomEditNotificationDetailExtractor(cache);
 
@@ -84,13 +85,13 @@ public class BomEditNotificationDetailExtractorTest {
 
         BlackDuckApiClient blackDuckApiClient = Mockito.mock(BlackDuckApiClient.class);
         Mockito.when(blackDuckApiClient.getResponse(Mockito.any(HttpUrl.class), Mockito.eq(ProjectVersionView.class))).thenReturn(projectVersionView);
-        Mockito.when(blackDuckApiClient.getResponse(Mockito.eq(projectVersionView.metaProjectLink()))).thenReturn(projectView);
+        Mockito.when(blackDuckApiClient.getResponse(projectVersionView.metaProjectLink())).thenReturn(projectView);
 
         BlackDuckServicesFactory blackDuckServicesFactory = Mockito.mock(BlackDuckServicesFactory.class);
         Mockito.when(blackDuckServicesFactory.getBlackDuckApiClient()).thenReturn(blackDuckApiClient);
 
         NotificationExtractorBlackDuckServicesFactoryCache cache = Mockito.mock(NotificationExtractorBlackDuckServicesFactoryCache.class);
-        Mockito.when(cache.retrieveBlackDuckServicesFactory(Mockito.eq(blackDuckConfigId))).thenReturn(blackDuckServicesFactory);
+        Mockito.when(cache.retrieveBlackDuckServicesFactory(blackDuckConfigId)).thenReturn(blackDuckServicesFactory);
 
         return cache;
     }

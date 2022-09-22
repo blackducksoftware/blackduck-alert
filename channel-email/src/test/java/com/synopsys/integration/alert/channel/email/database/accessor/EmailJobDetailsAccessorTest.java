@@ -83,7 +83,6 @@ class EmailJobDetailsAccessorTest {
         UUID jobId = UUID.randomUUID();
         String additionalEmailAddress = "fake@synopsys.com";
 
-        EmailJobDetailsEntity emailJobDetailsEntity = new EmailJobDetailsEntity(jobId, null, false, false, null);
         EmailJobAdditionalEmailAddressEntity emailJobAdditionalEmailAddressEntity = new EmailJobAdditionalEmailAddressEntity(jobId, additionalEmailAddress);
 
         Mockito.when(emailJobDetailsRepository.findById(Mockito.any())).thenReturn(Optional.empty());
@@ -99,7 +98,7 @@ class EmailJobDetailsAccessorTest {
 
         EmailJobAdditionalEmailAddressEntity emailJobAdditionalEmailAddressEntity = new EmailJobAdditionalEmailAddressEntity(jobId, additionalEmailAddress);
 
-        Mockito.when(additionalEmailAddressRepository.findByJobId(Mockito.eq(jobId))).thenReturn(List.of(emailJobAdditionalEmailAddressEntity));
+        Mockito.when(additionalEmailAddressRepository.findByJobId(jobId)).thenReturn(List.of(emailJobAdditionalEmailAddressEntity));
 
         List<String> newEmailAddresses = emailJobDetailsAccessor.retrieveAdditionalEmailAddressesForJob(jobId);
 
