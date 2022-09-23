@@ -91,17 +91,17 @@ public class AzureBoardsCredentialDataStore extends AbstractDataStore<StoredCred
         lock.lock();
         try {
             if (null != key && null != value) {
-                boolean changed;
                 ConfigurationModel defaultConfig = retrieveConfiguration();
                 Map<String, ConfigurationFieldModel> keyToFieldMap = defaultConfig.getCopyOfKeyToFieldMap();
-                changed = isFieldValueChanged(keyToFieldMap, AzureBoardsDescriptor.KEY_OAUTH_USER_EMAIL, key);
-                changed = changed || isFieldValueChanged(keyToFieldMap, AzureBoardsDescriptor.KEY_ACCESS_TOKEN, value.getAccessToken());
-                changed = changed || isFieldValueChanged(keyToFieldMap, AzureBoardsDescriptor.KEY_REFRESH_TOKEN, value.getRefreshToken());
+                boolean userChanged = isFieldValueChanged(keyToFieldMap, AzureBoardsDescriptor.KEY_OAUTH_USER_EMAIL, key);
+                boolean accessTokenChanged = isFieldValueChanged(keyToFieldMap, AzureBoardsDescriptor.KEY_ACCESS_TOKEN, value.getAccessToken());
+                boolean refreshTokenChanged = isFieldValueChanged(keyToFieldMap, AzureBoardsDescriptor.KEY_REFRESH_TOKEN, value.getRefreshToken());
 
                 Long expTimeMillis = value.getExpirationTimeMilliseconds();
                 String expTimeMillisString = expTimeMillis != null ? expTimeMillis.toString() : null;
-                changed = changed || isFieldValueChanged(keyToFieldMap, AzureBoardsDescriptor.KEY_TOKEN_EXPIRATION_MILLIS, expTimeMillisString);
+                boolean tokenExpirationChanged = isFieldValueChanged(keyToFieldMap, AzureBoardsDescriptor.KEY_TOKEN_EXPIRATION_MILLIS, expTimeMillisString);
 
+                boolean changed = userChanged || accessTokenChanged || refreshTokenChanged || tokenExpirationChanged;
                 // only update the database if the fields have actually changed.
                 if (changed) {
                     setFieldValue(keyToFieldMap, AzureBoardsDescriptor.KEY_OAUTH_USER_EMAIL, key);
