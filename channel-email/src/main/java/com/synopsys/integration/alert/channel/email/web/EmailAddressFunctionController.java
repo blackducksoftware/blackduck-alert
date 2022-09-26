@@ -14,8 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.common.rest.api.AbstractFunctionController;
 
+/**
+ * @deprecated This class is unused and part of the old Email REST API. It is set for removal in 8.0.0.
+ */
 @RestController
 @RequestMapping(EmailAddressFunctionController.EMAIL_ADDRESS_FUNCTION_URL)
+@Deprecated(forRemoval = true)
 public class EmailAddressFunctionController extends AbstractFunctionController<EmailAddressOptions> {
     public static final String EMAIL_ADDRESS_FUNCTION_URL = AbstractFunctionController.API_FUNCTION_URL + "/" + EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES;
 

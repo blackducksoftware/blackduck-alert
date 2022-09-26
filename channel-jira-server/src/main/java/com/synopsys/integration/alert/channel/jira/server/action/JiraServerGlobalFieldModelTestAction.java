@@ -28,7 +28,11 @@ import com.synopsys.integration.jira.common.server.service.IssueSearchService;
 import com.synopsys.integration.jira.common.server.service.JiraServerServiceFactory;
 import com.synopsys.integration.jira.common.server.service.MyPermissionsService;
 
+/**
+ * @deprecated Global test actions are now handled through JiraServerGlobalTestAction
+ */
 @Component
+@Deprecated(forRemoval = true)
 public class JiraServerGlobalFieldModelTestAction extends JiraGlobalFieldModelTestAction {
     public static final Logger logger = LoggerFactory.getLogger(JiraServerGlobalFieldModelTestAction.class);
     private final JiraServerPropertiesFactory jiraServerPropertiesFactory;

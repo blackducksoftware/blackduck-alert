@@ -20,7 +20,11 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
+/**
+ * @deprecated Once unsupported global endpoints are removed in 8.0.0 we will no longer need the conversion service to translate between the old and new actions.
+ */
 @Component
+@Deprecated(forRemoval = true)
 public class GlobalConfigurationModelToConcreteConversionService {
     private final DescriptorMap descriptorMap;
     private final Map<DescriptorKey, GlobalConfigurationModelToConcreteSaveActions> conversionActionMap;
