@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.channel.jira.cloud.distribution.event;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -16,19 +17,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.channel.issue.IssueTrackerResponsePostProcessor;
 import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCommentEventHandler;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCommentModel;
+import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerIssueResponseModel;
+import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerResponse;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraErrorMessageUtility;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraIssueCreationRequestCreator;
 import com.synopsys.integration.alert.api.channel.jira.distribution.custom.JiraCustomFieldResolver;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudProperties;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudPropertiesFactory;
 import com.synopsys.integration.alert.channel.jira.cloud.distribution.JiraCloudMessageSenderFactory;
 import com.synopsys.integration.alert.channel.jira.cloud.distribution.JiraCloudQueryExecutor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.synopsys.integration.jira.common.cloud.service.FieldService;
 import com.synopsys.integration.jira.common.cloud.service.IssueSearchService;
@@ -38,7 +44,7 @@ import com.synopsys.integration.jira.common.cloud.service.ProjectService;
 import com.synopsys.integration.jira.common.rest.service.IssuePropertyService;
 
 @Component
-public class JiraCloudCommentEventHandler implements IssueTrackerCommentEventHandler<JiraCloudCommentEvent> {
+public class JiraCloudCommentEventHandler extends IssueTrackerCommentEventHandler<JiraCloudCommentEvent> {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     private final Gson gson;
@@ -49,11 +55,15 @@ public class JiraCloudCommentEventHandler implements IssueTrackerCommentEventHan
 
     @Autowired
     public JiraCloudCommentEventHandler(
+        EventManager eventManager,
+        JobSubTaskAccessor jobSubTaskAccessor,
         Gson gson,
         JiraCloudPropertiesFactory jiraCloudPropertiesFactory,
         JiraCloudMessageSenderFactory messageSenderFactory,
-        JobDetailsAccessor<JiraCloudJobDetailsModel> jobDetailsAccessor
+        JobDetailsAccessor<JiraCloudJobDetailsModel> jobDetailsAccessor,
+        IssueTrackerResponsePostProcessor responsePostProcessor
     ) {
+        super(eventManager, jobSubTaskAccessor, responsePostProcessor);
         this.gson = gson;
         this.jiraCloudPropertiesFactory = jiraCloudPropertiesFactory;
         this.messageSenderFactory = messageSenderFactory;
@@ -61,7 +71,7 @@ public class JiraCloudCommentEventHandler implements IssueTrackerCommentEventHan
     }
 
     @Override
-    public void handle(JiraCloudCommentEvent event) {
+    public void handleEvent(JiraCloudCommentEvent event) {
         UUID jobId = event.getJobId();
         Optional<JiraCloudJobDetailsModel> details = jobDetailsAccessor.retrieveDetails(event.getJobId());
         if (details.isPresent()) {
@@ -95,7 +105,8 @@ public class JiraCloudCommentEventHandler implements IssueTrackerCommentEventHan
                     jiraCloudQueryExecutor
                 );
                 IssueCommentModel<String> commentModel = event.getCommentModel();
-                messageSender.sendMessage(commentModel);
+                List<IssueTrackerIssueResponseModel<String>> responses = messageSender.sendMessage(commentModel);
+                postProcess(new IssueTrackerResponse<>("Success", responses));
             } catch (AlertException ex) {
                 logger.error("Cannot comment on issue for job {}", jobId);
             }

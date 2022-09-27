@@ -12,13 +12,14 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.channel.issue.IssueTrackerChannel;
 import com.synopsys.integration.alert.api.channel.issue.IssueTrackerResponsePostProcessor;
+import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 
 @Component
 public class JiraCloudChannel extends IssueTrackerChannel<JiraCloudJobDetailsModel, String> {
     @Autowired
-    public JiraCloudChannel(JiraCloudProcessorFactory jiraCloudProcessorFactory, IssueTrackerResponsePostProcessor responsePostProcessor) {
-        super(jiraCloudProcessorFactory, responsePostProcessor);
+    public JiraCloudChannel(JiraCloudProcessorFactory jiraCloudProcessorFactory, IssueTrackerResponsePostProcessor responsePostProcessor, JobSubTaskAccessor jobSubTaskAccessor) {
+        super(jiraCloudProcessorFactory, responsePostProcessor, jobSubTaskAccessor);
     }
 
 }

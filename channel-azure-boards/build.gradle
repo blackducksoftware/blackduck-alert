@@ -24,4 +24,5 @@ dependencies {
     implementation 'org.freemarker:freemarker'
 
     testImplementation project(':test-common-channel')
+    testImplementation project(':alert-database-job')
 }

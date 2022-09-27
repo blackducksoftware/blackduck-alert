@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.channel.jira.cloud.distribution.event;
 
+import java.util.Set;
 import java.util.UUID;
 
 import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCommentEvent;
@@ -16,7 +17,13 @@ public class JiraCloudCommentEvent extends IssueTrackerCommentEvent<String> {
 
     private static final long serialVersionUID = 6009574433460787684L;
 
-    public JiraCloudCommentEvent(String destination, UUID jobId, IssueCommentModel<String> commentModel) {
-        super(destination, jobId, commentModel);
+    public JiraCloudCommentEvent(
+        String destination,
+        UUID parentEventId,
+        UUID jobId,
+        Set<Long> notificationIds,
+        IssueCommentModel<String> commentModel
+    ) {
+        super(destination, parentEventId, jobId, notificationIds, commentModel);
     }
 }

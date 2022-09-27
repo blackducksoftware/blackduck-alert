@@ -14,10 +14,10 @@ import com.synopsys.integration.alert.component.authentication.descriptor.Authen
 import com.synopsys.integration.alert.component.authentication.security.saml.SAMLContext;
 import com.synopsys.integration.alert.component.authentication.security.saml.SAMLManager;
 
-public class SAMLStartupComponentTest {
+class SAMLStartupComponentTest {
 
     @Test
-    public void testInitialize() throws Exception {
+    void testInitialize() throws Exception {
         SAMLContext context = Mockito.mock(SAMLContext.class);
         ParserPool parserPool = Mockito.mock(ParserPool.class);
         ExtendedMetadata extendedMetadata = Mockito.mock(ExtendedMetadata.class);
@@ -39,7 +39,7 @@ public class SAMLStartupComponentTest {
     }
 
     @Test
-    public void testInitializeException() throws Exception {
+    void testInitializeException() throws Exception {
         SAMLContext context = Mockito.mock(SAMLContext.class);
         ParserPool parserPool = Mockito.mock(ParserPool.class);
         ExtendedMetadata extendedMetadata = Mockito.mock(ExtendedMetadata.class);

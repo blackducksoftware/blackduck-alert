@@ -11,7 +11,6 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCommentModel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
@@ -19,8 +18,6 @@ import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerIssueR
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerModelHolder;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTransitionModel;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.api.event.AlertEvent;
-import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.function.ThrowingFunction;
 
 public class IssueTrackerMessageSender<T extends Serializable> {
@@ -28,27 +25,14 @@ public class IssueTrackerMessageSender<T extends Serializable> {
     private final IssueTrackerIssueTransitioner<T> issueTransitioner;
     private final IssueTrackerIssueCommenter<T> issueCommenter;
 
-    private final IssueTrackerCreationEventGenerator issueCreateEventGenerator;
-    private final IssueTrackerTransitionEventGenerator<T> issueTrackerTransitionEventGenerator;
-    private final IssueTrackerCommentEventGenerator<T> issueTrackerCommentEventGenerator;
-    private final EventManager eventManager;
-
     public IssueTrackerMessageSender(
         IssueTrackerIssueCreator<T> issueCreator,
         IssueTrackerIssueTransitioner<T> issueTransitioner,
-        IssueTrackerIssueCommenter<T> issueCommenter,
-        IssueTrackerCreationEventGenerator issueCreateEventGenerator,
-        IssueTrackerTransitionEventGenerator<T> issueTrackerTransitionEventGenerator,
-        IssueTrackerCommentEventGenerator<T> issueTrackerCommentEventGenerator,
-        EventManager eventManager
+        IssueTrackerIssueCommenter<T> issueCommenter
     ) {
         this.issueCreator = issueCreator;
         this.issueTransitioner = issueTransitioner;
         this.issueCommenter = issueCommenter;
-        this.issueCreateEventGenerator = issueCreateEventGenerator;
-        this.issueTrackerTransitionEventGenerator = issueTrackerTransitionEventGenerator;
-        this.issueTrackerCommentEventGenerator = issueTrackerCommentEventGenerator;
-        this.eventManager = eventManager;
     }
 
     // This method is used for testing issue tracker channels to get the issue that was created.
@@ -65,12 +49,6 @@ public class IssueTrackerMessageSender<T extends Serializable> {
         responses.addAll(commentResponses);
 
         return responses;
-    }
-
-    public final void sendAsyncMessages(IssueTrackerModelHolder<T> issueTrackerMessage) {
-        sendAsyncMessages(issueTrackerMessage.getIssueCreationModels(), issueCreateEventGenerator::generateEvent);
-        sendAsyncMessages(issueTrackerMessage.getIssueTransitionModels(), issueTrackerTransitionEventGenerator::generateEvent);
-        sendAsyncMessages(issueTrackerMessage.getIssueCommentModels(), issueTrackerCommentEventGenerator::generateEvent);
     }
 
     public final List<IssueTrackerIssueResponseModel<T>> sendMessage(IssueCreationModel model) throws AlertException {
@@ -107,12 +85,5 @@ public class IssueTrackerMessageSender<T extends Serializable> {
                 .ifPresent(responses::add);
         }
         return responses;
-    }
-
-    private <U> void sendAsyncMessages(List<U> messages, Function<U, AlertEvent> eventGenerator) {
-        for (U message : messages) {
-            AlertEvent event = eventGenerator.apply(message);
-            eventManager.sendEvent(event);
-        }
     }
 }

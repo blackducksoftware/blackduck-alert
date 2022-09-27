@@ -25,7 +25,7 @@ import com.synopsys.integration.alert.provider.blackduck.factory.BlackDuckProper
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
-public class NotificationExtractorBlackDuckServicesFactoryCacheTest {
+class NotificationExtractorBlackDuckServicesFactoryCacheTest {
     private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
     private final Gson gson = new Gson();
     private final AlertProperties properties = new AlertProperties();
@@ -42,9 +42,9 @@ public class NotificationExtractorBlackDuckServicesFactoryCacheTest {
     }
 
     @Test
-    public void retrieveBlackDuckServicesFactoryTest() throws AlertConfigurationException {
+    void retrieveBlackDuckServicesFactoryTest() throws AlertConfigurationException {
         ConfigurationModel configurationModel = createConfigurationModel();
-        Mockito.when(configurationModelConfigurationAccessor.getConfigurationById(Mockito.eq(blackDuckConfigId))).thenReturn(Optional.of(configurationModel));
+        Mockito.when(configurationModelConfigurationAccessor.getConfigurationById(blackDuckConfigId)).thenReturn(Optional.of(configurationModel));
 
         ProxyInfo proxyInfo = ProxyInfo.NO_PROXY_INFO;
         Mockito.when(proxyManager.createProxyInfoForHost(Mockito.any())).thenReturn(proxyInfo);
@@ -57,9 +57,9 @@ public class NotificationExtractorBlackDuckServicesFactoryCacheTest {
     }
 
     @Test
-    public void cacheClearedTest() throws AlertConfigurationException {
+    void cacheClearedTest() throws AlertConfigurationException {
         ConfigurationModel configurationModel = createConfigurationModel();
-        Mockito.when(configurationModelConfigurationAccessor.getConfigurationById(Mockito.eq(blackDuckConfigId))).thenReturn(Optional.of(configurationModel));
+        Mockito.when(configurationModelConfigurationAccessor.getConfigurationById(blackDuckConfigId)).thenReturn(Optional.of(configurationModel));
 
         ProxyInfo proxyInfo = ProxyInfo.NO_PROXY_INFO;
         Mockito.when(proxyManager.createProxyInfoForHost(Mockito.any())).thenReturn(proxyInfo);
@@ -72,7 +72,7 @@ public class NotificationExtractorBlackDuckServicesFactoryCacheTest {
     }
 
     @Test
-    public void missingConfigurationTest() {
+    void missingConfigurationTest() {
         try {
             cache.retrieveBlackDuckServicesFactory(blackDuckConfigId);
             fail("Expected AlertConfigurationException to be thrown due to missing optionalProperties.");
@@ -82,9 +82,9 @@ public class NotificationExtractorBlackDuckServicesFactoryCacheTest {
     }
 
     @Test
-    public void invalidConfigurationTest() {
+    void invalidConfigurationTest() {
         ConfigurationModel configurationModel = new ConfigurationModel(1L, 2L, "createdAt", "lastUpdated", ConfigContextEnum.GLOBAL, Map.of());
-        Mockito.when(configurationModelConfigurationAccessor.getConfigurationById(Mockito.eq(blackDuckConfigId))).thenReturn(Optional.of(configurationModel));
+        Mockito.when(configurationModelConfigurationAccessor.getConfigurationById(blackDuckConfigId)).thenReturn(Optional.of(configurationModel));
 
         try {
             cache.retrieveBlackDuckServicesFactory(blackDuckConfigId);

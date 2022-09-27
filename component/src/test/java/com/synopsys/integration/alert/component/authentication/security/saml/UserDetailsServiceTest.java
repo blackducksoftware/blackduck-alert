@@ -29,7 +29,7 @@ import com.synopsys.integration.alert.common.security.UserPrincipal;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.component.authentication.security.UserManagementAuthoritiesPopulator;
 
-public class UserDetailsServiceTest {
+class UserDetailsServiceTest {
 
     private static final String USER_NAME = "user_name";
     private static final String EMAIL = "email_address";
@@ -48,13 +48,13 @@ public class UserDetailsServiceTest {
         ConfigurationModel configuration = Mockito.mock(ConfigurationModel.class);
         UserAccessor userAccessor = Mockito.mock(UserAccessor.class);
         Mockito.when(configuration.getField(Mockito.anyString())).thenReturn(Optional.empty());
-        Mockito.when(configurationModelConfigurationAccessor.getConfigurationsByDescriptorKey(Mockito.eq(key))).thenReturn(List.of(configuration));
+        Mockito.when(configurationModelConfigurationAccessor.getConfigurationsByDescriptorKey(key)).thenReturn(List.of(configuration));
         Mockito.when(userAccessor.getUser(Mockito.anyString())).thenReturn(Optional.of(userModel));
         authoritiesPopulator = new UserManagementAuthoritiesPopulator(key, configurationModelConfigurationAccessor, userAccessor);
     }
 
     @Test
-    public void testValidCredential() {
+    void testValidCredential() {
         SAMLCredential credential = Mockito.mock(SAMLCredential.class);
 
         NameID nameId = Mockito.mock(NameID.class);
@@ -80,7 +80,7 @@ public class UserDetailsServiceTest {
     }
 
     @Test
-    public void testNullRoleArray() {
+    void testNullRoleArray() {
         SAMLCredential credential = Mockito.mock(SAMLCredential.class);
 
         NameID nameId = Mockito.mock(NameID.class);
@@ -105,7 +105,7 @@ public class UserDetailsServiceTest {
     }
 
     @Test
-    public void testEmptyRoleArray() {
+    void testEmptyRoleArray() {
         SAMLCredential credential = Mockito.mock(SAMLCredential.class);
         String[] roles = new String[0];
         NameID nameId = Mockito.mock(NameID.class);

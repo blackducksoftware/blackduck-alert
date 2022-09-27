@@ -26,6 +26,7 @@ import com.synopsys.integration.azure.boards.common.model.AzureArrayResponseMode
 import com.synopsys.integration.azure.boards.common.service.process.AzureProcessService;
 import com.synopsys.integration.azure.boards.common.service.process.ProcessFieldRequestModel;
 import com.synopsys.integration.azure.boards.common.service.process.ProcessFieldResponseModel;
+import com.synopsys.integration.azure.boards.common.service.process.ProcessWorkItemTypeFieldResponseModel;
 import com.synopsys.integration.azure.boards.common.service.process.ProcessWorkItemTypeRequestModel;
 import com.synopsys.integration.azure.boards.common.service.process.ProcessWorkItemTypesResponseModel;
 import com.synopsys.integration.azure.boards.common.service.project.AzureProjectService;
@@ -103,8 +104,14 @@ public class AzureCustomFieldManager {
         List<Future<ProcessFieldResponseModel>> processFieldAdditionHolders = new ArrayList<>(7);
         for (Future<ProjectWorkItemFieldModel> projectFieldFuture : projectFieldFindOrCreateHolders) {
             ProjectWorkItemFieldModel projectField = extractFutureResult(projectFieldFuture);
-            Future<ProcessFieldResponseModel> processFieldAdditionHolder = executorService.submit(() -> addAlertCustomFieldToProcess(processId, workItemTypeRefName, projectField));
-            processFieldAdditionHolders.add(processFieldAdditionHolder);
+            if (!hasAlertCustomFieldInProcess(processId, workItemTypeRefName, projectField)) {
+                Future<ProcessFieldResponseModel> processFieldAdditionHolder = executorService.submit(() -> addAlertCustomFieldToProcess(
+                    processId,
+                    workItemTypeRefName,
+                    projectField
+                ));
+                processFieldAdditionHolders.add(processFieldAdditionHolder);
+            }
         }
 
         for (Future<ProcessFieldResponseModel> processFieldAdditionHolder : processFieldAdditionHolders) {
@@ -131,9 +138,32 @@ public class AzureCustomFieldManager {
         try {
             return projectService.createProjectField(organizationName, projectName, fieldRequestModel);
         } catch (IOException e) {
-            throw new AlertException(String.format("There was a problem creating the request to create the Alert Custom Field (%s) in the Azure project: %s", fieldReferenceName, projectName), e);
+            throw new AlertException(String.format(
+                "There was a problem creating the request to create the Alert Custom Field (%s) in the Azure project: %s",
+                fieldReferenceName,
+                projectName
+            ), e);
         } catch (HttpServiceException e) {
             throw new AlertException(String.format("There was a problem creating the Alert Custom Field (%s) in the Azure project: %s", fieldReferenceName, projectName), e);
+        }
+    }
+
+    private boolean hasAlertCustomFieldInProcess(String processId, String workItemTypeRefName, ProjectWorkItemFieldModel projectField) throws AlertException {
+        try {
+            AzureArrayResponseModel<ProcessWorkItemTypeFieldResponseModel> workItemTypeFields = processService.getWorkItemTypeFields(
+                organizationName,
+                processId,
+                workItemTypeRefName
+            );
+            List<ProcessWorkItemTypeFieldResponseModel> workItemTypeList = workItemTypeFields.getValue();
+            return workItemTypeList.stream()
+                .anyMatch(item -> item.getReferenceName().equals(projectField.getReferenceName()));
+        } catch (HttpServiceException e) {
+            throw new AlertException(String.format(
+                "There was a problem finding the Alert Custom Field (%s) in the Azure process with id: %s",
+                projectField.getReferenceName(),
+                processId
+            ), e);
         }
     }
 
@@ -142,9 +172,17 @@ public class AzureCustomFieldManager {
         try {
             return processService.addFieldToWorkItemType(organizationName, processId, workItemTypeRefName, fieldRequestModel);
         } catch (IOException e) {
-            throw new AlertException(String.format("There was a problem creating the request to add the Alert Custom Field (%s) to the Azure process with id: %s", projectField.getReferenceName(), processId), e);
+            throw new AlertException(String.format(
+                "There was a problem creating the request to add the Alert Custom Field (%s) to the Azure process with id: %s",
+                projectField.getReferenceName(),
+                processId
+            ), e);
         } catch (HttpServiceException e) {
-            throw new AlertException(String.format("There was a problem adding the Alert Custom Field (%s) to the Azure process with id: %s", projectField.getReferenceName(), processId), e);
+            throw new AlertException(String.format(
+                "There was a problem adding the Alert Custom Field (%s) to the Azure process with id: %s",
+                projectField.getReferenceName(),
+                processId
+            ), e);
         }
     }
 

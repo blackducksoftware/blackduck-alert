@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -34,7 +36,7 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
  */
 public class AzureBoardsCredentialDataStore extends AbstractDataStore<StoredCredential> {
     private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
-
+    private final Lock lock = new ReentrantLock();
     /**
      * @param dataStoreFactory      data store factory
      * @param id                    data store ID
@@ -47,48 +49,94 @@ public class AzureBoardsCredentialDataStore extends AbstractDataStore<StoredCred
 
     @Override
     public Set<String> keySet() throws IOException {
-        ConfigurationModel configurationModel = retrieveConfiguration();
-        return configurationModel.getField(AzureBoardsDescriptor.KEY_OAUTH_USER_EMAIL)
-                   .flatMap(ConfigurationFieldModel::getFieldValue)
-                   .map(Set::of)
-                   .orElse(Set.of());
+        lock.lock();
+        try {
+            ConfigurationModel configurationModel = retrieveConfiguration();
+            return configurationModel.getField(AzureBoardsDescriptor.KEY_OAUTH_USER_EMAIL)
+                .flatMap(ConfigurationFieldModel::getFieldValue)
+                .map(Set::of)
+                .orElse(Set.of());
+        } finally {
+            lock.unlock();
+        }
     }
 
     @Override
     public Collection<StoredCredential> values() throws IOException {
-        ConfigurationModel configurationModel = retrieveConfiguration();
-        StoredCredential storedCredential = createStoredCredential(configurationModel);
-        return Set.of(storedCredential);
+        lock.lock();
+        try {
+            ConfigurationModel configurationModel = retrieveConfiguration();
+            StoredCredential storedCredential = createStoredCredential(configurationModel);
+            return Set.of(storedCredential);
+        } finally {
+            lock.unlock();
+        }
     }
 
     @Override
     public StoredCredential get(String key) throws IOException {
-        if (null == key) {
-            return null;
+        lock.lock();
+        try {
+            if (null == key) {
+                return null;
+            }
+            return retrieveCredentialMatchingEmailOrNull(key);
+        } finally {
+            lock.unlock();
         }
-        return retrieveCredentialMatchingEmailOrNull(key);
     }
 
     @Override
     public AzureBoardsCredentialDataStore set(String key, StoredCredential value) throws IOException {
-        if (null != key && null != value) {
-            ConfigurationModel defaultConfig = retrieveConfiguration();
-            Map<String, ConfigurationFieldModel> keyToFieldMap = defaultConfig.getCopyOfKeyToFieldMap();
-            setFieldValue(keyToFieldMap, AzureBoardsDescriptor.KEY_OAUTH_USER_EMAIL, key);
-            setFieldValue(keyToFieldMap, AzureBoardsDescriptor.KEY_ACCESS_TOKEN, value.getAccessToken());
-            setFieldValue(keyToFieldMap, AzureBoardsDescriptor.KEY_REFRESH_TOKEN, value.getRefreshToken());
+        lock.lock();
+        try {
+            if (null != key && null != value) {
+                ConfigurationModel defaultConfig = retrieveConfiguration();
+                Map<String, ConfigurationFieldModel> keyToFieldMap = defaultConfig.getCopyOfKeyToFieldMap();
+                boolean userChanged = isFieldValueChanged(keyToFieldMap, AzureBoardsDescriptor.KEY_OAUTH_USER_EMAIL, key);
+                boolean accessTokenChanged = isFieldValueChanged(keyToFieldMap, AzureBoardsDescriptor.KEY_ACCESS_TOKEN, value.getAccessToken());
+                boolean refreshTokenChanged = isFieldValueChanged(keyToFieldMap, AzureBoardsDescriptor.KEY_REFRESH_TOKEN, value.getRefreshToken());
 
-            Long expTimeMillis = value.getExpirationTimeMilliseconds();
-            String expTimeMillisString = expTimeMillis != null ? expTimeMillis.toString() : null;
-            setFieldValue(keyToFieldMap, AzureBoardsDescriptor.KEY_TOKEN_EXPIRATION_MILLIS, expTimeMillisString);
+                Long expTimeMillis = value.getExpirationTimeMilliseconds();
+                String expTimeMillisString = expTimeMillis != null ? expTimeMillis.toString() : null;
+                boolean tokenExpirationChanged = isFieldValueChanged(keyToFieldMap, AzureBoardsDescriptor.KEY_TOKEN_EXPIRATION_MILLIS, expTimeMillisString);
 
-            try {
-                configurationModelConfigurationAccessor.updateConfiguration(defaultConfig.getConfigurationId(), keyToFieldMap.values());
-            } catch (AlertConfigurationException e) {
-                throw new IOException("Cannot update the Azure Boards global configuration", e);
+                boolean changed = userChanged || accessTokenChanged || refreshTokenChanged || tokenExpirationChanged;
+                // only update the database if the fields have actually changed.
+                if (changed) {
+                    setFieldValue(keyToFieldMap, AzureBoardsDescriptor.KEY_OAUTH_USER_EMAIL, key);
+                    setFieldValue(keyToFieldMap, AzureBoardsDescriptor.KEY_ACCESS_TOKEN, value.getAccessToken());
+                    setFieldValue(keyToFieldMap, AzureBoardsDescriptor.KEY_REFRESH_TOKEN, value.getRefreshToken());
+                    setFieldValue(keyToFieldMap, AzureBoardsDescriptor.KEY_TOKEN_EXPIRATION_MILLIS, expTimeMillisString);
+                    try {
+                        configurationModelConfigurationAccessor.updateConfiguration(defaultConfig.getConfigurationId(), keyToFieldMap.values());
+                    } catch (AlertConfigurationException e) {
+                        throw new IOException("Cannot update the Azure Boards global configuration", e);
+                    }
+                }
             }
+            return this;
+        } finally {
+            lock.unlock();
         }
-        return this;
+    }
+
+    private boolean isFieldValueChanged(Map<String, ConfigurationFieldModel> keyToFieldMap, String fieldKey, String value) {
+        boolean fieldValueChanged = true;
+        if (keyToFieldMap.containsKey(fieldKey)) {
+            ConfigurationFieldModel fieldModel = keyToFieldMap.get(fieldKey);
+            if (null != value && fieldModel.getFieldValue().isPresent()) {
+                fieldValueChanged = fieldModel.getFieldValue()
+                    .filter(fieldValue -> !fieldValue.equals(value))
+                    .isPresent();
+            }
+        } else {
+            // non-blank values are added to a ConfigurationFieldModel when setFieldValue is called.
+            // If it isn't in the map and not an empty string value then the value has changed.
+            fieldValueChanged = StringUtils.isNotBlank(value);
+        }
+
+        return fieldValueChanged;
     }
 
     private void setFieldValue(Map<String, ConfigurationFieldModel> keyToFieldMap, String fieldKey, String value) {
@@ -98,21 +146,31 @@ public class AzureBoardsCredentialDataStore extends AbstractDataStore<StoredCred
 
     @Override
     public AzureBoardsCredentialDataStore clear() throws IOException {
-        for (String key : keySet()) {
-            delete(key);
+        lock.lock();
+        try {
+            for (String key : keySet()) {
+                delete(key);
+            }
+            return this;
+        } finally {
+            lock.unlock();
         }
-        return this;
     }
 
     @Override
     public AzureBoardsCredentialDataStore delete(String key) {
-        if (null != key) {
-            ConfigurationModel defaultConfig = retrieveConfiguration();
-            if (isConfiguredWithUserEmail(defaultConfig, key)) {
-                configurationModelConfigurationAccessor.deleteConfiguration(defaultConfig.getConfigurationId());
+        lock.lock();
+        try {
+            if (null != key) {
+                ConfigurationModel defaultConfig = retrieveConfiguration();
+                if (isConfiguredWithUserEmail(defaultConfig, key)) {
+                    configurationModelConfigurationAccessor.deleteConfiguration(defaultConfig.getConfigurationId());
+                }
             }
+            return this;
+        } finally {
+            lock.unlock();
         }
-        return this;
     }
 
     private StoredCredential retrieveCredentialMatchingEmailOrNull(String credentialUserEmail) {

@@ -29,7 +29,7 @@ import com.synopsys.integration.alert.database.user.UserRepository;
 import com.synopsys.integration.alert.database.user.UserRoleRelation;
 import com.synopsys.integration.alert.database.user.UserRoleRepository;
 
-public class DefaultUserAccessorTest {
+class DefaultUserAccessorTest {
     private final String username = "username";
     private final String password = "password";
     private final String emailAddress = "noreply@blackducksoftware.com";
@@ -50,7 +50,7 @@ public class DefaultUserAccessorTest {
     }
 
     @Test
-    public void getUsersTest() {
+    void getUsersTest() {
         final Long authenticationTypeId = 1L;
         final String roleName = "userName";
 
@@ -71,7 +71,7 @@ public class DefaultUserAccessorTest {
     }
 
     @Test
-    public void getUserByUserIdTest() {
+    void getUserByUserIdTest() {
         final Long userId = 1L;
         final Long emptyUserId = 5L;
         final Long authenticationTypeId = 1L;
@@ -97,7 +97,7 @@ public class DefaultUserAccessorTest {
     }
 
     @Test
-    public void getUserByUsernameTest() {
+    void getUserByUsernameTest() {
         final String emptyUsername = "";
         final Long authenticationTypeId = 1L;
         final String roleName = "userName";
@@ -122,7 +122,7 @@ public class DefaultUserAccessorTest {
     }
 
     @Test
-    public void addUserTest() throws Exception {
+    void addUserTest() throws Exception {
         final String roleName = "userName";
 
         UserEntity userEntity = new UserEntity(username, password, emailAddress, 2L);
@@ -143,7 +143,7 @@ public class DefaultUserAccessorTest {
     }
 
     @Test
-    public void addUserExistsTest() throws Exception {
+    void addUserExistsTest() {
         UserEntity userEntity = new UserEntity(username, password, emailAddress, 2L);
         userEntity.setId(1L);
 
@@ -160,7 +160,7 @@ public class DefaultUserAccessorTest {
     }
 
     @Test
-    public void updateUserTest() throws Exception {
+    void updateUserTest() throws Exception {
         final String roleName = "userName";
         AuthenticationType authenticationType = AuthenticationType.DATABASE;
 
@@ -186,7 +186,7 @@ public class DefaultUserAccessorTest {
     }
 
     @Test
-    public void updateUserNonDatabaseAuthTest() throws Exception {
+    void updateUserNonDatabaseAuthTest() throws Exception {
         final String roleName = "roleName";
         AuthenticationType authenticationType = AuthenticationType.LDAP;
 
@@ -211,7 +211,7 @@ public class DefaultUserAccessorTest {
     }
 
     @Test
-    public void updateUserNonDatabaseAuthInvalidTest() throws Exception {
+    void updateUserNonDatabaseAuthInvalidTest() {
         final String roleName = "roleName";
         AuthenticationType authenticationType = AuthenticationType.LDAP;
 
@@ -242,15 +242,15 @@ public class DefaultUserAccessorTest {
     }
 
     @Test
-    public void assignRolesTest() {
+    void assignRolesTest() {
         final String badUsername = "badUsername";
         final Long roleId = 5L;
 
         UserEntity userEntity = new UserEntity(username, password, emailAddress, 2L);
         userEntity.setId(1L);
 
-        Mockito.when(userRepository.findByUserName(Mockito.eq(username))).thenReturn(Optional.of(userEntity));
-        Mockito.when(userRepository.findByUserName(Mockito.eq(badUsername))).thenReturn(Optional.empty());
+        Mockito.when(userRepository.findByUserName(username)).thenReturn(Optional.of(userEntity));
+        Mockito.when(userRepository.findByUserName(badUsername)).thenReturn(Optional.empty());
 
         DefaultUserAccessor defaultUserAccessor = new DefaultUserAccessor(userRepository, userRoleRepository, defaultPasswordEncoder, roleAccessor, authenticationTypeAccessor);
         boolean assignedRoles = defaultUserAccessor.assignRoles(username, Set.of(roleId));
@@ -264,7 +264,7 @@ public class DefaultUserAccessorTest {
     }
 
     @Test
-    public void changeUserPasswordTest() {
+    void changeUserPasswordTest() {
         final String badUsername = "badUsername";
         final String newPassword = "newPassword";
 
@@ -273,8 +273,8 @@ public class DefaultUserAccessorTest {
         UserEntity newUserEntity = new UserEntity(username, newPassword, emailAddress, 2L);
         userEntity.setId(1L);
 
-        Mockito.when(userRepository.findByUserName(Mockito.eq(username))).thenReturn(Optional.of(userEntity));
-        Mockito.when(userRepository.findByUserName(Mockito.eq(badUsername))).thenReturn(Optional.empty());
+        Mockito.when(userRepository.findByUserName(username)).thenReturn(Optional.of(userEntity));
+        Mockito.when(userRepository.findByUserName(badUsername)).thenReturn(Optional.empty());
         Mockito.when(defaultPasswordEncoder.encode(Mockito.any())).thenReturn(newPassword);
         Mockito.when(userRepository.save(Mockito.any())).thenReturn(newUserEntity);
 
@@ -285,7 +285,7 @@ public class DefaultUserAccessorTest {
     }
 
     @Test
-    public void changeUserEmailAddressTest() {
+    void changeUserEmailAddressTest() {
         final String badUsername = "badUsername";
         final String newEmailAddress = "newemail.noreplay@blackducksoftware.com";
 
@@ -294,8 +294,8 @@ public class DefaultUserAccessorTest {
         UserEntity newUserEntity = new UserEntity(username, password, newEmailAddress, 2L);
         userEntity.setId(1L);
 
-        Mockito.when(userRepository.findByUserName(Mockito.eq(username))).thenReturn(Optional.of(userEntity));
-        Mockito.when(userRepository.findByUserName(Mockito.eq(badUsername))).thenReturn(Optional.empty());
+        Mockito.when(userRepository.findByUserName(username)).thenReturn(Optional.of(userEntity));
+        Mockito.when(userRepository.findByUserName(badUsername)).thenReturn(Optional.empty());
         Mockito.when(userRepository.save(Mockito.any())).thenReturn(newUserEntity);
 
         DefaultUserAccessor defaultUserAccessor = new DefaultUserAccessor(userRepository, userRoleRepository, defaultPasswordEncoder, roleAccessor, authenticationTypeAccessor);
@@ -305,12 +305,12 @@ public class DefaultUserAccessorTest {
     }
 
     @Test
-    public void deleteUserByNameTest() throws Exception {
+    void deleteUserByNameTest() throws Exception {
         //userEntity Id's between 0 and 2 are reserved
         UserEntity userEntity = new UserEntity(username, password, emailAddress, 2L);
         userEntity.setId(5L);
 
-        Mockito.when(userRepository.findByUserName(Mockito.eq(username))).thenReturn(Optional.of(userEntity));
+        Mockito.when(userRepository.findByUserName(username)).thenReturn(Optional.of(userEntity));
 
         DefaultUserAccessor defaultUserAccessor = new DefaultUserAccessor(userRepository, userRoleRepository, defaultPasswordEncoder, roleAccessor, authenticationTypeAccessor);
         defaultUserAccessor.deleteUser(username);
@@ -320,11 +320,11 @@ public class DefaultUserAccessorTest {
     }
 
     @Test
-    public void deleteUserByIdTest() throws Exception {
+    void deleteUserByIdTest() throws Exception {
         UserEntity userEntity = new UserEntity(username, password, emailAddress, 2L);
         userEntity.setId(5L);
 
-        Mockito.when(userRepository.findById(Mockito.eq(userEntity.getId()))).thenReturn(Optional.of(userEntity));
+        Mockito.when(userRepository.findById(userEntity.getId())).thenReturn(Optional.of(userEntity));
 
         DefaultUserAccessor defaultUserAccessor = new DefaultUserAccessor(userRepository, userRoleRepository, defaultPasswordEncoder, roleAccessor, authenticationTypeAccessor);
         defaultUserAccessor.deleteUser(userEntity.getId());
@@ -334,11 +334,11 @@ public class DefaultUserAccessorTest {
     }
 
     @Test
-    public void deleteUserReservedIdTest() throws Exception {
+    void deleteUserReservedIdTest() {
         UserEntity userEntity = new UserEntity(username, password, emailAddress, 2L);
         userEntity.setId(1L);
 
-        Mockito.when(userRepository.findByUserName(Mockito.eq(username))).thenReturn(Optional.of(userEntity));
+        Mockito.when(userRepository.findByUserName(username)).thenReturn(Optional.of(userEntity));
         Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.of(userEntity));
 
         DefaultUserAccessor defaultUserAccessor = new DefaultUserAccessor(userRepository, userRoleRepository, defaultPasswordEncoder, roleAccessor, authenticationTypeAccessor);

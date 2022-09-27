@@ -23,7 +23,7 @@ import com.synopsys.integration.alert.database.job.blackduck.projects.BlackDuckJ
 import com.synopsys.integration.alert.database.job.blackduck.vulnerability.BlackDuckJobVulnerabilitySeverityFilterEntity;
 import com.synopsys.integration.alert.database.job.blackduck.vulnerability.BlackDuckJobVulnerabilitySeverityFilterRepository;
 
-public class BlackDuckJobDetailsAccessorTest {
+class BlackDuckJobDetailsAccessorTest {
     private BlackDuckJobDetailsRepository blackDuckJobDetailsRepository;
     private BlackDuckJobNotificationTypeRepository blackDuckJobNotificationTypeRepository;
     private BlackDuckJobProjectRepository blackDuckJobProjectRepository;
@@ -32,29 +32,29 @@ public class BlackDuckJobDetailsAccessorTest {
 
     private BlackDuckJobDetailsAccessor blackDuckJobDetailsAccessor;
 
-    private final String jobName = "jobName";
-
     @BeforeEach
-    public void init() {
+    void init() {
         blackDuckJobDetailsRepository = Mockito.mock(BlackDuckJobDetailsRepository.class);
         blackDuckJobNotificationTypeRepository = Mockito.mock(BlackDuckJobNotificationTypeRepository.class);
         blackDuckJobProjectRepository = Mockito.mock(BlackDuckJobProjectRepository.class);
         blackDuckJobPolicyFilterRepository = Mockito.mock(BlackDuckJobPolicyFilterRepository.class);
         blackDuckJobVulnerabilitySeverityFilterRepository = Mockito.mock(BlackDuckJobVulnerabilitySeverityFilterRepository.class);
 
-        blackDuckJobDetailsAccessor = new BlackDuckJobDetailsAccessor(blackDuckJobDetailsRepository,
+        blackDuckJobDetailsAccessor = new BlackDuckJobDetailsAccessor(
+            blackDuckJobDetailsRepository,
             blackDuckJobNotificationTypeRepository,
             blackDuckJobProjectRepository,
             blackDuckJobPolicyFilterRepository,
-            blackDuckJobVulnerabilitySeverityFilterRepository);
+            blackDuckJobVulnerabilitySeverityFilterRepository
+        );
     }
 
     @Test
-    public void saveBlackDuckJobDetailsTest() {
+    void saveBlackDuckJobDetailsTest() {
         UUID jobId = UUID.randomUUID();
         DistributionJobRequestModel distributionJobRequestModel = new DistributionJobRequestModel(
             true,
-            jobName,
+            "jobName",
             FrequencyType.DAILY,
             ProcessingType.DEFAULT,
             null,
@@ -91,10 +91,10 @@ public class BlackDuckJobDetailsAccessorTest {
 
         BlackDuckJobDetailsEntity createdBlackDuckJobDetailsEntity = blackDuckJobDetailsAccessor.saveBlackDuckJobDetails(jobId, distributionJobRequestModel);
 
-        Mockito.verify(blackDuckJobNotificationTypeRepository).bulkDeleteAllByJobId(Mockito.eq(jobId));
-        Mockito.verify(blackDuckJobProjectRepository).bulkDeleteAllByJobId(Mockito.eq(jobId));
-        Mockito.verify(blackDuckJobPolicyFilterRepository).bulkDeleteAllByJobId(Mockito.eq(jobId));
-        Mockito.verify(blackDuckJobVulnerabilitySeverityFilterRepository).bulkDeleteAllByJobId(Mockito.eq(jobId));
+        Mockito.verify(blackDuckJobNotificationTypeRepository).bulkDeleteAllByJobId(jobId);
+        Mockito.verify(blackDuckJobProjectRepository).bulkDeleteAllByJobId(jobId);
+        Mockito.verify(blackDuckJobPolicyFilterRepository).bulkDeleteAllByJobId(jobId);
+        Mockito.verify(blackDuckJobVulnerabilitySeverityFilterRepository).bulkDeleteAllByJobId(jobId);
 
         assertEquals(jobId, createdBlackDuckJobDetailsEntity.getJobId());
         assertEquals(1, createdBlackDuckJobDetailsEntity.getBlackDuckJobNotificationTypes().size());
@@ -108,12 +108,12 @@ public class BlackDuckJobDetailsAccessorTest {
     }
 
     @Test
-    public void retrieveNotificationTypesForJobTest() {
+    void retrieveNotificationTypesForJobTest() {
         UUID jobId = UUID.randomUUID();
         String notificationType = "testNotificationType";
         BlackDuckJobNotificationTypeEntity blackDuckJobNotificationTypeEntity = new BlackDuckJobNotificationTypeEntity(jobId, notificationType);
 
-        Mockito.when(blackDuckJobNotificationTypeRepository.findByJobId(Mockito.eq(jobId))).thenReturn(List.of(blackDuckJobNotificationTypeEntity));
+        Mockito.when(blackDuckJobNotificationTypeRepository.findByJobId(jobId)).thenReturn(List.of(blackDuckJobNotificationTypeEntity));
 
         List<String> notificationTypes = blackDuckJobDetailsAccessor.retrieveNotificationTypesForJob(jobId);
 
@@ -122,13 +122,13 @@ public class BlackDuckJobDetailsAccessorTest {
     }
 
     @Test
-    public void retrieveProjectDetailsForJobTest() {
+    void retrieveProjectDetailsForJobTest() {
         UUID jobId = UUID.randomUUID();
         String projectName = "projectName";
         String href = "href";
         BlackDuckJobProjectEntity blackDuckJobProjectEntity = new BlackDuckJobProjectEntity(jobId, projectName, href);
 
-        Mockito.when(blackDuckJobProjectRepository.findByJobId(Mockito.eq(jobId))).thenReturn(List.of(blackDuckJobProjectEntity));
+        Mockito.when(blackDuckJobProjectRepository.findByJobId(jobId)).thenReturn(List.of(blackDuckJobProjectEntity));
 
         List<BlackDuckProjectDetailsModel> blackDuckProjectDetailsModels = blackDuckJobDetailsAccessor.retrieveProjectDetailsForJob(jobId);
 
@@ -139,12 +139,12 @@ public class BlackDuckJobDetailsAccessorTest {
     }
 
     @Test
-    public void retrievePolicyNamesForJobTest() {
+    void retrievePolicyNamesForJobTest() {
         UUID jobId = UUID.randomUUID();
         String policyName = "policyName";
         BlackDuckJobPolicyFilterEntity blackDuckJobPolicyFilterEntity = new BlackDuckJobPolicyFilterEntity(jobId, policyName);
 
-        Mockito.when(blackDuckJobPolicyFilterRepository.findByJobId(Mockito.eq(jobId))).thenReturn(List.of(blackDuckJobPolicyFilterEntity));
+        Mockito.when(blackDuckJobPolicyFilterRepository.findByJobId(jobId)).thenReturn(List.of(blackDuckJobPolicyFilterEntity));
 
         List<String> policyNamesList = blackDuckJobDetailsAccessor.retrievePolicyNamesForJob(jobId);
 
@@ -153,12 +153,12 @@ public class BlackDuckJobDetailsAccessorTest {
     }
 
     @Test
-    public void retrieveVulnerabilitySeverityNamesForJobTest() {
+    void retrieveVulnerabilitySeverityNamesForJobTest() {
         UUID jobId = UUID.randomUUID();
         String severityName = "severityName";
         BlackDuckJobVulnerabilitySeverityFilterEntity blackDuckJobVulnerabilitySeverityFilterEntity = new BlackDuckJobVulnerabilitySeverityFilterEntity(jobId, severityName);
 
-        Mockito.when(blackDuckJobVulnerabilitySeverityFilterRepository.findByJobId(Mockito.eq(jobId))).thenReturn(List.of(blackDuckJobVulnerabilitySeverityFilterEntity));
+        Mockito.when(blackDuckJobVulnerabilitySeverityFilterRepository.findByJobId(jobId)).thenReturn(List.of(blackDuckJobVulnerabilitySeverityFilterEntity));
 
         List<String> vulnerabilitySeverityNames = blackDuckJobDetailsAccessor.retrieveVulnerabilitySeverityNamesForJob(jobId);
 
