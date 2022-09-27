@@ -13,6 +13,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationA
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 
+//TODO: This class is a placeholder and is currently unimplemented
 @Component
 public class AzureBoardsGlobalConfigAccessor implements ConfigurationAccessor<AzureBoardsGlobalConfigModel> {
     private final EncryptionUtility encryptionUtility;
