@@ -95,7 +95,7 @@ class IssueTrackerModelExtractorTest {
         MockIssueTrackerMessageFormatter formatter = MockIssueTrackerMessageFormatter.withIntegerMaxValueLength();
 
         IssueTrackerSearcher<String> searcher = Mockito.mock(IssueTrackerSearcher.class);
-        Mockito.when(searcher.findIssues(Mockito.eq(projectMessage))).thenReturn(List.of(searchResult));
+        Mockito.when(searcher.findIssues(projectMessage)).thenReturn(List.of(searchResult));
 
         IssueTrackerModelExtractor<String> extractor = new IssueTrackerModelExtractor<>(formatter, searcher);
 
@@ -127,7 +127,7 @@ class IssueTrackerModelExtractorTest {
         MockIssueTrackerMessageFormatter formatter = MockIssueTrackerMessageFormatter.withIntegerMaxValueLength();
 
         IssueTrackerSearcher<String> searcher = Mockito.mock(IssueTrackerSearcher.class);
-        Mockito.when(searcher.findIssues(Mockito.eq(projectMessage))).thenReturn(List.of(searchResult));
+        Mockito.when(searcher.findIssues(projectMessage)).thenReturn(List.of(searchResult));
 
         IssueTrackerModelExtractor<String> extractor = new IssueTrackerModelExtractor<>(formatter, searcher);
 
@@ -157,7 +157,7 @@ class IssueTrackerModelExtractorTest {
         MockIssueTrackerMessageFormatter formatter = MockIssueTrackerMessageFormatter.withIntegerMaxValueLength();
 
         IssueTrackerSearcher<String> searcher = Mockito.mock(IssueTrackerSearcher.class);
-        Mockito.when(searcher.findIssues(Mockito.eq(projectMessage))).thenReturn(List.of(searchResult));
+        Mockito.when(searcher.findIssues(projectMessage)).thenReturn(List.of(searchResult));
 
         IssueTrackerModelExtractor<String> extractor = new IssueTrackerModelExtractor<>(formatter, searcher);
 

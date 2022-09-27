@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.email.EmailITTestAssertions;
 import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFileCreator;
 import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFormat;
@@ -31,19 +32,21 @@ import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.test.common.TestTags;
 
-public class EmailChannelTestIT {
+class EmailChannelTestIT {
     protected Gson gson;
     protected TestProperties testProperties;
+    private EventManager eventManager;
 
     @BeforeEach
     public void init() {
         gson = new Gson();
         testProperties = new TestProperties();
+        eventManager = Mockito.mock(EventManager.class);
     }
 
     @Test
     @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
-    public void sendEmailTest() {
+    void sendEmailTest() {
         MockAlertProperties testAlertProperties = new MockAlertProperties();
         String testEmailRecipient = testProperties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT);
 
@@ -63,13 +66,14 @@ public class EmailChannelTestIT {
         EmailAddressGatherer emailAddressGatherer = new EmailAddressGatherer(null, null);
         EmailChannelMessageConverter emailChannelMessageConverter = new EmailChannelMessageConverter(new EmailChannelMessageFormatter());
 
-        EmailChannelMessageSender emailChannelMessageSender = new EmailChannelMessageSender(emailConfigurationAccessor,
+        EmailChannelMessageSender emailChannelMessageSender = new EmailChannelMessageSender(
+            emailConfigurationAccessor,
             emailAddressGatherer,
             emailChannelMessagingService,
             emailAddressValidator,
             javamailPropertiesFactory
         );
-        EmailChannel emailChannel = new EmailChannel(emailChannelMessageConverter, emailChannelMessageSender);
+        EmailChannel emailChannel = new EmailChannel(emailChannelMessageConverter, emailChannelMessageSender, eventManager);
 
         List<String> emailAddresses = List.of(testEmailRecipient);
         EmailJobDetailsModel emailJobDetails = new EmailJobDetailsModel(
@@ -98,7 +102,7 @@ public class EmailChannelTestIT {
         EmailChannelMessageConverter emailChannelMessageConverter = new EmailChannelMessageConverter(new EmailChannelMessageFormatter());
         EmailChannelMessageSender emailChannelMessageSender = new EmailChannelMessageSender(emailConfigurationAccessor, emailAddressGatherer, null, emailAddressValidator, null);
 
-        EmailChannel emailChannel = new EmailChannel(emailChannelMessageConverter, emailChannelMessageSender);
+        EmailChannel emailChannel = new EmailChannel(emailChannelMessageConverter, emailChannelMessageSender, eventManager);
 
         List<String> emailAddresses = List.of(testEmailRecipient);
         EmailJobDetailsModel emailJobDetails = new EmailJobDetailsModel(

@@ -6,44 +6,39 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCommentModel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerModelHolder;
+import com.synopsys.integration.alert.api.channel.issue.model.IssueTransitionModel;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.api.event.EventManager;
+import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
+@ExtendWith(SpringExtension.class)
 class IssueTrackerMessageSenderTest {
-    private static final AlertException TEST_EXCEPTION = new AlertException("Test exception");
-    private static final IssueTrackerIssueResponseModel<String> DEFAULT_RESPONSE_MODEL = Mockito.mock(IssueTrackerIssueResponseModel.class);
-    private static IssueTrackerIssueCreator<String> creator;
-    private static IssueTrackerIssueTransitioner<String> transitioner;
-    private static IssueTrackerIssueCommenter<String> commenter;
+    private final AlertException TEST_EXCEPTION = new AlertException("Test exception");
+    @Mock
+    private IssueTrackerIssueResponseModel<String> mockIssueTrackerResponseModel;
+    @Mock
+    private IssueTrackerIssueCreator<String> mockIssueCreator;
+    @Mock
+    private IssueTrackerIssueTransitioner<String> mockIssueTransitioner;
+    @Mock
+    private IssueTrackerIssueCommenter<String> mockIssueCommenter;
 
-    private static IssueTrackerCreationEventGenerator createEventGenerator;
-    private static IssueTrackerTransitionEventGenerator transitionEventGenerator;
-    private static IssueTrackerCommentEventGenerator commentEventGenerator;
-    private static EventManager eventManager;
-
-    @BeforeAll
-    public static void init() throws AlertException {
-        creator = Mockito.mock(IssueTrackerIssueCreator.class);
-        Mockito.when(creator.createIssueTrackerIssue(Mockito.any())).thenReturn(DEFAULT_RESPONSE_MODEL);
-
-        transitioner = Mockito.mock(IssueTrackerIssueTransitioner.class);
-        Mockito.when(transitioner.transitionIssue(Mockito.any())).thenReturn(Optional.empty());
-
-        commenter = Mockito.mock(IssueTrackerIssueCommenter.class);
-        Mockito.when(commenter.commentOnIssue(Mockito.any())).thenReturn(Optional.of(DEFAULT_RESPONSE_MODEL));
-
-        createEventGenerator = Mockito.mock(IssueTrackerCreationEventGenerator.class);
-        transitionEventGenerator = Mockito.mock(IssueTrackerTransitionEventGenerator.class);
-        commentEventGenerator = Mockito.mock(IssueTrackerCommentEventGenerator.class);
-        eventManager = Mockito.mock(EventManager.class);
+    @BeforeEach
+    public void init() throws AlertException {
+        Mockito.when(mockIssueCreator.createIssueTrackerIssue(Mockito.any())).thenReturn(mockIssueTrackerResponseModel);
+        Mockito.when(mockIssueTransitioner.transitionIssue(Mockito.any())).thenReturn(Optional.of(mockIssueTrackerResponseModel));
+        Mockito.when(mockIssueCommenter.commentOnIssue(Mockito.any())).thenReturn(Optional.of(mockIssueTrackerResponseModel));
     }
 
     @Test
@@ -51,13 +46,9 @@ class IssueTrackerMessageSenderTest {
         IssueTrackerModelHolder<String> messages = createModelHolder();
 
         IssueTrackerMessageSender<String> messageSender = new IssueTrackerMessageSender<>(
-            creator,
-            transitioner,
-            commenter,
-            createEventGenerator,
-            transitionEventGenerator,
-            commentEventGenerator,
-            eventManager
+            mockIssueCreator,
+            mockIssueTransitioner,
+            mockIssueCommenter
         );
         List<IssueTrackerIssueResponseModel<String>> responseModels = messageSender.sendMessages(messages);
         assertEquals(
@@ -75,12 +66,8 @@ class IssueTrackerMessageSenderTest {
 
         IssueTrackerMessageSender<String> messageSender1 = new IssueTrackerMessageSender<>(
             exceptionCreator,
-            transitioner,
-            commenter,
-            createEventGenerator,
-            transitionEventGenerator,
-            commentEventGenerator,
-            eventManager
+            mockIssueTransitioner,
+            mockIssueCommenter
         );
         assertExceptionThrown(messageSender1, messages);
 
@@ -88,15 +75,50 @@ class IssueTrackerMessageSenderTest {
         Mockito.when(exceptionCommenter.commentOnIssue(Mockito.any())).thenThrow(TEST_EXCEPTION);
 
         IssueTrackerMessageSender<String> messageSender2 = new IssueTrackerMessageSender<>(
-            creator,
-            transitioner,
-            exceptionCommenter,
-            createEventGenerator,
-            transitionEventGenerator,
-            commentEventGenerator,
-            eventManager
+            mockIssueCreator,
+            mockIssueTransitioner,
+            exceptionCommenter
         );
         assertExceptionThrown(messageSender2, messages);
+    }
+
+    @Test
+    void sendMessageIssueCreationTest() throws AlertException {
+        IssueCreationModel createModel = IssueCreationModel.simple("tile", "description", List.of(), new LinkableItem("Label", "Value"));
+        IssueTrackerMessageSender<String> messageSender = new IssueTrackerMessageSender<>(
+            mockIssueCreator,
+            mockIssueTransitioner,
+            mockIssueCommenter
+        );
+        List<IssueTrackerIssueResponseModel<String>> createResponses = messageSender.sendMessage(createModel);
+        assertEquals(1, createResponses.size());
+        assertEquals(mockIssueTrackerResponseModel, createResponses.get(0));
+    }
+
+    @Test
+    void sendMessageIssueTransitionTest() throws AlertException {
+        IssueTransitionModel<String> transitionModel = new IssueTransitionModel<>(null, IssueOperation.RESOLVE, List.of(), null);
+        IssueTrackerMessageSender<String> messageSender = new IssueTrackerMessageSender<>(
+            mockIssueCreator,
+            mockIssueTransitioner,
+            mockIssueCommenter
+        );
+        List<IssueTrackerIssueResponseModel<String>> transitionResponses = messageSender.sendMessage(transitionModel);
+        assertEquals(1, transitionResponses.size());
+        assertEquals(mockIssueTrackerResponseModel, transitionResponses.get(0));
+    }
+
+    @Test
+    void sendMessageIssueCommentTest() throws AlertException {
+        IssueCommentModel<String> commentModel = new IssueCommentModel<>(null, List.of("Comment 1", "Comment 2"), null);
+        IssueTrackerMessageSender<String> messageSender = new IssueTrackerMessageSender<>(
+            mockIssueCreator,
+            mockIssueTransitioner,
+            mockIssueCommenter
+        );
+        List<IssueTrackerIssueResponseModel<String>> commentResponses = messageSender.sendMessage(commentModel);
+        assertEquals(1, commentResponses.size());
+        assertEquals(mockIssueTrackerResponseModel, commentResponses.get(0));
     }
 
     private void assertExceptionThrown(IssueTrackerMessageSender<String> messageSender, IssueTrackerModelHolder<String> messages) {

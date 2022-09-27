@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.channel.azure.boards.distribution.delegate;
 
+import java.util.Set;
 import java.util.UUID;
 
 import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCommentEvent;
@@ -17,16 +18,20 @@ import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
 
 public class AzureBoardsCommentGenerator implements IssueTrackerCommentEventGenerator<Integer> {
 
-    private AzureBoardsChannelKey channelKey;
-    private UUID jobId;
+    private final AzureBoardsChannelKey channelKey;
+    private final UUID parentEventId;
+    private final UUID jobId;
+    private final Set<Long> notificationIds;
 
-    public AzureBoardsCommentGenerator(AzureBoardsChannelKey channelKey, UUID jobId) {
+    public AzureBoardsCommentGenerator(AzureBoardsChannelKey channelKey, UUID parentEventId, UUID jobId, Set<Long> notificationIds) {
         this.channelKey = channelKey;
+        this.parentEventId = parentEventId;
         this.jobId = jobId;
+        this.notificationIds = notificationIds;
     }
 
     @Override
     public IssueTrackerCommentEvent<Integer> generateEvent(IssueCommentModel<Integer> model) {
-        return new AzureBoardsCommentEvent(IssueTrackerCommentEvent.createDefaultEventDestination(channelKey), jobId, model);
+        return new AzureBoardsCommentEvent(IssueTrackerCommentEvent.createDefaultEventDestination(channelKey), parentEventId, jobId, notificationIds, model);
     }
 }

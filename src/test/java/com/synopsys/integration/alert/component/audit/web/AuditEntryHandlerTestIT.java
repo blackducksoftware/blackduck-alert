@@ -74,7 +74,7 @@ import com.synopsys.integration.util.ResourceUtil;
 
 @Transactional
 @AlertIntegrationTest
-public class AuditEntryHandlerTestIT {
+class AuditEntryHandlerTestIT {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     @Autowired
     private AuditDescriptorKey auditDescriptorKey;
@@ -156,17 +156,32 @@ public class AuditEntryHandlerTestIT {
     }
 
     @Test
-    public void getTestIT() {
+    void getTestIT() {
         NotificationEntity savedNotificationEntity = notificationContentRepository.save(mockNotification.createEntity());
 
         notificationContentRepository
-            .save(new MockNotificationContent(DateUtils.createCurrentDateTimestamp(), "provider", DateUtils.createCurrentDateTimestamp(), "notificationType", "{}", 234L, providerConfigModel.getConfigurationId()).createEntity());
+            .save(new MockNotificationContent(
+                DateUtils.createCurrentDateTimestamp(),
+                "provider",
+                DateUtils.createCurrentDateTimestamp(),
+                "notificationType",
+                "{}",
+                234L,
+                providerConfigModel.getConfigurationId()
+            ).createEntity());
 
         DistributionJobRequestModel jobRequestModel = createJobRequestModel();
         DistributionJobModel jobModel = jobAccessor.createJob(jobRequestModel);
 
         AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(
-            new AuditEntryEntity(jobModel.getJobId(), DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp(), AuditEntryStatus.SUCCESS.toString(), null, null));
+            new AuditEntryEntity(
+                jobModel.getJobId(),
+                DateUtils.createCurrentDateTimestamp(),
+                DateUtils.createCurrentDateTimestamp(),
+                AuditEntryStatus.SUCCESS.toString(),
+                null,
+                null
+            ));
 
         auditNotificationRepository.save(new AuditNotificationRelation(savedAuditEntryEntity.getId(), savedNotificationEntity.getId()));
 
@@ -196,7 +211,7 @@ public class AuditEntryHandlerTestIT {
     }
 
     @Test
-    public void getGetAuditInfoForJobIT() {
+    void getGetAuditInfoForJobIT() {
         DistributionJobRequestModel jobRequestModel = createJobRequestModel();
         DistributionJobModel job = jobAccessor.createJob(jobRequestModel);
 
@@ -204,7 +219,7 @@ public class AuditEntryHandlerTestIT {
             new AuditEntryEntity(job.getJobId(), DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp(), AuditEntryStatus.SUCCESS.toString(), null, null));
 
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
-        Mockito.when(authorizationManager.hasReadPermission(Mockito.eq(ConfigContextEnum.GLOBAL), Mockito.eq(auditDescriptorKey))).thenReturn(true);
+        Mockito.when(authorizationManager.hasReadPermission(ConfigContextEnum.GLOBAL, auditDescriptorKey)).thenReturn(true);
         AuditEntryActions auditEntryController = createAuditActions(authorizationManager);
 
         AuditJobStatusModel jobStatusModel = auditEntryController.getAuditInfoForJob(savedAuditEntryEntity.getCommonConfigId()).getContent().orElse(null);
@@ -212,11 +227,17 @@ public class AuditEntryHandlerTestIT {
     }
 
     @Test
-    public void resendNotificationTestIT() throws Exception {
+    void resendNotificationTestIT() throws Exception {
         String content = ResourceUtil.getResourceAsString(getClass(), "/json/policyOverrideNotification.json", StandardCharsets.UTF_8);
 
-        MockNotificationContent mockNotification = new MockNotificationContent(DateUtils.createCurrentDateTimestamp(), blackDuckProviderKey.getUniversalKey(), DateUtils.createCurrentDateTimestamp(), "POLICY_OVERRIDE", content, 1L,
-            providerConfigModel.getConfigurationId());
+        MockNotificationContent mockNotification = new MockNotificationContent(DateUtils.createCurrentDateTimestamp(),
+            blackDuckProviderKey.getUniversalKey(),
+            DateUtils.createCurrentDateTimestamp(),
+            "POLICY_OVERRIDE",
+            content,
+            1L,
+            providerConfigModel.getConfigurationId()
+        );
 
         ConfigurationFieldModel providerConfigId = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID);
         providerConfigId.setFieldValue(String.valueOf(providerConfigModel.getConfigurationId()));
@@ -234,7 +255,7 @@ public class AuditEntryHandlerTestIT {
         auditNotificationRepository.save(new AuditNotificationRelation(savedAuditEntryEntity.getId(), savedNotificationEntity.getId()));
 
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
-        Mockito.when(authorizationManager.hasExecutePermission(Mockito.eq(ConfigContextEnum.GLOBAL.name()), Mockito.eq(AuditDescriptor.AUDIT_COMPONENT))).thenReturn(true);
+        Mockito.when(authorizationManager.hasExecutePermission(ConfigContextEnum.GLOBAL.name(), AuditDescriptor.AUDIT_COMPONENT)).thenReturn(true);
         AuditEntryActions auditEntryActions = createAuditActions(authorizationManager);
 
         try {

@@ -22,11 +22,11 @@ import com.synopsys.integration.blackduck.service.request.BlackDuckMultipleReque
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.HttpUrl;
 
-public class BlackDuckNotificationRetrieverTest {
+class BlackDuckNotificationRetrieverTest {
     private static final String THROWAWAY_SERVER = "https://someblackduckserver";
 
     @Test
-    public void retrievePageOfFilteredNotificationsTest() throws IntegrationException {
+    void retrievePageOfFilteredNotificationsTest() throws IntegrationException {
         ProjectNotificationUserView projectNotificationView = new ProjectNotificationUserView();
         BlackDuckPageResponse<NotificationUserView> pageResponse = new BlackDuckPageResponse<>(1, List.of(projectNotificationView));
 
@@ -48,7 +48,7 @@ public class BlackDuckNotificationRetrieverTest {
             .getPageResponse(Mockito.any(BlackDuckMultipleRequest.class));
         Mockito.doReturn(apiUser)
             .when(blackDuckApiClient)
-            .getResponse(Mockito.eq(currentUserUrl));
+            .getResponse(currentUserUrl);
 
         BlackDuckAccumulatorSearchDateManager dateRangeCreator = createDateRangeCreator();
 

@@ -157,7 +157,7 @@ class SettingsProxyTestActionTest {
     void passwordAlreadySavedTest() {
         ConfigurationTestResult configurationTestResult = ConfigurationTestResult.success();
         ProxyTestService proxyTestService = Mockito.mock(ProxyTestService.class);
-        Mockito.when(proxyTestService.pingHost(Mockito.eq(TEST_URL), Mockito.any())).thenReturn(configurationTestResult);
+        Mockito.when(proxyTestService.pingHost(Mockito.endsWith(TEST_URL), Mockito.any())).thenReturn(configurationTestResult);
 
         SettingsProxyModel settingsProxyModel = createDefaultSettingsProxyModel();
         settingsProxyModel.setProxyPassword(null);

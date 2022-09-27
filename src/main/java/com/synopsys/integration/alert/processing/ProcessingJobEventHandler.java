@@ -86,8 +86,8 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
                 providerMessageDistributor.distribute(processedNotificationDetails, processedMessageHolder);
             }
         } finally {
-            clearCaches(correlationId);
             jobNotificationMappingAccessor.removeJobMapping(correlationId, jobId);
+            clearCaches(correlationId);
         }
     }
 

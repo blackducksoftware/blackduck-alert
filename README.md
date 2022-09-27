@@ -12,8 +12,8 @@ This application provides the ability to send notifications from a provider to v
 ### Build Steps ###
 #### Requirements ####
  - JDK 11
+ - Node 16.15.1 (Recommended)
  - NPM 8.11.0 (Recommended)
- - NVM 16.15.1 (Recommended)
 
 To compile the UI and create the jar file run:
 
@@ -21,10 +21,10 @@ To compile the UI and create the jar file run:
 ```bash
 ./gradlew clean build
 ```
-To build the docker image:
+To build the docker images:
 
 ```bash
-./gradlew buildDockerImage
+./gradlew dockerBuildAllImages
 ```
 To build the zip file containing the orchestration files for deployment:
 

@@ -1,6 +1,7 @@
 ext.moduleName = 'com.synopsys.integration.alert.api-channel'
 
 dependencies {
+    api project(':api-distribution')
     api project(':api-environment')
     api project(':api-event')
     api project(':api-processor')
