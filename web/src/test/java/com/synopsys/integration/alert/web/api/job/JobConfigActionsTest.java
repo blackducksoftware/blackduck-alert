@@ -162,7 +162,7 @@ class JobConfigActionsTest {
     }
 
     @Test
-    void getPageTest() throws Exception {
+    void getPageTest() {
         int totalPages = 1;
         int pageNumber = 0;
         int pageSize = 10;
@@ -487,7 +487,7 @@ class JobConfigActionsTest {
         JobIdsRequestModel jobIdsRequestModel = new JobIdsRequestModel(List.of(jobId));
         Mockito.when(mockedAuthorizationManager.anyReadPermission(Mockito.any())).thenReturn(true);
         Mockito.when(mockedConfigurationFieldModelConverter.convertToFieldModel(Mockito.any())).thenReturn(fieldModel);
-        Mockito.when(mockedFieldModelProcessor.performAfterReadAction(Mockito.eq(fieldModel))).thenReturn(fieldModel);
+        Mockito.when(mockedFieldModelProcessor.performAfterReadAction(fieldModel)).thenReturn(fieldModel);
 
         ActionResponse<List<JobFieldStatuses>> actionResponse = defaultJobConfigActions.validateJobsById(jobIdsRequestModel);
 
@@ -599,7 +599,7 @@ class JobConfigActionsTest {
     private FieldModelTestAction createTestActionWithErrors() {
         FieldModelTestAction fieldModelTestAction = new FieldModelTestAction() {
             @Override
-            public MessageResult testConfig(String configId, FieldModel fieldModel, FieldUtility registeredFieldValues) throws IntegrationException {
+            public MessageResult testConfig(String configId, FieldModel fieldModel, FieldUtility registeredFieldValues) {
                 AlertFieldStatus alertFieldStatus = AlertFieldStatus.error("fieldNameTest", "Alert Error Message");
                 return new MessageResult("Test Status Message", List.of(alertFieldStatus));
             }

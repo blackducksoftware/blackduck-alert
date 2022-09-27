@@ -100,6 +100,7 @@ dependencies {
     implementation project(':api-common-model')
     implementation project(':api-channel')
     implementation project(':api-descriptor')
+    implementation project(':api-distribution')
     implementation project(':api-environment')
     implementation project(':api-event')
     implementation project(':api-processor')

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="psantos" id="create-job-sub-task-status-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="job_sub_task_status"/>
+            </not>
+        </preConditions>
+        <createTable tableName="job_sub_task_status" schemaName="alert">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="job_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="remaining_event_count" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="notification_correlation_id" type="UUID">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="psantos" id="create-notification-correlation-to-notification-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="notification_correlation_to_notification_relation"/>
+            </not>
+        </preConditions>
+        <createTable tableName="notification_correlation_to_notification_relation" schemaName="alert">
+            <column name="notification_correlation_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="notification_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="psantos" id="create-notification-correlation-to-notification-key">
+         <preConditions onFail="MARK_RAN">
+            <not>
+                <primaryKeyExists schemaName="alert" primaryKeyName="PK_NOTIFICATION_CORRELATION_TO_NOTIFICATION_RELATION"/>
+            </not>
+        </preConditions>
+        <addPrimaryKey columnNames="notification_correlation_id, notification_id"
+                       constraintName="PK_NOTIFICATION_CORRELATION_TO_NOTIFICATION_RELATION"
+                       tableName="notification_correlation_to_notification_relation"
+                       schemaName="ALERT"/>
+    </changeSet>
+    <changeSet author="psantos" id="create-foreign-key-job-sub-task-notification-correlation-id">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="job_sub_task_notification_correlation_id_fk"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint
+                baseTableSchemaName="alert"
+                baseTableName="notification_correlation_to_notification_relation"
+                baseColumnNames="notification_correlation_id"
+                constraintName="job_sub_task_notification_correlation_id_fk"
+                referencedTableSchemaName="alert"
+                referencedTableName="job_sub_task_status"
+                referencedColumnNames="notification_correlation_id"
+                onDelete="CASCADE"
+        />
+    </changeSet>
+     <changeSet author="psantos" id="create-foreign-key-notification-id">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="job_sub_task_notification_id_fk"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint
+                baseTableSchemaName="alert"
+                baseTableName="notification_correlation_to_notification_relation"
+                baseColumnNames="notification_id"
+                constraintName="job_sub_task_notification_id_fk"
+                referencedTableSchemaName="alert"
+                referencedTableName="raw_notification_content"
+                referencedColumnNames="id"
+                onDelete="CASCADE"
+        />
+    </changeSet>
+</databaseChangeLog>

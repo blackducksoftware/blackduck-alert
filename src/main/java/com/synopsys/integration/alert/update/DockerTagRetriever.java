@@ -56,7 +56,7 @@ public class DockerTagRetriever {
         try {
             httpUrl = new HttpUrl(pageUrl);
         } catch (IntegrationException e) {
-            logger.warn("Invalid url: " + pageUrl);
+            logger.warn(String.format("Invalid url: %s", pageUrl));
             return DockerTagsResponseModel.EMPTY;
         }
         Request dockerTagsRequest = new Request.Builder(httpUrl).build();

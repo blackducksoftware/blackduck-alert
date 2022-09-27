@@ -50,7 +50,7 @@ import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.HttpUrl;
 
-public class JobNotificationProcessorTest {
+class JobNotificationProcessorTest {
     private static final Gson GSON = new GsonBuilder().create();
     private static final BlackDuckResponseResolver RESPONSE_RESOLVER = new BlackDuckResponseResolver(GSON);
 
@@ -62,16 +62,23 @@ public class JobNotificationProcessorTest {
     private final Long notificationId = 123L;
 
     @Test
-    public void processNotificationForJobTest() throws IntegrationException {
+    void processNotificationForJobTest() throws IntegrationException {
         // Set up dependencies for JobNotificationProcessor
         RuleViolationNotificationDetailExtractor ruleViolationNotificationDetailExtractor = new RuleViolationNotificationDetailExtractor();
-        NotificationDetailExtractionDelegator notificationDetailExtractionDelegator = new NotificationDetailExtractionDelegator(RESPONSE_RESOLVER, List.of(ruleViolationNotificationDetailExtractor));
+        NotificationDetailExtractionDelegator notificationDetailExtractionDelegator = new NotificationDetailExtractionDelegator(
+            RESPONSE_RESOLVER,
+            List.of(ruleViolationNotificationDetailExtractor)
+        );
 
         RuleViolationNotificationMessageExtractor ruleViolationNotificationMessageExtractor = createRuleViolationNotificationMessageExtractor();
         ProviderMessageExtractionDelegator providerMessageExtractionDelegator = new ProviderMessageExtractionDelegator(List.of(ruleViolationNotificationMessageExtractor));
         ProjectMessageDigester projectMessageDigester = new ProjectMessageDigester();
         ProjectMessageSummarizer projectMessageSummarizer = new ProjectMessageSummarizer();
-        NotificationContentProcessor notificationContentProcessor = new NotificationContentProcessor(providerMessageExtractionDelegator, projectMessageDigester, projectMessageSummarizer);
+        NotificationContentProcessor notificationContentProcessor = new NotificationContentProcessor(
+            providerMessageExtractionDelegator,
+            projectMessageDigester,
+            projectMessageSummarizer
+        );
 
         MockProcessingAuditAccessor processingAuditAccessor = new MockProcessingAuditAccessor();
         EventManager eventManager = Mockito.mock(EventManager.class);

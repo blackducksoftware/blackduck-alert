@@ -23,9 +23,9 @@ import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.HttpUrl;
 
-public class BlackDuckMessageComponentVersionUpgradeGuidanceServiceTest {
+class BlackDuckMessageComponentVersionUpgradeGuidanceServiceTest {
     @Test
-    public void requestUpgradeGuidanceItemsBomTest() throws IntegrationException {
+    void requestUpgradeGuidanceItemsBomTest() throws IntegrationException {
         HttpUrl httpUrl = new HttpUrl("https://fake-url");
         UrlSingleResponse<ComponentVersionUpgradeGuidanceView> expectedUrl = new UrlSingleResponse<>(httpUrl, ComponentVersionUpgradeGuidanceView.class);
         ComponentVersionUpgradeGuidanceView upgradeGuidanceView = createUpgradeGuidance(true);
@@ -41,7 +41,7 @@ public class BlackDuckMessageComponentVersionUpgradeGuidanceServiceTest {
     }
 
     @Test
-    public void requestUpgradeGuidanceItemsComponentTest() throws IntegrationException {
+    void requestUpgradeGuidanceItemsComponentTest() throws IntegrationException {
         HttpUrl httpUrl = new HttpUrl("https://fake-url");
         UrlSingleResponse<ComponentVersionUpgradeGuidanceView> expectedUrl = new UrlSingleResponse<>(httpUrl, ComponentVersionUpgradeGuidanceView.class);
         ComponentVersionUpgradeGuidanceView upgradeGuidanceView = createUpgradeGuidance(false);
@@ -57,7 +57,7 @@ public class BlackDuckMessageComponentVersionUpgradeGuidanceServiceTest {
 
     private ProjectVersionComponentVersionView createBomComponent(LinkSingleResponse<ComponentVersionUpgradeGuidanceView> upgradeGuidanceLink, UrlSingleResponse<ComponentVersionUpgradeGuidanceView> expectedUrl) {
         ProjectVersionComponentVersionView bomComponent = Mockito.mock(ProjectVersionComponentVersionView.class);
-        Mockito.when(bomComponent.metaSingleResponseSafely(Mockito.eq(upgradeGuidanceLink))).thenReturn(Optional.of(expectedUrl));
+        Mockito.when(bomComponent.metaSingleResponseSafely(upgradeGuidanceLink)).thenReturn(Optional.of(expectedUrl));
         return bomComponent;
     }
 
@@ -97,7 +97,7 @@ public class BlackDuckMessageComponentVersionUpgradeGuidanceServiceTest {
 
     private BlackDuckApiClient createBlackDuckApiClient(UrlSingleResponse<ComponentVersionUpgradeGuidanceView> expectedArg, ComponentVersionUpgradeGuidanceView expectedReturn) throws IntegrationException {
         BlackDuckApiClient blackDuckApiClient = Mockito.mock(BlackDuckApiClient.class);
-        Mockito.when(blackDuckApiClient.getResponse(Mockito.eq(expectedArg))).thenReturn(expectedReturn);
+        Mockito.when(blackDuckApiClient.getResponse(expectedArg)).thenReturn(expectedReturn);
         return blackDuckApiClient;
     }
 

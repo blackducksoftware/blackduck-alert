@@ -43,7 +43,7 @@ import com.synopsys.integration.rest.HttpMethod;
 import com.synopsys.integration.rest.HttpUrl;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
-public class PolicyOverrideNotificationMessageExtractorTest {
+class PolicyOverrideNotificationMessageExtractorTest {
     private static final LinkableItem COMPONENT = new LinkableItem("Component", "A BOM component");
     private static final LinkableItem COMPONENT_VERSION = new LinkableItem("Component Version", "0.8.7");
     private static final String COMPONENT_VERSION_URL = "http://componentVersionUrl";
@@ -76,7 +76,7 @@ public class PolicyOverrideNotificationMessageExtractorTest {
     }
 
     @Test
-    public void createBomComponentDetailsTest() throws IntegrationException {
+    void createBomComponentDetailsTest() throws IntegrationException {
         BlackDuckServicesFactory blackDuckServicesFactory = Mockito.mock(BlackDuckServicesFactory.class);
         BlackDuckApiClient blackDuckApiClient = Mockito.mock(BlackDuckApiClient.class);
         Mockito.when(blackDuckServicesFactory.getBlackDuckApiClient()).thenReturn(blackDuckApiClient);
@@ -91,7 +91,7 @@ public class PolicyOverrideNotificationMessageExtractorTest {
         componentPolicyRulesView.setName(COMPONENT_POLICY.getPolicyName());
         componentPolicyRulesView.setSeverity(PolicyRuleSeverityType.BLOCKER);
         componentPolicyRulesView.setPolicyApprovalStatus(ProjectVersionComponentPolicyStatusType.IN_VIOLATION_OVERRIDDEN);
-        Mockito.when(blackDuckApiClient.getAllResponses(Mockito.eq(projectVersionComponentVersionView.metaPolicyRulesLink()))).thenReturn(List.of(componentPolicyRulesView));
+        Mockito.when(blackDuckApiClient.getAllResponses(projectVersionComponentVersionView.metaPolicyRulesLink())).thenReturn(List.of(componentPolicyRulesView));
 
         PolicyRuleView policyRuleView = new PolicyRuleView();
         policyRuleView.setCategory(PolicyRuleCategoryType.UNCATEGORIZED);
@@ -120,12 +120,19 @@ public class PolicyOverrideNotificationMessageExtractorTest {
     }
 
     @Test
-    public void createBomComponentDetailsMissingBomComponentTest() throws IntegrationException {
+    void createBomComponentDetailsMissingBomComponentTest() throws IntegrationException {
         BlackDuckServicesFactory blackDuckServicesFactory = Mockito.mock(BlackDuckServicesFactory.class);
         BlackDuckApiClient blackDuckApiClient = Mockito.mock(BlackDuckApiClient.class);
         Mockito.when(blackDuckServicesFactory.getBlackDuckApiClient()).thenReturn(blackDuckApiClient);
 
-        Mockito.doThrow(new IntegrationRestException(HttpMethod.GET, new HttpUrl("https://google.com"), HttpStatus.NOT_FOUND.value(), "httpStatusMessageTest", "httpResponseContentTest", "IntegrationRestExceptionForAlertTest"))
+        Mockito.doThrow(new IntegrationRestException(
+                HttpMethod.GET,
+                new HttpUrl("https://google.com"),
+                HttpStatus.NOT_FOUND.value(),
+                "httpStatusMessageTest",
+                "httpResponseContentTest",
+                "IntegrationRestExceptionForAlertTest"
+            ))
             .when(blackDuckApiClient).getResponse(Mockito.any(), Mockito.any());
 
         List<BomComponentDetails> bomComponentDetailsList = extractor.createBomComponentDetails(policyOverrideUniquePolicyNotificationContent, blackDuckServicesFactory);

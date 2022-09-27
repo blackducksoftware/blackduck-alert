@@ -19,21 +19,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.channel.issue.IssueTrackerResponsePostProcessor;
 import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCreateIssueEvent;
 import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCreateIssueEventHandler;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerIssueResponseModel;
+import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerResponse;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraErrorMessageUtility;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraIssueCreationRequestCreator;
 import com.synopsys.integration.alert.api.channel.jira.distribution.custom.JiraCustomFieldResolver;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerMessageSenderFactory;
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerQueryExecutor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.synopsys.integration.jira.common.rest.service.IssuePropertyService;
 import com.synopsys.integration.jira.common.server.service.FieldService;
@@ -43,7 +47,7 @@ import com.synopsys.integration.jira.common.server.service.JiraServerServiceFact
 import com.synopsys.integration.jira.common.server.service.ProjectService;
 
 @Component
-public class JiraServerCreateIssueEventHandler implements IssueTrackerCreateIssueEventHandler {
+public class JiraServerCreateIssueEventHandler extends IssueTrackerCreateIssueEventHandler {
     private Logger logger = LoggerFactory.getLogger(getClass());
     private final Gson gson;
     private final JiraServerPropertiesFactory jiraServerPropertiesFactory;
@@ -52,11 +56,15 @@ public class JiraServerCreateIssueEventHandler implements IssueTrackerCreateIssu
 
     @Autowired
     public JiraServerCreateIssueEventHandler(
+        EventManager eventManager,
+        JobSubTaskAccessor jobSubTaskAccessor,
         Gson gson,
         JiraServerPropertiesFactory jiraServerPropertiesFactory,
         JiraServerMessageSenderFactory jiraServerMessageSenderFactory,
-        JobDetailsAccessor<JiraServerJobDetailsModel> jobDetailsAccessor
+        JobDetailsAccessor<JiraServerJobDetailsModel> jobDetailsAccessor,
+        IssueTrackerResponsePostProcessor issueTrackerResponsePostProcessor
     ) {
+        super(eventManager, jobSubTaskAccessor, issueTrackerResponsePostProcessor);
         this.gson = gson;
         this.jiraServerPropertiesFactory = jiraServerPropertiesFactory;
         this.jiraServerMessageSenderFactory = jiraServerMessageSenderFactory;
@@ -64,7 +72,7 @@ public class JiraServerCreateIssueEventHandler implements IssueTrackerCreateIssu
     }
 
     @Override
-    public void handle(IssueTrackerCreateIssueEvent event) {
+    public void handleEvent(IssueTrackerCreateIssueEvent event) {
         UUID jobId = event.getJobId();
         IssueCreationModel creationModel = event.getCreationModel();
         Optional<JiraServerJobDetailsModel> details = jobDetailsAccessor.retrieveDetails(event.getJobId());
@@ -103,8 +111,9 @@ public class JiraServerCreateIssueEventHandler implements IssueTrackerCreateIssu
                 boolean issueDoesNotExist = checkIfIssueDoesNotExist(jiraServerQueryExecutor, jqlQuery);
                 if (issueDoesNotExist) {
                     List<IssueTrackerIssueResponseModel<String>> responses = messageSender.sendMessage(creationModel);
+                    postProcess(new IssueTrackerResponse<>("Success", responses));
                     List<String> issueKeys = responses.stream()
-                        .map(IssueTrackerIssueResponseModel::getIssueKey)
+                        .map(IssueTrackerIssueResponseModel::getIssueId)
                         .collect(Collectors.toList());
                     logger.info("Created issues: {}", issueKeys);
                 } else {

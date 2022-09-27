@@ -44,7 +44,7 @@ import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.HttpUrl;
 
-public class NotificationContentProcessorTest {
+class NotificationContentProcessorTest {
     private static final Gson GSON = new GsonBuilder().create();
 
     private static final ProviderDetails PROVIDER_DETAILS = new ProviderDetails(15L, new LinkableItem("Black Duck", "bd-server", "https://bd-server"));
@@ -66,43 +66,77 @@ public class NotificationContentProcessorTest {
     }
 
     @Test
-    public void processNotificationContentDefaultTest() {
+    void processNotificationContentDefaultTest() {
         //Create a NotificationContentWrapper
         AlertNotificationModel notificationModel = createNotification(NotificationType.RULE_VIOLATION.name());
 
-        RuleViolationUniquePolicyNotificationContent notificationContent = blackDuckResponseTestUtility.createRuleViolationUniquePolicyNotificationContent(projectName, projectVersionName);
+        RuleViolationUniquePolicyNotificationContent notificationContent = blackDuckResponseTestUtility.createRuleViolationUniquePolicyNotificationContent(
+            projectName,
+            projectVersionName
+        );
 
-        NotificationContentWrapper notificationContentWrapper = new NotificationContentWrapper(notificationModel, notificationContent, RuleViolationUniquePolicyNotificationContent.class);
+        NotificationContentWrapper notificationContentWrapper = new NotificationContentWrapper(
+            notificationModel,
+            notificationContent,
+            RuleViolationUniquePolicyNotificationContent.class
+        );
 
         //Run the test
-        ProcessedProviderMessageHolder processedProviderMessageHolder = notificationContentProcessor.processNotificationContent(ProcessingType.DEFAULT, List.of(notificationContentWrapper));
+        ProcessedProviderMessageHolder processedProviderMessageHolder = notificationContentProcessor.processNotificationContent(
+            ProcessingType.DEFAULT,
+            List.of(notificationContentWrapper)
+        );
         runProjectMessageAssertions(processedProviderMessageHolder, projectName, projectVersionName);
     }
 
     @Test
-    public void processNotificationContentDigestTest() {
+    void processNotificationContentDigestTest() {
         AlertNotificationModel notificationModel = createNotification(NotificationType.RULE_VIOLATION.name());
 
-        RuleViolationUniquePolicyNotificationContent notificationContent = blackDuckResponseTestUtility.createRuleViolationUniquePolicyNotificationContent(projectName, projectVersionName);
+        RuleViolationUniquePolicyNotificationContent notificationContent = blackDuckResponseTestUtility.createRuleViolationUniquePolicyNotificationContent(
+            projectName,
+            projectVersionName
+        );
 
-        NotificationContentWrapper notificationContentWrapper1 = new NotificationContentWrapper(notificationModel, notificationContent, RuleViolationUniquePolicyNotificationContent.class);
-        NotificationContentWrapper notificationContentWrapper2 = new NotificationContentWrapper(notificationModel, notificationContent, RuleViolationUniquePolicyNotificationContent.class);
+        NotificationContentWrapper notificationContentWrapper1 = new NotificationContentWrapper(
+            notificationModel,
+            notificationContent,
+            RuleViolationUniquePolicyNotificationContent.class
+        );
+        NotificationContentWrapper notificationContentWrapper2 = new NotificationContentWrapper(
+            notificationModel,
+            notificationContent,
+            RuleViolationUniquePolicyNotificationContent.class
+        );
 
-        //When set to digest, the NotificationContentProcessor will combine duplicate duplicate messages created from the two NotificationContentWrappers to a single message
-        ProcessedProviderMessageHolder processedProviderMessageHolder = notificationContentProcessor.processNotificationContent(ProcessingType.DIGEST, List.of(notificationContentWrapper1, notificationContentWrapper2));
+        //When set to digest, the NotificationContentProcessor will combine duplicate messages created from the two NotificationContentWrappers to a single message
+        ProcessedProviderMessageHolder processedProviderMessageHolder = notificationContentProcessor.processNotificationContent(
+            ProcessingType.DIGEST,
+            List.of(notificationContentWrapper1, notificationContentWrapper2)
+        );
         runProjectMessageAssertions(processedProviderMessageHolder, projectName, projectVersionName);
     }
 
     @Test
-    public void processNotificationContentSummaryTest() {
+    void processNotificationContentSummaryTest() {
         AlertNotificationModel notificationModel = createNotification(NotificationType.RULE_VIOLATION.name());
 
-        RuleViolationUniquePolicyNotificationContent notificationContent = blackDuckResponseTestUtility.createRuleViolationUniquePolicyNotificationContent(projectName, projectVersionName);
+        RuleViolationUniquePolicyNotificationContent notificationContent = blackDuckResponseTestUtility.createRuleViolationUniquePolicyNotificationContent(
+            projectName,
+            projectVersionName
+        );
 
-        NotificationContentWrapper notificationContentWrapper1 = new NotificationContentWrapper(notificationModel, notificationContent, RuleViolationUniquePolicyNotificationContent.class);
+        NotificationContentWrapper notificationContentWrapper1 = new NotificationContentWrapper(
+            notificationModel,
+            notificationContent,
+            RuleViolationUniquePolicyNotificationContent.class
+        );
 
         //When set to summary, project messages will be summarized into a SimpleMessage rather than ProjectMessage
-        ProcessedProviderMessageHolder processedProviderMessageHolder = notificationContentProcessor.processNotificationContent(ProcessingType.SUMMARY, List.of(notificationContentWrapper1));
+        ProcessedProviderMessageHolder processedProviderMessageHolder = notificationContentProcessor.processNotificationContent(
+            ProcessingType.SUMMARY,
+            List.of(notificationContentWrapper1)
+        );
         List<ProcessedProviderMessage<ProjectMessage>> processedProviderMessages = processedProviderMessageHolder.getProcessedProjectMessages();
         List<ProcessedProviderMessage<SimpleMessage>> processedSimpleMessages = processedProviderMessageHolder.getProcessedSimpleMessages();
 

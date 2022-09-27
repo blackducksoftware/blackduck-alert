@@ -32,9 +32,9 @@ import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
 
 class JiraServerGlobalConfigAccessorTest {
-    public static final String TEST_URL = "url";
-    public static final String TEST_USERNAME = "username";
-    public static final String TEST_PASSWORD = "password";
+    static final String TEST_URL = "url";
+    static final String TEST_USERNAME = "username";
+    static final String TEST_PASSWORD = "password";
     private final Gson gson = new Gson();
     private final AlertProperties alertProperties = new MockAlertProperties();
     private final FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, gson);
@@ -199,7 +199,6 @@ class JiraServerGlobalConfigAccessorTest {
 
     @Test
     void getPageEmptyTest() {
-        UUID id = UUID.randomUUID();
         Page<JiraServerConfigurationEntity> jiraConfigurations = new PageImpl<>(List.of());
         Mockito.when(jiraServerConfigurationRepository.findAll(Mockito.any(PageRequest.class))).thenReturn(jiraConfigurations);
         AlertPagedModel<JiraServerGlobalConfigModel> pagedModel = jiraServerGlobalConfigAccessor.getConfigurationPage(0, 10, null, null, null);
@@ -314,8 +313,6 @@ class JiraServerGlobalConfigAccessorTest {
     @Test
     void updateConfigurationNotFoundTest() {
         UUID id = UUID.randomUUID();
-        String updatedName = "updatedName";
-        String newUrl = "https://updated.example.com";
         JiraServerConfigurationEntity entity = createEntity(id, OffsetDateTime.now(), OffsetDateTime.now());
 
         JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(

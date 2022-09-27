@@ -1,5 +1,6 @@
 package com.synopsys.integration.alert.channel.slack.distribution.mock;
 
+import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +29,28 @@ public class MockProcessingAuditAccessor implements ProcessingAuditAccessor {
     }
 
     @Override
+    public void setAuditEntrySuccess(UUID jobId, Set<Long> notificationIds, OffsetDateTime successTimestamp) {
+        successes.put(jobId, notificationIds);
+    }
+
+    @Override
     public void setAuditEntryFailure(UUID jobId, Set<Long> notificationIds, String errorMessage, @Nullable Throwable exception) {
+        failures.put(jobId, notificationIds);
+    }
+
+    @Override
+    public void setAuditEntryFailure(UUID jobId, Set<Long> notificationIds, String errorMessage, @Nullable String stackTrace) {
+        failures.put(jobId, notificationIds);
+    }
+
+    @Override
+    public void setAuditEntryFailure(
+        UUID jobId,
+        Set<Long> notificationIds,
+        OffsetDateTime failureTimestamp,
+        String errorMessage,
+        @Nullable String stackTrace
+    ) {
         failures.put(jobId, notificationIds);
     }
 
