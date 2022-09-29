@@ -107,7 +107,7 @@ public class AzureBoardsGlobalConfigAccessor implements ConfigurationAccessor<Az
             String decryptedAppId = encryptionUtility.decrypt(configurationEntity.getAppId());
             configuration.setAppId(decryptedAppId);
         }
-        if (BooleanUtils.toBoolean(configuration.getIsClientSecretSetSet().orElse(Boolean.FALSE)) && configuration.getClientSecret().isEmpty()) {
+        if (BooleanUtils.toBoolean(configuration.getIsClientSecretSet().orElse(Boolean.FALSE)) && configuration.getClientSecret().isEmpty()) {
             String decryptedClientSecret = encryptionUtility.decrypt(configurationEntity.getClientSecret());
             configuration.setClientSecret(decryptedClientSecret);
         }
