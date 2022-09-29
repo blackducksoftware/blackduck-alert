@@ -44,7 +44,9 @@ ext {
 }
 
 mainClassName = 'com.synopsys.integration.alert.Application'
-version = '6.11.0'
+version = '6.11.0-SIGQA15-SNAPSHOT'
+
+ext.isSnapshot = project.version.endsWith('-SNAPSHOT')
 
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
