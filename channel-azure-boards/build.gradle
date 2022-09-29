@@ -11,6 +11,8 @@ dependencies {
     implementation project(':api-descriptor')
     implementation project(':alert-database')
 
+    api 'org.springframework.data:spring-data-jpa'
+    implementation 'jakarta.persistence:jakarta.persistence-api'
     implementation 'com.synopsys.integration:integration-rest'
 
     implementation 'com.google.http-client:google-http-client-apache-v2'
