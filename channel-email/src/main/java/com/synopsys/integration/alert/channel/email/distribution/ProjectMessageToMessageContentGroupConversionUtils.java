@@ -47,14 +47,14 @@ public final class ProjectMessageToMessageContentGroupConversionUtils {
             .map(ProjectMessageToMessageContentGroupConversionUtils::convertToItemOperation)
             .ifPresent(providerMessageContentBuilder::applyAction);
 
-        MessageContentGroup messageContentGroup = new MessageContentGroup();
         List<ComponentItem> componentItems = new LinkedList<>();
         for (BomComponentDetails bomComponent : projectMessage.getBomComponents()) {
             List<ComponentItem> bomComponentItems = convertToComponentItems(bomComponent);
             componentItems.addAll(bomComponentItems);
         }
-
         providerMessageContentBuilder.applyAllComponentItems(componentItems);
+
+        MessageContentGroup messageContentGroup = new MessageContentGroup();
         try {
             ProviderMessageContent providerMessageContent = providerMessageContentBuilder.build();
             messageContentGroup.add(providerMessageContent);
@@ -112,13 +112,10 @@ public final class ProjectMessageToMessageContentGroupConversionUtils {
     }
 
     private static ItemOperation convertToItemOperation(ProjectOperation projectOperation) {
-        switch (projectOperation) {
-            case CREATE:
-                return ItemOperation.ADD;
-            case DELETE:
-                return ItemOperation.DELETE;
-            default:
-                return ItemOperation.UPDATE;
+        if (ProjectOperation.CREATE.equals(projectOperation)) {
+            return ItemOperation.ADD;
+        } else {
+            return ItemOperation.DELETE;
         }
     }
 
