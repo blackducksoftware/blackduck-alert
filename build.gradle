@@ -30,6 +30,7 @@ ext {
         exclude group: 'com.blackducksoftware.bdio', module: 'bdio2'
     }
 
+    // This version is also in src/test/resources/spring-test.properties for the test jdbc connection
     postgresContainerVersion = '13.8'
 
     // Docker Variables
