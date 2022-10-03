@@ -18,7 +18,7 @@ public interface AzureBoardsConfigurationRepository extends JpaRepository<AzureB
 
     @Query("SELECT azureEntity FROM AzureBoardsConfigurationEntity azureEntity"
         + " WHERE azureEntity.name LIKE %:searchTerm%"
-        + "   OR azureEntity.organization_name LIKE %:searchTerm%"
+        + "   OR azureEntity.organizationName LIKE %:searchTerm%"
         + "   OR COALESCE(to_char(azureEntity.createdAt, 'MM/DD/YYYY, HH24:MI:SS'), '') LIKE %:searchTerm%"
         + "   OR (azureEntity.lastUpdated != NULL AND COALESCE(to_char(azureEntity.lastUpdated, 'MM/DD/YYYY, HH24:MI:SS'), '') LIKE %:searchTerm%)"
     )
