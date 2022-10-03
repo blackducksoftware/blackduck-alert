@@ -562,7 +562,7 @@ For the on-premise database deployment a second Persistent Volume must be create
 ### External Postgres Database
 
 #### External Postgres Database Requirements
-- Postgres Version: 12
+- Postgres Version: 13
 - Extension: uuid-ossp (Note: this should be installed prior to creating the database)
 - Schemas: public, alert
 - Roles/Privileges: Alert requires two sets of Postgres Privileges. One set of privileges is necessary for initializing and upgrading the database. The other set (which is a subset of the first) is for reading and writing data when the
