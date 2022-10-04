@@ -48,12 +48,12 @@ class AzureBoardsGlobalConfigAccessorTest {
     public void init() {
         MockRepositorySorter<AzureBoardsConfigurationEntity> sorter = new MockRepositorySorter<>();
         UnaryOperator<List<AzureBoardsConfigurationEntity>> nameFieldSorterFunction = entityList -> entityList.stream()
-                                                                                                        .sorted(Comparator.comparing(AzureBoardsConfigurationEntity::getName))
-                                                                                                        .collect(Collectors.toList());
+            .sorted(Comparator.comparing(AzureBoardsConfigurationEntity::getName))
+            .collect(Collectors.toList());
         sorter.applyFieldSorter("name", nameFieldSorterFunction);
         UnaryOperator<List<AzureBoardsConfigurationEntity>> organizationNameFieldSorterFunction = entityList -> entityList.stream()
-                                                                                                                    .sorted(Comparator.comparing(AzureBoardsConfigurationEntity::getOrganizationName))
-                                                                                                                    .collect(Collectors.toList());
+            .sorted(Comparator.comparing(AzureBoardsConfigurationEntity::getOrganizationName))
+            .collect(Collectors.toList());
         sorter.applyFieldSorter("organizationName", organizationNameFieldSorterFunction);
         mockAzureBoardsConfigurationRepository = new MockAzureBoardsConfigurationRepository(sorter);
         azureBoardsGlobalConfigAccessor = new AzureBoardsGlobalConfigAccessor(encryptionUtility, mockAzureBoardsConfigurationRepository);
