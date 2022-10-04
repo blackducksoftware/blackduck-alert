@@ -29,7 +29,7 @@ import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
 
-class JiraServerGlobalCrudActionsTest {
+class   JiraServerGlobalCrudActionsTest {
     private final String CREATED_AT = String.valueOf(DateUtils.createCurrentDateTimestamp().minusMinutes(5L));
     private final String UPDATED_AT = String.valueOf(DateUtils.createCurrentDateTimestamp());
     private final String URL = "https://someUrl";
@@ -98,6 +98,7 @@ class JiraServerGlobalCrudActionsTest {
 
     @Test
     void getPagedSearchTermTest() {
+        final String SEARCH_TERM = "term";
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel = createJiraServerGlobalConfigModel(id);
         AlertPagedModel<JiraServerGlobalConfigModel> alertPagedModel = new AlertPagedModel<>(
             1,
@@ -107,13 +108,13 @@ class JiraServerGlobalCrudActionsTest {
         );
 
         JiraServerGlobalConfigAccessor configAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
-        Mockito.when(configAccessor.getConfigurationPage(AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE, null, null, null)).thenReturn(alertPagedModel);
+        Mockito.when(configAccessor.getConfigurationPage(AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE, SEARCH_TERM, null, null)).thenReturn(alertPagedModel);
 
         JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, createValidator());
         ActionResponse<AlertPagedModel<JiraServerGlobalConfigModel>> actionResponse = crudActions.getPaged(
             AlertPagedModel.DEFAULT_PAGE_NUMBER,
             AlertPagedModel.DEFAULT_PAGE_SIZE,
-            null,
+            SEARCH_TERM,
             null,
             null
         );
