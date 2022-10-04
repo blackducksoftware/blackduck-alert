@@ -26,7 +26,11 @@ import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
 import com.synopsys.integration.alert.component.settings.validator.SettingsSystemValidator;
 
+/**
+ * @deprecated This class is unused and part of the old Settings encryption & proxy REST API. It is set for removal in 8.0.0.
+ */
 @Component
+@Deprecated(forRemoval = true)
 public class SettingsGlobalApiAction extends ApiAction {
     private final Logger logger = LoggerFactory.getLogger(SettingsGlobalApiAction.class);
     private final EncryptionUtility encryptionUtility;
@@ -73,7 +77,8 @@ public class SettingsGlobalApiAction extends ApiAction {
         fields.putAll(fieldModel.getKeyToValues());
 
         FieldModel modelToSave = new FieldModel(fieldModel.getDescriptorName(), fieldModel.getContext(),
-            fieldModel.getCreatedAt(), fieldModel.getLastUpdated(), fields);
+            fieldModel.getCreatedAt(), fieldModel.getLastUpdated(), fields
+        );
         modelToSave.setId(fieldModel.getId());
         return modelToSave;
     }

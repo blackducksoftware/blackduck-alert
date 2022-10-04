@@ -21,7 +21,12 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
+/**
+ * @deprecated This class is required for converting an old ConfigurationModel into the new GlobalConfigModel classes. This is a temporary class that should be removed once we
+ * remove unsupported REST endpoints in 8.0.0.
+ */
 @Component
+@Deprecated(forRemoval = true)
 public class EmailGlobalConfigurationModelSaveActions implements GlobalConfigurationModelToConcreteSaveActions {
     private final EmailGlobalConfigurationModelConverter emailFieldModelConverter;
     private final EmailGlobalCrudActions configurationActions;
