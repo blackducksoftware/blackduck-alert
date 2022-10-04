@@ -33,6 +33,7 @@ ext {
     postgresContainerVersion = '13.8'
 
     // Docker Variables
+    dockerBuildParam_POSTGRESIMAGEVERSION = 'postgres:' + postgresContainerVersion + '-alpine'
     dockerStagingDirectory = project.buildDir.toString() + '/docker-staging'
     baseDockerDirectory = project.projectDir.toString() + '/docker'
     dockerCleanStagingAreaDirectoryStageName = 'dockerCleanStagingAreaDirectory'
@@ -53,7 +54,7 @@ apply plugin: 'com.synopsys.integration.solution'
 apply from: 'buildSrc/buildTasks.gradle'
 apply from: 'buildSrc/runTasks.gradle'
 apply from: 'buildSrc/deploymentTasks.gradle'
-apply from: 'buildSrc/docker.gradle'
+apply from: 'buildSrc/docker-v2.gradle'
 
 allprojects {
     // disable the test task when running the alert server to speed up startup time.
