@@ -40,6 +40,9 @@ public class AzureBoardsGlobalConfigurationValidator {
             statuses.add(AlertFieldStatus.error("clientSecret", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
         }
 
+        if (!statuses.isEmpty()) {
+            return ValidationResponseModel.fromStatusCollection(statuses);
+        }
         return ValidationResponseModel.success();
     }
 

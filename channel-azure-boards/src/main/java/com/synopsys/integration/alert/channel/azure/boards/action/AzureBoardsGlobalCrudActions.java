@@ -3,6 +3,7 @@ package com.synopsys.integration.alert.channel.azure.boards.action;
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.channel.azure.boards.database.accessor.AzureBoardsGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
+import com.synopsys.integration.alert.channel.azure.boards.validator.AzureBoardsGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.rest.api.ConfigurationCrudHelper;
@@ -18,15 +19,17 @@ import java.util.UUID;
 public class AzureBoardsGlobalCrudActions {
     private final ConfigurationCrudHelper configurationHelper;
     private final AzureBoardsGlobalConfigAccessor configurationAccessor;
+    private final AzureBoardsGlobalConfigurationValidator configurationValidator;
 
     @Autowired
     public AzureBoardsGlobalCrudActions(
         AuthorizationManager authorizationManager,
-        AzureBoardsGlobalConfigAccessor configurationAccessor
-        //TODO: AzureBoardsGlobalConfigurationValidator validator
+        AzureBoardsGlobalConfigAccessor configurationAccessor,
+        AzureBoardsGlobalConfigurationValidator configurationValidator
     ) {
         this.configurationHelper = new ConfigurationCrudHelper(authorizationManager, ConfigContextEnum.GLOBAL, ChannelKeys.AZURE_BOARDS);
         this.configurationAccessor = configurationAccessor;
+        this.configurationValidator = configurationValidator;
     }
 
     public ActionResponse<AzureBoardsGlobalConfigModel> getOne(UUID id) {
@@ -41,7 +44,7 @@ public class AzureBoardsGlobalCrudActions {
 
     public ActionResponse<AzureBoardsGlobalConfigModel> create(AzureBoardsGlobalConfigModel resource) {
         return configurationHelper.create(
-            () -> ValidationResponseModel.success(), //TODO: validator.validate(resource, null)
+            () -> configurationValidator.validate(resource, null),
             () -> configurationAccessor.existsConfigurationByName(resource.getName()),
             () -> configurationAccessor.createConfiguration(resource)
         );
@@ -49,7 +52,7 @@ public class AzureBoardsGlobalCrudActions {
 
     public ActionResponse<AzureBoardsGlobalConfigModel> update(UUID id, AzureBoardsGlobalConfigModel resource) {
         return configurationHelper.update(
-            () -> ValidationResponseModel.success(), //TODO: validator.validate(resource, null),
+            () -> configurationValidator.validate(resource, id.toString()),
             () -> configurationAccessor.existsConfigurationById(id),
             () -> configurationAccessor.updateConfiguration(id, resource)
         );
