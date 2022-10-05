@@ -39,7 +39,11 @@ import com.synopsys.integration.jira.common.server.service.JiraServerServiceFact
 import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
+/**
+ * @deprecated This class is part of the old Alert REST API. It has since been replaced by JiraServerInstallPluginAction and is set for removal in 8.0.0.
+ */
 @Component
+@Deprecated(forRemoval = true)
 public class JiraServerCustomFunctionAction extends CustomFunctionAction<String> {
     private final Logger logger = LoggerFactory.getLogger(JiraServerCustomFunctionAction.class);
 
@@ -90,7 +94,13 @@ public class JiraServerCustomFunctionAction extends CustomFunctionAction<String>
             }
             boolean jiraPluginInstalled = JiraPluginCheckUtils.checkIsAppInstalledAndRetryIfNecessary(jiraAppService);
             if (!jiraPluginInstalled) {
-                return new ActionResponse<>(HttpStatus.NOT_FOUND, String.format("Unable to confirm Jira server successfully installed the '%s' plugin. Please verify the installation on you Jira server.", JiraConstants.JIRA_ALERT_APP_NAME));
+                return new ActionResponse<>(
+                    HttpStatus.NOT_FOUND,
+                    String.format(
+                        "Unable to confirm Jira server successfully installed the '%s' plugin. Please verify the installation on you Jira server.",
+                        JiraConstants.JIRA_ALERT_APP_NAME
+                    )
+                );
             }
             return new ActionResponse<>(HttpStatus.OK, String.format("Successfully installed the '%s' plugin on Jira server.", JiraConstants.JIRA_ALERT_APP_NAME));
         } catch (IntegrationException e) {
@@ -98,7 +108,10 @@ public class JiraServerCustomFunctionAction extends CustomFunctionAction<String>
         } catch (InterruptedException e) {
             logger.error("Thread was interrupted while validating Jira plugin installation.", e);
             Thread.currentThread().interrupt();
-            return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Thread was interrupted while validating Jira '%s' plugin installation: %s", JiraConstants.JIRA_ALERT_APP_NAME, e.getMessage()));
+            return new ActionResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                String.format("Thread was interrupted while validating Jira '%s' plugin installation: %s", JiraConstants.JIRA_ALERT_APP_NAME, e.getMessage())
+            );
         }
     }
 

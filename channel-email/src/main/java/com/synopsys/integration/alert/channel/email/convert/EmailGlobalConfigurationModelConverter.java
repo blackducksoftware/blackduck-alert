@@ -28,7 +28,12 @@ import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
+/**
+ * @deprecated This class is required for converting an old ConfigurationModel into the new GlobalConfigModel classes. This is a temporary class that should be removed once we
+ * remove unsupported REST endpoints.
+ */
 @Component
+@Deprecated(forRemoval = true)
 public class EmailGlobalConfigurationModelConverter extends GlobalConfigurationModelToConcreteConverter<EmailGlobalConfigModel> {
     private static final String EMAIL_FIELD_PREFIX = "mail.smtp.";
 

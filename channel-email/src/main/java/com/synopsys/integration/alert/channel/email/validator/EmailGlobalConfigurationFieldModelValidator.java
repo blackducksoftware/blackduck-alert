@@ -19,7 +19,11 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
 
+/**
+ * @deprecated Global configuration validators will replace old FieldModel validators as Alert switches to a new concrete REST API. This class will be removed in 8.0.0.
+ */
 @Component
+@Deprecated(forRemoval = true)
 public class EmailGlobalConfigurationFieldModelValidator implements GlobalConfigurationFieldModelValidator {
     @Override
     public Set<AlertFieldStatus> validate(FieldModel fieldModel) {
@@ -37,9 +41,9 @@ public class EmailGlobalConfigurationFieldModelValidator implements GlobalConfig
         configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_SOCKS_PORT_KEY.getPropertyKey());
 
         boolean useAuth = fieldModel.getFieldValueModel(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey())
-                              .flatMap(FieldValueModel::getValue)
-                              .map(Boolean::valueOf)
-                              .orElse(false);
+            .flatMap(FieldValueModel::getValue)
+            .map(Boolean::valueOf)
+            .orElse(false);
 
         if (useAuth) {
             configurationFieldValidator.validateRequiredFieldsAreNotBlank(List.of(

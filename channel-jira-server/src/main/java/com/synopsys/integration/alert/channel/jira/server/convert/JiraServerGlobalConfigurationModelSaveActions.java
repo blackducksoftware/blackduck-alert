@@ -21,7 +21,12 @@ import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
+/**
+ * @deprecated This class is required for converting an old ConfigurationModel into the new GlobalConfigModel classes. This is a temporary class that should be removed once we
+ * remove unsupported REST endpoints in 8.0.0.
+ */
 @Component
+@Deprecated(forRemoval = true)
 public class JiraServerGlobalConfigurationModelSaveActions implements GlobalConfigurationModelToConcreteSaveActions {
     private final JiraServerGlobalConfigurationModelConverter jiraFieldModelConverter;
     private final JiraServerGlobalCrudActions configurationActions;

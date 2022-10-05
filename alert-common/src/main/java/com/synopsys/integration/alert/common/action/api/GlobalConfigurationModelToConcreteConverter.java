@@ -17,6 +17,11 @@ import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.model.ConfigWithMetadata;
 
+/**
+ * @deprecated This class is required for converting an old ConfigurationModel into the new GlobalConfigModel classes. This is a temporary class that should be removed once we
+ * remove unsupported REST endpoints.
+ */
+@Deprecated(forRemoval = true)
 public abstract class GlobalConfigurationModelToConcreteConverter<T extends ConfigWithMetadata> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 

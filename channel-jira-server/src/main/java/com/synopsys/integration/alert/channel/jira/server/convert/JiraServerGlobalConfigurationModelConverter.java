@@ -22,6 +22,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 
 @Component
+@Deprecated(forRemoval = true)
 public class JiraServerGlobalConfigurationModelConverter extends GlobalConfigurationModelToConcreteConverter<JiraServerGlobalConfigModel> {
     public static final String URL_KEY = "jira.server.url";
     public static final String USERNAME_KEY = "jira.server.username";
