@@ -1,44 +1,41 @@
 package com.synopsys.integration.alert.channel.azure.boards.action;
 
-import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.azure.boards.database.accessor.AzureBoardsGlobalConfigAccessor;
+import com.synopsys.integration.alert.channel.azure.boards.database.configuration.AzureBoardsConfigurationEntity;
+import com.synopsys.integration.alert.channel.azure.boards.database.mock.MockAzureBoardsConfigurationRepository;
 import com.synopsys.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
 import com.synopsys.integration.alert.channel.azure.boards.validator.AzureBoardsGlobalConfigurationValidator;
+import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
+import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
+import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
+import com.synopsys.integration.alert.test.common.MockAlertProperties;
+import com.synopsys.integration.alert.test.common.database.MockRepositorySorter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.List;
+import java.text.ParseException;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 public class AzureBoardsGlobalCrudActionsTest {
-    private final String CREATED_AT = String.valueOf(DateUtils.createCurrentDateTimestamp().minusMinutes(5L));
-    private final String UPDATED_AT = String.valueOf(DateUtils.createCurrentDateTimestamp());
-    private final String ORGANIZATION_NAME = "org";
-
-    private final UUID id = UUID.randomUUID();
-    private final UUID app_id = UUID.randomUUID();
-
     private final AuthenticationTestUtils authenticationTestUtils = new AuthenticationTestUtils();
     private final DescriptorKey descriptorKey = ChannelKeys.AZURE_BOARDS;
     private final PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
@@ -49,50 +46,57 @@ public class AzureBoardsGlobalCrudActionsTest {
         () -> new PermissionMatrixModel(permissions)
     );
 
-    AzureBoardsGlobalConfigModel testAzureBoardsGlobalConfigModel;
-    AzureBoardsGlobalCrudActions testCrudActions;
+    private final Gson gson = new Gson();
+    private final AlertProperties alertProperties = new MockAlertProperties();
+    private final FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, gson);
+    private final EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, filePersistenceUtil);
 
-    @Mock
-    AzureBoardsGlobalConfigAccessor mockConfigAccessor;
+    AzureBoardsGlobalConfigModel firstConfigModel;
+    AzureBoardsGlobalCrudActions azureBoardsGlobalCrudActions;
+    AzureBoardsGlobalConfigAccessor azureBoardsGlobalConfigAccessor;
 
     @BeforeEach
     void initEach() {
-        testCrudActions = new AzureBoardsGlobalCrudActions(authorizationManager, mockConfigAccessor, new AzureBoardsGlobalConfigurationValidator(mockConfigAccessor));
-        testAzureBoardsGlobalConfigModel = new AzureBoardsGlobalConfigModel(
-            String.valueOf(id),
+        MockRepositorySorter<AzureBoardsConfigurationEntity> sorter = new MockRepositorySorter<>();
+        MockAzureBoardsConfigurationRepository mockAzureBoardsConfigurationRepository = new MockAzureBoardsConfigurationRepository(sorter);
+        azureBoardsGlobalConfigAccessor = new AzureBoardsGlobalConfigAccessor(encryptionUtility, mockAzureBoardsConfigurationRepository);
+
+        azureBoardsGlobalCrudActions = new AzureBoardsGlobalCrudActions(authorizationManager, azureBoardsGlobalConfigAccessor, new AzureBoardsGlobalConfigurationValidator(azureBoardsGlobalConfigAccessor));
+        firstConfigModel = new AzureBoardsGlobalConfigModel(
+            "",
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
-            CREATED_AT,
-            UPDATED_AT,
-            ORGANIZATION_NAME,
-            String.valueOf(app_id),
+            "",
+            "",
+            "First org",
+            String.valueOf(UUID.randomUUID()),
             Boolean.TRUE,
-            "W7071kQcvRRynq8-v4qmrZr1bjEfgFiKoVm7cOnOi!d",
+            "a secret",
             Boolean.TRUE
         );
     }
 
     @Test
-    void getOneSucceeds() {
-        Mockito.when(mockConfigAccessor.getConfiguration(id)).thenReturn(Optional.of(testAzureBoardsGlobalConfigModel));
+    void getOneSucceeds() throws ParseException {
+        ActionResponse<AzureBoardsGlobalConfigModel> createActionResponse = createConfigModelAndAssertSuccess(firstConfigModel);
+        ActionResponse<AzureBoardsGlobalConfigModel> getOneActionResponse = azureBoardsGlobalCrudActions.getOne(getUUIDFromActionResponse(createActionResponse));
 
-        ActionResponse<AzureBoardsGlobalConfigModel> actionResponse = testCrudActions.getOne(id);
-
-        assertActionResponseSucceeds(actionResponse);
-        assertModelObfuscated(actionResponse);
+        assertActionResponseSucceeds(getOneActionResponse);
+        assertModelObfuscated(getOneActionResponse, firstConfigModel);
     }
 
     @Test
-    void getPagedSucceeds() {
-        AlertPagedModel<AzureBoardsGlobalConfigModel> alertPagedModel = new AlertPagedModel<>(
-            1,
-            AlertPagedModel.DEFAULT_PAGE_NUMBER,
-            AlertPagedModel.DEFAULT_PAGE_SIZE,
-            List.of(testAzureBoardsGlobalConfigModel)
-        );
+    void getOneReturnsNotFoundForNonExistentId() {
+        createConfigModelAndAssertSuccess(firstConfigModel);
+        ActionResponse<AzureBoardsGlobalConfigModel> getOneActionResponse = azureBoardsGlobalCrudActions.getOne(UUID.randomUUID());
 
-        Mockito.when(mockConfigAccessor.getConfigurationPage(AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE, null, null, null)).thenReturn(alertPagedModel);
+        assertFalse(getOneActionResponse.hasContent());
+        assertEquals(HttpStatus.NOT_FOUND, getOneActionResponse.getHttpStatus());
+    }
 
-        ActionResponse<AlertPagedModel<AzureBoardsGlobalConfigModel>> actionResponse = testCrudActions.getPaged(
+    @Test
+    void getPagedSucceeds() throws ParseException {
+        createConfigModelAndAssertSuccess(firstConfigModel);
+        ActionResponse<AlertPagedModel<AzureBoardsGlobalConfigModel>> getPagedActionResponse = azureBoardsGlobalCrudActions.getPaged(
             AlertPagedModel.DEFAULT_PAGE_NUMBER,
             AlertPagedModel.DEFAULT_PAGE_SIZE,
             null,
@@ -100,164 +104,114 @@ public class AzureBoardsGlobalCrudActionsTest {
             null
         );
 
-        assertActionResponseSucceeds(actionResponse);
+        assertActionResponseSucceeds(getPagedActionResponse);
 
-        assertTrue(actionResponse.getContent().isPresent());
-        AlertPagedModel<AzureBoardsGlobalConfigModel> pagedModel = actionResponse.getContent().get();
+        assertTrue(getPagedActionResponse.getContent().isPresent());
+        AlertPagedModel<AzureBoardsGlobalConfigModel> pagedModel = getPagedActionResponse.getContent().get();
         assertEquals(1, pagedModel.getModels().size());
-        assertModelObfuscated(pagedModel.getModels().get(0));
+        assertModelObfuscated(pagedModel.getModels().get(0), firstConfigModel);
     }
 
     @Test
-    void getPageWithSearchTermSucceeds() {
-        final String SEARCH_TERM = "term";
-        AlertPagedModel<AzureBoardsGlobalConfigModel> alertPagedModel = new AlertPagedModel<>(
-            1,
+    void getPagedReturnsNoModel() {
+        ActionResponse<AlertPagedModel<AzureBoardsGlobalConfigModel>> getPagedActionResponse = azureBoardsGlobalCrudActions.getPaged(
             AlertPagedModel.DEFAULT_PAGE_NUMBER,
             AlertPagedModel.DEFAULT_PAGE_SIZE,
-            List.of(testAzureBoardsGlobalConfigModel)
-        );
-
-        Mockito.when(mockConfigAccessor.getConfigurationPage(AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE, SEARCH_TERM, null, null)).thenReturn(alertPagedModel);
-
-        ActionResponse<AlertPagedModel<AzureBoardsGlobalConfigModel>> actionResponse = testCrudActions.getPaged(
-            AlertPagedModel.DEFAULT_PAGE_NUMBER,
-            AlertPagedModel.DEFAULT_PAGE_SIZE,
-            SEARCH_TERM,
+            null,
             null,
             null
         );
 
-        assertActionResponseSucceeds(actionResponse);
-
-        assertTrue(actionResponse.getContent().isPresent());
-        AlertPagedModel<AzureBoardsGlobalConfigModel> pagedModel = actionResponse.getContent().get();
-        assertEquals(1, pagedModel.getModels().size());
-        assertModelObfuscated(pagedModel.getModels().get(0));
+        assertTrue(getPagedActionResponse.getContent().isPresent());
+        AlertPagedModel<AzureBoardsGlobalConfigModel> pagedModel = getPagedActionResponse.getContent().get();
+        assertEquals(0, pagedModel.getModels().size());
     }
 
     @Test
-    void getPagedSortAscendingSucceeds() {
-        AzureBoardsGlobalConfigModel firstModel = new AzureBoardsGlobalConfigModel(
-            String.valueOf(UUID.randomUUID()),
-            "Another Job",
-            CREATED_AT,
-            UPDATED_AT,
-            "org2",
+    void createSucceeds() throws ParseException {
+        ActionResponse<AzureBoardsGlobalConfigModel> actionResponse = createConfigModelAndAssertSuccess(firstConfigModel);
+
+        assertModelObfuscated(actionResponse, firstConfigModel);
+    }
+
+    @Test
+    void createMultipleNonDuplicateSucceeds() {
+        createConfigModelAndAssertSuccess(firstConfigModel);
+
+        AzureBoardsGlobalConfigModel secondConfigModel = new AzureBoardsGlobalConfigModel(
+            "",
+            "Second config",
+            "",
+            "",
+            "Second org",
             String.valueOf(UUID.randomUUID()),
             Boolean.TRUE,
-            "some other secret",
+            "Second secret",
             Boolean.TRUE
         );
-        AlertPagedModel<AzureBoardsGlobalConfigModel> alertPagedModel = new AlertPagedModel<>(
-            1,
-            AlertPagedModel.DEFAULT_PAGE_NUMBER,
-            AlertPagedModel.DEFAULT_PAGE_SIZE,
-            List.of(firstModel, testAzureBoardsGlobalConfigModel)
-        );
+        createConfigModelAndAssertSuccess(secondConfigModel);
+        assertEquals(2, azureBoardsGlobalConfigAccessor.getConfigurationCount());
 
-        Mockito.when(mockConfigAccessor.getConfigurationPage(AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE, "", "name", "asc")).thenReturn(alertPagedModel);
-
-        ActionResponse<AlertPagedModel<AzureBoardsGlobalConfigModel>> actionResponse = testCrudActions.getPaged(
-            AlertPagedModel.DEFAULT_PAGE_NUMBER,
-            AlertPagedModel.DEFAULT_PAGE_SIZE,
+        AzureBoardsGlobalConfigModel thirdConfigModel = new AzureBoardsGlobalConfigModel(
             "",
-            "name",
-            "asc"
-        );
-
-        assertActionResponseSucceeds(actionResponse);
-
-        assertTrue(actionResponse.getContent().isPresent());
-        AlertPagedModel<AzureBoardsGlobalConfigModel> pagedModel = actionResponse.getContent().get();
-        assertEquals(2, pagedModel.getModels().size());
-        assertEquals("Another Job", pagedModel.getModels().get(0).getName());
-        assertEquals(AlertRestConstants.DEFAULT_CONFIGURATION_NAME, pagedModel.getModels().get(1).getName());
-    }
-
-    @Test
-    void getPagedSortDescendingSucceeds() {
-        AzureBoardsGlobalConfigModel secondModel = new AzureBoardsGlobalConfigModel(
-            String.valueOf(UUID.randomUUID()),
-            "Another Job",
-            CREATED_AT,
-            UPDATED_AT,
-            "org2",
+            "Third config",
+            "",
+            "",
+            "Third org",
             String.valueOf(UUID.randomUUID()),
             Boolean.TRUE,
-            "some other secret",
+            "Third secret",
             Boolean.TRUE
         );
-        AlertPagedModel<AzureBoardsGlobalConfigModel> alertPagedModel = new AlertPagedModel<>(
-            1,
-            AlertPagedModel.DEFAULT_PAGE_NUMBER,
-            AlertPagedModel.DEFAULT_PAGE_SIZE,
-            List.of(testAzureBoardsGlobalConfigModel, secondModel)
-        );
+        createConfigModelAndAssertSuccess(thirdConfigModel);
+        assertEquals(3, azureBoardsGlobalConfigAccessor.getConfigurationCount());
+    }
 
-        Mockito.when(mockConfigAccessor.getConfigurationPage(AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE, "", "name", "desc")).thenReturn(alertPagedModel);
+    @Test
+    void createDuplicateReturnsError() {
+        createConfigModelAndAssertSuccess(firstConfigModel);
 
-        ActionResponse<AlertPagedModel<AzureBoardsGlobalConfigModel>> actionResponse = testCrudActions.getPaged(
-            AlertPagedModel.DEFAULT_PAGE_NUMBER,
-            AlertPagedModel.DEFAULT_PAGE_SIZE,
+        AzureBoardsGlobalConfigModel duplicateAzureBoardsGlobalConfigModel = new AzureBoardsGlobalConfigModel(
             "",
-            "name",
-            "desc"
+            firstConfigModel.getName(),  // Reusing name returns error as it is unique
+            "",
+            "",
+            "New org name",
+            String.valueOf(UUID.randomUUID()),
+            Boolean.TRUE,
+            "New secret",
+            Boolean.TRUE
         );
 
-        assertActionResponseSucceeds(actionResponse);
+        ActionResponse<AzureBoardsGlobalConfigModel> updateActionResponse = azureBoardsGlobalCrudActions.create(duplicateAzureBoardsGlobalConfigModel);
+        assertEquals(1, azureBoardsGlobalConfigAccessor.getConfigurationCount());
 
-        assertTrue(actionResponse.getContent().isPresent());
-        AlertPagedModel<AzureBoardsGlobalConfigModel> pagedModel = actionResponse.getContent().get();
-        assertEquals(2, pagedModel.getModels().size());
-        assertEquals(AlertRestConstants.DEFAULT_CONFIGURATION_NAME, pagedModel.getModels().get(0).getName());
-        assertEquals("Another Job", pagedModel.getModels().get(1).getName());
+        assertTrue(updateActionResponse.isError());
+        assertFalse(updateActionResponse.hasContent());
+        assertEquals(HttpStatus.BAD_REQUEST, updateActionResponse.getHttpStatus());
     }
 
     @Test
-    void createSucceeds() throws AlertConfigurationException {
-        Mockito.when(mockConfigAccessor.createConfiguration(Mockito.any())).thenReturn(testAzureBoardsGlobalConfigModel);
+    void updateSucceeds() throws ParseException {
+        ActionResponse<AzureBoardsGlobalConfigModel> createActionResponse = createConfigModelAndAssertSuccess(firstConfigModel);
+        AzureBoardsGlobalConfigModel createResponseModel = createActionResponse.getContent().orElseThrow();
 
-        ActionResponse<AzureBoardsGlobalConfigModel> actionResponse = testCrudActions.create(testAzureBoardsGlobalConfigModel);
+        ActionResponse<AzureBoardsGlobalConfigModel> updateActionResponse = azureBoardsGlobalCrudActions.update(getUUIDFromActionResponse(createActionResponse), createResponseModel);
+        assertEquals(1, azureBoardsGlobalConfigAccessor.getConfigurationCount());
 
-        assertActionResponseSucceeds(actionResponse);
-        assertModelObfuscated(actionResponse);
+        assertActionResponseSucceeds(updateActionResponse);
+        assertModelObfuscated(updateActionResponse, createResponseModel);
     }
 
     @Test
-    void createDuplicateTest() throws AlertConfigurationException {
-        Mockito.when(mockConfigAccessor.existsConfigurationByName(Mockito.any())).thenReturn(true);
-        Mockito.when(mockConfigAccessor.createConfiguration(Mockito.any())).thenReturn(testAzureBoardsGlobalConfigModel);
+    void deleteSucceeds() {
+        ActionResponse<AzureBoardsGlobalConfigModel> createActionResponse = createConfigModelAndAssertSuccess(firstConfigModel);
 
-        ActionResponse<AzureBoardsGlobalConfigModel> actionResponse = testCrudActions.create(testAzureBoardsGlobalConfigModel);
+        ActionResponse<AzureBoardsGlobalConfigModel> deleteActionResponse = azureBoardsGlobalCrudActions.delete(getUUIDFromActionResponse(createActionResponse));
 
-        assertTrue(actionResponse.isError());
-        assertFalse(actionResponse.hasContent());
-        assertEquals(HttpStatus.BAD_REQUEST, actionResponse.getHttpStatus());
-    }
-
-    @Test
-    void updateTest() throws AlertConfigurationException {
-        Mockito.when(mockConfigAccessor.existsConfigurationById(id)).thenReturn(true);
-        Mockito.when(mockConfigAccessor.updateConfiguration(Mockito.eq(id), Mockito.any())).thenReturn(testAzureBoardsGlobalConfigModel);
-
-        ActionResponse<AzureBoardsGlobalConfigModel> actionResponse = testCrudActions.update(id, testAzureBoardsGlobalConfigModel);
-
-        assertActionResponseSucceeds(actionResponse);
-        assertModelObfuscated(actionResponse);
-    }
-
-    @Test
-    void deleteTest() {
-        Mockito.when(mockConfigAccessor.existsConfigurationById(id)).thenReturn(true);
-
-        ActionResponse<AzureBoardsGlobalConfigModel> actionResponse = testCrudActions.delete(id);
-
-        Mockito.verify(mockConfigAccessor).deleteConfiguration(id);
-
-        assertTrue(actionResponse.isSuccessful());
-        assertFalse(actionResponse.hasContent());
-        assertEquals(HttpStatus.NO_CONTENT, actionResponse.getHttpStatus());
+        assertTrue(deleteActionResponse.isSuccessful());
+        assertFalse(deleteActionResponse.hasContent());
+        assertEquals(HttpStatus.NO_CONTENT, deleteActionResponse.getHttpStatus());
     }
 
     private void assertActionResponseSucceeds(ActionResponse<?> actionResponse) {
@@ -266,25 +220,39 @@ public class AzureBoardsGlobalCrudActionsTest {
         assertEquals(HttpStatus.OK, actionResponse.getHttpStatus());
     }
 
-    private void assertModelObfuscated(ActionResponse<AzureBoardsGlobalConfigModel> actionResponse) {
-        Optional<AzureBoardsGlobalConfigModel> optionalAzureBoardsGlobalConfigModel = actionResponse.getContent();
-        assertTrue(optionalAzureBoardsGlobalConfigModel.isPresent());
-        assertModelObfuscated(optionalAzureBoardsGlobalConfigModel.get());
+    private void assertModelObfuscated(ActionResponse<AzureBoardsGlobalConfigModel> actionResponse, AzureBoardsGlobalConfigModel expectedValuesModel) throws ParseException {
+        assertTrue(actionResponse.getContent().isPresent());
+        AzureBoardsGlobalConfigModel responseAzureBoardsGlobalConfigModel = actionResponse.getContent().get();
+        assertModelObfuscated(responseAzureBoardsGlobalConfigModel, expectedValuesModel);
     }
 
-    private void assertModelObfuscated(AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModel) {
-        assertEquals(AlertRestConstants.DEFAULT_CONFIGURATION_NAME, azureBoardsGlobalConfigModel.getName());
-        assertEquals(CREATED_AT, azureBoardsGlobalConfigModel.getCreatedAt());
-        assertEquals(UPDATED_AT, azureBoardsGlobalConfigModel.getLastUpdated());
-        assertEquals(ORGANIZATION_NAME, azureBoardsGlobalConfigModel.getOrganizationName());
+    private void assertModelObfuscated(AzureBoardsGlobalConfigModel responseAzureBoardsGlobalConfigModel, AzureBoardsGlobalConfigModel expectedValuesModel) throws ParseException {
+        // These values from response should be visible and match the ones from expectedValuesModel
+        assertEquals(expectedValuesModel.getName(), responseAzureBoardsGlobalConfigModel.getName());
+        assertEquals(expectedValuesModel.getOrganizationName(), responseAzureBoardsGlobalConfigModel.getOrganizationName());
+        // For timestamps fields (set by accessor); parsing them should not throw an error (bad format or empty)
+        DateUtils.parseDate(responseAzureBoardsGlobalConfigModel.getCreatedAt(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
+        DateUtils.parseDate(responseAzureBoardsGlobalConfigModel.getLastUpdated(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
 
-        // See model obfuscate for fields to hide
-        assertTrue(azureBoardsGlobalConfigModel.getAppId().isEmpty());
-        assertTrue(azureBoardsGlobalConfigModel.getIsAppIdSet().isPresent());
-        assertEquals(Boolean.TRUE, azureBoardsGlobalConfigModel.getIsAppIdSet().get());
+        // See model.obfuscate for fields to hide
+        assertTrue(responseAzureBoardsGlobalConfigModel.getAppId().isEmpty());
+        assertTrue(responseAzureBoardsGlobalConfigModel.getIsAppIdSet().isPresent());
+        assertEquals(Boolean.TRUE, responseAzureBoardsGlobalConfigModel.getIsAppIdSet().get());
 
-        assertTrue(azureBoardsGlobalConfigModel.getClientSecret().isEmpty());
-        assertTrue(azureBoardsGlobalConfigModel.getIsClientSecretSet().isPresent());
-        assertEquals(Boolean.TRUE, azureBoardsGlobalConfigModel.getIsClientSecretSet().get());
+        assertTrue(responseAzureBoardsGlobalConfigModel.getClientSecret().isEmpty());
+        assertTrue(responseAzureBoardsGlobalConfigModel.getIsClientSecretSet().isPresent());
+        assertEquals(Boolean.TRUE, responseAzureBoardsGlobalConfigModel.getIsClientSecretSet().get());
+    }
+
+    private ActionResponse<AzureBoardsGlobalConfigModel> createConfigModelAndAssertSuccess(AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModel) {
+        ActionResponse<AzureBoardsGlobalConfigModel> actionResponse = azureBoardsGlobalCrudActions.create(azureBoardsGlobalConfigModel);
+        assertActionResponseSucceeds(actionResponse);
+
+        return actionResponse;
+    }
+
+    private UUID getUUIDFromActionResponse(ActionResponse<AzureBoardsGlobalConfigModel> actionResponse) {
+        AzureBoardsGlobalConfigModel createResponseModel = actionResponse.getContent().orElseThrow();
+        return UUID.fromString(createResponseModel.getId());
     }
 }
