@@ -3,6 +3,7 @@ package com.synopsys.integration.alert.channel.azure.boards.action;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.channel.azure.boards.database.accessor.AzureBoardsGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
+import com.synopsys.integration.alert.channel.azure.boards.validator.AzureBoardsGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
@@ -51,13 +52,12 @@ public class AzureBoardsGlobalCrudActionsTest {
     AzureBoardsGlobalConfigModel testAzureBoardsGlobalConfigModel;
     AzureBoardsGlobalCrudActions testCrudActions;
 
-
     @Mock
     AzureBoardsGlobalConfigAccessor mockConfigAccessor;
 
     @BeforeEach
     void initEach() {
-        testCrudActions = new AzureBoardsGlobalCrudActions(authorizationManager, mockConfigAccessor);
+        testCrudActions = new AzureBoardsGlobalCrudActions(authorizationManager, mockConfigAccessor, new AzureBoardsGlobalConfigurationValidator(mockConfigAccessor));
         testAzureBoardsGlobalConfigModel = new AzureBoardsGlobalConfigModel(
             String.valueOf(id),
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
