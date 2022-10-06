@@ -8,12 +8,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.OffsetDateTime;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.UnaryOperator;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,14 +44,8 @@ class AzureBoardsGlobalConfigAccessorTest {
     @BeforeEach
     public void init() {
         MockRepositorySorter<AzureBoardsConfigurationEntity> sorter = new MockRepositorySorter<>();
-        UnaryOperator<List<AzureBoardsConfigurationEntity>> nameFieldSorterFunction = entityList -> entityList.stream()
-            .sorted(Comparator.comparing(AzureBoardsConfigurationEntity::getName))
-            .collect(Collectors.toList());
-        sorter.applyFieldSorter("name", nameFieldSorterFunction);
-        UnaryOperator<List<AzureBoardsConfigurationEntity>> organizationNameFieldSorterFunction = entityList -> entityList.stream()
-            .sorted(Comparator.comparing(AzureBoardsConfigurationEntity::getOrganizationName))
-            .collect(Collectors.toList());
-        sorter.applyFieldSorter("organizationName", organizationNameFieldSorterFunction);
+        sorter.applyFieldSorter("name", MockRepositorySorter.createSingleFieldSorter(AzureBoardsConfigurationEntity::getName));
+        sorter.applyFieldSorter("organizationName", MockRepositorySorter.createSingleFieldSorter(AzureBoardsConfigurationEntity::getOrganizationName));
         mockAzureBoardsConfigurationRepository = new MockAzureBoardsConfigurationRepository(sorter);
         azureBoardsGlobalConfigAccessor = new AzureBoardsGlobalConfigAccessor(encryptionUtility, mockAzureBoardsConfigurationRepository);
     }
