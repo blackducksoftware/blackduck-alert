@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
+import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesLegacy;
 import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUrlCreator;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidator;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
@@ -63,8 +63,16 @@ public class AzureOAuthCallbackController {
     private final AuthorizationManager authorizationManager;
 
     @Autowired
-    public AzureOAuthCallbackController(ResponseFactory responseFactory, Gson gson, AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory, ProxyManager proxyManager, ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor,
-        AzureRedirectUrlCreator azureRedirectUrlCreator, OAuthRequestValidator oAuthRequestValidator, AuthorizationManager authorizationManager) {
+    public AzureOAuthCallbackController(
+        ResponseFactory responseFactory,
+        Gson gson,
+        AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory,
+        ProxyManager proxyManager,
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor,
+        AzureRedirectUrlCreator azureRedirectUrlCreator,
+        OAuthRequestValidator oAuthRequestValidator,
+        AuthorizationManager authorizationManager
+    ) {
         this.responseFactory = responseFactory;
         this.gson = gson;
         this.azureBoardsCredentialDataStoreFactory = azureBoardsCredentialDataStoreFactory;
@@ -103,7 +111,11 @@ public class AzureOAuthCallbackController {
                         logger.error("OAuth request with id {}: Azure oauth callback: Authorization code isn't valid. Stop processing", oAuthRequestId);
                     } else {
                         String oAuthRedirectUri = azureRedirectUrlCreator.createOAuthRedirectUri();
-                        AzureBoardsProperties properties = AzureBoardsProperties.fromFieldAccessor(azureBoardsCredentialDataStoreFactory, oAuthRedirectUri, fieldUtility);
+                        AzureBoardsPropertiesLegacy properties = AzureBoardsPropertiesLegacy.fromFieldAccessor(
+                            azureBoardsCredentialDataStoreFactory,
+                            oAuthRedirectUri,
+                            fieldUtility
+                        );
                         testOAuthConnection(properties, authorizationCode, oAuthRequestId);
                     }
                 }
@@ -116,7 +128,7 @@ public class AzureOAuthCallbackController {
         return responseFactory.createFoundRedirectResponse(azureRedirectUrlCreator.createUIRedirectLocation());
     }
 
-    private void testOAuthConnection(AzureBoardsProperties azureBoardsProperties, String authorizationCode, String oAuthRequestId) {
+    private void testOAuthConnection(AzureBoardsPropertiesLegacy azureBoardsProperties, String authorizationCode, String oAuthRequestId) {
         try {
             ProxyInfo proxyInfo = proxyManager.createProxyInfoForHost(AzureHttpRequestCreatorFactory.DEFAULT_BASE_URL);
             String organizationName = azureBoardsProperties.getOrganizationName();
@@ -146,7 +158,10 @@ public class AzureOAuthCallbackController {
 
     private FieldUtility createFieldAccessor() {
         Map<String, ConfigurationFieldModel> fields = new HashMap<>();
-        List<ConfigurationModel> azureChannelConfigs = configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(ChannelKeys.AZURE_BOARDS, ConfigContextEnum.GLOBAL);
+        List<ConfigurationModel> azureChannelConfigs = configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(
+            ChannelKeys.AZURE_BOARDS,
+            ConfigContextEnum.GLOBAL
+        );
         azureChannelConfigs.stream()
             .findFirst()
             .map(ConfigurationModel::getCopyOfKeyToFieldMap)

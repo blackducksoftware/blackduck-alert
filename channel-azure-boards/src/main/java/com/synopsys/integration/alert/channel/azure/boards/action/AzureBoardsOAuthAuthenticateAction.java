@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
+import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesLegacy;
 import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUrlCreator;
 import com.synopsys.integration.alert.channel.azure.boards.database.accessor.AzureBoardsGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
@@ -150,7 +150,7 @@ public class AzureBoardsOAuthAuthenticateAction {
     }
 
     private boolean isAuthenticated(FieldUtility fieldUtility) {
-        AzureBoardsProperties properties = AzureBoardsProperties.fromFieldAccessor(
+        AzureBoardsPropertiesLegacy properties = AzureBoardsPropertiesLegacy.fromFieldAccessor(
             azureBoardsCredentialDataStoreFactory,
             azureRedirectUrlCreator.createOAuthRedirectUri(),
             fieldUtility

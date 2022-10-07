@@ -1,15 +1,23 @@
 package com.synopsys.integration.alert.test.common.database;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Sort;
 
 public class MockRepositorySorter<E> {
+    public static <E, U extends Comparable<? super U>> UnaryOperator<List<E>> createSingleFieldSorter(Function<? super E, ? extends U> keyExtractor) {
+        return entityList -> entityList.stream()
+            .sorted(Comparator.comparing(keyExtractor))
+            .collect(Collectors.toList());
+    }
 
     private final Map<String, UnaryOperator<List<E>>> fieldSorters = new HashMap<>();
 

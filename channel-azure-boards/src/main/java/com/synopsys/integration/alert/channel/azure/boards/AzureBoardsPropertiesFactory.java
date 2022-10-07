@@ -25,20 +25,22 @@ public class AzureBoardsPropertiesFactory {
     private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
 
     @Autowired
-    public AzureBoardsPropertiesFactory(AzureBoardsChannelKey channelKey, AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory,
-        AzureRedirectUrlCreator azureRedirectUrlCreator, ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor) {
+    public AzureBoardsPropertiesFactory(
+        AzureBoardsChannelKey channelKey, AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory,
+        AzureRedirectUrlCreator azureRedirectUrlCreator, ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor
+    ) {
         this.channelKey = channelKey;
         this.credentialDataStoreFactory = credentialDataStoreFactory;
         this.azureRedirectUrlCreator = azureRedirectUrlCreator;
         this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
     }
 
-    public AzureBoardsProperties createAzureBoardsProperties() throws AlertConfigurationException {
+    public AzureBoardsPropertiesLegacy createAzureBoardsProperties() throws AlertConfigurationException {
         ConfigurationModel azureBoardsGlobalConfiguration = configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(channelKey, ConfigContextEnum.GLOBAL)
-                                                                .stream()
-                                                                .findAny()
-                                                                .orElseThrow(() -> new AlertConfigurationException("Missing Azure Boards global configuration"));
-        return AzureBoardsProperties.fromGlobalConfig(credentialDataStoreFactory, azureRedirectUrlCreator.createOAuthRedirectUri(), azureBoardsGlobalConfiguration);
+            .stream()
+            .findAny()
+            .orElseThrow(() -> new AlertConfigurationException("Missing Azure Boards global configuration"));
+        return AzureBoardsPropertiesLegacy.fromGlobalConfig(credentialDataStoreFactory, azureRedirectUrlCreator.createOAuthRedirectUri(), azureBoardsGlobalConfiguration);
     }
 
 }
