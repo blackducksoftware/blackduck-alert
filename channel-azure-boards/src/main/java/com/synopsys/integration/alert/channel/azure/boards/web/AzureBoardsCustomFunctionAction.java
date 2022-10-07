@@ -47,7 +47,11 @@ import com.synopsys.integration.azure.boards.common.http.AzureHttpRequestCreator
 import com.synopsys.integration.azure.boards.common.oauth.AzureOAuthScopes;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
+/**
+ * @deprecated This class will be replaced by AzureBoardsOAuthAuthenticateAction. It is planned for removal in 8.0.0.
+ */
 @Component
+@Deprecated(forRemoval = true)
 public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthEndpointResponse> {
     private final Logger logger = LoggerFactory.getLogger(AzureBoardsCustomFunctionAction.class);
 
@@ -159,7 +163,11 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
     }
 
     private boolean isAuthenticated(FieldUtility fieldUtility) {
-        AzureBoardsProperties properties = AzureBoardsProperties.fromFieldAccessor(azureBoardsCredentialDataStoreFactory, azureRedirectUrlCreator.createOAuthRedirectUri(), fieldUtility);
+        AzureBoardsProperties properties = AzureBoardsProperties.fromFieldAccessor(
+            azureBoardsCredentialDataStoreFactory,
+            azureRedirectUrlCreator.createOAuthRedirectUri(),
+            fieldUtility
+        );
         ProxyInfo proxy = proxyManager.createProxyInfoForHost(AzureHttpRequestCreatorFactory.DEFAULT_BASE_URL);
         return properties.hasOAuthCredentials(proxy);
     }
