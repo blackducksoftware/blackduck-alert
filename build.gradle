@@ -34,7 +34,7 @@ ext {
     postgresContainerVersion = '13.8'
 
     // Docker Variables
-    dockerBuildParam_POSTGRESIMAGEVERSION = 'postgres:' + postgresContainerVersion + '-alpine'
+    dockerBuildParam_POSTGRESBASEIMAGE = 'docker.io/centos/postgresql-13-centos7:1'
     dockerStagingDirectory = project.buildDir.toString() + '/docker-staging'
     baseDockerDirectory = project.projectDir.toString() + '/docker'
     dockerCleanStagingAreaDirectoryStageName = 'dockerCleanStagingAreaDirectory'
