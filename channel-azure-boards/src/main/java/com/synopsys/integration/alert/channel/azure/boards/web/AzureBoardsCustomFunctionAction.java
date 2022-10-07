@@ -23,7 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
+import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesLegacy;
 import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUrlCreator;
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidator;
@@ -159,7 +159,11 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
     }
 
     private boolean isAuthenticated(FieldUtility fieldUtility) {
-        AzureBoardsProperties properties = AzureBoardsProperties.fromFieldAccessor(azureBoardsCredentialDataStoreFactory, azureRedirectUrlCreator.createOAuthRedirectUri(), fieldUtility);
+        AzureBoardsPropertiesLegacy properties = AzureBoardsPropertiesLegacy.fromFieldAccessor(
+            azureBoardsCredentialDataStoreFactory,
+            azureRedirectUrlCreator.createOAuthRedirectUri(),
+            fieldUtility
+        );
         ProxyInfo proxy = proxyManager.createProxyInfoForHost(AzureHttpRequestCreatorFactory.DEFAULT_BASE_URL);
         return properties.hasOAuthCredentials(proxy);
     }
