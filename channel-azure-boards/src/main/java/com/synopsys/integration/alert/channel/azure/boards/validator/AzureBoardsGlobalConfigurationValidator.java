@@ -27,7 +27,7 @@ public class AzureBoardsGlobalConfigurationValidator {
 
         if (StringUtils.isBlank(model.getName())) {
             statuses.add(AlertFieldStatus.error("name", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
-        } else if (doesNameExist(model.getName(), id)) {
+        } else if (doesNameExistAndNotAnUpdate(model.getName(), id)) {
             statuses.add(AlertFieldStatus.error("name", AlertFieldStatusMessages.DUPLICATE_NAME_FOUND));
         }
         if (StringUtils.isBlank(model.getOrganizationName())) {
@@ -46,8 +46,8 @@ public class AzureBoardsGlobalConfigurationValidator {
         return ValidationResponseModel.success();
     }
 
-    //Checks if a configuration already exists then checks if we're updating the found configuration
-    private boolean doesNameExist(String name, @Nullable String currentConfigId) {
+    //Checks if a configuration already exists then checks if we're updating (currentConfigId == id) the found configuration
+    private boolean doesNameExistAndNotAnUpdate(String name, @Nullable String currentConfigId) {
         return azureBoardsGlobalConfigAccessor.getConfigurationByName(name)
             .map(AzureBoardsGlobalConfigModel::getId)
             .filter(id -> currentConfigId == null || !currentConfigId.equals(id))
