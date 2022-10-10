@@ -9,23 +9,24 @@ function logIt() {
 }
 
 function setValueFromEnvironment() {
-  variableName="${1}"
-  local secretFile="${2}"
-  local envVarName="${3}"
-  local envVarValue=$(printenv "${envVarName}")
-  local defaultVarName="${4}"
-  local defaultVarValue=$(printenv "${defaultVarName}")
+  postgresqlVariableName="${1}"
+  local alertVariableName="${2}"
+
+  local secretFile="${dockerSecretDirectory}/${alertVariableName}"
+
+  local postgresVariableValue=$(printenv "${postgresqlVariableName}")
+  local alertVariableValue=$(printenv "${alertVariableName}")
 
   if [ -s "${secretFile}" ]; then
-    logIt "${variableName} set from contents of ${secretFile}"
-    eval "export ${variableName}=$(< "${secretFile}")"
-  elif [ -n "${envVarValue}" ]; then
-    logIt "${variableName} already set in environment"
-  elif [ -n "${defaultVarValue}" ]; then
-    logIt "${variableName} set with value from ENV-VAR ${defaultVarName}"
-    eval "export ${variableName}=${defaultVarValue}"
+    logIt "${postgresqlVariableName} set from contents of ${secretFile}"
+    eval "export ${postgresqlVariableName}=$(< "${secretFile}")"
+  elif [ -n "${postgresVariableValue}" ]; then
+    logIt "${postgresqlVariableName} already set in environment"
+  elif [ -n "${alertVariableValue}" ]; then
+    logIt "${postgresqlVariableName} set with value from ENV-VAR ${alertVariableName}"
+    eval "export ${postgresqlVariableName}=${alertVariableValue}"
   else
-    echo "Unable to set ${variableName}"
+    echo "Unable to set ${postgresqlVariableName}"
     exit 1
   fi
 }
@@ -36,9 +37,9 @@ if [ -z "${imageStartUpCmd}" ]; then
 fi
 
 ## Set PGSQL environment variables ##
-setValueFromEnvironment POSTGRESQL_USER "${dockerSecretDirectory}/ALERT_DB_USERNAME" POSTGRESQL_USER ALERT_DB_USERNAME
-setValueFromEnvironment POSTGRESQL_PASSWORD "${dockerSecretDirectory}/ALERT_DB_PASSWORD" POSTGRESQL_PASSWORD ALERT_DB_PASSWORD
-setValueFromEnvironment POSTGRESQL_DATABASE "${dockerSecretDirectory}/ALERT_DB_NAME" POSTGRESQL_DATABASE ALERT_DB_NAME
+setValueFromEnvironment POSTGRESQL_USER ALERT_DB_USERNAME
+setValueFromEnvironment POSTGRESQL_PASSWORD ALERT_DB_PASSWORD
+setValueFromEnvironment POSTGRESQL_DATABASE ALERT_DB_NAME
 
 ## Run Image start CMD ##
 eval "${imageStartUpCmd}"
