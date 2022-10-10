@@ -1,13 +1,13 @@
 version: '3.6'
 services:
   alertdb:
-#   environment:
-#     - POSTGRESQL_USER=
-#     - POSTGRESQL_PASSWORD=
-#     - POSTGRESQL_DATABASE=alertdb
-#     - ALERT_DB_USERNAME=
-#     - ALERT_DB_PASSWORD=
-#     - ALERT_DB_NAME
+    environment:
+      - POSTGRESQL_USER=sa
+      - POSTGRESQL_PASSWORD=blackduck
+      - POSTGRESQL_DATABASE=alertdb
+#     - ALERT_DB_USERNAME=sa
+#     - ALERT_DB_PASSWORD=blackduck
+#     - ALERT_DB_NAMEalertdb
 #   secrets:
 #     - ALERT_DB_USERNAME
 #     - ALERT_DB_PASSWORD
