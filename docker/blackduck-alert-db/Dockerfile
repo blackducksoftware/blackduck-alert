@@ -1,4 +1,7 @@
-FROM postgres:12.11-alpine
+# The ARG for the FROM image comes from Gradle. It is based off of postgresContainerVersion,
+# and used in buildSrc/docker.gradle
+ARG POSTGRESIMAGEVERSION=""
+FROM ${POSTGRESIMAGEVERSION}
 
 ARG VERSION
 
