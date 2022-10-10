@@ -17,7 +17,6 @@ COPY alertdb-healthcheck.sh /usr/local/bin/alertdb-healthcheck.sh
 COPY alertdb-cmd.sh /usr/local/bin/alertdb-cmd.sh
 COPY create_extension.sql $DOCKER_ENTRYPPOINT_INITD_DIR/create_extension.sql
 
-RUN chmod 754 /usr/local/bin/alertdb-*.sh
 USER postgres
 
 CMD ["alertdb-cmd.sh","run-postgresql"]
