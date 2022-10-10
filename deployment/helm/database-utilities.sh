@@ -3,11 +3,12 @@
 backup=false
 restore=false
 file=
-databaseKeyword=alertdb
+databaseKeyword="myalert-postgres-"
 dumpSchema=false
 databaseName=alertdb
 userName=sa
 password=
+deploymentNamespace=default
 
 displayConfiguration() {
   if [ -z $password ];
@@ -23,7 +24,8 @@ displayConfiguration() {
   echo "    restore: $restore"
   echo "  Input/Output File:"
   echo "    File: $file"
-  echo "  Container Search Keyword:"
+  echo "  Deployment Namespace: $deploymentNamespace"
+  echo "  Pod Search Keyword:"
   echo "    Keyword: $databaseKeyword"
   echo "  Dump Database Schema: $dumpSchema"
   echo "  Database Name: $databaseName"
@@ -33,15 +35,15 @@ displayConfiguration() {
 }
 
 checkContainerFound() {
-  if [ -z $containerId ];
+  if [ -z $podId ];
     then
       echo
-      echo "Database container not found exiting ..."
+      echo "Database pod in names space $deploymentNamespace not found exiting ..."
       echo
       exit 1
     else
       echo
-      echo "Database container found with ID: $containerId"
+      echo "Database pod in namespace $deploymentNamespace found with ID: $podId"
       echo
   fi
 }
@@ -55,7 +57,7 @@ checkFileSpecified() {
   fi
 }
 
-while getopts "b,f:,k:,r,s,u:,p:" option; do
+while getopts "b,f:,k:,n:,r,s,u:,p:" option; do
   case ${option} in
     b)
       backup=true
@@ -68,6 +70,9 @@ while getopts "b,f:,k:,r,s,u:,p:" option; do
       ;;
     k)
       databaseKeyword="${OPTARG}"
+      ;;
+    n)
+      deploymentNamespace="${OPTARG}"
       ;;
     r)
       restore=true
@@ -88,7 +93,7 @@ while getopts "b,f:,k:,r,s,u:,p:" option; do
 done
 shift $((OPTIND -1))
 
-containerId=$(docker ps | grep $databaseKeyword | awk '{print $1}');
+podId=$(kubectl -n $deploymentNamespace get pods | grep $databaseKeyword | awk '{print $1}');
 
 displayConfiguration
 checkContainerFound
@@ -98,8 +103,8 @@ if [ $backup == "true" ];
   then
     checkFileSpecified "Cannot backup the database."
     echo "Backing up database $databaseName"
-    docker exec -i $containerId pg_dump -Fc -U $userName -f /tmp/alert-database.dump $databaseName;
-    docker cp $containerId:/tmp/alert-database.dump $file
+    kubectl -n $deploymentNamespace exec $podId -i -- pg_dump -Fc -U $userName -f /tmp/alert-database.dump $databaseName;
+    kubectl -n $deploymentNamespace cp $podId:/tmp/alert-database.dump $file
     echo "Database $databaseName backup completed to file $file"
 fi
 
@@ -108,6 +113,6 @@ if [ $restore == "true" ];
   then
     checkFileSpecified "Cannot restore the database from a file."
     echo "Restoring database $databaseName from file $file"
-    cat $file | docker exec -i $containerId pg_restore -U $userName -Fc --verbose --clean --if-exists -d $databaseName
+    cat $file | kubectl -n $deploymentNamespace exec $podId -i -- pg_restore -U $userName -Fc --verbose --clean --if-exists -d $databaseName
     echo "Database $databaseName restored."
 fi
