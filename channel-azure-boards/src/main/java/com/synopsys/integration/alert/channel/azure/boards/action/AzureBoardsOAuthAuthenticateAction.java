@@ -21,7 +21,6 @@ import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBo
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthEndpointResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.rest.AlertWebServerUrlManager;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
@@ -66,7 +65,7 @@ public class AzureBoardsOAuthAuthenticateAction {
     }
 
     public ActionResponse<OAuthEndpointResponse> authenticate(AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModel) {
-        ActionResponse<AzureBoardsGlobalConfigModel> savedConfigModelResponse = saveOrUpdateModel(azureBoardsGlobalConfigModel);
+        ActionResponse<AzureBoardsGlobalConfigModel> savedConfigModelResponse = createOrUpdateModel(azureBoardsGlobalConfigModel);
         if (savedConfigModelResponse.isError()) {
             return new ActionResponse<>(
                 savedConfigModelResponse.getHttpStatus(),
@@ -97,6 +96,7 @@ public class AzureBoardsOAuthAuthenticateAction {
             return createErrorResponse("Could not determine the alert server url for the callback.");
         }
 
+        //TODO: generate request key that stores the UUID of the model, to be used in the AzureOAuthCallbackController
         String requestKey = oAuthRequestValidator.generateRequestKey();
         // since we have only one OAuth channel now remove any other requests.
         // if we have more OAuth clients then the "remove requests" will have to be removed from here.
@@ -107,9 +107,7 @@ public class AzureBoardsOAuthAuthenticateAction {
         logger.info("OAuth authorization request created: {}", requestKey);
         String authUrl = createAuthURL(appId, requestKey);
         logger.debug("Authenticating Azure OAuth URL: {}", authUrl);
-        //TODO: Implement isAuthenticated without the use of FieldModels
-        return new ActionResponse<>(HttpStatus.OK, new OAuthEndpointResponse(false, authUrl, "Authenticating..."));
-        //return new ActionResponse<>(HttpStatus.OK, new OAuthEndpointResponse(isAuthenticated(fieldUtility), authUrl, "Authenticating..."));
+        return new ActionResponse<>(HttpStatus.OK, new OAuthEndpointResponse(isAuthenticated(savedConfigModel), authUrl, "Authenticating..."));
     }
 
     private ActionResponse<OAuthEndpointResponse> createErrorResponse(String errorMessage) {
@@ -122,7 +120,7 @@ public class AzureBoardsOAuthAuthenticateAction {
         return new ActionResponse<>(httpStatus, errorMessage, oAuthEndpointResponse);
     }
 
-    private ActionResponse<AzureBoardsGlobalConfigModel> saveOrUpdateModel(AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModel) {
+    private ActionResponse<AzureBoardsGlobalConfigModel> createOrUpdateModel(AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModel) {
         if (!authorizationManager.hasExecutePermission(ConfigContextEnum.GLOBAL, ChannelKeys.AZURE_BOARDS)) {
             return new ActionResponse<>(HttpStatus.FORBIDDEN, ResponseFactory.UNAUTHORIZED_REQUEST_MESSAGE);
         }
@@ -149,11 +147,11 @@ public class AzureBoardsOAuthAuthenticateAction {
         }
     }
 
-    private boolean isAuthenticated(FieldUtility fieldUtility) {
-        AzureBoardsPropertiesLegacy properties = AzureBoardsPropertiesLegacy.fromFieldAccessor(
+    private boolean isAuthenticated(AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModel) {
+        AzureBoardsPropertiesLegacy properties = AzureBoardsPropertiesLegacy.fromGlobalConfigurationModel(
             azureBoardsCredentialDataStoreFactory,
             azureRedirectUrlCreator.createOAuthRedirectUri(),
-            fieldUtility
+            azureBoardsGlobalConfigModel
         );
         ProxyInfo proxy = proxyManager.createProxyInfoForHost(AzureHttpRequestCreatorFactory.DEFAULT_BASE_URL);
         return properties.hasOAuthCredentials(proxy);
