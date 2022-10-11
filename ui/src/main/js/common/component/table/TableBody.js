@@ -21,7 +21,7 @@ const TableBody = ({ columns, multiSelect, tableData, selected, onSelected }) =>
                             const CustomCell = col.customCell;
                             return (
                                 <WrapperCell key={columnKey} settings={col.settings} >
-                                    <CustomCell data={rowData} />
+                                    <CustomCell data={rowData} settings={col.settings}/>
                                 </WrapperCell>
                             )
                         }

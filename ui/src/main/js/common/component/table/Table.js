@@ -29,14 +29,20 @@ const Table = ({ columns, multiSelect, selected, onSelected, tableData, handleSe
         <>
             <div className={classes.tableActions}>
                 {tableActions ? tableActions() : null}
-                <SearchFilter 
-                    handleSearchChange={handleSearchChange}
-                    searchBarPlaceholder={searchBarPlaceholder}
-                />
-                <ToggleSwitch 
-                    active={active}
-                    onToggle={onToggle} 
-                />
+                { handleSearchChange ? (
+                    <SearchFilter 
+                        handleSearchChange={handleSearchChange}
+                        searchBarPlaceholder={searchBarPlaceholder}
+                    />
+                ) : null }
+                
+                {onToggle ? (
+                    <ToggleSwitch 
+                        active={active}
+                        onToggle={onToggle} 
+                    />
+                ) : null }
+                
             </div>
             <table className={classes.table}>
                 <TableHeader 

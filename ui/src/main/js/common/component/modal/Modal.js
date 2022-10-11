@@ -21,8 +21,7 @@ const useStyles = createUseStyles({
         position: 'relative',
         width: '90%',
         maxWidth: 600,
-        margin: ['100px', 'auto'],
-        maxHeight: '100%'
+        margin: ['100px', 'auto']
     },
     modalStyleLarge: {
         maxWidth: 900
@@ -37,6 +36,10 @@ const useStyles = createUseStyles({
         textAlign: 'left',
         padding: ['4px', '10px'],
         fontSize: '20px'
+    },
+    modalBody: {
+        maxHeight: 'calc(100vh - 480px)',
+        overflow: 'auto'
     }
 });
 
@@ -53,7 +56,6 @@ const Modal = ({ isOpen, size, title, closeModal, children, handleCancel, handle
     if (!isOpen) {
         return null;
     }
-
 
     return (
         <div className={classes.modal}>

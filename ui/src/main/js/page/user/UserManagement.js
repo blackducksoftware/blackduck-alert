@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Tab, Tabs } from 'react-bootstrap';
 import PageHeader from 'common/component/navigation/PageHeader';
-import RoleTable from 'page/user/RoleTable';
+import RolesTable from 'page/user/roles/RolesTable';
 import UserTable from 'page/user/UserTable';
 import * as DescriptorUtilities from 'common/util/descriptorUtilities';
 import { USER_MANAGEMENT_INFO } from 'page/user/UserModel';
@@ -25,7 +25,7 @@ const UserManagement = ({ descriptors }) => {
                     <UserTable canCreate={canCreate} canDelete={canDelete} />
                 </Tab>
                 <Tab eventKey={2} title="Roles">
-                    <RoleTable canCreate={canCreate} canDelete={canDelete} />
+                    <RolesTable canCreate={canCreate} canDelete={canDelete} />
                 </Tab>
             </Tabs>
         </div>
