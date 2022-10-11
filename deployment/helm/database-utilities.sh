@@ -6,7 +6,6 @@ file=
 databaseKeyword="myalert-postgres-"
 databaseName=alertdb
 userName=sa
-password=
 deploymentNamespace=default
 
 # functions
@@ -34,12 +33,6 @@ usage() {
 }
 
 displayConfiguration() {
-  if [ -z $password ];
-    then
-      databasePasswordSet=false
-    else
-      databasePasswordSet=true
-  fi
   echo "-------------------------------------"
   echo "Configured Options: "
   echo "  Mode:"
@@ -50,7 +43,6 @@ displayConfiguration() {
   echo "  Pod Search Keyword: $databaseKeyword"
   echo "  Database Name: $databaseName"
   echo "  Database User: $userName"
-  echo "  Database Password Set: $databasePasswordSet"
   echo "-------------------------------------"
 }
 
