@@ -138,9 +138,9 @@ spec:
               name: {{ .Release.Name }}-db-creds
         {{- end }}
         {{- if .Values.postgres.registry }}
-        image: {{ .Values.postgres.registry }}/postgresql-12-centos7:1
+        image: {{ .Values.postgres.registry }}/postgresql-13-centos7:1
         {{- else }}
-        image: {{ .Values.registry }}/postgresql-12-centos7:1
+        image: {{ .Values.registry }}/postgresql-13-centos7:1
         {{- end}}
         imagePullPolicy: IfNotPresent
         lifecycle:
@@ -149,7 +149,7 @@ spec:
               command:
                 - sh
                 - -c
-                - LD_LIBRARY_PATH=/opt/rh/rh-postgresql12/root/usr/lib64 /opt/rh/rh-postgresql12/root/usr/bin/pg_ctl -D /var/lib/pgsql/data/userdata -l logfile stop
+                - LD_LIBRARY_PATH=/opt/rh/rh-postgresql13/root/usr/lib64 /opt/rh/rh-postgresql13/root/usr/bin/pg_ctl -D /var/lib/pgsql/data/userdata -l logfile stop
         name: {{ .Release.Name }}-postgres
         ports:
         - containerPort: {{ .Values.postgres.port }}
@@ -159,7 +159,7 @@ spec:
             command:
               - /bin/bash
               - -c
-              - /opt/rh/rh-postgresql12/root/usr/bin/pg_isready -h localhost
+              - /opt/rh/rh-postgresql13/root/usr/bin/pg_isready -h localhost
           failureThreshold: 10
           initialDelaySeconds: 5
           periodSeconds: 10

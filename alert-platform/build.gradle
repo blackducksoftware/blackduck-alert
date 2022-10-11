@@ -5,10 +5,10 @@ plugins {
 dependencies {
     constraints {
         api 'com.github.springtestdbunit:spring-test-dbunit:1.3.0'
-        api 'org.testcontainers:postgresql:1.16.3'
-        api 'com.playtika.testcontainers:embedded-postgresql:2.1.5'
-        api 'org.testcontainers:rabbitmq:1.16.3'
-        api 'com.playtika.testcontainers:embedded-rabbitmq:2.1.5'
+        api 'org.testcontainers:postgresql:1.17.3'
+        api 'com.playtika.testcontainers:embedded-postgresql:2.2.8'
+        api 'org.testcontainers:rabbitmq:1.17.3'
+        api 'com.playtika.testcontainers:embedded-rabbitmq:2.2.8'
         api 'org.springframework.cloud:spring-cloud-starter-bootstrap:3.0.1'
         api 'org.springframework.boot:spring-boot-starter-amqp:2.5.12'
 
@@ -36,7 +36,7 @@ dependencies {
         api 'org.javassist:javassist:3.24.0-GA'
         api 'io.springfox:springfox-boot-starter:3.0.0'
 
-        runtime 'org.postgresql:postgresql:42.3.3'
+        runtime 'org.postgresql:postgresql:42.3.7'
         runtime 'org.liquibase:liquibase-core:3.8.9'
         runtime 'io.springfox:springfox-swagger-ui:2.8.0'
     }
