@@ -46,7 +46,7 @@ public class AzureBoardsGlobalConfigurationValidator {
         return ValidationResponseModel.success();
     }
 
-    //Checks if a configuration already exists then checks if we're updating the found configuration
+    //Checks if a configuration already exists then checks if we're updating (currentConfigId == id) the found configuration
     private boolean doesNameExist(String name, @Nullable String currentConfigId) {
         return azureBoardsGlobalConfigAccessor.getConfigurationByName(name)
             .map(AzureBoardsGlobalConfigModel::getId)
