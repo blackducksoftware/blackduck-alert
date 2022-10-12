@@ -1,16 +1,18 @@
 #!/bin/bash
+set -e
+
 #defaults
 backup=false
 restore=false
 file=
-databaseKeyword="myalert-postgres-"
+databaseKeyword="-postgres-"
 databaseName=alertdb
 userName=sa
 deploymentNamespace=default
 
 # functions
 usage() {
-  echo "usage: database-utilities - backup or restore a database with docker."
+  echo "usage: database-utilities - backup or restore a database with kubectl."
   echo
   echo "database-utilities.sh [-b] [-f file] [-d databaseName] [-k containerKeyword] [-n namespace] [-r] [-u userName]"
   echo "Options: "
@@ -61,9 +63,9 @@ checkContainerFound() {
 }
 
 checkFileSpecified() {
-  if [ -z $file ];
+  if [ -z "$file" ];
     then
-      echo "-f file option not specified. $1"
+      echo "-f file option not specified."
       echo
       exit 1
   fi

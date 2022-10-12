@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e
+
 # defaults
 backup=false
 restore=false
@@ -58,9 +60,9 @@ checkContainerFound() {
 }
 
 checkFileSpecified() {
-  if [ -z $file ];
+  if [ -z "$file" ];
     then
-      echo "-f file option not specified. $1"
+      echo "-f file option not specified."
       echo
       exit 1
   fi
@@ -121,7 +123,7 @@ while getopts "b,f:,d,k:,r,u:,h" option; do
 done
 shift $((OPTIND -1))
 
-containerId=$(docker ps | grep $databaseKeyword | awk '{print $1}');
+containerId=$(docker ps -q --filter name=$databaseKeyword);
 
 displayConfiguration
 checkContainerFound
