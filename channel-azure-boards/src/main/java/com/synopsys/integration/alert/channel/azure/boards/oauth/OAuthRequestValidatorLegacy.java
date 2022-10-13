@@ -9,41 +9,48 @@ package com.synopsys.integration.alert.channel.azure.boards.oauth;
 
 import java.time.Instant;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class OAuthRequestValidator {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final Map<UUID, OAuthRequestMapping> requestMap = new ConcurrentHashMap<>();
+public class OAuthRequestValidatorLegacy {
+    public static final String OAUTH_REQUEST_KEY_PREFIX = "alert-oauth-request-";
+    public static final String UNKNOWN_OAUTH_ID = "<unknown value>";
+    private final Logger logger = LoggerFactory.getLogger(OAuthRequestValidatorLegacy.class);
+    private final Map<String, Instant> requestMap = new ConcurrentHashMap<>();
 
-    public UUID generateRequestKey() {
-        return UUID.randomUUID();
+    public String generateRequestKey() {
+        UUID requestID = UUID.randomUUID();
+        return String.format("%s%s", OAuthRequestValidatorLegacy.OAUTH_REQUEST_KEY_PREFIX, requestID);
     }
 
-    public void addAuthorizationRequest(UUID requestKey, UUID configurationId) {
+    public void addAuthorizationRequest(String requestKey) {
         if (requestKey == null) {
             logger.error("OAuth authorization key is null, authorization request will not be added");
             return;
         }
-        logger.debug("Adding OAuth authorization key {}", requestKey);
-        requestMap.put(requestKey, new OAuthRequestMapping(configurationId, Instant.now()));
+        String oauthRequestId = parseRequestIdString(requestKey);
+        logger.debug("Adding OAuth authorization key {}", oauthRequestId);
+        requestMap.put(requestKey, Instant.now());
     }
 
-    public void removeAuthorizationRequest(UUID requestKey) {
+    public void removeAuthorizationRequest(String requestKey) {
         if (requestKey == null) {
             logger.error("OAuth authorization key is null, authorization request will not be removed");
             return;
         }
         requestMap.remove(requestKey);
-        logger.debug("Removed OAuth authorization key {}", requestKey);
+        String oauthRequestId = parseRequestIdString(requestKey);
+        logger.debug("Removed OAuth authorization key {}", oauthRequestId);
     }
 
-    public boolean hasRequestKey(UUID requestKey) {
+    public boolean hasRequestKey(String requestKey) {
         if (requestKey == null) {
             return false;
         }
@@ -63,7 +70,7 @@ public class OAuthRequestValidator {
 
     public void removeRequestsOlderThanInstant(Instant instant) {
         requestMap.entrySet().stream()
-            .filter(entry -> entry.getValue().getRequestTimestamp().isBefore(instant))
+            .filter(entry -> entry.getValue().isBefore(instant))
             .map(Map.Entry::getKey)
             .forEach(this::removeAuthorizationRequest);
 
@@ -74,7 +81,22 @@ public class OAuthRequestValidator {
         removeRequestsOlderThanInstant(fiveMinutesAgo);
     }
 
-    public UUID getConfigurationIdFromRequest(UUID requestKey) {
-        return requestMap.get(requestKey).getConfigurationId();
+    public String parseRequestIdString(String userRequestKey) {
+        return parseRequestKey(userRequestKey)
+            .map(UUID::toString)
+            .orElse(UNKNOWN_OAUTH_ID);
+    }
+
+    private Optional<UUID> parseRequestKey(String userRequestKey) {
+        Optional<UUID> parsedKey = Optional.empty();
+        if (StringUtils.isNotBlank(userRequestKey)) {
+            String idString = StringUtils.remove(userRequestKey, OAUTH_REQUEST_KEY_PREFIX);
+            try {
+                parsedKey = Optional.of(UUID.fromString(idString));
+            } catch (IllegalArgumentException ex) {
+                logger.error("Error parsing OAuth UUID string", ex);
+            }
+        }
+        return parsedKey;
     }
 }

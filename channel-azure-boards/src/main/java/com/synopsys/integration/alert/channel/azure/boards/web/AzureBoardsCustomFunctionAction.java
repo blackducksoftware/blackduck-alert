@@ -26,7 +26,7 @@ import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesLegacy;
 import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUrlCreator;
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
-import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidator;
+import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidatorLegacy;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
 import com.synopsys.integration.alert.channel.azure.boards.validator.AzureBoardsGlobalConfigurationFieldModelValidator;
 import com.synopsys.integration.alert.common.action.ActionResponse;
@@ -61,7 +61,7 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
     private final AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory;
     private final AzureRedirectUrlCreator azureRedirectUrlCreator;
     private final ProxyManager proxyManager;
-    private final OAuthRequestValidator oAuthRequestValidator;
+    private final OAuthRequestValidatorLegacy oAuthRequestValidator;
     private final ConfigResourceActions configActions;
     private final AlertWebServerUrlManager alertWebServerUrlManager;
 
@@ -73,7 +73,7 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
         AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory,
         AzureRedirectUrlCreator azureRedirectUrlCreator,
         ProxyManager proxyManager,
-        OAuthRequestValidator oAuthRequestValidator,
+        OAuthRequestValidatorLegacy oAuthRequestValidator,
         ConfigResourceActions configActions,
         AuthorizationManager authorizationManager,
         AlertWebServerUrlManager alertWebServerUrlManager

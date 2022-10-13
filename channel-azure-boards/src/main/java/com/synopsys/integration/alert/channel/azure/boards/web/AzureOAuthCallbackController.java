@@ -26,7 +26,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesLegacy;
 import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUrlCreator;
-import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidator;
+import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidatorLegacy;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
@@ -59,7 +59,7 @@ public class AzureOAuthCallbackController {
     private final ProxyManager proxyManager;
     private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     private final AzureRedirectUrlCreator azureRedirectUrlCreator;
-    private final OAuthRequestValidator oAuthRequestValidator;
+    private final OAuthRequestValidatorLegacy oAuthRequestValidator;
     private final AuthorizationManager authorizationManager;
 
     @Autowired
@@ -70,7 +70,7 @@ public class AzureOAuthCallbackController {
         ProxyManager proxyManager,
         ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor,
         AzureRedirectUrlCreator azureRedirectUrlCreator,
-        OAuthRequestValidator oAuthRequestValidator,
+        OAuthRequestValidatorLegacy oAuthRequestValidator,
         AuthorizationManager authorizationManager
     ) {
         this.responseFactory = responseFactory;

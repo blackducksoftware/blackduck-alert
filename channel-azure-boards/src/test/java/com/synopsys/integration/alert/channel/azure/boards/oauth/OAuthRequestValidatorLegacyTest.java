@@ -9,11 +9,11 @@ import java.time.Instant;
 
 import org.junit.jupiter.api.Test;
 
-class OAuthRequestValidatorTest {
+class OAuthRequestValidatorLegacyTest {
 
     @Test
     void testAddKey() {
-        OAuthRequestValidator oAuthRequestValidator = new OAuthRequestValidator();
+        OAuthRequestValidatorLegacy oAuthRequestValidator = new OAuthRequestValidatorLegacy();
         String requestKey = oAuthRequestValidator.generateRequestKey();
         oAuthRequestValidator.addAuthorizationRequest(requestKey);
         assertTrue(oAuthRequestValidator.hasRequestKey(requestKey));
@@ -21,14 +21,14 @@ class OAuthRequestValidatorTest {
 
     @Test
     void addNullKeyTest() {
-        OAuthRequestValidator oAuthRequestValidator = new OAuthRequestValidator();
+        OAuthRequestValidatorLegacy oAuthRequestValidator = new OAuthRequestValidatorLegacy();
         oAuthRequestValidator.addAuthorizationRequest(null);
         assertFalse(oAuthRequestValidator.hasRequestKey(null));
     }
 
     @Test
     void testRemoveKey() {
-        OAuthRequestValidator oAuthRequestValidator = new OAuthRequestValidator();
+        OAuthRequestValidatorLegacy oAuthRequestValidator = new OAuthRequestValidatorLegacy();
         String requestKey = oAuthRequestValidator.generateRequestKey();
         oAuthRequestValidator.addAuthorizationRequest(requestKey);
         oAuthRequestValidator.removeAuthorizationRequest(requestKey);
@@ -37,7 +37,7 @@ class OAuthRequestValidatorTest {
 
     @Test
     void removeNullKeyTest() {
-        OAuthRequestValidator oAuthRequestValidator = new OAuthRequestValidator();
+        OAuthRequestValidatorLegacy oAuthRequestValidator = new OAuthRequestValidatorLegacy();
         String requestKey = oAuthRequestValidator.generateRequestKey();
         oAuthRequestValidator.addAuthorizationRequest(requestKey);
         oAuthRequestValidator.removeAuthorizationRequest(null);
@@ -48,7 +48,7 @@ class OAuthRequestValidatorTest {
 
     @Test
     void testRemoveAll() {
-        OAuthRequestValidator oAuthRequestValidator = new OAuthRequestValidator();
+        OAuthRequestValidatorLegacy oAuthRequestValidator = new OAuthRequestValidatorLegacy();
         String requestKey = oAuthRequestValidator.generateRequestKey();
         String requestKey2 = oAuthRequestValidator.generateRequestKey();
         oAuthRequestValidator.addAuthorizationRequest(requestKey);
@@ -61,7 +61,7 @@ class OAuthRequestValidatorTest {
 
     @Test
     void testRemoveKeysByInstant() {
-        OAuthRequestValidator oAuthRequestValidator = new OAuthRequestValidator();
+        OAuthRequestValidatorLegacy oAuthRequestValidator = new OAuthRequestValidatorLegacy();
         String requestKey = oAuthRequestValidator.generateRequestKey();
         String requestKey2 = oAuthRequestValidator.generateRequestKey();
         oAuthRequestValidator.addAuthorizationRequest(requestKey);
@@ -75,17 +75,17 @@ class OAuthRequestValidatorTest {
 
     @Test
     void parseValidKeyTest() {
-        OAuthRequestValidator oAuthRequestValidator = new OAuthRequestValidator();
+        OAuthRequestValidatorLegacy oAuthRequestValidator = new OAuthRequestValidatorLegacy();
         String requestKey = oAuthRequestValidator.generateRequestKey();
         String oAuthRequestId = oAuthRequestValidator.parseRequestIdString(requestKey);
-        assertNotEquals(OAuthRequestValidator.UNKNOWN_OAUTH_ID, oAuthRequestId);
+        assertNotEquals(OAuthRequestValidatorLegacy.UNKNOWN_OAUTH_ID, oAuthRequestId);
     }
 
     @Test
     void parseInvalidKeyTest() {
-        OAuthRequestValidator oAuthRequestValidator = new OAuthRequestValidator();
+        OAuthRequestValidatorLegacy oAuthRequestValidator = new OAuthRequestValidatorLegacy();
         String oAuthRequestId = oAuthRequestValidator.parseRequestIdString("bad-request-key");
-        assertEquals(OAuthRequestValidator.UNKNOWN_OAUTH_ID, oAuthRequestId);
+        assertEquals(OAuthRequestValidatorLegacy.UNKNOWN_OAUTH_ID, oAuthRequestId);
     }
 
 }
