@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.test.common.scripts;
+package com.synopsys.integration.alert.scripts;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -15,18 +15,18 @@ import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.StringUtils;
 
 import com.synopsys.integration.alert.test.common.junit.docker.EnableIfDockerPresent;
-import com.synopsys.integration.alert.test.common.junit.kubernetes.EnableIfKubeAndHelmPresent;
 import com.synopsys.integration.executable.Executable;
 import com.synopsys.integration.executable.ExecutableOutput;
 import com.synopsys.integration.executable.ExecutableRunnerException;
 import com.synopsys.integration.executable.ProcessBuilderRunner;
 import com.synopsys.integration.log.BufferedIntLogger;
 
+@EnableIfDockerPresent
 class DockerDatabaseUtilitiesScriptTest {
     private static final String SCRIPT_NAME = "database-utilities.sh";
     private static final String ALERT_CONTAINER_NAME = String.format("alert-test-postgres-%s", UUID.randomUUID());
     private static final String CONTAINER_FILTER_BY_NAME = String.format("name=%s", ALERT_CONTAINER_NAME);
-    private final File scriptFile = new File(Paths.get("").toFile().getParentFile(), String.format("../deployment/docker-swarm/%s", SCRIPT_NAME));
+    private final File scriptFile = new File(Paths.get("").toFile().getParentFile(), String.format("deployment/docker-swarm/%s", SCRIPT_NAME));
 
     private File workingDirectory;
     private Executable dockerContainerSearchCommand;
@@ -82,7 +82,6 @@ class DockerDatabaseUtilitiesScriptTest {
     }
 
     @Test
-    @EnableIfDockerPresent
     void testBackupNoParameters() throws ExecutableRunnerException {
         Executable scriptExecutable = Executable.create(workingDirectory, scriptFile);
         ExecutableOutput output = processBuilderRunner.execute(scriptExecutable);
@@ -91,7 +90,6 @@ class DockerDatabaseUtilitiesScriptTest {
     }
 
     @Test
-    @EnableIfKubeAndHelmPresent
     void testAnnotation() {}
 
 }
