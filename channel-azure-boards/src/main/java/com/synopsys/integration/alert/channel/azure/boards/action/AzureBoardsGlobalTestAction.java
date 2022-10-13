@@ -53,8 +53,8 @@ public class AzureBoardsGlobalTestAction {
         Gson gson,
         ProxyManager proxyManager
     ) {
-        this.testHelper = new ConfigurationTestHelper(authorizationManager, ConfigContextEnum.GLOBAL, ChannelKeys.JIRA_SERVER);
-        this.validationHelper = new ConfigurationValidationHelper(authorizationManager, ConfigContextEnum.GLOBAL, ChannelKeys.JIRA_SERVER);
+        this.testHelper = new ConfigurationTestHelper(authorizationManager, ConfigContextEnum.GLOBAL, ChannelKeys.AZURE_BOARDS);
+        this.validationHelper = new ConfigurationValidationHelper(authorizationManager, ConfigContextEnum.GLOBAL, ChannelKeys.AZURE_BOARDS);
         this.proxyManager = proxyManager;
         this.gson = gson;
 
@@ -69,7 +69,7 @@ public class AzureBoardsGlobalTestAction {
         return testHelper.test(validationSupplier, () -> testConfigModelContent(requestResource));
     }
 
-    public ConfigurationTestResult testConfigModelContent(AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModel) {
+    protected ConfigurationTestResult testConfigModelContent(AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModel) {
         try {
             boolean isAppIdSet = BooleanUtils.toBoolean(azureBoardsGlobalConfigModel.getIsAppIdSet().orElse(Boolean.FALSE));
             boolean isClientSecretSet = BooleanUtils.toBoolean(azureBoardsGlobalConfigModel.getIsClientSecretSet().orElse(Boolean.FALSE));
@@ -89,8 +89,8 @@ public class AzureBoardsGlobalTestAction {
                 azureRedirectUrlCreator.createOAuthRedirectUri(),
                 azureBoardsGlobalConfigModel
             );
-            AzureHttpService azureHttpService = createAzureHttpService(azureBoardsProperties);
-            AzureProjectService azureProjectService = new AzureProjectService(azureHttpService, new AzureApiVersionAppender());
+            // Just make sure service creations and getting project succeeds
+            AzureProjectService azureProjectService = createAzureProjectService(azureBoardsProperties);
             azureProjectService.getProjects(azureBoardsGlobalConfigModel.getOrganizationName());
         } catch (IntegrationException ex) {
             return ConfigurationTestResult.failure("Global Test Action failed testing Azure Boards connection." + ex.getMessage());
@@ -98,8 +98,9 @@ public class AzureBoardsGlobalTestAction {
         return ConfigurationTestResult.success("Successfully connected to Azure instance.");
     }
 
-    private AzureHttpService createAzureHttpService(AzureBoardsPropertiesLegacy azureBoardsProperties) throws IntegrationException {
+    protected AzureProjectService createAzureProjectService(AzureBoardsPropertiesLegacy azureBoardsProperties) throws IntegrationException {
         ProxyInfo proxy = proxyManager.createProxyInfoForHost(AzureHttpRequestCreatorFactory.DEFAULT_BASE_URL);
-        return azureBoardsProperties.createAzureHttpService(proxy, gson);
+        AzureHttpService azureHttpService = azureBoardsProperties.createAzureHttpService(proxy, gson);
+        return new AzureProjectService(azureHttpService, new AzureApiVersionAppender());
     }
 }
