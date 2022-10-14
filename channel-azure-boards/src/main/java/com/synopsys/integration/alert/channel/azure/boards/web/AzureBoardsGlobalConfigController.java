@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.channel.azure.boards.action.AzureBoardsGlobalCrudActions;
+import com.synopsys.integration.alert.channel.azure.boards.action.AzureBoardsOAuthAuthenticateAction;
 import com.synopsys.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthEndpointResponse;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
@@ -23,10 +24,12 @@ import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 public class AzureBoardsGlobalConfigController implements StaticConfigResourceController<AzureBoardsGlobalConfigModel>, ValidateController<AzureBoardsGlobalConfigModel>,
     ReadPageController<AlertPagedModel<AzureBoardsGlobalConfigModel>> {
     private final AzureBoardsGlobalCrudActions configActions;
+    private final AzureBoardsOAuthAuthenticateAction authenticateAction;
 
     @Autowired
-    public AzureBoardsGlobalConfigController(AzureBoardsGlobalCrudActions configActions) {
+    public AzureBoardsGlobalConfigController(AzureBoardsGlobalCrudActions configActions, AzureBoardsOAuthAuthenticateAction authenticateAction) {
         this.configActions = configActions;
+        this.authenticateAction = authenticateAction;
     }
 
     @Override
@@ -61,7 +64,6 @@ public class AzureBoardsGlobalConfigController implements StaticConfigResourceCo
 
     @PostMapping("/oauth/authenticate")
     public OAuthEndpointResponse oAuthAuthenticate(AzureBoardsGlobalConfigModel resource) {
-        //TODO: This endpoint is currently not implemented but is being exposed for UI purposes
-        return new OAuthEndpointResponse(false, "testUrl", "");
+        return ResponseFactory.createContentResponseFromAction(authenticateAction.authenticate(resource));
     }
 }

@@ -34,7 +34,7 @@ public class AzureRedirectUrlCreator {
      */
     public String createUIRedirectLocation() {
         return alertWebServerUrlManager.getServerUrl("channels", AzureBoardsDescriptor.AZURE_BOARDS_URL)
-                   .orElseThrow(() -> new AlertRuntimeException("Could not create the Azure UI Redirect URL."));
+            .orElseThrow(() -> new AlertRuntimeException("Could not create the Azure UI Redirect URL."));
     }
 
     /**
@@ -43,9 +43,8 @@ public class AzureRedirectUrlCreator {
      * @return The URI string to redirect to from azure when obtaining the authorization code
      */
     public String createOAuthRedirectUri() {
-        return alertWebServerUrlManager.getServerUrl(AlertRestConstants.API, AlertRestConstants.CALLBACKS,
-            AlertRestConstants.OAUTH, AzureOAuthCallbackController.AZURE)
-                   .orElseThrow(() -> new AlertRuntimeException("Could not create the Azure OAuth Redirect URL."));
+        return alertWebServerUrlManager.getServerUrl(AlertRestConstants.API, AlertRestConstants.CALLBACKS, AlertRestConstants.OAUTH, AzureOAuthCallbackController.AZURE)
+            .orElseThrow(() -> new AlertRuntimeException("Could not create the Azure OAuth Redirect URL."));
     }
 
 }

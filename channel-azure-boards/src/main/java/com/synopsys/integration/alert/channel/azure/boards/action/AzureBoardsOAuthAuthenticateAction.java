@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesLegacy;
 import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUrlCreator;
 import com.synopsys.integration.alert.channel.azure.boards.database.accessor.AzureBoardsGlobalConfigAccessor;
@@ -37,7 +38,7 @@ public class AzureBoardsOAuthAuthenticateAction {
     private final AzureBoardsGlobalConfigAccessor azureBoardsGlobalConfigAccessor;
     private final AzureBoardsGlobalCrudActions azureBoardsGlobalCrudActions;
     private final AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory;
-
+    private final AzureBoardsGlobalValidationAction azureBoardsGlobalValidationAction;
     private final AzureRedirectUrlCreator azureRedirectUrlCreator;
     private final OAuthRequestValidator oAuthRequestValidator;
     private final AlertWebServerUrlManager alertWebServerUrlManager;
@@ -48,6 +49,7 @@ public class AzureBoardsOAuthAuthenticateAction {
         AzureBoardsGlobalConfigAccessor azureBoardsGlobalConfigAccessor,
         AzureBoardsGlobalCrudActions azureBoardsGlobalCrudActions,
         AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory,
+        AzureBoardsGlobalValidationAction azureBoardsGlobalValidationAction,
         AzureRedirectUrlCreator azureRedirectUrlCreator,
         OAuthRequestValidator oAuthRequestValidator,
         AlertWebServerUrlManager alertWebServerUrlManager,
@@ -58,13 +60,19 @@ public class AzureBoardsOAuthAuthenticateAction {
         this.azureBoardsGlobalCrudActions = azureBoardsGlobalCrudActions;
         this.azureBoardsCredentialDataStoreFactory = azureBoardsCredentialDataStoreFactory;
         this.azureRedirectUrlCreator = azureRedirectUrlCreator;
+        this.azureBoardsGlobalValidationAction = azureBoardsGlobalValidationAction;
         this.oAuthRequestValidator = oAuthRequestValidator;
         this.alertWebServerUrlManager = alertWebServerUrlManager;
         this.proxyManager = proxyManager;
-        //TODO: Needs validation action
     }
 
     public ActionResponse<OAuthEndpointResponse> authenticate(AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModel) {
+        ActionResponse<ValidationResponseModel> validationResponse = azureBoardsGlobalValidationAction.validate(azureBoardsGlobalConfigModel);
+        boolean validationHasErrors = validationResponse.getContent().map(ValidationResponseModel::hasErrors).orElse(false);
+        if (validationHasErrors) {
+            return createErrorResponse("The configuration is invalid. Please test the configuration.");
+        }
+
         ActionResponse<AzureBoardsGlobalConfigModel> savedConfigModelResponse = createOrUpdateModel(azureBoardsGlobalConfigModel);
         if (savedConfigModelResponse.isError()) {
             return new ActionResponse<>(
@@ -96,13 +104,12 @@ public class AzureBoardsOAuthAuthenticateAction {
             return createErrorResponse("Could not determine the alert server url for the callback.");
         }
 
-        //TODO: generate request key that stores the UUID of the model, to be used in the AzureOAuthCallbackController
-        String requestKey = oAuthRequestValidator.generateRequestKey();
+        UUID requestKey = oAuthRequestValidator.generateRequestKey();
         // since we have only one OAuth channel now remove any other requests.
         // if we have more OAuth clients then the "remove requests" will have to be removed from here.
         // beginning authentication process create the request id at the start.
         oAuthRequestValidator.removeRequestsOlderThan5MinutesAgo();
-        oAuthRequestValidator.addAuthorizationRequest(requestKey);
+        oAuthRequestValidator.addAuthorizationRequest(requestKey, UUID.fromString(savedConfigModel.getId()));
 
         logger.info("OAuth authorization request created: {}", requestKey);
         String authUrl = createAuthURL(appId, requestKey);
@@ -124,14 +131,6 @@ public class AzureBoardsOAuthAuthenticateAction {
         if (!authorizationManager.hasExecutePermission(ConfigContextEnum.GLOBAL, ChannelKeys.AZURE_BOARDS)) {
             return new ActionResponse<>(HttpStatus.FORBIDDEN, ResponseFactory.UNAUTHORIZED_REQUEST_MESSAGE);
         }
-
-        //TODO: Implement after validation action is created
-        /*
-        ActionResponse<ValidationResponseModel> validationResponse = azureBoardsGlobalValidationAction.validate(azureBoardsGlobalConfigModel);
-        Boolean validationHasErrors = validationResponse.getContent().map(ValidationResponseModel::hasErrors).orElse(false);
-        if (validationHasErrors) {
-            return createErrorResponse("The configuration is invalid. Please test the configuration.");
-        }*/
 
         if (null != azureBoardsGlobalConfigModel.getId()) {
             ActionResponse<AzureBoardsGlobalConfigModel> getOneResponse = azureBoardsGlobalCrudActions.getOne(UUID.fromString(azureBoardsGlobalConfigModel.getId()));
@@ -157,14 +156,14 @@ public class AzureBoardsOAuthAuthenticateAction {
         return properties.hasOAuthCredentials(proxy);
     }
 
-    private String createAuthURL(String clientId, String requestKey) {
+    private String createAuthURL(String clientId, UUID requestKey) {
         StringBuilder authUrlBuilder = new StringBuilder(300);
         authUrlBuilder.append(AzureHttpRequestCreatorFactory.DEFAULT_AUTHORIZATION_URL);
         authUrlBuilder.append(createQueryString(clientId, requestKey));
         return authUrlBuilder.toString();
     }
 
-    private String createQueryString(String clientId, String requestKey) {
+    private String createQueryString(String clientId, UUID requestKey) {
         List<String> scopes = List.of(AzureOAuthScopes.PROJECTS_READ.getScope(), AzureOAuthScopes.WORK_FULL.getScope());
         String authorizationUrl = azureRedirectUrlCreator.createOAuthRedirectUri();
         StringBuilder queryBuilder = new StringBuilder(250);
