@@ -70,17 +70,7 @@ public class AzureBoardsGlobalTestActionTest {
     @Test
     void testWithPermissionCheckReturnsHttpForbidden() {
         AuthorizationManager authorizationManager = createAuthorizationManager(AuthenticationTestUtils.NO_PERMISSIONS);
-        AzureBoardsGlobalConfigModel requestModel = new AzureBoardsGlobalConfigModel(
-            String.valueOf(UUID.randomUUID()),
-            AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
-            "",
-            "",
-            "Organization name",
-            String.valueOf(UUID.randomUUID()),
-            Boolean.TRUE,
-            "A secret",
-            Boolean.TRUE
-        );
+        AzureBoardsGlobalConfigModel requestModel = Mockito.mock(AzureBoardsGlobalConfigModel.class);
 
         AzureBoardsGlobalTestAction azureBoardsGlobalTestAction = new AzureBoardsGlobalTestAction(
             authorizationManager,
