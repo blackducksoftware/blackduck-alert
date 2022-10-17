@@ -21,6 +21,10 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 
+/**
+ * @deprecated This class is used to support conversion between FieldModels and GlobalConfigurationModels. When FieldModels are deprecated in 8.0.0
+ * this class will no longer be necessary.
+ */
 @Component
 @Deprecated(forRemoval = true)
 public class JiraServerGlobalConfigurationModelConverter extends GlobalConfigurationModelToConcreteConverter<JiraServerGlobalConfigModel> {
