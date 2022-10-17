@@ -45,7 +45,8 @@ cfssl:
 
 # postgres - configurations for the postgres Pod
 postgres:
-  registry: "docker.io/centos" # override the docker registry at container level
+  imageTag: ALERT_VERSION_TOKEN
+  registry: "" # override the docker registry at container level
   isExternal: false # false for running Postgres as a container and true for using External Postgres database
   ssl: false # If true, Alert uses SSL for external Postgres connection
   sslUseFiles: false # If true, Alert will expect to find ssl certs for communicating with the External Postgres database
@@ -85,7 +86,7 @@ postgres:
 # rabbitmq - configurations for the rabbitMQ pod
 rabbitmq:
   imageTag: ALERT_VERSION_TOKEN
-  registry: ""
+  registry: "" # override the docker registry at container level
   isExternal: false # false for running RabbitMQ as a container and true for using External RabbitMQ instance\
   host: "" # required only for external RabbitMQ,  it will point to <name>-rabbitmq
   port: 5672
