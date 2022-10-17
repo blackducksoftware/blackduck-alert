@@ -15,8 +15,10 @@ import { EMAIL_INFO } from 'page/channel/email/EmailModels';
 import { JIRA_SERVER_INFO, JIRA_SERVER_URLS } from 'page/channel/jira/server/JiraServerModel';
 import { MSTEAMS_INFO } from 'page/channel/msteams/MSTeamsModel';
 import MSTeamsGlobalConfiguration from 'page/channel/msteams/MSTeamsGlobalConfiguration';
-import { AZURE_INFO } from 'page/channel/azure/AzureModel';
+import { AZURE_INFO, AZURE_URLS } from 'page/channel/azure/AzureModel';
 import AzureGlobalConfiguration from 'page/channel/azure/AzureGlobalConfiguration';
+import AzureBoardPageForm from 'page/channel/azure/AzureBoardPageForm';
+import AzureBoardTableConstructor from 'page/channel/azure/AzureBoardTableConstructor';
 import { SCHEDULING_INFO } from 'page/scheduling/SchedulingModel';
 import SchedulingConfiguration from 'page/scheduling/SchedulingConfiguration';
 import { SETTINGS_INFO } from 'page/settings/SettingsModel';
@@ -44,6 +46,10 @@ import DescriptorRoute from 'common/component/descriptor/DescriptorRoute';
 import EmailGlobalConfiguration from 'page/channel/email/EmailGlobalConfiguration';
 import ConcreteJiraServerGlobalConfiguration from 'page/channel/jira/server/ConcreteJiraServerGlobalConfiguration';
 import ConcreteJiraServerGlobalConfigurationTable from 'page/channel/jira/server/ConcreteJiraServerGlobalConfigurationTable';
+
+import BetaPage from 'common/component/beta/BetaPage';
+import BetaComponent from 'common/component/beta/BetaComponent';
+import CurrentComponent from 'common/component/beta/CurrentComponent';
 
 const MainPage = ({
     descriptors, fetching, getDescriptorsRedux, csrfToken, autoRefresh, unauthorizedFunction
@@ -121,18 +127,44 @@ const MainPage = ({
                 )}
             />
             <DescriptorRoute
+                descriptor={globalDescriptorMap[AZURE_INFO.key]}
+                urlName={AZURE_INFO.url}
+                paths={[`${AZURE_URLS.editUrl}/:id?`, `${AZURE_URLS.copyUrl}/:id?`]}
+                render={(readonly, showTest, showSave) => (
+                    <AzureBoardPageForm
+                        errorHandler={errorHandler}
+                        csrfToken={csrfToken}
+                        readonly={readonly}
+                        displayTest={showTest}
+                        displaySave={showSave}
+                    />
+                )}
+            />
+            <DescriptorRoute
                 uriPrefix={channelUri}
                 urlName={AZURE_INFO.url}
                 descriptor={globalDescriptorMap[AZURE_INFO.key]}
                 render={(readonly, showTest, showSave, showDelete) => (
-                    <AzureGlobalConfiguration
-                        csrfToken={csrfToken}
-                        errorHandler={errorHandler}
-                        readonly={readonly}
-                        displayTest={showTest}
-                        displaySave={showSave}
-                        displayDelete={showDelete}
-                    />
+                    <BetaPage betaSelected>
+                        <BetaComponent>
+                            <AzureBoardTableConstructor
+                                csrfToken={csrfToken}
+                                readonly={false}
+                                showRefreshButton={!autoRefresh}
+                                displayDelete={showDelete}
+                            />
+                        </BetaComponent>
+                        <CurrentComponent>
+                            <AzureGlobalConfiguration
+                                csrfToken={csrfToken}
+                                errorHandler={errorHandler}
+                                readonly={readonly}
+                                displayTest={showTest}
+                                displaySave={showSave}
+                                displayDelete={showDelete}
+                            />
+                        </CurrentComponent>
+                    </BetaPage>
                 )}
             />
             <DescriptorRoute

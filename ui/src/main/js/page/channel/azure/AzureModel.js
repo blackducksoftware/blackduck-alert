@@ -5,10 +5,11 @@ export const AZURE_INFO = {
 };
 
 export const AZURE_GLOBAL_FIELD_KEYS = {
-    organization: 'azure.boards.organization.name',
-    clientId: 'azure.boards.client.id',
-    clientSecret: 'azure.boards.client.secret',
-    configureOAuth: 'azure.boards.oauth'
+    organization: 'organizationName',
+    clientId: 'appId',
+    clientSecret: 'clientSecret',
+    configureOAuth: 'oAuth',
+    name: 'name'
 };
 
 export const AZURE_DISTRIBUTION_FIELD_KEYS = {
@@ -17,4 +18,10 @@ export const AZURE_DISTRIBUTION_FIELD_KEYS = {
     workItemType: 'channel.azure.boards.work.item.type',
     workItemCompleted: 'channel.azure.boards.work.item.completed.state',
     workItemReopen: 'channel.azure.boards.work.item.reopen.state'
+};
+
+export const AZURE_URLS = {
+    mainUrl: '/alert/channels/azure_boards',
+    editUrl: '/alert/channels/azure_boards/edit',
+    copyUrl: '/alert/channels/azure_boards/copy'
 };
