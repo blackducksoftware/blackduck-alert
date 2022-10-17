@@ -30,21 +30,24 @@ volume_path=''
 while getopts "e:,n:,p:,v:,h" option; do
   case ${option} in
     n) 
-      container_name="$2"
+      container_name="${OPTARG}"
       ;;
     p)
-      postgres_password="$2"
+      postgres_password="${OPTARG}"
       ;;
     e) 
-      exposed_port="$2"
+      exposed_port="${OPTARG}"
       ;;
     v)
-      volume_path="$2"
+      volume_path="${OPTARG}"
       ;;
     h)
       usage
+      exit 0
       ;;
-    *) echo "$1 is not an option";;
+    *) echo "Unknown option: $option ${OPTARG}"
+       usage
+       ;;
   esac
 done
 shift $((OPTIND -1))
