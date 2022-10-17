@@ -5,6 +5,14 @@ export const AZURE_INFO = {
 };
 
 export const AZURE_GLOBAL_FIELD_KEYS = {
+    organization: 'azure.boards.organization.name',
+    clientId: 'azure.boards.client.id',
+    clientSecret: 'azure.boards.client.secret',
+    configureOAuth: 'azure.boards.oauth'
+};
+
+// Remove 'UPDATED' prior to merge
+export const AZURE_GLOBAL_FIELD_KEYS_UPDATED = {
     organization: 'organizationName',
     clientId: 'appId',
     clientSecret: 'clientSecret',
