@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '2.7.1'
+        springBootVersion = '2.7.4'
     }
 
     apply from: 'https://raw.githubusercontent.com/blackducksoftware/integration-resources/master/gradle_common/buildscript-repositories.gradle', to: buildscript
@@ -26,13 +26,15 @@ ext {
 
     moduleName = 'com.synopsys.integration.alert.main'
 
-    postgresContainerVersion = '12.2'
-
     blackduckCommonExcludes = {
         exclude group: 'com.blackducksoftware.bdio', module: 'bdio2'
     }
 
+    // This version is also in src/test/resources/spring-test.properties for the test jdbc connection
+    postgresContainerVersion = '13.8'
+
     // Docker Variables
+    dockerBuildParam_POSTGRESIMAGEVERSION = 'postgres:' + postgresContainerVersion + '-alpine'
     dockerStagingDirectory = project.buildDir.toString() + '/docker-staging'
     baseDockerDirectory = project.projectDir.toString() + '/docker'
     dockerCleanStagingAreaDirectoryStageName = 'dockerCleanStagingAreaDirectory'

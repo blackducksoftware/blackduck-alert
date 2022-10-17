@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
+import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesLegacy;
 import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUrlCreator;
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
@@ -43,7 +43,12 @@ public class AzureBoardsGlobalFieldModelTestAction extends FieldModelTestAction 
     private final ProxyManager proxyManager;
 
     @Autowired
-    public AzureBoardsGlobalFieldModelTestAction(Gson gson, AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory, AzureRedirectUrlCreator azureRedirectUrlCreator, ProxyManager proxyManager) {
+    public AzureBoardsGlobalFieldModelTestAction(
+        Gson gson,
+        AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory,
+        AzureRedirectUrlCreator azureRedirectUrlCreator,
+        ProxyManager proxyManager
+    ) {
         this.gson = gson;
         this.azureBoardsCredentialDataStoreFactory = azureBoardsCredentialDataStoreFactory;
         this.azureRedirectUrlCreator = azureRedirectUrlCreator;
@@ -56,7 +61,11 @@ public class AzureBoardsGlobalFieldModelTestAction extends FieldModelTestAction 
             Optional<ConfigurationFieldModel> configurationFieldModel = registeredFieldValues.getField(AzureBoardsDescriptor.KEY_ORGANIZATION_NAME);
             String organizationName = configurationFieldModel.flatMap(ConfigurationFieldModel::getFieldValue).orElse(null);
 
-            AzureBoardsProperties azureBoardsProperties = AzureBoardsProperties.fromFieldAccessor(azureBoardsCredentialDataStoreFactory, azureRedirectUrlCreator.createOAuthRedirectUri(), registeredFieldValues);
+            AzureBoardsPropertiesLegacy azureBoardsProperties = AzureBoardsPropertiesLegacy.fromFieldAccessor(
+                azureBoardsCredentialDataStoreFactory,
+                azureRedirectUrlCreator.createOAuthRedirectUri(),
+                registeredFieldValues
+            );
             AzureHttpService azureHttpService = createAzureHttpService(azureBoardsProperties);
             AzureProjectService azureProjectService = new AzureProjectService(azureHttpService, new AzureApiVersionAppender());
             azureProjectService.getProjects(organizationName);
@@ -67,7 +76,7 @@ public class AzureBoardsGlobalFieldModelTestAction extends FieldModelTestAction 
         }
     }
 
-    private AzureHttpService createAzureHttpService(AzureBoardsProperties azureBoardsProperties) throws IntegrationException {
+    private AzureHttpService createAzureHttpService(AzureBoardsPropertiesLegacy azureBoardsProperties) throws IntegrationException {
         ProxyInfo proxy = proxyManager.createProxyInfoForHost(AzureHttpRequestCreatorFactory.DEFAULT_BASE_URL);
         return azureBoardsProperties.createAzureHttpService(proxy, gson);
     }

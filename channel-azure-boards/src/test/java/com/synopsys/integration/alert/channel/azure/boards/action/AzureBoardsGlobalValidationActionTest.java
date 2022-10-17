@@ -1,9 +1,9 @@
-package com.synopsys.integration.alert.channel.jira.server.action;
+package com.synopsys.integration.alert.channel.azure.boards.action;
 
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
-import com.synopsys.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
-import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
-import com.synopsys.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationValidator;
+import com.synopsys.integration.alert.channel.azure.boards.database.accessor.AzureBoardsGlobalConfigAccessor;
+import com.synopsys.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
+import com.synopsys.integration.alert.channel.azure.boards.validator.AzureBoardsGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
@@ -24,30 +24,30 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
-public class JiraServerGlobalValidationActionTest {
+public class AzureBoardsGlobalValidationActionTest {
     private final AuthenticationTestUtils authenticationTestUtils = new AuthenticationTestUtils();
-    private final DescriptorKey descriptorKey = ChannelKeys.JIRA_SERVER;
+    private final DescriptorKey descriptorKey = ChannelKeys.AZURE_BOARDS;
     private final PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
 
     @Mock
-    private JiraServerGlobalConfigAccessor mockJiraServerGlobalConfigAccessor;
+    private AzureBoardsGlobalConfigAccessor mockAzureBoardsGlobalConfigAccessor;
 
-    private JiraServerGlobalConfigModel model;
-    private JiraServerGlobalConfigurationValidator validator;
+    private AzureBoardsGlobalConfigModel model;
+    private AzureBoardsGlobalConfigurationValidator validator;
 
     @BeforeEach
-    void init() {
-        model = new JiraServerGlobalConfigModel();
-        validator = new JiraServerGlobalConfigurationValidator(mockJiraServerGlobalConfigAccessor);
+    void initEach() {
+        model = new AzureBoardsGlobalConfigModel();
+        validator = new AzureBoardsGlobalConfigurationValidator(mockAzureBoardsGlobalConfigAccessor);
     }
 
     @Test
     void validateReturnsSuccessOnFullPermissions() {
         Map<PermissionKey, Integer> permissions = Map.of(permissionKey, AuthenticationTestUtils.FULL_PERMISSIONS);
         AuthorizationManager authManager = authenticationTestUtils
-                .createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
+            .createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
 
-        JiraServerGlobalValidationAction validationAction = new JiraServerGlobalValidationAction(validator, authManager);
+        AzureBoardsGlobalValidationAction validationAction = new AzureBoardsGlobalValidationAction(validator, authManager);
 
         ActionResponse<ValidationResponseModel> response = validationAction.validate(model);
         assertEquals(HttpStatus.OK, response.getHttpStatus());
@@ -57,9 +57,9 @@ public class JiraServerGlobalValidationActionTest {
     void validateReturnsForbiddenOnNoPermissions() {
         Map<PermissionKey, Integer> permissions = Map.of(permissionKey, AuthenticationTestUtils.NO_PERMISSIONS);
         AuthorizationManager authManager = authenticationTestUtils
-                .createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
+            .createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
 
-        JiraServerGlobalValidationAction validationAction = new JiraServerGlobalValidationAction(validator, authManager);
+        AzureBoardsGlobalValidationAction validationAction = new AzureBoardsGlobalValidationAction(validator, authManager);
 
         ActionResponse<ValidationResponseModel> response = validationAction.validate(model);
         assertEquals(HttpStatus.FORBIDDEN, response.getHttpStatus());

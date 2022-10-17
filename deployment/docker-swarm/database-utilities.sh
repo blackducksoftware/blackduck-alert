@@ -72,14 +72,14 @@ backupDatabase() {
   checkFileSpecified "Cannot backup the database."
   echo "Backing up database $databaseName"
   docker exec -i $containerId pg_dump -Fc -U $userName -f /tmp/alert-database.dump $databaseName;
-  docker cp $containerId:/tmp/alert-database.dump $file
+  docker cp $containerId:/tmp/alert-database.dump "$file"
   echo "Database $databaseName backup completed to file $file"
 }
 
 restoreDatabase() {
   checkFileSpecified "Cannot restore the database from a file."
   echo "Restoring database $databaseName from file $file"
-  cat $file | docker exec -i $containerId pg_restore -U $userName -Fc --verbose --clean --if-exists -d $databaseName
+  cat "$file" | docker exec -i $containerId pg_restore -U $userName -Fc --verbose --clean --if-exists -d $databaseName
   echo "Database $databaseName restored."
 }
 

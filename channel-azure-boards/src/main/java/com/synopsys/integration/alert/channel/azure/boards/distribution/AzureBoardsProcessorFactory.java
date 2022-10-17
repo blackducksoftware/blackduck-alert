@@ -26,8 +26,8 @@ import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetr
 import com.synopsys.integration.alert.api.channel.issue.search.IssueTrackerSearcher;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerAsyncMessageSender;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesFactory;
+import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesLegacy;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.search.AzureBoardsComponentIssueFinder;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.search.AzureBoardsExistingIssueDetailsCreator;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.search.AzureBoardsIssueStatusResolver;
@@ -81,7 +81,7 @@ public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory
 
     @Override
     public IssueTrackerProcessor<Integer> createProcessor(AzureBoardsJobDetailsModel distributionDetails, UUID eventId, Set<Long> notificationIds) throws AlertException {
-        AzureBoardsProperties azureBoardsProperties = azureBoardsPropertiesFactory.createAzureBoardsProperties();
+        AzureBoardsPropertiesLegacy azureBoardsProperties = azureBoardsPropertiesFactory.createAzureBoardsProperties();
         String organizationName = azureBoardsProperties.getOrganizationName();
         azureBoardsProperties.validateProperties();
 
@@ -143,7 +143,13 @@ public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory
         return new IssueTrackerProcessor<>(extractor, messageSender);
     }
 
-    private void installCustomFieldsIfNecessary(String organizationName, String projectName, String issueType, AzureProjectService projectService, AzureProcessService processService) throws AlertException {
+    private void installCustomFieldsIfNecessary(
+        String organizationName,
+        String projectName,
+        String issueType,
+        AzureProjectService projectService,
+        AzureProcessService processService
+    ) throws AlertException {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         AzureCustomFieldManager azureCustomFieldInstaller = new AzureCustomFieldManager(organizationName, projectService, processService, executorService);
         try {
