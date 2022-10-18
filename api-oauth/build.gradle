@@ -1,0 +1,16 @@
+ext.moduleName = 'com.synopsys.integration.alert.api-oauth'
+
+dependencies {
+    implementation platform(project(':alert-platform'))
+    implementation project(':alert-common')
+    implementation project(':api-common-model')
+    implementation 'com.synopsys.integration:blackduck-common'
+
+    api 'org.springframework.data:spring-data-jpa'
+    implementation 'org.springframework:spring-context'
+    implementation 'com.google.cloud:libraries-bom'
+    implementation 'com.google.oauth-client:google-oauth-client'
+    implementation 'com.google.api-client:google-api-client'
+    implementation 'com.google.http-client:google-http-client-apache-v2'
+
+}
