@@ -6,7 +6,7 @@ import { CONTEXT_TYPE } from 'common/util/descriptorUtilities';
 import PageHeader from 'common/component/navigation/PageHeader';
 import CommonGlobalConfigurationForm from 'common/configuration/global/CommonGlobalConfigurationForm';
 import PasswordInput from 'common/component/input/PasswordInput';
-import { AZURE_GLOBAL_FIELD_KEYS, AZURE_INFO } from 'page/channel/azure/AzureModel';
+import { AZURE_GLOBAL_FIELD_KEYS, AZURE_INFO } from 'page/channel/azure/AzureBoardModel';
 import OAuthEndpointButtonField from 'common/component/input/field/OAuthEndpointButtonField';
 import * as GlobalRequestHelper from 'common/configuration/global/GlobalRequestHelper';
 import TextInput from 'common/component/input/TextInput';

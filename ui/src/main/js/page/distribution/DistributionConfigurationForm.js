@@ -28,7 +28,7 @@ import {
 import CommonDistributionConfigurationForm from 'page/distribution/CommonDistributionConfigurationForm';
 import * as DistributionRequestUtility from 'page/distribution/DistributionRequestUtility';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
-import { AZURE_INFO } from 'page/channel/azure/AzureModel';
+import { AZURE_INFO } from 'page/channel/azure/AzureBoardModel';
 import { BLACKDUCK_INFO } from 'page/provider/blackduck/BlackDuckModel';
 import { EMAIL_INFO } from 'page/channel/email/EmailModels';
 import { JIRA_CLOUD_INFO } from 'page/channel/jira/cloud/JiraCloudModel';

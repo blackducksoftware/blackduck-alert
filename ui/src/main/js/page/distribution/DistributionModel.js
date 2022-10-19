@@ -1,5 +1,5 @@
 import { createTableSelectColumn } from 'common/component/input/TableSelectInput';
-import { AZURE_INFO } from 'page/channel/azure/AzureModel';
+import { AZURE_INFO } from 'page/channel/azure/AzureBoardModel';
 import { EMAIL_INFO } from 'page/channel/email/EmailModels';
 import { JIRA_CLOUD_INFO } from 'page/channel/jira/cloud/JiraCloudModel';
 import { JIRA_SERVER_INFO } from 'page/channel/jira/server/JiraServerModel';

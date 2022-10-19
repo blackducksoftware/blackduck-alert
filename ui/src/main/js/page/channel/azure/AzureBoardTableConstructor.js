@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import * as PropTypes from 'prop-types';
-import { AZURE_INFO, AZURE_URLS } from 'page/channel/azure/AzureModel';
+import { AZURE_INFO, AZURE_URLS } from 'page/channel/azure/AzureBoardModel';
 import * as ConfigurationRequestBuilder from 'common/util/configurationRequestBuilder';
 import AzureBoardTable from 'page/channel/azure/AzureBoardTable';
 import { TableHeaderColumn } from 'react-bootstrap-table';

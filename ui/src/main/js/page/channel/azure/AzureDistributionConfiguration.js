@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import TextInput from 'common/component/input/TextInput';
 import CheckboxInput from 'common/component/input/CheckboxInput';
-import { AZURE_DISTRIBUTION_FIELD_KEYS } from 'page/channel/azure/AzureModel';
+import { AZURE_DISTRIBUTION_FIELD_KEYS } from 'page/channel/azure/AzureBoardModel';
 
 const AzureDistributionConfiguration = ({
     data, setData, errors, readonly

@@ -9,7 +9,7 @@ import { EMAIL_INFO } from 'page/channel/email/EmailModels';
 import { JIRA_CLOUD_INFO } from 'page/channel/jira/cloud/JiraCloudModel';
 import { JIRA_SERVER_INFO } from 'page/channel/jira/server/JiraServerModel';
 import { MSTEAMS_INFO } from 'page/channel/msteams/MSTeamsModel';
-import { AZURE_INFO } from 'page/channel/azure/AzureModel';
+import { AZURE_INFO } from 'page/channel/azure/AzureBoardModel';
 import { SCHEDULING_INFO } from 'page/scheduling/SchedulingModel';
 import { SETTINGS_INFO } from 'page/settings/SettingsModel';
 import { AUTHENTICATION_INFO } from 'application/auth/AuthenticationModel';

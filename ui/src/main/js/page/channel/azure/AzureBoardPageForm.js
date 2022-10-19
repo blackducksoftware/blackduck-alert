@@ -3,7 +3,7 @@ import { useHistory, useParams } from 'react-router-dom';
 import * as PropTypes from 'prop-types';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
-import { AZURE_GLOBAL_FIELD_KEYS_UPDATED, AZURE_INFO, AZURE_URLS } from 'page/channel/azure/AzureModel';
+import { AZURE_GLOBAL_FIELD_KEYS_UPDATED, AZURE_INFO, AZURE_URLS } from 'page/channel/azure/AzureBoardModel';
 import { CONTEXT_TYPE } from 'common/util/descriptorUtilities';
 import PageHeader from 'common/component/navigation/PageHeader';
 import PasswordInput from 'common/component/input/PasswordInput';

@@ -15,7 +15,7 @@ import { EMAIL_INFO } from 'page/channel/email/EmailModels';
 import { JIRA_SERVER_INFO, JIRA_SERVER_URLS } from 'page/channel/jira/server/JiraServerModel';
 import { MSTEAMS_INFO } from 'page/channel/msteams/MSTeamsModel';
 import MSTeamsGlobalConfiguration from 'page/channel/msteams/MSTeamsGlobalConfiguration';
-import { AZURE_INFO, AZURE_URLS } from 'page/channel/azure/AzureModel';
+import { AZURE_INFO, AZURE_URLS } from 'page/channel/azure/AzureBoardModel';
 import AzureGlobalConfiguration from 'page/channel/azure/AzureGlobalConfiguration';
 import AzureBoardPageForm from 'page/channel/azure/AzureBoardPageForm';
 import AzureBoardTableConstructor from 'page/channel/azure/AzureBoardTableConstructor';
