@@ -1,0 +1,58 @@
+package com.synopsys.integration.alert.api.oauth.database.accessor;
+
+import java.util.Optional;
+import java.util.UUID;
+
+import org.springframework.stereotype.Component;
+
+import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.synopsys.integration.alert.api.oauth.database.AlertOAuthModel;
+import com.synopsys.integration.alert.api.oauth.database.configuration.AlertOAuthConfigurationEntity;
+import com.synopsys.integration.alert.api.oauth.database.configuration.AlertOAuthConfigurationRepository;
+
+@Component
+public class AlertOAuthConfigurationAccessor {
+    private final AlertOAuthConfigurationRepository oauthRepository;
+
+    public AlertOAuthConfigurationAccessor(final AlertOAuthConfigurationRepository oauthRepository) {
+        this.oauthRepository = oauthRepository;
+    }
+
+    public Optional<AlertOAuthModel> getConfiguration(UUID id) {
+        return oauthRepository.findById(id).map(this::convertToModel);
+    }
+
+    public boolean existsConfigurationById(UUID id) {
+        return oauthRepository.existsById(id);
+    }
+
+    public AlertOAuthModel createConfiguration(AlertOAuthModel configuration) throws AlertConfigurationException {
+        AlertOAuthConfigurationEntity entity = convertToEntity(configuration);
+        entity = oauthRepository.save(entity);
+        return convertToModel(entity);
+    }
+
+    public Optional<AlertOAuthModel> updateConfiguration(UUID configurationId, AlertOAuthModel configuration) throws AlertConfigurationException {
+        Optional<AlertOAuthModel> result = Optional.empty();
+        boolean exists = oauthRepository.existsById(configurationId);
+        if (exists) {
+            AlertOAuthConfigurationEntity entity = convertToEntity(configuration);
+            entity = oauthRepository.save(entity);
+            result = Optional.of(convertToModel(entity));
+        }
+        return result;
+
+    }
+
+    public void deleteConfiguration(UUID configurationId) {
+        oauthRepository.deleteById(configurationId);
+    }
+
+    private AlertOAuthModel convertToModel(AlertOAuthConfigurationEntity entity) {
+        return new AlertOAuthModel(entity.getId(), entity.getAccessToken(), entity.getRefreshToken(), entity.getExirationTimeMilliseconds());
+    }
+
+    private AlertOAuthConfigurationEntity convertToEntity(AlertOAuthModel model) {
+        return new AlertOAuthConfigurationEntity(model.getId(), model.getAccessToken(), model.getRefreshToken(), model.getExirationTimeMilliseconds());
+    }
+}
