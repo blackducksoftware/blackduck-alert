@@ -25,7 +25,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class AzureBoardsEnvironmentVariableHandlerTest {
+class AzureBoardsEnvironmentVariableHandlerTest {
     private final String ORGANIZATION_NAME = "A Organization Name";
     private final String APP_ID = String.valueOf(UUID.randomUUID());
     private final String CLIENT_SECRET = "aClientSecret";
