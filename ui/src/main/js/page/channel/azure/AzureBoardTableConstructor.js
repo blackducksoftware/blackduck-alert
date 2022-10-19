@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import * as PropTypes from 'prop-types';
-import { AZURE_INFO, AZURE_URLS } from 'page/channel/azure/AzureBoardModel';
+import { AZURE_BOARD_INFO, AZURE_BOARD_URLS } from 'page/channel/azure/AzureBoardModel';
 import * as ConfigurationRequestBuilder from 'common/util/configurationRequestBuilder';
 import AzureBoardTable from 'page/channel/azure/AzureBoardTable';
 import { TableHeaderColumn } from 'react-bootstrap-table';
@@ -35,14 +35,14 @@ const AzureBoardTableConstructor = ({
     return (
         <AzureBoardTable
             csrfToken={csrfToken}
-            key={AZURE_INFO.key}
-            label={AZURE_INFO.label}
+            key={AZURE_BOARD_INFO.key}
+            label={AZURE_BOARD_INFO.label}
             description="Configure the Azure Boards instance that Alert will send issue updates to."
             apiUrl={azureRequestUrl}
             tableData={azureBoardData}
             setTableData={setAzureBoardData}
-            editPageUrl={AZURE_URLS.editUrl}
-            copyPageUrl={AZURE_URLS.copyUrl}
+            editPageUrl={AZURE_BOARD_URLS.editUrl}
+            copyPageUrl={AZURE_BOARD_URLS.copyUrl}
             includeEnabled={false}
             readonly={readonly}
             showRefreshButton={showRefreshButton}

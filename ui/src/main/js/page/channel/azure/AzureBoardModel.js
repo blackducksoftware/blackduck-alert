@@ -4,6 +4,7 @@ export const AZURE_INFO = {
     label: 'Azure Boards'
 };
 
+// (temporary) Remove before merging `bs_IALERT-2955_azure-concrete-model-ui`
 export const AZURE_GLOBAL_FIELD_KEYS = {
     organization: 'azure.boards.organization.name',
     clientId: 'azure.boards.client.id',
@@ -12,7 +13,7 @@ export const AZURE_GLOBAL_FIELD_KEYS = {
 };
 
 // Remove 'UPDATED' prior to merge
-export const AZURE_GLOBAL_FIELD_KEYS_UPDATED = {
+export const AZURE_BOARD_FIELD_KEYS_UPDATED = {
     organization: 'organizationName',
     clientId: 'appId',
     clientSecret: 'clientSecret',

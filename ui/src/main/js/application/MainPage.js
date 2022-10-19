@@ -15,7 +15,7 @@ import { EMAIL_INFO } from 'page/channel/email/EmailModels';
 import { JIRA_SERVER_INFO, JIRA_SERVER_URLS } from 'page/channel/jira/server/JiraServerModel';
 import { MSTEAMS_INFO } from 'page/channel/msteams/MSTeamsModel';
 import MSTeamsGlobalConfiguration from 'page/channel/msteams/MSTeamsGlobalConfiguration';
-import { AZURE_INFO, AZURE_URLS } from 'page/channel/azure/AzureBoardModel';
+import { AZURE_BOARD_INFO, AZURE_BOARD_URLS } from 'page/channel/azure/AzureBoardModel';
 import AzureGlobalConfiguration from 'page/channel/azure/AzureGlobalConfiguration';
 import AzureBoardPageForm from 'page/channel/azure/AzureBoardPageForm';
 import AzureBoardTableConstructor from 'page/channel/azure/AzureBoardTableConstructor';
@@ -127,9 +127,9 @@ const MainPage = ({
                 )}
             />
             <DescriptorRoute
-                descriptor={globalDescriptorMap[AZURE_INFO.key]}
-                urlName={AZURE_INFO.url}
-                paths={[`${AZURE_URLS.editUrl}/:id?`, `${AZURE_URLS.copyUrl}/:id?`]}
+                descriptor={globalDescriptorMap[AZURE_BOARD_INFO.key]}
+                urlName={AZURE_BOARD_INFO.url}
+                paths={[`${AZURE_BOARD_URLS.editUrl}/:id?`, `${AZURE_BOARD_URLS.copyUrl}/:id?`]}
                 render={(readonly, showTest, showSave) => (
                     <AzureBoardPageForm
                         errorHandler={errorHandler}
@@ -142,8 +142,8 @@ const MainPage = ({
             />
             <DescriptorRoute
                 uriPrefix={channelUri}
-                urlName={AZURE_INFO.url}
-                descriptor={globalDescriptorMap[AZURE_INFO.key]}
+                urlName={AZURE_BOARD_INFO.url}
+                descriptor={globalDescriptorMap[AZURE_BOARD_INFO.key]}
                 render={(readonly, showTest, showSave, showDelete) => (
                     <BetaPage betaSelected>
                         <BetaComponent>
