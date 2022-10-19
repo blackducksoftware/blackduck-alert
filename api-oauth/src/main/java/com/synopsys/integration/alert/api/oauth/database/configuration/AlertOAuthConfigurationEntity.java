@@ -14,6 +14,7 @@ import com.synopsys.integration.alert.database.BaseEntity;
 public class AlertOAuthConfigurationEntity extends BaseEntity {
     private static final long serialVersionUID = -8009008640085992405L;
     @Id
+    @Column(name = "configuration_id")
     private UUID id;
     @Column(name = "access_token")
     private String accessToken;
