@@ -79,7 +79,7 @@ public class AzureBoardsGlobalConfigurationValidatorTest {
 
         ValidationResponseModel responseModel = azureBoardsGlobalConfigurationValidator.validate(missingFieldsModel, modelId);
 
-        assertFalse(responseModel.getErrors().values().size() == 0);
+        assertNotEquals(0, responseModel.getErrors().values().size());
         responseModel.getErrors().values()
             .forEach((alertFieldStatus) -> assertEquals(AlertFieldStatusMessages.REQUIRED_FIELD_MISSING, alertFieldStatus.getFieldMessage()));
     }
