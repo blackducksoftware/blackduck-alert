@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import * as PropTypes from 'prop-types';
-import { AZURE_BOARD_INFO, AZURE_BOARD_URLS } from 'page/channel/azure/AzureBoardModel';
+import { AZURE_BOARDS_INFO, AZURE_BOARDS_URLS } from 'page/channel/azure/AzureBoardsModel';
 import * as ConfigurationRequestBuilder from 'common/util/configurationRequestBuilder';
-import AzureBoardTable from 'page/channel/azure/AzureBoardTable';
+import AzureBoardsTable from 'page/channel/azure/AzureBoardsTable';
 import { TableHeaderColumn } from 'react-bootstrap-table';
 
-const AzureBoardTableConstructor = ({
+const AzureBoardsTableConstructor = ({
     csrfToken, readonly, showRefreshButton, displayDelete
 }) => {
-    const [azureBoardData, setAzureBoardData] = useState([]);
+    const [azureBoardsData, setAzureBoardsData] = useState([]);
 
     const assignedDataFormat = (cell) => (
         <div title={(cell) ? cell.toString() : null}>
@@ -33,16 +33,16 @@ const AzureBoardTableConstructor = ({
     );
 
     return (
-        <AzureBoardTable
+        <AzureBoardsTable
             csrfToken={csrfToken}
-            key={AZURE_BOARD_INFO.key}
-            label={AZURE_BOARD_INFO.label}
+            key={AZURE_BOARDS_INFO.key}
+            label={AZURE_BOARDS_INFO.label}
             description="Configure the Azure Boards instance that Alert will send issue updates to."
             apiUrl={azureRequestUrl}
-            tableData={azureBoardData}
-            setTableData={setAzureBoardData}
-            editPageUrl={AZURE_BOARD_URLS.editUrl}
-            copyPageUrl={AZURE_BOARD_URLS.copyUrl}
+            tableData={azureBoardsData}
+            setTableData={setAzureBoardsData}
+            editPageUrl={AZURE_BOARDS_URLS.editUrl}
+            copyPageUrl={AZURE_BOARDS_URLS.copyUrl}
             includeEnabled={false}
             readonly={readonly}
             showRefreshButton={showRefreshButton}
@@ -52,21 +52,21 @@ const AzureBoardTableConstructor = ({
             {createColumn('organizationName', 'Organization Name')}
             {createColumn('createdAt', 'Created At')}
             {createColumn('lastUpdated', 'Last Updated')}
-        </AzureBoardTable>
+        </AzureBoardsTable>
     );
 };
 
-AzureBoardTableConstructor.propTypes = {
+AzureBoardsTableConstructor.propTypes = {
     csrfToken: PropTypes.string.isRequired,
     readonly: PropTypes.bool,
     showRefreshButton: PropTypes.bool,
     displayDelete: PropTypes.bool
 };
 
-AzureBoardTableConstructor.defaultProps = {
+AzureBoardsTableConstructor.defaultProps = {
     readonly: false,
     showRefreshButton: false,
     displayDelete: true
 };
 
-export default AzureBoardTableConstructor;
+export default AzureBoardsTableConstructor;

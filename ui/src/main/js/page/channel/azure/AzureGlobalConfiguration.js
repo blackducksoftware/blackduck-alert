@@ -6,7 +6,7 @@ import { CONTEXT_TYPE } from 'common/util/descriptorUtilities';
 import PageHeader from 'common/component/navigation/PageHeader';
 import CommonGlobalConfigurationForm from 'common/configuration/global/CommonGlobalConfigurationForm';
 import PasswordInput from 'common/component/input/PasswordInput';
-import { AZURE_GLOBAL_FIELD_KEYS, AZURE_BOARD_INFO } from 'page/channel/azure/AzureBoardModel';
+import { AZURE_GLOBAL_FIELD_KEYS, AZURE_BOARDS_INFO } from 'page/channel/azure/AzureBoardsModel';
 import OAuthEndpointButtonField from 'common/component/input/field/OAuthEndpointButtonField';
 import * as GlobalRequestHelper from 'common/configuration/global/GlobalRequestHelper';
 import TextInput from 'common/component/input/TextInput';
@@ -14,11 +14,11 @@ import TextInput from 'common/component/input/TextInput';
 const AzureGlobalConfiguration = ({
     csrfToken, errorHandler, readonly, displayTest, displaySave, displayDelete
 }) => {
-    const [formData, setFormData] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, AZURE_BOARD_INFO.key));
+    const [formData, setFormData] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, AZURE_BOARDS_INFO.key));
     const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
 
     const retrieveData = async () => {
-        const data = await GlobalRequestHelper.getDataFindFirst(AZURE_BOARD_INFO.key, csrfToken);
+        const data = await GlobalRequestHelper.getDataFindFirst(AZURE_BOARDS_INFO.key, csrfToken);
         if (data) {
             setFormData(data);
         }
@@ -27,7 +27,7 @@ const AzureGlobalConfiguration = ({
     return (
         <div>
             <PageHeader
-                title={AZURE_BOARD_INFO.label}
+                title={AZURE_BOARDS_INFO.label}
                 description="Configure the Azure Boards instance that Alert will send issue updates to."
                 lastUpdated={formData.lastUpdated}
             />
@@ -36,7 +36,7 @@ const AzureGlobalConfiguration = ({
                 formData={formData}
                 setFormData={(data) => setFormData(data)}
                 csrfToken={csrfToken}
-                buttonIdPrefix={AZURE_BOARD_INFO.key}
+                buttonIdPrefix={AZURE_BOARDS_INFO.key}
                 retrieveData={retrieveData}
                 readonly={readonly}
                 displayTest={displayTest}

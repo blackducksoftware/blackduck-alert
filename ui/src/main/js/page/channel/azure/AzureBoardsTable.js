@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import IconTableCellFormatter from 'common/component/table/IconTableCellFormatter';
 import * as ConfigurationRequestBuilder from 'common/util/configurationRequestBuilder';
 
-const AzureBoardTable = ({
+const AzureBoardsTable = ({
     csrfToken,
     fieldKey,
     label,
@@ -306,7 +306,7 @@ const AzureBoardTable = ({
     );
 };
 
-AzureBoardTable.propTypes = {
+AzureBoardsTable.propTypes = {
     csrfToken: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
     children: PropTypes.node.isRequired,
@@ -323,7 +323,7 @@ AzureBoardTable.propTypes = {
     includeEnabled: PropTypes.bool
 };
 
-AzureBoardTable.defaultProps = {
+AzureBoardsTable.defaultProps = {
     fieldKey: '',
     description: '',
     editPageUrl: null,
@@ -334,4 +334,4 @@ AzureBoardTable.defaultProps = {
     includeEnabled: true
 };
 
-export default AzureBoardTable;
+export default AzureBoardsTable;
