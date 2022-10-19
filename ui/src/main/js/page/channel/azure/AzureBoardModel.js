@@ -1,4 +1,4 @@
-export const AZURE_INFO = {
+export const AZURE_BOARD_INFO = {
     key: 'channel_azure_boards',
     url: 'azure_boards',
     label: 'Azure Boards'
@@ -13,7 +13,7 @@ export const AZURE_GLOBAL_FIELD_KEYS = {
 };
 
 // Remove 'UPDATED' prior to merge
-export const AZURE_BOARD_FIELD_KEYS_UPDATED = {
+export const AZURE_BOARD_GLOBAL_FIELD_KEYS_UPDATED = {
     organization: 'organizationName',
     clientId: 'appId',
     clientSecret: 'clientSecret',
@@ -21,7 +21,7 @@ export const AZURE_BOARD_FIELD_KEYS_UPDATED = {
     name: 'name'
 };
 
-export const AZURE_DISTRIBUTION_FIELD_KEYS = {
+export const AZURE_BOARD_DISTRIBUTION_FIELD_KEYS = {
     comment: 'channel.azure.boards.work.item.comment',
     project: 'channel.azure.boards.project',
     workItemType: 'channel.azure.boards.work.item.type',
@@ -29,7 +29,7 @@ export const AZURE_DISTRIBUTION_FIELD_KEYS = {
     workItemReopen: 'channel.azure.boards.work.item.reopen.state'
 };
 
-export const AZURE_URLS = {
+export const AZURE_BOARD_URLS = {
     mainUrl: '/alert/channels/azure_boards',
     editUrl: '/alert/channels/azure_boards/edit',
     copyUrl: '/alert/channels/azure_boards/copy'
