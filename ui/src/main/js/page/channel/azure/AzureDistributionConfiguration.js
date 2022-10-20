@@ -3,70 +3,70 @@ import React, { useEffect } from 'react';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import TextInput from 'common/component/input/TextInput';
 import CheckboxInput from 'common/component/input/CheckboxInput';
-import { AZURE_DISTRIBUTION_FIELD_KEYS } from 'page/channel/azure/AzureModel';
+import { AZURE_BOARDS_DISTRIBUTION_FIELD_KEYS } from 'page/channel/azure/AzureBoardsModel';
 
 const AzureDistributionConfiguration = ({
     data, setData, errors, readonly
 }) => {
     useEffect(() => {
-        if (!FieldModelUtilities.hasValue(data, AZURE_DISTRIBUTION_FIELD_KEYS.workItemType)) {
-            setData(FieldModelUtilities.updateFieldModelSingleValue(data, AZURE_DISTRIBUTION_FIELD_KEYS.workItemType, 'Task'));
+        if (!FieldModelUtilities.hasValue(data, AZURE_BOARDS_DISTRIBUTION_FIELD_KEYS.workItemType)) {
+            setData(FieldModelUtilities.updateFieldModelSingleValue(data, AZURE_BOARDS_DISTRIBUTION_FIELD_KEYS.workItemType, 'Task'));
         }
     }, []);
     return (
         <>
             <CheckboxInput
-                id={AZURE_DISTRIBUTION_FIELD_KEYS.comment}
-                name={AZURE_DISTRIBUTION_FIELD_KEYS.comment}
+                id={AZURE_BOARDS_DISTRIBUTION_FIELD_KEYS.comment}
+                name={AZURE_BOARDS_DISTRIBUTION_FIELD_KEYS.comment}
                 label="Comment on Work Items"
                 description="If selected, Alert will comment on Work Items it created when updates occur."
                 readOnly={readonly}
                 onChange={FieldModelUtilities.handleChange(data, setData)}
-                isChecked={FieldModelUtilities.getFieldModelBooleanValue(data, AZURE_DISTRIBUTION_FIELD_KEYS.comment)}
-                errorName={FieldModelUtilities.createFieldModelErrorKey(AZURE_DISTRIBUTION_FIELD_KEYS.comment)}
-                errorValue={errors.fieldErrors[AZURE_DISTRIBUTION_FIELD_KEYS.comment]}
+                isChecked={FieldModelUtilities.getFieldModelBooleanValue(data, AZURE_BOARDS_DISTRIBUTION_FIELD_KEYS.comment)}
+                errorName={FieldModelUtilities.createFieldModelErrorKey(AZURE_BOARDS_DISTRIBUTION_FIELD_KEYS.comment)}
+                errorValue={errors.fieldErrors[AZURE_BOARDS_DISTRIBUTION_FIELD_KEYS.comment]}
             />
             <TextInput
-                id={AZURE_DISTRIBUTION_FIELD_KEYS.project}
+                id={AZURE_BOARDS_DISTRIBUTION_FIELD_KEYS.project}
                 label="Azure Project"
                 description="The project name or id in Azure Boards."
-                name={AZURE_DISTRIBUTION_FIELD_KEYS.project}
+                name={AZURE_BOARDS_DISTRIBUTION_FIELD_KEYS.project}
                 required
                 onChange={FieldModelUtilities.handleChange(data, setData)}
-                value={FieldModelUtilities.getFieldModelSingleValue(data, AZURE_DISTRIBUTION_FIELD_KEYS.project)}
-                errorName={FieldModelUtilities.createFieldModelErrorKey(AZURE_DISTRIBUTION_FIELD_KEYS.project)}
-                errorValue={errors.fieldErrors[AZURE_DISTRIBUTION_FIELD_KEYS.project]}
+                value={FieldModelUtilities.getFieldModelSingleValue(data, AZURE_BOARDS_DISTRIBUTION_FIELD_KEYS.project)}
+                errorName={FieldModelUtilities.createFieldModelErrorKey(AZURE_BOARDS_DISTRIBUTION_FIELD_KEYS.project)}
+                errorValue={errors.fieldErrors[AZURE_BOARDS_DISTRIBUTION_FIELD_KEYS.project]}
             />
             <TextInput
-                id={AZURE_DISTRIBUTION_FIELD_KEYS.workItemType}
+                id={AZURE_BOARDS_DISTRIBUTION_FIELD_KEYS.workItemType}
                 label="Work Item Type"
                 description="The work item type in Azure Boards."
-                name={AZURE_DISTRIBUTION_FIELD_KEYS.workItemType}
+                name={AZURE_BOARDS_DISTRIBUTION_FIELD_KEYS.workItemType}
                 required
                 onChange={FieldModelUtilities.handleChange(data, setData)}
-                value={FieldModelUtilities.getFieldModelSingleValue(data, AZURE_DISTRIBUTION_FIELD_KEYS.workItemType)}
-                errorName={FieldModelUtilities.createFieldModelErrorKey(AZURE_DISTRIBUTION_FIELD_KEYS.workItemType)}
-                errorValue={errors.fieldErrors[AZURE_DISTRIBUTION_FIELD_KEYS.workItemType]}
+                value={FieldModelUtilities.getFieldModelSingleValue(data, AZURE_BOARDS_DISTRIBUTION_FIELD_KEYS.workItemType)}
+                errorName={FieldModelUtilities.createFieldModelErrorKey(AZURE_BOARDS_DISTRIBUTION_FIELD_KEYS.workItemType)}
+                errorValue={errors.fieldErrors[AZURE_BOARDS_DISTRIBUTION_FIELD_KEYS.workItemType]}
             />
             <TextInput
-                id={AZURE_DISTRIBUTION_FIELD_KEYS.workItemCompleted}
+                id={AZURE_BOARDS_DISTRIBUTION_FIELD_KEYS.workItemCompleted}
                 label="Work Item Completed State"
                 description="The state a work item should result in if Alert receives a DELETE operation for it."
-                name={AZURE_DISTRIBUTION_FIELD_KEYS.workItemCompleted}
+                name={AZURE_BOARDS_DISTRIBUTION_FIELD_KEYS.workItemCompleted}
                 onChange={FieldModelUtilities.handleChange(data, setData)}
-                value={FieldModelUtilities.getFieldModelSingleValue(data, AZURE_DISTRIBUTION_FIELD_KEYS.workItemCompleted)}
-                errorName={FieldModelUtilities.createFieldModelErrorKey(AZURE_DISTRIBUTION_FIELD_KEYS.workItemCompleted)}
-                errorValue={errors.fieldErrors[AZURE_DISTRIBUTION_FIELD_KEYS.workItemCompleted]}
+                value={FieldModelUtilities.getFieldModelSingleValue(data, AZURE_BOARDS_DISTRIBUTION_FIELD_KEYS.workItemCompleted)}
+                errorName={FieldModelUtilities.createFieldModelErrorKey(AZURE_BOARDS_DISTRIBUTION_FIELD_KEYS.workItemCompleted)}
+                errorValue={errors.fieldErrors[AZURE_BOARDS_DISTRIBUTION_FIELD_KEYS.workItemCompleted]}
             />
             <TextInput
-                id={AZURE_DISTRIBUTION_FIELD_KEYS.workItemReopen}
+                id={AZURE_BOARDS_DISTRIBUTION_FIELD_KEYS.workItemReopen}
                 label="Work Item Reopen State"
                 description="The state a work item should result in if Alert receives an ADD operation and the work item is in a completed state."
-                name={AZURE_DISTRIBUTION_FIELD_KEYS.workItemReopen}
+                name={AZURE_BOARDS_DISTRIBUTION_FIELD_KEYS.workItemReopen}
                 onChange={FieldModelUtilities.handleChange(data, setData)}
-                value={FieldModelUtilities.getFieldModelSingleValue(data, AZURE_DISTRIBUTION_FIELD_KEYS.workItemReopen)}
-                errorName={FieldModelUtilities.createFieldModelErrorKey(AZURE_DISTRIBUTION_FIELD_KEYS.workItemReopen)}
-                errorValue={errors.fieldErrors[AZURE_DISTRIBUTION_FIELD_KEYS.workItemReopen]}
+                value={FieldModelUtilities.getFieldModelSingleValue(data, AZURE_BOARDS_DISTRIBUTION_FIELD_KEYS.workItemReopen)}
+                errorName={FieldModelUtilities.createFieldModelErrorKey(AZURE_BOARDS_DISTRIBUTION_FIELD_KEYS.workItemReopen)}
+                errorValue={errors.fieldErrors[AZURE_BOARDS_DISTRIBUTION_FIELD_KEYS.workItemReopen]}
             />
         </>
     );

@@ -28,6 +28,8 @@ import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.wait.ResilientJobConfig;
 import com.synopsys.integration.wait.WaitJob;
 import com.synopsys.integration.wait.WaitJobCondition;
+import com.synopsys.integration.wait.tracker.WaitIntervalTracker;
+import com.synopsys.integration.wait.tracker.WaitIntervalTrackerFactory;
 
 public class IntegrationPerformanceTestRunner {
     private static final IntLogger intLogger = new Slf4jIntLogger(LoggerFactory.getLogger(IntegrationPerformanceTestRunner.class));
@@ -85,11 +87,11 @@ public class IntegrationPerformanceTestRunner {
         blackDuckProviderService.triggerBlackDuckNotification();
         intLogger.info("Triggered the Black Duck notification.");
 
+        WaitIntervalTracker waitIntervalTracker = WaitIntervalTrackerFactory.createConstant(waitTimeoutInSeconds, 20);
         ResilientJobConfig resilientJobConfig = new ResilientJobConfig(
             intLogger,
-            waitTimeoutInSeconds,
             startingSearchDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
-            20
+            waitIntervalTracker
         );
         NotificationWaitJobTask notificationWaitJobTask = new NotificationWaitJobTask(intLogger, dateTimeFormatter, gson, alertRequestUtility, startingSearchDateTime, jobId);
         boolean isComplete = WaitJob.waitFor(resilientJobConfig, notificationWaitJobTask, "int performance test runner notification wait");
@@ -221,11 +223,11 @@ public class IntegrationPerformanceTestRunner {
     }
 
     private PerformanceExecutionStatusModel waitForJobToFinish(LocalDateTime startingNotificationTime, WaitJobCondition waitJobCondition) {
+        WaitIntervalTracker waitIntervalTracker = WaitIntervalTrackerFactory.createConstant(waitTimeoutInSeconds, 2);
         ResilientJobConfig resilientJobConfig = new ResilientJobConfig(
             intLogger,
-            waitTimeoutInSeconds,
             startingNotificationTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
-            2
+            waitIntervalTracker
         );
         try {
             boolean isComplete = WaitJob.waitFor(resilientJobConfig, waitJobCondition, "int performance test runner notification wait");
