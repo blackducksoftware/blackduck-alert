@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory, useLocation, useParams } from 'react-router-dom';
 import * as PropTypes from 'prop-types';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
 import { AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED, AZURE_BOARDS_INFO, AZURE_BOARDS_URLS } from 'page/channel/azure/AzureBoardsModel';
-import { CONTEXT_TYPE } from 'common/util/descriptorUtilities';
 import PageHeader from 'common/component/navigation/PageHeader';
 import PasswordInput from 'common/component/input/PasswordInput';
 import OAuthEndpointButtonField from 'common/component/input/field/OAuthEndpointButtonField';
@@ -15,16 +14,22 @@ import ConcreteConfigurationForm from 'common/configuration/global/concrete/Conc
 const AzureBoardsForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
     const { id } = useParams();
     const history = useHistory();
+    const location = useLocation();
 
-    const [formData, setFormData] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, AZURE_BOARDS_INFO.key));
+    const [formData, setFormData] = useState({});
     const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
 
     const azureBoardsRequestUrl = `${ConfigurationRequestBuilder.AZURE_BOARDS_API_URL}`;
 
     const fetchData = async () => {
-        const response = await ConfigurationRequestBuilder.createReadRequest(azureBoardsRequestUrl, csrfToken);
+        const response = await ConfigurationRequestBuilder.createReadRequest(azureBoardsRequestUrl, csrfToken, id);
         const data = await response.json();
         if (data) {
+            if (location.pathname.includes('/copy')) {
+                delete data.id;
+                delete data.isAppIdSet;
+                delete data.isClientSecretSet;
+            }
             setFormData(data);
         }
     };
@@ -71,6 +76,8 @@ const AzureBoardsForm = ({ csrfToken, errorHandler, readonly, displayTest }) => 
                 deleteRequest={deleteData}
                 updateRequest={updateData}
                 createRequest={postData}
+                displayCancel
+                displayDelete={false}
                 validateRequest={validateData}
                 testRequest={testData}
                 errorHandler={errorHandler}
@@ -85,7 +92,7 @@ const AzureBoardsForm = ({ csrfToken, errorHandler, readonly, displayTest }) => 
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleTestChange(formData, setFormData)}
                     value={formData.name || undefined}
-                    errorName={FieldModelUtilities.createFieldModelErrorKey(AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.name)}
+                    errorName={AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.name}
                     errorValue={errors.fieldErrors[AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.name]}
                 />
                 <TextInput
@@ -97,21 +104,21 @@ const AzureBoardsForm = ({ csrfToken, errorHandler, readonly, displayTest }) => 
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleTestChange(formData, setFormData)}
                     value={formData.organizationName || undefined}
-                    errorName={FieldModelUtilities.createFieldModelErrorKey(AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.organization)}
+                    errorName={AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.organization}
                     errorValue={errors.fieldErrors[AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.organization]}
                 />
                 <PasswordInput
-                    id={AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.clientId}
-                    name={AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.clientId}
+                    id={AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.appId}
+                    name={AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.appId}
                     label="App ID"
                     description="The App ID created for Alert when registering your Azure DevOps Client Application."
                     required
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleTestChange(formData, setFormData)}
                     value={formData.appId || undefined}
-                    isSet={FieldModelUtilities.isFieldModelValueSet(formData, AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.clientId)}
-                    errorName={FieldModelUtilities.createFieldModelErrorKey(AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.clientId)}
-                    errorValue={errors.fieldErrors[AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.clientId]}
+                    isSet={formData.isAppIdSet}
+                    errorName={AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.appId}
+                    errorValue={errors.fieldErrors[AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.appId]}
                 />
                 <PasswordInput
                     id={AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.clientSecret}
@@ -122,8 +129,8 @@ const AzureBoardsForm = ({ csrfToken, errorHandler, readonly, displayTest }) => 
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleTestChange(formData, setFormData)}
                     value={formData.clientSecret || undefined}
-                    isSet={FieldModelUtilities.isFieldModelValueSet(formData, AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.clientSecret)}
-                    errorName={FieldModelUtilities.createFieldModelErrorKey(AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.clientSecret)}
+                    isSet={formData.isClientSecretSet}
+                    errorName={AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.clientSecret}
                     errorValue={errors.fieldErrors[AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.clientSecret]}
                 />
                 <OAuthEndpointButtonField
@@ -138,7 +145,7 @@ const AzureBoardsForm = ({ csrfToken, errorHandler, readonly, displayTest }) => 
                     fieldKey={AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.configureOAuth}
                     requiredRelatedFields={[
                         AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.organization,
-                        AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.clientId,
+                        AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.appId,
                         AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.clientSecret
                     ]}
                     readOnly={readonly || !displayTest}

@@ -15,7 +15,7 @@ export const AZURE_GLOBAL_FIELD_KEYS = {
 // Remove 'UPDATED' prior to merge
 export const AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED = {
     organization: 'organizationName',
-    clientId: 'appId',
+    appId: 'appId',
     clientSecret: 'clientSecret',
     configureOAuth: 'oAuth',
     name: 'name'
