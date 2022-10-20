@@ -56,6 +56,8 @@ import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.rest.HttpUrl;
 import com.synopsys.integration.wait.ResilientJobConfig;
 import com.synopsys.integration.wait.WaitJob;
+import com.synopsys.integration.wait.tracker.WaitIntervalTracker;
+import com.synopsys.integration.wait.tracker.WaitIntervalTrackerFactory;
 
 @Tag(TestTags.DEFAULT_INTEGRATION)
 @SpringBootTest
@@ -87,7 +89,7 @@ public class ComponentUnknownVersionNotificationSerializationTest {
     @Test
     @Ignore // performance test
     @Disabled
-    void testNotificationSerialization() throws IntegrationException, InterruptedException {
+    void testNotificationSerialization() throws IntegrationException {
         LocalDateTime searchStartTime = LocalDateTime.now().minusMinutes(1);
         AlertRequestUtility alertRequestUtility = IntegrationPerformanceTestRunnerLegacy.createAlertRequestUtility(webApplicationContext);
         BlackDuckProviderService blackDuckProviderService = new BlackDuckProviderService(alertRequestUtility, gson);
@@ -100,7 +102,12 @@ public class ComponentUnknownVersionNotificationSerializationTest {
         blackDuckProviderService.triggerBlackDuckNotification(() -> externalId, componentFilter);
 
         try {
-            ResilientJobConfig resilientJobConfig = new ResilientJobConfig(intLogger, 300, searchStartTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), 20);
+            WaitIntervalTracker waitIntervalTracker = WaitIntervalTrackerFactory.createConstant(300, 20);
+            ResilientJobConfig resilientJobConfig = new ResilientJobConfig(
+                intLogger,
+                searchStartTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+                waitIntervalTracker
+            );
             NotificationReceivedWaitJobTask notificationWaitJobTask = new NotificationReceivedWaitJobTask(
                 notificationAccessor,
                 searchStartTime,

@@ -2,8 +2,11 @@ package com.synopsys.integration.alert.channel.azure.boards.web;
 
 import java.util.UUID;
 
+import com.synopsys.integration.alert.channel.azure.boards.action.AzureBoardsGlobalTestAction;
+import com.synopsys.integration.alert.channel.azure.boards.action.AzureBoardsGlobalValidationAction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,13 +23,16 @@ import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 
 @RestController
 @RequestMapping(AlertRestConstants.AZURE_BOARDS_CONFIGURATION_PATH)
-public class AzureBoardsGlobalConfigController implements StaticConfigResourceController<AzureBoardsGlobalConfigModel>, ValidateController<AzureBoardsGlobalConfigModel>,
-    ReadPageController<AlertPagedModel<AzureBoardsGlobalConfigModel>> {
+public class AzureBoardsGlobalConfigController implements StaticConfigResourceController<AzureBoardsGlobalConfigModel>, ValidateController<AzureBoardsGlobalConfigModel>, ReadPageController<AlertPagedModel<AzureBoardsGlobalConfigModel>> {
     private final AzureBoardsGlobalCrudActions configActions;
+    private final AzureBoardsGlobalTestAction azureBoardsGlobalTestAction;
+    private final AzureBoardsGlobalValidationAction azureBoardsGlobalValidationAction;
 
     @Autowired
-    public AzureBoardsGlobalConfigController(AzureBoardsGlobalCrudActions configActions) {
+    public AzureBoardsGlobalConfigController(AzureBoardsGlobalCrudActions configActions, AzureBoardsGlobalTestAction azureBoardsGlobalTestAction, AzureBoardsGlobalValidationAction azureBoardsGlobalValidationAction) {
         this.configActions = configActions;
+        this.azureBoardsGlobalTestAction = azureBoardsGlobalTestAction;
+        this.azureBoardsGlobalValidationAction = azureBoardsGlobalValidationAction;
     }
 
     @Override
@@ -56,7 +62,12 @@ public class AzureBoardsGlobalConfigController implements StaticConfigResourceCo
 
     @Override
     public ValidationResponseModel validate(AzureBoardsGlobalConfigModel requestBody) {
-        return ValidationResponseModel.success(); // TODO: AzureBoardsGlobalValidationAction
+        return ResponseFactory.createContentResponseFromAction(azureBoardsGlobalValidationAction.validate(requestBody));
+    }
+
+    @PostMapping("/test")
+    public ValidationResponseModel test(@RequestBody AzureBoardsGlobalConfigModel resource) {
+        return ResponseFactory.createContentResponseFromAction(azureBoardsGlobalTestAction.testWithPermissionCheck(resource));
     }
 
     @PostMapping("/oauth/authenticate")
