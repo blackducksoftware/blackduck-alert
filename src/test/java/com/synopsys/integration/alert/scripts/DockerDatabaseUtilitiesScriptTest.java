@@ -30,8 +30,6 @@ import com.synopsys.integration.log.LogLevel;
 class DockerDatabaseUtilitiesScriptTest {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private static final String SCRIPT_NAME = "database-utilities.sh";
-    //    private static final String POSTGRES_CONTAINER_NAME = String.format("alert-test-postgres-%s", UUID.randomUUID());
-    //    private static final String CONTAINER_FILTER_BY_NAME = String.format("name=%s", POSTGRES_CONTAINER_NAME);
     private static final File scriptFile = new File(Paths.get("").toFile().getParentFile(), String.format("deployment/docker-swarm/%s", SCRIPT_NAME));
 
     private File workingDirectory;
