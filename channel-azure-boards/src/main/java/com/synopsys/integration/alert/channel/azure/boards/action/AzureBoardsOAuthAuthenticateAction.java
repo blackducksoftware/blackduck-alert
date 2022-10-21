@@ -132,7 +132,7 @@ public class AzureBoardsOAuthAuthenticateAction {
             return new ActionResponse<>(HttpStatus.FORBIDDEN, ResponseFactory.UNAUTHORIZED_REQUEST_MESSAGE);
         }
 
-        if (null != azureBoardsGlobalConfigModel.getId()) {
+        if (StringUtils.isNotBlank(azureBoardsGlobalConfigModel.getId())) {
             ActionResponse<AzureBoardsGlobalConfigModel> getOneResponse = azureBoardsGlobalCrudActions.getOne(UUID.fromString(azureBoardsGlobalConfigModel.getId()));
             if (getOneResponse.isError()) {
                 return getOneResponse;

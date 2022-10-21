@@ -80,7 +80,7 @@ public class AzureBoardsGlobalConfigController implements StaticConfigResourceCo
     }
 
     @PostMapping("/oauth/authenticate")
-    public OAuthEndpointResponse oAuthAuthenticate(AzureBoardsGlobalConfigModel resource) {
+    public OAuthEndpointResponse oAuthAuthenticate(@RequestBody AzureBoardsGlobalConfigModel resource) {
         return ResponseFactory.createContentResponseFromAction(authenticateAction.authenticate(resource));
     }
 }
