@@ -1,5 +1,6 @@
 package com.synopsys.integration.alert.api.oauth.database;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public class AlertOAuthModel {
@@ -19,15 +20,15 @@ public class AlertOAuthModel {
         return id;
     }
 
-    public String getAccessToken() {
-        return accessToken;
+    public Optional<String> getAccessToken() {
+        return Optional.ofNullable(accessToken);
     }
 
-    public String getRefreshToken() {
-        return refreshToken;
+    public Optional<String> getRefreshToken() {
+        return Optional.ofNullable(refreshToken);
     }
 
-    public Long getExirationTimeMilliseconds() {
-        return exirationTimeMilliseconds;
+    public Optional<Long> getExirationTimeMilliseconds() {
+        return Optional.ofNullable(exirationTimeMilliseconds);
     }
 }

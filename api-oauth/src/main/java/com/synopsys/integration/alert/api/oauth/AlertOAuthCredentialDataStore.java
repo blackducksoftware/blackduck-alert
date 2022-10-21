@@ -1,77 +1,117 @@
 package com.synopsys.integration.alert.api.oauth;
 
-import java.io.IOException;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.google.api.client.auth.oauth2.StoredCredential;
 import com.google.api.client.util.store.AbstractDataStore;
+import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.synopsys.integration.alert.api.oauth.database.AlertOAuthModel;
+import com.synopsys.integration.alert.api.oauth.database.accessor.AlertOAuthConfigurationAccessor;
 
 @Component
 public class AlertOAuthCredentialDataStore extends AbstractDataStore<StoredCredential> {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final Lock lock = new ReentrantLock();
+    private final AlertOAuthConfigurationAccessor accessor;
 
     /**
      * @param dataStoreFactory data store factory
      * @param id               data store ID
      */
-    protected AlertOAuthCredentialDataStore(AlertOAuthCredentialDataStoreFactory dataStoreFactory, String id) {
+    protected AlertOAuthCredentialDataStore(AlertOAuthCredentialDataStoreFactory dataStoreFactory, String id, AlertOAuthConfigurationAccessor accessor) {
         super(dataStoreFactory, id);
+        this.accessor = accessor;
     }
 
     @Override
-    public Set<String> keySet() throws IOException {
+    public Set<String> keySet() {
         lock.lock();
         try {
-            //TODO implement
-            return Set.of();
+            return accessor.getConfigurations().stream()
+                .map(AlertOAuthModel::getId)
+                .map(UUID::toString)
+                .collect(Collectors.toSet());
         } finally {
             lock.unlock();
         }
     }
 
     @Override
-    public Collection<StoredCredential> values() throws IOException {
+    public Collection<StoredCredential> values() {
         lock.lock();
         try {
-            StoredCredential storedCredential = createStoredCredential();
-            return Set.of(storedCredential);
+            return accessor.getConfigurations().stream()
+                .map(this::convertToStoredCredential)
+                .collect(Collectors.toList());
         } finally {
             lock.unlock();
         }
     }
 
     @Override
-    public StoredCredential get(String key) throws IOException {
+    public StoredCredential get(String key) {
         lock.lock();
         try {
             if (null == key) {
                 return null;
             }
-            return retrieveCredentialMatchingEmailOrNull(key);
+            return retrieveCredentialMatchingKeyOrNull(key);
         } finally {
             lock.unlock();
         }
     }
 
     @Override
-    public AlertOAuthCredentialDataStore set(String key, StoredCredential value) throws IOException {
+    public AlertOAuthCredentialDataStore set(String key, StoredCredential value) {
         lock.lock();
         try {
-            return this;
+            if (null != key && null != value) {
+                AlertOAuthModel model = convertToModel(key, value);
+                UUID configurationId = UUID.fromString(key);
+                Optional<AlertOAuthModel> savedModel = accessor.getConfiguration(configurationId);
+                // initialize with any saved data first
+                String accessToken = savedModel.flatMap(AlertOAuthModel::getAccessToken).orElse(null);
+                String refreshToken = savedModel.flatMap(AlertOAuthModel::getRefreshToken).orElse(null);
+                Long expirationInMillseconds = savedModel.flatMap(AlertOAuthModel::getExirationTimeMilliseconds).orElse(null);
+
+                // update with the new credential data if present
+                if (model.getAccessToken().isPresent()) {
+                    accessToken = model.getAccessToken().get();
+                }
+
+                if (model.getRefreshToken().isPresent()) {
+                    refreshToken = model.getRefreshToken().get();
+                }
+
+                if (model.getExirationTimeMilliseconds().isPresent()) {
+                    expirationInMillseconds = model.getExirationTimeMilliseconds().get();
+                }
+                
+                AlertOAuthModel updateModel = new AlertOAuthModel(configurationId, accessToken, refreshToken, expirationInMillseconds);
+                accessor.updateConfiguration(model.getId(), updateModel);
+            }
+        } catch (AlertConfigurationException ex) {
+            logger.error("Error occurred saving OAuth credential for id: {}", key);
+            logger.error("Caused by:", ex);
         } finally {
             lock.unlock();
         }
+        return this;
     }
 
     @Override
-    public AlertOAuthCredentialDataStore clear() throws IOException {
+    public AlertOAuthCredentialDataStore clear() {
         lock.lock();
         try {
             for (String key : keySet()) {
@@ -87,27 +127,35 @@ public class AlertOAuthCredentialDataStore extends AbstractDataStore<StoredCrede
     public AlertOAuthCredentialDataStore delete(String key) {
         lock.lock();
         try {
+            if (null != key) {
+                UUID configurationId = UUID.fromString(key);
+                if (accessor.existsConfigurationById(configurationId)) {
+                    accessor.deleteConfiguration(configurationId);
+                }
+            }
             return this;
         } finally {
             lock.unlock();
         }
     }
 
-    private StoredCredential retrieveCredentialMatchingEmailOrNull(String credentialUserEmail) {
-        return createStoredCredential();
+    private StoredCredential retrieveCredentialMatchingKeyOrNull(String configurationKey) {
+        UUID configurationId = UUID.fromString(configurationKey);
+        return accessor.getConfiguration(configurationId)
+            .map(this::convertToStoredCredential)
+            .orElse(null);
     }
 
-    private StoredCredential createStoredCredential() {
-        String accessToken = null;
-        String refreshToken = null;
-
-        String tokenExpirationMillisString = null;
-        Long tokenExpirationMillis = StringUtils.isNotBlank(tokenExpirationMillisString) ? Long.parseLong(tokenExpirationMillisString) : null;
-
+    private StoredCredential convertToStoredCredential(AlertOAuthModel model) {
         StoredCredential storedCredential = new StoredCredential();
-        storedCredential.setAccessToken(accessToken);
-        storedCredential.setRefreshToken(refreshToken);
-        storedCredential.setExpirationTimeMilliseconds(tokenExpirationMillis);
+        model.getAccessToken().ifPresent(storedCredential::setAccessToken);
+        model.getRefreshToken().ifPresent(storedCredential::setRefreshToken);
+        model.getExirationTimeMilliseconds().ifPresent(storedCredential::setExpirationTimeMilliseconds);
         return storedCredential;
+    }
+
+    private AlertOAuthModel convertToModel(String key, StoredCredential storedCredential) {
+        UUID configurationId = UUID.fromString(key);
+        return new AlertOAuthModel(configurationId, storedCredential.getAccessToken(), storedCredential.getRefreshToken(), storedCredential.getExpirationTimeMilliseconds());
     }
 }

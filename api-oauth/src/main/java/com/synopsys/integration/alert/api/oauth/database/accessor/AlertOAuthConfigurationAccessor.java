@@ -1,7 +1,9 @@
 package com.synopsys.integration.alert.api.oauth.database.accessor;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
@@ -20,6 +22,12 @@ public class AlertOAuthConfigurationAccessor {
 
     public Optional<AlertOAuthModel> getConfiguration(UUID id) {
         return oauthRepository.findById(id).map(this::convertToModel);
+    }
+
+    public List<AlertOAuthModel> getConfigurations() {
+        return oauthRepository.findAll().stream()
+            .map(this::convertToModel)
+            .collect(Collectors.toList());
     }
 
     public boolean existsConfigurationById(UUID id) {
@@ -53,6 +61,11 @@ public class AlertOAuthConfigurationAccessor {
     }
 
     private AlertOAuthConfigurationEntity convertToEntity(AlertOAuthModel model) {
-        return new AlertOAuthConfigurationEntity(model.getId(), model.getAccessToken(), model.getRefreshToken(), model.getExirationTimeMilliseconds());
+        return new AlertOAuthConfigurationEntity(
+            model.getId(),
+            model.getAccessToken().orElse(null),
+            model.getRefreshToken().orElse(null),
+            model.getExirationTimeMilliseconds().orElse(null)
+        );
     }
 }
