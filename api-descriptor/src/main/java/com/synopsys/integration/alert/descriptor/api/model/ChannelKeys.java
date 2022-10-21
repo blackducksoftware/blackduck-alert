@@ -12,6 +12,7 @@ import java.util.Map;
 
 import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
 import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
+import com.synopsys.integration.alert.descriptor.api.GitHubChannelKey;
 import com.synopsys.integration.alert.descriptor.api.JiraCloudChannelKey;
 import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
 import com.synopsys.integration.alert.descriptor.api.MsTeamsKey;
@@ -20,6 +21,7 @@ import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
 public final class ChannelKeys {
     public static final AzureBoardsChannelKey AZURE_BOARDS = new AzureBoardsChannelKey();
     public static final EmailChannelKey EMAIL = new EmailChannelKey();
+    public static final GitHubChannelKey GITHUB = new GitHubChannelKey();
     public static final JiraCloudChannelKey JIRA_CLOUD = new JiraCloudChannelKey();
     public static final JiraServerChannelKey JIRA_SERVER = new JiraServerChannelKey();
     public static final MsTeamsKey MS_TEAMS = new MsTeamsKey();
@@ -40,6 +42,7 @@ public final class ChannelKeys {
     static {
         ChannelKeys.putKey(ChannelKeys.AZURE_BOARDS);
         ChannelKeys.putKey(ChannelKeys.EMAIL);
+        ChannelKeys.putKey(ChannelKeys.GITHUB);
         ChannelKeys.putKey(ChannelKeys.JIRA_CLOUD);
         ChannelKeys.putKey(ChannelKeys.JIRA_SERVER);
         ChannelKeys.putKey(ChannelKeys.MS_TEAMS);
