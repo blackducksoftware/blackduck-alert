@@ -38,6 +38,16 @@ public class AzureRedirectUrlCreator {
     }
 
     /**
+     * The OAuth callback controller will redirect back to the Alert UI to the configuration page where the authorization was initiated.
+     * @return The url location to redirect to the UI configuration page.
+     * @see #createOAuthRedirectUri()
+     */
+    public String createUIRedirectLocationForConfiguration(String configId) {
+        return alertWebServerUrlManager.getServerUrl("channels", AzureBoardsDescriptor.AZURE_BOARDS_URL, "edit", configId)
+            .orElseThrow(() -> new AlertRuntimeException("Could not create the Azure UI Redirect URL."));
+    }
+
+    /**
      * The OAuth callback controller URI as a string for Azure to redirect to send the authorization code.
      * This URI string should match the redirect URI in the Azure registered client application.
      * @return The URI string to redirect to from azure when obtaining the authorization code

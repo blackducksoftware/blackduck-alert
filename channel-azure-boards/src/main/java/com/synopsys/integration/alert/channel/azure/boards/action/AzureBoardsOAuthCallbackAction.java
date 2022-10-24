@@ -105,6 +105,7 @@ public class AzureBoardsOAuthCallbackAction {
                             savedConfigModel
                         );
                         testOAuthConnection(properties, authorizationCode, oAuthRequestId);
+                        return new ActionResponse<>(HttpStatus.OK, "Redirecting...", azureRedirectUrlCreator.createUIRedirectLocationForConfiguration(savedConfigModel.getId()));
                     }
                 }
             }
@@ -112,7 +113,7 @@ public class AzureBoardsOAuthCallbackAction {
             // catch any exceptions so the redirect back to the UI happens and doesn't display the URL with the authorization code to the user.
             logger.error("OAuth request with id {}: Azure OAuth callback error occurred", oAuthRequestId, ex);
         }
-        return new ActionResponse<>(HttpStatus.OK, azureRedirectUrlCreator.createUIRedirectLocation());
+        return new ActionResponse<>(HttpStatus.OK, "Redirecting...", azureRedirectUrlCreator.createUIRedirectLocation());
     }
 
     private void testOAuthConnection(AzureBoardsPropertiesLegacy azureBoardsProperties, String authorizationCode, UUID oAuthRequestId) {
