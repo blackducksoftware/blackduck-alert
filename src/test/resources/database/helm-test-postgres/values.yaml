@@ -1,0 +1,45 @@
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+registry: "docker.io"
+
+# Storage configurations
+enablePersistentStorage: false
+storageClass: # it will apply to all PVC's storage class but it can be override at container level
+
+# postgres - configurations for the postgres Pod
+postgres:
+  registry: "" # override the docker registry at container level
+  isExternal: false # false for running Postgres as a container and true for using External Postgres database
+  host: "" # required only for external postgres, for postgres as a container, it will point to <name>-postgres
+  port: 5432
+  # NOTE: do not change usernames when using postgres as a container; only configure if using external database
+  userUserName: sa
+  userPassword: blackduck
+  databaseName: alertdb
+  # pvc related parameters for postgres container
+  persistentVolumeClaimName: "" # set if you want to create your own PVC (used for migration)
+  claimSize: "5Gi" # PVC claim size
+  storageClass: "" # PVC storage class name
+  volumeName: "" # existing persistent volume name backing the PVC
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  podSecurityContext: {}
+  securityContext: {}
+  resources:
+    limits:
+      cpu: "1000m"
+    requests:
+      cpu: "1000m"
+
+# image pull secret to download images (mostly applicable for air gapped customers)
+imagePullSecrets: [] # array of strings delimited by comma
+
+# Used to start or stop the alert instance. Set to "Running" to start, or "Stopped" to stop
+status: Running
+
+exposedServiceType: NodePort # NodePort | LoadBalancer | OpenShift
+
+environs: {}
+secretEnvirons: {}

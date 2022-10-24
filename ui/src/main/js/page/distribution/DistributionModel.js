@@ -1,5 +1,5 @@
 import { createTableSelectColumn } from 'common/component/input/TableSelectInput';
-import { AZURE_INFO } from 'page/channel/azure/AzureModel';
+import { AZURE_BOARDS_INFO } from 'page/channel/azure/AzureBoardsModel';
 import { EMAIL_INFO } from 'page/channel/email/EmailModels';
 import { JIRA_CLOUD_INFO } from 'page/channel/jira/cloud/JiraCloudModel';
 import { JIRA_SERVER_INFO } from 'page/channel/jira/server/JiraServerModel';
@@ -63,7 +63,7 @@ export const DISTRIBUTION_NOTIFICATION_TYPE_OPTIONS = [
 ];
 
 export const DISTRIBUTION_CHANNEL_OPTIONS = [
-    { label: AZURE_INFO.label, value: AZURE_INFO.key },
+    { label: AZURE_BOARDS_INFO.label, value: AZURE_BOARDS_INFO.key },
     { label: EMAIL_INFO.label, value: EMAIL_INFO.key },
     { label: JIRA_CLOUD_INFO.label, value: JIRA_CLOUD_INFO.key },
     { label: JIRA_SERVER_INFO.label, value: JIRA_SERVER_INFO.key },

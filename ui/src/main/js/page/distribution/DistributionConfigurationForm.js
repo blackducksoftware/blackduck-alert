@@ -28,7 +28,7 @@ import {
 import CommonDistributionConfigurationForm from 'page/distribution/CommonDistributionConfigurationForm';
 import * as DistributionRequestUtility from 'page/distribution/DistributionRequestUtility';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
-import { AZURE_INFO } from 'page/channel/azure/AzureModel';
+import { AZURE_BOARDS_INFO } from 'page/channel/azure/AzureBoardsModel';
 import { BLACKDUCK_INFO } from 'page/provider/blackduck/BlackDuckModel';
 import { EMAIL_INFO } from 'page/channel/email/EmailModels';
 import { JIRA_CLOUD_INFO } from 'page/channel/jira/cloud/JiraCloudModel';
@@ -50,10 +50,10 @@ const DistributionConfigurationForm = ({
     const location = useLocation();
     const [formData, setFormData] = useState({});
     const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
-    const [channelModel, setChannelModel] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.DISTRIBUTION, AZURE_INFO.key));
-    const [specificChannelModel, setSpecificChannelModel] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.DISTRIBUTION, AZURE_INFO.key));
+    const [channelModel, setChannelModel] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.DISTRIBUTION, AZURE_BOARDS_INFO.key));
+    const [specificChannelModel, setSpecificChannelModel] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.DISTRIBUTION, AZURE_BOARDS_INFO.key));
     const [providerModel, setProviderModel] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.DISTRIBUTION, BLACKDUCK_INFO.key));
-    const [selectedChannel, setSelectedChannel] = useState(AZURE_INFO.key);
+    const [selectedChannel, setSelectedChannel] = useState(AZURE_BOARDS_INFO.key);
     const [testFieldModel, setTestFieldModel] = useState({});
     const [readonly, setReadonly] = useState(false);
     const [processingTypes, setProcessingTypes] = useState(DISTRIBUTION_PROCESSING_TYPES);
@@ -107,7 +107,7 @@ const DistributionConfigurationForm = ({
     useEffect(() => {
         const channelFieldModel = (formData && formData.fieldModels)
             ? formData.fieldModels.find((model) => FieldModelUtilities.hasKey(model, DISTRIBUTION_COMMON_FIELD_KEYS.channelName))
-            : FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.DISTRIBUTION, AZURE_INFO.key);
+            : FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.DISTRIBUTION, AZURE_BOARDS_INFO.key);
         const channelKey = FieldModelUtilities.getFieldModelSingleValue(channelFieldModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName);
         if (channelKey) {
             setSelectedChannel(channelKey);
@@ -160,7 +160,7 @@ const DistributionConfigurationForm = ({
 
     useEffect(() => {
         switch (selectedChannel.toString()) {
-            case AZURE_INFO.key:
+            case AZURE_BOARDS_INFO.key:
             case JIRA_SERVER_INFO.key:
             case JIRA_CLOUD_INFO.key: {
                 const filtered = DISTRIBUTION_PROCESSING_TYPES.filter((type) => type.value !== 'SUMMARY');
@@ -174,7 +174,7 @@ const DistributionConfigurationForm = ({
 
     const renderChannelFields = () => {
         switch (selectedChannel.toString()) {
-            case AZURE_INFO.key:
+            case AZURE_BOARDS_INFO.key:
                 return (
                     <AzureDistributionConfiguration
                         data={specificChannelModel}
@@ -252,7 +252,7 @@ const DistributionConfigurationForm = ({
     }
 
     if (!FieldModelUtilities.hasKey(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName)) {
-        onChannelSelectChange({ target: { name: DISTRIBUTION_COMMON_FIELD_KEYS.channelName, value: [AZURE_INFO.key] } });
+        onChannelSelectChange({ target: { name: DISTRIBUTION_COMMON_FIELD_KEYS.channelName, value: [AZURE_BOARDS_INFO.key] } });
     }
 
     if (!FieldModelUtilities.hasKey(testFieldModel, DISTRIBUTION_TEST_FIELD_KEYS.topic) && !FieldModelUtilities.hasKey(testFieldModel, DISTRIBUTION_TEST_FIELD_KEYS.message)) {
