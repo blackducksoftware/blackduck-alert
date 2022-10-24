@@ -23,11 +23,13 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
+  annotations:
+    "helm.sh/resource-policy": keep
   labels:
     app: alert
     component: rabbitmq
     name: {{ .Release.Name }}
-  name: {{ .Release.Name }}-rabbitmq
+  name: {{ .Release.Name }}-rabbitmq-pvc
   namespace: {{ .Release.Namespace }}
 spec:
   {{- if .Values.rabbitmq.storageClass }}

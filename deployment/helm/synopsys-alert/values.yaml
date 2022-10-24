@@ -23,7 +23,7 @@ alert:
   persistentVolumeClaimName: ""
   claimSize: "5Gi"
   storageClass: ""
-  volumeName: ""
+  volumeName: "" # existing persistent volume name backing the PVC
   nodeSelector: {}
   tolerations: []
   affinity: {}

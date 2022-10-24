@@ -414,7 +414,7 @@ Please see: https://unofficial-kubernetes.readthedocs.io/en/latest/concepts/stor
   enablePersistentStorage: true 
   ```
   - This is the default value to prevent loss of data  
-  - Alert will not startup correctly if this is set to 'true' and persistent volumes are note configured
+  - Alert will not startup correctly if this is set to 'true' and persistent volumes are not configured
   - If this is false when the deployment is uninstalled all data will be lost
   
 #### With Storage Claims
