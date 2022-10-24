@@ -35,12 +35,17 @@ public class AlertOAuthConfigurationAccessor {
     }
 
     public AlertOAuthModel createConfiguration(AlertOAuthModel configuration) throws AlertConfigurationException {
+        UUID id = configuration.getId();
+        Optional<AlertOAuthConfigurationEntity> oauthEntity = oauthRepository.findById(id);
+        if (oauthEntity.isPresent()) {
+            throw new AlertConfigurationException(String.format("A configuration with username id '%s' is already present. Cannot create duplicate configuration.", id));
+        }
         AlertOAuthConfigurationEntity entity = convertToEntity(configuration);
         entity = oauthRepository.save(entity);
         return convertToModel(entity);
     }
 
-    public Optional<AlertOAuthModel> updateConfiguration(UUID configurationId, AlertOAuthModel configuration) throws AlertConfigurationException {
+    public Optional<AlertOAuthModel> updateConfiguration(UUID configurationId, AlertOAuthModel configuration) {
         Optional<AlertOAuthModel> result = Optional.empty();
         boolean exists = oauthRepository.existsById(configurationId);
         if (exists) {

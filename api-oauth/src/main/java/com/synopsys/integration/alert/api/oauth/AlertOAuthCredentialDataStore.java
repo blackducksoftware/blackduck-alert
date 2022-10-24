@@ -8,20 +8,15 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.google.api.client.auth.oauth2.StoredCredential;
 import com.google.api.client.util.store.AbstractDataStore;
-import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.oauth.database.AlertOAuthModel;
 import com.synopsys.integration.alert.api.oauth.database.accessor.AlertOAuthConfigurationAccessor;
 
 @Component
 public class AlertOAuthCredentialDataStore extends AbstractDataStore<StoredCredential> {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
     private final Lock lock = new ReentrantLock();
     private final AlertOAuthConfigurationAccessor accessor;
 
@@ -101,9 +96,6 @@ public class AlertOAuthCredentialDataStore extends AbstractDataStore<StoredCrede
                 AlertOAuthModel updateModel = new AlertOAuthModel(configurationId, accessToken, refreshToken, expirationInMillseconds);
                 accessor.updateConfiguration(model.getId(), updateModel);
             }
-        } catch (AlertConfigurationException ex) {
-            logger.error("Error occurred saving OAuth credential for id: {}", key);
-            logger.error("Caused by:", ex);
         } finally {
             lock.unlock();
         }

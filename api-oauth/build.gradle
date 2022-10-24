@@ -16,4 +16,6 @@ dependencies {
     implementation 'com.google.api-client:google-api-client'
     implementation 'com.google.http-client:google-http-client-apache-v2'
 
+    testImplementation project(":test-common")
+
 }
