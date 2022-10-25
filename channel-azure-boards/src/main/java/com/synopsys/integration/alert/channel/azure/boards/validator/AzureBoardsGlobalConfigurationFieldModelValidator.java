@@ -14,17 +14,17 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
-import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidator;
+import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidatorLegacy;
 import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
 @Component
 public class AzureBoardsGlobalConfigurationFieldModelValidator implements GlobalConfigurationFieldModelValidator {
-    private final OAuthRequestValidator oAuthRequestValidator;
+    private final OAuthRequestValidatorLegacy oAuthRequestValidator;
 
     @Autowired
-    public AzureBoardsGlobalConfigurationFieldModelValidator(OAuthRequestValidator oAuthRequestValidator) {
+    public AzureBoardsGlobalConfigurationFieldModelValidator(OAuthRequestValidatorLegacy oAuthRequestValidator) {
         this.oAuthRequestValidator = oAuthRequestValidator;
     }
 

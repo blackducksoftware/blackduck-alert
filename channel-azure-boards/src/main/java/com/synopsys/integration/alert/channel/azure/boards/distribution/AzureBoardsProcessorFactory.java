@@ -26,8 +26,8 @@ import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetr
 import com.synopsys.integration.alert.api.channel.issue.search.IssueTrackerSearcher;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerAsyncMessageSender;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesFactory;
-import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesLegacy;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.search.AzureBoardsComponentIssueFinder;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.search.AzureBoardsExistingIssueDetailsCreator;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.search.AzureBoardsIssueStatusResolver;
@@ -81,7 +81,7 @@ public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory
 
     @Override
     public IssueTrackerProcessor<Integer> createProcessor(AzureBoardsJobDetailsModel distributionDetails, UUID eventId, Set<Long> notificationIds) throws AlertException {
-        AzureBoardsPropertiesLegacy azureBoardsProperties = azureBoardsPropertiesFactory.createAzureBoardsProperties();
+        AzureBoardsProperties azureBoardsProperties = azureBoardsPropertiesFactory.createAzureBoardsProperties();
         String organizationName = azureBoardsProperties.getOrganizationName();
         azureBoardsProperties.validateProperties();
 

@@ -53,7 +53,7 @@ import com.synopsys.integration.azure.boards.common.oauth.AzureAuthorizationCode
 import com.synopsys.integration.azure.boards.common.oauth.AzureOAuthScopes;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
-public class AzureBoardsPropertiesLegacy {
+public class AzureBoardsProperties {
     private static final String DEFAULT_AZURE_OAUTH_USER_ID = "azure_default_user";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -66,16 +66,24 @@ public class AzureBoardsPropertiesLegacy {
     private final List<String> scopes;
     private final String redirectUri;
 
-    public static AzureBoardsPropertiesLegacy fromFieldAccessor(AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory, String redirectUri, FieldUtility fieldUtility) {
+    /**
+     * @deprecated Replaced by fromGlobalConfigurationModel in the updated API. For removal in 8.0.0.
+     */
+    @Deprecated(forRemoval = true)
+    public static AzureBoardsProperties fromFieldAccessor(AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory, String redirectUri, FieldUtility fieldUtility) {
         String organizationName = fieldUtility.getStringOrNull(AzureBoardsDescriptor.KEY_ORGANIZATION_NAME);
         String clientId = fieldUtility.getStringOrNull(AzureBoardsDescriptor.KEY_CLIENT_ID);
         String clientSecret = fieldUtility.getStringOrNull(AzureBoardsDescriptor.KEY_CLIENT_SECRET);
         String oAuthUserEmail = fieldUtility.getString(AzureBoardsDescriptor.KEY_OAUTH_USER_EMAIL).orElse(DEFAULT_AZURE_OAUTH_USER_ID);
         List<String> defaultScopes = List.of(AzureOAuthScopes.PROJECTS_READ.getScope(), AzureOAuthScopes.WORK_FULL.getScope());
-        return new AzureBoardsPropertiesLegacy(credentialDataStoreFactory, organizationName, clientId, clientSecret, oAuthUserEmail, defaultScopes, redirectUri);
+        return new AzureBoardsProperties(credentialDataStoreFactory, organizationName, clientId, clientSecret, oAuthUserEmail, defaultScopes, redirectUri);
     }
 
-    public static AzureBoardsPropertiesLegacy fromGlobalConfig(
+    /**
+     * @deprecated Replaced by fromGlobalConfigurationModel in the updated API. For removal in 8.0.0.
+     */
+    @Deprecated(forRemoval = true)
+    public static AzureBoardsProperties fromGlobalConfig(
         AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory,
         String redirectUri,
         ConfigurationModel globalConfiguration
@@ -84,7 +92,7 @@ public class AzureBoardsPropertiesLegacy {
         return fromFieldAccessor(credentialDataStoreFactory, redirectUri, globalFieldUtility);
     }
 
-    public static AzureBoardsPropertiesLegacy fromGlobalConfigurationModel(
+    public static AzureBoardsProperties fromGlobalConfigurationModel(
         AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory,
         String redirectUri,
         AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModel
@@ -92,7 +100,7 @@ public class AzureBoardsPropertiesLegacy {
         //TODO: Determine if we need the KEY_OAUTH_USER_EMAIL here or can we use the default
         String oAuthUserEmail = DEFAULT_AZURE_OAUTH_USER_ID;
         List<String> defaultScopes = List.of(AzureOAuthScopes.PROJECTS_READ.getScope(), AzureOAuthScopes.WORK_FULL.getScope());
-        return new AzureBoardsPropertiesLegacy(
+        return new AzureBoardsProperties(
             credentialDataStoreFactory,
             azureBoardsGlobalConfigModel.getOrganizationName(),
             azureBoardsGlobalConfigModel.getAppId().orElse(null),
@@ -103,7 +111,7 @@ public class AzureBoardsPropertiesLegacy {
         );
     }
 
-    public AzureBoardsPropertiesLegacy(
+    public AzureBoardsProperties(
         AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory,
         String organizationName,
         String clientId,

@@ -83,6 +83,16 @@ public class ResponseFactory {
         throw createStatusException(actionResponse);
     }
 
+    public static <T> ResponseEntity<T> createFoundRedirectResponseFromAction(ActionResponse<String> locationResponse) throws ResponseStatusException {
+        if (locationResponse.isError()) {
+            throw createStatusException(locationResponse);
+        }
+        String location = locationResponse.getContent().get();
+        HttpHeaders header = new HttpHeaders();
+        header.add("Location", location);
+        return new ResponseEntity<>(header, HttpStatus.FOUND);
+    }
+
     // Unnecessarily stateful methods:
 
     public ResponseEntity<String> createMessageResponse(HttpStatus status, String id, String message) {
