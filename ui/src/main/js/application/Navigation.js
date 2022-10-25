@@ -9,7 +9,7 @@ import { EMAIL_INFO } from 'page/channel/email/EmailModels';
 import { JIRA_CLOUD_INFO } from 'page/channel/jira/cloud/JiraCloudModel';
 import { JIRA_SERVER_INFO } from 'page/channel/jira/server/JiraServerModel';
 import { MSTEAMS_INFO } from 'page/channel/msteams/MSTeamsModel';
-import { AZURE_INFO } from 'page/channel/azure/AzureModel';
+import { AZURE_BOARDS_INFO } from 'page/channel/azure/AzureBoardsModel';
 import { SCHEDULING_INFO } from 'page/scheduling/SchedulingModel';
 import { SETTINGS_INFO } from 'page/settings/SettingsModel';
 import { AUTHENTICATION_INFO } from 'application/auth/AuthenticationModel';
@@ -59,7 +59,7 @@ const Navigation = ({ confirmLogoutPressed, globalDescriptorMap }) => {
                             Channels
                         </li>
                     )}
-                    {doesDescriptorExist(globalDescriptorMap, AZURE_INFO.key) && createStaticNavItem(channelUri, AZURE_INFO)}
+                    {doesDescriptorExist(globalDescriptorMap, AZURE_BOARDS_INFO.key) && createStaticNavItem(channelUri, AZURE_BOARDS_INFO)}
                     {doesDescriptorExist(globalDescriptorMap, EMAIL_INFO.key) && createStaticNavItem(channelUri, EMAIL_INFO)}
                     {doesDescriptorExist(globalDescriptorMap, JIRA_CLOUD_INFO.key) && createStaticNavItem(channelUri, JIRA_CLOUD_INFO)}
                     {doesDescriptorExist(globalDescriptorMap, JIRA_SERVER_INFO.key) && createStaticNavItem(channelUri, JIRA_SERVER_INFO)}

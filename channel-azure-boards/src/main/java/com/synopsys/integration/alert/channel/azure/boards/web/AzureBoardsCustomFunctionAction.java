@@ -23,10 +23,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesLegacy;
+import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
 import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUrlCreator;
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
-import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidator;
+import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidatorLegacy;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
 import com.synopsys.integration.alert.channel.azure.boards.validator.AzureBoardsGlobalConfigurationFieldModelValidator;
 import com.synopsys.integration.alert.common.action.ActionResponse;
@@ -47,7 +47,11 @@ import com.synopsys.integration.azure.boards.common.http.AzureHttpRequestCreator
 import com.synopsys.integration.azure.boards.common.oauth.AzureOAuthScopes;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
+/**
+ * @deprecated This class will be replaced by AzureBoardsOAuthAuthenticateAction. It is planned for removal in 8.0.0.
+ */
 @Component
+@Deprecated(forRemoval = true)
 public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthEndpointResponse> {
     private final Logger logger = LoggerFactory.getLogger(AzureBoardsCustomFunctionAction.class);
 
@@ -57,7 +61,7 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
     private final AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory;
     private final AzureRedirectUrlCreator azureRedirectUrlCreator;
     private final ProxyManager proxyManager;
-    private final OAuthRequestValidator oAuthRequestValidator;
+    private final OAuthRequestValidatorLegacy oAuthRequestValidator;
     private final ConfigResourceActions configActions;
     private final AlertWebServerUrlManager alertWebServerUrlManager;
 
@@ -69,7 +73,7 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
         AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory,
         AzureRedirectUrlCreator azureRedirectUrlCreator,
         ProxyManager proxyManager,
-        OAuthRequestValidator oAuthRequestValidator,
+        OAuthRequestValidatorLegacy oAuthRequestValidator,
         ConfigResourceActions configActions,
         AuthorizationManager authorizationManager,
         AlertWebServerUrlManager alertWebServerUrlManager
@@ -159,7 +163,7 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
     }
 
     private boolean isAuthenticated(FieldUtility fieldUtility) {
-        AzureBoardsPropertiesLegacy properties = AzureBoardsPropertiesLegacy.fromFieldAccessor(
+        AzureBoardsProperties properties = AzureBoardsProperties.fromFieldAccessor(
             azureBoardsCredentialDataStoreFactory,
             azureRedirectUrlCreator.createOAuthRedirectUri(),
             fieldUtility

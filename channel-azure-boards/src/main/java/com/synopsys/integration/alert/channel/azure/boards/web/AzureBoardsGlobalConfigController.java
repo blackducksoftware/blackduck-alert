@@ -2,8 +2,6 @@ package com.synopsys.integration.alert.channel.azure.boards.web;
 
 import java.util.UUID;
 
-import com.synopsys.integration.alert.channel.azure.boards.action.AzureBoardsGlobalTestAction;
-import com.synopsys.integration.alert.channel.azure.boards.action.AzureBoardsGlobalValidationAction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,6 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.channel.azure.boards.action.AzureBoardsGlobalCrudActions;
+import com.synopsys.integration.alert.channel.azure.boards.action.AzureBoardsGlobalTestAction;
+import com.synopsys.integration.alert.channel.azure.boards.action.AzureBoardsGlobalValidationAction;
+import com.synopsys.integration.alert.channel.azure.boards.action.AzureBoardsOAuthAuthenticateAction;
 import com.synopsys.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthEndpointResponse;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
@@ -23,16 +24,24 @@ import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 
 @RestController
 @RequestMapping(AlertRestConstants.AZURE_BOARDS_CONFIGURATION_PATH)
-public class AzureBoardsGlobalConfigController implements StaticConfigResourceController<AzureBoardsGlobalConfigModel>, ValidateController<AzureBoardsGlobalConfigModel>, ReadPageController<AlertPagedModel<AzureBoardsGlobalConfigModel>> {
+public class AzureBoardsGlobalConfigController implements StaticConfigResourceController<AzureBoardsGlobalConfigModel>, ValidateController<AzureBoardsGlobalConfigModel>,
+    ReadPageController<AlertPagedModel<AzureBoardsGlobalConfigModel>> {
     private final AzureBoardsGlobalCrudActions configActions;
     private final AzureBoardsGlobalTestAction azureBoardsGlobalTestAction;
     private final AzureBoardsGlobalValidationAction azureBoardsGlobalValidationAction;
+    private final AzureBoardsOAuthAuthenticateAction authenticateAction;
 
     @Autowired
-    public AzureBoardsGlobalConfigController(AzureBoardsGlobalCrudActions configActions, AzureBoardsGlobalTestAction azureBoardsGlobalTestAction, AzureBoardsGlobalValidationAction azureBoardsGlobalValidationAction) {
+    public AzureBoardsGlobalConfigController(
+        AzureBoardsGlobalCrudActions configActions,
+        AzureBoardsGlobalTestAction azureBoardsGlobalTestAction,
+        AzureBoardsGlobalValidationAction azureBoardsGlobalValidationAction,
+        AzureBoardsOAuthAuthenticateAction authenticateAction
+    ) {
         this.configActions = configActions;
         this.azureBoardsGlobalTestAction = azureBoardsGlobalTestAction;
         this.azureBoardsGlobalValidationAction = azureBoardsGlobalValidationAction;
+        this.authenticateAction = authenticateAction;
     }
 
     @Override
@@ -71,8 +80,7 @@ public class AzureBoardsGlobalConfigController implements StaticConfigResourceCo
     }
 
     @PostMapping("/oauth/authenticate")
-    public OAuthEndpointResponse oAuthAuthenticate(AzureBoardsGlobalConfigModel resource) {
-        //TODO: This endpoint is currently not implemented but is being exposed for UI purposes
-        return new OAuthEndpointResponse(false, "testUrl", "");
+    public OAuthEndpointResponse oAuthAuthenticate(@RequestBody AzureBoardsGlobalConfigModel resource) {
+        return ResponseFactory.createContentResponseFromAction(authenticateAction.authenticate(resource));
     }
 }
