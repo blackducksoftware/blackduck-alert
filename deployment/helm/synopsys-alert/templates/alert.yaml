@@ -220,8 +220,6 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  annotations:
-    "helm.sh/resource-policy": keep
   labels:
     app: alert
     component: alert
