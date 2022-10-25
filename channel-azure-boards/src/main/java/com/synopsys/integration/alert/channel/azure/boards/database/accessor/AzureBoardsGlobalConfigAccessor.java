@@ -102,7 +102,7 @@ public class AzureBoardsGlobalConfigAccessor implements ConfigurationAccessor<Az
     @Transactional(propagation = Propagation.REQUIRED)
     public AzureBoardsGlobalConfigModel updateConfiguration(UUID configurationId, AzureBoardsGlobalConfigModel configuration) throws AlertConfigurationException {
         AzureBoardsConfigurationEntity configurationEntity = azureBoardsConfigurationRepository.findById(configurationId)
-            .orElseThrow(() -> new AlertConfigurationException((String.format("Config with id '%s' did not exist", configurationId.toString()))));
+            .orElseThrow(() -> new AlertConfigurationException((String.format("Config with id '%s' did not exist", configurationId))));
         if (BooleanUtils.toBoolean(configuration.getIsAppIdSet().orElse(Boolean.FALSE)) && configuration.getAppId().isEmpty()) {
             String decryptedAppId = encryptionUtility.decrypt(configurationEntity.getAppId());
             configuration.setAppId(decryptedAppId);
