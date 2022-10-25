@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -121,8 +122,9 @@ class DockerDatabaseUtilitiesScriptTest {
         ExecutableOutput backupOutput = processBuilderRunner.execute(scriptBackupExecutable);
         assertEquals(0, backupOutput.getReturnCode());
 
-        // perform restore
-        List<String> backupArguments = List.of("-b", "-k", containerName, "-f", dumpFilePath.toFile().getAbsolutePath());
+        // perform backup
+        File backupFile = Files.createTempFile("testAlertBackup", "dump").toFile();
+        List<String> backupArguments = List.of("-b", "-k", containerName, "-f", backupFile.getAbsolutePath());
         Executable scriptRestoreExecutable = Executable.create(workingDirectory, scriptFile, backupArguments);
         ExecutableOutput restoreOutput = processBuilderRunner.execute(scriptRestoreExecutable);
         assertEquals(0, restoreOutput.getReturnCode());

@@ -3,7 +3,9 @@ package com.synopsys.integration.alert.api.oauth.database;
 import java.util.Optional;
 import java.util.UUID;
 
-public class AlertOAuthModel {
+import com.synopsys.integration.util.Stringable;
+
+public class AlertOAuthModel extends Stringable {
     private final UUID id;
     private final String accessToken;
     private final String refreshToken;

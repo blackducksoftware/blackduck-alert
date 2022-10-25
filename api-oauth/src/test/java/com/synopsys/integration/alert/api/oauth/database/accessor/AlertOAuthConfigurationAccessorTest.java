@@ -141,7 +141,6 @@ class AlertOAuthConfigurationAccessorTest {
         String accessToken = "accessToken";
         String refreshToken = "refreshToken";
         Long expirationTime = 5000L;
-        AlertOAuthConfigurationAccessor accessor = new AlertOAuthConfigurationAccessor(repository);
         return new AlertOAuthModel(id, accessToken, refreshToken, expirationTime);
     }
 }
