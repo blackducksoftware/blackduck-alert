@@ -23,7 +23,6 @@ import org.springframework.mock.env.MockEnvironment;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class AzureBoardsEnvironmentVariableHandlerTest {
     private final String ORGANIZATION_NAME = "A Organization Name";
