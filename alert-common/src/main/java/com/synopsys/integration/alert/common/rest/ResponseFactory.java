@@ -83,7 +83,7 @@ public class ResponseFactory {
         throw createStatusException(actionResponse);
     }
 
-    public static <T> ResponseEntity<T> createFoundRedirectResponseV2(ActionResponse<String> locationResponse) throws ResponseStatusException {
+    public static <T> ResponseEntity<T> createFoundRedirectResponseFromAction(ActionResponse<String> locationResponse) throws ResponseStatusException {
         if (locationResponse.isError()) {
             throw createStatusException(locationResponse);
         }

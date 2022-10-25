@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesLegacy;
+import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
 import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUrlCreator;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidatorLegacy;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
@@ -46,7 +46,9 @@ import com.synopsys.integration.azure.boards.common.service.project.TeamProjectR
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 /**
- * @deprecated This class
+ * @deprecated This class is deprecated in favor of the AzureOAuthCallbackController. The RestController for this class has
+ * been disabled and is not an active endpoint. This class remains as reference for the previous authorization endpoint,  but
+ * should be removed in 8.0.0.
  */
 @Deprecated(forRemoval = true)
 //@RestController
@@ -113,7 +115,7 @@ public class AzureOAuthCallbackControllerLegacy {
                         logger.error("OAuth request with id {}: Azure oauth callback: Authorization code isn't valid. Stop processing", oAuthRequestId);
                     } else {
                         String oAuthRedirectUri = azureRedirectUrlCreator.createOAuthRedirectUri();
-                        AzureBoardsPropertiesLegacy properties = AzureBoardsPropertiesLegacy.fromFieldAccessor(
+                        AzureBoardsProperties properties = AzureBoardsProperties.fromFieldAccessor(
                             azureBoardsCredentialDataStoreFactory,
                             oAuthRedirectUri,
                             fieldUtility
@@ -130,7 +132,7 @@ public class AzureOAuthCallbackControllerLegacy {
         return responseFactory.createFoundRedirectResponse(azureRedirectUrlCreator.createUIRedirectLocation());
     }
 
-    private void testOAuthConnection(AzureBoardsPropertiesLegacy azureBoardsProperties, String authorizationCode, String oAuthRequestId) {
+    private void testOAuthConnection(AzureBoardsProperties azureBoardsProperties, String authorizationCode, String oAuthRequestId) {
         try {
             ProxyInfo proxyInfo = proxyManager.createProxyInfoForHost(AzureHttpRequestCreatorFactory.DEFAULT_BASE_URL);
             String organizationName = azureBoardsProperties.getOrganizationName();

@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesLegacy;
+import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
 import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUrlCreator;
 import com.synopsys.integration.alert.channel.azure.boards.database.accessor.AzureBoardsGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
@@ -99,7 +99,7 @@ public class AzureBoardsOAuthCallbackAction {
                         logger.error("OAuth request with id {}: Azure oauth callback: Authorization code isn't valid. Stop processing", oAuthRequestId);
                     } else {
                         String oAuthRedirectUri = azureRedirectUrlCreator.createOAuthRedirectUri();
-                        AzureBoardsPropertiesLegacy properties = AzureBoardsPropertiesLegacy.fromGlobalConfigurationModel(
+                        AzureBoardsProperties properties = AzureBoardsProperties.fromGlobalConfigurationModel(
                             azureBoardsCredentialDataStoreFactory,
                             oAuthRedirectUri,
                             savedConfigModel
@@ -116,7 +116,7 @@ public class AzureBoardsOAuthCallbackAction {
         return new ActionResponse<>(HttpStatus.OK, "Redirecting...", azureRedirectUrlCreator.createUIRedirectLocation());
     }
 
-    private void testOAuthConnection(AzureBoardsPropertiesLegacy azureBoardsProperties, String authorizationCode, UUID oAuthRequestId) {
+    private void testOAuthConnection(AzureBoardsProperties azureBoardsProperties, String authorizationCode, UUID oAuthRequestId) {
         try {
             ProxyInfo proxyInfo = proxyManager.createProxyInfoForHost(AzureHttpRequestCreatorFactory.DEFAULT_BASE_URL);
             String organizationName = azureBoardsProperties.getOrganizationName();

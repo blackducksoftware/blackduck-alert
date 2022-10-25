@@ -13,7 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
-import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesLegacy;
+import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
 import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUrlCreator;
 import com.synopsys.integration.alert.channel.azure.boards.database.accessor.AzureBoardsGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
@@ -147,7 +147,7 @@ public class AzureBoardsOAuthAuthenticateAction {
     }
 
     private boolean isAuthenticated(AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModel) {
-        AzureBoardsPropertiesLegacy properties = AzureBoardsPropertiesLegacy.fromGlobalConfigurationModel(
+        AzureBoardsProperties properties = AzureBoardsProperties.fromGlobalConfigurationModel(
             azureBoardsCredentialDataStoreFactory,
             azureRedirectUrlCreator.createOAuthRedirectUri(),
             azureBoardsGlobalConfigModel

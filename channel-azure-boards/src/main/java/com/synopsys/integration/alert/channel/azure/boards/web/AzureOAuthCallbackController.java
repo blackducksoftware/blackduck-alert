@@ -25,6 +25,6 @@ public class AzureOAuthCallbackController {
 
     @GetMapping
     public ResponseEntity<String> oauthCallback(HttpServletRequest request) {
-        return ResponseFactory.createFoundRedirectResponseV2(azureBoardsOAuthCallbackAction.handleCallback(request));
+        return ResponseFactory.createFoundRedirectResponseFromAction(azureBoardsOAuthCallbackAction.handleCallback(request));
     }
 }
