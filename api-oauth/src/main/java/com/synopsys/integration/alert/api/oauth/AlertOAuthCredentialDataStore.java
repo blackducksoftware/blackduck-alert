@@ -8,14 +8,11 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
-import org.springframework.stereotype.Component;
-
 import com.google.api.client.auth.oauth2.StoredCredential;
 import com.google.api.client.util.store.AbstractDataStore;
 import com.synopsys.integration.alert.api.oauth.database.AlertOAuthModel;
 import com.synopsys.integration.alert.api.oauth.database.accessor.AlertOAuthConfigurationAccessor;
 
-@Component
 public class AlertOAuthCredentialDataStore extends AbstractDataStore<StoredCredential> {
     private final Lock lock = new ReentrantLock();
     private final AlertOAuthConfigurationAccessor accessor;
@@ -92,7 +89,7 @@ public class AlertOAuthCredentialDataStore extends AbstractDataStore<StoredCrede
                 if (model.getExirationTimeMilliseconds().isPresent()) {
                     expirationInMillseconds = model.getExirationTimeMilliseconds().get();
                 }
-                
+
                 AlertOAuthModel updateModel = new AlertOAuthModel(configurationId, accessToken, refreshToken, expirationInMillseconds);
                 accessor.updateConfiguration(model.getId(), updateModel);
             }
