@@ -92,7 +92,6 @@ const AzureBoardsForm = ({ csrfToken, errorHandler, readonly, displayTest }) => 
     }
 
     function validateData() {
-        console.log('validating')
         return ConfigurationRequestBuilder.createValidateRequest(azureBoardsRequestUrl, csrfToken, formData);
     }
 
