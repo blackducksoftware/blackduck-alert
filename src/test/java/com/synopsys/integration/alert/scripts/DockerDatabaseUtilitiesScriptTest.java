@@ -12,12 +12,14 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.logging.Logger;
 import org.junit.platform.commons.logging.LoggerFactory;
 import org.junit.platform.commons.util.StringUtils;
 
 import com.synopsys.integration.alert.test.common.TestResourceUtils;
+import com.synopsys.integration.alert.test.common.TestTags;
 import com.synopsys.integration.alert.test.common.junit.docker.EnableIfDockerPresent;
 import com.synopsys.integration.executable.Executable;
 import com.synopsys.integration.executable.ExecutableOutput;
@@ -27,6 +29,7 @@ import com.synopsys.integration.log.BufferedIntLogger;
 import com.synopsys.integration.log.LogLevel;
 
 @EnableIfDockerPresent
+@Tag(TestTags.DEFAULT_INTEGRATION)
 class DockerDatabaseUtilitiesScriptTest {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private static final String SCRIPT_NAME = "database-utilities.sh";
@@ -123,6 +126,21 @@ class DockerDatabaseUtilitiesScriptTest {
 
         // perform restore
         List<String> backupArguments = List.of("-b", "-k", containerName, "-f", dumpFilePath.toFile().getAbsolutePath());
+        Executable scriptRestoreExecutable = Executable.create(workingDirectory, scriptFile, backupArguments);
+        ExecutableOutput restoreOutput = processBuilderRunner.execute(scriptRestoreExecutable);
+        assertEquals(0, restoreOutput.getReturnCode());
+    }
+
+    @Test
+    void testRestoreAndBackupWithInsertsOnly() throws ExecutableRunnerException, IOException {
+        Path dumpFilePath = findFilePath("alert-example-db.dump");
+        List<String> restoreArguments = List.of("-r", "-k", containerName, "-f", dumpFilePath.toFile().getAbsolutePath());
+        Executable scriptBackupExecutable = Executable.create(workingDirectory, scriptFile, restoreArguments);
+        ExecutableOutput backupOutput = processBuilderRunner.execute(scriptBackupExecutable);
+        assertEquals(0, backupOutput.getReturnCode());
+
+        // perform restore
+        List<String> backupArguments = List.of("-b", "-k", containerName, "-i", "-f", dumpFilePath.toFile().getAbsolutePath());
         Executable scriptRestoreExecutable = Executable.create(workingDirectory, scriptFile, backupArguments);
         ExecutableOutput restoreOutput = processBuilderRunner.execute(scriptRestoreExecutable);
         assertEquals(0, restoreOutput.getReturnCode());

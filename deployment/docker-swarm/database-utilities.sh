@@ -4,6 +4,7 @@ set -e
 # defaults
 backup=false
 restore=false
+insertsOnly=false
 file=
 databaseKeyword=alertdb
 databaseName=alertdb
@@ -13,11 +14,12 @@ userName=sa
 usage() {
   echo "usage: database-utilities - backup or restore a database with docker."
   echo
-  echo "database-utilities.sh [-b] [-f file] [-d databaseName] [-k containerKeyword] [-r] [-u userName]"
+  echo "database-utilities.sh [-b] [-d databaseName] [-f file] [-i] [-k containerKeyword] [-r] [-u userName]"
   echo "Options: "
   echo "  -b: backup a database to the file specified in the file option."
-  echo "  -f: the file to save a backup or the file to restore the database from."
   echo "  -d: the name of the database."
+  echo "  -f: the file to save a backup or the file to restore the database from."
+  echo "  -i: create a backup of the data only with insert statements"
   echo "  -k: the keyword to search for the database container."
   echo "  -r: restore a database from the file specified by the file option."
   echo "  -u: database user name."
@@ -36,8 +38,9 @@ displayConfiguration() {
   echo "-------------------------------------"
   echo "Configured Options: "
   echo "  Mode:"
-  echo "    backup:  $backup"
-  echo "    restore: $restore"
+  echo "    backup:       $backup"
+  echo "    inserts only: $insertsOnly"
+  echo "    restore:      $restore"
   echo "  Backup/Restore File: $file"
   echo "  Container Search Keyword: $databaseKeyword"
   echo "  Database Name: $databaseName"
@@ -71,7 +74,12 @@ checkFileSpecified() {
 backupDatabase() {
   checkFileSpecified "Cannot backup the database."
   echo "Backing up database $databaseName"
-  docker exec -i $containerId pg_dump -Fc -U $userName -f /tmp/alert-database.dump $databaseName;
+  if [ $insertsOnly == "true" ];
+    then
+      docker exec -i $containerId pg_dump --column-inserts --data-only -Fc -U $userName -f /tmp/alert-database.dump $databaseName;
+    else
+      docker exec -i $containerId pg_dump -Fc -U $userName -f /tmp/alert-database.dump $databaseName;
+  fi
   docker cp $containerId:/tmp/alert-database.dump "$file"
   echo "Database $databaseName backup completed to file $file"
 }
@@ -91,16 +99,19 @@ if [ $# -eq 0 ];
     exit 0
 fi
 
-while getopts "b,f:,d:,k:,r,u:,h" option; do
+while getopts "b,d:,f:,i,k:,r,u:,h" option; do
   case ${option} in
     b)
       backup=true
       ;;
+    d)
+      databaseName="${OPTARG}"
+      ;;
     f)
       file="${OPTARG}"
       ;;
-    d)
-      databaseName="${OPTARG}"
+    i)
+      insertsOnly=true
       ;;
     k)
       databaseKeyword="${OPTARG}"
