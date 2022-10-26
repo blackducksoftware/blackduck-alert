@@ -59,6 +59,8 @@ import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.wait.ResilientJobConfig;
 import com.synopsys.integration.wait.WaitJob;
 import com.synopsys.integration.wait.WaitJobCondition;
+import com.synopsys.integration.wait.tracker.WaitIntervalTracker;
+import com.synopsys.integration.wait.tracker.WaitIntervalTrackerFactory;
 
 @Tag(TestTags.DEFAULT_PERFORMANCE)
 @AlertIntegrationTest
@@ -129,7 +131,8 @@ class NotificationRemovalTest {
             return notificationsInDatabase.size() == BATCH_SIZE && notificationsInDatabase.stream()
                 .allMatch(AlertNotificationModel::getProcessed);
         };
-        ResilientJobConfig resilientJobConfig = new ResilientJobConfig(LOGGER, 600, startTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), 1);
+        WaitIntervalTracker waitIntervalTracker = WaitIntervalTrackerFactory.createConstant(600, 1);
+        ResilientJobConfig resilientJobConfig = new ResilientJobConfig(LOGGER, startTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), waitIntervalTracker);
         boolean isComplete = WaitJob.waitFor(resilientJobConfig, waitJobCondition, "int performance test runner notification wait");
 
         logTimeElapsedWithMessage("Purge of notifications duration: %s", startTime, LocalDateTime.now());

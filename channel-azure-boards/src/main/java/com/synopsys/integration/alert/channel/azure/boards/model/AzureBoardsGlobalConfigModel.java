@@ -89,7 +89,7 @@ public class AzureBoardsGlobalConfigModel extends ConfigWithMetadata implements 
         return Optional.ofNullable(isClientSecretSet);
     }
 
-    public void setIsClientSecretSetSet(Boolean clientSecretSet) {
+    public void setIsClientSecretSet(Boolean clientSecretSet) {
         isClientSecretSet = clientSecretSet;
     }
 
