@@ -9,16 +9,17 @@ import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
+import com.synopsys.integration.alert.api.oauth.AlertOAuthCredentialDataStoreFactory;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
 import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUrlCreator;
 import com.synopsys.integration.alert.channel.azure.boards.database.accessor.AzureBoardsGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidator;
-import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthEndpointResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -37,18 +38,19 @@ public class AzureBoardsOAuthAuthenticateAction {
     private final AuthorizationManager authorizationManager;
     private final AzureBoardsGlobalConfigAccessor azureBoardsGlobalConfigAccessor;
     private final AzureBoardsGlobalCrudActions azureBoardsGlobalCrudActions;
-    private final AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory;
+    private final AlertOAuthCredentialDataStoreFactory alertOAuthCredentialDataStoreFactory;
     private final AzureBoardsGlobalValidationAction azureBoardsGlobalValidationAction;
     private final AzureRedirectUrlCreator azureRedirectUrlCreator;
     private final OAuthRequestValidator oAuthRequestValidator;
     private final AlertWebServerUrlManager alertWebServerUrlManager;
     private final ProxyManager proxyManager;
 
+    @Autowired
     public AzureBoardsOAuthAuthenticateAction(
         AuthorizationManager authorizationManager,
         AzureBoardsGlobalConfigAccessor azureBoardsGlobalConfigAccessor,
         AzureBoardsGlobalCrudActions azureBoardsGlobalCrudActions,
-        AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory,
+        AlertOAuthCredentialDataStoreFactory alertOAuthCredentialDataStoreFactory,
         AzureBoardsGlobalValidationAction azureBoardsGlobalValidationAction,
         AzureRedirectUrlCreator azureRedirectUrlCreator,
         OAuthRequestValidator oAuthRequestValidator,
@@ -58,7 +60,7 @@ public class AzureBoardsOAuthAuthenticateAction {
         this.authorizationManager = authorizationManager;
         this.azureBoardsGlobalConfigAccessor = azureBoardsGlobalConfigAccessor;
         this.azureBoardsGlobalCrudActions = azureBoardsGlobalCrudActions;
-        this.azureBoardsCredentialDataStoreFactory = azureBoardsCredentialDataStoreFactory;
+        this.alertOAuthCredentialDataStoreFactory = alertOAuthCredentialDataStoreFactory;
         this.azureRedirectUrlCreator = azureRedirectUrlCreator;
         this.azureBoardsGlobalValidationAction = azureBoardsGlobalValidationAction;
         this.oAuthRequestValidator = oAuthRequestValidator;
@@ -148,7 +150,7 @@ public class AzureBoardsOAuthAuthenticateAction {
 
     private boolean isAuthenticated(AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModel) {
         AzureBoardsProperties properties = AzureBoardsProperties.fromGlobalConfigurationModel(
-            azureBoardsCredentialDataStoreFactory,
+            alertOAuthCredentialDataStoreFactory,
             azureRedirectUrlCreator.createOAuthRedirectUri(),
             azureBoardsGlobalConfigModel
         );

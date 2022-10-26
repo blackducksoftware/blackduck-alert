@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
-import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
+import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesLegacy;
 import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUrlCreator;
 import com.synopsys.integration.alert.channel.azure.boards.database.accessor.AzureBoardsGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
@@ -85,7 +85,7 @@ public class AzureBoardsGlobalTestAction {
                 }
             }
 
-            AzureBoardsProperties azureBoardsProperties = AzureBoardsProperties.fromGlobalConfigurationModel(
+            AzureBoardsPropertiesLegacy azureBoardsProperties = AzureBoardsPropertiesLegacy.fromGlobalConfigurationModel(
                 azureBoardsCredentialDataStoreFactory,
                 azureRedirectUrlCreator.createOAuthRedirectUri(),
                 azureBoardsGlobalConfigModel
@@ -99,7 +99,7 @@ public class AzureBoardsGlobalTestAction {
         return ConfigurationTestResult.success("Successfully connected to Azure instance.");
     }
 
-    protected AzureProjectService createAzureProjectService(AzureBoardsProperties azureBoardsProperties) throws IntegrationException {
+    protected AzureProjectService createAzureProjectService(AzureBoardsPropertiesLegacy azureBoardsProperties) throws IntegrationException {
         ProxyInfo proxy = proxyManager.createProxyInfoForHost(AzureHttpRequestCreatorFactory.DEFAULT_BASE_URL);
         AzureHttpService azureHttpService = azureBoardsProperties.createAzureHttpService(proxy, gson);
         return new AzureProjectService(azureHttpService, new AzureApiVersionAppender());

@@ -14,12 +14,12 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.oauth.AlertOAuthCredentialDataStoreFactory;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
 import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUrlCreator;
 import com.synopsys.integration.alert.channel.azure.boards.database.accessor.AzureBoardsGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidator;
-import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
@@ -37,7 +37,7 @@ import com.synopsys.integration.rest.proxy.ProxyInfo;
 @Component
 public class AzureBoardsOAuthCallbackAction {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory;
+    private final AlertOAuthCredentialDataStoreFactory alertOAuthCredentialDataStoreFactory;
     private final AzureBoardsGlobalConfigAccessor azureBoardsGlobalConfigAccessor;
     private final Gson gson;
     private final AuthorizationManager authorizationManager;
@@ -47,7 +47,7 @@ public class AzureBoardsOAuthCallbackAction {
 
     @Autowired
     public AzureBoardsOAuthCallbackAction(
-        AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory,
+        AlertOAuthCredentialDataStoreFactory alertOAuthCredentialDataStoreFactory,
         AzureBoardsGlobalConfigAccessor azureBoardsGlobalConfigAccessor,
         Gson gson,
         AuthorizationManager authorizationManager,
@@ -55,7 +55,7 @@ public class AzureBoardsOAuthCallbackAction {
         OAuthRequestValidator oAuthRequestValidator,
         AzureRedirectUrlCreator azureRedirectUrlCreator
     ) {
-        this.azureBoardsCredentialDataStoreFactory = azureBoardsCredentialDataStoreFactory;
+        this.alertOAuthCredentialDataStoreFactory = alertOAuthCredentialDataStoreFactory;
         this.azureBoardsGlobalConfigAccessor = azureBoardsGlobalConfigAccessor;
         this.gson = gson;
         this.authorizationManager = authorizationManager;
@@ -100,7 +100,7 @@ public class AzureBoardsOAuthCallbackAction {
                     } else {
                         String oAuthRedirectUri = azureRedirectUrlCreator.createOAuthRedirectUri();
                         AzureBoardsProperties properties = AzureBoardsProperties.fromGlobalConfigurationModel(
-                            azureBoardsCredentialDataStoreFactory,
+                            alertOAuthCredentialDataStoreFactory,
                             oAuthRedirectUri,
                             savedConfigModel
                         );
