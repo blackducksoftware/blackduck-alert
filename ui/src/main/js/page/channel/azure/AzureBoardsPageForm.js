@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
+import { AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED, AZURE_BOARDS_INFO, AZURE_BOARDS_URLS } from 'page/channel/azure/AzureBoardsModel';
 import * as PropTypes from 'prop-types';
+import * as ConfigurationRequestBuilder from 'common/util/configurationRequestBuilder';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
-import { AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED, AZURE_BOARDS_INFO, AZURE_BOARDS_URLS } from 'page/channel/azure/AzureBoardsModel';
 import PageHeader from 'common/component/navigation/PageHeader';
 import PasswordInput from 'common/component/input/PasswordInput';
-import OAuthEndpointButtonField from 'common/component/input/field/OAuthEndpointButtonField';
 import TextInput from 'common/component/input/TextInput';
-import * as ConfigurationRequestBuilder from 'common/util/configurationRequestBuilder';
+import ButtonField from 'common/component/input/field/ButtonField';
 import ConcreteConfigurationForm from 'common/configuration/global/concrete/ConcreteConfigurationForm';
 
 const AzureBoardsForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
@@ -18,6 +18,43 @@ const AzureBoardsForm = ({ csrfToken, errorHandler, readonly, displayTest }) => 
 
     const [formData, setFormData] = useState({});
     const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
+
+    const [buttonErrorMessage, setButtonErrorMessage] = useState('');
+    const [buttonSuccess, setButtonSuccess] = useState(false);
+    const [buttonMessage, setButtonMessage] = useState('');
+
+    const authenticateAzureForm = async () => {
+        setButtonErrorMessage('');
+        setButtonSuccess(false);
+        setErrors(HttpErrorUtilities.createEmptyErrorObject())
+
+        const validateResponse = await validateData();
+        const validateJson = await validateResponse.json();
+
+        if (validateResponse.ok) {
+            if (validateJson.hasErrors) {
+                setErrors(HttpErrorUtilities.createErrorObject(validateJson));
+            } else {
+                sendAzureData();
+            }
+        }
+    };
+
+    async function sendAzureData() {
+        const response = await ConfigurationRequestBuilder.createNewConfigurationRequest('/alert/api/configuration/azure-boards/oauth/authenticate', csrfToken, formData);
+        const data = await response.json();
+        const okRequest = HttpErrorUtilities.isOk(response.status)
+        const errorRequest = HttpErrorUtilities.isError(response.status)
+
+        if (okRequest) {
+            window.location.replace(data.authorizationUrl);
+            setButtonMessage()
+        }
+
+        if (errorRequest) {
+            setButtonErrorMessage(HttpErrorUtilities.createFieldError(data.error))
+        }
+    }
 
     const azureBoardsRequestUrl = `${ConfigurationRequestBuilder.AZURE_BOARDS_API_URL}`;
 
@@ -55,6 +92,7 @@ const AzureBoardsForm = ({ csrfToken, errorHandler, readonly, displayTest }) => 
     }
 
     function validateData() {
+        console.log('validating')
         return ConfigurationRequestBuilder.createValidateRequest(azureBoardsRequestUrl, csrfToken, formData);
     }
 
@@ -133,25 +171,18 @@ const AzureBoardsForm = ({ csrfToken, errorHandler, readonly, displayTest }) => 
                     errorName={AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.clientSecret}
                     errorValue={errors.fieldErrors[AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.clientSecret]}
                 />
-                <OAuthEndpointButtonField
+                <ButtonField
                     id={AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.configureOAuth}
                     name={AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.configureOAuth}
-                    buttonLabel="Authenticate"
                     label="Microsoft OAuth"
+                    buttonLabel="Authenticate & Save"
                     description="This will redirect you to Microsoft's OAuth login. To clear the Oauth request cache, please delete and reconfigure the Azure fields.  Please note you will remain logged in; for security reasons you may want to logout of your Microsoft account after authenticating the application."
-                    endpoint="/api/function"
-                    csrfToken={csrfToken}
-                    currentConfig={formData}
+                    onSendClick={authenticateAzureForm}
                     fieldKey={AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.configureOAuth}
-                    requiredRelatedFields={[
-                        AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.organization,
-                        AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.appId,
-                        AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.clientSecret
-                    ]}
+                    fieldError={buttonErrorMessage}
                     readOnly={readonly || !displayTest}
-                    onChange={FieldModelUtilities.handleTestChange(formData, setFormData)}
-                    errorName={FieldModelUtilities.createFieldModelErrorKey(AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.configureOAuth)}
-                    errorValue={errors.fieldErrors[AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.configureOAuth]}
+                    success={buttonSuccess}
+                    statusMessage={buttonMessage}
                 />
             </ConcreteConfigurationForm>
         </div>
@@ -163,8 +194,6 @@ AzureBoardsForm.propTypes = {
     errorHandler: PropTypes.object.isRequired,
     readonly: PropTypes.bool,
     displayTest: PropTypes.bool,
-    displaySave: PropTypes.bool,
-    displayDelete: PropTypes.bool
 };
 
 AzureBoardsForm.defaultProps = {
