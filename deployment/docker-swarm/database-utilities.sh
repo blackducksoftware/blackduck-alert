@@ -4,7 +4,7 @@ set -e
 # defaults
 backup=false
 restore=false
-insertsOnly=false
+plainFormat=false
 file=
 databaseKeyword=alertdb
 databaseName=alertdb
@@ -21,6 +21,7 @@ usage() {
   echo "  -f: the file to save a backup or the file to restore the database from."
   echo "  -i: create a backup of the data only with insert statements"
   echo "  -k: the keyword to search for the database container."
+  echo "  -p: plain text database dump format"
   echo "  -r: restore a database from the file specified by the file option."
   echo "  -u: database user name."
   echo "  -h: display this help."
@@ -38,13 +39,13 @@ displayConfiguration() {
   echo "-------------------------------------"
   echo "Configured Options: "
   echo "  Mode:"
-  echo "    backup:       $backup"
-  echo "    inserts only: $insertsOnly"
-  echo "    restore:      $restore"
-  echo "  Backup/Restore File: $file"
+  echo "    backup:                 $backup"
+  echo "    restore:                $restore"
+  echo "  Plain Text Format:        $plainFormat"
+  echo "  Backup/Restore File:      $file"
   echo "  Container Search Keyword: $databaseKeyword"
-  echo "  Database Name: $databaseName"
-  echo "  Database User: $userName"
+  echo "  Database Name:            $databaseName"
+  echo "  Database User:            $userName"
   echo "-------------------------------------"
 }
 
@@ -74,9 +75,9 @@ checkFileSpecified() {
 backupDatabase() {
   checkFileSpecified "Cannot backup the database."
   echo "Backing up database $databaseName"
-  if [ $insertsOnly == "true" ];
+  if [ $plainFormat == "true" ];
     then
-      docker exec -i $containerId pg_dump --column-inserts --data-only -Fc -U $userName -f /tmp/alert-database.dump $databaseName;
+      docker exec -i $containerId pg_dump -Fp -U $userName -f /tmp/alert-database.dump $databaseName;
     else
       docker exec -i $containerId pg_dump -Fc -U $userName -f /tmp/alert-database.dump $databaseName;
   fi
@@ -87,7 +88,12 @@ backupDatabase() {
 restoreDatabase() {
   checkFileSpecified "Cannot restore the database from a file."
   echo "Restoring database $databaseName from file $file"
-  cat "$file" | docker exec -i $containerId pg_restore -U $userName -Fc --verbose --clean --if-exists -d $databaseName
+  if [ $plainFormat == "true" ];
+    then
+      cat "$file" | docker exec -i $containerId psql -U $userName $databaseName
+    else
+      cat "$file" | docker exec -i $containerId pg_restore -U $userName -Fc --verbose --clean --if-exists -d $databaseName
+  fi
   echo "Database $databaseName restored."
 }
 
