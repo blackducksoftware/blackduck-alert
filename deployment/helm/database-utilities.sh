@@ -94,7 +94,7 @@ restoreDatabase() {
     then
       cat "$file" | kubectl -n $deploymentNamespace exec $podId -i -- psql -U $userName $databaseName
     else
-      cat "$file" | kubectl -n $deploymentNamespace exec $podId -i -- pg_restore -U $userName -Fc --verbose -d $databaseName
+      cat "$file" | kubectl -n $deploymentNamespace exec $podId -i -- pg_restore -U $userName -Fc --verbose --clean --if-exists -d $databaseName
   fi
   echo "Database $databaseName restored."
 }

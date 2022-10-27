@@ -2,6 +2,7 @@ package com.synopsys.integration.alert.scripts;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,12 +14,14 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.logging.Logger;
 import org.junit.platform.commons.logging.LoggerFactory;
 import org.junit.platform.commons.util.StringUtils;
 
 import com.synopsys.integration.alert.test.common.TestResourceUtils;
+import com.synopsys.integration.alert.test.common.TestTags;
 import com.synopsys.integration.alert.test.common.junit.kubernetes.EnableIfKubeAndHelmPresent;
 import com.synopsys.integration.executable.Executable;
 import com.synopsys.integration.executable.ExecutableOutput;
@@ -28,6 +31,7 @@ import com.synopsys.integration.log.BufferedIntLogger;
 import com.synopsys.integration.log.LogLevel;
 
 @EnableIfKubeAndHelmPresent
+@Tag(TestTags.DEFAULT_INTEGRATION)
 class HelmDatabaseUtilitiesScriptTest {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -58,11 +62,31 @@ class HelmDatabaseUtilitiesScriptTest {
         ExecutableOutput searchOutput = processBuilderRunner.execute(podSearchCommand);
         if (StringUtils.isBlank(searchOutput.getStandardOutput())) {
             processBuilderRunner.execute(createPodCommand);
+            searchOutput = processBuilderRunner.execute(podSearchCommand);
+            Executable copySqlCommand = createCopySqlDataCommand(workingDirectory, searchOutput.getStandardOutput());
+            Executable copyLoadScriptCommand = createCopyLoadDataScriptCommand(workingDirectory, searchOutput.getStandardOutput());
+            Executable loadDataCommand = createLoadDataCommand(workingDirectory, searchOutput.getStandardOutput());
+            ExecutableOutput copyOutput = processBuilderRunner.execute(copySqlCommand);
+            ExecutableOutput copyLoadScriptOutput = processBuilderRunner.execute(copyLoadScriptCommand);
+
+            if (copyOutput.getReturnCode() > 0) {
+                fail("Couldn't copy database dump to pod.");
+            }
+
+            if (copyLoadScriptOutput.getReturnCode() > 0) {
+                fail("Couldn't copy load data script to pod.");
+            }
+
+            ExecutableOutput loadOutput = processBuilderRunner.execute(loadDataCommand);
+            if (loadOutput.getReturnCode() > 0) {
+                fail("Couldn't load database dump file");
+            }
         }
     }
 
-    private Executable createSearchCommand(File workingDirectory, String searchName) {
-        List<String> commandLine = List.of("kubectl", "-n", TEST_NAMESPACE, "get", "pods", "|", "grep", searchName, "|", "awk", "'{print $1}'");
+    private Executable createSearchCommand(File workingDirectory, String searchName) throws IOException {
+        Path podSearchScript = findFilePath("kubernetes-pod-search.sh");
+        List<String> commandLine = List.of(podSearchScript.toFile().getAbsolutePath(), TEST_NAMESPACE, searchName);
         return Executable.create(workingDirectory, commandLine);
     }
 
@@ -71,6 +95,25 @@ class HelmDatabaseUtilitiesScriptTest {
         Path helmChartPath = findFilePath("helm-test-postgres");
         List<String> commandLineArguments = List.of("-n", TEST_NAMESPACE, "-i", name, "-c", helmChartPath.toFile().getAbsolutePath());
         return Executable.create(workingDirectory, initScriptPath.toFile(), commandLineArguments);
+    }
+
+    private Executable createCopySqlDataCommand(File workingDirectory, String name) throws IOException {
+        Path dumpFilePath = findFilePath("alert-example-db.sql");
+        String copyDestinationArgument = String.format("%s/%s:/tmp/alert-example-db.sql", TEST_NAMESPACE, name);
+        List<String> commandLine = List.of("kubectl", "cp", dumpFilePath.toFile().getAbsolutePath(), copyDestinationArgument);
+        return Executable.create(workingDirectory, commandLine);
+    }
+
+    private Executable createCopyLoadDataScriptCommand(File workingDirectory, String name) throws IOException {
+        Path dumpFilePath = findFilePath("load-example-db.sh");
+        String copyDestinationArgument = String.format("%s/%s:/tmp/load-example-db.sh", TEST_NAMESPACE, name);
+        List<String> commandLine = List.of("kubectl", "cp", dumpFilePath.toFile().getAbsolutePath(), copyDestinationArgument);
+        return Executable.create(workingDirectory, commandLine);
+    }
+
+    private Executable createLoadDataCommand(File workingDirectory, String name) {
+        List<String> commandLine = List.of("kubectl", "-n", TEST_NAMESPACE, "exec", "-i", name, "--", "bash", "-c", "/tmp/load-example-db.sh");
+        return Executable.create(workingDirectory, commandLine);
     }
 
     @AfterEach
@@ -103,34 +146,31 @@ class HelmDatabaseUtilitiesScriptTest {
     }
 
     @Test
-    void testRestoreAndBackup() throws ExecutableRunnerException, IOException {
-        Path dumpFilePath = findFilePath("alert-example-db.dump");
-        List<String> restoreArguments = List.of("-r", "-n", TEST_NAMESPACE, "-k", podName, "-f", dumpFilePath.toFile().getAbsolutePath());
-        Executable scriptBackupExecutable = Executable.create(workingDirectory, scriptFile, restoreArguments);
-        ExecutableOutput backupOutput = processBuilderRunner.execute(scriptBackupExecutable);
-        assertEquals(0, backupOutput.getReturnCode());
-
-        // perform restore
+    void testBackupAndRestore() throws ExecutableRunnerException, IOException {
         File backupFile = Files.createTempFile("testAlertBackup", "dump").toFile();
         List<String> backupArguments = List.of("-b", "-n", TEST_NAMESPACE, "-k", podName, "-f", backupFile.getAbsolutePath());
         Executable scriptRestoreExecutable = Executable.create(workingDirectory, scriptFile, backupArguments);
         ExecutableOutput restoreOutput = processBuilderRunner.execute(scriptRestoreExecutable);
         assertEquals(0, restoreOutput.getReturnCode());
-    }
 
-    @Test
-    void testRestoreAndBackupWithInserts() throws ExecutableRunnerException, IOException {
-        Path dumpFilePath = findFilePath("alert-example-db.dump");
-        List<String> restoreArguments = List.of("-r", "-n", TEST_NAMESPACE, "-k", podName, "-f", dumpFilePath.toFile().getAbsolutePath());
+        List<String> restoreArguments = List.of("-r", "-n", TEST_NAMESPACE, "-k", podName, "-f", backupFile.getAbsolutePath());
         Executable scriptBackupExecutable = Executable.create(workingDirectory, scriptFile, restoreArguments);
         ExecutableOutput backupOutput = processBuilderRunner.execute(scriptBackupExecutable);
         assertEquals(0, backupOutput.getReturnCode());
+    }
 
-        // perform restore
-        List<String> backupArguments = List.of("-b", "-n", TEST_NAMESPACE, "-k", podName, "-i", "-f", dumpFilePath.toFile().getAbsolutePath());
+    @Test
+    void testPlainTextBackupAndRestore() throws ExecutableRunnerException, IOException {
+        File backupFile = Files.createTempFile("testAlertBackup", "dump").toFile();
+        List<String> backupArguments = List.of("-b", "-p", "-n", TEST_NAMESPACE, "-k", podName, "-f", backupFile.getAbsolutePath());
         Executable scriptRestoreExecutable = Executable.create(workingDirectory, scriptFile, backupArguments);
         ExecutableOutput restoreOutput = processBuilderRunner.execute(scriptRestoreExecutable);
         assertEquals(0, restoreOutput.getReturnCode());
+
+        List<String> restoreArguments = List.of("-r", "-p", "-n", TEST_NAMESPACE, "-k", podName, "-f", backupFile.getAbsolutePath());
+        Executable scriptBackupExecutable = Executable.create(workingDirectory, scriptFile, restoreArguments);
+        ExecutableOutput backupOutput = processBuilderRunner.execute(scriptBackupExecutable);
+        assertEquals(0, backupOutput.getReturnCode());
     }
 
     @Test
@@ -151,20 +191,36 @@ class HelmDatabaseUtilitiesScriptTest {
 
     @Test
     void testDatabaseNameValid() throws IOException, ExecutableRunnerException {
-        Path dumpFilePath = findFilePath("alert-example-db.dump");
-        List<String> restoreArguments = List.of("-r", "-n", TEST_NAMESPACE, "-k", podName, "-d", "alertdb", "-f", dumpFilePath.toFile().getAbsolutePath());
-        Executable scriptBackupExecutable = Executable.create(workingDirectory, scriptFile, restoreArguments);
+        File backupFile = Files.createTempFile("testAlertBackup", "dump").toFile();
+        List<String> backupArguments = List.of("-b", "-n", TEST_NAMESPACE, "-k", podName, "-d", "alertdb", "-f", backupFile.getAbsolutePath());
+        Executable scriptBackupExecutable = Executable.create(workingDirectory, scriptFile, backupArguments);
         ExecutableOutput backupOutput = processBuilderRunner.execute(scriptBackupExecutable);
         assertEquals(0, backupOutput.getReturnCode());
+
+        List<String> restoreArguments = List.of("-r", "-n", TEST_NAMESPACE, "-k", podName, "-d", "alertdb", "-f", backupFile.getAbsolutePath());
+        Executable scriptRestoreExecutable = Executable.create(workingDirectory, scriptFile, restoreArguments);
+        ExecutableOutput restoreOutput = processBuilderRunner.execute(scriptRestoreExecutable);
+        assertEquals(0, restoreOutput.getReturnCode());
     }
 
     @Test
     void testDatabaseNameInvalid() throws IOException, ExecutableRunnerException {
-        Path dumpFilePath = findFilePath("alert-example-db.dump");
-        List<String> restoreArguments = List.of("-r", "-n", TEST_NAMESPACE, "-k", podName, "-d", "invalid-database-name", "-f", dumpFilePath.toFile().getAbsolutePath());
-        Executable scriptBackupExecutable = Executable.create(workingDirectory, scriptFile, restoreArguments);
+        File backupFile = Files.createTempFile("testAlertBackup", "dump").toFile();
+        List<String> backupArguments = List.of("-b", "-n", TEST_NAMESPACE, "-k", podName, "-d", "invalid-database-name", "-f", backupFile.getAbsolutePath());
+        Executable scriptBackupExecutable = Executable.create(workingDirectory, scriptFile, backupArguments);
         ExecutableOutput backupOutput = processBuilderRunner.execute(scriptBackupExecutable);
         assertEquals(1, backupOutput.getReturnCode());
+
+        backupFile = Files.createTempFile("testAlertBackup", "dump").toFile();
+        backupArguments = List.of("-b", "-n", TEST_NAMESPACE, "-k", podName, "-d", "alertdb", "-f", backupFile.getAbsolutePath());
+        scriptBackupExecutable = Executable.create(workingDirectory, scriptFile, backupArguments);
+        backupOutput = processBuilderRunner.execute(scriptBackupExecutable);
+        assertEquals(0, backupOutput.getReturnCode());
+
+        List<String> restoreArguments = List.of("-r", "-n", TEST_NAMESPACE, "-k", podName, "-d", "invalid-database-name", "-f", backupFile.getAbsolutePath());
+        Executable scriptRestoreExecutable = Executable.create(workingDirectory, scriptFile, restoreArguments);
+        ExecutableOutput restoreOutput = processBuilderRunner.execute(scriptRestoreExecutable);
+        assertEquals(1, restoreOutput.getReturnCode());
     }
 
     @Test
