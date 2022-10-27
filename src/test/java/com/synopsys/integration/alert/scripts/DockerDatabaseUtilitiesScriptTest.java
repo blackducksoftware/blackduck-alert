@@ -2,6 +2,7 @@ package com.synopsys.integration.alert.scripts;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,14 +14,12 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.logging.Logger;
 import org.junit.platform.commons.logging.LoggerFactory;
 import org.junit.platform.commons.util.StringUtils;
 
 import com.synopsys.integration.alert.test.common.TestResourceUtils;
-import com.synopsys.integration.alert.test.common.TestTags;
 import com.synopsys.integration.alert.test.common.junit.docker.EnableIfDockerPresent;
 import com.synopsys.integration.executable.Executable;
 import com.synopsys.integration.executable.ExecutableOutput;
@@ -30,7 +29,6 @@ import com.synopsys.integration.log.BufferedIntLogger;
 import com.synopsys.integration.log.LogLevel;
 
 @EnableIfDockerPresent
-@Tag(TestTags.DEFAULT_INTEGRATION)
 class DockerDatabaseUtilitiesScriptTest {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private static final String SCRIPT_NAME = "database-utilities.sh";
@@ -57,12 +55,26 @@ class DockerDatabaseUtilitiesScriptTest {
 
         dockerContainerSearchCommand = createSearchCommand(workingDirectory, containerName);
         Executable dockerCreateContainerCommand = createContainerCommand(workingDirectory, containerName);
+        Executable copySqlCommand = createCopySqlDataCommand(workingDirectory, containerName);
+        Executable copyLoadScriptCommand = createCopyLoadDataScriptCommand(workingDirectory, containerName);
+        Executable loadDataCommand = createLoadDataCommand(workingDirectory, containerName);
         testLogger = new BufferedIntLogger();
         processBuilderRunner = new ProcessBuilderRunner(testLogger);
 
         ExecutableOutput searchOutput = processBuilderRunner.execute(dockerContainerSearchCommand);
         if (StringUtils.isBlank(searchOutput.getStandardOutput())) {
             processBuilderRunner.execute(dockerCreateContainerCommand);
+            ExecutableOutput copyOutput = processBuilderRunner.execute(copySqlCommand);
+            processBuilderRunner.execute(copyLoadScriptCommand);
+
+            if (copyOutput.getReturnCode() > 0) {
+                fail("Couldn't copy database dump to container.");
+            }
+
+            ExecutableOutput loadOutput = processBuilderRunner.execute(loadDataCommand);
+            if (loadOutput.getReturnCode() > 0) {
+                fail("Couldn't load database dump file");
+            }
         }
     }
 
@@ -75,6 +87,25 @@ class DockerDatabaseUtilitiesScriptTest {
         Path initScriptPath = findFilePath("init-docker-db.sh");
         List<String> commandLineArguments = List.of("-n", containerName);
         return Executable.create(workingDirectory, initScriptPath.toFile(), commandLineArguments);
+    }
+
+    private Executable createCopySqlDataCommand(File workingDirectory, String containerName) throws IOException {
+        Path dumpFilePath = findFilePath("alert-example-db.sql");
+        String copyDestinationArgument = String.format("%s:/tmp/alert-example-db.sql", containerName);
+        List<String> commandLine = List.of("docker", "cp", dumpFilePath.toFile().getAbsolutePath(), copyDestinationArgument);
+        return Executable.create(workingDirectory, commandLine);
+    }
+
+    private Executable createCopyLoadDataScriptCommand(File workingDirectory, String containerName) throws IOException {
+        Path dumpFilePath = findFilePath("load-example-db.sh");
+        String copyDestinationArgument = String.format("%s:/tmp/load-example-db.sh", containerName);
+        List<String> commandLine = List.of("docker", "cp", dumpFilePath.toFile().getAbsolutePath(), copyDestinationArgument);
+        return Executable.create(workingDirectory, commandLine);
+    }
+
+    private Executable createLoadDataCommand(File workingDirectory, String containerName) throws IOException {
+        List<String> commandLine = List.of("docker", "exec", "-i", containerName, "bash", "-c", "/tmp/load-example-db.sh");
+        return Executable.create(workingDirectory, commandLine);
     }
 
     @AfterEach
@@ -119,33 +150,18 @@ class DockerDatabaseUtilitiesScriptTest {
 
     @Test
     void testRestoreAndBackup() throws ExecutableRunnerException, IOException {
-        Path dumpFilePath = findFilePath("alert-example-db.dump");
-        List<String> restoreArguments = List.of("-r", "-k", containerName, "-f", dumpFilePath.toFile().getAbsolutePath());
-        Executable scriptBackupExecutable = Executable.create(workingDirectory, scriptFile, restoreArguments);
-        ExecutableOutput backupOutput = processBuilderRunner.execute(scriptBackupExecutable);
-        assertEquals(0, backupOutput.getReturnCode());
-
         // perform backup
         File backupFile = Files.createTempFile("testAlertBackup", "dump").toFile();
         List<String> backupArguments = List.of("-b", "-k", containerName, "-f", backupFile.getAbsolutePath());
         Executable scriptRestoreExecutable = Executable.create(workingDirectory, scriptFile, backupArguments);
         ExecutableOutput restoreOutput = processBuilderRunner.execute(scriptRestoreExecutable);
         assertEquals(0, restoreOutput.getReturnCode());
-    }
 
-    @Test
-    void testRestoreAndBackupWithInsertsOnly() throws ExecutableRunnerException, IOException {
-        Path dumpFilePath = findFilePath("alert-example-db.dump");
-        List<String> restoreArguments = List.of("-r", "-k", containerName, "-f", dumpFilePath.toFile().getAbsolutePath());
+        List<String> restoreArguments = List.of("-r", "-k", containerName, "-f", backupFile.getAbsolutePath());
         Executable scriptBackupExecutable = Executable.create(workingDirectory, scriptFile, restoreArguments);
         ExecutableOutput backupOutput = processBuilderRunner.execute(scriptBackupExecutable);
         assertEquals(0, backupOutput.getReturnCode());
 
-        // perform restore
-        List<String> backupArguments = List.of("-b", "-k", containerName, "-i", "-f", dumpFilePath.toFile().getAbsolutePath());
-        Executable scriptRestoreExecutable = Executable.create(workingDirectory, scriptFile, backupArguments);
-        ExecutableOutput restoreOutput = processBuilderRunner.execute(scriptRestoreExecutable);
-        assertEquals(0, restoreOutput.getReturnCode());
     }
 
     @Test
@@ -166,20 +182,37 @@ class DockerDatabaseUtilitiesScriptTest {
 
     @Test
     void testDatabaseNameValid() throws IOException, ExecutableRunnerException {
-        Path dumpFilePath = findFilePath("alert-example-db.dump");
-        List<String> restoreArguments = List.of("-r", "-k", containerName, "-d", "alertdb", "-f", dumpFilePath.toFile().getAbsolutePath());
-        Executable scriptBackupExecutable = Executable.create(workingDirectory, scriptFile, restoreArguments);
+        File backupFile = Files.createTempFile("testAlertBackup", "dump").toFile();
+        List<String> backupArguments = List.of("-b", "-k", containerName, "-d", "alertdb", "-f", backupFile.getAbsolutePath());
+        Executable scriptBackupExecutable = Executable.create(workingDirectory, scriptFile, backupArguments);
         ExecutableOutput backupOutput = processBuilderRunner.execute(scriptBackupExecutable);
         assertEquals(0, backupOutput.getReturnCode());
+
+        List<String> restoreArguments = List.of("-r", "-k", containerName, "-d", "alertdb", "-f", backupFile.getAbsolutePath());
+        Executable scriptRestoreExecutable = Executable.create(workingDirectory, scriptFile, restoreArguments);
+        ExecutableOutput restoreOutput = processBuilderRunner.execute(scriptRestoreExecutable);
+        assertEquals(0, restoreOutput.getReturnCode());
     }
 
     @Test
     void testDatabaseNameInvalid() throws IOException, ExecutableRunnerException {
-        Path dumpFilePath = findFilePath("alert-example-db.dump");
-        List<String> restoreArguments = List.of("-r", "-k", containerName, "-d", "invalid-database-name", "-f", dumpFilePath.toFile().getAbsolutePath());
-        Executable scriptBackupExecutable = Executable.create(workingDirectory, scriptFile, restoreArguments);
+        File backupFile = Files.createTempFile("testAlertBackup", "dump").toFile();
+        List<String> backupArguments = List.of("-b", "-k", containerName, "-d", "invalid-database-name", "-f", backupFile.getAbsolutePath());
+        Executable scriptBackupExecutable = Executable.create(workingDirectory, scriptFile, backupArguments);
         ExecutableOutput backupOutput = processBuilderRunner.execute(scriptBackupExecutable);
         assertEquals(1, backupOutput.getReturnCode());
+
+        // create a valid backup
+        backupFile = Files.createTempFile("testAlertBackup", "dump").toFile();
+        backupArguments = List.of("-b", "-k", containerName, "-d", "alertdb", "-f", backupFile.getAbsolutePath());
+        scriptBackupExecutable = Executable.create(workingDirectory, scriptFile, backupArguments);
+        backupOutput = processBuilderRunner.execute(scriptBackupExecutable);
+        assertEquals(0, backupOutput.getReturnCode());
+
+        List<String> restoreArguments = List.of("-r", "-k", containerName, "-d", "invalid-database-name", "-f", backupFile.getAbsolutePath());
+        Executable scriptRestoreExecutable = Executable.create(workingDirectory, scriptFile, restoreArguments);
+        ExecutableOutput restoreOutput = processBuilderRunner.execute(scriptRestoreExecutable);
+        assertEquals(1, restoreOutput.getReturnCode());
     }
 
     @Test

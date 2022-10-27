@@ -13,14 +13,12 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.logging.Logger;
 import org.junit.platform.commons.logging.LoggerFactory;
 import org.junit.platform.commons.util.StringUtils;
 
 import com.synopsys.integration.alert.test.common.TestResourceUtils;
-import com.synopsys.integration.alert.test.common.TestTags;
 import com.synopsys.integration.alert.test.common.junit.kubernetes.EnableIfKubeAndHelmPresent;
 import com.synopsys.integration.executable.Executable;
 import com.synopsys.integration.executable.ExecutableOutput;
@@ -30,7 +28,6 @@ import com.synopsys.integration.log.BufferedIntLogger;
 import com.synopsys.integration.log.LogLevel;
 
 @EnableIfKubeAndHelmPresent
-@Tag(TestTags.DEFAULT_INTEGRATION)
 class HelmDatabaseUtilitiesScriptTest {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
