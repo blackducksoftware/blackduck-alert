@@ -77,7 +77,7 @@ backupDatabase() {
   echo "Backing up database $databaseName"
   if [ $plainFormat == "true" ];
     then
-      docker exec -i $containerId pg_dump -Fp -U $userName -f /tmp/alert-database.dump $databaseName;
+      docker exec -i $containerId pg_dump -Fp -U $userName --clean -f /tmp/alert-database.dump $databaseName;
     else
       docker exec -i $containerId pg_dump -Fc -U $userName -f /tmp/alert-database.dump $databaseName;
   fi
@@ -105,7 +105,7 @@ if [ $# -eq 0 ];
     exit 0
 fi
 
-while getopts "b,d:,f:,i,k:,r,u:,h" option; do
+while getopts "b,d:,f:,i,k:,p,r,u:,h" option; do
   case ${option} in
     b)
       backup=true
@@ -116,11 +116,11 @@ while getopts "b,d:,f:,i,k:,r,u:,h" option; do
     f)
       file="${OPTARG}"
       ;;
-    i)
-      insertsOnly=true
-      ;;
     k)
       databaseKeyword="${OPTARG}"
+      ;;
+    p)
+      plainFormat=true
       ;;
     r)
       restore=true
