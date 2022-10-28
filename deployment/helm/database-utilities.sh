@@ -15,7 +15,7 @@ deploymentNamespace=default
 usage() {
   echo "usage: database-utilities - backup or restore a database with kubectl."
   echo
-  echo "database-utilities.sh [-b] [-d databaseName] [-f file] [-i] [-k containerKeyword] [-n namespace] [-r] [-u userName]"
+  echo "database-utilities.sh [-b] [-d databaseName] [-f file] [-k containerKeyword] [-n namespace] [-p] [-r] [-u userName]"
   echo "Options: "
   echo "  -b: backup a database to the file specified in the file option."
   echo "  -d: the name of the database."

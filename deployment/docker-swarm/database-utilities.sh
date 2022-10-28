@@ -14,12 +14,11 @@ userName=sa
 usage() {
   echo "usage: database-utilities - backup or restore a database with docker."
   echo
-  echo "database-utilities.sh [-b] [-d databaseName] [-f file] [-i] [-k containerKeyword] [-r] [-u userName]"
+  echo "database-utilities.sh [-b] [-d databaseName] [-f file] [-k containerKeyword] [-p] [-r] [-u userName]"
   echo "Options: "
   echo "  -b: backup a database to the file specified in the file option."
   echo "  -d: the name of the database."
   echo "  -f: the file to save a backup or the file to restore the database from."
-  echo "  -i: create a backup of the data only with insert statements"
   echo "  -k: the keyword to search for the database container."
   echo "  -p: plain text database dump format"
   echo "  -r: restore a database from the file specified by the file option."
