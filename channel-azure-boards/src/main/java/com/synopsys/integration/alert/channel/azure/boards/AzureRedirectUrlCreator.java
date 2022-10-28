@@ -34,7 +34,17 @@ public class AzureRedirectUrlCreator {
      */
     public String createUIRedirectLocation() {
         return alertWebServerUrlManager.getServerUrl("channels", AzureBoardsDescriptor.AZURE_BOARDS_URL)
-                   .orElseThrow(() -> new AlertRuntimeException("Could not create the Azure UI Redirect URL."));
+            .orElseThrow(() -> new AlertRuntimeException("Could not create the Azure UI Redirect URL."));
+    }
+
+    /**
+     * The OAuth callback controller will redirect back to the Alert UI to the configuration page where the authorization was initiated.
+     * @return The url location to redirect to the UI configuration page.
+     * @see #createOAuthRedirectUri()
+     */
+    public String createUIRedirectLocationForConfiguration(String configId) {
+        return alertWebServerUrlManager.getServerUrl("channels", AzureBoardsDescriptor.AZURE_BOARDS_URL, "edit", configId)
+            .orElseThrow(() -> new AlertRuntimeException("Could not create the Azure UI Redirect URL."));
     }
 
     /**
@@ -43,9 +53,8 @@ public class AzureRedirectUrlCreator {
      * @return The URI string to redirect to from azure when obtaining the authorization code
      */
     public String createOAuthRedirectUri() {
-        return alertWebServerUrlManager.getServerUrl(AlertRestConstants.API, AlertRestConstants.CALLBACKS,
-            AlertRestConstants.OAUTH, AzureOAuthCallbackController.AZURE)
-                   .orElseThrow(() -> new AlertRuntimeException("Could not create the Azure OAuth Redirect URL."));
+        return alertWebServerUrlManager.getServerUrl(AlertRestConstants.API, AlertRestConstants.CALLBACKS, AlertRestConstants.OAUTH, AzureOAuthCallbackController.AZURE)
+            .orElseThrow(() -> new AlertRuntimeException("Could not create the Azure OAuth Redirect URL."));
     }
 
 }
