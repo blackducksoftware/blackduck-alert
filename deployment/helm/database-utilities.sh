@@ -79,7 +79,7 @@ backupDatabase() {
   echo "Backing up database $databaseName"
   if [ $plainFormat == "true" ];
     then
-      kubectl -n $deploymentNamespace exec $podId -i -- pg_dump -Fp -U $userName -f /tmp/alert-database.dump $databaseName;
+      kubectl -n $deploymentNamespace exec $podId -i -- pg_dump -Fp -U $userName --clean -f /tmp/alert-database.dump $databaseName;
     else
       kubectl -n $deploymentNamespace exec $podId -i -- pg_dump -Fc -U $userName -f /tmp/alert-database.dump $databaseName;
   fi
