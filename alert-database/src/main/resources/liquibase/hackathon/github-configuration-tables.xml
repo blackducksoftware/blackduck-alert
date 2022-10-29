@@ -28,4 +28,41 @@
             </column>
         </createTable>
     </changeSet>
+    <!-- Distribution job tables -->
+    <changeSet author="psantos" id="create-github-job-details-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="github_job_details"/>
+            </not>
+        </preConditions>
+        <createTable schemaName="alert" tableName="github_job_details">
+            <column name="job_id" type="UUID">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="repository_url" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="pull_request_title_prefix" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="psantos" id="create-github-job-details-table-fk">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="github_job_details_job_id_fk"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint
+                constraintName="github_job_details_job_id_fk"
+                baseTableSchemaName="alert"
+                baseTableName="github_job_details"
+                baseColumnNames="job_id"
+                referencedTableSchemaName="alert"
+                referencedTableName="distribution_jobs"
+                referencedColumnNames="job_id"
+                onDelete="CASCADE"
+                onUpdate="CASCADE"
+        />
+    </changeSet>
 </databaseChangeLog>
