@@ -31,6 +31,11 @@ public final class DateUtils {
         return formatDate(currentDate, format);
     }
 
+    public static String createCurrentDateAsJsonString() {
+        OffsetDateTime currentDate = DateUtils.createCurrentDateTimestamp();
+        return formatDate(currentDate, RestConstants.JSON_DATE_FORMAT);
+    }
+
     public static String formatDate(OffsetDateTime date, String format) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(format);
         return dtf.format(date);
