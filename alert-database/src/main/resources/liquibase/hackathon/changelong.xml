@@ -2,4 +2,5 @@
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
     <include file="channel-descriptor.xml" relativeToChangelogFile="true"/>
+    <include file="github-configuration-tables.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
