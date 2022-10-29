@@ -23,6 +23,7 @@ public final class AlertRestConstants {
     public static final String SETTINGS_ENCRYPTION_PATH = AlertRestConstants.SETTINGS_PATH + "/encryption";
     public static final String SETTINGS_PROXY_PATH = AlertRestConstants.SETTINGS_PATH + "/proxy";
     public static final String DIAGNOSTIC_PATH = AlertRestConstants.BASE_PATH + "/diagnostic";
+    public static final String GITHUB_CONFIGURATION_PATH = AlertRestConstants.CONFIGURATION_PATH + "/github";
 
     public static final String DEFAULT_CONFIGURATION_NAME = "default-configuration";
 
