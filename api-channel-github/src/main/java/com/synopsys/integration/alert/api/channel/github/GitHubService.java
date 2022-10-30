@@ -4,15 +4,12 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
-import org.kohsuke.github.GHBranch;
-import org.kohsuke.github.GHRef;
-import org.kohsuke.github.GHRepository;
-import org.kohsuke.github.GitHub;
-import org.kohsuke.github.GitHubBuilder;
+import org.kohsuke.github.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
+import org.springframework.cache.annotation.Cacheable;
 
 public class GitHubService {
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -35,13 +32,13 @@ public class GitHubService {
         }
     }
 
-    //TODO: Step 1) Pull the package manager file/repository
+    //TODO: Step 1) Pull the package manager file/repository... should we make this cacheable?
     public String getDefaultBranch(GHRepository githubRepository) {
         return githubRepository.getDefaultBranch();
     }
 
-    //TODO: Step 2) Create a new branch
-    public Optional<GHRef> createNewBranch(GHRepository githubRepository, String newBranchName) throws IOException {
+    // Create a new branch
+    public Optional<GHRef> createNewBranchOffDefault(GHRepository githubRepository, String newBranchName) throws IOException {
         Map<String, GHBranch> repositoryBranches = githubRepository.getBranches();
         if (repositoryBranches.containsKey(newBranchName)) {
             logger.error(String.format("The branch \"%s\" already exists.", newBranchName));
@@ -59,9 +56,26 @@ public class GitHubService {
         return null;
     }
 
-    //TODO: Step 4) Commit the changes to the branch
+    // Commit the changes to the specified ref
+    public GHCommit createCommit(GHRepository githubRepository, GHRef ref, String fileName, String fileContent, String commitMessage) throws IOException {
+        GHCommit refLatestCommit = githubRepository.getCommit(ref.getObject().getSha());
+        GHTreeBuilder ghTreeBuilder = githubRepository.createTree().baseTree(refLatestCommit.getTree().getSha());
+        ghTreeBuilder.add(fileName, fileContent, false);
+        GHTree ghTree = ghTreeBuilder.create();
+        return githubRepository.createCommit()
+                .parent(refLatestCommit.getSHA1())
+                .tree(ghTree.getSha())
+                .message(commitMessage)
+                .create();
+    }
 
-    //TODO: Step 5) Push the branch to the remote
+    // Push the commit to the ref
+    public void pushCommit(GHRef ref, GHCommit commit) throws IOException {
+        ref.updateTo(commit.getSHA1());
+    }
 
-    //TODO: Step 6) Open a PR from the branch into the main development branch (main/master/or development)
+    // Open a PR from the ref to the specified toBranch
+    public GHPullRequest createPullRequest(GHRepository githubRepository, GHRef fromRef, String toBranch, String title, String description) throws IOException {
+        return githubRepository.createPullRequest(title, fromRef.getRef(), String.format("refs/heads/%s", toBranch), description);
+    }
 }
