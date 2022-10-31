@@ -42,7 +42,6 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
-import com.synopsys.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -90,25 +89,6 @@ public class AzureBoardsPropertiesLegacy {
     ) {
         FieldUtility globalFieldUtility = new FieldUtility(globalConfiguration.getCopyOfKeyToFieldMap());
         return fromFieldAccessor(credentialDataStoreFactory, redirectUri, globalFieldUtility);
-    }
-
-    public static AzureBoardsPropertiesLegacy fromGlobalConfigurationModel(
-        AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory,
-        String redirectUri,
-        AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModel
-    ) {
-        //TODO: Determine if we need the KEY_OAUTH_USER_EMAIL here or can we use the default
-        String oAuthUserEmail = DEFAULT_AZURE_OAUTH_USER_ID;
-        List<String> defaultScopes = List.of(AzureOAuthScopes.PROJECTS_READ.getScope(), AzureOAuthScopes.WORK_FULL.getScope());
-        return new AzureBoardsPropertiesLegacy(
-            credentialDataStoreFactory,
-            azureBoardsGlobalConfigModel.getOrganizationName(),
-            azureBoardsGlobalConfigModel.getAppId().orElse(null),
-            azureBoardsGlobalConfigModel.getClientSecret().orElse(null),
-            oAuthUserEmail,
-            defaultScopes,
-            redirectUri
-        );
     }
 
     public AzureBoardsPropertiesLegacy(
