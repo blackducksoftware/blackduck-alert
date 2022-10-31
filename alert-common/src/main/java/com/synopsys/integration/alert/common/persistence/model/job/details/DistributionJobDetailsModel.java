@@ -21,6 +21,7 @@ public abstract class DistributionJobDetailsModel extends AlertSerializableModel
     private static final long serialVersionUID = -9210491364879513303L;
     public static final Class<AzureBoardsJobDetailsModel> AZURE = AzureBoardsJobDetailsModel.class;
     public static final Class<EmailJobDetailsModel> EMAIL = EmailJobDetailsModel.class;
+    public static final Class<GitHubJobDetailsModel> GITHUB = GitHubJobDetailsModel.class;
     public static final Class<JiraCloudJobDetailsModel> JIRA_CLOUD = JiraCloudJobDetailsModel.class;
     public static final Class<JiraServerJobDetailsModel> JIRA_SERVER = JiraServerJobDetailsModel.class;
     public static final Class<MSTeamsJobDetailsModel> MS_TEAMS = MSTeamsJobDetailsModel.class;
@@ -31,6 +32,7 @@ public abstract class DistributionJobDetailsModel extends AlertSerializableModel
     static {
         detailsModels.put(ChannelKeys.AZURE_BOARDS, AZURE);
         detailsModels.put(ChannelKeys.EMAIL, EMAIL);
+        detailsModels.put(ChannelKeys.GITHUB, GITHUB);
         detailsModels.put(ChannelKeys.JIRA_CLOUD, JIRA_CLOUD);
         detailsModels.put(ChannelKeys.JIRA_SERVER, JIRA_SERVER);
         detailsModels.put(ChannelKeys.MS_TEAMS, MS_TEAMS);
