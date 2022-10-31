@@ -70,15 +70,13 @@ public class AzureBoardsProperties {
         String redirectUri,
         AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModel
     ) {
-        //TODO: Determine if we need the KEY_OAUTH_USER_EMAIL here or can we use the default
-        String oAuthUserEmail = DEFAULT_AZURE_OAUTH_USER_ID;
         List<String> defaultScopes = List.of(AzureOAuthScopes.PROJECTS_READ.getScope(), AzureOAuthScopes.WORK_FULL.getScope());
         return new AzureBoardsProperties(
             alertOAuthCredentialDataStoreFactory,
             azureBoardsGlobalConfigModel.getOrganizationName(),
             azureBoardsGlobalConfigModel.getAppId().orElse(null),
             azureBoardsGlobalConfigModel.getClientSecret().orElse(null),
-            oAuthUserEmail,
+            azureBoardsGlobalConfigModel.getId(),
             defaultScopes,
             redirectUri,
             azureBoardsGlobalConfigModel.getId()

@@ -8,12 +8,17 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.api.client.auth.oauth2.StoredCredential;
 import com.google.api.client.util.store.AbstractDataStore;
+import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.oauth.database.AlertOAuthModel;
 import com.synopsys.integration.alert.api.oauth.database.accessor.AlertOAuthConfigurationAccessor;
 
 public class AlertOAuthCredentialDataStore extends AbstractDataStore<StoredCredential> {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final Lock lock = new ReentrantLock();
     private final AlertOAuthConfigurationAccessor accessor;
 
@@ -90,8 +95,18 @@ public class AlertOAuthCredentialDataStore extends AbstractDataStore<StoredCrede
                     expirationInMillseconds = model.getExirationTimeMilliseconds().get();
                 }
 
-                AlertOAuthModel updateModel = new AlertOAuthModel(configurationId, accessToken, refreshToken, expirationInMillseconds);
-                accessor.updateConfiguration(model.getId(), updateModel);
+                AlertOAuthModel alertOAuthModel = new AlertOAuthModel(configurationId, accessToken, refreshToken, expirationInMillseconds);
+                if (savedModel.isEmpty()) {
+                    try {
+                        accessor.createConfiguration(alertOAuthModel);
+                    } catch (AlertConfigurationException ex) {
+                        logger.error("There was an issue trying to save an Alert OAuth Configuration", ex);
+                        return this;
+                    }
+                } else {
+                    accessor.updateConfiguration(model.getId(), alertOAuthModel);
+                }
+
             }
         } finally {
             lock.unlock();

@@ -10,11 +10,11 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
-import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesLegacy;
+import com.synopsys.integration.alert.api.oauth.AlertOAuthCredentialDataStoreFactory;
+import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
 import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUrlCreator;
 import com.synopsys.integration.alert.channel.azure.boards.database.accessor.AzureBoardsGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
-import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
 import com.synopsys.integration.alert.channel.azure.boards.validator.AzureBoardsGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
@@ -36,7 +36,7 @@ import com.synopsys.integration.rest.proxy.ProxyInfo;
 public class AzureBoardsGlobalTestAction {
     private final AzureBoardsGlobalConfigurationValidator validator;
     private final AzureBoardsGlobalConfigAccessor configurationAccessor;
-    private final AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory;
+    private final AlertOAuthCredentialDataStoreFactory alertOAuthCredentialDataStoreFactory;
     private final AzureRedirectUrlCreator azureRedirectUrlCreator;
 
     private final ConfigurationValidationHelper validationHelper;
@@ -49,7 +49,7 @@ public class AzureBoardsGlobalTestAction {
         AuthorizationManager authorizationManager,
         AzureBoardsGlobalConfigurationValidator validator,
         AzureBoardsGlobalConfigAccessor configurationAccessor,
-        AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory,
+        AlertOAuthCredentialDataStoreFactory alertOAuthCredentialDataStoreFactory,
         AzureRedirectUrlCreator azureRedirectUrlCreator,
         Gson gson,
         ProxyManager proxyManager
@@ -58,8 +58,7 @@ public class AzureBoardsGlobalTestAction {
         this.validationHelper = new ConfigurationValidationHelper(authorizationManager, ConfigContextEnum.GLOBAL, ChannelKeys.AZURE_BOARDS);
         this.proxyManager = proxyManager;
         this.gson = gson;
-
-        this.azureBoardsCredentialDataStoreFactory = azureBoardsCredentialDataStoreFactory;
+        this.alertOAuthCredentialDataStoreFactory = alertOAuthCredentialDataStoreFactory;
         this.azureRedirectUrlCreator = azureRedirectUrlCreator;
         this.validator = validator;
         this.configurationAccessor = configurationAccessor;
@@ -85,8 +84,8 @@ public class AzureBoardsGlobalTestAction {
                 }
             }
 
-            AzureBoardsPropertiesLegacy azureBoardsProperties = AzureBoardsPropertiesLegacy.fromGlobalConfigurationModel(
-                azureBoardsCredentialDataStoreFactory,
+            AzureBoardsProperties azureBoardsProperties = AzureBoardsProperties.fromGlobalConfigurationModel(
+                alertOAuthCredentialDataStoreFactory,
                 azureRedirectUrlCreator.createOAuthRedirectUri(),
                 azureBoardsGlobalConfigModel
             );
@@ -99,7 +98,7 @@ public class AzureBoardsGlobalTestAction {
         return ConfigurationTestResult.success("Successfully connected to Azure instance.");
     }
 
-    protected AzureProjectService createAzureProjectService(AzureBoardsPropertiesLegacy azureBoardsProperties) throws IntegrationException {
+    protected AzureProjectService createAzureProjectService(AzureBoardsProperties azureBoardsProperties) throws IntegrationException {
         ProxyInfo proxy = proxyManager.createProxyInfoForHost(AzureHttpRequestCreatorFactory.DEFAULT_BASE_URL);
         AzureHttpService azureHttpService = azureBoardsProperties.createAzureHttpService(proxy, gson);
         return new AzureProjectService(azureHttpService, new AzureApiVersionAppender());
