@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -110,7 +111,8 @@ class HelmDatabaseUtilitiesScriptTest {
         assertEquals(0, backupOutput.getReturnCode());
 
         // perform restore
-        List<String> backupArguments = List.of("-b", "-n", TEST_NAMESPACE, "-k", podName, "-f", dumpFilePath.toFile().getAbsolutePath());
+        File backupFile = Files.createTempFile("testAlertBackup", "dump").toFile();
+        List<String> backupArguments = List.of("-b", "-n", TEST_NAMESPACE, "-k", podName, "-f", backupFile.getAbsolutePath());
         Executable scriptRestoreExecutable = Executable.create(workingDirectory, scriptFile, backupArguments);
         ExecutableOutput restoreOutput = processBuilderRunner.execute(scriptRestoreExecutable);
         assertEquals(0, restoreOutput.getReturnCode());
