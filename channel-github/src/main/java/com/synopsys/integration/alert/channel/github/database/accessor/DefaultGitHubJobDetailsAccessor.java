@@ -11,7 +11,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.GitHu
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 @Component
-public class DefaultGitHubJobDetailAccessor implements GitHubJobDetailAccessor {
+public class DefaultGitHubJobDetailsAccessor implements GitHubJobDetailAccessor {
 
     @Override
     public Optional<GitHubJobDetailsModel> retrieveDetails(final UUID jobId) {
