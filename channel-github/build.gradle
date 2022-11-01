@@ -13,6 +13,7 @@ dependencies {
 
     api 'org.springframework.data:spring-data-jpa'
     implementation 'jakarta.persistence:jakarta.persistence-api'
+    implementation 'org.kohsuke:github-api:1.313'
     implementation 'com.synopsys.integration:integration-rest'
     implementation 'org.springframework:spring-web'
 

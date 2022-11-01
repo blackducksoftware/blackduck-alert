@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.api.channel.github;
+package com.synopsys.integration.alert.channel.github.service;
 
 import java.io.IOException;
 import java.util.Map;
@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
-import org.springframework.cache.annotation.Cacheable;
 
 public class GitHubService {
     private final Logger logger = LoggerFactory.getLogger(getClass());
