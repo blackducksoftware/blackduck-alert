@@ -5,25 +5,25 @@ import org.apache.commons.lang3.StringUtils;
 import com.synopsys.integration.alert.api.common.model.Obfuscated;
 import com.synopsys.integration.alert.common.rest.model.ConfigWithMetadata;
 
-public class GitHubConfigModel extends ConfigWithMetadata implements Obfuscated<GitHubConfigModel> {
+public class GitHubGlobalConfigModel extends ConfigWithMetadata implements Obfuscated<GitHubGlobalConfigModel> {
     private static final long serialVersionUID = 6190207942888784566L;
 
     private String apiToken;
     private Boolean isApiTokenSet;
     private Long timeoutInSeconds;
 
-    public GitHubConfigModel() {
+    public GitHubGlobalConfigModel() {
         // for serialization
     }
 
-    public GitHubConfigModel(final String id, final String name, final String apiToken, final Boolean isApiTokenSet, final Long timeoutInSeconds) {
+    public GitHubGlobalConfigModel(final String id, final String name, final String apiToken, final Boolean isApiTokenSet, final Long timeoutInSeconds) {
         super(id, name);
         this.apiToken = apiToken;
         this.isApiTokenSet = isApiTokenSet;
         this.timeoutInSeconds = timeoutInSeconds;
     }
 
-    public GitHubConfigModel(
+    public GitHubGlobalConfigModel(
         final String id,
         final String name,
         final String createdAt,
@@ -47,8 +47,8 @@ public class GitHubConfigModel extends ConfigWithMetadata implements Obfuscated<
     }
 
     @Override
-    public GitHubConfigModel obfuscate() {
-        return new GitHubConfigModel(
+    public GitHubGlobalConfigModel obfuscate() {
+        return new GitHubGlobalConfigModel(
             getId(),
             getName(),
             getCreatedAt(),
