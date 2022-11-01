@@ -7,26 +7,30 @@ import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
-public class ComponentUpgradeGuidanceTest {
+class ComponentUpgradeGuidanceTest {
     private final LinkableItem shortTermGuidance = new LinkableItem("Short Term Guidance", "1.1.0");
     private final LinkableItem longTermGuidance = new LinkableItem("Long Term Guidance", "2.0.0");
 
     @Test
-    public void getShortTermUpgradeGuidanceTest() {
-        ComponentUpgradeGuidance componentUpgradeGuidance = new ComponentUpgradeGuidance(shortTermGuidance, longTermGuidance);
+    void getShortTermUpgradeGuidanceTest() {
+        UpgradeGuidanceDetails shortTermUpgradeGuidanceDetails = new UpgradeGuidanceDetails(shortTermGuidance, null, null, null);
+        UpgradeGuidanceDetails longTermUpgradeGuidanceDetails = new UpgradeGuidanceDetails(longTermGuidance, null, null, null);
+        ComponentUpgradeGuidance componentUpgradeGuidance = new ComponentUpgradeGuidance(shortTermUpgradeGuidanceDetails, longTermUpgradeGuidanceDetails, null, null, null);
         assertTrue(componentUpgradeGuidance.getShortTermUpgradeGuidance().isPresent());
         assertEquals(shortTermGuidance, componentUpgradeGuidance.getShortTermUpgradeGuidance().get());
     }
 
     @Test
-    public void getLongTermUpgradeGuidanceTest() {
-        ComponentUpgradeGuidance componentUpgradeGuidance = new ComponentUpgradeGuidance(shortTermGuidance, longTermGuidance);
+    void getLongTermUpgradeGuidanceTest() {
+        UpgradeGuidanceDetails shortTermUpgradeGuidanceDetails = new UpgradeGuidanceDetails(shortTermGuidance, null, null, null);
+        UpgradeGuidanceDetails longTermUpgradeGuidanceDetails = new UpgradeGuidanceDetails(longTermGuidance, null, null, null);
+        ComponentUpgradeGuidance componentUpgradeGuidance = new ComponentUpgradeGuidance(shortTermUpgradeGuidanceDetails, longTermUpgradeGuidanceDetails, null, null, null);
         assertTrue(componentUpgradeGuidance.getLongTermUpgradeGuidance().isPresent());
         assertEquals(longTermGuidance, componentUpgradeGuidance.getLongTermUpgradeGuidance().get());
     }
 
     @Test
-    public void getNullUpgradeGuidance() {
+    void getNullUpgradeGuidance() {
         ComponentUpgradeGuidance componentUpgradeGuidance = ComponentUpgradeGuidance.none();
         assertTrue(componentUpgradeGuidance.getShortTermUpgradeGuidance().isEmpty());
         assertTrue(componentUpgradeGuidance.getLongTermUpgradeGuidance().isEmpty());

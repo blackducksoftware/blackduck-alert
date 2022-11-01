@@ -13,30 +13,31 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Compon
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentPolicy;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentUpgradeGuidance;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentVulnerabilities;
+import com.synopsys.integration.alert.processor.api.extract.model.project.UpgradeGuidanceDetails;
 
-public class BomComponentDetailConverterTest {
+class BomComponentDetailConverterTest {
     private static final AbstractBomComponentDetails BOM_COMPONENT_DETAILS = createBomComponentDetails();
 
     @Test
-    public void gatherAbstractBomComponentSectionPiecesTest() {
+    void gatherAbstractBomComponentSectionPiecesTest() {
         callGatherAbstractBomComponentSectionPieces();
     }
 
     @Disabled
     @Test
-    public void previewAbstractBomComponentSectionPiecesFormatting() {
+    void previewAbstractBomComponentSectionPiecesFormatting() {
         List<String> sectionPieces = callGatherAbstractBomComponentSectionPieces();
         printSectionPieces(sectionPieces);
     }
 
     @Test
-    public void gatherAttributeStringsTest() {
+    void gatherAttributeStringsTest() {
         callGatherAttributeStrings();
     }
 
     @Disabled
     @Test
-    public void previewAttributeStringsFormatting() {
+    void previewAttributeStringsFormatting() {
         List<String> sectionPieces = callGatherAttributeStrings();
         printSectionPieces(sectionPieces);
     }
@@ -66,7 +67,9 @@ public class BomComponentDetailConverterTest {
 
         LinkableItem shortTermUpgradeGuidance = new LinkableItem("Upgrade Guidance - Short Term", "1.0");
         LinkableItem longTermUpgradeGuidance = new LinkableItem("Upgrade Guidance - Long Term", "2.0");
-        ComponentUpgradeGuidance componentUpgradeGuidance = new ComponentUpgradeGuidance(shortTermUpgradeGuidance, longTermUpgradeGuidance);
+        UpgradeGuidanceDetails shortTermUpgradeGuidanceDetails = new UpgradeGuidanceDetails(shortTermUpgradeGuidance, null, null, null);
+        UpgradeGuidanceDetails longTermUpgradeGuidanceDetails = new UpgradeGuidanceDetails(longTermUpgradeGuidance, null, null, null);
+        ComponentUpgradeGuidance componentUpgradeGuidance = new ComponentUpgradeGuidance(shortTermUpgradeGuidanceDetails, longTermUpgradeGuidanceDetails, null, null, null);
 
         LinkableItem attribute1 = new LinkableItem("Attribute", "Number 1");
         LinkableItem attribute2 = new LinkableItem("Attribute", "Number 2");

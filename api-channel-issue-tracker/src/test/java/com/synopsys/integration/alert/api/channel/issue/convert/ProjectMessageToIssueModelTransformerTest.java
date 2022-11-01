@@ -24,8 +24,9 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Compon
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentUpgradeGuidance;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentVulnerabilities;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
+import com.synopsys.integration.alert.processor.api.extract.model.project.UpgradeGuidanceDetails;
 
-public class ProjectMessageToIssueModelTransformerTest {
+class ProjectMessageToIssueModelTransformerTest {
     private static final LinkableItem PROVIDER = new LinkableItem("Black Duck", "server-name", "https://blackduck-server-url");
     private static final ProviderDetails PROVIDER_DETAILS = new ProviderDetails(0L, PROVIDER);
 
@@ -38,7 +39,9 @@ public class ProjectMessageToIssueModelTransformerTest {
     private static final String USAGE = "Some generic usage";
     private static final LinkableItem SHORT_TERM_GUIDANCE = new LinkableItem("Upgrade Guidance - Short Term", "1.0");
     private static final LinkableItem LONG_TERM_GUIDANCE = new LinkableItem("Upgrade Guidance - Long Term", "2.0");
-    private static final ComponentUpgradeGuidance UPGRADE_GUIDANCE = new ComponentUpgradeGuidance(SHORT_TERM_GUIDANCE, LONG_TERM_GUIDANCE);
+    private static final UpgradeGuidanceDetails SHORT_TERM_UPGRADE_GUIDANCE = new UpgradeGuidanceDetails(SHORT_TERM_GUIDANCE, null, null, null);
+    private static final UpgradeGuidanceDetails LONG_TERM_UPGRADE_GUIDANCE = new UpgradeGuidanceDetails(LONG_TERM_GUIDANCE, null, null, null);
+    private static final ComponentUpgradeGuidance UPGRADE_GUIDANCE = new ComponentUpgradeGuidance(SHORT_TERM_UPGRADE_GUIDANCE, LONG_TERM_UPGRADE_GUIDANCE, null, null, null);
     private static final LinkableItem ADDITIONAL_ATTRIBUTE = new LinkableItem("A Label", "An attribute value");
     private static final String ISSUES_URL = "https://issues-url";
 
@@ -56,14 +59,21 @@ public class ProjectMessageToIssueModelTransformerTest {
     );
 
     private static final ComponentPolicy COMPONENT_POLICY_1 = new ComponentPolicy("First Policy", ComponentConcernSeverity.MINOR_MEDIUM, false, true, null, "Uncategorized");
-    private static final ComponentPolicy COMPONENT_POLICY_2 = new ComponentPolicy("Second Policy", ComponentConcernSeverity.UNSPECIFIED_UNKNOWN, true, false, null, "Uncategorized");
+    private static final ComponentPolicy COMPONENT_POLICY_2 = new ComponentPolicy(
+        "Second Policy",
+        ComponentConcernSeverity.UNSPECIFIED_UNKNOWN,
+        true,
+        false,
+        null,
+        "Uncategorized"
+    );
     private static final List<ComponentPolicy> COMPONENT_POLICIES = List.of(
         COMPONENT_POLICY_1,
         COMPONENT_POLICY_2
     );
 
     @Test
-    public void convertToIssueModelsForPolicyTest() {
+    void convertToIssueModelsForPolicyTest() {
         ComponentConcern policyConcern = ComponentConcern.policy(ItemOperation.ADD, COMPONENT_POLICY_1.getPolicyName(), "https://policy");
         BomComponentDetails bomComponentDetails = createBomComponentDetails(policyConcern);
         ProjectMessage projectMessage = ProjectMessage.componentConcern(
@@ -90,11 +100,21 @@ public class ProjectMessageToIssueModelTransformerTest {
     }
 
     @Test
-    public void convertToIssueModelsForVulnerabilitiesTest() {
+    void convertToIssueModelsForVulnerabilitiesTest() {
         LinkableItem vulnerabilityItem0 = createVulnerabilityItem("CVE-000");
         LinkableItem vulnerabilityItem7 = createVulnerabilityItem("CVE-007");
-        ComponentConcern vulnConcern0 = ComponentConcern.vulnerability(ItemOperation.ADD, vulnerabilityItem0.getValue(), ComponentConcernSeverity.CRITICAL, vulnerabilityItem0.getUrl().orElse(null));
-        ComponentConcern vulnConcern7 = ComponentConcern.vulnerability(ItemOperation.DELETE, vulnerabilityItem7.getValue(), ComponentConcernSeverity.MINOR_MEDIUM, vulnerabilityItem7.getUrl().orElse(null));
+        ComponentConcern vulnConcern0 = ComponentConcern.vulnerability(
+            ItemOperation.ADD,
+            vulnerabilityItem0.getValue(),
+            ComponentConcernSeverity.CRITICAL,
+            vulnerabilityItem0.getUrl().orElse(null)
+        );
+        ComponentConcern vulnConcern7 = ComponentConcern.vulnerability(
+            ItemOperation.DELETE,
+            vulnerabilityItem7.getValue(),
+            ComponentConcernSeverity.MINOR_MEDIUM,
+            vulnerabilityItem7.getUrl().orElse(null)
+        );
         BomComponentDetails bomComponentDetails = createBomComponentDetails(List.of(
             vulnConcern0,
             ComponentConcern.vulnerability(ItemOperation.UPDATE, VULNERABILITY_2.getValue(), ComponentConcernSeverity.MINOR_MEDIUM, VULNERABILITY_2.getUrl().orElse(null)),
@@ -124,8 +144,14 @@ public class ProjectMessageToIssueModelTransformerTest {
     }
 
     @Test
-    public void convertToIssueModelsForComponentUnknownVersionTest() {
-        ComponentConcern unknownComponentConcern = ComponentConcern.unknownComponentVersion(ItemOperation.ADD, "Component01", ComponentConcernSeverity.MAJOR_HIGH, 2, "https://synopsys.com");
+    void convertToIssueModelsForComponentUnknownVersionTest() {
+        ComponentConcern unknownComponentConcern = ComponentConcern.unknownComponentVersion(
+            ItemOperation.ADD,
+            "Component01",
+            ComponentConcernSeverity.MAJOR_HIGH,
+            2,
+            "https://synopsys.com"
+        );
         BomComponentDetails bomComponentDetails = createBomComponentDetails(unknownComponentConcern);
         ProjectMessage projectMessage = ProjectMessage.componentConcern(
             PROVIDER_DETAILS,
