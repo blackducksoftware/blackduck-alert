@@ -18,33 +18,34 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Compon
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentVulnerabilities;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectOperation;
+import com.synopsys.integration.alert.processor.api.extract.model.project.UpgradeGuidanceDetails;
 
-public class ProjectMessageConverterTest {
+class ProjectMessageConverterTest {
     private static final ProviderDetails PROVIDER_DETAILS = new ProviderDetails(0L, new LinkableItem("Provider", "The provider"));
     private static final LinkableItem PROJECT_ITEM = new LinkableItem("Project", "The project", "https://a-url");
     private static final ProjectMessage PROJECT_MESSAGE_PROJECT = createProjectMessageForProject();
     private static final ProjectMessage PROJECT_MESSAGE_COMPONENT = createProjectMessageForComponent();
 
     @Test
-    public void convertToFormattedMessageChunksProjectTest() {
+    void convertToFormattedMessageChunksProjectTest() {
         callConvertToFormattedMessageChunks(PROJECT_MESSAGE_PROJECT);
     }
 
     @Test
     @Disabled
-    public void previewConvertToFormattedMessageChunksProjectFormatting() {
+    void previewConvertToFormattedMessageChunksProjectFormatting() {
         List<String> messageChunks = callConvertToFormattedMessageChunks(PROJECT_MESSAGE_PROJECT);
         printMessageChunks(messageChunks);
     }
 
     @Test
-    public void convertToFormattedMessageChunksComponentTest() {
+    void convertToFormattedMessageChunksComponentTest() {
         callConvertToFormattedMessageChunks(PROJECT_MESSAGE_COMPONENT);
     }
 
     @Test
     @Disabled
-    public void previewConvertToFormattedMessageChunksComponentFormatting() {
+    void previewConvertToFormattedMessageChunksComponentFormatting() {
         List<String> messageChunks = callConvertToFormattedMessageChunks(PROJECT_MESSAGE_COMPONENT);
         printMessageChunks(messageChunks);
     }
@@ -84,12 +85,38 @@ public class ProjectMessageConverterTest {
 
         LinkableItem shortTermUpgradeGuidance = new LinkableItem("Upgrade Guidance - Short Term", "1.0");
         LinkableItem longTermUpgradeGuidance = new LinkableItem("Upgrade Guidance - Long Term", "2.0");
-        ComponentUpgradeGuidance componentUpgradeGuidance = new ComponentUpgradeGuidance(shortTermUpgradeGuidance, longTermUpgradeGuidance);
+        UpgradeGuidanceDetails shortTermUpgradeGuidanceDetails = new UpgradeGuidanceDetails(shortTermUpgradeGuidance, null, null, null);
+        UpgradeGuidanceDetails longTermUpgradeGuidanceDetails = new UpgradeGuidanceDetails(longTermUpgradeGuidance, null, null, null);
+        ComponentUpgradeGuidance componentUpgradeGuidance = new ComponentUpgradeGuidance(shortTermUpgradeGuidanceDetails, longTermUpgradeGuidanceDetails, null, null, null);
 
-        ComponentConcern unknownVersionConcern1 = ComponentConcern.unknownComponentVersion(ItemOperation.ADD, "Component-Unknown-Version-01", ComponentConcernSeverity.CRITICAL, 0, "https://synopsys.com");
-        ComponentConcern unknownVersionConcern2 = ComponentConcern.unknownComponentVersion(ItemOperation.ADD, "Component-Unknown-Version-01", ComponentConcernSeverity.MAJOR_HIGH, 1, "https://synopsys.com");
-        ComponentConcern unknownVersionConcern3 = ComponentConcern.unknownComponentVersion(ItemOperation.ADD, "Component-Unknown-Version-01", ComponentConcernSeverity.MINOR_MEDIUM, 2, "https://synopsys.com");
-        ComponentConcern unknownVersionConcern4 = ComponentConcern.unknownComponentVersion(ItemOperation.ADD, "Component-Unknown-Version-01", ComponentConcernSeverity.TRIVIAL_LOW, 3, "https://synopsys.com");
+        ComponentConcern unknownVersionConcern1 = ComponentConcern.unknownComponentVersion(
+            ItemOperation.ADD,
+            "Component-Unknown-Version-01",
+            ComponentConcernSeverity.CRITICAL,
+            0,
+            "https://synopsys.com"
+        );
+        ComponentConcern unknownVersionConcern2 = ComponentConcern.unknownComponentVersion(
+            ItemOperation.ADD,
+            "Component-Unknown-Version-01",
+            ComponentConcernSeverity.MAJOR_HIGH,
+            1,
+            "https://synopsys.com"
+        );
+        ComponentConcern unknownVersionConcern3 = ComponentConcern.unknownComponentVersion(
+            ItemOperation.ADD,
+            "Component-Unknown-Version-01",
+            ComponentConcernSeverity.MINOR_MEDIUM,
+            2,
+            "https://synopsys.com"
+        );
+        ComponentConcern unknownVersionConcern4 = ComponentConcern.unknownComponentVersion(
+            ItemOperation.ADD,
+            "Component-Unknown-Version-01",
+            ComponentConcernSeverity.TRIVIAL_LOW,
+            3,
+            "https://synopsys.com"
+        );
 
         LinkableItem attribute1 = new LinkableItem("Attribute", "The first attribute");
         LinkableItem attribute2 = new LinkableItem("Attribute Prime", "The second attribute");
@@ -99,7 +126,17 @@ public class ProjectMessageConverterTest {
             new LinkableItem("Component Version", "The component version"),
             createComponentVulnerabilities(),
             List.of(componentPolicy1, componentPolicy2),
-            List.of(policyConcern1, policyConcern2, vulnerabilityConcern1, vulnerabilityConcern2, vulnerabilityConcern3, unknownVersionConcern1, unknownVersionConcern2, unknownVersionConcern3, unknownVersionConcern4),
+            List.of(
+                policyConcern1,
+                policyConcern2,
+                vulnerabilityConcern1,
+                vulnerabilityConcern2,
+                vulnerabilityConcern3,
+                unknownVersionConcern1,
+                unknownVersionConcern2,
+                unknownVersionConcern3,
+                unknownVersionConcern4
+            ),
             new LinkableItem("License", "The software license name", "https://license-url"),
             "The usage of the component",
             componentUpgradeGuidance,
