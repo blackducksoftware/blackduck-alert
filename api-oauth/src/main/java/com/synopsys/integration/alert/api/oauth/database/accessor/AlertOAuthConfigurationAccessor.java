@@ -62,7 +62,7 @@ public class AlertOAuthConfigurationAccessor {
     }
 
     private AlertOAuthModel convertToModel(AlertOAuthConfigurationEntity entity) {
-        return new AlertOAuthModel(entity.getId(), entity.getAccessToken(), entity.getRefreshToken(), entity.getExpirationTimeMillisecondsTimeMilliseconds());
+        return new AlertOAuthModel(entity.getId(), entity.getAccessToken(), entity.getRefreshToken(), entity.getExpirationTimeMilliseconds());
     }
 
     private AlertOAuthConfigurationEntity convertToEntity(AlertOAuthModel model) {

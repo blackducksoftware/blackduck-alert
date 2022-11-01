@@ -46,7 +46,7 @@ public class AlertOAuthConfigurationEntity extends BaseEntity {
         return refreshToken;
     }
 
-    public Long getExpirationTimeMillisecondsTimeMilliseconds() {
+    public Long getExpirationTimeMilliseconds() {
         return expirationTimeMilliseconds;
     }
 }
