@@ -31,13 +31,13 @@ import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessag
 public class GitHubChannel implements DistributionChannel<GitHubJobDetailsModel> {
     private static final String GRADLE_FILENAME = "build.gradle";
 
-    private final GitHubGlobalConfigAccessor gitHubConfigModelConfigAccessor;
+    private final GitHubGlobalConfigAccessor githubConfigModelConfigAccessor;
     private final JobAccessor jobAccessor;
 
     @Autowired
-    public GitHubChannel(JobAccessor jobAccessor, GitHubGlobalConfigAccessor gitHubConfigModelConfigAccessor) {
+    public GitHubChannel(JobAccessor jobAccessor, GitHubGlobalConfigAccessor githubConfigModelConfigAccessor) {
         this.jobAccessor = jobAccessor;
-        this.gitHubConfigModelConfigAccessor = gitHubConfigModelConfigAccessor;
+        this.githubConfigModelConfigAccessor = githubConfigModelConfigAccessor;
     }
 
     @Override
@@ -53,14 +53,15 @@ public class GitHubChannel implements DistributionChannel<GitHubJobDetailsModel>
         String apiToken = getApiToken(distributionDetails);
 
         try {
-            GitHubService gitHubService = new GitHubService(apiToken);
-            Optional<GHRepository> optionalGHRepository = gitHubService.getGithubRepository(distributionDetails.getRepositoryUrl()); //TODO: Use repository name here instead of toString
+            GitHubService githubService = new GitHubService(apiToken);
+            Optional<GHRepository> optionalGHRepository = githubService.getGithubRepository(distributionDetails.getRepositoryUrl()); //TODO: Use repository name here instead of toString
 
             if (optionalGHRepository.isEmpty()) {
                 return createErrorMessageResult("Could not find GitHub repository");
             }
+            GHRepository ghRepository = optionalGHRepository.get();
 
-            return performRemediationProcess(gitHubService, ghRepository, messages);
+            return performRemediationProcess(githubService, ghRepository, messages);
         } catch (IOException e) {
             return createErrorMessageResult(e.getMessage());
         }
@@ -77,34 +78,33 @@ public class GitHubChannel implements DistributionChannel<GitHubJobDetailsModel>
         DistributionJobModel distributionJobModel = jobAccessor.getJobById(distributionDetails.getJobId()).orElseThrow(
             () -> new AlertConfigurationException("Missing GitHub distribution configuration")
         );
-        GitHubGlobalConfigModel configModel = gitHubConfigModelConfigAccessor.getConfiguration(distributionJobModel.getChannelGlobalConfigId()).orElseThrow(
+        GitHubGlobalConfigModel configModel = githubConfigModelConfigAccessor.getConfiguration(distributionJobModel.getChannelGlobalConfigId()).orElseThrow(
             () -> new AlertConfigurationException("Missing GitHub config configuration")
         );
         return configModel.getApiToken();
     }
 
-    private MessageResult performRemediationProcess(GitHubService gitHubService, GHRepository ghRepository, ProviderMessageHolder messages) throws IOException {
-        // TODO: Implement martin's changes
-        Optional<GHRef> optionalNewBranchRef = gitHubService.createNewBranchOffDefault(ghRepository, "BlackDuck Alert branch");
+    private MessageResult performRemediationProcess(GitHubService githubService, GHRepository ghRepository, ProviderMessageHolder messages) throws IOException {
+        Optional<GHRef> optionalNewBranchRef = githubService.createNewBranchOffDefault(ghRepository, "BlackDuck Alert branch");
         if (optionalNewBranchRef.isEmpty()) {
             return createErrorMessageResult("Could not create a new branch");
         }
         GHRef newBranchRef = optionalNewBranchRef.get();
 
         GHContent originalGHContent = ghRepository.getFileContent(GRADLE_FILENAME, newBranchRef.getRef());
-        String fileChanges = getRemediatedChanges(messages, originalGHContent);
+        String fileChanges = getRemediatedChanges(githubService, messages, originalGHContent);
 
-        Optional<GHCommit> optionalGHCommit = gitHubService.createCommit(ghRepository, newBranchRef, GRADLE_FILENAME, fileChanges, "Remediation commit");
+        Optional<GHCommit> optionalGHCommit = githubService.createCommit(ghRepository, newBranchRef, GRADLE_FILENAME, fileChanges, "Remediation commit");
         if (optionalGHCommit.isEmpty()) {
             return createErrorMessageResult("Could not commit the changes");
         }
 
-        gitHubService.pushCommit(newBranchRef, optionalGHCommit.get());
+        githubService.pushCommit(newBranchRef, optionalGHCommit.get());
 
-        if (gitHubService.createPullRequest(
+        if (githubService.createPullRequest(
                 ghRepository,
                 newBranchRef,
-                gitHubService.getDefaultBranch(ghRepository),
+                githubService.getDefaultBranch(ghRepository),
                 "BlackDuck Alert remediation pull request",
                 "Guidance version upgrades"
             ).isEmpty()
@@ -115,9 +115,10 @@ public class GitHubChannel implements DistributionChannel<GitHubJobDetailsModel>
         return MessageResult.success();
     }
 
-    private String getRemediatedChanges(ProviderMessageHolder messages, GHContent originalGHContent) {
-        gitHubService.editGithubContentWithNewDependency(originalGHContent, "", "");
-        return ""; //TODO: implement
+    //TODO: implement
+    private String getRemediatedChanges(GitHubService githubService, ProviderMessageHolder messages, GHContent originalGHContent) throws IOException {
+        githubService.editGithubContentWithNewDependency(originalGHContent, "", "");
+        return "";
     }
 }
 
