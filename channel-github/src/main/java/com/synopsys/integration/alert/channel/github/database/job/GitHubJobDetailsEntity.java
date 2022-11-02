@@ -21,7 +21,7 @@ public class GitHubJobDetailsEntity {
     public GitHubJobDetailsEntity() {
     }
 
-    public GitHubJobDetailsEntity(final UUID jobId, final String repositoryUrl, final String pullRequestTitlePrefix) {
+    public GitHubJobDetailsEntity(UUID jobId, String repositoryUrl, String pullRequestTitlePrefix) {
         this.jobId = jobId;
         this.repositoryUrl = repositoryUrl;
         this.pullRequestTitlePrefix = pullRequestTitlePrefix;
@@ -31,7 +31,7 @@ public class GitHubJobDetailsEntity {
         return jobId;
     }
 
-    public void setJobId(final UUID jobId) {
+    public void setJobId(UUID jobId) {
         this.jobId = jobId;
     }
 
@@ -39,7 +39,7 @@ public class GitHubJobDetailsEntity {
         return repositoryUrl;
     }
 
-    public void setRepositoryUrl(final String repositoryUrl) {
+    public void setRepositoryUrl(String repositoryUrl) {
         this.repositoryUrl = repositoryUrl;
     }
 
@@ -47,7 +47,7 @@ public class GitHubJobDetailsEntity {
         return pullRequestTitlePrefix;
     }
 
-    public void setPullRequestTitlePrefix(final String pullRequestTitlePrefix) {
+    public void setPullRequestTitlePrefix(String pullRequestTitlePrefix) {
         this.pullRequestTitlePrefix = pullRequestTitlePrefix;
     }
 }
