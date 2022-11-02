@@ -13,7 +13,9 @@ import com.synopsys.integration.alert.channel.github.model.GitHubGlobalConfigMod
 import com.synopsys.integration.alert.channel.github.service.GitHubService;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
-import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
+import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import org.kohsuke.github.GHCommit;
+import org.kohsuke.github.GHRef;
 import org.kohsuke.github.GHRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -28,8 +30,6 @@ import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessag
 public class GitHubChannel implements DistributionChannel<GitHubJobDetailsModel> {
     private final GitHubGlobalConfigAccessor gitHubConfigModelConfigAccessor;
     private final JobAccessor jobAccessor;
-
-    private final String GITHUB_DISTRIBUTION_FAILURE_STATUS_MESSAGE = "Failed distribution for GitHub.";
 
     @Autowired
     public GitHubChannel(JobAccessor jobAccessor, GitHubGlobalConfigAccessor gitHubConfigModelConfigAccessor) {
@@ -46,33 +46,67 @@ public class GitHubChannel implements DistributionChannel<GitHubJobDetailsModel>
         final Set<Long> notificationIds
     )
         throws AlertException {
-        // get githubconfigmodel? from distributiondetails -> jobid -> jobaccessor -> channelglobalconfigid -> globalconfigaccessor -> config
-        // get token from configmodel, create service
-        // Go through github work flow, make changes from bomcomponent
-        // providermessageholder has upgrade details project
+
+        String apiToken = getApiToken(distributionDetails);
+
+        try {
+            GitHubService gitHubService = new GitHubService(apiToken);
+            Optional<GHRepository> optionalGHRepository = gitHubService.getGithubRepository(distributionDetails.getRepositoryUrl()); //TODO: Use repository name here instead of toString
+
+            if (optionalGHRepository.isEmpty()) {
+                return createErrorMessageResult("Could not find GitHub repository");
+            }
+
+            return performRemediationProcess(gitHubService, optionalGHRepository.get(), messages);
+        } catch (IOException e) {
+            return createErrorMessageResult(e.getMessage());
+        }
+    }
+
+    private MessageResult createErrorMessageResult(String errorMessage) {
+        return new MessageResult(
+            "Failed distribution for GitHub.",
+            List.of(AlertFieldStatus.error("none", errorMessage))
+        );
+    }
+
+    private String getApiToken(DistributionJobDetailsModel distributionDetails) throws AlertConfigurationException {
         DistributionJobModel distributionJobModel = jobAccessor.getJobById(distributionDetails.getJobId()).orElseThrow(
             () -> new AlertConfigurationException("Missing GitHub distribution configuration")
         );
         GitHubGlobalConfigModel configModel = gitHubConfigModelConfigAccessor.getConfiguration(distributionJobModel.getChannelGlobalConfigId()).orElseThrow(
-            () -> new AlertConfigurationException("Missing GitHub config model configuration")
+            () -> new AlertConfigurationException("Missing GitHub config configuration")
         );
+        return configModel.getApiToken();
+    }
 
-        try {
-            GitHubService gitHubService = new GitHubService(configModel.getApiToken());
-            Optional<GHRepository> optionalGHRepository = gitHubService.getGithubRepository(distributionDetails.toString()); //TODO: Use repository name here instead of toString
-            if (optionalGHRepository.isPresent()) {
-                GHRepository ghRepository = optionalGHRepository.get();
+    private MessageResult performRemediationProcess(GitHubService gitHubService, GHRepository ghRepository, ProviderMessageHolder messages) throws IOException {
+        // TODO: Implement martin's changes
+        String fileName = "build.gradle";
+        String fileChanges = ""; //TODO: Get file changes from messages
 
-                // TODO: Implement martin's changes
-            } else {
-                return new MessageResult(
-                    GITHUB_DISTRIBUTION_FAILURE_STATUS_MESSAGE,
-                    List.of(AlertFieldStatus.error("none", "Could not find GitHub repository"))
-                );
-            }
+        Optional<GHRef> optionalNewBranchRef = gitHubService.createNewBranchOffDefault(ghRepository, "BlackDuck Alert branch");
+        if (optionalNewBranchRef.isEmpty()) {
+            return createErrorMessageResult("Could not create a new branch");
+        }
+        GHRef newBranchRef = optionalNewBranchRef.get();
 
-        } catch (IOException e) {
-            throw new AlertException(e);
+        Optional<GHCommit> optionalGHCommit = gitHubService.createCommit(ghRepository, newBranchRef, fileName, fileChanges, "Remediation commit");
+        if (optionalGHCommit.isEmpty()) {
+            return createErrorMessageResult("Could not commit the changes");
+        }
+
+        gitHubService.pushCommit(newBranchRef, optionalGHCommit.get());
+
+        if (gitHubService.createPullRequest(
+                ghRepository,
+                newBranchRef,
+                gitHubService.getDefaultBranch(ghRepository),
+                "BlackDuck Alert remediation pull request",
+                "Guidance version upgrades"
+            ).isEmpty()
+        ) {
+            return createErrorMessageResult("Could not create the pull request");
         }
 
         return MessageResult.success();
