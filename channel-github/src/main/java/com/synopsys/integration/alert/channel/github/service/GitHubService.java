@@ -1,14 +1,26 @@
 package com.synopsys.integration.alert.channel.github.service;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Optional;
 
-import org.kohsuke.github.*;
+import org.kohsuke.github.GHBranch;
+import org.kohsuke.github.GHCommit;
+import org.kohsuke.github.GHContent;
+import org.kohsuke.github.GHPullRequest;
+import org.kohsuke.github.GHRef;
+import org.kohsuke.github.GHRepository;
+import org.kohsuke.github.GHTree;
+import org.kohsuke.github.GHTreeBuilder;
+import org.kohsuke.github.GitHub;
+import org.kohsuke.github.GitHubBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentUpgradeGuidance;
+import com.synopsys.integration.alert.processor.api.extract.model.project.UpgradeGuidanceDetails;
 
 public class GitHubService {
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -49,10 +61,23 @@ public class GitHubService {
     }
 
     //TODO: Step 3) Edit the build.gradle file with remediated version
-    public String getRemediatedVersion(BomComponentDetails bomComponentDetails) {
+    public Optional<String> getUpgradeGuidanceVersion(BomComponentDetails bomComponentDetails) {
+        ComponentUpgradeGuidance upgradeGuidance = bomComponentDetails.getComponentUpgradeGuidance();
+        UpgradeGuidanceDetails shortTermUpgradeGuidanceDetails = upgradeGuidance.getShortTermUpgradeGuidanceDetails();
+        UpgradeGuidanceDetails longTermUpgradeGuidanceDetails = upgradeGuidance.getLongTermUpgradeGuidanceDetails();
 
-        //TODO: implement
-        return null;
+        // Prefer long term upgrade guidance over short term if it is available. Otherwise, use short term if available.
+        if (longTermUpgradeGuidanceDetails.getOriginExternalId().isPresent()) {
+            return longTermUpgradeGuidanceDetails.getOriginExternalId();
+        } else if (shortTermUpgradeGuidanceDetails.getOriginExternalId().isPresent()) {
+            shortTermUpgradeGuidanceDetails.getOriginExternalId();
+        }
+        return Optional.empty();
+    }
+
+    public String editGithubContentWithNewDependency(GHContent githubContent, String oldDependencyExternalId, String updatedDependencyExternalId) throws IOException {
+        String fileContent = new String(githubContent.read().readAllBytes(), StandardCharsets.UTF_8);
+        return fileContent.replace(oldDependencyExternalId, updatedDependencyExternalId);
     }
 
     // Commit the changes to the specified ref
@@ -62,10 +87,10 @@ public class GitHubService {
         ghTreeBuilder.add(fileName, fileContent, false);
         GHTree ghTree = ghTreeBuilder.create();
         return githubRepository.createCommit()
-                .parent(refLatestCommit.getSHA1())
-                .tree(ghTree.getSha())
-                .message(commitMessage)
-                .create();
+            .parent(refLatestCommit.getSHA1())
+            .tree(ghTree.getSha())
+            .message(commitMessage)
+            .create();
     }
 
     // Push the commit to the ref
