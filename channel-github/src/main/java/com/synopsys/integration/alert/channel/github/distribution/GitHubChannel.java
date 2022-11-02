@@ -15,6 +15,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import org.kohsuke.github.GHCommit;
+import org.kohsuke.github.GHContent;
 import org.kohsuke.github.GHRef;
 import org.kohsuke.github.GHRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,8 @@ import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessag
 
 @Component
 public class GitHubChannel implements DistributionChannel<GitHubJobDetailsModel> {
+    private static final String GRADLE_FILENAME = "build.gradle";
+
     private final GitHubGlobalConfigAccessor gitHubConfigModelConfigAccessor;
     private final JobAccessor jobAccessor;
 
@@ -57,7 +60,7 @@ public class GitHubChannel implements DistributionChannel<GitHubJobDetailsModel>
                 return createErrorMessageResult("Could not find GitHub repository");
             }
 
-            return performRemediationProcess(gitHubService, optionalGHRepository.get(), messages);
+            return performRemediationProcess(gitHubService, ghRepository, messages);
         } catch (IOException e) {
             return createErrorMessageResult(e.getMessage());
         }
@@ -82,16 +85,16 @@ public class GitHubChannel implements DistributionChannel<GitHubJobDetailsModel>
 
     private MessageResult performRemediationProcess(GitHubService gitHubService, GHRepository ghRepository, ProviderMessageHolder messages) throws IOException {
         // TODO: Implement martin's changes
-        String fileName = "build.gradle";
-        String fileChanges = ""; //TODO: Get file changes from messages
-
         Optional<GHRef> optionalNewBranchRef = gitHubService.createNewBranchOffDefault(ghRepository, "BlackDuck Alert branch");
         if (optionalNewBranchRef.isEmpty()) {
             return createErrorMessageResult("Could not create a new branch");
         }
         GHRef newBranchRef = optionalNewBranchRef.get();
 
-        Optional<GHCommit> optionalGHCommit = gitHubService.createCommit(ghRepository, newBranchRef, fileName, fileChanges, "Remediation commit");
+        GHContent originalGHContent = ghRepository.getFileContent(GRADLE_FILENAME, newBranchRef.getRef());
+        String fileChanges = getRemediatedChanges(messages, originalGHContent);
+
+        Optional<GHCommit> optionalGHCommit = gitHubService.createCommit(ghRepository, newBranchRef, GRADLE_FILENAME, fileChanges, "Remediation commit");
         if (optionalGHCommit.isEmpty()) {
             return createErrorMessageResult("Could not commit the changes");
         }
@@ -110,6 +113,11 @@ public class GitHubChannel implements DistributionChannel<GitHubJobDetailsModel>
         }
 
         return MessageResult.success();
+    }
+
+    private String getRemediatedChanges(ProviderMessageHolder messages, GHContent originalGHContent) {
+        gitHubService.editGithubContentWithNewDependency(originalGHContent, "", "");
+        return ""; //TODO: implement
     }
 }
 
