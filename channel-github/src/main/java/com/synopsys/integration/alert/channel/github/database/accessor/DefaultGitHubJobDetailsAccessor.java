@@ -39,7 +39,7 @@ public class DefaultGitHubJobDetailsAccessor implements GitHubJobDetailAccessor 
     @Override
     @Transactional(readOnly = true)
     public Optional<GitHubJobDetailsModel> retrieveDetails(UUID jobId) {
-        return Optional.empty();
+        return gitHubJobDetailsRepository.findById(jobId).map(this::convertToModel);
     }
 
     @Override
