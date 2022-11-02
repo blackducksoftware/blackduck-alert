@@ -91,7 +91,8 @@ public class GitHubChannel implements DistributionChannel<GitHubJobDetailsModel>
         }
         GHRef newBranchRef = optionalNewBranchRef.get();
 
-        GHContent originalGHContent = ghRepository.getFileContent(GRADLE_FILENAME, newBranchRef.getRef());
+        GHContent originalGHContent = ghRepository.getFileContent(GRADLE_FILENAME, newBranchRef.getRef());  //TODO: The ordering can be discussed, do we want to pull the file from default branch to make changes and then create the new branch?
+                                                                                                            //TODO: Or currently create the new branch first and pull the file from new branch to the makes.
         String fileChanges = getRemediatedChanges(githubService, messages, originalGHContent);
 
         Optional<GHCommit> optionalGHCommit = githubService.createCommit(ghRepository, newBranchRef, GRADLE_FILENAME, fileChanges, "Remediation commit");
