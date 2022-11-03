@@ -13,17 +13,17 @@ public class GitHubJobDetailsEntity {
     @Id
     @Column(name = "job_id")
     private UUID jobId;
-    @Column(name = "repository_url")
-    private String repositoryUrl;
+    @Column(name = "repository_name")
+    private String repositoryName;
     @Column(name = "pull_request_title_prefix")
     private String pullRequestTitlePrefix;
 
     public GitHubJobDetailsEntity() {
     }
 
-    public GitHubJobDetailsEntity(UUID jobId, String repositoryUrl, String pullRequestTitlePrefix) {
+    public GitHubJobDetailsEntity(UUID jobId, String repositoryName, String pullRequestTitlePrefix) {
         this.jobId = jobId;
-        this.repositoryUrl = repositoryUrl;
+        this.repositoryName = repositoryName;
         this.pullRequestTitlePrefix = pullRequestTitlePrefix;
     }
 
@@ -35,12 +35,12 @@ public class GitHubJobDetailsEntity {
         this.jobId = jobId;
     }
 
-    public String getRepositoryUrl() {
-        return repositoryUrl;
+    public String getRepositoryName() {
+        return repositoryName;
     }
 
-    public void setRepositoryUrl(String repositoryUrl) {
-        this.repositoryUrl = repositoryUrl;
+    public void setRepositoryName(String repositoryUrl) {
+        this.repositoryName = repositoryUrl;
     }
 
     public String getPullRequestTitlePrefix() {

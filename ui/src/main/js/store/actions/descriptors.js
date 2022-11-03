@@ -13,6 +13,7 @@ function fetchingDescriptors() {
 }
 
 function descriptorsFetched(descriptors) {
+    debugger;
     if (descriptors) {
         const sortedList = descriptors.sort((first, second) => {
             if (first.label < second.label) {
