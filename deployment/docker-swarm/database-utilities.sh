@@ -104,7 +104,7 @@ if [ $# -eq 0 ];
     exit 0
 fi
 
-while getopts "b,d:,f:,i,k:,p,r,u:,h" option; do
+while getopts "b,d:,f:,k:,p,r,u:,h" option; do
   case ${option} in
     b)
       backup=true
