@@ -6,6 +6,10 @@ import {
     ADD_GITHUB_USER_SUCCESS,
     ADD_GITHUB_USER_REQUEST,
     ADD_GITHUB_USER_FAIL,
+    VALIDATE_GITHUB_CONFIGURATION_REQUEST,
+    VALIDATE_GITHUB_CONFIGURATION_SUCCESS,
+    VALIDATE_GITHUB_CONFIGURATION_FAIL,
+    VALIDATE_GITHUB_CONFIGURATION_ERROR
 } from 'store/actions/types';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 
@@ -72,6 +76,38 @@ const roles = (state = initialState, action) => {
                 error: HTTPErrorUtils.createEmptyErrorObject(),
                 fieldErrors: {},
                 saveStatus: 'SAVED'
+            };
+        case VALIDATE_GITHUB_CONFIGURATION_REQUEST:
+            return {
+                ...state,
+                inProgress: true,
+                deleteSuccess: false,
+                saveStatus: 'VALIDATING'
+            };
+        case VALIDATE_GITHUB_CONFIGURATION_SUCCESS:
+            return {
+                ...state,
+                inProgress: false,
+                deleteSuccess: false,
+                error: HTTPErrorUtils.createEmptyErrorObject(),
+                saveStatus: 'VALIDATED'
+            };
+        case VALIDATE_GITHUB_CONFIGURATION_FAIL:
+            return {
+                ...state,
+                inProgress: false,
+                deleteSuccess: false,
+                error: HTTPErrorUtils.createErrorObject(action),
+                saveStatus: 'ERROR'
+            };
+        case VALIDATE_GITHUB_CONFIGURATION_ERROR:
+            return {
+                ...state,
+                inProgress: false,
+                deleteSuccess: false,
+                error: HTTPErrorUtils.createErrorObject(action),
+                fieldErrors: action.errors || {},
+                saveStatus: 'ERROR'
             };
         case SERIALIZE:
             return initialState;

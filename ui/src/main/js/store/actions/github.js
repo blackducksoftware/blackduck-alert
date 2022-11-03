@@ -4,7 +4,11 @@ import {
     GET_GITHUB_ERROR,
     ADD_GITHUB_USER_REQUEST,
     ADD_GITHUB_USER_SUCCESS,
-    ADD_GITHUB_USER_FAIL
+    ADD_GITHUB_USER_FAIL,
+    VALIDATE_GITHUB_CONFIGURATION_REQUEST,
+    VALIDATE_GITHUB_CONFIGURATION_SUCCESS,
+    VALIDATE_GITHUB_CONFIGURATION_FAIL,
+    VALIDATE_GITHUB_CONFIGURATION_ERROR
 } from 'store/actions/types';
 import * as ConfigRequestBuilder from 'common/util/configurationRequestBuilder';
 import { unauthorized } from 'store/actions/session';
@@ -32,6 +36,33 @@ function fetchingGithubListError(message) {
     };
 }
 
+function validatingGitHubConfiguration() {
+    return {
+        type: VALIDATE_GITHUB_CONFIGURATION_REQUEST
+    };
+}
+
+function validatedGitHubConfiguration() {
+    return {
+        type: VALIDATE_GITHUB_CONFIGURATION_SUCCESS
+    };
+}
+
+function validateGitHubConfigurationFail(message, errors) {
+    return {
+        type: VALIDATE_GITHUB_CONFIGURATION_FAIL,
+        message,
+        errors
+    };
+}
+
+function validateGitHubConfigurationErrorMessage(message) {
+    return {
+        type: VALIDATE_GITHUB_CONFIGURATION_ERROR,
+        message
+    };
+}
+
 function postGithubConfigurationRequest() {
     return {
         type: ADD_GITHUB_USER_REQUEST
@@ -51,6 +82,13 @@ function postGithubConfigurationError(message) {
         message,
         errors: {}
     };
+}
+
+function handleValidationError(dispatch, errorHandlers, responseStatus, defaultHandler) {
+    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
+    errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
+    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+    dispatch(handler(responseStatus));
 }
 
 function createErrorHandler(defaultHandler) {
@@ -99,6 +137,34 @@ export function fetchGithub() {
                 console.log(error);
                 dispatch(fetchingGithubListError(error));
             });
+    };
+}
+
+export function validateGitHubConfiguration(githubConfig) {
+    return (dispatch, getState) => {
+        dispatch(validatingGitHubConfiguration());
+        const { csrfToken } = getState().session;
+        const errorHandlers = [];
+        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => validateGitHubConfigurationErrorMessage(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
+
+        const validateRequest = ConfigRequestBuilder.createValidateRequest(ConfigRequestBuilder.GITHUB_API_URL, csrfToken, githubConfig);
+        validateRequest.then((response) => {
+            if (response.ok) {
+                response.json()
+                    .then((validationResponse) => {
+                        // FIXME figure out the best way to handle warning statuses
+                        if (!Object.keys(validationResponse.errors).length) {
+                            dispatch(validatedGitHubConfiguration());
+                        } else {
+                            handleValidationError(dispatch, errorHandlers, response.status, () => validateGitHubConfigurationFail(validationResponse.message, validationResponse.errors));
+                        }
+                    });
+            } else {
+                handleValidationError(dispatch, errorHandlers, response.status, () => validateGitHubConfigurationFail(response.message, HTTPErrorUtils.createEmptyErrorObject()));
+            }
+        })
+            .catch(console.error);
     };
 }
 

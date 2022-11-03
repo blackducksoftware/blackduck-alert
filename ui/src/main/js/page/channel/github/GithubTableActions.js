@@ -63,7 +63,7 @@ const GithubTableActions = ({ canCreate, canDelete, data, selected }) => {
     function handleDeleteRole() {
         setShowDeleteModal(true);
     }
-
+    
     return (
         <>
             <button className={classes.createUserBtn} onClick={handleCreateRole}>
@@ -80,7 +80,6 @@ const GithubTableActions = ({ canCreate, canDelete, data, selected }) => {
 
             { showCreateModal ? (
                 <GithubAddUserModal 
-                    data={data} 
                     isOpen={showCreateModal}
                     toggleModal={setShowCreateModal}
                 />
