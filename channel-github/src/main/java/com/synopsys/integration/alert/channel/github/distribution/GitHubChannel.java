@@ -6,14 +6,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.channel.github.database.accessor.GitHubGlobalConfigAccessor;
-import com.synopsys.integration.alert.channel.github.model.GitHubGlobalConfigModel;
-import com.synopsys.integration.alert.channel.github.service.GitHubService;
-import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
-import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import org.kohsuke.github.GHCommit;
 import org.kohsuke.github.GHContent;
 import org.kohsuke.github.GHRef;
@@ -22,8 +14,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.channel.DistributionChannel;
+import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
+import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.channel.github.database.accessor.GitHubGlobalConfigAccessor;
+import com.synopsys.integration.alert.channel.github.model.GitHubGlobalConfigModel;
+import com.synopsys.integration.alert.channel.github.service.GitHubService;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.GitHubJobDetailsModel;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 
@@ -54,7 +54,7 @@ public class GitHubChannel implements DistributionChannel<GitHubJobDetailsModel>
 
         try {
             GitHubService githubService = new GitHubService(apiToken);
-            Optional<GHRepository> optionalGHRepository = githubService.getGithubRepository(distributionDetails.getRepositoryUrl()); //TODO: Use repository name here instead of toString
+            Optional<GHRepository> optionalGHRepository = githubService.getGithubRepository(distributionDetails.getRepositoryName()); //TODO: Use repository name here instead of toString
 
             if (optionalGHRepository.isEmpty()) {
                 return createErrorMessageResult("Could not find GitHub repository");

@@ -39,7 +39,7 @@
             <column name="job_id" type="UUID">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="repository_url" type="VARCHAR">
+            <column name="repository_name" type="VARCHAR">
                 <constraints nullable="false"/>
             </column>
             <column name="pull_request_title_prefix" type="VARCHAR">
