@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Modal from 'common/component/modal/Modal';
 import { fetchGithub, postGithubConfiguration, validateGitHubConfiguration } from 'store/actions/github';
 import TextInput from 'common/component/input/TextInput';
-import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
+import { GitHubFields } from 'common/util/enums/GitHubEnums';
 
 {/* 
 Form Fields:
@@ -63,43 +63,43 @@ const GithubAddUserModal = ({ isOpen, toggleModal }) => {
         >   
             <div>
                 <TextInput
-                    id="name"
-                    name="name"
+                    id={GitHubFields.USERNAME}
+                    name={GitHubFields.USERNAME}
                     label="Username"
-                    description="The user's username."
+                    description="The GitHub Username"
                     placeholder="Enter username..."
                     readOnly={false}
-                    required={false}
-                    onChange={handleOnChange('name')}
-                    value={newGitHubUser['name']}
-                    errorName="name"
-                    errorValue={fieldErrors['name']}
+                    required={true}
+                    onChange={handleOnChange(GitHubFields.USERNAME)}
+                    value={newGitHubUser[GitHubFields.USERNAME]}
+                    errorName={GitHubFields.USERNAME}
+                    errorValue={fieldErrors[GitHubFields.USERNAME]}
                 />
                 <TextInput
-                    id="apiToken"
-                    name="apiToken"
-                    label="Email"
-                    description="The user's email."
-                    placeholder="Enter email..."
+                    id={GitHubFields.API_TOKEN}
+                    name={GitHubFields.API_TOKEN}
+                    label="API Token"
+                    description="The GitHub Account's API Token"
+                    placeholder="Enter API Token..."
                     readOnly={false}
-                    required={false}
-                    onChange={handleOnChange('apiToken')}
-                    value={newGitHubUser['apiToken']}
-                    errorName="apiToken"
-                    errorValue={fieldErrors['apiToken']}
+                    required={true}
+                    onChange={handleOnChange(GitHubFields.API_TOKEN)}
+                    value={newGitHubUser[GitHubFields.API_TOKEN]}
+                    errorName={GitHubFields.API_TOKEN}
+                    errorValue={fieldErrors[GitHubFields.API_TOKEN]}
                 />
                 <TextInput
-                    id="timeoutInSeconds"
-                    name="timeoutInSeconds"
-                    label="Email"
-                    description="The user's email."
-                    placeholder="Enter email..."
+                    id={GitHubFields.TIMEOUT}
+                    name={GitHubFields.TIMEOUT}
+                    label="Timeout in Seconds"
+                    description="Description of timeout here"
+                    placeholder="Enter timout..."
                     readOnly={false}
                     required={false}
-                    onChange={handleOnChange('timeoutInSeconds')}
-                    value={newGitHubUser['timeoutInSeconds']}
-                    errorName="timeoutInSeconds"
-                    errorValue={fieldErrors['timeoutInSeconds']}
+                    onChange={handleOnChange(GitHubFields.TIMEOUT)}
+                    value={newGitHubUser[GitHubFields.TIMEOUT]}
+                    errorName={GitHubFields.TIMEOUT}
+                    errorValue={fieldErrors[GitHubFields.TIMEOUT]}
                 />
             </div>
         </Modal>
