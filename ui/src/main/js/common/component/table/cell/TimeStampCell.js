@@ -1,6 +1,6 @@
 import React from 'react';
 import { createUseStyles } from 'react-jss';
-import { DateTime } from "luxon";
+// import { DateTime } from "luxon";
 
 const useStyles = createUseStyles({
     wrapperCell: {
@@ -27,7 +27,8 @@ const TimeStampCell = ({ data }) => {
 
     return (
         <>
-            {DateTime.fromISO(createdAt || lastUpdated).toLocaleString(fullFormat)}
+            {createdAt || lastUpdated}
+            {/* {DateTime.fromISO(createdAt || lastUpdated).toLocaleString(fullFormat)} */}
         </>
     )
 };

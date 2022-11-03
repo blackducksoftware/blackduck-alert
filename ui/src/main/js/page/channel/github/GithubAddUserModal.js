@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Modal from 'common/component/modal/Modal';
-import { useForm } from "react-hook-form";
+// import { useForm } from "react-hook-form";
 import { createUseStyles } from 'react-jss';
 import { postGithubConfiguration } from 'store/actions/github';
 
@@ -52,13 +52,17 @@ Form Fields:
 const GithubAddUserModal = ({ data, isOpen, toggleModal }) => {
     const dispatch = useDispatch();
     const classes = useStyles();
-    const { register, handleSubmit: handleFormSubmit, watch, formState: { errors } } = useForm();
-    const onSubmit = (data) => {
-        dispatch(postGithubConfiguration(data));
-    };
+    // const { register, handleSubmit: handleFormSubmit, watch, formState: { errors } } = useForm();
+    // const onSubmit = (data) => {
+    //     dispatch(postGithubConfiguration(data));
+    // };
 
     function handleClose() {
         toggleModal(false);
+    }
+
+    function handleSubmit() {
+        console.log('handleSubmit');
     }
     
     return (
@@ -68,11 +72,11 @@ const GithubAddUserModal = ({ data, isOpen, toggleModal }) => {
             title="Add Github User Connection"
             closeModal={handleClose}
             handleCancel={handleClose}
-            handleSubmit={handleFormSubmit(onSubmit)}
+            handleSubmit={handleSubmit}
             submitText="Save"
         >   
             <div className={classes.formContainer}>
-                <form className={classes.form}>
+                {/* <form className={classes.form}>
                     <div className={classes.inputcontainer}>
                         <label className={classes.fieldRequired}>Username</label>
                         <input className={classes.input} {...register("name", { required: true })} />
@@ -92,7 +96,7 @@ const GithubAddUserModal = ({ data, isOpen, toggleModal }) => {
 
                     {errors.exampleRequired && <span>This field is required</span>}
                     
-                </form>
+                </form> */}
             </div>
         </Modal>
     );
