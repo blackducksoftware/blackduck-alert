@@ -6,6 +6,7 @@ import Logo from 'common/component/Logo';
 import { confirmLogout } from 'store/actions/session';
 import { SLACK_INFO } from 'page/channel/slack/SlackModels';
 import { EMAIL_INFO } from 'page/channel/email/EmailModels';
+import { GITHUB_INFO } from 'page/channel/github/GitHubModel';
 import { JIRA_CLOUD_INFO } from 'page/channel/jira/cloud/JiraCloudModel';
 import { JIRA_SERVER_INFO } from 'page/channel/jira/server/JiraServerModel';
 import { MSTEAMS_INFO } from 'page/channel/msteams/MSTeamsModel';
@@ -35,7 +36,8 @@ const Navigation = ({ confirmLogoutPressed, globalDescriptorMap }) => {
     const componentUri = '/alert/components/';
 
     const hasType = (descriptorType) => Object.values(globalDescriptorMap).some((descriptor) => descriptorType === descriptor.type);
-
+    console.log(doesDescriptorExist(globalDescriptorMap, GITHUB_INFO.key));
+    // console.log('HERE', globalDescriptorMap);
     return (
         <div className="navigation">
             <div className="navigationContent">
@@ -61,6 +63,7 @@ const Navigation = ({ confirmLogoutPressed, globalDescriptorMap }) => {
                     )}
                     {doesDescriptorExist(globalDescriptorMap, AZURE_BOARDS_INFO.key) && createStaticNavItem(channelUri, AZURE_BOARDS_INFO)}
                     {doesDescriptorExist(globalDescriptorMap, EMAIL_INFO.key) && createStaticNavItem(channelUri, EMAIL_INFO)}
+                    {createStaticNavItem(channelUri, GITHUB_INFO)}
                     {doesDescriptorExist(globalDescriptorMap, JIRA_CLOUD_INFO.key) && createStaticNavItem(channelUri, JIRA_CLOUD_INFO)}
                     {doesDescriptorExist(globalDescriptorMap, JIRA_SERVER_INFO.key) && createStaticNavItem(channelUri, JIRA_SERVER_INFO)}
                     {doesDescriptorExist(globalDescriptorMap, MSTEAMS_INFO.key) && createStaticNavItem(channelUri, MSTEAMS_INFO)}

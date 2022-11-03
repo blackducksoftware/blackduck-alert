@@ -11,6 +11,7 @@ export const CONTEXT_TYPE = {
 
 export const DESCRIPTOR_NAME = {
     CHANNEL_EMAIL: 'channel_email',
+    CHANNEL_GITHUB: 'github',
     CHANNEL_SLACK: 'channel_slack',
     COMPONENT_AUDIT: 'component_audit',
     COMPONENT_SCHEDULING: 'component_scheduling',

@@ -47,6 +47,9 @@ import EmailGlobalConfiguration from 'page/channel/email/EmailGlobalConfiguratio
 import ConcreteJiraServerGlobalConfiguration from 'page/channel/jira/server/ConcreteJiraServerGlobalConfiguration';
 import ConcreteJiraServerGlobalConfigurationTable from 'page/channel/jira/server/ConcreteJiraServerGlobalConfigurationTable';
 
+import GithubPageLayout from 'page/channel/github/GithubPageLayout';
+import { GITHUB_INFO } from 'page/channel/github/GitHubModel';
+
 import BetaPage from 'common/component/beta/BetaPage';
 import BetaComponent from 'common/component/beta/BetaComponent';
 import CurrentComponent from 'common/component/beta/CurrentComponent';
@@ -173,6 +176,21 @@ const MainPage = ({
                 descriptor={globalDescriptorMap[EMAIL_INFO.key]}
                 render={(readOnly, showTest, showSave, showDelete) => (
                     <EmailGlobalConfiguration
+                        csrfToken={csrfToken}
+                        errorHandler={errorHandler}
+                        readonly={readOnly}
+                        displayTest={showTest}
+                        displaySave={showSave}
+                        displayDelete={showDelete}
+                    />
+                )}
+            />
+            <DescriptorRoute 
+                uriPrefix={channelUri}
+                urlName={GITHUB_INFO.url}
+                descriptor={globalDescriptorMap[GITHUB_INFO.key]}
+                render={(readOnly, showTest, showSave, showDelete) => (
+                    <GithubPageLayout 
                         csrfToken={csrfToken}
                         errorHandler={errorHandler}
                         readonly={readOnly}
