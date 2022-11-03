@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
-import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidator;
+import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidatorLegacy;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
@@ -54,11 +54,15 @@ public class AzureBoardsGlobalConfigurationFieldModelValidatorTest {
 
     @Test
     public void oauthRequestIsRunningError() {
-        OAuthRequestValidator oAuthRequestValidator = new OAuthRequestValidator();
+        OAuthRequestValidatorLegacy oAuthRequestValidator = new OAuthRequestValidatorLegacy();
         oAuthRequestValidator.addAuthorizationRequest("test");
 
         AzureBoardsGlobalConfigurationFieldModelValidator azureBoardsGlobalConfigurationValidator = new AzureBoardsGlobalConfigurationFieldModelValidator(oAuthRequestValidator);
-        Set<AlertFieldStatus> fieldStatuses = azureBoardsGlobalConfigurationValidator.validate(new FieldModel(new AzureBoardsChannelKey().getUniversalKey(), ConfigContextEnum.GLOBAL.name(), createValidKeyToValues()));
+        Set<AlertFieldStatus> fieldStatuses = azureBoardsGlobalConfigurationValidator.validate(new FieldModel(
+            new AzureBoardsChannelKey().getUniversalKey(),
+            ConfigContextEnum.GLOBAL.name(),
+            createValidKeyToValues()
+        ));
 
         assertEquals(1, fieldStatuses.size());
 
@@ -68,12 +72,16 @@ public class AzureBoardsGlobalConfigurationFieldModelValidatorTest {
     }
 
     private GlobalConfigurationValidatorAsserter createValidatorAsserter() {
-        OAuthRequestValidator oAuthRequestValidator = new OAuthRequestValidator();
+        OAuthRequestValidatorLegacy oAuthRequestValidator = new OAuthRequestValidatorLegacy();
         return createValidatorAsserter(oAuthRequestValidator);
     }
 
-    private GlobalConfigurationValidatorAsserter createValidatorAsserter(OAuthRequestValidator oAuthRequestValidator) {
-        return new GlobalConfigurationValidatorAsserter(new AzureBoardsChannelKey().getUniversalKey(), new AzureBoardsGlobalConfigurationFieldModelValidator(oAuthRequestValidator), createValidKeyToValues());
+    private GlobalConfigurationValidatorAsserter createValidatorAsserter(OAuthRequestValidatorLegacy oAuthRequestValidator) {
+        return new GlobalConfigurationValidatorAsserter(
+            new AzureBoardsChannelKey().getUniversalKey(),
+            new AzureBoardsGlobalConfigurationFieldModelValidator(oAuthRequestValidator),
+            createValidKeyToValues()
+        );
     }
 
     private Map<String, FieldValueModel> createValidKeyToValues() {

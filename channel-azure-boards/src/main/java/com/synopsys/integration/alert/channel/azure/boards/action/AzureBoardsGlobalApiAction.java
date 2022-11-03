@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
-import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidator;
+import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidatorLegacy;
 import com.synopsys.integration.alert.common.action.ApiAction;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -33,14 +33,14 @@ public class AzureBoardsGlobalApiAction extends ApiAction {
     private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     private final DescriptorMap descriptorMap;
     private final ConfigurationFieldModelConverter fieldModelConverter;
-    private final OAuthRequestValidator oAuthRequestValidator;
+    private final OAuthRequestValidatorLegacy oAuthRequestValidator;
 
     @Autowired
     public AzureBoardsGlobalApiAction(
         ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor,
         DescriptorMap descriptorMap,
         ConfigurationFieldModelConverter configurationFieldModelConverter,
-        OAuthRequestValidator oAuthRequestValidator
+        OAuthRequestValidatorLegacy oAuthRequestValidator
     ) {
         this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
         this.descriptorMap = descriptorMap;
