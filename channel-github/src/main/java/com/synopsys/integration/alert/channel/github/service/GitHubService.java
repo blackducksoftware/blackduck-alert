@@ -23,6 +23,8 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Compon
 import com.synopsys.integration.alert.processor.api.extract.model.project.UpgradeGuidanceDetails;
 
 public class GitHubService {
+    public static final String REF_BRANCH_BASE = "refs/heads/";
+    
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private GitHub gitHubApiClient;
 
@@ -58,9 +60,9 @@ public class GitHubService {
             }
 
             String defaultBranchName = getDefaultBranch(githubRepository);
-            String defaultBranchSha = githubRepository.getRef(String.format("refs/heads/%s", defaultBranchName)).getObject().getSha();
+            String defaultBranchSha = githubRepository.getRef(REF_BRANCH_BASE + defaultBranchName).getObject().getSha();
 
-            return Optional.of(githubRepository.createRef(String.format("refs/heads/%s", newBranchName), defaultBranchSha));
+            return Optional.of(githubRepository.createRef(REF_BRANCH_BASE + newBranchName, defaultBranchSha));
         } catch (IOException ex) {
             logger.error("Could not create a branch off default: ", ex);
             return Optional.empty();
@@ -111,7 +113,7 @@ public class GitHubService {
     // Open a PR from the ref to the specified toBranch
     public Optional<GHPullRequest> createPullRequest(GHRepository githubRepository, GHRef fromRef, String toBranch, String title, String description) {
         try {
-            return Optional.of(githubRepository.createPullRequest(title, fromRef.getRef(), String.format("refs/heads/%s", toBranch), description));
+            return Optional.of(githubRepository.createPullRequest(title, fromRef.getRef(), REF_BRANCH_BASE + toBranch, description));
         } catch (IOException ex) {
             logger.error("Could not create the pull request: ", ex);
             return Optional.empty();

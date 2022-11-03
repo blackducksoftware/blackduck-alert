@@ -87,7 +87,7 @@ public class GitHubChannel implements DistributionChannel<GitHubJobDetailsModel>
 
     private MessageResult performRemediationProcess(GitHubService githubService, GHRepository ghRepository, ProviderMessageHolder messages) throws IOException {
         String defaultBranch = ghRepository.getDefaultBranch();
-        GHRef defaultBranchGHRef = ghRepository.getRef(defaultBranch);
+        GHRef defaultBranchGHRef = ghRepository.getRef(GitHubService.REF_BRANCH_BASE + defaultBranch);
         // Pull the file from default branch -- 1
         GHContent defaultBranchGHContent = ghRepository.getFileContent(GRADLE_FILENAME, defaultBranch);
         // Modify file -- 2
