@@ -86,23 +86,26 @@ public class GitHubChannel implements DistributionChannel<GitHubJobDetailsModel>
     }
 
     private MessageResult performRemediationProcess(GitHubService githubService, GHRepository ghRepository, ProviderMessageHolder messages) throws IOException {
+        String defaultBranch = ghRepository.getDefaultBranch();
+        GHRef defaultBranchGHRef = ghRepository.getRef(defaultBranch);
+        // Pull the file from default branch -- 1
+        GHContent defaultBranchGHContent = ghRepository.getFileContent(GRADLE_FILENAME, defaultBranch);
+        // Modify file -- 2
+        String fileChanges = getRemediatedChanges(githubService, messages, defaultBranchGHContent);
+        // Create commit -- 3
+        Optional<GHCommit> optionalGHCommit = githubService.createCommit(ghRepository, defaultBranchGHRef, GRADLE_FILENAME, fileChanges, "Remediation commit");
+        if (optionalGHCommit.isEmpty()) {
+            return createErrorMessageResult("Could not commit the changes");
+        }
+        // Create new branch off default -- 4
         Optional<GHRef> optionalNewBranchRef = githubService.createNewBranchOffDefault(ghRepository, "BlackDuck Alert branch");
         if (optionalNewBranchRef.isEmpty()) {
             return createErrorMessageResult("Could not create a new branch");
         }
         GHRef newBranchRef = optionalNewBranchRef.get();
-
-        GHContent originalGHContent = ghRepository.getFileContent(GRADLE_FILENAME, newBranchRef.getRef());  //TODO: The ordering can be discussed, do we want to pull the file from default branch to make changes and then create the new branch?
-                                                                                                            //TODO: Or currently create the new branch first and pull the file from new branch to the makes.
-        String fileChanges = getRemediatedChanges(githubService, messages, originalGHContent);
-
-        Optional<GHCommit> optionalGHCommit = githubService.createCommit(ghRepository, newBranchRef, GRADLE_FILENAME, fileChanges, "Remediation commit");
-        if (optionalGHCommit.isEmpty()) {
-            return createErrorMessageResult("Could not commit the changes");
-        }
-
+        // Push commit to new branch -- 5
         githubService.pushCommit(newBranchRef, optionalGHCommit.get());
-
+        // Create pull request -- 6
         if (githubService.createPullRequest(
                 ghRepository,
                 newBranchRef,
