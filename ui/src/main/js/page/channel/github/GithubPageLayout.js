@@ -8,12 +8,11 @@ import { fetchGithub } from 'store/actions/github';
 const GithubPageLayout = ({
     csrfToken, readonly, showRefreshButton, displayDelete
 }) => {
-    const [data, setData] = useState();
-    const [isLoading, setIsLoating] = useState(true);
-    const apiUrl = `${ConfigurationRequestBuilder.CONFIG_API_URL}/github`;
-
     const dispatch = useDispatch();
     const githubData = useSelector(state => state.github);
+
+    const apiUrl = `${ConfigurationRequestBuilder.CONFIG_API_URL}/github`;
+
     useEffect(() => {
         dispatch(fetchGithub())
     }, []);

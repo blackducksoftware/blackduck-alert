@@ -31,12 +31,14 @@ import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
 import { AZURE_BOARDS_INFO } from 'page/channel/azure/AzureBoardsModel';
 import { BLACKDUCK_INFO } from 'page/provider/blackduck/BlackDuckModel';
 import { EMAIL_INFO } from 'page/channel/email/EmailModels';
+import { GITHUB_INFO } from '../channel/github/GitHubModel';
 import { JIRA_CLOUD_INFO } from 'page/channel/jira/cloud/JiraCloudModel';
 import { JIRA_SERVER_INFO } from 'page/channel/jira/server/JiraServerModel';
 import { MSTEAMS_INFO } from 'page/channel/msteams/MSTeamsModel';
 import { SLACK_INFO } from 'page/channel/slack/SlackModels';
 import AzureDistributionConfiguration from 'page/channel/azure/AzureDistributionConfiguration';
 import EmailDistributionConfiguration from 'page/channel/email/EmailDistributionConfiguration';
+import GitHubDistributionConfiguration from 'page/channel/github/GitHubDistributionConfiguration';
 import JiraCloudDistributionConfiguration from 'page/channel/jira/cloud/JiraCloudDistributionConfiguration';
 import JiraServerDistributionConfiguration from 'page/channel/jira/server/JiraServerDistributionConfiguration';
 import MsTeamsDistributionConfiguration from 'page/channel/msteams/MsTeamsDistributionConfiguration';
@@ -194,6 +196,16 @@ const DistributionConfigurationForm = ({
                         readonly={readonly}
                     />
                 );
+            case GITHUB_INFO.key:
+                return (
+                    <GitHubDistributionConfiguration
+                        csrfToken={csrfToken}
+                        data={specificChannelModel}
+                        setData={setSpecificChannelModel}
+                        errors={errors}
+                        readonly={readonly}
+                    />
+                )
             case JIRA_CLOUD_INFO.key:
                 return (
                     <JiraCloudDistributionConfiguration
