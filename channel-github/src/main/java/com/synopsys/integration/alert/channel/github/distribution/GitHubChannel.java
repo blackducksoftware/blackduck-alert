@@ -1,17 +1,9 @@
 package com.synopsys.integration.alert.channel.github.distribution;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-
-import org.kohsuke.github.GHCommit;
-import org.kohsuke.github.GHContent;
-import org.kohsuke.github.GHRef;
-import org.kohsuke.github.GHRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.api.channel.DistributionChannel;
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
@@ -26,6 +18,15 @@ import com.synopsys.integration.alert.common.persistence.model.job.DistributionJ
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.GitHubJobDetailsModel;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
+import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
+
+import org.kohsuke.github.GHCommit;
+import org.kohsuke.github.GHContent;
+import org.kohsuke.github.GHRef;
+import org.kohsuke.github.GHRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
 public class GitHubChannel implements DistributionChannel<GitHubJobDetailsModel> {
@@ -85,23 +86,26 @@ public class GitHubChannel implements DistributionChannel<GitHubJobDetailsModel>
     }
 
     private MessageResult performRemediationProcess(GitHubService githubService, GHRepository ghRepository, ProviderMessageHolder messages) throws IOException {
+        String defaultBranch = ghRepository.getDefaultBranch();
+        GHRef defaultBranchGHRef = ghRepository.getRef(defaultBranch);
+        // Pull the file from default branch -- 1
+        GHContent defaultBranchGHContent = ghRepository.getFileContent(GRADLE_FILENAME, defaultBranch);
+        // Modify file -- 2
+        String fileChanges = getRemediatedChanges(githubService, messages, defaultBranchGHContent);
+        // Create commit -- 3
+        Optional<GHCommit> optionalGHCommit = githubService.createCommit(ghRepository, defaultBranchGHRef, GRADLE_FILENAME, fileChanges, "Remediation commit");
+        if (optionalGHCommit.isEmpty()) {
+            return createErrorMessageResult("Could not commit the changes");
+        }
+        // Create new branch off default -- 4
         Optional<GHRef> optionalNewBranchRef = githubService.createNewBranchOffDefault(ghRepository, "BlackDuck Alert branch");
         if (optionalNewBranchRef.isEmpty()) {
             return createErrorMessageResult("Could not create a new branch");
         }
         GHRef newBranchRef = optionalNewBranchRef.get();
-
-        GHContent originalGHContent = ghRepository.getFileContent(GRADLE_FILENAME, newBranchRef.getRef());  //TODO: The ordering can be discussed, do we want to pull the file from default branch to make changes and then create the new branch?
-                                                                                                            //TODO: Or currently create the new branch first and pull the file from new branch to the makes.
-        String fileChanges = getRemediatedChanges(githubService, messages, originalGHContent);
-
-        Optional<GHCommit> optionalGHCommit = githubService.createCommit(ghRepository, newBranchRef, GRADLE_FILENAME, fileChanges, "Remediation commit");
-        if (optionalGHCommit.isEmpty()) {
-            return createErrorMessageResult("Could not commit the changes");
-        }
-
+        // Push commit to new branch -- 5
         githubService.pushCommit(newBranchRef, optionalGHCommit.get());
-
+        // Create pull request -- 6
         if (githubService.createPullRequest(
                 ghRepository,
                 newBranchRef,
@@ -116,10 +120,26 @@ public class GitHubChannel implements DistributionChannel<GitHubJobDetailsModel>
         return MessageResult.success();
     }
 
-    //TODO: implement
+    //Updates old versions in the file with new versions
     private String getRemediatedChanges(GitHubService githubService, ProviderMessageHolder messages, GHContent originalGHContent) throws IOException {
-        githubService.editGithubContentWithNewDependency(originalGHContent, "", "");
-        return "";
+        List<BomComponentDetails> componentDetailsList = messages.getProjectMessages().stream()
+            .map(ProjectMessage::getBomComponents)
+            .flatMap(List::stream)
+            .collect(Collectors.toList());
+
+        Map<String, Optional<String>> oldToNewVersionMap = new HashMap<>();
+        componentDetailsList.forEach(bomComponentDetails -> oldToNewVersionMap.put(
+            bomComponentDetails.getComponentUpgradeGuidance().getOriginExternalId(),
+            githubService.getUpgradeGuidanceVersion(bomComponentDetails))
+        );
+
+        String fileContent = new String(originalGHContent.read().readAllBytes(), StandardCharsets.UTF_8);
+        for (Map.Entry<String, Optional<String>> entry: oldToNewVersionMap.entrySet()) {
+            if (entry.getValue().isPresent()) {
+                fileContent = githubService.editGithubContentWithNewDependency(fileContent, entry.getKey(), entry.getValue().get());
+            }
+        }
+
+        return fileContent;
     }
 }
-
