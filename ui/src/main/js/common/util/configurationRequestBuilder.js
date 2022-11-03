@@ -10,6 +10,7 @@ export const USER_API_URL = `${ALERT_API_URL}/configuration/user`;
 export const SETTINGS_API_URL = `${ALERT_API_URL}/settings`;
 export const ENCRYPTION_API_URL = `${SETTINGS_API_URL}/encryption`;
 export const PROXY_API_URL = `${SETTINGS_API_URL}/proxy`;
+export const GITHUB_API_URL = `${ALERT_API_URL}/configuration/github`;
 
 export function createReadAllRequest(apiUrl, csrfToken, context, descriptorName) {
     const queryParams = {

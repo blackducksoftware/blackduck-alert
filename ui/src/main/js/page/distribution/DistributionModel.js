@@ -5,6 +5,7 @@ import { JIRA_CLOUD_INFO } from 'page/channel/jira/cloud/JiraCloudModel';
 import { JIRA_SERVER_INFO } from 'page/channel/jira/server/JiraServerModel';
 import { MSTEAMS_INFO } from 'page/channel/msteams/MSTeamsModel';
 import { SLACK_INFO } from 'page/channel/slack/SlackModels';
+import { GITHUB_INFO } from '../channel/github/GitHubModel';
 
 export const DISTRIBUTION_INFO = {
     url: 'distribution',
@@ -65,6 +66,7 @@ export const DISTRIBUTION_NOTIFICATION_TYPE_OPTIONS = [
 export const DISTRIBUTION_CHANNEL_OPTIONS = [
     { label: AZURE_BOARDS_INFO.label, value: AZURE_BOARDS_INFO.key },
     { label: EMAIL_INFO.label, value: EMAIL_INFO.key },
+    { label: GITHUB_INFO.label, value: GITHUB_INFO.key },
     { label: JIRA_CLOUD_INFO.label, value: JIRA_CLOUD_INFO.key },
     { label: JIRA_SERVER_INFO.label, value: JIRA_SERVER_INFO.key },
     { label: MSTEAMS_INFO.label, value: MSTEAMS_INFO.key },

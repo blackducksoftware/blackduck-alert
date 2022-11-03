@@ -93,7 +93,7 @@ public class GitHubChannel implements DistributionChannel<GitHubJobDetailsModel>
 
     private MessageResult performRemediationProcess(GitHubService githubService, GHRepository ghRepository, ProviderMessageHolder messages) throws IOException {
         String defaultBranch = ghRepository.getDefaultBranch();
-        GHRef defaultBranchGHRef = ghRepository.getRef(String.format("refs/heads/%s", defaultBranch));
+        GHRef defaultBranchGHRef = ghRepository.getRef(GitHubService.REF_BRANCH_BASE + defaultBranch);
         // Pull the file from default branch -- 1
         GHContent defaultBranchGHContent = ghRepository.getFileContent(GRADLE_FILENAME, defaultBranch);
         // Modify file -- 2
@@ -134,13 +134,12 @@ public class GitHubChannel implements DistributionChannel<GitHubJobDetailsModel>
 
         Map<String, Optional<String>> oldToNewVersionMap = new HashMap<>();
         componentDetailsList.forEach(bomComponentDetails -> oldToNewVersionMap.put(
-                bomComponentDetails.getComponentUpgradeGuidance().getOriginExternalId(),
-                githubService.getUpgradeGuidanceVersion(bomComponentDetails)
-            )
+            bomComponentDetails.getComponentUpgradeGuidance().getOriginExternalId(),
+            githubService.getUpgradeGuidanceVersion(bomComponentDetails))
         );
 
         String fileContent = new String(originalGHContent.read().readAllBytes(), StandardCharsets.UTF_8);
-        for (Map.Entry<String, Optional<String>> entry : oldToNewVersionMap.entrySet()) {
+        for (Map.Entry<String, Optional<String>> entry: oldToNewVersionMap.entrySet()) {
             if (entry.getValue().isPresent()) {
                 fileContent = githubService.editGithubContentWithNewDependency(fileContent, entry.getKey(), entry.getValue().get());
             }
