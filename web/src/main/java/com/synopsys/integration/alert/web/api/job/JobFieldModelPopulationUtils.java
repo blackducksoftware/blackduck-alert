@@ -20,6 +20,7 @@ import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
+import com.synopsys.integration.alert.channel.github.descriptor.GitHubDescriptor;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.channel.msteams.descriptor.MsTeamsDescriptor;
@@ -30,6 +31,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.DistributionJ
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.GitHubJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
@@ -119,6 +121,8 @@ public final class JobFieldModelPopulationUtils {
             populateAzureBoardsFields(channelFieldModel, jobDetails.getAs(DistributionJobDetailsModel.AZURE));
         } else if (jobDetails.isA(ChannelKeys.EMAIL)) {
             populateEmailFields(channelFieldModel, jobDetails.getAs(DistributionJobDetailsModel.EMAIL));
+        } else if (jobDetails.isA(ChannelKeys.GITHUB)) {
+            populateGitHubFields(channelFieldModel, jobDetails.getAs(DistributionJobDetailsModel.GITHUB));
         } else if (jobDetails.isA(ChannelKeys.JIRA_CLOUD)) {
             populateJiraCloudFields(channelFieldModel, jobDetails.getAs(DistributionJobDetailsModel.JIRA_CLOUD));
         } else if (jobDetails.isA(ChannelKeys.JIRA_SERVER)) {
@@ -191,6 +195,13 @@ public final class JobFieldModelPopulationUtils {
             putField(channelFieldModel, SlackDescriptor.KEY_WEBHOOK, slackJobDetails.getWebhook());
             putField(channelFieldModel, SlackDescriptor.KEY_CHANNEL_NAME, slackJobDetails.getChannelName());
             putField(channelFieldModel, SlackDescriptor.KEY_CHANNEL_USERNAME, slackJobDetails.getChannelUsername());
+        }
+    }
+
+    private static void populateGitHubFields(FieldModel channelFieldModel, GitHubJobDetailsModel githubJobDetails) {
+        if (null != githubJobDetails) {
+            putField(channelFieldModel, GitHubDescriptor.GITHUB_REPOSITORY_NAME, githubJobDetails.getRepositoryName());
+            putField(channelFieldModel, GitHubDescriptor.GITHUB_PR_TITLE_PREFIX, githubJobDetails.getPullRequestTitlePrefix());
         }
     }
 
