@@ -1,10 +1,9 @@
 package com.synopsys.integration.alert.channel.github.distribution;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
@@ -14,6 +13,8 @@ import com.synopsys.integration.alert.channel.github.service.GitHubService;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 import org.kohsuke.github.GHCommit;
 import org.kohsuke.github.GHContent;
 import org.kohsuke.github.GHRef;
@@ -118,8 +119,26 @@ public class GitHubChannel implements DistributionChannel<GitHubJobDetailsModel>
 
     //TODO: implement
     private String getRemediatedChanges(GitHubService githubService, ProviderMessageHolder messages, GHContent originalGHContent) throws IOException {
-        githubService.editGithubContentWithNewDependency(originalGHContent, "", "");
-        return "";
+        List<BomComponentDetails> componentDetailsList = messages.getProjectMessages().stream()
+            .map(ProjectMessage::getBomComponents)
+            .flatMap(List::stream)
+            .collect(Collectors.toList());
+
+        Map<String, Optional<String>> oldToNewVersionMap = new HashMap<>();
+        componentDetailsList.forEach(bomComponentDetails -> oldToNewVersionMap.put(
+            bomComponentDetails.getComponentUpgradeGuidance().getOriginExternalId(),
+            githubService.getUpgradeGuidanceVersion(bomComponentDetails))
+        );
+
+        String fileContent = new String(originalGHContent.read().readAllBytes(), StandardCharsets.UTF_8);
+        for (Map.Entry<String, Optional<String>> entry: oldToNewVersionMap.entrySet()) {
+            if (entry.getValue().isPresent()) {
+                fileContent = githubService.editGithubContentWithNewDependency(fileContent, entry.getKey(), entry.getValue().get());
+            }
+        }
+
+        return fileContent;
     }
+
 }
 

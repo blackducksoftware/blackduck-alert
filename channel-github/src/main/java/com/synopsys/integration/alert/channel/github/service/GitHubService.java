@@ -82,8 +82,7 @@ public class GitHubService {
         return Optional.empty();
     }
 
-    public String editGithubContentWithNewDependency(GHContent githubContent, String oldDependencyExternalId, String updatedDependencyExternalId) throws IOException {
-        String fileContent = new String(githubContent.read().readAllBytes(), StandardCharsets.UTF_8);
+    public String editGithubContentWithNewDependency(String fileContent, String oldDependencyExternalId, String updatedDependencyExternalId) throws IOException {
         return fileContent.replace(oldDependencyExternalId, updatedDependencyExternalId);
     }
 
