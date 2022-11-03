@@ -30,6 +30,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.GitHubJobDetailsModel;
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
@@ -99,12 +100,13 @@ public class GitHubChannel implements DistributionChannel<GitHubJobDetailsModel>
         // Modify file -- 2
         String fileChanges = getRemediatedChanges(githubService, messages, defaultBranchGHContent);
         // Create commit -- 3
-        Optional<GHCommit> optionalGHCommit = githubService.createCommit(ghRepository, defaultBranchGHRef, GRADLE_FILENAME, fileChanges, "Remediation commit");
+        Optional<GHCommit> optionalGHCommit = githubService.createCommit(ghRepository, defaultBranchGHRef, GRADLE_FILENAME, fileChanges, "BlackDuck Alert Auto Remediation commit");
         if (optionalGHCommit.isEmpty()) {
             return createErrorMessageResult("Could not commit the changes");
         }
         // Create new branch off default -- 4     NOTE: This will create a remote branch in github
-        Optional<GHRef> optionalNewBranchRef = githubService.createNewBranchOffDefault(ghRepository, "BlackDuck-Alert-branch");
+        String timestamp = DateUtils.createCurrentDateString(DateUtils.GITHUB_DATE_FORMAT);
+        Optional<GHRef> optionalNewBranchRef = githubService.createNewBranchOffDefault(ghRepository, String.format("BlackDuck-Alert-Auto-Remediation-%s", timestamp));
         if (optionalNewBranchRef.isEmpty()) {
             return createErrorMessageResult("Could not create a new branch");
         }
@@ -116,8 +118,8 @@ public class GitHubChannel implements DistributionChannel<GitHubJobDetailsModel>
             ghRepository,
             newBranchRef,
             githubService.getDefaultBranch(ghRepository),
-            "BlackDuck Alert remediation pull request",
-            "Guidance version upgrades"
+            "Black Duck Alert Auto Remediation",
+            "Black Duck Alert has detected vulnerabilities with a remediation path available."
         );
         if (pullRequestOptional.isEmpty()) {
             return createErrorMessageResult("Could not create the pull request");
@@ -134,12 +136,13 @@ public class GitHubChannel implements DistributionChannel<GitHubJobDetailsModel>
 
         Map<String, Optional<String>> oldToNewVersionMap = new HashMap<>();
         componentDetailsList.forEach(bomComponentDetails -> oldToNewVersionMap.put(
-            bomComponentDetails.getComponentUpgradeGuidance().getOriginExternalId(),
-            githubService.getUpgradeGuidanceVersion(bomComponentDetails))
+                bomComponentDetails.getComponentUpgradeGuidance().getOriginExternalId(),
+                githubService.getUpgradeGuidanceVersion(bomComponentDetails)
+            )
         );
 
         String fileContent = new String(originalGHContent.read().readAllBytes(), StandardCharsets.UTF_8);
-        for (Map.Entry<String, Optional<String>> entry: oldToNewVersionMap.entrySet()) {
+        for (Map.Entry<String, Optional<String>> entry : oldToNewVersionMap.entrySet()) {
             if (entry.getValue().isPresent()) {
                 fileContent = githubService.editGithubContentWithNewDependency(fileContent, entry.getKey(), entry.getValue().get());
             }
