@@ -1,11 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { createUseStyles } from 'react-jss';
 import Modal from 'common/component/modal/Modal';
 import NumberInput from 'common/component/input/NumberInput';
 import TextInput from 'common/component/input/TextInput';
 import PasswordInput from 'common/component/input/PasswordInput';
 import { GitHubFields } from 'common/util/enums/GitHubEnums';
 import { fetchGithub, postGithubConfiguration, validateGitHubConfiguration } from 'store/actions/github';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
+const useStyles = createUseStyles({
+    descriptorContainer: {
+        display: 'flex',
+        alignItems: 'center', 
+        
+    },
+    descriptor: {
+        fontSize: '14px',
+        paddingLeft: '8px'
+    }
+});
 
 {/* 
 Form Fields:
@@ -15,6 +29,7 @@ Form Fields:
 */}
 
 const EditGithubRowAction = ({ data, isOpen, toggleModal }) => {
+    const classes = useStyles();
     const dispatch = useDispatch();
     const [githubAccountForm, setGithubAccountFormUser] = useState(data);
 
@@ -58,13 +73,21 @@ const EditGithubRowAction = ({ data, isOpen, toggleModal }) => {
         <Modal 
             isOpen={isOpen} 
             size="lg" 
-            title="Add Github User Connection"
+            title="Edit Github Connection"
             closeModal={handleClose}
             handleCancel={handleClose}
             handleSubmit={handleSubmit}
             submitText="Save"
         >   
             <div>
+                <div style={{margin: '0 25% 30px 25%'}}>
+                    <div className={classes.descriptorContainer}>
+                        <FontAwesomeIcon icon="exclamation-circle" size="2x" />
+                        <span className={classes.descriptor}>
+                            Performing this action will edit '{data.name}'
+                        </span>
+                    </div>
+                </div>
                 <TextInput
                     id={GitHubFields.USERNAME}
                     name={GitHubFields.USERNAME}

@@ -10,7 +10,7 @@ import EditGithubRowAction from 'page/channel/github/EditGithubRowAction';
 
 const COLUMNS = [{
     key: 'name',
-    label: 'Github Username',
+    label: 'Github Connection',
     sortable: true
 }, {
     key: 'createdAt',

@@ -35,7 +35,7 @@ const GitHubDistributionConfiguration = ({
                 csrfToken={csrfToken}
                 endpoint="/api/configuration/github"
                 fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId}
-                label="Github User"
+                label="Github Connection"
                 description="Select a Github User that will be used to create or update issues. Please note the options are limited to the first 25 Github users."
                 readOnly={readonly}
                 required
