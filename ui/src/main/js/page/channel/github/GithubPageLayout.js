@@ -21,7 +21,7 @@ const GithubPageLayout = ({
             <PageHeader
                 title='Github'
                 description="This page allows you to configure Alert notifications for Github."
-                icon="user"
+                icon={['fab', 'github']}
             />
             {githubData.data.models ? (
                 <GithubTable 
