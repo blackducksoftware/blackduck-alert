@@ -3,11 +3,34 @@ import React, { useEffect } from 'react';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import TextInput from 'common/component/input/TextInput';
 import CheckboxInput from 'common/component/input/CheckboxInput';
+import EndpointSelectField from 'common/component/input/EndpointSelectField';
+import { createReadRequest } from 'common/util/configurationRequestBuilder';
 import { AZURE_BOARDS_DISTRIBUTION_FIELD_KEYS } from 'page/channel/azure/AzureBoardsModel';
+import { DISTRIBUTION_COMMON_FIELD_KEYS } from 'page/distribution/DistributionModel';
 
 const AzureDistributionConfiguration = ({
-    data, setData, errors, readonly
+    data, setData, errors, readonly, csrfToken
 }) => {
+
+    const readRequest = () => {
+        const apiUrl = '/alert/api/configuration/azure-boards?pageNumber=0&pageSize=10&sortName=name&sortOrder=asc';
+        return createReadRequest(apiUrl, csrfToken);
+    };
+
+    const convertDataToOptions = (responseData) => {
+        const { models } = responseData;
+        console.log(responseData);
+        return models.map((configurationModel) => {
+            const { id: configId, name } = configurationModel;
+            return {
+                key: configId,
+                label: name,
+                value: configId
+            };
+        });
+    };
+
+
     useEffect(() => {
         if (!FieldModelUtilities.hasValue(data, AZURE_BOARDS_DISTRIBUTION_FIELD_KEYS.workItemType)) {
             setData(FieldModelUtilities.updateFieldModelSingleValue(data, AZURE_BOARDS_DISTRIBUTION_FIELD_KEYS.workItemType, 'Task'));
@@ -25,6 +48,22 @@ const AzureDistributionConfiguration = ({
                 isChecked={FieldModelUtilities.getFieldModelBooleanValue(data, AZURE_BOARDS_DISTRIBUTION_FIELD_KEYS.comment)}
                 errorName={FieldModelUtilities.createFieldModelErrorKey(AZURE_BOARDS_DISTRIBUTION_FIELD_KEYS.comment)}
                 errorValue={errors.fieldErrors[AZURE_BOARDS_DISTRIBUTION_FIELD_KEYS.comment]}
+            />
+            <EndpointSelectField
+                id={DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId}
+                csrfToken={csrfToken}
+                endpoint="/api/configuration/azure_board"
+                fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId}
+                label="Azure Board"
+                description="Select an Azure Board that will be used to create or update issues. Please note the options are limited to the first 25 Azure Boards."
+                readOnly={readonly}
+                required
+                readOptionsRequest={readRequest}
+                convertDataToOptions={convertDataToOptions}
+                onChange={FieldModelUtilities.handleChange(data, setData)}
+                value={FieldModelUtilities.getFieldModelValues(data, DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId)}
+                errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId)}
+                errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId]}
             />
             <TextInput
                 id={AZURE_BOARDS_DISTRIBUTION_FIELD_KEYS.project}
