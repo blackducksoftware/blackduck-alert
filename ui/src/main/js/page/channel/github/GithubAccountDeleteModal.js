@@ -57,8 +57,7 @@ const GithubAccountDeleteModal = ({ isOpen, toggleModal, data, selected }) => {
 
     function handleClose() {
         toggleModal(false);
-
-        dispatch(fetchGithub());
+        location.reload();
     }
 
     function handleDelete() {
@@ -67,8 +66,8 @@ const GithubAccountDeleteModal = ({ isOpen, toggleModal, data, selected }) => {
                 dispatch(deleteGithubConfiguration(account.id));
             }
         });
+        
         handleClose();
-
     }
 
     function toggleSelect(selection) {

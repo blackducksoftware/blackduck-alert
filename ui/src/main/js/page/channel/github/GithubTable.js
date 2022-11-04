@@ -59,7 +59,7 @@ const GithubTable = ({ data }) => {
     // Show Add Github Modal when the user clicks on the TableLoader button
     if (showAddGithubModal) { 
         return (
-            <GithubAddUserModal isOpen={showAddGithubModal} toggleModal={setShowAddGithubModal}/>
+            <GithubAddUserModal isOpen={showAddGithubModal} toggleModal={setShowAddGithubModal} />
         )
     }
 

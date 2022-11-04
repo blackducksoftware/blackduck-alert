@@ -47,6 +47,7 @@ const GithubAddUserModal = ({ isOpen, toggleModal }) => {
     function handleSave() {
         dispatch(postGithubConfiguration(newGitHubUser));
         handleClose();
+        location.reload();
     }
 
     function handleSubmit() {
