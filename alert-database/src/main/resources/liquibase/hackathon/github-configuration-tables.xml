@@ -42,7 +42,7 @@
             <column name="repository_name" type="VARCHAR">
                 <constraints nullable="false"/>
             </column>
-            <column name="pull_request_title_prefix" type="VARCHAR">
+            <column name="pull_request_title_prefix" type="VARCHAR" defaultValue="''">
                 <constraints nullable="true"/>
             </column>
         </createTable>

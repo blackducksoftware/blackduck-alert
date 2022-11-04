@@ -29,7 +29,7 @@ public class GitHubJobDetailsExtractor extends DistributionJobDetailsExtractor {
         return new GitHubJobDetailsModel(
             jobId,
             fieldExtractor.extractFieldValue(GitHubDescriptor.GITHUB_REPOSITORY_NAME, configuredFieldsMap).orElse(null),
-            fieldExtractor.extractFieldValue(GitHubDescriptor.GITHUB_PR_TITLE_PREFIX, configuredFieldsMap).orElse(null)
+            fieldExtractor.extractFieldValue(GitHubDescriptor.GITHUB_PR_TITLE_PREFIX, configuredFieldsMap).orElse("")
         );
     }
 }
