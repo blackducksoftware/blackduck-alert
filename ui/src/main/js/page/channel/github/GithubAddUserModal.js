@@ -22,7 +22,7 @@ const GithubAddUserModal = ({ isOpen, toggleModal }) => {
     const saveStatus = useSelector(state => state.github.saveStatus);
 
     useEffect(() => {
-        if ( saveStatus === 'VALIDATED' && !inProgress) { 
+        if (saveStatus === 'VALIDATED' && !inProgress) { 
             handleSave();
         }
     }, [saveStatus]);
@@ -94,7 +94,6 @@ const GithubAddUserModal = ({ isOpen, toggleModal }) => {
                     name={GitHubFields.TIMEOUT}
                     label="Timeout"
                     description="The timeout in seconds for all connections to the Black Duck server."
-                    required
                     readOnly={false}
                     onChange={handleOnChange(GitHubFields.TIMEOUT)}
                     value={newGitHubUser[GitHubFields.TIMEOUT]}

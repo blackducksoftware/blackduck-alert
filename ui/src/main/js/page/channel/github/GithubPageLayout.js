@@ -10,7 +10,6 @@ const GithubPageLayout = ({
 }) => {
     const dispatch = useDispatch();
     const githubData = useSelector(state => state.github);
-
     const apiUrl = `${ConfigurationRequestBuilder.CONFIG_API_URL}/github`;
 
     useEffect(() => {

@@ -5,6 +5,10 @@ import {
     ADD_GITHUB_USER_REQUEST,
     ADD_GITHUB_USER_SUCCESS,
     ADD_GITHUB_USER_FAIL,
+    DELETE_GITHUB_CONFIG_REQUEST,
+    DELETE_GITHUB_CONFIG_SUCCESS,
+    DELETE_GITHUB_CONFIG_FAIL,
+    DELETE_GITHUB_CONFIG_ERROR,
     VALIDATE_GITHUB_CONFIGURATION_REQUEST,
     VALIDATE_GITHUB_CONFIGURATION_SUCCESS,
     VALIDATE_GITHUB_CONFIGURATION_FAIL,
@@ -84,6 +88,33 @@ function postGithubConfigurationError(message) {
     };
 }
 
+function deleteGithubConfigRequest() {
+    return {
+        type: DELETE_GITHUB_CONFIG_REQUEST
+    }
+}
+
+function deleteGithubConfigSuccess() {
+    return {
+        type: DELETE_GITHUB_CONFIG_SUCCESS
+    };
+}
+
+function deleteGithubConfigError(message) {
+    return {
+        type: DELETE_GITHUB_CONFIG_ERROR,
+        message
+    };
+}
+
+function deleteGithubConfigFail({ message, errors }) {
+    return {
+        type: DELETE_GITHUB_CONFIG_FAIL,
+        message,
+        errors
+    };
+}
+
 function handleValidationError(dispatch, errorHandlers, responseStatus, defaultHandler) {
     errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
     errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
@@ -134,7 +165,6 @@ export function fetchGithub() {
                     });
             })
             .catch((error) => {
-                console.log(error);
                 dispatch(fetchingGithubListError(error));
             });
     };
@@ -170,8 +200,6 @@ export function validateGitHubConfiguration(githubConfig) {
 
 export function postGithubConfiguration(config) {
     return (dispatch, getState) => {
-        console.log('config', config);
-
         dispatch(postGithubConfigurationRequest());
         const { csrfToken } = getState().session;
         const { id } = config;
@@ -181,9 +209,7 @@ export function postGithubConfiguration(config) {
         } else {
             request = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.GITHUB_API_URL, csrfToken, config);
         }
-        console.log(request);
         request.then((response) => {
-            console.log(response);
             if (response.ok) {
                 dispatch(postGithubConfigurationSuccess());
                 dispatch(fetchingGithubList());
@@ -195,5 +221,32 @@ export function postGithubConfiguration(config) {
                     });
             }
         }).catch(console.error);
+    };
+}
+
+
+export function deleteGithubConfiguration(config) {
+    return (dispatch, getState) => {
+        dispatch(deleteGithubConfigRequest());
+        const { csrfToken } = getState().session;
+        const errorHandlers = [];
+        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => deleteGithubConfigError(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
+        const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.GITHUB_API_URL, csrfToken, config);
+        request.then((response) => {
+            if (response.ok) {
+                dispatch(deleteGithubConfigSuccess());
+            } else {
+                response.json()
+                    .then((responseData) => {
+                        const defaultHandler = () => deleteGithubConfigFail(responseData);
+                        errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
+                        errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
+                        const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                        dispatch(handler(response.status));
+                    });
+            }
+        })
+            .catch(console.error);
     };
 }

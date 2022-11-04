@@ -9,7 +9,11 @@ import {
     VALIDATE_GITHUB_CONFIGURATION_REQUEST,
     VALIDATE_GITHUB_CONFIGURATION_SUCCESS,
     VALIDATE_GITHUB_CONFIGURATION_FAIL,
-    VALIDATE_GITHUB_CONFIGURATION_ERROR
+    VALIDATE_GITHUB_CONFIGURATION_ERROR,
+    DELETE_GITHUB_CONFIG_REQUEST,
+    DELETE_GITHUB_CONFIG_SUCCESS,
+    DELETE_GITHUB_CONFIG_FAIL,
+    DELETE_GITHUB_CONFIG_ERROR,
 } from 'store/actions/types';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 
@@ -108,6 +112,39 @@ const roles = (state = initialState, action) => {
                 error: HTTPErrorUtils.createErrorObject(action),
                 fieldErrors: action.errors || {},
                 saveStatus: 'ERROR'
+            };
+        case DELETE_GITHUB_CONFIG_REQUEST:
+            return {
+                ...state,
+                inProgress: true,
+                deleteSuccess: false,
+                saveStatus: 'SAVING'
+            };
+        case DELETE_GITHUB_CONFIG_SUCCESS:
+            return {
+                ...state,
+                inProgress: false,
+                deleteSuccess: false,
+                error: HTTPErrorUtils.createEmptyErrorObject(),
+                fieldErrors: {},
+                saveStatus: 'SAVED'
+            };
+        case DELETE_GITHUB_CONFIG_FAIL:
+            return {
+                ...state,
+                error: HTTPErrorUtils.createEmptyErrorObject(),
+                fieldErrors: {},
+                saveStatus: ''
+            };
+        case DELETE_GITHUB_CONFIG_ERROR:
+            return {
+                ...state,
+                inProgress: false,
+                deleteSuccess: false,
+                error: HTTPErrorUtils.createErrorObject(action),
+                fieldErrors: action.errors || {},
+                saveStatus: '',
+                deleteStatus: 'ERROR'
             };
         case SERIALIZE:
             return initialState;

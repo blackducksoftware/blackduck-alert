@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import GithubAddUserModal from 'page/channel/github/GithubAddUserModal';
+import GithubAccountDeleteModal from 'page/channel/github/GithubAccountDeleteModal';
 
 const useStyles = createUseStyles({
     createUserBtn: {
@@ -83,14 +84,14 @@ const GithubTableActions = ({ canCreate, canDelete, data, selected }) => {
                 />
             ) : null }
 
-            {/* { showDeleteModal ? (
-                <RoleDeleteModal 
+            { showDeleteModal ? (
+                <GithubAccountDeleteModal 
                     data={data}
                     isOpen={showDeleteModal} 
                     toggleModal={setShowDeleteModal}
                     selected={selected}
                 />
-            ) : null } */}
+            ) : null }
 
         </>
 
