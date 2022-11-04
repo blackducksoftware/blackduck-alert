@@ -48,8 +48,9 @@ const GitHubDistributionConfiguration = ({
             />
             <TextInput
                 id={GITHUB_DISTRIBUTION_FIELD_KEYS.repositoryUrl}
-                label="GitHub Repository URL"
+                label="GitHub Repository Name"
                 description="The URL of the GitHub repository assigned to receive Upgrade Guidance."
+                placeHolderText="ex. repo_owner/repo_name"
                 name={GITHUB_DISTRIBUTION_FIELD_KEYS.repositoryUrl}
                 readOnly={readonly}
                 onChange={FieldModelUtilities.handleChange(data, setData)}

@@ -14,9 +14,9 @@ Form Fields:
     Timeout: How long should we wait for the connection to timeout
 */}
 
-const GithubAddUserModal = ({ isOpen, toggleModal }) => {
+const EditGithubRowAction = ({ data, isOpen, toggleModal }) => {
     const dispatch = useDispatch();
-    const [newGitHubUser, setNewGitHubUser] = useState({timeoutInSeconds: 300});
+    const [githubAccountForm, setGithubAccountFormUser] = useState(data);
 
     const fieldErrors = useSelector(state => state.github.error.fieldErrors);
     const inProgress = useSelector(state => state.github.inProgress);
@@ -29,7 +29,7 @@ const GithubAddUserModal = ({ isOpen, toggleModal }) => {
     }, [saveStatus]);
 
     function clearInputs() {
-        setNewGitHubUser({timeoutInSeconds: 300});
+        setGithubAccountFormUser(data);
     }
 
     function handleClose() {
@@ -40,18 +40,18 @@ const GithubAddUserModal = ({ isOpen, toggleModal }) => {
 
     const handleOnChange = (label) => {
         return ({ target: { value } }) => {
-            setNewGitHubUser(userData => ({...userData, [label]: value }));
+            setGithubAccountFormUser(userData => ({...userData, [label]: value }));
         }
     }
 
     function handleSave() {
-        dispatch(postGithubConfiguration(newGitHubUser));
+        dispatch(postGithubConfiguration(githubAccountForm));
         handleClose();
         location.reload();
     }
 
     function handleSubmit() {
-        dispatch(validateGitHubConfiguration(newGitHubUser));
+        dispatch(validateGitHubConfiguration(githubAccountForm));
     }
 
     return (
@@ -74,7 +74,7 @@ const GithubAddUserModal = ({ isOpen, toggleModal }) => {
                     readOnly={false}
                     required={true}
                     onChange={handleOnChange(GitHubFields.USERNAME)}
-                    value={newGitHubUser[GitHubFields.USERNAME]}
+                    value={githubAccountForm[GitHubFields.USERNAME]}
                     errorName={GitHubFields.USERNAME}
                     errorValue={fieldErrors[GitHubFields.USERNAME]}
                 />
@@ -87,7 +87,7 @@ const GithubAddUserModal = ({ isOpen, toggleModal }) => {
                     readOnly={false}
                     required={true}
                     onChange={handleOnChange(GitHubFields.API_TOKEN)}
-                    value={newGitHubUser[GitHubFields.API_TOKEN]}
+                    value={githubAccountForm[GitHubFields.API_TOKEN]}
                     errorName={GitHubFields.API_TOKEN}
                     errorValue={fieldErrors[GitHubFields.API_TOKEN]}
                 />
@@ -98,7 +98,7 @@ const GithubAddUserModal = ({ isOpen, toggleModal }) => {
                     description="The timeout in seconds for all connections to the Black Duck server."
                     readOnly={false}
                     onChange={handleOnChange(GitHubFields.TIMEOUT)}
-                    value={newGitHubUser[GitHubFields.TIMEOUT]}
+                    value={githubAccountForm[GitHubFields.TIMEOUT]}
                     errorName={GitHubFields.TIMEOUT}
                     errorValue={fieldErrors[GitHubFields.TIMEOUT]}
                 />
@@ -107,4 +107,4 @@ const GithubAddUserModal = ({ isOpen, toggleModal }) => {
     );
 };
 
-export default GithubAddUserModal;
+export default EditGithubRowAction;

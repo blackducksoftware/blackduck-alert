@@ -4,8 +4,9 @@ import GithubTableActions from 'page/channel/github/GithubTableActions';
 import TimeStampCell from 'common/component/table/cell/TimeStampCell';
 import Table from 'common/component/table/Table';
 import { fetchGithub } from 'store/actions/github';
-import TableLoader from '../../../common/component/loaders/TableLoader';
-import GithubAddUserModal from './GithubAddUserModal';
+import TableLoader from 'common/component/loaders/TableLoader';
+import GithubAddUserModal from 'page/channel/github/GithubAddUserModal';
+import EditGithubRowAction from 'page/channel/github/EditGithubRowAction';
 
 const COLUMNS = [{
     key: 'name',
@@ -21,7 +22,12 @@ const COLUMNS = [{
     label: 'Last Updated',
     sortable: false,
     customCell: TimeStampCell
-}]
+}, {
+    key: 'editGithubPAT',
+    label: 'Edit',
+    sortable: false,
+    customCell: EditGithubRowAction
+}];
 
 const GithubTable = ({ data }) => {
 
@@ -55,11 +61,15 @@ const GithubTable = ({ data }) => {
     function handleLoaderClick () {
         setShowAddGithubModal(true);
     }
+
+    const getGithubData = () => {
+        return (!search ? data.models : data.models.filter((account) => account.name.toLowerCase().includes(search.toLowerCase())));
+    }
     
     // Show Add Github Modal when the user clicks on the TableLoader button
     if (showAddGithubModal) { 
         return (
-            <GithubAddUserModal isOpen={showAddGithubModal} toggleModal={setShowAddGithubModal}/>
+            <GithubAddUserModal isOpen={showAddGithubModal} toggleModal={setShowAddGithubModal} />
         )
     }
 
@@ -75,11 +85,11 @@ const GithubTable = ({ data }) => {
             />
         )
     }
-
+    
     return (
-        <>
+        <> 
             <Table 
-                tableData={data.models}
+                tableData={getGithubData()}
                 columns={COLUMNS}
                 multiSelect
                 selected={selected}
