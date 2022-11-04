@@ -1,34 +1,11 @@
 import React, { useEffect, useState } from 'react';
 // import PropTypes from 'prop-types';
-// import { useDispatch, useSelector } from 'react-redux';
-// import { fetchRoles } from 'store/actions/roles';
 import GithubTableActions from 'page/channel/github/GithubTableActions';
 import TimeStampCell from 'common/component/table/cell/TimeStampCell';
-// import RoleEditRowAction from 'page/user/roles/RoleEditRowAction';
 import Table from 'common/component/table/Table';
 import { fetchGithub } from 'store/actions/github';
-
-
-
-
-
-// const COLUMNS = [{
-//     key: 'roleName',
-//     label: 'Name',
-//     sortable: true
-// }, {
-//     key: 'editRole',
-//     label: 'Edit',
-//     sortable: false,
-//     customCell: RoleEditRowAction,
-//     settings: { alignment: 'center' }
-// }, {
-//     key: 'copyRole',
-//     label: 'Copy',
-//     sortable: false,
-//     customCell: RoleCopyRowAction,
-//     settings: { alignment: 'center' }
-// }]
+import TableLoader from '../../../common/component/loaders/TableLoader';
+import GithubAddUserModal from './GithubAddUserModal';
 
 const COLUMNS = [{
     key: 'name',
@@ -51,6 +28,7 @@ const GithubTable = ({ data }) => {
     const [search, setNewSearch] = useState("");
     const [selected, setSelected] = useState([]);
     const [autoRefresh, setAutoRefresh] = useState(false);
+    const [showAddGithubModal, setShowAddGithubModal] = useState(false);
 
 
     useEffect(() => {
@@ -72,6 +50,30 @@ const GithubTable = ({ data }) => {
 
     function handleToggle() {
         setAutoRefresh(!autoRefresh);
+    }
+
+    function handleLoaderClick () {
+        setShowAddGithubModal(true);
+    }
+    
+    // Show Add Github Modal when the user clicks on the TableLoader button
+    if (showAddGithubModal) { 
+        return (
+            <GithubAddUserModal isOpen={showAddGithubModal} toggleModal={setShowAddGithubModal}/>
+        )
+    }
+
+    // Show No Data screen when the user has not added data
+    if (data.models.length === 0) {
+        return (
+            <TableLoader 
+                icon={['fab', 'github']}  
+                onClick={handleLoaderClick}
+                buttonLabel="Connect Github" 
+                description="You currently have no GitHub connections. Click above and connect your Github 
+                account to recieve alerts for your repositories."
+            />
+        )
     }
 
     return (

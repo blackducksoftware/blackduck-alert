@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Modal from 'common/component/modal/Modal';
-import { fetchGithub, postGithubConfiguration, validateGitHubConfiguration } from 'store/actions/github';
+import NumberInput from 'common/component/input/NumberInput';
 import TextInput from 'common/component/input/TextInput';
 import { GitHubFields } from 'common/util/enums/GitHubEnums';
+import { fetchGithub, postGithubConfiguration, validateGitHubConfiguration } from 'store/actions/github';
 
 {/* 
 Form Fields:
@@ -14,7 +15,7 @@ Form Fields:
 
 const GithubAddUserModal = ({ isOpen, toggleModal }) => {
     const dispatch = useDispatch();
-    const [newGitHubUser, setNewGitHubUser] = useState({});
+    const [newGitHubUser, setNewGitHubUser] = useState({timeoutInSeconds: 300});
 
     const fieldErrors = useSelector(state => state.github.error.fieldErrors);
     const inProgress = useSelector(state => state.github.inProgress);
@@ -27,7 +28,7 @@ const GithubAddUserModal = ({ isOpen, toggleModal }) => {
     }, [saveStatus]);
 
     function clearInputs() {
-        setNewGitHubUser({});
+        setNewGitHubUser({timeoutInSeconds: 300});
     }
 
     function handleClose() {
@@ -50,7 +51,7 @@ const GithubAddUserModal = ({ isOpen, toggleModal }) => {
     function handleSubmit() {
         dispatch(validateGitHubConfiguration(newGitHubUser));
     }
-    
+
     return (
         <Modal 
             isOpen={isOpen} 
@@ -65,7 +66,7 @@ const GithubAddUserModal = ({ isOpen, toggleModal }) => {
                 <TextInput
                     id={GitHubFields.USERNAME}
                     name={GitHubFields.USERNAME}
-                    label="Username"
+                    label="Github Connection Name"
                     description="The GitHub Username"
                     placeholder="Enter username..."
                     readOnly={false}
@@ -88,14 +89,13 @@ const GithubAddUserModal = ({ isOpen, toggleModal }) => {
                     errorName={GitHubFields.API_TOKEN}
                     errorValue={fieldErrors[GitHubFields.API_TOKEN]}
                 />
-                <TextInput
+                <NumberInput
                     id={GitHubFields.TIMEOUT}
                     name={GitHubFields.TIMEOUT}
-                    label="Timeout in Seconds"
-                    description="Description of timeout here"
-                    placeholder="Enter timout..."
+                    label="Timeout"
+                    description="The timeout in seconds for all connections to the Black Duck server."
+                    required
                     readOnly={false}
-                    required={false}
                     onChange={handleOnChange(GitHubFields.TIMEOUT)}
                     value={newGitHubUser[GitHubFields.TIMEOUT]}
                     errorName={GitHubFields.TIMEOUT}

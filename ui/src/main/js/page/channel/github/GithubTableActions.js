@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import GithubAddUserModal from 'page/channel/github/GithubAddUserModal';
-// import RoleDeleteModal from 'page/user/roles/RoleDeleteModal';
-// import RoleCreateModal from 'page/user/roles/RoleCreateModal';
 
 const useStyles = createUseStyles({
     createUserBtn: {
