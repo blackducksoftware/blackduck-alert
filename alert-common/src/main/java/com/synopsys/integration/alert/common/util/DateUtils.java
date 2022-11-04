@@ -21,6 +21,7 @@ public final class DateUtils {
     public static final String DOCKER_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'";
     public static final String AUDIT_DATE_FORMAT = "yyyy/MM/dd HH:mm:ss";
     public static final String UTC_DATE_FORMAT_TO_MINUTE = "yyyy-MM-dd HH:mm '(UTC)'";
+    public static final String GITHUB_DATE_FORMAT = "yyyy-MM-dd'T'HH-mm-ss.SSSSSS'Z'";
 
     public static OffsetDateTime createCurrentDateTimestamp() {
         return OffsetDateTime.now(ZoneOffset.UTC);
