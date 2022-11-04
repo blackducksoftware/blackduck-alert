@@ -13,7 +13,7 @@ const AzureDistributionConfiguration = ({
 }) => {
 
     const readRequest = () => {
-        const apiUrl = '/alert/api/configuration/azure-boards?pageNumber=0&pageSize=10&sortName=name&sortOrder=asc';
+        const apiUrl = '/alert/api/configuration/azure-boards?pageNumber=0&pageSize=25&sortName=name&sortOrder=asc';
         return createReadRequest(apiUrl, csrfToken);
     };
 
