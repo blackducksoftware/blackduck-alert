@@ -68,7 +68,7 @@ const EditGithubRowAction = ({ data, isOpen, toggleModal }) => {
     function handleSubmit() {
         dispatch(validateGitHubConfiguration(githubAccountForm));
     }
-
+    console.group(githubAccountForm);
     return (
         <Modal 
             isOpen={isOpen} 
@@ -111,6 +111,7 @@ const EditGithubRowAction = ({ data, isOpen, toggleModal }) => {
                     required={true}
                     onChange={handleOnChange(GitHubFields.API_TOKEN)}
                     value={githubAccountForm[GitHubFields.API_TOKEN]}
+                    isSet={githubAccountForm.isApiTokenSet}
                     errorName={GitHubFields.API_TOKEN}
                     errorValue={fieldErrors[GitHubFields.API_TOKEN]}
                 />
