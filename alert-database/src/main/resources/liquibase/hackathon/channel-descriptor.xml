@@ -51,4 +51,28 @@
             <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
         </insert>
     </changeSet>
+    <changeSet author="psantos" id="github-register-common-fields">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">select count(*)
+                                         from ALERT.DESCRIPTOR_FIELDS
+                                         where FIELD_ID = GET_FIELD_ID('channel.common.name')
+                                           AND DESCRIPTOR_ID = GET_DESCRIPTOR_ID('channel_github')</sqlCheck>
+        </preConditions>
+        <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_github')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.name')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_github')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.channel.name')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_github')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.provider.name')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_github')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.frequency')"/>
+        </insert>
+    </changeSet>
 </databaseChangeLog>
