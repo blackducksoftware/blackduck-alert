@@ -61,6 +61,10 @@ const GithubTable = ({ data }) => {
     function handleLoaderClick () {
         setShowAddGithubModal(true);
     }
+
+    const getGithubData = () => {
+        return (!search ? data.models : data.models.filter((account) => account.name.toLowerCase().includes(search.toLowerCase())));
+    }
     
     // Show Add Github Modal when the user clicks on the TableLoader button
     if (showAddGithubModal) { 
@@ -81,11 +85,11 @@ const GithubTable = ({ data }) => {
             />
         )
     }
-
+    
     return (
-        <>
+        <> 
             <Table 
-                tableData={data.models}
+                tableData={getGithubData()}
                 columns={COLUMNS}
                 multiSelect
                 selected={selected}
