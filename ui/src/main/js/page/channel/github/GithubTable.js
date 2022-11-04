@@ -4,8 +4,9 @@ import GithubTableActions from 'page/channel/github/GithubTableActions';
 import TimeStampCell from 'common/component/table/cell/TimeStampCell';
 import Table from 'common/component/table/Table';
 import { fetchGithub } from 'store/actions/github';
-import TableLoader from '../../../common/component/loaders/TableLoader';
-import GithubAddUserModal from './GithubAddUserModal';
+import TableLoader from 'common/component/loaders/TableLoader';
+import GithubAddUserModal from 'page/channel/github/GithubAddUserModal';
+import EditGithubRowAction from 'page/channel/github/EditGithubRowAction';
 
 const COLUMNS = [{
     key: 'name',
@@ -21,7 +22,12 @@ const COLUMNS = [{
     label: 'Last Updated',
     sortable: false,
     customCell: TimeStampCell
-}]
+}, {
+    key: 'editGithubPAT',
+    label: 'Edit',
+    sortable: false,
+    customCell: EditGithubRowAction
+}];
 
 const GithubTable = ({ data }) => {
 
