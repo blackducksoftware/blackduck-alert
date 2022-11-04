@@ -58,7 +58,7 @@ const GithubAddUserModal = ({ isOpen, toggleModal }) => {
         <Modal 
             isOpen={isOpen} 
             size="lg" 
-            title="Add Github User Connection"
+            title="Add Github Connection"
             closeModal={handleClose}
             handleCancel={handleClose}
             handleSubmit={handleSubmit}
