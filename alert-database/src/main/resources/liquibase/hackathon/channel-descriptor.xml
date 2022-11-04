@@ -75,4 +75,36 @@
             <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.common.frequency')"/>
         </insert>
     </changeSet>
+    <changeSet author="psantos" id="github-register-distribution-fields">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">select count(*)
+                                         from ALERT.DESCRIPTOR_FIELDS
+                                         where FIELD_ID = GET_FIELD_ID('github.repository.name')
+                                           AND DESCRIPTOR_ID = GET_DESCRIPTOR_ID('channel_github')</sqlCheck>
+        </preConditions>
+        <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY">github.repository.name</column>
+            <column name="SENSITIVE">false</column>
+        </insert>
+        <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY">github.pr.title.prefix</column>
+            <column name="SENSITIVE">false</column>
+        </insert>
+        <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('github.repository.name')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('github.pr.title.prefix')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_github')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('github.repository.name')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_github')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('github.pr.title.prefix')"/>
+        </insert>
+    </changeSet>
 </databaseChangeLog>
