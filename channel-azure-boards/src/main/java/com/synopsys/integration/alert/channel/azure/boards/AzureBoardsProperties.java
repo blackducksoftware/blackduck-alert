@@ -63,6 +63,8 @@ public class AzureBoardsProperties {
     private final List<String> scopes;
     private final String redirectUri;
 
+    private final String configurationId;
+
     public static AzureBoardsProperties fromGlobalConfigurationModel(
         AlertOAuthCredentialDataStoreFactory alertOAuthCredentialDataStoreFactory,
         String redirectUri,
@@ -76,7 +78,8 @@ public class AzureBoardsProperties {
             azureBoardsGlobalConfigModel.getClientSecret().orElse(null),
             azureBoardsGlobalConfigModel.getId(),
             defaultScopes,
-            redirectUri
+            redirectUri,
+            azureBoardsGlobalConfigModel.getId()
         );
     }
 
@@ -87,7 +90,8 @@ public class AzureBoardsProperties {
         String clientSecret,
         String oauthUserId,
         List<String> scopes,
-        String redirectUri
+        String redirectUri,
+        String configurationId
     ) {
         this.alertOAuthCredentialDataStoreFactory = alertOAuthCredentialDataStoreFactory;
         this.organizationName = organizationName;
@@ -96,13 +100,15 @@ public class AzureBoardsProperties {
         this.oauthUserId = oauthUserId;
         this.scopes = scopes;
         this.redirectUri = redirectUri;
+        this.configurationId = configurationId;
 
         logger.debug(
-            "Initializing Azure Boards Properties with values: organizationName=[{}], oAuthUserId=[{}], scopes=[{}], redirectUri=[{}]",
+            "Initializing Azure Boards Properties with values: organizationName=[{}], oAuthUserId=[{}], scopes=[{}], redirectUri=[{}], jobId[{}]",
             organizationName,
             oauthUserId,
             StringUtils.join(scopes, ","),
-            redirectUri
+            redirectUri,
+            configurationId
         );
     }
 
@@ -126,6 +132,10 @@ public class AzureBoardsProperties {
         return scopes;
     }
 
+    public String getConfigurationId() {
+        return configurationId;
+    }
+
     public void validateProperties() throws AlertConfigurationException {
         if (StringUtils.isBlank(organizationName) || StringUtils.isBlank(clientId) || StringUtils.isBlank(clientSecret)) {
             throw new AlertConfigurationException("The global configuration for Azure is missing required information.");
@@ -137,7 +147,7 @@ public class AzureBoardsProperties {
         try {
             AuthorizationCodeFlow oAuthFlow = createOAuthFlow(httpTransport);
             Credential oAuthCredential = requestTokens(oAuthFlow, authorizationCode)
-                .orElseThrow(() -> new AlertException(String.format("Cannot request Azure OAuth credential associated with '%s'", oauthUserId)));
+                .orElseThrow(() -> new AlertException(String.format("Cannot request Azure OAuth credential associated with job '%s'", configurationId)));
 
             AzureHttpRequestCreator httpRequestCreator = AzureHttpRequestCreatorFactory.withCredential(httpTransport, oAuthCredential, gson);
             return new AzureHttpService(gson, httpRequestCreator);
@@ -156,7 +166,7 @@ public class AzureBoardsProperties {
         try {
             AuthorizationCodeFlow oAuthFlow = createOAuthFlow(httpTransport);
             Credential oAuthCredential = getExistingOAuthCredential(oAuthFlow)
-                .orElseThrow(() -> new AlertException(String.format("No existing Azure OAuth credential associated with '%s'", oauthUserId)));
+                .orElseThrow(() -> new AlertException(String.format("No existing Azure OAuth credential associated with job '%s'", configurationId)));
             return AzureHttpRequestCreatorFactory.withCredential(httpTransport, oAuthCredential, gson);
         } catch (IOException e) {
             throw new AlertException("Cannot read OAuth credentials", e);
@@ -166,7 +176,7 @@ public class AzureBoardsProperties {
     public AuthorizationCodeFlow createOAuthFlow(HttpTransport httpTransport) throws IOException {
         return createOAuthFlowBuilder(httpTransport)
             .setCredentialDataStore(StoredCredential.getDefaultDataStore(alertOAuthCredentialDataStoreFactory))
-            .addRefreshListener(new DataStoreCredentialRefreshListener(oauthUserId, alertOAuthCredentialDataStoreFactory))
+            .addRefreshListener(new DataStoreCredentialRefreshListener(configurationId, alertOAuthCredentialDataStoreFactory))
             .build();
     }
 
@@ -223,7 +233,7 @@ public class AzureBoardsProperties {
     }
 
     public Optional<Credential> getExistingOAuthCredential(AuthorizationCodeFlow authorizationCodeFlow) throws IOException {
-        Credential storedCredential = authorizationCodeFlow.loadCredential(oauthUserId);
+        Credential storedCredential = authorizationCodeFlow.loadCredential(configurationId);
         return Optional.ofNullable(storedCredential);
     }
 
@@ -241,7 +251,7 @@ public class AzureBoardsProperties {
     public Optional<Credential> requestTokens(AuthorizationCodeFlow authorizationCodeFlow, String authorizationCode) throws IOException {
         AuthorizationCodeTokenRequest tokenRequest = authorizationCodeFlow.newTokenRequest(authorizationCode);
         TokenResponse tokenResponse = tokenRequest.execute();
-        Credential credential = authorizationCodeFlow.createAndStoreCredential(tokenResponse, oauthUserId);
+        Credential credential = authorizationCodeFlow.createAndStoreCredential(tokenResponse, configurationId);
         return Optional.ofNullable(credential);
     }
 
