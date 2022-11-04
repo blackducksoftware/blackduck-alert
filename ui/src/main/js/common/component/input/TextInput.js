@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import LabeledField, { LabelFieldPropertyDefaults } from 'common/component/input/field/LabeledField';
 
 const TextInput = ({
-    id, autoFocus, description, errorName, errorValue, inputClass, label, labelClass, name, onChange, optionList, readOnly, required, showDescriptionPlaceHolder, value
+    id, autoFocus, description, placeHolderText, errorName, errorValue, inputClass, label, labelClass, name, onChange, optionList, readOnly, required, showDescriptionPlaceHolder, value
 }) => {
     const listId = optionList ? 'listOptions' : null;
     const dataListOptionObjects = !optionList ? null : optionList.map((currentOption) => (<option key={`${currentOption}Key`} value={currentOption} />));
@@ -30,6 +30,7 @@ const TextInput = ({
                     value={value}
                     onChange={onChange}
                     list={listId}
+                    placeholder={placeHolderText}
                 />
                 {optionList
                 && (
@@ -57,8 +58,8 @@ TextInput.propTypes = {
     label: PropTypes.string.isRequired,
     labelClass: PropTypes.string,
     required: PropTypes.bool,
-    showDescriptionPlaceHolder: PropTypes.bool
-
+    showDescriptionPlaceHolder: PropTypes.bool,
+    placeHolderText: PropTypes.string
 };
 
 TextInput.defaultProps = {
