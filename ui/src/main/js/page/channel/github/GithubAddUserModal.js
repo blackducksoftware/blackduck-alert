@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Modal from 'common/component/modal/Modal';
 import NumberInput from 'common/component/input/NumberInput';
 import TextInput from 'common/component/input/TextInput';
+import PasswordInput from 'common/component/input/PasswordInput';
 import { GitHubFields } from 'common/util/enums/GitHubEnums';
 import { fetchGithub, postGithubConfiguration, validateGitHubConfiguration } from 'store/actions/github';
 
@@ -76,7 +77,7 @@ const GithubAddUserModal = ({ isOpen, toggleModal }) => {
                     errorName={GitHubFields.USERNAME}
                     errorValue={fieldErrors[GitHubFields.USERNAME]}
                 />
-                <TextInput
+                <PasswordInput
                     id={GitHubFields.API_TOKEN}
                     name={GitHubFields.API_TOKEN}
                     label="API Token"
