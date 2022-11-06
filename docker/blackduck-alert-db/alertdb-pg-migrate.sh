@@ -128,6 +128,8 @@ epochTime="$(date +%s)"
 inputPostgresDataDirectory="${PGDATA}"
 backupPostgresDataDirectory="${runDirectory}/backup.${epochTime}"
 
+pgHbaConfFileName="pg_hba.conf"
+
 postgresUser=""
 postgresPassword=""
 
@@ -163,6 +165,10 @@ _pg_upgrade
 _start_postgres
 _analyze_db
 _stop_postgres
+
+## Move hba conf file from OLD to NEW
+mv "${PGDATAOLD}/${pgHbaConfFileName}" "${PGDATANEW}"/.
+_checkStatus $? "Moving ${pgHbaConfFileName}"
 
 ## Cleanup migrated data
 rm -rf "${PGDATAOLD}"

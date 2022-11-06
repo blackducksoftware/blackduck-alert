@@ -83,6 +83,8 @@ spec:
           value: "300"
         - name: POSTGRES_SHARED_BUFFERS
           value: 1024MB
+        - name: MIGRATE_POSTGRES
+          value: "{{ if .Values.postgres.postgresMigration }}{{ .Values.postgres.postgresMigration }}{{ else }}false{{ end }}"
         {{- if .Values.postgres.dbCredential.secretName }}
         - name: POSTGRES_USER
           valueFrom:

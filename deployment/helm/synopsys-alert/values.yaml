@@ -63,6 +63,7 @@ postgres:
   databaseName: alertdb
   adminUserName: postgres
   adminPassword: ""
+  postgresMigration:
   dbCredential: #Secret that contains both the regular username & password
     secretName: ""
     usernameKey: "ALERT_DB_USERNAME"
