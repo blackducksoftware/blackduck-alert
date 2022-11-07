@@ -24,8 +24,8 @@ import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel
 import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsHttpExceptionMessageImprover;
+import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesFactory;
-import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesLegacy;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.AzureBoardsMessageSenderFactory;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.event.mock.MockAzureBoardsJobDetailsRepository;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.event.mock.MockCorrelationToNotificationRelationRepository;
@@ -128,7 +128,7 @@ class AzureBoardsCreateIssueEventHandlerTest {
         Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
 
         AzureBoardsPropertiesFactory propertiesFactory = Mockito.mock(AzureBoardsPropertiesFactory.class);
-        AzureBoardsPropertiesLegacy azureBoardsProperties = Mockito.mock(AzureBoardsPropertiesLegacy.class);
+        AzureBoardsProperties azureBoardsProperties = Mockito.mock(AzureBoardsProperties.class);
         AzureHttpRequestCreator azureHttpRequestCreator = Mockito.mock(AzureHttpRequestCreator.class);
 
         AzureBoardsJobDetailsModel jobDetailsModel = createJobDetails(jobId);
@@ -154,7 +154,7 @@ class AzureBoardsCreateIssueEventHandlerTest {
 
         //TODO: Mock out services required for Azure, blocked by IALERT-3136
 
-        Mockito.when(propertiesFactory.createAzureBoardsProperties()).thenReturn(azureBoardsProperties);
+        Mockito.when(propertiesFactory.createAzureBoardsProperties(Mockito.any())).thenReturn(azureBoardsProperties);
         Mockito.when(azureBoardsProperties.getOrganizationName()).thenReturn("organizationName");
         Mockito.when(azureBoardsProperties.createAzureHttpRequestCreator(Mockito.any(), Mockito.any())).thenReturn(azureHttpRequestCreator);
         Mockito.when(mockProxyManager.createProxyInfoForHost(Mockito.anyString())).thenReturn(ProxyInfo.NO_PROXY_INFO);

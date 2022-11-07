@@ -26,8 +26,8 @@ import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerTransit
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsHttpExceptionMessageImprover;
+import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesFactory;
-import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesLegacy;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.delegate.AzureBoardsCommentGenerator;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.delegate.AzureBoardsCreateEventGenerator;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.delegate.AzureBoardsIssueCommenter;
@@ -86,7 +86,7 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
 
     @Override
     public IssueTrackerMessageSender<Integer> createMessageSender(AzureBoardsJobDetailsModel distributionDetails, UUID globalId) throws AlertException {
-        AzureBoardsPropertiesLegacy azureBoardsProperties = azureBoardsPropertiesFactory.createAzureBoardsProperties();
+        AzureBoardsProperties azureBoardsProperties = azureBoardsPropertiesFactory.createAzureBoardsProperties(globalId);
         azureBoardsProperties.validateProperties();
 
         // Initialize Http Service
