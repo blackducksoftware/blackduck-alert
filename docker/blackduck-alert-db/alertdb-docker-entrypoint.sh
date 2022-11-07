@@ -1,8 +1,7 @@
 #!/bin/bash
-# shellcheck disable=SC2112
-# shellcheck disable=SC2155
+# shellcheck disable=SC2112,SC2155
 
-if [ -n "${ALERT_DEBUG}" ] && [ "true" = "${ALERT_DEBUG}" ] ; then
+if [ -n "${ALERT_SCRIPT_DEBUG}" ] && [ "true" = "${ALERT_SCRIPT_DEBUG}" ] ; then
   set -x
 fi
 
@@ -25,11 +24,6 @@ function _checkStatus() {
   else
     _logIt "Successfully ran: ${2}"
   fi
-}
-
-function _export_functions() {
-  ## Export logging and status check functions to be used in downstream script(s)
-  export -f _logIt _logStart _logEnd _checkStatus
 }
 
 function _validate_environment() {
@@ -82,12 +76,12 @@ function _set_values_in_environment() {
 
 function _run_DB_migration() {
   _logStart
-  if [ "true" = "${MIGRATE_POSTGRES}" ]; then
-    _logIt "Environment variable MIGRATE_POSTGRES set to true, launching migration script: ${alertDBMigrationScript}"
+  if [ "false" = "${MIGRATE_POSTGRES}" ]; then
+    _logIt "Environment variable MIGRATE_POSTGRES is set to false. NOT running DB migration"
+  else
+    _logIt "Environment variable MIGRATE_POSTGRES is not set to false, launching migration script: ${alertDBMigrationScript}"
     "${alertDBMigrationScript}" "${osUser}"
     _checkStatus $? "Running: ${alertDBMigrationScript}"
-  else
-    _logIt "Environment variable MIGRATE_POSTGRES is NOT set to true. NOT running DB migration"
   fi
   _logEnd
 }
@@ -102,8 +96,6 @@ function _launch_postgres() {
 
 ############## START ##############
 _logIt "Launching ${0}"
-
-_export_functions
 
 osUser="${1}"
 
@@ -122,7 +114,7 @@ _validate_environment
 _set_values_in_environment POSTGRES_USER "${dockerSecretDir}/ALERT_DB_USERNAME" "${POSTGRES_USER_FILE}" "${POSTGRES_USER}" "sa"
 _set_values_in_environment POSTGRES_PASSWORD "${dockerSecretDir}/ALERT_DB_PASSWORD" "${POSTGRES_PASSWORD_FILE}" "${POSTGRES_PASSWORD}" "blackduck"
 _set_values_in_environment POSTGRES_DB "${dockerSecretDir}/POSTGRES_DB" "" "${POSTGRES_DB}" "alertdb"
-_set_values_in_environment MIGRATE_POSTGRES "${dockerSecretDir}/MIGRATE_POSTGRES" "" "${MIGRATE_POSTGRES}" "false"
+_set_values_in_environment MIGRATE_POSTGRES "${dockerSecretDir}/MIGRATE_POSTGRES" "" "${MIGRATE_POSTGRES}" "true"
 
 _run_DB_migration
 

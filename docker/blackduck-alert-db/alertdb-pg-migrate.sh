@@ -1,6 +1,33 @@
 #! /bin/bash
-# shellcheck disable=SC2155
-set -e
+# shellcheck disable=SC2155,SC2164
+
+if [ -n "${ALERT_SCRIPT_DEBUG}" ] && [ "true" = "${ALERT_SCRIPT_DEBUG}" ] ; then
+  set -x
+fi
+
+function _logIt() {
+  echo "$(date "+%F %T") :: ${1}"
+}
+
+function _logStart() {
+  _logIt "Function start: '${FUNCNAME[1]}' from script: '$(basename "${BASH_SOURCE[-1]}")'"
+}
+
+function _logEnd() {
+  _logIt "Function end:   '${FUNCNAME[1]}' from script: '$(basename "${BASH_SOURCE[-1]}")'"
+}
+
+function _checkStatus() {
+  if [ "${1}" -ne 0 ]; then
+    _logIt "ERROR: ${2} (Exit Code: ${1})."
+    if [ "true" == "${inputDataMoved}" ]; then
+      _restore_backed_up_data
+    fi
+    exit "${1}"
+  else
+    _logIt "Successfully ran: ${2}"
+  fi
+}
 
 function _set_value() {
   _logStart
@@ -13,7 +40,7 @@ function _set_value() {
   elif [ -n "${localFile}" ] && [ -s "${localFile}" ]; then
     eval "export ${resultVariable}=$(<"${localFile}")"
   else
-    _checkStatus 1 "Unable to set value from environment"
+    _checkStatus 1 "Unable to set value from environment for ${resultVariable}"
   fi
   _logEnd
 }
@@ -62,7 +89,7 @@ function _validate_migration_viability() {
 
 function _update_existing_data_ownership() {
   _logStart
-  local userId=$(id -g "${osUser}")
+  local userId=$(id -u "${osUser}")
   local groupId=$(id -g "${osUser}")
   chown -R "${userId}:${groupId}" "${inputPostgresDataDirectory}"
   _checkStatus $? "Updating ownership for existing PG data"
@@ -75,10 +102,28 @@ function _move_existing_data_backup_directory() {
   su-exec "${osUser}" mkdir -m "${existingDirectoryMode}" -p "${backupPostgresDataDirectory}"
   _checkStatus $? "Creating backup directory : ${backupPostgresDataDirectory}"
 
-  # shellcheck disable=SC2046,SC2010
   mv "${inputPostgresDataDirectory}"/* "${backupPostgresDataDirectory}"/.
   _checkStatus $? "Moving input PG data into ${backupPostgresDataDirectory}"
+  inputDataMoved="true"
   _logEnd
+}
+
+function _restore_backed_up_data() {
+  if [ "true" == "${inputDataMoved}" ]; then
+    _logStart
+    _logIt "Attempting to restore input Postgres data"
+
+    _logIt "Cleaning out ${inputPostgresDataDirectory}"
+    rm -rf "${inputPostgresDataDirectory:?}"/*
+    _logIt "Clean out exit Code: $?"
+
+    _logIt "Restoring back up data from ${backupPostgresDataDirectory}"
+    mv "${backupPostgresDataDirectory}"/* "${inputPostgresDataDirectory}"/.
+    _logIt "Restore exit Code: $?"
+
+    _logIt "Input Postgres data restored"
+    _logEnd
+  fi
 }
 
 function _initialize_new_db() {
@@ -89,8 +134,11 @@ function _initialize_new_db() {
 }
 
 function _pg_upgrade() {
+  ## pg_upgrade uses the following environment variables:
+  ##  PGBINOLD, PGBINNEW, PGDATAOLD, PGDATANEW
   _logStart
   local upgradeCmd="su-exec ${osUser} pg_upgrade -U ${postgresUser} ${1}"
+  _logIt "Launching: ${upgradeCmd}"
   ${upgradeCmd}
   _checkStatus $? "${upgradeCmd}"
   _logEnd
@@ -98,7 +146,7 @@ function _pg_upgrade() {
 
 function _start_postgres() {
   _logStart
-  su-exec "${osUser}" pg_ctl -m smart -w start
+  su-exec "${osUser}" pg_ctl -D "${PGDATA}" -m fast -w start
   _checkStatus $? "Start running postgres"
   _logEnd
 }
@@ -112,7 +160,7 @@ function _analyze_db() {
 
 function _stop_postgres() {
   _logStart
-  su-exec "${osUser}" pg_ctl -m smart -w stop
+  su-exec "${osUser}" pg_ctl -D "${PGDATA}" -m fast -w stop
   _checkStatus $? "Stop running postgres"
   _logEnd
 }
@@ -121,6 +169,8 @@ function _stop_postgres() {
 _logIt "Launching ${0}"
 
 osUser="${1}"
+
+inputDataMoved="false"
 
 runDirectory="/tmp"
 epochTime="$(date +%s)"
@@ -133,15 +183,15 @@ pgHbaConfFileName="pg_hba.conf"
 postgresUser=""
 postgresPassword=""
 
+## Check run environment
+_validate_environment
+
 ## Change directory
 cd "${runDirectory}"
 _checkStatus $? "Changing directory to ${runDirectory}"
 
 _set_value postgresUser "${POSTGRES_USER}" "${POSTGRES_USER_FILE}"
 _set_value postgresPassword "${POSTGRES_PASSWORD}" "${POSTGRES_PASSWORD_FILE}"
-
-## Check run environment
-_validate_environment
 
 ## Check if we can and should run
 _validate_migration_viability
