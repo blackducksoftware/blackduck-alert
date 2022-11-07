@@ -181,6 +181,7 @@ const DistributionConfigurationForm = ({
                         setData={setSpecificChannelModel}
                         errors={errors}
                         readonly={readonly}
+                        csrfToken={csrfToken}
                     />
                 );
             case EMAIL_INFO.key:
