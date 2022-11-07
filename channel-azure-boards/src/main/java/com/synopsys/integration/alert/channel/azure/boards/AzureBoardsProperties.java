@@ -51,15 +51,12 @@ import com.synopsys.integration.azure.boards.common.oauth.AzureOAuthScopes;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 public class AzureBoardsProperties {
-    private static final String DEFAULT_AZURE_OAUTH_USER_ID = "azure_default_user";
-
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final AlertOAuthCredentialDataStoreFactory alertOAuthCredentialDataStoreFactory;
     private final String organizationName;
     private final String clientId;
     private final String clientSecret;
-    private final String oauthUserId;
     private final List<String> scopes;
     private final String redirectUri;
 
@@ -76,7 +73,6 @@ public class AzureBoardsProperties {
             azureBoardsGlobalConfigModel.getOrganizationName(),
             azureBoardsGlobalConfigModel.getAppId().orElse(null),
             azureBoardsGlobalConfigModel.getClientSecret().orElse(null),
-            azureBoardsGlobalConfigModel.getId(),
             defaultScopes,
             redirectUri,
             azureBoardsGlobalConfigModel.getId()
@@ -88,7 +84,6 @@ public class AzureBoardsProperties {
         String organizationName,
         String clientId,
         String clientSecret,
-        String oauthUserId,
         List<String> scopes,
         String redirectUri,
         String configurationId
@@ -97,15 +92,13 @@ public class AzureBoardsProperties {
         this.organizationName = organizationName;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
-        this.oauthUserId = oauthUserId;
         this.scopes = scopes;
         this.redirectUri = redirectUri;
         this.configurationId = configurationId;
 
         logger.debug(
-            "Initializing Azure Boards Properties with values: organizationName=[{}], oAuthUserId=[{}], scopes=[{}], redirectUri=[{}], jobId[{}]",
+            "Initializing Azure Boards Properties with values: organizationName=[{}], scopes=[{}], redirectUri=[{}], jobId[{}]",
             organizationName,
-            oauthUserId,
             StringUtils.join(scopes, ","),
             redirectUri,
             configurationId
@@ -122,10 +115,6 @@ public class AzureBoardsProperties {
 
     public String getClientSecret() {
         return clientSecret;
-    }
-
-    public String getOauthUserId() {
-        return oauthUserId;
     }
 
     public List<String> getScopes() {
