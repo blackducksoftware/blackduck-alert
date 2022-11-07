@@ -66,7 +66,6 @@ public class OAuthRequestValidator {
             .filter(entry -> entry.getValue().getRequestTimestamp().isBefore(instant))
             .map(Map.Entry::getKey)
             .forEach(this::removeAuthorizationRequest);
-
     }
 
     public void removeRequestsOlderThan5MinutesAgo() {

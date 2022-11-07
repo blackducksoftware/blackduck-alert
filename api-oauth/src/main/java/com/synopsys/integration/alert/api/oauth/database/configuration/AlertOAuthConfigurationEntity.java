@@ -20,18 +20,18 @@ public class AlertOAuthConfigurationEntity extends BaseEntity {
     private String accessToken;
     @Column(name = "refresh_token")
     private String refreshToken;
-    @Column(name = "exipiration_time_ms")
-    private Long exirationTimeMilliseconds;
+    @Column(name = "expiration_time_ms")
+    private Long expirationTimeMilliseconds;
 
     public AlertOAuthConfigurationEntity() {
         //default constructor for JPA
     }
 
-    public AlertOAuthConfigurationEntity(final UUID id, final String accessToken, final String refreshToken, final Long exirationTimeMilliseconds) {
+    public AlertOAuthConfigurationEntity(UUID id, String accessToken, String refreshToken, Long expirationTimeMilliseconds) {
         this.id = id;
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
-        this.exirationTimeMilliseconds = exirationTimeMilliseconds;
+        this.expirationTimeMilliseconds = expirationTimeMilliseconds;
     }
 
     public UUID getId() {
@@ -46,7 +46,7 @@ public class AlertOAuthConfigurationEntity extends BaseEntity {
         return refreshToken;
     }
 
-    public Long getExirationTimeMilliseconds() {
-        return exirationTimeMilliseconds;
+    public Long getExpirationTimeMilliseconds() {
+        return expirationTimeMilliseconds;
     }
 }
