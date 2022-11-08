@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <!-- create an initial row -->
+    <changeSet author="psantos" id="create-initial-azure-boards-oauth-entries">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <sqlCheck expectedResult="1">
+                    SELECT COUNT(*)
+                    FROM alert.configuration_azure_boards
+                    WHERE name = 'default-configuration';
+                </sqlCheck>
+                <rowCount schemaName="alert" tableName="configuration_azure_boards" expectedRows="0"/>
+            </and>
+        </preConditions>
+        <sql dbms="postgresql" stripComments="true">
+            INSERT INTO alert.oauth_credentials (configuration_id, access_token, refresh_token, expiration_time_ms)
+            SELECT configuration_id,
+                   null,
+                   null,
+                   null,
+            FROM alert.configuration_azure_boards
+            WHERE name = 'default-configuration' LIMIT 1;
+        </sql>
+    </changeSet>
+    <!-- Update common job fields one at a time -->
+    <changeSet author="psantos" id="update-oauth-azure-boards-tokens">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*)
+                FROM alert.oauth_credentials
+                WHERE configuration_id = (SELECT configuration_id FROM alert.configuration_azure_boards WHERE name = 'default-configuration' LIMIT 1);
+            </sqlCheck>
+        </preConditions>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.oauth_credentials config
+            SET access_token = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_azure_boards') configFields
+            WHERE config.name = 'default-configuration'
+              AND configFields.source_key = 'azure.boards.access.token';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.oauth_credentials config
+            SET refresh_token = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_azure_boards') configFields
+            WHERE config.name = 'default-configuration'
+              AND configFields.source_key = 'azure.boards.refresh.token';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.oauth_credentials config
+            SET expiration_time_ms = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_azure_boards') configFields
+            WHERE config.name = 'default-configuration'
+              AND configFields.source_key = 'azure.boards.token.expiration.millis';
+        </sql>
+    </changeSet>
+</databaseChangeLog>
