@@ -243,6 +243,9 @@ validatePostgresConnection() {
 
     psql "${alertDatabaseConfig}" -c '\l' > /dev/null
     checkStatus $? "Validate postgres connection"
+
+    psql "${alertDatabaseAdminConfig}" -c '\l' > /dev/null
+    checkStatus $? "Validate postgres admin connection"
 }
 
 validateAlertDBExists() {
@@ -321,6 +324,7 @@ postgresPrepare600Upgrade() {
 
             logIt "Importing data from old database into new database..."
             psql "${alertDatabaseConfig}" -f ${upgradeResourcesDir}/import_postgres_tables.sql
+            checkStatus $? "Running ${upgradeResourcesDir}/import_postgres_tables.sql"
         else
             logIt "No previous database existed."
         fi
@@ -330,6 +334,7 @@ postgresPrepare600Upgrade() {
 createPostgresExtensions() {
   logIt "Creating required postgres extensions."
   psql "${alertDatabaseAdminConfig}" -f ${upgradeResourcesDir}/create_extension.sql
+  checkStatus $? "Running ${upgradeResourcesDir}/create_extension.sql"
 }
 
 setLocalVariableFromFileContents() {

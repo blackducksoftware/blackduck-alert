@@ -79,24 +79,26 @@ spec:
     spec:
       containers:
       - env:
-        - name: POSTGRESQL_MAX_CONNECTIONS
+        - name: POSTGRES_MAX_CONNECTIONS
           value: "300"
-        - name: POSTGRESQL_SHARED_BUFFERS
+        - name: POSTGRES_SHARED_BUFFERS
           value: 1024MB
+        - name: MIGRATE_POSTGRES
+          value: "{{ if .Values.postgres.postgresMigration }}{{ .Values.postgres.postgresMigration }}{{ else }}true{{ end }}"
         {{- if .Values.postgres.dbCredential.secretName }}
-        - name: POSTGRESQL_USER
+        - name: POSTGRES_USER
           valueFrom:
             secretKeyRef:
               key: {{ required ".Values.postgres.dbCredential.usernameKey is missing." .Values.postgres.dbCredential.usernameKey }}
               name: {{ .Values.postgres.dbCredential.secretName }}
         {{- else }}
-        - name: POSTGRESQL_USER
+        - name: POSTGRES_USER
           valueFrom:
             configMapKeyRef:
               key: ALERT_DB_USERNAME
               name: {{ .Release.Name }}-db-config
         {{- end }}
-        - name: POSTGRESQL_DATABASE
+        - name: POSTGRES_DB
           valueFrom:
             configMapKeyRef:
               key: ALERT_DB_NAME
@@ -112,44 +114,55 @@ spec:
               key: ALERT_DB_PORT
               name: {{ .Release.Name }}-db-config
         {{- if .Values.postgres.dbCredential.secretName }}
-        - name: POSTGRESQL_PASSWORD
+        - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
               key: {{ required ".Values.postgres.dbCredential.passwordKey is missing." .Values.postgres.dbCredential.passwordKey }}
               name: {{ .Values.postgres.dbCredential.secretName }}
         {{- else }}
-        - name: POSTGRESQL_PASSWORD
+        - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
               key: ALERT_POSTGRES_USER_PASSWORD_FILE
               name: {{ .Release.Name }}-db-creds
         {{- end }}
         {{- if .Values.postgres.dbAdminCredential.secretName }}
-        - name: POSTGRESQL_ADMIN_PASSWORD
+        - name: POSTGRES_ADMIN_PASSWORD
           valueFrom:
             secretKeyRef:
               key: {{ required ".Values.postgres.dbAdminCredential.passwordKey is missing." .Values.postgres.dbAdminCredential.passwordKey }}
               name: {{ .Values.postgres.dbAdminCredential.secretName }}
         {{- else }}
-        - name: POSTGRESQL_ADMIN_PASSWORD
+        - name: POSTGRES_ADMIN_PASSWORD
           valueFrom:
             secretKeyRef:
               key: ALERT_POSTGRES_ADMIN_PASSWORD_FILE
               name: {{ .Release.Name }}-db-creds
         {{- end }}
         {{- if .Values.postgres.registry }}
-        image: {{ .Values.postgres.registry }}/postgresql-13-centos7:1
+        image: {{ .Values.postgres.registry }}/blackduck-alert-db:{{ .Values.postgres.imageTag }}
         {{- else }}
-        image: {{ .Values.registry }}/postgresql-13-centos7:1
+        image: {{ .Values.registry }}/blackduck-alert-db:{{ .Values.postgres.imageTag }}
         {{- end}}
         imagePullPolicy: IfNotPresent
+        livenessProbe:
+          exec:
+            command:
+              - /bin/bash
+              - -c
+              - /usr/local/bin/alertdb-healthcheck.sh
+          initialDelaySeconds: 120
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 3
+          successThreshold: 1
         lifecycle:
           preStop:
             exec:
               command:
-                - sh
+                - /bin/bash
                 - -c
-                - LD_LIBRARY_PATH=/opt/rh/rh-postgresql13/root/usr/lib64 /opt/rh/rh-postgresql13/root/usr/bin/pg_ctl -D /var/lib/pgsql/data/userdata -l logfile stop
+                - LD_LIBRARY_PATH=/usr/local/lib /usr/local/bin/pg_ctl -D /var/lib/postgresql/data/userdata -l logfile stop
         name: {{ .Release.Name }}-postgres
         ports:
         - containerPort: {{ .Values.postgres.port }}
@@ -159,12 +172,12 @@ spec:
             command:
               - /bin/bash
               - -c
-              - /opt/rh/rh-postgresql13/root/usr/bin/pg_isready -h localhost
-          failureThreshold: 10
-          initialDelaySeconds: 5
-          periodSeconds: 10
-          successThreshold: 1
+              - /usr/local/bin/pg_isready -U "${POSTGRES_USER}" -d "${POSTGRES_DB}" -h localhost
+          initialDelaySeconds: 30
+          periodSeconds: 30
           timeoutSeconds: 5
+          failureThreshold: 3
+          successThreshold: 1
         resources:
           {{- toYaml .Values.postgres.resources | nindent 12 }}
           {{- with .Values.postgres.securityContext }}
@@ -172,7 +185,7 @@ spec:
 {{ toYaml . | indent 10 }}
         {{- end }}
         volumeMounts:
-          - mountPath: /var/lib/pgsql/data
+          - mountPath: /var/lib/postgresql/data
             name: alert-postgres-data-volume
       dnsPolicy: ClusterFirst
       {{- include "alert.imagePullSecrets" . | nindent 6 -}}

@@ -110,7 +110,7 @@ spec:
         {{- else }}
         image: {{ .Values.registry }}/blackduck-alert-rabbitmq:{{ .Values.rabbitmq.imageTag }}
         {{- end }}
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         livenessProbe:
           exec:
             command:
