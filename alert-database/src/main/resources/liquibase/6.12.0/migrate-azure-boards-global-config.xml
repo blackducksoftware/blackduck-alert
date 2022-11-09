@@ -62,14 +62,14 @@
                 <sqlCheck expectedResult="0">
                     SELECT COUNT(*)
                     FROM alert.distribution_jobs job
-                    WHERE job.channel_descriptor_name = 'configuration_azure_boards';
+                    WHERE job.channel_descriptor_name = 'channel_azure_boards';
                 </sqlCheck>
             </not>
         </preConditions>
         <sql dbms="postgresql" stripComments="true">
             UPDATE alert.distribution_jobs job
             SET channel_global_config_id = (SELECT config.configuration_id FROM alert.configuration_azure_boards config WHERE config.name = 'default-configuration')
-            WHERE job.channel_descriptor_name = 'configuration_azure_boards';
+            WHERE job.channel_descriptor_name = 'channel_azure_boards';
         </sql>
     </changeSet>
 </databaseChangeLog>
