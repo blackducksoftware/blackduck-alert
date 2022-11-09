@@ -3,8 +3,8 @@ dockerSecretDir=/run/secrets
 alertDatabaseHost="${ALERT_DB_HOST:-alertdb}"
 alertDatabasePort="${ALERT_DB_PORT:-5432}"
 alertDatabaseName="${POSTGRES_DB:-alertdb}"
-alertDatabaseUser="$POSTGRES_USER"
-alertDatabasePassword="$POSTGRES_PASSWORD"
+alertDatabaseUser="${POSTGRES_USER:-sa}"
+alertDatabasePassword="${POSTGRES_PASSWORD:-blackduck}"
 
 if [ -e $dockerSecretDir/ALERT_DB_USERNAME ];
 then

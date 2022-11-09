@@ -1,18 +1,23 @@
 # The ARG for the FROM image comes from Gradle. It is based off of postgresContainerVersion,
 # and used in buildSrc/docker.gradle
+ARG POSTGRESIMAGEVERSION_MIGRATION=""
 ARG POSTGRESIMAGEVERSION=""
+
+FROM ${POSTGRESIMAGEVERSION_MIGRATION} AS old
+
 FROM ${POSTGRESIMAGEVERSION}
+
+COPY --from=old /usr/local /usr/local-old
+
+ENV PGBINOLD /usr/local-old/bin
+ENV PGBINNEW /usr/local/bin
 
 ARG VERSION
 
 LABEL com.blackducksoftware.integration.alert.vendor="Black Duck Software, Inc." \
       com.blackducksoftware.integration.alert.version="$VERSION"
 
-ENV DOCKER_ENTRYPPOINT_INITD_DIR /docker-entrypoint-initdb.d
+COPY alertdb-*.sh /usr/local/bin/
 
-RUN mkdir -p -m 774 $DOCKER_ENTRYPPOINT_INITD_DIR
-
-COPY alertdb-healthcheck.sh /usr/local/bin/alertdb-healthcheck.sh
-COPY create_extension.sql $DOCKER_ENTRYPPOINT_INITD_DIR/create_extension.sql
-
-RUN chmod 774 /usr/local/bin/alertdb-healthcheck.sh
+CMD ["postgres"]
+ENTRYPOINT ["/usr/local/bin/alertdb-docker-entrypoint.sh"]
