@@ -1,5 +1,14 @@
 package com.synopsys.integration.alert.channel.azure.boards.validator;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.UUID;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatusMessages;
@@ -8,24 +17,20 @@ import com.synopsys.integration.alert.channel.azure.boards.database.accessor.Azu
 import com.synopsys.integration.alert.channel.azure.boards.database.configuration.AzureBoardsConfigurationEntity;
 import com.synopsys.integration.alert.channel.azure.boards.database.mock.MockAzureBoardsConfigurationRepository;
 import com.synopsys.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
+import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidator;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
 import com.synopsys.integration.alert.test.common.database.MockRepositorySorter;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
-
-public class AzureBoardsGlobalConfigurationValidatorTest {
+class AzureBoardsGlobalConfigurationValidatorTest {
     private final Gson gson = new Gson();
     private final AlertProperties alertProperties = new MockAlertProperties();
     private final FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, gson);
     private final EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, filePersistenceUtil);
+    private final OAuthRequestValidator oAuthRequestValidator = new OAuthRequestValidator();
 
     AzureBoardsGlobalConfigAccessor azureBoardsGlobalConfigAccessor;
     AzureBoardsGlobalConfigurationValidator azureBoardsGlobalConfigurationValidator;
@@ -35,7 +40,7 @@ public class AzureBoardsGlobalConfigurationValidatorTest {
         MockRepositorySorter<AzureBoardsConfigurationEntity> sorter = new MockRepositorySorter<>();
         MockAzureBoardsConfigurationRepository mockAzureBoardsConfigurationRepository = new MockAzureBoardsConfigurationRepository(sorter);
         azureBoardsGlobalConfigAccessor = new AzureBoardsGlobalConfigAccessor(encryptionUtility, mockAzureBoardsConfigurationRepository);
-        azureBoardsGlobalConfigurationValidator = new AzureBoardsGlobalConfigurationValidator(azureBoardsGlobalConfigAccessor);
+        azureBoardsGlobalConfigurationValidator = new AzureBoardsGlobalConfigurationValidator(azureBoardsGlobalConfigAccessor, oAuthRequestValidator);
     }
 
     @Test

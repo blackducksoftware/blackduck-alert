@@ -16,6 +16,7 @@ import com.synopsys.integration.alert.channel.azure.boards.action.AzureBoardsGlo
 import com.synopsys.integration.alert.channel.azure.boards.database.accessor.AzureBoardsGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.azure.boards.database.configuration.AzureBoardsConfigurationEntity;
 import com.synopsys.integration.alert.channel.azure.boards.database.mock.MockAzureBoardsConfigurationRepository;
+import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidator;
 import com.synopsys.integration.alert.channel.azure.boards.validator.AzureBoardsGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -42,6 +43,7 @@ class AzureBoardsGlobalConfigurationModelSaveActionsTest {
     private final FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, gson);
     private final EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, filePersistenceUtil);
     private final AuthorizationManager authorizationManager = createAuthorizationManager();
+    private final OAuthRequestValidator oAuthRequestValidator = new OAuthRequestValidator();
     private MockAzureBoardsConfigurationRepository mockAzureRepository;
     private AzureBoardsGlobalConfigAccessor configAccessor;
     private AzureBoardsGlobalCrudActions crudActions;
@@ -55,7 +57,7 @@ class AzureBoardsGlobalConfigurationModelSaveActionsTest {
         sorter.applyFieldSorter("organizationName", MockRepositorySorter.createSingleFieldSorter(AzureBoardsConfigurationEntity::getOrganizationName));
         mockAzureRepository = new MockAzureBoardsConfigurationRepository(sorter);
         configAccessor = new AzureBoardsGlobalConfigAccessor(encryptionUtility, mockAzureRepository);
-        validator = new AzureBoardsGlobalConfigurationValidator(configAccessor);
+        validator = new AzureBoardsGlobalConfigurationValidator(configAccessor, oAuthRequestValidator);
         crudActions = new AzureBoardsGlobalCrudActions(authorizationManager, configAccessor, validator);
         converter = new AzureBoardsGlobalConfigurationModelConverter(validator);
     }
