@@ -19,7 +19,11 @@ import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationF
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
+/**
+ * @deprecated Global configuration validators will replace old FieldModel validators as Alert switches to a new concrete REST API. This class will be removed in 8.0.0.
+ */
 @Component
+@Deprecated(forRemoval = true)
 public class AzureBoardsGlobalConfigurationFieldModelValidator implements GlobalConfigurationFieldModelValidator {
     private final OAuthRequestValidatorLegacy oAuthRequestValidator;
 

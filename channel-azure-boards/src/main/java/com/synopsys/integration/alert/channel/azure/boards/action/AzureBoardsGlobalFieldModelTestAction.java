@@ -33,7 +33,11 @@ import com.synopsys.integration.azure.boards.common.service.project.AzureProject
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
+/**
+ * @deprecated Replaced by AzureBoardsGlobalTestAction. To be removed in 8.0.0.
+ */
 @Component
+@Deprecated(forRemoval = true)
 public class AzureBoardsGlobalFieldModelTestAction extends FieldModelTestAction {
     public static final Logger logger = LoggerFactory.getLogger(AzureBoardsGlobalFieldModelTestAction.class);
 
