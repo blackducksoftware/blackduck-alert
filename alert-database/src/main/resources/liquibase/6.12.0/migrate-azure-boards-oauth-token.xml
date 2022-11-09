@@ -10,7 +10,7 @@
                     FROM alert.configuration_azure_boards
                     WHERE name = 'default-configuration';
                 </sqlCheck>
-                <rowCount schemaName="alert" tableName="configuration_azure_boards" expectedRows="0"/>
+                <rowCount schemaName="alert" tableName="oauth_credentials" expectedRows="0"/>
             </and>
         </preConditions>
         <sql dbms="postgresql" stripComments="true">
@@ -18,7 +18,7 @@
             SELECT configuration_id,
                    null,
                    null,
-                   null,
+                   null
             FROM alert.configuration_azure_boards
             WHERE name = 'default-configuration' LIMIT 1;
         </sql>
@@ -35,19 +35,19 @@
         <sql dbms="postgresql" stripComments="true">
             UPDATE alert.oauth_credentials config
             SET access_token = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_azure_boards') configFields
-            WHERE config.name = 'default-configuration'
+            WHERE config.configuration_id = (SELECT configuration_id FROM alert.configuration_azure_boards WHERE name = 'default-configuration' LIMIT 1)
               AND configFields.source_key = 'azure.boards.access.token';
         </sql>
         <sql dbms="postgresql" stripComments="true">
             UPDATE alert.oauth_credentials config
             SET refresh_token = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_azure_boards') configFields
-            WHERE config.name = 'default-configuration'
+            WHERE config.configuration_id = (SELECT configuration_id FROM alert.configuration_azure_boards WHERE name = 'default-configuration' LIMIT 1)
               AND configFields.source_key = 'azure.boards.refresh.token';
         </sql>
         <sql dbms="postgresql" stripComments="true">
             UPDATE alert.oauth_credentials config
-            SET expiration_time_ms = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_azure_boards') configFields
-            WHERE config.name = 'default-configuration'
+            SET expiration_time_ms = cast(configFields.field_value as BIGINT) FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_azure_boards') configFields
+            WHERE config.configuration_id = (SELECT configuration_id FROM alert.configuration_azure_boards WHERE name = 'default-configuration' LIMIT 1)
               AND configFields.source_key = 'azure.boards.token.expiration.millis';
         </sql>
     </changeSet>

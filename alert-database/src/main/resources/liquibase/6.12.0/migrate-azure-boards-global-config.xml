@@ -37,19 +37,19 @@
         </sql>
         <!-- Update azure boards specific fields -->
         <sql dbms="postgresql" stripComments="true">
-            UPDATE alert.configuration_jira_server config
+            UPDATE alert.configuration_azure_boards config
             SET organization_name = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_azure_boards') configFields
             WHERE config.name = 'default-configuration'
               AND configFields.source_key = 'azure.boards.organization.name';
         </sql>
         <sql dbms="postgresql" stripComments="true">
-            UPDATE alert.configuration_jira_server config
+            UPDATE alert.configuration_azure_boards config
             SET app_id = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_azure_boards') configFields
             WHERE config.name = 'default-configuration'
               AND configFields.source_key = 'azure.boards.client.id';
         </sql>
         <sql dbms="postgresql" stripComments="true">
-            UPDATE alert.configuration_jira_server config
+            UPDATE alert.configuration_azure_boards config
             SET client_secret = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_azure_boards') configFields
             WHERE config.name = 'default-configuration'
               AND configFields.source_key = 'azure.boards.client.secret';
