@@ -3,4 +3,6 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
     <include file="concrete-azure-boards-configuration-tables.xml" relativeToChangelogFile="true"/>
     <include file="oauth-credential-store.xml" relativeToChangelogFile="true"/>
+    <include file="migrate-azure-boards-global-config.xml" relativeToChangelogFile="true"/>
+    <include file="migrate-azure-boards-oauth-token.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

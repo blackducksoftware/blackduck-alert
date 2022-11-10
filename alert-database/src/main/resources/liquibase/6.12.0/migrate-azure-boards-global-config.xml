@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+  <!-- create an initial row -->
+    <changeSet author="psantos" id="create-initial-azure-boards-config-entries">
+        <preConditions onFail="MARK_RAN">
+            <rowCount schemaName="alert" tableName="configuration_azure_boards" expectedRows="0"/>
+        </preConditions>
+        <sql dbms="postgresql" stripComments="true">
+            INSERT INTO alert.configuration_azure_boards (created_at, last_updated, name, organization_name, app_id, client_secret)
+            SELECT now(),
+                   null,
+                   'default-configuration',
+                   '',
+                   '',
+                   ''
+            FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_azure_boards') configFields
+            WHERE configFields.source_key IS NOT NULL LIMIT 1;
+        </sql>
+    </changeSet>
+    <!-- Update common job fields one at a time -->
+    <changeSet author="psantos" id="update-initial-azure-boards-config-entries">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*)
+                FROM alert.configuration_azure_boards
+                WHERE name = 'default-configuration';
+            </sqlCheck>
+        </preConditions>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_azure_boards config
+            SET created_at = configTimestamps.created_at FROM GET_GLOBAL_CONFIG_TIMESTAMPS('channel_azure_boards') configTimestamps;
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_azure_boards config
+            SET last_updated = configTimestamps.last_updated FROM GET_GLOBAL_CONFIG_TIMESTAMPS('channel_azure_boards') configTimestamps;
+        </sql>
+        <!-- Update azure boards specific fields -->
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_azure_boards config
+            SET organization_name = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_azure_boards') configFields
+            WHERE config.name = 'default-configuration'
+              AND configFields.source_key = 'azure.boards.organization.name';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_azure_boards config
+            SET app_id = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_azure_boards') configFields
+            WHERE config.name = 'default-configuration'
+              AND configFields.source_key = 'azure.boards.client.id';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_azure_boards config
+            SET client_secret = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('channel_azure_boards') configFields
+            WHERE config.name = 'default-configuration'
+              AND configFields.source_key = 'azure.boards.client.secret';
+        </sql>
+    </changeSet>
+    <!-- Migrate existing jira server jobs to use the default configuration -->
+    <changeSet author="psantos" id="migrate-azure-boards-jobs">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="0">
+                    SELECT COUNT(*)
+                    FROM alert.distribution_jobs job
+                    WHERE job.channel_descriptor_name = 'channel_azure_boards';
+                </sqlCheck>
+            </not>
+        </preConditions>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.distribution_jobs job
+            SET channel_global_config_id = (SELECT config.configuration_id FROM alert.configuration_azure_boards config WHERE config.name = 'default-configuration')
+            WHERE job.channel_descriptor_name = 'channel_azure_boards';
+        </sql>
+    </changeSet>
+</databaseChangeLog>
