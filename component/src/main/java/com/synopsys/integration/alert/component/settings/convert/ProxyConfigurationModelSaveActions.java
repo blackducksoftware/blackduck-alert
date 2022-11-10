@@ -56,7 +56,7 @@ public class ProxyConfigurationModelSaveActions implements GlobalConfigurationMo
     }
 
     private void convertModelAndPerformAction(ConfigurationModel configurationModel, Function<SettingsProxyModel, ActionResponse<SettingsProxyModel>> configAction) {
-        Optional<SettingsProxyModel> settingsProxyModel = proxyFieldModelConverter.convertAndValidate(configurationModel);
+        Optional<SettingsProxyModel> settingsProxyModel = proxyFieldModelConverter.convertAndValidate(configurationModel, null);
         settingsProxyModel.ifPresent(configAction::apply);
     }
 }

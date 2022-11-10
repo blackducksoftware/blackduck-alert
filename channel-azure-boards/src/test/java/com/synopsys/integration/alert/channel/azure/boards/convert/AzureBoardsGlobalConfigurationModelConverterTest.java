@@ -42,7 +42,7 @@ class AzureBoardsGlobalConfigurationModelConverterTest {
     void validConversionTest() {
         ConfigurationModel configurationModel = createDefaultConfigurationModel();
         AzureBoardsGlobalConfigurationModelConverter converter = new AzureBoardsGlobalConfigurationModelConverter(validator);
-        Optional<AzureBoardsGlobalConfigModel> model = converter.convertAndValidate(configurationModel);
+        Optional<AzureBoardsGlobalConfigModel> model = converter.convertAndValidate(configurationModel, null);
         assertTrue(model.isPresent());
         AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModel = model.get();
 
@@ -56,7 +56,7 @@ class AzureBoardsGlobalConfigurationModelConverterTest {
     void emptyFieldsTest() {
         ConfigurationModel emptyModel = new ConfigurationModel(1L, 1L, "", "", ConfigContextEnum.GLOBAL, Map.of());
         AzureBoardsGlobalConfigurationModelConverter converter = new AzureBoardsGlobalConfigurationModelConverter(validator);
-        Optional<AzureBoardsGlobalConfigModel> model = converter.convertAndValidate(emptyModel);
+        Optional<AzureBoardsGlobalConfigModel> model = converter.convertAndValidate(emptyModel, null);
         assertTrue(model.isEmpty());
     }
 
@@ -67,7 +67,7 @@ class AzureBoardsGlobalConfigurationModelConverterTest {
         Map<String, ConfigurationFieldModel> fieldValues = Map.of(invalidFieldKey, invalidField);
         ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, "", "", ConfigContextEnum.GLOBAL, fieldValues);
         AzureBoardsGlobalConfigurationModelConverter converter = new AzureBoardsGlobalConfigurationModelConverter(validator);
-        Optional<AzureBoardsGlobalConfigModel> model = converter.convertAndValidate(configurationModel);
+        Optional<AzureBoardsGlobalConfigModel> model = converter.convertAndValidate(configurationModel, null);
         assertTrue(model.isEmpty());
     }
 

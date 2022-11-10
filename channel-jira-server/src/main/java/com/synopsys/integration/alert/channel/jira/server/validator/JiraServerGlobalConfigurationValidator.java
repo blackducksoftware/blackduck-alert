@@ -69,7 +69,7 @@ public class JiraServerGlobalConfigurationValidator {
     private boolean doesNameExist(String name, @Nullable String currentConfigId) {
         return jiraServerGlobalConfigAccessor.getConfigurationByName(name)
             .map(JiraServerGlobalConfigModel::getId)
-            .filter(id -> (currentConfigId != null) ? !currentConfigId.equals(id) : true)
+            .filter(id -> currentConfigId == null || !currentConfigId.equals(id))
             .isPresent();
     }
 }

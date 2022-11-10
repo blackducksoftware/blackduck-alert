@@ -38,7 +38,7 @@ class JiraServerGlobalConfigurationModelConverterTest {
     void validConversionTest() {
         ConfigurationModel configurationModel = createDefaultConfigurationModel();
         JiraServerGlobalConfigurationModelConverter converter = new JiraServerGlobalConfigurationModelConverter(validator);
-        Optional<JiraServerGlobalConfigModel> model = converter.convertAndValidate(configurationModel);
+        Optional<JiraServerGlobalConfigModel> model = converter.convertAndValidate(configurationModel, null);
         assertTrue(model.isPresent());
         JiraServerGlobalConfigModel jiraModel = model.get();
 
@@ -57,7 +57,7 @@ class JiraServerGlobalConfigurationModelConverterTest {
         fields.remove(JiraServerGlobalConfigurationModelConverter.DISABLE_PLUGIN_CHECK_KEY);
         configurationModel = new ConfigurationModel(1L, 1L, "", "", ConfigContextEnum.GLOBAL, fields);
         JiraServerGlobalConfigurationModelConverter converter = new JiraServerGlobalConfigurationModelConverter(validator);
-        Optional<JiraServerGlobalConfigModel> model = converter.convertAndValidate(configurationModel);
+        Optional<JiraServerGlobalConfigModel> model = converter.convertAndValidate(configurationModel, null);
         assertTrue(model.isPresent());
         JiraServerGlobalConfigModel jiraModel = model.get();
 
@@ -73,7 +73,7 @@ class JiraServerGlobalConfigurationModelConverterTest {
     void emptyFieldsTest() {
         ConfigurationModel emptyModel = new ConfigurationModel(1L, 1L, "", "", ConfigContextEnum.GLOBAL, Map.of());
         JiraServerGlobalConfigurationModelConverter converter = new JiraServerGlobalConfigurationModelConverter(validator);
-        Optional<JiraServerGlobalConfigModel> model = converter.convertAndValidate(emptyModel);
+        Optional<JiraServerGlobalConfigModel> model = converter.convertAndValidate(emptyModel, null);
         assertTrue(model.isEmpty());
     }
 
@@ -84,7 +84,7 @@ class JiraServerGlobalConfigurationModelConverterTest {
         Map<String, ConfigurationFieldModel> fieldValues = Map.of(invalidFieldKey, invalidField);
         ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, "", "", ConfigContextEnum.GLOBAL, fieldValues);
         JiraServerGlobalConfigurationModelConverter converter = new JiraServerGlobalConfigurationModelConverter(validator);
-        Optional<JiraServerGlobalConfigModel> model = converter.convertAndValidate(configurationModel);
+        Optional<JiraServerGlobalConfigModel> model = converter.convertAndValidate(configurationModel, null);
         assertTrue(model.isEmpty());
     }
 
