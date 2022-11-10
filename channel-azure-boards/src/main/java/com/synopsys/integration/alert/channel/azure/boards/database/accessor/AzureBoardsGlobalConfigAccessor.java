@@ -115,6 +115,7 @@ public class AzureBoardsGlobalConfigAccessor implements ConfigurationAccessor<Az
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void deleteConfiguration(UUID configurationId) {
         if (null != configurationId) {
             azureBoardsConfigurationRepository.deleteById(configurationId);
