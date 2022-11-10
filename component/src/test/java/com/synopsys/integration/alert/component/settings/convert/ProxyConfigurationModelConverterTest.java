@@ -29,7 +29,7 @@ class ProxyConfigurationModelConverterTest {
     void validConversionTest() {
         ConfigurationModel configurationModel = createDefaultConfigurationModel();
         ProxyConfigurationModelConverter converter = new ProxyConfigurationModelConverter(validator);
-        Optional<SettingsProxyModel> model = converter.convertAndValidate(configurationModel);
+        Optional<SettingsProxyModel> model = converter.convertAndValidate(configurationModel, null);
         assertTrue(model.isPresent());
         SettingsProxyModel proxyModel = model.get();
         assertEquals(TEST_AUTH_USER, proxyModel.getProxyUsername().orElse(null));
@@ -46,7 +46,7 @@ class ProxyConfigurationModelConverterTest {
         configurationModel.getField(ProxyConfigurationModelConverter.FIELD_KEY_PORT)
             .ifPresent(field -> field.setFieldValue("twenty-five"));
         ProxyConfigurationModelConverter converter = new ProxyConfigurationModelConverter(validator);
-        Optional<SettingsProxyModel> model = converter.convertAndValidate(configurationModel);
+        Optional<SettingsProxyModel> model = converter.convertAndValidate(configurationModel, null);
         assertTrue(model.isEmpty());
     }
 
@@ -54,7 +54,7 @@ class ProxyConfigurationModelConverterTest {
     void emptyFieldsTest() {
         ConfigurationModel emptyModel = new ConfigurationModel(1L, 1L, "", "", ConfigContextEnum.GLOBAL, Map.of());
         ProxyConfigurationModelConverter converter = new ProxyConfigurationModelConverter(validator);
-        Optional<SettingsProxyModel> model = converter.convertAndValidate(emptyModel);
+        Optional<SettingsProxyModel> model = converter.convertAndValidate(emptyModel, null);
         assertTrue(model.isEmpty());
     }
 
