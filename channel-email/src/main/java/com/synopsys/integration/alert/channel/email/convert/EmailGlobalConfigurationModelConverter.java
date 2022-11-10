@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
@@ -95,7 +96,8 @@ public class EmailGlobalConfigurationModelConverter extends GlobalConfigurationM
     }
 
     @Override
-    protected ValidationResponseModel validate(EmailGlobalConfigModel configModel) {
+    protected ValidationResponseModel validate(EmailGlobalConfigModel configModel, @Nullable String existingConfigurationId) {
+        //Since there is only a single email global configuration, existingConfigurationId is ignored.
         return validator.validate(configModel);
     }
 

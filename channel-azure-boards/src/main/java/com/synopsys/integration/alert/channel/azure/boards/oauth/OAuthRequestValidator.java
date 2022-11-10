@@ -8,18 +8,20 @@
 package com.synopsys.integration.alert.channel.azure.boards.oauth;
 
 import java.time.Instant;
+import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.collections4.map.PassiveExpiringMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
 public class OAuthRequestValidator {
+    private static final Long TIME_TO_LIVE_IN_MILLIS = 600000L;
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final Map<UUID, OAuthRequestMapping> requestMap = new ConcurrentHashMap<>();
+    private final Map<UUID, OAuthRequestMapping> requestMap = Collections.synchronizedMap(new PassiveExpiringMap<>(TIME_TO_LIVE_IN_MILLIS));
 
     public UUID generateRequestKey() {
         return UUID.randomUUID();
@@ -59,25 +61,6 @@ public class OAuthRequestValidator {
 
     public boolean hasRequests() {
         return !requestMap.isEmpty();
-    }
-
-    //TODO Currently being used by AzureBoards to clear all requests when the user deletes a config. Will need to update this when new OAuth user is introduced
-    public void removeAllRequests() {
-        // NOTE: If there are multiple OAuth clients make sure removeAllRequests is used correctly.
-        // Do not want to remove requests for other OAuth clients inadvertently.
-        requestMap.clear();
-    }
-
-    public void removeRequestsOlderThanInstant(Instant instant) {
-        requestMap.entrySet().stream()
-            .filter(entry -> entry.getValue().getRequestTimestamp().isBefore(instant))
-            .map(Map.Entry::getKey)
-            .forEach(this::removeAuthorizationRequest);
-    }
-
-    public void removeRequestsOlderThan5MinutesAgo() {
-        Instant fiveMinutesAgo = Instant.now().minusSeconds(300);
-        removeRequestsOlderThanInstant(fiveMinutesAgo);
     }
 
     public UUID getConfigurationIdFromRequest(UUID requestKey) {

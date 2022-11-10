@@ -25,8 +25,8 @@ import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerRespon
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.event.EventManager;
+import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesFactory;
-import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesLegacy;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.AzureBoardsMessageSenderFactory;
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
@@ -73,10 +73,10 @@ public class AzureBoardsCommentEventHandler extends IssueTrackerCommentEventHand
     @Override
     public void handleEvent(AzureBoardsCommentEvent event) throws AlertException {
         UUID jobId = event.getJobId();
-        Optional<AzureBoardsJobDetailsModel> details = jobDetailsAccessor.retrieveDetails(event.getJobId());
+        Optional<AzureBoardsJobDetailsModel> details = jobDetailsAccessor.retrieveDetails(jobId);
         if (details.isPresent()) {
             AzureBoardsJobDetailsModel distributionDetails = details.get();
-            AzureBoardsPropertiesLegacy azureBoardsProperties = azureBoardsPropertiesFactory.createAzureBoardsProperties();
+            AzureBoardsProperties azureBoardsProperties = azureBoardsPropertiesFactory.createAzureBoardsPropertiesWithJobId(jobId);
             String organizationName = azureBoardsProperties.getOrganizationName();
             azureBoardsProperties.validateProperties();
 

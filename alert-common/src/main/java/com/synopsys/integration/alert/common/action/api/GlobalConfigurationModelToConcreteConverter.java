@@ -11,6 +11,7 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.Nullable;
 
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
@@ -25,14 +26,13 @@ import com.synopsys.integration.alert.common.rest.model.ConfigWithMetadata;
 public abstract class GlobalConfigurationModelToConcreteConverter<T extends ConfigWithMetadata> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public Optional<T> convertAndValidate(ConfigurationModel globalConfigurationModel) {
+    public Optional<T> convertAndValidate(ConfigurationModel globalConfigurationModel, @Nullable String existingConfigurationId) {
         Optional<T> configModel = convert(globalConfigurationModel);
 
         if (configModel.isEmpty()) {
             return Optional.empty();
         }
-
-        ValidationResponseModel validationResponseModel = validate(configModel.get());
+        ValidationResponseModel validationResponseModel = validate(configModel.get(), existingConfigurationId);
         if (validationResponseModel.hasErrors()) {
             logger.error("Converted field model validation failed: {}", validationResponseModel.getMessage());
             for (AlertFieldStatus errorStatus : validationResponseModel.getErrors().values()) {
@@ -45,5 +45,5 @@ public abstract class GlobalConfigurationModelToConcreteConverter<T extends Conf
 
     protected abstract Optional<T> convert(ConfigurationModel globalConfigurationModel);
 
-    protected abstract ValidationResponseModel validate(T configModel);
+    protected abstract ValidationResponseModel validate(T configModel, @Nullable String existingConfigurationId);
 }

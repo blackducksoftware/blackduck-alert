@@ -54,7 +54,7 @@ public class AzureBoardsGlobalConfigurationModelConverter extends GlobalConfigur
     }
 
     @Override
-    protected ValidationResponseModel validate(AzureBoardsGlobalConfigModel configModel) {
-        return validator.validate(configModel, null);
+    protected ValidationResponseModel validate(AzureBoardsGlobalConfigModel configModel, String existingConfigurationId) {
+        return validator.validate(configModel, existingConfigurationId);
     }
 }

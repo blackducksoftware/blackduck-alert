@@ -47,7 +47,10 @@ public class AzureBoardsGlobalConfigurationModelSaveActions implements GlobalCon
         Optional<UUID> defaultConfigurationId = configurationAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
             .map(AzureBoardsGlobalConfigModel::getId)
             .map(UUID::fromString);
-        Optional<AzureBoardsGlobalConfigModel> azureBoardsGlobalConfigModel = azureBoardsModelConverter.convertAndValidate(configurationModel);
+        Optional<AzureBoardsGlobalConfigModel> azureBoardsGlobalConfigModel = azureBoardsModelConverter.convertAndValidate(
+            configurationModel,
+            defaultConfigurationId.map(UUID::toString).orElse(null)
+        );
         if (azureBoardsGlobalConfigModel.isPresent()) {
             AzureBoardsGlobalConfigModel model = azureBoardsGlobalConfigModel.get();
             model.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
@@ -61,7 +64,7 @@ public class AzureBoardsGlobalConfigurationModelSaveActions implements GlobalCon
 
     @Override
     public void createConcreteModel(ConfigurationModel configurationModel) {
-        Optional<AzureBoardsGlobalConfigModel> azureBoardsGlobalConfigModel = azureBoardsModelConverter.convertAndValidate(configurationModel);
+        Optional<AzureBoardsGlobalConfigModel> azureBoardsGlobalConfigModel = azureBoardsModelConverter.convertAndValidate(configurationModel, null);
         if (azureBoardsGlobalConfigModel.isPresent()) {
             AzureBoardsGlobalConfigModel model = azureBoardsGlobalConfigModel.get();
             model.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);

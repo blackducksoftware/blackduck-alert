@@ -107,10 +107,6 @@ public class AzureBoardsOAuthAuthenticateAction {
         }
 
         UUID requestKey = oAuthRequestValidator.generateRequestKey();
-        // since we have only one OAuth channel now remove any other requests.
-        // if we have more OAuth clients then the "remove requests" will have to be removed from here.
-        // beginning authentication process create the request id at the start.
-        oAuthRequestValidator.removeRequestsOlderThan5MinutesAgo();
         oAuthRequestValidator.addAuthorizationRequest(requestKey, UUID.fromString(savedConfigModel.getId()));
 
         logger.info("OAuth authorization request created: {}", requestKey);
@@ -124,7 +120,6 @@ public class AzureBoardsOAuthAuthenticateAction {
     }
 
     private ActionResponse<OAuthEndpointResponse> createErrorResponse(HttpStatus httpStatus, String errorMessage) {
-        oAuthRequestValidator.removeAllRequests();
         OAuthEndpointResponse oAuthEndpointResponse = new OAuthEndpointResponse(false, "", errorMessage);
         return new ActionResponse<>(httpStatus, errorMessage, oAuthEndpointResponse);
     }

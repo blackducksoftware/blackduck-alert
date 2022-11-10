@@ -51,7 +51,10 @@ public class JiraServerGlobalConfigurationModelSaveActions implements GlobalConf
         Optional<UUID> defaultConfigurationId = configurationAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
             .map(JiraServerGlobalConfigModel::getId)
             .map(UUID::fromString);
-        Optional<JiraServerGlobalConfigModel> jiraGlobalConfigModel = jiraFieldModelConverter.convertAndValidate(configurationModel);
+        Optional<JiraServerGlobalConfigModel> jiraGlobalConfigModel = jiraFieldModelConverter.convertAndValidate(
+            configurationModel,
+            defaultConfigurationId.map(UUID::toString).orElse(null)
+        );
         if (jiraGlobalConfigModel.isPresent()) {
             JiraServerGlobalConfigModel model = jiraGlobalConfigModel.get();
             model.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
@@ -65,7 +68,7 @@ public class JiraServerGlobalConfigurationModelSaveActions implements GlobalConf
 
     @Override
     public void createConcreteModel(ConfigurationModel configurationModel) {
-        Optional<JiraServerGlobalConfigModel> jiraGlobalConfigModel = jiraFieldModelConverter.convertAndValidate(configurationModel);
+        Optional<JiraServerGlobalConfigModel> jiraGlobalConfigModel = jiraFieldModelConverter.convertAndValidate(configurationModel, null);
         if (jiraGlobalConfigModel.isPresent()) {
             JiraServerGlobalConfigModel model = jiraGlobalConfigModel.get();
             model.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);

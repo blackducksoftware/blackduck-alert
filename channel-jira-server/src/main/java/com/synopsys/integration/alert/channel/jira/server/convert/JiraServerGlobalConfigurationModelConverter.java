@@ -11,6 +11,7 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
@@ -69,7 +70,7 @@ public class JiraServerGlobalConfigurationModelConverter extends GlobalConfigura
     }
 
     @Override
-    protected ValidationResponseModel validate(JiraServerGlobalConfigModel configModel) {
-        return validator.validate(configModel, null);
+    protected ValidationResponseModel validate(JiraServerGlobalConfigModel configModel, @Nullable String existingConfigurationId) {
+        return validator.validate(configModel, existingConfigurationId);
     }
 }
