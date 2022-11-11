@@ -59,7 +59,6 @@ public class AzureBoardsProperties {
     private final String clientSecret;
     private final List<String> scopes;
     private final String redirectUri;
-
     private final String configurationId;
 
     public static AzureBoardsProperties fromGlobalConfigurationModel(

@@ -52,6 +52,13 @@ public class OAuthRequestValidator {
         return requestMap.containsKey(requestKey);
     }
 
+    public boolean hasRequestFromConfigurationId(String configurationId) {
+        return requestMap.values().stream()
+            .map(OAuthRequestMapping::getConfigurationId)
+            .map(UUID::toString)
+            .anyMatch(configurationId::equals);
+    }
+
     public boolean hasRequests() {
         return !requestMap.isEmpty();
     }

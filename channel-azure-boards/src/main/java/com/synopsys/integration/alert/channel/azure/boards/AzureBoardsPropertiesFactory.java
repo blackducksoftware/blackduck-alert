@@ -11,6 +11,7 @@ import com.synopsys.integration.alert.channel.azure.boards.database.accessor.Azu
 import com.synopsys.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 
 @Component
 public class AzureBoardsPropertiesFactory {
@@ -46,6 +47,37 @@ public class AzureBoardsPropertiesFactory {
         DistributionJobModel azureBoardsDistributionJobConfiguration = jobAccessor.getJobById(azureBoardsJobId)
             .orElseThrow(() -> new AlertConfigurationException("Missing Azure Boards distribution configuration"));
         return createAzureBoardsProperties(azureBoardsDistributionJobConfiguration.getChannelGlobalConfigId());
+    }
+
+    //TODO: This is used by the old field model action services. In 8.0.0, this method can be removed.
+    public AzureBoardsProperties createAzureBoardsProperties(String organizationName, String clientId, String clientSecret) throws AlertConfigurationException {
+        AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModelSaved = azureBoardsGlobalConfigAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
+            .orElseThrow(() -> new AlertConfigurationException("Missing Azure Boards global configuration"));
+        String organization = azureBoardsGlobalConfigModelSaved.getOrganizationName();
+        String appId = azureBoardsGlobalConfigModelSaved.getAppId().orElse("");
+        String secret = azureBoardsGlobalConfigModelSaved.getClientSecret().orElse("");
+        if (StringUtils.isNotBlank(organizationName)) {
+            organization = organizationName;
+        }
+        if (StringUtils.isNotBlank(clientId)) {
+            appId = clientId;
+        }
+        if (StringUtils.isNotBlank(clientSecret)) {
+            secret = clientSecret;
+        }
+
+        AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModel = new AzureBoardsGlobalConfigModel(
+            azureBoardsGlobalConfigModelSaved.getId(),
+            AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
+            organization,
+            appId,
+            secret
+        );
+        return AzureBoardsProperties.fromGlobalConfigurationModel(
+            alertOAuthCredentialDataStoreFactory,
+            azureRedirectUrlCreator.createOAuthRedirectUri(),
+            azureBoardsGlobalConfigModel
+        );
     }
 
 }

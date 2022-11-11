@@ -14,17 +14,21 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
-import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidatorLegacy;
+import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
+/**
+ * @deprecated Global configuration validators will replace old FieldModel validators as Alert switches to a new concrete REST API. This class will be removed in 8.0.0.
+ */
 @Component
+@Deprecated(forRemoval = true)
 public class AzureBoardsGlobalConfigurationFieldModelValidator implements GlobalConfigurationFieldModelValidator {
-    private final OAuthRequestValidatorLegacy oAuthRequestValidator;
+    private final OAuthRequestValidator oAuthRequestValidator;
 
     @Autowired
-    public AzureBoardsGlobalConfigurationFieldModelValidator(OAuthRequestValidatorLegacy oAuthRequestValidator) {
+    public AzureBoardsGlobalConfigurationFieldModelValidator(OAuthRequestValidator oAuthRequestValidator) {
         this.oAuthRequestValidator = oAuthRequestValidator;
     }
 

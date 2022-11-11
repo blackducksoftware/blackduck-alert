@@ -22,6 +22,7 @@ import com.synopsys.integration.alert.channel.azure.boards.database.accessor.Azu
 import com.synopsys.integration.alert.channel.azure.boards.database.configuration.AzureBoardsConfigurationEntity;
 import com.synopsys.integration.alert.channel.azure.boards.database.mock.MockAzureBoardsConfigurationRepository;
 import com.synopsys.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
+import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidator;
 import com.synopsys.integration.alert.channel.azure.boards.validator.AzureBoardsGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.ActionResponse;
@@ -48,7 +49,7 @@ class AzureBoardsGlobalTestActionTest {
     private final AlertProperties alertProperties = new MockAlertProperties();
     private final FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, gson);
     private final EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, filePersistenceUtil);
-
+    private final OAuthRequestValidator oAuthRequestValidator = new OAuthRequestValidator();
     AzureBoardsGlobalConfigAccessor azureBoardsGlobalConfigAccessor;
     AzureBoardsGlobalConfigurationValidator azureBoardsGlobalConfigurationValidator;
 
@@ -66,7 +67,7 @@ class AzureBoardsGlobalTestActionTest {
         MockRepositorySorter<AzureBoardsConfigurationEntity> sorter = new MockRepositorySorter<>();
         MockAzureBoardsConfigurationRepository mockAzureBoardsConfigurationRepository = new MockAzureBoardsConfigurationRepository(sorter);
         azureBoardsGlobalConfigAccessor = new AzureBoardsGlobalConfigAccessor(encryptionUtility, mockAzureBoardsConfigurationRepository);
-        azureBoardsGlobalConfigurationValidator = new AzureBoardsGlobalConfigurationValidator(azureBoardsGlobalConfigAccessor);
+        azureBoardsGlobalConfigurationValidator = new AzureBoardsGlobalConfigurationValidator(azureBoardsGlobalConfigAccessor, oAuthRequestValidator);
 
         Mockito.when(mockAzureRedirectUrlCreator.createOAuthRedirectUri()).thenReturn("https://www.redirect.com");
     }
