@@ -53,22 +53,25 @@ public class AzureBoardsPropertiesFactory {
     public AzureBoardsProperties createAzureBoardsProperties(String organizationName, String clientId, String clientSecret) throws AlertConfigurationException {
         AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModelSaved = azureBoardsGlobalConfigAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
             .orElseThrow(() -> new AlertConfigurationException("Missing Azure Boards global configuration"));
-        if (organizationName == null) {
-            organizationName = azureBoardsGlobalConfigModelSaved.getOrganizationName();
+        String organization = azureBoardsGlobalConfigModelSaved.getOrganizationName();
+        String appId = azureBoardsGlobalConfigModelSaved.getAppId().orElse("");
+        String secret = azureBoardsGlobalConfigModelSaved.getClientSecret().orElse("");
+        if (StringUtils.isNotBlank(organizationName)) {
+            organization = organizationName;
         }
-        if (clientId == null) {
-            clientId = azureBoardsGlobalConfigModelSaved.getAppId().orElse("");
+        if (StringUtils.isNotBlank(clientId)) {
+            appId = clientId;
         }
-        if (clientSecret == null) {
-            clientSecret = azureBoardsGlobalConfigModelSaved.getClientSecret().orElse("");
+        if (StringUtils.isNotBlank(clientSecret)) {
+            secret = clientSecret;
         }
 
         AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModel = new AzureBoardsGlobalConfigModel(
             azureBoardsGlobalConfigModelSaved.getId(),
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
-            organizationName,
-            clientId,
-            clientSecret
+            organization,
+            appId,
+            secret
         );
         return AzureBoardsProperties.fromGlobalConfigurationModel(
             alertOAuthCredentialDataStoreFactory,
