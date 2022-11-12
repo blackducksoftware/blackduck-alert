@@ -1,14 +1,22 @@
 package com.synopsys.integration.alert.channel.email.action;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.spy;
 
 import java.time.OffsetDateTime;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
@@ -22,27 +30,135 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Email
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
 
+@ExtendWith(SpringExtension.class)
 public class EmailTestActionHelperTest {
+    private final List<ProviderProject> providerProjects = createProviderProjects();
+    private final String projectOwnerEmailAddress = "project-owner@synopsys.com";
+    private final String additionalEmailAddress = "additional-email@synopsy.com";
+
+    @Mock
+    private ProviderDataAccessor providerDataAccessor;
 
     @Test
-    public void verifyAllProjectsProperlyRetrieved() throws AlertException {
-        ProviderDataAccessor providerDataAccessor = Mockito.mock(ProviderDataAccessor.class);
-        List<ProviderProject> providerProjects = createProviderProjects();
+    void verifyEmailProjectOwnerOnly() throws AlertException {
+        List<ProviderProject> singleProject = List.of(new ProviderProject("name", "description", "href", projectOwnerEmailAddress));
+        Mockito.when(providerDataAccessor.getProjectsByProviderConfigId(Mockito.anyLong())).thenReturn(singleProject);
+
+        DistributionJobModel distributionJobModel = createDistributionJobModelBuilder(createDefaultEmailJobDetails(
+            true,
+            false,
+            List.of(additionalEmailAddress)
+        ))
+            .projectNamePattern("name")
+            .filterByProject(true)
+            .build();
+
+        EmailTestActionHelper emailTestActionHelper = new EmailTestActionHelper(providerDataAccessor);
+        List<String> emailAddresses = emailTestActionHelper.createUpdatedEmailAddresses(distributionJobModel);
+
+        assertEquals(1, emailAddresses.size());
+        assertEquals(emailAddresses.get(0), projectOwnerEmailAddress);
+    }
+
+    @Test
+    void verifyAdditionalEmailAddressesOnly() throws AlertException {
+        List<ProviderProject> singleProject = List.of(new ProviderProject("name", "description", "href", projectOwnerEmailAddress));
+        Mockito.when(providerDataAccessor.getProjectsByProviderConfigId(Mockito.anyLong())).thenReturn(singleProject);
+
+        DistributionJobModel distributionJobModel = createDistributionJobModelBuilder(createDefaultEmailJobDetails(false, true, List.of(additionalEmailAddress))).build();
+
+        EmailTestActionHelper emailTestActionHelper = new EmailTestActionHelper(providerDataAccessor);
+        List<String> emailAddresses = emailTestActionHelper.createUpdatedEmailAddresses(distributionJobModel);
+
+        assertEquals(1, emailAddresses.size());
+        assertEquals(emailAddresses.get(0), additionalEmailAddress);
+    }
+
+    @Test
+    void verifyEmailOwnerAndAdditional() throws AlertException {
+        Long blackduckGlobalConfigId = new Random().nextLong();
+        List<ProviderProject> singleProject = List.of(new ProviderProject("name", "description", "href", projectOwnerEmailAddress));
+        Mockito.when(providerDataAccessor.getProjectsByProviderConfigId(Mockito.anyLong())).thenReturn(singleProject);
+        Mockito.when(providerDataAccessor.getEmailAddressesForProjectHref(Mockito.eq(blackduckGlobalConfigId), Mockito.anyString()))
+            .thenAnswer(i -> Set.of(projectOwnerEmailAddress));
+
+        DistributionJobModel distributionJobModel = createDistributionJobModelBuilder(createDefaultEmailJobDetails(
+            false,
+            false,
+            List.of(additionalEmailAddress)
+        )).blackDuckGlobalConfigId(blackduckGlobalConfigId).build();
+
+        EmailTestActionHelper emailTestActionHelper = new EmailTestActionHelper(providerDataAccessor);
+        List<String> emailAddresses = emailTestActionHelper.createUpdatedEmailAddresses(distributionJobModel);
+
+        assertEquals(2, emailAddresses.size());
+        assertTrue(emailAddresses.contains(projectOwnerEmailAddress));
+        assertTrue(emailAddresses.contains(additionalEmailAddress));
+    }
+
+    @Test
+    void verifyEmptyProjectEmailThrowsException() {
+        List<ProviderProject> singleProject = List.of(new ProviderProject("name", "description", "href", ""));
+        Mockito.when(providerDataAccessor.getProjectsByProviderConfigId(Mockito.anyLong())).thenReturn(singleProject);
+
+        DistributionJobModel distributionJobModel = createDistributionJobModelBuilder(createDefaultEmailJobDetails(true, false, List.of(additionalEmailAddress)))
+            .projectNamePattern("na.*")
+            .filterByProject(true)
+            .build();
+
+        EmailTestActionHelper emailTestActionHelper = new EmailTestActionHelper(providerDataAccessor);
+
+        assertThrows(AlertException.class, () -> emailTestActionHelper.createUpdatedEmailAddresses(distributionJobModel));
+    }
+
+    @Test
+    void verifyNullProviderConfigId() throws AlertException {
+        DistributionJobModel distributionJobModel = createDefaultDistributionJobModel();
+
+        DistributionJobModel spiedDistributionJobModel = spy(distributionJobModel);
+        Mockito.doReturn(distributionJobModel.getDistributionJobDetails()).when(spiedDistributionJobModel).getDistributionJobDetails();
+        Mockito.doReturn(null).when(spiedDistributionJobModel).getBlackDuckGlobalConfigId();
+
+        EmailTestActionHelper emailTestActionHelper = new EmailTestActionHelper(providerDataAccessor);
+        List<String> updatedEmailAddresses = emailTestActionHelper.createUpdatedEmailAddresses(spiedDistributionJobModel);
+        assertEquals(updatedEmailAddresses, Collections.emptyList());
+    }
+
+    @Test
+    void verifyNoMatchingPattern() throws AlertException {
+        List<ProviderProject> singleProject = List.of(new ProviderProject("name", "description", "href", projectOwnerEmailAddress));
+        Mockito.when(providerDataAccessor.getProjectsByProviderConfigId(Mockito.anyLong())).thenReturn(singleProject);
+
+        DistributionJobModel distributionJobModel = createDistributionJobModelBuilder(createDefaultEmailJobDetails(
+            true,
+            false,
+            List.of(additionalEmailAddress)
+        ))
+            .projectNamePattern("pattern")
+            .filterByProject(true)
+            .build();
+
+        EmailTestActionHelper emailTestActionHelper = new EmailTestActionHelper(providerDataAccessor);
+        List<String> emailAddresses = emailTestActionHelper.createUpdatedEmailAddresses(distributionJobModel);
+
+        assertEquals(Collections.emptyList(), emailAddresses);
+    }
+
+    @Test
+    void verifyAllProjectsProperlyRetrieved() throws AlertException {
         Mockito.when(providerDataAccessor.getProjectsByProviderConfigId(Mockito.anyLong())).thenReturn(providerProjects);
         Mockito.when(providerDataAccessor.getEmailAddressesForProjectHref(Mockito.anyLong(), Mockito.anyString())).thenAnswer(i -> Set.of(UUID.randomUUID().toString()));
 
         EmailTestActionHelper emailTestActionHelper = new EmailTestActionHelper(providerDataAccessor);
 
         DistributionJobModel distributionJobModel = createDefaultDistributionJobModel();
-        Set<String> emailAddresses = emailTestActionHelper.createUpdatedEmailAddresses(distributionJobModel);
+        List<String> emailAddresses = emailTestActionHelper.createUpdatedEmailAddresses(distributionJobModel);
 
         assertEquals(providerProjects.size(), emailAddresses.size());
     }
 
     @Test
-    public void verifyProjectsRetrievedWithOnlyVersionPattern() throws AlertException {
-        ProviderDataAccessor providerDataAccessor = Mockito.mock(ProviderDataAccessor.class);
-        List<ProviderProject> providerProjects = createProviderProjects();
+    void verifyProjectsRetrievedWithOnlyVersionPattern() throws AlertException {
         Mockito.when(providerDataAccessor.getProjectsByProviderConfigId(Mockito.anyLong())).thenReturn(providerProjects);
         Mockito.when(providerDataAccessor.getEmailAddressesForProjectHref(Mockito.anyLong(), Mockito.anyString())).thenAnswer(i -> Set.of(UUID.randomUUID().toString()));
         Mockito.when(providerDataAccessor.getProjectVersionNamesByHref(Mockito.anyLong(), Mockito.anyString(), Mockito.anyInt())).thenReturn(getProjectVersions());
@@ -50,12 +166,12 @@ public class EmailTestActionHelperTest {
         EmailTestActionHelper emailTestActionHelper = new EmailTestActionHelper(providerDataAccessor);
 
         DistributionJobModel distributionJobModel = createDistributionJobModel(
-            createDefaultEmailJobDetails(),
+            createDefaultEmailJobDetails(false, false, List.of()),
             null,
             "1.0.*",
             List.of()
         );
-        Set<String> emailAddresses = emailTestActionHelper.createUpdatedEmailAddresses(distributionJobModel);
+        List<String> emailAddresses = emailTestActionHelper.createUpdatedEmailAddresses(distributionJobModel);
 
         assertEquals(providerProjects.size(), emailAddresses.size());
     }
@@ -81,17 +197,18 @@ public class EmailTestActionHelperTest {
     }
 
     private DistributionJobModel createDefaultDistributionJobModel() {
-        return createDistributionJobModelBuilder(createDefaultEmailJobDetails()).build();
+        return createDistributionJobModelBuilder(createDefaultEmailJobDetails(false, false, List.of())).build();
     }
 
-    private EmailJobDetailsModel createDefaultEmailJobDetails() {
+    private EmailJobDetailsModel createDefaultEmailJobDetails(boolean projectOwnerOnly, boolean additionalEmailAddressesOnly, List<String> additionalEmailAddresses) {
         return new EmailJobDetailsModel(
             UUID.randomUUID(),
             null,
-            false,
-            false,
+            projectOwnerOnly,
+            additionalEmailAddressesOnly,
             "none",
-            List.of());
+            additionalEmailAddresses
+        );
     }
 
     private DistributionJobModelBuilder createDistributionJobModelBuilder(EmailJobDetailsModel emailJobDetailsModel) {
