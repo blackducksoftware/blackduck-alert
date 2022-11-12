@@ -57,7 +57,7 @@ public class AuthenticationTestUtils {
     }
 
     public void addUserWithRole(String userName, Set<String> roleNames) {
-        Set<String> existingRoles = userToRoleNamesMap.computeIfAbsent(userName, (ignored) -> new HashSet<>());
+        Set<String> existingRoles = userToRoleNamesMap.computeIfAbsent(userName, ignored -> new HashSet<>());
         existingRoles.addAll(roleNames);
     }
 
