@@ -3,7 +3,6 @@ package com.synopsys.integration.alert.channel.email.action;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.spy;
 
 import java.time.OffsetDateTime;
 import java.util.Collections;
@@ -109,19 +108,6 @@ public class EmailTestActionHelperTest {
         EmailTestActionHelper emailTestActionHelper = new EmailTestActionHelper(providerDataAccessor);
 
         assertThrows(AlertException.class, () -> emailTestActionHelper.createUpdatedEmailAddresses(distributionJobModel));
-    }
-
-    @Test
-    void verifyNullProviderConfigId() throws AlertException {
-        DistributionJobModel distributionJobModel = createDefaultDistributionJobModel();
-
-        DistributionJobModel spiedDistributionJobModel = spy(distributionJobModel);
-        Mockito.doReturn(distributionJobModel.getDistributionJobDetails()).when(spiedDistributionJobModel).getDistributionJobDetails();
-        Mockito.doReturn(null).when(spiedDistributionJobModel).getBlackDuckGlobalConfigId();
-
-        EmailTestActionHelper emailTestActionHelper = new EmailTestActionHelper(providerDataAccessor);
-        List<String> updatedEmailAddresses = emailTestActionHelper.createUpdatedEmailAddresses(spiedDistributionJobModel);
-        assertEquals(Collections.emptyList(), updatedEmailAddresses);
     }
 
     @Test

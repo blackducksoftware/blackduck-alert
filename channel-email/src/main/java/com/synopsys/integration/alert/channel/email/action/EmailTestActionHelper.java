@@ -46,17 +46,11 @@ public class EmailTestActionHelper {
         DistributionJobDetailsModel distributionJobDetails = distributionJobModel.getDistributionJobDetails();
         EmailJobDetailsModel emailJobDetails = distributionJobDetails.getAs(DistributionJobDetailsModel.EMAIL);
 
-        Long providerConfigId = distributionJobModel.getBlackDuckGlobalConfigId();
-        // Won't this be caught as part of validation. Do we need this check?
-        if (null == providerConfigId) {
-            return Collections.emptyList();
-        }
-
         if (emailJobDetails.isAdditionalEmailAddressesOnly()) {
             return emailJobDetails.getAdditionalEmailAddresses();
         }
 
-        List<String> emailAddresses = getProviderEmailAddresses(emailJobDetails, distributionJobModel, providerConfigId);
+        List<String> emailAddresses = getProviderEmailAddresses(emailJobDetails, distributionJobModel);
 
         if (!emailJobDetails.isProjectOwnerOnly()) {
             emailAddresses.addAll(emailJobDetails.getAdditionalEmailAddresses());
@@ -65,8 +59,9 @@ public class EmailTestActionHelper {
         return emailAddresses;
     }
 
-    private List<String> getProviderEmailAddresses(EmailJobDetailsModel emailJobDetails, DistributionJobModel distributionJobModel, Long providerConfigId)
+    private List<String> getProviderEmailAddresses(EmailJobDetailsModel emailJobDetails, DistributionJobModel distributionJobModel)
         throws AlertFieldException {
+        Long providerConfigId = distributionJobModel.getBlackDuckGlobalConfigId();
         Set<ProviderProject> providerProjects = retrieveProviderProjects(distributionJobModel, providerConfigId);
         if (CollectionUtils.isNotEmpty(providerProjects)) {
             return new ArrayList<>(addEmailAddresses(providerConfigId, providerProjects, distributionJobModel, emailJobDetails));
