@@ -121,7 +121,7 @@ public class EmailTestActionHelperTest {
 
         EmailTestActionHelper emailTestActionHelper = new EmailTestActionHelper(providerDataAccessor);
         List<String> updatedEmailAddresses = emailTestActionHelper.createUpdatedEmailAddresses(spiedDistributionJobModel);
-        assertEquals(updatedEmailAddresses, Collections.emptyList());
+        assertEquals(Collections.emptyList(), updatedEmailAddresses);
     }
 
     @Test
