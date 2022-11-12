@@ -7,9 +7,7 @@
  */
 package com.synopsys.integration.alert.channel.email.action;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -34,14 +32,8 @@ public class EmailDistributionTestAction extends DistributionChannelMessageTestA
 
     @Override
     protected EmailJobDetailsModel resolveTestDistributionDetails(DistributionJobModel testJobModel) throws AlertException {
-        Set<String> updateEmailAddresses = emailTestActionHelper.createUpdatedEmailAddresses(testJobModel);
+        List<String> updateEmailAddresses = emailTestActionHelper.createUpdatedEmailAddresses(testJobModel);
         EmailJobDetailsModel originalEmailJobDetails = testJobModel.getDistributionJobDetails().getAs(DistributionJobDetailsModel.EMAIL);
-
-        // For testing configuration, just use additional email addresses field
-        List<String> originalAdditionalEmailAddresses = originalEmailJobDetails.getAdditionalEmailAddresses();
-        List<String> additionalEmailAddressesToUse = new ArrayList<>(updateEmailAddresses.size() + originalAdditionalEmailAddresses.size());
-        additionalEmailAddressesToUse.addAll(originalAdditionalEmailAddresses);
-        additionalEmailAddressesToUse.addAll(updateEmailAddresses);
 
         return new EmailJobDetailsModel(
             testJobModel.getJobId(),
@@ -49,7 +41,7 @@ public class EmailDistributionTestAction extends DistributionChannelMessageTestA
             false,
             true,
             originalEmailJobDetails.getAttachmentFileType(),
-            additionalEmailAddressesToUse
+            updateEmailAddresses
         );
     }
 
