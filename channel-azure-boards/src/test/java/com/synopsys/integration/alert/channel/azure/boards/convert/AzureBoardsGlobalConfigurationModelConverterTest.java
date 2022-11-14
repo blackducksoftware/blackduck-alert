@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,7 @@ import com.synopsys.integration.alert.channel.azure.boards.validator.AzureBoards
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 
 @ExtendWith(SpringExtension.class)
 class AzureBoardsGlobalConfigurationModelConverterTest {
@@ -48,6 +50,31 @@ class AzureBoardsGlobalConfigurationModelConverterTest {
         AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModel = model.get();
 
         assertNull(azureBoardsGlobalConfigModel.getId());
+        assertEquals(TEST_ORGANIZATION_NAME, azureBoardsGlobalConfigModel.getOrganizationName());
+        assertEquals(TEST_CLIENT_ID, azureBoardsGlobalConfigModel.getAppId().orElse("Client ID is missing"));
+        assertEquals(TEST_CLIENT_SECRET, azureBoardsGlobalConfigModel.getClientSecret().orElse("Client Secret is missing"));
+    }
+
+    @Test
+    void validConversionWithExistingConfigTest() {
+        String uuid = UUID.randomUUID().toString();
+        ConfigurationModel configurationModel = createDefaultConfigurationModel();
+
+        AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModelSaved = new AzureBoardsGlobalConfigModel(
+            uuid,
+            AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
+            TEST_ORGANIZATION_NAME,
+            TEST_CLIENT_ID,
+            TEST_CLIENT_SECRET
+        );
+        Mockito.when(azureBoardsGlobalConfigAccessor.getConfigurationByName(Mockito.anyString())).thenReturn(Optional.of(azureBoardsGlobalConfigModelSaved));
+        validator = new AzureBoardsGlobalConfigurationValidator(azureBoardsGlobalConfigAccessor, oAuthRequestValidator);
+
+        AzureBoardsGlobalConfigurationModelConverter converter = new AzureBoardsGlobalConfigurationModelConverter(validator);
+        Optional<AzureBoardsGlobalConfigModel> model = converter.convertAndValidate(configurationModel, uuid);
+        assertTrue(model.isPresent());
+        AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModel = model.get();
+
         assertEquals(TEST_ORGANIZATION_NAME, azureBoardsGlobalConfigModel.getOrganizationName());
         assertEquals(TEST_CLIENT_ID, azureBoardsGlobalConfigModel.getAppId().orElse("Client ID is missing"));
         assertEquals(TEST_CLIENT_SECRET, azureBoardsGlobalConfigModel.getClientSecret().orElse("Client Secret is missing"));
