@@ -73,7 +73,7 @@ public class AzureBoardsGlobalApiAction extends ApiAction {
 
     @Override
     public void afterDeleteAction(FieldModel fieldModel) throws AlertException {
-
+        // Previously the oAuthRequests were deleted in the afterDeleteAction. This is now handled by authenticate and callback actions.
     }
 
     private FieldModel updateTokenFields(FieldModel fieldModel, ConfigurationModel configurationModel) {
