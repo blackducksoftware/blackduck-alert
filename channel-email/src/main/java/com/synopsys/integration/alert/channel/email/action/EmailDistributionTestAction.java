@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.channel.email.action;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ public class EmailDistributionTestAction extends DistributionChannelMessageTestA
 
     @Override
     protected EmailJobDetailsModel resolveTestDistributionDetails(DistributionJobModel testJobModel) throws AlertException {
-        List<String> updateEmailAddresses = emailTestActionHelper.createUpdatedEmailAddresses(testJobModel);
+        List<String> updateEmailAddresses = new ArrayList<>(emailTestActionHelper.createUpdatedEmailAddresses(testJobModel));
         EmailJobDetailsModel originalEmailJobDetails = testJobModel.getDistributionJobDetails().getAs(DistributionJobDetailsModel.EMAIL);
 
         return new EmailJobDetailsModel(

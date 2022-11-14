@@ -42,15 +42,15 @@ public class EmailTestActionHelper {
         this.providerDataAccessor = providerDataAccessor;
     }
 
-    public List<String> createUpdatedEmailAddresses(DistributionJobModel distributionJobModel) throws AlertException {
+    public Set<String> createUpdatedEmailAddresses(DistributionJobModel distributionJobModel) throws AlertException {
         DistributionJobDetailsModel distributionJobDetails = distributionJobModel.getDistributionJobDetails();
         EmailJobDetailsModel emailJobDetails = distributionJobDetails.getAs(DistributionJobDetailsModel.EMAIL);
 
         if (emailJobDetails.isAdditionalEmailAddressesOnly()) {
-            return emailJobDetails.getAdditionalEmailAddresses();
+            return new HashSet<>(emailJobDetails.getAdditionalEmailAddresses());
         }
 
-        List<String> emailAddresses = getProviderEmailAddresses(emailJobDetails, distributionJobModel);
+        Set<String> emailAddresses = new HashSet<>(getProviderEmailAddresses(emailJobDetails, distributionJobModel));
 
         if (!emailJobDetails.isProjectOwnerOnly()) {
             emailAddresses.addAll(emailJobDetails.getAdditionalEmailAddresses());

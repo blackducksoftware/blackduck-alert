@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.OffsetDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -53,10 +52,10 @@ public class EmailTestActionHelperTest {
             .build();
 
         EmailTestActionHelper emailTestActionHelper = new EmailTestActionHelper(providerDataAccessor);
-        List<String> emailAddresses = emailTestActionHelper.createUpdatedEmailAddresses(distributionJobModel);
+        Set<String> emailAddresses = emailTestActionHelper.createUpdatedEmailAddresses(distributionJobModel);
 
         assertEquals(1, emailAddresses.size());
-        assertEquals(emailAddresses.get(0), projectOwnerEmailAddress);
+        assertTrue(emailAddresses.contains(projectOwnerEmailAddress));
     }
 
     @Test
@@ -64,13 +63,17 @@ public class EmailTestActionHelperTest {
         List<ProviderProject> singleProject = List.of(new ProviderProject("name", "description", "href", projectOwnerEmailAddress));
         Mockito.when(providerDataAccessor.getProjectsByProviderConfigId(Mockito.anyLong())).thenReturn(singleProject);
 
-        DistributionJobModel distributionJobModel = createDistributionJobModelBuilder(createDefaultEmailJobDetails(false, true, List.of(additionalEmailAddress))).build();
+        DistributionJobModel distributionJobModel = createDistributionJobModelBuilder(createDefaultEmailJobDetails(
+            false,
+            true,
+            List.of(additionalEmailAddress, additionalEmailAddress)
+        )).build();
 
         EmailTestActionHelper emailTestActionHelper = new EmailTestActionHelper(providerDataAccessor);
-        List<String> emailAddresses = emailTestActionHelper.createUpdatedEmailAddresses(distributionJobModel);
+        Set<String> emailAddresses = emailTestActionHelper.createUpdatedEmailAddresses(distributionJobModel);
 
         assertEquals(1, emailAddresses.size());
-        assertEquals(emailAddresses.get(0), additionalEmailAddress);
+        assertTrue(emailAddresses.contains(additionalEmailAddress));
     }
 
     @Test
@@ -84,11 +87,11 @@ public class EmailTestActionHelperTest {
         DistributionJobModel distributionJobModel = createDistributionJobModelBuilder(createDefaultEmailJobDetails(
             false,
             false,
-            List.of(additionalEmailAddress)
+            List.of(additionalEmailAddress, additionalEmailAddress)
         )).blackDuckGlobalConfigId(blackduckGlobalConfigId).build();
 
         EmailTestActionHelper emailTestActionHelper = new EmailTestActionHelper(providerDataAccessor);
-        List<String> emailAddresses = emailTestActionHelper.createUpdatedEmailAddresses(distributionJobModel);
+        Set<String> emailAddresses = emailTestActionHelper.createUpdatedEmailAddresses(distributionJobModel);
 
         assertEquals(2, emailAddresses.size());
         assertTrue(emailAddresses.contains(projectOwnerEmailAddress));
@@ -125,9 +128,9 @@ public class EmailTestActionHelperTest {
             .build();
 
         EmailTestActionHelper emailTestActionHelper = new EmailTestActionHelper(providerDataAccessor);
-        List<String> emailAddresses = emailTestActionHelper.createUpdatedEmailAddresses(distributionJobModel);
+        Set<String> emailAddresses = emailTestActionHelper.createUpdatedEmailAddresses(distributionJobModel);
 
-        assertEquals(Collections.emptyList(), emailAddresses);
+        assertTrue(emailAddresses.isEmpty());
     }
 
     @Test
@@ -138,7 +141,7 @@ public class EmailTestActionHelperTest {
         EmailTestActionHelper emailTestActionHelper = new EmailTestActionHelper(providerDataAccessor);
 
         DistributionJobModel distributionJobModel = createDefaultDistributionJobModel();
-        List<String> emailAddresses = emailTestActionHelper.createUpdatedEmailAddresses(distributionJobModel);
+        Set<String> emailAddresses = emailTestActionHelper.createUpdatedEmailAddresses(distributionJobModel);
 
         assertEquals(providerProjects.size(), emailAddresses.size());
     }
@@ -157,7 +160,7 @@ public class EmailTestActionHelperTest {
             "1.0.*",
             List.of()
         );
-        List<String> emailAddresses = emailTestActionHelper.createUpdatedEmailAddresses(distributionJobModel);
+        Set<String> emailAddresses = emailTestActionHelper.createUpdatedEmailAddresses(distributionJobModel);
 
         assertEquals(providerProjects.size(), emailAddresses.size());
     }
