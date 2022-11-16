@@ -175,7 +175,7 @@ const AzureBoardsForm = ({ csrfToken, errorHandler, readonly, displayTest }) => 
                     id={AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.configureOAuth}
                     name={AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.configureOAuth}
                     label="Microsoft OAuth"
-                    buttonLabel="Save Authenticate"
+                    buttonLabel="Save/Authenticate"
                     description="This will redirect you to Microsoft's OAuth login. To clear the Oauth request cache, please delete and reconfigure the Azure fields.  Please note you will remain logged in; for security reasons you may want to logout of your Microsoft account after authenticating the application."
                     onSendClick={authenticateAzureForm}
                     fieldKey={AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.configureOAuth}
