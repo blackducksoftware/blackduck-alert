@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,7 @@ import com.synopsys.integration.alert.channel.jira.server.validator.JiraServerGl
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 
 class JiraServerGlobalConfigurationModelConverterTest {
     public static final String TEST_URL = "http://test.jira.example.com";
@@ -48,6 +50,34 @@ class JiraServerGlobalConfigurationModelConverterTest {
         assertEquals(TEST_PASSWORD, jiraModel.getPassword().orElse("Password value is missing"));
         assertTrue(jiraModel.getDisablePluginCheck().orElse(Boolean.FALSE));
 
+    }
+
+    @Test
+    void validConversionWithExistingConfigTest() {
+        String uuid = UUID.randomUUID().toString();
+        ConfigurationModel configurationModel = createDefaultConfigurationModel();
+
+        JiraServerGlobalConfigModel jiraServerGlobalConfigModelSaved = new JiraServerGlobalConfigModel(
+            uuid,
+            AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
+            TEST_URL,
+            TEST_USERNAME,
+            TEST_PASSWORD
+        );
+        JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
+        Mockito.when(jiraServerGlobalConfigAccessor.getConfigurationByName(Mockito.anyString())).thenReturn(Optional.of(jiraServerGlobalConfigModelSaved));
+        validator = new JiraServerGlobalConfigurationValidator(jiraServerGlobalConfigAccessor);
+
+        JiraServerGlobalConfigurationModelConverter converter = new JiraServerGlobalConfigurationModelConverter(validator);
+        Optional<JiraServerGlobalConfigModel> model = converter.convertAndValidate(configurationModel, uuid);
+
+        assertTrue(model.isPresent());
+        JiraServerGlobalConfigModel jiraModel = model.get();
+
+        assertEquals(TEST_URL, jiraModel.getUrl());
+        assertEquals(TEST_USERNAME, jiraModel.getUserName());
+        assertEquals(TEST_PASSWORD, jiraModel.getPassword().orElse("Password value is missing"));
+        assertTrue(jiraModel.getDisablePluginCheck().orElse(Boolean.FALSE));
     }
 
     @Test
