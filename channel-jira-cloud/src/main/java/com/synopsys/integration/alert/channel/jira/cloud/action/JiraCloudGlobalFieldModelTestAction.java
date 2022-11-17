@@ -61,7 +61,7 @@ public class JiraCloudGlobalFieldModelTestAction extends JiraGlobalFieldModelTes
         JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
         IssueSearchService issueSearchService = jiraCloudServiceFactory.createIssueSearchService();
         IssueSearchResponseModel issueSearchResponseModel = issueSearchService.queryForIssuePage("", 0, 1);
-        return issueSearchResponseModel.getIssues().isEmpty();
+        return !issueSearchResponseModel.getIssues().isEmpty();
     }
 
     @Override
