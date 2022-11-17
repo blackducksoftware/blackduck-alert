@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import Table from 'common/component/table/Table';
 import PermissionTableActions from 'page/user/roles/PermissionTableActions';
 import PermissionCell from 'page/user/roles/PermissionCell';
+import PermissionNameCell from 'page/user/roles/PermissionNameCell';
 import PermissionRowAction from 'page/user/roles/PermissionRowAction';
 import * as DescriptorUtilities from 'common/util/descriptorUtilities';
 import { useSelector } from 'react-redux';
@@ -31,7 +32,8 @@ const PermissionTable = ({ data, role, sendPermissionArray }) => {
     const COLUMNS = [{
         key: 'descriptorName',
         label: 'Descriptor',
-        sortable: true
+        sortable: true,
+        customCell: PermissionNameCell
     }, {
         key: 'context',
         label: 'Context',
