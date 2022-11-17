@@ -37,13 +37,13 @@ public abstract class AbstractChannelMessageConverter<D extends DistributionJobD
     public final List<T> convertToChannelMessages(D distributionDetails, ProviderMessageHolder messages, String jobName) {
         List<T> convertedSimpleMessages = convertProviderMessagesToChannelMessages(
             messages.getSimpleMessages(),
-            (simpleMessage) -> simpleMessageConverter.convertToFormattedMessageChunks(simpleMessage, jobName),
+            simpleMessage -> simpleMessageConverter.convertToFormattedMessageChunks(simpleMessage, jobName),
             (message, formattedMessageChunks) -> convertSimpleMessageToChannelMessages(distributionDetails, message, formattedMessageChunks)
         );
 
         List<T> convertedProjectMessages = convertProviderMessagesToChannelMessages(
             messages.getProjectMessages(),
-            (projectMessage) -> projectMessageConverter.convertToFormattedMessageChunks(projectMessage, jobName),
+            projectMessage -> projectMessageConverter.convertToFormattedMessageChunks(projectMessage, jobName),
             (message, formattedMessageChunks) -> convertProjectMessageToChannelMessages(distributionDetails, message, formattedMessageChunks)
         );
 

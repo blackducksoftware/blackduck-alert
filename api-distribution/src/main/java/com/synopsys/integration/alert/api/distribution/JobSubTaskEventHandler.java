@@ -33,7 +33,7 @@ public abstract class JobSubTaskEventHandler<T extends JobSubTaskEvent> implemen
             Optional<JobSubTaskStatusModel> subTaskStatus = jobSubTaskAccessor.decrementTaskCount(parentEventId);
             subTaskStatus.map(JobSubTaskStatusModel::getRemainingTaskCount)
                 .filter(remainingCount -> remainingCount < 1)
-                .ifPresent((ignored) -> {
+                .ifPresent(ignored -> {
                     eventManager.sendEvent(new AuditSuccessEvent(event.getJobId(), event.getNotificationIds()));
                     jobSubTaskAccessor.removeSubTaskStatus(parentEventId);
                 });

@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 
 public class MessageReplacementValues {
-    public final static String DEFAULT_NOTIFICATION_REPLACEMENT_VALUE = "None";
+    public static final String DEFAULT_NOTIFICATION_REPLACEMENT_VALUE = "None";
 
     private final String providerType;
     private final String projectName;

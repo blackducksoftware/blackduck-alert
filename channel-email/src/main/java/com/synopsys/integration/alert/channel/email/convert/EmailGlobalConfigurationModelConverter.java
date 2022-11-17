@@ -106,7 +106,7 @@ public class EmailGlobalConfigurationModelConverter extends GlobalConfigurationM
         Map<String, ConfigurationFieldModel> keyToValue = globalConfigurationModel.getCopyOfKeyToFieldMap();
         keyToValue.entrySet().stream()
             .filter(validAdditionalPropertiesKeyTest)
-            .forEach(entry -> additionalPropertiesMap.computeIfAbsent(entry.getKey(), (key) -> globalConfigurationModel.getField(key)
+            .forEach(entry -> additionalPropertiesMap.computeIfAbsent(entry.getKey(), key -> globalConfigurationModel.getField(key)
                 .flatMap(ConfigurationFieldModel::getFieldValue)
                 .orElse(StringUtils.EMPTY)));
         return additionalPropertiesMap;
