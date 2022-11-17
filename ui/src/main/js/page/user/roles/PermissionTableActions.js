@@ -74,7 +74,7 @@ const useStyles = createUseStyles({
     permissionOptions: {
         display: 'flex',
         justifyContent: 'flex-end',
-        paddingRight: '30px',
+        paddingRight: '95px',
         columnGap: '35px',
         marginBottom: '5px'
     }
@@ -82,6 +82,13 @@ const useStyles = createUseStyles({
 
 const PermissionTableActions = ({ handleValidatePermission }) => {
     const classes = useStyles();
+    const CONTEXT = 'context';
+    const DESCRIPTOR = 'descriptorName';
+    const [showCreatePermission, setShowCreatePermission] = useState(false);
+    const [newPermission, setNewPermission] = useState({'uploadDelete': undefined, 'uploadWrite': undefined, 'uploadRead': undefined});
+    const [fieldErrors, setFieldErrors] = useState({});
+
+    const descriptors = useSelector(state => state.descriptors.items);
 
     function getBtnStyle(muted) {
         return classNames(classes.createRoleBtn, {
@@ -89,22 +96,6 @@ const PermissionTableActions = ({ handleValidatePermission }) => {
             [classes.mutedCreateBtn]: muted,
         });
     }
-
-    const CONTEXT = 'context';
-    const DESCRIPTOR = 'descriptorName';
-    const contextOptions = [{
-        label: 'Global',
-        value: 'GLOBAL'
-    }, {
-        label: 'Distribution',
-        value: 'DISTRIBUTION'
-    }]
-
-    const [showCreatePermission, setShowCreatePermission] = useState(false);
-    const [newPermission, setNewPermission] = useState({'uploadDelete': undefined, 'uploadWrite': undefined, 'uploadRead': undefined});
-    const [fieldErrors, setFieldErrors] = useState({});
-
-    const descriptors = useSelector(state => state.descriptors.items);
 
     function createDescriptorOptions(descriptors) {
         const descriptorOptions = [];
@@ -124,6 +115,21 @@ const PermissionTableActions = ({ handleValidatePermission }) => {
         return descriptorOptions;
     }
 
+    function createContextOptions(descriptors, selectedPermission) {
+        const availableContexts = [];
+        if (selectedPermission.descriptorName) {
+            descriptors.forEach((descriptor) => {
+                if (descriptor.name === selectedPermission.descriptorName) {
+                    availableContexts.push(descriptor.context);
+                }
+            });
+        }
+
+        return availableContexts.map((context) => ({
+            label: context,
+            value: context
+        }));
+    }
     function handleCreateUserClick() {
         setShowCreatePermission(!showCreatePermission);
     }
@@ -214,7 +220,7 @@ const PermissionTableActions = ({ handleValidatePermission }) => {
                         name={CONTEXT}
                         id={CONTEXT}
                         label="Context"
-                        options={contextOptions}
+                        options={createContextOptions(descriptors, newPermission)}
                         clearable={false}
                         onChange={handleDropdownChange}
                         value={[newPermission.context]}
