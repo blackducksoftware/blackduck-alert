@@ -16,7 +16,7 @@ public final class AzureBoardsSearchPropertiesUtils {
     public static final String URL_DELIMITER = "|";
     public static final String LINKABLE_ITEM_DELIMITER = ":";
 
-    private static final int MAX_KEY_LENGTH = 256;
+    public static final int MAX_KEY_LENGTH = 255;
 
     public static String createProviderKey(String providerName, String providerUrl) {
         StringBuilder providerKeyBuilder = new StringBuilder();
@@ -43,7 +43,7 @@ public final class AzureBoardsSearchPropertiesUtils {
                 linkableItemBuilder.append(url);
             });
 
-        // Truncating to a valid amount listed here https://github.com/MicrosoftDocs/azure-devops-docs/issues/5890.
+        // Truncating to a valid amount listed here (type - String, label values are 255 char limit): https://learn.microsoft.com/en-us/azure/devops/reference/xml/field-definition-element-reference?view=azure-devops-2022.
         return StringUtils.truncate(linkableItemBuilder.toString(), MAX_KEY_LENGTH);
     }
 
