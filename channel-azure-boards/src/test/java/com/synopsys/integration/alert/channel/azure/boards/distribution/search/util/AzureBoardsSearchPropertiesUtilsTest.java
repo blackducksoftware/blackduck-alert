@@ -29,6 +29,6 @@ class AzureBoardsSearchPropertiesUtilsTest {
         LinkableItem linkableItem = new LinkableItem(label, value, url);
         String stringWithQuotesEscaped = AzureBoardsSearchPropertiesUtils.createNullableLinkableItemKey(linkableItem);
 
-        assertEquals(AzureBoardsSearchPropertiesUtils.MAX_KEY_LENGTH, stringWithQuotesEscaped.length());
+        assertEquals(AzureBoardsSearchPropertiesUtils.MAX_STRING_VALUE_LENGTH, stringWithQuotesEscaped.length());
     }
 }
