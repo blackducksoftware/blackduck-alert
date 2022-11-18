@@ -4,7 +4,6 @@ export const AZURE_BOARDS_INFO = {
     label: 'Azure Boards'
 };
 
-// Remove 'UPDATED' prior to merge
 export const AZURE_BOARDS_GLOBAL_FIELD_KEYS = {
     organization: 'organizationName',
     appId: 'appId',
