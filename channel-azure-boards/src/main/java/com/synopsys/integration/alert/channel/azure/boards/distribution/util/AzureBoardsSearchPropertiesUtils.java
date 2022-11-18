@@ -16,7 +16,7 @@ public final class AzureBoardsSearchPropertiesUtils {
     public static final String URL_DELIMITER = "|";
     public static final String LINKABLE_ITEM_DELIMITER = ":";
 
-    private static final int MAX_KEY_LENGTH = 255;
+    public static final int MAX_KEY_LENGTH = 255;
 
     public static String createProviderKey(String providerName, String providerUrl) {
         StringBuilder providerKeyBuilder = new StringBuilder();
