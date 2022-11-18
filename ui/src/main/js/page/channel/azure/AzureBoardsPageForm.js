@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
-import { AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED, AZURE_BOARDS_INFO, AZURE_BOARDS_URLS } from 'page/channel/azure/AzureBoardsModel';
+import { AZURE_BOARDS_GLOBAL_FIELD_KEYS, AZURE_BOARDS_INFO, AZURE_BOARDS_URLS } from 'page/channel/azure/AzureBoardsModel';
 import * as PropTypes from 'prop-types';
 import * as ConfigurationRequestBuilder from 'common/util/configurationRequestBuilder';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
@@ -122,32 +122,32 @@ const AzureBoardsForm = ({ csrfToken, errorHandler, readonly, displayTest }) => 
                 submitLabel="Save Configuration"
             >
                 <TextInput
-                    id={AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.name}
-                    name={AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.name}
+                    id={AZURE_BOARDS_GLOBAL_FIELD_KEYS.name}
+                    name={AZURE_BOARDS_GLOBAL_FIELD_KEYS.name}
                     label="Name"
                     description="The name of the Azure Board for your identification purposes."
                     required
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleTestChange(formData, setFormData)}
                     value={formData.name || undefined}
-                    errorName={AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.name}
-                    errorValue={errors.fieldErrors[AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.name]}
+                    errorName={AZURE_BOARDS_GLOBAL_FIELD_KEYS.name}
+                    errorValue={errors.fieldErrors[AZURE_BOARDS_GLOBAL_FIELD_KEYS.name]}
                 />
                 <TextInput
-                    id={AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.organization}
-                    name={AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.organization}
+                    id={AZURE_BOARDS_GLOBAL_FIELD_KEYS.organization}
+                    name={AZURE_BOARDS_GLOBAL_FIELD_KEYS.organization}
                     label="Organization Name"
                     description="The name of the Azure DevOps organization."
                     required
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleTestChange(formData, setFormData)}
                     value={formData.organizationName || undefined}
-                    errorName={AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.organization}
-                    errorValue={errors.fieldErrors[AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.organization]}
+                    errorName={AZURE_BOARDS_GLOBAL_FIELD_KEYS.organization}
+                    errorValue={errors.fieldErrors[AZURE_BOARDS_GLOBAL_FIELD_KEYS.organization]}
                 />
                 <PasswordInput
-                    id={AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.appId}
-                    name={AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.appId}
+                    id={AZURE_BOARDS_GLOBAL_FIELD_KEYS.appId}
+                    name={AZURE_BOARDS_GLOBAL_FIELD_KEYS.appId}
                     label="App ID"
                     description="The App ID created for Alert when registering your Azure DevOps Client Application."
                     required
@@ -155,12 +155,12 @@ const AzureBoardsForm = ({ csrfToken, errorHandler, readonly, displayTest }) => 
                     onChange={FieldModelUtilities.handleTestChange(formData, setFormData)}
                     value={formData.appId || undefined}
                     isSet={formData.isAppIdSet}
-                    errorName={AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.appId}
-                    errorValue={errors.fieldErrors[AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.appId]}
+                    errorName={AZURE_BOARDS_GLOBAL_FIELD_KEYS.appId}
+                    errorValue={errors.fieldErrors[AZURE_BOARDS_GLOBAL_FIELD_KEYS.appId]}
                 />
                 <PasswordInput
-                    id={AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.clientSecret}
-                    name={AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.clientSecret}
+                    id={AZURE_BOARDS_GLOBAL_FIELD_KEYS.clientSecret}
+                    name={AZURE_BOARDS_GLOBAL_FIELD_KEYS.clientSecret}
                     label="Client Secret"
                     description="The Client secret created for Alert when registering your Azure DevOps Application."
                     required
@@ -168,17 +168,17 @@ const AzureBoardsForm = ({ csrfToken, errorHandler, readonly, displayTest }) => 
                     onChange={FieldModelUtilities.handleTestChange(formData, setFormData)}
                     value={formData.clientSecret || undefined}
                     isSet={formData.isClientSecretSet}
-                    errorName={AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.clientSecret}
-                    errorValue={errors.fieldErrors[AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.clientSecret]}
+                    errorName={AZURE_BOARDS_GLOBAL_FIELD_KEYS.clientSecret}
+                    errorValue={errors.fieldErrors[AZURE_BOARDS_GLOBAL_FIELD_KEYS.clientSecret]}
                 />
                 <ButtonField
-                    id={AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.configureOAuth}
-                    name={AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.configureOAuth}
+                    id={AZURE_BOARDS_GLOBAL_FIELD_KEYS.configureOAuth}
+                    name={AZURE_BOARDS_GLOBAL_FIELD_KEYS.configureOAuth}
                     label="Microsoft OAuth"
                     buttonLabel="Save/Authenticate"
                     description="This will redirect you to Microsoft's OAuth login. To clear the Oauth request cache, please delete and reconfigure the Azure fields.  Please note you will remain logged in; for security reasons you may want to logout of your Microsoft account after authenticating the application."
                     onSendClick={authenticateAzureForm}
-                    fieldKey={AZURE_BOARDS_GLOBAL_FIELD_KEYS_UPDATED.configureOAuth}
+                    fieldKey={AZURE_BOARDS_GLOBAL_FIELD_KEYS.configureOAuth}
                     fieldError={buttonErrorMessage}
                     readOnly={readonly || !displayTest}
                     success={buttonSuccess}
