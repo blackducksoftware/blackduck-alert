@@ -36,14 +36,17 @@ class AzureBoardsEnvironmentVariableHandlerTestIT {
     private EnvironmentVariableUtility environmentVariableUtility;
 
     @BeforeEach
+    public void initEach() {
+        mockEnvironment = new MockEnvironment();
+        environmentVariableUtility = new EnvironmentVariableUtility(mockEnvironment);
+    }
+
     @AfterEach
     public void cleanup() {
         azureBoardsGlobalConfigAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
             .map(Config::getId)
             .map(UUID::fromString)
             .ifPresent(azureBoardsGlobalConfigAccessor::deleteConfiguration);
-        mockEnvironment = new MockEnvironment();
-        environmentVariableUtility = new EnvironmentVariableUtility(mockEnvironment);
     }
 
     @Test
