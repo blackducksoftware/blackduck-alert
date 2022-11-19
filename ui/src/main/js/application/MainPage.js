@@ -16,7 +16,6 @@ import { JIRA_SERVER_INFO, JIRA_SERVER_URLS } from 'page/channel/jira/server/Jir
 import { MSTEAMS_INFO } from 'page/channel/msteams/MSTeamsModel';
 import MSTeamsGlobalConfiguration from 'page/channel/msteams/MSTeamsGlobalConfiguration';
 import { AZURE_BOARDS_INFO, AZURE_BOARDS_URLS } from 'page/channel/azure/AzureBoardsModel';
-import AzureGlobalConfiguration from 'page/channel/azure/AzureGlobalConfiguration';
 import AzureBoardsPageForm from 'page/channel/azure/AzureBoardsPageForm';
 import AzureBoardsTableConstructor from 'page/channel/azure/AzureBoardsTableConstructor';
 import { SCHEDULING_INFO } from 'page/scheduling/SchedulingModel';
@@ -46,10 +45,6 @@ import DescriptorRoute from 'common/component/descriptor/DescriptorRoute';
 import EmailGlobalConfiguration from 'page/channel/email/EmailGlobalConfiguration';
 import ConcreteJiraServerGlobalConfiguration from 'page/channel/jira/server/ConcreteJiraServerGlobalConfiguration';
 import ConcreteJiraServerGlobalConfigurationTable from 'page/channel/jira/server/ConcreteJiraServerGlobalConfigurationTable';
-
-import BetaPage from 'common/component/beta/BetaPage';
-import BetaComponent from 'common/component/beta/BetaComponent';
-import CurrentComponent from 'common/component/beta/CurrentComponent';
 
 const MainPage = ({
     descriptors, fetching, getDescriptorsRedux, csrfToken, autoRefresh, unauthorizedFunction
@@ -145,26 +140,12 @@ const MainPage = ({
                 urlName={AZURE_BOARDS_INFO.url}
                 descriptor={globalDescriptorMap[AZURE_BOARDS_INFO.key]}
                 render={(readonly, showTest, showSave, showDelete) => (
-                    <BetaPage betaSelected>
-                        <BetaComponent>
-                            <AzureBoardsTableConstructor
-                                csrfToken={csrfToken}
-                                readonly={false}
-                                showRefreshButton={!autoRefresh}
-                                displayDelete={showDelete}
-                            />
-                        </BetaComponent>
-                        <CurrentComponent>
-                            <AzureGlobalConfiguration
-                                csrfToken={csrfToken}
-                                errorHandler={errorHandler}
-                                readonly={readonly}
-                                displayTest={showTest}
-                                displaySave={showSave}
-                                displayDelete={showDelete}
-                            />
-                        </CurrentComponent>
-                    </BetaPage>
+                    <AzureBoardsTableConstructor
+                        csrfToken={csrfToken}
+                        readonly={readonly}
+                        showRefreshButton={!autoRefresh}
+                        displayDelete={showDelete}
+                    />
                 )}
             />
             <DescriptorRoute
