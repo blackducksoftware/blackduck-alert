@@ -12,11 +12,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.synopsys.integration.alert.channel.azure.boards.distribution.util.AzureBoardsSearchPropertiesUtils;
 import org.apache.commons.lang3.StringUtils;
 
 public class AzureSearchFieldMappingBuilder {
-    private static final int AZURE_CUSTOM_PROPERTY_LIMIT = 256;
-
     private final Map<String, String> customFieldMapping = new HashMap<>();
 
     public static AzureSearchFieldMappingBuilder create() {
@@ -55,7 +54,7 @@ public class AzureSearchFieldMappingBuilder {
     }
 
     private void addMapping(String key, String value) {
-        String shortenedKeyValue = StringUtils.truncate(value, AzureSearchFieldMappingBuilder.AZURE_CUSTOM_PROPERTY_LIMIT);
+        String shortenedKeyValue = StringUtils.truncate(value, AzureBoardsSearchPropertiesUtils.MAX_STRING_VALUE_LENGTH);
         customFieldMapping.put(key, shortenedKeyValue);
     }
 
