@@ -9,17 +9,15 @@ import { AZURE_BOARDS_DISTRIBUTION_FIELD_KEYS } from 'page/channel/azure/AzureBo
 import { DISTRIBUTION_COMMON_FIELD_KEYS } from 'page/distribution/DistributionModel';
 
 const AzureDistributionConfiguration = ({
-    data, setData, errors, readonly, csrfToken
+    csrfToken, data, setData, errors, readonly
 }) => {
-
     const readRequest = () => {
-        const apiUrl = '/alert/api/configuration/azure-boards?pageNumber=0&pageSize=25&sortName=name&sortOrder=asc';
+        const apiUrl = '/alert/api/configuration/azure-boards?pageNumber=0&pageSize=25';
         return createReadRequest(apiUrl, csrfToken);
     };
 
     const convertDataToOptions = (responseData) => {
         const { models } = responseData;
-        console.log(responseData);
         return models.map((configurationModel) => {
             const { id: configId, name } = configurationModel;
             return {
@@ -29,7 +27,6 @@ const AzureDistributionConfiguration = ({
             };
         });
     };
-
 
     useEffect(() => {
         if (!FieldModelUtilities.hasValue(data, AZURE_BOARDS_DISTRIBUTION_FIELD_KEYS.workItemType)) {
@@ -52,7 +49,7 @@ const AzureDistributionConfiguration = ({
             <EndpointSelectField
                 id={DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId}
                 csrfToken={csrfToken}
-                endpoint="/api/configuration/azure_board"
+                endpoint="/api/configuration/azure-boards"
                 fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId}
                 label="Azure Board"
                 description="Select an Azure Board that will be used to create or update issues. Please note the options are limited to the first 25 Azure Boards."
@@ -112,6 +109,7 @@ const AzureDistributionConfiguration = ({
 };
 
 AzureDistributionConfiguration.propTypes = {
+    csrfToken: PropTypes.string.isRequired,
     data: PropTypes.object.isRequired,
     setData: PropTypes.func.isRequired,
     errors: PropTypes.object.isRequired,
