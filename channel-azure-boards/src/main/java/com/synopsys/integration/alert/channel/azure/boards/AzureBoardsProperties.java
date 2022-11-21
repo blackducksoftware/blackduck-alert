@@ -42,12 +42,10 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.oauth.AlertOAuthCredentialDataStoreFactory;
-import com.synopsys.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpRequestCreator;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpRequestCreatorFactory;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.oauth.AzureAuthorizationCodeFlow;
-import com.synopsys.integration.azure.boards.common.oauth.AzureOAuthScopes;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 public class AzureBoardsProperties {
@@ -60,23 +58,6 @@ public class AzureBoardsProperties {
     private final List<String> scopes;
     private final String redirectUri;
     private final String configurationId;
-
-    public static AzureBoardsProperties fromGlobalConfigurationModel(
-        AlertOAuthCredentialDataStoreFactory alertOAuthCredentialDataStoreFactory,
-        String redirectUri,
-        AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModel
-    ) {
-        List<String> defaultScopes = List.of(AzureOAuthScopes.PROJECTS_READ.getScope(), AzureOAuthScopes.WORK_FULL.getScope());
-        return new AzureBoardsProperties(
-            alertOAuthCredentialDataStoreFactory,
-            azureBoardsGlobalConfigModel.getOrganizationName(),
-            azureBoardsGlobalConfigModel.getAppId().orElse(null),
-            azureBoardsGlobalConfigModel.getClientSecret().orElse(null),
-            defaultScopes,
-            redirectUri,
-            azureBoardsGlobalConfigModel.getId()
-        );
-    }
 
     public AzureBoardsProperties(
         AlertOAuthCredentialDataStoreFactory alertOAuthCredentialDataStoreFactory,
