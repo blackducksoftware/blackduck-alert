@@ -17,6 +17,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.api.oauth.AlertOAuthCredentialDataStoreFactory;
+import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesFactory;
 import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUrlCreator;
 import com.synopsys.integration.alert.channel.azure.boards.database.accessor.AzureBoardsGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.azure.boards.database.configuration.AzureBoardsConfigurationEntity;
@@ -56,6 +57,8 @@ class AzureBoardsGlobalTestActionTest {
     @Mock
     AlertOAuthCredentialDataStoreFactory mockAlertOAuthCredentialDataStoreFactory;
     @Mock
+    AzureBoardsPropertiesFactory mockAzureBoardsPropertiesFactory;
+    @Mock
     AzureProjectService mockedAzureProjectService;
     @Mock
     AzureRedirectUrlCreator mockAzureRedirectUrlCreator;
@@ -82,6 +85,7 @@ class AzureBoardsGlobalTestActionTest {
             azureBoardsGlobalConfigurationValidator,
             azureBoardsGlobalConfigAccessor,
             mockAlertOAuthCredentialDataStoreFactory,
+            mockAzureBoardsPropertiesFactory,
             mockAzureRedirectUrlCreator,
             gson,
             mockProxyManager
@@ -103,6 +107,7 @@ class AzureBoardsGlobalTestActionTest {
                 azureBoardsGlobalConfigurationValidator,
                 azureBoardsGlobalConfigAccessor,
                 mockAlertOAuthCredentialDataStoreFactory,
+                mockAzureBoardsPropertiesFactory,
                 mockAzureRedirectUrlCreator,
                 gson,
                 mockProxyManager
@@ -143,6 +148,7 @@ class AzureBoardsGlobalTestActionTest {
                 azureBoardsGlobalConfigurationValidator,
                 azureBoardsGlobalConfigAccessor,
                 mockAlertOAuthCredentialDataStoreFactory,
+                mockAzureBoardsPropertiesFactory,
                 mockAzureRedirectUrlCreator,
                 gson,
                 mockProxyManager

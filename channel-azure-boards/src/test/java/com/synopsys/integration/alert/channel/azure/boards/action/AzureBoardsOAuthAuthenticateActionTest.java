@@ -17,6 +17,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.oauth.AlertOAuthCredentialDataStoreFactory;
 import com.synopsys.integration.alert.api.oauth.database.accessor.AlertOAuthConfigurationAccessor;
+import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesFactory;
 import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUrlCreator;
 import com.synopsys.integration.alert.channel.azure.boards.database.accessor.AzureBoardsGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.azure.boards.database.configuration.AzureBoardsConfigurationEntity;
@@ -56,6 +57,7 @@ class AzureBoardsOAuthAuthenticateActionTest {
     private AzureBoardsGlobalConfigAccessor azureBoardsGlobalConfigAccessor;
     private final OAuthRequestValidator oAuthRequestValidator = new OAuthRequestValidator();
     private AlertOAuthCredentialDataStoreFactory alertOAuthCredentialDataStoreFactory;
+    private AzureBoardsPropertiesFactory azureBoardsPropertiesFactory;
     private AzureBoardsGlobalConfigurationValidator azureBoardsGlobalConfigurationValidator;
     private AlertOAuthConfigurationAccessor alertOAuthConfigurationAccessor;
     private AlertWebServerUrlManager alertWebServerUrlManager;
@@ -64,9 +66,10 @@ class AzureBoardsOAuthAuthenticateActionTest {
     private final AuthorizationManager authorizationManager = createAuthorizationManager(AuthenticationTestUtils.FULL_PERMISSIONS);
     private AzureBoardsGlobalCrudActions azureBoardsGlobalCrudActions;
     private AzureBoardsGlobalValidationAction validationAction;
+    private AzureBoardsOAuthAuthenticateAction authenticateAction;
 
     @BeforeEach
-    void initEach() {
+    void init() {
         //Set up global config accessor
         MockRepositorySorter<AzureBoardsConfigurationEntity> sorter = new MockRepositorySorter<>();
         MockAzureBoardsConfigurationRepository mockAzureBoardsConfigurationRepository = new MockAzureBoardsConfigurationRepository(sorter);
@@ -91,25 +94,31 @@ class AzureBoardsOAuthAuthenticateActionTest {
             azureBoardsGlobalConfigAccessor,
             azureBoardsGlobalConfigurationValidator
         );
-    }
 
-    /**
-     * Test authenticate with:
-     * full permissions, performing a create action on a model
-     */
-    @Test
-    void authenticateTest() {
-        AzureBoardsOAuthAuthenticateAction authenticateAction = new AzureBoardsOAuthAuthenticateAction(
+        // Set up Azure Properties Factory
+        azureBoardsPropertiesFactory = new AzureBoardsPropertiesFactory(alertOAuthCredentialDataStoreFactory, azureRedirectUrlCreator, azureBoardsGlobalConfigAccessor, null);
+
+        //Create the authenticateAction for testing
+        authenticateAction = new AzureBoardsOAuthAuthenticateAction(
             authorizationManager,
             azureBoardsGlobalConfigAccessor,
             azureBoardsGlobalCrudActions,
             alertOAuthCredentialDataStoreFactory,
+            azureBoardsPropertiesFactory,
             validationAction,
             azureRedirectUrlCreator,
             oAuthRequestValidator,
             alertWebServerUrlManager,
             proxyManager
         );
+    }
+
+    /**
+     * Test authenticate with:
+     * Run with full permissions, performing a create action on a model
+     */
+    @Test
+    void authenticateTest() {
         AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModel = new AzureBoardsGlobalConfigModel(
             null,
             "testConfigName",
@@ -126,34 +135,14 @@ class AzureBoardsOAuthAuthenticateActionTest {
         assertTrue(authorizationUrl.contains(CLIENT_ID), "Missing Client ID");
         assertFalse(authorizationUrl.contains(CLIENT_SECRET), "Client secret should not be exposed in the authUrl");
         assertTrue(oAuthRequestValidator.hasRequests());
-
-        //No configurations present:
-        /*
-        assertEquals(1, alertOAuthConfigurationAccessor.getConfigurations().size());
-        AlertOAuthModel oAuthModel = alertOAuthConfigurationAccessor.getConfigurations().stream().findFirst()
-            .orElseThrow(() -> new AssertionError("an OAuth configuration should exist."));
-        String accessToken = oAuthModel.getAccessToken().orElse("Missing access token");
-        assertTrue(authorizationUrl.contains(accessToken));
-         */
     }
 
     /**
      * Test authenticate with:
-     * full permissions, config model  with missing fields causing a validation failures
+     * Run with full permissions, config model with missing fields causing a validation failures
      */
     @Test
     void testValidationErrors() {
-        AzureBoardsOAuthAuthenticateAction authenticateAction = new AzureBoardsOAuthAuthenticateAction(
-            authorizationManager,
-            azureBoardsGlobalConfigAccessor,
-            azureBoardsGlobalCrudActions,
-            alertOAuthCredentialDataStoreFactory,
-            validationAction,
-            azureRedirectUrlCreator,
-            oAuthRequestValidator,
-            alertWebServerUrlManager,
-            proxyManager
-        );
         AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModel = new AzureBoardsGlobalConfigModel(
             null,
             "testConfigName",
@@ -168,21 +157,10 @@ class AzureBoardsOAuthAuthenticateActionTest {
 
     /**
      * Test authenticate with:
-     * full permissions, update performed on config model that has ID provided.
+     * Run with full permissions, update rather than create is performed when the config model has an ID provided.
      */
     @Test
     void testAuthenticateWithUpdateAction() throws AlertConfigurationException {
-        AzureBoardsOAuthAuthenticateAction authenticateAction = new AzureBoardsOAuthAuthenticateAction(
-            authorizationManager,
-            azureBoardsGlobalConfigAccessor,
-            azureBoardsGlobalCrudActions,
-            alertOAuthCredentialDataStoreFactory,
-            validationAction,
-            azureRedirectUrlCreator,
-            oAuthRequestValidator,
-            alertWebServerUrlManager,
-            proxyManager
-        );
         AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModel = new AzureBoardsGlobalConfigModel(
             null,
             "testConfigName",
@@ -214,17 +192,6 @@ class AzureBoardsOAuthAuthenticateActionTest {
      */
     @Test
     void testUpdateFailure() {
-        AzureBoardsOAuthAuthenticateAction authenticateAction = new AzureBoardsOAuthAuthenticateAction(
-            authorizationManager,
-            azureBoardsGlobalConfigAccessor,
-            azureBoardsGlobalCrudActions,
-            alertOAuthCredentialDataStoreFactory,
-            validationAction,
-            azureRedirectUrlCreator,
-            oAuthRequestValidator,
-            alertWebServerUrlManager,
-            proxyManager
-        );
         AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModel = new AzureBoardsGlobalConfigModel(
             UUID.randomUUID().toString(),
             "testConfigName",
