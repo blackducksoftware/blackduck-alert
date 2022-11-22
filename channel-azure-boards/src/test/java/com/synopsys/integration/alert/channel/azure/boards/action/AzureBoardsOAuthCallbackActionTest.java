@@ -56,6 +56,8 @@ import com.synopsys.integration.azure.boards.common.service.project.TeamProjectR
 @ExtendWith(SpringExtension.class)
 class AzureBoardsOAuthCallbackActionTest {
     private static final String SERVER_URL = "https://localhost:8443/alert";
+    private static final String GENERATED_URL = SERVER_URL + "/channels/azure_boards/edit/";
+    private static final String DEFAULT_URL = SERVER_URL + "/channels/azure_boards";
     private static final String ORG_NAME = "alert_test_org_name";
     private static final String CLIENT_ID = "alert_test_client_id";
     private static final String CLIENT_SECRET = "alert_test_client_secret";
@@ -147,7 +149,7 @@ class AzureBoardsOAuthCallbackActionTest {
         ActionResponse<String> callbackURLResponse = callbackAction.handleCallback(request);
 
         assertFalse(callbackURLResponse.isError());
-        assertEquals(SERVER_URL, callbackURLResponse.getContent().orElseThrow(() -> new AssertionError("Callback content missing.")));
+        assertEquals(GENERATED_URL + savedModel.getId(), callbackURLResponse.getContent().orElseThrow(() -> new AssertionError("Callback content missing.")));
         assertFalse(oAuthRequestValidator.hasRequests());
         Mockito.verify(azureBoardsPropertiesFactory).fromGlobalConfigurationModel(Mockito.any(), Mockito.any(), Mockito.any());
     }
@@ -202,10 +204,9 @@ class AzureBoardsOAuthCallbackActionTest {
 
     /**
      * If the callback is performed but reaches the timeout, a message is logged and the user is redirected to the configuration.
-     * @throws Exception
      */
     @Test
-    void validatorTimeoutNotFoundTest() throws Exception {
+    void validatorTimeoutNotFoundTest() {
         UUID requestId = UUID.randomUUID();
 
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
@@ -217,7 +218,7 @@ class AzureBoardsOAuthCallbackActionTest {
         ActionResponse<String> callbackURLResponse = callbackAction.handleCallback(request);
 
         assertFalse(callbackURLResponse.isError());
-        assertEquals(SERVER_URL, callbackURLResponse.getContent().orElseThrow(() -> new AssertionError("Callback content missing.")));
+        assertEquals(DEFAULT_URL, callbackURLResponse.getContent().orElseThrow(() -> new AssertionError("Callback content missing.")));
         assertFalse(oAuthRequestValidator.hasRequests());
         Mockito.verify(azureBoardsPropertiesFactory, Mockito.times(0)).fromGlobalConfigurationModel(Mockito.any(), Mockito.any(), Mockito.any());
     }
@@ -225,10 +226,9 @@ class AzureBoardsOAuthCallbackActionTest {
     /**
      * If a configuration is missing after performing a callback (perhaps while waiting for the callback, the configuration was deleted) the request ID is still present but the
      * configuration no longer exists. In this case we should return to the default redirect.
-     * @throws Exception
      */
     @Test
-    void globalConfigurationMissingAfterCallback() throws Exception {
+    void globalConfigurationMissingAfterCallback() {
         UUID requestId = UUID.randomUUID();
 
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
@@ -242,7 +242,7 @@ class AzureBoardsOAuthCallbackActionTest {
         ActionResponse<String> callbackURLResponse = callbackAction.handleCallback(request);
 
         assertFalse(callbackURLResponse.isError());
-        assertEquals(SERVER_URL, callbackURLResponse.getContent().orElseThrow(() -> new AssertionError("Callback content missing.")));
+        assertEquals(DEFAULT_URL, callbackURLResponse.getContent().orElseThrow(() -> new AssertionError("Callback content missing.")));
         assertFalse(oAuthRequestValidator.hasRequests());
         Mockito.verify(azureBoardsPropertiesFactory, Mockito.times(0)).fromGlobalConfigurationModel(Mockito.any(), Mockito.any(), Mockito.any());
     }
@@ -276,7 +276,7 @@ class AzureBoardsOAuthCallbackActionTest {
         ActionResponse<String> callbackURLResponse = callbackAction.handleCallback(request);
 
         assertFalse(callbackURLResponse.isError());
-        assertEquals(SERVER_URL, callbackURLResponse.getContent().orElseThrow(() -> new AssertionError("Callback content missing.")));
+        assertEquals(DEFAULT_URL, callbackURLResponse.getContent().orElseThrow(() -> new AssertionError("Callback content missing.")));
         assertFalse(oAuthRequestValidator.hasRequests());
         Mockito.verify(azureBoardsPropertiesFactory, Mockito.times(0)).fromGlobalConfigurationModel(Mockito.any(), Mockito.any(), Mockito.any());
     }
@@ -298,7 +298,9 @@ class AzureBoardsOAuthCallbackActionTest {
 
         @Override
         public Optional<String> getServerUrl(String... pathSegments) {
-            return Optional.of(SERVER_URL);
+            String path = String.join("/", pathSegments);
+            String serverUrl = String.join("/", List.of(SERVER_URL, path));
+            return Optional.of(serverUrl);
         }
     }
 
