@@ -1,5 +1,6 @@
 package com.synopsys.integration.alert.channel.azure.boards;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
@@ -13,6 +14,7 @@ import com.synopsys.integration.alert.channel.azure.boards.model.AzureBoardsGlob
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
+import com.synopsys.integration.azure.boards.common.oauth.AzureOAuthScopes;
 
 @Component
 public class AzureBoardsPropertiesFactory {
@@ -34,10 +36,27 @@ public class AzureBoardsPropertiesFactory {
         this.jobAccessor = jobAccessor;
     }
 
+    public AzureBoardsProperties fromGlobalConfigurationModel(
+        AlertOAuthCredentialDataStoreFactory alertOAuthCredentialDataStoreFactory,
+        String redirectUri,
+        AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModel
+    ) {
+        List<String> defaultScopes = List.of(AzureOAuthScopes.PROJECTS_READ.getScope(), AzureOAuthScopes.WORK_FULL.getScope());
+        return new AzureBoardsProperties(
+            alertOAuthCredentialDataStoreFactory,
+            azureBoardsGlobalConfigModel.getOrganizationName(),
+            azureBoardsGlobalConfigModel.getAppId().orElse(null),
+            azureBoardsGlobalConfigModel.getClientSecret().orElse(null),
+            defaultScopes,
+            redirectUri,
+            azureBoardsGlobalConfigModel.getId()
+        );
+    }
+
     public AzureBoardsProperties createAzureBoardsProperties(UUID configurationId) throws AlertConfigurationException {
         AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModel = azureBoardsGlobalConfigAccessor.getConfiguration(configurationId)
             .orElseThrow(() -> new AlertConfigurationException("Missing Azure Boards global configuration"));
-        return AzureBoardsProperties.fromGlobalConfigurationModel(
+        return fromGlobalConfigurationModel(
             alertOAuthCredentialDataStoreFactory,
             azureRedirectUrlCreator.createOAuthRedirectUri(),
             azureBoardsGlobalConfigModel
@@ -74,7 +93,7 @@ public class AzureBoardsPropertiesFactory {
             appId,
             secret
         );
-        return AzureBoardsProperties.fromGlobalConfigurationModel(
+        return fromGlobalConfigurationModel(
             alertOAuthCredentialDataStoreFactory,
             azureRedirectUrlCreator.createOAuthRedirectUri(),
             azureBoardsGlobalConfigModel

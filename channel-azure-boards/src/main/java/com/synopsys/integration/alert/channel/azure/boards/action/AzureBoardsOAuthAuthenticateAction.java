@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.api.oauth.AlertOAuthCredentialDataStoreFactory;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
+import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesFactory;
 import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUrlCreator;
 import com.synopsys.integration.alert.channel.azure.boards.database.accessor.AzureBoardsGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
@@ -39,6 +40,7 @@ public class AzureBoardsOAuthAuthenticateAction {
     private final AzureBoardsGlobalConfigAccessor azureBoardsGlobalConfigAccessor;
     private final AzureBoardsGlobalCrudActions azureBoardsGlobalCrudActions;
     private final AlertOAuthCredentialDataStoreFactory alertOAuthCredentialDataStoreFactory;
+    private final AzureBoardsPropertiesFactory azureBoardsPropertiesFactory;
     private final AzureBoardsGlobalValidationAction azureBoardsGlobalValidationAction;
     private final AzureRedirectUrlCreator azureRedirectUrlCreator;
     private final OAuthRequestValidator oAuthRequestValidator;
@@ -51,6 +53,7 @@ public class AzureBoardsOAuthAuthenticateAction {
         AzureBoardsGlobalConfigAccessor azureBoardsGlobalConfigAccessor,
         AzureBoardsGlobalCrudActions azureBoardsGlobalCrudActions,
         AlertOAuthCredentialDataStoreFactory alertOAuthCredentialDataStoreFactory,
+        AzureBoardsPropertiesFactory azureBoardsPropertiesFactory,
         AzureBoardsGlobalValidationAction azureBoardsGlobalValidationAction,
         AzureRedirectUrlCreator azureRedirectUrlCreator,
         OAuthRequestValidator oAuthRequestValidator,
@@ -61,6 +64,7 @@ public class AzureBoardsOAuthAuthenticateAction {
         this.azureBoardsGlobalConfigAccessor = azureBoardsGlobalConfigAccessor;
         this.azureBoardsGlobalCrudActions = azureBoardsGlobalCrudActions;
         this.alertOAuthCredentialDataStoreFactory = alertOAuthCredentialDataStoreFactory;
+        this.azureBoardsPropertiesFactory = azureBoardsPropertiesFactory;
         this.azureRedirectUrlCreator = azureRedirectUrlCreator;
         this.azureBoardsGlobalValidationAction = azureBoardsGlobalValidationAction;
         this.oAuthRequestValidator = oAuthRequestValidator;
@@ -144,7 +148,7 @@ public class AzureBoardsOAuthAuthenticateAction {
     }
 
     private boolean isAuthenticated(AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModel) {
-        AzureBoardsProperties properties = AzureBoardsProperties.fromGlobalConfigurationModel(
+        AzureBoardsProperties properties = azureBoardsPropertiesFactory.fromGlobalConfigurationModel(
             alertOAuthCredentialDataStoreFactory,
             azureRedirectUrlCreator.createOAuthRedirectUri(),
             azureBoardsGlobalConfigModel
