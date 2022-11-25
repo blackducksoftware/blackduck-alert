@@ -22,6 +22,7 @@ function _checkStatus() {
     _logIt "ERROR: ${2} (Exit Code: ${1})."
     if [ "true" == "${inputDataMoved}" ]; then
       _restore_backed_up_data
+      cat pg_upgrade_server.log
     fi
     exit "${1}"
   else
@@ -29,26 +30,16 @@ function _checkStatus() {
   fi
 }
 
-function _set_value() {
-  _logStart
-  local resultVariable="${1}"
-  local environmentValue="${2}"
-  local localFile="${3}"
-
-  if [ -n "${environmentValue}" ]; then
-    eval "${resultVariable}=\"${environmentValue}\""
-  elif [ -n "${localFile}" ] && [ -s "${localFile}" ]; then
-    eval "export ${resultVariable}=$(<"${localFile}")"
-  else
-    _checkStatus 1 "Unable to set value from environment for ${resultVariable}"
-  fi
-  _logEnd
-}
-
 function _validate_environment() {
   _logStart
   if [ -z "${osUser}" ]; then
     _checkStatus 1 "Script requires one argument of OS user to run commands as (usually 'postgres')"
+  fi
+  if [ -z "${postgresUser}" ]; then
+    _checkStatus 1 "Verifying able to set postgresUser"
+  fi
+  if [ -z "${postgresPassword}" ]; then
+    _checkStatus 1 "Verifying able to set postgresPassword"
   fi
   if [ -z "${PGDATA}" ]; then
     _checkStatus 1 "Verifying environment variable: PGDATA"
@@ -83,6 +74,26 @@ function _validate_migration_viability() {
   fi
 
   _logIt "Image is running PG version ${environmentPostgresVersion} and data is from PG version ${pgVersionFileValue}. PG migration needs to run."
+  _logEnd
+}
+
+function _create_openshift_custom_conf() {
+  _logStart
+  local openshiftConfFile="/var/lib/pgsql/openshift-custom-postgresql.conf"
+  local openshiftTemplateFile="${openshiftConfFile}.template"
+
+  if [ ! -s "${openshiftConfFile}" ]; then
+    export POSTGRESQL_MAX_CONNECTIONS=${POSTGRESQL_MAX_CONNECTIONS:-100}
+    export POSTGRESQL_MAX_PREPARED_TRANSACTIONS=${POSTGRESQL_MAX_PREPARED_TRANSACTIONS:-0}
+    export POSTGRESQL_SHARED_BUFFERS=${POSTGRESQL_SHARED_BUFFERS:-32MB}
+    export POSTGRESQL_EFFECTIVE_CACHE_SIZE=${POSTGRESQL_EFFECTIVE_CACHE_SIZE:-128MB}
+
+    envsubst < "${openshiftTemplateFile}" > "${openshiftConfFile}"
+    _checkStatus $? "Creating openshift custom conf file"
+  else
+    _logIt "Custom conf file already exists"
+  fi
+
   _logEnd
 }
 
@@ -179,8 +190,8 @@ backupPostgresDataDirectory="${runDirectory}/backup.${epochTime}"
 
 pgHbaConfFileName="pg_hba.conf"
 
-postgresUser=""
-postgresPassword=""
+postgresUser="${POSTGRES_ADMIN_USER:-${POSTGRES_USER}}"
+postgresPassword="${POSTGRES_ADMIN_PASSWORD:-${POSTGRES_PASSWORD}}"
 
 ## Check run environment
 _validate_environment
@@ -189,13 +200,11 @@ _validate_environment
 cd "${runDirectory}"
 _checkStatus $? "Changing directory to ${runDirectory}"
 
-_set_value postgresUser "${POSTGRES_USER}" "${POSTGRES_USER_FILE}"
-_set_value postgresPassword "${POSTGRES_PASSWORD}" "${POSTGRES_PASSWORD_FILE}"
-
 ## Check if we can and should run
 _validate_migration_viability
 
 ## Prepare existing data for migration
+_create_openshift_custom_conf
 _update_existing_data_ownership
 _move_existing_data_backup_directory
 
