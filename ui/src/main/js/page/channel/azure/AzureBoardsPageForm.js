@@ -19,12 +19,10 @@ const AzureBoardsForm = ({ csrfToken, errorHandler, readonly, displayTest }) => 
     const [formData, setFormData] = useState({});
     const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
 
-    const [buttonErrorMessage, setButtonErrorMessage] = useState('');
     const [buttonSuccess, setButtonSuccess] = useState(false);
     const [buttonMessage, setButtonMessage] = useState('');
 
     const authenticateAzureForm = async () => {
-        setButtonErrorMessage('');
         setButtonSuccess(false);
         setErrors(HttpErrorUtilities.createEmptyErrorObject())
 
@@ -52,7 +50,7 @@ const AzureBoardsForm = ({ csrfToken, errorHandler, readonly, displayTest }) => 
         }
 
         if (errorRequest) {
-            setButtonErrorMessage(HttpErrorUtilities.createFieldError(data.error))
+            setErrors(HttpErrorUtilities.createFieldError(data.error))
         }
     }
 
@@ -179,7 +177,7 @@ const AzureBoardsForm = ({ csrfToken, errorHandler, readonly, displayTest }) => 
                     description="This will redirect you to Microsoft's OAuth login. To clear the Oauth request cache, please delete and reconfigure the Azure fields.  Please note you will remain logged in; for security reasons you may want to logout of your Microsoft account after authenticating the application."
                     onSendClick={authenticateAzureForm}
                     fieldKey={AZURE_BOARDS_GLOBAL_FIELD_KEYS.configureOAuth}
-                    fieldError={buttonErrorMessage}
+                    fieldError={errors.fieldErrors[AZURE_BOARDS_GLOBAL_FIELD_KEYS.configureOAuth]}
                     readOnly={readonly || !displayTest}
                     success={buttonSuccess}
                     statusMessage={buttonMessage}
