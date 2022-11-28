@@ -30,10 +30,6 @@ public class AzureBoardsGlobalConfigurationValidator {
     public ValidationResponseModel validate(AzureBoardsGlobalConfigModel model, String id) {
         Set<AlertFieldStatus> statuses = new HashSet<>();
 
-        if (model.getId() != null && oAuthRequestValidator.hasRequestFromConfigurationId(model.getId())) {
-            statuses.add(AlertFieldStatus.error("oAuth", AUTHENTICATION_IN_PROGRESS));
-        }
-
         if (StringUtils.isBlank(model.getName())) {
             statuses.add(AlertFieldStatus.error("name", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
         } else if (doesNameExist(model.getName(), id)) {
