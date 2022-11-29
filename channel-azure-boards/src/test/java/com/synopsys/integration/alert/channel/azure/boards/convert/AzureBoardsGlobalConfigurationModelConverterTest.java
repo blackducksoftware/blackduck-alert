@@ -18,7 +18,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.synopsys.integration.alert.channel.azure.boards.database.accessor.AzureBoardsGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
-import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidator;
 import com.synopsys.integration.alert.channel.azure.boards.validator.AzureBoardsGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -30,7 +29,6 @@ class AzureBoardsGlobalConfigurationModelConverterTest {
     private static final String TEST_ORGANIZATION_NAME = "testOrganizationName";
     private static final String TEST_CLIENT_ID = "testClientID";
     private static final String TEST_CLIENT_SECRET = "testClientSecret";
-    private final OAuthRequestValidator oAuthRequestValidator = new OAuthRequestValidator();
     private AzureBoardsGlobalConfigurationValidator validator;
     @Mock
     private AzureBoardsGlobalConfigAccessor azureBoardsGlobalConfigAccessor;
@@ -38,7 +36,7 @@ class AzureBoardsGlobalConfigurationModelConverterTest {
     @BeforeEach
     public void init() {
         Mockito.when(azureBoardsGlobalConfigAccessor.getConfigurationByName(Mockito.anyString())).thenReturn(Optional.empty());
-        validator = new AzureBoardsGlobalConfigurationValidator(azureBoardsGlobalConfigAccessor, oAuthRequestValidator);
+        validator = new AzureBoardsGlobalConfigurationValidator(azureBoardsGlobalConfigAccessor);
     }
 
     @Test
@@ -68,7 +66,7 @@ class AzureBoardsGlobalConfigurationModelConverterTest {
             TEST_CLIENT_SECRET
         );
         Mockito.when(azureBoardsGlobalConfigAccessor.getConfigurationByName(Mockito.anyString())).thenReturn(Optional.of(azureBoardsGlobalConfigModelSaved));
-        validator = new AzureBoardsGlobalConfigurationValidator(azureBoardsGlobalConfigAccessor, oAuthRequestValidator);
+        validator = new AzureBoardsGlobalConfigurationValidator(azureBoardsGlobalConfigAccessor);
 
         AzureBoardsGlobalConfigurationModelConverter converter = new AzureBoardsGlobalConfigurationModelConverter(validator);
         Optional<AzureBoardsGlobalConfigModel> model = converter.convertAndValidate(configurationModel, uuid);
