@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '2.7.1'
+        springBootVersion = '2.7.4'
     }
 
     apply from: 'https://raw.githubusercontent.com/blackducksoftware/integration-resources/master/gradle_common/buildscript-repositories.gradle', to: buildscript
@@ -26,13 +26,17 @@ ext {
 
     moduleName = 'com.synopsys.integration.alert.main'
 
-    postgresContainerVersion = '12.2'
-
     blackduckCommonExcludes = {
         exclude group: 'com.blackducksoftware.bdio', module: 'bdio2'
     }
 
+    // This version is also in src/test/resources/spring-test.properties for the test jdbc connection
+    postgresContainerVersionMigration = '12.11'
+    postgresContainerVersionCurrent = '14.5'
+
     // Docker Variables
+    dockerBuildParam_POSTGRESIMAGEVERSION_MIGRATION = 'postgres:' + postgresContainerVersionMigration + '-alpine'
+    dockerBuildParam_POSTGRESIMAGEVERSION = 'postgres:' + postgresContainerVersionCurrent + '-alpine'
     dockerStagingDirectory = project.buildDir.toString() + '/docker-staging'
     baseDockerDirectory = project.projectDir.toString() + '/docker'
     dockerCleanStagingAreaDirectoryStageName = 'dockerCleanStagingAreaDirectory'
@@ -44,7 +48,9 @@ ext {
 }
 
 mainClassName = 'com.synopsys.integration.alert.Application'
-version = '6.12.0-SNAPSHOT'
+version = '6.12.1-SNAPSHOT'
+
+ext.isSnapshot = project.version.endsWith('-SNAPSHOT')
 
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
@@ -103,6 +109,7 @@ dependencies {
     implementation project(':api-distribution')
     implementation project(':api-environment')
     implementation project(':api-event')
+    implementation project(':api-oauth')
     implementation project(':api-processor')
     implementation project(':api-provider')
     implementation project(':api-task')

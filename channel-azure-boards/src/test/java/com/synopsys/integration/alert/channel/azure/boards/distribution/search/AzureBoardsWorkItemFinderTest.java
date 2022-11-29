@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.synopsys.integration.alert.channel.azure.boards.distribution.util.AzureBoardsSearchPropertiesUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -22,10 +23,10 @@ import com.synopsys.integration.azure.boards.common.service.query.fluent.WorkIte
 import com.synopsys.integration.azure.boards.common.service.query.fluent.WorkItemQueryWhereJunctionType;
 import com.synopsys.integration.azure.boards.common.service.query.fluent.WorkItemQueryWhereOperator;
 
-public class AzureBoardsWorkItemFinderTest {
+class AzureBoardsWorkItemFinderTest {
 
     @Test
-    public void verifyQueryWhereStatementExists() throws AlertException {
+    void verifyQueryWhereStatementExists() throws AlertException {
         AzureBoardsIssueTrackerQueryManager azureBoardsIssueTrackerQueryManager = Mockito.mock(AzureBoardsIssueTrackerQueryManager.class);
         ArgumentCaptor<WorkItemQuery> workItemQueryArgumentCaptor = ArgumentCaptor.forClass(WorkItemQuery.class);
 
@@ -61,7 +62,7 @@ public class AzureBoardsWorkItemFinderTest {
     }
 
     @Test
-    public void verifyQueryWhereStatementTruncated() throws AlertException {
+    void verifyQueryWhereStatementTruncated() throws AlertException {
         AzureBoardsIssueTrackerQueryManager azureBoardsIssueTrackerQueryManager = Mockito.mock(AzureBoardsIssueTrackerQueryManager.class);
         ArgumentCaptor<WorkItemQuery> workItemQueryArgumentCaptor = ArgumentCaptor.forClass(WorkItemQuery.class);
 
@@ -98,7 +99,7 @@ public class AzureBoardsWorkItemFinderTest {
         assertNotNull(component);
 
         // This is Azure boards custom field size limit
-        String truncatedComponent = StringUtils.truncate(componentKey, 256);
+        String truncatedComponent = StringUtils.truncate(componentKey, AzureBoardsSearchPropertiesUtils.MAX_STRING_VALUE_LENGTH);
         assertEquals(truncatedComponent, component);
     }
 

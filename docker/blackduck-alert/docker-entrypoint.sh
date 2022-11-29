@@ -241,8 +241,13 @@ validatePostgresConnection() {
     # Since the database is now external to the alert container verify we can connect to the database before starting.
     # https://stackoverflow.com/a/58784528/6921621
 
+    logIt "Validating postgres user connection"
     psql "${alertDatabaseConfig}" -c '\l' > /dev/null
-    checkStatus $? "Validate postgres connection"
+    checkStatus $? "Validating postgres user connection"
+
+    logIt "Validating postgres admin connection"
+    psql "${alertDatabaseAdminConfig}" -c '\l' > /dev/null
+    checkStatus $? "Validating postgres admin connection"
 }
 
 validateAlertDBExists() {
@@ -321,6 +326,7 @@ postgresPrepare600Upgrade() {
 
             logIt "Importing data from old database into new database..."
             psql "${alertDatabaseConfig}" -f ${upgradeResourcesDir}/import_postgres_tables.sql
+            checkStatus $? "Running ${upgradeResourcesDir}/import_postgres_tables.sql"
         else
             logIt "No previous database existed."
         fi
@@ -330,6 +336,7 @@ postgresPrepare600Upgrade() {
 createPostgresExtensions() {
   logIt "Creating required postgres extensions."
   psql "${alertDatabaseAdminConfig}" -f ${upgradeResourcesDir}/create_extension.sql
+  checkStatus $? "Running ${upgradeResourcesDir}/create_extension.sql"
 }
 
 setLocalVariableFromFileContents() {
@@ -393,9 +400,21 @@ setOverrideVariables() {
     setVariablesFromFilePath "${dockerSecretDir}/ALERT_DB_SSL_ROOT_CERT_PATH" alertDatabaseSslRootCert ALERT_DB_SSL_ROOT_CERT_PATH
 }
 
+validateEnvironment() {
+  if [ -z "${alertDatabaseAdminUser}" ] || [ -z "${alertDatabaseAdminPassword}" ];
+  then
+    checkStatus 2 "DB admin user or pass is not set"
+  fi
+  if [ -z "${alertDatabaseUser}" ] && [ -z "${alertDatabasePassword}" ];
+  then
+    checkStatus 2 "DB user or pass is not set"
+  fi
+}
+
 [ -z "${ALERT_HOSTNAME}" ] && logIt "Alert Host: [$alertHostName]. Wrong host name? Restart the container with the right host name configured in blackduck-alert.env"
 
 setOverrideVariables
+validateEnvironment
 
 alertDatabaseAdminConfig="host=$alertDatabaseHost port=$alertDatabasePort dbname=$alertDatabaseName user=$alertDatabaseAdminUser password=$alertDatabaseAdminPassword sslmode=$alertDatabaseSslMode sslkey=$alertDatabaseSslKey sslcert=$alertDatabaseSslCert sslrootcert=$alertDatabaseSslRootCert"
 alertDatabaseConfig="host=$alertDatabaseHost port=$alertDatabasePort dbname=$alertDatabaseName user=$alertDatabaseUser password=$alertDatabasePassword sslmode=$alertDatabaseSslMode sslkey=$alertDatabaseSslKey sslcert=$alertDatabaseSslCert sslrootcert=$alertDatabaseSslRootCert"

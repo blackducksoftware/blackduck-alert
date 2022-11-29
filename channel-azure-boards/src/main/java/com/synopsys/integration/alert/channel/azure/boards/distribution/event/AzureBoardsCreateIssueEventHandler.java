@@ -81,7 +81,7 @@ public class AzureBoardsCreateIssueEventHandler extends IssueTrackerCreateIssueE
         if (details.isPresent()) {
             try {
                 AzureBoardsJobDetailsModel distributionDetails = details.get();
-                AzureBoardsProperties azureBoardsProperties = azureBoardsPropertiesFactory.createAzureBoardsProperties();
+                AzureBoardsProperties azureBoardsProperties = azureBoardsPropertiesFactory.createAzureBoardsPropertiesWithJobId(jobId);
                 String organizationName = azureBoardsProperties.getOrganizationName();
                 azureBoardsProperties.validateProperties();
 

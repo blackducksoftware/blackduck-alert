@@ -26,7 +26,11 @@ import com.synopsys.integration.alert.service.email.JavamailPropertiesFactory;
 import com.synopsys.integration.alert.service.email.SmtpConfig;
 import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
 
+/**
+ * @deprecated Global test actions are now handled through EmailGlobalTestAction
+ */
 @Component
+@Deprecated(forRemoval = true)
 public class EmailGlobalFieldModelTestAction extends FieldModelTestAction {
     private static final String TEST_SUBJECT_LINE = "Email Global Configuration Test";
     private static final String TEST_MESSAGE_CONTENT = "This is a test message from Alert to confirm your Global Email Configuration is valid.";
@@ -44,7 +48,10 @@ public class EmailGlobalFieldModelTestAction extends FieldModelTestAction {
     public MessageResult testConfig(String configId, FieldModel fieldModel, FieldUtility registeredFieldValues) throws AlertException {
         String addressString = fieldModel.getFieldValue(FieldModelTestAction.KEY_DESTINATION_NAME).orElse("");
         if (StringUtils.isBlank(addressString)) {
-            throw new AlertException(String.format("Could not determine what email address to send this content to. %s was not provided or was blank. Please provide a valid email address to test the configuration.", FieldModelTestAction.KEY_DESTINATION_NAME));
+            throw new AlertException(String.format(
+                "Could not determine what email address to send this content to. %s was not provided or was blank. Please provide a valid email address to test the configuration.",
+                FieldModelTestAction.KEY_DESTINATION_NAME
+            ));
         }
 
         try {

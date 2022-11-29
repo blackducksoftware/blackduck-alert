@@ -81,7 +81,7 @@ public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory
 
     @Override
     public IssueTrackerProcessor<Integer> createProcessor(AzureBoardsJobDetailsModel distributionDetails, UUID eventId, Set<Long> notificationIds) throws AlertException {
-        AzureBoardsProperties azureBoardsProperties = azureBoardsPropertiesFactory.createAzureBoardsProperties();
+        AzureBoardsProperties azureBoardsProperties = azureBoardsPropertiesFactory.createAzureBoardsPropertiesWithJobId(distributionDetails.getJobId());
         String organizationName = azureBoardsProperties.getOrganizationName();
         azureBoardsProperties.validateProperties();
 
@@ -143,7 +143,13 @@ public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory
         return new IssueTrackerProcessor<>(extractor, messageSender);
     }
 
-    private void installCustomFieldsIfNecessary(String organizationName, String projectName, String issueType, AzureProjectService projectService, AzureProcessService processService) throws AlertException {
+    private void installCustomFieldsIfNecessary(
+        String organizationName,
+        String projectName,
+        String issueType,
+        AzureProjectService projectService,
+        AzureProcessService processService
+    ) throws AlertException {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         AzureCustomFieldManager azureCustomFieldInstaller = new AzureCustomFieldManager(organizationName, projectService, processService, executorService);
         try {

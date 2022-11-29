@@ -8,95 +8,62 @@
 package com.synopsys.integration.alert.channel.azure.boards.oauth;
 
 import java.time.Instant;
+import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.collections4.map.PassiveExpiringMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
 public class OAuthRequestValidator {
-    public static final String OAUTH_REQUEST_KEY_PREFIX = "alert-oauth-request-";
-    public static final String UNKNOWN_OAUTH_ID = "<unknown value>";
-    private final Logger logger = LoggerFactory.getLogger(OAuthRequestValidator.class);
-    private final Map<String, Instant> requestMap = new ConcurrentHashMap<>();
+    private static final Long TIME_TO_LIVE_IN_MILLIS = 600000L;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Map<UUID, OAuthRequestMapping> requestMap = Collections.synchronizedMap(new PassiveExpiringMap<>(TIME_TO_LIVE_IN_MILLIS));
 
-    public String generateRequestKey() {
-        UUID requestID = UUID.randomUUID();
-        return String.format("%s%s", OAuthRequestValidator.OAUTH_REQUEST_KEY_PREFIX, requestID);
+    public UUID generateRequestKey() {
+        return UUID.randomUUID();
     }
 
-    public void addAuthorizationRequest(String requestKey) {
+    public void addAuthorizationRequest(UUID requestKey, UUID configurationId) {
         if (requestKey == null) {
             logger.error("OAuth authorization key is null, authorization request will not be added");
             return;
         }
-        String oauthRequestId = parseRequestIdString(requestKey);
-        logger.debug("Adding OAuth authorization key {}", oauthRequestId);
-        requestMap.put(requestKey, Instant.now());
+        logger.debug("Adding OAuth authorization key {}", requestKey);
+        requestMap.put(requestKey, new OAuthRequestMapping(configurationId, Instant.now()));
     }
 
-    public void removeAuthorizationRequest(String requestKey) {
+    public void removeAuthorizationRequest(UUID requestKey) {
         if (requestKey == null) {
             logger.error("OAuth authorization key is null, authorization request will not be removed");
             return;
         }
         requestMap.remove(requestKey);
-        String oauthRequestId = parseRequestIdString(requestKey);
-        logger.debug("Removed OAuth authorization key {}", oauthRequestId);
+        logger.debug("Removed OAuth authorization key {}", requestKey);
     }
 
-    public boolean hasRequestKey(String requestKey) {
+    public boolean hasRequestKey(UUID requestKey) {
         if (requestKey == null) {
             return false;
         }
         return requestMap.containsKey(requestKey);
     }
 
+    public boolean hasRequestFromConfigurationId(String configurationId) {
+        return requestMap.values().stream()
+            .map(OAuthRequestMapping::getConfigurationId)
+            .map(UUID::toString)
+            .anyMatch(configurationId::equals);
+    }
+
     public boolean hasRequests() {
         return !requestMap.isEmpty();
     }
 
-    //TODO Currently being used by AzureBoards to clear all requests when the user deletes a config. Will need to update this when new OAuth user is introduced
-    public void removeAllRequests() {
-        // NOTE: If there are multiple OAuth clients make sure removeAllRequests is used correctly.
-        // Do not want to remove requests for other OAuth clients inadvertently.
-        requestMap.clear();
-    }
-
-    public void removeRequestsOlderThanInstant(Instant instant) {
-        requestMap.entrySet().stream()
-            .filter(entry -> entry.getValue().isBefore(instant))
-            .map(Map.Entry::getKey)
-            .forEach(this::removeAuthorizationRequest);
-
-    }
-
-    public void removeRequestsOlderThan5MinutesAgo() {
-        Instant fiveMinutesAgo = Instant.now().minusSeconds(300);
-        removeRequestsOlderThanInstant(fiveMinutesAgo);
-    }
-
-    public String parseRequestIdString(String userRequestKey) {
-        return parseRequestKey(userRequestKey)
-            .map(UUID::toString)
-            .orElse(UNKNOWN_OAUTH_ID);
-    }
-
-    private Optional<UUID> parseRequestKey(String userRequestKey) {
-        Optional<UUID> parsedKey = Optional.empty();
-        if (StringUtils.isNotBlank(userRequestKey)) {
-            String idString = StringUtils.remove(userRequestKey, OAUTH_REQUEST_KEY_PREFIX);
-            try {
-                parsedKey = Optional.of(UUID.fromString(idString));
-            } catch (IllegalArgumentException ex) {
-                logger.error("Error parsing OAuth UUID string", ex);
-            }
-        }
-        return parsedKey;
+    public UUID getConfigurationIdFromRequest(UUID requestKey) {
+        return requestMap.get(requestKey).getConfigurationId();
     }
 }

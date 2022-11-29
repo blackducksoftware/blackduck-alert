@@ -13,7 +13,11 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.action.ConfigurationAction;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
+/**
+ * @deprecated Global configuration actions for Email channel are now handled through EmailGlobalCrudActions
+ */
 @Component
+@Deprecated(forRemoval = true)
 public class EmailConfigurationAction extends ConfigurationAction {
     @Autowired
     protected EmailConfigurationAction(EmailGlobalFieldModelTestAction emailGlobalFieldModelTestAction) {

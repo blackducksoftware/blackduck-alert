@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.channel.jira.environment;
+package com.synopsys.integration.alert.channel.jira.server.environment;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

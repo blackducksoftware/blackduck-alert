@@ -107,13 +107,13 @@ class JiraServerGlobalCrudActionsTest {
         );
 
         JiraServerGlobalConfigAccessor configAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
-        Mockito.when(configAccessor.getConfigurationPage(AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE, null, null, null)).thenReturn(alertPagedModel);
+        Mockito.when(configAccessor.getConfigurationPage(AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE, "", null, null)).thenReturn(alertPagedModel);
 
         JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, createValidator());
         ActionResponse<AlertPagedModel<JiraServerGlobalConfigModel>> actionResponse = crudActions.getPaged(
             AlertPagedModel.DEFAULT_PAGE_NUMBER,
             AlertPagedModel.DEFAULT_PAGE_SIZE,
-            null,
+            "",
             null,
             null
         );

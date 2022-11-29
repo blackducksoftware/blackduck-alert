@@ -21,7 +21,12 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
+/**
+ * @deprecated This class is required for converting an old ConfigurationModel into the new GlobalConfigModel classes. This is a temporary class that should be removed once we
+ * remove unsupported REST endpoints in 8.0.0.
+ */
 @Component
+@Deprecated(forRemoval = true)
 public class EmailGlobalConfigurationModelSaveActions implements GlobalConfigurationModelToConcreteSaveActions {
     private final EmailGlobalConfigurationModelConverter emailFieldModelConverter;
     private final EmailGlobalCrudActions configurationActions;
@@ -47,7 +52,10 @@ public class EmailGlobalConfigurationModelSaveActions implements GlobalConfigura
         Optional<UUID> defaultConfigurationId = configurationAccessor.getConfiguration()
             .map(EmailGlobalConfigModel::getId)
             .map(UUID::fromString);
-        Optional<EmailGlobalConfigModel> emailGlobalConfigModel = emailFieldModelConverter.convertAndValidate(configurationModel);
+        Optional<EmailGlobalConfigModel> emailGlobalConfigModel = emailFieldModelConverter.convertAndValidate(
+            configurationModel,
+            defaultConfigurationId.map(UUID::toString).orElse(null)
+        );
         if (defaultConfigurationId.isPresent()) {
             emailGlobalConfigModel.ifPresent(configurationActions::update);
         }
@@ -55,7 +63,7 @@ public class EmailGlobalConfigurationModelSaveActions implements GlobalConfigura
 
     @Override
     public void createConcreteModel(ConfigurationModel configurationModel) {
-        Optional<EmailGlobalConfigModel> emailGlobalConfigModel = emailFieldModelConverter.convertAndValidate(configurationModel);
+        Optional<EmailGlobalConfigModel> emailGlobalConfigModel = emailFieldModelConverter.convertAndValidate(configurationModel, null);
         emailGlobalConfigModel.ifPresent(configurationActions::create);
     }
 

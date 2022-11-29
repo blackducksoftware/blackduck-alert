@@ -15,6 +15,11 @@ import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoard
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthEndpointResponse;
 import com.synopsys.integration.alert.common.rest.api.AbstractFunctionController;
 
+/**
+ * @deprecated This controller is replaced by the oAuthAuthenticate endpoint of AzureBoardsGlobalConfigController.
+ * This class should be removed in 8.0.0.
+ */
+@Deprecated(forRemoval = true)
 @RestController
 @RequestMapping(AzureBoardsOAuthFunctionController.AZURE_OAUTH_FUNCTION_URL)
 public class AzureBoardsOAuthFunctionController extends AbstractFunctionController<OAuthEndpointResponse> {

@@ -15,8 +15,9 @@ import { EMAIL_INFO } from 'page/channel/email/EmailModels';
 import { JIRA_SERVER_INFO, JIRA_SERVER_URLS } from 'page/channel/jira/server/JiraServerModel';
 import { MSTEAMS_INFO } from 'page/channel/msteams/MSTeamsModel';
 import MSTeamsGlobalConfiguration from 'page/channel/msteams/MSTeamsGlobalConfiguration';
-import { AZURE_INFO } from 'page/channel/azure/AzureModel';
-import AzureGlobalConfiguration from 'page/channel/azure/AzureGlobalConfiguration';
+import { AZURE_BOARDS_INFO, AZURE_BOARDS_URLS } from 'page/channel/azure/AzureBoardsModel';
+import AzureBoardsPageForm from 'page/channel/azure/AzureBoardsPageForm';
+import AzureBoardsTableConstructor from 'page/channel/azure/AzureBoardsTableConstructor';
 import { SCHEDULING_INFO } from 'page/scheduling/SchedulingModel';
 import SchedulingConfiguration from 'page/scheduling/SchedulingConfiguration';
 import { SETTINGS_INFO } from 'page/settings/SettingsModel';
@@ -121,16 +122,28 @@ const MainPage = ({
                 )}
             />
             <DescriptorRoute
-                uriPrefix={channelUri}
-                urlName={AZURE_INFO.url}
-                descriptor={globalDescriptorMap[AZURE_INFO.key]}
-                render={(readonly, showTest, showSave, showDelete) => (
-                    <AzureGlobalConfiguration
-                        csrfToken={csrfToken}
+                descriptor={globalDescriptorMap[AZURE_BOARDS_INFO.key]}
+                urlName={AZURE_BOARDS_INFO.url}
+                paths={[`${AZURE_BOARDS_URLS.editUrl}/:id?`, `${AZURE_BOARDS_URLS.copyUrl}/:id?`]}
+                render={(readonly, showTest, showSave) => (
+                    <AzureBoardsPageForm
                         errorHandler={errorHandler}
+                        csrfToken={csrfToken}
                         readonly={readonly}
                         displayTest={showTest}
                         displaySave={showSave}
+                    />
+                )}
+            />
+            <DescriptorRoute
+                uriPrefix={channelUri}
+                urlName={AZURE_BOARDS_INFO.url}
+                descriptor={globalDescriptorMap[AZURE_BOARDS_INFO.key]}
+                render={(readonly, showTest, showSave, showDelete) => (
+                    <AzureBoardsTableConstructor
+                        csrfToken={csrfToken}
+                        readonly={readonly}
+                        showRefreshButton={!autoRefresh}
                         displayDelete={showDelete}
                     />
                 )}

@@ -116,7 +116,7 @@ spec:
         {{- else }}
         image: {{ .Values.registry }}/blackduck-alert:{{ .Values.alert.imageTag }}
         {{- end }}
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         livenessProbe:
           exec:
             command:

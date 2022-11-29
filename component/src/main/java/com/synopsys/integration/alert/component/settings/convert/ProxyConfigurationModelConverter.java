@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import org.apache.commons.lang3.math.NumberUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -24,9 +22,13 @@ import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
 import com.synopsys.integration.alert.component.settings.proxy.validator.SettingsProxyValidator;
 
+/**
+ * @deprecated This class is required for converting an old ConfigurationModel into the new GlobalConfigModel classes. This is a temporary class that should be removed once we
+ * remove unsupported REST endpoints.
+ */
 @Component
+@Deprecated(forRemoval = true)
 public class ProxyConfigurationModelConverter extends GlobalConfigurationModelToConcreteConverter<SettingsProxyModel> {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
     // TODO Remove field keys from ProxyManager when the old field models aren't used anymore.
     public static final String FIELD_KEY_USERNAME = "settings.proxy.username";
     public static final String FIELD_KEY_PASSWORD = "settings.proxy.password";
@@ -72,7 +74,8 @@ public class ProxyConfigurationModelConverter extends GlobalConfigurationModelTo
     }
 
     @Override
-    protected ValidationResponseModel validate(SettingsProxyModel configModel) {
+    protected ValidationResponseModel validate(SettingsProxyModel configModel, String existingConfigurationId) {
+        //Since there is only a single email global configuration, existingConfigurationId is ignored.
         return validator.validate(configModel);
     }
 }
