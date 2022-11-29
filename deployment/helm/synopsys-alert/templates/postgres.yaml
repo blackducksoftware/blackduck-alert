@@ -85,6 +85,12 @@ spec:
           value: 1024MB
         - name: MIGRATE_POSTGRES
           value: "{{ if .Values.postgres.postgresMigration }}{{ .Values.postgres.postgresMigration }}{{ else }}true{{ end }}"
+        - name: PGDATA
+        {{- if .Values.postgres.postgresDataDirectory }}
+          value: {{ .Values.postgres.postgresDataDirectory }}
+        {{- else }}
+          value: "/var/lib/postgresql/data"
+        {{- end}}
         {{- if .Values.postgres.dbCredential.secretName }}
         - name: POSTGRES_USER
           valueFrom:
@@ -96,6 +102,19 @@ spec:
           valueFrom:
             configMapKeyRef:
               key: ALERT_DB_USERNAME
+              name: {{ .Release.Name }}-db-config
+        {{- end }}
+        {{- if .Values.postgres.dbAdminCredential.secretName }}
+        - name: POSTGRES_ADMIN_USER
+          valueFrom:
+            secretKeyRef:
+              key: {{ required ".Values.postgres.dbAdminCredential.usernameKey is missing." .Values.postgres.dbAdminCredential.usernameKey }}
+              name: {{ .Values.postgres.dbAdminCredential.secretName }}
+        {{- else }}
+        - name: POSTGRES_ADMIN_USER
+          valueFrom:
+            configMapKeyRef:
+              key: ALERT_DB_ADMIN_USERNAME
               name: {{ .Release.Name }}-db-config
         {{- end }}
         - name: POSTGRES_DB
@@ -162,7 +181,7 @@ spec:
               command:
                 - /bin/bash
                 - -c
-                - LD_LIBRARY_PATH=/usr/local/lib /usr/local/bin/pg_ctl -D /var/lib/postgresql/data/userdata -l logfile stop
+                - LD_LIBRARY_PATH=/usr/local/lib /usr/local/bin/pg_ctl -D "${PGDATA}" -l logfile stop
         name: {{ .Release.Name }}-postgres
         ports:
         - containerPort: {{ .Values.postgres.port }}

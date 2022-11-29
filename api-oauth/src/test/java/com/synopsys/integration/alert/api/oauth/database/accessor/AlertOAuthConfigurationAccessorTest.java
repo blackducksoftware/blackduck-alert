@@ -13,8 +13,13 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.oauth.database.AlertOAuthModel;
+import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
+import com.synopsys.integration.alert.common.security.EncryptionUtility;
+import com.synopsys.integration.alert.test.common.MockAlertProperties;
 
 class AlertOAuthConfigurationAccessorTest {
     private MockAlertOAuthConfigurationRepository repository;
@@ -23,7 +28,10 @@ class AlertOAuthConfigurationAccessorTest {
     @BeforeEach
     void initRepository() {
         repository = new MockAlertOAuthConfigurationRepository();
-        accessor = new AlertOAuthConfigurationAccessor(repository);
+        AlertProperties alertProperties = new MockAlertProperties();
+        FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, new Gson());
+        EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, filePersistenceUtil);
+        accessor = new AlertOAuthConfigurationAccessor(repository, encryptionUtility);
     }
 
     @Test
@@ -43,7 +51,10 @@ class AlertOAuthConfigurationAccessorTest {
 
     @Test
     void readSingleConfigurationWithUnknownId() {
-        AlertOAuthConfigurationAccessor accessor = new AlertOAuthConfigurationAccessor(repository);
+        AlertProperties alertProperties = new MockAlertProperties();
+        FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, new Gson());
+        EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, filePersistenceUtil);
+        accessor = new AlertOAuthConfigurationAccessor(repository, encryptionUtility);
         Optional<AlertOAuthModel> configuration = accessor.getConfiguration(UUID.randomUUID());
         assertTrue(configuration.isEmpty());
     }

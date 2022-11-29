@@ -77,7 +77,7 @@ class AzureBoardsOAuthAuthenticateActionTest {
 
         //Set up OAuth accessor
         MockAlertOAuthConfigurationRepository mockAlertOAuthConfigurationRepository = new MockAlertOAuthConfigurationRepository();
-        alertOAuthConfigurationAccessor = new AlertOAuthConfigurationAccessor(mockAlertOAuthConfigurationRepository);
+        alertOAuthConfigurationAccessor = new AlertOAuthConfigurationAccessor(mockAlertOAuthConfigurationRepository, encryptionUtility);
         alertOAuthCredentialDataStoreFactory = new AlertOAuthCredentialDataStoreFactory(alertOAuthConfigurationAccessor);
 
         //Set up azure global validation

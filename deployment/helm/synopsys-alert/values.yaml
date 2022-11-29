@@ -57,13 +57,14 @@ postgres:
     sslRootCertKey: "ALERT_DB_SSL_ROOT_CERT_PATH"
   host: "" # required only for external postgres, for postgres as a container, it will point to <name>-postgres
   port: 5432
+  postgresMigration:
+  postgresDataDirectory: # If upgrading from the Centos image used prior to Alert 6.12.0, set this value to "/var/lib/postgresql/data/userdata"
   # NOTE: do not change usernames when using postgres as a container; only configure if using external database
   userUserName: sa
   userPassword: blackduck
   databaseName: alertdb
-  adminUserName: postgres
-  adminPassword: ""
-  postgresMigration:
+  adminUserName: # If upgrading from the Centos image used prior to Alert 6.12.0, set this value to your admin user. Default was postgres
+  adminPassword: # If upgrading from the Centos image used prior to Alert 6.12.0, set this value to your admin password. Default was ""
   dbCredential: #Secret that contains both the regular username & password
     secretName: ""
     usernameKey: "ALERT_DB_USERNAME"
