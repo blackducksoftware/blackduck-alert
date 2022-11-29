@@ -5,19 +5,24 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.oauth.database.AlertOAuthModel;
 import com.synopsys.integration.alert.api.oauth.database.configuration.AlertOAuthConfigurationEntity;
 import com.synopsys.integration.alert.api.oauth.database.configuration.AlertOAuthConfigurationRepository;
+import com.synopsys.integration.alert.common.security.EncryptionUtility;
 
 @Component
 public class AlertOAuthConfigurationAccessor {
     private final AlertOAuthConfigurationRepository oauthRepository;
+    private final EncryptionUtility encryptionUtility;
 
-    public AlertOAuthConfigurationAccessor(final AlertOAuthConfigurationRepository oauthRepository) {
+    @Autowired
+    public AlertOAuthConfigurationAccessor(final AlertOAuthConfigurationRepository oauthRepository, final EncryptionUtility encryptionUtility) {
         this.oauthRepository = oauthRepository;
+        this.encryptionUtility = encryptionUtility;
     }
 
     public Optional<AlertOAuthModel> getConfiguration(UUID id) {
@@ -62,14 +67,19 @@ public class AlertOAuthConfigurationAccessor {
     }
 
     private AlertOAuthModel convertToModel(AlertOAuthConfigurationEntity entity) {
-        return new AlertOAuthModel(entity.getId(), entity.getAccessToken(), entity.getRefreshToken(), entity.getExpirationTimeMilliseconds());
+        return new AlertOAuthModel(
+            entity.getId(),
+            encryptionUtility.decrypt(entity.getAccessToken()),
+            encryptionUtility.decrypt(entity.getRefreshToken()),
+            entity.getExpirationTimeMilliseconds()
+        );
     }
 
     private AlertOAuthConfigurationEntity convertToEntity(AlertOAuthModel model) {
         return new AlertOAuthConfigurationEntity(
             model.getId(),
-            model.getAccessToken().orElse(null),
-            model.getRefreshToken().orElse(null),
+            model.getAccessToken().map(encryptionUtility::encrypt).orElse(null),
+            model.getRefreshToken().map(encryptionUtility::encrypt).orElse(null),
             model.getExirationTimeMilliseconds().orElse(null)
         );
     }
