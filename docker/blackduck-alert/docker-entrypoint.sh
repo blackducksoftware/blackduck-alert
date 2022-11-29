@@ -237,6 +237,53 @@ liquibaseChangelockReset() {
   logIt "End releasing liquibase changeloglock."
 }
 
+liquibaseChangelockResetPostgres() {
+  logIt "Begin releasing Postgres liquibase changeloglock."
+
+## Intentionally left justified to handle multi line query
+tableExists=$(psql "${alertDatabaseAdminConfig}" -t -A <<SQL
+SELECT EXISTS (
+SELECT FROM
+pg_tables
+WHERE
+schemaname = 'public'
+AND tablename  = 'databasechangeloglock'
+)
+SQL
+)
+
+  # shellcheck disable=SC2039
+  if [[ "${tableExists}" =~ ^"t|T"* ]]
+  then
+    logIt "databasechangeloglock table exists"
+
+## Intentionally left justified to handle multi line query
+columnType=$(psql "${alertDatabaseAdminConfig}" -t -A <<SQL
+SELECT data_type FROM information_schema.columns
+WHERE table_schema = 'public'
+AND table_name = 'databasechangeloglock'
+AND column_name = 'locked'
+SQL
+)
+    checkStatus $? "Getting column from databasechangeloglock"
+
+    if [ "${columnType}" = "boolean" ]
+    then
+      psql "${alertDatabaseAdminConfig}" -c 'UPDATE databasechangeloglock SET LOCKED=false, LOCKGRANTED=null, LOCKEDBY=null where ID=1;'
+    elif [ "${columnType}" = "integer" ]
+    then
+      psql "${alertDatabaseAdminConfig}" -c 'UPDATE databasechangeloglock SET LOCKED=0, LOCKGRANTED=null, LOCKEDBY=null where ID=1;'
+    else
+      checkStatus $? "Unhandled columnType for databasechangeloglock: ${columnType}"
+    fi
+    checkStatus $? "Updating databasechangeloglock"
+  else
+    logIt "databasechangeloglock table does not exist"
+  fi
+
+  logIt "End releasing Postgres liquibase changeloglock."
+}
+
 validatePostgresConnection() {
     # Since the database is now external to the alert container verify we can connect to the database before starting.
     # https://stackoverflow.com/a/58784528/6921621
@@ -444,6 +491,7 @@ validatePostgresDatabase
 postgresPrepare600Upgrade
 createPostgresExtensions
 liquibaseChangelockReset
+liquibaseChangelockResetPostgres
 
 if [ -f "$truststoreFile" ];
 then
