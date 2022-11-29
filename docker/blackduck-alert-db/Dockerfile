@@ -17,7 +17,12 @@ ARG VERSION
 LABEL com.blackducksoftware.integration.alert.vendor="Black Duck Software, Inc." \
       com.blackducksoftware.integration.alert.version="$VERSION"
 
+RUN set -ex \
+    && mkdir -p -m 775 /var/lib/pgsql \
+    && apk add --no-cache --virtual .run-deps gettext
+
 COPY alertdb-*.sh /usr/local/bin/
+COPY openshift-custom-postgresql.conf.template /var/lib/pgsql/
 
 CMD ["postgres"]
 ENTRYPOINT ["/usr/local/bin/alertdb-docker-entrypoint.sh"]
