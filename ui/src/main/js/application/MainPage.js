@@ -33,6 +33,7 @@ import { CERTIFICATE_INFO } from 'page/certificates/CertificateModel';
 import CertificatesPage from 'page/certificates/CertificatesPage';
 import { TASK_MANAGEMENT_INFO } from 'page/task/TaskManagementModel';
 import TaskManagement from 'page/task/TaskManagement';
+import TaskManagementLayout from 'page/task/TaskManagementLayout';
 import { USER_MANAGEMENT_INFO } from 'page/user/UserModel';
 import UserManagement from 'page/user/UserManagement';
 import { CONTEXT_TYPE, isOperationAssigned, OPERATIONS } from 'common/util/descriptorUtilities';
@@ -45,6 +46,10 @@ import DescriptorRoute from 'common/component/descriptor/DescriptorRoute';
 import EmailGlobalConfiguration from 'page/channel/email/EmailGlobalConfiguration';
 import ConcreteJiraServerGlobalConfiguration from 'page/channel/jira/server/ConcreteJiraServerGlobalConfiguration';
 import ConcreteJiraServerGlobalConfigurationTable from 'page/channel/jira/server/ConcreteJiraServerGlobalConfigurationTable';
+
+import BetaPage from 'common/component/beta/BetaPage';
+import BetaComponent from 'common/component/beta/BetaComponent';
+import CurrentComponent from 'common/component/beta/CurrentComponent';
 
 const MainPage = ({
     descriptors, fetching, getDescriptorsRedux, csrfToken, autoRefresh, unauthorizedFunction
@@ -282,7 +287,14 @@ const MainPage = ({
                 urlName={TASK_MANAGEMENT_INFO.url}
                 descriptor={globalDescriptorMap[TASK_MANAGEMENT_INFO.key]}
                 render={() => (
-                    <TaskManagement />
+                    <BetaPage betaSelected>
+                        <BetaComponent>
+                            <TaskManagementLayout />
+                        </BetaComponent>
+                        <CurrentComponent>
+                            <TaskManagement />
+                        </CurrentComponent>
+                    </BetaPage>
                 )}
             />
             <DescriptorRoute
