@@ -31,6 +31,7 @@ import { AUDIT_INFO } from 'page/audit/AuditModel';
 import AuditPage from 'page/audit/AuditPage';
 import { CERTIFICATE_INFO } from 'page/certificates/CertificateModel';
 import CertificatesPage from 'page/certificates/CertificatesPage';
+import CertificatesPageLayout from 'page/certificates/CertificatesPageLayout';
 import { TASK_MANAGEMENT_INFO } from 'page/task/TaskManagementModel';
 import TaskManagement from 'page/task/TaskManagement';
 import { USER_MANAGEMENT_INFO } from 'page/user/UserModel';
@@ -45,6 +46,10 @@ import DescriptorRoute from 'common/component/descriptor/DescriptorRoute';
 import EmailGlobalConfiguration from 'page/channel/email/EmailGlobalConfiguration';
 import ConcreteJiraServerGlobalConfiguration from 'page/channel/jira/server/ConcreteJiraServerGlobalConfiguration';
 import ConcreteJiraServerGlobalConfigurationTable from 'page/channel/jira/server/ConcreteJiraServerGlobalConfigurationTable';
+
+import BetaPage from 'common/component/beta/BetaPage';
+import BetaComponent from 'common/component/beta/BetaComponent';
+import CurrentComponent from 'common/component/beta/CurrentComponent';
 
 const MainPage = ({
     descriptors, fetching, getDescriptorsRedux, csrfToken, autoRefresh, unauthorizedFunction
@@ -246,7 +251,14 @@ const MainPage = ({
                 urlName={CERTIFICATE_INFO.url}
                 descriptor={globalDescriptorMap[CERTIFICATE_INFO.key]}
                 render={() => (
-                    <CertificatesPage />
+                    <BetaPage betaSelected>
+                        <BetaComponent>
+                            <CertificatesPageLayout />
+                        </BetaComponent>
+                        <CurrentComponent>
+                            <CertificatesPage />
+                        </CurrentComponent>
+                    </BetaPage>
                 )}
             />
             <DescriptorRoute
