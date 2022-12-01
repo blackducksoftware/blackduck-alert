@@ -9,8 +9,11 @@ package com.synopsys.integration.alert.provider.blackduck.processor.message;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
@@ -20,20 +23,26 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Compon
 import com.synopsys.integration.alert.provider.blackduck.processor.NotificationExtractorBlackDuckServicesFactoryCache;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.BlackDuckMessageBomComponentDetailsCreator;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.BlackDuckMessageBomComponentDetailsCreatorFactory;
+import com.synopsys.integration.alert.provider.blackduck.processor.message.service.BlackDuckMessageComponentVersionUpgradeGuidanceService;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.BomComponent404Handler;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.policy.BlackDuckPolicyComponentConcernCreator;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.util.BlackDuckMessageLinkUtils;
 import com.synopsys.integration.alert.provider.blackduck.processor.model.AbstractRuleViolationNotificationContent;
+import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentVersionView;
 import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.function.ThrowingSupplier;
 import com.synopsys.integration.rest.HttpUrl;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
-public abstract class AbstractRuleViolationNotificationMessageExtractor<T extends AbstractRuleViolationNotificationContent> extends AbstractBlackDuckComponentConcernMessageExtractor<T> {
+public abstract class AbstractRuleViolationNotificationMessageExtractor<T extends AbstractRuleViolationNotificationContent>
+    extends AbstractBlackDuckComponentConcernMessageExtractor<T> {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private static final String UPGRADE_GUIDANCE_RESPONSE_DESCRIPTION = "upgrade guidance";
     private final ItemOperation itemOperation;
     private final BlackDuckPolicyComponentConcernCreator policyComponentConcernCreator;
     private final BlackDuckMessageBomComponentDetailsCreatorFactory detailsCreatorFactory;
@@ -66,23 +75,29 @@ public abstract class AbstractRuleViolationNotificationMessageExtractor<T extend
         return bomComponentDetails;
     }
 
-    private BomComponentDetails createBomComponentDetails(BlackDuckServicesFactory blackDuckServicesFactory, T notificationContent, ComponentVersionStatus componentVersionStatus) throws IntegrationException {
+    private BomComponentDetails createBomComponentDetails(BlackDuckServicesFactory blackDuckServicesFactory, T notificationContent, ComponentVersionStatus componentVersionStatus)
+        throws IntegrationException {
         BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
         BlackDuckMessageBomComponentDetailsCreator bomComponentDetailsCreator = detailsCreatorFactory.createBomComponentDetailsCreator(blackDuckServicesFactory);
 
         ComponentConcern policyConcern = policyComponentConcernCreator.fromPolicyInfo(notificationContent.getPolicyInfo(), itemOperation);
         try {
-            ProjectVersionComponentVersionView bomComponent = blackDuckApiClient.getResponse(new HttpUrl(componentVersionStatus.getBomComponent()), ProjectVersionComponentVersionView.class);
-            return bomComponentDetailsCreator.createBomComponentDetails(bomComponent, policyConcern, ComponentUpgradeGuidance.none(), List.of());
+            ProjectVersionComponentVersionView bomComponent = blackDuckApiClient.getResponse(
+                new HttpUrl(componentVersionStatus.getBomComponent()),
+                ProjectVersionComponentVersionView.class
+            );
+            ComponentUpgradeGuidance componentUpgradeGuidance = createComponentUpgradeGuidance(blackDuckApiClient, bomComponent);
+            return bomComponentDetailsCreator.createBomComponentDetails(bomComponent, policyConcern, componentUpgradeGuidance, List.of());
         } catch (IntegrationRestException e) {
             bomComponent404Handler.logIf404OrThrow(e, componentVersionStatus.getComponentName(), componentVersionStatus.getComponentVersionName());
+            ComponentUpgradeGuidance componentUpgradeGuidance = createComponentUpgradeGuidance(blackDuckApiClient, componentVersionStatus);
             return bomComponentDetailsCreator.createMissingBomComponentDetails(
                 componentVersionStatus.getComponentName(),
                 createComponentUrl(componentVersionStatus),
                 componentVersionStatus.getComponentVersionName(),
                 createComponentVersionUrl(componentVersionStatus),
                 List.of(policyConcern),
-                ComponentUpgradeGuidance.none(),
+                componentUpgradeGuidance,
                 List.of()
             );
         }
@@ -100,6 +115,43 @@ public abstract class AbstractRuleViolationNotificationMessageExtractor<T extend
             return BlackDuckMessageLinkUtils.createComponentQueryLink(status.getBomComponent(), status.getComponentName());
         }
         return status.getComponentVersion();
+    }
+
+    private ComponentUpgradeGuidance createComponentUpgradeGuidance(BlackDuckApiClient blackDuckApiClient, ProjectVersionComponentVersionView bomComponent) {
+        BlackDuckMessageComponentVersionUpgradeGuidanceService upgradeGuidanceService = new BlackDuckMessageComponentVersionUpgradeGuidanceService(blackDuckApiClient);
+        return safelyRetrieveItems(() -> upgradeGuidanceService.requestUpgradeGuidanceItems(bomComponent), UPGRADE_GUIDANCE_RESPONSE_DESCRIPTION);
+    }
+
+    private ComponentUpgradeGuidance createComponentUpgradeGuidance(BlackDuckApiClient blackDuckApiClient, ComponentVersionStatus componentVersionStatus) {
+        Optional<String> componentVersion = Optional.ofNullable(componentVersionStatus.getComponentVersion());
+        if (componentVersion.isEmpty()) {
+            return ComponentUpgradeGuidance.none();
+        }
+        Optional<ComponentVersionView> componentVersionView = retrieveComponentVersionView(blackDuckApiClient, componentVersion.get());
+        if (componentVersionView.isPresent()) {
+            BlackDuckMessageComponentVersionUpgradeGuidanceService upgradeGuidanceService = new BlackDuckMessageComponentVersionUpgradeGuidanceService(blackDuckApiClient);
+            return safelyRetrieveItems(() -> upgradeGuidanceService.requestUpgradeGuidanceItems(componentVersionView.get()), UPGRADE_GUIDANCE_RESPONSE_DESCRIPTION);
+        }
+        return ComponentUpgradeGuidance.none();
+    }
+
+    private Optional<ComponentVersionView> retrieveComponentVersionView(BlackDuckApiClient blackDuckApiClient, String componentVersionUrl) {
+        try {
+            ComponentVersionView componentVersionView = blackDuckApiClient.getResponse(new HttpUrl(componentVersionUrl), ComponentVersionView.class);
+            return Optional.of(componentVersionView);
+        } catch (IntegrationException e) {
+            logger.debug("Could not retrieve component version attributes");
+            return Optional.empty();
+        }
+    }
+
+    private ComponentUpgradeGuidance safelyRetrieveItems(ThrowingSupplier<ComponentUpgradeGuidance, IntegrationException> request, String responseDescription) {
+        try {
+            return request.get();
+        } catch (IntegrationException e) {
+            logger.debug("Could not retrieve {}", responseDescription, e);
+            return ComponentUpgradeGuidance.none();
+        }
     }
 
 }
