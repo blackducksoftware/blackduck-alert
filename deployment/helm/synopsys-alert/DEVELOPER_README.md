@@ -101,8 +101,3 @@ $ helm package . --app-version <APP_VERSION> --version <CHART_VERSION>
 - Note: 
     - Replace `<APP_VERSION>` with the application version to use.
     - Replace `<CHART_VERSION>` with the helm chart version to use.
-
-
-
-
-
