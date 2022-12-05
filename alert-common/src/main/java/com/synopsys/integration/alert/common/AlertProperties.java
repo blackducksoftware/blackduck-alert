@@ -12,12 +12,16 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 
 public class AlertProperties {
+    private final Logger logger = LoggerFactory.getLogger(AlertProperties.class);
+
     public static final String FILE_NAME_SYNOPSYS_LOGO = "synopsys.png";
 
     @Value("${alert.config.home:}")
@@ -184,10 +188,10 @@ public class AlertProperties {
     public UriComponentsBuilder createPopulatedUriComponentsBuilderForServerURL() {
         String scheme = getSslEnabled() ? "https" : "http";
         String hostName = getAlertHostName().orElse("localhost");
-        System.out.println("---- Public server port ----");
-        System.out.println(getPublicServerPort());
+        logger.info("---- Public server port ----");
+        logger.info(getPublicServerPort().orElse(" Public server port not found"));
         String port = getPublicServerPort().or(this::getServerPort).orElse("8443");
-        System.out.println(port);
+        logger.info(port);
         String path = getContextPath().orElse("alert");
 
         UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.newInstance();
