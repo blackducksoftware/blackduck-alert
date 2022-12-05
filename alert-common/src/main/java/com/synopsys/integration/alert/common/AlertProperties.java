@@ -184,7 +184,10 @@ public class AlertProperties {
     public UriComponentsBuilder createPopulatedUriComponentsBuilderForServerURL() {
         String scheme = getSslEnabled() ? "https" : "http";
         String hostName = getAlertHostName().orElse("localhost");
+        System.out.println("---- Public server port ----");
+        System.out.println(getPublicServerPort());
         String port = getPublicServerPort().or(this::getServerPort).orElse("8443");
+        System.out.println(port);
         String path = getContextPath().orElse("alert");
 
         UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.newInstance();
