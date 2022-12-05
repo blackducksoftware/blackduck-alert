@@ -43,7 +43,6 @@ public class AlertWebServerUrlManagerImpl implements AlertWebServerUrlManager {
             logger.warn("Could not get Alert's URL from the current servlet context. Falling back to AlertProperties...");
             uriComponentsBuilder = alertProperties.createPopulatedUriComponentsBuilderForServerURL();
         }
-        logger.info("--- Populated server string ----");
         return uriComponentsBuilder;
     }
 
