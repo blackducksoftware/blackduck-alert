@@ -33,9 +33,16 @@ public class AlertWebServerUrlManagerImpl implements AlertWebServerUrlManager {
     @Override
     public UriComponentsBuilder getServerComponentsBuilder() {
         try {
+            logger.warn("---- getServerComponentsBuilder try ----");
+            logger.warn(ServletUriComponentsBuilder.fromCurrentContextPath().toUriString());
+            logger.warn(ServletUriComponentsBuilder.fromCurrentRequestUri().toUriString());
+            logger.warn(ServletUriComponentsBuilder.fromCurrentRequest().toUriString());
+            logger.warn(ServletUriComponentsBuilder.fromCurrentServletMapping().toUriString());
             return ServletUriComponentsBuilder.fromCurrentContextPath();
         } catch (Exception e) {
             logger.warn("Could not get Alert's URL from the current servlet context. Falling back to AlertProperties...");
+            logger.warn("---- getServerComponentsBuilder catch ----");
+            logger.warn(e.getMessage());
             return alertProperties.createPopulatedUriComponentsBuilderForServerURL();
         }
     }
