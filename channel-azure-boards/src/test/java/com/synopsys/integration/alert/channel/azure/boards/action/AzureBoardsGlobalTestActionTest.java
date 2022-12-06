@@ -1,13 +1,28 @@
 package com.synopsys.integration.alert.channel.azure.boards.action;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+
+import java.util.Map;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
+import com.synopsys.integration.alert.api.oauth.AlertOAuthCredentialDataStoreFactory;
+import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesFactory;
 import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUrlCreator;
 import com.synopsys.integration.alert.channel.azure.boards.database.accessor.AzureBoardsGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.azure.boards.database.configuration.AzureBoardsConfigurationEntity;
 import com.synopsys.integration.alert.channel.azure.boards.database.mock.MockAzureBoardsConfigurationRepository;
 import com.synopsys.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
-import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
 import com.synopsys.integration.alert.channel.azure.boards.validator.AzureBoardsGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.ActionResponse;
@@ -27,35 +42,26 @@ import com.synopsys.integration.alert.test.common.MockAlertProperties;
 import com.synopsys.integration.alert.test.common.database.MockRepositorySorter;
 import com.synopsys.integration.azure.boards.common.service.project.AzureProjectService;
 import com.synopsys.integration.exception.IntegrationException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.springframework.http.HttpStatus;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import java.util.Map;
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(SpringExtension.class)
-public class AzureBoardsGlobalTestActionTest {
+class AzureBoardsGlobalTestActionTest {
     private final Gson gson = new Gson();
     private final AlertProperties alertProperties = new MockAlertProperties();
     private final FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, gson);
     private final EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, filePersistenceUtil);
-
     AzureBoardsGlobalConfigAccessor azureBoardsGlobalConfigAccessor;
     AzureBoardsGlobalConfigurationValidator azureBoardsGlobalConfigurationValidator;
 
-    @Mock AzureBoardsCredentialDataStoreFactory mockAzureBoardsCredentialDataStoreFactory;
-    @Mock AzureProjectService mockedAzureProjectService;
-    @Mock AzureRedirectUrlCreator mockAzureRedirectUrlCreator;
-    @Mock ProxyManager mockProxyManager;
+    @Mock
+    AlertOAuthCredentialDataStoreFactory mockAlertOAuthCredentialDataStoreFactory;
+    @Mock
+    AzureBoardsPropertiesFactory mockAzureBoardsPropertiesFactory;
+    @Mock
+    AzureProjectService mockedAzureProjectService;
+    @Mock
+    AzureRedirectUrlCreator mockAzureRedirectUrlCreator;
+    @Mock
+    ProxyManager mockProxyManager;
 
     @BeforeEach
     void initEach() {
@@ -76,7 +82,8 @@ public class AzureBoardsGlobalTestActionTest {
             authorizationManager,
             azureBoardsGlobalConfigurationValidator,
             azureBoardsGlobalConfigAccessor,
-            mockAzureBoardsCredentialDataStoreFactory,
+            mockAlertOAuthCredentialDataStoreFactory,
+            mockAzureBoardsPropertiesFactory,
             mockAzureRedirectUrlCreator,
             gson,
             mockProxyManager
@@ -97,7 +104,8 @@ public class AzureBoardsGlobalTestActionTest {
                 authorizationManager,
                 azureBoardsGlobalConfigurationValidator,
                 azureBoardsGlobalConfigAccessor,
-                mockAzureBoardsCredentialDataStoreFactory,
+                mockAlertOAuthCredentialDataStoreFactory,
+                mockAzureBoardsPropertiesFactory,
                 mockAzureRedirectUrlCreator,
                 gson,
                 mockProxyManager
@@ -115,8 +123,8 @@ public class AzureBoardsGlobalTestActionTest {
         AuthorizationManager authorizationManager = createAuthorizationManager(AuthenticationTestUtils.FULL_PERMISSIONS);
         String name = AlertRestConstants.DEFAULT_CONFIGURATION_NAME;
         String organizationName = "Organization name";
-        String appId  = "obfuscated-app-id";
-        String clientSecret  = "obfuscatedClientSecret";
+        String appId = "obfuscated-app-id";
+        String clientSecret = "obfuscatedClientSecret";
         AzureBoardsGlobalConfigModel createdModel = azureBoardsGlobalConfigAccessor.createConfiguration(
             new AzureBoardsGlobalConfigModel(
                 "",
@@ -137,7 +145,8 @@ public class AzureBoardsGlobalTestActionTest {
                 authorizationManager,
                 azureBoardsGlobalConfigurationValidator,
                 azureBoardsGlobalConfigAccessor,
-                mockAzureBoardsCredentialDataStoreFactory,
+                mockAlertOAuthCredentialDataStoreFactory,
+                mockAzureBoardsPropertiesFactory,
                 mockAzureRedirectUrlCreator,
                 gson,
                 mockProxyManager

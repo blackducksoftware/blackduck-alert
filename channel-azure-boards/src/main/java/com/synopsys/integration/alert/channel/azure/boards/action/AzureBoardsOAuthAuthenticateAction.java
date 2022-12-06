@@ -9,16 +9,18 @@ import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
+import com.synopsys.integration.alert.api.oauth.AlertOAuthCredentialDataStoreFactory;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
+import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesFactory;
 import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUrlCreator;
 import com.synopsys.integration.alert.channel.azure.boards.database.accessor.AzureBoardsGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidator;
-import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthEndpointResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -37,18 +39,21 @@ public class AzureBoardsOAuthAuthenticateAction {
     private final AuthorizationManager authorizationManager;
     private final AzureBoardsGlobalConfigAccessor azureBoardsGlobalConfigAccessor;
     private final AzureBoardsGlobalCrudActions azureBoardsGlobalCrudActions;
-    private final AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory;
+    private final AlertOAuthCredentialDataStoreFactory alertOAuthCredentialDataStoreFactory;
+    private final AzureBoardsPropertiesFactory azureBoardsPropertiesFactory;
     private final AzureBoardsGlobalValidationAction azureBoardsGlobalValidationAction;
     private final AzureRedirectUrlCreator azureRedirectUrlCreator;
     private final OAuthRequestValidator oAuthRequestValidator;
     private final AlertWebServerUrlManager alertWebServerUrlManager;
     private final ProxyManager proxyManager;
 
+    @Autowired
     public AzureBoardsOAuthAuthenticateAction(
         AuthorizationManager authorizationManager,
         AzureBoardsGlobalConfigAccessor azureBoardsGlobalConfigAccessor,
         AzureBoardsGlobalCrudActions azureBoardsGlobalCrudActions,
-        AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory,
+        AlertOAuthCredentialDataStoreFactory alertOAuthCredentialDataStoreFactory,
+        AzureBoardsPropertiesFactory azureBoardsPropertiesFactory,
         AzureBoardsGlobalValidationAction azureBoardsGlobalValidationAction,
         AzureRedirectUrlCreator azureRedirectUrlCreator,
         OAuthRequestValidator oAuthRequestValidator,
@@ -58,7 +63,8 @@ public class AzureBoardsOAuthAuthenticateAction {
         this.authorizationManager = authorizationManager;
         this.azureBoardsGlobalConfigAccessor = azureBoardsGlobalConfigAccessor;
         this.azureBoardsGlobalCrudActions = azureBoardsGlobalCrudActions;
-        this.azureBoardsCredentialDataStoreFactory = azureBoardsCredentialDataStoreFactory;
+        this.alertOAuthCredentialDataStoreFactory = alertOAuthCredentialDataStoreFactory;
+        this.azureBoardsPropertiesFactory = azureBoardsPropertiesFactory;
         this.azureRedirectUrlCreator = azureRedirectUrlCreator;
         this.azureBoardsGlobalValidationAction = azureBoardsGlobalValidationAction;
         this.oAuthRequestValidator = oAuthRequestValidator;
@@ -105,10 +111,6 @@ public class AzureBoardsOAuthAuthenticateAction {
         }
 
         UUID requestKey = oAuthRequestValidator.generateRequestKey();
-        // since we have only one OAuth channel now remove any other requests.
-        // if we have more OAuth clients then the "remove requests" will have to be removed from here.
-        // beginning authentication process create the request id at the start.
-        oAuthRequestValidator.removeRequestsOlderThan5MinutesAgo();
         oAuthRequestValidator.addAuthorizationRequest(requestKey, UUID.fromString(savedConfigModel.getId()));
 
         logger.info("OAuth authorization request created: {}", requestKey);
@@ -122,7 +124,6 @@ public class AzureBoardsOAuthAuthenticateAction {
     }
 
     private ActionResponse<OAuthEndpointResponse> createErrorResponse(HttpStatus httpStatus, String errorMessage) {
-        oAuthRequestValidator.removeAllRequests();
         OAuthEndpointResponse oAuthEndpointResponse = new OAuthEndpointResponse(false, "", errorMessage);
         return new ActionResponse<>(httpStatus, errorMessage, oAuthEndpointResponse);
     }
@@ -147,8 +148,8 @@ public class AzureBoardsOAuthAuthenticateAction {
     }
 
     private boolean isAuthenticated(AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModel) {
-        AzureBoardsProperties properties = AzureBoardsProperties.fromGlobalConfigurationModel(
-            azureBoardsCredentialDataStoreFactory,
+        AzureBoardsProperties properties = azureBoardsPropertiesFactory.fromGlobalConfigurationModel(
+            alertOAuthCredentialDataStoreFactory,
             azureRedirectUrlCreator.createOAuthRedirectUri(),
             azureBoardsGlobalConfigModel
         );

@@ -96,7 +96,7 @@ public interface DistributionJobRepository extends JpaRepository<DistributionJob
             + "            coalesce(:vulnerabilitySeverities, NULL) IS NULL"
             + "            OR vulnerabilitySeverityFilters.severityName IS NULL"
             + "            OR vulnerabilitySeverityFilters.severityName IN (:vulnerabilitySeverities)"
-            + "          ) OR ("
+            + "          ) AND ("
             + "            coalesce(:policyNames, NULL) IS NULL"
             + "            OR policyFilters.policyName IS NULL"
             + "            OR policyFilters.policyName IN (:policyNames)"

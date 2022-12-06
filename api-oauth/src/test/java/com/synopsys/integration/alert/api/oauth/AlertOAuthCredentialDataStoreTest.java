@@ -11,10 +11,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.google.api.client.auth.oauth2.StoredCredential;
+import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.oauth.database.AlertOAuthModel;
 import com.synopsys.integration.alert.api.oauth.database.accessor.AlertOAuthConfigurationAccessor;
 import com.synopsys.integration.alert.api.oauth.database.accessor.MockAlertOAuthConfigurationRepository;
+import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
+import com.synopsys.integration.alert.common.security.EncryptionUtility;
+import com.synopsys.integration.alert.test.common.MockAlertProperties;
 
 class AlertOAuthCredentialDataStoreTest {
 
@@ -27,7 +32,11 @@ class AlertOAuthCredentialDataStoreTest {
     @BeforeEach
     void initDataStore() {
         repository = new MockAlertOAuthConfigurationRepository();
-        accessor = new AlertOAuthConfigurationAccessor(repository);
+        Gson gson = new Gson();
+        AlertProperties alertProperties = new MockAlertProperties();
+        FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, gson);
+        EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, filePersistenceUtil);
+        accessor = new AlertOAuthConfigurationAccessor(repository, encryptionUtility);
         factory = new AlertOAuthCredentialDataStoreFactory(accessor);
         dataStore = new AlertOAuthCredentialDataStore(factory, StoredCredential.DEFAULT_DATA_STORE_ID, accessor);
     }

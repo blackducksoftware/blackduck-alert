@@ -31,10 +31,12 @@ ext {
     }
 
     // This version is also in src/test/resources/spring-test.properties for the test jdbc connection
-    postgresContainerVersion = '13.8'
+    postgresContainerVersionMigration = '12.11'
+    postgresContainerVersionCurrent = '14.5'
 
     // Docker Variables
-    dockerBuildParam_POSTGRESIMAGEVERSION = 'postgres:' + postgresContainerVersion + '-alpine'
+    dockerBuildParam_POSTGRESIMAGEVERSION_MIGRATION = 'postgres:' + postgresContainerVersionMigration + '-alpine'
+    dockerBuildParam_POSTGRESIMAGEVERSION = 'postgres:' + postgresContainerVersionCurrent + '-alpine'
     dockerStagingDirectory = project.buildDir.toString() + '/docker-staging'
     baseDockerDirectory = project.projectDir.toString() + '/docker'
     dockerCleanStagingAreaDirectoryStageName = 'dockerCleanStagingAreaDirectory'
@@ -107,6 +109,7 @@ dependencies {
     implementation project(':api-distribution')
     implementation project(':api-environment')
     implementation project(':api-event')
+    implementation project(':api-oauth')
     implementation project(':api-processor')
     implementation project(':api-provider')
     implementation project(':api-task')

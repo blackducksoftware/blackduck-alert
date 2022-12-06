@@ -41,99 +41,47 @@ import com.google.api.client.util.Base64;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
-import com.synopsys.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
-import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.api.oauth.AlertOAuthCredentialDataStoreFactory;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpRequestCreator;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpRequestCreatorFactory;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.oauth.AzureAuthorizationCodeFlow;
-import com.synopsys.integration.azure.boards.common.oauth.AzureOAuthScopes;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 public class AzureBoardsProperties {
-    private static final String DEFAULT_AZURE_OAUTH_USER_ID = "azure_default_user";
-
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory;
+    private final AlertOAuthCredentialDataStoreFactory alertOAuthCredentialDataStoreFactory;
     private final String organizationName;
     private final String clientId;
     private final String clientSecret;
-    private final String oauthUserId;
     private final List<String> scopes;
     private final String redirectUri;
-
-    /**
-     * @deprecated Replaced by fromGlobalConfigurationModel in the updated API. For removal in 8.0.0.
-     */
-    @Deprecated(forRemoval = true)
-    public static AzureBoardsProperties fromFieldAccessor(AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory, String redirectUri, FieldUtility fieldUtility) {
-        String organizationName = fieldUtility.getStringOrNull(AzureBoardsDescriptor.KEY_ORGANIZATION_NAME);
-        String clientId = fieldUtility.getStringOrNull(AzureBoardsDescriptor.KEY_CLIENT_ID);
-        String clientSecret = fieldUtility.getStringOrNull(AzureBoardsDescriptor.KEY_CLIENT_SECRET);
-        String oAuthUserEmail = fieldUtility.getString(AzureBoardsDescriptor.KEY_OAUTH_USER_EMAIL).orElse(DEFAULT_AZURE_OAUTH_USER_ID);
-        List<String> defaultScopes = List.of(AzureOAuthScopes.PROJECTS_READ.getScope(), AzureOAuthScopes.WORK_FULL.getScope());
-        return new AzureBoardsProperties(credentialDataStoreFactory, organizationName, clientId, clientSecret, oAuthUserEmail, defaultScopes, redirectUri);
-    }
-
-    /**
-     * @deprecated Replaced by fromGlobalConfigurationModel in the updated API. For removal in 8.0.0.
-     */
-    @Deprecated(forRemoval = true)
-    public static AzureBoardsProperties fromGlobalConfig(
-        AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory,
-        String redirectUri,
-        ConfigurationModel globalConfiguration
-    ) {
-        FieldUtility globalFieldUtility = new FieldUtility(globalConfiguration.getCopyOfKeyToFieldMap());
-        return fromFieldAccessor(credentialDataStoreFactory, redirectUri, globalFieldUtility);
-    }
-
-    public static AzureBoardsProperties fromGlobalConfigurationModel(
-        AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory,
-        String redirectUri,
-        AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModel
-    ) {
-        //TODO: Determine if we need the KEY_OAUTH_USER_EMAIL here or can we use the default
-        String oAuthUserEmail = DEFAULT_AZURE_OAUTH_USER_ID;
-        List<String> defaultScopes = List.of(AzureOAuthScopes.PROJECTS_READ.getScope(), AzureOAuthScopes.WORK_FULL.getScope());
-        return new AzureBoardsProperties(
-            credentialDataStoreFactory,
-            azureBoardsGlobalConfigModel.getOrganizationName(),
-            azureBoardsGlobalConfigModel.getAppId().orElse(null),
-            azureBoardsGlobalConfigModel.getClientSecret().orElse(null),
-            oAuthUserEmail,
-            defaultScopes,
-            redirectUri
-        );
-    }
+    private final String configurationId;
 
     public AzureBoardsProperties(
-        AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory,
+        AlertOAuthCredentialDataStoreFactory alertOAuthCredentialDataStoreFactory,
         String organizationName,
         String clientId,
         String clientSecret,
-        String oauthUserId,
         List<String> scopes,
-        String redirectUri
+        String redirectUri,
+        String configurationId
     ) {
-        this.credentialDataStoreFactory = credentialDataStoreFactory;
+        this.alertOAuthCredentialDataStoreFactory = alertOAuthCredentialDataStoreFactory;
         this.organizationName = organizationName;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
-        this.oauthUserId = oauthUserId;
         this.scopes = scopes;
         this.redirectUri = redirectUri;
+        this.configurationId = configurationId;
 
         logger.debug(
-            "Initializing Azure Boards Properties with values: organizationName=[{}], oAuthUserId=[{}], scopes=[{}], redirectUri=[{}]",
+            "Initializing Azure Boards Properties with values: organizationName=[{}], scopes=[{}], redirectUri=[{}], jobId[{}]",
             organizationName,
-            oauthUserId,
             StringUtils.join(scopes, ","),
-            redirectUri
+            redirectUri,
+            configurationId
         );
     }
 
@@ -149,12 +97,12 @@ public class AzureBoardsProperties {
         return clientSecret;
     }
 
-    public String getOauthUserId() {
-        return oauthUserId;
-    }
-
     public List<String> getScopes() {
         return scopes;
+    }
+
+    public String getConfigurationId() {
+        return configurationId;
     }
 
     public void validateProperties() throws AlertConfigurationException {
@@ -168,7 +116,7 @@ public class AzureBoardsProperties {
         try {
             AuthorizationCodeFlow oAuthFlow = createOAuthFlow(httpTransport);
             Credential oAuthCredential = requestTokens(oAuthFlow, authorizationCode)
-                .orElseThrow(() -> new AlertException(String.format("Cannot request Azure OAuth credential associated with '%s'", oauthUserId)));
+                .orElseThrow(() -> new AlertException(String.format("Cannot request Azure OAuth credential associated with job '%s'", configurationId)));
 
             AzureHttpRequestCreator httpRequestCreator = AzureHttpRequestCreatorFactory.withCredential(httpTransport, oAuthCredential, gson);
             return new AzureHttpService(gson, httpRequestCreator);
@@ -187,7 +135,7 @@ public class AzureBoardsProperties {
         try {
             AuthorizationCodeFlow oAuthFlow = createOAuthFlow(httpTransport);
             Credential oAuthCredential = getExistingOAuthCredential(oAuthFlow)
-                .orElseThrow(() -> new AlertException(String.format("No existing Azure OAuth credential associated with '%s'", oauthUserId)));
+                .orElseThrow(() -> new AlertException(String.format("No existing Azure OAuth credential associated with job '%s'", configurationId)));
             return AzureHttpRequestCreatorFactory.withCredential(httpTransport, oAuthCredential, gson);
         } catch (IOException e) {
             throw new AlertException("Cannot read OAuth credentials", e);
@@ -196,8 +144,8 @@ public class AzureBoardsProperties {
 
     public AuthorizationCodeFlow createOAuthFlow(HttpTransport httpTransport) throws IOException {
         return createOAuthFlowBuilder(httpTransport)
-            .setCredentialDataStore(StoredCredential.getDefaultDataStore(credentialDataStoreFactory))
-            .addRefreshListener(new DataStoreCredentialRefreshListener(oauthUserId, credentialDataStoreFactory))
+            .setCredentialDataStore(StoredCredential.getDefaultDataStore(alertOAuthCredentialDataStoreFactory))
+            .addRefreshListener(new DataStoreCredentialRefreshListener(configurationId, alertOAuthCredentialDataStoreFactory))
             .build();
     }
 
@@ -254,7 +202,7 @@ public class AzureBoardsProperties {
     }
 
     public Optional<Credential> getExistingOAuthCredential(AuthorizationCodeFlow authorizationCodeFlow) throws IOException {
-        Credential storedCredential = authorizationCodeFlow.loadCredential(oauthUserId);
+        Credential storedCredential = authorizationCodeFlow.loadCredential(configurationId);
         return Optional.ofNullable(storedCredential);
     }
 
@@ -272,7 +220,7 @@ public class AzureBoardsProperties {
     public Optional<Credential> requestTokens(AuthorizationCodeFlow authorizationCodeFlow, String authorizationCode) throws IOException {
         AuthorizationCodeTokenRequest tokenRequest = authorizationCodeFlow.newTokenRequest(authorizationCode);
         TokenResponse tokenResponse = tokenRequest.execute();
-        Credential credential = authorizationCodeFlow.createAndStoreCredential(tokenResponse, oauthUserId);
+        Credential credential = authorizationCodeFlow.createAndStoreCredential(tokenResponse, configurationId);
         return Optional.ofNullable(credential);
     }
 

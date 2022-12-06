@@ -86,7 +86,7 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
 
     @Override
     public IssueTrackerMessageSender<Integer> createMessageSender(AzureBoardsJobDetailsModel distributionDetails, UUID globalId) throws AlertException {
-        AzureBoardsProperties azureBoardsProperties = azureBoardsPropertiesFactory.createAzureBoardsProperties();
+        AzureBoardsProperties azureBoardsProperties = azureBoardsPropertiesFactory.createAzureBoardsProperties(globalId);
         azureBoardsProperties.validateProperties();
 
         // Initialize Http Service

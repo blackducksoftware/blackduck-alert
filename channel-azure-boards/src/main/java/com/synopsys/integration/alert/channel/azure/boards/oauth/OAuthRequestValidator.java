@@ -26,10 +26,12 @@ public class OAuthRequestValidator {
     }
 
     public void addAuthorizationRequest(UUID requestKey, UUID configurationId) {
+        removeRequestsOlderThan5MinutesAgo();
         if (requestKey == null) {
             logger.error("OAuth authorization key is null, authorization request will not be added");
             return;
         }
+        requestMap.entrySet().removeIf(entry -> entry.getValue().getConfigurationId().equals(configurationId));
         logger.debug("Adding OAuth authorization key {}", requestKey);
         requestMap.put(requestKey, new OAuthRequestMapping(configurationId, Instant.now()));
     }
@@ -41,9 +43,11 @@ public class OAuthRequestValidator {
         }
         requestMap.remove(requestKey);
         logger.debug("Removed OAuth authorization key {}", requestKey);
+        removeRequestsOlderThan5MinutesAgo();
     }
 
     public boolean hasRequestKey(UUID requestKey) {
+        removeRequestsOlderThan5MinutesAgo();
         if (requestKey == null) {
             return false;
         }
@@ -51,14 +55,13 @@ public class OAuthRequestValidator {
     }
 
     public boolean hasRequests() {
+        removeRequestsOlderThan5MinutesAgo();
         return !requestMap.isEmpty();
     }
 
-    //TODO Currently being used by AzureBoards to clear all requests when the user deletes a config. Will need to update this when new OAuth user is introduced
-    public void removeAllRequests() {
-        // NOTE: If there are multiple OAuth clients make sure removeAllRequests is used correctly.
-        // Do not want to remove requests for other OAuth clients inadvertently.
-        requestMap.clear();
+    public UUID getConfigurationIdFromRequest(UUID requestKey) {
+        removeRequestsOlderThan5MinutesAgo();
+        return requestMap.get(requestKey).getConfigurationId();
     }
 
     public void removeRequestsOlderThanInstant(Instant instant) {
@@ -66,15 +69,10 @@ public class OAuthRequestValidator {
             .filter(entry -> entry.getValue().getRequestTimestamp().isBefore(instant))
             .map(Map.Entry::getKey)
             .forEach(this::removeAuthorizationRequest);
-
     }
 
     public void removeRequestsOlderThan5MinutesAgo() {
         Instant fiveMinutesAgo = Instant.now().minusSeconds(300);
         removeRequestsOlderThanInstant(fiveMinutesAgo);
-    }
-
-    public UUID getConfigurationIdFromRequest(UUID requestKey) {
-        return requestMap.get(requestKey).getConfigurationId();
     }
 }

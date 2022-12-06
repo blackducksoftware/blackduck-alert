@@ -4,6 +4,7 @@ set -e
 #defaults
 backup=false
 restore=false
+plainFormat=false
 file=
 databaseKeyword="-postgres-"
 databaseName=alertdb
@@ -14,13 +15,14 @@ deploymentNamespace=default
 usage() {
   echo "usage: database-utilities - backup or restore a database with kubectl."
   echo
-  echo "database-utilities.sh [-b] [-f file] [-d databaseName] [-k containerKeyword] [-n namespace] [-r] [-u userName]"
+  echo "database-utilities.sh [-b] [-d databaseName] [-f file] [-k containerKeyword] [-n namespace] [-p] [-r] [-u userName]"
   echo "Options: "
   echo "  -b: backup a database to the file specified in the file option."
-  echo "  -f: the file to save a backup or the file to restore the database from."
   echo "  -d: the name of the database."
+  echo "  -f: the file to save a backup or the file to restore the database from."
   echo "  -k: the keyword to search for the database container."
   echo "  -n: the namespace used with the deployment."
+  echo "  -p: plain text database dump format"
   echo "  -r: restore a database from the file specified by the file option."
   echo "  -u: database user name."
   echo "  -h: display this help."
@@ -38,13 +40,14 @@ displayConfiguration() {
   echo "-------------------------------------"
   echo "Configured Options: "
   echo "  Mode:"
-  echo "    backup:  $backup"
-  echo "    restore: $restore"
-  echo "  Backup/Restore File: $file"
+  echo "    backup:             $backup"
+  echo "    restore:            $restore"
+  echo "  Plain Text Format:    $plainFormat"
+  echo "  Backup/Restore File:  $file"
   echo "  Deployment Namespace: $deploymentNamespace"
-  echo "  Pod Search Keyword: $databaseKeyword"
-  echo "  Database Name: $databaseName"
-  echo "  Database User: $userName"
+  echo "  Pod Search Keyword:   $databaseKeyword"
+  echo "  Database Name:        $databaseName"
+  echo "  Database User:        $userName"
   echo "-------------------------------------"
 }
 
@@ -74,7 +77,12 @@ checkFileSpecified() {
 backupDatabase() {
   checkFileSpecified "Cannot backup the database."
   echo "Backing up database $databaseName"
-  kubectl -n $deploymentNamespace exec $podId -i -- pg_dump -Fc -U $userName -f /tmp/alert-database.dump $databaseName;
+  if [ $plainFormat == "true" ];
+    then
+      kubectl -n $deploymentNamespace exec $podId -i -- pg_dump -Fp -U $userName --clean -f /tmp/alert-database.dump $databaseName;
+    else
+      kubectl -n $deploymentNamespace exec $podId -i -- pg_dump -Fc -U $userName -f /tmp/alert-database.dump $databaseName;
+  fi
   kubectl -n $deploymentNamespace cp $podId:/tmp/alert-database.dump "$file"
   echo "Database $databaseName backup completed to file $file"
 }
@@ -82,7 +90,12 @@ backupDatabase() {
 restoreDatabase() {
   checkFileSpecified "Cannot restore the database from a file."
   echo "Restoring database $databaseName from file $file"
-  cat "$file" | kubectl -n $deploymentNamespace exec $podId -i -- pg_restore -U $userName -Fc --verbose --clean --if-exists -d $databaseName
+  if [ $plainFormat == "true" ];
+    then
+      cat "$file" | kubectl -n $deploymentNamespace exec $podId -i -- psql -U $userName $databaseName
+    else
+      cat "$file" | kubectl -n $deploymentNamespace exec $podId -i -- pg_restore -U $userName -Fc --verbose --clean --if-exists -d $databaseName
+  fi
   echo "Database $databaseName restored."
 }
 
@@ -94,22 +107,25 @@ if [ $# -eq 0 ];
     exit 0
 fi
 
-while getopts "b,f:,d:,k:,n:,r,u:,h" option; do
+while getopts "b,d:,f:,k:,n:,p,r,u:,h" option; do
   case ${option} in
     b)
       backup=true
       ;;
-    f)
-      file="${OPTARG}"
-      ;;
     d)
       databaseName="${OPTARG}"
+      ;;
+    f)
+      file="${OPTARG}"
       ;;
     k)
       databaseKeyword="${OPTARG}"
       ;;
     n)
       deploymentNamespace="${OPTARG}"
+      ;;
+    p)
+      plainFormat=true
       ;;
     r)
       restore=true

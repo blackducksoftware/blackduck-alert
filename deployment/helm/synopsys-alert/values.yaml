@@ -23,7 +23,7 @@ alert:
   persistentVolumeClaimName: ""
   claimSize: "5Gi"
   storageClass: ""
-  volumeName: ""
+  volumeName: "" # existing persistent volume name backing the PVC
   nodeSelector: {}
   tolerations: []
   affinity: {}
@@ -45,7 +45,8 @@ cfssl:
 
 # postgres - configurations for the postgres Pod
 postgres:
-  registry: "docker.io/centos" # override the docker registry at container level
+  imageTag: ALERT_VERSION_TOKEN
+  registry: "" # override the docker registry at container level
   isExternal: false # false for running Postgres as a container and true for using External Postgres database
   ssl: false # If true, Alert uses SSL for external Postgres connection
   sslUseFiles: false # If true, Alert will expect to find ssl certs for communicating with the External Postgres database
@@ -56,12 +57,14 @@ postgres:
     sslRootCertKey: "ALERT_DB_SSL_ROOT_CERT_PATH"
   host: "" # required only for external postgres, for postgres as a container, it will point to <name>-postgres
   port: 5432
+  postgresMigration:
+  postgresDataDirectory: # If upgrading from the Centos image used prior to Alert 6.12.0, set this value to "/var/lib/postgresql/data/userdata"
   # NOTE: do not change usernames when using postgres as a container; only configure if using external database
   userUserName: sa
   userPassword: blackduck
   databaseName: alertdb
-  adminUserName: postgres
-  adminPassword: ""
+  adminUserName: # If upgrading from the Centos image used prior to Alert 6.12.0, set this value to your admin user. Default was postgres
+  adminPassword: # If upgrading from the Centos image used prior to Alert 6.12.0, set this value to your admin password. Default was ""
   dbCredential: #Secret that contains both the regular username & password
     secretName: ""
     usernameKey: "ALERT_DB_USERNAME"
@@ -85,7 +88,7 @@ postgres:
 # rabbitmq - configurations for the rabbitMQ pod
 rabbitmq:
   imageTag: ALERT_VERSION_TOKEN
-  registry: ""
+  registry: "" # override the docker registry at container level
   isExternal: false # false for running RabbitMQ as a container and true for using External RabbitMQ instance\
   host: "" # required only for external RabbitMQ,  it will point to <name>-rabbitmq
   port: 5672

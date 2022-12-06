@@ -174,17 +174,28 @@ const DistributionConfigurationForm = ({
         }
     }, [selectedChannel]);
 
+    // For channels that are using GlobalConfigModels
+    const globalConfigSetSpecificChannelModel = () => {
+        if (!FieldModelUtilities.hasKey(specificChannelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId)) {
+            const commonGlobalConfigId = FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId);
+            setSpecificChannelModel(FieldModelUtilities.updateFieldModelSingleValue(specificChannelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId, commonGlobalConfigId));
+        }
+    };
+
     const renderChannelFields = () => {
         switch (selectedChannel.toString()) {
-            case AZURE_BOARDS_INFO.key:
+            case AZURE_BOARDS_INFO.key: {
+                globalConfigSetSpecificChannelModel();
                 return (
                     <AzureDistributionConfiguration
+                        csrfToken={csrfToken}
                         data={specificChannelModel}
                         setData={setSpecificChannelModel}
                         errors={errors}
                         readonly={readonly}
                     />
                 );
+            }
             case EMAIL_INFO.key:
                 return (
                     <EmailDistributionConfiguration
@@ -217,10 +228,7 @@ const DistributionConfigurationForm = ({
                     />
                 );
             case JIRA_SERVER_INFO.key: {
-                if (!FieldModelUtilities.hasKey(specificChannelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId)) {
-                    const commonGlobalConfigId = FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId);
-                    setSpecificChannelModel(FieldModelUtilities.updateFieldModelSingleValue(specificChannelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId, commonGlobalConfigId));
-                }
+                globalConfigSetSpecificChannelModel();
                 return (
                     <JiraServerDistributionConfiguration
                         csrfToken={csrfToken}

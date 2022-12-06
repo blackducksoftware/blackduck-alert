@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
@@ -29,7 +30,23 @@ class ProxyConfigurationModelConverterTest {
     void validConversionTest() {
         ConfigurationModel configurationModel = createDefaultConfigurationModel();
         ProxyConfigurationModelConverter converter = new ProxyConfigurationModelConverter(validator);
-        Optional<SettingsProxyModel> model = converter.convertAndValidate(configurationModel);
+        Optional<SettingsProxyModel> model = converter.convertAndValidate(configurationModel, null);
+        assertTrue(model.isPresent());
+        SettingsProxyModel proxyModel = model.get();
+        assertEquals(TEST_AUTH_USER, proxyModel.getProxyUsername().orElse(null));
+        assertEquals(TEST_AUTH_PASSWORD, proxyModel.getProxyPassword().orElse(null));
+        assertEquals(TEST_SMTP_HOST, proxyModel.getProxyHost());
+        assertEquals(Integer.valueOf(TEST_SMTP_PORT), proxyModel.getProxyPort());
+        assertEquals(TEST_NON_PROXY_HOSTS, proxyModel.getNonProxyHosts().orElse(null));
+
+    }
+
+    @Test
+    void validConversionExistingConfigIgnoredTest() {
+        ConfigurationModel configurationModel = createDefaultConfigurationModel();
+        ProxyConfigurationModelConverter converter = new ProxyConfigurationModelConverter(validator);
+        // Note: Since only one proxy configuration is present, the existing ID field is just ignored.
+        Optional<SettingsProxyModel> model = converter.convertAndValidate(configurationModel, UUID.randomUUID().toString());
         assertTrue(model.isPresent());
         SettingsProxyModel proxyModel = model.get();
         assertEquals(TEST_AUTH_USER, proxyModel.getProxyUsername().orElse(null));
@@ -46,7 +63,7 @@ class ProxyConfigurationModelConverterTest {
         configurationModel.getField(ProxyConfigurationModelConverter.FIELD_KEY_PORT)
             .ifPresent(field -> field.setFieldValue("twenty-five"));
         ProxyConfigurationModelConverter converter = new ProxyConfigurationModelConverter(validator);
-        Optional<SettingsProxyModel> model = converter.convertAndValidate(configurationModel);
+        Optional<SettingsProxyModel> model = converter.convertAndValidate(configurationModel, null);
         assertTrue(model.isEmpty());
     }
 
@@ -54,7 +71,7 @@ class ProxyConfigurationModelConverterTest {
     void emptyFieldsTest() {
         ConfigurationModel emptyModel = new ConfigurationModel(1L, 1L, "", "", ConfigContextEnum.GLOBAL, Map.of());
         ProxyConfigurationModelConverter converter = new ProxyConfigurationModelConverter(validator);
-        Optional<SettingsProxyModel> model = converter.convertAndValidate(emptyModel);
+        Optional<SettingsProxyModel> model = converter.convertAndValidate(emptyModel, null);
         assertTrue(model.isEmpty());
     }
 

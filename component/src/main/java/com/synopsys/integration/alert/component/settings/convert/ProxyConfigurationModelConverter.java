@@ -74,7 +74,8 @@ public class ProxyConfigurationModelConverter extends GlobalConfigurationModelTo
     }
 
     @Override
-    protected ValidationResponseModel validate(SettingsProxyModel configModel) {
+    protected ValidationResponseModel validate(SettingsProxyModel configModel, String existingConfigurationId) {
+        //Since there is only a single email global configuration, existingConfigurationId is ignored.
         return validator.validate(configModel);
     }
 }

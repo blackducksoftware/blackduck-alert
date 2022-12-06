@@ -57,7 +57,7 @@ public class JobNotificationFilterUtils {
         }
 
         String projectNamePattern = filteredDistributionJobResponseModel.getProjectNamePattern();
-        boolean matchingProjectNamePattern = (StringUtils.isNotBlank(projectNamePattern)) ? Pattern.matches(projectNamePattern, projectName) : false;
+        boolean matchingProjectNamePattern = StringUtils.isNotBlank(projectNamePattern) && Pattern.matches(projectNamePattern, projectName);
         boolean hasMatchingProjects = filteredDistributionJobResponseModel.getProjectDetails()
             .stream()
             .map(BlackDuckProjectDetailsModel::getName)
@@ -87,7 +87,7 @@ public class JobNotificationFilterUtils {
         String projectNamePattern = filteredDistributionJobResponseModel.getProjectNamePattern();
         String projectVersionNamePattern = filteredDistributionJobResponseModel.getProjectVersionNamePattern();
 
-        boolean matchingProjectNamePattern = (StringUtils.isNotBlank(projectNamePattern)) ? Pattern.matches(projectNamePattern, projectName) : false;
+        boolean matchingProjectNamePattern = StringUtils.isNotBlank(projectNamePattern) && Pattern.matches(projectNamePattern, projectName);
         boolean hasMatchingProjects = filteredDistributionJobResponseModel.hasProjectsConfigured();
         if (StringUtils.isNotBlank(projectVersionNamePattern)) {
             // Project version pattern has to always be valid and if something else exists (Selected project or project name pattern), that also needs to be valid

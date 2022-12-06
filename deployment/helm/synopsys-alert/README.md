@@ -1,3 +1,4 @@
+
 # alert-helm
 Helm Charts for Synopsys Alert
 
@@ -17,7 +18,7 @@ Helm Charts for Synopsys Alert
   - [Persistent Storage](#persistent-storage)
   - [External Postgres Database](#external-postgres-database)
     - [External Postgres Database Requirements](#external-postgres-database-requirements)
-    - [Configuring the External Postgres Database](#Configuring the External Postgres Database)
+    - [Configuring the External Postgres Database](#configuring-the-external-postgres-database)
   - [Database Admin User Password](#database-admin-user-password)
   - [Installing with Black Duck](#installing-with-black-duck)
 
@@ -131,6 +132,15 @@ For Example:
 $ helm repo update
 ```
 
+### Create a database backup
+
+1. Execute the script database-utilities.sh to create a database backup
+    ```
+    database-utilities -b -p -n <namespace> -f <DATABASE_DUMP_FILE>
+    ```
+NOTE: Use the -h option for the database-utilities script to see the usage and get an explanation of the parameters.
+If something goes wrong the database-utilities script can be used to restore the database backup with the -r option.
+
 ### Perform upgrade
 
 ```bash
@@ -165,7 +175,7 @@ This contains a table briefly describing each parameter in the values.yaml file.
 | `alert.claimSize`                        | The persistent storage claim size limit                                                | `5Gi`                                                                   |
 | `alert.storageClass`                     | The name of the storage class for persistent storage                                   | `""`                                                                    |
 | `alert.volumeName`                       | The name of the persistent storage volume                                              | `""`                                                                    |
-| `alert.nodeSelector`                     | Alert node labels for pod assignment                                                   | `{}`                                                                    | 
+| `alert.nodeSelector`                     | Alert node labels for pod assignment                                                   | `{}`                                                                    |
 | `alert.tolerations`                      | Alert node tolerations for pod assignment                                              | `[]`                                                                    |
 | `alert.affinity`                         | Alert node affinity for pod assignment                                                 | `{}`                                                                    |
 | `alert.securityContext`                  | Alert security context                                                                 | `{}`                                                                    |
@@ -179,7 +189,8 @@ This contains a table briefly describing each parameter in the values.yaml file.
 | `cfssl.affinity`                         | Cfssl node affinity for pod assignment                                                 | `{}`                                                                    |
 | `cfssl.securityContext`                  | Cfssl node security context                                                            | `{}`                                                                    |
 | `cfssl.podSecurityContext`               | Cfssl pod security context                                                             | `{}`                                                                    |
-| `postgres.registry`                      | Postgres registry containing image for the container                                   | `"docker.io/centos"`                                                    |
+| `postgres.imageTag`                      | Image tag for the Postgres container                                                   | `docker.io/blackducksoftware/blackduck-alert-db:ALERT_VERSION_TOKEN`    |
+| `postgres.registry`                      | The container registry for the Postgres pod                                            | `""`                                                                    |
 | `postgres.isExternal`                    | If true, do not deploy a Postgres container                                            | `false`                                                                 |
 | `postgres.host`                          | Host name of the Postgres database                                                     | `""`                                                                    |
 | `postgres.port`                          | Port of the Postgres database                                                          | `5432`                                                                  |
@@ -188,13 +199,14 @@ This contains a table briefly describing each parameter in the values.yaml file.
 | `postgres.databaseName`                  | Postgres database name where Alert data will be stored                                 | `alertdb`                                                               |
 | `postgres.adminUserName`                 | Postgres database admin user                                                           | `postgres`                                                              |
 | `postgres.adminPassword`                 | Postgres database password for the admin user                                          | `""`                                                                    |
+| `postgres.postgresMigration`             | Flag to control launching Postgres migration                                           | `"false"`                                                               |
 | `postgres.dbCredential.secretName`       | The name of the secret that contains the database user's username & password           | `""`                                                                    |
 | `postgres.dbCredential.usernameKey`      | The key containing the database user's username                                        | `"ALERT_DB_USERNAME"`                                                   |
 | `postgres.dbCredential.passwordKey`      | The key containing the database user's password                                        | `"ALERT_DB_PASSWORD"`                                                   |
 | `postgres.dbAdminCredential.secretName`  | The name of the secret that contains both the database admin's username & password     | `""`                                                                    |
 | `postgres.dbAdminCredential.usernameKey` | The key containing the database admin's username                                       | `"ALERT_DB_ADMIN_USERNAME"`                                             |
 | `postgres.dbAdminCredential.passwordKey` | The key containing the database admin's username                                       | `"ALERT_DB_ADMIN_PASSWORD"`                                             |
-| `postgres.persistentVolumeClaimName`     | Postgres node volume claim name                                                        | `""`                                                                    | 
+| `postgres.persistentVolumeClaimName`     | Postgres node volume claim name                                                        | `""`                                                                    |
 | `postgres.claimSize`                     | Postgres node volume claim size                                                        | `"5Gi"`                                                                 |
 | `postgres.storageClass`                  | Postgres node storage class for volume claim                                           | `""`                                                                    |
 | `postgres.volumeName`                    | Postgres node volume name for pod assignment                                           | `""`                                                                    |
@@ -204,26 +216,26 @@ This contains a table briefly describing each parameter in the values.yaml file.
 | `postgres.podSecurityContext`            | Postgres node pod security context                                                     | `{}`                                                                    |
 | `postgres.securityContext`               | Postgres node security context                                                         | `{}`                                                                    |
 | `postgres.resources`                     | Postrges node resources                                                                | `{}`                                                                    |
- | `rabbitmq.imageTag`                      | Image tag for the RabbitMQ container                                                   | 'docker.io/blackducksoftware/blackduck-alert-rabbitmq:ALERT_VERSION_TOKEN' |
- | `rabbitmq.registry`                      | The container registry for the RabbitMQ pod                                            | '""'                                                                    |
- | `rabbitmq.isExternal`                    | If true, do not deploy a RabbitMQ container                                            | 'false'                                                                 |
- | `rabbitmq.host`                          | RabbitMQ host name                                                                     | '""'                                                                    |
- | `rabbitmq.port`                          | RabbitMQ port                                                                          | '5672'                                                                  |
- | `rabbitmq.virtualHost`                   | RabbitMQ virtual host name                                                             | 'blackduck-alert'                                                       |
- | `rabbitmq.managementPort`                | RabbitMQ management port                                                               | '15672'                                                                  |
-| `rabbitmq.credential.secretName`         | The name of the secret that contains both the RabbitMQ username & password             | '""'                                                                    |
- | `rabbitmq.credential.usernameKey`        | The key containing the RabbitMQ username                                               | '"ALERT_RABBITMQ_USER"'                                                 |
- | `rabbitmq.credential.passwordKey`        | The key containing the RabbitMQ password                                               | '"ALERT_RABBITMQ_PASSWORD"'                                             |
- | `rabbitmq.persistentVolumeClaimName`     | RabbitMQ node volume claim name                                                        | '""'                                                                    |
- | `rabbitmq.claimSize`                     | RabbitMQ node volume claim size                                                        | '"2Gi"'                                                                 |
- | `rabbitmq.storageClass`                  | RabbitMQ storage class for volume claim                                                | '""'                                                                    |
- | `rabbitmq.volumeName`                    | RabbitMQ node volume name for pod assignment                                           | '""'                                                                    |
- | `rabbitmq.nodeSelector`                  | RabbitMQ node labels for pod assignment                                                | '{}'                                                                    |
- | `rabbitmq.tolerations`                   | RabbitMQ node tolerations for pod assignment                                           | '[]'                                                                    |
- | `rabbitmq.affinity`                      | RabbitMQ node affinity for pod assignment                                              | '{}'                                                                    |
- | `rabbitmq.podSecurityContext`            | RabbitMQ node pod security context                                                     | '{}'                                                                    |
- | `rabbitmq.securityContext`               | RabbitMQ node security context                                                         | '{}'                                                                    |
- | `rabbitmq.resources.limits.memory`       | RabbitMQ node memory limit                                                             | '"1024Mi"'                                                              |
+| `rabbitmq.imageTag`                      | Image tag for the RabbitMQ container                                                   | `docker.io/blackducksoftware/blackduck-alert-rabbitmq:ALERT_VERSION_TOKEN` |
+| `rabbitmq.registry`                      | The container registry for the RabbitMQ pod                                            | `""`                                                                    |
+| `rabbitmq.isExternal`                    | If true, do not deploy a RabbitMQ container                                            | `false`                                                                 |
+| `rabbitmq.host`                          | RabbitMQ host name                                                                     | `""`                                                                    |
+| `rabbitmq.port`                          | RabbitMQ port                                                                          | `5672`                                                                  |
+| `rabbitmq.virtualHost`                   | RabbitMQ virtual host name                                                             | `blackduck-alert`                                                       |
+| `rabbitmq.managementPort`                | RabbitMQ management port                                                               | `15672`                                                                 |
+| `rabbitmq.credential.secretName`         | The name of the secret that contains both the RabbitMQ username & password             | `""`                                                                    |
+| `rabbitmq.credential.usernameKey`        | The key containing the RabbitMQ username                                               | `"ALERT_RABBITMQ_USER"`                                                 |
+| `rabbitmq.credential.passwordKey`        | The key containing the RabbitMQ password                                               | `"ALERT_RABBITMQ_PASSWORD"`                                             |
+| `rabbitmq.persistentVolumeClaimName`     | RabbitMQ node volume claim name                                                        | `""`                                                                    |
+| `rabbitmq.claimSize`                     | RabbitMQ node volume claim size                                                        | `"2Gi"`                                                                 |
+| `rabbitmq.storageClass`                  | RabbitMQ storage class for volume claim                                                | `""`                                                                    |
+| `rabbitmq.volumeName`                    | RabbitMQ node volume name for pod assignment                                           | `""`                                                                    |
+| `rabbitmq.nodeSelector`                  | RabbitMQ node labels for pod assignment                                                | `{}`                                                                    |
+| `rabbitmq.tolerations`                   | RabbitMQ node tolerations for pod assignment                                           | `[]`                                                                    |
+| `rabbitmq.affinity`                      | RabbitMQ node affinity for pod assignment                                              | `{}`                                                                    |
+| `rabbitmq.podSecurityContext`            | RabbitMQ node pod security context                                                     | `{}`                                                                    |
+| `rabbitmq.securityContext`               | RabbitMQ node security context                                                         | `{}`                                                                    |
+| `rabbitmq.resources.limits.memory`       | RabbitMQ node memory limit                                                             | `"1024Mi"`                                                              |
 | `blackDuckName`                          | The ReleaseName of the Black Duck instance                                             | `""`                                                                    |
 | `blackDuckNamespace`                     | The Namespace of the Black Duck instance                                               | `""`                                                                    |
 | `deployAlertWithBlackDuck`               | If true, Alert will be configured to run with a Black Duck instance                    | `false`                                                                 |
@@ -413,7 +425,7 @@ Please see: https://unofficial-kubernetes.readthedocs.io/en/latest/concepts/stor
   enablePersistentStorage: true 
   ```
   - This is the default value to prevent loss of data  
-  - Alert will not startup correctly if this is set to 'true' and persistent volumes are note configured
+  - Alert will not startup correctly if this is set to 'true' and persistent volumes are not configured
   - If this is false when the deployment is uninstalled all data will be lost
   
 #### With Storage Claims

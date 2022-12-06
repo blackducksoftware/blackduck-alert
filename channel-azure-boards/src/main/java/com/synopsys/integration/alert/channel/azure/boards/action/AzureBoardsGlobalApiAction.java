@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
-import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidatorLegacy;
 import com.synopsys.integration.alert.common.action.ApiAction;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -33,19 +32,16 @@ public class AzureBoardsGlobalApiAction extends ApiAction {
     private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     private final DescriptorMap descriptorMap;
     private final ConfigurationFieldModelConverter fieldModelConverter;
-    private final OAuthRequestValidatorLegacy oAuthRequestValidator;
 
     @Autowired
     public AzureBoardsGlobalApiAction(
         ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor,
         DescriptorMap descriptorMap,
-        ConfigurationFieldModelConverter configurationFieldModelConverter,
-        OAuthRequestValidatorLegacy oAuthRequestValidator
+        ConfigurationFieldModelConverter configurationFieldModelConverter
     ) {
         this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
         this.descriptorMap = descriptorMap;
         this.fieldModelConverter = configurationFieldModelConverter;
-        this.oAuthRequestValidator = oAuthRequestValidator;
     }
 
     @Override
@@ -77,7 +73,7 @@ public class AzureBoardsGlobalApiAction extends ApiAction {
 
     @Override
     public void afterDeleteAction(FieldModel fieldModel) throws AlertException {
-        oAuthRequestValidator.removeAllRequests();
+        // Previously the oAuthRequests were deleted in the afterDeleteAction. This is now handled by authenticate and callback actions.
     }
 
     private FieldModel updateTokenFields(FieldModel fieldModel, ConfigurationModel configurationModel) {

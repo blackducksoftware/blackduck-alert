@@ -81,7 +81,7 @@ public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory
 
     @Override
     public IssueTrackerProcessor<Integer> createProcessor(AzureBoardsJobDetailsModel distributionDetails, UUID eventId, Set<Long> notificationIds) throws AlertException {
-        AzureBoardsProperties azureBoardsProperties = azureBoardsPropertiesFactory.createAzureBoardsProperties();
+        AzureBoardsProperties azureBoardsProperties = azureBoardsPropertiesFactory.createAzureBoardsPropertiesWithJobId(distributionDetails.getJobId());
         String organizationName = azureBoardsProperties.getOrganizationName();
         azureBoardsProperties.validateProperties();
 

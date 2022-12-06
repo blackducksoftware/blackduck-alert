@@ -52,7 +52,10 @@ public class EmailGlobalConfigurationModelSaveActions implements GlobalConfigura
         Optional<UUID> defaultConfigurationId = configurationAccessor.getConfiguration()
             .map(EmailGlobalConfigModel::getId)
             .map(UUID::fromString);
-        Optional<EmailGlobalConfigModel> emailGlobalConfigModel = emailFieldModelConverter.convertAndValidate(configurationModel);
+        Optional<EmailGlobalConfigModel> emailGlobalConfigModel = emailFieldModelConverter.convertAndValidate(
+            configurationModel,
+            defaultConfigurationId.map(UUID::toString).orElse(null)
+        );
         if (defaultConfigurationId.isPresent()) {
             emailGlobalConfigModel.ifPresent(configurationActions::update);
         }
@@ -60,7 +63,7 @@ public class EmailGlobalConfigurationModelSaveActions implements GlobalConfigura
 
     @Override
     public void createConcreteModel(ConfigurationModel configurationModel) {
-        Optional<EmailGlobalConfigModel> emailGlobalConfigModel = emailFieldModelConverter.convertAndValidate(configurationModel);
+        Optional<EmailGlobalConfigModel> emailGlobalConfigModel = emailFieldModelConverter.convertAndValidate(configurationModel, null);
         emailGlobalConfigModel.ifPresent(configurationActions::create);
     }
 

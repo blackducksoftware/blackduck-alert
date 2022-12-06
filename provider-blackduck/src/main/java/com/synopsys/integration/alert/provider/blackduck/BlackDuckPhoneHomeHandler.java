@@ -72,8 +72,7 @@ public class BlackDuckPhoneHomeHandler implements ProviderPhoneHomeHandler {
         if (StringUtils.isBlank(registrationId)) {
             registrationId = PhoneHomeRequestBody.UNKNOWN_FIELD_VALUE;
         }
-        PhoneHomeRequestBodyBuilder phoneHomeBuilder = new PhoneHomeRequestBodyBuilder(registrationId, blackDuckUrl, alertArtifactInfo, UniquePhoneHomeProduct.BLACK_DUCK, blackDuckVersion);
-        return phoneHomeBuilder;
+        return new PhoneHomeRequestBodyBuilder(registrationId, blackDuckUrl, alertArtifactInfo, UniquePhoneHomeProduct.BLACK_DUCK, blackDuckVersion);
     }
 
 }

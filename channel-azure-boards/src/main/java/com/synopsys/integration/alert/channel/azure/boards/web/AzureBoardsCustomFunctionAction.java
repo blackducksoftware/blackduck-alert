@@ -7,11 +7,8 @@
  */
 package com.synopsys.integration.alert.channel.azure.boards.web;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -23,11 +20,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
-import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUrlCreator;
+import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.synopsys.integration.alert.channel.azure.boards.action.AzureBoardsOAuthAuthenticateAction;
+import com.synopsys.integration.alert.channel.azure.boards.database.accessor.AzureBoardsGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
-import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidatorLegacy;
-import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
+import com.synopsys.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
 import com.synopsys.integration.alert.channel.azure.boards.validator.AzureBoardsGlobalConfigurationFieldModelValidator;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.CustomFunctionAction;
@@ -38,14 +35,10 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
-import com.synopsys.integration.alert.common.rest.AlertWebServerUrlManager;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.azure.boards.common.http.AzureHttpRequestCreatorFactory;
-import com.synopsys.integration.azure.boards.common.oauth.AzureOAuthScopes;
-import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 /**
  * @deprecated This class will be replaced by AzureBoardsOAuthAuthenticateAction. It is planned for removal in 8.0.0.
@@ -58,67 +51,61 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
     private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     private final ConfigurationFieldModelConverter modelConverter;
     private final AzureBoardsGlobalConfigurationFieldModelValidator globalConfigurationValidator;
-    private final AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory;
-    private final AzureRedirectUrlCreator azureRedirectUrlCreator;
-    private final ProxyManager proxyManager;
-    private final OAuthRequestValidatorLegacy oAuthRequestValidator;
     private final ConfigResourceActions configActions;
-    private final AlertWebServerUrlManager alertWebServerUrlManager;
+    private final AzureBoardsGlobalConfigAccessor azureBoardsGlobalConfigAccessor;
+    private final AzureBoardsOAuthAuthenticateAction azureBoardsOAuthAuthenticateAction;
 
     @Autowired
     public AzureBoardsCustomFunctionAction(
         ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor,
         ConfigurationFieldModelConverter modelConverter,
         AzureBoardsGlobalConfigurationFieldModelValidator globalConfigurationValidator,
-        AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory,
-        AzureRedirectUrlCreator azureRedirectUrlCreator,
-        ProxyManager proxyManager,
-        OAuthRequestValidatorLegacy oAuthRequestValidator,
         ConfigResourceActions configActions,
         AuthorizationManager authorizationManager,
-        AlertWebServerUrlManager alertWebServerUrlManager
+        AzureBoardsGlobalConfigAccessor azureBoardsGlobalConfigAccessor,
+        AzureBoardsOAuthAuthenticateAction azureBoardsOAuthAuthenticateAction
     ) {
         super(authorizationManager);
         this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
         this.modelConverter = modelConverter;
         this.globalConfigurationValidator = globalConfigurationValidator;
-        this.azureBoardsCredentialDataStoreFactory = azureBoardsCredentialDataStoreFactory;
-        this.azureRedirectUrlCreator = azureRedirectUrlCreator;
-        this.proxyManager = proxyManager;
-        this.oAuthRequestValidator = oAuthRequestValidator;
         this.configActions = configActions;
-        this.alertWebServerUrlManager = alertWebServerUrlManager;
+        this.azureBoardsGlobalConfigAccessor = azureBoardsGlobalConfigAccessor;
+        this.azureBoardsOAuthAuthenticateAction = azureBoardsOAuthAuthenticateAction;
     }
 
     @Override
     public ActionResponse<OAuthEndpointResponse> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
         try {
             Optional<FieldModel> savedFieldModel = saveIfValid(fieldModel);
-            if (!savedFieldModel.isPresent()) {
+            if (savedFieldModel.isEmpty()) {
                 return createErrorResponse("The configuration is invalid. Please test the configuration.");
             }
             FieldUtility fieldUtility = createFieldAccessor(savedFieldModel.get());
-            Optional<String> clientId = fieldUtility.getString(AzureBoardsDescriptor.KEY_CLIENT_ID);
-            if (!clientId.isPresent()) {
-                return createErrorResponse("App ID not found.");
+
+            String organizationName = fieldUtility.getStringOrNull(AzureBoardsDescriptor.KEY_ORGANIZATION_NAME);
+            String clientId = fieldUtility.getStringOrNull(AzureBoardsDescriptor.KEY_CLIENT_ID);
+            String clientSecret = fieldUtility.getStringOrNull(AzureBoardsDescriptor.KEY_CLIENT_SECRET);
+            AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModelSaved = azureBoardsGlobalConfigAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
+                .orElseThrow(() -> new AlertConfigurationException("Missing Azure Boards global configuration"));
+            if (organizationName == null) {
+                organizationName = azureBoardsGlobalConfigModelSaved.getOrganizationName();
             }
-
-            Optional<String> alertServerUrl = alertWebServerUrlManager.getServerUrl();
-            if (!alertServerUrl.isPresent()) {
-                return createErrorResponse("Could not determine the alert server url for the callback.");
+            if (clientId == null) {
+                clientId = azureBoardsGlobalConfigModelSaved.getAppId().orElse("");
             }
+            if (clientSecret == null) {
+                clientSecret = azureBoardsGlobalConfigModelSaved.getClientSecret().orElse("");
+            }
+            AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModel = new AzureBoardsGlobalConfigModel(
+                azureBoardsGlobalConfigModelSaved.getId(),
+                AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
+                organizationName,
+                clientId,
+                clientSecret
+            );
 
-            String requestKey = oAuthRequestValidator.generateRequestKey();
-            // since we have only one OAuth channel now remove any other requests.
-            // if we have more OAuth clients then the "remove requests" will have to be removed from here.
-            // beginning authentication process create the request id at the start.
-            oAuthRequestValidator.removeRequestsOlderThan5MinutesAgo();
-            oAuthRequestValidator.addAuthorizationRequest(requestKey);
-
-            logger.info("OAuth authorization request created: {}", requestKey);
-            String authUrl = createAuthURL(clientId.get(), requestKey);
-            logger.debug("Authenticating Azure OAuth URL: {}", authUrl);
-            return new ActionResponse<>(HttpStatus.OK, new OAuthEndpointResponse(isAuthenticated(fieldUtility), authUrl, "Authenticating..."));
+            return azureBoardsOAuthAuthenticateAction.authenticate(azureBoardsGlobalConfigModel);
         } catch (Exception ex) {
             logger.error("Error activating Azure Boards", ex);
             return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Error activating azure oauth.");
@@ -135,7 +122,6 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
     }
 
     private ActionResponse<OAuthEndpointResponse> createErrorResponse(HttpStatus httpStatus, String errorMessage) {
-        oAuthRequestValidator.removeAllRequests();
         OAuthEndpointResponse oAuthEndpointResponse = new OAuthEndpointResponse(false, "", errorMessage);
         return new ActionResponse<>(httpStatus, errorMessage, oAuthEndpointResponse);
     }
@@ -161,37 +147,4 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
         }
         return new FieldUtility(fields);
     }
-
-    private boolean isAuthenticated(FieldUtility fieldUtility) {
-        AzureBoardsProperties properties = AzureBoardsProperties.fromFieldAccessor(
-            azureBoardsCredentialDataStoreFactory,
-            azureRedirectUrlCreator.createOAuthRedirectUri(),
-            fieldUtility
-        );
-        ProxyInfo proxy = proxyManager.createProxyInfoForHost(AzureHttpRequestCreatorFactory.DEFAULT_BASE_URL);
-        return properties.hasOAuthCredentials(proxy);
-    }
-
-    private String createAuthURL(String clientId, String requestKey) {
-        StringBuilder authUrlBuilder = new StringBuilder(300);
-        authUrlBuilder.append(AzureHttpRequestCreatorFactory.DEFAULT_AUTHORIZATION_URL);
-        authUrlBuilder.append(createQueryString(clientId, requestKey));
-        return authUrlBuilder.toString();
-    }
-
-    private String createQueryString(String clientId, String requestKey) {
-        List<String> scopes = List.of(AzureOAuthScopes.PROJECTS_READ.getScope(), AzureOAuthScopes.WORK_FULL.getScope());
-        String authorizationUrl = azureRedirectUrlCreator.createOAuthRedirectUri();
-        StringBuilder queryBuilder = new StringBuilder(250);
-        queryBuilder.append("&client_id=");
-        queryBuilder.append(clientId);
-        queryBuilder.append("&state=");
-        queryBuilder.append(requestKey);
-        queryBuilder.append("&scope=");
-        queryBuilder.append(URLEncoder.encode(StringUtils.join(scopes, " "), StandardCharsets.UTF_8));
-        queryBuilder.append("&redirect_uri=");
-        queryBuilder.append(URLEncoder.encode(authorizationUrl, StandardCharsets.UTF_8));
-        return queryBuilder.toString();
-    }
-
 }

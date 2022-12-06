@@ -64,7 +64,7 @@ public class JiraServerGlobalFieldModelTestAction extends JiraGlobalFieldModelTe
         JiraServerServiceFactory jiraServerServiceFactory = jiraProperties.createJiraServicesServerFactory(logger, gson);
         IssueSearchService issueSearchService = jiraServerServiceFactory.createIssueSearchService();
         IssueSearchResponseModel issueSearchResponseModel = issueSearchService.queryForIssuePage("", 0, 1);
-        return issueSearchResponseModel.getIssues().size() > 0;
+        return !issueSearchResponseModel.getIssues().isEmpty();
     }
 
     @Override

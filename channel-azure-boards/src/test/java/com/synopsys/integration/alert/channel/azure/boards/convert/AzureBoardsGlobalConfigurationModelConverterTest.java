@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,13 +22,13 @@ import com.synopsys.integration.alert.channel.azure.boards.validator.AzureBoards
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 
 @ExtendWith(SpringExtension.class)
 class AzureBoardsGlobalConfigurationModelConverterTest {
     private static final String TEST_ORGANIZATION_NAME = "testOrganizationName";
     private static final String TEST_CLIENT_ID = "testClientID";
     private static final String TEST_CLIENT_SECRET = "testClientSecret";
-
     private AzureBoardsGlobalConfigurationValidator validator;
     @Mock
     private AzureBoardsGlobalConfigAccessor azureBoardsGlobalConfigAccessor;
@@ -42,7 +43,7 @@ class AzureBoardsGlobalConfigurationModelConverterTest {
     void validConversionTest() {
         ConfigurationModel configurationModel = createDefaultConfigurationModel();
         AzureBoardsGlobalConfigurationModelConverter converter = new AzureBoardsGlobalConfigurationModelConverter(validator);
-        Optional<AzureBoardsGlobalConfigModel> model = converter.convertAndValidate(configurationModel);
+        Optional<AzureBoardsGlobalConfigModel> model = converter.convertAndValidate(configurationModel, null);
         assertTrue(model.isPresent());
         AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModel = model.get();
 
@@ -53,10 +54,35 @@ class AzureBoardsGlobalConfigurationModelConverterTest {
     }
 
     @Test
+    void validConversionWithExistingConfigTest() {
+        String uuid = UUID.randomUUID().toString();
+        ConfigurationModel configurationModel = createDefaultConfigurationModel();
+
+        AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModelSaved = new AzureBoardsGlobalConfigModel(
+            uuid,
+            AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
+            TEST_ORGANIZATION_NAME,
+            TEST_CLIENT_ID,
+            TEST_CLIENT_SECRET
+        );
+        Mockito.when(azureBoardsGlobalConfigAccessor.getConfigurationByName(Mockito.anyString())).thenReturn(Optional.of(azureBoardsGlobalConfigModelSaved));
+        validator = new AzureBoardsGlobalConfigurationValidator(azureBoardsGlobalConfigAccessor);
+
+        AzureBoardsGlobalConfigurationModelConverter converter = new AzureBoardsGlobalConfigurationModelConverter(validator);
+        Optional<AzureBoardsGlobalConfigModel> model = converter.convertAndValidate(configurationModel, uuid);
+        assertTrue(model.isPresent());
+        AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModel = model.get();
+
+        assertEquals(TEST_ORGANIZATION_NAME, azureBoardsGlobalConfigModel.getOrganizationName());
+        assertEquals(TEST_CLIENT_ID, azureBoardsGlobalConfigModel.getAppId().orElse("Client ID is missing"));
+        assertEquals(TEST_CLIENT_SECRET, azureBoardsGlobalConfigModel.getClientSecret().orElse("Client Secret is missing"));
+    }
+
+    @Test
     void emptyFieldsTest() {
         ConfigurationModel emptyModel = new ConfigurationModel(1L, 1L, "", "", ConfigContextEnum.GLOBAL, Map.of());
         AzureBoardsGlobalConfigurationModelConverter converter = new AzureBoardsGlobalConfigurationModelConverter(validator);
-        Optional<AzureBoardsGlobalConfigModel> model = converter.convertAndValidate(emptyModel);
+        Optional<AzureBoardsGlobalConfigModel> model = converter.convertAndValidate(emptyModel, null);
         assertTrue(model.isEmpty());
     }
 
@@ -67,7 +93,7 @@ class AzureBoardsGlobalConfigurationModelConverterTest {
         Map<String, ConfigurationFieldModel> fieldValues = Map.of(invalidFieldKey, invalidField);
         ConfigurationModel configurationModel = new ConfigurationModel(1L, 1L, "", "", ConfigContextEnum.GLOBAL, fieldValues);
         AzureBoardsGlobalConfigurationModelConverter converter = new AzureBoardsGlobalConfigurationModelConverter(validator);
-        Optional<AzureBoardsGlobalConfigModel> model = converter.convertAndValidate(configurationModel);
+        Optional<AzureBoardsGlobalConfigModel> model = converter.convertAndValidate(configurationModel, null);
         assertTrue(model.isEmpty());
     }
 

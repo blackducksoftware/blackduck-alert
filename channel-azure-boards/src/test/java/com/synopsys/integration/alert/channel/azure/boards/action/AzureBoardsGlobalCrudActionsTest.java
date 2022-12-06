@@ -1,5 +1,19 @@
 package com.synopsys.integration.alert.channel.azure.boards.action;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.text.ParseException;
+import java.util.Map;
+import java.util.UUID;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.azure.boards.database.accessor.AzureBoardsGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.azure.boards.database.configuration.AzureBoardsConfigurationEntity;
@@ -22,20 +36,9 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
 import com.synopsys.integration.alert.test.common.database.MockRepositorySorter;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.http.HttpStatus;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import java.text.ParseException;
-import java.util.Map;
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
-public class AzureBoardsGlobalCrudActionsTest {
+class AzureBoardsGlobalCrudActionsTest {
     private final AuthenticationTestUtils authenticationTestUtils = new AuthenticationTestUtils();
     private final DescriptorKey descriptorKey = ChannelKeys.AZURE_BOARDS;
     private final PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
@@ -61,7 +64,11 @@ public class AzureBoardsGlobalCrudActionsTest {
         MockAzureBoardsConfigurationRepository mockAzureBoardsConfigurationRepository = new MockAzureBoardsConfigurationRepository(sorter);
         azureBoardsGlobalConfigAccessor = new AzureBoardsGlobalConfigAccessor(encryptionUtility, mockAzureBoardsConfigurationRepository);
 
-        azureBoardsGlobalCrudActions = new AzureBoardsGlobalCrudActions(authorizationManager, azureBoardsGlobalConfigAccessor, new AzureBoardsGlobalConfigurationValidator(azureBoardsGlobalConfigAccessor));
+        azureBoardsGlobalCrudActions = new AzureBoardsGlobalCrudActions(
+            authorizationManager,
+            azureBoardsGlobalConfigAccessor,
+            new AzureBoardsGlobalConfigurationValidator(azureBoardsGlobalConfigAccessor)
+        );
         firstConfigModel = new AzureBoardsGlobalConfigModel(
             "",
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
@@ -196,7 +203,10 @@ public class AzureBoardsGlobalCrudActionsTest {
         ActionResponse<AzureBoardsGlobalConfigModel> createActionResponse = createConfigModelAndAssertSuccess(firstConfigModel);
         AzureBoardsGlobalConfigModel createResponseModel = createActionResponse.getContent().orElseThrow();
 
-        ActionResponse<AzureBoardsGlobalConfigModel> updateActionResponse = azureBoardsGlobalCrudActions.update(getUUIDFromActionResponse(createActionResponse), createResponseModel);
+        ActionResponse<AzureBoardsGlobalConfigModel> updateActionResponse = azureBoardsGlobalCrudActions.update(
+            getUUIDFromActionResponse(createActionResponse),
+            createResponseModel
+        );
         assertEquals(1, azureBoardsGlobalConfigAccessor.getConfigurationCount());
 
         assertActionResponseSucceeds(updateActionResponse);
