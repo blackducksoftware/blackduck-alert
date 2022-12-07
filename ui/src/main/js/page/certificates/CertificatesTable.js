@@ -54,7 +54,7 @@ const CertificatesTable = () => {
 
     function handleToggle() {
         setAutoRefresh(!autoRefresh);
-    };
+    }
 
     const getCertificates = () => (
         !search ? certificates : certificates.filter((certificate) => certificate.alias.toLowerCase().includes(search.toLowerCase()))

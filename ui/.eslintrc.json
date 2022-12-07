@@ -40,7 +40,7 @@
       240
     ],
     "object-curly-newline": ["error", {
-      "ExportDeclaration": { "multiline": true, "minProperties": 3 }
+      "ExportDeclaration": { "minProperties": 1 }
     }],
     "react/forbid-prop-types": [
       "warn",
