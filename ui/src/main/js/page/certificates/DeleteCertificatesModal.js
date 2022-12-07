@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -40,17 +41,17 @@ const useStyles = createUseStyles({
     }
 });
 
-
 const DeleteCertificatesModal = ({ isOpen, toggleModal, data, selected }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
-    const [selectedCertificates, setSelectedCertificates] = useState(getStagedForDelete());
-    const isMultiCertDelete = selectedCertificates.length > 1;
 
     function getStagedForDelete() {
-        const staged = data.filter(certificate => selected.includes(certificate.id));
-        return staged.map(certificate => ({ ...certificate, staged: true }));
+        const staged = data.filter((certificate) => selected.includes(certificate.id));
+        return staged.map((certificate) => ({ ...certificate, staged: true }));
     }
+
+    const [selectedCertificates, setSelectedCertificates] = useState(getStagedForDelete());
+    const isMultiCertDelete = selectedCertificates.length > 1;
 
     useEffect(() => {
         setSelectedCertificates(getStagedForDelete());
@@ -68,13 +69,12 @@ const DeleteCertificatesModal = ({ isOpen, toggleModal, data, selected }) => {
             }
         });
         handleClose();
-
     }
 
     function toggleSelect(selection) {
         const toggledCertificates = selectedCertificates.map((cert) => {
             if (cert.id === selection.id) {
-                return {...cert, staged: !cert.staged}
+                return { ...cert, staged: !cert.staged };
             }
             return cert;
         });
@@ -84,9 +84,9 @@ const DeleteCertificatesModal = ({ isOpen, toggleModal, data, selected }) => {
 
     return (
         <>
-            <Modal 
-                isOpen={isOpen} 
-                size="sm" 
+            <Modal
+                isOpen={isOpen}
+                size="sm"
                 title={isMultiCertDelete ? 'Delete Certificates' : 'Delete Certificate'}
                 closeModal={handleClose}
                 handleCancel={handleClose}
@@ -97,26 +97,36 @@ const DeleteCertificatesModal = ({ isOpen, toggleModal, data, selected }) => {
                     { isMultiCertDelete ? 'Are you sure you want to delete these certificates?' : 'Are you sure you want to delete this certificate?' }
                 </div>
                 <div>
-                    { selectedCertificates?.map((cert) => {
-                        return (
-                            <div className={classes.cardContainer}>
-                                <input type="checkbox" checked={cert.staged} onChange={() => toggleSelect(cert)}/>
-                                <div className={classes.certCard}>
-                                    <div className={classes.certIcon}>
-                                        <FontAwesomeIcon icon="award" size="3x"/>
-                                    </div>
-                                    <div className={classes.certInfo}>
-                                        <div style={{fontSize: '16px'}}>{cert.alias}</div>
-                                    </div>
+                    { selectedCertificates?.map((cert) => (
+                        <div className={classes.cardContainer} key={cert.alias}>
+                            <input type="checkbox" checked={cert.staged} onChange={() => toggleSelect(cert)} />
+                            <div className={classes.certCard}>
+                                <div className={classes.certIcon}>
+                                    <FontAwesomeIcon icon="award" size="3x" />
+                                </div>
+                                <div className={classes.certInfo}>
+                                    <div style={{ fontSize: '16px' }}>{cert.alias}</div>
                                 </div>
                             </div>
-                        )
-                    }) }
+                        </div>
+                    )) }
                 </div>
             </Modal>
         </>
 
     );
+};
+
+DeleteCertificatesModal.propTypes = {
+    isOpen: PropTypes.bool,
+    toggleModal: PropTypes.func,
+    selected: PropTypes.arrayOf(PropTypes.string),
+    data: PropTypes.arrayOf(PropTypes.shape({
+        alias: PropTypes.string,
+        certificateContent: PropTypes.string,
+        lastUpdated: PropTypes.string,
+        id: PropTypes.string
+    })).isRequired
 };
 
 export default DeleteCertificatesModal;

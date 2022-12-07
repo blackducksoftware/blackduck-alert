@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { createUseStyles } from 'react-jss';
 import { saveCertificate, validateCertificate } from 'store/actions/certificates';
@@ -18,23 +19,11 @@ const useStyles = createUseStyles({
 const CertificateModal = ({ data, isOpen, toggleModal, type }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
-    const [certificateData, setCertificateData] = useState(data ? data : null);
+    const [certificateData, setCertificateData] = useState();
 
-    const fieldErrors = useSelector(state => state.certificates.error.fieldErrors);
-    const inProgress = useSelector(state => state.certificates.inProgress);
-    const saveStatus = useSelector(state => state.certificates.saveStatus);
-
-    useEffect(() => {
-        if ( saveStatus === 'VALIDATED' && !inProgress) { 
-            handleSave();
-        }
-    }, [saveStatus, inProgress]);
-
-    const handleOnChange = (label) => {
-        return ({ target: { value } }) => {
-            setCertificateData(certData => ({...certData, [label]: value }));
-        }
-    };
+    const fieldErrors = useSelector((state) => state.certificates.error.fieldErrors);
+    const inProgress = useSelector((state) => state.certificates.inProgress);
+    const saveStatus = useSelector((state) => state.certificates.saveStatus);
 
     function handleClose() {
         toggleModal(false);
@@ -51,20 +40,36 @@ const CertificateModal = ({ data, isOpen, toggleModal, type }) => {
 
     function getDisplayValue(field) {
         if (certificateData) {
-            return certificateData[field]
+            return certificateData[field];
         }
-        return ''
+        return '';
     }
 
+    useEffect(() => {
+        setCertificateData(data);
+    }, [data]);
+
+    useEffect(() => {
+        if (saveStatus === 'VALIDATED' && !inProgress) {
+            handleSave();
+        }
+    }, [saveStatus, inProgress]);
+
+    const handleOnChange = (label) => (
+        ({ target: { value } }) => {
+            setCertificateData((certData) => ({ ...certData, [label]: value }));
+        }
+    );
+
     return (
-        <Modal 
-            isOpen={isOpen} 
-            size="lg" 
-            title={type === 'create' ? "Create Certificate" : "Edit Certificate"}
+        <Modal
+            isOpen={isOpen}
+            size="lg"
+            title={type === 'create' ? 'Create Certificate' : 'Edit Certificate'}
             closeModal={handleClose}
             handleCancel={handleClose}
             handleSubmit={handleSubmit}
-            submitText={type === 'create' ? "Create New Certificate" : "Confirm Edit"}
+            submitText={type === 'create' ? 'Create New Certificate' : 'Confirm Edit'}
         >
             <div className={classes.content}>
 
@@ -75,7 +80,7 @@ const CertificateModal = ({ data, isOpen, toggleModal, type }) => {
                         value={getDisplayValue('lastUpdated')}
                     />
                 ) : null}
-                
+
                 <TextInput
                     id="alias-textInputId"
                     name="alias"
@@ -85,7 +90,7 @@ const CertificateModal = ({ data, isOpen, toggleModal, type }) => {
                     onChange={handleOnChange('alias')}
                     value={getDisplayValue('alias')}
                     errorName="alias"
-                    errorValue={fieldErrors['alias']}
+                    errorValue={fieldErrors.alias}
                 />
                 <TextArea
                     id="certificate-textAreaId"
@@ -96,11 +101,23 @@ const CertificateModal = ({ data, isOpen, toggleModal, type }) => {
                     onChange={handleOnChange('certificateContent')}
                     value={getDisplayValue('certificateContent')}
                     errorName="certificateContent"
-                    errorValue={fieldErrors['certificateContent']}
+                    errorValue={fieldErrors.certificateContent}
                 />
             </div>
         </Modal>
     );
+};
+
+CertificateModal.propTypes = {
+    isOpen: PropTypes.bool,
+    toggleModal: PropTypes.func,
+    type: PropTypes.string,
+    data: PropTypes.shape({
+        alias: PropTypes.string,
+        certificateContent: PropTypes.string,
+        lastUpdated: PropTypes.string,
+        id: PropTypes.string
+    })
 };
 
 export default CertificateModal;

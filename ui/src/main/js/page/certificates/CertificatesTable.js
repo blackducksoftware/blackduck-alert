@@ -24,12 +24,12 @@ const COLUMNS = [{
 const CertificatesTable = () => {
     const dispatch = useDispatch();
     const [autoRefresh, setAutoRefresh] = useState(false);
-    const [search, setNewSearch] = useState("");
+    const [search, setNewSearch] = useState('');
     const [selected, setSelected] = useState([]);
-    const certificates = useSelector(state => state.certificates.data);
-    
+    const certificates = useSelector((state) => state.certificates.data);
+
     useEffect(() => {
-        dispatch(fetchCertificates())
+        dispatch(fetchCertificates());
     }, []);
 
     useEffect(() => {
@@ -37,28 +37,31 @@ const CertificatesTable = () => {
             const refreshIntervalId = setInterval(() => dispatch(fetchCertificates()), 30000);
             return function clearRefreshInterval() {
                 clearInterval(refreshIntervalId);
-            }
+            };
         }
-    }, [autoRefresh])
+
+        // Added for 'consistent-return' lint rule
+        return undefined;
+    }, [autoRefresh]);
 
     const handleSearchChange = (e) => {
         setNewSearch(e.target.value);
-    }
+    };
 
-    const onSelected = selected => {
-        setSelected(selected);
+    const onSelected = (selectedRow) => {
+        setSelected(selectedRow);
     };
 
     function handleToggle() {
         setAutoRefresh(!autoRefresh);
     }
 
-    const getCertificates = () => {
-        return (!search ? certificates : certificates.filter((certificate) => certificate.alias.toLowerCase().includes(search.toLowerCase())));
-    }
+    const getCertificates = () => (
+        !search ? certificates : certificates.filter((certificate) => certificate.alias.toLowerCase().includes(search.toLowerCase()))
+    );
 
     return (
-        <Table 
+        <Table
             tableData={getCertificates()}
             columns={COLUMNS}
             searchBarPlaceholder="Search Certificates..."
@@ -68,9 +71,9 @@ const CertificatesTable = () => {
             multiSelect
             selected={selected}
             onSelected={onSelected}
-            tableActions={ () => <CertificatesTableActions data={getCertificates()} selected={selected} /> }
+            tableActions={() => <CertificatesTableActions data={getCertificates()} selected={selected} />}
         />
-    )
-}
+    );
+};
 
 export default CertificatesTable;

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CertificateModal from 'page/certificates/CertificateModal';
@@ -7,7 +8,6 @@ import DeleteCertificatesModal from 'page/certificates/DeleteCertificatesModal';
 const useStyles = createUseStyles({
     createUserBtn: {
         background: 'none',
-        color: 'inherit',
         border: 'solid .5px',
         padding: ['6px', '20px'],
         font: 'inherit',
@@ -25,7 +25,6 @@ const useStyles = createUseStyles({
     },
     deleteUserBtn: {
         background: 'none',
-        color: 'inherit',
         border: 'solid .5px',
         padding: ['6px', '20px'],
         font: 'inherit',
@@ -65,18 +64,18 @@ const CertificatesTableActions = ({ data, selected }) => {
 
     return (
         <>
-            <button className={classes.createUserBtn} onClick={handleCreateUserClick}>
+            <button className={classes.createUserBtn} onClick={handleCreateUserClick} type="button">
                 <FontAwesomeIcon icon="plus" />
                 Create Certificate
             </button>
 
-            <button className={classes.deleteUserBtn} onClick={handleDeleteUserClick} disabled={selected.length === 0}>
+            <button className={classes.deleteUserBtn} onClick={handleDeleteUserClick} disabled={selected.length === 0} type="button">
                 <FontAwesomeIcon icon="trash" />
                 Delete
             </button>
 
             { showCreateModal ? (
-                <CertificateModal 
+                <CertificateModal
                     isOpen={showCreateModal}
                     toggleModal={setShowCreateModal}
                     type="create"
@@ -84,9 +83,9 @@ const CertificatesTableActions = ({ data, selected }) => {
             ) : null }
 
             { showDeleteModal ? (
-                <DeleteCertificatesModal 
+                <DeleteCertificatesModal
                     data={data}
-                    isOpen={showDeleteModal} 
+                    isOpen={showDeleteModal}
                     toggleModal={setShowDeleteModal}
                     selected={selected}
                 />
@@ -95,6 +94,16 @@ const CertificatesTableActions = ({ data, selected }) => {
         </>
 
     );
+};
+
+CertificatesTableActions.propTypes = {
+    selected: PropTypes.array,
+    data: PropTypes.arrayOf(PropTypes.shape({
+        alias: PropTypes.string,
+        certificateContent: PropTypes.string,
+        lastUpdated: PropTypes.string,
+        id: PropTypes.string
+    }))
 };
 
 export default CertificatesTableActions;
