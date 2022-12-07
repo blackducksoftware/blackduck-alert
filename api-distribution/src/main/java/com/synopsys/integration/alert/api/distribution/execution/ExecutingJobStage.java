@@ -4,17 +4,17 @@ import java.time.Instant;
 import java.util.UUID;
 
 public class ExecutingJobStage {
-    private final UUID jobId;
+    private final UUID executionId;
     private final JobStage stage;
     private final Instant start;
     private Instant end;
 
-    public static ExecutingJobStage createStage(UUID jobId, String key, JobStage stage) {
-        return new ExecutingJobStage(jobId, stage, Instant.now());
+    public static ExecutingJobStage createStage(UUID executionId, JobStage stage) {
+        return new ExecutingJobStage(executionId, stage, Instant.now());
     }
 
-    protected ExecutingJobStage(UUID jobId, JobStage stage, Instant start) {
-        this.jobId = jobId;
+    protected ExecutingJobStage(UUID executionId, JobStage stage, Instant start) {
+        this.executionId = executionId;
         this.stage = stage;
         this.start = start;
     }
@@ -23,8 +23,8 @@ public class ExecutingJobStage {
         this.end = Instant.now();
     }
 
-    public UUID getJobId() {
-        return jobId;
+    public UUID getExecutionId() {
+        return executionId;
     }
 
     public JobStage getStage() {

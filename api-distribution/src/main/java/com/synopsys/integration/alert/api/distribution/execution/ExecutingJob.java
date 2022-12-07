@@ -9,23 +9,33 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 
 public class ExecutingJob {
-    private final UUID jobId;
+    private final UUID executionId;
+    private final UUID jobConfigId;
     private final Instant start;
     private Instant end;
     private AuditEntryStatus status;
     private final Map<JobStage, ExecutingJobStage> stages = new ConcurrentHashMap<>();
 
-    public static ExecutingJob startJob(UUID jobId) {
-        return new ExecutingJob(jobId, Instant.now(), AuditEntryStatus.PENDING);
+    public static ExecutingJob startJob(UUID jobConfigId) {
+        return new ExecutingJob(jobConfigId, Instant.now(), AuditEntryStatus.PENDING);
     }
 
-    private ExecutingJob(UUID jobId, Instant start, AuditEntryStatus status) {
-        this.jobId = jobId;
+    private ExecutingJob(UUID jobConfigId, Instant start, AuditEntryStatus status) {
+        this.executionId = UUID.randomUUID();
+        this.jobConfigId = jobConfigId;
         this.start = start;
         this.status = status;
     }
 
-    public void completeJobWithStatus(AuditEntryStatus status) {
+    public void jobSucceeded() {
+        completeJobWithStatus(AuditEntryStatus.SUCCESS);
+    }
+
+    public void jobFailed() {
+        completeJobWithStatus(AuditEntryStatus.FAILURE);
+    }
+
+    private void completeJobWithStatus(AuditEntryStatus status) {
         this.end = Instant.now();
         this.status = status;
     }
@@ -38,16 +48,20 @@ public class ExecutingJob {
         return Optional.ofNullable(stages.getOrDefault(jobStage, null));
     }
 
-    public UUID getJobId() {
-        return jobId;
+    public UUID getExecutionId() {
+        return executionId;
+    }
+
+    public UUID getJobConfigId() {
+        return jobConfigId;
     }
 
     public Instant getStart() {
         return start;
     }
 
-    public Instant getEnd() {
-        return end;
+    public Optional<Instant> getEnd() {
+        return Optional.ofNullable(end);
     }
 
     public AuditEntryStatus getStatus() {
