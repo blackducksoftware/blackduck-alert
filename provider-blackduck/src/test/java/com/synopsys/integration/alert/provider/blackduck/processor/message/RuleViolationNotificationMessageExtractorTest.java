@@ -1,9 +1,9 @@
 package com.synopsys.integration.alert.provider.blackduck.processor.message;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -28,11 +28,17 @@ import com.synopsys.integration.alert.provider.blackduck.processor.message.servi
 import com.synopsys.integration.alert.provider.blackduck.processor.model.RuleViolationUniquePolicyNotificationContent;
 import com.synopsys.integration.blackduck.api.core.ResourceLink;
 import com.synopsys.integration.blackduck.api.core.ResourceMetadata;
+import com.synopsys.integration.blackduck.api.core.response.UrlSingleResponse;
+import com.synopsys.integration.blackduck.api.generated.component.ComponentVersionUpgradeGuidanceLongTermView;
+import com.synopsys.integration.blackduck.api.generated.component.ComponentVersionUpgradeGuidanceLongTermVulnerabilityRiskView;
+import com.synopsys.integration.blackduck.api.generated.component.ComponentVersionUpgradeGuidanceShortTermView;
+import com.synopsys.integration.blackduck.api.generated.component.ComponentVersionUpgradeGuidanceShortTermVulnerabilityRiskView;
 import com.synopsys.integration.blackduck.api.generated.component.ProjectVersionComponentVersionLicensesView;
 import com.synopsys.integration.blackduck.api.generated.enumeration.PolicyRuleCategoryType;
 import com.synopsys.integration.blackduck.api.generated.enumeration.PolicyRuleSeverityType;
 import com.synopsys.integration.blackduck.api.generated.enumeration.ProjectVersionComponentPolicyStatusType;
 import com.synopsys.integration.blackduck.api.generated.enumeration.UsageType;
+import com.synopsys.integration.blackduck.api.generated.response.ComponentVersionUpgradeGuidanceView;
 import com.synopsys.integration.blackduck.api.generated.view.ComponentPolicyRulesView;
 import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentVersionView;
@@ -49,6 +55,7 @@ import com.synopsys.integration.rest.exception.IntegrationRestException;
 class RuleViolationNotificationMessageExtractorTest {
     private static String PROJECT = "ProjectName";
     private static String PROJECT_VERSION = "ProjectVersionName";
+    private static String PROJECT_VERSION_UPGRADE = "UpgradedProjectVersionName";
     private static String PROJECT_VERSION_URL = "http://projectVersionUrl";
     private static int COMPONENT_VERSIONS_IN_VIOLATION = 1;
 
@@ -112,7 +119,35 @@ class RuleViolationNotificationMessageExtractorTest {
         policyRuleView.setCategory(PolicyRuleCategoryType.UNCATEGORIZED);
         Mockito.when(blackDuckApiClient.getResponse(Mockito.any(), Mockito.eq(PolicyRuleView.class))).thenReturn(policyRuleView);
 
-        RuleViolationUniquePolicyNotificationContent notificationContent = new RuleViolationUniquePolicyNotificationContent(PROJECT,
+        // Set up mock for component upgrade guidance in BlackDuckMessageComponentVersionUpgradeGuidanceService
+        ComponentVersionUpgradeGuidanceView componentVersionView = new ComponentVersionUpgradeGuidanceView();
+        ComponentVersionUpgradeGuidanceShortTermView shortTermView = new ComponentVersionUpgradeGuidanceShortTermView();
+        ComponentVersionUpgradeGuidanceShortTermVulnerabilityRiskView shortTermRiskView = new ComponentVersionUpgradeGuidanceShortTermVulnerabilityRiskView();
+        shortTermRiskView.setCritical(BigDecimal.valueOf(0L));
+        shortTermRiskView.setHigh(BigDecimal.valueOf(0L));
+        shortTermRiskView.setMedium(BigDecimal.valueOf(0L));
+        shortTermRiskView.setLow(BigDecimal.valueOf(0L));
+        shortTermView.setVulnerabilityRisk(shortTermRiskView);
+        shortTermView.setVersionName(PROJECT_VERSION_UPGRADE);
+        componentVersionView.setShortTerm(shortTermView);
+
+        ComponentVersionUpgradeGuidanceLongTermView longTermView = new ComponentVersionUpgradeGuidanceLongTermView();
+        ComponentVersionUpgradeGuidanceLongTermVulnerabilityRiskView longTermRiskView = new ComponentVersionUpgradeGuidanceLongTermVulnerabilityRiskView();
+        longTermRiskView.setCritical(BigDecimal.valueOf(0L));
+        longTermRiskView.setHigh(BigDecimal.valueOf(0L));
+        longTermRiskView.setMedium(BigDecimal.valueOf(0L));
+        longTermRiskView.setLow(BigDecimal.valueOf(0L));
+        longTermView.setVulnerabilityRisk(longTermRiskView);
+        longTermView.setVersionName(PROJECT_VERSION_UPGRADE);
+        componentVersionView.setLongTerm(longTermView);
+        UrlSingleResponse<ComponentVersionUpgradeGuidanceView> upgradeGuidanceView = new UrlSingleResponse<>(
+            new HttpUrl("https://upgradeGuidanceHref"),
+            ComponentVersionUpgradeGuidanceView.class
+        );
+        Mockito.when(blackDuckApiClient.getResponse(upgradeGuidanceView)).thenReturn(componentVersionView);
+
+        RuleViolationUniquePolicyNotificationContent notificationContent = new RuleViolationUniquePolicyNotificationContent(
+            PROJECT,
             PROJECT_VERSION,
             PROJECT_VERSION_URL,
             COMPONENT_VERSIONS_IN_VIOLATION,
@@ -135,8 +170,8 @@ class RuleViolationNotificationMessageExtractorTest {
         assertEquals(ItemOperation.ADD, testBomComponentDetails.getComponentConcerns().get(0).getOperation());
 
         ComponentUpgradeGuidance componentUpgradeGuidance = testBomComponentDetails.getComponentUpgradeGuidance();
-        assertFalse(componentUpgradeGuidance.getLongTermUpgradeGuidance().isPresent());
-        assertFalse(componentUpgradeGuidance.getShortTermUpgradeGuidance().isPresent());
+        assertTrue(componentUpgradeGuidance.getLongTermUpgradeGuidance().isPresent());
+        assertTrue(componentUpgradeGuidance.getShortTermUpgradeGuidance().isPresent());
 
         assertEquals(1, testBomComponentDetails.getRelevantPolicies().size());
         ComponentPolicy testComponentPolicy = testBomComponentDetails.getRelevantPolicies().get(0);
@@ -227,6 +262,13 @@ class RuleViolationNotificationMessageExtractorTest {
         projectVersionComponentVersionView.setMeta(meta);
 
         VersionBomOriginView versionBomOriginView = new VersionBomOriginView();
+        ResourceLink bomOriginResourceLink = new ResourceLink();
+        bomOriginResourceLink.setHref(new HttpUrl("https://upgradeGuidanceHref"));
+        bomOriginResourceLink.setRel("upgrade-guidance");
+        ResourceMetadata bomOriginViewMeta = new ResourceMetadata();
+        bomOriginViewMeta.setHref(new HttpUrl("https://bomOriginUrl"));
+        bomOriginViewMeta.setLinks(List.of(bomOriginResourceLink));
+        versionBomOriginView.setMeta(bomOriginViewMeta);
         projectVersionComponentVersionView.setOrigins(List.of(versionBomOriginView));
 
         return projectVersionComponentVersionView;
