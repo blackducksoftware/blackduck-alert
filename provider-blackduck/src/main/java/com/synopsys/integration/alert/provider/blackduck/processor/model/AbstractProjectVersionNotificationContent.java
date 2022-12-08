@@ -33,5 +33,5 @@ public abstract class AbstractProjectVersionNotificationContent extends Notifica
         return projectVersionUrl;
     }
 
-    public String getProjectVersionToComponentsUrl() { return getProjectVersionUrl() + BlackDuckMessageLinkUtils.URI_PIECE_COMPONENTS; }
+    public String getProjectVersionComponentsTabUrl() { return getProjectVersionUrl() + BlackDuckMessageLinkUtils.URI_PIECE_COMPONENTS; }
 }
