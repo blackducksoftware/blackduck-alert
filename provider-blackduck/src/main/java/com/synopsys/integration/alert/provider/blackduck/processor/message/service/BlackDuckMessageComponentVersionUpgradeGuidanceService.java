@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentUpgradeGuidance;
@@ -29,59 +31,82 @@ import com.synopsys.integration.rest.HttpUrl;
 
 public class BlackDuckMessageComponentVersionUpgradeGuidanceService {
     private static final String LINK_UPGRADE_GUIDANCE = "upgrade-guidance";
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final BlackDuckApiClient blackDuckApiClient;
 
     public BlackDuckMessageComponentVersionUpgradeGuidanceService(BlackDuckApiClient blackDuckApiClient) {
         this.blackDuckApiClient = blackDuckApiClient;
     }
 
-    public ComponentUpgradeGuidance requestUpgradeGuidanceItems(ProjectVersionComponentVersionView bomComponent) throws IntegrationException {
+    public ComponentUpgradeGuidance requestUpgradeGuidanceItems(ProjectVersionComponentVersionView bomComponent) {
         // TODO determine what to do with multiple origins
-        Optional<UrlSingleResponse<ComponentVersionUpgradeGuidanceView>> upgradeGuidanceUrl = bomComponent.getOrigins()
-                                                                                                  .stream()
-                                                                                                  .findFirst()
-                                                                                                  .flatMap(origin -> Optional.ofNullable(origin.getMeta()))
-                                                                                                  .flatMap(this::extractFirstUpgradeGuidanceLinkSafely)
-                                                                                                  .map(url -> new UrlSingleResponse<>(url, ComponentVersionUpgradeGuidanceView.class))
-                                                                                                  .or(() -> extractComponentVersionUpgradeGuidanceUrl(bomComponent));
-        if (upgradeGuidanceUrl.isPresent()) {
-            ComponentVersionUpgradeGuidanceView upgradeGuidanceView = blackDuckApiClient.getResponse(upgradeGuidanceUrl.get());
-            return createUpgradeGuidanceItems(upgradeGuidanceView);
+        try {
+            Optional<UrlSingleResponse<ComponentVersionUpgradeGuidanceView>> upgradeGuidanceUrl = bomComponent.getOrigins()
+                .stream()
+                .findFirst()
+                .flatMap(origin -> Optional.ofNullable(origin.getMeta()))
+                .flatMap(this::extractFirstUpgradeGuidanceLinkSafely)
+                .map(url -> new UrlSingleResponse<>(url, ComponentVersionUpgradeGuidanceView.class))
+                .or(() -> extractComponentVersionUpgradeGuidanceUrl(bomComponent));
+            if (upgradeGuidanceUrl.isPresent()) {
+                ComponentVersionUpgradeGuidanceView upgradeGuidanceView = blackDuckApiClient.getResponse(upgradeGuidanceUrl.get());
+                return createUpgradeGuidanceItems(upgradeGuidanceView);
+            }
+        } catch (IntegrationException e) {
+            logger.debug("Could not retrieve upgrade guidance", e);
         }
         return ComponentUpgradeGuidance.none();
     }
 
-    public ComponentUpgradeGuidance requestUpgradeGuidanceItems(ComponentVersionView componentVersionView) throws IntegrationException {
-        Optional<UrlSingleResponse<ComponentVersionUpgradeGuidanceView>> upgradeGuidanceUrl = componentVersionView.metaUpgradeGuidanceLinkSafely();
-        if (upgradeGuidanceUrl.isPresent()) {
-            ComponentVersionUpgradeGuidanceView upgradeGuidanceView = blackDuckApiClient.getResponse(upgradeGuidanceUrl.get());
-            return createUpgradeGuidanceItems(upgradeGuidanceView);
+    public ComponentUpgradeGuidance requestUpgradeGuidanceItems(ComponentVersionView componentVersionView) {
+        try {
+            Optional<UrlSingleResponse<ComponentVersionUpgradeGuidanceView>> upgradeGuidanceUrl = componentVersionView.metaUpgradeGuidanceLinkSafely();
+            if (upgradeGuidanceUrl.isPresent()) {
+                ComponentVersionUpgradeGuidanceView upgradeGuidanceView = blackDuckApiClient.getResponse(upgradeGuidanceUrl.get());
+                return createUpgradeGuidanceItems(upgradeGuidanceView);
+            }
+        } catch (IntegrationException e) {
+            logger.debug("Could not retrieve upgrade guidance", e);
         }
         return ComponentUpgradeGuidance.none();
+    }
+
+    public ComponentUpgradeGuidance requestUpgradeGuidanceItems(String componentVersionUrl) {
+        ComponentVersionView componentVersionView;
+        try {
+            componentVersionView = blackDuckApiClient.getResponse(new HttpUrl(componentVersionUrl), ComponentVersionView.class);
+        } catch (IntegrationException e) {
+            logger.debug("Could not retrieve component version attributes", e);
+            return ComponentUpgradeGuidance.none();
+        }
+        return requestUpgradeGuidanceItems(componentVersionView);
     }
 
     private Optional<HttpUrl> extractFirstUpgradeGuidanceLinkSafely(ResourceMetadata meta) {
         return meta.getLinks()
-                   .stream()
-                   .filter(resourceLink -> resourceLink.getRel().equals(LINK_UPGRADE_GUIDANCE))
-                   .map(ResourceLink::getHref)
-                   .findFirst();
+            .stream()
+            .filter(resourceLink -> resourceLink.getRel().equals(LINK_UPGRADE_GUIDANCE))
+            .map(ResourceLink::getHref)
+            .findFirst();
     }
 
     private Optional<UrlSingleResponse<ComponentVersionUpgradeGuidanceView>> extractComponentVersionUpgradeGuidanceUrl(ProjectVersionComponentVersionView bomComponent) {
-        LinkSingleResponse<ComponentVersionUpgradeGuidanceView> upgradeGuidanceViewLinkName = new LinkSingleResponse<>(LINK_UPGRADE_GUIDANCE, ComponentVersionUpgradeGuidanceView.class);
+        LinkSingleResponse<ComponentVersionUpgradeGuidanceView> upgradeGuidanceViewLinkName = new LinkSingleResponse<>(
+            LINK_UPGRADE_GUIDANCE,
+            ComponentVersionUpgradeGuidanceView.class
+        );
         return bomComponent.metaSingleResponseSafely(upgradeGuidanceViewLinkName);
     }
 
     private ComponentUpgradeGuidance createUpgradeGuidanceItems(ComponentVersionUpgradeGuidanceView upgradeGuidanceView) {
         LinkableItem shortTermGuidance = Optional.ofNullable(upgradeGuidanceView.getShortTerm())
-                                             .map(CommonUpgradeGuidanceModel::fromShortTermGuidance)
-                                             .map(guidanceModel -> createUpgradeGuidanceItem(BlackDuckMessageLabels.LABEL_GUIDANCE_SHORT_TERM, guidanceModel))
-                                             .orElse(null);
+            .map(CommonUpgradeGuidanceModel::fromShortTermGuidance)
+            .map(guidanceModel -> createUpgradeGuidanceItem(BlackDuckMessageLabels.LABEL_GUIDANCE_SHORT_TERM, guidanceModel))
+            .orElse(null);
         LinkableItem longTermGuidance = Optional.ofNullable(upgradeGuidanceView.getLongTerm())
-                                            .map(CommonUpgradeGuidanceModel::fromLongTermGuidance)
-                                            .map(guidanceModel -> createUpgradeGuidanceItem(BlackDuckMessageLabels.LABEL_GUIDANCE_LONG_TERM, guidanceModel))
-                                            .orElse(null);
+            .map(CommonUpgradeGuidanceModel::fromLongTermGuidance)
+            .map(guidanceModel -> createUpgradeGuidanceItem(BlackDuckMessageLabels.LABEL_GUIDANCE_LONG_TERM, guidanceModel))
+            .orElse(null);
         return new ComponentUpgradeGuidance(shortTermGuidance, longTermGuidance);
     }
 
