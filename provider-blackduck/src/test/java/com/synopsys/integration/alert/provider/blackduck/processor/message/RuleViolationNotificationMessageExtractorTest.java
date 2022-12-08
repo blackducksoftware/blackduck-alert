@@ -112,7 +112,8 @@ class RuleViolationNotificationMessageExtractorTest {
         policyRuleView.setCategory(PolicyRuleCategoryType.UNCATEGORIZED);
         Mockito.when(blackDuckApiClient.getResponse(Mockito.any(), Mockito.eq(PolicyRuleView.class))).thenReturn(policyRuleView);
 
-        RuleViolationUniquePolicyNotificationContent notificationContent = new RuleViolationUniquePolicyNotificationContent(PROJECT,
+        RuleViolationUniquePolicyNotificationContent notificationContent = new RuleViolationUniquePolicyNotificationContent(
+            PROJECT,
             PROJECT_VERSION,
             PROJECT_VERSION_URL,
             COMPONENT_VERSIONS_IN_VIOLATION,

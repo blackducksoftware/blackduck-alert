@@ -76,7 +76,7 @@ public class BlackDuckMessageComponentVersionUpgradeGuidanceService {
         try {
             componentVersionView = blackDuckApiClient.getResponse(new HttpUrl(componentVersionUrl), ComponentVersionView.class);
         } catch (IntegrationException e) {
-            logger.debug("Could not retrieve component version attributes");
+            logger.debug("Could not retrieve component version attributes", e);
             return ComponentUpgradeGuidance.none();
         }
         return requestUpgradeGuidanceItems(componentVersionView);
