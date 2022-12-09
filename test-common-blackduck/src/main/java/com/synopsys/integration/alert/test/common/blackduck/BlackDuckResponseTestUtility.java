@@ -21,6 +21,7 @@ import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionS
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 import com.synopsys.integration.blackduck.api.manual.component.RuleViolationNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.synopsys.integration.blackduck.api.manual.temporary.component.VersionBomOriginView;
 import com.synopsys.integration.blackduck.api.manual.view.RuleViolationNotificationView;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.HttpUrl;
@@ -47,6 +48,9 @@ public class BlackDuckResponseTestUtility {
         meta.setHref(new HttpUrl("https://meta-url"));
         meta.setLinks(List.of(resourceLink));
         projectVersionComponentVersionView.setMeta(meta);
+
+        VersionBomOriginView versionBomOriginView = new VersionBomOriginView();
+        projectVersionComponentVersionView.setOrigins(List.of(versionBomOriginView));
 
         return projectVersionComponentVersionView;
     }

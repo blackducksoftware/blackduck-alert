@@ -38,6 +38,7 @@ import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentVersionView;
 import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
+import com.synopsys.integration.blackduck.api.manual.temporary.component.VersionBomOriginView;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.exception.IntegrationException;
@@ -71,12 +72,22 @@ class RuleViolationClearedNotificationMessageExtractorTest {
         BlackDuckPolicySeverityConverter blackDuckPolicySeverityConverter = new BlackDuckPolicySeverityConverter();
         BlackDuckPolicyComponentConcernCreator blackDuckPolicyComponentConcernCreator = new BlackDuckPolicyComponentConcernCreator(blackDuckPolicySeverityConverter);
         BlackDuckComponentVulnerabilityDetailsCreator vulnerabilityDetailsCreator = new BlackDuckComponentVulnerabilityDetailsCreator();
-        BlackDuckComponentPolicyDetailsCreatorFactory blackDuckComponentPolicyDetailsCreatorFactory = new BlackDuckComponentPolicyDetailsCreatorFactory(blackDuckPolicySeverityConverter);
-        BlackDuckMessageBomComponentDetailsCreatorFactory detailsCreatorFactory = new BlackDuckMessageBomComponentDetailsCreatorFactory(vulnerabilityDetailsCreator, blackDuckComponentPolicyDetailsCreatorFactory);
+        BlackDuckComponentPolicyDetailsCreatorFactory blackDuckComponentPolicyDetailsCreatorFactory = new BlackDuckComponentPolicyDetailsCreatorFactory(
+            blackDuckPolicySeverityConverter);
+        BlackDuckMessageBomComponentDetailsCreatorFactory detailsCreatorFactory = new BlackDuckMessageBomComponentDetailsCreatorFactory(
+            vulnerabilityDetailsCreator,
+            blackDuckComponentPolicyDetailsCreatorFactory
+        );
 
         BomComponent404Handler bomComponent404Handler = new BomComponent404Handler();
 
-        extractor = new RuleViolationClearedNotificationMessageExtractor(providerKey, servicesFactoryCache, blackDuckPolicyComponentConcernCreator, detailsCreatorFactory, bomComponent404Handler);
+        extractor = new RuleViolationClearedNotificationMessageExtractor(
+            providerKey,
+            servicesFactoryCache,
+            blackDuckPolicyComponentConcernCreator,
+            detailsCreatorFactory,
+            bomComponent404Handler
+        );
     }
 
     @Test
@@ -101,8 +112,13 @@ class RuleViolationClearedNotificationMessageExtractorTest {
         policyRuleView.setCategory(PolicyRuleCategoryType.UNCATEGORIZED);
         Mockito.when(blackDuckApiClient.getResponse(Mockito.any(), Mockito.eq(PolicyRuleView.class))).thenReturn(policyRuleView);
 
-        RuleViolationClearedUniquePolicyNotificationContent notificationContent = new RuleViolationClearedUniquePolicyNotificationContent(PROJECT, PROJECT_VERSION, PROJECT_VERSION_URL, COMPONENT_VERSIONS_CLEARED,
-            List.of(componentVersionStatus), policyInfo);
+        RuleViolationClearedUniquePolicyNotificationContent notificationContent = new RuleViolationClearedUniquePolicyNotificationContent(PROJECT,
+            PROJECT_VERSION,
+            PROJECT_VERSION_URL,
+            COMPONENT_VERSIONS_CLEARED,
+            List.of(componentVersionStatus),
+            policyInfo
+        );
 
         List<BomComponentDetails> bomComponentDetailsList = extractor.createBomComponentDetails(notificationContent, blackDuckServicesFactory);
 
@@ -144,7 +160,8 @@ class RuleViolationClearedNotificationMessageExtractorTest {
             ))
             .when(blackDuckApiClient).getResponse(Mockito.any(), Mockito.any());
 
-        RuleViolationClearedUniquePolicyNotificationContent notificationContent = new RuleViolationClearedUniquePolicyNotificationContent(PROJECT,
+        RuleViolationClearedUniquePolicyNotificationContent notificationContent = new RuleViolationClearedUniquePolicyNotificationContent(
+            PROJECT,
             PROJECT_VERSION,
             PROJECT_VERSION_URL,
             COMPONENT_VERSIONS_CLEARED,
@@ -208,6 +225,9 @@ class RuleViolationClearedNotificationMessageExtractorTest {
         meta.setHref(new HttpUrl("https://someUrl"));
         meta.setLinks(List.of(resourceLink));
         projectVersionComponentVersionView.setMeta(meta);
+
+        VersionBomOriginView versionBomOriginView = new VersionBomOriginView();
+        projectVersionComponentVersionView.setOrigins(List.of(versionBomOriginView));
 
         return projectVersionComponentVersionView;
     }
