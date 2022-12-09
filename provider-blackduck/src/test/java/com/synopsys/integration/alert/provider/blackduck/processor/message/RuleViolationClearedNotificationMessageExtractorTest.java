@@ -3,7 +3,6 @@ package com.synopsys.integration.alert.provider.blackduck.processor.message;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -26,13 +25,10 @@ import com.synopsys.integration.alert.provider.blackduck.processor.message.servi
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.policy.BlackDuckPolicyComponentConcernCreator;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.policy.BlackDuckPolicySeverityConverter;
 import com.synopsys.integration.alert.provider.blackduck.processor.model.RuleViolationClearedUniquePolicyNotificationContent;
+import com.synopsys.integration.alert.test.common.blackduck.BlackDuckResponseTestUtility;
 import com.synopsys.integration.blackduck.api.core.ResourceLink;
 import com.synopsys.integration.blackduck.api.core.ResourceMetadata;
 import com.synopsys.integration.blackduck.api.core.response.UrlSingleResponse;
-import com.synopsys.integration.blackduck.api.generated.component.ComponentVersionUpgradeGuidanceLongTermView;
-import com.synopsys.integration.blackduck.api.generated.component.ComponentVersionUpgradeGuidanceLongTermVulnerabilityRiskView;
-import com.synopsys.integration.blackduck.api.generated.component.ComponentVersionUpgradeGuidanceShortTermView;
-import com.synopsys.integration.blackduck.api.generated.component.ComponentVersionUpgradeGuidanceShortTermVulnerabilityRiskView;
 import com.synopsys.integration.blackduck.api.generated.component.ProjectVersionComponentVersionLicensesView;
 import com.synopsys.integration.blackduck.api.generated.enumeration.PolicyRuleCategoryType;
 import com.synopsys.integration.blackduck.api.generated.enumeration.PolicyRuleSeverityType;
@@ -120,31 +116,12 @@ class RuleViolationClearedNotificationMessageExtractorTest {
         Mockito.when(blackDuckApiClient.getResponse(Mockito.any(), Mockito.eq(PolicyRuleView.class))).thenReturn(policyRuleView);
 
         // Set up mock for component upgrade guidance in BlackDuckMessageComponentVersionUpgradeGuidanceService
-        ComponentVersionUpgradeGuidanceView componentVersionView = new ComponentVersionUpgradeGuidanceView();
-        ComponentVersionUpgradeGuidanceShortTermView shortTermView = new ComponentVersionUpgradeGuidanceShortTermView();
-        ComponentVersionUpgradeGuidanceShortTermVulnerabilityRiskView shortTermRiskView = new ComponentVersionUpgradeGuidanceShortTermVulnerabilityRiskView();
-        shortTermRiskView.setCritical(BigDecimal.valueOf(0L));
-        shortTermRiskView.setHigh(BigDecimal.valueOf(0L));
-        shortTermRiskView.setMedium(BigDecimal.valueOf(0L));
-        shortTermRiskView.setLow(BigDecimal.valueOf(0L));
-        shortTermView.setVulnerabilityRisk(shortTermRiskView);
-        shortTermView.setVersionName(PROJECT_VERSION_UPGRADE);
-        componentVersionView.setShortTerm(shortTermView);
-
-        ComponentVersionUpgradeGuidanceLongTermView longTermView = new ComponentVersionUpgradeGuidanceLongTermView();
-        ComponentVersionUpgradeGuidanceLongTermVulnerabilityRiskView longTermRiskView = new ComponentVersionUpgradeGuidanceLongTermVulnerabilityRiskView();
-        longTermRiskView.setCritical(BigDecimal.valueOf(0L));
-        longTermRiskView.setHigh(BigDecimal.valueOf(0L));
-        longTermRiskView.setMedium(BigDecimal.valueOf(0L));
-        longTermRiskView.setLow(BigDecimal.valueOf(0L));
-        longTermView.setVulnerabilityRisk(longTermRiskView);
-        longTermView.setVersionName(PROJECT_VERSION_UPGRADE);
-        componentVersionView.setLongTerm(longTermView);
-        UrlSingleResponse<ComponentVersionUpgradeGuidanceView> upgradeGuidanceView = new UrlSingleResponse<>(
+        ComponentVersionUpgradeGuidanceView upgradeGuidanceView = BlackDuckResponseTestUtility.createComponentVersionUpgradeGuidanceView(PROJECT_VERSION_UPGRADE);
+        UrlSingleResponse<ComponentVersionUpgradeGuidanceView> upgradeGuidanceViewResponse = new UrlSingleResponse<>(
             new HttpUrl("https://upgradeGuidanceHref"),
             ComponentVersionUpgradeGuidanceView.class
         );
-        Mockito.when(blackDuckApiClient.getResponse(upgradeGuidanceView)).thenReturn(componentVersionView);
+        Mockito.when(blackDuckApiClient.getResponse(upgradeGuidanceViewResponse)).thenReturn(upgradeGuidanceView);
 
         RuleViolationClearedUniquePolicyNotificationContent notificationContent = new RuleViolationClearedUniquePolicyNotificationContent(
             PROJECT,
