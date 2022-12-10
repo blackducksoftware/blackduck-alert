@@ -1,5 +1,5 @@
 version: '3.6'
-#services:
+services:
 #  alertdb:
 #    # Comment or remove the POSTGRES_USER and POSTGRES_PASSWORD if secrets are used for credentials.
 #    environment:
