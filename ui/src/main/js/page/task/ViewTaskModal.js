@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Modal from 'common/component/modal/Modal';
 import ReadOnlyField from 'common/component/input/field/ReadOnlyField';
 import { createUseStyles } from 'react-jss';
@@ -6,10 +7,10 @@ import { createUseStyles } from 'react-jss';
 const useStyles = createUseStyles({
     content: {
         display: 'flex',
-        flexDirection: 'column', 
+        flexDirection: 'column',
         minHeight: '175px'
     }
-})
+});
 
 const ViewTaskModal = ({ data, isOpen, toggleModal }) => {
     const classes = useStyles();
@@ -18,15 +19,15 @@ const ViewTaskModal = ({ data, isOpen, toggleModal }) => {
     function handleClose() {
         toggleModal(false);
     }
-    
+
     function setId(identifier) {
-        return `${identifier}-readOnlyFieldId`
+        return `${identifier}-readOnlyFieldId`;
     }
 
     return (
-        <Modal 
-            isOpen={isOpen} 
-            size="lg" 
+        <Modal
+            isOpen={isOpen}
+            size="lg"
             title="Task Details"
             closeModal={handleClose}
             handleSubmit={handleClose}
@@ -69,6 +70,17 @@ const ViewTaskModal = ({ data, isOpen, toggleModal }) => {
             </div>
         </Modal>
     );
+};
+
+ViewTaskModal.propTypes = {
+    data: PropTypes.shape({
+        fullyQualifiedType: PropTypes.string,
+        nextRunTime: PropTypes.string,
+        properties: PropTypes.array,
+        type: PropTypes.string
+    }),
+    isOpen: PropTypes.bool,
+    toggleModal: PropTypes.func
 };
 
 export default ViewTaskModal;

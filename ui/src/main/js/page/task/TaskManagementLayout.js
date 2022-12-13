@@ -3,17 +3,15 @@ import PageHeader from 'common/component/navigation/PageHeader';
 import TaskManagementTable from 'page/task/TaskManagementTable';
 import { TASK_MANAGEMENT_INFO } from 'page/task/TaskManagementModel';
 
-const TaskManagementLayout = () => {
-    return (
-        <div>
-            <PageHeader
-                title={TASK_MANAGEMENT_INFO.label}
-                description="This page allows you to view the tasks running internally within Alert."
-                icon="list"
-            />
-            <TaskManagementTable />
-        </div>
-    );
-};
+const TaskManagementLayout = () => (
+    <div>
+        <PageHeader
+            title={TASK_MANAGEMENT_INFO.label}
+            description="This page allows you to view the tasks running internally within Alert."
+            icon="list"
+        />
+        <TaskManagementTable />
+    </div>
+);
 
 export default TaskManagementLayout;

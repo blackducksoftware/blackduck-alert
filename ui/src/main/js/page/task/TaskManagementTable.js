@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Table from 'common/component/table/Table';
 import ViewTaskCell from 'page/task/ViewTaskCell';
 import { fetchTasks } from 'store/actions/tasks';
+import { fetchUsers } from 'store/actions/users';
 
 const COLUMNS = [{
     key: 'type',
@@ -22,12 +23,12 @@ const COLUMNS = [{
 
 const TaskManagementTable = () => {
     const dispatch = useDispatch();
-    const [search, setNewSearch] = useState("");
+    const [search, setNewSearch] = useState('');
     const [autoRefresh, setAutoRefresh] = useState(false);
-    const tasks = useSelector(state => state.tasks.data);
-    
+    const tasks = useSelector((state) => state.tasks.data);
+
     useEffect(() => {
-        dispatch(fetchTasks())
+        dispatch(fetchTasks());
     }, []);
 
     useEffect(() => {
@@ -35,24 +36,26 @@ const TaskManagementTable = () => {
             const refreshIntervalId = setInterval(() => dispatch(fetchUsers()), 30000);
             return function clearRefreshInterval() {
                 clearInterval(refreshIntervalId);
-            }
+            };
         }
-    }, [autoRefresh])
+
+        return undefined;
+    }, [autoRefresh]);
 
     const handleSearchChange = (e) => {
         setNewSearch(e.target.value);
-    }
+    };
 
     function handleToggle() {
         setAutoRefresh(!autoRefresh);
     }
 
-    const getTasks = () => {
-        return (!search ? tasks : tasks.filter((task) => task.type.toLowerCase().includes(search.toLowerCase())));
-    }
+    const getTasks = () => (
+        !search ? tasks : tasks.filter((task) => task.type.toLowerCase().includes(search.toLowerCase()))
+    );
 
     return (
-        <Table 
+        <Table
             tableData={getTasks()}
             columns={COLUMNS}
             searchBarPlaceholder="Search Tasks..."
@@ -60,7 +63,7 @@ const TaskManagementTable = () => {
             active={autoRefresh}
             onToggle={handleToggle}
         />
-    )
-}
+    );
+};
 
 export default TaskManagementTable;

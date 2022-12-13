@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ViewTaskModal from 'page/task/ViewTaskModal';
 
 const useStyles = createUseStyles({
     editCell: {
-        '&:hover': {
-            cursor: 'pointer'
+        background: 'none',
+        border: 'none',
+        padding: 0,
+        cursor: 'pointer',
+        '&:focus': {
+            outline: 0
         }
     }
 });
@@ -21,11 +26,11 @@ const ViewTaskCell = ({ data }) => {
 
     return (
         <>
-            <span className={classes.editCell} onClick={() => handleClick()}>
+            <button className={classes.editCell} onClick={() => handleClick()} type="button">
                 <FontAwesomeIcon icon="eye" />
-            </span>
+            </button>
             { showModal ? (
-                <ViewTaskModal 
+                <ViewTaskModal
                     data={data}
                     isOpen={showModal}
                     toggleModal={setShowModal}
@@ -34,6 +39,15 @@ const ViewTaskCell = ({ data }) => {
         </>
 
     );
+};
+
+ViewTaskCell.propTypes = {
+    data: PropTypes.shape({
+        fullyQualifiedType: PropTypes.string,
+        nextRunTime: PropTypes.string,
+        properties: PropTypes.array,
+        type: PropTypes.string
+    })
 };
 
 export default ViewTaskCell;
