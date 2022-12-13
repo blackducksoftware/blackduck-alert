@@ -1,3 +1,4 @@
+
 # alert-helm
 Helm Charts for Synopsys Alert
 
@@ -17,7 +18,7 @@ Helm Charts for Synopsys Alert
   - [Persistent Storage](#persistent-storage)
   - [External Postgres Database](#external-postgres-database)
     - [External Postgres Database Requirements](#external-postgres-database-requirements)
-    - [Configuring the External Postgres Database](#Configuring the External Postgres Database)
+    - [Configuring the External Postgres Database](#configuring-the-external-postgres-database)
   - [Database Admin User Password](#database-admin-user-password)
   - [Installing with Black Duck](#installing-with-black-duck)
 

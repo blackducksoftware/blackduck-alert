@@ -19,4 +19,5 @@ dependencies {
     implementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
 
     testImplementation project(':test-common-channel')
+    testImplementation project(':test-common-blackduck')
 }

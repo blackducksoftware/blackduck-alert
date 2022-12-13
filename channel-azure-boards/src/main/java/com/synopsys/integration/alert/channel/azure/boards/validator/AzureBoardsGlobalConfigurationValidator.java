@@ -13,26 +13,18 @@ import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatusMessages;
 import com.synopsys.integration.alert.channel.azure.boards.database.accessor.AzureBoardsGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
-import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidator;
 
 @Component
 public class AzureBoardsGlobalConfigurationValidator {
-    private static final String AUTHENTICATION_IN_PROGRESS = "Authentication in progress cannot perform current action.";
     private final AzureBoardsGlobalConfigAccessor azureBoardsGlobalConfigAccessor;
-    private final OAuthRequestValidator oAuthRequestValidator;
 
     @Autowired
-    public AzureBoardsGlobalConfigurationValidator(AzureBoardsGlobalConfigAccessor azureBoardsGlobalConfigAccessor, OAuthRequestValidator oAuthRequestValidator) {
+    public AzureBoardsGlobalConfigurationValidator(AzureBoardsGlobalConfigAccessor azureBoardsGlobalConfigAccessor) {
         this.azureBoardsGlobalConfigAccessor = azureBoardsGlobalConfigAccessor;
-        this.oAuthRequestValidator = oAuthRequestValidator;
     }
 
     public ValidationResponseModel validate(AzureBoardsGlobalConfigModel model, String id) {
         Set<AlertFieldStatus> statuses = new HashSet<>();
-
-        if (model.getId() != null && oAuthRequestValidator.hasRequestFromConfigurationId(model.getId())) {
-            statuses.add(AlertFieldStatus.error("oAuth", AUTHENTICATION_IN_PROGRESS));
-        }
 
         if (StringUtils.isBlank(model.getName())) {
             statuses.add(AlertFieldStatus.error("name", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
