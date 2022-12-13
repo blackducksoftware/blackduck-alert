@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import Table from 'common/component/table/Table';
 import ViewTaskCell from 'page/task/ViewTaskCell';
