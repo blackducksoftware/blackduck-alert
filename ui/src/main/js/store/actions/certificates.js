@@ -227,6 +227,7 @@ export function deleteCertificate(certificateId) {
         request.then((response) => {
             if (response.ok) {
                 dispatch(deletedCertificate());
+                dispatch(fetchCertificates());
             } else {
                 response.json()
                     .then((responseData) => {
