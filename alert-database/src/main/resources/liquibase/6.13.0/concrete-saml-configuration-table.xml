@@ -38,7 +38,7 @@
             <column name="entity_base_url" type="VARCHAR">
                 <constraints nullable="false"/>
             </column>
-            <column name="require_assertions_signed" type="BOOLEAN">
+            <column name="require_assertions_signed" type="BOOLEAN" defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
             <column name="role_attribute_mapping" type="VARCHAR">
