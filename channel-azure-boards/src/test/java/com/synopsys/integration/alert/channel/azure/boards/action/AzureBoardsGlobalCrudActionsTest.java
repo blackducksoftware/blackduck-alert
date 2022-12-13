@@ -19,7 +19,6 @@ import com.synopsys.integration.alert.channel.azure.boards.database.accessor.Azu
 import com.synopsys.integration.alert.channel.azure.boards.database.configuration.AzureBoardsConfigurationEntity;
 import com.synopsys.integration.alert.channel.azure.boards.database.mock.MockAzureBoardsConfigurationRepository;
 import com.synopsys.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
-import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidator;
 import com.synopsys.integration.alert.channel.azure.boards.validator.AzureBoardsGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.ActionResponse;
@@ -54,7 +53,6 @@ class AzureBoardsGlobalCrudActionsTest {
     private final AlertProperties alertProperties = new MockAlertProperties();
     private final FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, gson);
     private final EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, filePersistenceUtil);
-    private final OAuthRequestValidator oAuthRequestValidator = new OAuthRequestValidator();
 
     AzureBoardsGlobalConfigModel firstConfigModel;
     AzureBoardsGlobalCrudActions azureBoardsGlobalCrudActions;
@@ -69,7 +67,7 @@ class AzureBoardsGlobalCrudActionsTest {
         azureBoardsGlobalCrudActions = new AzureBoardsGlobalCrudActions(
             authorizationManager,
             azureBoardsGlobalConfigAccessor,
-            new AzureBoardsGlobalConfigurationValidator(azureBoardsGlobalConfigAccessor, oAuthRequestValidator)
+            new AzureBoardsGlobalConfigurationValidator(azureBoardsGlobalConfigAccessor)
         );
         firstConfigModel = new AzureBoardsGlobalConfigModel(
             "",

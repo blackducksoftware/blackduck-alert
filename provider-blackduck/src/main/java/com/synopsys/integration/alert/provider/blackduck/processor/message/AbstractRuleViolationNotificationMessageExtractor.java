@@ -9,6 +9,7 @@ package com.synopsys.integration.alert.provider.blackduck.processor.message;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -20,6 +21,7 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Compon
 import com.synopsys.integration.alert.provider.blackduck.processor.NotificationExtractorBlackDuckServicesFactoryCache;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.BlackDuckMessageBomComponentDetailsCreator;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.BlackDuckMessageBomComponentDetailsCreatorFactory;
+import com.synopsys.integration.alert.provider.blackduck.processor.message.service.BlackDuckMessageComponentVersionUpgradeGuidanceService;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.BomComponent404Handler;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.policy.BlackDuckPolicyComponentConcernCreator;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.util.BlackDuckMessageLinkUtils;
@@ -33,7 +35,8 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.HttpUrl;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
-public abstract class AbstractRuleViolationNotificationMessageExtractor<T extends AbstractRuleViolationNotificationContent> extends AbstractBlackDuckComponentConcernMessageExtractor<T> {
+public abstract class AbstractRuleViolationNotificationMessageExtractor<T extends AbstractRuleViolationNotificationContent>
+    extends AbstractBlackDuckComponentConcernMessageExtractor<T> {
     private final ItemOperation itemOperation;
     private final BlackDuckPolicyComponentConcernCreator policyComponentConcernCreator;
     private final BlackDuckMessageBomComponentDetailsCreatorFactory detailsCreatorFactory;
@@ -66,23 +69,36 @@ public abstract class AbstractRuleViolationNotificationMessageExtractor<T extend
         return bomComponentDetails;
     }
 
-    private BomComponentDetails createBomComponentDetails(BlackDuckServicesFactory blackDuckServicesFactory, T notificationContent, ComponentVersionStatus componentVersionStatus) throws IntegrationException {
+    private BomComponentDetails createBomComponentDetails(BlackDuckServicesFactory blackDuckServicesFactory, T notificationContent, ComponentVersionStatus componentVersionStatus)
+        throws IntegrationException {
         BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
         BlackDuckMessageBomComponentDetailsCreator bomComponentDetailsCreator = detailsCreatorFactory.createBomComponentDetailsCreator(blackDuckServicesFactory);
+        BlackDuckMessageComponentVersionUpgradeGuidanceService upgradeGuidanceService = new BlackDuckMessageComponentVersionUpgradeGuidanceService(blackDuckApiClient);
 
         ComponentConcern policyConcern = policyComponentConcernCreator.fromPolicyInfo(notificationContent.getPolicyInfo(), itemOperation);
         try {
-            ProjectVersionComponentVersionView bomComponent = blackDuckApiClient.getResponse(new HttpUrl(componentVersionStatus.getBomComponent()), ProjectVersionComponentVersionView.class);
-            return bomComponentDetailsCreator.createBomComponentDetails(bomComponent, policyConcern, ComponentUpgradeGuidance.none(), List.of());
+            ProjectVersionComponentVersionView bomComponent = blackDuckApiClient.getResponse(
+                new HttpUrl(componentVersionStatus.getBomComponent()),
+                ProjectVersionComponentVersionView.class
+            );
+            ComponentUpgradeGuidance componentUpgradeGuidance = upgradeGuidanceService.requestUpgradeGuidanceItems(bomComponent);
+            return bomComponentDetailsCreator.createBomComponentDetails(bomComponent, policyConcern, componentUpgradeGuidance, List.of());
         } catch (IntegrationRestException e) {
             bomComponent404Handler.logIf404OrThrow(e, componentVersionStatus.getComponentName(), componentVersionStatus.getComponentVersionName());
+            Optional<String> componentVersion = Optional.ofNullable(componentVersionStatus.getComponentVersion());
+            ComponentUpgradeGuidance componentUpgradeGuidance;
+            if (componentVersion.isEmpty()) {
+                componentUpgradeGuidance = ComponentUpgradeGuidance.none();
+            } else {
+                componentUpgradeGuidance = upgradeGuidanceService.requestUpgradeGuidanceItems(componentVersion.get());
+            }
             return bomComponentDetailsCreator.createMissingBomComponentDetails(
                 componentVersionStatus.getComponentName(),
                 createComponentUrl(componentVersionStatus),
                 componentVersionStatus.getComponentVersionName(),
                 createComponentVersionUrl(componentVersionStatus),
                 List.of(policyConcern),
-                ComponentUpgradeGuidance.none(),
+                componentUpgradeGuidance,
                 List.of()
             );
         }
@@ -101,5 +117,4 @@ public abstract class AbstractRuleViolationNotificationMessageExtractor<T extend
         }
         return status.getComponentVersion();
     }
-
 }

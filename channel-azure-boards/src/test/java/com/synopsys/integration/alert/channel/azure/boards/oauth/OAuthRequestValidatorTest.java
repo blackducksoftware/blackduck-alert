@@ -43,4 +43,18 @@ class OAuthRequestValidatorTest {
         assertTrue(oAuthRequestValidator.hasRequestKey(requestKey));
         assertTrue(oAuthRequestValidator.hasRequests());
     }
+
+    @Test
+    void removeDuplicateRequestsTest() {
+        OAuthRequestValidator oAuthRequestValidator = new OAuthRequestValidator();
+        UUID configId = UUID.randomUUID();
+        UUID request1 = UUID.randomUUID();
+        UUID request2 = UUID.randomUUID();
+        oAuthRequestValidator.addAuthorizationRequest(request1, configId);
+        oAuthRequestValidator.addAuthorizationRequest(request2, configId);
+
+        assertTrue(oAuthRequestValidator.hasRequests());
+        assertFalse(oAuthRequestValidator.hasRequestKey(request1));
+        assertTrue(oAuthRequestValidator.hasRequestKey(request2));
+    }
 }
