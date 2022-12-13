@@ -14,7 +14,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.channel.azure.boards.database.accessor.AzureBoardsGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
-import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidator;
 import com.synopsys.integration.alert.channel.azure.boards.validator.AzureBoardsGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -30,7 +29,6 @@ class AzureBoardsGlobalValidationActionTest {
     private final AuthenticationTestUtils authenticationTestUtils = new AuthenticationTestUtils();
     private final DescriptorKey descriptorKey = ChannelKeys.AZURE_BOARDS;
     private final PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
-    private final OAuthRequestValidator oAuthRequestValidator = new OAuthRequestValidator();
     @Mock
     private AzureBoardsGlobalConfigAccessor mockAzureBoardsGlobalConfigAccessor;
 
@@ -40,7 +38,7 @@ class AzureBoardsGlobalValidationActionTest {
     @BeforeEach
     void initEach() {
         model = new AzureBoardsGlobalConfigModel();
-        validator = new AzureBoardsGlobalConfigurationValidator(mockAzureBoardsGlobalConfigAccessor, oAuthRequestValidator);
+        validator = new AzureBoardsGlobalConfigurationValidator(mockAzureBoardsGlobalConfigAccessor);
     }
 
     @Test

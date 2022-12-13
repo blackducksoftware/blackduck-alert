@@ -31,6 +31,7 @@ import { AUDIT_INFO } from 'page/audit/AuditModel';
 import AuditPage from 'page/audit/AuditPage';
 import { CERTIFICATE_INFO } from 'page/certificates/CertificateModel';
 import CertificatesPage from 'page/certificates/CertificatesPage';
+import CertificatesPageLayout from 'page/certificates/CertificatesPageLayout';
 import { TASK_MANAGEMENT_INFO } from 'page/task/TaskManagementModel';
 import TaskManagement from 'page/task/TaskManagement';
 import TaskManagementLayout from 'page/task/TaskManagementLayout';
@@ -251,7 +252,14 @@ const MainPage = ({
                 urlName={CERTIFICATE_INFO.url}
                 descriptor={globalDescriptorMap[CERTIFICATE_INFO.key]}
                 render={() => (
-                    <CertificatesPage />
+                    <BetaPage betaSelected>
+                        <BetaComponent>
+                            <CertificatesPageLayout />
+                        </BetaComponent>
+                        <CurrentComponent>
+                            <CertificatesPage />
+                        </CurrentComponent>
+                    </BetaPage>
                 )}
             />
             <DescriptorRoute

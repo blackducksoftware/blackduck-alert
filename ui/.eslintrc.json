@@ -39,6 +39,9 @@
       "warn",
       240
     ],
+    "object-curly-newline": ["error", {
+      "ExportDeclaration": { "minProperties": 1 }
+    }],
     "react/forbid-prop-types": [
       "warn",
       {
@@ -73,6 +76,9 @@
       "warn"
     ],
     "react/jsx-first-prop-new-line": [
+      "warn"
+    ],
+    "react/require-default-props": [
       "warn"
     ],
     "comma-dangle": [

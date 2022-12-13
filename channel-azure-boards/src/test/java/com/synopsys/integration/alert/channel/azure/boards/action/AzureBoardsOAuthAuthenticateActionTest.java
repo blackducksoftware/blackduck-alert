@@ -81,7 +81,7 @@ class AzureBoardsOAuthAuthenticateActionTest {
         alertOAuthCredentialDataStoreFactory = new AlertOAuthCredentialDataStoreFactory(alertOAuthConfigurationAccessor);
 
         //Set up azure global validation
-        azureBoardsGlobalConfigurationValidator = new AzureBoardsGlobalConfigurationValidator(azureBoardsGlobalConfigAccessor, oAuthRequestValidator);
+        azureBoardsGlobalConfigurationValidator = new AzureBoardsGlobalConfigurationValidator(azureBoardsGlobalConfigAccessor);
         validationAction = new AzureBoardsGlobalValidationAction(azureBoardsGlobalConfigurationValidator, authorizationManager);
 
         //Set up AzureRedirectUrl and AlertWebServerManager

@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.processor.model;
 
+import com.synopsys.integration.alert.provider.blackduck.processor.message.util.BlackDuckMessageLinkUtils;
 import com.synopsys.integration.blackduck.api.manual.component.NotificationContentComponent;
 
 public abstract class AbstractProjectVersionNotificationContent extends NotificationContentComponent {
@@ -32,4 +33,5 @@ public abstract class AbstractProjectVersionNotificationContent extends Notifica
         return projectVersionUrl;
     }
 
+    public String getProjectVersionComponentsTabUrl() { return getProjectVersionUrl() + BlackDuckMessageLinkUtils.URI_PIECE_COMPONENTS; }
 }
