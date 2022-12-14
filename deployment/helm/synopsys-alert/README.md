@@ -199,7 +199,6 @@ This contains a table briefly describing each parameter in the values.yaml file.
 | `postgres.databaseName`                  | Postgres database name where Alert data will be stored                                 | `alertdb`                                                               |
 | `postgres.adminUserName`                 | Postgres database admin user                                                           | `postgres`                                                              |
 | `postgres.adminPassword`                 | Postgres database password for the admin user                                          | `""`                                                                    |
-| `postgres.postgresMigration`             | Flag to control launching Postgres migration                                           | `"false"`                                                               |
 | `postgres.dbCredential.secretName`       | The name of the secret that contains the database user's username & password           | `""`                                                                    |
 | `postgres.dbCredential.usernameKey`      | The key containing the database user's username                                        | `"ALERT_DB_USERNAME"`                                                   |
 | `postgres.dbCredential.passwordKey`      | The key containing the database user's password                                        | `"ALERT_DB_PASSWORD"`                                                   |
