@@ -53,6 +53,25 @@ function _validate_environment() {
   _logEnd
 }
 
+function _move_centos_data() {
+  _logStart
+  local centosDBDirectory="${PGDATA}/userdata"
+
+  if [ -s "${centosDBDirectory}/PG_VERSION" ]; then
+    _logIt "Found Postgres DB in ${centosDBDirectory}. Moving DB files to ${PGDATA}"
+
+    existingModePGDATA=$(stat -c '%a' "${centosDBDirectory}")
+
+    mv "${centosDBDirectory}"/* "${PGDATA}"/.
+    _checkStatus $? "Moving Postgres DB from ${centosDBDirectory} to ${PGDATA}"
+
+    rmdir "${PGDATA}/userdata"
+    _checkStatus $? "Removing empty directory ${centosDBDirectory}"
+  fi
+
+  _logEnd
+}
+
 function _validate_migration_viability() {
   _logStart
   local pgVersionFile="${PGDATA}/PG_VERSION"
@@ -108,8 +127,7 @@ function _update_existing_data_ownership() {
 
 function _move_existing_data_backup_directory() {
   _logStart
-  local existingDirectoryMode=$(stat -c '%a' "${inputPostgresDataDirectory}")
-  su-exec "${osUser}" mkdir -m "${existingDirectoryMode}" -p "${backupPostgresDataDirectory}"
+  su-exec "${osUser}" mkdir -m "${existingModePGDATA}" -p "${backupPostgresDataDirectory}"
   _checkStatus $? "Creating backup directory : ${backupPostgresDataDirectory}"
 
   mv "${inputPostgresDataDirectory}"/* "${backupPostgresDataDirectory}"/.
@@ -195,6 +213,10 @@ postgresPassword="${POSTGRES_ADMIN_PASSWORD:-${POSTGRES_PASSWORD}}"
 
 ## Check run environment
 _validate_environment
+existingModePGDATA=$(stat -c '%a' "${PGDATA}")
+
+## Handle prior Centos directory and address IALERT-3269
+_move_centos_data
 
 ## Change directory
 cd "${runDirectory}"
