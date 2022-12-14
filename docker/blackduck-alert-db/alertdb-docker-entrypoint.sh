@@ -76,13 +76,8 @@ function _set_values_in_environment() {
 
 function _run_DB_migration() {
   _logStart
-  if [ "false" = "${MIGRATE_POSTGRES}" ]; then
-    _logIt "Environment variable MIGRATE_POSTGRES is set to false. NOT running DB migration"
-  else
-    _logIt "Environment variable MIGRATE_POSTGRES is not set to false, launching migration script: ${alertDBMigrationScript}"
-    "${alertDBMigrationScript}" "${osUser}"
-    _checkStatus $? "Running: ${alertDBMigrationScript}"
-  fi
+  "${alertDBMigrationScript}" "${osUser}"
+  _checkStatus $? "Running: ${alertDBMigrationScript}"
   _logEnd
 }
 
@@ -114,7 +109,6 @@ _validate_environment
 _set_values_in_environment POSTGRES_USER "${dockerSecretDir}/ALERT_DB_USERNAME" "${POSTGRES_USER_FILE}" "${POSTGRES_USER}" "sa"
 _set_values_in_environment POSTGRES_PASSWORD "${dockerSecretDir}/ALERT_DB_PASSWORD" "${POSTGRES_PASSWORD_FILE}" "${POSTGRES_PASSWORD}" "blackduck"
 _set_values_in_environment POSTGRES_DB "${dockerSecretDir}/POSTGRES_DB" "" "${POSTGRES_DB}" "alertdb"
-_set_values_in_environment MIGRATE_POSTGRES "${dockerSecretDir}/MIGRATE_POSTGRES" "" "${MIGRATE_POSTGRES}" "true"
 
 _run_DB_migration
 
