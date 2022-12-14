@@ -1,0 +1,10 @@
+ext.moduleName = 'com.synopsys.integration.alert.component'
+
+dependencies {
+    implementation platform(project(':alert-platform'))
+
+    implementation project(':alert-common')
+    implementation project(':api-common-model')
+
+    testImplementation 'org.springframework.data:spring-data-commons'
+}
