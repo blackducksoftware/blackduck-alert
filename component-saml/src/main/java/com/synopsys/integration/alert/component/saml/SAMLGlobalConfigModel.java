@@ -1,11 +1,12 @@
 package com.synopsys.integration.alert.component.saml;
 
+import com.synopsys.integration.alert.api.common.model.Obfuscated;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.model.ConfigWithMetadata;
 
 import java.util.Optional;
 
-public class SAMLGlobalConfigModel extends ConfigWithMetadata {
+public class SAMLGlobalConfigModel extends ConfigWithMetadata implements Obfuscated<SAMLGlobalConfigModel> {
     private Boolean enabled;
     private Boolean forceAuth;
     private String metadataUrl;
@@ -51,19 +52,52 @@ public class SAMLGlobalConfigModel extends ConfigWithMetadata {
         setLastUpdated(lastUpdated);
     }
 
-    public Optional<Boolean> getEnabled() { return Optional.ofNullable(enabled); }
+    @Override
+    public SAMLGlobalConfigModel obfuscate() {
+        return new SAMLGlobalConfigModel(
+            getId(),
+            getCreatedAt(),
+            getLastUpdated(),
+            enabled,
+            forceAuth,
+            metadataUrl,
+            metadataFilePath,
+            entityId,
+            entityBaseUrl,
+            requireAssertionsSigned,
+            roleAttributeMapping
+        );
+    }
 
-    public Optional<Boolean> getForceAuth() { return Optional.ofNullable(forceAuth); }
+    public Optional<Boolean> getEnabled() {
+        return Optional.ofNullable(enabled);
+    }
 
-    public Optional<String> getMetadataUrl() { return Optional.ofNullable(metadataUrl); }
+    public Optional<Boolean> getForceAuth() {
+        return Optional.ofNullable(forceAuth);
+    }
 
-    public Optional<String> getMetadataFilePath() { return Optional.ofNullable(metadataFilePath); }
+    public Optional<String> getMetadataUrl() {
+        return Optional.ofNullable(metadataUrl);
+    }
 
-    public Optional<String> getEntityId() { return Optional.ofNullable(entityId); }
+    public Optional<String> getMetadataFilePath() {
+        return Optional.ofNullable(metadataFilePath);
+    }
 
-    public Optional<String> getEntityBaseUrl() { return Optional.ofNullable(entityBaseUrl); }
+    public Optional<String> getEntityId() {
+        return Optional.ofNullable(entityId);
+    }
 
-    public Optional<Boolean> getRequireAssertionsSigned() { return Optional.ofNullable(requireAssertionsSigned); }
+    public Optional<String> getEntityBaseUrl() {
+        return Optional.ofNullable(entityBaseUrl);
+    }
 
-    public Optional<String> getRoleAttributeMapping() { return Optional.ofNullable(roleAttributeMapping); }
+    public Optional<Boolean> getRequireAssertionsSigned() {
+        return Optional.ofNullable(requireAssertionsSigned);
+    }
+
+    public Optional<String> getRoleAttributeMapping() {
+        return Optional.ofNullable(roleAttributeMapping);
+    }
 }
