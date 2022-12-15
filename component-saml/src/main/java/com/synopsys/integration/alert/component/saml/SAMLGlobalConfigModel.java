@@ -1,5 +1,6 @@
 package com.synopsys.integration.alert.component.saml;
 
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.model.ConfigWithMetadata;
 
 import java.util.Optional;
@@ -19,13 +20,12 @@ public class SAMLGlobalConfigModel extends ConfigWithMetadata {
     }
 
     // Required
-    public SAMLGlobalConfigModel (String id, String name) {
-        super(id, name);
+    public SAMLGlobalConfigModel (String id) {
+        super(id, AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
     }
 
     public SAMLGlobalConfigModel (
         String id,
-        String name,
         String createdAt,
         String lastUpdated,
         Boolean enabled,
@@ -37,7 +37,7 @@ public class SAMLGlobalConfigModel extends ConfigWithMetadata {
         Boolean requireAssertionsSigned,
         String roleAttributeMapping
     ) {
-        this(id, name);
+        this(id);
         this.enabled = enabled;
         this.forceAuth = forceAuth;
         this.metadataUrl = metadataUrl;
