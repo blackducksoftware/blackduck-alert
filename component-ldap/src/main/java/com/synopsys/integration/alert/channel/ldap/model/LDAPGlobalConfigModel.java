@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.api.common.model.Obfuscated;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.model.ConfigWithMetadata;
 
 public class LDAPGlobalConfigModel extends ConfigWithMetadata implements Obfuscated<LDAPGlobalConfigModel> {
@@ -28,13 +29,12 @@ public class LDAPGlobalConfigModel extends ConfigWithMetadata implements Obfusca
     }
 
     // Required
-    public LDAPGlobalConfigModel(String id, String name) {
-        super(id, name);
+    public LDAPGlobalConfigModel(String id) {
+        super(id, AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
     }
 
     public LDAPGlobalConfigModel(
         String id,
-        String name,
         String createdAt,
         String lastUpdated,
         Boolean enabled,
@@ -52,7 +52,7 @@ public class LDAPGlobalConfigModel extends ConfigWithMetadata implements Obfusca
         String groupSearchFilter,
         String groupRoleAttribute
     ) {
-        this(id, name);
+        this(id);
         this.enabled = enabled;
         this.serverName = serverName;
         this.managerDn = managerDn;
@@ -75,7 +75,6 @@ public class LDAPGlobalConfigModel extends ConfigWithMetadata implements Obfusca
     public LDAPGlobalConfigModel obfuscate() {
         return new LDAPGlobalConfigModel(
             getId(),
-            getName(),
             getCreatedAt(),
             getLastUpdated(),
             enabled,
