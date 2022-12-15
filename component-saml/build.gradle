@@ -6,5 +6,5 @@ dependencies {
     implementation project(':alert-common')
     implementation project(':api-common-model')
 
-    testImplementation project(':test-common-channel')
+    implementation 'org.springframework.security:spring-security-web'
 }
