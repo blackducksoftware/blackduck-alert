@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.component.saml;
+package com.synopsys.integration.alert.component.saml.model;
 
 import com.synopsys.integration.alert.api.common.model.Obfuscated;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
