@@ -28,9 +28,12 @@ public class LDAPGlobalConfigModel extends ConfigWithMetadata implements Obfusca
         // For serialization
     }
 
-    // Required
-    public LDAPGlobalConfigModel(String id) {
+    public LDAPGlobalConfigModel(String id, String serverName, String managerDn, String managerPassword) {
         super(id, AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
+
+        this.serverName = serverName;
+        this.managerDn = managerDn;
+        this.managerPassword = managerPassword;
     }
 
     public LDAPGlobalConfigModel(
@@ -52,11 +55,8 @@ public class LDAPGlobalConfigModel extends ConfigWithMetadata implements Obfusca
         String groupSearchFilter,
         String groupRoleAttribute
     ) {
-        this(id);
+        this(id, serverName, managerDn, managerPassword);
         this.enabled = enabled;
-        this.serverName = serverName;
-        this.managerDn = managerDn;
-        this.managerPassword = managerPassword;
         this.isManagerPasswordSet = isManagerPasswordSet;
         this.authenticationType = authenticationType;
         this.referral = referral;
@@ -114,43 +114,43 @@ public class LDAPGlobalConfigModel extends ConfigWithMetadata implements Obfusca
         return Optional.ofNullable(isManagerPasswordSet);
     }
 
-    public void setIsManagerPasswordSet(final Boolean managerPasswordSet) {
+    public void setIsManagerPasswordSet(Boolean managerPasswordSet) {
         isManagerPasswordSet = managerPasswordSet;
     }
 
-    public String getAuthenticationType() {
-        return authenticationType;
+    public Optional<String> getAuthenticationType() {
+        return Optional.ofNullable(authenticationType);
     }
 
-    public String getReferral() {
-        return referral;
+    public Optional<String> getReferral() {
+        return Optional.ofNullable(referral);
     }
 
-    public String getUserSearchBase() {
-        return userSearchBase;
+    public Optional<String> getUserSearchBase() {
+        return Optional.ofNullable(userSearchBase);
     }
 
-    public String getUserSearchFilter() {
-        return userSearchFilter;
+    public Optional<String> getUserSearchFilter() {
+        return Optional.ofNullable(userSearchFilter);
     }
 
-    public String getUserDnPatterns() {
-        return userDnPatterns;
+    public Optional<String> getUserDnPatterns() {
+        return Optional.ofNullable(userDnPatterns);
     }
 
-    public String getUserAttributes() {
-        return userAttributes;
+    public Optional<String> getUserAttributes() {
+        return Optional.ofNullable(userAttributes);
     }
 
-    public String getGroupSearchBase() {
-        return groupSearchBase;
+    public Optional<String> getGroupSearchBase() {
+        return Optional.ofNullable(groupSearchBase);
     }
 
-    public String getGroupSearchFilter() {
-        return groupSearchFilter;
+    public Optional<String> getGroupSearchFilter() {
+        return Optional.ofNullable(groupSearchFilter);
     }
 
-    public String getGroupRoleAttribute() {
-        return groupRoleAttribute;
+    public Optional<String> getGroupRoleAttribute() {
+        return Optional.ofNullable(groupRoleAttribute);
     }
 }
