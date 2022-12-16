@@ -1,5 +1,6 @@
 package com.synopsys.integration.alert.component.saml.web;
 
+import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,6 +18,8 @@ import java.util.UUID;
 public class SAMLGlobalConfigController implements StaticUniqueConfigResourceController<SAMLGlobalConfigModel>, ValidateController<SAMLGlobalConfigModel> {
     @Override
     public SAMLGlobalConfigModel create(SAMLGlobalConfigModel resource) {
+        //TODO Remove: Checking for cyclic dependency
+        String keySamlWantAssertionsSigned = AuthenticationDescriptor.KEY_SAML_WANT_ASSERTIONS_SIGNED;
         return new SAMLGlobalConfigModel(UUID.randomUUID().toString());
     }
 
