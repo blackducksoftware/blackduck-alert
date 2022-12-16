@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @RestController
-@RequestMapping(AlertRestConstants.SETTINGS_PROXY_PATH) // TODO figure path
+@RequestMapping(AlertRestConstants.API + "/authentication/saml:") // TODO Create AlertRestConstants once path is confirmed
 public class SAMLGlobalConfigController implements StaticUniqueConfigResourceController<SAMLGlobalConfigModel>, ValidateController<SAMLGlobalConfigModel> {
     @Override
     public SAMLGlobalConfigModel create(SAMLGlobalConfigModel resource) {
