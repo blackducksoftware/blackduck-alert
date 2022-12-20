@@ -16,6 +16,6 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Distr
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 
 public interface DistributionChannel<D extends DistributionJobDetailsModel> {
-    MessageResult distributeMessages(D distributionDetails, ProviderMessageHolder messages, String jobName, UUID eventId, Set<Long> notificationIds) throws AlertException;
+    MessageResult distributeMessages(D distributionDetails, ProviderMessageHolder messages, String jobName, UUID jobExecutionId, Set<Long> notificationIds) throws AlertException;
 
 }
