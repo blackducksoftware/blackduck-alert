@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobNotificationMappingAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
@@ -22,7 +23,6 @@ class ProcessingJobEventHandlerTest {
     void handleEventTest() {
         UUID correlationId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
-        UUID jobExecutionId = UUID.randomUUID();
         NotificationDetailExtractionDelegator notificationDetailExtractionDelegator = Mockito.mock(NotificationDetailExtractionDelegator.class);
         NotificationContentProcessor notificationContentProcessor = Mockito.mock(NotificationContentProcessor.class);
         ProviderMessageDistributor providerMessageDistributor = Mockito.mock(ProviderMessageDistributor.class);
@@ -30,6 +30,7 @@ class ProcessingJobEventHandlerTest {
         NotificationAccessor notificationAccessor = Mockito.mock(NotificationAccessor.class);
         JobAccessor jobAccessor = Mockito.mock(JobAccessor.class);
         JobNotificationMappingAccessor jobNotificationMappingAccessor = Mockito.mock(JobNotificationMappingAccessor.class);
+        ExecutingJobManager executingJobManager = new ExecutingJobManager();
         ProcessingJobEventHandler eventHandler = new ProcessingJobEventHandler(
             notificationDetailExtractionDelegator,
             notificationContentProcessor,
@@ -37,10 +38,11 @@ class ProcessingJobEventHandlerTest {
             lifecycleCaches,
             notificationAccessor,
             jobAccessor,
-            jobNotificationMappingAccessor
+            jobNotificationMappingAccessor,
+            executingJobManager
         );
         try {
-            eventHandler.handle(new JobProcessingEvent(correlationId, jobId, jobExecutionId));
+            eventHandler.handle(new JobProcessingEvent(correlationId, jobId));
         } catch (RuntimeException e) {
             fail("Unable to handle event", e);
         }

@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
@@ -97,6 +98,9 @@ class ProcessingJobEventHandlerTestIT {
     @Autowired
     private Gson gson;
 
+    @Autowired
+    private ExecutingJobManager executingJobManager;
+
     private Long blackDuckGlobalConfigId;
     private UUID channelGlobalConfigId;
     private NotificationContentProcessor notificationContentProcessor;
@@ -154,7 +158,6 @@ class ProcessingJobEventHandlerTestIT {
         DistributionJobModel distributionJobModel = jobAccessor.createJob(createDistributionJobRequest(NotificationType.VULNERABILITY));
         UUID correlationId = UUID.randomUUID();
         UUID jobId = distributionJobModel.getJobId();
-        UUID jobExecutionId = UUID.randomUUID();
         ProcessingJobEventHandler eventHandler = new ProcessingJobEventHandler(
             notificationDetailExtractionDelegator,
             notificationContentProcessor,
@@ -162,11 +165,12 @@ class ProcessingJobEventHandlerTestIT {
             lifecycleCaches,
             notificationAccessor,
             jobAccessor,
-            jobNotificationMappingAccessor
+            jobNotificationMappingAccessor,
+            executingJobManager
         );
-        JobProcessingEvent event = new JobProcessingEvent(correlationId, jobId, jobExecutionId);
+        JobProcessingEvent event = new JobProcessingEvent(correlationId, jobId);
         eventHandler.handle(event);
-        assertFalse(jobExecutionIdAndEventIdMap.containsKey(jobExecutionId));
+        assertFalse(jobExecutionIdAndEventIdMap.containsKey(jobId));
     }
 
     @Test
@@ -174,7 +178,6 @@ class ProcessingJobEventHandlerTestIT {
         DistributionJobModel distributionJobModel = jobAccessor.createJob(createDistributionJobRequest(NotificationType.VULNERABILITY));
         UUID correlationId = UUID.randomUUID();
         UUID jobId = distributionJobModel.getJobId();
-        UUID jobExecutionId = UUID.randomUUID();
 
         List<AlertNotificationModel> notifications = new ArrayList<>();
         notifications.add(createNotification());
@@ -190,13 +193,14 @@ class ProcessingJobEventHandlerTestIT {
             lifecycleCaches,
             notificationAccessor,
             jobAccessor,
-            jobNotificationMappingAccessor
+            jobNotificationMappingAccessor,
+            executingJobManager
         );
-        JobProcessingEvent event = new JobProcessingEvent(correlationId, jobId, jobExecutionId);
+        JobProcessingEvent event = new JobProcessingEvent(correlationId, jobId);
         eventHandler.handle(event);
-        assertTrue(jobExecutionIdAndEventIdMap.containsKey(jobExecutionId));
+        assertTrue(jobExecutionIdAndEventIdMap.containsKey(jobId));
         // the events in here are Distribution Events where we don't know the ids
-        assertEquals(2, jobExecutionIdAndEventIdMap.get(jobExecutionId).size());
+        assertEquals(2, jobExecutionIdAndEventIdMap.get(jobId).size());
     }
 
     private DistributionJobRequestModel createDistributionJobRequest(NotificationType notificationType) {
@@ -284,7 +288,7 @@ class ProcessingJobEventHandlerTestIT {
         EventManager eventManager = Mockito.mock(EventManager.class);
         Mockito.doAnswer(invocation -> {
             DistributionEvent event = invocation.getArgument(0, DistributionEvent.class);
-            Set<String> eventIdSet = jobExecutionIdAndEventIdMap.computeIfAbsent(event.getJobExecutionId(), ignored -> new HashSet<>());
+            Set<String> eventIdSet = jobExecutionIdAndEventIdMap.computeIfAbsent(event.getJobId(), ignored -> new HashSet<>());
             eventIdSet.add(event.getEventId());
             return null;
         }).when(eventManager).sendEvent(Mockito.any());

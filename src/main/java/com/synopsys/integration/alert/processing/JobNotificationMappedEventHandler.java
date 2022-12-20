@@ -14,8 +14,6 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.api.distribution.execution.ExecutingJob;
-import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.AlertEventHandler;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
@@ -28,13 +26,11 @@ public class JobNotificationMappedEventHandler implements AlertEventHandler<JobN
     private final Logger notificationLogger = AlertLoggerFactory.getNotificationLogger(getClass());
     private final JobNotificationMappingAccessor jobMappingAccessor;
     private final EventManager eventManager;
-    private final ExecutingJobManager executingJobManager;
 
     @Autowired
-    public JobNotificationMappedEventHandler(JobNotificationMappingAccessor jobMappingAccessor, EventManager eventManager, ExecutingJobManager executingJobManager) {
+    public JobNotificationMappedEventHandler(JobNotificationMappingAccessor jobMappingAccessor, EventManager eventManager) {
         this.jobMappingAccessor = jobMappingAccessor;
         this.eventManager = eventManager;
-        this.executingJobManager = executingJobManager;
     }
 
     @Override
@@ -42,10 +38,8 @@ public class JobNotificationMappedEventHandler implements AlertEventHandler<JobN
         UUID correlationId = event.getCorrelationId();
         Set<UUID> jobConfigIds = jobMappingAccessor.getUniqueJobIds(correlationId);
         for (UUID jobConfigId : jobConfigIds) {
-            ExecutingJob startedJob = executingJobManager.startJob(jobConfigId);
             notificationLogger.info("Creating processing event for jobConfigId: {}, batch: {}", jobConfigId, correlationId);
-            notificationLogger.info("Started Job execution: {}", startedJob.getExecutionId());
-            eventManager.sendEvent(new JobProcessingEvent(correlationId, jobConfigId, startedJob.getExecutionId()));
+            eventManager.sendEvent(new JobProcessingEvent(correlationId, jobConfigId));
         }
     }
 }
