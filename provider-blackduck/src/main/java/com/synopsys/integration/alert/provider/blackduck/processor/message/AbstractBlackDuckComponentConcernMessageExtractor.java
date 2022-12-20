@@ -72,7 +72,8 @@ public abstract class AbstractBlackDuckComponentConcernMessageExtractor<T extend
 
         Optional<String> projectUrl = extractProjectUrl(notificationContent.getProjectVersionUrl());
         LinkableItem project = new LinkableItem(BlackDuckMessageLabels.LABEL_PROJECT, notificationContent.getProjectName(), projectUrl.orElse(null));
-        LinkableItem projectVersion = new LinkableItem(BlackDuckMessageLabels.LABEL_PROJECT_VERSION, notificationContent.getProjectVersionName(), notificationContent.getProjectVersionUrl());
+        // IALERT-3119: For Project Version, redirect to components tab
+        LinkableItem projectVersion = new LinkableItem(BlackDuckMessageLabels.LABEL_PROJECT_VERSION, notificationContent.getProjectVersionName(), notificationContent.getProjectVersionComponentsTabUrl());
 
         // FIXME this is where I should put the additional info
         ProjectMessage projectMessage = createProjectMessage(providerDetails, project, projectVersion, bomComponentDetails);

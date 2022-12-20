@@ -21,7 +21,12 @@ import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
+/**
+ * @deprecated This class is required for converting an old ConfigurationModel into the new GlobalConfigModel classes. This is a temporary class that should be removed once we
+ * remove unsupported REST endpoints in 8.0.0.
+ */
 @Component
+@Deprecated(forRemoval = true)
 public class JiraServerGlobalConfigurationModelSaveActions implements GlobalConfigurationModelToConcreteSaveActions {
     private final JiraServerGlobalConfigurationModelConverter jiraFieldModelConverter;
     private final JiraServerGlobalCrudActions configurationActions;
@@ -46,7 +51,10 @@ public class JiraServerGlobalConfigurationModelSaveActions implements GlobalConf
         Optional<UUID> defaultConfigurationId = configurationAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
             .map(JiraServerGlobalConfigModel::getId)
             .map(UUID::fromString);
-        Optional<JiraServerGlobalConfigModel> jiraGlobalConfigModel = jiraFieldModelConverter.convertAndValidate(configurationModel);
+        Optional<JiraServerGlobalConfigModel> jiraGlobalConfigModel = jiraFieldModelConverter.convertAndValidate(
+            configurationModel,
+            defaultConfigurationId.map(UUID::toString).orElse(null)
+        );
         if (jiraGlobalConfigModel.isPresent()) {
             JiraServerGlobalConfigModel model = jiraGlobalConfigModel.get();
             model.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
@@ -60,7 +68,7 @@ public class JiraServerGlobalConfigurationModelSaveActions implements GlobalConf
 
     @Override
     public void createConcreteModel(ConfigurationModel configurationModel) {
-        Optional<JiraServerGlobalConfigModel> jiraGlobalConfigModel = jiraFieldModelConverter.convertAndValidate(configurationModel);
+        Optional<JiraServerGlobalConfigModel> jiraGlobalConfigModel = jiraFieldModelConverter.convertAndValidate(configurationModel, null);
         if (jiraGlobalConfigModel.isPresent()) {
             JiraServerGlobalConfigModel model = jiraGlobalConfigModel.get();
             model.setName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);

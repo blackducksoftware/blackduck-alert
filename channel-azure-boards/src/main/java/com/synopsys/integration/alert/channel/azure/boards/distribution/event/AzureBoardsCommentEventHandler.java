@@ -73,25 +73,25 @@ public class AzureBoardsCommentEventHandler extends IssueTrackerCommentEventHand
     @Override
     public void handleEvent(AzureBoardsCommentEvent event) throws AlertException {
         UUID jobId = event.getJobId();
-        Optional<AzureBoardsJobDetailsModel> details = jobDetailsAccessor.retrieveDetails(event.getJobId());
+        Optional<AzureBoardsJobDetailsModel> details = jobDetailsAccessor.retrieveDetails(jobId);
         if (details.isPresent()) {
             AzureBoardsJobDetailsModel distributionDetails = details.get();
-            AzureBoardsProperties azureBoardsProperties = azureBoardsPropertiesFactory.createAzureBoardsProperties();
+            AzureBoardsProperties azureBoardsProperties = azureBoardsPropertiesFactory.createAzureBoardsPropertiesWithJobId(jobId);
             String organizationName = azureBoardsProperties.getOrganizationName();
             azureBoardsProperties.validateProperties();
 
             // Initialize Http Service
             ProxyInfo proxy = proxyManager.createProxyInfoForHost(AzureHttpRequestCreatorFactory.DEFAULT_BASE_URL);
-                AzureHttpRequestCreator azureHttpRequestCreator = azureBoardsProperties.createAzureHttpRequestCreator(proxy, gson);
-                AzureHttpService azureHttpService = new AzureHttpService(gson, azureHttpRequestCreator);
+            AzureHttpRequestCreator azureHttpRequestCreator = azureBoardsProperties.createAzureHttpRequestCreator(proxy, gson);
+            AzureHttpService azureHttpService = new AzureHttpService(gson, azureHttpRequestCreator);
 
-                // Common Azure Boards Services
-                AzureApiVersionAppender apiVersionAppender = new AzureApiVersionAppender();
-                AzureWorkItemService workItemService = new AzureWorkItemService(azureHttpService, azureHttpRequestCreator);
-                AzureWorkItemQueryService workItemQueryService = new AzureWorkItemQueryService(azureHttpService, apiVersionAppender);
-                // Message Sender Requirements
-                AzureWorkItemTypeStateService workItemTypeStateService = new AzureWorkItemTypeStateService(azureHttpService, apiVersionAppender);
-                AzureWorkItemCommentService workItemCommentService = new AzureWorkItemCommentService(azureHttpService, apiVersionAppender);
+            // Common Azure Boards Services
+            AzureApiVersionAppender apiVersionAppender = new AzureApiVersionAppender();
+            AzureWorkItemService workItemService = new AzureWorkItemService(azureHttpService, azureHttpRequestCreator);
+            AzureWorkItemQueryService workItemQueryService = new AzureWorkItemQueryService(azureHttpService, apiVersionAppender);
+            // Message Sender Requirements
+            AzureWorkItemTypeStateService workItemTypeStateService = new AzureWorkItemTypeStateService(azureHttpService, apiVersionAppender);
+            AzureWorkItemCommentService workItemCommentService = new AzureWorkItemCommentService(azureHttpService, apiVersionAppender);
 
             IssueTrackerMessageSender<Integer> messageSender = azureBoardsMessageSenderFactory.createMessageSender(
                 workItemService,

@@ -45,7 +45,6 @@ public class JiraServerIssueCreator extends JiraIssueCreator<IssueCreationReques
     private final ProjectService projectService;
     private final JiraIssueCreationRequestCreator jiraIssueCreationRequestCreator;
     private JiraServerQueryExecutor jiraServerQueryExecutor;
-    private IssueCategoryRetriever issueCategoryRetriever;
 
     public JiraServerIssueCreator(
         JiraServerChannelKey jiraServerChannelKey,
@@ -74,7 +73,6 @@ public class JiraServerIssueCreator extends JiraIssueCreator<IssueCreationReques
         this.projectService = projectService;
         this.jiraIssueCreationRequestCreator = jiraIssueCreationRequestCreator;
         this.jiraServerQueryExecutor = jiraServerQueryExecutor;
-        this.issueCategoryRetriever = issueCategoryRetriever;
 
     }
 

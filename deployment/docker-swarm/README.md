@@ -384,6 +384,14 @@ Remove the stack and then re-deploy the stack. The steps in the upgrade procedur
     ```bash
     docker secret ls
     ```
+### Create a database backup
+
+1. Execute the script database-utilities.sh to create a database backup
+    ```
+    database-utilities -b -p -f <DATABASE_DUMP_FILE>
+    ```
+NOTE: Use the -h option for the database-utilities script to see the usage and get an explanation of the parameters.
+If something goes wrong the database-utilities script can be used to restore the database backup with the -r option.
 
 ### Upgrade
 

@@ -23,8 +23,10 @@ import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.wait.ResilientJobConfig;
 import com.synopsys.integration.wait.WaitJob;
+import com.synopsys.integration.wait.tracker.WaitIntervalTracker;
+import com.synopsys.integration.wait.tracker.WaitIntervalTrackerFactory;
 
-//TODO: Implementaions of this class should be replaced with IntegrationPerformanceTestRunner
+//TODO: Implementations of this class should be replaced with IntegrationPerformanceTestRunner
 @Deprecated(forRemoval = true)
 public class IntegrationPerformanceTestRunnerLegacy {
     private static final IntLogger intLogger = new Slf4jIntLogger(LoggerFactory.getLogger(IntegrationPerformanceTestRunnerLegacy.class));
@@ -85,7 +87,12 @@ public class IntegrationPerformanceTestRunnerLegacy {
         // trigger BD notification
         blackDuckProviderService.triggerBlackDuckNotification();
         intLogger.info("Triggered the Black Duck notification.");
-        ResilientJobConfig resilientJobConfig = new ResilientJobConfig(intLogger, 600, startingSearchDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), 20);
+        WaitIntervalTracker waitIntervalTracker = WaitIntervalTrackerFactory.createConstant(600, 20);
+        ResilientJobConfig resilientJobConfig = new ResilientJobConfig(
+            intLogger,
+            startingSearchDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+            waitIntervalTracker
+        );
         NotificationWaitJobTask notificationWaitJobTask = new NotificationWaitJobTask(intLogger, dateTimeFormatter, gson, alertRequestUtility, startingSearchDateTime, jobId);
         boolean isComplete = WaitJob.waitFor(resilientJobConfig, notificationWaitJobTask, "int performance test runner notification wait");
         intLogger.info("Finished waiting for the notification to be processed: " + isComplete);

@@ -57,12 +57,11 @@ public class BlackDuckNotificationRetriever {
         UserView currentUser = blackDuckApiClient.getResponse(apiDiscovery.metaCurrentUserLink());
         UrlMultipleResponses<NotificationUserView> currentUserNotificationsUrl = currentUser.metaNotificationsLink();
         NotificationEditor notificationEditor = new NotificationEditor(dateRange.getStart(), dateRange.getEnd(), notificationTypesToInclude);
-        BlackDuckMultipleRequest<NotificationUserView> spec = new BlackDuckRequestBuilder()
+        return new BlackDuckRequestBuilder()
             .commonGet()
             .apply(notificationEditor)
             .addQueryParameter("sort", String.format("%s asc", PAGE_SORT_FIELD))
             .buildBlackDuckRequest(currentUserNotificationsUrl);
-        return spec;
     }
 
     private class NotificationPageRetriever implements PageRetriever<NotificationUserView, IntegrationException> {

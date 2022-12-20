@@ -22,10 +22,28 @@ import org.springframework.data.repository.query.FluentQuery;
 public class MockRepositoryContainer<ID extends Serializable, T> implements JpaRepository<T, ID> {
     private Map<ID, T> dataMap;
     private Function<T, ID> idGenerator;
+    private MockRepositorySorter<T> mockRepositorySorter;
 
+    /**
+     * To sort data in the mock repository a MockRepositorySorter<T> with fieldSorters must be applied.
+     * Otherwise, the sort method will return an unsorted List<T>.
+     * @param idGenerator
+     */
     public MockRepositoryContainer(Function<T, ID> idGenerator) {
+        this(idGenerator, new MockRepositorySorter<>());
+    }
+
+    /**
+     * To sort data in the mock repository the method MockRepositorySorter<T>::applyFieldSorter(fieldName, fieldSorters)
+     * must provide a sortable fieldName (String) with fieldSorters (UnaryOperator<List<T>>).
+     * Otherwise, the sort method will return an unsorted List<T>.
+     * @param idGenerator
+     * @param mockRepositorySorter
+     */
+    public MockRepositoryContainer(Function<T, ID> idGenerator, MockRepositorySorter<T> mockRepositorySorter) {
         dataMap = new ConcurrentHashMap<>();
         this.idGenerator = idGenerator;
+        this.mockRepositorySorter = mockRepositorySorter;
     }
 
     protected Map<ID, T> getDataMap() {
@@ -43,14 +61,17 @@ public class MockRepositoryContainer<ID extends Serializable, T> implements JpaR
 
     @Override
     public @NotNull List<T> findAll(@NotNull Sort sort) {
-        return findAll();
+        return mockRepositorySorter.sort(sort, new ArrayList<>(dataMap.values()));
     }
 
     @Override
     public @NotNull Page<T> findAll(Pageable pageable) {
         int pageSize = pageable.getPageSize();
         int pageNumber = pageable.getPageNumber();
-        List<List<T>> partitions = ListUtils.partition(new ArrayList<>(dataMap.values()), pageSize);
+        Sort sort = pageable.getSort();
+
+        List<T> sortedList = mockRepositorySorter.sort(sort, new ArrayList<>(dataMap.values()));
+        List<List<T>> partitions = ListUtils.partition(sortedList, pageSize);
         List<T> pageData = List.of();
         for (int currentPage = 0; currentPage < partitions.size(); currentPage++) {
             if (currentPage == pageNumber) {

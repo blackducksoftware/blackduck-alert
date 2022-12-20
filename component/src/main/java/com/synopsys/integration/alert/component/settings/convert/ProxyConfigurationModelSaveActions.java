@@ -20,7 +20,12 @@ import com.synopsys.integration.alert.component.settings.descriptor.SettingsDesc
 import com.synopsys.integration.alert.component.settings.proxy.action.SettingsProxyCrudActions;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
+/**
+ * @deprecated This class is required for converting an old ConfigurationModel into the new GlobalConfigModel classes. This is a temporary class that should be removed once we
+ * remove unsupported REST endpoints in 8.0.0.
+ */
 @Component
+@Deprecated(forRemoval = true)
 public class ProxyConfigurationModelSaveActions implements GlobalConfigurationModelToConcreteSaveActions {
     private final ProxyConfigurationModelConverter proxyFieldModelConverter;
     private final SettingsProxyCrudActions configurationActions;
@@ -51,7 +56,7 @@ public class ProxyConfigurationModelSaveActions implements GlobalConfigurationMo
     }
 
     private void convertModelAndPerformAction(ConfigurationModel configurationModel, Function<SettingsProxyModel, ActionResponse<SettingsProxyModel>> configAction) {
-        Optional<SettingsProxyModel> settingsProxyModel = proxyFieldModelConverter.convertAndValidate(configurationModel);
+        Optional<SettingsProxyModel> settingsProxyModel = proxyFieldModelConverter.convertAndValidate(configurationModel, null);
         settingsProxyModel.ifPresent(configAction::apply);
     }
 }

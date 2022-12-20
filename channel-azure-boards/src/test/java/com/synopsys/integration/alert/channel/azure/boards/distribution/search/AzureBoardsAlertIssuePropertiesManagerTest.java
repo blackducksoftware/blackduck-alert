@@ -21,10 +21,10 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Compon
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernSeverity;
 import com.synopsys.integration.azure.boards.common.service.workitem.request.WorkItemElementOperationModel;
 
-public class AzureBoardsAlertIssuePropertiesManagerTest {
+class AzureBoardsAlertIssuePropertiesManagerTest {
 
     @Test
-    public void verifyValidVulnIssuesAreCreated() {
+    void verifyValidVulnIssuesAreCreated() {
         AzureBoardsAlertIssuePropertiesManager azureBoardsAlertIssuePropertiesManager = new AzureBoardsAlertIssuePropertiesManager();
         LinkableItem providerConfig = new LinkableItem("providerConfigLabel", "providerConfigValue");
         ProviderDetails providerDetails = new ProviderDetails(1L, providerConfig);
@@ -64,7 +64,7 @@ public class AzureBoardsAlertIssuePropertiesManagerTest {
     }
 
     @Test
-    public void verifyValidPolicyIssuesAreCreated() {
+    void verifyValidPolicyIssuesAreCreated() {
         AzureBoardsAlertIssuePropertiesManager azureBoardsAlertIssuePropertiesManager = new AzureBoardsAlertIssuePropertiesManager();
         LinkableItem providerConfig = new LinkableItem("providerConfigLabel", "providerConfigValue");
         ProviderDetails providerDetails = new ProviderDetails(1L, providerConfig);
@@ -97,7 +97,7 @@ public class AzureBoardsAlertIssuePropertiesManagerTest {
     }
 
     @Test
-    public void verifyPolicyIssuesAreCreatedWithTruncatedPropertyValues() {
+    void verifyPolicyIssuesAreCreatedWithTruncatedPropertyValues() {
         AzureBoardsAlertIssuePropertiesManager azureBoardsAlertIssuePropertiesManager = new AzureBoardsAlertIssuePropertiesManager();
         LinkableItem providerConfig = new LinkableItem("providerConfigLabel", "providerConfigValue");
         ProviderDetails providerDetails = new ProviderDetails(1L, providerConfig);
@@ -125,7 +125,7 @@ public class AzureBoardsAlertIssuePropertiesManagerTest {
 
         assertValidContents(workItemRequestCustomFieldOperations, AzureCustomFieldManager.ALERT_CATEGORY_KEY_FIELD_REFERENCE_NAME, AzureBoardsAlertIssuePropertiesManager.CATEGORY_TYPE_POLICY_COMPATIBILITY_LABEL);
 
-        // This should trim the contents of the linkableitem
+        // This should trim the contents of the linkableItem
         String subTopicKey = AzureBoardsSearchPropertiesUtils.createNullableLinkableItemKey(policy.getProjectVersion().orElse(null));
         assertValidContents(workItemRequestCustomFieldOperations, AzureCustomFieldManager.ALERT_SUB_TOPIC_KEY_FIELD_REFERENCE_NAME, subTopicKey);
         WorkItemElementOperationModel workItem = workItemRequestCustomFieldOperations.stream()
@@ -136,7 +136,7 @@ public class AzureBoardsAlertIssuePropertiesManagerTest {
         Object workItemValue = workItem.getValue();
         assertEquals(subTopicKey, workItemValue);
         // Ensures that we don't push values that are larger than azure allows for custom fields
-        assertEquals(256, workItemValue.toString().length());
+        assertEquals(AzureBoardsSearchPropertiesUtils.MAX_STRING_VALUE_LENGTH, workItemValue.toString().length());
     }
 
     private void assertValidContents(List<WorkItemElementOperationModel> workItems, String searchKey, String expectedValue) {

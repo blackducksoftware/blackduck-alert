@@ -1,0 +1,203 @@
+{{- if not .Values.postgres.isExternal }}
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: postgres
+    component: postgres
+    name: {{ .Release.Name }}
+  name: {{ .Release.Name }}-postgres
+  namespace: {{ .Release.Namespace }}
+spec:
+  ports:
+    - name: port-5432
+      port: {{ .Values.postgres.port }}
+      protocol: TCP
+      targetPort: {{ .Values.postgres.port }}
+  selector:
+    app: postgres
+    component: postgres
+  type: ClusterIP
+  {{- if and .Values.enablePersistentStorage (not .Values.postgres.persistentVolumeClaimName) }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: postgres
+    component: postgres
+    name: {{ .Release.Name }}
+  name: {{ .Release.Name }}-postgres
+  namespace: {{ .Release.Namespace }}
+spec:
+  {{- if .Values.postgres.storageClass }}
+  storageClassName: {{ .Values.postgres.storageClass }}
+  {{- else if .Values.storageClass }}
+  storageClassName: {{ .Values.storageClass }}
+  {{- end}}
+  {{ if .Values.alert.volumeName -}}
+  volumeName: {{ .Values.postgres.volumeName }}
+  {{ end -}}
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.postgres.claimSize }}
+  {{- end }}
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: postgres
+    component: postgres
+    name: {{ .Release.Name }}
+  name: {{ .Release.Name }}-postgres
+  namespace: {{ .Release.Namespace }}
+spec:
+  {{- if eq .Values.status "Running" }}
+  replicas: 1
+  {{- else }}
+  replicas: 0
+  {{- end }}
+  selector:
+    matchLabels:
+      app: postgres
+      component: postgres
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: postgres
+        component: postgres
+        name: {{ .Release.Name }}
+      annotations:
+        checksum/postgres-config: {{ include (print $.Template.BasePath "/postgres-config.yaml") . | sha256sum }}
+      name: {{ .Release.Name }}-postgres
+    spec:
+      containers:
+      - env:
+        - name: POSTGRES_USER
+          valueFrom:
+            configMapKeyRef:
+              key: ALERT_DB_USERNAME
+              name: {{ .Release.Name }}-db-config
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              key: ALERT_DB_NAME
+              name: {{ .Release.Name }}-db-config
+        - name: ALERT_DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              key: ALERT_DB_HOST
+              name: {{ .Release.Name }}-db-config
+        - name: ALERT_DB_PORT
+          valueFrom:
+            configMapKeyRef:
+              key: ALERT_DB_PORT
+              name: {{ .Release.Name }}-db-config
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: ALERT_POSTGRES_USER_PASSWORD_FILE
+              name: {{ .Release.Name }}-db-creds
+        {{- if .Values.postgres.registry }}
+        image: {{ .Values.postgres.registry }}/postgres:14.5-alpine
+        {{- else }}
+        image: {{ .Values.registry }}/postgres:14.5-alpine
+        {{- end}}
+        imagePullPolicy: IfNotPresent
+        lifecycle:
+          preStop:
+            exec:
+              command:
+                - pg_isready
+                - -h
+                - localhost
+                - -U
+                - $(POSTGRES_USER)
+                - -d
+                - $(POSTGRES_DB)
+        name: {{ .Release.Name }}-postgres
+        ports:
+        - containerPort: {{ .Values.postgres.port }}
+          protocol: TCP
+        readinessProbe:
+          exec:
+            command:
+              - pg_isready
+              - -h
+              - localhost
+              - -U
+              - $(POSTGRES_USER)
+              - -d
+              - $(POSTGRES_DB)
+          failureThreshold: 10
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        resources:
+          {{- toYaml .Values.postgres.resources | nindent 12 }}
+          {{- with .Values.postgres.securityContext }}
+        securityContext:
+{{ toYaml . | indent 10 }}
+        {{- end }}
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: alert-postgres-data-volume
+      dnsPolicy: ClusterFirst
+      {{- include "alert.imagePullSecrets" . | nindent 6 -}}
+      {{- with .Values.postgres.nodeSelector }}
+      nodeSelector:
+      {{ toYaml . | indent 2 }}
+      {{- end }}
+      {{- with .Values.postgres.affinity }}
+      affinity:
+      {{ toYaml . | indent 2 }}
+      {{- end }}
+      {{- with .Values.postgres.tolerations }}
+      tolerations:
+      {{ toYaml . | indent 2 }}
+      {{- end }}
+      {{- with .Values.postgres.podSecurityContext }}
+      securityContext:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      serviceAccountName: {{ .Release.Name }}-service-account
+      restartPolicy: Always
+      volumes:
+      {{- include "postgresPersistentStorage" . | nindent 6 }}
+
+---
+    
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: postgres
+    name: {{ .Release.Name }}
+    component: postgres
+  name: {{ .Release.Name }}-exposed
+  namespace: {{ .Release.Namespace }}
+spec:
+  ports:
+    - name: port-{{ .Values.postgres.port }}
+      port: {{ .Values.postgres.port }}
+      protocol: TCP
+      targetPort: {{ .Values.postgres.port }}
+  selector:
+    app: postgres
+    component: postgres
+    name: {{ .Release.Name }}
+  type: {{ .Values.exposedServiceType }}
+---
+{{- end -}}
+
+{{- define "postgresPersistentStorage" -}}
+- emptyDir: {}
+  name: alert-postgres-data-volume
+{{- end -}}

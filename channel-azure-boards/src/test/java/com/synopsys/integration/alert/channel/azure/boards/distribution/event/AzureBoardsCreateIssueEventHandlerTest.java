@@ -154,7 +154,7 @@ class AzureBoardsCreateIssueEventHandlerTest {
 
         //TODO: Mock out services required for Azure, blocked by IALERT-3136
 
-        Mockito.when(propertiesFactory.createAzureBoardsProperties()).thenReturn(azureBoardsProperties);
+        Mockito.when(propertiesFactory.createAzureBoardsProperties(Mockito.any())).thenReturn(azureBoardsProperties);
         Mockito.when(azureBoardsProperties.getOrganizationName()).thenReturn("organizationName");
         Mockito.when(azureBoardsProperties.createAzureHttpRequestCreator(Mockito.any(), Mockito.any())).thenReturn(azureHttpRequestCreator);
         Mockito.when(mockProxyManager.createProxyInfoForHost(Mockito.anyString())).thenReturn(ProxyInfo.NO_PROXY_INFO);

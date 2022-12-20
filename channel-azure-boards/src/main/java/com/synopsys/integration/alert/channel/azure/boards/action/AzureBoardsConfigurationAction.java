@@ -13,7 +13,11 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.action.ConfigurationAction;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
+/**
+ * @deprecated Global configuration actions for Jira Server are now handled through AzureBoardsGlobalCrudActions
+ */
 @Component
+@Deprecated(forRemoval = true)
 public class AzureBoardsConfigurationAction extends ConfigurationAction {
     @Autowired
     protected AzureBoardsConfigurationAction(AzureBoardsGlobalFieldModelTestAction azureBoardsGlobalTestAction, AzureBoardsGlobalApiAction azureBoardsGlobalApiAction) {

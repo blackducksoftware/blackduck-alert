@@ -1,6 +1,6 @@
 task copyDeploymentFiles(type: Copy) {
     from('deployment') {
-        include "docker-swarm/**", "helm/synopsys-alert/**"
+        include "docker-swarm/**", "helm/**"
     }
     from('deployment/blackduck-alert.env') {
         into "docker-swarm/external-db/hub"

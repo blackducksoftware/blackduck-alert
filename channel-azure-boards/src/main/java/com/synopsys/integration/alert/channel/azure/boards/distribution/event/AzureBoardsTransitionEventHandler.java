@@ -76,7 +76,7 @@ public class AzureBoardsTransitionEventHandler extends IssueTrackerTransitionEve
         Optional<AzureBoardsJobDetailsModel> details = jobDetailsAccessor.retrieveDetails(event.getJobId());
         if (details.isPresent()) {
             AzureBoardsJobDetailsModel distributionDetails = details.get();
-            AzureBoardsProperties azureBoardsProperties = azureBoardsPropertiesFactory.createAzureBoardsProperties();
+            AzureBoardsProperties azureBoardsProperties = azureBoardsPropertiesFactory.createAzureBoardsPropertiesWithJobId(jobId);
             String organizationName = azureBoardsProperties.getOrganizationName();
             azureBoardsProperties.validateProperties();
 
@@ -92,7 +92,7 @@ public class AzureBoardsTransitionEventHandler extends IssueTrackerTransitionEve
 
             // Message Sender Requirements
             AzureWorkItemTypeStateService workItemTypeStateService = new AzureWorkItemTypeStateService(azureHttpService, apiVersionAppender);
-                AzureWorkItemCommentService workItemCommentService = new AzureWorkItemCommentService(azureHttpService, apiVersionAppender);
+            AzureWorkItemCommentService workItemCommentService = new AzureWorkItemCommentService(azureHttpService, apiVersionAppender);
 
             IssueTrackerMessageSender<Integer> messageSender = azureBoardsMessageSenderFactory.createMessageSender(
                 workItemService,

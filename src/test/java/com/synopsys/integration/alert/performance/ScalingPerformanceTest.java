@@ -39,6 +39,8 @@ import com.synopsys.integration.rest.client.IntHttpClient;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 import com.synopsys.integration.wait.ResilientJobConfig;
 import com.synopsys.integration.wait.WaitJob;
+import com.synopsys.integration.wait.tracker.WaitIntervalTracker;
+import com.synopsys.integration.wait.tracker.WaitIntervalTrackerFactory;
 
 @Tag(TestTags.DEFAULT_PERFORMANCE)
 public class ScalingPerformanceTest {
@@ -130,11 +132,11 @@ public class ScalingPerformanceTest {
         LocalDateTime startingNotificationWaitForTenJobs = LocalDateTime.now();
 
         // check that all jobs have processed the notification successfully, log how long it took
+        WaitIntervalTracker waitIntervalTracker = WaitIntervalTrackerFactory.createConstant(900, 30);
         ResilientJobConfig resilientJobConfig = new ResilientJobConfig(
             intLogger,
-            900,
             startingNotificationSearchDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
-            30
+            waitIntervalTracker
         );
         NotificationWaitJobTask notificationWaitJobTask = new NotificationWaitJobTask(
             intLogger,

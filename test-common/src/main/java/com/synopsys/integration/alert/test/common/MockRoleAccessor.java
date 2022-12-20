@@ -49,7 +49,7 @@ public class MockRoleAccessor implements RoleAccessor {
     @Override
     public UserRoleModel createRoleWithPermissions(String roleName, PermissionMatrixModel permissionMatrix) {
         Long id = latestId.incrementAndGet();
-        return roleMap.computeIfAbsent(id, (ignoredId) -> new UserRoleModel(id, roleName, true, permissionMatrix));
+        return roleMap.computeIfAbsent(id, ignoredId -> new UserRoleModel(id, roleName, true, permissionMatrix));
     }
 
     @Override

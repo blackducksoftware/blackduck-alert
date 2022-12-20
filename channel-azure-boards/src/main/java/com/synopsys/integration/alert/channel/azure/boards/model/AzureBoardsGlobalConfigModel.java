@@ -85,11 +85,11 @@ public class AzureBoardsGlobalConfigModel extends ConfigWithMetadata implements 
         this.appId = appId;
     }
 
-    public Optional<Boolean> getIsClientSecretSetSet() {
+    public Optional<Boolean> getIsClientSecretSet() {
         return Optional.ofNullable(isClientSecretSet);
     }
 
-    public void setIsClientSecretSetSet(Boolean clientSecretSet) {
+    public void setIsClientSecretSet(Boolean clientSecretSet) {
         isClientSecretSet = clientSecretSet;
     }
 

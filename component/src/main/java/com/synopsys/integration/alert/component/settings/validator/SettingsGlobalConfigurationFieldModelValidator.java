@@ -20,7 +20,11 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
 
+/**
+ * @deprecated Global configuration validators will replace old FieldModel validators as Alert switches to a new concrete REST API. This class will be removed in 8.0.0.
+ */
 @Component
+@Deprecated(forRemoval = true)
 public class SettingsGlobalConfigurationFieldModelValidator implements GlobalConfigurationFieldModelValidator {
     @Override
     public Set<AlertFieldStatus> validate(FieldModel fieldModel) {
