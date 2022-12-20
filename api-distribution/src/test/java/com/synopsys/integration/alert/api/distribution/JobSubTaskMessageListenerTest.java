@@ -31,8 +31,8 @@ class JobSubTaskMessageListenerTest {
     private static class TestEvent extends JobSubTaskEvent {
         private static final long serialVersionUID = -4316390923286571736L;
 
-        public TestEvent(String destination, UUID parentEventId, UUID jobId, Set<Long> notificationIds) {
-            super(destination, parentEventId, jobId, notificationIds);
+        public TestEvent(String destination, UUID jobExecutionId, UUID jobId, Set<Long> notificationIds) {
+            super(destination, jobExecutionId, jobId, notificationIds);
         }
     }
 

@@ -16,6 +16,8 @@ import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJob;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.distribution.mock.MockAuditEntryRepository;
 import com.synopsys.integration.alert.api.distribution.mock.MockAuditNotificationRepository;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
@@ -32,6 +34,7 @@ class AuditFailedEventListenerTest {
     private final TaskExecutor taskExecutor = new SyncTaskExecutor();
     private ProcessingAuditAccessor processingAuditAccessor;
     private AuditEntryRepository auditEntryRepository;
+    private ExecutingJobManager executingJobManager;
     private final AtomicLong idContainer = new AtomicLong(0L);
     private AuditFailedHandler handler;
 
@@ -40,7 +43,8 @@ class AuditFailedEventListenerTest {
         AuditNotificationRepository auditNotificationRepository = new MockAuditNotificationRepository(this::generateRelationKey);
         auditEntryRepository = new MockAuditEntryRepository(this::generateEntityKey, auditNotificationRepository);
         processingAuditAccessor = new DefaultProcessingAuditAccessor(auditEntryRepository, auditNotificationRepository);
-        handler = new AuditFailedHandler(processingAuditAccessor);
+        executingJobManager = new ExecutingJobManager();
+        handler = new AuditFailedHandler(processingAuditAccessor, executingJobManager);
     }
 
     private Long generateEntityKey(AuditEntryEntity entity) {
@@ -62,13 +66,13 @@ class AuditFailedEventListenerTest {
     @Test
     void onMessageTest() {
         UUID jobId = UUID.randomUUID();
+        ExecutingJob executingJob = executingJobManager.startJob(jobId);
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
         String errorMessage = "Error message";
         String stackTrace = "Stack trace goes here";
 
         AuditFailedEventListener listener = new AuditFailedEventListener(gson, taskExecutor, handler);
-        processingAuditAccessor.createOrUpdatePendingAuditEntryForJob(jobId, notificationIds);
-        AuditFailedEvent event = new AuditFailedEvent(jobId, notificationIds, errorMessage, stackTrace);
+        AuditFailedEvent event = new AuditFailedEvent(executingJob.getExecutionId(), notificationIds, errorMessage, stackTrace);
         Message message = new Message(gson.toJson(event).getBytes());
         listener.onMessage(message);
 
@@ -78,7 +82,8 @@ class AuditFailedEventListenerTest {
             AuditEntryEntity entity = entry.get();
             assertEquals(AuditEntryStatus.FAILURE.name(), entity.getStatus());
             assertNotNull(entity.getTimeCreated());
-            assertTrue(entity.getTimeLastSent().isAfter(entity.getTimeCreated()));
+            // no longer applies with current work.
+            //assertTrue(entity.getTimeLastSent().isAfter(entity.getTimeCreated()));
             assertEquals(errorMessage, entity.getErrorMessage());
             assertEquals(stackTrace, entity.getErrorStackTrace());
         }

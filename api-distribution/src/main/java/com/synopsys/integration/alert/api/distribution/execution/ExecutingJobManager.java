@@ -19,15 +19,43 @@ public class ExecutingJobManager {
         return job;
     }
 
+    public Optional<ExecutingJob> endJobWithSuccess(UUID executionId) {
+        Optional<ExecutingJob> executingJob = Optional.ofNullable(executingJobMap.getOrDefault(executionId, null));
+        executingJob.ifPresent(ExecutingJob::jobSucceeded);
+        return executingJob;
+    }
+
+    public Optional<ExecutingJob> endJobWithFailure(UUID executionId) {
+        Optional<ExecutingJob> executingJob = Optional.ofNullable(executingJobMap.getOrDefault(executionId, null));
+        executingJob.ifPresent(ExecutingJob::jobFailed);
+        return executingJob;
+    }
+
     public Optional<ExecutingJob> getExecutingJob(UUID jobExecutionId) {
         return Optional.ofNullable(executingJobMap.getOrDefault(jobExecutionId, null));
+    }
+
+    public boolean startStage(UUID executionId, JobStage stage) {
+        Optional<ExecutingJob> executingJob = Optional.ofNullable(executingJobMap.getOrDefault(executionId, null));
+        executingJob.ifPresent(job -> {
+            job.addStage(ExecutingJobStage.createStage(executionId, stage));
+        });
+        return executingJob.isPresent();
+    }
+
+    public boolean endStage(UUID executionId, JobStage stage) {
+        Optional<ExecutingJob> executingJob = Optional.ofNullable(executingJobMap.getOrDefault(executionId, null));
+        executingJob
+            .flatMap(job -> job.getStage(stage))
+            .ifPresent(ExecutingJobStage::endStage);
+        return executingJob.isPresent();
     }
 
     public AggregatedExecutionResults aggregateExecutingJobData() {
         Long pendingCount = countPendingJobs();
         Long successCount = countSuccessfulJobs();
         Long failedJobs = countFailedJobs();
-        Long totalJobs = Integer.valueOf(executingJobMap.size()).longValue();
+        Long totalJobs = Long.valueOf(executingJobMap.size());
 
         return new AggregatedExecutionResults(totalJobs, pendingCount, successCount, failedJobs);
     }

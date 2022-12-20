@@ -53,7 +53,7 @@ class JiraServerCommentEventListenerTest {
             null,
             null
         ));
-        Mockito.doNothing().when(handler).handle(event);
+        Mockito.doNothing().when(handler).handleEvent(event);
 
         jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobId, 1L, notificationIds);
         Optional<JobSubTaskStatusModel> optionalJobSubTaskStatusModel = jobSubTaskAccessor.getSubTaskStatus(parentEventId);
