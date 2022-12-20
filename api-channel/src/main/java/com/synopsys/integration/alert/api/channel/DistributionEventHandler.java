@@ -13,7 +13,11 @@ import java.util.UUID;
 import org.slf4j.Logger;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.distribution.execution.JobStage;
+import com.synopsys.integration.alert.api.distribution.execution.JobStageEndedEvent;
+import com.synopsys.integration.alert.api.distribution.execution.JobStageStartedEvent;
 import com.synopsys.integration.alert.api.event.AlertEventHandler;
+import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
@@ -26,21 +30,25 @@ public class DistributionEventHandler<D extends DistributionJobDetailsModel> imp
     private final DistributionChannel<D> channel;
     private final JobDetailsAccessor<D> jobDetailsAccessor;
     private final ProcessingAuditAccessor auditAccessor;
+    private final EventManager eventManager;
 
-    public DistributionEventHandler(DistributionChannel<D> channel, JobDetailsAccessor<D> jobDetailsAccessor, ProcessingAuditAccessor auditAccessor) {
+    public DistributionEventHandler(DistributionChannel<D> channel, JobDetailsAccessor<D> jobDetailsAccessor, ProcessingAuditAccessor auditAccessor, EventManager eventManager) {
         this.channel = channel;
         this.jobDetailsAccessor = jobDetailsAccessor;
         this.auditAccessor = auditAccessor;
+        this.eventManager = eventManager;
+
     }
 
     @Override
     public final void handle(DistributionEvent event) {
+        UUID jobExecutionId = event.getJobExecutionId();
+        eventManager.sendEvent(new JobStageStartedEvent(jobExecutionId, JobStage.CHANNEL_PROCESSING));
         Optional<D> details = jobDetailsAccessor.retrieveDetails(event.getJobId());
         if (details.isPresent()) {
             try {
                 notificationLogger.debug("Channel: {} is processing event: {}", channel.getClass(), event.getEventId());
                 channel.distributeMessages(details.get(), event.getProviderMessages(), event.getJobName(), UUID.fromString(event.getEventId()), event.getNotificationIds());
-                //auditAccessor.setAuditEntrySuccess(event.getJobId(), event.getNotificationIds());
                 notificationLogger.debug("Channel: {} successfully processed event: {}", channel.getClass(), event.getEventId());
             } catch (AlertException alertException) {
                 handleAlertException(alertException, event);
@@ -50,6 +58,7 @@ public class DistributionEventHandler<D extends DistributionJobDetailsModel> imp
         } else {
             handleJobDetailsMissing(event);
         }
+        eventManager.sendEvent(new JobStageEndedEvent(jobExecutionId, JobStage.CHANNEL_PROCESSING));
     }
 
     protected void handleAlertException(AlertException e, DistributionEvent event) {

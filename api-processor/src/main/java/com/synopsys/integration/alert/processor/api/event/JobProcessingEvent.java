@@ -17,11 +17,13 @@ public class JobProcessingEvent extends AlertEvent {
 
     private UUID correlationId;
     private UUID jobId;
+    private final UUID jobExecutionId;
 
-    public JobProcessingEvent(UUID correlationId, UUID jobId) {
+    public JobProcessingEvent(UUID correlationId, UUID jobId, UUID jobExecutionId) {
         super(JOB_PROCESSING_EVENT_TYPE);
         this.correlationId = correlationId;
         this.jobId = jobId;
+        this.jobExecutionId = jobExecutionId;
     }
 
     public UUID getCorrelationId() {
@@ -32,4 +34,7 @@ public class JobProcessingEvent extends AlertEvent {
         return jobId;
     }
 
+    public UUID getJobExecutionId() {
+        return jobExecutionId;
+    }
 }

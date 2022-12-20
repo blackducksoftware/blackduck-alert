@@ -57,7 +57,6 @@ class SlackDistributionEventHandlerTest {
         SlackChannelMessageConverter slackChannelMessageConverter = new SlackChannelMessageConverter(slackChannelMessageFormatter);
         SlackChannelMessageSender slackChannelMessageSender = new SlackChannelMessageSender(ChannelKeys.SLACK, createConnectionFactory());
         SlackChannel slackChannel = new SlackChannel(slackChannelMessageConverter, slackChannelMessageSender, eventManager);
-
         mockSlackServer.start();
         String url = mockSlackServer.url("/").toString();
 
@@ -65,7 +64,7 @@ class SlackDistributionEventHandlerTest {
 
         SlackJobDetailsAccessor slackJobDetailsAccessor = jobId -> Optional.of(slackJobDetailsModel);
 
-        distributionEventHandler = new SlackDistributionEventHandler(slackChannel, slackJobDetailsAccessor, processingAuditAccessor);
+        distributionEventHandler = new SlackDistributionEventHandler(slackChannel, slackJobDetailsAccessor, processingAuditAccessor, eventManager);
     }
 
     @AfterEach
@@ -124,7 +123,7 @@ class SlackDistributionEventHandlerTest {
     }
 
     private DistributionEvent createSlackDistributionEvent(Set<Long> notificationIds, ProviderMessageHolder providerMessages) {
-        return new DistributionEvent(slackChannelKey, UUID.randomUUID(), "jobName", notificationIds, providerMessages);
+        return new DistributionEvent(slackChannelKey, UUID.randomUUID(), UUID.randomUUID(), "jobName", notificationIds, providerMessages);
     }
 
 }
