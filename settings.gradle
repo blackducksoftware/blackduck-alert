@@ -30,5 +30,5 @@ include 'web'
 include 'test-common'
 include 'test-common-channel'
 include 'test-common-blackduck'
-include 'authenication-saml'
+include 'authentication-saml'
 
