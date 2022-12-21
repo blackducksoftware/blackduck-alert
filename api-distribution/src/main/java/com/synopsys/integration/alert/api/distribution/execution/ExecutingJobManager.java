@@ -48,8 +48,8 @@ public class ExecutingJobManager {
     public AlertPagedModel<ExecutingJob> getExecutingJobs(int pageNumber, int pageSize) {
         List<List<ExecutingJob>> pages = ListUtils.partition(new ArrayList<>(executingJobMap.values()), pageSize);
         List<ExecutingJob> pageOfData = List.of();
-        if (!pages.isEmpty() && pages.size() < pageNumber) {
-            pageOfData = pages.get(pageNumber);
+        if (!pages.isEmpty() && pageNumber - 1 < pages.size()) {
+            pageOfData = pages.get(pageNumber - 1);
         }
         return new AlertPagedModel<>(pages.size(), pageNumber, pageSize, pageOfData);
     }

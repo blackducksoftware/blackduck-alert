@@ -121,7 +121,7 @@ public class DefaultDiagnosticAccessor implements DiagnosticAccessor {
     private List<JobExecutionDiagnosticModel> getExecutionData() {
         List<JobExecutionDiagnosticModel> jobExecutions = new LinkedList<>();
         int pageSize = 100;
-        int pageNumber = 0;
+        int pageNumber = 1;
         AlertPagedModel<ExecutingJob> page = executingJobManager.getExecutingJobs(pageNumber, pageSize);
         while (page.getCurrentPage() <= page.getTotalPages()) {
             jobExecutions.addAll(page.getModels().stream()
