@@ -15,6 +15,7 @@ dependencies {
     implementation project(':alert-database-job')
     implementation project(':api-common-model')
     implementation project(':api-descriptor')
+    implementation project(':api-distribution')
     implementation project(':api-environment')
     implementation project(':api-event')
     implementation project(':api-processor')

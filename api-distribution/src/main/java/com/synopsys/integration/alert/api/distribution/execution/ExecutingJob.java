@@ -14,6 +14,7 @@ public class ExecutingJob {
     private final Instant start;
     private Instant end;
     private AuditEntryStatus status;
+    private Long notificationCount;
     private final Map<JobStage, ExecutingJobStage> stages = new ConcurrentHashMap<>();
 
     public static ExecutingJob startJob(UUID jobConfigId) {
@@ -25,6 +26,7 @@ public class ExecutingJob {
         this.jobConfigId = jobConfigId;
         this.start = start;
         this.status = status;
+        this.notificationCount = 0L;
     }
 
     public void jobSucceeded() {
@@ -38,6 +40,11 @@ public class ExecutingJob {
     private void completeJobWithStatus(AuditEntryStatus status) {
         this.end = Instant.now();
         this.status = status;
+    }
+
+    public Long updateNotificationCount(Number notificationCount) {
+        this.notificationCount += notificationCount.longValue();
+        return this.notificationCount;
     }
 
     public void addStage(ExecutingJobStage jobStage) {
@@ -54,6 +61,10 @@ public class ExecutingJob {
 
     public UUID getJobConfigId() {
         return jobConfigId;
+    }
+
+    public Long getNotificationCount() {
+        return notificationCount;
     }
 
     public Instant getStart() {

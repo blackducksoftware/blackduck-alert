@@ -78,28 +78,28 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
     public void handle(JobProcessingEvent event) {
         UUID correlationId = event.getCorrelationId();
         UUID jobId = event.getJobId();
-        ExecutingJob executingJob = executingJobManager.startJob(jobId);
         try {
             Optional<DistributionJobModel> jobModel = jobAccessor.getJobById(jobId);
             if (jobModel.isPresent()) {
-                DistributionJobModel job = jobModel.get();
-                ProcessedProviderMessageHolder processedMessageHolder = processNotifications(event, job);
+                ExecutingJob executingJob = executingJobManager.startJob(jobId);
+                DistributionJobModel jobConfiguration = jobModel.get();
+                ProcessedProviderMessageHolder processedMessageHolder = processNotifications(event, executingJob, jobConfiguration);
                 ProcessedNotificationDetails processedNotificationDetails = new ProcessedNotificationDetails(
                     executingJob.getExecutionId(),
-                    job.getJobId(),
-                    job.getChannelDescriptorName(),
-                    job.getName()
+                    jobConfiguration.getJobId(),
+                    jobConfiguration.getChannelDescriptorName(),
+                    jobConfiguration.getName()
                 );
                 providerMessageDistributor.distribute(processedNotificationDetails, processedMessageHolder);
+                executingJob.jobSucceeded();
             }
         } finally {
             jobNotificationMappingAccessor.removeJobMapping(correlationId, jobId);
             clearCaches(correlationId);
-            executingJob.jobSucceeded();
         }
     }
 
-    private ProcessedProviderMessageHolder processNotifications(JobProcessingEvent event, DistributionJobModel job) {
+    private ProcessedProviderMessageHolder processNotifications(JobProcessingEvent event, ExecutingJob executingJob, DistributionJobModel job) {
         ProcessedProviderMessageHolder processedMessageHolder = null;
         UUID correlationId = event.getCorrelationId();
         UUID jobId = event.getJobId();
@@ -114,6 +114,7 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
 
         while (jobNotificationMappings.getCurrentPage() <= jobNotificationMappings.getTotalPages()) {
             List<Long> notificationIds = extractNotificationIds(jobNotificationMappings);
+            executingJob.updateNotificationCount(notificationIds.size());
             List<AlertNotificationModel> notifications = notificationAccessor.findByIds(notificationIds);
             logNotifications("Start", event, notificationIds);
             ProcessedProviderMessageHolder currentProcessedMessages = processNotifications(job, notifications);
