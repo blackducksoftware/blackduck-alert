@@ -16,6 +16,8 @@ import java.util.UUID;
 @RestController
 @RequestMapping(AlertRestConstants.SAML_PATH)
 public class SAMLGlobalConfigController implements StaticUniqueConfigResourceController<SAMLGlobalConfigModel>, ValidateController<SAMLGlobalConfigModel> {
+    private final String UNIQUE_ID = UUID.randomUUID().toString();
+
     @Autowired
     public SAMLGlobalConfigController() {
         // TODO Wire actions
@@ -23,12 +25,12 @@ public class SAMLGlobalConfigController implements StaticUniqueConfigResourceCon
 
     @Override
     public SAMLGlobalConfigModel create(SAMLGlobalConfigModel resource) {
-        return new SAMLGlobalConfigModel(UUID.randomUUID().toString());
+        return new SAMLGlobalConfigModel(UNIQUE_ID);
     }
 
     @Override
     public SAMLGlobalConfigModel getOne() {
-        return new SAMLGlobalConfigModel(UUID.randomUUID().toString());
+        return new SAMLGlobalConfigModel(UNIQUE_ID);
     }
 
     @Override
