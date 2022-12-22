@@ -16,6 +16,7 @@ include 'api-oauth'
 include 'api-processor'
 include 'api-provider'
 include 'api-task'
+include 'authentication-ldap'
 include 'channel-azure-boards'
 include 'channel-email'
 include 'channel-jira-cloud'
@@ -31,4 +32,5 @@ include 'test-common'
 include 'test-common-channel'
 include 'test-common-blackduck'
 include 'authentication-saml'
+
 
