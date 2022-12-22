@@ -166,13 +166,13 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
 
     public IssueTrackerAsyncMessageSender<Integer> createAsyncMessageSender(
         AzureBoardsJobDetailsModel distributionDetails,
-        UUID parentEventId,
+        UUID jobExecutionId,
         Set<Long> notificationIds
     ) {
         UUID jobId = distributionDetails.getJobId();
-        IssueTrackerCommentEventGenerator<Integer> commentEventGenerator = new AzureBoardsCommentGenerator(channelKey, parentEventId, jobId, notificationIds);
-        IssueTrackerCreationEventGenerator createEventGenerator = new AzureBoardsCreateEventGenerator(channelKey, parentEventId, jobId, notificationIds);
-        IssueTrackerTransitionEventGenerator<Integer> transitionEventGenerator = new AzureBoardsTransitionGenerator(channelKey, parentEventId, jobId, notificationIds);
+        IssueTrackerCommentEventGenerator<Integer> commentEventGenerator = new AzureBoardsCommentGenerator(channelKey, jobExecutionId, jobId, notificationIds);
+        IssueTrackerCreationEventGenerator createEventGenerator = new AzureBoardsCreateEventGenerator(channelKey, jobExecutionId, jobId, notificationIds);
+        IssueTrackerTransitionEventGenerator<Integer> transitionEventGenerator = new AzureBoardsTransitionGenerator(channelKey, jobExecutionId, jobId, notificationIds);
 
         return new IssueTrackerAsyncMessageSender<>(
             createEventGenerator,
@@ -180,8 +180,7 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
             commentEventGenerator,
             eventManager,
             jobSubTaskAccessor,
-            parentEventId,
-            jobId,
+            jobExecutionId,
             notificationIds
         );
     }

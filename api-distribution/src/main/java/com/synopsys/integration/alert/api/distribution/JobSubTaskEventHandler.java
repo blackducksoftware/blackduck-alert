@@ -33,7 +33,6 @@ public abstract class JobSubTaskEventHandler<T extends JobSubTaskEvent> implemen
     public final void handle(T event) {
         UUID jobExecutionId = event.getJobExecutionId();
         try {
-
             handleEvent(event);
             Optional<JobSubTaskStatusModel> subTaskStatus = jobSubTaskAccessor.decrementTaskCount(jobExecutionId);
             subTaskStatus.map(JobSubTaskStatusModel::getRemainingTaskCount)

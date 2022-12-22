@@ -159,13 +159,13 @@ public class JiraCloudMessageSenderFactory implements IssueTrackerMessageSenderF
 
     public IssueTrackerAsyncMessageSender<String> createAsyncMessageSender(
         JiraCloudJobDetailsModel distributionDetails,
-        UUID parentEventId,
+        UUID jobExecutionId,
         Set<Long> notificationIds
     ) {
         UUID jobId = distributionDetails.getJobId();
-        IssueTrackerCommentEventGenerator<String> commentEventGenerator = new JiraCloudCommentGenerator(channelKey, parentEventId, jobId, notificationIds);
-        IssueTrackerCreationEventGenerator createEventGenerator = new JiraCloudCreateEventGenerator(channelKey, parentEventId, jobId, notificationIds);
-        IssueTrackerTransitionEventGenerator<String> transitionEventGenerator = new JiraCloudTransitionGenerator(channelKey, parentEventId, jobId, notificationIds);
+        IssueTrackerCommentEventGenerator<String> commentEventGenerator = new JiraCloudCommentGenerator(channelKey, jobExecutionId, jobId, notificationIds);
+        IssueTrackerCreationEventGenerator createEventGenerator = new JiraCloudCreateEventGenerator(channelKey, jobExecutionId, jobId, notificationIds);
+        IssueTrackerTransitionEventGenerator<String> transitionEventGenerator = new JiraCloudTransitionGenerator(channelKey, jobExecutionId, jobId, notificationIds);
 
         return new IssueTrackerAsyncMessageSender<>(
             createEventGenerator,
@@ -173,8 +173,7 @@ public class JiraCloudMessageSenderFactory implements IssueTrackerMessageSenderF
             commentEventGenerator,
             eventManager,
             jobSubTaskAccessor,
-            parentEventId,
-            jobId,
+            jobExecutionId,
             notificationIds
         );
 

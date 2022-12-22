@@ -82,7 +82,7 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
     }
 
     @Override
-    public IssueTrackerProcessor<String> createProcessor(JiraCloudJobDetailsModel distributionDetails, UUID eventId, Set<Long> notificationIds) throws AlertException {
+    public IssueTrackerProcessor<String> createProcessor(JiraCloudJobDetailsModel distributionDetails, UUID jobExecutionId, Set<Long> notificationIds) throws AlertException {
         JiraCloudProperties jiraProperties = createJiraCloudProperties();
         JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
 
@@ -114,7 +114,7 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
         
         IssueTrackerAsyncMessageSender<String> messageSender = messageSenderFactory.createAsyncMessageSender(
             distributionDetails,
-            eventId,
+            jobExecutionId,
             notificationIds
         );
 
