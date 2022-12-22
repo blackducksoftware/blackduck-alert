@@ -5,16 +5,13 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.AlertEventHandler;
-import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 
 @Component
 public class AuditSuccessHandler implements AlertEventHandler<AuditSuccessEvent> {
-    private final ProcessingAuditAccessor processingAuditAccessor;
     private final ExecutingJobManager executingJobManager;
 
     @Autowired
-    public AuditSuccessHandler(ProcessingAuditAccessor processingAuditAccessor, ExecutingJobManager executingJobManager) {
-        this.processingAuditAccessor = processingAuditAccessor;
+    public AuditSuccessHandler(ExecutingJobManager executingJobManager) {
         this.executingJobManager = executingJobManager;
     }
 
