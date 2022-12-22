@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.database.authentication.saml;
+package com.synopsys.integration.alert.authentication.saml.database.configuration;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
