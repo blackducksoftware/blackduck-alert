@@ -39,7 +39,7 @@ class IssueTrackerChannelTest {
         IssueTrackerAsyncMessageSender<String> messageSender = createMessageSender(jobSubTaskAccessor);
         IssueTrackerProcessor<String> processor = new IssueTrackerProcessor<>(modelExtractor, messageSender);
 
-        IssueTrackerProcessorFactory<DistributionJobDetailsModel, String> processorFactory = (x, y, z) -> processor;
+        IssueTrackerProcessorFactory<DistributionJobDetailsModel, String> processorFactory = (v, x, y, z) -> processor;
 
         IssueTrackerResponsePostProcessor postProcessor = new IssueTrackerResponsePostProcessor() {
             @Override
@@ -48,7 +48,14 @@ class IssueTrackerChannelTest {
         };
         IssueTrackerChannel<DistributionJobDetailsModel, String> issueTrackerChannel = new IssueTrackerChannel<>(processorFactory, postProcessor, jobSubTaskAccessor) {};
 
-        MessageResult testResult = issueTrackerChannel.distributeMessages(distributionJobDetailsModel, ProviderMessageHolder.empty(), null, UUID.randomUUID(), Set.of());
+        MessageResult testResult = issueTrackerChannel.distributeMessages(
+            distributionJobDetailsModel,
+            ProviderMessageHolder.empty(),
+            null,
+            UUID.randomUUID(),
+            UUID.randomUUID(),
+            Set.of()
+        );
 
         IssueTrackerResponse<?> processorResponse = processor.processMessages(ProviderMessageHolder.empty(), "jobName");
         assertEquals(processorResponse.getStatusMessage(), testResult.getStatusMessage());

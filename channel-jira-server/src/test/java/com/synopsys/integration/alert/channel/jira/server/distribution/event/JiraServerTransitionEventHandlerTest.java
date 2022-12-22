@@ -83,6 +83,7 @@ class JiraServerTransitionEventHandlerTest {
     @Test
     void handleUnknownJobTest() {
         UUID parentEventId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
 
@@ -116,6 +117,7 @@ class JiraServerTransitionEventHandlerTest {
         JiraServerTransitionEvent event = new JiraServerTransitionEvent(
             IssueTrackerTransitionIssueEvent.createDefaultEventDestination(ChannelKeys.JIRA_SERVER),
             parentEventId,
+            jobExecutionId,
             jobId,
             notificationIds,
             model
@@ -129,6 +131,7 @@ class JiraServerTransitionEventHandlerTest {
     @Test
     void handleTransitionTest() throws IntegrationException {
         UUID parentEventId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
 
@@ -184,6 +187,7 @@ class JiraServerTransitionEventHandlerTest {
         JiraServerTransitionEvent event = new JiraServerTransitionEvent(
             IssueTrackerTransitionIssueEvent.createDefaultEventDestination(ChannelKeys.JIRA_SERVER),
             parentEventId,
+            jobExecutionId,
             jobId,
             notificationIds,
             model

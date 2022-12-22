@@ -68,6 +68,7 @@ class AzureBoardsCreateIssueEventHandlerTest {
     @Test
     void handleUnknownJobTest() {
         UUID parentEventId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
 
@@ -109,6 +110,7 @@ class AzureBoardsCreateIssueEventHandlerTest {
         AzureBoardsCreateIssueEvent event = new AzureBoardsCreateIssueEvent(
             IssueTrackerCreateIssueEvent.createDefaultEventDestination(ChannelKeys.AZURE_BOARDS),
             parentEventId,
+            jobExecutionId,
             jobId,
             notificationIds,
             issueCreationModel
@@ -124,6 +126,7 @@ class AzureBoardsCreateIssueEventHandlerTest {
     @Disabled("Blocked by IALERT-3136")
     void handleIssueQueryBlankTest() throws IntegrationException, IOException {
         UUID parentEventId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
 
@@ -176,6 +179,7 @@ class AzureBoardsCreateIssueEventHandlerTest {
         AzureBoardsCreateIssueEvent event = new AzureBoardsCreateIssueEvent(
             IssueTrackerCreateIssueEvent.createDefaultEventDestination(ChannelKeys.AZURE_BOARDS),
             parentEventId,
+            jobExecutionId,
             jobId,
             notificationIds,
             issueCreationModel

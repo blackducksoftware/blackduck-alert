@@ -119,9 +119,10 @@ public class JiraServerMessageSenderFactory implements IssueTrackerMessageSender
         JiraServerJobDetailsModel distributionDetails,
         UUID globalId,
         UUID parentEventId,
+        UUID jobExecutionId,
         Set<Long> notificationIds
     ) throws AlertException {
-        return createAsyncMessageSender(distributionDetails, parentEventId, notificationIds);
+        return createAsyncMessageSender(distributionDetails, parentEventId, jobExecutionId, notificationIds);
     }
 
     public IssueTrackerMessageSender<String> createMessageSender(
@@ -163,12 +164,19 @@ public class JiraServerMessageSenderFactory implements IssueTrackerMessageSender
     public IssueTrackerAsyncMessageSender<String> createAsyncMessageSender(
         JiraServerJobDetailsModel distributionDetails,
         UUID parentEventId,
+        UUID jobExecutionId,
         Set<Long> notificationIds
     ) {
         UUID jobId = distributionDetails.getJobId();
-        IssueTrackerCommentEventGenerator<String> commentEventGenerator = new JiraServerCommentGenerator(channelKey, parentEventId, jobId, notificationIds);
-        IssueTrackerCreationEventGenerator createEventGenerator = new JiraServerCreateEventGenerator(channelKey, parentEventId, jobId, notificationIds);
-        IssueTrackerTransitionEventGenerator<String> transitionEventGenerator = new JiraServerTransitionGenerator(channelKey, parentEventId, jobId, notificationIds);
+        IssueTrackerCommentEventGenerator<String> commentEventGenerator = new JiraServerCommentGenerator(channelKey, parentEventId, jobExecutionId, jobId, notificationIds);
+        IssueTrackerCreationEventGenerator createEventGenerator = new JiraServerCreateEventGenerator(channelKey, parentEventId, jobExecutionId, jobId, notificationIds);
+        IssueTrackerTransitionEventGenerator<String> transitionEventGenerator = new JiraServerTransitionGenerator(
+            channelKey,
+            parentEventId,
+            jobExecutionId,
+            jobId,
+            notificationIds
+        );
 
         return new IssueTrackerAsyncMessageSender<>(
             createEventGenerator,

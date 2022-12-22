@@ -77,6 +77,7 @@ class JiraServerCommentEventHandlerTest {
     @Test
     void handleUnknownJobTest() {
         UUID parentEventId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
 
@@ -110,6 +111,7 @@ class JiraServerCommentEventHandlerTest {
         JiraServerCommentEvent event = new JiraServerCommentEvent(
             IssueTrackerCommentEvent.createDefaultEventDestination(ChannelKeys.JIRA_SERVER),
             parentEventId,
+            jobExecutionId,
             jobId,
             notificationIds,
             model
@@ -123,6 +125,7 @@ class JiraServerCommentEventHandlerTest {
     @Test
     void handleCommentTest() throws IntegrationException {
         UUID parentEventId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
 
@@ -176,6 +179,7 @@ class JiraServerCommentEventHandlerTest {
         JiraServerCommentEvent event = new JiraServerCommentEvent(
             IssueTrackerCommentEvent.createDefaultEventDestination(ChannelKeys.JIRA_SERVER),
             parentEventId,
+            jobExecutionId,
             jobId,
             notificationIds,
             model

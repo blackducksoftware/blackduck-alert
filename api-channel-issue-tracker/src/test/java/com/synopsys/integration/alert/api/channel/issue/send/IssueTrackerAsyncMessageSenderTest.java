@@ -56,6 +56,7 @@ class IssueTrackerAsyncMessageSenderTest {
 
     @Test
     void sendAsyncMessageTest() {
+        UUID parentEventId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         UUID jobExecutionId = UUID.randomUUID();
 
@@ -64,9 +65,16 @@ class IssueTrackerAsyncMessageSenderTest {
         IssueCommentModel<String> commentModel = new IssueCommentModel<>(null, List.of(), null);
         IssueTrackerModelHolder<String> modelHolder = new IssueTrackerModelHolder<>(List.of(createModel), List.of(transitionModel), List.of(commentModel));
 
-        IssueTrackerCreationEventGenerator createEventGenerator = (model) -> new IssueTrackerCreateIssueEvent(null, jobExecutionId, jobId, null, createModel);
-        IssueTrackerTransitionEventGenerator<String> transitionEventGenerator = (model) -> new IssueTrackerTransitionIssueEvent<>(null, jobExecutionId, jobId, null, null);
-        IssueTrackerCommentEventGenerator<String> commentEventGenerator = (model) -> new IssueTrackerCommentEvent<>(null, jobExecutionId, jobId, null, null);
+        IssueTrackerCreationEventGenerator createEventGenerator = (model) -> new IssueTrackerCreateIssueEvent(null, parentEventId, jobExecutionId, jobId, null, createModel);
+        IssueTrackerTransitionEventGenerator<String> transitionEventGenerator = (model) -> new IssueTrackerTransitionIssueEvent<>(
+            null,
+            parentEventId,
+            jobExecutionId,
+            jobId,
+            null,
+            null
+        );
+        IssueTrackerCommentEventGenerator<String> commentEventGenerator = (model) -> new IssueTrackerCommentEvent<>(null, parentEventId, jobExecutionId, jobId, null, null);
         IssueTrackerAsyncMessageSender<String> sender = new IssueTrackerAsyncMessageSender<>(
             createEventGenerator,
             transitionEventGenerator,

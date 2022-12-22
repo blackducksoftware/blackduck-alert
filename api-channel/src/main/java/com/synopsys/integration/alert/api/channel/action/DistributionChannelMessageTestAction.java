@@ -44,7 +44,7 @@ public abstract class DistributionChannelMessageTestAction<D extends Distributio
 
         D distributionJobDetails = resolveTestDistributionDetails(testJobModel);
         ProviderMessageHolder messages = createTestMessageHolder(testJobModel, topicString, messageString);
-        return distributionChannel.distributeMessages(distributionJobDetails, messages, jobName, UUID.randomUUID(), Set.of());
+        return distributionChannel.distributeMessages(distributionJobDetails, messages, jobName, UUID.randomUUID(), UUID.randomUUID(), Set.of());
     }
 
     protected D resolveTestDistributionDetails(DistributionJobModel testJobModel) throws AlertException {

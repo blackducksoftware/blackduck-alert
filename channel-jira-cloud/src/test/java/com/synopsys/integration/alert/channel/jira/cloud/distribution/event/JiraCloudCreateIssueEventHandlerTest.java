@@ -86,6 +86,7 @@ class JiraCloudCreateIssueEventHandlerTest {
     @Test
     void handleUnknownJobTest() {
         UUID parentEventId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
 
@@ -120,6 +121,7 @@ class JiraCloudCreateIssueEventHandlerTest {
         JiraCloudCreateIssueEvent event = new JiraCloudCreateIssueEvent(
             IssueTrackerCreateIssueEvent.createDefaultEventDestination(ChannelKeys.JIRA_CLOUD),
             parentEventId,
+            jobExecutionId,
             jobId,
             notificationIds,
             issueCreationModel
@@ -133,6 +135,7 @@ class JiraCloudCreateIssueEventHandlerTest {
     @Test
     void handleIssueQueryBlankTest() throws IntegrationException {
         UUID parentEventId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
 
@@ -191,6 +194,7 @@ class JiraCloudCreateIssueEventHandlerTest {
         JiraCloudCreateIssueEvent event = new JiraCloudCreateIssueEvent(
             IssueTrackerCreateIssueEvent.createDefaultEventDestination(ChannelKeys.JIRA_CLOUD),
             parentEventId,
+            jobExecutionId,
             jobId,
             notificationIds,
             issueCreationModel
@@ -205,6 +209,7 @@ class JiraCloudCreateIssueEventHandlerTest {
     @Test
     void handleIssueIssueDoesNotExistTest() throws IntegrationException {
         UUID parentEventId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
 
@@ -272,6 +277,7 @@ class JiraCloudCreateIssueEventHandlerTest {
         JiraCloudCreateIssueEvent event = new JiraCloudCreateIssueEvent(
             IssueTrackerCreateIssueEvent.createDefaultEventDestination(ChannelKeys.JIRA_CLOUD),
             parentEventId,
+            jobExecutionId,
             jobId,
             notificationIds,
             issueCreationModel
@@ -286,6 +292,7 @@ class JiraCloudCreateIssueEventHandlerTest {
     @Test
     void handleIssueIssueExistsTest() throws IntegrationException {
         UUID parentEventId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
 
@@ -346,6 +353,7 @@ class JiraCloudCreateIssueEventHandlerTest {
         JiraCloudCreateIssueEvent event = new JiraCloudCreateIssueEvent(
             IssueTrackerCreateIssueEvent.createDefaultEventDestination(ChannelKeys.JIRA_CLOUD),
             parentEventId,
+            jobExecutionId,
             jobId,
             notificationIds,
             issueCreationModel

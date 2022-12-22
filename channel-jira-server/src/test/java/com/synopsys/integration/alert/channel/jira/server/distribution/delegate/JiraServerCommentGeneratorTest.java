@@ -20,18 +20,20 @@ public class JiraServerCommentGeneratorTest {
 	void generateEventAttributeMatches() {
 		JiraServerChannelKey testKey = ChannelKeys.JIRA_SERVER;
 		UUID testParentEventUID = UUID.randomUUID();
+		UUID testJobExecutionID = UUID.randomUUID();
 		UUID testJobUID = UUID.randomUUID();
 		Set<Long> testNotificationIds = Set.of(1L, 2L, 3L , 5L);
 		IssueCommentModel<String> testModel = Mockito.mock(IssueCommentModel.class);
 
-		JiraServerCommentGenerator testGenerator = new JiraServerCommentGenerator(testKey, testParentEventUID, testJobUID, testNotificationIds);
+		JiraServerCommentGenerator testGenerator = new JiraServerCommentGenerator(testKey, testParentEventUID, testJobExecutionID, testJobUID, testNotificationIds);
 		IssueTrackerCommentEvent<String> generatedCommentEvent = testGenerator.generateEvent(testModel);
 
 		assertEquals(generatedCommentEvent.getClass(), JiraServerCommentEvent.class);
 		assertAll(
 			"Constructed IssueTrackerCommentEvent matches generator attributes",
 			() -> assertEquals(IssueTrackerCommentEvent.createDefaultEventDestination(testKey), generatedCommentEvent.getDestination()),
-			() -> assertEquals(testParentEventUID, generatedCommentEvent.getJobExecutionId()),
+			() -> assertEquals(testParentEventUID, generatedCommentEvent.getParentEventId()),
+			() -> assertEquals(testJobExecutionID, generatedCommentEvent.getJobExecutionId()),
 			() -> assertEquals(testJobUID, generatedCommentEvent.getJobId()),
 			() -> assertEquals(testNotificationIds, generatedCommentEvent.getNotificationIds()),
 			() -> assertEquals(testModel, generatedCommentEvent.getCommentModel())

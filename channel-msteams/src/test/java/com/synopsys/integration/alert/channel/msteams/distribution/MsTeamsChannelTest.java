@@ -69,7 +69,7 @@ class MsTeamsChannelTest {
 
         MessageResult messageResult = null;
         try {
-            messageResult = msTeamsChannel.distributeMessages(msTeamsJobDetailsModel, TEST_MESSAGE_HOLDER, "jobName", UUID.randomUUID(), Set.of());
+            messageResult = msTeamsChannel.distributeMessages(msTeamsJobDetailsModel, TEST_MESSAGE_HOLDER, "jobName", UUID.randomUUID(), UUID.randomUUID(), Set.of());
         } catch (AlertException e) {
             Assertions.fail("Failed to distribute simple channel message due to an exception", e);
         }

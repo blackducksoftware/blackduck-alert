@@ -27,6 +27,7 @@ class JiraServerCreateIssueEventListenerTest {
 
     @Test
     void onMessageTest() {
+        UUID parentEventId = UUID.randomUUID();
         UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
@@ -36,6 +37,7 @@ class JiraServerCreateIssueEventListenerTest {
         IssueCreationModel issueCreationModel = IssueCreationModel.simple("title", "description", List.of(), provider);
         JiraServerCreateIssueEvent event = new JiraServerCreateIssueEvent(
             "destination",
+            parentEventId,
             jobExecutionId,
             jobId,
             notificationIds,
@@ -56,15 +58,15 @@ class JiraServerCreateIssueEventListenerTest {
         ));
         Mockito.doNothing().when(handler).handleEvent(event);
 
-        jobSubTaskAccessor.createSubTaskStatus(jobExecutionId, jobId, 1L, notificationIds);
-        Optional<JobSubTaskStatusModel> optionalJobSubTaskStatusModel = jobSubTaskAccessor.getSubTaskStatus(jobExecutionId);
+        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobId, 1L, notificationIds);
+        Optional<JobSubTaskStatusModel> optionalJobSubTaskStatusModel = jobSubTaskAccessor.getSubTaskStatus(parentEventId);
         assertTrue(optionalJobSubTaskStatusModel.isPresent());
 
         JiraServerCreateIssueEventListener listener = new JiraServerCreateIssueEventListener(gson, ChannelKeys.JIRA_SERVER, handler);
         Message message = new Message(gson.toJson(event).getBytes());
         listener.onMessage(message);
 
-        optionalJobSubTaskStatusModel = jobSubTaskAccessor.getSubTaskStatus(jobExecutionId);
+        optionalJobSubTaskStatusModel = jobSubTaskAccessor.getSubTaskStatus(parentEventId);
         assertFalse(optionalJobSubTaskStatusModel.isPresent());
     }
 }
