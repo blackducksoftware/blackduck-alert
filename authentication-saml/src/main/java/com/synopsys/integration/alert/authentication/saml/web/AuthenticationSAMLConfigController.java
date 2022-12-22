@@ -1,7 +1,7 @@
 package com.synopsys.integration.alert.authentication.saml.web;
 
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
-import com.synopsys.integration.alert.authentication.saml.model.SAMLGlobalConfigModel;
+import com.synopsys.integration.alert.authentication.saml.model.AuthenticationSAMLConfigModel;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.api.StaticUniqueConfigResourceController;
 import com.synopsys.integration.alert.common.rest.api.ValidateController;
@@ -15,26 +15,26 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping(AlertRestConstants.SAML_PATH)
-public class SAMLGlobalConfigController implements StaticUniqueConfigResourceController<SAMLGlobalConfigModel>, ValidateController<SAMLGlobalConfigModel> {
-    private final String UNIQUE_ID = UUID.randomUUID().toString();
+public class AuthenticationSAMLConfigController implements StaticUniqueConfigResourceController<AuthenticationSAMLConfigModel>, ValidateController<AuthenticationSAMLConfigModel> {
+    private static final String UNIQUE_ID = UUID.randomUUID().toString();
 
     @Autowired
-    public SAMLGlobalConfigController() {
+    public AuthenticationSAMLConfigController() {
         // TODO Wire actions
     }
 
     @Override
-    public SAMLGlobalConfigModel create(SAMLGlobalConfigModel resource) {
-        return new SAMLGlobalConfigModel(UNIQUE_ID);
+    public AuthenticationSAMLConfigModel create(AuthenticationSAMLConfigModel resource) {
+        return new AuthenticationSAMLConfigModel(UNIQUE_ID);
     }
 
     @Override
-    public SAMLGlobalConfigModel getOne() {
-        return new SAMLGlobalConfigModel(UNIQUE_ID);
+    public AuthenticationSAMLConfigModel getOne() {
+        return new AuthenticationSAMLConfigModel(UNIQUE_ID);
     }
 
     @Override
-    public void update(SAMLGlobalConfigModel resource) {
+    public void update(AuthenticationSAMLConfigModel resource) {
 
     }
 
@@ -44,7 +44,7 @@ public class SAMLGlobalConfigController implements StaticUniqueConfigResourceCon
     }
 
     @Override
-    public ValidationResponseModel validate(SAMLGlobalConfigModel requestBody) {
+    public ValidationResponseModel validate(AuthenticationSAMLConfigModel requestBody) {
         return new ValidationResponseModel("Success", Map.of());
     }
 }
