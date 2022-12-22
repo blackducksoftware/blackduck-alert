@@ -31,7 +31,7 @@ class IssueTrackerAsyncMessageSenderTest {
 
     @Test
     void sendAsyncMessagesNoEventsTest() {
-        UUID jobId = UUID.randomUUID();
+        UUID parentEventId = UUID.randomUUID();
         UUID jobExecutionId = UUID.randomUUID();
 
         IssueTrackerModelHolder<String> modelHolder = new IssueTrackerModelHolder<>(List.of(), List.of(), List.of());
@@ -45,6 +45,7 @@ class IssueTrackerAsyncMessageSenderTest {
             commentEventGenerator,
             mockEventManager,
             mockJobSubTaskAccessor,
+            parentEventId,
             jobExecutionId,
             Set.of(1L, 2L, 3L)
         );
@@ -81,6 +82,7 @@ class IssueTrackerAsyncMessageSenderTest {
             commentEventGenerator,
             mockEventManager,
             mockJobSubTaskAccessor,
+            parentEventId,
             jobExecutionId,
             Set.of(1L, 2L, 3L)
         );

@@ -104,6 +104,7 @@ class IssueTrackerChannelTest {
             eventManager,
             jobSubTaskAccessor,
             UUID.randomUUID(),
+            UUID.randomUUID(),
             Set.of(1L, 2L, 3L)
         );
     }

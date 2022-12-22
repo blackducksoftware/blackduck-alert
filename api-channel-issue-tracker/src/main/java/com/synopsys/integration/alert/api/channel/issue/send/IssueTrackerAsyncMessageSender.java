@@ -25,6 +25,7 @@ public class IssueTrackerAsyncMessageSender<T extends Serializable> {
     private final IssueTrackerCommentEventGenerator<T> issueTrackerCommentEventGenerator;
     private final EventManager eventManager;
     private final JobSubTaskAccessor jobSubTaskAccessor;
+    private final UUID parentEventId;
     private final UUID jobExecutionId;
     private final Set<Long> notificationIds;
 
@@ -34,6 +35,7 @@ public class IssueTrackerAsyncMessageSender<T extends Serializable> {
         IssueTrackerCommentEventGenerator<T> issueTrackerCommentEventGenerator,
         EventManager eventManager,
         JobSubTaskAccessor jobSubTaskAccessor,
+        UUID parentEventId,
         UUID jobExecutionId,
         Set<Long> notificationIds
     ) {
@@ -42,6 +44,7 @@ public class IssueTrackerAsyncMessageSender<T extends Serializable> {
         this.issueTrackerCommentEventGenerator = issueTrackerCommentEventGenerator;
         this.eventManager = eventManager;
         this.jobSubTaskAccessor = jobSubTaskAccessor;
+        this.parentEventId = parentEventId;
         this.jobExecutionId = jobExecutionId;
         this.notificationIds = notificationIds;
     }
@@ -56,7 +59,7 @@ public class IssueTrackerAsyncMessageSender<T extends Serializable> {
             // nothing further to send downstream. Channel handled message successfully.
             eventManager.sendEvent(new AuditSuccessEvent(jobExecutionId, notificationIds));
         } else {
-            jobSubTaskAccessor.updateTaskCount(jobExecutionId, (long) eventList.size());
+            jobSubTaskAccessor.updateTaskCount(parentEventId, (long) eventList.size());
             eventManager.sendEvents(eventList);
         }
     }
