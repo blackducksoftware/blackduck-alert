@@ -6,7 +6,6 @@ dependencies {
     implementation project(':alert-common')
     implementation project(':alert-database')
     implementation project(':api-common-model')
-    implementation project(':component')
 
     implementation 'org.springframework:spring-web'
 }
