@@ -83,13 +83,14 @@ class ExecutingJobManagerTest {
         ExecutingJobManager jobManager = new ExecutingJobManager();
         UUID jobConfigId = UUID.randomUUID();
         ExecutingJob executingJob = jobManager.startJob(jobConfigId);
-        ExecutingJobStage executingJobStage = ExecutingJobStage.createStage(executingJob.getExecutionId(), JobStage.MAPPING);
+        ExecutingJobStage executingJobStage = ExecutingJobStage.createStage(executingJob.getExecutionId(), JobStage.NOTIFICATION_PROCESSING);
         executingJob.addStage(executingJobStage);
         executingJobStage.endStage();
-        ExecutingJobStage storedStage = executingJob.getStage(JobStage.MAPPING).orElseThrow(() -> new AssertionError("Job Stage is missing when it should be present."));
+        ExecutingJobStage storedStage = executingJob.getStage(JobStage.NOTIFICATION_PROCESSING)
+            .orElseThrow(() -> new AssertionError("Job Stage is missing when it should be present."));
         assertEquals(executingJobStage, storedStage);
         assertEquals(executingJob.getExecutionId(), executingJobStage.getExecutionId());
-        assertEquals(JobStage.MAPPING, executingJobStage.getStage());
+        assertEquals(JobStage.NOTIFICATION_PROCESSING, executingJobStage.getStage());
         assertNotNull(executingJobStage.getStart());
         assertNotNull(executingJobStage.getEnd());
     }
@@ -99,10 +100,10 @@ class ExecutingJobManagerTest {
         ExecutingJobManager jobManager = new ExecutingJobManager();
         UUID jobConfigId = UUID.randomUUID();
         ExecutingJob executingJob = jobManager.startJob(jobConfigId);
-        ExecutingJobStage executingJobStage = ExecutingJobStage.createStage(executingJob.getExecutionId(), JobStage.MAPPING);
+        ExecutingJobStage executingJobStage = ExecutingJobStage.createStage(executingJob.getExecutionId(), JobStage.NOTIFICATION_PROCESSING);
         executingJob.addStage(executingJobStage);
         executingJobStage.endStage();
-        Optional<ExecutingJobStage> missingStage = executingJob.getStage(JobStage.PROCESSING);
+        Optional<ExecutingJobStage> missingStage = executingJob.getStage(JobStage.CHANNEL_PROCESSING);
         assertTrue(missingStage.isEmpty());
     }
 
@@ -111,16 +112,17 @@ class ExecutingJobManagerTest {
         ExecutingJobManager jobManager = new ExecutingJobManager();
         UUID jobConfigId = UUID.randomUUID();
         ExecutingJob executingJob = jobManager.startJob(jobConfigId);
-        ExecutingJobStage firstMappingStage = ExecutingJobStage.createStage(executingJob.getExecutionId(), JobStage.MAPPING);
-        executingJob.addStage(firstMappingStage);
-        firstMappingStage.endStage();
+        ExecutingJobStage firstStage = ExecutingJobStage.createStage(executingJob.getExecutionId(), JobStage.NOTIFICATION_PROCESSING);
+        executingJob.addStage(firstStage);
+        firstStage.endStage();
 
-        ExecutingJobStage secondMappingStage = ExecutingJobStage.createStage(executingJob.getExecutionId(), JobStage.MAPPING);
-        executingJob.addStage(secondMappingStage);
-        secondMappingStage.endStage();
+        ExecutingJobStage secondStage = ExecutingJobStage.createStage(executingJob.getExecutionId(), JobStage.NOTIFICATION_PROCESSING);
+        executingJob.addStage(secondStage);
+        secondStage.endStage();
 
-        ExecutingJobStage storedStage = executingJob.getStage(JobStage.MAPPING).orElseThrow(() -> new AssertionError("Job Stage is missing when it should be present."));
-        assertEquals(firstMappingStage, storedStage);
+        ExecutingJobStage storedStage = executingJob.getStage(JobStage.NOTIFICATION_PROCESSING)
+            .orElseThrow(() -> new AssertionError("Job Stage is missing when it should be present."));
+        assertEquals(firstStage, storedStage);
         assertEquals(1, executingJob.getStages().size());
     }
 
@@ -129,14 +131,14 @@ class ExecutingJobManagerTest {
         ExecutingJobManager jobManager = new ExecutingJobManager();
         UUID jobConfigId = UUID.randomUUID();
         ExecutingJob executingJob = jobManager.startJob(jobConfigId);
-        ExecutingJobStage mappingStage = ExecutingJobStage.createStage(executingJob.getExecutionId(), JobStage.MAPPING);
+        ExecutingJobStage mappingStage = ExecutingJobStage.createStage(executingJob.getExecutionId(), JobStage.NOTIFICATION_PROCESSING);
         executingJob.addStage(mappingStage);
         mappingStage.endStage();
-        ExecutingJobStage processingStage = ExecutingJobStage.createStage(executingJob.getExecutionId(), JobStage.PROCESSING);
+        ExecutingJobStage processingStage = ExecutingJobStage.createStage(executingJob.getExecutionId(), JobStage.CHANNEL_PROCESSING);
         executingJob.addStage(processingStage);
         processingStage.endStage();
-        assertTrue(executingJob.getStage(JobStage.MAPPING).isPresent());
-        assertTrue(executingJob.getStage(JobStage.PROCESSING).isPresent());
+        assertTrue(executingJob.getStage(JobStage.NOTIFICATION_PROCESSING).isPresent());
+        assertTrue(executingJob.getStage(JobStage.CHANNEL_PROCESSING).isPresent());
         assertEquals(2, executingJob.getStages().size());
     }
 

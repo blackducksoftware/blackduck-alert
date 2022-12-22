@@ -83,7 +83,7 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
             Optional<DistributionJobModel> jobModel = jobAccessor.getJobById(jobId);
             if (jobModel.isPresent()) {
                 ExecutingJob executingJob = executingJobManager.startJob(jobId);
-                executingJobManager.startStage(executingJob.getExecutionId(), JobStage.PROCESSING);
+                executingJobManager.startStage(executingJob.getExecutionId(), JobStage.NOTIFICATION_PROCESSING);
                 DistributionJobModel jobConfiguration = jobModel.get();
                 ProcessedProviderMessageHolder processedMessageHolder = processNotifications(event, executingJob, jobConfiguration);
                 ProcessedNotificationDetails processedNotificationDetails = new ProcessedNotificationDetails(
@@ -93,7 +93,7 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
                     jobConfiguration.getName()
                 );
                 providerMessageDistributor.distribute(processedNotificationDetails, processedMessageHolder);
-                executingJobManager.endStage(executingJob.getExecutionId(), JobStage.PROCESSING);
+                executingJobManager.endStage(executingJob.getExecutionId(), JobStage.NOTIFICATION_PROCESSING);
                 executingJob.jobSucceeded();
             }
         } finally {
