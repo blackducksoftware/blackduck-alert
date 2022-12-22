@@ -1,4 +1,4 @@
-ext.moduleName = 'com.synopsys.integration.alert.component.ldap'
+ext.moduleName = 'com.synopsys.integration.alert.authentication.ldap'
 
 dependencies {
     implementation platform(project(':alert-platform'))

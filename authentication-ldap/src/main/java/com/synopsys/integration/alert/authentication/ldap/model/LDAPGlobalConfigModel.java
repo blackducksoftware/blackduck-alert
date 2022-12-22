@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.component.ldap.model;
+package com.synopsys.integration.alert.authentication.ldap.model;
 
 import java.util.Optional;
 
