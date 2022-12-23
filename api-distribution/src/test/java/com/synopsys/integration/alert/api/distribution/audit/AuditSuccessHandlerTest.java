@@ -25,7 +25,7 @@ class AuditSuccessHandlerTest {
     @Test
     void handleEventTest() {
         UUID jobId = UUID.randomUUID();
-        ExecutingJob executingJob = executingJobManager.startJob(jobId);
+        ExecutingJob executingJob = executingJobManager.startJob(jobId, 0);
         UUID jobExecutionId = executingJob.getExecutionId();
         AuditSuccessHandler handler = new AuditSuccessHandler(executingJobManager);
         AuditSuccessEvent event = new AuditSuccessEvent(jobExecutionId, Set.of());

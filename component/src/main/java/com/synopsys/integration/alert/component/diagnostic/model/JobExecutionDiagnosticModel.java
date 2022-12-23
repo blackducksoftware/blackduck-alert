@@ -10,25 +10,28 @@ public class JobExecutionDiagnosticModel {
     private final String start;
     private final String end;
     private final AuditEntryStatus status;
-    private final Long notificationCount;
+    private final int processedNotificationCount;
+    private final int totalNotificationCount;
 
     private final List<JobStageDiagnosticModel> stages;
 
     public JobExecutionDiagnosticModel(
-        final String jobName,
-        final String channelName,
-        final String start,
-        final String end,
-        final AuditEntryStatus status,
-        final Long notificationCount,
-        final List<JobStageDiagnosticModel> stages
+        String jobName,
+        String channelName,
+        String start,
+        String end,
+        AuditEntryStatus status,
+        int processedNotificationCount,
+        int totalNotificationCount,
+        List<JobStageDiagnosticModel> stages
     ) {
         this.jobName = jobName;
         this.channelName = channelName;
         this.start = start;
         this.end = end;
         this.status = status;
-        this.notificationCount = notificationCount;
+        this.processedNotificationCount = processedNotificationCount;
+        this.totalNotificationCount = totalNotificationCount;
         this.stages = stages;
     }
 
@@ -52,8 +55,12 @@ public class JobExecutionDiagnosticModel {
         return status;
     }
 
-    public Long getNotificationCount() {
-        return notificationCount;
+    public int getProcessedNotificationCount() {
+        return processedNotificationCount;
+    }
+
+    public int getTotalNotificationCount() {
+        return totalNotificationCount;
     }
 
     public List<JobStageDiagnosticModel> getStages() {

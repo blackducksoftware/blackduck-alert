@@ -82,10 +82,11 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
         try {
             Optional<DistributionJobModel> jobModel = jobAccessor.getJobById(jobId);
             if (jobModel.isPresent()) {
-                ExecutingJob executingJob = executingJobManager.startJob(jobId);
+                int totalNotificationCount = jobNotificationMappingAccessor.getNotificationCountForJob(correlationId, jobId);
+                ExecutingJob executingJob = executingJobManager.startJob(jobId, totalNotificationCount);
                 executingJobManager.startStage(executingJob.getExecutionId(), JobStage.NOTIFICATION_PROCESSING);
                 DistributionJobModel jobConfiguration = jobModel.get();
-                ProcessedProviderMessageHolder processedMessageHolder = processNotifications(event, executingJob, jobConfiguration);
+                ProcessedProviderMessageHolder processedMessageHolder = processNotifications(event, executingJob.getJobConfigId(), jobConfiguration);
                 ProcessedNotificationDetails processedNotificationDetails = new ProcessedNotificationDetails(
                     executingJob.getExecutionId(),
                     jobConfiguration.getJobId(),
@@ -102,7 +103,7 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
         }
     }
 
-    private ProcessedProviderMessageHolder processNotifications(JobProcessingEvent event, ExecutingJob executingJob, DistributionJobModel job) {
+    private ProcessedProviderMessageHolder processNotifications(JobProcessingEvent event, UUID jobExecutionId, DistributionJobModel job) {
         ProcessedProviderMessageHolder processedMessageHolder = null;
         UUID correlationId = event.getCorrelationId();
         UUID jobId = event.getJobId();
@@ -117,8 +118,8 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
 
         while (jobNotificationMappings.getCurrentPage() <= jobNotificationMappings.getTotalPages()) {
             List<Long> notificationIds = extractNotificationIds(jobNotificationMappings);
-            executingJob.updateNotificationCount(notificationIds.size());
             List<AlertNotificationModel> notifications = notificationAccessor.findByIds(notificationIds);
+            executingJobManager.incrementNotificationCount(jobExecutionId, notifications.size());
             logNotifications("Start", event, notificationIds);
             ProcessedProviderMessageHolder currentProcessedMessages = processNotifications(job, notifications);
             if (null == processedMessageHolder) {

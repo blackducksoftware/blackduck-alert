@@ -14,19 +14,21 @@ public class ExecutingJob {
     private final Instant start;
     private Instant end;
     private AuditEntryStatus status;
-    private Long notificationCount;
+    private int processedNotificationCount;
+    private final int totalNotificationCount;
     private final Map<JobStage, ExecutingJobStage> stages = new ConcurrentHashMap<>();
 
-    public static ExecutingJob startJob(UUID jobConfigId) {
-        return new ExecutingJob(jobConfigId, Instant.now(), AuditEntryStatus.PENDING);
+    public static ExecutingJob startJob(UUID jobConfigId, int totalNotificationCount) {
+        return new ExecutingJob(jobConfigId, Instant.now(), AuditEntryStatus.PENDING, totalNotificationCount);
     }
 
-    private ExecutingJob(UUID jobConfigId, Instant start, AuditEntryStatus status) {
+    private ExecutingJob(UUID jobConfigId, Instant start, AuditEntryStatus status, int totalNotificationCount) {
         this.executionId = UUID.randomUUID();
         this.jobConfigId = jobConfigId;
         this.start = start;
         this.status = status;
-        this.notificationCount = 0L;
+        this.processedNotificationCount = 0;
+        this.totalNotificationCount = totalNotificationCount;
     }
 
     public void jobSucceeded() {
@@ -42,9 +44,9 @@ public class ExecutingJob {
         this.status = status;
     }
 
-    public Long updateNotificationCount(Number notificationCount) {
-        this.notificationCount += notificationCount.longValue();
-        return this.notificationCount;
+    public int updateNotificationCount(int notificationCount) {
+        this.processedNotificationCount += notificationCount;
+        return this.processedNotificationCount;
     }
 
     public void addStage(ExecutingJobStage jobStage) {
@@ -63,8 +65,12 @@ public class ExecutingJob {
         return jobConfigId;
     }
 
-    public Long getNotificationCount() {
-        return notificationCount;
+    public int getProcessedNotificationCount() {
+        return processedNotificationCount;
+    }
+
+    public int getTotalNotificationCount() {
+        return totalNotificationCount;
     }
 
     public Instant getStart() {

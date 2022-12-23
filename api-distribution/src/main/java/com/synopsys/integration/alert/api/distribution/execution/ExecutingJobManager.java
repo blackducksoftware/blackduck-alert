@@ -17,28 +17,26 @@ import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 public class ExecutingJobManager {
     private final Map<UUID, ExecutingJob> executingJobMap = new ConcurrentHashMap<>();
 
-    public ExecutingJob startJob(UUID jobConfigId) {
-        ExecutingJob job = ExecutingJob.startJob(jobConfigId);
+    public ExecutingJob startJob(UUID jobConfigId, int totalNotificationCount) {
+        ExecutingJob job = ExecutingJob.startJob(jobConfigId, totalNotificationCount);
         executingJobMap.putIfAbsent(job.getExecutionId(), job);
         return job;
     }
 
-    public Optional<ExecutingJob> endJobWithSuccess(UUID executionId) {
+    public void endJobWithSuccess(UUID executionId) {
         Optional<ExecutingJob> executingJob = Optional.ofNullable(executingJobMap.getOrDefault(executionId, null));
         executingJob.ifPresent(ExecutingJob::jobSucceeded);
-        return executingJob;
     }
 
-    public Optional<ExecutingJob> endJobWithFailure(UUID executionId) {
+    public void endJobWithFailure(UUID executionId) {
         Optional<ExecutingJob> executingJob = Optional.ofNullable(executingJobMap.getOrDefault(executionId, null));
         executingJob.ifPresent(ExecutingJob::jobFailed);
-        return executingJob;
     }
 
-    public Long incrementNotificationCount(UUID jobExecutionId, Long notificationCount) {
+    public int incrementNotificationCount(UUID jobExecutionId, int notificationCount) {
         Optional<ExecutingJob> executingJob = getExecutingJob(jobExecutionId);
         executingJob.ifPresent(execution -> execution.updateNotificationCount(notificationCount));
-        return executingJob.map(ExecutingJob::getNotificationCount).orElse(0L);
+        return executingJob.map(ExecutingJob::getProcessedNotificationCount).orElse(0);
     }
 
     public Optional<ExecutingJob> getExecutingJob(UUID jobExecutionId) {

@@ -17,7 +17,7 @@ class ExecutingJobManagerTest {
     void createExecutingJobTest() {
         ExecutingJobManager jobManager = new ExecutingJobManager();
         UUID jobConfigId = UUID.randomUUID();
-        ExecutingJob executingJob = jobManager.startJob(jobConfigId);
+        ExecutingJob executingJob = jobManager.startJob(jobConfigId, 0);
         assertNotNull(executingJob);
         assertEquals(jobConfigId, executingJob.getJobConfigId());
     }
@@ -26,7 +26,7 @@ class ExecutingJobManagerTest {
     void executingJobPendingTest() {
         ExecutingJobManager jobManager = new ExecutingJobManager();
         UUID jobConfigId = UUID.randomUUID();
-        ExecutingJob executingJob = jobManager.startJob(jobConfigId);
+        ExecutingJob executingJob = jobManager.startJob(jobConfigId, 1);
         AggregatedExecutionResults results = jobManager.aggregateExecutingJobData();
         assertNotNull(executingJob);
         assertEquals(jobConfigId, executingJob.getJobConfigId());
@@ -44,7 +44,7 @@ class ExecutingJobManagerTest {
     void executingJobSucceededTest() {
         ExecutingJobManager jobManager = new ExecutingJobManager();
         UUID jobConfigId = UUID.randomUUID();
-        ExecutingJob executingJob = jobManager.startJob(jobConfigId);
+        ExecutingJob executingJob = jobManager.startJob(jobConfigId, 1);
         ExecutingJob savedJob = jobManager.getExecutingJob(executingJob.getExecutionId()).orElseThrow(() -> new AssertionError("Job with execution ID not found."));
         savedJob.jobSucceeded();
         AggregatedExecutionResults results = jobManager.aggregateExecutingJobData();
@@ -63,7 +63,7 @@ class ExecutingJobManagerTest {
     void executingJobFailedTest() {
         ExecutingJobManager jobManager = new ExecutingJobManager();
         UUID jobConfigId = UUID.randomUUID();
-        ExecutingJob executingJob = jobManager.startJob(jobConfigId);
+        ExecutingJob executingJob = jobManager.startJob(jobConfigId, 1);
         ExecutingJob savedJob = jobManager.getExecutingJob(executingJob.getExecutionId()).orElseThrow(() -> new AssertionError("Job with execution ID not found."));
         savedJob.jobFailed();
         AggregatedExecutionResults results = jobManager.aggregateExecutingJobData();
@@ -82,7 +82,7 @@ class ExecutingJobManagerTest {
     void addStageTest() {
         ExecutingJobManager jobManager = new ExecutingJobManager();
         UUID jobConfigId = UUID.randomUUID();
-        ExecutingJob executingJob = jobManager.startJob(jobConfigId);
+        ExecutingJob executingJob = jobManager.startJob(jobConfigId, 1);
         ExecutingJobStage executingJobStage = ExecutingJobStage.createStage(executingJob.getExecutionId(), JobStage.NOTIFICATION_PROCESSING);
         executingJob.addStage(executingJobStage);
         executingJobStage.endStage();
@@ -99,7 +99,7 @@ class ExecutingJobManagerTest {
     void stageMissingTest() {
         ExecutingJobManager jobManager = new ExecutingJobManager();
         UUID jobConfigId = UUID.randomUUID();
-        ExecutingJob executingJob = jobManager.startJob(jobConfigId);
+        ExecutingJob executingJob = jobManager.startJob(jobConfigId, 1);
         ExecutingJobStage executingJobStage = ExecutingJobStage.createStage(executingJob.getExecutionId(), JobStage.NOTIFICATION_PROCESSING);
         executingJob.addStage(executingJobStage);
         executingJobStage.endStage();
@@ -111,7 +111,7 @@ class ExecutingJobManagerTest {
     void addSameStageTest() {
         ExecutingJobManager jobManager = new ExecutingJobManager();
         UUID jobConfigId = UUID.randomUUID();
-        ExecutingJob executingJob = jobManager.startJob(jobConfigId);
+        ExecutingJob executingJob = jobManager.startJob(jobConfigId, 1);
         ExecutingJobStage firstStage = ExecutingJobStage.createStage(executingJob.getExecutionId(), JobStage.NOTIFICATION_PROCESSING);
         executingJob.addStage(firstStage);
         firstStage.endStage();
@@ -130,7 +130,7 @@ class ExecutingJobManagerTest {
     void multipleStagesTest() {
         ExecutingJobManager jobManager = new ExecutingJobManager();
         UUID jobConfigId = UUID.randomUUID();
-        ExecutingJob executingJob = jobManager.startJob(jobConfigId);
+        ExecutingJob executingJob = jobManager.startJob(jobConfigId, 1);
         ExecutingJobStage mappingStage = ExecutingJobStage.createStage(executingJob.getExecutionId(), JobStage.NOTIFICATION_PROCESSING);
         executingJob.addStage(mappingStage);
         mappingStage.endStage();

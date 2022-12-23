@@ -145,7 +145,7 @@ public class DefaultDiagnosticAccessor implements DiagnosticAccessor {
         String start = DateUtils.formatDateAsJsonString(DateUtils.fromInstantUTC(job.getStart()));
         String end = job.getEnd().map(instant -> DateUtils.formatDateAsJsonString(DateUtils.fromInstantUTC(instant))).orElse("");
 
-        return new JobExecutionDiagnosticModel(jobName, channelName, start, end, job.getStatus(), job.getNotificationCount(), stageData);
+        return new JobExecutionDiagnosticModel(jobName, channelName, start, end, job.getStatus(), job.getProcessedNotificationCount(), job.getTotalNotificationCount(), stageData);
     }
 
     private JobStageDiagnosticModel convertJobStageData(ExecutingJobStage executingJobStage) {

@@ -32,9 +32,9 @@ class AuditSuccessEventListenerTest {
     @Test
     void onMessageTest() {
         UUID jobId = UUID.randomUUID();
-        ExecutingJob executingJob = executingJobManager.startJob(jobId);
-        UUID executingJobId = executingJob.getExecutionId();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
+        ExecutingJob executingJob = executingJobManager.startJob(jobId, notificationIds.size());
+        UUID executingJobId = executingJob.getExecutionId();
 
         AuditSuccessEventListener listener = new AuditSuccessEventListener(gson, taskExecutor, handler);
         AuditSuccessEvent event = new AuditSuccessEvent(executingJobId, notificationIds);
