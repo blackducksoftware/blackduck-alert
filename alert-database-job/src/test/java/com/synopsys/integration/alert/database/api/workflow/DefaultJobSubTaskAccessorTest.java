@@ -29,10 +29,11 @@ class DefaultJobSubTaskAccessorTest {
     @Test
     void testCreateSubTask() {
         UUID id = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Long remainingTaskCount = 0L;
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
-        JobSubTaskStatusModel model = accessor.createSubTaskStatus(id, jobId, remainingTaskCount, notificationIds);
+        JobSubTaskStatusModel model = accessor.createSubTaskStatus(id, jobId, jobExecutionId, remainingTaskCount, notificationIds);
         assertNotNull(model);
         assertEquals(id, model.getParentEventId());
         assertEquals(jobId, model.getJobId());
@@ -50,10 +51,11 @@ class DefaultJobSubTaskAccessorTest {
     @Test
     void testGetSubTask() {
         UUID id = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Long remainingTaskCount = 0L;
         Set<Long> notificationIds = Set.of();
-        JobSubTaskStatusModel createdModel = accessor.createSubTaskStatus(id, jobId, remainingTaskCount, notificationIds);
+        JobSubTaskStatusModel createdModel = accessor.createSubTaskStatus(id, jobId, jobExecutionId, remainingTaskCount, notificationIds);
         Optional<JobSubTaskStatusModel> savedModel = accessor.getSubTaskStatus(id);
         assertTrue(savedModel.isPresent());
         JobSubTaskStatusModel model = savedModel.get();
@@ -74,10 +76,11 @@ class DefaultJobSubTaskAccessorTest {
     @Test
     void testUpdateTaskCount() {
         UUID id = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Long remainingTaskCount = 0L;
         Set<Long> notificationIds = Set.of();
-        JobSubTaskStatusModel createdModel = accessor.createSubTaskStatus(id, jobId, remainingTaskCount, notificationIds);
+        JobSubTaskStatusModel createdModel = accessor.createSubTaskStatus(id, jobId, jobExecutionId, remainingTaskCount, notificationIds);
         Long updatedTaskCount = 5L;
         Optional<JobSubTaskStatusModel> savedModel = accessor.updateTaskCount(id, updatedTaskCount);
         assertTrue(savedModel.isPresent());
@@ -99,10 +102,11 @@ class DefaultJobSubTaskAccessorTest {
     @Test
     void testDecrementTaskCount() {
         UUID id = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Long remainingTaskCount = 5L;
         Set<Long> notificationIds = Set.of();
-        JobSubTaskStatusModel createdModel = accessor.createSubTaskStatus(id, jobId, remainingTaskCount, notificationIds);
+        JobSubTaskStatusModel createdModel = accessor.createSubTaskStatus(id, jobId, jobExecutionId, remainingTaskCount, notificationIds);
         Optional<JobSubTaskStatusModel> savedModel = accessor.decrementTaskCount(id);
         assertTrue(savedModel.isPresent());
         JobSubTaskStatusModel model = savedModel.get();
@@ -123,10 +127,11 @@ class DefaultJobSubTaskAccessorTest {
     @Test
     void testRemoveTask() {
         UUID id = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Long remainingTaskCount = 5L;
         Set<Long> notificationIds = Set.of();
-        accessor.createSubTaskStatus(id, jobId, remainingTaskCount, notificationIds);
+        accessor.createSubTaskStatus(id, jobId, jobExecutionId, remainingTaskCount, notificationIds);
         Optional<JobSubTaskStatusModel> removedModel = accessor.removeSubTaskStatus(id);
         assertTrue(removedModel.isPresent());
         assertTrue(accessor.getSubTaskStatus(id).isEmpty());

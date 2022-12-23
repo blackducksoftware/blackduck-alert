@@ -52,7 +52,7 @@ class JobSubTaskEventHandlerTest {
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
 
-        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobId, 2L, notificationIds);
+        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobId, jobExecutionId, 2L, notificationIds);
 
         TestHandler handler = new TestHandler(eventManager, jobSubTaskAccessor);
         TestEvent event = new TestEvent(destination, parentEventId, jobExecutionId, jobId, notificationIds);
@@ -78,7 +78,7 @@ class JobSubTaskEventHandlerTest {
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
 
-        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobId, 2L, notificationIds);
+        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobId, jobExecutionId, 2L, notificationIds);
 
         TestHandler handler = new TestHandler(eventManager, jobSubTaskAccessor);
         handler.setShouldThrowException(true);
@@ -99,7 +99,7 @@ class JobSubTaskEventHandlerTest {
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
 
-        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobId, 1L, notificationIds);
+        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobId, jobExecutionId, 1L, notificationIds);
 
         TestHandler handler = new TestHandler(eventManager, jobSubTaskAccessor);
         TestEvent event = new TestEvent(destination, parentEventId, jobExecutionId, jobId, notificationIds);

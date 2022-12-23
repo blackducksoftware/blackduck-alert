@@ -58,7 +58,7 @@ class JiraCloudCreateIssueEventListenerTest {
         ));
         Mockito.doNothing().when(handler).handleEvent(event);
 
-        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobId, 1L, notificationIds);
+        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobId, jobExecutionId, 1L, notificationIds);
         Optional<JobSubTaskStatusModel> optionalJobSubTaskStatusModel = jobSubTaskAccessor.getSubTaskStatus(parentEventId);
         assertTrue(optionalJobSubTaskStatusModel.isPresent());
 
