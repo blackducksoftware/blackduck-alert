@@ -286,7 +286,8 @@ class RoleActionsTest {
     }
 
     @Test
-    void updateErrorTest() throws Exception {
+    void
+    updateErrorTest() throws Exception {
         String newRoleName = "newRoleName";
         Long longId = 1L;
         PermissionModel permissionModel = createPermissionModel();
@@ -304,7 +305,7 @@ class RoleActionsTest {
 
         assertTrue(rolePermissionModelActionResponse.isError());
         assertFalse(rolePermissionModelActionResponse.hasContent());
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, rolePermissionModelActionResponse.getHttpStatus());
+        assertEquals(HttpStatus.BAD_REQUEST, rolePermissionModelActionResponse.getHttpStatus());
     }
 
     @Test
