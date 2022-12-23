@@ -99,6 +99,6 @@ public class DefaultJobSubTaskAccessor implements JobSubTaskAccessor {
     }
 
     private JobSubTaskStatusModel convertEntity(JobSubTaskStatusEntity entity) {
-        return new JobSubTaskStatusModel(entity.getId(), entity.getJobId(), entity.getRemainingEvents(), entity.getNotificationCorrelationId());
+        return new JobSubTaskStatusModel(entity.getId(), entity.getJobId(), entity.getJobExecutionId(), entity.getRemainingEvents(), entity.getNotificationCorrelationId());
     }
 }
