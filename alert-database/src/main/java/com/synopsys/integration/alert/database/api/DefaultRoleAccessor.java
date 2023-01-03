@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
@@ -51,8 +52,10 @@ public class DefaultRoleAccessor implements RoleAccessor {
     private final ConfigContextRepository configContextRepository;
 
     @Autowired
-    public DefaultRoleAccessor(RoleRepository roleRepository, UserRoleRepository userRoleRepository, PermissionMatrixRepository permissionMatrixRepository,
-        RegisteredDescriptorRepository registeredDescriptorRepository, ConfigContextRepository configContextRepository) {
+    public DefaultRoleAccessor(
+        RoleRepository roleRepository, UserRoleRepository userRoleRepository, PermissionMatrixRepository permissionMatrixRepository,
+        RegisteredDescriptorRepository registeredDescriptorRepository, ConfigContextRepository configContextRepository
+    ) {
         this.roleRepository = roleRepository;
         this.userRoleRepository = userRoleRepository;
         this.permissionMatrixRepository = permissionMatrixRepository;
@@ -98,12 +101,13 @@ public class DefaultRoleAccessor implements RoleAccessor {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public void updateRoleName(Long roleId, String roleName) throws AlertForbiddenOperationException {
+    public void updateRoleName(Long roleId, String roleName) throws AlertException {
         Optional<RoleEntity> foundRole = roleRepository.findById(roleId);
         if (foundRole.isPresent()) {
             RoleEntity roleEntity = foundRole.get();
             if (BooleanUtils.isFalse(roleEntity.getCustom())) {
-                throw new AlertForbiddenOperationException("Cannot update the existing role '" + foundRole.get().getRoleName() + "' to '" + roleName + "' because it is not a custom role");
+                throw new AlertForbiddenOperationException(
+                    "Cannot update the existing role '" + foundRole.get().getRoleName() + "' to '" + roleName + "' because it is not a custom role");
             }
             RoleEntity updatedEntity = new RoleEntity(roleName, true);
             updatedEntity.setId(roleEntity.getId());
@@ -115,7 +119,7 @@ public class DefaultRoleAccessor implements RoleAccessor {
     @Transactional(propagation = Propagation.REQUIRED)
     public PermissionMatrixModel updatePermissionsForRole(String roleName, PermissionMatrixModel permissionMatrix) throws AlertConfigurationException {
         RoleEntity roleEntity = roleRepository.findByRoleName(roleName)
-                                    .orElseThrow(() -> new AlertConfigurationException("No role exists with name: " + roleName));
+            .orElseThrow(() -> new AlertConfigurationException("No role exists with name: " + roleName));
         List<PermissionMatrixRelation> permissions = updateRoleOperations(roleEntity, permissionMatrix);
         return createModelFromPermission(permissions);
     }
@@ -182,9 +186,9 @@ public class DefaultRoleAccessor implements RoleAccessor {
         for (Map.Entry<PermissionKey, Integer> permission : permissions.entrySet()) {
             PermissionKey permissionKey = permission.getKey();
             ConfigContextEntity dbContext = configContextRepository.findFirstByContext(permissionKey.getContext())
-                                                .orElseThrow(() -> new AlertRuntimeException("Invalid context specified for permission"));
+                .orElseThrow(() -> new AlertRuntimeException("Invalid context specified for permission"));
             RegisteredDescriptorEntity registeredDescriptor = registeredDescriptorRepository.findFirstByName(permissionKey.getDescriptorName())
-                                                                  .orElseThrow(() -> new AlertRuntimeException("Invalid descriptor name specified for permission"));
+                .orElseThrow(() -> new AlertRuntimeException("Invalid descriptor name specified for permission"));
 
             int accessOperations = permission.getValue();
             PermissionMatrixRelation permissionMatrixRelation = new PermissionMatrixRelation(roleEntity.getId(), dbContext.getId(), registeredDescriptor.getId(), accessOperations);
