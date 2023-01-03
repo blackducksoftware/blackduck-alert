@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -42,8 +43,8 @@ public class AuthenticationSAMLConfigAccessor implements UniqueConfigurationAcce
         if (doesConfigurationExist()) {
             throw new AlertConfigurationException("A SAML config already exists.");
         }
-
-        AuthenticationSAMLConfigurationEntity authenticationSAMLConfigurationEntity = toEntity(UUID.randomUUID(), configuration);
+        OffsetDateTime createAndUpdatedDateTime = DateUtils.createCurrentDateTimestamp();
+        AuthenticationSAMLConfigurationEntity authenticationSAMLConfigurationEntity = toEntity(UUID.randomUUID(), configuration, createAndUpdatedDateTime, createAndUpdatedDateTime);
         AuthenticationSAMLConfigurationEntity savedEntity = authenticationSAMLConfigurationRepository.save(authenticationSAMLConfigurationEntity);
 
         return toModel(savedEntity);
@@ -57,7 +58,7 @@ public class AuthenticationSAMLConfigAccessor implements UniqueConfigurationAcce
                 .findByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
                 .orElseThrow(() -> new AlertConfigurationException("SAML config does not exist"));
 
-        AuthenticationSAMLConfigurationEntity authenticationSAMLConfigurationEntity = toEntity(configurationEntity.getConfigurationId(), configuration);
+        AuthenticationSAMLConfigurationEntity authenticationSAMLConfigurationEntity = toEntity(configurationEntity.getConfigurationId(), configuration, configurationEntity.getCreatedAt(), DateUtils.createCurrentDateTimestamp());
         AuthenticationSAMLConfigurationEntity savedEntity = authenticationSAMLConfigurationRepository.save(authenticationSAMLConfigurationEntity);
 
         return toModel(savedEntity);
@@ -85,9 +86,11 @@ public class AuthenticationSAMLConfigAccessor implements UniqueConfigurationAcce
         );
     }
 
-    private AuthenticationSAMLConfigurationEntity toEntity(UUID configurationId, AuthenticationSAMLConfigModel authenticationSAMLConfigModel) {
+    private AuthenticationSAMLConfigurationEntity toEntity(UUID configurationId, AuthenticationSAMLConfigModel authenticationSAMLConfigModel, OffsetDateTime createdTime, OffsetDateTime lastUpdated) {
         return new AuthenticationSAMLConfigurationEntity(
             configurationId,
+            createdTime,
+            lastUpdated,
             authenticationSAMLConfigModel.getEnabled().orElse(Boolean.FALSE),
             authenticationSAMLConfigModel.getForceAuth().orElse(Boolean.FALSE),
             authenticationSAMLConfigModel.getMetadataUrl().orElse(""),
