@@ -86,7 +86,7 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
                 ExecutingJob executingJob = executingJobManager.startJob(jobId, totalNotificationCount);
                 executingJobManager.startStage(executingJob.getExecutionId(), JobStage.NOTIFICATION_PROCESSING);
                 DistributionJobModel jobConfiguration = jobModel.get();
-                ProcessedProviderMessageHolder processedMessageHolder = processNotifications(event, executingJob.getJobConfigId(), jobConfiguration);
+                ProcessedProviderMessageHolder processedMessageHolder = processNotifications(event, executingJob.getExecutionId(), jobConfiguration);
                 ProcessedNotificationDetails processedNotificationDetails = new ProcessedNotificationDetails(
                     executingJob.getExecutionId(),
                     jobConfiguration.getJobId(),

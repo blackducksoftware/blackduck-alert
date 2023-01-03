@@ -33,10 +33,10 @@ public class ExecutingJobManager {
         executingJob.ifPresent(ExecutingJob::jobFailed);
     }
 
-    public int incrementNotificationCount(UUID jobExecutionId, int notificationCount) {
+    public void incrementNotificationCount(UUID jobExecutionId, int notificationCount) {
         Optional<ExecutingJob> executingJob = getExecutingJob(jobExecutionId);
         executingJob.ifPresent(execution -> execution.updateNotificationCount(notificationCount));
-        return executingJob.map(ExecutingJob::getProcessedNotificationCount).orElse(0);
+        executingJob.map(ExecutingJob::getProcessedNotificationCount);
     }
 
     public Optional<ExecutingJob> getExecutingJob(UUID jobExecutionId) {

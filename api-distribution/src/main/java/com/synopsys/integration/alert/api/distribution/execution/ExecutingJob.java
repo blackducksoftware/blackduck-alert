@@ -44,9 +44,8 @@ public class ExecutingJob {
         this.status = status;
     }
 
-    public int updateNotificationCount(int notificationCount) {
+    public void updateNotificationCount(int notificationCount) {
         this.processedNotificationCount += notificationCount;
-        return this.processedNotificationCount;
     }
 
     public void addStage(ExecutingJobStage jobStage) {
