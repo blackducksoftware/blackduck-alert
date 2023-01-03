@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.distribution.execution.JobStage;
 import com.synopsys.integration.alert.api.distribution.mock.MockJobSubTaskRepository;
 import com.synopsys.integration.alert.api.distribution.mock.MockNotificationCorrelationToNotificationRelationRepository;
 import com.synopsys.integration.alert.api.event.EventManager;
@@ -46,21 +47,21 @@ class JobSubTaskEventHandlerTest {
     @Test
     void testHandleEvent() {
         String destination = "destination";
-        UUID parentEventId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
 
-        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobId, 2L, notificationIds);
+        jobSubTaskAccessor.createSubTaskStatus(jobExecutionId, jobId, 2L, notificationIds);
 
         TestHandler handler = new TestHandler(eventManager, jobSubTaskAccessor);
-        TestEvent event = new TestEvent(destination, parentEventId, jobId, notificationIds);
+        TestEvent event = new TestEvent(destination, jobExecutionId, jobId, notificationIds);
         handler.handle(event);
 
         assertTrue(handler.wasHandlerCalled());
-        Optional<JobSubTaskStatusEntity> entry = jobSubTaskRepository.findById(parentEventId);
+        Optional<JobSubTaskStatusEntity> entry = jobSubTaskRepository.findById(jobExecutionId);
         assertTrue(entry.isPresent());
         JobSubTaskStatusEntity entity = entry.get();
-        assertEquals(parentEventId, entity.getId());
+        assertEquals(jobExecutionId, entity.getId());
         assertEquals(jobId, entity.getJobId());
         assertEquals(1L, entity.getRemainingEvents());
         assertNotNull(entity.getNotificationCorrelationId());
@@ -71,46 +72,46 @@ class JobSubTaskEventHandlerTest {
     void testHandleExceptionEvent() {
 
         String destination = "destination";
-        UUID parentEventId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
 
-        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobId, 2L, notificationIds);
+        jobSubTaskAccessor.createSubTaskStatus(jobExecutionId, jobId, 2L, notificationIds);
 
         TestHandler handler = new TestHandler(eventManager, jobSubTaskAccessor);
         handler.setShouldThrowException(true);
 
-        TestEvent event = new TestEvent(destination, parentEventId, jobId, notificationIds);
+        TestEvent event = new TestEvent(destination, jobExecutionId, jobId, notificationIds);
         handler.handle(event);
 
         assertTrue(handler.wasHandlerCalled());
-        Optional<JobSubTaskStatusEntity> entry = jobSubTaskRepository.findById(parentEventId);
+        Optional<JobSubTaskStatusEntity> entry = jobSubTaskRepository.findById(jobExecutionId);
         assertTrue(entry.isEmpty());
     }
 
     @Test
     void testHandleEventCountToZero() {
         String destination = "destination";
-        UUID parentEventId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
 
-        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobId, 1L, notificationIds);
+        jobSubTaskAccessor.createSubTaskStatus(jobExecutionId, jobId, 1L, notificationIds);
 
         TestHandler handler = new TestHandler(eventManager, jobSubTaskAccessor);
-        TestEvent event = new TestEvent(destination, parentEventId, jobId, notificationIds);
+        TestEvent event = new TestEvent(destination, jobExecutionId, jobId, notificationIds);
         handler.handle(event);
 
         assertTrue(handler.wasHandlerCalled());
-        Optional<JobSubTaskStatusEntity> entry = jobSubTaskRepository.findById(parentEventId);
+        Optional<JobSubTaskStatusEntity> entry = jobSubTaskRepository.findById(jobExecutionId);
         assertTrue(entry.isEmpty());
     }
 
     private static class TestEvent extends JobSubTaskEvent {
         private static final long serialVersionUID = -2052376174682165438L;
 
-        public TestEvent(String destination, UUID parentEventId, UUID jobId, Set<Long> notificationIds) {
-            super(destination, parentEventId, jobId, notificationIds);
+        public TestEvent(String destination, UUID jobExecutionId, UUID jobId, Set<Long> notificationIds) {
+            super(destination, jobExecutionId, jobId, notificationIds);
         }
     }
 
@@ -122,7 +123,7 @@ class JobSubTaskEventHandlerTest {
             EventManager eventManager,
             JobSubTaskAccessor jobSubTaskAccessor
         ) {
-            super(eventManager, jobSubTaskAccessor);
+            super(eventManager, jobSubTaskAccessor, JobStage.CHANNEL_PROCESSING);
 
         }
 

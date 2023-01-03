@@ -7,6 +7,8 @@ import java.util.UUID;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.distribution.audit.AuditFailedEvent;
 import com.synopsys.integration.alert.api.distribution.audit.AuditSuccessEvent;
+import com.synopsys.integration.alert.api.distribution.execution.JobStage;
+import com.synopsys.integration.alert.api.distribution.execution.JobStageEndedEvent;
 import com.synopsys.integration.alert.api.event.AlertEvent;
 import com.synopsys.integration.alert.api.event.AlertEventHandler;
 import com.synopsys.integration.alert.api.event.EventManager;
@@ -19,33 +21,38 @@ public abstract class JobSubTaskEventHandler<T extends JobSubTaskEvent> implemen
 
     private final EventManager eventManager;
     private final JobSubTaskAccessor jobSubTaskAccessor;
+    private final JobStage jobStage;
 
-    protected JobSubTaskEventHandler(EventManager eventManager, JobSubTaskAccessor jobSubTaskAccessor) {
+    protected JobSubTaskEventHandler(EventManager eventManager, JobSubTaskAccessor jobSubTaskAccessor, JobStage jobStage) {
         this.eventManager = eventManager;
         this.jobSubTaskAccessor = jobSubTaskAccessor;
+        this.jobStage = jobStage;
     }
 
     @Override
     public final void handle(T event) {
-        UUID parentEventId = event.getParentEventId();
+        UUID jobExecutionId = event.getJobExecutionId();
         try {
+
             handleEvent(event);
-            Optional<JobSubTaskStatusModel> subTaskStatus = jobSubTaskAccessor.decrementTaskCount(parentEventId);
+            Optional<JobSubTaskStatusModel> subTaskStatus = jobSubTaskAccessor.decrementTaskCount(jobExecutionId);
             subTaskStatus.map(JobSubTaskStatusModel::getRemainingTaskCount)
                 .filter(remainingCount -> remainingCount < 1)
                 .ifPresent(ignored -> {
-                    eventManager.sendEvent(new AuditSuccessEvent(event.getJobId(), event.getNotificationIds()));
-                    jobSubTaskAccessor.removeSubTaskStatus(parentEventId);
+                    eventManager.sendEvent(new JobStageEndedEvent(event.getJobExecutionId(), jobStage));
+                    eventManager.sendEvent(new AuditSuccessEvent(event.getJobExecutionId(), event.getNotificationIds()));
+                    jobSubTaskAccessor.removeSubTaskStatus(jobExecutionId);
                 });
         } catch (AlertException exception) {
+            eventManager.sendEvent(new JobStageEndedEvent(event.getJobExecutionId(), jobStage));
             eventManager.sendEvent(new AuditFailedEvent(
-                event.getJobId(),
+                event.getJobExecutionId(),
                 event.getNotificationIds(),
                 exception.getMessage(),
                 AuditStackTraceUtil.createStackTraceString(exception)
             ));
 
-            jobSubTaskAccessor.removeSubTaskStatus(parentEventId);
+            jobSubTaskAccessor.removeSubTaskStatus(jobExecutionId);
         }
     }
 

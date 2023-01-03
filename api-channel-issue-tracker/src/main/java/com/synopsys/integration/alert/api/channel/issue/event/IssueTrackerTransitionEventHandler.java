@@ -12,6 +12,7 @@ import java.io.Serializable;
 import com.synopsys.integration.alert.api.channel.issue.IssueTrackerResponsePostProcessor;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerResponse;
 import com.synopsys.integration.alert.api.distribution.JobSubTaskEventHandler;
+import com.synopsys.integration.alert.api.distribution.execution.JobStage;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.api.event.distribution.JobSubTaskEvent;
 import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
@@ -25,7 +26,7 @@ public abstract class IssueTrackerTransitionEventHandler<T extends JobSubTaskEve
         JobSubTaskAccessor jobSubTaskAccessor,
         IssueTrackerResponsePostProcessor responsePostProcessor
     ) {
-        super(eventManager, jobSubTaskAccessor);
+        super(eventManager, jobSubTaskAccessor, JobStage.ISSUE_RESOLVING);
         this.responsePostProcessor = responsePostProcessor;
     }
 

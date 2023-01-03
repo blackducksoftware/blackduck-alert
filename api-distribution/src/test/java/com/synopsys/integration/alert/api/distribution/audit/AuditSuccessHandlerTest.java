@@ -1,8 +1,6 @@
 package com.synopsys.integration.alert.api.distribution.audit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Optional;
@@ -13,6 +11,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJob;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.distribution.mock.MockAuditEntryRepository;
 import com.synopsys.integration.alert.api.distribution.mock.MockAuditNotificationRepository;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
@@ -28,6 +28,7 @@ class AuditSuccessHandlerTest {
     private ProcessingAuditAccessor processingAuditAccessor;
     private AuditEntryRepository auditEntryRepository;
     private AuditNotificationRepository auditNotificationRepository;
+    private ExecutingJobManager executingJobManager;
     private AtomicLong idContainer = new AtomicLong(0L);
 
     @BeforeEach
@@ -35,6 +36,7 @@ class AuditSuccessHandlerTest {
         auditNotificationRepository = new MockAuditNotificationRepository(this::generateRelationKey);
         auditEntryRepository = new MockAuditEntryRepository(this::generateEntityKey, auditNotificationRepository);
         processingAuditAccessor = new DefaultProcessingAuditAccessor(auditEntryRepository, auditNotificationRepository);
+        executingJobManager = new ExecutingJobManager();
     }
 
     private Long generateEntityKey(AuditEntryEntity entity) {
@@ -56,36 +58,24 @@ class AuditSuccessHandlerTest {
     @Test
     void handleEventTest() {
         UUID jobId = UUID.randomUUID();
-        Set<Long> notificationIds = Set.of(1L, 2L, 3L);
-        processingAuditAccessor.createOrUpdatePendingAuditEntryForJob(jobId, notificationIds);
-        AuditSuccessHandler handler = new AuditSuccessHandler(processingAuditAccessor);
-        AuditSuccessEvent event = new AuditSuccessEvent(jobId, notificationIds);
+        ExecutingJob executingJob = executingJobManager.startJob(jobId);
+        UUID jobExecutionId = executingJob.getExecutionId();
+        AuditSuccessHandler handler = new AuditSuccessHandler(processingAuditAccessor, executingJobManager);
+        AuditSuccessEvent event = new AuditSuccessEvent(jobExecutionId, Set.of());
         handler.handle(event);
-
-        for (Long notificationId : notificationIds) {
-            Optional<AuditEntryEntity> entry = auditEntryRepository.findMatchingAudit(notificationId, jobId);
-            assertTrue(entry.isPresent());
-            AuditEntryEntity entity = entry.get();
-            assertEquals(AuditEntryStatus.SUCCESS.name(), entity.getStatus());
-            assertNotNull(entity.getTimeCreated());
-            assertTrue(entity.getTimeLastSent().isAfter(entity.getTimeCreated()));
-            assertNull(entity.getErrorMessage());
-            assertNull(entity.getErrorStackTrace());
-        }
+        executingJob = executingJobManager.getExecutingJob(jobExecutionId).orElseThrow(() -> new AssertionError("Executing Job cannot be missing from the test."));
+        assertEquals(AuditEntryStatus.SUCCESS, executingJob.getStatus());
     }
 
     @Test
     void handleEventAuditMissingTest() {
-        UUID jobId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
 
-        AuditSuccessHandler handler = new AuditSuccessHandler(processingAuditAccessor);
-        AuditSuccessEvent event = new AuditSuccessEvent(jobId, notificationIds);
+        AuditSuccessHandler handler = new AuditSuccessHandler(processingAuditAccessor, executingJobManager);
+        AuditSuccessEvent event = new AuditSuccessEvent(jobExecutionId, notificationIds);
         handler.handle(event);
-
-        for (Long notificationId : notificationIds) {
-            Optional<AuditEntryEntity> entry = auditEntryRepository.findMatchingAudit(notificationId, jobId);
-            assertTrue(entry.isEmpty());
-        }
+        Optional<ExecutingJob> executingJob = executingJobManager.getExecutingJob(jobExecutionId);
+        assertTrue(executingJob.isEmpty());
     }
 }

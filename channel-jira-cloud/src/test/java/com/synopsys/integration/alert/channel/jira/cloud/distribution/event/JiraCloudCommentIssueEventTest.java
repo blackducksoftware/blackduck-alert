@@ -22,7 +22,7 @@ class JiraCloudCommentIssueEventTest {
         JiraCloudCommentEvent event = new JiraCloudCommentEvent(destination, parentEventId, jobId, notificationIds, model);
 
         assertNotNull(event.getEventId());
-        assertEquals(parentEventId, event.getParentEventId());
+        assertEquals(parentEventId, event.getJobExecutionId());
         assertEquals(destination, event.getDestination());
         assertEquals(jobId, event.getJobId());
         assertEquals(notificationIds, event.getNotificationIds());

@@ -1,18 +1,19 @@
 package com.synopsys.integration.alert.channel.jira.server.distribution.delegate;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.Set;
+import java.util.UUID;
+
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
 import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCreateIssueEvent;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.channel.jira.server.distribution.event.JiraServerCreateIssueEvent;
 import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-
-import java.util.Set;
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class JiraServerCreateEventGeneratorTest {
     @Test
@@ -27,9 +28,10 @@ public class JiraServerCreateEventGeneratorTest {
         IssueTrackerCreateIssueEvent generatedCreateEvent = testGenerator.generateEvent(testModel);
 
         assertEquals(generatedCreateEvent.getClass(), JiraServerCreateIssueEvent.class);
-        assertAll("Constructed IssueTrackerCreateIssueEvent matches generator attributes",
+        assertAll(
+            "Constructed IssueTrackerCreateIssueEvent matches generator attributes",
             () -> assertEquals(IssueTrackerCreateIssueEvent.createDefaultEventDestination(testKey), generatedCreateEvent.getDestination()),
-            () -> assertEquals(testParentEventUID, generatedCreateEvent.getParentEventId()),
+            () -> assertEquals(testParentEventUID, generatedCreateEvent.getJobExecutionId()),
             () -> assertEquals(testJobUID, generatedCreateEvent.getJobId()),
             () -> assertEquals(testNotificationIds, generatedCreateEvent.getNotificationIds()),
             () -> assertEquals(testModel, generatedCreateEvent.getCreationModel())
