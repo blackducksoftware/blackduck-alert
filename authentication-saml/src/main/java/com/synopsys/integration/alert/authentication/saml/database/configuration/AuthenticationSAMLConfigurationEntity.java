@@ -1,11 +1,9 @@
 package com.synopsys.integration.alert.authentication.saml.database.configuration;
 
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.database.BaseEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -27,8 +25,8 @@ public class AuthenticationSAMLConfigurationEntity extends BaseEntity {
     private Boolean forceAuth;
     @Column(name = "metadata_url")
     private String metadataUrl;
-    @Column(name = "metadata_path")
-    private String metadataPath;
+    @Column(name = "metadata_file_path")
+    private String metadataFilePath;
     @Column(name = "entity_id")
     private String entityId;
     @Column(name = "entity_base_url")
@@ -42,25 +40,26 @@ public class AuthenticationSAMLConfigurationEntity extends BaseEntity {
     }
 
     public AuthenticationSAMLConfigurationEntity(
-        String name,
+        UUID configurationId,
         OffsetDateTime createdAt,
         OffsetDateTime lastUpdated,
         Boolean enabled,
         Boolean forceAuth,
         String metadataUrl,
-        String metadataPath,
+        String metadataFilePath,
         String entityId,
         String entityBaseUrl,
         Boolean requireAssertionsSigned,
         String roleAttributeMapping
     ) {
-        this.name = name;
+        this.configurationId = configurationId;
+        this.name = AlertRestConstants.DEFAULT_CONFIGURATION_NAME;
         this.createdAt = createdAt;
         this.lastUpdated = lastUpdated;
         this.enabled = enabled;
         this.forceAuth = forceAuth;
         this.metadataUrl = metadataUrl;
-        this.metadataPath = metadataPath;
+        this.metadataFilePath = metadataFilePath;
         this.entityId = entityId;
         this.entityBaseUrl = entityBaseUrl;
         this.requireAssertionsSigned = requireAssertionsSigned;
@@ -95,8 +94,8 @@ public class AuthenticationSAMLConfigurationEntity extends BaseEntity {
         return metadataUrl;
     }
 
-    public String getMetadataPath() {
-        return metadataPath;
+    public String getMetadataFilePath() {
+        return metadataFilePath;
     }
 
     public String getEntityId() {
