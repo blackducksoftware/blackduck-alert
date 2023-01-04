@@ -17,16 +17,10 @@
             <column name="job_config_id" type="UUID">
                 <constraints nullable="false"/>
             </column>
-            <column name="channel_name" type="VARCHAR">
-                <constraints nullable="false"/>
-            </column>
             <column name="provider_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
             <column name="notification_type" type="VARCHAR">
-                <constraints nullable="false"/>
-            </column>
-            <column name="status" type="VARCHAR">
                 <constraints nullable="false"/>
             </column>
             <column name="error_message" type="VARCHAR"/>

@@ -2,6 +2,7 @@ package com.synopsys.integration.alert.database.audit;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.persistence.Column;
@@ -29,15 +30,10 @@ public class AuditFailedEntity extends BaseEntity {
     private OffsetDateTime timeCreated;
     @Column(name = "job_config_id")
     private UUID jobConfigId;
-    @Column(name = "channel_name")
-    private String channelName;
     @Column(name = "provider_id")
     private Long providerId;
     @Column(name = "notification_type")
     private String notificationType;
-
-    @Column(name = "status")
-    private String status;
 
     @Column(name = "error_message")
     private String errorMessage;
@@ -58,20 +54,32 @@ public class AuditFailedEntity extends BaseEntity {
         UUID id,
         OffsetDateTime timeCreated,
         UUID jobConfigId,
-        String channelName,
         Long providerId,
         String notificationType,
-        String status,
+        String errorMessage
+    ) {
+        this.id = id;
+        this.timeCreated = timeCreated;
+        this.jobConfigId = jobConfigId;
+        this.providerId = providerId;
+        this.notificationType = notificationType;
+        this.errorMessage = errorMessage;
+    }
+
+    public AuditFailedEntity(
+        UUID id,
+        OffsetDateTime timeCreated,
+        UUID jobConfigId,
+        Long providerId,
+        String notificationType,
         String errorMessage,
         String errorStackTrace
     ) {
         this.id = id;
         this.timeCreated = timeCreated;
         this.jobConfigId = jobConfigId;
-        this.channelName = channelName;
         this.providerId = providerId;
         this.notificationType = notificationType;
-        this.status = status;
         this.errorMessage = errorMessage;
         this.errorStackTrace = errorStackTrace;
     }
@@ -80,12 +88,12 @@ public class AuditFailedEntity extends BaseEntity {
         return id;
     }
 
-    public UUID getJobName() {
-        return jobConfigId;
+    public OffsetDateTime getTimeCreated() {
+        return timeCreated;
     }
 
-    public String getChannelName() {
-        return channelName;
+    public UUID getJobConfigId() {
+        return jobConfigId;
     }
 
     public Long getProviderId() {
@@ -96,15 +104,11 @@ public class AuditFailedEntity extends BaseEntity {
         return notificationType;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
     public String getErrorMessage() {
         return errorMessage;
     }
 
-    public String getErrorStackTrace() {
-        return errorStackTrace;
+    public Optional<String> getErrorStackTrace() {
+        return Optional.ofNullable(errorStackTrace);
     }
 }
