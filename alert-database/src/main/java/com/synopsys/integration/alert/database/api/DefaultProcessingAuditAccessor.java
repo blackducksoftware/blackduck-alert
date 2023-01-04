@@ -32,6 +32,8 @@ import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryNotificationView;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
+import com.synopsys.integration.alert.database.audit.AuditFailedEntryRepository;
+import com.synopsys.integration.alert.database.audit.AuditFailedNotificationRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
 
@@ -41,10 +43,20 @@ public class DefaultProcessingAuditAccessor implements ProcessingAuditAccessor {
     private final AuditEntryRepository auditEntryRepository;
     private final AuditNotificationRepository auditNotificationRepository;
 
+    private final AuditFailedEntryRepository auditFailedEntryRepository;
+    private final AuditFailedNotificationRepository auditFailedNotificationRepository;
+
     @Autowired
-    public DefaultProcessingAuditAccessor(AuditEntryRepository auditEntryRepository, AuditNotificationRepository auditNotificationRepository) {
+    public DefaultProcessingAuditAccessor(
+        AuditEntryRepository auditEntryRepository,
+        AuditNotificationRepository auditNotificationRepository,
+        AuditFailedEntryRepository auditFailedEntryRepository,
+        AuditFailedNotificationRepository auditFailedNotificationRepository
+    ) {
         this.auditEntryRepository = auditEntryRepository;
         this.auditNotificationRepository = auditNotificationRepository;
+        this.auditFailedEntryRepository = auditFailedEntryRepository;
+        this.auditFailedNotificationRepository = auditFailedNotificationRepository;
     }
 
     @Override

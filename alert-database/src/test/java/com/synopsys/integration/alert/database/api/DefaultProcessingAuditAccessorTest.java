@@ -19,6 +19,8 @@ import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAudi
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryNotificationView;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
+import com.synopsys.integration.alert.database.audit.AuditFailedEntryRepository;
+import com.synopsys.integration.alert.database.audit.AuditFailedNotificationRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
 
 class DefaultProcessingAuditAccessorTest {
@@ -36,11 +38,18 @@ class DefaultProcessingAuditAccessorTest {
             auditEntry.setId(RANDOM.nextLong());
             return auditEntry;
         });
+        AuditFailedEntryRepository auditFailedEntryRepository = Mockito.mock(AuditFailedEntryRepository.class);
+        AuditFailedNotificationRepository auditFailedNotificationRepository = Mockito.mock(AuditFailedNotificationRepository.class);
 
         AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
         Mockito.when(auditNotificationRepository.saveAll(Mockito.anyCollection())).thenReturn(List.of());
 
-        DefaultProcessingAuditAccessor processingAuditAccessor = new DefaultProcessingAuditAccessor(auditEntryRepository, auditNotificationRepository);
+        DefaultProcessingAuditAccessor processingAuditAccessor = new DefaultProcessingAuditAccessor(
+            auditEntryRepository,
+            auditNotificationRepository,
+            auditFailedEntryRepository,
+            auditFailedNotificationRepository
+        );
         processingAuditAccessor.createOrUpdatePendingAuditEntryForJob(testJobId, testNotificationIds);
 
         Mockito.verify(auditEntryRepository, Mockito.times(testNotificationIds.size())).save(Mockito.any());
@@ -89,7 +98,15 @@ class DefaultProcessingAuditAccessorTest {
             return List.of();
         });
 
-        DefaultProcessingAuditAccessor processingAuditAccessor = new DefaultProcessingAuditAccessor(auditEntryRepository, null);
+        AuditFailedEntryRepository auditFailedEntryRepository = Mockito.mock(AuditFailedEntryRepository.class);
+        AuditFailedNotificationRepository auditFailedNotificationRepository = Mockito.mock(AuditFailedNotificationRepository.class);
+
+        DefaultProcessingAuditAccessor processingAuditAccessor = new DefaultProcessingAuditAccessor(
+            auditEntryRepository,
+            null,
+            auditFailedEntryRepository,
+            auditFailedNotificationRepository
+        );
         statusSetter.setStatus(processingAuditAccessor, testJobId, testNotificationIds);
 
         AuditEntryEntity auditEntryEntity = savedEntry.get();
