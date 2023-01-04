@@ -40,10 +40,10 @@
             </not>
         </preConditions>
         <createTable schemaName="alert" tableName="failed_audit_notification_relation">
-            <column name="failed_audit_entry_id">
+            <column name="failed_audit_entry_id" type="UUID">
                 <constraints nullable="false"/>
             </column>
-            <column name="notification_id">
+            <column name="notification_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
         </createTable>
@@ -58,23 +58,6 @@
                        constraintName="PK_AUDIT_FAILED_TO_NOTIFICATION_RELATION"
                        tableName="failed_audit_notification_relation"
                        schemaName="alert"/>
-    </changeSet>
-    <changeSet author="psantos" id="create-audit-failed-provider-constraint">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="audit_failed_provider_id_fk"/>
-            </not>
-        </preConditions>
-        <addForeignKeyConstraint
-                baseTableSchemaName="alert"
-                baseTableName="failed_audit_entries"
-                baseColumnNames="provider_id"
-                constraintName="audit_failed_provider_id_fk"
-                referencedTableSchemaName="alert"
-                referencedTableName=""
-                referencedColumnNames=""
-                onDelete="CASCADE"
-        />
     </changeSet>
     <changeSet author="psantos" id="create-audit-failed-job-config-constraint">
         <preConditions onFail="MARK_RAN">
@@ -101,7 +84,7 @@
         </preConditions>
         <addForeignKeyConstraint
                 baseTableSchemaName="alert"
-                baseTableName="audit_notification_relation"
+                baseTableName="failed_audit_notification_relation"
                 baseColumnNames="notification_id"
                 constraintName="audit_failed_notification_id_fk"
                 referencedTableSchemaName="alert"
@@ -118,7 +101,7 @@
         </preConditions>
         <addForeignKeyConstraint
                 baseTableSchemaName="alert"
-                baseTableName="audit_notification_relation"
+                baseTableName="failed_audit_notification_relation"
                 baseColumnNames="failed_audit_entry_id"
                 constraintName="audit_failed_relation_id_fk"
                 referencedTableSchemaName="alert"
