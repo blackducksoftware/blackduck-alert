@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.channel.DistributionEventHandler;
+import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.persistence.accessor.EmailJobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
@@ -18,8 +19,8 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Email
 @Component
 public class EmailDistributionEventHandler extends DistributionEventHandler<EmailJobDetailsModel> {
     @Autowired
-    public EmailDistributionEventHandler(EmailChannel channel, EmailJobDetailsAccessor jobDetailsAccessor, ProcessingAuditAccessor auditAccessor) {
-        super(channel, jobDetailsAccessor, auditAccessor);
+    public EmailDistributionEventHandler(EmailChannel channel, EmailJobDetailsAccessor jobDetailsAccessor, ProcessingAuditAccessor auditAccessor, EventManager eventManager) {
+        super(channel, jobDetailsAccessor, auditAccessor, eventManager);
     }
 
 }

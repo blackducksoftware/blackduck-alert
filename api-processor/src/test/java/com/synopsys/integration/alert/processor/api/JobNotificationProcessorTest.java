@@ -59,6 +59,8 @@ class JobNotificationProcessorTest {
     private final BlackDuckResponseTestUtility blackDuckResponseTestUtility = new BlackDuckResponseTestUtility();
 
     private final UUID uuid = UUID.randomUUID();
+
+    private final UUID jobExecutionId = UUID.randomUUID();
     private final Long notificationId = 123L;
 
     @Test
@@ -87,7 +89,7 @@ class JobNotificationProcessorTest {
         NotificationExtractorBlackDuckServicesFactoryCache lifecycleCaches = createNotificationExtractorBlackDuckServicesFactoryCache();
 
         //Create Requirements for processNotificationForJob
-        ProcessedNotificationDetails processedNotificationDetails = new ProcessedNotificationDetails(uuid, CHANNEL_KEY, "JobName");
+        ProcessedNotificationDetails processedNotificationDetails = new ProcessedNotificationDetails(jobExecutionId, uuid, CHANNEL_KEY, "JobName");
 
         AlertNotificationModel notificationModel = createNotification(NotificationType.RULE_VIOLATION.name());
 

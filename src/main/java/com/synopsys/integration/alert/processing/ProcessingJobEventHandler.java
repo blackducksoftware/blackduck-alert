@@ -18,6 +18,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJob;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.AlertEventHandler;
 import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
@@ -49,6 +51,7 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
     private final NotificationAccessor notificationAccessor;
     private final JobAccessor jobAccessor;
     private final JobNotificationMappingAccessor jobNotificationMappingAccessor;
+    private final ExecutingJobManager executingJobManager;
 
     @Autowired
     public ProcessingJobEventHandler(
@@ -58,7 +61,8 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
         List<NotificationProcessingLifecycleCache> lifecycleCaches,
         NotificationAccessor notificationAccessor,
         JobAccessor jobAccessor,
-        JobNotificationMappingAccessor jobNotificationMappingAccessor
+        JobNotificationMappingAccessor jobNotificationMappingAccessor,
+        ExecutingJobManager executingJobManager
     ) {
         this.notificationDetailExtractionDelegator = notificationDetailExtractionDelegator;
         this.notificationContentProcessor = notificationContentProcessor;
@@ -67,18 +71,21 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
         this.notificationAccessor = notificationAccessor;
         this.jobAccessor = jobAccessor;
         this.jobNotificationMappingAccessor = jobNotificationMappingAccessor;
+        this.executingJobManager = executingJobManager;
     }
 
     @Override
     public void handle(JobProcessingEvent event) {
         UUID correlationId = event.getCorrelationId();
         UUID jobId = event.getJobId();
+        ExecutingJob executingJob = executingJobManager.startJob(jobId);
         try {
             Optional<DistributionJobModel> jobModel = jobAccessor.getJobById(jobId);
             if (jobModel.isPresent()) {
                 DistributionJobModel job = jobModel.get();
                 ProcessedProviderMessageHolder processedMessageHolder = processNotifications(event, job);
                 ProcessedNotificationDetails processedNotificationDetails = new ProcessedNotificationDetails(
+                    executingJob.getExecutionId(),
                     job.getJobId(),
                     job.getChannelDescriptorName(),
                     job.getName()
@@ -88,6 +95,7 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
         } finally {
             jobNotificationMappingAccessor.removeJobMapping(correlationId, jobId);
             clearCaches(correlationId);
+            executingJob.jobSucceeded();
         }
     }
 
