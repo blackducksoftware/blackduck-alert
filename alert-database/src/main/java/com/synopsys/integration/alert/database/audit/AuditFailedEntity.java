@@ -28,10 +28,13 @@ public class AuditFailedEntity extends BaseEntity {
 
     @Column(name = "time_created")
     private OffsetDateTime timeCreated;
-    @Column(name = "job_config_id")
-    private UUID jobConfigId;
-    @Column(name = "provider_id")
-    private Long providerId;
+    @Column(name = "job_name")
+    private String jobName;
+    @Column(name = "provider_name")
+    private String providerName;
+
+    @Column(name = "channel_name")
+    private String channelName;
     @Column(name = "notification_type")
     private String notificationType;
 
@@ -53,15 +56,17 @@ public class AuditFailedEntity extends BaseEntity {
     public AuditFailedEntity(
         UUID id,
         OffsetDateTime timeCreated,
-        UUID jobConfigId,
-        Long providerId,
+        String jobName,
+        String providerName,
+        String channelName,
         String notificationType,
         String errorMessage
     ) {
         this.id = id;
         this.timeCreated = timeCreated;
-        this.jobConfigId = jobConfigId;
-        this.providerId = providerId;
+        this.jobName = jobName;
+        this.providerName = providerName;
+        this.channelName = channelName;
         this.notificationType = notificationType;
         this.errorMessage = errorMessage;
     }
@@ -69,16 +74,18 @@ public class AuditFailedEntity extends BaseEntity {
     public AuditFailedEntity(
         UUID id,
         OffsetDateTime timeCreated,
-        UUID jobConfigId,
-        Long providerId,
+        String jobName,
+        String providerName,
+        String channelName,
         String notificationType,
         String errorMessage,
         String errorStackTrace
     ) {
         this.id = id;
         this.timeCreated = timeCreated;
-        this.jobConfigId = jobConfigId;
-        this.providerId = providerId;
+        this.jobName = jobName;
+        this.providerName = providerName;
+        this.channelName = channelName;
         this.notificationType = notificationType;
         this.errorMessage = errorMessage;
         this.errorStackTrace = errorStackTrace;
@@ -92,12 +99,16 @@ public class AuditFailedEntity extends BaseEntity {
         return timeCreated;
     }
 
-    public UUID getJobConfigId() {
-        return jobConfigId;
+    public String getJobName() {
+        return jobName;
     }
 
-    public Long getProviderId() {
-        return providerId;
+    public String getProviderName() {
+        return providerName;
+    }
+
+    public String getChannelName() {
+        return channelName;
     }
 
     public String getNotificationType() {

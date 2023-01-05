@@ -14,10 +14,13 @@
             <column name="time_created" type="TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
-            <column name="job_config_id" type="UUID">
+            <column name="job_name" type="VARCHAR">
                 <constraints nullable="false"/>
             </column>
-            <column name="provider_id" type="BIGINT">
+            <column name="provider_name" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="channel_name" type="VARCHAR">
                 <constraints nullable="false"/>
             </column>
             <column name="notification_type" type="VARCHAR">
@@ -52,23 +55,6 @@
                        constraintName="PK_AUDIT_FAILED_TO_NOTIFICATION_RELATION"
                        tableName="failed_audit_notification_relation"
                        schemaName="alert"/>
-    </changeSet>
-    <changeSet author="psantos" id="create-audit-failed-job-config-constraint">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="audit_failed_job_config_id_fk"/>
-            </not>
-        </preConditions>
-        <addForeignKeyConstraint
-                baseTableSchemaName="alert"
-                baseTableName="failed_audit_entries"
-                baseColumnNames="job_config_id"
-                constraintName="audit_failed_job_config_id_fk"
-                referencedTableSchemaName="alert"
-                referencedTableName="distribution_jobs"
-                referencedColumnNames="job_id"
-                onDelete="CASCADE"
-        />
     </changeSet>
     <changeSet author="psantos" id="create-audit-failed-relation-notification-constraint">
         <preConditions onFail="MARK_RAN">
