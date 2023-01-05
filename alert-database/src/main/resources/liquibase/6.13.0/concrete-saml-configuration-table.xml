@@ -29,7 +29,7 @@
             <column name="metadata_url" type="VARCHAR">
                 <constraints nullable="false"/>
             </column>
-            <column name="metadata_filepath" type="VARCHAR">
+            <column name="metadata_file_path" type="VARCHAR">
                 <constraints nullable="false"/>
             </column>
             <column name="entity_id" type="VARCHAR">

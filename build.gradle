@@ -114,6 +114,8 @@ dependencies {
     implementation project(':api-provider')
     implementation project(':api-task')
 
+    implementation project(':authentication-saml')
+
     implementation project(':channel-azure-boards')
     implementation project(':channel-email')
     implementation project(':channel-jira-cloud')

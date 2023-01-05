@@ -6,7 +6,7 @@ import com.synopsys.integration.alert.common.rest.model.ConfigWithMetadata;
 
 import java.util.Optional;
 
-public class SAMLGlobalConfigModel extends ConfigWithMetadata implements Obfuscated<SAMLGlobalConfigModel> {
+public class AuthenticationSAMLConfigModel extends ConfigWithMetadata implements Obfuscated<AuthenticationSAMLConfigModel> {
     private Boolean enabled;
     private Boolean forceAuth;
     private String metadataUrl;
@@ -16,16 +16,16 @@ public class SAMLGlobalConfigModel extends ConfigWithMetadata implements Obfusca
     private Boolean requireAssertionsSigned;
     private String roleAttributeMapping;
 
-    public SAMLGlobalConfigModel () {
+    public AuthenticationSAMLConfigModel() {
         // For serialization
     }
 
     // Required
-    public SAMLGlobalConfigModel (String id) {
+    public AuthenticationSAMLConfigModel(String id) {
         super(id, AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
     }
 
-    public SAMLGlobalConfigModel (
+    public AuthenticationSAMLConfigModel(
         String id,
         String createdAt,
         String lastUpdated,
@@ -53,8 +53,8 @@ public class SAMLGlobalConfigModel extends ConfigWithMetadata implements Obfusca
     }
 
     @Override
-    public SAMLGlobalConfigModel obfuscate() {
-        return new SAMLGlobalConfigModel(
+    public AuthenticationSAMLConfigModel obfuscate() {
+        return new AuthenticationSAMLConfigModel(
             getId(),
             getCreatedAt(),
             getLastUpdated(),
