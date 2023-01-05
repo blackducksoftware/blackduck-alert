@@ -1,9 +1,7 @@
 package com.synopsys.integration.alert.api.distribution.audit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
@@ -24,7 +22,6 @@ import org.springframework.core.task.TaskExecutor;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.distribution.mock.MockAuditEntryRepository;
 import com.synopsys.integration.alert.api.distribution.mock.MockAuditFailedEntryRepository;
-import com.synopsys.integration.alert.api.distribution.mock.MockAuditFailedNotificationRepository;
 import com.synopsys.integration.alert.api.distribution.mock.MockAuditNotificationRepository;
 import com.synopsys.integration.alert.api.distribution.mock.MockNotificationContentRepository;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
@@ -44,8 +41,6 @@ import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditFailedEntity;
 import com.synopsys.integration.alert.database.audit.AuditFailedEntryRepository;
-import com.synopsys.integration.alert.database.audit.AuditFailedNotificationRelation;
-import com.synopsys.integration.alert.database.audit.AuditFailedNotificationRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelationPK;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
@@ -61,7 +56,6 @@ class AuditFailedEventListenerTest {
     private final AtomicLong idContainer = new AtomicLong(0L);
 
     private AuditFailedEntryRepository auditFailedEntryRepository;
-    private AuditFailedNotificationRepository auditFailedNotificationRepository;
 
     private NotificationContentRepository notificationContentRepository;
     private final AtomicLong notificationIdContainer = new AtomicLong(0);
@@ -74,7 +68,6 @@ class AuditFailedEventListenerTest {
         processingAuditAccessor = new DefaultProcessingAuditAccessor(auditEntryRepository, auditNotificationRepository);
         notificationContentRepository = new MockNotificationContentRepository(this::generateNotificationId);
         auditFailedEntryRepository = new MockAuditFailedEntryRepository(AuditFailedEntity::getId);
-        auditFailedNotificationRepository = new MockAuditFailedNotificationRepository(MockAuditFailedNotificationRepository::generateRelationKey);
         ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
         notificationAccessor = new DefaultNotificationAccessor(notificationContentRepository, auditEntryRepository, configurationModelConfigurationAccessor);
     }
@@ -114,7 +107,6 @@ class AuditFailedEventListenerTest {
         JobAccessor jobAccessor = createJobAccessor(this::createJobModel);
         ProcessingFailedAccessor processingFailedAccessor = new DefaultProcessingFailedAccessor(
             auditFailedEntryRepository,
-            auditFailedNotificationRepository,
             notificationAccessor,
             jobAccessor
         );
@@ -129,32 +121,26 @@ class AuditFailedEventListenerTest {
         Message message = new Message(gson.toJson(event).getBytes());
         listener.onMessage(message);
 
-        for (Long notificationId : notificationIds) {
-            List<AuditFailedNotificationRelation> relations = auditFailedNotificationRepository.findAuditFailedNotificationRelationsByNotificationId(notificationId);
-            assertFalse(relations.isEmpty(), "Expect failure relations but none found");
-            for (AuditFailedNotificationRelation relation : relations) {
-                Optional<AuditFailedEntity> entry = auditFailedEntryRepository.findById(relation.getFailedAuditEntryId());
-                assertTrue(entry.isPresent());
-                AuditFailedEntity entity = entry.get();
-                assertNotNull(entity.getId());
-                assertNotNull(entity.getProviderName());
-                assertEquals(TEST_JOB_NAME, entity.getJobName());
-                assertEquals(ChannelKeys.SLACK.getUniversalKey(), entity.getChannelName());
-                assertEquals(event.getCreatedTimestamp(), entity.getTimeCreated());
-                assertEquals(errorMessage, entity.getErrorMessage());
-                assertEquals(stackTrace, entity.getErrorStackTrace().orElseThrow(() -> new AssertionError("Expected stack trace but none found")));
-            }
+        List<AuditFailedEntity> failedEntities = auditFailedEntryRepository.findAll();
+        for (AuditFailedEntity entity : failedEntities) {
+            assertNotNull(entity.getId());
+            assertNotNull(entity.getProviderName());
+            assertEquals(TEST_JOB_NAME, entity.getJobName());
+            assertEquals(ChannelKeys.SLACK.getUniversalKey(), entity.getChannelName());
+            assertEquals(event.getCreatedTimestamp(), entity.getTimeCreated());
+            assertEquals(errorMessage, entity.getErrorMessage());
+            assertEquals(stackTrace, entity.getErrorStackTrace().orElseThrow(() -> new AssertionError("Expected stack trace but none found")));
         }
+
     }
 
     private DistributionJobModel createJobModel(UUID jobId) {
-        String name = TEST_JOB_NAME;
         OffsetDateTime createdAt = DateUtils.createCurrentDateTimestamp();
         Long blackDuckGlobalConfigId = 1L;
         List<String> notificationTypes = List.of("VULNERABILITY");
         DistributionJobModelBuilder jobBuilder = new DistributionJobModelBuilder();
         jobBuilder.jobId(jobId)
-            .name(name)
+            .name(TEST_JOB_NAME)
             .createdAt(createdAt)
             .blackDuckGlobalConfigId(blackDuckGlobalConfigId)
             .distributionFrequency(FrequencyType.REAL_TIME)

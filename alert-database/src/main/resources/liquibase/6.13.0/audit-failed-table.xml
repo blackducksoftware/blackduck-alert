@@ -26,68 +26,13 @@
             <column name="notification_type" type="VARCHAR">
                 <constraints nullable="false"/>
             </column>
-            <column name="error_message" type="VARCHAR"/>
+            <column name="error_message" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
             <column name="error_stack_trace" type="VARCHAR"/>
-        </createTable>
-    </changeSet>
-    <changeSet author="psantos" id="create-audit-failed-to-notification-relation">
-        <preConditions>
-            <not>
-                <tableExists schemaName="alert" tableName="failed_audit_notification_relation"/>
-            </not>
-        </preConditions>
-        <createTable schemaName="alert" tableName="failed_audit_notification_relation">
-            <column name="failed_audit_entry_id" type="UUID">
-                <constraints nullable="false"/>
-            </column>
-            <column name="notification_id" type="BIGINT">
+            <column name="notification_content" type="VARCHAR">
                 <constraints nullable="false"/>
             </column>
         </createTable>
-    </changeSet>
-    <changeSet author="psantos" id="create-audit-failed-to-notification-key">
-         <preConditions onFail="MARK_RAN">
-            <not>
-                <primaryKeyExists schemaName="alert" primaryKeyName="PK_AUDIT_FAILED_TO_NOTIFICATION_RELATION"/>
-            </not>
-        </preConditions>
-        <addPrimaryKey columnNames="failed_audit_entry_id, notification_id"
-                       constraintName="PK_AUDIT_FAILED_TO_NOTIFICATION_RELATION"
-                       tableName="failed_audit_notification_relation"
-                       schemaName="alert"/>
-    </changeSet>
-    <changeSet author="psantos" id="create-audit-failed-relation-notification-constraint">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="audit_failed_notification_id_fk"/>
-            </not>
-        </preConditions>
-        <addForeignKeyConstraint
-                baseTableSchemaName="alert"
-                baseTableName="failed_audit_notification_relation"
-                baseColumnNames="notification_id"
-                constraintName="audit_failed_notification_id_fk"
-                referencedTableSchemaName="alert"
-                referencedTableName="raw_notification_content"
-                referencedColumnNames="id"
-                onDelete="CASCADE"
-        />
-    </changeSet>
-    <changeSet author="psantos" id="create-audit-failed-relation-id-constraint">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="audit_failed_relation_id_fk"/>
-            </not>
-        </preConditions>
-        <addForeignKeyConstraint
-                baseTableSchemaName="alert"
-                baseTableName="failed_audit_notification_relation"
-                baseColumnNames="failed_audit_entry_id"
-                constraintName="audit_failed_relation_id_fk"
-                referencedTableSchemaName="alert"
-                referencedTableName="failed_audit_entries"
-                referencedColumnNames="id"
-                onDelete="CASCADE"
-        />
     </changeSet>
 </databaseChangeLog>

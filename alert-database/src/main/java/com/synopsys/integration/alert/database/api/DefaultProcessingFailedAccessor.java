@@ -18,8 +18,6 @@ import com.synopsys.integration.alert.common.persistence.model.job.DistributionJ
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.database.audit.AuditFailedEntity;
 import com.synopsys.integration.alert.database.audit.AuditFailedEntryRepository;
-import com.synopsys.integration.alert.database.audit.AuditFailedNotificationRelation;
-import com.synopsys.integration.alert.database.audit.AuditFailedNotificationRepository;
 
 @Component
 public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor {
@@ -27,19 +25,16 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
     public static final String UNKNOWN_JOB = "Job Unknown";
     public static final String UNKNOWN_CHANNEL = "Unknown Channel";
     private final AuditFailedEntryRepository auditFailedEntryRepository;
-    private final AuditFailedNotificationRepository auditFailedNotificationRepository;
     private final NotificationAccessor notificationAccessor;
     private final JobAccessor jobAccessor;
 
     @Autowired
     public DefaultProcessingFailedAccessor(
         AuditFailedEntryRepository auditFailedEntryRepository,
-        AuditFailedNotificationRepository auditFailedNotificationRepository,
         NotificationAccessor notificationAccessor,
         JobAccessor jobAccessor
     ) {
         this.auditFailedEntryRepository = auditFailedEntryRepository;
-        this.auditFailedNotificationRepository = auditFailedNotificationRepository;
         this.notificationAccessor = notificationAccessor;
         this.jobAccessor = jobAccessor;
     }
@@ -57,10 +52,10 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
                 notificationModel.getProviderConfigName(),
                 distributionJobModel.map(DistributionJobModel::getChannelDescriptorName).orElse(UNKNOWN_CHANNEL),
                 notificationModel.getNotificationType(),
-                errorMessage
+                errorMessage,
+                notificationModel.getContent()
             );
-            auditFailedEntity = auditFailedEntryRepository.save(auditFailedEntity);
-            auditFailedNotificationRepository.save(new AuditFailedNotificationRelation(auditFailedEntity.getId(), notificationModel.getId()));
+            auditFailedEntryRepository.save(auditFailedEntity);
         }
     }
 
@@ -78,10 +73,10 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
                 distributionJobModel.map(DistributionJobModel::getChannelDescriptorName).orElse(UNKNOWN_CHANNEL),
                 notificationModel.getNotificationType(),
                 errorMessage,
-                stackTrace
+                stackTrace,
+                notificationModel.getContent()
             );
-            auditFailedEntity = auditFailedEntryRepository.save(auditFailedEntity);
-            auditFailedNotificationRepository.save(new AuditFailedNotificationRelation(auditFailedEntity.getId(), notificationModel.getId()));
+            auditFailedEntryRepository.save(auditFailedEntity);
         }
     }
 }

@@ -1,7 +1,6 @@
 package com.synopsys.integration.alert.database.audit;
 
 import java.time.OffsetDateTime;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -9,7 +8,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Lob;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
@@ -46,8 +44,8 @@ public class AuditFailedEntity extends BaseEntity {
     @Column(name = "error_stack_trace", length = STACK_TRACE_CHAR_LIMIT)
     private String errorStackTrace;
 
-    @OneToMany(mappedBy = "auditFailedEntity")
-    private List<AuditFailedNotificationRelation> auditFailedNotificationRelations;
+    @Column(name = "notification_content")
+    private String notificationContent;
 
     public AuditFailedEntity() {
         // default constructor for JPA
@@ -60,7 +58,8 @@ public class AuditFailedEntity extends BaseEntity {
         String providerName,
         String channelName,
         String notificationType,
-        String errorMessage
+        String errorMessage,
+        String notificationContent
     ) {
         this.id = id;
         this.timeCreated = timeCreated;
@@ -69,6 +68,7 @@ public class AuditFailedEntity extends BaseEntity {
         this.channelName = channelName;
         this.notificationType = notificationType;
         this.errorMessage = errorMessage;
+        this.notificationContent = notificationContent;
     }
 
     public AuditFailedEntity(
@@ -79,7 +79,8 @@ public class AuditFailedEntity extends BaseEntity {
         String channelName,
         String notificationType,
         String errorMessage,
-        String errorStackTrace
+        String errorStackTrace,
+        String notificationContent
     ) {
         this.id = id;
         this.timeCreated = timeCreated;
@@ -89,6 +90,7 @@ public class AuditFailedEntity extends BaseEntity {
         this.notificationType = notificationType;
         this.errorMessage = errorMessage;
         this.errorStackTrace = errorStackTrace;
+        this.notificationContent = notificationContent;
     }
 
     public UUID getId() {
@@ -121,5 +123,9 @@ public class AuditFailedEntity extends BaseEntity {
 
     public Optional<String> getErrorStackTrace() {
         return Optional.ofNullable(errorStackTrace);
+    }
+
+    public String getNotificationContent() {
+        return notificationContent;
     }
 }
