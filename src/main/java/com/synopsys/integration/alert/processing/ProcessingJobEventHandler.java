@@ -95,7 +95,6 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
                 );
                 providerMessageDistributor.distribute(processedNotificationDetails, processedMessageHolder);
                 executingJobManager.endStage(executingJob.getExecutionId(), JobStage.NOTIFICATION_PROCESSING);
-                executingJob.jobSucceeded();
             }
         } finally {
             jobNotificationMappingAccessor.removeJobMapping(correlationId, jobId);

@@ -36,7 +36,6 @@ public class ExecutingJobManager {
     public void incrementNotificationCount(UUID jobExecutionId, int notificationCount) {
         Optional<ExecutingJob> executingJob = getExecutingJob(jobExecutionId);
         executingJob.ifPresent(execution -> execution.updateNotificationCount(notificationCount));
-        executingJob.map(ExecutingJob::getProcessedNotificationCount);
     }
 
     public Optional<ExecutingJob> getExecutingJob(UUID jobExecutionId) {

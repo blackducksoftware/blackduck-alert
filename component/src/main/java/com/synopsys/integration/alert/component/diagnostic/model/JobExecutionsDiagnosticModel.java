@@ -8,20 +8,20 @@ public class JobExecutionsDiagnosticModel {
     private final long successFulJobs;
     private final long failedJobs;
 
-    private final List<JobExecutionDiagnosticModel> jobExecutionDiagnosticModels;
+    private final List<JobExecutionDiagnosticModel> jobExecutions;
 
     public JobExecutionsDiagnosticModel(
         final long totalJobsInSystem,
         final long pendingJobs,
         final long successFulJobs,
         final long failedJobs,
-        final List<JobExecutionDiagnosticModel> jobExecutionDiagnosticModels
+        final List<JobExecutionDiagnosticModel> jobExecutions
     ) {
         this.totalJobsInSystem = totalJobsInSystem;
         this.pendingJobs = pendingJobs;
         this.successFulJobs = successFulJobs;
         this.failedJobs = failedJobs;
-        this.jobExecutionDiagnosticModels = jobExecutionDiagnosticModels;
+        this.jobExecutions = jobExecutions;
     }
 
     public long getTotalJobsInSystem() {
@@ -40,7 +40,7 @@ public class JobExecutionsDiagnosticModel {
         return failedJobs;
     }
 
-    public List<JobExecutionDiagnosticModel> getJobExecutionDiagnosticModels() {
-        return jobExecutionDiagnosticModels;
+    public List<JobExecutionDiagnosticModel> getJobExecutions() {
+        return jobExecutions;
     }
 }
