@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import RoleCopyModal from 'page/user/roles/RoleCopyModal';
+import RoleModal from 'page/user/roles/RoleModal';
 
 const useStyles = createUseStyles({
     copyCell: {
@@ -11,7 +11,7 @@ const useStyles = createUseStyles({
     }
 });
 
-const UserCopyRowAction = ({ data }) => {
+const RoleCopyCell = ({ data }) => {
     const classes = useStyles();
     const [showModal, setShowModal] = useState(false);
     const [selectedData, setSelectedData] = useState(data);
@@ -29,11 +29,14 @@ const UserCopyRowAction = ({ data }) => {
                 <FontAwesomeIcon icon="copy" />
             </span>
             { showModal ? (
-                <RoleCopyModal 
+                <RoleModal 
                     data={selectedData}
                     isOpen={showModal}
                     toggleModal={setShowModal}
                     copiedRoleName={selectedRoleName}
+                    type="copy"
+                    title="Copy Role"
+                    submitText="Save"
                 />
             ) : null }
 
@@ -42,4 +45,4 @@ const UserCopyRowAction = ({ data }) => {
     );
 };
 
-export default UserCopyRowAction;
+export default RoleCopyCell;

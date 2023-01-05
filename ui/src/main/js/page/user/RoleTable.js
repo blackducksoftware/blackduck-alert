@@ -242,6 +242,7 @@ class RoleTable extends Component {
         } = this.props;
         const fieldErrorKeys = Object.keys(fieldErrors);
         const hasErrors = roleError || (fieldErrorKeys && fieldErrorKeys.length > 0);
+        console.log(roleError);
         return (
             <div>
                 <TableDisplay

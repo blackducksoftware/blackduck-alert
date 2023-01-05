@@ -1,36 +1,37 @@
 import React, { useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import RoleEditModal from 'page/user/roles/RoleEditModal';
+import RoleModal from 'page/user/roles/RoleModal';
 
 const useStyles = createUseStyles({
     editCell: {
         '&:hover': {
-            cursor: 'pointer',
+            cursor: 'pointer'
         }
     }
 });
 
-const RoleEditRowAction = ({ rowData, data }) => {
+const RoleEditCell = ({ data }) => {
     const classes = useStyles();
     const [showModal, setShowModal] = useState(false);
-    // const [selectedData, setSelectedData] = useState(data)
 
     function handleClick() {
         setShowModal(true);
-        // setSelectedData(rowData);
     }
-    // console.log('rowDatarowDatarowData', selectedData);
+
     return (
         <>
             <span className={classes.editCell} onClick={() => handleClick()}>
                 <FontAwesomeIcon icon="pencil-alt" />
             </span>
             { showModal ? (
-                <RoleEditModal 
+                <RoleModal 
                     data={data}
                     isOpen={showModal}
                     toggleModal={setShowModal}
+                    type="edit"
+                    title="Edit Role"
+                    submitText="Save"
                 />
             ) : null }
 
@@ -39,4 +40,4 @@ const RoleEditRowAction = ({ rowData, data }) => {
     );
 };
 
-export default RoleEditRowAction;
+export default RoleEditCell;

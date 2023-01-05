@@ -17,23 +17,25 @@ const useStyles = createUseStyles({
         fontSize: '14px',
         paddingLeft: '8px'
     }
-})
+});
 
-const RoleCopyModal = ({ data, isOpen, toggleModal, copiedRoleName }) => {
+// Modal Capabilities -> Create (type: create) | Update (type: edit) | Duplicate (type: copy)
+
+const RoleModal = ({ data, isOpen, toggleModal, title, type = 'create', submitText, copiedRoleName }) => {
     const dispatch = useDispatch();
     const classes = useStyles();
-    const [role, setRole] = useState(data);
+    const [role, setRole] = useState(type === 'create' ? {permissions: []} : data);
 
     const ROLE_NAME_KEY = 'roleName';
 
-    const fieldErrors = useSelector(state => state.roles.error.fieldErrors);
+    const fieldErrors = useSelector(state => state.roles);
     const descriptors = useSelector(state => state.descriptors.items);
     const { saveStatus, inProgress } = useSelector(state => state.roles);
 
     useEffect(() => {
-        if ( saveStatus === 'VALIDATED' && !inProgress) { 
+        if (saveStatus === 'VALIDATED' && !inProgress) { 
             handleSave();
-        }
+        } 
     }, [saveStatus]);
 
     function handleClose() {
@@ -52,54 +54,59 @@ const RoleCopyModal = ({ data, isOpen, toggleModal, copiedRoleName }) => {
     }
 
     function handleSubmit() {
-        const updatedPermissions = role.permissions.map(permission => {
-            const descriptor = descriptors.find((currentDescriptor) => currentDescriptor.label === permission.descriptorName || currentDescriptor.name === permission.descriptorName);
-            if (descriptor) {
-                permission.descriptorName = descriptor.name;
-                return permission;
-            }
-        });
-        setRole(role => ({...role, permissions: updatedPermissions}))
+        if (type === 'edit') {
+            const updatedPermissions = role.permissions.map(permission => {
+                const descriptor = descriptors.find((currentDescriptor) => currentDescriptor.label === permission.descriptorName || currentDescriptor.name === permission.descriptorName);
+                if (descriptor) {
+                    permission.descriptorName = descriptor.name;
+                    return permission;
+                }
+            });
+            setRole(role => ({...role, permissions: updatedPermissions}));
+        }
 
         dispatch(validateRole(role));
+        handleSave();
     }
 
-    function getPermissionArray(datar) {
-        setRole(role => ({...role, permissions: datar}));
+    function getPermissionArray(permissionArray) {
+        setRole(role => ({...role, permissions: permissionArray}));
     }
 
     return (
         <Modal 
             isOpen={isOpen} 
             size="lg" 
-            title="Copy Role"
+            title={title}
             closeModal={handleClose}
             handleCancel={handleClose}
             handleSubmit={handleSubmit}
-            submitText="Create"
+            submitText={submitText}
         >
-            <div className={classes.descriptorContainer}>
-                <FontAwesomeIcon icon="exclamation-circle" size="2x" />
-                <span className={classes.descriptor}>
-                    Performing this action will create a new role by using the same settings as '{copiedRoleName}'
-                </span>
-            </div>
+            { (type === 'copy' && copiedRoleName) ? (
+                <div className={classes.descriptorContainer}>
+                    <FontAwesomeIcon icon="exclamation-circle" size="2x" />
+                    <span className={classes.descriptor}>
+                        Performing this action will create a new role by using the same settings as '{copiedRoleName}'
+                    </span>
+                </div>
+            ) : null}
             <TextInput
                 id={ROLE_NAME_KEY}
                 name={ROLE_NAME_KEY}
                 label="Role Name"
                 description="The name of the role."
                 required
-                onChange={handleOnChange('roleName')}
-                value={data.roleName}
+                onChange={handleOnChange(ROLE_NAME_KEY)}
+                value={role[ROLE_NAME_KEY]}
                 errorName={ROLE_NAME_KEY}
                 errorValue={fieldErrors[ROLE_NAME_KEY]}
             />
             <div style={{'width': '90%', 'margin': 'auto'}}>
-                <PermissionTable data={data.permissions} sendPermissionArray={getPermissionArray}/>
+                <PermissionTable data={role.permissions} sendPermissionArray={getPermissionArray}/>
             </div>
         </Modal>
     );
 };
 
-export default RoleCopyModal;
+export default RoleModal;

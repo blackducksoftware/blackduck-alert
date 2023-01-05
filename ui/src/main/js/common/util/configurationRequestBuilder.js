@@ -125,6 +125,23 @@ export function createDeleteRequest(apiUrl, csrfToken, configurationId = null) {
     });
 }
 
+// Params for bulk delete:
+//      baseUrl: request url without specifics (i.e. /api/configuration/role/)
+//      configurationIdArray: array of id's staged for delete (i.e. ['1', '2', '3'])
+export function createMultiDeleteRequest(baseUrl, csrfToken, configurationIdArray = null, onSuccess, onFail) {
+    const stagedDeleteUrls = configurationIdArray.map((configId) =>  baseUrl.concat(`/${configId}`));
+    const headersUtil = new HeaderUtilities();
+    headersUtil.addXCsrfToken(csrfToken);
+
+    return Promise.all(stagedDeleteUrls.map(url =>
+        fetch(url, {
+            credentials: 'same-origin',
+            method: 'DELETE',
+            headers: headersUtil.getHeaders()
+        })
+    ));
+}
+
 export function createValidateRequest(apiUrl, csrfToken, fieldModel) {
     const url = `${apiUrl}/validate`;
     const headersUtil = new HeaderUtilities();

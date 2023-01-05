@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { fetchRoles, deleteRole } from 'store/actions/roles';
+import { deleteRoleList } from 'store/actions/roles';
 import Modal from 'common/component/modal/Modal';
 
 const useStyles = createUseStyles({
@@ -58,17 +58,13 @@ const RoleDeleteModal = ({ isOpen, toggleModal, data, selected }) => {
 
     function handleClose() {
         toggleModal(false);
-        dispatch(fetchRoles());
     }
 
     function handleDelete() {
-        selectedRoles.forEach((role) => {
-            if (role.staged) {
-                dispatch(deleteRole(role.id));
-            }
-        });
+        let selectedDeleteIds = []
+        selectedRoles.forEach((role) => role.staged ? selectedDeleteIds.push(role.id) : null);
+        dispatch(deleteRoleList(selectedDeleteIds));
         handleClose();
-
     }
 
     function toggleSelect(selection) {
