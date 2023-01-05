@@ -19,6 +19,8 @@ public class AuthenticationSAMLConfigurationValidator {
             statuses.add(AlertFieldStatus.error("name", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
         }
 
+        // TODO: Check if we need validation for any other fields
+
         if (!statuses.isEmpty()) {
             return ValidationResponseModel.fromStatusCollection(statuses);
         }
