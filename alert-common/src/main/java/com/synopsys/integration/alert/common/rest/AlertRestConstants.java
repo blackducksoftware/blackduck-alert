@@ -23,6 +23,8 @@ public final class AlertRestConstants {
     public static final String SETTINGS_ENCRYPTION_PATH = AlertRestConstants.SETTINGS_PATH + "/encryption";
     public static final String SETTINGS_PROXY_PATH = AlertRestConstants.SETTINGS_PATH + "/proxy";
     public static final String DIAGNOSTIC_PATH = AlertRestConstants.BASE_PATH + "/diagnostic";
+    public static final String AUTHENTICATION_PATH = AlertRestConstants.BASE_PATH + "/authentication";
+    public static final String SAML_PATH = AlertRestConstants.AUTHENTICATION_PATH + "/saml";
 
     public static final String DEFAULT_CONFIGURATION_NAME = "default-configuration";
 
