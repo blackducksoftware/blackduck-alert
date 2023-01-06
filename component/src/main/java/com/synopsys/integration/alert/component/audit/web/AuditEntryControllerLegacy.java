@@ -30,14 +30,14 @@ import com.synopsys.integration.alert.common.rest.model.AuditJobStatusesModel;
 import com.synopsys.integration.alert.common.rest.model.JobIdsRequestModel;
 
 @RestController
-@RequestMapping(AuditEntryController.AUDIT_BASE_PATH)
-public class AuditEntryController extends BaseController {
+@RequestMapping(AuditEntryControllerLegacy.AUDIT_BASE_PATH)
+public class AuditEntryControllerLegacy extends BaseController {
     public static final String AUDIT_BASE_PATH = AlertRestConstants.BASE_PATH + "/audit";
-    private final AuditEntryActions auditEntryActions;
+    private final AuditEntryActionsLegacy auditEntryActionsLegacy;
 
     @Autowired
-    public AuditEntryController(AuditEntryActions auditEntryActions) {
-        this.auditEntryActions = auditEntryActions;
+    public AuditEntryControllerLegacy(AuditEntryActionsLegacy auditEntryActionsLegacy) {
+        this.auditEntryActionsLegacy = auditEntryActionsLegacy;
     }
 
     @GetMapping
@@ -45,35 +45,42 @@ public class AuditEntryController extends BaseController {
         @RequestParam(value = "pageNumber", required = false) Integer pageNumber, @RequestParam(value = "pageSize", required = false) Integer pageSize,
         @RequestParam(value = "searchTerm", required = false) String searchTerm, @RequestParam(value = "sortField", required = false) String sortField,
         @RequestParam(value = "sortOrder", required = false) String sortOrder, @RequestParam(value = "onlyShowSentNotifications", required = false) Boolean onlyShowSentNotifications) {
-        ActionResponse<AuditEntryPageModel> response = auditEntryActions.get(pageNumber, pageSize, searchTerm, sortField, sortOrder, BooleanUtils.toBoolean(onlyShowSentNotifications));
+        ActionResponse<AuditEntryPageModel> response = auditEntryActionsLegacy.get(
+            pageNumber,
+            pageSize,
+            searchTerm,
+            sortField,
+            sortOrder,
+            BooleanUtils.toBoolean(onlyShowSentNotifications)
+        );
         return ResponseFactory.createContentResponseFromAction(response);
     }
 
     @GetMapping(value = "/{id}")
     public AuditEntryModel get(@PathVariable(value = "id") Long id) {
-        return ResponseFactory.createContentResponseFromAction(auditEntryActions.get(id));
+        return ResponseFactory.createContentResponseFromAction(auditEntryActionsLegacy.get(id));
     }
 
     @GetMapping(value = "/job/{jobId}")
     public AuditJobStatusModel getAuditInfoForJob(@PathVariable(value = "jobId") UUID jobId) {
-        return ResponseFactory.createContentResponseFromAction(auditEntryActions.getAuditInfoForJob(jobId));
+        return ResponseFactory.createContentResponseFromAction(auditEntryActionsLegacy.getAuditInfoForJob(jobId));
     }
 
     @PostMapping(value = "/job")
     public AuditJobStatusesModel queryForJobAuditInfoInJobs(@RequestBody JobIdsRequestModel queryRequestModel) {
-        return ResponseFactory.createContentResponseFromAction(auditEntryActions.queryForAuditInfoInJobs(queryRequestModel));
+        return ResponseFactory.createContentResponseFromAction(auditEntryActionsLegacy.queryForAuditInfoInJobs(queryRequestModel));
     }
 
     @PostMapping(value = "/resend/{id}/")
     // TODO returning something other than the resource being interacted with is considered bad practice
     public AuditEntryPageModel resendById(@PathVariable(value = "id") Long notificationId) {
-        return ResponseFactory.createContentResponseFromAction(auditEntryActions.resendNotification(notificationId, null));
+        return ResponseFactory.createContentResponseFromAction(auditEntryActionsLegacy.resendNotification(notificationId, null));
     }
 
     @PostMapping(value = "/resend/{id}/job/{jobId}")
     // TODO returning something other than the resource being interacted with is considered bad practice
     public AuditEntryPageModel resendByIdAndJobId(@PathVariable(value = "id") Long notificationId, @PathVariable(value = "jobId") UUID jobId) {
-        return ResponseFactory.createContentResponseFromAction(auditEntryActions.resendNotification(notificationId, jobId));
+        return ResponseFactory.createContentResponseFromAction(auditEntryActionsLegacy.resendNotification(notificationId, jobId));
     }
 
 }

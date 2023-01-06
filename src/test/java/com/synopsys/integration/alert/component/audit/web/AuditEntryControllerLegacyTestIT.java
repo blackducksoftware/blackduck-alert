@@ -50,7 +50,7 @@ import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 
 @Transactional
 @AlertIntegrationTest
-public class AuditEntryControllerTestIT {
+public class AuditEntryControllerLegacyTestIT {
     private final String auditUrl = AlertRestConstants.BASE_PATH + "/audit";
     @Autowired
     NotificationContentRepository notificationRepository;

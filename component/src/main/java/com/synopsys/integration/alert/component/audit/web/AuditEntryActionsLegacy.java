@@ -42,8 +42,8 @@ import com.synopsys.integration.alert.processor.api.distribute.ProcessedNotifica
 
 @Component
 @Transactional
-public class AuditEntryActions {
-    private final Logger logger = LoggerFactory.getLogger(AuditEntryActions.class);
+public class AuditEntryActionsLegacy {
+    private final Logger logger = LoggerFactory.getLogger(AuditEntryActionsLegacy.class);
 
     private final AuthorizationManager authorizationManager;
     private final AuditDescriptorKey descriptorKey;
@@ -54,7 +54,7 @@ public class AuditEntryActions {
     private final JobNotificationProcessor jobNotificationProcessor;
 
     @Autowired
-    public AuditEntryActions(
+    public AuditEntryActionsLegacy(
         AuthorizationManager authorizationManager,
         AuditDescriptorKey descriptorKey,
         RestApiAuditAccessor auditAccessor,
