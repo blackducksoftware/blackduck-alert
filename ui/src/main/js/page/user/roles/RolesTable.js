@@ -6,7 +6,6 @@ import RoleCopyCell from 'page/user/roles/RoleCopyCell';
 import RoleEditCell from 'page/user/roles/RoleEditCell';
 import Table from 'common/component/table/Table';
 import RoleTableActions from 'page/user/roles/RoleTableActions';
-import StatusMessage from 'common/component/StatusMessage';
 
 const COLUMNS = [{
     key: 'roleName',
@@ -62,10 +61,6 @@ const RolesTable = ({ canCreate, canDelete }) => {
 
     return (
         <>
-            {/* <StatusMessage 
-                id="roles-table-status-msg"
-                errorMessage={}
-            /> */}
             <Table
                 tableData={roles.data}
                 columns={COLUMNS}

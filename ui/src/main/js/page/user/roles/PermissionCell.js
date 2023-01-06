@@ -1,7 +1,7 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
-
 
 const useStyles = createUseStyles({
     permissionDisplay: {
@@ -17,7 +17,7 @@ const useStyles = createUseStyles({
         width: 'min-content',
         '&:hover': {
             cursor: 'pointer',
-            backgroundColor: '#c6c6c6',
+            backgroundColor: '#c6c6c6'
         }
     },
     emptyPermission: {
@@ -43,20 +43,16 @@ const permissionDisplay = {
 const PermissionCell = ({ data }) => {
     const classes = useStyles();
 
-    function getPermissions(data) {
-        let permissions = [];
+    function getPermissions(permissionData) {
+        const permissions = [];
 
-        for (const [key, value] of Object.entries(data)) {
-            if (value === true) {
-                permissions.push(key);
+        Object.entries(permissionData).forEach((permission) => {
+            if (permission[1] === true) {
+                permissions.push(permission[0]);
             }
-        };
+        });
 
-        permissions = permissions.map(permission => {
-            return permissionDisplay[permission];
-        })
-
-        return permissions;
+        return permissions.map((permission) => permissionDisplay[permission]);
     }
 
     const permissionsData = getPermissions(data);
@@ -65,17 +61,17 @@ const PermissionCell = ({ data }) => {
     const popoverPermissions = (
         <Popover id="permission-popover-trigger-hover-focus" title="Permissions">
             <div className={classes.popoverPermissions}>
-                {permissionsData.join(", ")}
+                {permissionsData.join(', ')}
             </div>
         </Popover>
-    )
+    );
 
     if (count === 1) {
         return (
             <span className={classes.permissionDisplay}>
                 {`${permissionsData[0]}`}
             </span>
-        )
+        );
     }
 
     if (count === 0) {
@@ -83,7 +79,7 @@ const PermissionCell = ({ data }) => {
             <span className={classes.emptyPermission}>
                 No permissions set.
             </span>
-        )
+        );
     }
 
     return (
@@ -94,7 +90,22 @@ const PermissionCell = ({ data }) => {
                 </span>
             </OverlayTrigger>
         </>
-    )
+    );
+};
+
+PermissionCell.propTypes = {
+    data: PropTypes.shape({
+        context: PropTypes.string,
+        create: PropTypes.bool,
+        delete: PropTypes.bool,
+        descriptorName: PropTypes.string,
+        execute: PropTypes.bool,
+        read: PropTypes.bool,
+        uploadDelete: PropTypes.bool,
+        uploadRead: PropTypes.bool,
+        uploadWrite: PropTypes.bool,
+        write: PropTypes.bool
+    })
 };
 
 export default PermissionCell;

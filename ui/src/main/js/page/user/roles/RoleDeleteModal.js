@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -40,17 +41,17 @@ const useStyles = createUseStyles({
     }
 });
 
-
 const RoleDeleteModal = ({ isOpen, toggleModal, data, selected }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
-    const [selectedRoles, setSelectedRoles] = useState(getStagedForDelete());
-    const isMultiRoleDelete = selectedRoles.length > 1;
 
     function getStagedForDelete() {
-        const staged = data.filter(role => selected.includes(role.id));
-        return staged.map(role => ({ ...role, staged: true }));
+        const staged = data.filter((role) => selected.includes(role.id));
+        return staged.map((role) => ({ ...role, staged: true }));
     }
+
+    const [selectedRoles, setSelectedRoles] = useState(getStagedForDelete());
+    const isMultiRoleDelete = selectedRoles.length > 1;
 
     useEffect(() => {
         setSelectedRoles(getStagedForDelete());
@@ -61,8 +62,15 @@ const RoleDeleteModal = ({ isOpen, toggleModal, data, selected }) => {
     }
 
     function handleDelete() {
-        let selectedDeleteIds = []
-        selectedRoles.forEach((role) => role.staged ? selectedDeleteIds.push(role.id) : null);
+        const selectedDeleteIds = [];
+        selectedRoles.forEach((role) => {
+            if (role.staged) {
+                selectedDeleteIds.push(role.id);
+            }
+
+            return null;
+        });
+
         dispatch(deleteRoleList(selectedDeleteIds));
         handleClose();
     }
@@ -70,7 +78,7 @@ const RoleDeleteModal = ({ isOpen, toggleModal, data, selected }) => {
     function toggleSelect(selection) {
         const toggledRoles = selectedRoles.map((role) => {
             if (role.id === selection.id) {
-                return {...role, staged: !role.staged}
+                return { ...role, staged: !role.staged };
             }
             return role;
         });
@@ -80,9 +88,9 @@ const RoleDeleteModal = ({ isOpen, toggleModal, data, selected }) => {
 
     return (
         <>
-            <Modal 
-                isOpen={isOpen} 
-                size="sm" 
+            <Modal
+                isOpen={isOpen}
+                size="sm"
                 title={isMultiRoleDelete ? 'Delete Roles' : 'Delete Role'}
                 closeModal={handleClose}
                 handleCancel={handleClose}
@@ -93,26 +101,33 @@ const RoleDeleteModal = ({ isOpen, toggleModal, data, selected }) => {
                     { isMultiRoleDelete ? 'Are you sure you want to delete these roles?' : 'Are you sure you want to delete this role?' }
                 </div>
                 <div>
-                    { selectedRoles?.map((role) => {
-                        return (
-                            <div className={classes.cardContainer}>
-                                <input type="checkbox" checked={role.staged} onChange={() => toggleSelect(role)}/>
-                                <div className={classes.roleCard}>
-                                    <div className={classes.roleIcon}>
-                                        <FontAwesomeIcon icon="user-cog" size="3x"/>
-                                    </div>
-                                    <div className={classes.roleInfo}>
-                                        <div style={{fontSize: '16px'}}>{role.roleName}</div>
-                                    </div>
+                    { selectedRoles?.map((role) => (
+                        <div className={classes.cardContainer}>
+                            <input type="checkbox" checked={role.staged} onChange={() => toggleSelect(role)} />
+                            <div className={classes.roleCard}>
+                                <div className={classes.roleIcon}>
+                                    <FontAwesomeIcon icon="user-cog" size="3x" />
+                                </div>
+                                <div className={classes.roleInfo}>
+                                    <div style={{ fontSize: '16px' }}>{role.roleName}</div>
                                 </div>
                             </div>
-                        )
-                    }) }
+                        </div>
+                    )) }
                 </div>
             </Modal>
         </>
 
     );
+};
+
+RoleDeleteModal.propTypes = {
+    isOpen: PropTypes.bool,
+    toggleModal: PropTypes.func,
+    data: PropTypes.arrayOf(PropTypes.shape({
+        id: PropTypes.string
+    })),
+    selected: PropTypes.arrayOf(PropTypes.string)
 };
 
 export default RoleDeleteModal;

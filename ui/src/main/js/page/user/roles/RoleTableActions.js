@@ -54,7 +54,7 @@ const useStyles = createUseStyles({
 const RoleTableActions = ({ canCreate, canDelete, data, selected }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
-    const { deleteStatus, error } = useSelector(state => state.roles);
+    const { deleteStatus, error } = useSelector((state) => state.roles);
 
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -79,18 +79,18 @@ const RoleTableActions = ({ canCreate, canDelete, data, selected }) => {
     }, [deleteStatus]);
 
     useEffect(() => {
-        setErrorMessage(null)
+        setErrorMessage(null);
     }, [selected]);
 
     return (
         <>
             {errorMessage ? (
-                <StatusMessage 
+                <StatusMessage
                     id="roles-table-status-msg"
                     errorMessage={errorMessage}
                 />
             ) : null }
-            
+
             { canCreate ? (
                 <button className={classes.createUserBtn} onClick={handleCreateRole} type="button">
                     <FontAwesomeIcon icon="plus" />
@@ -106,7 +106,7 @@ const RoleTableActions = ({ canCreate, canDelete, data, selected }) => {
             ) : null }
 
             { showCreateModal ? (
-                <RoleModal 
+                <RoleModal
                     data={data}
                     isOpen={showCreateModal}
                     toggleModal={setShowCreateModal}

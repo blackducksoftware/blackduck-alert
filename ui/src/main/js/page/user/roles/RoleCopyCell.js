@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import RoleModal from 'page/user/roles/RoleModal';
 
 const useStyles = createUseStyles({
     copyCell: {
-        '&:hover': {
-            cursor: 'pointer',
+        background: 'none',
+        border: 'none',
+        cursor: 'pointer',
+        '&:focus': {
+            outline: 0
         }
     }
 });
@@ -20,16 +24,16 @@ const RoleCopyCell = ({ data }) => {
 
     function handleClick() {
         setShowModal(true);
-        setSelectedData(userData => ({...userData, id: null, username: '', password: '', emailAddress: email }))
+        setSelectedData((userData) => ({ ...userData, id: null, username: '', password: '', emailAddress: email }));
     }
 
     return (
         <>
-            <span className={classes.copyCell} onClick={() => handleClick()}>
+            <button className={classes.copyCell} onClick={() => handleClick()} type="button">
                 <FontAwesomeIcon icon="copy" />
-            </span>
+            </button>
             { showModal ? (
-                <RoleModal 
+                <RoleModal
                     data={selectedData}
                     isOpen={showModal}
                     toggleModal={setShowModal}
@@ -39,10 +43,15 @@ const RoleCopyCell = ({ data }) => {
                     submitText="Save"
                 />
             ) : null }
-
         </>
-
     );
+};
+
+RoleCopyCell.propTypes = {
+    data: PropTypes.shape({
+        id: PropTypes.string,
+        roleName: PropTypes.string
+    })
 };
 
 export default RoleCopyCell;

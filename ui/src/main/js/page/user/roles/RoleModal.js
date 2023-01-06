@@ -1,51 +1,43 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDispatch, useSelector } from 'react-redux';
 import { createUseStyles } from 'react-jss';
 import Modal from 'common/component/modal/Modal';
 import TextInput from 'common/component/input/TextInput';
 import { saveRole, validateRole } from 'store/actions/roles';
 import PermissionTable from './PermissionTable';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const useStyles = createUseStyles({
     descriptorContainer: {
         display: 'flex',
-        alignItems: 'center', 
+        alignItems: 'center',
         padding: [0, 0, '20px', '60px']
     },
     descriptor: {
         fontSize: '14px',
         paddingLeft: '8px'
+    },
+    permissionTable: {
+        width: '90%',
+        margin: 'auto'
     }
 });
 
 // Modal Capabilities -> Create (type: create) | Update (type: edit) | Duplicate (type: copy)
-
 const RoleModal = ({ data, isOpen, toggleModal, title, type = 'create', submitText, copiedRoleName }) => {
     const dispatch = useDispatch();
     const classes = useStyles();
-    const [role, setRole] = useState(type === 'create' ? {permissions: []} : data);
+    const copyWarning = `Performing this action will create a new role by using the same settings as '${copiedRoleName}'`;
+    const [role, setRole] = useState(type === 'create' ? { permissions: [] } : data);
 
     const ROLE_NAME_KEY = 'roleName';
 
-    const fieldErrors = useSelector(state => state.roles);
-    const descriptors = useSelector(state => state.descriptors.items);
-    const { saveStatus, inProgress } = useSelector(state => state.roles);
-
-    useEffect(() => {
-        if (saveStatus === 'VALIDATED' && !inProgress) { 
-            handleSave();
-        } 
-    }, [saveStatus]);
+    const descriptors = useSelector((state) => state.descriptors.items);
+    const { saveStatus, inProgress, fieldErrors } = useSelector((state) => state.roles);
 
     function handleClose() {
         toggleModal(false);
-    }
-
-    const handleOnChange = (label) => {
-        return ({ target: { value } }) => {
-            setRole(role => ({...role, [label]: value }));
-        }
     }
 
     function handleSave() {
@@ -55,28 +47,38 @@ const RoleModal = ({ data, isOpen, toggleModal, title, type = 'create', submitTe
 
     function handleSubmit() {
         if (type === 'edit') {
-            const updatedPermissions = role.permissions.map(permission => {
+            const updatedPermissions = role.permissions.map((permission) => {
+                const permissionUpdate = permission;
                 const descriptor = descriptors.find((currentDescriptor) => currentDescriptor.label === permission.descriptorName || currentDescriptor.name === permission.descriptorName);
-                if (descriptor) {
-                    permission.descriptorName = descriptor.name;
-                    return permission;
-                }
+                permissionUpdate.descriptorName = descriptor.name;
+
+                return permissionUpdate;
             });
-            setRole(role => ({...role, permissions: updatedPermissions}));
+            setRole((updatedRole) => ({ ...updatedRole, permissions: updatedPermissions }));
         }
 
         dispatch(validateRole(role));
         handleSave();
     }
 
+    const handleOnChange = (label) => ({ target: { value } }) => {
+        setRole((updatedRole) => ({ ...updatedRole, [label]: value }));
+    };
+
+    useEffect(() => {
+        if (saveStatus === 'VALIDATED' && !inProgress) {
+            handleSave();
+        }
+    }, [saveStatus]);
+
     function getPermissionArray(permissionArray) {
-        setRole(role => ({...role, permissions: permissionArray}));
+        setRole((updatedRole) => ({ ...updatedRole, permissions: permissionArray }));
     }
 
     return (
-        <Modal 
-            isOpen={isOpen} 
-            size="lg" 
+        <Modal
+            isOpen={isOpen}
+            size="lg"
             title={title}
             closeModal={handleClose}
             handleCancel={handleClose}
@@ -86,9 +88,7 @@ const RoleModal = ({ data, isOpen, toggleModal, title, type = 'create', submitTe
             { (type === 'copy' && copiedRoleName) ? (
                 <div className={classes.descriptorContainer}>
                     <FontAwesomeIcon icon="exclamation-circle" size="2x" />
-                    <span className={classes.descriptor}>
-                        Performing this action will create a new role by using the same settings as '{copiedRoleName}'
-                    </span>
+                    <span className={classes.descriptor}>{copyWarning}</span>
                 </div>
             ) : null}
             <TextInput
@@ -102,11 +102,23 @@ const RoleModal = ({ data, isOpen, toggleModal, title, type = 'create', submitTe
                 errorName={ROLE_NAME_KEY}
                 errorValue={fieldErrors[ROLE_NAME_KEY]}
             />
-            <div style={{'width': '90%', 'margin': 'auto'}}>
-                <PermissionTable data={role.permissions} sendPermissionArray={getPermissionArray}/>
+            <div className={classes.permissionTable}>
+                <PermissionTable data={role.permissions} sendPermissionArray={getPermissionArray} role={role} />
             </div>
         </Modal>
     );
+};
+
+RoleModal.propTypes = {
+    isOpen: PropTypes.bool,
+    toggleModal: PropTypes.func,
+    data: PropTypes.arrayOf(PropTypes.shape({
+        id: PropTypes.string
+    })),
+    title: PropTypes.string,
+    type: PropTypes.string,
+    submitText: PropTypes.string,
+    copiedRoleName: PropTypes.string
 };
 
 export default RoleModal;

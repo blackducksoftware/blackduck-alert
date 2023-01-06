@@ -13,7 +13,7 @@ const useStyles = createUseStyles({
         backgroundColor: '#bdbdbd',
         '&:hover': {
             cursor: 'pointer',
-            backgroundColor: '#b0b0b0',
+            backgroundColor: '#b0b0b0'
         }
     },
     deleteContainer: {
@@ -30,7 +30,7 @@ const useStyles = createUseStyles({
     confirmContainer: {
         display: 'flex',
         fontSize: '11px',
-        columnGap: '5px',
+        columnGap: '5px'
     },
     confirmOptionBtn: {
         border: 'none',
@@ -56,63 +56,60 @@ const useStyles = createUseStyles({
             color: 'white'
         }
     }
-})
+});
 
-const PermissionRowAction = ({ data, settings}) => {
+const PermissionRowAction = ({ data, settings }) => {
     const dispatch = useDispatch();
     const classes = useStyles();
-    const { parentData } = settings;
-    const filterData = parentData?.permissions.filter(permission => {
-        return !Object.is(permission, data)
-    });
-
-    const descriptors = useSelector(state => state.descriptors.items);
-    const roles = useSelector(state => state.roles);
+    const { permissionData, role } = settings;
+    const descriptors = useSelector((state) => state.descriptors.items);
+    const roles = useSelector((state) => state.roles);
 
     const [showDelete, setShowDelete] = useState(false);
-    const [roleData, setRoleData] = useState(parentData);
-
-    useEffect(() => {
-        if (roles.saveStatus === 'VALIDATED' && !roles.inProgress) { 
-            handleSave();
-        } 
-    }, [roles.saveStatus]);
-
-    function handleDeletePermission() {
-        roleData.permissions = filterData;
-
-        const updatedPermissions = roleData.permissions.map(permission => {
-            const descriptor = descriptors.find((currentDescriptor) => currentDescriptor.label === permission.descriptorName || currentDescriptor.name === permission.descriptorName);
-            if (descriptor) {
-                permission.descriptorName = descriptor.name;
-                return permission;
-            }
-        });
-        setRoleData(role => ({...role, permissions: updatedPermissions}));
-        
-        dispatch(validateRole(roleData));
-    }
+    const [roleData, setRoleData] = useState(role);
 
     function handleSave() {
         dispatch(saveRole(roleData));
     }
 
+    function handleDeletePermission() {
+        const { context: selectedContext, descriptorName: selectedDescriptor } = data;
+        const updatedPermissions = permissionData
+            .filter((permission) => !(permission.context === selectedContext && permission.descriptorName === selectedDescriptor))
+            .map((permission) => {
+                const permissionUpdate = permission;
+                const descriptor = descriptors.find((currentDescriptor) => currentDescriptor.label === permission.descriptorName || currentDescriptor.name === permission.descriptorName);
+                permissionUpdate.descriptorName = descriptor.name;
+
+                return permissionUpdate;
+            });
+
+        setRoleData((updatedRole) => ({ ...updatedRole, permissions: updatedPermissions }));
+        dispatch(validateRole(roleData));
+    }
+
+    useEffect(() => {
+        if (roles.saveStatus === 'VALIDATED' && !roles.inProgress) {
+            handleSave();
+        }
+    }, [roles.saveStatus]);
+
     return (
         <>
             {!showDelete ? (
-                <button className={classes.deletePermissionBtn} onClick={() => setShowDelete(true)}>
-                    <FontAwesomeIcon icon="trash"/>
+                <button className={classes.deletePermissionBtn} onClick={() => setShowDelete(true)} type="button">
+                    <FontAwesomeIcon icon="trash" />
                 </button>
             ) : (
                 <div className={classes.deleteContainer}>
                     <span className={classes.confirmMessage}>Delete Permission?</span>
                     <span className={classes.confirmContainer}>
-                        <button className={classes.confirmOptionBtn} onClick={handleDeletePermission}>
+                        <button className={classes.confirmOptionBtn} onClick={handleDeletePermission} type="button">
                             Confirm
                             <FontAwesomeIcon icon="check" />
                         </button>
                         <div> | </div>
-                        <button className={classes.cancelOptionBtn} onClick={() => setShowDelete(false)}>
+                        <button className={classes.cancelOptionBtn} onClick={() => setShowDelete(false)} type="button">
                             Cancel
                             <FontAwesomeIcon icon="times" />
                         </button>
@@ -120,7 +117,53 @@ const PermissionRowAction = ({ data, settings}) => {
                 </div>
             )}
         </>
-    )
-}
+    );
+};
+
+PermissionRowAction.propTypes = {
+    data: PropTypes.shape({
+        context: PropTypes.string,
+        create: PropTypes.bool,
+        delete: PropTypes.bool,
+        descriptorName: PropTypes.string,
+        execute: PropTypes.bool,
+        read: PropTypes.bool,
+        uploadDelete: PropTypes.bool,
+        uploadRead: PropTypes.bool,
+        uploadWrite: PropTypes.bool,
+        write: PropTypes.bool
+    }),
+    settings: PropTypes.shape({
+        alignment: PropTypes.string,
+        permissionData: PropTypes.arrayOf(PropTypes.shape({
+            context: PropTypes.string,
+            create: PropTypes.bool,
+            delete: PropTypes.bool,
+            descriptorName: PropTypes.string,
+            execute: PropTypes.bool,
+            read: PropTypes.bool,
+            uploadDelete: PropTypes.bool,
+            uploadRead: PropTypes.bool,
+            uploadWrite: PropTypes.bool,
+            write: PropTypes.bool
+        })),
+        role: PropTypes.shape({
+            id: PropTypes.string,
+            roleName: PropTypes.string,
+            permissionData: PropTypes.arrayOf(PropTypes.shape({
+                context: PropTypes.string,
+                create: PropTypes.bool,
+                delete: PropTypes.bool,
+                descriptorName: PropTypes.string,
+                execute: PropTypes.bool,
+                read: PropTypes.bool,
+                uploadDelete: PropTypes.bool,
+                uploadRead: PropTypes.bool,
+                uploadWrite: PropTypes.bool,
+                write: PropTypes.bool
+            }))
+        })
+    })
+};
 
 export default PermissionRowAction;

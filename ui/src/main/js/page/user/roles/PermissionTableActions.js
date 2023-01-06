@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import classNames from 'classnames';
-import Checkbox  from 'common/component/input/Checkbox';
+import Checkbox from 'common/component/input/Checkbox';
 import DynamicSelectInput from 'common/component/input/DynamicSelectInput';
 import { useSelector } from 'react-redux';
 
@@ -40,7 +41,6 @@ const useStyles = createUseStyles({
     },
     deleteUserBtn: {
         background: 'none',
-        color: 'inherit',
         border: 'solid .5px',
         padding: ['6px', '20px'],
         font: 'inherit',
@@ -69,7 +69,7 @@ const useStyles = createUseStyles({
         width: '100%',
         backgroundColor: '#EDEDED',
         borderRadius: '5px',
-        marginBottom: '10px',
+        marginBottom: '10px'
     },
     permissionOptions: {
         display: 'flex',
@@ -85,23 +85,23 @@ const PermissionTableActions = ({ handleValidatePermission }) => {
     const CONTEXT = 'context';
     const DESCRIPTOR = 'descriptorName';
     const [showCreatePermission, setShowCreatePermission] = useState(false);
-    const [newPermission, setNewPermission] = useState({'uploadDelete': undefined, 'uploadWrite': undefined, 'uploadRead': undefined});
+    const [newPermission, setNewPermission] = useState({ uploadDelete: undefined, uploadWrite: undefined, uploadRead: undefined });
     const [fieldErrors, setFieldErrors] = useState({});
 
-    const descriptors = useSelector(state => state.descriptors.items);
+    const descriptors = useSelector((state) => state.descriptors.items);
 
     function getBtnStyle(muted) {
         return classNames(classes.createRoleBtn, {
             [classes.activeCreateBtn]: !muted,
-            [classes.mutedCreateBtn]: muted,
+            [classes.mutedCreateBtn]: muted
         });
     }
 
-    function createDescriptorOptions(descriptors) {
+    function createDescriptorOptions(options) {
         const descriptorOptions = [];
         const nameCache = [];
 
-        descriptors.forEach((descriptor) => {
+        options.forEach((descriptor) => {
             const { label } = descriptor;
             if (!nameCache.includes(label)) {
                 nameCache.push(label);
@@ -115,10 +115,10 @@ const PermissionTableActions = ({ handleValidatePermission }) => {
         return descriptorOptions;
     }
 
-    function createContextOptions(descriptors, selectedPermission) {
+    function createContextOptions(descriptorOptions, selectedPermission) {
         const availableContexts = [];
         if (selectedPermission.descriptorName) {
-            descriptors.forEach((descriptor) => {
+            descriptorOptions.forEach((descriptor) => {
                 if (descriptor.name === selectedPermission.descriptorName) {
                     availableContexts.push(descriptor.context);
                 }
@@ -136,60 +136,59 @@ const PermissionTableActions = ({ handleValidatePermission }) => {
 
     function handleCheckboxChange(e) {
         const { checked, name } = e;
-        setNewPermission(permission => ({...permission, [name]: checked}));
+        setNewPermission((permission) => ({ ...permission, [name]: checked }));
     }
 
     function handleDropdownChange(e) {
         const { value, name } = e.target;
-        setNewPermission(permission => ({...permission, [name]: value[0]}));
+        setNewPermission((permission) => ({ ...permission, [name]: value[0] }));
     }
 
     function handleDescriptorChange(e) {
         const { value, name } = e.target;
-        const selectedValue = descriptors.find(descriptor => {return descriptor.label === value[0]});
-        setNewPermission(permission => ({...permission, [name]: selectedValue.name, label: value[0]}));
+        const selectedValue = descriptors.find((descriptor) => descriptor.label === value[0]);
+        setNewPermission((permission) => ({ ...permission, [name]: selectedValue.name, label: value[0] }));
     }
 
-    function handleSave(newPermission) {
-        if(!newPermission[DESCRIPTOR] && !newPermission[CONTEXT]) {
+    function handleSave(permission) {
+        if (!permission[DESCRIPTOR] && !permission[CONTEXT]) {
             setFieldErrors({
-                'descriptorName': { 
-                    'fieldMessage': 'Descriptor is required',
-                    'fieldName': 'descriptorName',
-                    'severity': 'ERROR'
+                descriptorName: {
+                    fieldMessage: 'Descriptor is required',
+                    fieldName: 'descriptorName',
+                    severity: 'ERROR'
                 },
-                'context': { 
-                    'fieldMessage': 'Context is required',
-                    'fieldName': 'context',
-                    'severity': 'ERROR'
+                context: {
+                    fieldMessage: 'Context is required',
+                    fieldName: 'context',
+                    severity: 'ERROR'
                 }
             });
-        } else if (!newPermission[DESCRIPTOR]) {
+        } else if (!permission[DESCRIPTOR]) {
             setFieldErrors({
-                'descriptorName': { 
-                    'fieldMessage': 'Descriptor is required',
-                    'fieldName': 'descriptorName',
-                    'severity': 'ERROR'
+                descriptorName: {
+                    fieldMessage: 'Descriptor is required',
+                    fieldName: 'descriptorName',
+                    severity: 'ERROR'
                 }
             });
-        } else if (!newPermission[CONTEXT]) {
+        } else if (!permission[CONTEXT]) {
             setFieldErrors({
-                'context': { 
-                    'fieldMessage': 'Context is required',
-                    'fieldName': 'context',
-                    'severity': 'ERROR'
+                context: {
+                    fieldMessage: 'Context is required',
+                    fieldName: 'context',
+                    severity: 'ERROR'
                 }
             });
         } else {
             setFieldErrors({});
-            handleValidatePermission(newPermission);
+            handleValidatePermission(permission);
         }
     }
 
-
     return (
         <div className={classes.permissionActionContainer}>
-            <button className={getBtnStyle(showCreatePermission)} onClick={handleCreateUserClick}>
+            <button className={getBtnStyle(showCreatePermission)} onClick={handleCreateUserClick} type="button">
                 {showCreatePermission ? (
                     <>
                         <FontAwesomeIcon icon="minus" />
@@ -199,8 +198,8 @@ const PermissionTableActions = ({ handleValidatePermission }) => {
                     <>
                         <FontAwesomeIcon icon="plus" />
                         Create Permission
-                    </> 
-                )}                
+                    </>
+                )}
             </button>
 
             { showCreatePermission ? (
@@ -263,9 +262,9 @@ const PermissionTableActions = ({ handleValidatePermission }) => {
                             label="Execute"
                             onChange={handleCheckboxChange}
                             isChecked={newPermission.execute}
-                        />            
+                        />
                     </div>
-                    <button className={getBtnStyle(false)} onClick={() => handleSave(newPermission)}>
+                    <button className={getBtnStyle(false)} onClick={() => handleSave(newPermission)} type="button">
                         <FontAwesomeIcon icon="plus" />
                         Add Permission
                     </button>
@@ -274,6 +273,10 @@ const PermissionTableActions = ({ handleValidatePermission }) => {
         </div>
 
     );
+};
+
+PermissionTableActions.propTypes = {
+    handleValidatePermission: PropTypes.func
 };
 
 export default PermissionTableActions;

@@ -257,15 +257,15 @@ export function deleteRoleList(roleIds) {
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => deletingRoleErrorMessage(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
-        
+
         const request = ConfigRequestBuilder.createMultiDeleteRequest(ConfigRequestBuilder.ROLE_API_URL, csrfToken, roleIds);
         request.then(() => {
             dispatch(deletedRoleList());
         })
-        .catch((error) => {
-            dispatch(deletingRoleListErrorMessage(error.message))
-        });
-    }
+            .catch((error) => {
+                dispatch(deletingRoleListErrorMessage(error.message));
+            });
+    };
 }
 
 export function clearRoleFieldErrors() {

@@ -22,21 +22,21 @@ const UserManagement = ({ descriptors }) => {
 
         <BetaPage betaSelected>
             <BetaComponent>
-            <div>
-                <PageHeader
-                    title={USER_MANAGEMENT_INFO.label}
-                    description="This page allows you to configure users and roles for Alert."
-                    icon="user"
-                />
-                <Tabs defaultActiveKey={1} id="user-management-tabs">
-                    <Tab eventKey={1} title="Users">
-                        <UserTable canCreate={canCreate} canDelete={canDelete} />
-                    </Tab>
-                    <Tab eventKey={2} title="Roles">
-                        <RolesTable canCreate={canCreate} canDelete={canDelete} />
-                    </Tab>
-                </Tabs>
-            </div>
+                <div>
+                    <PageHeader
+                        title={USER_MANAGEMENT_INFO.label}
+                        description="This page allows you to configure users and roles for Alert."
+                        icon="user"
+                    />
+                    <Tabs defaultActiveKey={1} id="user-management-tabs">
+                        <Tab eventKey={1} title="Users">
+                            <UserTable canCreate={canCreate} canDelete={canDelete} />
+                        </Tab>
+                        <Tab eventKey={2} title="Roles">
+                            <RolesTable canCreate={canCreate} canDelete={canDelete} />
+                        </Tab>
+                    </Tabs>
+                </div>
             </BetaComponent>
             <CurrentComponent>
                 <div>

@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import RoleModal from 'page/user/roles/RoleModal';
 
 const useStyles = createUseStyles({
     editCell: {
-        '&:hover': {
-            cursor: 'pointer'
+        background: 'none',
+        border: 'none',
+        cursor: 'pointer',
+        '&:focus': {
+            outline: 0
         }
     }
 });
@@ -21,11 +25,11 @@ const RoleEditCell = ({ data }) => {
 
     return (
         <>
-            <span className={classes.editCell} onClick={() => handleClick()}>
+            <button className={classes.editCell} onClick={() => handleClick()} type="button">
                 <FontAwesomeIcon icon="pencil-alt" />
-            </span>
+            </button>
             { showModal ? (
-                <RoleModal 
+                <RoleModal
                     data={data}
                     isOpen={showModal}
                     toggleModal={setShowModal}
@@ -38,6 +42,10 @@ const RoleEditCell = ({ data }) => {
         </>
 
     );
+};
+
+RoleEditCell.propTypes = {
+    data: PropTypes.object
 };
 
 export default RoleEditCell;
