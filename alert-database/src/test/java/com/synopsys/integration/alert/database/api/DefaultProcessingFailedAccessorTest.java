@@ -28,8 +28,11 @@ import com.synopsys.integration.alert.common.persistence.model.job.DistributionJ
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.api.mock.MockAuditFailedEntryRepository;
+import com.synopsys.integration.alert.database.api.mock.MockAuditFailedNotificationRepository;
 import com.synopsys.integration.alert.database.audit.AuditFailedEntity;
 import com.synopsys.integration.alert.database.audit.AuditFailedEntryRepository;
+import com.synopsys.integration.alert.database.audit.AuditFailedNotificationEntity;
+import com.synopsys.integration.alert.database.audit.AuditFailedNotificationRepository;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
@@ -37,11 +40,13 @@ class DefaultProcessingFailedAccessorTest {
     public static final String TEST_JOB_NAME = "Test Job";
     public static final String TEST_PROVIDER_NAME = "My Provider";
     private AuditFailedEntryRepository auditFailedEntryRepository;
+    private AuditFailedNotificationRepository auditFailedNotificationRepository;
     private NotificationAccessor notificationAccessor;
 
     @BeforeEach
     public void initializeRepositories() {
         auditFailedEntryRepository = new MockAuditFailedEntryRepository(AuditFailedEntity::getId);
+        auditFailedNotificationRepository = new MockAuditFailedNotificationRepository(AuditFailedNotificationEntity::getNotificationId);
         notificationAccessor = createNotificationAccessor();
     }
 
@@ -50,6 +55,7 @@ class DefaultProcessingFailedAccessorTest {
         JobAccessor jobAccessor = createJobAccessor(this::createJobModel);
         ProcessingFailedAccessor processingFailedAccessor = new DefaultProcessingFailedAccessor(
             auditFailedEntryRepository,
+            auditFailedNotificationRepository,
             notificationAccessor,
             jobAccessor
         );
@@ -76,6 +82,7 @@ class DefaultProcessingFailedAccessorTest {
         JobAccessor jobAccessor = createJobAccessor(this::createJobModel);
         ProcessingFailedAccessor processingFailedAccessor = new DefaultProcessingFailedAccessor(
             auditFailedEntryRepository,
+            auditFailedNotificationRepository,
             notificationAccessor,
             jobAccessor
         );
@@ -92,6 +99,7 @@ class DefaultProcessingFailedAccessorTest {
         JobAccessor jobAccessor = createJobAccessor(this::createJobModel);
         ProcessingFailedAccessor processingFailedAccessor = new DefaultProcessingFailedAccessor(
             auditFailedEntryRepository,
+            auditFailedNotificationRepository,
             notificationAccessor,
             jobAccessor
         );

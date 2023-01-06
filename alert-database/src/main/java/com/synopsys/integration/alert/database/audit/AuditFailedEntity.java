@@ -7,7 +7,9 @@ import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
@@ -44,8 +46,12 @@ public class AuditFailedEntity extends BaseEntity {
     @Column(name = "error_stack_trace", length = STACK_TRACE_CHAR_LIMIT)
     private String errorStackTrace;
 
-    @Column(name = "notification_content")
-    private String notificationContent;
+    @Column(name = "notification_id")
+    private Long notificationId;
+
+    @ManyToOne
+    @JoinColumn(name = "notification_id", referencedColumnName = "notification_id", insertable = false, updatable = false)
+    public AuditFailedNotificationEntity notificationContent;
 
     public AuditFailedEntity() {
         // default constructor for JPA
@@ -59,7 +65,7 @@ public class AuditFailedEntity extends BaseEntity {
         String channelName,
         String notificationType,
         String errorMessage,
-        String notificationContent
+        Long notificationId
     ) {
         this.id = id;
         this.timeCreated = timeCreated;
@@ -68,7 +74,7 @@ public class AuditFailedEntity extends BaseEntity {
         this.channelName = channelName;
         this.notificationType = notificationType;
         this.errorMessage = errorMessage;
-        this.notificationContent = notificationContent;
+        this.notificationId = notificationId;
     }
 
     public AuditFailedEntity(
@@ -80,7 +86,7 @@ public class AuditFailedEntity extends BaseEntity {
         String notificationType,
         String errorMessage,
         String errorStackTrace,
-        String notificationContent
+        Long notificationId
     ) {
         this.id = id;
         this.timeCreated = timeCreated;
@@ -90,7 +96,7 @@ public class AuditFailedEntity extends BaseEntity {
         this.notificationType = notificationType;
         this.errorMessage = errorMessage;
         this.errorStackTrace = errorStackTrace;
-        this.notificationContent = notificationContent;
+        this.notificationId = notificationId;
     }
 
     public UUID getId() {
@@ -125,7 +131,11 @@ public class AuditFailedEntity extends BaseEntity {
         return Optional.ofNullable(errorStackTrace);
     }
 
-    public String getNotificationContent() {
+    public Long getNotificationId() {
+        return notificationId;
+    }
+
+    public AuditFailedNotificationEntity getNotificationContent() {
         return notificationContent;
     }
 }

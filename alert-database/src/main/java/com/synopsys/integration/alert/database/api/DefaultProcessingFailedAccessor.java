@@ -18,6 +18,8 @@ import com.synopsys.integration.alert.common.persistence.model.job.DistributionJ
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.database.audit.AuditFailedEntity;
 import com.synopsys.integration.alert.database.audit.AuditFailedEntryRepository;
+import com.synopsys.integration.alert.database.audit.AuditFailedNotificationEntity;
+import com.synopsys.integration.alert.database.audit.AuditFailedNotificationRepository;
 
 @Component
 public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor {
@@ -25,16 +27,19 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
     public static final String UNKNOWN_JOB = "Job Unknown";
     public static final String UNKNOWN_CHANNEL = "Unknown Channel";
     private final AuditFailedEntryRepository auditFailedEntryRepository;
+    private final AuditFailedNotificationRepository auditFailedNotificationRepository;
     private final NotificationAccessor notificationAccessor;
     private final JobAccessor jobAccessor;
 
     @Autowired
     public DefaultProcessingFailedAccessor(
         AuditFailedEntryRepository auditFailedEntryRepository,
+        AuditFailedNotificationRepository auditFailedNotificationRepository,
         NotificationAccessor notificationAccessor,
         JobAccessor jobAccessor
     ) {
         this.auditFailedEntryRepository = auditFailedEntryRepository;
+        this.auditFailedNotificationRepository = auditFailedNotificationRepository;
         this.notificationAccessor = notificationAccessor;
         this.jobAccessor = jobAccessor;
     }
@@ -45,6 +50,7 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
         List<AlertNotificationModel> notificationModels = notificationAccessor.findByIds(new ArrayList<>(notificationIds));
         Optional<DistributionJobModel> distributionJobModel = jobAccessor.getJobById(jobId);
         for (AlertNotificationModel notificationModel : notificationModels) {
+            Long notificationId = notificationModel.getId();
             AuditFailedEntity auditFailedEntity = new AuditFailedEntity(
                 UUID.randomUUID(),
                 occurrence,
@@ -53,9 +59,12 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
                 distributionJobModel.map(DistributionJobModel::getChannelDescriptorName).orElse(UNKNOWN_CHANNEL),
                 notificationModel.getNotificationType(),
                 errorMessage,
-                notificationModel.getContent()
+                notificationId
             );
             auditFailedEntryRepository.save(auditFailedEntity);
+            if (!auditFailedNotificationRepository.existsById(notificationId)) {
+                auditFailedNotificationRepository.save(new AuditFailedNotificationEntity(notificationId, notificationModel.getContent()));
+            }
         }
     }
 
@@ -65,6 +74,7 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
         List<AlertNotificationModel> notificationModels = notificationAccessor.findByIds(new ArrayList<>(notificationIds));
         Optional<DistributionJobModel> distributionJobModel = jobAccessor.getJobById(jobId);
         for (AlertNotificationModel notificationModel : notificationModels) {
+            Long notificationId = notificationModel.getId();
             AuditFailedEntity auditFailedEntity = new AuditFailedEntity(
                 UUID.randomUUID(),
                 occurrence,
@@ -74,9 +84,12 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
                 notificationModel.getNotificationType(),
                 errorMessage,
                 stackTrace,
-                notificationModel.getContent()
+                notificationId
             );
             auditFailedEntryRepository.save(auditFailedEntity);
+            if (!auditFailedNotificationRepository.existsById(notificationId)) {
+                auditFailedNotificationRepository.save(new AuditFailedNotificationEntity(notificationId, notificationModel.getContent()));
+            }
         }
     }
 }

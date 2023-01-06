@@ -18,6 +18,7 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.api.distribution.mock.MockAuditEntryRepository;
 import com.synopsys.integration.alert.api.distribution.mock.MockAuditFailedEntryRepository;
+import com.synopsys.integration.alert.api.distribution.mock.MockAuditFailedNotificationRepository;
 import com.synopsys.integration.alert.api.distribution.mock.MockAuditNotificationRepository;
 import com.synopsys.integration.alert.api.distribution.mock.MockNotificationContentRepository;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
@@ -37,6 +38,8 @@ import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditFailedEntity;
 import com.synopsys.integration.alert.database.audit.AuditFailedEntryRepository;
+import com.synopsys.integration.alert.database.audit.AuditFailedNotificationEntity;
+import com.synopsys.integration.alert.database.audit.AuditFailedNotificationRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelationPK;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
@@ -52,6 +55,7 @@ class AuditFailedHandlerTest {
     private final AtomicLong idContainer = new AtomicLong(0L);
 
     private AuditFailedEntryRepository auditFailedEntryRepository;
+    private AuditFailedNotificationRepository auditFailedNotificationRepository;
 
     private NotificationContentRepository notificationContentRepository;
     private NotificationAccessor notificationAccessor;
@@ -64,6 +68,7 @@ class AuditFailedHandlerTest {
         processingAuditAccessor = new DefaultProcessingAuditAccessor(auditEntryRepository, auditNotificationRepository);
         notificationContentRepository = new MockNotificationContentRepository(this::generateNotificationId);
         auditFailedEntryRepository = new MockAuditFailedEntryRepository(AuditFailedEntity::getId);
+        auditFailedNotificationRepository = new MockAuditFailedNotificationRepository(AuditFailedNotificationEntity::getNotificationId);
         ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
         notificationAccessor = new DefaultNotificationAccessor(notificationContentRepository, auditEntryRepository, configurationModelConfigurationAccessor);
     }
@@ -98,6 +103,7 @@ class AuditFailedHandlerTest {
         JobAccessor jobAccessor = createJobAccessor(this::createJobModel);
         ProcessingFailedAccessor processingFailedAccessor = new DefaultProcessingFailedAccessor(
             auditFailedEntryRepository,
+            auditFailedNotificationRepository,
             notificationAccessor,
             jobAccessor
         );
@@ -133,6 +139,7 @@ class AuditFailedHandlerTest {
         JobAccessor jobAccessor = createJobAccessor(this::createJobModel);
         ProcessingFailedAccessor processingFailedAccessor = new DefaultProcessingFailedAccessor(
             auditFailedEntryRepository,
+            auditFailedNotificationRepository,
             notificationAccessor,
             jobAccessor
         );
