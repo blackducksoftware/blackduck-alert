@@ -43,7 +43,7 @@ public class LDAPConfigAccessor implements UniqueConfigurationAccessor<LDAPGloba
     @Transactional(propagation = Propagation.REQUIRED)
     public LDAPGlobalConfigModel createConfiguration(LDAPGlobalConfigModel ldapGlobalConfigModel) throws AlertConfigurationException {
         if (doesConfigurationExist()) {
-            throw new AlertConfigurationException(String.format("A config with the name '%s' already exists.", ldapGlobalConfigModel.getName()));
+            throw new AlertConfigurationException("An LDAP configuration already exists.");
         }
 
         OffsetDateTime createAndUpdatedDateTime = DateUtils.createCurrentDateTimestamp();
@@ -59,7 +59,7 @@ public class LDAPConfigAccessor implements UniqueConfigurationAccessor<LDAPGloba
         LDAPConfigurationEntity configurationEntity =
             ldapConfigurationRepository
                 .findByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
-                .orElseThrow(() -> new AlertConfigurationException(String.format("Config with name '%s' did not exist", AlertRestConstants.DEFAULT_CONFIGURATION_NAME)));
+                .orElseThrow(() -> new AlertConfigurationException("An LDAP configuration does not exist"));
 
         if (ldapGlobalConfigModel.getIsManagerPasswordSet().isPresent() && ldapGlobalConfigModel.getIsManagerPasswordSet().get()) {
             String decryptedPassword = encryptionUtility.decrypt(configurationEntity.getManagerPassword());
