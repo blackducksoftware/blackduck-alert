@@ -51,7 +51,7 @@ public class AuditFailedEntity extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "notification_id", referencedColumnName = "notification_id", insertable = false, updatable = false)
-    public AuditFailedNotificationEntity notificationContent;
+    public AuditFailedNotificationEntity notification;
 
     public AuditFailedEntity() {
         // default constructor for JPA
@@ -135,7 +135,7 @@ public class AuditFailedEntity extends BaseEntity {
         return notificationId;
     }
 
-    public AuditFailedNotificationEntity getNotificationContent() {
-        return notificationContent;
+    public AuditFailedNotificationEntity getNotification() {
+        return notification;
     }
 }
