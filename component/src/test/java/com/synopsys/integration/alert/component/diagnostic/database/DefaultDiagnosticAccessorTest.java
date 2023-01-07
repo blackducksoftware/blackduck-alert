@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.component.diagnostic.model.AlertQueueInformation;
 import com.synopsys.integration.alert.component.diagnostic.model.AuditDiagnosticModel;
@@ -18,6 +19,7 @@ import com.synopsys.integration.alert.component.diagnostic.model.NotificationDia
 import com.synopsys.integration.alert.component.diagnostic.model.RabbitMQDiagnosticModel;
 import com.synopsys.integration.alert.component.diagnostic.model.SystemDiagnosticModel;
 import com.synopsys.integration.alert.component.diagnostic.utility.RabbitMQDiagnosticUtility;
+import com.synopsys.integration.alert.database.api.StaticJobAccessor;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
 
@@ -25,17 +27,27 @@ class DefaultDiagnosticAccessorTest {
     private NotificationContentRepository notificationContentRepository;
     private AuditEntryRepository auditEntryRepository;
     private RabbitMQDiagnosticUtility rabbitMQDiagnosticUtility;
+    private ExecutingJobManager executingJobManager;
+    private StaticJobAccessor staticJobAccessor;
 
     @BeforeEach
     public void init() {
         notificationContentRepository = Mockito.mock(NotificationContentRepository.class);
         auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         rabbitMQDiagnosticUtility = Mockito.mock(RabbitMQDiagnosticUtility.class);
+        staticJobAccessor = Mockito.mock(StaticJobAccessor.class);
+        executingJobManager = new ExecutingJobManager();
     }
 
     @Test
     void testGetDiagnosticInfo() {
-        DefaultDiagnosticAccessor diagnosticAccessor = new DefaultDiagnosticAccessor(notificationContentRepository, auditEntryRepository, rabbitMQDiagnosticUtility);
+        DefaultDiagnosticAccessor diagnosticAccessor = new DefaultDiagnosticAccessor(
+            notificationContentRepository,
+            auditEntryRepository,
+            rabbitMQDiagnosticUtility,
+            staticJobAccessor,
+            executingJobManager
+        );
         NotificationDiagnosticModel notificationDiagnosticModel = createNotificationDiagnosticModel();
         AuditDiagnosticModel auditDiagnosticModel = createAuditDiagnosticModel();
         RabbitMQDiagnosticModel rabbitMQDiagnosticModel = createRabbitMQDiagnosticModel();

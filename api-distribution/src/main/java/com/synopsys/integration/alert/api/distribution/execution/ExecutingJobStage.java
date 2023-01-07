@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.api.distribution.execution;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 public class ExecutingJobStage {
@@ -35,7 +36,7 @@ public class ExecutingJobStage {
         return start;
     }
 
-    public Instant getEnd() {
-        return end;
+    public Optional<Instant> getEnd() {
+        return Optional.ofNullable(end);
     }
 }

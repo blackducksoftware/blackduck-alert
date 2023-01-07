@@ -30,7 +30,7 @@ class DistributionEventHandlerTest {
         DistributionJobDetailsModel details = new DistributionJobDetailsModel(null, null) {};
         JobDetailsAccessor<DistributionJobDetailsModel> jobDetailsAccessor = x -> Optional.of(details);
 
-        DistributionChannel<DistributionJobDetailsModel> channel = (v, w, x, y, z) -> {
+        DistributionChannel<DistributionJobDetailsModel> channel = (u, v, w, x, y, z) -> {
             count.incrementAndGet();
             return null;
         };
@@ -57,7 +57,7 @@ class DistributionEventHandlerTest {
         JobDetailsAccessor<DistributionJobDetailsModel> jobDetailsAccessor = x -> Optional.of(details);
 
         AlertException testException = new AlertException("Test exception");
-        DistributionChannel<DistributionJobDetailsModel> channel = (v, w, x, y, z) -> {
+        DistributionChannel<DistributionJobDetailsModel> channel = (u, v, w, x, y, z) -> {
             count.incrementAndGet();
             throw testException;
         };
@@ -81,7 +81,7 @@ class DistributionEventHandlerTest {
         Mockito.doNothing().when(auditAccessor).setAuditEntryFailure(Mockito.any(), Mockito.anySet(), Mockito.anyString(), Mockito.any(Throwable.class));
         EventManager eventManager = Mockito.mock(EventManager.class);
         JobDetailsAccessor<DistributionJobDetailsModel> jobDetailsAccessor = x -> Optional.empty();
-        DistributionChannel<DistributionJobDetailsModel> channel = (v, w, x, y, z) -> {
+        DistributionChannel<DistributionJobDetailsModel> channel = (u, v, w, x, y, z) -> {
             count.incrementAndGet();
             return null;
         };

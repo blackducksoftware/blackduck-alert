@@ -17,13 +17,15 @@ class IssueTrackerCommentEventTest {
     void testObjectConstruction() {
         String destination = "destination_queue";
         UUID parentEventId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
         IssueCommentModel<String> model = new IssueCommentModel<>(null, List.of(), null);
-        IssueTrackerCommentEvent<String> event = new IssueTrackerCommentEvent<>(destination, parentEventId, jobId, notificationIds, model);
+        IssueTrackerCommentEvent<String> event = new IssueTrackerCommentEvent<>(destination, parentEventId, jobExecutionId, jobId, notificationIds, model);
 
         assertNotNull(event.getEventId());
-        assertEquals(parentEventId, event.getJobExecutionId());
+        assertEquals(parentEventId, event.getParentEventId());
+        assertEquals(jobExecutionId, event.getJobExecutionId());
         assertEquals(destination, event.getDestination());
         assertEquals(jobId, event.getJobId());
         assertEquals(notificationIds, event.getNotificationIds());
@@ -41,7 +43,7 @@ class IssueTrackerCommentEventTest {
     @Test
     void getCommentModelTest() {
         IssueCommentModel<String> model = new IssueCommentModel<>(null, List.of(), null);
-        IssueTrackerCommentEvent<String> event = new IssueTrackerCommentEvent<>(null, null, null, null, model);
+        IssueTrackerCommentEvent<String> event = new IssueTrackerCommentEvent<>(null, null, null, null, null, model);
 
         IssueCommentModel<String> testModel = event.getCommentModel();
         assertEquals(model, testModel);

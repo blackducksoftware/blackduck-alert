@@ -9,6 +9,7 @@ package com.synopsys.integration.alert.common.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -41,7 +42,11 @@ public final class DateUtils {
     }
 
     public static OffsetDateTime fromDateUTC(Date date) {
-        return OffsetDateTime.ofInstant(date.toInstant(), ZoneOffset.UTC);
+        return fromInstantUTC(date.toInstant());
+    }
+
+    public static OffsetDateTime fromInstantUTC(Instant instant) {
+        return OffsetDateTime.ofInstant(instant, ZoneOffset.UTC);
     }
 
     public static OffsetDateTime parseDate(String dateTime, String format) throws ParseException {

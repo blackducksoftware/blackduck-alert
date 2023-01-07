@@ -14,17 +14,21 @@ public class ExecutingJob {
     private final Instant start;
     private Instant end;
     private AuditEntryStatus status;
+    private int processedNotificationCount;
+    private final int totalNotificationCount;
     private final Map<JobStage, ExecutingJobStage> stages = new ConcurrentHashMap<>();
 
-    public static ExecutingJob startJob(UUID jobConfigId) {
-        return new ExecutingJob(jobConfigId, Instant.now(), AuditEntryStatus.PENDING);
+    public static ExecutingJob startJob(UUID jobConfigId, int totalNotificationCount) {
+        return new ExecutingJob(jobConfigId, Instant.now(), AuditEntryStatus.PENDING, totalNotificationCount);
     }
 
-    private ExecutingJob(UUID jobConfigId, Instant start, AuditEntryStatus status) {
+    private ExecutingJob(UUID jobConfigId, Instant start, AuditEntryStatus status, int totalNotificationCount) {
         this.executionId = UUID.randomUUID();
         this.jobConfigId = jobConfigId;
         this.start = start;
         this.status = status;
+        this.processedNotificationCount = 0;
+        this.totalNotificationCount = totalNotificationCount;
     }
 
     public void jobSucceeded() {
@@ -38,6 +42,10 @@ public class ExecutingJob {
     private void completeJobWithStatus(AuditEntryStatus status) {
         this.end = Instant.now();
         this.status = status;
+    }
+
+    public void updateNotificationCount(int notificationCount) {
+        this.processedNotificationCount += notificationCount;
     }
 
     public void addStage(ExecutingJobStage jobStage) {
@@ -54,6 +62,14 @@ public class ExecutingJob {
 
     public UUID getJobConfigId() {
         return jobConfigId;
+    }
+
+    public int getProcessedNotificationCount() {
+        return processedNotificationCount;
+    }
+
+    public int getTotalNotificationCount() {
+        return totalNotificationCount;
     }
 
     public Instant getStart() {

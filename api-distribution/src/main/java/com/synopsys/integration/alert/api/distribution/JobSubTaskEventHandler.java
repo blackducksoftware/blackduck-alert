@@ -31,28 +31,29 @@ public abstract class JobSubTaskEventHandler<T extends JobSubTaskEvent> implemen
 
     @Override
     public final void handle(T event) {
+        UUID parentEventId = event.getParentEventId();
         UUID jobExecutionId = event.getJobExecutionId();
         try {
-
             handleEvent(event);
-            Optional<JobSubTaskStatusModel> subTaskStatus = jobSubTaskAccessor.decrementTaskCount(jobExecutionId);
+            Optional<JobSubTaskStatusModel> subTaskStatus = jobSubTaskAccessor.decrementTaskCount(parentEventId);
             subTaskStatus.map(JobSubTaskStatusModel::getRemainingTaskCount)
                 .filter(remainingCount -> remainingCount < 1)
                 .ifPresent(ignored -> {
-                    eventManager.sendEvent(new JobStageEndedEvent(event.getJobExecutionId(), jobStage));
+                    eventManager.sendEvent(new JobStageEndedEvent(jobExecutionId, jobStage));
+                    // need to check if the count of the jobExecution id is 1 for this event only.
                     eventManager.sendEvent(new AuditSuccessEvent(event.getJobExecutionId(), event.getNotificationIds()));
-                    jobSubTaskAccessor.removeSubTaskStatus(jobExecutionId);
+                    jobSubTaskAccessor.removeSubTaskStatus(parentEventId);
                 });
         } catch (AlertException exception) {
-            eventManager.sendEvent(new JobStageEndedEvent(event.getJobExecutionId(), jobStage));
+            eventManager.sendEvent(new JobStageEndedEvent(jobExecutionId, jobStage));
             eventManager.sendEvent(new AuditFailedEvent(
-                event.getJobExecutionId(),
+                jobExecutionId,
                 event.getNotificationIds(),
                 exception.getMessage(),
                 AuditStackTraceUtil.createStackTraceString(exception)
             ));
 
-            jobSubTaskAccessor.removeSubTaskStatus(jobExecutionId);
+            jobSubTaskAccessor.removeSubTaskStatus(parentEventId);
         }
     }
 

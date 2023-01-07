@@ -75,6 +75,12 @@ public class DefaultJobNotificationMappingAccessor implements JobNotificationMap
         jobToNotificationRelationRepository.deleteAllByCorrelationIdAndJobId(correlationId, jobId);
     }
 
+    @Override
+    @Transactional
+    public int getNotificationCountForJob(final UUID correlationId, final UUID jobId) {
+        return jobToNotificationRelationRepository.countAllByCorrelationIdAndJobId(correlationId, jobId);
+    }
+
     private JobToNotificationRelation convertToEntity(JobToNotificationMappingModel model) {
         return new JobToNotificationRelation(model.getCorrelationId(), model.getJobId(), model.getNotificationId());
     }

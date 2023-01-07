@@ -60,8 +60,8 @@ class AuditFailedHandlerTest {
     @Test
     void handleEventTest() {
         UUID jobId = UUID.randomUUID();
-        ExecutingJob executingJob = executingJobManager.startJob(jobId);
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
+        ExecutingJob executingJob = executingJobManager.startJob(jobId, notificationIds.size());
         String errorMessage = "Error message";
         String stackTrace = "Stack trace goes here";
 

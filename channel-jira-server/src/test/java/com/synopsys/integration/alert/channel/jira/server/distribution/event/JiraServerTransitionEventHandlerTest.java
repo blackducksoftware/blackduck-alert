@@ -83,6 +83,7 @@ class JiraServerTransitionEventHandlerTest {
     @Test
     void handleUnknownJobTest() {
         UUID parentEventId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
 
@@ -100,7 +101,7 @@ class JiraServerTransitionEventHandlerTest {
         );
 
         JiraServerJobDetailsModel jobDetailsModel = createJobDetails(jobId);
-        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobDetailsModel.getJobId(), 1L, notificationIds);
+        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobDetailsModel.getJobId(), jobExecutionId, 1L, notificationIds);
 
         JiraServerTransitionEventHandler handler = new JiraServerTransitionEventHandler(
             eventManager,
@@ -116,6 +117,7 @@ class JiraServerTransitionEventHandlerTest {
         JiraServerTransitionEvent event = new JiraServerTransitionEvent(
             IssueTrackerTransitionIssueEvent.createDefaultEventDestination(ChannelKeys.JIRA_SERVER),
             parentEventId,
+            jobExecutionId,
             jobId,
             notificationIds,
             model
@@ -129,11 +131,12 @@ class JiraServerTransitionEventHandlerTest {
     @Test
     void handleTransitionTest() throws IntegrationException {
         UUID parentEventId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
 
         JiraServerJobDetailsModel jobDetailsModel = createJobDetails(jobId);
-        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobDetailsModel.getJobId(), 1L, notificationIds);
+        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobDetailsModel.getJobId(), jobExecutionId, 1L, notificationIds);
 
         JiraServerPropertiesFactory propertiesFactory = Mockito.mock(JiraServerPropertiesFactory.class);
         JiraServerProperties jiraProperties = Mockito.mock(JiraServerProperties.class);
@@ -184,6 +187,7 @@ class JiraServerTransitionEventHandlerTest {
         JiraServerTransitionEvent event = new JiraServerTransitionEvent(
             IssueTrackerTransitionIssueEvent.createDefaultEventDestination(ChannelKeys.JIRA_SERVER),
             parentEventId,
+            jobExecutionId,
             jobId,
             notificationIds,
             model

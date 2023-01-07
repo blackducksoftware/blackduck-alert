@@ -17,6 +17,7 @@ public class DiagnosticModel extends AlertSerializableModel implements Obfuscate
     private AuditDiagnosticModel auditDiagnosticModel;
     private SystemDiagnosticModel systemDiagnosticModel;
     private RabbitMQDiagnosticModel rabbitMQDiagnosticModel;
+    private JobExecutionsDiagnosticModel jobExecutionsDiagnosticModel;
     private String requestTimestamp;
 
     public DiagnosticModel() {
@@ -28,13 +29,15 @@ public class DiagnosticModel extends AlertSerializableModel implements Obfuscate
         NotificationDiagnosticModel notificationDiagnosticModel,
         AuditDiagnosticModel auditDiagnosticModel,
         SystemDiagnosticModel systemDiagnosticModel,
-        RabbitMQDiagnosticModel rabbitMQDiagnosticModel
+        RabbitMQDiagnosticModel rabbitMQDiagnosticModel,
+        JobExecutionsDiagnosticModel jobExecutionsDiagnosticModel
     ) {
         this.requestTimestamp = requestTimestamp;
         this.notificationDiagnosticModel = notificationDiagnosticModel;
         this.auditDiagnosticModel = auditDiagnosticModel;
         this.systemDiagnosticModel = systemDiagnosticModel;
         this.rabbitMQDiagnosticModel = rabbitMQDiagnosticModel;
+        this.jobExecutionsDiagnosticModel = jobExecutionsDiagnosticModel;
     }
 
     public NotificationDiagnosticModel getNotificationDiagnosticModel() {
@@ -57,8 +60,19 @@ public class DiagnosticModel extends AlertSerializableModel implements Obfuscate
         return requestTimestamp;
     }
 
+    public JobExecutionsDiagnosticModel getJobExecutionsDiagnosticModel() {
+        return jobExecutionsDiagnosticModel;
+    }
+
     @Override
     public DiagnosticModel obfuscate() {
-        return new DiagnosticModel(requestTimestamp, notificationDiagnosticModel, auditDiagnosticModel, systemDiagnosticModel, rabbitMQDiagnosticModel);
+        return new DiagnosticModel(
+            requestTimestamp,
+            notificationDiagnosticModel,
+            auditDiagnosticModel,
+            systemDiagnosticModel,
+            rabbitMQDiagnosticModel,
+            jobExecutionsDiagnosticModel
+        );
     }
 }
