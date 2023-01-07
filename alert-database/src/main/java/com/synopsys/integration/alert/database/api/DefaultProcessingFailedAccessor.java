@@ -127,7 +127,7 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
         List<AuditEntryModel> models = new LinkedList<>();
         Map<Long, List<JobAuditModel>> jobAuditModelMap = new HashMap<>();
         for (AuditFailedEntity entity : failedEntities) {
-            List<JobAuditModel> jobAuditModels = jobAuditModelMap.putIfAbsent(entity.getNotificationId(), new LinkedList<>());
+            List<JobAuditModel> jobAuditModels = jobAuditModelMap.computeIfAbsent(entity.getNotificationId(), ignored -> new LinkedList<>());
 
             AuditJobStatusModel jobStatusModel = new AuditJobStatusModel(
                 UUID.randomUUID(),
