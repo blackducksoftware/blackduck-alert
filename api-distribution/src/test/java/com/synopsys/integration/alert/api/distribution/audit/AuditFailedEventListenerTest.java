@@ -59,11 +59,11 @@ class AuditFailedEventListenerTest {
     private final AtomicLong idContainer = new AtomicLong(0L);
 
     private AuditFailedEntryRepository auditFailedEntryRepository;
-    private AuditFailedNotificationRepository auditFailedNotificationRepository;
 
     private NotificationContentRepository notificationContentRepository;
     private final AtomicLong notificationIdContainer = new AtomicLong(0);
     private NotificationAccessor notificationAccessor;
+    private AuditFailedNotificationRepository auditFailedNotificationRepository;
 
     @BeforeEach
     public void init() {
