@@ -11,14 +11,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.authentication.ldap.database.configuration.LDAPConfigurationEntity;
 import com.synopsys.integration.alert.authentication.ldap.database.configuration.LDAPConfigurationRepository;
-import com.synopsys.integration.alert.authentication.ldap.model.LDAPGlobalConfigModel;
+import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigModel;
 import com.synopsys.integration.alert.common.persistence.accessor.UniqueConfigurationAccessor;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.util.DateUtils;
 
 @Component
-public class LDAPConfigAccessor implements UniqueConfigurationAccessor<LDAPGlobalConfigModel> {
+public class LDAPConfigAccessor implements UniqueConfigurationAccessor<LDAPConfigModel> {
     private final EncryptionUtility encryptionUtility;
     private final LDAPConfigurationRepository ldapConfigurationRepository;
 
@@ -29,7 +29,7 @@ public class LDAPConfigAccessor implements UniqueConfigurationAccessor<LDAPGloba
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<LDAPGlobalConfigModel> getConfiguration() {
+    public Optional<LDAPConfigModel> getConfiguration() {
         return ldapConfigurationRepository.findByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME).map(this::toModel);
     }
 
@@ -41,13 +41,13 @@ public class LDAPConfigAccessor implements UniqueConfigurationAccessor<LDAPGloba
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public LDAPGlobalConfigModel createConfiguration(LDAPGlobalConfigModel ldapGlobalConfigModel) throws AlertConfigurationException {
+    public LDAPConfigModel createConfiguration(LDAPConfigModel ldapConfigModel) throws AlertConfigurationException {
         if (doesConfigurationExist()) {
             throw new AlertConfigurationException("An LDAP configuration already exists.");
         }
 
         OffsetDateTime createAndUpdatedDateTime = DateUtils.createCurrentDateTimestamp();
-        LDAPConfigurationEntity ldapConfigurationEntity = toEntity(UUID.randomUUID(), ldapGlobalConfigModel, createAndUpdatedDateTime, createAndUpdatedDateTime);
+        LDAPConfigurationEntity ldapConfigurationEntity = toEntity(UUID.randomUUID(), ldapConfigModel, createAndUpdatedDateTime, createAndUpdatedDateTime);
         LDAPConfigurationEntity savedEntity = ldapConfigurationRepository.save(ldapConfigurationEntity);
 
         return toModel(savedEntity);
@@ -55,20 +55,20 @@ public class LDAPConfigAccessor implements UniqueConfigurationAccessor<LDAPGloba
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public LDAPGlobalConfigModel updateConfiguration(LDAPGlobalConfigModel ldapGlobalConfigModel) throws AlertConfigurationException {
+    public LDAPConfigModel updateConfiguration(LDAPConfigModel ldapConfigModel) throws AlertConfigurationException {
         LDAPConfigurationEntity configurationEntity =
             ldapConfigurationRepository
                 .findByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
                 .orElseThrow(() -> new AlertConfigurationException("An LDAP configuration does not exist"));
 
-        if (ldapGlobalConfigModel.getIsManagerPasswordSet().isPresent() && ldapGlobalConfigModel.getIsManagerPasswordSet().get()) {
+        if (ldapConfigModel.getIsManagerPasswordSet().isPresent() && ldapConfigModel.getIsManagerPasswordSet().get()) {
             String decryptedPassword = encryptionUtility.decrypt(configurationEntity.getManagerPassword());
-            ldapGlobalConfigModel.setManagerPassword(decryptedPassword);
+            ldapConfigModel.setManagerPassword(decryptedPassword);
         }
 
         LDAPConfigurationEntity ldapConfigurationEntity = toEntity(
             configurationEntity.getConfigurationId(),
-            ldapGlobalConfigModel,
+            ldapConfigModel,
             configurationEntity.getCreatedAt(),
             DateUtils.createCurrentDateTimestamp()
         );
@@ -83,8 +83,8 @@ public class LDAPConfigAccessor implements UniqueConfigurationAccessor<LDAPGloba
         ldapConfigurationRepository.deleteByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
     }
 
-    private LDAPGlobalConfigModel toModel(LDAPConfigurationEntity ldapConfigurationEntity) {
-        return new LDAPGlobalConfigModel(
+    private LDAPConfigModel toModel(LDAPConfigurationEntity ldapConfigurationEntity) {
+        return new LDAPConfigModel(
             ldapConfigurationEntity.getConfigurationId().toString(),
             DateUtils.formatDate(ldapConfigurationEntity.getCreatedAt(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE),
             DateUtils.formatDate(ldapConfigurationEntity.getLastUpdated(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE),
@@ -105,26 +105,26 @@ public class LDAPConfigAccessor implements UniqueConfigurationAccessor<LDAPGloba
         );
     }
 
-    private LDAPConfigurationEntity toEntity(UUID configurationId, LDAPGlobalConfigModel ldapGlobalConfigModel, OffsetDateTime createdTime, OffsetDateTime lastUpdated) {
+    private LDAPConfigurationEntity toEntity(UUID configurationId, LDAPConfigModel ldapConfigModel, OffsetDateTime createdTime, OffsetDateTime lastUpdated) {
         return new LDAPConfigurationEntity(
             configurationId,
-            ldapGlobalConfigModel.getName(),
+            ldapConfigModel.getName(),
             createdTime,
             lastUpdated,
-            ldapGlobalConfigModel.getEnabled(),
-            ldapGlobalConfigModel.getServerName(),
-            ldapGlobalConfigModel.getManagerDn(),
-            ldapGlobalConfigModel.getManagerPassword().orElse(""),
-            ldapGlobalConfigModel.getIsManagerPasswordSet().orElse(Boolean.FALSE),
-            ldapGlobalConfigModel.getAuthenticationType().orElse(""),
-            ldapGlobalConfigModel.getReferral().orElse(""),
-            ldapGlobalConfigModel.getUserSearchBase().orElse(""),
-            ldapGlobalConfigModel.getUserSearchFilter().orElse(""),
-            ldapGlobalConfigModel.getUserDnPatterns().orElse(""),
-            ldapGlobalConfigModel.getUserAttributes().orElse(""),
-            ldapGlobalConfigModel.getGroupSearchBase().orElse(""),
-            ldapGlobalConfigModel.getGroupSearchFilter().orElse(""),
-            ldapGlobalConfigModel.getGroupRoleAttribute().orElse("")
+            ldapConfigModel.getEnabled(),
+            ldapConfigModel.getServerName(),
+            ldapConfigModel.getManagerDn(),
+            ldapConfigModel.getManagerPassword().orElse(""),
+            ldapConfigModel.getIsManagerPasswordSet().orElse(Boolean.FALSE),
+            ldapConfigModel.getAuthenticationType().orElse(""),
+            ldapConfigModel.getReferral().orElse(""),
+            ldapConfigModel.getUserSearchBase().orElse(""),
+            ldapConfigModel.getUserSearchFilter().orElse(""),
+            ldapConfigModel.getUserDnPatterns().orElse(""),
+            ldapConfigModel.getUserAttributes().orElse(""),
+            ldapConfigModel.getGroupSearchBase().orElse(""),
+            ldapConfigModel.getGroupSearchFilter().orElse(""),
+            ldapConfigModel.getGroupRoleAttribute().orElse("")
         );
     }
 }
