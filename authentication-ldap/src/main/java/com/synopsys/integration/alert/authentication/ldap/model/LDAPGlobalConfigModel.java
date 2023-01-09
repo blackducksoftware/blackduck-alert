@@ -110,6 +110,10 @@ public class LDAPGlobalConfigModel extends ConfigWithMetadata implements Obfusca
         return Optional.ofNullable(managerPassword);
     }
 
+    public void setManagerPassword(String managerPassword) {
+        this.managerPassword = managerPassword;
+    }
+
     public Optional<Boolean> getIsManagerPasswordSet() {
         return Optional.ofNullable(isManagerPasswordSet);
     }
