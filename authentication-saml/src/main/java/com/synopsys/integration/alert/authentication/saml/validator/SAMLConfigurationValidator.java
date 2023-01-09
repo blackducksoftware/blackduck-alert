@@ -19,29 +19,32 @@ public class SAMLConfigurationValidator {
     public ValidationResponseModel validate(SAMLConfigModel model) {
         Set<AlertFieldStatus> statuses = new HashSet<>();
 
-        if (StringUtils.isBlank(model.getEntityId())) {
-            statuses.add(AlertFieldStatus.error("entityId", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
-        }
-        if (StringUtils.isBlank(model.getEntityBaseUrl())) {
-            statuses.add(AlertFieldStatus.error("entityBaseUrl", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
-        } else {
-            addErrorStatusIfInvalidUrl(model.getEntityBaseUrl(),"entityBaseUrl", statuses);
-        }
+        // Perform validation on fields if enabled
+        if (model.getEnabled().orElse(false)) {
+            if (StringUtils.isBlank(model.getEntityId())) {
+                statuses.add(AlertFieldStatus.error("entityId", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
+            }
+            if (StringUtils.isBlank(model.getEntityBaseUrl())) {
+                statuses.add(AlertFieldStatus.error("entityBaseUrl", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
+            } else {
+                addErrorStatusIfInvalidUrl(model.getEntityBaseUrl(), "entityBaseUrl", statuses);
+            }
 
-        // Convert to empty optional for blank metadata url and file path
-        Optional<String> optionalFilteredMetadataUrl = model.getMetadataUrl().filter(StringUtils::isNotBlank);
-        Optional<String> optionalFilteredMetadataFilePath = model.getMetadataFilePath().filter(StringUtils::isNotBlank);
-        // One of url or filepath must exist
-        if (optionalFilteredMetadataUrl.isEmpty() && optionalFilteredMetadataFilePath.isEmpty()) {  // TODO: verify message
-            statuses.add(AlertFieldStatus.error("metadataUrl, metadataFilePath", "One of either fields is required."));
+            // Convert to empty optional for blank metadata url and file path
+            Optional<String> optionalFilteredMetadataUrl = model.getMetadataUrl().filter(StringUtils::isNotBlank);
+            Optional<String> optionalFilteredMetadataFilePath = model.getMetadataFilePath().filter(StringUtils::isNotBlank);
+            // One of url or filepath must exist
+            if (optionalFilteredMetadataUrl.isEmpty() && optionalFilteredMetadataFilePath.isEmpty()) {  // TODO: verify message
+                statuses.add(AlertFieldStatus.error("metadataUrl, metadataFilePath", "One of either fields is required."));
+            }
+            // Check if the metadata fields are valid
+            optionalFilteredMetadataUrl.ifPresent(
+                metaDataUrl -> addErrorStatusIfInvalidUrl(metaDataUrl, "metaDataUrl", statuses)
+            );
+            optionalFilteredMetadataFilePath.ifPresent(
+                metaDataFilePath -> addErrorStatusIfInvalidMetadataFilePath(metaDataFilePath, statuses)
+            );
         }
-        // Check if the metadata fields are valid
-        optionalFilteredMetadataUrl.ifPresent(
-            metaDataUrl -> addErrorStatusIfInvalidUrl(metaDataUrl,"metaDataUrl", statuses)
-        );
-        optionalFilteredMetadataFilePath.ifPresent(
-            metaDataFilePath -> addErrorStatusIfInvalidMetadataFilePath(metaDataFilePath, statuses)
-        );
 
         if (!statuses.isEmpty()) {
             return ValidationResponseModel.fromStatusCollection(statuses);
