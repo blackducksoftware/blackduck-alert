@@ -17,6 +17,9 @@
             <column name="job_name" type="VARCHAR">
                 <constraints nullable="false"/>
             </column>
+            <column name="provider_key" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
             <column name="provider_name" type="VARCHAR">
                 <constraints nullable="false"/>
             </column>

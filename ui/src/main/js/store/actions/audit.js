@@ -3,7 +3,7 @@ import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 import { unauthorized } from 'store/actions/session';
 import HeaderUtilities from 'common/util/HeaderUtilities';
 
-const FETCH_URL = '/alert/api/audit';
+const FETCH_URL = '/alert/api/audit/failed';
 
 /**
  * Triggers Config Fetching reducer

@@ -3,6 +3,7 @@ package com.synopsys.integration.alert.database.api;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
@@ -79,12 +81,14 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
     public void setAuditFailure(UUID jobId, Set<Long> notificationIds, OffsetDateTime occurrence, String errorMessage) {
         List<AlertNotificationModel> notificationModels = notificationAccessor.findByIds(new ArrayList<>(notificationIds));
         Optional<DistributionJobModel> distributionJobModel = jobAccessor.getJobById(jobId);
+        Map<Long, String> auditedNotifications = new HashMap<>();
         for (AlertNotificationModel notificationModel : notificationModels) {
             Long notificationId = notificationModel.getId();
             AuditFailedEntity auditFailedEntity = new AuditFailedEntity(
                 UUID.randomUUID(),
                 occurrence,
                 distributionJobModel.map(DistributionJobModel::getName).orElse(UNKNOWN_JOB),
+                notificationModel.getProvider(),
                 notificationModel.getProviderConfigName(),
                 distributionJobModel.map(DistributionJobModel::getChannelDescriptorName).orElse(UNKNOWN_CHANNEL),
                 notificationModel.getNotificationType(),
@@ -92,10 +96,12 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
                 notificationId
             );
             auditFailedEntryRepository.save(auditFailedEntity);
-            if (!auditFailedNotificationRepository.existsById(notificationId)) {
-                auditFailedNotificationRepository.save(new AuditFailedNotificationEntity(notificationId, notificationModel.getContent()));
-            }
+            auditedNotifications.put(notificationId, notificationModel.getContent());
         }
+        List<AuditFailedNotificationEntity> notificationEntities = auditedNotifications.entrySet().stream()
+            .map(notification -> new AuditFailedNotificationEntity(notification.getKey(), notification.getValue()))
+            .collect(Collectors.toList());
+        auditFailedNotificationRepository.saveAllAndFlush(notificationEntities);
     }
 
     @Override
@@ -103,12 +109,14 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
     public void setAuditFailure(UUID jobId, Set<Long> notificationIds, OffsetDateTime occurrence, String errorMessage, String stackTrace) {
         List<AlertNotificationModel> notificationModels = notificationAccessor.findByIds(new ArrayList<>(notificationIds));
         Optional<DistributionJobModel> distributionJobModel = jobAccessor.getJobById(jobId);
+        Map<Long, String> auditedNotifications = new HashMap<>();
         for (AlertNotificationModel notificationModel : notificationModels) {
             Long notificationId = notificationModel.getId();
             AuditFailedEntity auditFailedEntity = new AuditFailedEntity(
                 UUID.randomUUID(),
                 occurrence,
                 distributionJobModel.map(DistributionJobModel::getName).orElse(UNKNOWN_JOB),
+                notificationModel.getProvider(),
                 notificationModel.getProviderConfigName(),
                 distributionJobModel.map(DistributionJobModel::getChannelDescriptorName).orElse(UNKNOWN_CHANNEL),
                 notificationModel.getNotificationType(),
@@ -117,18 +125,19 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
                 notificationId
             );
             auditFailedEntryRepository.save(auditFailedEntity);
-            if (!auditFailedNotificationRepository.existsById(notificationId)) {
-                auditFailedNotificationRepository.save(new AuditFailedNotificationEntity(notificationId, notificationModel.getContent()));
-            }
+            auditedNotifications.put(notificationId, notificationModel.getContent());
         }
+
+        List<AuditFailedNotificationEntity> notificationEntities = auditedNotifications.entrySet().stream()
+            .map(notification -> new AuditFailedNotificationEntity(notification.getKey(), notification.getValue()))
+            .collect(Collectors.toList());
+        auditFailedNotificationRepository.saveAllAndFlush(notificationEntities);
     }
 
     private List<AuditEntryModel> convertFailedEntries(List<AuditFailedEntity> failedEntities) {
-        List<AuditEntryModel> models = new LinkedList<>();
         Map<Long, List<JobAuditModel>> jobAuditModelMap = new HashMap<>();
         for (AuditFailedEntity entity : failedEntities) {
             List<JobAuditModel> jobAuditModels = jobAuditModelMap.computeIfAbsent(entity.getNotificationId(), ignored -> new LinkedList<>());
-
             AuditJobStatusModel jobStatusModel = new AuditJobStatusModel(
                 UUID.randomUUID(),
                 DateUtils.formatDateAsJsonString(entity.getTimeCreated()),
@@ -139,32 +148,35 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
                 "",
                 "",
                 entity.getJobName(),
-                entity.getNotificationType(),
+                entity.getChannelName(),
                 jobStatusModel,
                 entity.getErrorMessage(),
                 entity.getErrorStackTrace().orElse(null)
             ));
         }
 
+        Map<Long, AuditEntryModel> auditEntryModelMap = new LinkedHashMap<>();
         for (AuditFailedEntity entity : failedEntities) {
-            NotificationConfig notificationConfig = createNotificationConfig(entity);
-            AuditEntryModel model = new AuditEntryModel(
-                entity.getId().toString(),
-                notificationConfig,
-                jobAuditModelMap.getOrDefault(entity.getNotificationId(), List.of()),
-                AuditEntryStatus.FAILURE.getDisplayName(),
-                DateUtils.formatDateAsJsonString(entity.getTimeCreated())
-            );
-            models.add(model);
+            Long notificationId = entity.getNotificationId();
+            auditEntryModelMap.computeIfAbsent(notificationId, ignoredKey -> {
+                NotificationConfig notificationConfig = createNotificationConfig(entity);
+                return new AuditEntryModel(
+                    entity.getId().toString(),
+                    notificationConfig,
+                    jobAuditModelMap.getOrDefault(notificationId, List.of()),
+                    AuditEntryStatus.FAILURE.getDisplayName(),
+                    DateUtils.formatDateAsJsonString(entity.getTimeCreated())
+                );
+            });
         }
-        return models;
+        return new ArrayList<>(auditEntryModelMap.values());
     }
 
     private NotificationConfig createNotificationConfig(AuditFailedEntity entity) {
         return new NotificationConfig(
             entity.getNotificationId().toString(),
             DateUtils.formatDateAsJsonString(entity.getTimeCreated()),
-            "",
+            entity.getProviderKey(),
             0L,
             entity.getProviderName(),
             DateUtils.formatDateAsJsonString(entity.getTimeCreated()),

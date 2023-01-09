@@ -30,6 +30,9 @@ public class AuditFailedEntity extends BaseEntity {
     private OffsetDateTime timeCreated;
     @Column(name = "job_name")
     private String jobName;
+
+    @Column(name = "provider_key")
+    private String providerKey;
     @Column(name = "provider_name")
     private String providerName;
 
@@ -61,6 +64,7 @@ public class AuditFailedEntity extends BaseEntity {
         UUID id,
         OffsetDateTime timeCreated,
         String jobName,
+        String providerKey,
         String providerName,
         String channelName,
         String notificationType,
@@ -70,6 +74,7 @@ public class AuditFailedEntity extends BaseEntity {
         this.id = id;
         this.timeCreated = timeCreated;
         this.jobName = jobName;
+        this.providerKey = providerKey;
         this.providerName = providerName;
         this.channelName = channelName;
         this.notificationType = notificationType;
@@ -81,6 +86,7 @@ public class AuditFailedEntity extends BaseEntity {
         UUID id,
         OffsetDateTime timeCreated,
         String jobName,
+        String providerKey,
         String providerName,
         String channelName,
         String notificationType,
@@ -91,6 +97,7 @@ public class AuditFailedEntity extends BaseEntity {
         this.id = id;
         this.timeCreated = timeCreated;
         this.jobName = jobName;
+        this.providerKey = providerKey;
         this.providerName = providerName;
         this.channelName = channelName;
         this.notificationType = notificationType;
@@ -109,6 +116,10 @@ public class AuditFailedEntity extends BaseEntity {
 
     public String getJobName() {
         return jobName;
+    }
+
+    public String getProviderKey() {
+        return providerKey;
     }
 
     public String getProviderName() {
