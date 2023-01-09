@@ -2,39 +2,79 @@ package com.synopsys.integration.alert.api.distribution.audit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Function;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.api.distribution.mock.MockAuditEntryRepository;
+import com.synopsys.integration.alert.api.distribution.mock.MockAuditFailedEntryRepository;
 import com.synopsys.integration.alert.api.distribution.mock.MockAuditNotificationRepository;
-import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
+import com.synopsys.integration.alert.api.distribution.mock.MockNotificationContentRepository;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.synopsys.integration.alert.common.enumeration.ProcessingType;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ProcessingFailedAccessor;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModelBuilder;
+import com.synopsys.integration.alert.common.util.DateUtils;
+import com.synopsys.integration.alert.database.api.DefaultNotificationAccessor;
 import com.synopsys.integration.alert.database.api.DefaultProcessingAuditAccessor;
+import com.synopsys.integration.alert.database.api.DefaultProcessingFailedAccessor;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
+import com.synopsys.integration.alert.database.audit.AuditFailedEntity;
+import com.synopsys.integration.alert.database.audit.AuditFailedEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelationPK;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
+import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
+import com.synopsys.integration.alert.database.notification.NotificationEntity;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 class AuditFailedHandlerTest {
+    public static final String TEST_JOB_NAME = "Test Job";
 
     private ProcessingAuditAccessor processingAuditAccessor;
-    private AuditEntryRepository auditEntryRepository;
-    private AuditNotificationRepository auditNotificationRepository;
-    private AtomicLong idContainer = new AtomicLong(0L);
+
+    private final AtomicLong idContainer = new AtomicLong(0L);
+
+    private AuditFailedEntryRepository auditFailedEntryRepository;
+
+    private NotificationContentRepository notificationContentRepository;
+    private NotificationAccessor notificationAccessor;
+    private final AtomicLong notificationIdContainer = new AtomicLong(0);
 
     @BeforeEach
     public void init() {
-        auditNotificationRepository = new MockAuditNotificationRepository(this::generateRelationKey);
-        auditEntryRepository = new MockAuditEntryRepository(this::generateEntityKey, auditNotificationRepository);
+        AuditNotificationRepository auditNotificationRepository = new MockAuditNotificationRepository(this::generateRelationKey);
+        AuditEntryRepository auditEntryRepository = new MockAuditEntryRepository(this::generateEntityKey, auditNotificationRepository);
         processingAuditAccessor = new DefaultProcessingAuditAccessor(auditEntryRepository, auditNotificationRepository);
+        notificationContentRepository = new MockNotificationContentRepository(this::generateNotificationId);
+        auditFailedEntryRepository = new MockAuditFailedEntryRepository(AuditFailedEntity::getId);
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
+        notificationAccessor = new DefaultNotificationAccessor(notificationContentRepository, auditEntryRepository, configurationModelConfigurationAccessor);
+    }
+
+    private Long generateNotificationId(NotificationEntity entity) {
+        Long id = entity.getId();
+        if (null == id) {
+            id = notificationIdContainer.incrementAndGet();
+            entity.setId(id);
+        }
+        return id;
     }
 
     private Long generateEntityKey(AuditEntryEntity entity) {
@@ -55,44 +95,113 @@ class AuditFailedHandlerTest {
 
     @Test
     void handleEventTest() {
+        JobAccessor jobAccessor = createJobAccessor(this::createJobModel);
+        ProcessingFailedAccessor processingFailedAccessor = new DefaultProcessingFailedAccessor(
+            auditFailedEntryRepository,
+            notificationAccessor,
+            jobAccessor
+        );
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
         String errorMessage = "Error message";
         String stackTrace = "Stack trace goes here";
 
-        AuditFailedHandler handler = new AuditFailedHandler(processingAuditAccessor);
+        AuditFailedHandler handler = new AuditFailedHandler(processingAuditAccessor, processingFailedAccessor);
+        notificationIds.stream()
+            .map(this::createNotification)
+            .forEach(notificationContentRepository::save);
         processingAuditAccessor.createOrUpdatePendingAuditEntryForJob(jobId, notificationIds);
         AuditFailedEvent event = new AuditFailedEvent(jobId, notificationIds, errorMessage, stackTrace);
 
         handler.handle(event);
 
-        for (Long notificationId : notificationIds) {
-            Optional<AuditEntryEntity> entry = auditEntryRepository.findMatchingAudit(notificationId, jobId);
-            assertTrue(entry.isPresent());
-            AuditEntryEntity entity = entry.get();
-            assertEquals(AuditEntryStatus.FAILURE.name(), entity.getStatus());
-            assertNotNull(entity.getTimeCreated());
-            assertTrue(entity.getTimeLastSent().isAfter(entity.getTimeCreated()));
+        List<AuditFailedEntity> failedEntities = auditFailedEntryRepository.findAll();
+        for (AuditFailedEntity entity : failedEntities) {
+            assertNotNull(entity.getId());
+            assertNotNull(entity.getProviderName());
+            assertEquals(TEST_JOB_NAME, entity.getJobName());
+            assertEquals(ChannelKeys.SLACK.getUniversalKey(), entity.getChannelName());
+            assertEquals(event.getCreatedTimestamp(), entity.getTimeCreated());
             assertEquals(errorMessage, entity.getErrorMessage());
-            assertEquals(stackTrace, entity.getErrorStackTrace());
+            assertEquals(stackTrace, entity.getErrorStackTrace().orElseThrow(() -> new AssertionError("Expected stack trace but none found")));
         }
+
     }
 
     @Test
     void handleEventAuditEntryMissingTest() {
+        JobAccessor jobAccessor = createJobAccessor(this::createJobModel);
+        ProcessingFailedAccessor processingFailedAccessor = new DefaultProcessingFailedAccessor(
+            auditFailedEntryRepository,
+            notificationAccessor,
+            jobAccessor
+        );
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
         String errorMessage = "Error message";
         String stackTrace = "Stack trace goes here";
 
-        AuditFailedHandler handler = new AuditFailedHandler(processingAuditAccessor);
+        notificationIds.stream()
+            .map(this::createNotification)
+            .forEach(notificationContentRepository::save);
+        AuditFailedHandler handler = new AuditFailedHandler(processingAuditAccessor, processingFailedAccessor);
         AuditFailedEvent event = new AuditFailedEvent(jobId, notificationIds, errorMessage, stackTrace);
 
         handler.handle(event);
 
-        for (Long notificationId : notificationIds) {
-            Optional<AuditEntryEntity> entry = auditEntryRepository.findMatchingAudit(notificationId, jobId);
-            assertTrue(entry.isEmpty());
+        List<AuditFailedEntity> failedEntities = auditFailedEntryRepository.findAll();
+        for (AuditFailedEntity entity : failedEntities) {
+            assertNotNull(entity.getId());
+            assertNotNull(entity.getProviderName());
+            assertEquals(TEST_JOB_NAME, entity.getJobName());
+            assertEquals(ChannelKeys.SLACK.getUniversalKey(), entity.getChannelName());
+            assertEquals(event.getCreatedTimestamp(), entity.getTimeCreated());
+            assertEquals(errorMessage, entity.getErrorMessage());
+            assertEquals(stackTrace, entity.getErrorStackTrace().orElseThrow(() -> new AssertionError("Expected stack trace but none found")));
         }
+    }
+
+    private DistributionJobModel createJobModel(UUID jobId) {
+        String name = TEST_JOB_NAME;
+        OffsetDateTime createdAt = DateUtils.createCurrentDateTimestamp();
+        Long blackDuckGlobalConfigId = 1L;
+        List<String> notificationTypes = List.of("VULNERABILITY");
+        DistributionJobModelBuilder jobBuilder = new DistributionJobModelBuilder();
+        jobBuilder.jobId(jobId)
+            .name(name)
+            .createdAt(createdAt)
+            .blackDuckGlobalConfigId(blackDuckGlobalConfigId)
+            .distributionFrequency(FrequencyType.REAL_TIME)
+            .processingType(ProcessingType.DEFAULT)
+            .channelDescriptorName(ChannelKeys.SLACK.getUniversalKey())
+            .notificationTypes(notificationTypes);
+
+        return jobBuilder.build();
+    }
+
+    private JobAccessor createJobAccessor(Function<UUID, DistributionJobModel> jobModelSupplier) {
+        JobAccessor accessor = Mockito.mock(JobAccessor.class);
+        Mockito.doAnswer(invocation -> {
+            UUID jobId = invocation.getArgument(0);
+            return Optional.ofNullable(jobModelSupplier.apply(jobId));
+        }).when(accessor).getJobById(Mockito.any());
+        return accessor;
+    }
+
+    private NotificationEntity createNotification(Long id) {
+        String provider = "Provider";
+        String content = "notification content";
+        OffsetDateTime creationTime = DateUtils.createCurrentDateTimestamp();
+        OffsetDateTime providerCreationTime = creationTime.minus(1, ChronoUnit.MINUTES);
+        return new NotificationEntity(
+            id,
+            creationTime,
+            provider,
+            1L,
+            providerCreationTime,
+            "VULNERABILITY",
+            content,
+            false
+        );
     }
 }

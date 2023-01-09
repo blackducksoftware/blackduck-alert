@@ -81,6 +81,7 @@ public class DefaultJobSubTaskAccessor implements JobSubTaskAccessor {
     }
 
     @Override
+    @Transactional
     public Optional<JobSubTaskStatusModel> removeSubTaskStatus(UUID id) {
         Optional<JobSubTaskStatusEntity> entity = jobSubTaskRepository.findById(id);
         Optional<JobSubTaskStatusModel> model = Optional.empty();
