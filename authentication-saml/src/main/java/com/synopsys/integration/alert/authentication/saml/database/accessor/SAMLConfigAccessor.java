@@ -44,8 +44,8 @@ public class SAMLConfigAccessor implements UniqueConfigurationAccessor<SAMLConfi
             throw new AlertConfigurationException("A SAML config already exists.");
         }
         OffsetDateTime createAndUpdatedDateTime = DateUtils.createCurrentDateTimestamp();
-        SAMLConfigurationEntity SAMLConfigurationEntity = toEntity(UUID.randomUUID(), configuration, createAndUpdatedDateTime, createAndUpdatedDateTime);
-        SAMLConfigurationEntity savedEntity = samlConfigurationRepository.save(SAMLConfigurationEntity);
+        SAMLConfigurationEntity samlConfigurationEntity = toEntity(UUID.randomUUID(), configuration, createAndUpdatedDateTime, createAndUpdatedDateTime);
+        SAMLConfigurationEntity savedEntity = samlConfigurationRepository.save(samlConfigurationEntity);
 
         return toModel(savedEntity);
     }
@@ -58,8 +58,8 @@ public class SAMLConfigAccessor implements UniqueConfigurationAccessor<SAMLConfi
                 .findByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
                 .orElseThrow(() -> new AlertConfigurationException("SAML config does not exist"));
 
-        SAMLConfigurationEntity SAMLConfigurationEntity = toEntity(configurationEntity.getConfigurationId(), configuration, configurationEntity.getCreatedAt(), DateUtils.createCurrentDateTimestamp());
-        SAMLConfigurationEntity savedEntity = samlConfigurationRepository.save(SAMLConfigurationEntity);
+        SAMLConfigurationEntity samlConfigurationEntity = toEntity(configurationEntity.getConfigurationId(), configuration, configurationEntity.getCreatedAt(), DateUtils.createCurrentDateTimestamp());
+        SAMLConfigurationEntity savedEntity = samlConfigurationRepository.save(samlConfigurationEntity);
 
         return toModel(savedEntity);
     }
@@ -95,8 +95,8 @@ public class SAMLConfigAccessor implements UniqueConfigurationAccessor<SAMLConfi
             samlConfigModel.getForceAuth().orElse(Boolean.FALSE),
             samlConfigModel.getMetadataUrl().orElse(""),
             samlConfigModel.getMetadataFilePath().orElse(""),
-            samlConfigModel.getEntityId().orElse(""),
-            samlConfigModel.getEntityBaseUrl().orElse(""),
+            samlConfigModel.getEntityId(),
+            samlConfigModel.getEntityBaseUrl(),
             samlConfigModel.getRequireAssertionsSigned().orElse(Boolean.FALSE),
             samlConfigModel.getRoleAttributeMapping().orElse("")
         );

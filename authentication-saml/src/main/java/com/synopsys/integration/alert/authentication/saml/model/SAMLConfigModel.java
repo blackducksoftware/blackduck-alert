@@ -69,6 +69,7 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
         );
     }
 
+    // Getters
     public Optional<Boolean> getEnabled() {
         return Optional.ofNullable(enabled);
     }
@@ -85,12 +86,12 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
         return Optional.ofNullable(metadataFilePath);
     }
 
-    public Optional<String> getEntityId() {
-        return Optional.ofNullable(entityId);
+    public String getEntityId() {
+        return entityId;
     }
 
-    public Optional<String> getEntityBaseUrl() {
-        return Optional.ofNullable(entityBaseUrl);
+    public String getEntityBaseUrl() {
+        return entityBaseUrl;
     }
 
     public Optional<Boolean> getRequireAssertionsSigned() {
@@ -99,5 +100,30 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
 
     public Optional<String> getRoleAttributeMapping() {
         return Optional.ofNullable(roleAttributeMapping);
+    }
+
+    // Setters
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public void setForceAuth(Boolean forceAuth) {
+        this.forceAuth = forceAuth;
+    }
+
+    public void setMetadataUrl(String metadataUrl) {
+        this.metadataUrl = metadataUrl;
+    }
+
+    public void setEntityId(String entityId) {
+        this.entityId = entityId;
+    }
+
+    public void setEntityBaseUrl(String entityBaseUrl) {
+        this.entityBaseUrl = entityBaseUrl;
+    }
+
+    public void setRoleAttributeMapping(String roleAttributeMapping) {
+        this.roleAttributeMapping = roleAttributeMapping;
     }
 }
