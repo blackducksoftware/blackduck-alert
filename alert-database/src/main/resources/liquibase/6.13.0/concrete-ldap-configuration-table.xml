@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="dmaxfield" id="create-ldap-configuration-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="configuration_ldap"/>
+            </not>
+        </preConditions>
+        <createTable schemaName="alert" tableName="configuration_ldap">
+            <column name="configuration_id" type="UUID" defaultValueComputed="uuid_generate_v4()">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP WITH TIMEZONE" defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_updated" type="TIMESTAMP WITH TIMEZONE">
+                <constraints nullable="true"/>
+            </column>
+            <column name="enabled" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="server_name" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="manager_dn" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="manager_password" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_manager_password_set" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="authentication_type" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+            <column name="referral" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+            <column name="user_search_base" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+            <column name="user_search_filter" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+            <column name="user_dn_patterns" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+            <column name="user_attributes" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+            <column name="group_search_base" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+            <column name="group_search_filter" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+            <column name="group_role_attribute" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>
