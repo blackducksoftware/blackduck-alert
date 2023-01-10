@@ -7,7 +7,9 @@ import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
@@ -28,6 +30,9 @@ public class AuditFailedEntity extends BaseEntity {
     private OffsetDateTime timeCreated;
     @Column(name = "job_name")
     private String jobName;
+
+    @Column(name = "provider_key")
+    private String providerKey;
     @Column(name = "provider_name")
     private String providerName;
 
@@ -44,8 +49,12 @@ public class AuditFailedEntity extends BaseEntity {
     @Column(name = "error_stack_trace", length = STACK_TRACE_CHAR_LIMIT)
     private String errorStackTrace;
 
-    @Column(name = "notification_content")
-    private String notificationContent;
+    @Column(name = "notification_id")
+    private Long notificationId;
+
+    @ManyToOne
+    @JoinColumn(name = "notification_id", referencedColumnName = "notification_id", insertable = false, updatable = false)
+    public AuditFailedNotificationEntity notification;
 
     public AuditFailedEntity() {
         // default constructor for JPA
@@ -55,42 +64,46 @@ public class AuditFailedEntity extends BaseEntity {
         UUID id,
         OffsetDateTime timeCreated,
         String jobName,
+        String providerKey,
         String providerName,
         String channelName,
         String notificationType,
         String errorMessage,
-        String notificationContent
+        Long notificationId
     ) {
         this.id = id;
         this.timeCreated = timeCreated;
         this.jobName = jobName;
+        this.providerKey = providerKey;
         this.providerName = providerName;
         this.channelName = channelName;
         this.notificationType = notificationType;
         this.errorMessage = errorMessage;
-        this.notificationContent = notificationContent;
+        this.notificationId = notificationId;
     }
 
     public AuditFailedEntity(
         UUID id,
         OffsetDateTime timeCreated,
         String jobName,
+        String providerKey,
         String providerName,
         String channelName,
         String notificationType,
         String errorMessage,
         String errorStackTrace,
-        String notificationContent
+        Long notificationId
     ) {
         this.id = id;
         this.timeCreated = timeCreated;
         this.jobName = jobName;
+        this.providerKey = providerKey;
         this.providerName = providerName;
         this.channelName = channelName;
         this.notificationType = notificationType;
         this.errorMessage = errorMessage;
         this.errorStackTrace = errorStackTrace;
-        this.notificationContent = notificationContent;
+        this.notificationId = notificationId;
     }
 
     public UUID getId() {
@@ -103,6 +116,10 @@ public class AuditFailedEntity extends BaseEntity {
 
     public String getJobName() {
         return jobName;
+    }
+
+    public String getProviderKey() {
+        return providerKey;
     }
 
     public String getProviderName() {
@@ -125,7 +142,11 @@ public class AuditFailedEntity extends BaseEntity {
         return Optional.ofNullable(errorStackTrace);
     }
 
-    public String getNotificationContent() {
-        return notificationContent;
+    public Long getNotificationId() {
+        return notificationId;
+    }
+
+    public AuditFailedNotificationEntity getNotification() {
+        return notification;
     }
 }

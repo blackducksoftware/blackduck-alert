@@ -17,6 +17,9 @@
             <column name="job_name" type="VARCHAR">
                 <constraints nullable="false"/>
             </column>
+            <column name="provider_key" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
             <column name="provider_name" type="VARCHAR">
                 <constraints nullable="false"/>
             </column>
@@ -30,6 +33,21 @@
                 <constraints nullable="false"/>
             </column>
             <column name="error_stack_trace" type="VARCHAR"/>
+            <column name="notification_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="psantos" id="create-failed-audit-notifications">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="failed_audit_notifications"/>
+            </not>
+        </preConditions>
+        <createTable schemaName="alert" tableName="failed_audit_notifications">
+            <column name="notification_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
             <column name="notification_content" type="VARCHAR">
                 <constraints nullable="false"/>
             </column>
