@@ -4,6 +4,7 @@ import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ public class LDAPConfigAccessor implements UniqueConfigurationAccessor<LDAPConfi
     private final EncryptionUtility encryptionUtility;
     private final LDAPConfigurationRepository ldapConfigurationRepository;
 
+    @Autowired
     public LDAPConfigAccessor(EncryptionUtility encryptionUtility, LDAPConfigurationRepository ldapConfigurationRepository) {
         this.encryptionUtility = encryptionUtility;
         this.ldapConfigurationRepository = ldapConfigurationRepository;
@@ -56,23 +58,23 @@ public class LDAPConfigAccessor implements UniqueConfigurationAccessor<LDAPConfi
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public LDAPConfigModel updateConfiguration(LDAPConfigModel ldapConfigModel) throws AlertConfigurationException {
-        LDAPConfigurationEntity configurationEntity =
+        LDAPConfigurationEntity existingLDAPConfigurationEntity =
             ldapConfigurationRepository
                 .findByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
                 .orElseThrow(() -> new AlertConfigurationException("An LDAP configuration does not exist"));
 
         if (ldapConfigModel.getIsManagerPasswordSet().isPresent() && ldapConfigModel.getIsManagerPasswordSet().get()) {
-            String decryptedPassword = encryptionUtility.decrypt(configurationEntity.getManagerPassword());
+            String decryptedPassword = encryptionUtility.decrypt(existingLDAPConfigurationEntity.getManagerPassword());
             ldapConfigModel.setManagerPassword(decryptedPassword);
         }
 
-        LDAPConfigurationEntity ldapConfigurationEntity = toEntity(
-            configurationEntity.getConfigurationId(),
+        LDAPConfigurationEntity updatedLDAPConfigurationEntity = toEntity(
+            existingLDAPConfigurationEntity.getConfigurationId(),
             ldapConfigModel,
-            configurationEntity.getCreatedAt(),
+            existingLDAPConfigurationEntity.getCreatedAt(),
             DateUtils.createCurrentDateTimestamp()
         );
-        LDAPConfigurationEntity savedEntity = ldapConfigurationRepository.save(ldapConfigurationEntity);
+        LDAPConfigurationEntity savedEntity = ldapConfigurationRepository.save(updatedLDAPConfigurationEntity);
 
         return toModel(savedEntity);
     }
