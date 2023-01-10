@@ -1,5 +1,7 @@
 package com.synopsys.integration.alert.database.audit;
 
+import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -21,4 +23,6 @@ public interface AuditFailedEntryRepository extends JpaRepository<AuditFailedEnt
         + "LOWER(failedAuditEntry.channelName) LIKE %:searchTerm%"
     )
     Page<AuditFailedEntity> findAllWithSearchTerm(@Param("searchTerm") String searchTerm, Pageable pageable);
+
+    List<AuditFailedEntity> findAllByTimeCreatedBefore(OffsetDateTime expirationDate);
 }

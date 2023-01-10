@@ -134,6 +134,25 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
         auditFailedNotificationRepository.saveAllAndFlush(notificationEntities);
     }
 
+    @Override
+    @Transactional
+    public void deleteAuditEntriesBefore(OffsetDateTime expirationDate) {
+        List<AuditFailedEntity> auditFailedEntities = auditFailedEntryRepository.findAllByTimeCreatedBefore(expirationDate);
+        Set<Long> notificationIds = auditFailedEntities.stream()
+            .map(AuditFailedEntity::getNotificationId)
+            .collect(Collectors.toSet());
+        List<UUID> entryIds = auditFailedEntities.stream()
+            .map(AuditFailedEntity::getId)
+            .collect(Collectors.toList());
+        if (!notificationIds.isEmpty()) {
+            auditFailedNotificationRepository.deleteAllById(notificationIds);
+        }
+
+        if (!entryIds.isEmpty()) {
+            auditFailedEntryRepository.deleteAllById(entryIds);
+        }
+    }
+
     private List<AuditEntryModel> convertFailedEntries(List<AuditFailedEntity> failedEntities) {
         Map<Long, List<JobAuditModel>> jobAuditModelMap = new HashMap<>();
         for (AuditFailedEntity entity : failedEntities) {
