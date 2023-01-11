@@ -5,13 +5,12 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.component.authentication.security.event;
+package com.synopsys.integration.alert.api.authentication.security.event;
 
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.authentication.security.event.AlertAuthenticationEvent;
 import com.synopsys.integration.alert.api.event.AlertMessageListener;
 
 @Component

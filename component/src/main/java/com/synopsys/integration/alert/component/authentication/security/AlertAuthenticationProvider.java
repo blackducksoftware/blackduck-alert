@@ -19,6 +19,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.authentication.security.AuthenticationPerformer;
+
 @Component
 public class AlertAuthenticationProvider implements AuthenticationProvider {
     private final Logger logger = LoggerFactory.getLogger(AlertAuthenticationProvider.class);

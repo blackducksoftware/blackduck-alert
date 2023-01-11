@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.component.authentication.security;
+package com.synopsys.integration.alert.api.authentication.security;
 
 import java.util.Collection;
 import java.util.List;

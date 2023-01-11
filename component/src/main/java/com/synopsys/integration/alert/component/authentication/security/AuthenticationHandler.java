@@ -76,7 +76,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationM
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptorKey;
-import com.synopsys.integration.alert.component.authentication.security.event.AuthenticationEventManager;
+import com.synopsys.integration.alert.api.authentication.security.event.AuthenticationEventManager;
 import com.synopsys.integration.alert.component.authentication.security.saml.AlertFilterChainProxy;
 import com.synopsys.integration.alert.component.authentication.security.saml.AlertSAMLEntryPoint;
 import com.synopsys.integration.alert.component.authentication.security.saml.AlertSAMLMetadataGenerator;
