@@ -4,10 +4,12 @@ import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatusMessages;
 import com.synopsys.integration.alert.authentication.saml.model.SAMLConfigModel;
+import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
+import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashSet;
@@ -16,33 +18,49 @@ import java.util.Set;
 
 @Component
 public class SAMLConfigurationValidator {
+    private final FilePersistenceUtil filePersistenceUtil;
+
+    @Autowired
+    public SAMLConfigurationValidator(FilePersistenceUtil filePersistenceUtil) {
+        this.filePersistenceUtil = filePersistenceUtil;
+    }
+
     public ValidationResponseModel validate(SAMLConfigModel model) {
         Set<AlertFieldStatus> statuses = new HashSet<>();
 
         // Perform validation on fields if enabled
         if (model.getEnabled().orElse(false)) {
-            if (StringUtils.isBlank(model.getEntityId())) {
-                statuses.add(AlertFieldStatus.error("entityId", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
-            }
-            if (StringUtils.isBlank(model.getEntityBaseUrl())) {
-                statuses.add(AlertFieldStatus.error("entityBaseUrl", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
-            } else {
-                addErrorStatusIfInvalidUrl(model.getEntityBaseUrl(), "entityBaseUrl", statuses);
-            }
-
             // Convert to empty optional for blank metadata url and file path
             Optional<String> optionalFilteredMetadataUrl = model.getMetadataUrl().filter(StringUtils::isNotBlank);
             Optional<String> optionalFilteredMetadataFilePath = model.getMetadataFilePath().filter(StringUtils::isNotBlank);
-            // One of url or filepath must exist
-            if (optionalFilteredMetadataUrl.isEmpty() && optionalFilteredMetadataFilePath.isEmpty()) {  // TODO: verify message
-                statuses.add(AlertFieldStatus.error("metadataUrl, metadataFilePath", "One of either fields is required."));
+            boolean metadataFileExists = optionalFilteredMetadataFilePath
+                .map(filePersistenceUtil::uploadFileExists)
+                .orElse(false);
+
+            if (StringUtils.isBlank(model.getEntityId())) {
+                statuses.add(AlertFieldStatus.error(AuthenticationDescriptor.KEY_SAML_ENTITY_ID, AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
             }
-            // Check if the metadata fields are valid
-            optionalFilteredMetadataUrl.ifPresent(
-                metaDataUrl -> addErrorStatusIfInvalidUrl(metaDataUrl, "metaDataUrl", statuses)
-            );
-            optionalFilteredMetadataFilePath.ifPresent(
-                metaDataFilePath -> addErrorStatusIfInvalidMetadataFilePath(metaDataFilePath, statuses)
+            if (StringUtils.isBlank(model.getEntityBaseUrl())) {
+                statuses.add(AlertFieldStatus.error(AuthenticationDescriptor.KEY_SAML_ENTITY_BASE_URL, AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
+            } else {
+                addErrorStatusIfInvalidUrl(model.getEntityBaseUrl(), AuthenticationDescriptor.KEY_SAML_ENTITY_BASE_URL, statuses);
+            }
+
+            // One of url or filepath must exist
+            if (optionalFilteredMetadataUrl.isEmpty() && !metadataFileExists) {
+                statuses.add(AlertFieldStatus.error(
+                    AuthenticationDescriptor.KEY_SAML_METADATA_FILE,
+                    AuthenticationDescriptor.FIELD_ERROR_SAML_METADATA_FILE_MISSING)
+                );
+            }
+            // Check if valid url for present, else add missing status if metadata file is also missing
+            optionalFilteredMetadataUrl.ifPresentOrElse(
+                metaDataUrl -> addErrorStatusIfInvalidUrl(metaDataUrl, AuthenticationDescriptor.KEY_SAML_METADATA_URL, statuses),
+                () -> {
+                    if (!metadataFileExists) {
+                        statuses.add(AlertFieldStatus.error(AuthenticationDescriptor.KEY_SAML_METADATA_URL, AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
+                    }
+                }
             );
         }
 
@@ -54,20 +72,10 @@ public class SAMLConfigurationValidator {
     }
 
     private void addErrorStatusIfInvalidUrl(String url, String fieldName, Set<AlertFieldStatus> statuses) {
-        if (StringUtils.isNotBlank(url)) {
-            try {
-                new URL(url);
-            } catch (MalformedURLException e) {
-                statuses.add(AlertFieldStatus.error(fieldName, e.getMessage()));
-            }
-        }
-    }
-
-    // Could make this more generic with param field name but lint warns since it is only one value here
-    private void addErrorStatusIfInvalidMetadataFilePath(String filePath, Set<AlertFieldStatus> statuses) {
-        File file = new File(filePath);
-        if (!file.isFile()) {   // TODO: Verify if we're using AuthenticationConfigurationFieldModelValidator and FilePersistenceUtil.uploadFileExists
-            statuses.add(AlertFieldStatus.error("metaDataFilePath", "Metadata file path is incorrect or does not point to a file"));
+        try {
+            new URL(url);
+        } catch (MalformedURLException e) {
+            statuses.add(AlertFieldStatus.error(fieldName, e.getMessage()));
         }
     }
 }

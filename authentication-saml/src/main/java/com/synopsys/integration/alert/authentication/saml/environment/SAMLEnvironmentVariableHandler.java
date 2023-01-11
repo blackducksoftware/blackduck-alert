@@ -22,7 +22,7 @@ public class SAMLEnvironmentVariableHandler extends EnvironmentVariableHandler<S
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public static final String HANDLER_NAME = "SAML Settings";
-    public static final String ENVIRONMENT_VARIABLE_PREFIX = "ALERT_COMPONENT_AUTHENTICATION_SETTINGS_SAML_"; //TODO: verify
+    public static final String ENVIRONMENT_VARIABLE_PREFIX = "ALERT_COMPONENT_AUTHENTICATION_SETTINGS_SAML_";
 
     // Fields in model
     public static final String SAML_ENABLED_KEY = ENVIRONMENT_VARIABLE_PREFIX + "ENABLED";
