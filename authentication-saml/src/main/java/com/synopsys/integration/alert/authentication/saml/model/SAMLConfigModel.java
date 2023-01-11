@@ -86,9 +86,7 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
         return Optional.ofNullable(metadataFilePath);
     }
 
-    public String getEntityId() {
-        return entityId;
-    }
+    public String getEntityId() { return entityId; }
 
     public String getEntityBaseUrl() {
         return entityBaseUrl;
@@ -107,9 +105,7 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
         this.enabled = enabled;
     }
 
-    public void setForceAuth(Boolean forceAuth) {
-        this.forceAuth = forceAuth;
-    }
+    public void setForceAuth(Boolean forceAuth) { this.forceAuth = forceAuth; }
 
     public void setMetadataUrl(String metadataUrl) {
         this.metadataUrl = metadataUrl;
@@ -123,7 +119,5 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
         this.entityBaseUrl = entityBaseUrl;
     }
 
-    public void setRoleAttributeMapping(String roleAttributeMapping) {
-        this.roleAttributeMapping = roleAttributeMapping;
-    }
+    public void setRoleAttributeMapping(String roleAttributeMapping) { this.roleAttributeMapping = roleAttributeMapping; }
 }
