@@ -21,7 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
-import com.synopsys.integration.alert.component.authentication.security.event.AuthenticationEventManager;
+import com.synopsys.integration.alert.api.authentication.security.event.AuthenticationEventManager;
 
 public abstract class AuthenticationPerformer {
     private AuthenticationEventManager authenticationEventManager;

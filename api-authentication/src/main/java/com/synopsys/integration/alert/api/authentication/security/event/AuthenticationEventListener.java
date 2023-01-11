@@ -11,6 +11,7 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.authentication.security.event.AlertAuthenticationEvent;
 import com.synopsys.integration.alert.api.event.AlertMessageListener;
 
 @Component
