@@ -103,6 +103,89 @@ class FailedAuditPurgeTaskTest {
         assertFalse(auditFailedNotificationRepository.existsById(3L));
     }
 
+    @Test
+    void purgeDataMultipleNotificationsDifferentDatesTest() {
+        ConfigurationModelConfigurationAccessor configurationAccessor = createConfigurationAccessor(11);
+        MockAuditFailedEntryRepository auditFailedEntryRepository = new MockAuditFailedEntryRepository(AuditFailedEntity::getId);
+        MockAuditFailedNotificationRepository auditFailedNotificationRepository = new MockAuditFailedNotificationRepository(AuditFailedNotificationEntity::getNotificationId);
+        NotificationAccessor notificationAccessor = Mockito.mock(NotificationAccessor.class);
+        JobAccessor jobAccessor = Mockito.mock(JobAccessor.class);
+        DefaultProcessingFailedAccessor processingFailedAccessor = new DefaultProcessingFailedAccessor(
+            auditFailedEntryRepository,
+            auditFailedNotificationRepository,
+            notificationAccessor,
+            jobAccessor
+        );
+
+        UUID expectedId = UUID.randomUUID();
+        UUID secondExpectedId = UUID.randomUUID();
+        UUID firstIdToBeRemoved = UUID.randomUUID();
+        UUID secondIdToBeRemoved = UUID.randomUUID();
+        Long expectedNotificationId = 1L;
+        auditFailedEntryRepository.save(new AuditFailedEntity(
+            expectedId,
+            DateUtils.createCurrentDateTimestamp(),
+            "jobName",
+            "providerKey",
+            "providerName",
+            "channelName",
+            "notificationType",
+            "errorMessage",
+            expectedNotificationId
+        ));
+        auditFailedEntryRepository.save(new AuditFailedEntity(
+            secondExpectedId,
+            DateUtils.createCurrentDateTimestamp().minusDays(9),
+            "jobName",
+            "providerKey",
+            "providerName",
+            "channelName",
+            "notificationType",
+            "errorMessage",
+            2L
+        ));
+
+        auditFailedEntryRepository.save(new AuditFailedEntity(
+            firstIdToBeRemoved,
+            DateUtils.createCurrentDateTimestamp().minusDays(11),
+            "jobName",
+            "providerKey",
+            "providerName",
+            "channelName",
+            "notificationType",
+            "errorMessage",
+            2L
+        ));
+
+        auditFailedEntryRepository.save(new AuditFailedEntity(
+            secondIdToBeRemoved,
+            DateUtils.createCurrentDateTimestamp().minusDays(25),
+            "jobName",
+            "providerKey",
+            "providerName",
+            "channelName",
+            "notificationType",
+            "errorMessage",
+            3L
+        ));
+
+        auditFailedNotificationRepository.save(new AuditFailedNotificationEntity(1L, "notification 1 content"));
+        auditFailedNotificationRepository.save(new AuditFailedNotificationEntity(2L, "notification 2 content"));
+        auditFailedNotificationRepository.save(new AuditFailedNotificationEntity(3L, "notification 3 content"));
+
+        FailedAuditPurgeTask task = new FailedAuditPurgeTask(null, null, processingFailedAccessor, configurationAccessor);
+        task.runTask();
+        assertEquals(2, auditFailedEntryRepository.count());
+        assertEquals(2, auditFailedNotificationRepository.count());
+        assertTrue(auditFailedEntryRepository.existsById(expectedId));
+        assertTrue(auditFailedEntryRepository.existsById(secondExpectedId));
+        assertFalse(auditFailedEntryRepository.existsById(firstIdToBeRemoved));
+        assertFalse(auditFailedEntryRepository.existsById(secondIdToBeRemoved));
+        assertTrue(auditFailedNotificationRepository.existsById(expectedNotificationId));
+        assertTrue(auditFailedNotificationRepository.existsById(2L));
+        assertFalse(auditFailedNotificationRepository.existsById(3L));
+    }
+
     private ConfigurationModelConfigurationAccessor createConfigurationAccessor(int purgeFrequencyDays) {
         ConfigurationModelConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
 
