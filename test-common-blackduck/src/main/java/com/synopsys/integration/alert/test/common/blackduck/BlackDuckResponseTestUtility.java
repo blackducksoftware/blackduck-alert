@@ -7,15 +7,21 @@
  */
 package com.synopsys.integration.alert.test.common.blackduck;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import com.synopsys.integration.alert.provider.blackduck.processor.model.RuleViolationUniquePolicyNotificationContent;
 import com.synopsys.integration.blackduck.api.core.ResourceLink;
 import com.synopsys.integration.blackduck.api.core.ResourceMetadata;
+import com.synopsys.integration.blackduck.api.generated.component.ComponentVersionUpgradeGuidanceLongTermView;
+import com.synopsys.integration.blackduck.api.generated.component.ComponentVersionUpgradeGuidanceLongTermVulnerabilityRiskView;
+import com.synopsys.integration.blackduck.api.generated.component.ComponentVersionUpgradeGuidanceShortTermView;
+import com.synopsys.integration.blackduck.api.generated.component.ComponentVersionUpgradeGuidanceShortTermVulnerabilityRiskView;
 import com.synopsys.integration.blackduck.api.generated.component.ProjectVersionComponentVersionLicensesView;
 import com.synopsys.integration.blackduck.api.generated.enumeration.PolicyRuleSeverityType;
 import com.synopsys.integration.blackduck.api.generated.enumeration.ProjectVersionComponentPolicyStatusType;
 import com.synopsys.integration.blackduck.api.generated.enumeration.UsageType;
+import com.synopsys.integration.blackduck.api.generated.response.ComponentVersionUpgradeGuidanceView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentVersionView;
 import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
@@ -77,6 +83,37 @@ public class BlackDuckResponseTestUtility {
             notificationContent.getComponentVersionStatuses(),
             notificationContent.getPolicyInfos().get(0)
         );
+    }
+
+    public static ComponentVersionUpgradeGuidanceView createComponentVersionUpgradeGuidanceView(String projectVersionName) {
+        ComponentVersionUpgradeGuidanceView componentVersionUpgradeGuidanceView = new ComponentVersionUpgradeGuidanceView();
+        componentVersionUpgradeGuidanceView.setShortTerm(createShortTermUpgradeGuidance(projectVersionName));
+        componentVersionUpgradeGuidanceView.setLongTerm(createLongTermUpgradeGuidance(projectVersionName));
+        return componentVersionUpgradeGuidanceView;
+    }
+
+    public static ComponentVersionUpgradeGuidanceShortTermView createShortTermUpgradeGuidance(String projectVersionName) {
+        ComponentVersionUpgradeGuidanceShortTermView shortTermView = new ComponentVersionUpgradeGuidanceShortTermView();
+        ComponentVersionUpgradeGuidanceShortTermVulnerabilityRiskView shortTermRiskView = new ComponentVersionUpgradeGuidanceShortTermVulnerabilityRiskView();
+        shortTermRiskView.setCritical(BigDecimal.valueOf(0L));
+        shortTermRiskView.setHigh(BigDecimal.valueOf(0L));
+        shortTermRiskView.setMedium(BigDecimal.valueOf(0L));
+        shortTermRiskView.setLow(BigDecimal.valueOf(0L));
+        shortTermView.setVulnerabilityRisk(shortTermRiskView);
+        shortTermView.setVersionName(projectVersionName);
+        return shortTermView;
+    }
+
+    public static ComponentVersionUpgradeGuidanceLongTermView createLongTermUpgradeGuidance(String projectVersionName) {
+        ComponentVersionUpgradeGuidanceLongTermView longTermView = new ComponentVersionUpgradeGuidanceLongTermView();
+        ComponentVersionUpgradeGuidanceLongTermVulnerabilityRiskView longTermRiskView = new ComponentVersionUpgradeGuidanceLongTermVulnerabilityRiskView();
+        longTermRiskView.setCritical(BigDecimal.valueOf(0L));
+        longTermRiskView.setHigh(BigDecimal.valueOf(0L));
+        longTermRiskView.setMedium(BigDecimal.valueOf(0L));
+        longTermRiskView.setLow(BigDecimal.valueOf(0L));
+        longTermView.setVulnerabilityRisk(longTermRiskView);
+        longTermView.setVersionName(projectVersionName);
+        return longTermView;
     }
 
     private RuleViolationNotificationContent createRuleViolationNotificationContent(String projectName, String projectVersionName) {

@@ -26,6 +26,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -157,7 +158,7 @@ public class AuthorizationManager {
             .anyMatch(name -> permissionCache.containsKey(name) && permissionCache.get(name).hasPermissions(permissionKey, operations));
     }
 
-    public void updateRoleName(Long roleId, String roleName) throws AlertForbiddenOperationException {
+    public void updateRoleName(Long roleId, String roleName) throws AlertException {
         roleAccessor.updateRoleName(roleId, roleName);
         loadPermissionsIntoCache();
     }

@@ -26,7 +26,7 @@ public class AzureBoardsEnvironmentVariableHandler extends EnvironmentVariableHa
 
     public static final String APP_ID_KEY = "ALERT_CHANNEL_AZURE_BOARDS_AZURE_BOARDS_APP_ID";
     public static final String CLIENT_SECRET_KEY = "ALERT_CHANNEL_AZURE_BOARDS_AZURE_BOARDS_CLIENT_SECRET";
-    public static final String ORGANIZATION_NAME_KEY = "ALERT_CHANNEL_AZURE_BOARDS_AZURE_BOARDS_ORGANIZATION_NAME ";
+    public static final String ORGANIZATION_NAME_KEY = "ALERT_CHANNEL_AZURE_BOARDS_AZURE_BOARDS_ORGANIZATION_NAME";
 
     public static final Set<String> VARIABLE_NAMES = Set.of(APP_ID_KEY, CLIENT_SECRET_KEY, ORGANIZATION_NAME_KEY);
 

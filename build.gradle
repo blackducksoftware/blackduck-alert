@@ -61,16 +61,6 @@ apply from: 'buildSrc/runTasks.gradle'
 apply from: 'buildSrc/deploymentTasks.gradle'
 apply from: 'buildSrc/docker-v2.gradle'
 
-allprojects {
-    // disable the test task when running the alert server to speed up startup time.
-    gradle.taskGraph.whenReady { graph ->
-        if (graph.hasTask(runServer)) {
-            compileTestJava.enabled = false
-            test.enabled = false
-        }
-    }
-}
-
 subprojects {
     if (project.name != 'alert-platform') {
         version = rootProject.version
@@ -82,16 +72,26 @@ subprojects {
     }
 }
 
+allprojects {
+    // disable the test task when running the alert server to speed up startup time.
+    gradle.taskGraph.whenReady { graph ->
+        if (graph.hasTask(runServer)) {
+            compileTestJava.enabled = false
+            test.enabled = false
+        }
+    }
+
+    repositories {
+        // Need this repository to resolve the spring-security-saml2-core dependencies
+        maven {
+            url 'https://build.shibboleth.net/nexus/content/repositories/releases/'
+        }
+    }
+}
+
 // configure the version of the JaCoCo plugin to 0.8.2 which works for Java 11 until we switch to a gradle wrapper that includes 0.8.2+ by default.
 jacoco {
     toolVersion = "0.8.5"
-}
-
-repositories {
-    // Need this repository to resolve the spring-security-saml2-core dependencies
-    maven {
-        url 'https://build.shibboleth.net/nexus/content/repositories/releases/'
-    }
 }
 
 dependencies {
@@ -103,6 +103,7 @@ dependencies {
     implementation project(':alert-database')
     implementation project(':alert-database-job')
 
+    implementation project(':api-authentication')
     implementation project(':api-common-model')
     implementation project(':api-channel')
     implementation project(':api-descriptor')
@@ -113,6 +114,8 @@ dependencies {
     implementation project(':api-processor')
     implementation project(':api-provider')
     implementation project(':api-task')
+
+    implementation project(':authentication-saml')
 
     implementation project(':channel-azure-boards')
     implementation project(':channel-email')
