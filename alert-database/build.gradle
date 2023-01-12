@@ -1,14 +1,4 @@
-
-buildscript {
-    repositories {
-        mavenCentral()
-        maven { url 'https://plugins.gradle.org/m2/' }
-    }
-}
-
-ext {
-    moduleName = 'com.synopsys.integration.alert.database'
-}
+ext.moduleName = 'com.synopsys.integration.alert.database'
 
 dependencies {
     implementation platform(project(':alert-platform'))

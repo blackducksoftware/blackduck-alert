@@ -1,12 +1,5 @@
 ext.moduleName = 'com.synopsys.integration.alert.web'
 
-repositories {
-    // Need this repository to resolve the spring-security-saml2-core dependencies
-    maven {
-        url 'https://build.shibboleth.net/nexus/content/repositories/releases/'
-    }
-}
-
 dependencies {
     implementation platform(project(':alert-platform'))
 
