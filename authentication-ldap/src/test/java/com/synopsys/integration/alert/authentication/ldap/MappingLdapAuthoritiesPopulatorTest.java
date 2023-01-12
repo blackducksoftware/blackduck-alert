@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.component.authentication.security.ldap;
+package com.synopsys.integration.alert.authentication.ldap;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
