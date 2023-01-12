@@ -22,13 +22,14 @@ import org.springframework.security.saml.metadata.ExtendedMetadataDelegate;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
+import com.synopsys.integration.alert.authentication.ldap.action.LdapManager;
+import com.synopsys.integration.alert.authentication.ldap.descriptor.LDAPDescriptor;
 import com.synopsys.integration.alert.common.action.FieldModelTestAction;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
-import com.synopsys.integration.alert.component.authentication.security.ldap.LdapManager;
 import com.synopsys.integration.alert.component.authentication.security.saml.SAMLManager;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -47,13 +48,14 @@ public class AuthenticationFieldModelTestAction extends FieldModelTestAction {
     @Override
     public MessageResult testConfig(String configId, FieldModel fieldModel, FieldUtility registeredFieldValues) throws IntegrationException {
         logger.info("Testing authentication.");
-        boolean ldapEnabled = registeredFieldValues.getBooleanOrFalse(AuthenticationDescriptor.KEY_LDAP_ENABLED);
+        boolean ldapEnabled = registeredFieldValues.getBooleanOrFalse(LDAPDescriptor.KEY_LDAP_ENABLED);
         boolean samlEnabled = registeredFieldValues.getBooleanOrFalse(AuthenticationDescriptor.KEY_SAML_ENABLED);
         if (!ldapEnabled && !samlEnabled) {
             String errorMessage = "Enable LDAP or SAML authentication.";
             List<AlertFieldStatus> errors = List.of(
-                AlertFieldStatus.error(AuthenticationDescriptor.KEY_LDAP_ENABLED, errorMessage),
-                AlertFieldStatus.error(AuthenticationDescriptor.KEY_SAML_ENABLED, errorMessage));
+                AlertFieldStatus.error(LDAPDescriptor.KEY_LDAP_ENABLED, errorMessage),
+                AlertFieldStatus.error(AuthenticationDescriptor.KEY_SAML_ENABLED, errorMessage)
+            );
             throw new AlertFieldException(errors);
         }
 
@@ -70,19 +72,21 @@ public class AuthenticationFieldModelTestAction extends FieldModelTestAction {
 
     private void performLdapTest(FieldModel fieldModel, FieldUtility registeredFieldValues) throws IntegrationException {
         logger.info("LDAP enabled testing LDAP authentication.");
-        String userName = fieldModel.getFieldValue(AuthenticationDescriptor.TEST_FIELD_KEY_USERNAME).orElse("");
+        String userName = fieldModel.getFieldValue(LDAPDescriptor.TEST_FIELD_KEY_USERNAME).orElse("");
         Optional<LdapAuthenticationProvider> ldapProvider = ldapManager.createAuthProvider(registeredFieldValues);
         String errorMessage = String.format("Ldap Authentication test failed for the test user %s.  Please check the LDAP configuration.", userName);
         List<AlertFieldStatus> errors = new ArrayList<>();
-        if (!ldapProvider.isPresent()) {
-            errors.add(AlertFieldStatus.error(AuthenticationDescriptor.KEY_LDAP_ENABLED, errorMessage));
+        if (ldapProvider.isEmpty()) {
+            errors.add(AlertFieldStatus.error(LDAPDescriptor.KEY_LDAP_ENABLED, errorMessage));
         } else {
             try {
-                Authentication pendingAuthentication = new UsernamePasswordAuthenticationToken(userName,
-                    fieldModel.getFieldValue(AuthenticationDescriptor.TEST_FIELD_KEY_PASSWORD).orElse(""));
+                Authentication pendingAuthentication = new UsernamePasswordAuthenticationToken(
+                    userName,
+                    fieldModel.getFieldValue(LDAPDescriptor.TEST_FIELD_KEY_PASSWORD).orElse("")
+                );
                 Authentication authentication = ldapProvider.get().authenticate(pendingAuthentication);
                 if (!authentication.isAuthenticated()) {
-                    errors.add(AlertFieldStatus.error(AuthenticationDescriptor.KEY_LDAP_ENABLED, errorMessage));
+                    errors.add(AlertFieldStatus.error(LDAPDescriptor.KEY_LDAP_ENABLED, errorMessage));
                 }
                 authentication.setAuthenticated(false);
             } catch (Exception ex) {
@@ -91,7 +95,7 @@ public class AuthenticationFieldModelTestAction extends FieldModelTestAction {
                 if (StringUtils.isNotBlank(exceptionMessage)) {
                     errorMessage = String.format("%s Additional details: %s", errorMessage, exceptionMessage);
                 }
-                errors.add(AlertFieldStatus.error(AuthenticationDescriptor.KEY_LDAP_ENABLED, errorMessage));
+                errors.add(AlertFieldStatus.error(LDAPDescriptor.KEY_LDAP_ENABLED, errorMessage));
             }
         }
 

@@ -4,13 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.authentication.ldap.database.accessor.LDAPConfigAccessor;
+import com.synopsys.integration.alert.authentication.ldap.descriptor.LDAPDescriptorKey;
 import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigModel;
 import com.synopsys.integration.alert.authentication.ldap.validator.LDAPConfigurationValidator;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.rest.api.ConfigurationCrudHelper;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptorKey;
 
 @Component
 public class LDAPCrudActions {
@@ -23,9 +23,9 @@ public class LDAPCrudActions {
         AuthorizationManager authorizationManager,
         LDAPConfigAccessor ldapConfigAccessor,
         LDAPConfigurationValidator ldapConfigurationValidator,
-        AuthenticationDescriptorKey authenticationDescriptorKey
+        LDAPDescriptorKey ldapDescriptorKey
     ) {
-        this.configurationCrudHelper = new ConfigurationCrudHelper(authorizationManager, ConfigContextEnum.GLOBAL, authenticationDescriptorKey);
+        this.configurationCrudHelper = new ConfigurationCrudHelper(authorizationManager, ConfigContextEnum.GLOBAL, ldapDescriptorKey);
         this.ldapConfigAccessor = ldapConfigAccessor;
         this.ldapConfigurationValidator = ldapConfigurationValidator;
     }

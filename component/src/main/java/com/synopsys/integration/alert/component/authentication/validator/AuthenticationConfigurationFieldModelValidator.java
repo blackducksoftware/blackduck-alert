@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
+import com.synopsys.integration.alert.authentication.ldap.descriptor.LDAPDescriptor;
 import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
@@ -34,19 +35,19 @@ public class AuthenticationConfigurationFieldModelValidator implements GlobalCon
     @Override
     public Set<AlertFieldStatus> validate(FieldModel fieldModel) {
         ConfigurationFieldValidator configurationFieldValidator = ConfigurationFieldValidator.fromFieldModel(fieldModel);
-        boolean ldapEnabled = configurationFieldValidator.getBooleanValue(AuthenticationDescriptor.KEY_LDAP_ENABLED).orElse(false);
+        boolean ldapEnabled = configurationFieldValidator.getBooleanValue(LDAPDescriptor.KEY_LDAP_ENABLED).orElse(false);
         boolean samlEnabled = configurationFieldValidator.getBooleanValue(AuthenticationDescriptor.KEY_SAML_ENABLED).orElse(false);
 
         if (ldapEnabled && samlEnabled) {
-            configurationFieldValidator.addValidationResults(AlertFieldStatus.error(AuthenticationDescriptor.KEY_LDAP_ENABLED, SAML_LDAP_ENABLED_ERROR));
+            configurationFieldValidator.addValidationResults(AlertFieldStatus.error(LDAPDescriptor.KEY_LDAP_ENABLED, SAML_LDAP_ENABLED_ERROR));
             configurationFieldValidator.addValidationResults(AlertFieldStatus.error(AuthenticationDescriptor.KEY_SAML_ENABLED, SAML_LDAP_ENABLED_ERROR));
         }
 
         if (ldapEnabled) {
             configurationFieldValidator.validateRequiredFieldsAreNotBlank(List.of(
-                AuthenticationDescriptor.KEY_LDAP_SERVER,
-                AuthenticationDescriptor.KEY_LDAP_MANAGER_DN,
-                AuthenticationDescriptor.KEY_LDAP_MANAGER_PWD
+                LDAPDescriptor.KEY_LDAP_SERVER,
+                LDAPDescriptor.KEY_LDAP_MANAGER_DN,
+                LDAPDescriptor.KEY_LDAP_MANAGER_PWD
             ));
         }
 

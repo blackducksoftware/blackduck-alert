@@ -19,6 +19,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.authentication.ldap.descriptor.LDAPDescriptor;
 import com.synopsys.integration.alert.common.descriptor.accessor.DefaultDescriptorGlobalConfigUtility;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
@@ -78,7 +79,7 @@ public class ConfigurationOverridesStartupComponent extends StartupComponent {
     }
 
     private void checkAndDisableLdapAuthentication(FieldModel fieldModel) {
-        checkAndDisableBooleanField(fieldModel, ENV_VAR_LDAP_DISABLE, AuthenticationDescriptor.KEY_LDAP_ENABLED);
+        checkAndDisableBooleanField(fieldModel, ENV_VAR_LDAP_DISABLE, LDAPDescriptor.KEY_LDAP_ENABLED);
     }
 
     private void checkAndDisableSamlAuthentication(FieldModel fieldModel) {

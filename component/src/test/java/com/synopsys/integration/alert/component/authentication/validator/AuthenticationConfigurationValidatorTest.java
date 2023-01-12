@@ -13,6 +13,7 @@ import org.mockito.Mockito;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
+import com.synopsys.integration.alert.authentication.ldap.descriptor.LDAPDescriptor;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
@@ -53,7 +54,7 @@ public class AuthenticationConfigurationValidatorTest {
     @Test
     public void verifyInvalidLdapAndSamlEnabled() {
         Map<String, FieldValueModel> keyToValues = Map.of(
-            AuthenticationDescriptor.KEY_LDAP_ENABLED, new FieldValueModel(List.of("true"), true),
+            LDAPDescriptor.KEY_LDAP_ENABLED, new FieldValueModel(List.of("true"), true),
             AuthenticationDescriptor.KEY_SAML_ENABLED, new FieldValueModel(List.of("true"), true)
         );
         GlobalConfigurationValidatorAsserter validatorAsserter = createValidatorAsserter(keyToValues);
@@ -75,7 +76,7 @@ public class AuthenticationConfigurationValidatorTest {
     @Test
     public void missingLdapFields() {
         Map<String, FieldValueModel> keyToValues = Map.of(
-            AuthenticationDescriptor.KEY_LDAP_ENABLED, new FieldValueModel(List.of("true"), true)
+            LDAPDescriptor.KEY_LDAP_ENABLED, new FieldValueModel(List.of("true"), true)
         );
         GlobalConfigurationValidatorAsserter validatorAsserter = createValidatorAsserter(keyToValues);
         validatorAsserter.assertCustom(alertFieldStatuses -> assertEquals(3, alertFieldStatuses.size(), alertFieldStatuses.toString()));
@@ -118,10 +119,10 @@ public class AuthenticationConfigurationValidatorTest {
         FieldValueModel managerPassword = new FieldValueModel(List.of("managerPassword"), true);
 
         Map<String, FieldValueModel> keyToValues = new HashMap<>();
-        keyToValues.put(AuthenticationDescriptor.KEY_LDAP_ENABLED, ldapEnabled);
-        keyToValues.put(AuthenticationDescriptor.KEY_LDAP_SERVER, server);
-        keyToValues.put(AuthenticationDescriptor.KEY_LDAP_MANAGER_DN, managerDn);
-        keyToValues.put(AuthenticationDescriptor.KEY_LDAP_MANAGER_PWD, managerPassword);
+        keyToValues.put(LDAPDescriptor.KEY_LDAP_ENABLED, ldapEnabled);
+        keyToValues.put(LDAPDescriptor.KEY_LDAP_SERVER, server);
+        keyToValues.put(LDAPDescriptor.KEY_LDAP_MANAGER_DN, managerDn);
+        keyToValues.put(LDAPDescriptor.KEY_LDAP_MANAGER_PWD, managerPassword);
 
         return keyToValues;
     }

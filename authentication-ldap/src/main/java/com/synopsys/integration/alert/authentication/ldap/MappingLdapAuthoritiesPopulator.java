@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.component.authentication.security.ldap;
+package com.synopsys.integration.alert.authentication.ldap;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -17,15 +17,13 @@ import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopulator;
 
-import com.synopsys.integration.alert.component.authentication.security.UserManagementAuthoritiesPopulator;
-
 public class MappingLdapAuthoritiesPopulator extends DefaultLdapAuthoritiesPopulator {
     private final Logger logger = LoggerFactory.getLogger(MappingLdapAuthoritiesPopulator.class);
-    private final UserManagementAuthoritiesPopulator authoritiesPopulator;
+    private final LDAPAuthoritiesPopulator ldapAuthoritiesPopulator;
 
-    public MappingLdapAuthoritiesPopulator(ContextSource contextSource, String groupSearchBase, UserManagementAuthoritiesPopulator authoritiesPopulator) {
+    public MappingLdapAuthoritiesPopulator(ContextSource contextSource, String groupSearchBase, LDAPAuthoritiesPopulator ldapAuthoritiesPopulator) {
         super(contextSource, groupSearchBase);
-        this.authoritiesPopulator = authoritiesPopulator;
+        this.ldapAuthoritiesPopulator = ldapAuthoritiesPopulator;
     }
 
     @Override
@@ -46,6 +44,6 @@ public class MappingLdapAuthoritiesPopulator extends DefaultLdapAuthoritiesPopul
     @Override
     protected Set<GrantedAuthority> getAdditionalRoles(DirContextOperations user, String username) {
         // load the roles from the database.  These roles will be added to the set of roles for the user.
-        return authoritiesPopulator.addAdditionalRoles(username, Set.of());
+        return ldapAuthoritiesPopulator.addAdditionalRoles(username, Set.of());
     }
 }

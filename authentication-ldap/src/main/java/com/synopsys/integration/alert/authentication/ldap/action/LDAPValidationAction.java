@@ -4,13 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
+import com.synopsys.integration.alert.authentication.ldap.descriptor.LDAPDescriptorKey;
 import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigModel;
 import com.synopsys.integration.alert.authentication.ldap.validator.LDAPConfigurationValidator;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.rest.api.ConfigurationValidationHelper;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptorKey;
 
 @Component
 public class LDAPValidationAction {
@@ -21,10 +21,10 @@ public class LDAPValidationAction {
     public LDAPValidationAction(
         LDAPConfigurationValidator ldapConfigurationValidator,
         AuthorizationManager authorizationManager,
-        AuthenticationDescriptorKey authenticationDescriptorKey
+        LDAPDescriptorKey ldapDescriptorKey
     ) {
         this.ldapConfigurationValidator = ldapConfigurationValidator;
-        this.configurationValidationHelper = new ConfigurationValidationHelper(authorizationManager, ConfigContextEnum.GLOBAL, authenticationDescriptorKey);
+        this.configurationValidationHelper = new ConfigurationValidationHelper(authorizationManager, ConfigContextEnum.GLOBAL, ldapDescriptorKey);
     }
 
     public ActionResponse<ValidationResponseModel> validate(LDAPConfigModel requestResource) {
