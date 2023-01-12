@@ -3,7 +3,7 @@ import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 import { unauthorized } from 'store/actions/session';
 import HeaderUtilities from 'common/util/HeaderUtilities';
 
-const FETCH_URL = '/alert/api/audit';
+const FETCH_URL_AUDIT_FAILED = '/alert/api/audit/failed';
 
 /**
  * Triggers Config Fetching reducer
@@ -67,7 +67,7 @@ function createPagedQueryURL(pageNumber, pageSize, searchTerm, sortField, sortOr
     // server side is 0 based but UI paging component starts with 1
     const pageNumberParameter = pageNumber - 1;
     const encodedSearchTerm = encodeURIComponent(searchTerm);
-    return `${FETCH_URL}?pageNumber=${pageNumberParameter}&pageSize=${pageSize}&searchTerm=${encodedSearchTerm}&sortField=${sortField}&sortOrder=${sortOrder}&onlyShowSentNotifications=${onlyShowSentNotifications}`;
+    return `${FETCH_URL_AUDIT_FAILED}?pageNumber=${pageNumberParameter}&pageSize=${pageSize}&searchTerm=${encodedSearchTerm}&sortField=${sortField}&sortOrder=${sortOrder}&onlyShowSentNotifications=${onlyShowSentNotifications}`;
 }
 
 /**

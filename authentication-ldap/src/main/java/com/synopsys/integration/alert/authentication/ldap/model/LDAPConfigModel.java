@@ -8,7 +8,7 @@ import com.synopsys.integration.alert.api.common.model.Obfuscated;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.model.ConfigWithMetadata;
 
-public class LDAPGlobalConfigModel extends ConfigWithMetadata implements Obfuscated<LDAPGlobalConfigModel> {
+public class LDAPConfigModel extends ConfigWithMetadata implements Obfuscated<LDAPConfigModel> {
     private Boolean enabled;
     private String serverName;
     private String managerDn;
@@ -24,11 +24,11 @@ public class LDAPGlobalConfigModel extends ConfigWithMetadata implements Obfusca
     private String groupSearchFilter;
     private String groupRoleAttribute;
 
-    public LDAPGlobalConfigModel() {
+    public LDAPConfigModel() {
         // For serialization
     }
 
-    public LDAPGlobalConfigModel(String id, String serverName, String managerDn, String managerPassword) {
+    public LDAPConfigModel(String id, String serverName, String managerDn, String managerPassword) {
         super(id, AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
 
         this.serverName = serverName;
@@ -36,7 +36,7 @@ public class LDAPGlobalConfigModel extends ConfigWithMetadata implements Obfusca
         this.managerPassword = managerPassword;
     }
 
-    public LDAPGlobalConfigModel(
+    public LDAPConfigModel(
         String id,
         String createdAt,
         String lastUpdated,
@@ -71,9 +71,10 @@ public class LDAPGlobalConfigModel extends ConfigWithMetadata implements Obfusca
         setCreatedAt(createdAt);
         setLastUpdated(lastUpdated);
     }
+
     @Override
-    public LDAPGlobalConfigModel obfuscate() {
-        return new LDAPGlobalConfigModel(
+    public LDAPConfigModel obfuscate() {
+        return new LDAPConfigModel(
             getId(),
             getCreatedAt(),
             getLastUpdated(),
