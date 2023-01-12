@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
@@ -40,6 +42,13 @@ class SchedulingConfigurationValidatorTest {
     void invalidOption() {
         GlobalConfigurationValidatorAsserter validatorAsserter = createValidatorAsserter();
         validatorAsserter.assertInvalidValue(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS, "potato");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "potato", "-1", "0", "31", "100" })
+    void invalidAuditPurgeOption(String invalidOption) {
+        GlobalConfigurationValidatorAsserter validatorAsserter = createValidatorAsserter();
+        validatorAsserter.assertInvalidValue(SchedulingDescriptor.KEY_PURGE_AUDIT_FAILED_FREQUENCY_DAYS, invalidOption);
     }
 
     private GlobalConfigurationValidatorAsserter createValidatorAsserter() {
