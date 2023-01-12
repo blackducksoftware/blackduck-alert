@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.component.scheduling.validator;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -41,38 +42,12 @@ public class SchedulingConfigurationFieldModelValidator implements GlobalConfigu
     }
 
     private Set<String> getPurgeAuditDays() {
-        return Set.of(
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-            "13",
-            "14",
-            "15",
-            "16",
-            "17",
-            "18",
-            "19",
-            "20",
-            "21",
-            "22",
-            "23",
-            "24",
-            "25",
-            "26",
-            "27",
-            "28",
-            "29",
-            "30"
-        );
+        Set<String> validRange = new LinkedHashSet<>();
+        for (int index = 1; index < 31; index++) {
+            validRange.add(String.valueOf(index));
+        }
+
+        return validRange;
     }
 
     private Set<String> getPurgeFrequency() {
