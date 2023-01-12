@@ -29,6 +29,10 @@ import com.synopsys.integration.alert.common.rest.api.BaseController;
 import com.synopsys.integration.alert.common.rest.model.AuditJobStatusesModel;
 import com.synopsys.integration.alert.common.rest.model.JobIdsRequestModel;
 
+/**
+ * @deprecated Replaced by AuditEntryController. To be removed in 8.0.0.
+ */
+@Deprecated(forRemoval = true)
 @RestController
 @RequestMapping(AuditEntryControllerLegacy.AUDIT_BASE_PATH)
 public class AuditEntryControllerLegacy extends BaseController {
