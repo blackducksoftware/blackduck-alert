@@ -15,7 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.saml.SAMLAuthenticationProvider;
 
 import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
-import com.synopsys.integration.alert.component.authentication.security.event.AuthenticationEventManager;
+import com.synopsys.integration.alert.api.authentication.security.event.AuthenticationEventManager;
 
 public class SAMLAuthProvider extends SAMLAuthenticationProvider {
     private final Logger logger = LoggerFactory.getLogger(SAMLAuthProvider.class);
