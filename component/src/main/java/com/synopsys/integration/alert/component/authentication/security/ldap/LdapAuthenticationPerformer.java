@@ -19,8 +19,8 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
-import com.synopsys.integration.alert.component.authentication.security.AuthenticationPerformer;
-import com.synopsys.integration.alert.component.authentication.security.event.AuthenticationEventManager;
+import com.synopsys.integration.alert.api.authentication.security.AuthenticationPerformer;
+import com.synopsys.integration.alert.api.authentication.security.event.AuthenticationEventManager;
 
 @Component
 public class LdapAuthenticationPerformer extends AuthenticationPerformer {

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="psantos" id="create-failed-audit-entries-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="failed_audit_entries"/>
+            </not>
+        </preConditions>
+        <createTable schemaName="alert" tableName="failed_audit_entries">
+            <column name="id" type="UUID" defaultValueComputed="uuid_generate_v4()">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="time_created" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="job_name" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="provider_key" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="provider_name" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="channel_name" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="notification_type" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="error_message" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="error_stack_trace" type="VARCHAR"/>
+            <column name="notification_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="psantos" id="create-failed-audit-notifications">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="failed_audit_notifications"/>
+            </not>
+        </preConditions>
+        <createTable schemaName="alert" tableName="failed_audit_notifications">
+            <column name="notification_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="notification_content" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

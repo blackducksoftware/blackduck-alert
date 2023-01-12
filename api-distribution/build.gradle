@@ -8,6 +8,7 @@ dependencies {
     implementation project(':alert-common')
     implementation project(':api-common-model')
     implementation project(':api-event')
+    implementation project(':api-task')
 
     testImplementation project(':test-common')
     testImplementation project(':alert-database')

@@ -9,15 +9,18 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.AlertEventHandler;
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ProcessingFailedAccessor;
 
 @Component
 public class AuditFailedHandler implements AlertEventHandler<AuditFailedEvent> {
     private final ProcessingAuditAccessor processingAuditAccessor;
+    private final ProcessingFailedAccessor processingFailedAccessor;
     private final ExecutingJobManager executingJobManager;
 
     @Autowired
-    public AuditFailedHandler(ProcessingAuditAccessor processingAuditAccessor, ExecutingJobManager executingJobManager) {
+    public AuditFailedHandler(ProcessingAuditAccessor processingAuditAccessor, ProcessingFailedAccessor processingFailedAccessor, ExecutingJobManager executingJobManager) {
         this.processingAuditAccessor = processingAuditAccessor;
+        this.processingFailedAccessor = processingFailedAccessor;
         this.executingJobManager = executingJobManager;
     }
 
@@ -26,15 +29,17 @@ public class AuditFailedHandler implements AlertEventHandler<AuditFailedEvent> {
         executingJobManager.endJobWithFailure(event.getJobExecutionId());
         executingJobManager.getExecutingJob(event.getJobExecutionId()).ifPresent(executingJob -> {
             UUID jobConfigId = executingJob.getJobConfigId();
-            Set<Long> notificationids = event.getNotificationIds();
-            processingAuditAccessor.createOrUpdatePendingAuditEntryForJob(jobConfigId, notificationids);
-            processingAuditAccessor.setAuditEntryFailure(
-                jobConfigId,
-                event.getNotificationIds(),
-                event.getCreatedTimestamp(),
-                event.getErrorMessage(),
-                event.getStackTrace().orElse(null)
-            );
+            if (event.getStackTrace().isPresent()) {
+                processingFailedAccessor.setAuditFailure(
+                    jobConfigId,
+                    event.getNotificationIds(),
+                    event.getCreatedTimestamp(),
+                    event.getErrorMessage(),
+                    event.getStackTrace().orElse("NO STACK TRACE")
+                );
+            } else {
+                processingFailedAccessor.setAuditFailure(jobConfigId, event.getNotificationIds(), event.getCreatedTimestamp(), event.getErrorMessage());
+            }
         });
     }
 }

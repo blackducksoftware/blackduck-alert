@@ -72,9 +72,13 @@ import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDes
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.util.ResourceUtil;
 
+/**
+ * @deprecated Replaced by AuditEntryController. To be removed in 8.0.0.
+ */
+@Deprecated(forRemoval = true)
 @Transactional
 @AlertIntegrationTest
-class AuditEntryHandlerTestIT {
+class AuditEntryHandlerLegacyTestIT {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     @Autowired
     private AuditDescriptorKey auditDescriptorKey;
@@ -151,8 +155,16 @@ class AuditEntryHandlerTestIT {
         fieldValueRepository.deleteAllInBatch();
     }
 
-    private AuditEntryActions createAuditActions(AuthorizationManager authorizationManager) {
-        return new AuditEntryActions(authorizationManager, auditDescriptorKey, auditAccessor, notificationAccessor, jobAccessor, notificationMappingProcessor, jobNotificationProcessor);
+    private AuditEntryActionsLegacy createAuditActions(AuthorizationManager authorizationManager) {
+        return new AuditEntryActionsLegacy(
+            authorizationManager,
+            auditDescriptorKey,
+            auditAccessor,
+            notificationAccessor,
+            jobAccessor,
+            notificationMappingProcessor,
+            jobNotificationProcessor
+        );
     }
 
     @Test
@@ -188,11 +200,11 @@ class AuditEntryHandlerTestIT {
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
         Mockito.when(authorizationManager.hasReadPermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.TRUE);
 
-        AuditEntryActions auditEntryActions = createAuditActions(authorizationManager);
-        AuditEntryPageModel auditEntries = auditEntryActions.get(null, null, null, null, null, true).getContent().orElse(null);
+        AuditEntryActionsLegacy auditEntryActionsLegacy = createAuditActions(authorizationManager);
+        AuditEntryPageModel auditEntries = auditEntryActionsLegacy.get(null, null, null, null, null, true).getContent().orElse(null);
         assertEquals(1, auditEntries.getContent().size());
 
-        AuditEntryModel auditEntryResponse = auditEntryActions.get(savedNotificationEntity.getId()).getContent().orElse(null);
+        AuditEntryModel auditEntryResponse = auditEntryActionsLegacy.get(savedNotificationEntity.getId()).getContent().orElse(null);
         assertNotNull(auditEntryResponse);
 
         AuditEntryModel auditEntry = auditEntries.getContent().get(0);
@@ -206,7 +218,7 @@ class AuditEntryHandlerTestIT {
         assertEquals(savedNotificationEntity.getNotificationType(), notification.getNotificationType());
         assertNotNull(notification.getContent());
 
-        auditEntries = auditEntryActions.get(null, null, null, null, null, false).getContent().orElse(null);
+        auditEntries = auditEntryActionsLegacy.get(null, null, null, null, null, false).getContent().orElse(null);
         assertEquals(2, auditEntries.getContent().size());
     }
 
@@ -220,7 +232,7 @@ class AuditEntryHandlerTestIT {
 
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
         Mockito.when(authorizationManager.hasReadPermission(ConfigContextEnum.GLOBAL, auditDescriptorKey)).thenReturn(true);
-        AuditEntryActions auditEntryController = createAuditActions(authorizationManager);
+        AuditEntryActionsLegacy auditEntryController = createAuditActions(authorizationManager);
 
         AuditJobStatusModel jobStatusModel = auditEntryController.getAuditInfoForJob(savedAuditEntryEntity.getCommonConfigId()).getContent().orElse(null);
         assertNotNull(jobStatusModel);
@@ -256,19 +268,19 @@ class AuditEntryHandlerTestIT {
 
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
         Mockito.when(authorizationManager.hasExecutePermission(ConfigContextEnum.GLOBAL.name(), AuditDescriptor.AUDIT_COMPONENT)).thenReturn(true);
-        AuditEntryActions auditEntryActions = createAuditActions(authorizationManager);
+        AuditEntryActionsLegacy auditEntryActionsLegacy = createAuditActions(authorizationManager);
 
         try {
-            auditEntryActions.resendNotification(savedNotificationEntity.getId(), null);
-            auditEntryActions.resendNotification(savedNotificationEntity.getId(), null);
-            auditEntryActions.resendNotification(savedNotificationEntity.getId(), jobModel.getJobId());
+            auditEntryActionsLegacy.resendNotification(savedNotificationEntity.getId(), null);
+            auditEntryActionsLegacy.resendNotification(savedNotificationEntity.getId(), null);
+            auditEntryActionsLegacy.resendNotification(savedNotificationEntity.getId(), jobModel.getJobId());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             fail("Expected the Audit POST request(s) not to throw an exception");
         }
 
-        assertResponseStatusException(HttpStatus.GONE, () -> auditEntryActions.resendNotification(-1L, null));
-        assertResponseStatusException(HttpStatus.GONE, () -> auditEntryActions.resendNotification(savedNotificationEntity.getId(), UUID.randomUUID()));
+        assertResponseStatusException(HttpStatus.GONE, () -> auditEntryActionsLegacy.resendNotification(-1L, null));
+        assertResponseStatusException(HttpStatus.GONE, () -> auditEntryActionsLegacy.resendNotification(savedNotificationEntity.getId(), UUID.randomUUID()));
     }
 
     private void assertResponseStatusException(HttpStatus expectedStatus, Supplier<?> auditRequest) {
