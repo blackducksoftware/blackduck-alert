@@ -8,7 +8,9 @@ export const SCHEDULING_FIELD_KEYS = {
     dailyProcessorHourOfDay: 'scheduling.daily.processor.hour',
     dailyProcessorNextRun: 'scheduling.daily.processor.next.run',
     purgeDataFrequencyDays: 'scheduling.purge.data.frequency',
-    purgeDataNextRun: 'scheduling.purge.data.next.run'
+    purgeDataNextRun: 'scheduling.purge.data.next.run',
+    purgeDataAuditFailedFrequencyDays: 'scheduling.purge.data.audit.failed.frequency',
+    purgeDataAuditFailedNextRun: 'scheduling.purge.data.audit.failed.next.run'
 };
 
 export const SCHEDULING_DIGEST_HOURS_OPTIONS = [
@@ -46,4 +48,37 @@ export const SCHEDULING_PURGE_FREQUENCY_OPTIONS = [
     { label: 'Every 5 days', value: '5' },
     { label: 'Every 6 days', value: '6' },
     { label: 'Every 7 days', value: '7' }
+];
+
+export const SCHEDULING_PURGE_AUDIT_FAILED_FREQUENCY_OPTIONS = [
+    { label: 'Every day', value: '1' },
+    { label: 'Every 2 days', value: '2' },
+    { label: 'Every 3 days', value: '3' },
+    { label: 'Every 4 days', value: '4' },
+    { label: 'Every 5 days', value: '5' },
+    { label: 'Every 6 days', value: '6' },
+    { label: 'Every 7 days', value: '7' },
+    { label: 'Every 8 days', value: '8' },
+    { label: 'Every 9 days', value: '9' },
+    { label: 'Every 10 days', value: '10' },
+    { label: 'Every 11 days', value: '11' },
+    { label: 'Every 12 days', value: '12' },
+    { label: 'Every 13 days', value: '13' },
+    { label: 'Every 14 days', value: '14' },
+    { label: 'Every 15 days', value: '15' },
+    { label: 'Every 16 days', value: '16' },
+    { label: 'Every 17 days', value: '17' },
+    { label: 'Every 18 days', value: '18' },
+    { label: 'Every 19 days', value: '19' },
+    { label: 'Every 20 days', value: '20' },
+    { label: 'Every 21 days', value: '21' },
+    { label: 'Every 22 days', value: '22' },
+    { label: 'Every 23 days', value: '23' },
+    { label: 'Every 24 days', value: '24' },
+    { label: 'Every 25 days', value: '25' },
+    { label: 'Every 26 days', value: '26' },
+    { label: 'Every 27 days', value: '27' },
+    { label: 'Every 28 days', value: '28' },
+    { label: 'Every 29 days', value: '29' },
+    { label: 'Every 30 days', value: '30' }
 ];

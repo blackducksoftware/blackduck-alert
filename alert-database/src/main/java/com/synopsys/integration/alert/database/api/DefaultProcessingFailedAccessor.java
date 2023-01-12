@@ -144,12 +144,17 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
         List<UUID> entryIds = auditFailedEntities.stream()
             .map(AuditFailedEntity::getId)
             .collect(Collectors.toList());
-        if (!notificationIds.isEmpty()) {
-            auditFailedNotificationRepository.deleteAllById(notificationIds);
-        }
-
         if (!entryIds.isEmpty()) {
             auditFailedEntryRepository.deleteAllById(entryIds);
+        }
+
+        Predicate<Long> notificationNoLongExists = notificationId -> !auditFailedEntryRepository.existsByNotificationId(notificationId);
+        List<Long> notificationIdsToRemove = notificationIds.stream()
+            .filter(notificationNoLongExists)
+            .collect(Collectors.toList());
+        
+        if (!notificationIdsToRemove.isEmpty()) {
+            auditFailedNotificationRepository.deleteAllById(notificationIdsToRemove);
         }
     }
 

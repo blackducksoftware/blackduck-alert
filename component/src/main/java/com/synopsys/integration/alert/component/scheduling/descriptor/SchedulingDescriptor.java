@@ -27,6 +27,9 @@ public class SchedulingDescriptor extends ComponentDescriptor {
     public static final String KEY_PURGE_DATA_FREQUENCY_DAYS = "scheduling.purge.data.frequency";
     public static final String KEY_PURGE_DATA_NEXT_RUN = "scheduling.purge.data.next.run";
 
+    public static final String KEY_PURGE_AUDIT_FAILED_FREQUENCY_DAYS = "scheduling.purge.data.audit.failed.frequency";
+    public static final String KEY_PURGE_AUDIT_FAILED_NEXT_RUN = "scheduling.purge.data.audit.failed.next.run";
+
     private final SchedulingConfigurationFieldModelValidator schedulingValidator;
 
     @Autowired

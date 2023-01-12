@@ -25,4 +25,6 @@ public interface AuditFailedEntryRepository extends JpaRepository<AuditFailedEnt
     Page<AuditFailedEntity> findAllWithSearchTerm(@Param("searchTerm") String searchTerm, Pageable pageable);
 
     List<AuditFailedEntity> findAllByTimeCreatedBefore(OffsetDateTime expirationDate);
+
+    boolean existsByNotificationId(Long notificationId);
 }
