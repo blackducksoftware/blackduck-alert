@@ -1,5 +1,6 @@
 package com.synopsys.integration.alert.api.distribution.execution;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,14 +24,14 @@ public class ExecutingJobManager {
         return job;
     }
 
-    public void endJobWithSuccess(UUID executionId) {
+    public void endJobWithSuccess(UUID executionId, Instant endTime) {
         Optional<ExecutingJob> executingJob = Optional.ofNullable(executingJobMap.getOrDefault(executionId, null));
-        executingJob.ifPresent(ExecutingJob::jobSucceeded);
+        executingJob.ifPresent(execution -> execution.jobSucceeded(endTime));
     }
 
-    public void endJobWithFailure(UUID executionId) {
+    public void endJobWithFailure(UUID executionId, Instant endTime) {
         Optional<ExecutingJob> executingJob = Optional.ofNullable(executingJobMap.getOrDefault(executionId, null));
-        executingJob.ifPresent(ExecutingJob::jobFailed);
+        executingJob.ifPresent(execution -> execution.jobFailed(endTime));
     }
 
     public void incrementNotificationCount(UUID jobExecutionId, int notificationCount) {

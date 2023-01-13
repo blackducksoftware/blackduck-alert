@@ -17,6 +17,6 @@ public class AuditSuccessHandler implements AlertEventHandler<AuditSuccessEvent>
 
     @Override
     public void handle(AuditSuccessEvent event) {
-        executingJobManager.endJobWithSuccess(event.getJobExecutionId());
+        executingJobManager.endJobWithSuccess(event.getJobExecutionId(), event.getCreatedTimestamp().toInstant());
     }
 }

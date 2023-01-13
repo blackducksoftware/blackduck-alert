@@ -31,16 +31,16 @@ public class ExecutingJob {
         this.totalNotificationCount = totalNotificationCount;
     }
 
-    public void jobSucceeded() {
-        completeJobWithStatus(AuditEntryStatus.SUCCESS);
+    public void jobSucceeded(Instant endTime) {
+        completeJobWithStatus(AuditEntryStatus.SUCCESS, endTime);
     }
 
-    public void jobFailed() {
-        completeJobWithStatus(AuditEntryStatus.FAILURE);
+    public void jobFailed(Instant endTime) {
+        completeJobWithStatus(AuditEntryStatus.FAILURE, endTime);
     }
 
-    private void completeJobWithStatus(AuditEntryStatus status) {
-        this.end = Instant.now();
+    private void completeJobWithStatus(AuditEntryStatus status, Instant endTime) {
+        this.end = endTime;
         this.status = status;
     }
 

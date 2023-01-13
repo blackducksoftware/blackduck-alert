@@ -1,6 +1,5 @@
 package com.synopsys.integration.alert.api.distribution.audit;
 
-import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +25,7 @@ public class AuditFailedHandler implements AlertEventHandler<AuditFailedEvent> {
 
     @Override
     public void handle(AuditFailedEvent event) {
-        executingJobManager.endJobWithFailure(event.getJobExecutionId());
+        executingJobManager.endJobWithFailure(event.getJobExecutionId(), event.getCreatedTimestamp().toInstant());
         executingJobManager.getExecutingJob(event.getJobExecutionId()).ifPresent(executingJob -> {
             UUID jobConfigId = executingJob.getJobConfigId();
             if (event.getStackTrace().isPresent()) {

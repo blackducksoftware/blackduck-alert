@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -46,7 +47,7 @@ class ExecutingJobManagerTest {
         UUID jobConfigId = UUID.randomUUID();
         ExecutingJob executingJob = jobManager.startJob(jobConfigId, 1);
         ExecutingJob savedJob = jobManager.getExecutingJob(executingJob.getExecutionId()).orElseThrow(() -> new AssertionError("Job with execution ID not found."));
-        savedJob.jobSucceeded();
+        savedJob.jobSucceeded(Instant.now());
         AggregatedExecutionResults results = jobManager.aggregateExecutingJobData();
         assertEquals(jobConfigId, savedJob.getJobConfigId());
         assertEquals(AuditEntryStatus.SUCCESS, savedJob.getStatus());
@@ -65,7 +66,7 @@ class ExecutingJobManagerTest {
         UUID jobConfigId = UUID.randomUUID();
         ExecutingJob executingJob = jobManager.startJob(jobConfigId, 1);
         ExecutingJob savedJob = jobManager.getExecutingJob(executingJob.getExecutionId()).orElseThrow(() -> new AssertionError("Job with execution ID not found."));
-        savedJob.jobFailed();
+        savedJob.jobFailed(Instant.now());
         AggregatedExecutionResults results = jobManager.aggregateExecutingJobData();
         assertEquals(jobConfigId, savedJob.getJobConfigId());
         assertEquals(AuditEntryStatus.FAILURE, executingJob.getStatus());
