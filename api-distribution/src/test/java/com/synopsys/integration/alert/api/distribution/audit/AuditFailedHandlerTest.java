@@ -2,6 +2,7 @@ package com.synopsys.integration.alert.api.distribution.audit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
@@ -22,19 +23,23 @@ import com.synopsys.integration.alert.api.distribution.mock.MockAuditEntryReposi
 import com.synopsys.integration.alert.api.distribution.mock.MockAuditFailedEntryRepository;
 import com.synopsys.integration.alert.api.distribution.mock.MockAuditFailedNotificationRepository;
 import com.synopsys.integration.alert.api.distribution.mock.MockAuditNotificationRepository;
+import com.synopsys.integration.alert.api.distribution.mock.MockJobExecutionStatusDurationsRepository;
+import com.synopsys.integration.alert.api.distribution.mock.MockJobExecutionStatusRepository;
 import com.synopsys.integration.alert.api.distribution.mock.MockNotificationContentRepository;
+import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.JobExecutionStatusAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingFailedAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModelBuilder;
+import com.synopsys.integration.alert.common.persistence.model.job.executions.JobExecutionStatusModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
+import com.synopsys.integration.alert.database.api.DefaultJobExecutionStatusAccessor;
 import com.synopsys.integration.alert.database.api.DefaultNotificationAccessor;
-import com.synopsys.integration.alert.database.api.DefaultProcessingAuditAccessor;
 import com.synopsys.integration.alert.database.api.DefaultProcessingFailedAccessor;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
@@ -45,6 +50,8 @@ import com.synopsys.integration.alert.database.audit.AuditFailedNotificationRepo
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelationPK;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
+import com.synopsys.integration.alert.database.job.execution.JobExecutionDurationsRepository;
+import com.synopsys.integration.alert.database.job.execution.JobExecutionRepository;
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
 import com.synopsys.integration.alert.database.notification.NotificationEntity;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
@@ -52,7 +59,6 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 class AuditFailedHandlerTest {
     public static final String TEST_JOB_NAME = "Test Job";
 
-    private ProcessingAuditAccessor processingAuditAccessor;
     private ExecutingJobManager executingJobManager;
     private final AtomicLong idContainer = new AtomicLong(0L);
 
@@ -61,19 +67,25 @@ class AuditFailedHandlerTest {
 
     private NotificationContentRepository notificationContentRepository;
     private NotificationAccessor notificationAccessor;
+
+    private JobExecutionStatusAccessor jobExecutionStatusAccessor;
+
     private final AtomicLong notificationIdContainer = new AtomicLong(0);
 
     @BeforeEach
     public void init() {
         AuditNotificationRepository auditNotificationRepository = new MockAuditNotificationRepository(this::generateRelationKey);
         AuditEntryRepository auditEntryRepository = new MockAuditEntryRepository(this::generateEntityKey, auditNotificationRepository);
-        processingAuditAccessor = new DefaultProcessingAuditAccessor(auditEntryRepository, auditNotificationRepository);
         executingJobManager = new ExecutingJobManager();
         notificationContentRepository = new MockNotificationContentRepository(this::generateNotificationId);
         auditFailedEntryRepository = new MockAuditFailedEntryRepository(AuditFailedEntity::getId);
         auditFailedNotificationRepository = new MockAuditFailedNotificationRepository(AuditFailedNotificationEntity::getNotificationId);
         ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
         notificationAccessor = new DefaultNotificationAccessor(notificationContentRepository, auditEntryRepository, configurationModelConfigurationAccessor);
+        JobExecutionDurationsRepository jobExecutionDurationsRepository = new MockJobExecutionStatusDurationsRepository();
+        JobExecutionRepository jobExecutionRepository = new MockJobExecutionStatusRepository(jobExecutionDurationsRepository);
+
+        jobExecutionStatusAccessor = new DefaultJobExecutionStatusAccessor(jobExecutionRepository, jobExecutionDurationsRepository);
     }
 
     private Long generateNotificationId(NotificationEntity entity) {
@@ -116,11 +128,10 @@ class AuditFailedHandlerTest {
         String errorMessage = "Error message";
         String stackTrace = "Stack trace goes here";
 
-        AuditFailedHandler handler = new AuditFailedHandler(processingAuditAccessor, processingFailedAccessor, executingJobManager);
+        AuditFailedHandler handler = new AuditFailedHandler(processingFailedAccessor, executingJobManager, jobExecutionStatusAccessor);
         notificationIds.stream()
             .map(this::createNotification)
             .forEach(notificationContentRepository::save);
-        processingAuditAccessor.createOrUpdatePendingAuditEntryForJob(jobId, notificationIds);
         AuditFailedEvent event = new AuditFailedEvent(executingJob.getExecutionId(), notificationIds, errorMessage, stackTrace);
 
         handler.handle(event);
@@ -135,6 +146,13 @@ class AuditFailedHandlerTest {
             assertEquals(errorMessage, entity.getErrorMessage());
             assertEquals(stackTrace, entity.getErrorStackTrace().orElseThrow(() -> new AssertionError("Expected stack trace but none found")));
         }
+
+        JobExecutionStatusModel statusModel = jobExecutionStatusAccessor.getJobExecutionStatus(jobId)
+            .orElseThrow(() -> new AssertionError("Executing Job cannot be missing from the test."));
+        assertEquals(AuditEntryStatus.FAILURE, statusModel.getLatestStatus());
+        assertEquals(0, statusModel.getSuccessCount());
+        assertEquals(1, statusModel.getFailureCount());
+        assertEquals(0, statusModel.getNotificationCount());
 
     }
 
@@ -155,7 +173,7 @@ class AuditFailedHandlerTest {
         notificationIds.stream()
             .map(this::createNotification)
             .forEach(notificationContentRepository::save);
-        AuditFailedHandler handler = new AuditFailedHandler(processingAuditAccessor, processingFailedAccessor, executingJobManager);
+        AuditFailedHandler handler = new AuditFailedHandler(processingFailedAccessor, executingJobManager, jobExecutionStatusAccessor);
         AuditFailedEvent event = new AuditFailedEvent(jobId, notificationIds, errorMessage, stackTrace);
 
         handler.handle(event);
@@ -170,6 +188,7 @@ class AuditFailedHandlerTest {
             assertEquals(errorMessage, entity.getErrorMessage());
             assertEquals(stackTrace, entity.getErrorStackTrace().orElseThrow(() -> new AssertionError("Expected stack trace but none found")));
         }
+        assertTrue(jobExecutionStatusAccessor.getJobExecutionStatus(jobId).isEmpty());
     }
 
     private DistributionJobModel createJobModel(UUID jobId) {

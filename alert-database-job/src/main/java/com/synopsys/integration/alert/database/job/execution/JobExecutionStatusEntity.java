@@ -46,7 +46,8 @@ public class JobExecutionStatusEntity extends BaseEntity {
         Long successCount,
         Long failureCount,
         AuditEntryStatus latestStatus,
-        OffsetDateTime lastRun
+        OffsetDateTime lastRun,
+        JobExecutionStatusDurationsEntity jobExecutionStatusDurationsEntity
     ) {
         this.jobConfigId = jobConfigId;
         this.notificationCount = notificationCount;
@@ -54,6 +55,7 @@ public class JobExecutionStatusEntity extends BaseEntity {
         this.failureCount = failureCount;
         this.latestStatus = latestStatus;
         this.lastRun = lastRun;
+        this.jobExecutionStatusDurationsEntity = jobExecutionStatusDurationsEntity;
     }
 
     public UUID getJobConfigId() {

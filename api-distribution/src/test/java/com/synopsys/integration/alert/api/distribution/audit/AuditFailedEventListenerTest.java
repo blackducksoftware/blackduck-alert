@@ -26,17 +26,23 @@ import com.synopsys.integration.alert.api.distribution.mock.MockAuditEntryReposi
 import com.synopsys.integration.alert.api.distribution.mock.MockAuditFailedEntryRepository;
 import com.synopsys.integration.alert.api.distribution.mock.MockAuditFailedNotificationRepository;
 import com.synopsys.integration.alert.api.distribution.mock.MockAuditNotificationRepository;
+import com.synopsys.integration.alert.api.distribution.mock.MockJobExecutionStatusDurationsRepository;
+import com.synopsys.integration.alert.api.distribution.mock.MockJobExecutionStatusRepository;
 import com.synopsys.integration.alert.api.distribution.mock.MockNotificationContentRepository;
+import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.JobExecutionStatusAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingFailedAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModelBuilder;
+import com.synopsys.integration.alert.common.persistence.model.job.executions.JobExecutionStatusModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
+import com.synopsys.integration.alert.database.api.DefaultJobExecutionStatusAccessor;
 import com.synopsys.integration.alert.database.api.DefaultNotificationAccessor;
 import com.synopsys.integration.alert.database.api.DefaultProcessingAuditAccessor;
 import com.synopsys.integration.alert.database.api.DefaultProcessingFailedAccessor;
@@ -49,6 +55,8 @@ import com.synopsys.integration.alert.database.audit.AuditFailedNotificationRepo
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelationPK;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
+import com.synopsys.integration.alert.database.job.execution.JobExecutionDurationsRepository;
+import com.synopsys.integration.alert.database.job.execution.JobExecutionRepository;
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
 import com.synopsys.integration.alert.database.notification.NotificationEntity;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
@@ -68,6 +76,7 @@ class AuditFailedEventListenerTest {
     private final AtomicLong notificationIdContainer = new AtomicLong(0);
     private NotificationAccessor notificationAccessor;
     private AuditFailedNotificationRepository auditFailedNotificationRepository;
+    private JobExecutionStatusAccessor jobExecutionStatusAccessor;
 
     @BeforeEach
     public void init() {
@@ -80,6 +89,10 @@ class AuditFailedEventListenerTest {
         auditFailedNotificationRepository = new MockAuditFailedNotificationRepository(AuditFailedNotificationEntity::getNotificationId);
         ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
         notificationAccessor = new DefaultNotificationAccessor(notificationContentRepository, auditEntryRepository, configurationModelConfigurationAccessor);
+        JobExecutionDurationsRepository jobExecutionDurationsRepository = new MockJobExecutionStatusDurationsRepository();
+        JobExecutionRepository jobExecutionRepository = new MockJobExecutionStatusRepository(jobExecutionDurationsRepository);
+
+        jobExecutionStatusAccessor = new DefaultJobExecutionStatusAccessor(jobExecutionRepository, jobExecutionDurationsRepository);
     }
 
     private Long generateNotificationId(NotificationEntity entity) {
@@ -123,7 +136,7 @@ class AuditFailedEventListenerTest {
             notificationAccessor,
             jobAccessor
         );
-        AuditFailedHandler handler = new AuditFailedHandler(processingAuditAccessor, processingFailedAccessor, executingJobManager);
+        AuditFailedHandler handler = new AuditFailedHandler(processingFailedAccessor, executingJobManager, jobExecutionStatusAccessor);
 
         notificationIds.stream()
             .map(this::createNotification)
@@ -143,6 +156,13 @@ class AuditFailedEventListenerTest {
             assertEquals(errorMessage, entity.getErrorMessage());
             assertEquals(stackTrace, entity.getErrorStackTrace().orElseThrow(() -> new AssertionError("Expected stack trace but none found")));
         }
+
+        JobExecutionStatusModel statusModel = jobExecutionStatusAccessor.getJobExecutionStatus(jobId)
+            .orElseThrow(() -> new AssertionError("Executing Job cannot be missing from the test."));
+        assertEquals(AuditEntryStatus.FAILURE, statusModel.getLatestStatus());
+        assertEquals(0, statusModel.getSuccessCount());
+        assertEquals(1, statusModel.getFailureCount());
+        assertEquals(0, statusModel.getNotificationCount());
 
     }
 

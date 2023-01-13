@@ -1,9 +1,11 @@
 package com.synopsys.integration.alert.database.api;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -25,9 +27,15 @@ public class DefaultJobExecutionStatusAccessor implements JobExecutionStatusAcce
     private final JobExecutionRepository jobExecutionRepository;
     private final JobExecutionDurationsRepository jobExecutionDurationsRepository;
 
+    @Autowired
     public DefaultJobExecutionStatusAccessor(JobExecutionRepository jobExecutionRepository, JobExecutionDurationsRepository jobExecutionDurationsRepository) {
         this.jobExecutionRepository = jobExecutionRepository;
         this.jobExecutionDurationsRepository = jobExecutionDurationsRepository;
+    }
+
+    @Override
+    public Optional<JobExecutionStatusModel> getJobExecutionStatus(UUID jobConfigId) {
+        return jobExecutionRepository.findById(jobConfigId).map(this::convertToModel);
     }
 
     public AlertPagedModel<JobExecutionStatusModel> getJobExecutionStatus(AlertPagedQueryDetails pagedQueryDetails) {
@@ -84,7 +92,8 @@ public class DefaultJobExecutionStatusAccessor implements JobExecutionStatusAcce
             model.getSuccessCount(),
             model.getFailureCount(),
             model.getLatestStatus(),
-            model.getLastRun()
+            model.getLastRun(),
+            convertDurationFromModel(model.getJobConfigId(), model.getDurations())
         );
     }
 
