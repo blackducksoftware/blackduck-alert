@@ -6,7 +6,7 @@ import com.synopsys.integration.alert.common.rest.model.ConfigWithMetadata;
 
 import java.util.Optional;
 
-public class AuthenticationSAMLConfigModel extends ConfigWithMetadata implements Obfuscated<AuthenticationSAMLConfigModel> {
+public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SAMLConfigModel> {
     private Boolean enabled;
     private Boolean forceAuth;
     private String metadataUrl;
@@ -16,16 +16,16 @@ public class AuthenticationSAMLConfigModel extends ConfigWithMetadata implements
     private Boolean requireAssertionsSigned;
     private String roleAttributeMapping;
 
-    public AuthenticationSAMLConfigModel() {
+    public SAMLConfigModel() {
         // For serialization
     }
 
     // Required
-    public AuthenticationSAMLConfigModel(String id) {
+    public SAMLConfigModel(String id) {
         super(id, AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
     }
 
-    public AuthenticationSAMLConfigModel(
+    public SAMLConfigModel(
         String id,
         String createdAt,
         String lastUpdated,
@@ -53,8 +53,8 @@ public class AuthenticationSAMLConfigModel extends ConfigWithMetadata implements
     }
 
     @Override
-    public AuthenticationSAMLConfigModel obfuscate() {
-        return new AuthenticationSAMLConfigModel(
+    public SAMLConfigModel obfuscate() {
+        return new SAMLConfigModel(
             getId(),
             getCreatedAt(),
             getLastUpdated(),
@@ -69,6 +69,7 @@ public class AuthenticationSAMLConfigModel extends ConfigWithMetadata implements
         );
     }
 
+    // Getters
     public Optional<Boolean> getEnabled() {
         return Optional.ofNullable(enabled);
     }
@@ -85,12 +86,10 @@ public class AuthenticationSAMLConfigModel extends ConfigWithMetadata implements
         return Optional.ofNullable(metadataFilePath);
     }
 
-    public Optional<String> getEntityId() {
-        return Optional.ofNullable(entityId);
-    }
+    public String getEntityId() { return entityId; }
 
-    public Optional<String> getEntityBaseUrl() {
-        return Optional.ofNullable(entityBaseUrl);
+    public String getEntityBaseUrl() {
+        return entityBaseUrl;
     }
 
     public Optional<Boolean> getRequireAssertionsSigned() {
@@ -100,4 +99,25 @@ public class AuthenticationSAMLConfigModel extends ConfigWithMetadata implements
     public Optional<String> getRoleAttributeMapping() {
         return Optional.ofNullable(roleAttributeMapping);
     }
+
+    // Setters
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public void setForceAuth(Boolean forceAuth) { this.forceAuth = forceAuth; }
+
+    public void setMetadataUrl(String metadataUrl) {
+        this.metadataUrl = metadataUrl;
+    }
+
+    public void setEntityId(String entityId) {
+        this.entityId = entityId;
+    }
+
+    public void setEntityBaseUrl(String entityBaseUrl) {
+        this.entityBaseUrl = entityBaseUrl;
+    }
+
+    public void setRoleAttributeMapping(String roleAttributeMapping) { this.roleAttributeMapping = roleAttributeMapping; }
 }

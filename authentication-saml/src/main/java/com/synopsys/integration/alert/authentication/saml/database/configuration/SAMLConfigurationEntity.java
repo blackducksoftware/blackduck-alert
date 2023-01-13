@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Entity
 @Table(schema = "alert", name = "configuration_saml")
-public class AuthenticationSAMLConfigurationEntity extends BaseEntity {
+public class SAMLConfigurationEntity extends BaseEntity {
     @Id
     @Column(name = "configuration_id")
     private UUID configurationId;
@@ -36,10 +36,10 @@ public class AuthenticationSAMLConfigurationEntity extends BaseEntity {
     @Column(name = "role_attribute_mapping")
     private String roleAttributeMapping;
 
-    public AuthenticationSAMLConfigurationEntity() {
+    public SAMLConfigurationEntity() {
     }
 
-    public AuthenticationSAMLConfigurationEntity(
+    public SAMLConfigurationEntity(
         UUID configurationId,
         OffsetDateTime createdAt,
         OffsetDateTime lastUpdated,
