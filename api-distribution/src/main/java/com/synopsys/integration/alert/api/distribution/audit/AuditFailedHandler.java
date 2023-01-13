@@ -38,21 +38,24 @@ public class AuditFailedHandler implements AlertEventHandler<AuditFailedEvent> {
 
     @Override
     public void handle(AuditFailedEvent event) {
-        executingJobManager.endJobWithFailure(event.getJobExecutionId(), event.getCreatedTimestamp().toInstant());
-        executingJobManager.getExecutingJob(event.getJobExecutionId()).ifPresent(executingJob -> {
-            UUID jobConfigId = executingJob.getJobConfigId();
-            if (event.getStackTrace().isPresent()) {
-                processingFailedAccessor.setAuditFailure(
-                    jobConfigId,
-                    event.getNotificationIds(),
-                    event.getCreatedTimestamp(),
-                    event.getErrorMessage(),
-                    event.getStackTrace().orElse("NO STACK TRACE")
-                );
-            } else {
+        UUID jobExecutionId = event.getJobExecutionId();
+        executingJobManager.endJobWithFailure(jobExecutionId, event.getCreatedTimestamp().toInstant());
+        executingJobManager.getExecutingJob(jobExecutionId)
+            .ifPresent(executingJob -> {
+                UUID jobConfigId = executingJob.getJobConfigId();
+                if (event.getStackTrace().isPresent()) {
+                    processingFailedAccessor.setAuditFailure(
+                        jobConfigId,
+                        event.getNotificationIds(),
+                        event.getCreatedTimestamp(),
+                        event.getErrorMessage(),
+                        event.getStackTrace().orElse("NO STACK TRACE")
+                    );
+                } else {
                 processingFailedAccessor.setAuditFailure(jobConfigId, event.getNotificationIds(), event.getCreatedTimestamp(), event.getErrorMessage());
             }
-            jobExecutionStatusAccessor.saveExecutionStatus(createStatusModel(executingJob));
+                jobExecutionStatusAccessor.saveExecutionStatus(createStatusModel(executingJob));
+                executingJobManager.purgeJob(jobExecutionId);
         });
     }
 

@@ -32,7 +32,10 @@ public class AuditSuccessHandler implements AlertEventHandler<AuditSuccessEvent>
         UUID jobExecutionId = event.getJobExecutionId();
         executingJobManager.endJobWithSuccess(jobExecutionId, event.getCreatedTimestamp().toInstant());
         executingJobManager.getExecutingJob(jobExecutionId)
-            .ifPresent(executingJob -> jobExecutionStatusAccessor.saveExecutionStatus(createStatusModel(executingJob)));
+            .ifPresent(executingJob -> {
+                jobExecutionStatusAccessor.saveExecutionStatus(createStatusModel(executingJob));
+                executingJobManager.purgeJob(jobExecutionId);
+            });
     }
 
     private JobExecutionStatusModel createStatusModel(ExecutingJob executingJob) {

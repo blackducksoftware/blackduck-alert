@@ -49,6 +49,7 @@ class AuditSuccessHandlerTest {
         assertEquals(1, statusModel.getSuccessCount());
         assertEquals(0, statusModel.getFailureCount());
         assertEquals(0, statusModel.getNotificationCount());
+        assertTrue(executingJobManager.getExecutingJob(jobExecutionId).isEmpty());
     }
 
     @Test
@@ -62,5 +63,6 @@ class AuditSuccessHandlerTest {
         Optional<ExecutingJob> executingJob = executingJobManager.getExecutingJob(jobExecutionId);
         assertTrue(executingJob.isEmpty());
         assertTrue(jobExecutionStatusAccessor.getJobExecutionStatus(pagedQueryDetails).getModels().isEmpty());
+        assertTrue(executingJobManager.getExecutingJob(jobExecutionId).isEmpty());
     }
 }

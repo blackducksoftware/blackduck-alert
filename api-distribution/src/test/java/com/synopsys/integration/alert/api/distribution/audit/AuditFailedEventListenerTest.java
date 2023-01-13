@@ -2,6 +2,7 @@ package com.synopsys.integration.alert.api.distribution.audit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
@@ -122,10 +123,10 @@ class AuditFailedEventListenerTest {
 
     @Test
     void onMessageTest() {
-        UUID jobId = UUID.randomUUID();
+        UUID jobConfigId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
-        ExecutingJob executingJob = executingJobManager.startJob(jobId, notificationIds.size());
-
+        ExecutingJob executingJob = executingJobManager.startJob(jobConfigId, notificationIds.size());
+        UUID executingJobId = executingJob.getExecutionId();
         String errorMessage = "Error message";
         String stackTrace = "Stack trace goes here";
 
@@ -142,7 +143,7 @@ class AuditFailedEventListenerTest {
             .map(this::createNotification)
             .forEach(notificationContentRepository::save);
         AuditFailedEventListener listener = new AuditFailedEventListener(gson, taskExecutor, handler);
-        AuditFailedEvent event = new AuditFailedEvent(executingJob.getExecutionId(), notificationIds, errorMessage, stackTrace);
+        AuditFailedEvent event = new AuditFailedEvent(executingJobId, notificationIds, errorMessage, stackTrace);
         Message message = new Message(gson.toJson(event).getBytes());
         listener.onMessage(message);
 
@@ -157,13 +158,13 @@ class AuditFailedEventListenerTest {
             assertEquals(stackTrace, entity.getErrorStackTrace().orElseThrow(() -> new AssertionError("Expected stack trace but none found")));
         }
 
-        JobExecutionStatusModel statusModel = jobExecutionStatusAccessor.getJobExecutionStatus(jobId)
+        JobExecutionStatusModel statusModel = jobExecutionStatusAccessor.getJobExecutionStatus(jobConfigId)
             .orElseThrow(() -> new AssertionError("Executing Job cannot be missing from the test."));
         assertEquals(AuditEntryStatus.FAILURE, statusModel.getLatestStatus());
         assertEquals(0, statusModel.getSuccessCount());
         assertEquals(1, statusModel.getFailureCount());
         assertEquals(0, statusModel.getNotificationCount());
-
+        assertTrue(executingJobManager.getExecutingJob(executingJobId).isEmpty());
     }
 
     private DistributionJobModel createJobModel(UUID jobId) {

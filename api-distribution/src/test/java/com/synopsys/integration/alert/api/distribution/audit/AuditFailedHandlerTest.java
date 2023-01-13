@@ -122,17 +122,18 @@ class AuditFailedHandlerTest {
             notificationAccessor,
             jobAccessor
         );
-        UUID jobId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
-        ExecutingJob executingJob = executingJobManager.startJob(jobId, notificationIds.size());
+        ExecutingJob executingJob = executingJobManager.startJob(jobExecutionId, notificationIds.size());
         String errorMessage = "Error message";
         String stackTrace = "Stack trace goes here";
+        UUID executingJobId = executingJob.getExecutionId();
 
         AuditFailedHandler handler = new AuditFailedHandler(processingFailedAccessor, executingJobManager, jobExecutionStatusAccessor);
         notificationIds.stream()
             .map(this::createNotification)
             .forEach(notificationContentRepository::save);
-        AuditFailedEvent event = new AuditFailedEvent(executingJob.getExecutionId(), notificationIds, errorMessage, stackTrace);
+        AuditFailedEvent event = new AuditFailedEvent(executingJobId, notificationIds, errorMessage, stackTrace);
 
         handler.handle(event);
 
@@ -147,12 +148,13 @@ class AuditFailedHandlerTest {
             assertEquals(stackTrace, entity.getErrorStackTrace().orElseThrow(() -> new AssertionError("Expected stack trace but none found")));
         }
 
-        JobExecutionStatusModel statusModel = jobExecutionStatusAccessor.getJobExecutionStatus(jobId)
+        JobExecutionStatusModel statusModel = jobExecutionStatusAccessor.getJobExecutionStatus(jobExecutionId)
             .orElseThrow(() -> new AssertionError("Executing Job cannot be missing from the test."));
         assertEquals(AuditEntryStatus.FAILURE, statusModel.getLatestStatus());
         assertEquals(0, statusModel.getSuccessCount());
         assertEquals(1, statusModel.getFailureCount());
         assertEquals(0, statusModel.getNotificationCount());
+        assertTrue(executingJobManager.getExecutingJob(executingJobId).isEmpty());
 
     }
 
@@ -165,7 +167,7 @@ class AuditFailedHandlerTest {
             notificationAccessor,
             jobAccessor
         );
-        UUID jobId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
         String errorMessage = "Error message";
         String stackTrace = "Stack trace goes here";
@@ -174,7 +176,7 @@ class AuditFailedHandlerTest {
             .map(this::createNotification)
             .forEach(notificationContentRepository::save);
         AuditFailedHandler handler = new AuditFailedHandler(processingFailedAccessor, executingJobManager, jobExecutionStatusAccessor);
-        AuditFailedEvent event = new AuditFailedEvent(jobId, notificationIds, errorMessage, stackTrace);
+        AuditFailedEvent event = new AuditFailedEvent(jobExecutionId, notificationIds, errorMessage, stackTrace);
 
         handler.handle(event);
 
@@ -188,7 +190,8 @@ class AuditFailedHandlerTest {
             assertEquals(errorMessage, entity.getErrorMessage());
             assertEquals(stackTrace, entity.getErrorStackTrace().orElseThrow(() -> new AssertionError("Expected stack trace but none found")));
         }
-        assertTrue(jobExecutionStatusAccessor.getJobExecutionStatus(jobId).isEmpty());
+        assertTrue(jobExecutionStatusAccessor.getJobExecutionStatus(jobExecutionId).isEmpty());
+        assertTrue(executingJobManager.getExecutingJob(jobExecutionId).isEmpty());
     }
 
     private DistributionJobModel createJobModel(UUID jobId) {

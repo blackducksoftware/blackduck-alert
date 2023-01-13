@@ -68,6 +68,14 @@ public class ExecutingJobManager {
         return executingJob.isPresent();
     }
 
+    public boolean purgeJob(UUID executionId) {
+        boolean remove = executingJobMap.containsKey(executionId);
+        if (remove) {
+            executingJobMap.remove(executionId);
+        }
+        return remove;
+    }
+
     public AggregatedExecutionResults aggregateExecutingJobData() {
         Long pendingCount = countPendingJobs();
         Long successCount = countSuccessfulJobs();

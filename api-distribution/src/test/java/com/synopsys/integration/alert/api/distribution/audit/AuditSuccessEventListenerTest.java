@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.api.distribution.audit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Set;
 import java.util.UUID;
@@ -59,5 +60,6 @@ class AuditSuccessEventListenerTest {
         assertEquals(1, statusModel.getSuccessCount());
         assertEquals(0, statusModel.getFailureCount());
         assertEquals(0, statusModel.getNotificationCount());
+        assertTrue(executingJobManager.getExecutingJob(executingJobId).isEmpty());
     }
 }
