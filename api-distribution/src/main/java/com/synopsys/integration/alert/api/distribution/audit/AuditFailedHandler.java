@@ -40,23 +40,24 @@ public class AuditFailedHandler implements AlertEventHandler<AuditFailedEvent> {
     public void handle(AuditFailedEvent event) {
         UUID jobExecutionId = event.getJobExecutionId();
         executingJobManager.endJobWithFailure(jobExecutionId, event.getCreatedTimestamp().toInstant());
-        executingJobManager.getExecutingJob(jobExecutionId)
-            .ifPresent(executingJob -> {
-                UUID jobConfigId = executingJob.getJobConfigId();
-                if (event.getStackTrace().isPresent()) {
-                    processingFailedAccessor.setAuditFailure(
-                        jobConfigId,
-                        event.getNotificationIds(),
-                        event.getCreatedTimestamp(),
-                        event.getErrorMessage(),
-                        event.getStackTrace().orElse("NO STACK TRACE")
-                    );
-                } else {
+        Optional<ExecutingJob> executingJobOptional = executingJobManager.getExecutingJob(jobExecutionId);
+        if (executingJobOptional.isPresent()) {
+            ExecutingJob executingJob = executingJobOptional.get();
+            UUID jobConfigId = executingJob.getJobConfigId();
+            if (event.getStackTrace().isPresent()) {
+                processingFailedAccessor.setAuditFailure(
+                    jobConfigId,
+                    event.getNotificationIds(),
+                    event.getCreatedTimestamp(),
+                    event.getErrorMessage(),
+                    event.getStackTrace().orElse("NO STACK TRACE")
+                );
+            } else {
                 processingFailedAccessor.setAuditFailure(jobConfigId, event.getNotificationIds(), event.getCreatedTimestamp(), event.getErrorMessage());
             }
-                jobExecutionStatusAccessor.saveExecutionStatus(createStatusModel(executingJob));
-                executingJobManager.purgeJob(jobExecutionId);
-        });
+            jobExecutionStatusAccessor.saveExecutionStatus(createStatusModel(executingJob));
+            executingJobManager.purgeJob(jobExecutionId);
+        }
     }
 
     private JobExecutionStatusModel createStatusModel(ExecutingJob executingJob) {
@@ -87,7 +88,7 @@ public class AuditFailedHandler implements AlertEventHandler<AuditFailedEvent> {
                 calculateAverage(Integer.valueOf(executingJob.getProcessedNotificationCount()).longValue(), currentStatus.getNotificationCount()),
                 currentStatus.getSuccessCount(),
                 currentStatus.getFailureCount() + 1L,
-                AuditEntryStatus.FAILURE,
+                AuditEntryStatus.FAILURE.name(),
                 DateUtils.fromInstantUTC(executingJob.getEnd().orElse(Instant.now())),
                 durations
             );
@@ -106,7 +107,7 @@ public class AuditFailedHandler implements AlertEventHandler<AuditFailedEvent> {
                 Integer.valueOf(executingJob.getProcessedNotificationCount()).longValue(),
                 0L,
                 1L,
-                AuditEntryStatus.FAILURE,
+                AuditEntryStatus.FAILURE.name(),
                 DateUtils.fromInstantUTC(executingJob.getEnd().orElse(Instant.now())),
                 durations
             );

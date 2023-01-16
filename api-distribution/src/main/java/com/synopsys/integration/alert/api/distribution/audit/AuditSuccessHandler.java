@@ -31,11 +31,11 @@ public class AuditSuccessHandler implements AlertEventHandler<AuditSuccessEvent>
     public void handle(AuditSuccessEvent event) {
         UUID jobExecutionId = event.getJobExecutionId();
         executingJobManager.endJobWithSuccess(jobExecutionId, event.getCreatedTimestamp().toInstant());
-        executingJobManager.getExecutingJob(jobExecutionId)
-            .ifPresent(executingJob -> {
-                jobExecutionStatusAccessor.saveExecutionStatus(createStatusModel(executingJob));
-                executingJobManager.purgeJob(jobExecutionId);
-            });
+        Optional<ExecutingJob> executingJob = executingJobManager.getExecutingJob(jobExecutionId);
+        if (executingJob.isPresent()) {
+            jobExecutionStatusAccessor.saveExecutionStatus(createStatusModel(executingJob.get()));
+            executingJobManager.purgeJob(jobExecutionId);
+        }
     }
 
     private JobExecutionStatusModel createStatusModel(ExecutingJob executingJob) {
@@ -66,7 +66,7 @@ public class AuditSuccessHandler implements AlertEventHandler<AuditSuccessEvent>
                 calculateAverage(Integer.valueOf(executingJob.getProcessedNotificationCount()).longValue(), currentStatus.getNotificationCount()),
                 currentStatus.getSuccessCount() + 1L,
                 currentStatus.getFailureCount(),
-                AuditEntryStatus.SUCCESS,
+                AuditEntryStatus.SUCCESS.name(),
                 DateUtils.fromInstantUTC(executingJob.getEnd().orElse(Instant.now())),
                 durations
             );
@@ -85,7 +85,7 @@ public class AuditSuccessHandler implements AlertEventHandler<AuditSuccessEvent>
                 Integer.valueOf(executingJob.getProcessedNotificationCount()).longValue(),
                 1L,
                 0L,
-                AuditEntryStatus.SUCCESS,
+                AuditEntryStatus.SUCCESS.name(),
                 DateUtils.fromInstantUTC(executingJob.getEnd().orElse(Instant.now())),
                 durations
             );

@@ -6,15 +6,12 @@ import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.database.BaseEntity;
 
 @Entity
-@Table(schema = "alert", name = "execution_job_status")
+@Table(schema = "alert", name = "job_execution_status")
 public class JobExecutionStatusEntity extends BaseEntity {
     private static final long serialVersionUID = -3107164032971829096L;
     @Id
@@ -29,12 +26,9 @@ public class JobExecutionStatusEntity extends BaseEntity {
     private Long failureCount;
 
     @Column(name = "latest_status")
-    private AuditEntryStatus latestStatus;
+    private String latestStatus;
     @Column(name = "last_run")
     private OffsetDateTime lastRun;
-    @OneToOne
-    @JoinColumn
-    private JobExecutionStatusDurationsEntity jobExecutionStatusDurationsEntity;
 
     public JobExecutionStatusEntity() {
         // default constructor for JPA
@@ -45,9 +39,8 @@ public class JobExecutionStatusEntity extends BaseEntity {
         Long notificationCount,
         Long successCount,
         Long failureCount,
-        AuditEntryStatus latestStatus,
-        OffsetDateTime lastRun,
-        JobExecutionStatusDurationsEntity jobExecutionStatusDurationsEntity
+        String latestStatus,
+        OffsetDateTime lastRun
     ) {
         this.jobConfigId = jobConfigId;
         this.notificationCount = notificationCount;
@@ -55,7 +48,6 @@ public class JobExecutionStatusEntity extends BaseEntity {
         this.failureCount = failureCount;
         this.latestStatus = latestStatus;
         this.lastRun = lastRun;
-        this.jobExecutionStatusDurationsEntity = jobExecutionStatusDurationsEntity;
     }
 
     public UUID getJobConfigId() {
@@ -74,7 +66,7 @@ public class JobExecutionStatusEntity extends BaseEntity {
         return failureCount;
     }
 
-    public AuditEntryStatus getLatestStatus() {
+    public String getLatestStatus() {
         return latestStatus;
     }
 
@@ -82,7 +74,4 @@ public class JobExecutionStatusEntity extends BaseEntity {
         return lastRun;
     }
 
-    public JobExecutionStatusDurationsEntity getJobExecutionDurations() {
-        return jobExecutionStatusDurationsEntity;
-    }
 }

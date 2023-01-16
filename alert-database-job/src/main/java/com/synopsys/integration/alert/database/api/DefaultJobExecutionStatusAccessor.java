@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.persistence.accessor.JobExecutionStatusAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.executions.JobExecutionStatusDurations;
@@ -34,10 +36,13 @@ public class DefaultJobExecutionStatusAccessor implements JobExecutionStatusAcce
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<JobExecutionStatusModel> getJobExecutionStatus(UUID jobConfigId) {
         return jobExecutionRepository.findById(jobConfigId).map(this::convertToModel);
     }
 
+    @Override
+    @Transactional(readOnly = true)
     public AlertPagedModel<JobExecutionStatusModel> getJobExecutionStatus(AlertPagedQueryDetails pagedQueryDetails) {
         Sort sort = (pagedQueryDetails.getSortName().isPresent() && pagedQueryDetails.getSortOrder().isPresent()) ?
             Sort.by(pagedQueryDetails.getSortOrder().get(), pagedQueryDetails.getSortName().get()) :
@@ -54,6 +59,8 @@ public class DefaultJobExecutionStatusAccessor implements JobExecutionStatusAcce
         return new AlertPagedModel<>(entities.getTotalPages(), pagedQueryDetails.getOffset(), pagedQueryDetails.getLimit(), pageContents);
     }
 
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void saveExecutionStatus(JobExecutionStatusModel statusModel) {
         JobExecutionStatusDurationsEntity durations = convertDurationFromModel(statusModel.getJobConfigId(), statusModel.getDurations());
         JobExecutionStatusEntity jobExecutionStatus = convertFromModel(statusModel);
@@ -62,7 +69,8 @@ public class DefaultJobExecutionStatusAccessor implements JobExecutionStatusAcce
     }
 
     private JobExecutionStatusModel convertToModel(JobExecutionStatusEntity entity) {
-        JobExecutionStatusDurations durations = convertDurationToModel(entity.getJobExecutionDurations());
+        JobExecutionStatusDurations durations = convertDurationToModel(jobExecutionDurationsRepository.findById(entity.getJobConfigId())
+            .orElseGet(() -> createEmptyDurations(entity.getJobConfigId())));
         return new JobExecutionStatusModel(
             entity.getJobConfigId(),
             entity.getNotificationCount(),
@@ -92,8 +100,7 @@ public class DefaultJobExecutionStatusAccessor implements JobExecutionStatusAcce
             model.getSuccessCount(),
             model.getFailureCount(),
             model.getLatestStatus(),
-            model.getLastRun(),
-            convertDurationFromModel(model.getJobConfigId(), model.getDurations())
+            model.getLastRun()
         );
     }
 
@@ -106,6 +113,18 @@ public class DefaultJobExecutionStatusAccessor implements JobExecutionStatusAcce
             model.getIssueCreationDuration().orElse(null),
             model.getIssueCommentingDuration().orElse(null),
             model.getIssueTransitionDuration().orElse(null)
+        );
+    }
+
+    private JobExecutionStatusDurationsEntity createEmptyDurations(UUID jobConfigId) {
+        return new JobExecutionStatusDurationsEntity(
+            jobConfigId,
+            0L,
+            null,
+            null,
+            null,
+            null,
+            null
         );
     }
 }

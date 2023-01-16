@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
-    <changeSet author="psantos" id="create-failed-audit-entries-table">
+    <changeSet author="psantos" id="create-job-execution-status-table">
         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists schemaName="alert" tableName="execution_job_status"/>
+                <tableExists schemaName="alert" tableName="job_execution_status"/>
             </not>
         </preConditions>
-        <createTable schemaName="alert" tableName="execution_job_status">
+        <createTable schemaName="alert" tableName="job_execution_status">
             <column name="job_config_id" type="UUID" defaultValueComputed="uuid_generate_v4()">
                 <constraints primaryKey="true"/>
             </column>
@@ -58,7 +58,7 @@
                 baseTableName="job_execution_durations"
                 baseColumnNames="job_config_id"
                 referencedTableSchemaName="alert"
-                referencedTableName="execution_job_status"
+                referencedTableName="job_execution_status"
                 referencedColumnNames="job_config_id"
                 onDelete="CASCADE"
         />
@@ -72,7 +72,7 @@
         <addForeignKeyConstraint
                 constraintName="job-config-execution-status-fk"
                 baseTableSchemaName="alert"
-                baseTableName="execution_job_status"
+                baseTableName="job_execution_status"
                 baseColumnNames="job_config_id"
                 referencedTableSchemaName="alert"
                 referencedTableName="distribution_jobs"

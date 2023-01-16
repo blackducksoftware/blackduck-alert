@@ -4,7 +4,6 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
-import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 
 public class JobExecutionStatusModel extends AlertSerializableModel {
     private static final long serialVersionUID = -118491395692643581L;
@@ -12,7 +11,7 @@ public class JobExecutionStatusModel extends AlertSerializableModel {
     private final Long notificationCount;
     private final Long successCount;
     private final Long failureCount;
-    private final AuditEntryStatus latestStatus;
+    private final String latestStatus;
     private final OffsetDateTime lastRun;
     private final JobExecutionStatusDurations durations;
 
@@ -21,7 +20,7 @@ public class JobExecutionStatusModel extends AlertSerializableModel {
         Long notificationCount,
         Long successCount,
         Long failureCount,
-        AuditEntryStatus latestStatus,
+        String latestStatus,
         OffsetDateTime lastRun,
         JobExecutionStatusDurations durations
     ) {
@@ -50,7 +49,7 @@ public class JobExecutionStatusModel extends AlertSerializableModel {
         return failureCount;
     }
 
-    public AuditEntryStatus getLatestStatus() {
+    public String getLatestStatus() {
         return latestStatus;
     }
 
