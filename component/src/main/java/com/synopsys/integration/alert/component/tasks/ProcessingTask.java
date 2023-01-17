@@ -88,10 +88,13 @@ public abstract class ProcessingTask extends StartupScheduledTask {
             List<AlertNotificationModel> notificationList = page.getModels();
             logger.info("Processing page {} of {}. {} notifications to process.", currentPage, totalPages, notificationList.size());
             notificationMappingProcessor.processNotifications(correlationId, notificationList, List.of(frequencyType));
-            eventManager.sendEvent(new JobNotificationMappedEvent(correlationId));
             page = read(dateRange, currentPage + 1, PAGE_SIZE);
             currentPage = page.getCurrentPage();
             totalPages = page.getTotalPages();
+        }
+
+        if (totalPages > 0) {
+            eventManager.sendEvent(new JobNotificationMappedEvent(correlationId));
         }
     }
 
