@@ -5,6 +5,7 @@ dependencies {
 
     implementation project(':alert-common')
     implementation project(':api-common-model')
+    implementation project(':api-descriptor')
     implementation project(':api-event')
 
     // Spring Security
