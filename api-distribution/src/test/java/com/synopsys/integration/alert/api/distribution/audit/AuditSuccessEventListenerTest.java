@@ -56,7 +56,7 @@ class AuditSuccessEventListenerTest {
 
         JobExecutionStatusModel statusModel = jobExecutionStatusAccessor.getJobExecutionStatus(jobId)
             .orElseThrow(() -> new AssertionError("Executing Job cannot be missing from the test."));
-        assertEquals(AuditEntryStatus.SUCCESS, statusModel.getLatestStatus());
+        assertEquals(AuditEntryStatus.SUCCESS.name(), statusModel.getLatestStatus());
         assertEquals(1, statusModel.getSuccessCount());
         assertEquals(0, statusModel.getFailureCount());
         assertEquals(0, statusModel.getNotificationCount());

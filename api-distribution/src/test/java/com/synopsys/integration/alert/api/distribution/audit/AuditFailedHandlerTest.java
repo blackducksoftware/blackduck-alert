@@ -150,7 +150,7 @@ class AuditFailedHandlerTest {
 
         JobExecutionStatusModel statusModel = jobExecutionStatusAccessor.getJobExecutionStatus(jobExecutionId)
             .orElseThrow(() -> new AssertionError("Executing Job cannot be missing from the test."));
-        assertEquals(AuditEntryStatus.FAILURE, statusModel.getLatestStatus());
+        assertEquals(AuditEntryStatus.FAILURE.name(), statusModel.getLatestStatus());
         assertEquals(0, statusModel.getSuccessCount());
         assertEquals(1, statusModel.getFailureCount());
         assertEquals(0, statusModel.getNotificationCount());
