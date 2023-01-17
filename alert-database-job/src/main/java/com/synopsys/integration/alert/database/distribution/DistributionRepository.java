@@ -33,6 +33,7 @@ public interface DistributionRepository extends JpaRepository<DistributionJobEnt
             + "   ) AS auditMaxDate"
             + "   ON auditRequirements.common_config_id = auditMaxDate.common_config_id"
             + "   AND auditRequirements.time_last_sent = auditMaxDate.last_sent"
+            + "   LIMIT 1"
             + " ) AS filteredAudit"
             + " ON filteredAudit.common_config_id = job.job_id"
             + " WHERE job.channel_descriptor_name IN (:channelDescriptorNames)",
@@ -53,6 +54,7 @@ public interface DistributionRepository extends JpaRepository<DistributionJobEnt
             + "   ) AS auditMaxDate"
             + "   ON auditRequirements.common_config_id = auditMaxDate.common_config_id"
             + "   AND auditRequirements.time_last_sent = auditMaxDate.last_sent"
+            + "   LIMIT 1"
             + " ) AS filteredAudit"
             + " ON filteredAudit.common_config_id = job.job_id"
             + " WHERE job.channel_descriptor_name IN (:channelDescriptorNames) AND job.name LIKE %:searchTerm%",
