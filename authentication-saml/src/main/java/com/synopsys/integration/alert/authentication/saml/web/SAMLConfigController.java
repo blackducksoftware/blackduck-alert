@@ -58,13 +58,13 @@ public class SAMLConfigController implements StaticUniqueConfigResourceControlle
     }
 
     @GetMapping(METADATA_FILE_UPLOAD_PATH)
-    public ExistenceModel checkMetadataFileExists() {
+    public boolean checkMetadataFileExists() {
         return ResponseFactory.createContentResponseFromAction(fileUploadActions.metadataFileExists());
     }
 
     @PostMapping(METADATA_FILE_UPLOAD_PATH)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void uploadMetadataFile(@RequestParam("file") MultipartFile file) {
-        //ResponseFactory.createResponseFromAction(fileUploadActions.uploadFile(file.getResource()));
+        ResponseFactory.createResponseFromAction(fileUploadActions.metadataFileUpload(file.getResource()));
     }
 }
