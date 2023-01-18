@@ -86,7 +86,7 @@ public abstract class ProcessingTask extends StartupScheduledTask {
         UUID correlationId = UUID.randomUUID();
         while (!page.getModels().isEmpty() || currentPage < totalPages) {
             List<AlertNotificationModel> notificationList = page.getModels();
-            logger.info("Processing page {} of {}. {} notifications to process.", currentPage, totalPages, notificationList.size());
+            logger.info("Processing page {} of {}. {} notifications to process.", currentPage + 1, totalPages, notificationList.size());
             notificationMappingProcessor.processNotifications(correlationId, notificationList, List.of(frequencyType));
             page = read(dateRange, currentPage + 1, PAGE_SIZE);
             currentPage = page.getCurrentPage();

@@ -49,6 +49,7 @@ import com.synopsys.integration.alert.database.api.DefaultConfigurationModelConf
 import com.synopsys.integration.alert.database.api.DefaultNotificationAccessor;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import com.synopsys.integration.alert.processor.api.JobNotificationContentProcessor;
 import com.synopsys.integration.alert.processor.api.NotificationContentProcessor;
 import com.synopsys.integration.alert.processor.api.NotificationMappingProcessor;
 import com.synopsys.integration.alert.processor.api.NotificationProcessingLifecycleCache;
@@ -94,6 +95,8 @@ class ProcessingJobEventHandlerTestIT {
     private EmailGlobalConfigAccessor emailGlobalConfigAccessor;
     @Autowired
     private NotificationMappingProcessor notificationProcessor;
+    @Autowired
+    JobNotificationContentProcessor jobNotificationContentProcessor;
     @Autowired
     private Gson gson;
 
@@ -161,7 +164,8 @@ class ProcessingJobEventHandlerTestIT {
             lifecycleCaches,
             notificationAccessor,
             jobAccessor,
-            jobNotificationMappingAccessor
+            jobNotificationMappingAccessor,
+            jobNotificationContentProcessor
         );
         JobProcessingEvent event = new JobProcessingEvent(correlationId, jobId);
         eventHandler.handle(event);
@@ -188,7 +192,8 @@ class ProcessingJobEventHandlerTestIT {
             lifecycleCaches,
             notificationAccessor,
             jobAccessor,
-            jobNotificationMappingAccessor
+            jobNotificationMappingAccessor,
+            jobNotificationContentProcessor
         );
         JobProcessingEvent event = new JobProcessingEvent(correlationId, jobId);
         eventHandler.handle(event);

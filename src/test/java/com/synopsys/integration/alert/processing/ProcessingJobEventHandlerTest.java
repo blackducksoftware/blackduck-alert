@@ -11,11 +11,15 @@ import org.mockito.Mockito;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobNotificationMappingAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
+import com.synopsys.integration.alert.processor.api.JobNotificationContentProcessor;
 import com.synopsys.integration.alert.processor.api.NotificationContentProcessor;
 import com.synopsys.integration.alert.processor.api.NotificationProcessingLifecycleCache;
 import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExtractionDelegator;
+import com.synopsys.integration.alert.processor.api.digest.ProjectMessageDigester;
 import com.synopsys.integration.alert.processor.api.distribute.ProviderMessageDistributor;
 import com.synopsys.integration.alert.processor.api.event.JobProcessingEvent;
+import com.synopsys.integration.alert.processor.api.extract.ProviderMessageExtractionDelegator;
+import com.synopsys.integration.alert.processor.api.summarize.ProjectMessageSummarizer;
 
 class ProcessingJobEventHandlerTest {
     @Test
@@ -29,6 +33,16 @@ class ProcessingJobEventHandlerTest {
         NotificationAccessor notificationAccessor = Mockito.mock(NotificationAccessor.class);
         JobAccessor jobAccessor = Mockito.mock(JobAccessor.class);
         JobNotificationMappingAccessor jobNotificationMappingAccessor = Mockito.mock(JobNotificationMappingAccessor.class);
+        ProviderMessageExtractionDelegator providerMessageExtractionDelegator = Mockito.mock(ProviderMessageExtractionDelegator.class);
+        JobNotificationContentProcessor jobNotificationContentProcessor = new JobNotificationContentProcessor(
+            notificationDetailExtractionDelegator,
+            notificationAccessor,
+            jobAccessor,
+            jobNotificationMappingAccessor,
+            providerMessageExtractionDelegator,
+            new ProjectMessageDigester(),
+            new ProjectMessageSummarizer()
+        );
         ProcessingJobEventHandler eventHandler = new ProcessingJobEventHandler(
             notificationDetailExtractionDelegator,
             notificationContentProcessor,
@@ -36,7 +50,8 @@ class ProcessingJobEventHandlerTest {
             lifecycleCaches,
             notificationAccessor,
             jobAccessor,
-            jobNotificationMappingAccessor
+            jobNotificationMappingAccessor,
+            jobNotificationContentProcessor
         );
         try {
             eventHandler.handle(new JobProcessingEvent(correlationId, jobId));
