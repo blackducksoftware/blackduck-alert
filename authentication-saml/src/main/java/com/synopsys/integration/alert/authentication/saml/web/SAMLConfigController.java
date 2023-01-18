@@ -1,9 +1,9 @@
 package com.synopsys.integration.alert.authentication.saml.web;
 
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
-import com.synopsys.integration.alert.authentication.saml.action.AuthenticationSAMLCrudActions;
-import com.synopsys.integration.alert.authentication.saml.action.AuthenticationSAMLValidationAction;
-import com.synopsys.integration.alert.authentication.saml.model.AuthenticationSAMLConfigModel;
+import com.synopsys.integration.alert.authentication.saml.action.SAMLCrudActions;
+import com.synopsys.integration.alert.authentication.saml.action.SAMLValidationAction;
+import com.synopsys.integration.alert.authentication.saml.model.SAMLConfigModel;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.api.StaticUniqueConfigResourceController;
@@ -15,28 +15,28 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(AlertRestConstants.SAML_PATH)
-public class AuthenticationSAMLConfigController implements StaticUniqueConfigResourceController<AuthenticationSAMLConfigModel>, ValidateController<AuthenticationSAMLConfigModel> {
-    private final AuthenticationSAMLCrudActions configActions;
-    private final AuthenticationSAMLValidationAction validationAction;
+public class SAMLConfigController implements StaticUniqueConfigResourceController<SAMLConfigModel>, ValidateController<SAMLConfigModel> {
+    private final SAMLCrudActions configActions;
+    private final SAMLValidationAction validationAction;
 
     @Autowired
-    public AuthenticationSAMLConfigController(AuthenticationSAMLCrudActions configActions, AuthenticationSAMLValidationAction validationAction) {
+    public SAMLConfigController(SAMLCrudActions configActions, SAMLValidationAction validationAction) {
         this.configActions = configActions;
         this.validationAction = validationAction;
     }
 
     @Override
-    public AuthenticationSAMLConfigModel create(AuthenticationSAMLConfigModel resource) {
+    public SAMLConfigModel create(SAMLConfigModel resource) {
         return ResponseFactory.createContentResponseFromAction(configActions.create(resource));
     }
 
     @Override
-    public AuthenticationSAMLConfigModel getOne() {
+    public SAMLConfigModel getOne() {
         return ResponseFactory.createContentResponseFromAction(configActions.getOne());
     }
 
     @Override
-    public void update(AuthenticationSAMLConfigModel resource) {
+    public void update(SAMLConfigModel resource) {
         ResponseFactory.createContentResponseFromAction(configActions.update(resource));
     }
 
@@ -46,7 +46,7 @@ public class AuthenticationSAMLConfigController implements StaticUniqueConfigRes
     }
 
     @Override
-    public ValidationResponseModel validate(AuthenticationSAMLConfigModel requestBody) {
+    public ValidationResponseModel validate(SAMLConfigModel requestBody) {
         return ResponseFactory.createContentResponseFromAction(validationAction.validate(requestBody));
     }
 }

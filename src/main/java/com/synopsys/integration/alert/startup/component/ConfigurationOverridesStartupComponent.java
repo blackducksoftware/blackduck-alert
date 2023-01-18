@@ -28,8 +28,8 @@ import com.synopsys.integration.alert.common.persistence.util.ConfigurationField
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.component.authentication.actions.AuthenticationApiAction;
-import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
-import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptorKey;
+import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
+import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
 
 @Component

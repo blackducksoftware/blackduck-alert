@@ -13,7 +13,7 @@ import org.springframework.security.saml.websso.WebSSOProfileOptions;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
+import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
 
 public class AlertWebSSOProfileOptions extends WebSSOProfileOptions {
     private final transient Logger logger = LoggerFactory.getLogger(AlertWebSSOProfileOptions.class);

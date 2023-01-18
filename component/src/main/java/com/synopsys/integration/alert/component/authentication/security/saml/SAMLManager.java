@@ -33,7 +33,7 @@ import org.springframework.security.saml.metadata.MetadataMemoryProvider;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
-import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
+import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
 
 public class SAMLManager {
     public static final Logger logger = LoggerFactory.getLogger(SAMLManager.class);
