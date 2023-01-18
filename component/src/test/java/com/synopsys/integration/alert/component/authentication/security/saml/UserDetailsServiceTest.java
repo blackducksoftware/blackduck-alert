@@ -26,7 +26,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.common.security.UserPrincipal;
-import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptorKey;
+import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.component.authentication.security.UserManagementAuthoritiesPopulator;
 
 class UserDetailsServiceTest {
