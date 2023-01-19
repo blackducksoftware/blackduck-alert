@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.component.authentication.validator;
+package com.synopsys.integration.alert.api.authentication.validator;
 
 import java.util.List;
 import java.util.Set;
@@ -18,7 +18,7 @@ import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationF
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
+import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
 
 @Component
 public class AuthenticationConfigurationFieldModelValidator implements GlobalConfigurationFieldModelValidator {

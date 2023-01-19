@@ -49,18 +49,22 @@ import com.synopsys.integration.alert.database.api.DefaultConfigurationModelConf
 import com.synopsys.integration.alert.database.api.DefaultNotificationAccessor;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import com.synopsys.integration.alert.processor.api.JobNotificationContentProcessor;
 import com.synopsys.integration.alert.processor.api.NotificationContentProcessor;
 import com.synopsys.integration.alert.processor.api.NotificationMappingProcessor;
 import com.synopsys.integration.alert.processor.api.NotificationProcessingLifecycleCache;
 import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExtractionDelegator;
+import com.synopsys.integration.alert.processor.api.digest.ProjectMessageDigester;
 import com.synopsys.integration.alert.processor.api.distribute.DistributionEvent;
 import com.synopsys.integration.alert.processor.api.distribute.ProviderMessageDistributor;
 import com.synopsys.integration.alert.processor.api.event.JobProcessingEvent;
+import com.synopsys.integration.alert.processor.api.extract.ProviderMessageExtractionDelegator;
 import com.synopsys.integration.alert.processor.api.extract.model.ProcessedProviderMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.ProcessedProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.processor.api.filter.NotificationContentWrapper;
+import com.synopsys.integration.alert.processor.api.summarize.ProjectMessageSummarizer;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.BlackDuckMessageLabels;
@@ -96,6 +100,10 @@ class ProcessingJobEventHandlerTestIT {
     @Autowired
     private NotificationMappingProcessor notificationProcessor;
     @Autowired
+    private ProjectMessageDigester projectMessageDigester;
+    @Autowired
+    private ProjectMessageSummarizer projectMessageSummarizer;
+    @Autowired
     private Gson gson;
 
     @Autowired
@@ -104,6 +112,7 @@ class ProcessingJobEventHandlerTestIT {
     private Long blackDuckGlobalConfigId;
     private UUID channelGlobalConfigId;
     private NotificationContentProcessor notificationContentProcessor;
+    private JobNotificationContentProcessor jobNotificationContentProcessor;
     private TestProperties properties;
 
     private final Map<UUID, Set<String>> jobExecutionIdAndEventIdMap = new HashMap<>();
@@ -142,6 +151,7 @@ class ProcessingJobEventHandlerTestIT {
         EmailGlobalConfigModel emailGlobalConfigModel = emailGlobalConfigAccessor.createConfiguration(channelConfig);
         channelGlobalConfigId = UUID.fromString(emailGlobalConfigModel.getId());
         notificationContentProcessor = createContentProcessor();
+        jobNotificationContentProcessor = createJobContentProcessor();
     }
 
     @AfterEach
@@ -166,6 +176,7 @@ class ProcessingJobEventHandlerTestIT {
             notificationAccessor,
             jobAccessor,
             jobNotificationMappingAccessor,
+            jobNotificationContentProcessor,
             executingJobManager
         );
         JobProcessingEvent event = new JobProcessingEvent(correlationId, jobId);
@@ -180,8 +191,8 @@ class ProcessingJobEventHandlerTestIT {
         UUID jobId = distributionJobModel.getJobId();
 
         List<AlertNotificationModel> notifications = new ArrayList<>();
-        notifications.add(createNotification());
-        notifications.add(createNotification());
+        notifications.add(createNotification(2));
+        notifications.add(createNotification(1));
         notifications = notificationAccessor.saveAllNotifications(notifications);
 
         notificationProcessor.processNotifications(correlationId, notifications, List.of(distributionJobModel.getDistributionFrequency()));
@@ -194,6 +205,7 @@ class ProcessingJobEventHandlerTestIT {
             notificationAccessor,
             jobAccessor,
             jobNotificationMappingAccessor,
+            jobNotificationContentProcessor,
             executingJobManager
         );
         JobProcessingEvent event = new JobProcessingEvent(correlationId, jobId);
@@ -224,6 +236,24 @@ class ProcessingJobEventHandlerTestIT {
         );
     }
 
+    private JobNotificationContentProcessor createJobContentProcessor() {
+        ProviderMessageExtractionDelegator providerMessageExtractionDelegator = Mockito.mock(ProviderMessageExtractionDelegator.class);
+        Mockito.doAnswer(invocation -> {
+                NotificationContentWrapper notifications = invocation.getArgument(0);
+                return createNotificationMessageHolder(notifications);
+            })
+            .when(providerMessageExtractionDelegator).extract(Mockito.any());
+        return new JobNotificationContentProcessor(
+            notificationDetailExtractionDelegator,
+            notificationAccessor,
+            jobNotificationMappingAccessor,
+            providerMessageExtractionDelegator,
+            projectMessageDigester,
+            projectMessageSummarizer,
+            executingJobManager
+        );
+    }
+
     private NotificationContentProcessor createContentProcessor() {
         NotificationContentProcessor notificationContentProcessor = Mockito.mock(NotificationContentProcessor.class);
         Mockito.doAnswer(invocation -> {
@@ -250,14 +280,14 @@ class ProcessingJobEventHandlerTestIT {
         LinkableItem project = new LinkableItem(BlackDuckMessageLabels.LABEL_PROJECT, "Test Project", null);
         LinkableItem projectVersion = new LinkableItem(
             BlackDuckMessageLabels.LABEL_PROJECT_VERSION,
-            "Project Version 1.0"
+            String.format("Project Version 1.0 %s", notificationModel.getProviderCreationTime())
         );
         ProjectMessage projectMessage = ProjectMessage.componentConcern(providerDetails, project, projectVersion, List.of());
         ProcessedProviderMessage<ProjectMessage> processedProviderMessage = ProcessedProviderMessage.singleSource(notificationModel.getId(), projectMessage);
         return new ProcessedProviderMessageHolder(List.of(processedProviderMessage), List.of());
     }
 
-    private AlertNotificationModel createNotification() throws IOException {
+    private AlertNotificationModel createNotification(int minuteOffset) throws IOException {
         String content = createVulnerabilityContent();
 
         return new AlertNotificationModel(
@@ -268,7 +298,7 @@ class ProcessingJobEventHandlerTestIT {
             NotificationType.VULNERABILITY.name(),
             content,
             OffsetDateTime.now(),
-            OffsetDateTime.now().minusMinutes(1),
+            OffsetDateTime.now().minusMinutes(minuteOffset),
             true
         );
     }
