@@ -35,6 +35,12 @@ public class SAMLConfigurationEntity extends BaseEntity {
     private Boolean wantAssertionsSigned;
     @Column(name = "role_attribute_mapping")
     private String roleAttributeMapping;
+    @Column(name = "encryption_cert_file_path")
+    private String encryptionCertFilePath;
+    @Column(name = "signing_cert_file_path")
+    private String signingCertFilePath;
+    @Column(name = "verification_cert_file_path")
+    private String verificationCertFilePath;
 
     public SAMLConfigurationEntity() {
     }
@@ -50,7 +56,10 @@ public class SAMLConfigurationEntity extends BaseEntity {
         String entityId,
         String entityBaseUrl,
         Boolean wantAssertionsSigned,
-        String roleAttributeMapping
+        String roleAttributeMapping,
+        String encryptionCertFilePath,
+        String signingCertFilePath,
+        String verificationCertFilePath
     ) {
         this.configurationId = configurationId;
         this.name = AlertRestConstants.DEFAULT_CONFIGURATION_NAME;
@@ -64,6 +73,9 @@ public class SAMLConfigurationEntity extends BaseEntity {
         this.entityBaseUrl = entityBaseUrl;
         this.wantAssertionsSigned = wantAssertionsSigned;
         this.roleAttributeMapping = roleAttributeMapping;
+        this.encryptionCertFilePath = encryptionCertFilePath;
+        this.signingCertFilePath = signingCertFilePath;
+        this.verificationCertFilePath = verificationCertFilePath;
     }
 
     public UUID getConfigurationId() {
@@ -112,5 +124,17 @@ public class SAMLConfigurationEntity extends BaseEntity {
 
     public String getRoleAttributeMapping() {
         return roleAttributeMapping;
+    }
+
+    public String getEncryptionCertFilePath() {
+        return encryptionCertFilePath;
+    }
+
+    public String getSigningCertFilePath() {
+        return signingCertFilePath;
+    }
+
+    public String getVerificationCertFilePath() {
+        return verificationCertFilePath;
     }
 }
