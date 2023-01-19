@@ -41,6 +41,14 @@ public class SAMLFileUploadValidator {
         );
     }
 
+    public ValidationResponseModel validateEncryptionCert(Resource resource) {
+        return validateFile(
+            AuthenticationDescriptor.SAML_ENCRYPTION_CERT_FILE,
+            resource,
+            this::validateXMLFile
+        );
+    }
+
     private ValidationResponseModel validateFile(String fileName, Resource resource, Function<File, ValidationResult> validateFunction) {
         String tempFilename = "temp_" + fileName;
         try {
