@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="psantos" id="create-job-execution-status-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="job_execution_status"/>
+            </not>
+        </preConditions>
+        <createTable schemaName="alert" tableName="job_execution_status">
+            <column name="job_config_id" type="UUID" defaultValueComputed="uuid_generate_v4()">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="notification_count" type="BIGINT" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="success_count" type="BIGINT" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="failure_count" type="BIGINT" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="latest_status" type="VARCHAR"/>
+            <column name="last_run" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="psantos" id="create-job-execution-durations-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="job_execution_durations"/>
+            </not>
+        </preConditions>
+        <createTable schemaName="alert" tableName="job_execution_durations">
+            <column name="job_config_id" type="UUID" defaultValueComputed="uuid_generate_v4()">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="job_duration_milliseconds" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="notification_processing_duration_milliseconds" type="BIGINT"/>
+            <column name="channel_processing_duration_milliseconds" type="BIGINT"/>
+            <column name="issue_creation_duration_milliseconds" type="BIGINT"/>
+            <column name="issue_commenting_duration_milliseconds" type="BIGINT"/>
+            <column name="issue_resolving_duration_milliseconds" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="psantos" id="create-execution-tables-foreign-key">
+        <preConditions>
+            <not>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="job-execution-config-id-fk"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint
+                constraintName="job-execution-config-id-fk"
+                baseTableSchemaName="alert"
+                baseTableName="job_execution_durations"
+                baseColumnNames="job_config_id"
+                referencedTableSchemaName="alert"
+                referencedTableName="job_execution_status"
+                referencedColumnNames="job_config_id"
+                onDelete="CASCADE"
+        />
+    </changeSet>
+    <changeSet author="psantos" id="create-job-config-execution-tables-foreign-key">
+        <preConditions>
+            <not>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="job-config-execution-status-fk"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint
+                constraintName="job-config-execution-status-fk"
+                baseTableSchemaName="alert"
+                baseTableName="job_execution_status"
+                baseColumnNames="job_config_id"
+                referencedTableSchemaName="alert"
+                referencedTableName="distribution_jobs"
+                referencedColumnNames="job_id"
+                onDelete="CASCADE"
+        />
+    </changeSet>
+</databaseChangeLog>

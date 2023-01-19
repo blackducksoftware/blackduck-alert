@@ -41,7 +41,7 @@ public abstract class JobSubTaskEventHandler<T extends JobSubTaskEvent> implemen
                 .ifPresent(ignored -> {
                     eventManager.sendEvent(new JobStageEndedEvent(jobExecutionId, jobStage));
                     // need to check if the count of the jobExecution id is 1 for this event only.
-                    eventManager.sendEvent(new AuditSuccessEvent(event.getJobExecutionId(), event.getNotificationIds()));
+                    eventManager.sendEvent(new AuditSuccessEvent(jobExecutionId, event.getNotificationIds()));
                     jobSubTaskAccessor.removeSubTaskStatus(parentEventId);
                 });
         } catch (AlertException exception) {

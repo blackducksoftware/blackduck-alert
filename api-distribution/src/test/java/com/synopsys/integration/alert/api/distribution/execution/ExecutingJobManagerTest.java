@@ -24,6 +24,19 @@ class ExecutingJobManagerTest {
     }
 
     @Test
+    void removeExecutingJobTest() {
+        ExecutingJobManager jobManager = new ExecutingJobManager();
+        UUID jobConfigId = UUID.randomUUID();
+        ExecutingJob executingJob = jobManager.startJob(jobConfigId, 0);
+        jobManager.endJobWithSuccess(jobConfigId, Instant.now());
+        ExecutingJob savedJob = jobManager.getExecutingJob(executingJob.getExecutionId()).orElse(null);
+        jobManager.purgeJob(executingJob.getExecutionId());
+        assertNotNull(savedJob);
+        assertEquals(executingJob.getExecutionId(), savedJob.getExecutionId());
+        assertTrue(jobManager.getExecutingJob(savedJob.getExecutionId()).isEmpty());
+    }
+
+    @Test
     void executingJobPendingTest() {
         ExecutingJobManager jobManager = new ExecutingJobManager();
         UUID jobConfigId = UUID.randomUUID();
