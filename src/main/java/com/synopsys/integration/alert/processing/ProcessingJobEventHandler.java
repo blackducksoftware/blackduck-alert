@@ -27,6 +27,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.DistributionJ
 import com.synopsys.integration.alert.common.persistence.model.job.JobToNotificationMappingModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
+import com.synopsys.integration.alert.processor.api.JobNotificationContentProcessor;
 import com.synopsys.integration.alert.processor.api.NotificationContentProcessor;
 import com.synopsys.integration.alert.processor.api.NotificationProcessingLifecycleCache;
 import com.synopsys.integration.alert.processor.api.detail.DetailedNotificationContent;
@@ -49,6 +50,7 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
     private final NotificationAccessor notificationAccessor;
     private final JobAccessor jobAccessor;
     private final JobNotificationMappingAccessor jobNotificationMappingAccessor;
+    private final JobNotificationContentProcessor jobNotificationContentProcessor;
 
     @Autowired
     public ProcessingJobEventHandler(
@@ -58,7 +60,8 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
         List<NotificationProcessingLifecycleCache> lifecycleCaches,
         NotificationAccessor notificationAccessor,
         JobAccessor jobAccessor,
-        JobNotificationMappingAccessor jobNotificationMappingAccessor
+        JobNotificationMappingAccessor jobNotificationMappingAccessor,
+        JobNotificationContentProcessor jobNotificationContentProcessor
     ) {
         this.notificationDetailExtractionDelegator = notificationDetailExtractionDelegator;
         this.notificationContentProcessor = notificationContentProcessor;
@@ -67,6 +70,7 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
         this.notificationAccessor = notificationAccessor;
         this.jobAccessor = jobAccessor;
         this.jobNotificationMappingAccessor = jobNotificationMappingAccessor;
+        this.jobNotificationContentProcessor = jobNotificationContentProcessor;
     }
 
     @Override
@@ -77,7 +81,7 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
             Optional<DistributionJobModel> jobModel = jobAccessor.getJobById(jobId);
             if (jobModel.isPresent()) {
                 DistributionJobModel job = jobModel.get();
-                ProcessedProviderMessageHolder processedMessageHolder = processNotifications(event, job);
+                ProcessedProviderMessageHolder processedMessageHolder = jobNotificationContentProcessor.processNotifications(event, job);
                 ProcessedNotificationDetails processedNotificationDetails = new ProcessedNotificationDetails(
                     job.getJobId(),
                     job.getChannelDescriptorName(),
