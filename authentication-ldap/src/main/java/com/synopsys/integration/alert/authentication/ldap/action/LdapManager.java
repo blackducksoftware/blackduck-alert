@@ -1,11 +1,4 @@
-/*
- * component
- *
- * Copyright (c) 2022 Synopsys, Inc.
- *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
- */
-package com.synopsys.integration.alert.component.authentication.security.ldap;
+package com.synopsys.integration.alert.authentication.ldap.action;
 
 import java.util.Optional;
 
@@ -24,32 +17,33 @@ import org.springframework.security.ldap.userdetails.InetOrgPersonContextMapper;
 import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
+import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
+import com.synopsys.integration.alert.api.authentication.security.UserManagementAuthoritiesPopulator;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.synopsys.integration.alert.authentication.ldap.MappingLdapAuthoritiesPopulator;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
-import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
-import com.synopsys.integration.alert.component.authentication.security.UserManagementAuthoritiesPopulator;
 
 @Component
 public class LdapManager {
     private final AuthenticationDescriptorKey authenticationDescriptorKey;
     private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
-    private final UserManagementAuthoritiesPopulator authoritiesPopulator;
+    private final UserManagementAuthoritiesPopulator userManagementAuthoritiesPopulator;
     private final InetOrgPersonContextMapper inetOrgPersonContextMapper;
 
     @Autowired
     public LdapManager(
         AuthenticationDescriptorKey authenticationDescriptorKey,
         ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor,
-        UserManagementAuthoritiesPopulator authoritiesPopulator,
+        UserManagementAuthoritiesPopulator userManagementAuthoritiesPopulator,
         InetOrgPersonContextMapper inetOrgPersonContextMapper
     ) {
         this.authenticationDescriptorKey = authenticationDescriptorKey;
         this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
-        this.authoritiesPopulator = authoritiesPopulator;
+        this.userManagementAuthoritiesPopulator = userManagementAuthoritiesPopulator;
         this.inetOrgPersonContextMapper = inetOrgPersonContextMapper;
     }
 
@@ -151,7 +145,11 @@ public class LdapManager {
         String groupSearchBase = configurationModel.getStringOrEmpty(AuthenticationDescriptor.KEY_LDAP_GROUP_SEARCH_BASE);
         String groupSearchFilter = configurationModel.getStringOrEmpty(AuthenticationDescriptor.KEY_LDAP_GROUP_SEARCH_FILTER);
         String groupRoleAttribute = configurationModel.getStringOrEmpty(AuthenticationDescriptor.KEY_LDAP_GROUP_ROLE_ATTRIBUTE);
-        MappingLdapAuthoritiesPopulator mappingLdapAuthoritiesPopulator = new MappingLdapAuthoritiesPopulator(contextSource, groupSearchBase, this.authoritiesPopulator);
+        MappingLdapAuthoritiesPopulator mappingLdapAuthoritiesPopulator = new MappingLdapAuthoritiesPopulator(
+            contextSource,
+            groupSearchBase,
+            this.userManagementAuthoritiesPopulator
+        );
         mappingLdapAuthoritiesPopulator.setGroupSearchFilter(groupSearchFilter);
         mappingLdapAuthoritiesPopulator.setGroupRoleAttribute(groupRoleAttribute);
         // expect the LDAP group name for the role to be ROLE_<ROLE_NAME> where ROLE_NAME defined in UserRoles

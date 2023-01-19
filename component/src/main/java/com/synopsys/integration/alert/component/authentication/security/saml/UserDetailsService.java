@@ -16,11 +16,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 
+import com.synopsys.integration.alert.api.authentication.security.UserManagementAuthoritiesPopulator;
 import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.common.security.UserPrincipal;
-import com.synopsys.integration.alert.component.authentication.security.UserManagementAuthoritiesPopulator;
 
 public class UserDetailsService implements SAMLUserDetailsService {
     private final UserManagementAuthoritiesPopulator authoritiesPopulator;
