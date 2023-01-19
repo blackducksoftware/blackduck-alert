@@ -41,7 +41,7 @@ public class SAMLFileUploadValidator {
         );
     }
 
-    public ValidationResponseModel validateFile(String fileName, Resource resource, Function<File, ValidationResult> validateFunction) {
+    private ValidationResponseModel validateFile(String fileName, Resource resource, Function<File, ValidationResult> validateFunction) {
         String tempFilename = "temp_" + fileName;
         try {
             filePersistenceUtil.writeFileToUploadsDirectory(tempFilename, resource.getInputStream());

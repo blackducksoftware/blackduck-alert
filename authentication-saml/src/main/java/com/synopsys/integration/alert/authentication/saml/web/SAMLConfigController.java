@@ -10,7 +10,6 @@ import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.api.StaticUniqueConfigResourceController;
 import com.synopsys.integration.alert.common.rest.api.ValidateController;
 
-import com.synopsys.integration.alert.common.rest.model.ExistenceModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -19,11 +18,11 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping(AlertRestConstants.SAML_PATH)
 public class SAMLConfigController implements StaticUniqueConfigResourceController<SAMLConfigModel>, ValidateController<SAMLConfigModel> {
+    private static final String METADATA_FILE_UPLOAD_PATH = "/" + AlertRestConstants.UPLOAD + "/metadata";
+
     private final SAMLCrudActions configActions;
     private final SAMLValidationAction validationAction;
     private final SAMLFileUploadActions fileUploadActions;
-
-    private final String METADATA_FILE_UPLOAD_PATH = "/" + AlertRestConstants.UPLOAD + "/metadata";
 
     @Autowired
     public SAMLConfigController(SAMLCrudActions configActions, SAMLValidationAction validationAction, SAMLFileUploadActions fileUploadActions) {
