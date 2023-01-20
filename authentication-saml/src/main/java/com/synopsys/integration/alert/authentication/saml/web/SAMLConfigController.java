@@ -1,5 +1,6 @@
 package com.synopsys.integration.alert.authentication.saml.web;
 
+import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.authentication.saml.action.SAMLCrudActions;
 import com.synopsys.integration.alert.authentication.saml.action.SAMLFileUploadActions;
@@ -10,7 +11,6 @@ import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.api.StaticUniqueConfigResourceController;
 import com.synopsys.integration.alert.common.rest.api.ValidateController;
 
-import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
