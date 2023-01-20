@@ -23,8 +23,8 @@ public class SAMLFileUploadActions {
         this.fileUploadValidator = fileUploadValidator;
     }
 
-    public ActionResponse<Boolean> metadataFileExists() {
-        return fileUploadHelper.fileExists(AuthenticationDescriptor.SAML_METADATA_FILE);
+    public ActionResponse<Boolean> fileExists(String fileName) {
+        return fileUploadHelper.fileExists(fileName);
     }
 
     public ActionResponse<Void> metadataFileUpload(Resource resource) {
@@ -35,15 +35,11 @@ public class SAMLFileUploadActions {
         );
     }
 
-    public ActionResponse<Boolean> encryptionCertFileExists() {
-        return fileUploadHelper.fileExists(AuthenticationDescriptor.SAML_ENCRYPTION_CERT_FILE);
-    }
-
-    public ActionResponse<Void> encryptionCertFileUpload(Resource resource) {
+    public ActionResponse<Void> certFileUpload(String certFileName, Resource resource) {
         return fileUploadHelper.fileUpload(
-            AuthenticationDescriptor.SAML_ENCRYPTION_CERT_FILE,
+            certFileName,
             resource,
-            () -> fileUploadValidator.validateEncryptionCertFile(resource)
+            () -> fileUploadValidator.validateCertFile(certFileName, resource)
         );
     }
 }

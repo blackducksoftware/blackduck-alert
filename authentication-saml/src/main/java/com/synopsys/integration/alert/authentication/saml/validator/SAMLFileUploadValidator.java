@@ -40,9 +40,9 @@ public class SAMLFileUploadValidator {
         );
     }
 
-    public ValidationResponseModel validateEncryptionCertFile(Resource resource) {
+    public ValidationResponseModel validateCertFile(String fileName, Resource resource) {
         return validateFile(
-            AuthenticationDescriptor.SAML_ENCRYPTION_CERT_FILE,
+            fileName,
             resource,
             this::validateCertFile
         );
