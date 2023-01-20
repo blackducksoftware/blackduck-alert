@@ -1,279 +1,213 @@
 package com.synopsys.integration.alert.authentication.ldap.action;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
-import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.opentest4j.AssertionFailedError;
+import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 import org.springframework.security.ldap.userdetails.InetOrgPersonContextMapper;
 
-import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
-import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
+import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.authentication.security.UserManagementAuthoritiesPopulator;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.persistence.model.mutable.ConfigurationModelMutable;
-import com.synopsys.integration.alert.database.api.DefaultConfigurationModelConfigurationAccessor;
-import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
+import com.synopsys.integration.alert.authentication.ldap.database.accessor.LDAPConfigAccessor;
+import com.synopsys.integration.alert.authentication.ldap.database.configuration.MockLDAPConfigurationRepository;
+import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigModel;
+import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
+import com.synopsys.integration.alert.common.security.EncryptionUtility;
+import com.synopsys.integration.alert.common.util.DateUtils;
+import com.synopsys.integration.alert.test.common.MockAlertProperties;
 
 public class LdapManagerTest {
-    public static final String DEFAULT_ENABLED = "true";
-    public static final String DEFAULT_SERVER = "aserver";
-    public static final String DEFAULT_MANAGER_DN = "managerDN";
-    public static final String DEFAULT_MANAGER_PASSWORD = "managerPassword";
-    public static final String DEFAULT_AUTHENTICATION_TYPE = "simple";
-    public static final String DEFAULT_REFERRAL = "referral";
-    public static final String DEFAULT_USER_SEARCH_BASE = "searchbase";
-    public static final String DEFAULT_USER_SEARCH_FILTER = "searchFilter";
-    public static final String DEFAULT_USER_DN_PATTERNS = "pattern1,pattern2";
-    public static final String DEFAULT_USER_ATTRIBUTES = "attribute1,attribute2";
-    public static final String DEFAULT_GROUP_SEARCH_BASE = "groupSearchBase";
-    public static final String DEFAULT_GROUP_SEARCH_FILTER = "groupSearchFilter";
-    public static final String DEFAULT_GROUP_ROLE_ATTRIBUTE = "roleAttribute";
+    private static final String DEFAULT_CONFIG_ID = UUID.randomUUID().toString();
+    private static final String DEFAULT_DATE_STRING = DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
+    private static final String DEFAULT_SERVER = "aserver";
+    private static final String DEFAULT_MANAGER_DN = "managerDN";
+    private static final String DEFAULT_MANAGER_PASSWORD = "managerPassword";
+    private static final String DEFAULT_AUTHENTICATION_TYPE_SIMPLE = "simple";
+    private static final String DEFAULT_AUTHENTICATION_TYPE_DIGEST = "digest";
+    private static final String DEFAULT_REFERRAL = "referral";
+    private static final String DEFAULT_USER_SEARCH_BASE = "searchbase";
+    private static final String DEFAULT_USER_SEARCH_FILTER = "searchFilter";
+    private static final String DEFAULT_USER_DN_PATTERNS = "pattern1,pattern2";
+    private static final String DEFAULT_USER_ATTRIBUTES = "attribute1,attribute2";
+    private static final String DEFAULT_GROUP_SEARCH_BASE = "groupSearchBase";
+    private static final String DEFAULT_GROUP_SEARCH_FILTER = "groupSearchFilter";
+    private static final String DEFAULT_GROUP_ROLE_ATTRIBUTE = "roleAttribute";
 
-    private static final AuthenticationDescriptorKey AUTHENTICATION_DESCRIPTOR_KEY = new AuthenticationDescriptorKey();
     private static final InetOrgPersonContextMapper LDAP_USER_CONTEXT_MAPPER = new InetOrgPersonContextMapper();
 
-    private ConfigurationModel createConfigurationModel() {
-        ConfigurationModelMutable configurationModel = new ConfigurationModelMutable(1L, 1L, null, null, ConfigContextEnum.GLOBAL);
+    private LDAPConfigAccessor ldapConfigAccessor;
+    private LdapManager ldapManager;
 
-        ConfigurationFieldModel enabledField = ConfigurationFieldModel.create(AuthenticationDescriptor.KEY_LDAP_ENABLED);
-        ConfigurationFieldModel serverField = ConfigurationFieldModel.create(AuthenticationDescriptor.KEY_LDAP_SERVER);
-        ConfigurationFieldModel managerDNField = ConfigurationFieldModel.create(AuthenticationDescriptor.KEY_LDAP_MANAGER_DN);
-        ConfigurationFieldModel managerPasswordField = ConfigurationFieldModel.createSensitive(AuthenticationDescriptor.KEY_LDAP_MANAGER_PWD);
-        ConfigurationFieldModel authenticationTypeField = ConfigurationFieldModel.create(AuthenticationDescriptor.KEY_LDAP_AUTHENTICATION_TYPE);
-        ConfigurationFieldModel referralField = ConfigurationFieldModel.create(AuthenticationDescriptor.KEY_LDAP_REFERRAL);
-        ConfigurationFieldModel userSearchBaseField = ConfigurationFieldModel.create(AuthenticationDescriptor.KEY_LDAP_USER_SEARCH_BASE);
-        ConfigurationFieldModel userSearchFilterField = ConfigurationFieldModel.create(AuthenticationDescriptor.KEY_LDAP_USER_SEARCH_FILTER);
-        ConfigurationFieldModel userDNPatternsField = ConfigurationFieldModel.create(AuthenticationDescriptor.KEY_LDAP_USER_DN_PATTERNS);
-        ConfigurationFieldModel userAttributesField = ConfigurationFieldModel.create(AuthenticationDescriptor.KEY_LDAP_USER_ATTRIBUTES);
-        ConfigurationFieldModel groupSearchBaseField = ConfigurationFieldModel.create(AuthenticationDescriptor.KEY_LDAP_GROUP_SEARCH_BASE);
-        ConfigurationFieldModel groupSearchFilterField = ConfigurationFieldModel.create(AuthenticationDescriptor.KEY_LDAP_GROUP_SEARCH_FILTER);
-        ConfigurationFieldModel groupRoleAttributeField = ConfigurationFieldModel.create(AuthenticationDescriptor.KEY_LDAP_GROUP_ROLE_ATTRIBUTE);
+    @BeforeEach
+    public void initAccessor() {
+        // Create new LDAPConfigAccessor
+        AlertProperties alertProperties = new MockAlertProperties();
+        FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, new Gson());
+        EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, filePersistenceUtil);
+        MockLDAPConfigurationRepository mockLDAPConfigurationRepository = new MockLDAPConfigurationRepository();
+        ldapConfigAccessor = new LDAPConfigAccessor(encryptionUtility, mockLDAPConfigurationRepository);
 
-        enabledField.setFieldValue(DEFAULT_ENABLED);
-        serverField.setFieldValue(DEFAULT_SERVER);
-        managerDNField.setFieldValue(DEFAULT_MANAGER_DN);
-        managerPasswordField.setFieldValue(DEFAULT_MANAGER_PASSWORD);
-        authenticationTypeField.setFieldValue(DEFAULT_AUTHENTICATION_TYPE);
-        referralField.setFieldValue(DEFAULT_REFERRAL);
-        userSearchBaseField.setFieldValue(DEFAULT_USER_SEARCH_BASE);
-        userSearchFilterField.setFieldValue(DEFAULT_USER_SEARCH_FILTER);
-        userDNPatternsField.setFieldValue(DEFAULT_USER_DN_PATTERNS);
-        userAttributesField.setFieldValue(DEFAULT_USER_ATTRIBUTES);
-        groupSearchBaseField.setFieldValue(DEFAULT_GROUP_SEARCH_BASE);
-        groupSearchFilterField.setFieldValue(DEFAULT_GROUP_SEARCH_FILTER);
-        groupRoleAttributeField.setFieldValue(DEFAULT_GROUP_ROLE_ATTRIBUTE);
-
-        configurationModel.put(enabledField);
-        configurationModel.put(serverField);
-        configurationModel.put(managerDNField);
-        configurationModel.put(managerPasswordField);
-        configurationModel.put(authenticationTypeField);
-        configurationModel.put(referralField);
-        configurationModel.put(userSearchBaseField);
-        configurationModel.put(userSearchFilterField);
-        configurationModel.put(userDNPatternsField);
-        configurationModel.put(userAttributesField);
-        configurationModel.put(groupSearchBaseField);
-        configurationModel.put(groupSearchFilterField);
-        configurationModel.put(groupRoleAttributeField);
-
-        return configurationModel;
+        // Create new LdapManager
+        UserManagementAuthoritiesPopulator userManagementAuthoritiesPopulator = Mockito.mock(UserManagementAuthoritiesPopulator.class);
+        ldapManager = new LdapManager(ldapConfigAccessor, userManagementAuthoritiesPopulator, LDAP_USER_CONTEXT_MAPPER);
     }
 
     @Test
-    public void testUpdate() throws Exception {
-        ConfigurationModel configurationModel = createConfigurationModel();
-        DefaultConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(DefaultConfigurationModelConfigurationAccessor.class);
-        UserManagementAuthoritiesPopulator userManagementAuthoritiesPopulator = Mockito.mock(UserManagementAuthoritiesPopulator.class);
-        Mockito.when(configurationModelConfigurationAccessor.getConfigurationsByDescriptorKey(Mockito.any(DescriptorKey.class))).thenReturn(List.of(configurationModel));
-
-        LdapManager ldapManager = new LdapManager(
-            AUTHENTICATION_DESCRIPTOR_KEY,
-            configurationModelConfigurationAccessor,
-            userManagementAuthoritiesPopulator,
-            LDAP_USER_CONTEXT_MAPPER
-        );
-
-        FieldUtility updatedProperties = ldapManager.getCurrentConfiguration();
-        assertEquals(DEFAULT_ENABLED, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_ENABLED).flatMap(ConfigurationFieldModel::getFieldValue).orElse(null));
-        assertEquals(DEFAULT_SERVER, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_SERVER).flatMap(ConfigurationFieldModel::getFieldValue).orElse(null));
-        assertEquals(DEFAULT_MANAGER_DN, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_MANAGER_DN).flatMap(ConfigurationFieldModel::getFieldValue).orElse(null));
-        assertEquals(
-            DEFAULT_MANAGER_PASSWORD,
-            updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_MANAGER_PWD).flatMap(ConfigurationFieldModel::getFieldValue).orElse(null)
-        );
-        assertEquals(
-            DEFAULT_AUTHENTICATION_TYPE,
-            updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_AUTHENTICATION_TYPE).flatMap(ConfigurationFieldModel::getFieldValue).orElse(null)
-        );
-        assertEquals(DEFAULT_REFERRAL, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_REFERRAL).flatMap(ConfigurationFieldModel::getFieldValue).orElse(null));
-        assertEquals(
-            DEFAULT_USER_SEARCH_BASE,
-            updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_USER_SEARCH_BASE).flatMap(ConfigurationFieldModel::getFieldValue).orElse(null)
-        );
-        assertEquals(
-            DEFAULT_USER_SEARCH_FILTER,
-            updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_USER_SEARCH_FILTER).flatMap(ConfigurationFieldModel::getFieldValue).orElse(null)
-        );
-        assertEquals(
-            DEFAULT_USER_DN_PATTERNS,
-            updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_USER_DN_PATTERNS).flatMap(ConfigurationFieldModel::getFieldValue).orElse(null)
-        );
-        assertEquals(
-            DEFAULT_USER_ATTRIBUTES,
-            updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_USER_ATTRIBUTES).flatMap(ConfigurationFieldModel::getFieldValue).orElse(null)
-        );
-        assertEquals(
-            DEFAULT_GROUP_SEARCH_BASE,
-            updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_GROUP_SEARCH_BASE).flatMap(ConfigurationFieldModel::getFieldValue).orElse(null)
-        );
-        assertEquals(
-            DEFAULT_GROUP_SEARCH_FILTER,
-            updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_GROUP_SEARCH_FILTER).flatMap(ConfigurationFieldModel::getFieldValue).orElse(null)
-        );
-        assertEquals(
-            DEFAULT_GROUP_ROLE_ATTRIBUTE,
-            updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_GROUP_ROLE_ATTRIBUTE).flatMap(ConfigurationFieldModel::getFieldValue).orElse(null)
-        );
-    }
-
-    @Test
-    public void testIsEnabled() {
-        ConfigurationModel configurationModel = createConfigurationModel();
-        DefaultConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(DefaultConfigurationModelConfigurationAccessor.class);
-        UserManagementAuthoritiesPopulator userManagementAuthoritiesPopulator = Mockito.mock(UserManagementAuthoritiesPopulator.class);
-        Mockito.when(configurationModelConfigurationAccessor.getConfigurationsByDescriptorKey(Mockito.any(DescriptorKey.class))).thenReturn(List.of(configurationModel));
-        LdapManager ldapManager = new LdapManager(
-            AUTHENTICATION_DESCRIPTOR_KEY,
-            configurationModelConfigurationAccessor,
-            userManagementAuthoritiesPopulator,
-            LDAP_USER_CONTEXT_MAPPER
-        );
-        assertTrue(ldapManager.isLdapEnabled());
-        configurationModel.getField(AuthenticationDescriptor.KEY_LDAP_ENABLED).ifPresent(field -> field.setFieldValue("false"));
+    public void testCreateConfiguration() {
+        assertFalse(ldapManager.getCurrentConfiguration().isPresent());
         assertFalse(ldapManager.isLdapEnabled());
+
+        LDAPConfigModel ldapConfigModel = createLDAPConfigModel(true, "");
+        assertDoesNotThrow(() -> ldapConfigAccessor.createConfiguration(ldapConfigModel));
+        LDAPConfigModel expectedLDAPConfigModel = ldapManager.getCurrentConfiguration()
+            .orElseThrow(() -> new AssertionFailedError("Expected LDAPConfigModel did not exist"));
+
+        assertTrue(ldapManager.getCurrentConfiguration().isPresent());
+        assertTrue(ldapManager.isLdapEnabled());
+        assertNotEquals(DEFAULT_CONFIG_ID, expectedLDAPConfigModel.getId());
+        assertEquals(true, expectedLDAPConfigModel.getEnabled());
+        assertEquals(DEFAULT_SERVER, expectedLDAPConfigModel.getServerName());
+        assertEquals(DEFAULT_MANAGER_DN, expectedLDAPConfigModel.getManagerDn());
+        assertEquals(DEFAULT_MANAGER_PASSWORD, expectedLDAPConfigModel.getManagerPassword().orElse(""));
+        assertEquals("", expectedLDAPConfigModel.getAuthenticationType().orElse(""));
+        assertEquals(DEFAULT_REFERRAL, expectedLDAPConfigModel.getReferral().orElse(""));
+        assertEquals(DEFAULT_USER_SEARCH_BASE, expectedLDAPConfigModel.getUserSearchBase().orElse(""));
+        assertEquals(DEFAULT_USER_SEARCH_FILTER, expectedLDAPConfigModel.getUserSearchFilter().orElse(""));
+        assertEquals(DEFAULT_USER_DN_PATTERNS, expectedLDAPConfigModel.getUserDnPatterns().orElse(""));
+        assertEquals(DEFAULT_USER_ATTRIBUTES, expectedLDAPConfigModel.getUserAttributes().orElse(""));
+        assertEquals(DEFAULT_GROUP_SEARCH_BASE, expectedLDAPConfigModel.getGroupSearchBase().orElse(""));
+        assertEquals(DEFAULT_GROUP_SEARCH_FILTER, expectedLDAPConfigModel.getGroupSearchFilter().orElse(""));
+        assertEquals(DEFAULT_GROUP_ROLE_ATTRIBUTE, expectedLDAPConfigModel.getGroupRoleAttribute().orElse(""));
     }
 
     @Test
-    public void testAuthenticationTypeSimple() throws Exception {
-        final String authenticationType = "simple";
-        ConfigurationModel configurationModel = createConfigurationModel();
-        configurationModel.getField(AuthenticationDescriptor.KEY_LDAP_AUTHENTICATION_TYPE).get().setFieldValue(authenticationType);
-        DefaultConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(DefaultConfigurationModelConfigurationAccessor.class);
-        Mockito.when(configurationModelConfigurationAccessor.getConfigurationsByDescriptorKey(Mockito.any(DescriptorKey.class))).thenReturn(List.of(configurationModel));
-        UserManagementAuthoritiesPopulator userManagementAuthoritiesPopulator = Mockito.mock(UserManagementAuthoritiesPopulator.class);
-        LdapManager ldapManager = new LdapManager(
-            AUTHENTICATION_DESCRIPTOR_KEY,
-            configurationModelConfigurationAccessor,
-            userManagementAuthoritiesPopulator,
-            LDAP_USER_CONTEXT_MAPPER
-        );
-        ldapManager.getAuthenticationProvider();
-        FieldUtility updatedProperties = ldapManager.getCurrentConfiguration();
-        assertEquals(
-            authenticationType,
-            updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_AUTHENTICATION_TYPE).flatMap(ConfigurationFieldModel::getFieldValue).orElse(null)
-        );
+    public void testConfigurationExists() {
+        assertFalse(ldapManager.getCurrentConfiguration().isPresent());
+        LDAPConfigModel ldapConfigModel = createLDAPConfigModel(true, "");
+        assertDoesNotThrow(() -> ldapConfigAccessor.createConfiguration(ldapConfigModel));
+        Optional<LDAPConfigModel> expectedLDAPConfigModel = ldapManager.getCurrentConfiguration();
+        assertTrue(ldapManager.getCurrentConfiguration().isPresent());
+
+        AlertConfigurationException alertConfigurationException = assertThrows(AlertConfigurationException.class, () -> ldapConfigAccessor.createConfiguration(ldapConfigModel));
+        assertTrue(alertConfigurationException.getMessage().contains("An LDAP configuration already exists."));
+        assertEquals(expectedLDAPConfigModel, ldapManager.getCurrentConfiguration());
     }
 
     @Test
-    public void testAuthenticationTypeDigest() throws Exception {
-        final String authenticationType = "digest";
-        ConfigurationModel configurationModel = createConfigurationModel();
-        configurationModel.getField(AuthenticationDescriptor.KEY_LDAP_AUTHENTICATION_TYPE).get().setFieldValue(authenticationType);
-        DefaultConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(DefaultConfigurationModelConfigurationAccessor.class);
-        Mockito.when(configurationModelConfigurationAccessor.getConfigurationsByDescriptorKey(Mockito.any(DescriptorKey.class))).thenReturn(List.of(configurationModel));
-        UserManagementAuthoritiesPopulator userManagementAuthoritiesPopulator = Mockito.mock(UserManagementAuthoritiesPopulator.class);
-        LdapManager ldapManager = new LdapManager(
-            AUTHENTICATION_DESCRIPTOR_KEY,
-            configurationModelConfigurationAccessor,
-            userManagementAuthoritiesPopulator,
-            LDAP_USER_CONTEXT_MAPPER
-        );
-        ldapManager.getAuthenticationProvider();
-        FieldUtility updatedProperties = ldapManager.getCurrentConfiguration();
-        assertEquals(
-            authenticationType,
-            updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_AUTHENTICATION_TYPE).flatMap(ConfigurationFieldModel::getFieldValue).orElse(null)
-        );
+    public void testDeleteConfiguration() {
+        assertFalse(ldapManager.getCurrentConfiguration().isPresent());
+        LDAPConfigModel ldapConfigModel = createLDAPConfigModel(true, "");
+        assertDoesNotThrow(() -> ldapConfigAccessor.createConfiguration(ldapConfigModel));
+        assertTrue(ldapManager.getCurrentConfiguration().isPresent());
+        ldapConfigAccessor.deleteConfiguration();
+        assertFalse(ldapManager.getCurrentConfiguration().isPresent());
     }
 
     @Test
-    public void testAuthenticationProviderCreated() throws Exception {
-        ConfigurationModel configurationModel = createConfigurationModel();
-        DefaultConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(DefaultConfigurationModelConfigurationAccessor.class);
-        Mockito.when(configurationModelConfigurationAccessor.getConfigurationsByDescriptorKey(Mockito.any(DescriptorKey.class))).thenReturn(List.of(configurationModel));
-        UserManagementAuthoritiesPopulator userManagementAuthoritiesPopulator = Mockito.mock(UserManagementAuthoritiesPopulator.class);
-        LdapManager ldapManager = new LdapManager(
-            AUTHENTICATION_DESCRIPTOR_KEY,
-            configurationModelConfigurationAccessor,
-            userManagementAuthoritiesPopulator,
-            LDAP_USER_CONTEXT_MAPPER
-        );
-        assertNotNull(ldapManager.getAuthenticationProvider());
+    public void testGetAuthenticationProviderCreated() {
+        Optional<LdapAuthenticationProvider> ldapAuthenticationProvider = assertDoesNotThrow(() -> ldapManager.getAuthenticationProvider());
+        assertEquals(Optional.empty(), ldapAuthenticationProvider);
+        LDAPConfigModel ldapConfigModel = createLDAPConfigModel(true, "");
+        assertDoesNotThrow(() -> ldapConfigAccessor.createConfiguration(ldapConfigModel));
+        ldapAuthenticationProvider = assertDoesNotThrow(() -> ldapManager.getAuthenticationProvider());
+        assertTrue(ldapAuthenticationProvider.isPresent());
+    }
+
+    @Test
+    public void testAuthenticationTypeSimple() {
+        LDAPConfigModel ldapConfigModel = createLDAPConfigModel(true, DEFAULT_AUTHENTICATION_TYPE_SIMPLE);
+        assertDoesNotThrow(() -> ldapConfigAccessor.createConfiguration(ldapConfigModel));
+        LDAPConfigModel expectedLDAPConfigModel = ldapManager.getCurrentConfiguration()
+            .orElseThrow(() -> new AssertionFailedError("Expected LDAPConfigModel did not exist"));
+        assertDoesNotThrow(() -> ldapManager.getAuthenticationProvider());
+        assertEquals(DEFAULT_AUTHENTICATION_TYPE_SIMPLE, expectedLDAPConfigModel.getAuthenticationType().orElse(""));
+    }
+
+    @Test
+    public void testAuthenticationTypeDigest() {
+        LDAPConfigModel ldapConfigModel = createLDAPConfigModel(true, DEFAULT_AUTHENTICATION_TYPE_DIGEST);
+        assertDoesNotThrow(() -> ldapConfigAccessor.createConfiguration(ldapConfigModel));
+        LDAPConfigModel expectedLDAPConfigModel = ldapManager.getCurrentConfiguration()
+            .orElseThrow(() -> new AssertionFailedError("Expected LDAPConfigModel did not exist"));
+        assertDoesNotThrow(() -> ldapManager.getAuthenticationProvider());
+        assertEquals(DEFAULT_AUTHENTICATION_TYPE_DIGEST, expectedLDAPConfigModel.getAuthenticationType().orElse(""));
+    }
+
+    @Test
+    public void testCreateAuthProviderDisabled() throws AlertConfigurationException {
+        LDAPConfigModel ldapConfigModel = createLDAPConfigModel(false, DEFAULT_AUTHENTICATION_TYPE_DIGEST);
+        assertDoesNotThrow(() -> ldapConfigAccessor.createConfiguration(ldapConfigModel));
+        Optional<LdapAuthenticationProvider> expectedLDAPAuthenticationProvider = ldapManager.createAuthProvider(ldapConfigModel);
+        assertEquals(Optional.empty(), expectedLDAPAuthenticationProvider);
     }
 
     @Test
     public void testExceptionOnContext() {
-        final String managerDN = "";
-        final String managerPassword = "";
-
-        ConfigurationModel configurationModel = createConfigurationModel();
-        configurationModel.getField(AuthenticationDescriptor.KEY_LDAP_SERVER).get().setFieldValue(null);
-        configurationModel.getField(AuthenticationDescriptor.KEY_LDAP_MANAGER_DN).get().setFieldValue(managerDN);
-        configurationModel.getField(AuthenticationDescriptor.KEY_LDAP_MANAGER_PWD).get().setFieldValue(managerPassword);
-        DefaultConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(DefaultConfigurationModelConfigurationAccessor.class);
-        Mockito.when(configurationModelConfigurationAccessor.getConfigurationsByDescriptorKey(Mockito.any(DescriptorKey.class))).thenReturn(List.of(configurationModel));
-        UserManagementAuthoritiesPopulator userManagementAuthoritiesPopulator = Mockito.mock(UserManagementAuthoritiesPopulator.class);
-        LdapManager ldapManager = new LdapManager(
-            AUTHENTICATION_DESCRIPTOR_KEY,
-            configurationModelConfigurationAccessor,
-            userManagementAuthoritiesPopulator,
-            LDAP_USER_CONTEXT_MAPPER
-        );
-        try {
-            ldapManager.getAuthenticationProvider();
-            fail();
-        } catch (AlertConfigurationException ex) {
-            // exception occurred
-        }
+        LDAPConfigModel invalidConfigModel = new LDAPConfigModel("", "", "", true, "", "", "", false, "", "", "", "", "", "", "", "", "");
+        AlertConfigurationException alertConfigurationException = assertThrows(AlertConfigurationException.class, () -> ldapManager.createAuthProvider(invalidConfigModel));
+        assertTrue(alertConfigurationException.getMessage().contains("Error creating LDAP Context Source"));
     }
 
     @Test
-    public void testExceptionOnAuthenticator() {
-        final String userSearchBase = "";
-        final String userSearchFilter = "";
-        final String userDNPatterns = "";
-
-        ConfigurationModel configurationModel = createConfigurationModel();
-        configurationModel.getField(AuthenticationDescriptor.KEY_LDAP_USER_SEARCH_BASE).get().setFieldValue(userSearchBase);
-        configurationModel.getField(AuthenticationDescriptor.KEY_LDAP_USER_SEARCH_FILTER).get().setFieldValue(userSearchFilter);
-        configurationModel.getField(AuthenticationDescriptor.KEY_LDAP_USER_DN_PATTERNS).get().setFieldValue(userDNPatterns);
-        DefaultConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(DefaultConfigurationModelConfigurationAccessor.class);
-        Mockito.when(configurationModelConfigurationAccessor.getConfigurationsByDescriptorKey(Mockito.any(DescriptorKey.class))).thenReturn(List.of(configurationModel));
-        UserManagementAuthoritiesPopulator userManagementAuthoritiesPopulator = Mockito.mock(UserManagementAuthoritiesPopulator.class);
-        LdapManager ldapManager = new LdapManager(
-            AUTHENTICATION_DESCRIPTOR_KEY,
-            configurationModelConfigurationAccessor,
-            userManagementAuthoritiesPopulator,
-            LDAP_USER_CONTEXT_MAPPER
+    public void testCreateAuthenticatorException() {
+        LDAPConfigModel ldapConfigModel = new LDAPConfigModel(
+            DEFAULT_CONFIG_ID,
+            DEFAULT_DATE_STRING,
+            DEFAULT_DATE_STRING,
+            true,
+            DEFAULT_SERVER,
+            DEFAULT_MANAGER_DN,
+            DEFAULT_MANAGER_PASSWORD,
+            StringUtils.isNotBlank(DEFAULT_MANAGER_PASSWORD),
+            "",
+            DEFAULT_REFERRAL,
+            "",
+            "",
+            "",
+            DEFAULT_USER_ATTRIBUTES,
+            DEFAULT_GROUP_SEARCH_BASE,
+            DEFAULT_GROUP_SEARCH_FILTER,
+            DEFAULT_GROUP_ROLE_ATTRIBUTE
         );
-        try {
-            ldapManager.getAuthenticationProvider();
-            fail();
-        } catch (AlertConfigurationException ex) {
-            // exception occurred
-        }
+
+        AlertConfigurationException alertConfigurationException = assertThrows(AlertConfigurationException.class, () -> ldapManager.createAuthProvider(ldapConfigModel));
+        assertTrue(alertConfigurationException.getMessage().contains("Error creating LDAP authenticator"));
+    }
+
+    private LDAPConfigModel createLDAPConfigModel(Boolean enabled, String authenticationType) {
+        return new LDAPConfigModel(
+            DEFAULT_CONFIG_ID,
+            DEFAULT_DATE_STRING,
+            DEFAULT_DATE_STRING,
+            enabled,
+            DEFAULT_SERVER,
+            DEFAULT_MANAGER_DN,
+            DEFAULT_MANAGER_PASSWORD,
+            StringUtils.isNotBlank(DEFAULT_MANAGER_PASSWORD),
+            authenticationType,
+            DEFAULT_REFERRAL,
+            DEFAULT_USER_SEARCH_BASE,
+            DEFAULT_USER_SEARCH_FILTER,
+            DEFAULT_USER_DN_PATTERNS,
+            DEFAULT_USER_ATTRIBUTES,
+            DEFAULT_GROUP_SEARCH_BASE,
+            DEFAULT_GROUP_SEARCH_FILTER,
+            DEFAULT_GROUP_ROLE_ATTRIBUTE
+        );
     }
 
 }
