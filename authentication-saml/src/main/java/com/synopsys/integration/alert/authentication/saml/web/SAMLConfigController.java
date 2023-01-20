@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping(AlertRestConstants.SAML_PATH)
 public class SAMLConfigController implements StaticUniqueConfigResourceController<SAMLConfigModel>, ValidateController<SAMLConfigModel> {
     private static final String METADATA_FILE_UPLOAD_PATH = "/" + AlertRestConstants.UPLOAD + "/metadata";
+    private static final String ENCRYPTION_CERT_UPLOAD_PATH = "/" + AlertRestConstants.UPLOAD + "/encryption-cert";
 
     private final SAMLCrudActions configActions;
     private final SAMLValidationAction validationAction;
@@ -65,5 +66,16 @@ public class SAMLConfigController implements StaticUniqueConfigResourceControlle
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void uploadMetadataFile(@RequestParam("file") MultipartFile file) {
         ResponseFactory.createResponseFromAction(fileUploadActions.metadataFileUpload(file.getResource()));
+    }
+
+    @GetMapping(ENCRYPTION_CERT_UPLOAD_PATH)
+    public boolean checkEncryptionCertFileExists() {
+        return ResponseFactory.createContentResponseFromAction(fileUploadActions.encryptionCertFileExists());
+    }
+
+    @PostMapping(ENCRYPTION_CERT_UPLOAD_PATH)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void uploadEncryptionCertFile(@RequestParam("file") MultipartFile file) {
+        ResponseFactory.createResponseFromAction(fileUploadActions.encryptionCertFileUpload(file.getResource()));
     }
 }

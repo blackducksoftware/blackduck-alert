@@ -17,10 +17,9 @@ import org.xml.sax.SAXParseException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.util.function.Function;
 
 @Component
@@ -41,11 +40,11 @@ public class SAMLFileUploadValidator {
         );
     }
 
-    public ValidationResponseModel validateEncryptionCert(Resource resource) {
+    public ValidationResponseModel validateEncryptionCertFile(Resource resource) {
         return validateFile(
             AuthenticationDescriptor.SAML_ENCRYPTION_CERT_FILE,
             resource,
-            this::validateXMLFile
+            this::validateCertFile
         );
     }
 
@@ -77,6 +76,19 @@ public class SAMLFileUploadValidator {
             builder.parse(new InputSource(fileInputStream));
         } catch (ParserConfigurationException | SAXException | IOException ex) {
             return ValidationResult.errors(String.format("XML file error: %s", ex.getMessage()));
+        }
+        return ValidationResult.success();
+    }
+
+
+    private ValidationResult validateCertFile(File file) {
+        try (InputStream fileInputStream = new FileInputStream(file)) {
+            CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+            try (ByteArrayInputStream certInputStream = new ByteArrayInputStream(fileInputStream.readAllBytes())) {
+                certFactory.generateCertificate(certInputStream);
+            }
+        } catch (IOException | CertificateException ex) {
+            return ValidationResult.errors(String.format("Certificate file error: %s", ex.getMessage()));
         }
         return ValidationResult.success();
     }

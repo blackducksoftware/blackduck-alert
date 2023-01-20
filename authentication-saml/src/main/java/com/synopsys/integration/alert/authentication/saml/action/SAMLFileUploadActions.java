@@ -35,9 +35,15 @@ public class SAMLFileUploadActions {
         );
     }
 
-//    public ActionResponse<ExistenceModel> encryptionCertificateExists() {
-//        return fileUploadHelper.fileExists(
-//            () -> fileFromConfigFieldExists(samlConfigModel -> samlConfigModel.getEncryptionCertificate().orElse(""))
-//        );
-//    }
+    public ActionResponse<Boolean> encryptionCertFileExists() {
+        return fileUploadHelper.fileExists(AuthenticationDescriptor.SAML_ENCRYPTION_CERT_FILE);
+    }
+
+    public ActionResponse<Void> encryptionCertFileUpload(Resource resource) {
+        return fileUploadHelper.fileUpload(
+            AuthenticationDescriptor.SAML_ENCRYPTION_CERT_FILE,
+            resource,
+            () -> fileUploadValidator.validateEncryptionCertFile(resource)
+        );
+    }
 }
