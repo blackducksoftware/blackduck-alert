@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="psantos" id="register-failed-audit-purge-frequency">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM alert.descriptor_fields
+                WHERE descriptor_id = GET_DESCRIPTOR_ID('component_scheduling')
+                  AND field_id = GET_FIELD_ID('scheduling.purge.data.audit.failed.frequency')
+            </sqlCheck>
+        </preConditions>
+        <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY">scheduling.purge.data.audit.failed.frequency</column>
+            <column name="SENSITIVE">false</column>
+        </insert>
+        <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_scheduling')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('scheduling.purge.data.audit.failed.frequency')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('scheduling.purge.data.audit.failed.frequency')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+        </insert>
+    </changeSet>
+    <changeSet author="psantos" id="register-failed-audit-purge-next-run">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM alert.descriptor_fields
+                WHERE descriptor_id = GET_DESCRIPTOR_ID('component_scheduling')
+                  AND field_id = GET_FIELD_ID('scheduling.purge.data.audit.failed.next.run')
+            </sqlCheck>
+        </preConditions>
+        <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY">scheduling.purge.data.audit.failed.next.run</column>
+            <column name="SENSITIVE">false</column>
+        </insert>
+        <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('component_scheduling')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('scheduling.purge.data.audit.failed.next.run')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('scheduling.purge.data.audit.failed.next.run')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+        </insert>
+    </changeSet>
+    <changeSet author="psantos" id="insert-default-failed-audit-purge">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM alert.field_values
+                WHERE field_id = GET_FIELD_ID('scheduling.purge.data.audit.failed.frequency')
+                  AND config_id = (SELECT id
+                                   FROM alert.descriptor_configs
+                                   WHERE context_id = GET_CONTEXT_ID('GLOBAL')
+                                     AND descriptor_id IN (SELECT id
+                                                           FROM alert.registered_descriptors
+                                                           WHERE name = 'component_scheduling'))
+            </sqlCheck>
+        </preConditions>
+         <sql stripComments="true">
+            INSERT INTO alert.field_values (config_id, field_id, field_value)
+            SELECT config.id, GET_FIELD_ID('scheduling.purge.data.audit.failed.frequency'), '10'
+            FROM (SELECT id
+                  FROM alert.descriptor_configs
+                  WHERE context_id = GET_CONTEXT_ID('GLOBAL')
+                    AND descriptor_id IN (SELECT id
+                                          FROM alert.registered_descriptors
+                                          WHERE name = 'component_scheduling')) config;
+        </sql>
+    </changeSet>
+</databaseChangeLog>

@@ -40,6 +40,10 @@ import com.synopsys.integration.alert.processor.api.JobNotificationProcessor;
 import com.synopsys.integration.alert.processor.api.NotificationMappingProcessor;
 import com.synopsys.integration.alert.processor.api.distribute.ProcessedNotificationDetails;
 
+/**
+ * @deprecated Replaced by AuditEntryActions. To be removed in 8.0.0.
+ */
+@Deprecated(forRemoval = true)
 @Component
 @Transactional
 public class AuditEntryActionsLegacy {

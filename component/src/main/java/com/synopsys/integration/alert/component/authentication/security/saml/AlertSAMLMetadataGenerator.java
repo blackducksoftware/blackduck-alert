@@ -13,7 +13,7 @@ import org.springframework.security.saml.metadata.MetadataGenerator;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
+import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
 
 public class AlertSAMLMetadataGenerator extends MetadataGenerator {
     private final Logger logger = LoggerFactory.getLogger(AlertSAMLMetadataGenerator.class);

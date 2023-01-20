@@ -72,9 +72,13 @@ import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDes
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.util.ResourceUtil;
 
+/**
+ * @deprecated Replaced by AuditEntryController. To be removed in 8.0.0.
+ */
+@Deprecated(forRemoval = true)
 @Transactional
 @AlertIntegrationTest
-class AuditEntryHandlerTestIT {
+class AuditEntryHandlerLegacyTestIT {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     @Autowired
     private AuditDescriptorKey auditDescriptorKey;
