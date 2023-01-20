@@ -80,7 +80,6 @@ public class SAMLFileUploadValidator {
         return ValidationResult.success();
     }
 
-
     private ValidationResult validateCertFile(File file) {
         try (InputStream fileInputStream = new FileInputStream(file)) {
             CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
