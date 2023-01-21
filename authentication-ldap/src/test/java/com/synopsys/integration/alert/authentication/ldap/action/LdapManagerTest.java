@@ -26,6 +26,7 @@ import com.synopsys.integration.alert.authentication.ldap.database.configuration
 import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigModel;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
@@ -77,6 +78,7 @@ public class LdapManagerTest {
             .orElseThrow(() -> new AssertionFailedError("Expected LDAPConfigModel did not exist"));
 
         assertTrue(ldapManager.getCurrentConfiguration().isPresent());
+        assertEquals(AlertRestConstants.DEFAULT_CONFIGURATION_NAME, expectedLDAPConfigModel.getName());
         assertTrue(ldapManager.isLdapEnabled());
         assertNotEquals(DEFAULT_CONFIG_ID, expectedLDAPConfigModel.getId());
         assertEquals(true, expectedLDAPConfigModel.getEnabled());

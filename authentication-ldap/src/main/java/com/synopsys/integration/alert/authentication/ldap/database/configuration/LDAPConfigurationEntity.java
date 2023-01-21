@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.database.BaseEntity;
 
 @Entity
@@ -75,7 +76,7 @@ public class LDAPConfigurationEntity extends BaseEntity {
         String groupRoleAttribute
     ) {
         this.configurationId = configurationId;
-        this.name = name;
+        this.name = AlertRestConstants.DEFAULT_CONFIGURATION_NAME;
         this.createdAt = createdAt;
         this.lastUpdated = lastUpdated;
         this.enabled = enabled;

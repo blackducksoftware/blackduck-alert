@@ -1,9 +1,13 @@
 package com.synopsys.integration.alert.authentication.ldap.model;
 
 public class LDAPConfigTestModel {
-    private final LDAPConfigModel ldapConfigModel;
-    private final String testLDAPUsername;
-    private final String testLDAPPassword;
+    private LDAPConfigModel ldapConfigModel;
+    private String testLDAPUsername;
+    private String testLDAPPassword;
+
+    public LDAPConfigTestModel() {
+        // For serialization
+    }
 
     public LDAPConfigTestModel(LDAPConfigModel ldapConfigModel, String testLDAPUsername, String testLDAPPassword) {
         this.ldapConfigModel = ldapConfigModel;
