@@ -33,19 +33,19 @@ import com.synopsys.integration.alert.test.common.MockAlertProperties;
 public class LdapManagerTest {
     private static final String DEFAULT_CONFIG_ID = UUID.randomUUID().toString();
     private static final String DEFAULT_DATE_STRING = DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
-    private static final String DEFAULT_SERVER = "aserver";
-    private static final String DEFAULT_MANAGER_DN = "managerDN";
-    private static final String DEFAULT_MANAGER_PASSWORD = "managerPassword";
     private static final String DEFAULT_AUTHENTICATION_TYPE_SIMPLE = "simple";
     private static final String DEFAULT_AUTHENTICATION_TYPE_DIGEST = "digest";
-    private static final String DEFAULT_REFERRAL = "referral";
-    private static final String DEFAULT_USER_SEARCH_BASE = "searchbase";
-    private static final String DEFAULT_USER_SEARCH_FILTER = "searchFilter";
-    private static final String DEFAULT_USER_DN_PATTERNS = "pattern1,pattern2";
-    private static final String DEFAULT_USER_ATTRIBUTES = "attribute1,attribute2";
+    private static final String DEFAULT_GROUP_ROLE_ATTRIBUTE = "groupRoleAttribute";
     private static final String DEFAULT_GROUP_SEARCH_BASE = "groupSearchBase";
     private static final String DEFAULT_GROUP_SEARCH_FILTER = "groupSearchFilter";
-    private static final String DEFAULT_GROUP_ROLE_ATTRIBUTE = "roleAttribute";
+    private static final String DEFAULT_MANAGER_DN = "managerDN";
+    private static final String DEFAULT_MANAGER_PASSWORD = "managerPassword";
+    private static final String DEFAULT_REFERRAL = "referral";
+    private static final String DEFAULT_SERVER = "aserver";
+    private static final String DEFAULT_USER_ATTRIBUTES = "userAttribute1,userAttribute2";
+    private static final String DEFAULT_USER_DN_PATTERNS = "userDNPattern1,userDNPattern2";
+    private static final String DEFAULT_USER_SEARCH_BASE = "userSearchbase";
+    private static final String DEFAULT_USER_SEARCH_FILTER = "userSearchFilter";
 
     private static final InetOrgPersonContextMapper LDAP_USER_CONTEXT_MAPPER = new InetOrgPersonContextMapper();
 
