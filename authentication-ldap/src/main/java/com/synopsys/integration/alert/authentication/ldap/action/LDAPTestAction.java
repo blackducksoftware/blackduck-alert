@@ -1,8 +1,11 @@
 package com.synopsys.integration.alert.authentication.ldap.action;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +15,7 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurat
 import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigTestModel;
 import com.synopsys.integration.alert.authentication.ldap.validator.LDAPConfigurationValidator;
 import com.synopsys.integration.alert.common.action.ActionResponse;
+import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.message.model.ConfigurationTestResult;
 import com.synopsys.integration.alert.common.rest.api.ConfigurationTestHelper;
@@ -39,16 +43,29 @@ public class LDAPTestAction {
     }
 
     public ActionResponse<ValidationResponseModel> testAuthentication(LDAPConfigTestModel ldapConfigTestModel) {
-        testConfigModelContent(ldapConfigTestModel);
-        return null;
+        Supplier<ValidationActionResponse> validationSupplier = () -> configurationValidationHelper.validate(() -> ldapConfigurationValidator.validate(ldapConfigTestModel.getLdapConfigModel()));
+        return configurationTestHelper.test(validationSupplier, () -> testConfigModelContent(ldapConfigTestModel));
     }
 
     protected ConfigurationTestResult testConfigModelContent(LDAPConfigTestModel ldapConfigTestModel) {
+        String username = ldapConfigTestModel.getTestLDAPUsername();
+        String password = ldapConfigTestModel.getTestLDAPPassword();
+        Authentication pendingAuthentication = new UsernamePasswordAuthenticationToken(username, password);
+
         try {
-            Optional<LdapAuthenticationProvider> ldapProvider = ldapManager.createAuthProvider(ldapConfigTestModel.getLdapConfigModel());
+            Optional<LdapAuthenticationProvider> ldapAuthenticationProvider = ldapManager.createAuthProvider(ldapConfigTestModel.getLdapConfigModel());
+            if (ldapAuthenticationProvider.isEmpty()) {
+                return ConfigurationTestResult.failure("LDAP Test Configuration failed. Please check your configuration.");
+            } else {
+                Authentication authentication = ldapAuthenticationProvider.get().authenticate(pendingAuthentication);
+                if (!authentication.isAuthenticated()) {
+                    return ConfigurationTestResult.failure(String.format("LDAP authentication failed for test user %s.", username));
+                }
+                authentication.setAuthenticated(false);
+            }
         } catch (AlertConfigurationException ex) {
-            //
+            return ConfigurationTestResult.failure("LDAP Test Configuration failed." + ex.getMessage());
         }
-        return null;
+        return ConfigurationTestResult.success("LDAP Test Configuration successful.");
     }
 }
