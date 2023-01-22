@@ -41,7 +41,11 @@ public class LdapManager {
     }
 
     public boolean isLdapEnabled() {
-        return getCurrentConfiguration().isPresent() ? getCurrentConfiguration().get().getEnabled() : false;
+        if (getCurrentConfiguration().isEmpty()) {
+            return false;
+        }
+
+        return getCurrentConfiguration().get().getEnabled().orElse(false);
     }
 
     public Optional<LDAPConfigModel> getCurrentConfiguration() {
@@ -59,9 +63,8 @@ public class LdapManager {
 
     public Optional<LdapAuthenticationProvider> createAuthProvider(LDAPConfigModel ldapConfigModel) throws AlertConfigurationException {
         try {
-            System.out.println(ldapConfigModel.getEnabled());
-            Boolean ldapEnabled = ldapConfigModel.getEnabled();
-            if (null != ldapEnabled && !ldapEnabled) {
+            Boolean ldapEnabled = ldapConfigModel.getEnabled().orElse(false);
+            if (!ldapEnabled) {
                 return Optional.empty();
             }
             LdapContextSource ldapContextSource = new LdapContextSource();

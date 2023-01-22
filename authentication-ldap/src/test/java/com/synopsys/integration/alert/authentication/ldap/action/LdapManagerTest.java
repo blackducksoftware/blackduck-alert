@@ -81,7 +81,7 @@ public class LdapManagerTest {
         assertEquals(AlertRestConstants.DEFAULT_CONFIGURATION_NAME, expectedLDAPConfigModel.getName());
         assertTrue(ldapManager.isLdapEnabled());
         assertNotEquals(DEFAULT_CONFIG_ID, expectedLDAPConfigModel.getId());
-        assertEquals(true, expectedLDAPConfigModel.getEnabled());
+        assertEquals(true, expectedLDAPConfigModel.getEnabled().orElse(false));
         assertEquals(DEFAULT_SERVER, expectedLDAPConfigModel.getServerName());
         assertEquals(DEFAULT_MANAGER_DN, expectedLDAPConfigModel.getManagerDn());
         assertEquals(DEFAULT_MANAGER_PASSWORD, expectedLDAPConfigModel.getManagerPassword().orElse(""));

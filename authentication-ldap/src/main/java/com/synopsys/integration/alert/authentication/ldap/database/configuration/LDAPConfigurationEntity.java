@@ -57,7 +57,6 @@ public class LDAPConfigurationEntity extends BaseEntity {
 
     public LDAPConfigurationEntity(
         UUID configurationId,
-        String name,
         OffsetDateTime createdAt,
         OffsetDateTime lastUpdated,
         Boolean enabled,
