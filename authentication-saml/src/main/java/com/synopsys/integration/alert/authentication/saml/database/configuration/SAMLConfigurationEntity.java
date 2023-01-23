@@ -1,5 +1,6 @@
 package com.synopsys.integration.alert.authentication.saml.database.configuration;
 
+import com.synopsys.integration.alert.authentication.saml.model.SAMLMetadataMode;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.database.BaseEntity;
 
@@ -41,6 +42,8 @@ public class SAMLConfigurationEntity extends BaseEntity {
     private String signingCertFilePath;
     @Column(name = "verification_cert_file_path")
     private String verificationCertFilePath;
+    @Column(name = "metadata_mode")
+    private SAMLMetadataMode metadataMode;
 
     public SAMLConfigurationEntity() {
     }
@@ -59,7 +62,8 @@ public class SAMLConfigurationEntity extends BaseEntity {
         String roleAttributeMapping,
         String encryptionCertFilePath,
         String signingCertFilePath,
-        String verificationCertFilePath
+        String verificationCertFilePath,
+        SAMLMetadataMode metadataMode
     ) {
         this.configurationId = configurationId;
         this.name = AlertRestConstants.DEFAULT_CONFIGURATION_NAME;
@@ -76,19 +80,14 @@ public class SAMLConfigurationEntity extends BaseEntity {
         this.encryptionCertFilePath = encryptionCertFilePath;
         this.signingCertFilePath = signingCertFilePath;
         this.verificationCertFilePath = verificationCertFilePath;
+        this.metadataMode = metadataMode;
     }
 
-    public UUID getConfigurationId() {
-        return configurationId;
-    }
+    public UUID getConfigurationId() { return configurationId; }
 
-    public String getName() {
-        return name;
-    }
+    public String getName() { return name; }
 
-    public OffsetDateTime getCreatedAt() {
-        return createdAt;
-    }
+    public OffsetDateTime getCreatedAt() { return createdAt; }
 
     public OffsetDateTime getLastUpdated() {
         return lastUpdated;
@@ -130,11 +129,9 @@ public class SAMLConfigurationEntity extends BaseEntity {
         return encryptionCertFilePath;
     }
 
-    public String getSigningCertFilePath() {
-        return signingCertFilePath;
-    }
+    public String getSigningCertFilePath() { return signingCertFilePath; }
 
-    public String getVerificationCertFilePath() {
-        return verificationCertFilePath;
-    }
+    public String getVerificationCertFilePath() { return verificationCertFilePath; }
+
+    public SAMLMetadataMode getMetadataMode() { return metadataMode; }
 }
