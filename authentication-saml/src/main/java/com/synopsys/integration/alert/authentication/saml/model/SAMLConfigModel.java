@@ -13,7 +13,7 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
     private String metadataFilePath;
     private String entityId;
     private String entityBaseUrl;
-    private Boolean requireAssertionsSigned;
+    private Boolean wantAssertionsSigned;
     private String roleAttributeMapping;
 
     public SAMLConfigModel() {
@@ -35,7 +35,7 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
         String metadataFilePath,
         String entityId,
         String entityBaseUrl,
-        Boolean requireAssertionsSigned,
+        Boolean wantAssertionsSigned,
         String roleAttributeMapping
     ) {
         this(id);
@@ -45,7 +45,7 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
         this.metadataFilePath = metadataFilePath;
         this.entityId = entityId;
         this.entityBaseUrl = entityBaseUrl;
-        this.requireAssertionsSigned = requireAssertionsSigned;
+        this.wantAssertionsSigned = wantAssertionsSigned;
         this.roleAttributeMapping = roleAttributeMapping;
 
         setCreatedAt(createdAt);
@@ -64,7 +64,7 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
             metadataFilePath,
             entityId,
             entityBaseUrl,
-            requireAssertionsSigned,
+            wantAssertionsSigned,
             roleAttributeMapping
         );
     }
@@ -92,8 +92,8 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
         return entityBaseUrl;
     }
 
-    public Optional<Boolean> getRequireAssertionsSigned() {
-        return Optional.ofNullable(requireAssertionsSigned);
+    public Optional<Boolean> getWantAssertionsSigned() {
+        return Optional.ofNullable(wantAssertionsSigned);
     }
 
     public Optional<String> getRoleAttributeMapping() {

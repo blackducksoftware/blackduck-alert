@@ -34,6 +34,11 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
 import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
 
+/**
+ * Replaced by SAMLFileUploadActions
+ * @deprecated
+ */
+@Deprecated(since = "6.13.0", forRemoval = true)
 @Component
 public class SamlMetaDataFileUpload extends AbstractUploadAction {
     private final Logger logger = LoggerFactory.getLogger(SamlMetaDataFileUpload.class);
