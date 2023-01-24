@@ -83,11 +83,17 @@ public class SAMLConfigurationEntity extends BaseEntity {
         this.metadataMode = metadataMode;
     }
 
-    public UUID getConfigurationId() { return configurationId; }
+    public UUID getConfigurationId() {
+        return configurationId;
+    }
 
-    public String getName() { return name; }
+    public String getName() {
+        return name;
+    }
 
-    public OffsetDateTime getCreatedAt() { return createdAt; }
+    public OffsetDateTime getCreatedAt() {
+        return createdAt;
+    }
 
     public OffsetDateTime getLastUpdated() {
         return lastUpdated;
@@ -129,9 +135,15 @@ public class SAMLConfigurationEntity extends BaseEntity {
         return encryptionCertFilePath;
     }
 
-    public String getSigningCertFilePath() { return signingCertFilePath; }
+    public String getSigningCertFilePath() {
+        return signingCertFilePath;
+    }
 
-    public String getVerificationCertFilePath() { return verificationCertFilePath; }
+    public String getVerificationCertFilePath() {
+        return verificationCertFilePath;
+    }
 
-    public SAMLMetadataMode getMetadataMode() { return metadataMode; }
+    public SAMLMetadataMode getMetadataMode() {
+        return metadataMode;
+    }
 }
