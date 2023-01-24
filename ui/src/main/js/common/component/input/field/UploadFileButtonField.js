@@ -23,7 +23,9 @@ const UploadFileButtonField = ({
     required,
     showDescriptionPlaceHolder,
     statusMessage,
-    permissions
+    permissions,
+    onChange,
+    customEndpoint
 }) => {
     const [fieldError, setFieldError] = useState(errorValue);
     const [success, setSuccess] = useState(false);
@@ -33,7 +35,7 @@ const UploadFileButtonField = ({
     const fileInputField = useRef(null);
 
     const checkFileExists = () => {
-        const request = createReadRequest(`/alert${endpoint}/${fieldKey}/exists`, csrfToken);
+        const request = createReadRequest((customEndpoint || `/alert${endpoint}/${fieldKey}/exists`), csrfToken);
         request.then((response) => {
             if (response.ok) {
                 response.json().then((data) => {
@@ -65,7 +67,7 @@ const UploadFileButtonField = ({
             setProgress(false);
             setFieldError('Please select a file to upload.');
         } else {
-            const request = createFileUploadRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, 'file', fileData);
+            const request = createFileUploadRequest((customEndpoint || `/alert${endpoint}/${fieldKey}`), csrfToken, 'file', fileData);
             request.then((response) => {
                 setProgress(false);
                 if (response.ok) {
@@ -85,7 +87,7 @@ const UploadFileButtonField = ({
         setFieldError(errorValue);
         setProgress(true);
         setSuccess(false);
-        const request = createDeleteRequest(`/alert${endpoint}/${fieldKey}`, csrfToken);
+        const request = createDeleteRequest((customEndpoint || `/alert${endpoint}/${fieldKey}`), csrfToken);
         request.then((response) => {
             setProgress(false);
             if (response.ok) {
@@ -124,6 +126,7 @@ const UploadFileButtonField = ({
                             disabled={readOnly || !permissions.read || !permissions.write}
                             accept={acceptedContentTypes}
                             capture={capture}
+                            onChange={onChange}
                         />
                         <div>
                             <div className="d-inline-flex">

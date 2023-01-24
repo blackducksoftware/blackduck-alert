@@ -1,6 +1,7 @@
 import HeaderUtilities from 'common/util/HeaderUtilities';
 
 export const ALERT_API_URL = '/alert/api';
+export const AUTHENTICATION_SAML_API_URL = `${ALERT_API_URL}/authentication/saml`
 export const AZURE_BOARDS_API_URL = `${ALERT_API_URL}/configuration/azure-boards`;
 export const CONFIG_API_URL = `${ALERT_API_URL}/configuration`;
 export const JOB_API_URL = `${ALERT_API_URL}/configuration/job`;
@@ -89,7 +90,7 @@ export function createNewConfigurationRequest(apiUrl, csrfToken, fieldModel) {
 export function createUpdateRequest(apiUrl, csrfToken, configurationId, fieldModel) {
     const headersUtil = new HeaderUtilities();
     headersUtil.addDefaultHeaders(csrfToken);
-    const url = `${apiUrl}/${configurationId}`;
+    const url = configurationId ? `${apiUrl}/${configurationId}` : apiUrl;
     return fetch(url, {
         credentials: 'same-origin',
         method: 'PUT',
