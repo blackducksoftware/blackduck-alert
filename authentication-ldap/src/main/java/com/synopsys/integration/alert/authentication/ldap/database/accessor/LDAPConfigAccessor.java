@@ -4,6 +4,7 @@ import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -94,7 +95,7 @@ public class LDAPConfigAccessor implements UniqueConfigurationAccessor<LDAPConfi
             ldapConfigurationEntity.getServerName(),
             ldapConfigurationEntity.getManagerDn(),
             ldapConfigurationEntity.getManagerPassword(),
-            ldapConfigurationEntity.getManagerPasswordSet(),
+            StringUtils.isNotBlank(ldapConfigurationEntity.getManagerPassword()),
             ldapConfigurationEntity.getAuthenticationType(),
             ldapConfigurationEntity.getReferral(),
             ldapConfigurationEntity.getUserSearchBase(),
@@ -110,14 +111,12 @@ public class LDAPConfigAccessor implements UniqueConfigurationAccessor<LDAPConfi
     private LDAPConfigurationEntity toEntity(UUID configurationId, LDAPConfigModel ldapConfigModel, OffsetDateTime createdTime, OffsetDateTime lastUpdated) {
         return new LDAPConfigurationEntity(
             configurationId,
-            ldapConfigModel.getName(),
             createdTime,
             lastUpdated,
-            ldapConfigModel.getEnabled(),
+            ldapConfigModel.getEnabled().orElse(Boolean.FALSE),
             ldapConfigModel.getServerName(),
             ldapConfigModel.getManagerDn(),
             ldapConfigModel.getManagerPassword().orElse(""),
-            ldapConfigModel.getIsManagerPasswordSet().orElse(Boolean.FALSE),
             ldapConfigModel.getAuthenticationType().orElse(""),
             ldapConfigModel.getReferral().orElse(""),
             ldapConfigModel.getUserSearchBase().orElse(""),

@@ -25,8 +25,11 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
     }
 
     // Required
-    public SAMLConfigModel(String id) {
+    public SAMLConfigModel(String id, String entityId, String entityBaseUrl) {
         super(id, AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
+
+        this.entityId = entityId;
+        this.entityBaseUrl = entityBaseUrl;
     }
 
     public SAMLConfigModel(
@@ -46,13 +49,11 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
         String verificationCertFilePath,
         SAMLMetadataMode metadataMode
     ) {
-        this(id);
+        this(id, entityId, entityBaseUrl);
         this.enabled = enabled;
         this.forceAuth = forceAuth;
         this.metadataUrl = metadataUrl;
         this.metadataFilePath = metadataFilePath;
-        this.entityId = entityId;
-        this.entityBaseUrl = entityBaseUrl;
         this.wantAssertionsSigned = wantAssertionsSigned;
         this.roleAttributeMapping = roleAttributeMapping;
         this.encryptionCertFilePath = encryptionCertFilePath;
@@ -102,7 +103,9 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
         return Optional.ofNullable(metadataFilePath);
     }
 
-    public String getEntityId() { return entityId; }
+    public String getEntityId() {
+        return entityId;
+    }
 
     public String getEntityBaseUrl() {
         return entityBaseUrl;
@@ -116,7 +119,9 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
         return Optional.ofNullable(roleAttributeMapping);
     }
 
-    public Optional<String> getEncryptionCertFilePath() { return Optional.ofNullable(encryptionCertFilePath); }
+    public Optional<String> getEncryptionCertFilePath() {
+        return Optional.ofNullable(encryptionCertFilePath);
+    }
 
     public Optional<String> getSigningCertFilePath() {
         return Optional.ofNullable(signingCertFilePath);
@@ -126,7 +131,9 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
         return Optional.ofNullable(verificationCertFilePath);
     }
 
-    public Optional<SAMLMetadataMode> getMetadataMode() { return Optional.ofNullable(metadataMode); }
+    public Optional<SAMLMetadataMode> getMetadataMode() {
+        return Optional.ofNullable(metadataMode);
+    }
 
     // Setters
     public void setEnabled(Boolean enabled) {
@@ -134,7 +141,8 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
     }
 
     public void setForceAuth(Boolean forceAuth) {
-        this.forceAuth = forceAuth; }
+        this.forceAuth = forceAuth;
+    }
 
     public void setMetadataUrl(String metadataUrl) {
         this.metadataUrl = metadataUrl;

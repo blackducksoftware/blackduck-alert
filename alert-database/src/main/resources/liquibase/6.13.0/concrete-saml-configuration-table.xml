@@ -44,10 +44,10 @@
                 <constraints nullable="true"/>
             </column>
             <column name="enabled" type="BOOLEAN" defaultValueBoolean="false">
-                <constraints nullable="true"/>
+                <constraints nullable="false"/>
             </column>
             <column name="force_auth" type="BOOLEAN" defaultValueBoolean="false">
-                <constraints nullable="true"/>
+                <constraints nullable="false"/>
             </column>
             <column name="metadata_url" type="VARCHAR">
                 <constraints nullable="true"/>
@@ -62,7 +62,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="want_assertions_signed" type="BOOLEAN" defaultValueBoolean="false">
-                <constraints nullable="true"/>
+                <constraints nullable="false"/>
             </column>
             <column name="role_attribute_mapping" type="VARCHAR">
                 <constraints nullable="true"/>
