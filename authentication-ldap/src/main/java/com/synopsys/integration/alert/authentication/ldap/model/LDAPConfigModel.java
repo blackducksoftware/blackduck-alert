@@ -95,8 +95,8 @@ public class LDAPConfigModel extends ConfigWithMetadata implements Obfuscated<LD
         );
     }
 
-    public Boolean getEnabled() {
-        return enabled;
+    public Optional<Boolean> getEnabled() {
+        return Optional.ofNullable(enabled);
     }
 
     public String getServerName() {
