@@ -1,11 +1,4 @@
-/*
- * component
- *
- * Copyright (c) 2022 Synopsys, Inc.
- *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
- */
-package com.synopsys.integration.alert.component.authentication.security;
+package com.synopsys.integration.alert.api.authentication.security;
 
 import java.util.LinkedHashSet;
 import java.util.Optional;
@@ -21,6 +14,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
+import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.enumeration.DefaultUserRole;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
@@ -28,8 +23,6 @@ import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
-import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
-import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
 
 @Component
 public class UserManagementAuthoritiesPopulator {

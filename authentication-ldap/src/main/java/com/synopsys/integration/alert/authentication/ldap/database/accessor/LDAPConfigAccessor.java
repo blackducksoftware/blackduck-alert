@@ -111,10 +111,9 @@ public class LDAPConfigAccessor implements UniqueConfigurationAccessor<LDAPConfi
     private LDAPConfigurationEntity toEntity(UUID configurationId, LDAPConfigModel ldapConfigModel, OffsetDateTime createdTime, OffsetDateTime lastUpdated) {
         return new LDAPConfigurationEntity(
             configurationId,
-            ldapConfigModel.getName(),
             createdTime,
             lastUpdated,
-            ldapConfigModel.getEnabled(),
+            ldapConfigModel.getEnabled().orElse(Boolean.FALSE),
             ldapConfigModel.getServerName(),
             ldapConfigModel.getManagerDn(),
             ldapConfigModel.getManagerPassword().orElse(""),
