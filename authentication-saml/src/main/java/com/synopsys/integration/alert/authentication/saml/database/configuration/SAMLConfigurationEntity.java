@@ -31,8 +31,8 @@ public class SAMLConfigurationEntity extends BaseEntity {
     private String entityId;
     @Column(name = "entity_base_url")
     private String entityBaseUrl;
-    @Column(name = "require_assertions_signed")
-    private Boolean requireAssertionsSigned;
+    @Column(name = "want_assertions_signed")
+    private Boolean wantAssertionsSigned;
     @Column(name = "role_attribute_mapping")
     private String roleAttributeMapping;
 
@@ -49,7 +49,7 @@ public class SAMLConfigurationEntity extends BaseEntity {
         String metadataFilePath,
         String entityId,
         String entityBaseUrl,
-        Boolean requireAssertionsSigned,
+        Boolean wantAssertionsSigned,
         String roleAttributeMapping
     ) {
         this.configurationId = configurationId;
@@ -62,7 +62,7 @@ public class SAMLConfigurationEntity extends BaseEntity {
         this.metadataFilePath = metadataFilePath;
         this.entityId = entityId;
         this.entityBaseUrl = entityBaseUrl;
-        this.requireAssertionsSigned = requireAssertionsSigned;
+        this.wantAssertionsSigned = wantAssertionsSigned;
         this.roleAttributeMapping = roleAttributeMapping;
     }
 
@@ -106,8 +106,8 @@ public class SAMLConfigurationEntity extends BaseEntity {
         return entityBaseUrl;
     }
 
-    public Boolean getRequireAssertionsSigned() {
-        return requireAssertionsSigned;
+    public Boolean getWantAssertionsSigned() {
+        return wantAssertionsSigned;
     }
 
     public String getRoleAttributeMapping() {

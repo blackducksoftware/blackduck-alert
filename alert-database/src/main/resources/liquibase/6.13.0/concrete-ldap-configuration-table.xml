@@ -32,9 +32,6 @@
             <column name="manager_password" type="VARCHAR">
                 <constraints nullable="false"/>
             </column>
-            <column name="is_manager_password_set" type="BOOLEAN" defaultValueBoolean="false">
-                <constraints nullable="false"/>
-            </column>
             <column name="authentication_type" type="VARCHAR">
                 <constraints nullable="true"/>
             </column>

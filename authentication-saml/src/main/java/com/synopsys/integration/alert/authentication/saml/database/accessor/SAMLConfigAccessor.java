@@ -81,7 +81,7 @@ public class SAMLConfigAccessor implements UniqueConfigurationAccessor<SAMLConfi
             samlConfigurationEntity.getMetadataFilePath(),
             samlConfigurationEntity.getEntityId(),
             samlConfigurationEntity.getEntityBaseUrl(),
-            samlConfigurationEntity.getRequireAssertionsSigned(),
+            samlConfigurationEntity.getWantAssertionsSigned(),
             samlConfigurationEntity.getRoleAttributeMapping()
         );
     }
@@ -97,7 +97,7 @@ public class SAMLConfigAccessor implements UniqueConfigurationAccessor<SAMLConfi
             samlConfigModel.getMetadataFilePath().orElse(""),
             samlConfigModel.getEntityId(),
             samlConfigModel.getEntityBaseUrl(),
-            samlConfigModel.getRequireAssertionsSigned().orElse(Boolean.FALSE),
+            samlConfigModel.getWantAssertionsSigned().orElse(Boolean.FALSE),
             samlConfigModel.getRoleAttributeMapping().orElse("")
         );
     }
