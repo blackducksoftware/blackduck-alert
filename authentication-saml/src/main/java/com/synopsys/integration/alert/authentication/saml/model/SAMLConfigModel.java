@@ -15,6 +15,9 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
     private String entityBaseUrl;
     private Boolean wantAssertionsSigned;
     private String roleAttributeMapping;
+    private String encryptionCertFilePath;
+    private String signingCertFilePath;
+    private String verificationCertFilePath;
 
     public SAMLConfigModel() {
         // For serialization
@@ -36,7 +39,10 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
         String entityId,
         String entityBaseUrl,
         Boolean wantAssertionsSigned,
-        String roleAttributeMapping
+        String roleAttributeMapping,
+        String encryptionCertFilePath,
+        String signingCertFilePath,
+        String verificationCertFilePath
     ) {
         this(id);
         this.enabled = enabled;
@@ -47,6 +53,9 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
         this.entityBaseUrl = entityBaseUrl;
         this.wantAssertionsSigned = wantAssertionsSigned;
         this.roleAttributeMapping = roleAttributeMapping;
+        this.encryptionCertFilePath = encryptionCertFilePath;
+        this.signingCertFilePath = signingCertFilePath;
+        this.verificationCertFilePath = verificationCertFilePath;
 
         setCreatedAt(createdAt);
         setLastUpdated(lastUpdated);
@@ -65,7 +74,10 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
             entityId,
             entityBaseUrl,
             wantAssertionsSigned,
-            roleAttributeMapping
+            roleAttributeMapping,
+            encryptionCertFilePath,
+            signingCertFilePath,
+            verificationCertFilePath
         );
     }
 
@@ -86,7 +98,8 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
         return Optional.ofNullable(metadataFilePath);
     }
 
-    public String getEntityId() { return entityId; }
+    public String getEntityId() {
+        return entityId; }
 
     public String getEntityBaseUrl() {
         return entityBaseUrl;
@@ -100,12 +113,25 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
         return Optional.ofNullable(roleAttributeMapping);
     }
 
+    public Optional<String> getEncryptionCertFilePath() {
+        return Optional.ofNullable(encryptionCertFilePath);
+    }
+
+    public Optional<String> getSigningCertFilePath() {
+        return Optional.ofNullable(signingCertFilePath);
+    }
+
+    public Optional<String> getVerificationCertFilePath() {
+        return Optional.ofNullable(verificationCertFilePath);
+    }
+
     // Setters
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
     }
 
-    public void setForceAuth(Boolean forceAuth) { this.forceAuth = forceAuth; }
+    public void setForceAuth(Boolean forceAuth) {
+        this.forceAuth = forceAuth; }
 
     public void setMetadataUrl(String metadataUrl) {
         this.metadataUrl = metadataUrl;
@@ -119,5 +145,7 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
         this.entityBaseUrl = entityBaseUrl;
     }
 
-    public void setRoleAttributeMapping(String roleAttributeMapping) { this.roleAttributeMapping = roleAttributeMapping; }
+    public void setRoleAttributeMapping(String roleAttributeMapping) {
+        this.roleAttributeMapping = roleAttributeMapping;
+    }
 }

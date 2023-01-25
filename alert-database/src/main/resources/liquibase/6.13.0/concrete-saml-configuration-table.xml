@@ -27,10 +27,10 @@
                 <constraints nullable="false"/>
             </column>
             <column name="metadata_url" type="VARCHAR">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column name="metadata_file_path" type="VARCHAR">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column name="entity_id" type="VARCHAR">
                 <constraints nullable="false"/>
@@ -42,7 +42,16 @@
                 <constraints nullable="false"/>
             </column>
             <column name="role_attribute_mapping" type="VARCHAR">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
+            </column>
+            <column name="encryption_cert_file_path" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+            <column name="signing_cert_file_path" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+            <column name="verification_cert_file_path" type="VARCHAR">
+                <constraints nullable="true"/>
             </column>
         </createTable>
     </changeSet>

@@ -4,6 +4,7 @@ import com.synopsys.integration.alert.api.authentication.descriptor.Authenticati
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.ValidationResult;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.util.function.Function;
 
 @Component
@@ -38,6 +42,14 @@ public class SAMLFileUploadValidator {
             AuthenticationDescriptor.SAML_METADATA_FILE,
             resource,
             this::validateXMLFile
+        );
+    }
+
+    public ValidationResponseModel validateCertFile(String fileName, Resource resource) {
+        return validateFile(
+            fileName,
+            resource,
+            this::validateCertFile
         );
     }
 
@@ -69,6 +81,18 @@ public class SAMLFileUploadValidator {
             builder.parse(new InputSource(fileInputStream));
         } catch (ParserConfigurationException | SAXException | IOException ex) {
             return ValidationResult.errors(String.format("XML file error: %s", ex.getMessage()));
+        }
+        return ValidationResult.success();
+    }
+
+    private ValidationResult validateCertFile(File file) {
+        try (InputStream fileInputStream = new FileInputStream(file)) {
+            CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+            try (ByteArrayInputStream certInputStream = new ByteArrayInputStream(fileInputStream.readAllBytes())) {
+                certFactory.generateCertificate(certInputStream);
+            }
+        } catch (IOException | CertificateException ex) {
+            return ValidationResult.errors(String.format("Certificate file error: %s", ex.getMessage()));
         }
         return ValidationResult.success();
     }

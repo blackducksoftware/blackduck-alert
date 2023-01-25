@@ -28,38 +28,34 @@ public class SAMLConfigurationValidator {
     public ValidationResponseModel validate(SAMLConfigModel model) {
         Set<AlertFieldStatus> statuses = new HashSet<>();
 
-        // Perform validation on fields if enabled
-        if (model.getEnabled().orElse(false)) {
-            Optional<String> optionalFilteredMetadataUrl = model.getMetadataUrl().filter(StringUtils::isNotBlank);
-            // Just check if file is upload - filePath is for showing to user their uploaded path and may not need to validate it
-            boolean metadataFileExists = filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_METADATA_FILE);
+        Optional<String> optionalFilteredMetadataUrl = model.getMetadataUrl().filter(StringUtils::isNotBlank);
+        // Just check if file is upload - filePath is for showing to user their uploaded path and may not need to validate it
+        boolean metadataFileExists = filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_METADATA_FILE);
 
-            if (StringUtils.isBlank(model.getEntityId())) {
-                statuses.add(AlertFieldStatus.error(AuthenticationDescriptor.KEY_SAML_ENTITY_ID, AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
-            }
-            if (StringUtils.isBlank(model.getEntityBaseUrl())) {
-                statuses.add(AlertFieldStatus.error(AuthenticationDescriptor.KEY_SAML_ENTITY_BASE_URL, AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
-            } else {
-                addErrorStatusIfInvalidUrl(model.getEntityBaseUrl(), AuthenticationDescriptor.KEY_SAML_ENTITY_BASE_URL, statuses);
-            }
+        if (StringUtils.isBlank(model.getEntityId())) {
+            statuses.add(AlertFieldStatus.error(AuthenticationDescriptor.KEY_SAML_ENTITY_ID, AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
+        }
+        if (StringUtils.isBlank(model.getEntityBaseUrl())) {
+            statuses.add(AlertFieldStatus.error(AuthenticationDescriptor.KEY_SAML_ENTITY_BASE_URL, AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
+        } else {
+            addErrorStatusIfInvalidUrl(model.getEntityBaseUrl(), AuthenticationDescriptor.KEY_SAML_ENTITY_BASE_URL, statuses);
+        }
 
-            // One of url or file must exist
-            if (optionalFilteredMetadataUrl.isEmpty() && !metadataFileExists) {
-                statuses.add(AlertFieldStatus.error(
-                    AuthenticationDescriptor.KEY_SAML_METADATA_FILE,
-                    AuthenticationDescriptor.FIELD_ERROR_SAML_METADATA_FILE_MISSING)
-                );
-            }
-            // Check if valid url for present, else add missing status if metadata file is also missing
-            optionalFilteredMetadataUrl.ifPresentOrElse(
-                metaDataUrl -> addErrorStatusIfInvalidUrl(metaDataUrl, AuthenticationDescriptor.KEY_SAML_METADATA_URL, statuses),
-                () -> {
-                    if (!metadataFileExists) {
-                        statuses.add(AlertFieldStatus.error(AuthenticationDescriptor.KEY_SAML_METADATA_URL, AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
-                    }
-                }
+        // One of url or file must exist
+        if (optionalFilteredMetadataUrl.isEmpty() && !metadataFileExists) {
+            statuses.add(AlertFieldStatus.error(
+                AuthenticationDescriptor.KEY_SAML_METADATA_FILE, AuthenticationDescriptor.FIELD_ERROR_SAML_METADATA_FILE_MISSING)
             );
         }
+        // Check if valid url for present, else add missing status if metadata file is also missing
+        optionalFilteredMetadataUrl.ifPresentOrElse(
+            metaDataUrl -> addErrorStatusIfInvalidUrl(metaDataUrl, AuthenticationDescriptor.KEY_SAML_METADATA_URL, statuses),
+            () -> {
+                if (!metadataFileExists) {
+                    statuses.add(AlertFieldStatus.error(AuthenticationDescriptor.KEY_SAML_METADATA_URL, AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
+                }
+            }
+        );
 
         if (!statuses.isEmpty()) {
             return ValidationResponseModel.fromStatusCollection(statuses);
