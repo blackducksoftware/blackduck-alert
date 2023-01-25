@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--suppress SqlNoDataSourceInspection -->
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <!-- create an initial row -->
+    <changeSet author="dmaxfield" id="create-initial-ldap-config-entries">
+        <preConditions onFail="MARK_RAN">
+            <rowCount schemaName="alert" tableName="configuration_ldap" expectedRows="0"/>
+        </preConditions>
+
+        <sql dbms="postgresql" stripComments="true">
+                INSERT INTO alert.configuration_ldap (name, created_at, last_updated, enabled, server_name, manager_dn, manager_password,
+                                                      authentication_type, referral, user_search_base, user_search_filter, user_dn_patterns,
+                                                      user_attributes, group_search_base, group_search_filter, group_role_attribute)
+                SELECT 'default-configuration',
+                       now(),
+                       null,
+                       false,
+                       '',
+                       '',
+                       '',
+                       null,
+                       null,
+                       null,
+                       null,
+                       null,
+                       null,
+                       null,
+                       null,
+                       null
+                FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('component_authentication') configFields
+                WHERE configFields.source_key IS NOT NULL LIMIT 1;
+        </sql>
+    </changeSet>
+
+    <changeSet author="dmaxfield" id="update-initial-ldap-config-entries">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*)
+                FROM alert.configuration_ldap
+                WHERE name = 'default-configuration';
+            </sqlCheck>
+        </preConditions>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_ldap config
+            SET created_at = configTimestamps.created_at FROM GET_GLOBAL_CONFIG_TIMESTAMPS('component_authentication') configTimestamps;
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_ldap config
+            SET last_updated = configTimestamps.last_updated FROM GET_GLOBAL_CONFIG_TIMESTAMPS('component_authentication') configTimestamps;
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_ldap config
+            SET enabled = cast(coalesce(configFields.field_value, 'false') as BOOLEAN) FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('component_authentication') configFields
+            WHERE config.name = 'default-configuration'
+              AND configFields.source_key = 'settings.ldap.enabled';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_ldap config
+            SET server_name = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('component_authentication') configFields
+            WHERE config.name = 'default-configuration'
+              AND configFields.source_key = 'settings.ldap.server';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_ldap config
+            SET manager_dn = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('component_authentication') configFields
+            WHERE config.name = 'default-configuration'
+              AND configFields.source_key = 'settings.ldap.manager.dn';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_ldap config
+            SET manager_password = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('component_authentication') configFields
+            WHERE config.name = 'default-configuration'
+              AND configFields.source_key = 'settings.ldap.manager.password';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_ldap config
+            SET authentication_type = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('component_authentication') configFields
+            WHERE config.name = 'default-configuration'
+              AND configFields.source_key = 'settings.ldap.authentication.type';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_ldap config
+            SET referral = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('component_authentication') configFields
+            WHERE config.name = 'default-configuration'
+              AND configFields.source_key = 'settings.ldap.referral';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_ldap config
+            SET user_search_base = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('component_authentication') configFields
+            WHERE config.name = 'default-configuration'
+              AND configFields.source_key = 'settings.ldap.user.search.base';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_ldap config
+            SET user_search_filter = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('component_authentication') configFields
+            WHERE config.name = 'default-configuration'
+              AND configFields.source_key = 'settings.ldap.user.search.filter';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_ldap config
+            SET user_dn_patterns = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('component_authentication') configFields
+            WHERE config.name = 'default-configuration'
+              AND configFields.source_key = 'settings.ldap.user.dn.patterns';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_ldap config
+            SET user_attributes = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('component_authentication') configFields
+            WHERE config.name = 'default-configuration'
+              AND configFields.source_key = 'settings.ldap.user.attributes';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_ldap config
+            SET group_search_base = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('component_authentication') configFields
+            WHERE config.name = 'default-configuration'
+              AND configFields.source_key = 'settings.ldap.group.search.base';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_ldap config
+            SET group_search_filter = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('component_authentication') configFields
+            WHERE config.name = 'default-configuration'
+              AND configFields.source_key = 'settings.ldap.group.search.filter';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_ldap config
+            SET group_role_attribute = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('component_authentication') configFields
+            WHERE config.name = 'default-configuration'
+              AND configFields.source_key = 'settings.ldap.group.role.attribute';
+        </sql>
+    </changeSet>
+</databaseChangeLog>
