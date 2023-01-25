@@ -10,6 +10,9 @@ import * as ConfigurationRequestBuilder from 'common/util/configurationRequestBu
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
 import { AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS } from 'application/auth/AuthenticationModel';
+import BlackDuckSSOConfigImportModal from './BlackDuckSSOConfigImportModal';
+import LabeledField from '../../common/component/input/field/LabeledField';
+import GeneralButton from '../../common/component/button/GeneralButton';
 
 const radioOptions = [{
     name: 'url',
@@ -32,7 +35,11 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, displayTest, fileDelete, 
     const [formData, setFormData] = useState({});
     const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
     const [samlEnabled, setSamlEnabled] = useState(FieldModelUtilities.getFieldModelBooleanValue(formData, AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.enabled));
+    const [showBlackDuckSSOImportModal, setShowBlackDuckSSOImportModal] = useState(false);
     const samlRequestUrl = `${ConfigurationRequestBuilder.AUTHENTICATION_SAML_API_URL}`;
+
+    const importBlackDuckSSOConfigLabel = 'Retrieve Black Duck SAML Configuration';
+    const importBlackDuckSSOConfigDescription = 'Fills in some of the form fields based on the SAML configuration from the chosen Black Duck server (if a SAML configuration exists).';
 
     useEffect(() => {
         setSamlEnabled(formData.enabled);        
@@ -90,6 +97,20 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, displayTest, fileDelete, 
                 submitLabel="Save SAML Configuration"
                 testLabel="Test SAML Configuration"
             >
+                <LabeledField label={importBlackDuckSSOConfigLabel} description={importBlackDuckSSOConfigDescription}>
+                    <div className="d-inline-flex p-2">
+                        <GeneralButton id="blackduck-sso-import-button" onClick={() => setShowBlackDuckSSOImportModal(true)}>Fill Form</GeneralButton>
+                    </div>
+                </LabeledField>
+                <BlackDuckSSOConfigImportModal
+                    label={importBlackDuckSSOConfigLabel}
+                    csrfToken={csrfToken}
+                    readOnly={readonly}
+                    show={showBlackDuckSSOImportModal}
+                    onHide={() => setShowBlackDuckSSOImportModal(false)}
+                    initialSSOFieldData={formData}
+                    updateSSOFieldData={(data) => setFormData(data)}
+                />
                 <CheckboxInput
                     id={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.enabled}
                     name={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.enabled}
