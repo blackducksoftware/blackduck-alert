@@ -25,7 +25,10 @@ const ConcreteConfigurationForm = ({
     afterSuccessfulSave,
     readonly,
     errorHandler,
-    submitLabel
+    cancelLabel,
+    deleteLabel,
+    submitLabel,
+    testLabel
 }) => {
     const [showTest, setShowTest] = useState(false);
     const [errorMessage, setErrorMessage] = useState(null);
@@ -167,7 +170,10 @@ const ConcreteConfigurationForm = ({
                     onDeleteClick={performDeleteRequest}
                     confirmDeleteMessage="Are you sure you want to delete the configuration?"
                     performingAction={inProgress}
+                    cancelLabel={cancelLabel}
+                    deleteLabel={deleteLabel}
                     submitLabel={submitLabel}
+                    testLabel={testLabel}
                 />
             </form>
             <GlobalTestModal
@@ -205,7 +211,10 @@ ConcreteConfigurationForm.propTypes = {
     afterSuccessfulSave: PropTypes.func,
     readonly: PropTypes.bool,
     errorHandler: PropTypes.object.isRequired,
-    submitLabel: PropTypes.string
+    cancelLabel: PropTypes.string,
+    deleteLabel: PropTypes.string,
+    submitLabel: PropTypes.string,
+    testLabel: PropTypes.string
 };
 
 ConcreteConfigurationForm.defaultProps = {

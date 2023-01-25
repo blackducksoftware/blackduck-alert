@@ -84,10 +84,11 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, displayTest, fileDelete, 
                 updateRequest={updateData}
                 createRequest={postData}
                 validateRequest={handleValidation}
-                displayCancel
                 displayDelete={formData.status !== 404}
                 errorHandler={errorHandler}
-                submitLabel="Save Configuration"
+                deleteLabel="Delete SAML Configuration"
+                submitLabel="Save SAML Configuration"
+                testLabel="Test SAML Configuration"
             >
                 <CheckboxInput
                     id={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.enabled}
