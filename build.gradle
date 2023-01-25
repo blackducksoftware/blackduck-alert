@@ -115,6 +115,7 @@ dependencies {
     implementation project(':api-provider')
     implementation project(':api-task')
 
+    implementation project(':authentication-ldap')
     implementation project(':authentication-saml')
 
     implementation project(':channel-azure-boards')

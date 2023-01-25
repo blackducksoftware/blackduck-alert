@@ -8,9 +8,9 @@ dependencies {
     implementation project(':api-common-model')
     implementation project(':api-descriptor')
     implementation project(':api-authentication')
-    implementation project(':component')
 
     implementation 'jakarta.persistence:jakarta.persistence-api'
+    implementation 'org.springframework.security:spring-security-ldap'
     implementation 'org.springframework:spring-web'
 
     testImplementation project(':test-common-channel')

@@ -1,11 +1,4 @@
-/*
- * component
- *
- * Copyright (c) 2022 Synopsys, Inc.
- *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
- */
-package com.synopsys.integration.alert.component.authentication.security.ldap;
+package com.synopsys.integration.alert.authentication.ldap;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -17,15 +10,15 @@ import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopulator;
 
-import com.synopsys.integration.alert.component.authentication.security.UserManagementAuthoritiesPopulator;
+import com.synopsys.integration.alert.api.authentication.security.UserManagementAuthoritiesPopulator;
 
 public class MappingLdapAuthoritiesPopulator extends DefaultLdapAuthoritiesPopulator {
     private final Logger logger = LoggerFactory.getLogger(MappingLdapAuthoritiesPopulator.class);
-    private final UserManagementAuthoritiesPopulator authoritiesPopulator;
+    private final UserManagementAuthoritiesPopulator userManagementAuthoritiesPopulator;
 
-    public MappingLdapAuthoritiesPopulator(ContextSource contextSource, String groupSearchBase, UserManagementAuthoritiesPopulator authoritiesPopulator) {
+    public MappingLdapAuthoritiesPopulator(ContextSource contextSource, String groupSearchBase, UserManagementAuthoritiesPopulator userManagementAuthoritiesPopulator) {
         super(contextSource, groupSearchBase);
-        this.authoritiesPopulator = authoritiesPopulator;
+        this.userManagementAuthoritiesPopulator = userManagementAuthoritiesPopulator;
     }
 
     @Override
@@ -46,6 +39,6 @@ public class MappingLdapAuthoritiesPopulator extends DefaultLdapAuthoritiesPopul
     @Override
     protected Set<GrantedAuthority> getAdditionalRoles(DirContextOperations user, String username) {
         // load the roles from the database.  These roles will be added to the set of roles for the user.
-        return authoritiesPopulator.addAdditionalRoles(username, Set.of());
+        return userManagementAuthoritiesPopulator.addAdditionalRoles(username, Set.of());
     }
 }
