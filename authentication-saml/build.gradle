@@ -13,5 +13,6 @@ dependencies {
 
     implementation 'jakarta.persistence:jakarta.persistence-api'
 
+    implementation 'org.springframework.security:spring-security-saml2-service-provider'
     implementation 'org.springframework:spring-web'
 }
