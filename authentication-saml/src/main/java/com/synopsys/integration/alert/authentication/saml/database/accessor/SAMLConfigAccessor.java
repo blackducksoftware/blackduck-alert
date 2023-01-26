@@ -81,8 +81,12 @@ public class SAMLConfigAccessor implements UniqueConfigurationAccessor<SAMLConfi
             samlConfigurationEntity.getMetadataFilePath(),
             samlConfigurationEntity.getEntityId(),
             samlConfigurationEntity.getEntityBaseUrl(),
-            samlConfigurationEntity.getRequireAssertionsSigned(),
-            samlConfigurationEntity.getRoleAttributeMapping()
+            samlConfigurationEntity.getWantAssertionsSigned(),
+            samlConfigurationEntity.getRoleAttributeMapping(),
+            samlConfigurationEntity.getEncryptionCertFilePath(),
+            samlConfigurationEntity.getSigningCertFilePath(),
+            samlConfigurationEntity.getVerificationCertFilePath(),
+            samlConfigurationEntity.getMetadataMode()
         );
     }
 
@@ -97,8 +101,12 @@ public class SAMLConfigAccessor implements UniqueConfigurationAccessor<SAMLConfi
             samlConfigModel.getMetadataFilePath().orElse(""),
             samlConfigModel.getEntityId(),
             samlConfigModel.getEntityBaseUrl(),
-            samlConfigModel.getRequireAssertionsSigned().orElse(Boolean.FALSE),
-            samlConfigModel.getRoleAttributeMapping().orElse("")
+            samlConfigModel.getWantAssertionsSigned().orElse(Boolean.FALSE),
+            samlConfigModel.getRoleAttributeMapping().orElse(""),
+            samlConfigModel.getEncryptionCertFilePath().orElse(""),
+            samlConfigModel.getSigningCertFilePath().orElse(""),
+            samlConfigModel.getVerificationCertFilePath().orElse(""),
+            samlConfigModel.getMetadataMode().orElse(null)
         );
     }
 }

@@ -11,6 +11,7 @@ public final class AlertRestConstants {
     public static final String API = "api";
     public static final String CALLBACKS = "callbacks";
     public static final String OAUTH = "oauth";
+    public static final String UPLOAD = "upload";
     public static final String BASE_PATH = "/" + API;
     public static final String CALLBACKS_PATH = BASE_PATH + "/" + CALLBACKS;
     public static final String OAUTH_CALLBACK_PATH = CALLBACKS_PATH + "/" + OAUTH;

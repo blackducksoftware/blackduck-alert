@@ -40,6 +40,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.api.authentication.security.event.AuthenticationEventManager;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.synopsys.integration.alert.authentication.ldap.LdapAuthenticationPerformer;
+import com.synopsys.integration.alert.authentication.ldap.action.LdapManager;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
@@ -47,8 +49,6 @@ import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationEx
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.component.authentication.security.AlertAuthenticationProvider;
 import com.synopsys.integration.alert.component.authentication.security.database.AlertDatabaseAuthenticationPerformer;
-import com.synopsys.integration.alert.component.authentication.security.ldap.LdapAuthenticationPerformer;
-import com.synopsys.integration.alert.component.authentication.security.ldap.LdapManager;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 import com.synopsys.integration.alert.mock.model.MockLoginRestModel;
 import com.synopsys.integration.alert.test.common.TestProperties;
