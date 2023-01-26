@@ -21,7 +21,6 @@ import com.synopsys.integration.alert.api.event.AlertEventHandler;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.util.AuditStackTraceUtil;
 import com.synopsys.integration.alert.processor.api.distribute.DistributionEvent;
@@ -31,13 +30,11 @@ public class DistributionEventHandler<D extends DistributionJobDetailsModel> imp
 
     private final DistributionChannel<D> channel;
     private final JobDetailsAccessor<D> jobDetailsAccessor;
-    private final ProcessingAuditAccessor auditAccessor;
     private final EventManager eventManager;
 
-    public DistributionEventHandler(DistributionChannel<D> channel, JobDetailsAccessor<D> jobDetailsAccessor, ProcessingAuditAccessor auditAccessor, EventManager eventManager) {
+    public DistributionEventHandler(DistributionChannel<D> channel, JobDetailsAccessor<D> jobDetailsAccessor, EventManager eventManager) {
         this.channel = channel;
         this.jobDetailsAccessor = jobDetailsAccessor;
-        this.auditAccessor = auditAccessor;
         this.eventManager = eventManager;
 
     }
@@ -72,7 +69,12 @@ public class DistributionEventHandler<D extends DistributionJobDetailsModel> imp
 
     protected void handleAlertException(AlertException e, DistributionEvent event) {
         notificationLogger.error("An exception occurred while handling the following event: {}.", event.getEventId(), e);
-        auditAccessor.setAuditEntryFailure(event.getJobId(), event.getNotificationIds(), "An exception occurred during message distribution", e);
+        eventManager.sendEvent(new AuditFailedEvent(
+            event.getJobExecutionId(),
+            event.getNotificationIds(),
+            String.format("An exception occurred while handling the following event: %s.", event.getEventId()),
+            AuditStackTraceUtil.createStackTraceString(e)
+        ));
     }
 
     protected void handleUnknownException(Exception e, DistributionEvent event) {
