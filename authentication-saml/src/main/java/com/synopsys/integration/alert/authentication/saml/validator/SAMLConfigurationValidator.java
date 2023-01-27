@@ -68,7 +68,7 @@ public class SAMLConfigurationValidator {
         }
         if (encryptionCertFileExists && !filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_ENCRYPTION_PRIVATE_KEY_FILE)) {
             statuses.add(AlertFieldStatus.error(
-                "verificationPrivateKeyFilePath", "SAML encryption private key has not been uploaded for encryption certificate.")
+                "encryptionPrivateKeyFilePath", "SAML encryption private key has not been uploaded for encryption certificate.")
             );
         }
 
