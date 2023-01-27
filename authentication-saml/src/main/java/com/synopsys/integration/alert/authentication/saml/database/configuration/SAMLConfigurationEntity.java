@@ -56,14 +56,14 @@ public class SAMLConfigurationEntity extends BaseEntity {
         Boolean forceAuth,
         String metadataUrl,
         String metadataFilePath,
+        SAMLMetadataMode metadataMode,
         String entityId,
         String entityBaseUrl,
         Boolean wantAssertionsSigned,
         String roleAttributeMapping,
         String encryptionCertFilePath,
         String signingCertFilePath,
-        String verificationCertFilePath,
-        SAMLMetadataMode metadataMode
+        String verificationCertFilePath
     ) {
         this.configurationId = configurationId;
         this.name = AlertRestConstants.DEFAULT_CONFIGURATION_NAME;

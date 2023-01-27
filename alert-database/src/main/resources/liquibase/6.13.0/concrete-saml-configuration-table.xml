@@ -49,6 +49,9 @@
             <column name="force_auth" type="BOOLEAN" defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
+            <column name="metadata_mode" type="BIGINT">
+                <constraints nullable="true"/>
+            </column>
             <column name="metadata_url" type="VARCHAR">
                 <constraints nullable="true"/>
             </column>
@@ -74,9 +77,6 @@
                 <constraints nullable="true"/>
             </column>
             <column name="verification_cert_file_path" type="VARCHAR">
-                <constraints nullable="true"/>
-            </column>
-            <column name="metadata_mode" type="BIGINT">
                 <constraints nullable="true"/>
             </column>
         </createTable>

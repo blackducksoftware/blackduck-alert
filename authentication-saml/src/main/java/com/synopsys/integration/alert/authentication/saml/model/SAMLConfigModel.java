@@ -11,6 +11,7 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
     private Boolean forceAuth;
     private String metadataUrl;
     private String metadataFilePath;
+    private SAMLMetadataMode metadataMode;
     private String entityId;
     private String entityBaseUrl;
     private Boolean wantAssertionsSigned;
@@ -18,7 +19,6 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
     private String encryptionCertFilePath;
     private String signingCertFilePath;
     private String verificationCertFilePath;
-    private SAMLMetadataMode metadataMode;
 
     public SAMLConfigModel() {
         // For serialization
@@ -40,26 +40,26 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
         Boolean forceAuth,
         String metadataUrl,
         String metadataFilePath,
+        SAMLMetadataMode metadataMode,
         String entityId,
         String entityBaseUrl,
         Boolean wantAssertionsSigned,
         String roleAttributeMapping,
         String encryptionCertFilePath,
         String signingCertFilePath,
-        String verificationCertFilePath,
-        SAMLMetadataMode metadataMode
+        String verificationCertFilePath
     ) {
         this(id, entityId, entityBaseUrl);
         this.enabled = enabled;
         this.forceAuth = forceAuth;
         this.metadataUrl = metadataUrl;
         this.metadataFilePath = metadataFilePath;
+        this.metadataMode = metadataMode;
         this.wantAssertionsSigned = wantAssertionsSigned;
         this.roleAttributeMapping = roleAttributeMapping;
         this.encryptionCertFilePath = encryptionCertFilePath;
         this.signingCertFilePath = signingCertFilePath;
         this.verificationCertFilePath = verificationCertFilePath;
-        this.metadataMode = metadataMode;
 
         setCreatedAt(createdAt);
         setLastUpdated(lastUpdated);
@@ -75,14 +75,14 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
             forceAuth,
             metadataUrl,
             metadataFilePath,
+            metadataMode,
             entityId,
             entityBaseUrl,
             wantAssertionsSigned,
             roleAttributeMapping,
             encryptionCertFilePath,
             signingCertFilePath,
-            verificationCertFilePath,
-            metadataMode
+            verificationCertFilePath
         );
     }
 
