@@ -63,12 +63,12 @@ public class SAMLConfigurationValidator {
 
         if (signingCertFileExists && !filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_SIGNING_PRIVATE_KEY_FILE)) {
             statuses.add(AlertFieldStatus.error(
-                "signingCertFilePath", "SAML signing private key has not been uploaded for signing certificate.")
+                "signingPrivateKeyFilePath", "SAML signing private key has not been uploaded for signing certificate.")
             );
         }
         if (encryptionCertFileExists && !filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_ENCRYPTION_PRIVATE_KEY_FILE)) {
             statuses.add(AlertFieldStatus.error(
-                "verificationCertFilePath", "SAML encryption private key has not been uploaded for encryption certificate.")
+                "verificationPrivateKeyFilePath", "SAML encryption private key has not been uploaded for encryption certificate.")
             );
         }
 
