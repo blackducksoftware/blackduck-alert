@@ -28,6 +28,8 @@ public class SAMLConfigurationEntity extends BaseEntity {
     private String metadataUrl;
     @Column(name = "metadata_file_path")
     private String metadataFilePath;
+    @Column(name = "metadata_mode")
+    private SAMLMetadataMode metadataMode;
     @Column(name = "entity_id")
     private String entityId;
     @Column(name = "entity_base_url")
@@ -40,10 +42,12 @@ public class SAMLConfigurationEntity extends BaseEntity {
     private String encryptionCertFilePath;
     @Column(name = "signing_cert_file_path")
     private String signingCertFilePath;
+    @Column(name = "signing_private_key_file_path")
+    private String signingPrivateKeyFilePath;
     @Column(name = "verification_cert_file_path")
     private String verificationCertFilePath;
-    @Column(name = "metadata_mode")
-    private SAMLMetadataMode metadataMode;
+    @Column(name = "verification_private_key_file_path")
+    private String verificationPrivateKeyFilePath;
 
     public SAMLConfigurationEntity() {
     }
@@ -63,7 +67,9 @@ public class SAMLConfigurationEntity extends BaseEntity {
         String roleAttributeMapping,
         String encryptionCertFilePath,
         String signingCertFilePath,
-        String verificationCertFilePath
+        String signingPrivateKeyFilePath,
+        String verificationCertFilePath,
+        String verificationPrivateKeyFilePath
     ) {
         this.configurationId = configurationId;
         this.name = AlertRestConstants.DEFAULT_CONFIGURATION_NAME;
@@ -73,14 +79,16 @@ public class SAMLConfigurationEntity extends BaseEntity {
         this.forceAuth = forceAuth;
         this.metadataUrl = metadataUrl;
         this.metadataFilePath = metadataFilePath;
+        this.metadataMode = metadataMode;
         this.entityId = entityId;
         this.entityBaseUrl = entityBaseUrl;
         this.wantAssertionsSigned = wantAssertionsSigned;
         this.roleAttributeMapping = roleAttributeMapping;
         this.encryptionCertFilePath = encryptionCertFilePath;
         this.signingCertFilePath = signingCertFilePath;
+        this.signingPrivateKeyFilePath = signingPrivateKeyFilePath;
         this.verificationCertFilePath = verificationCertFilePath;
-        this.metadataMode = metadataMode;
+        this.verificationPrivateKeyFilePath = verificationPrivateKeyFilePath;
     }
 
     public UUID getConfigurationId() {
@@ -115,6 +123,10 @@ public class SAMLConfigurationEntity extends BaseEntity {
         return metadataFilePath;
     }
 
+    public SAMLMetadataMode getMetadataMode() {
+        return metadataMode;
+    }
+
     public String getEntityId() {
         return entityId;
     }
@@ -139,11 +151,15 @@ public class SAMLConfigurationEntity extends BaseEntity {
         return signingCertFilePath;
     }
 
+    public String getSigningPrivateKeyFilePath() {
+        return signingPrivateKeyFilePath;
+    }
+
     public String getVerificationCertFilePath() {
         return verificationCertFilePath;
     }
 
-    public SAMLMetadataMode getMetadataMode() {
-        return metadataMode;
+    public String getVerificationPrivateKeyFilePath() {
+        return verificationPrivateKeyFilePath;
     }
 }

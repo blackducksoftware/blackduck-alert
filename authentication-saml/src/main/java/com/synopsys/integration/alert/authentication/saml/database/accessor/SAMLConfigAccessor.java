@@ -86,7 +86,9 @@ public class SAMLConfigAccessor implements UniqueConfigurationAccessor<SAMLConfi
             samlConfigurationEntity.getRoleAttributeMapping(),
             samlConfigurationEntity.getEncryptionCertFilePath(),
             samlConfigurationEntity.getSigningCertFilePath(),
-            samlConfigurationEntity.getVerificationCertFilePath()
+            samlConfigurationEntity.getSigningPrivateKeyFilePath(),
+            samlConfigurationEntity.getVerificationCertFilePath(),
+            samlConfigurationEntity.getVerificationPrivateKeyFilePath()
         );
     }
 
@@ -106,7 +108,9 @@ public class SAMLConfigAccessor implements UniqueConfigurationAccessor<SAMLConfi
             samlConfigModel.getRoleAttributeMapping().orElse(""),
             samlConfigModel.getEncryptionCertFilePath().orElse(""),
             samlConfigModel.getSigningCertFilePath().orElse(""),
-            samlConfigModel.getVerificationCertFilePath().orElse("")
+            samlConfigModel.getSigningPrivateKeyFilePath().orElse(""),
+            samlConfigModel.getVerificationCertFilePath().orElse(""),
+            samlConfigModel.getSigningPrivateKeyFilePath().orElse("")
         );
     }
 }

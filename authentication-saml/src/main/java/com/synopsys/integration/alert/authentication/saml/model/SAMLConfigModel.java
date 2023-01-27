@@ -18,7 +18,9 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
     private String roleAttributeMapping;
     private String encryptionCertFilePath;
     private String signingCertFilePath;
+    private String signingPrivateKeyFilePath;
     private String verificationCertFilePath;
+    private String verificationPrivateKeyFilePath;
 
     public SAMLConfigModel() {
         // For serialization
@@ -47,7 +49,9 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
         String roleAttributeMapping,
         String encryptionCertFilePath,
         String signingCertFilePath,
-        String verificationCertFilePath
+        String signingPrivateKeyFilePath,
+        String verificationCertFilePath,
+        String verificationPrivateKeyFilePath
     ) {
         this(id, entityId, entityBaseUrl);
         this.enabled = enabled;
@@ -59,7 +63,9 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
         this.roleAttributeMapping = roleAttributeMapping;
         this.encryptionCertFilePath = encryptionCertFilePath;
         this.signingCertFilePath = signingCertFilePath;
+        this.signingPrivateKeyFilePath = signingPrivateKeyFilePath;
         this.verificationCertFilePath = verificationCertFilePath;
+        this.verificationPrivateKeyFilePath = verificationPrivateKeyFilePath;
 
         setCreatedAt(createdAt);
         setLastUpdated(lastUpdated);
@@ -82,7 +88,9 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
             roleAttributeMapping,
             encryptionCertFilePath,
             signingCertFilePath,
-            verificationCertFilePath
+            signingPrivateKeyFilePath,
+            verificationCertFilePath,
+            verificationPrivateKeyFilePath
         );
     }
 
@@ -101,6 +109,10 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
 
     public Optional<String> getMetadataFilePath() {
         return Optional.ofNullable(metadataFilePath);
+    }
+
+    public Optional<SAMLMetadataMode> getMetadataMode() {
+        return Optional.ofNullable(metadataMode);
     }
 
     public String getEntityId() {
@@ -127,12 +139,16 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
         return Optional.ofNullable(signingCertFilePath);
     }
 
+    public Optional<String> getSigningPrivateKeyFilePath() {
+        return Optional.ofNullable(signingPrivateKeyFilePath);
+    }
+
     public Optional<String> getVerificationCertFilePath() {
         return Optional.ofNullable(verificationCertFilePath);
     }
 
-    public Optional<SAMLMetadataMode> getMetadataMode() {
-        return Optional.ofNullable(metadataMode);
+    public Optional<String> getVerificationPrivateKeyFilePath() {
+        return Optional.ofNullable(verificationPrivateKeyFilePath);
     }
 
     // Setters
