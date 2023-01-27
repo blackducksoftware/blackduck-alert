@@ -106,7 +106,7 @@ public class SAMLConfigController implements StaticUniqueConfigResourceControlle
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void uploadEncryptionPrivateKeyFile(@RequestParam("file") MultipartFile file) {
         ResponseFactory.createResponseFromAction(
-            fileUploadActions.keyFileUpload(AuthenticationDescriptor.SAML_ENCRYPTION_PRIVATE_KEY_FILE, file.getResource())
+            fileUploadActions.privateKeyFileUpload(AuthenticationDescriptor.SAML_ENCRYPTION_PRIVATE_KEY_FILE, file.getResource())
         );
     }
 
@@ -138,7 +138,7 @@ public class SAMLConfigController implements StaticUniqueConfigResourceControlle
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void uploadSigningPrivateKeyFile(@RequestParam("file") MultipartFile file) {
         ResponseFactory.createResponseFromAction(
-            fileUploadActions.keyFileUpload(AuthenticationDescriptor.SAML_SIGNING_PRIVATE_KEY_FILE, file.getResource())
+            fileUploadActions.privateKeyFileUpload(AuthenticationDescriptor.SAML_SIGNING_PRIVATE_KEY_FILE, file.getResource())
         );
     }
 

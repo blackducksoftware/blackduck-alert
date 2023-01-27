@@ -43,11 +43,11 @@ public class SAMLFileUploadActions {
         );
     }
 
-    public ActionResponse<Void> keyFileUpload(String keyFileName, Resource resource) {
+    public ActionResponse<Void> privateKeyFileUpload(String keyFileName, Resource resource) {
         return fileUploadHelper.fileUpload(
             keyFileName,
             resource,
-            () -> fileUploadValidator.validateKeyFile(keyFileName, resource)
+            () -> fileUploadValidator.validatePrivateKeyFile(keyFileName, resource)
         );
     }
 }

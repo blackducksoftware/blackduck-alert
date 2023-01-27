@@ -54,11 +54,11 @@ public class SAMLFileUploadValidator {
         );
     }
 
-    public ValidationResponseModel validateKeyFile(String fileName, Resource resource) {
+    public ValidationResponseModel validatePrivateKeyFile(String fileName, Resource resource) {
         return validateFile(
             fileName,
             resource,
-            this::validateKeyFile
+            this::validatePrivateKeyFile
         );
     }
 
@@ -106,7 +106,7 @@ public class SAMLFileUploadValidator {
         return ValidationResult.success();
     }
 
-    private ValidationResult validateKeyFile(File file) {
+    private ValidationResult validatePrivateKeyFile(File file) {
         try (InputStream fileInputStream = new FileInputStream(file)) {
             RsaKeyConverters.pkcs8().convert(fileInputStream);
         } catch (IOException | IllegalArgumentException ex) {
