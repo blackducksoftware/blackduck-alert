@@ -57,7 +57,7 @@ public class SAMLConfigurationValidator {
             }
         );
 
-        // For advanced settings, check if the following have their public keys uploaded if the cert is
+        // For advanced settings, check if the following have their private keys uploaded if the cert is
         boolean signingCertFileExists = filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_SIGNING_CERT_FILE);
         boolean encryptionCertFileExists = filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_ENCRYPTION_CERT_FILE);
 
