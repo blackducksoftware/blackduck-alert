@@ -42,4 +42,12 @@ public class SAMLFileUploadActions {
             () -> fileUploadValidator.validateCertFile(certFileName, resource)
         );
     }
+
+    public ActionResponse<Void> keyFileUpload(String keyFileName, Resource resource) {
+        return fileUploadHelper.fileUpload(
+            keyFileName,
+            resource,
+            () -> fileUploadValidator.validateKeyFile(keyFileName, resource)
+        );
+    }
 }

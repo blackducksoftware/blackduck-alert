@@ -28,7 +28,7 @@ public class SAMLConfigurationValidator {
     public ValidationResponseModel validate(SAMLConfigModel model) {
         Set<AlertFieldStatus> statuses = new HashSet<>();
 
-        Optional<String> optionalFilteredMetadataUrl = model.getMetadataUrl().filter(StringUtils::isNotBlank);
+        Optional<String> optionalMetadataUrl = model.getMetadataUrl().filter(StringUtils::isNotBlank);
         // Just check if file is upload - filePath is for showing to user their uploaded path and may not need to validate it
         boolean metadataFileExists = filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_METADATA_FILE);
 
@@ -42,13 +42,13 @@ public class SAMLConfigurationValidator {
         }
 
         // One of url or file must exist
-        if (optionalFilteredMetadataUrl.isEmpty() && !metadataFileExists) {
+        if (optionalMetadataUrl.isEmpty() && !metadataFileExists) {
             statuses.add(AlertFieldStatus.error(
                 AuthenticationDescriptor.KEY_SAML_METADATA_FILE, AuthenticationDescriptor.FIELD_ERROR_SAML_METADATA_FILE_MISSING)
             );
         }
         // Check if valid url for present, else add missing status if metadata file is also missing
-        optionalFilteredMetadataUrl.ifPresentOrElse(
+        optionalMetadataUrl.ifPresentOrElse(
             metaDataUrl -> addErrorStatusIfInvalidUrl(metaDataUrl, AuthenticationDescriptor.KEY_SAML_METADATA_URL, statuses),
             () -> {
                 if (!metadataFileExists) {
@@ -56,6 +56,21 @@ public class SAMLConfigurationValidator {
                 }
             }
         );
+
+        // For advanced settings, check if the following have their public keys uploaded if the cert is
+        boolean signingCertFileExists = filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_SIGNING_CERT_FILE);
+        boolean encryptionCertFileExists = filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_ENCRYPTION_CERT_FILE);
+
+        if (signingCertFileExists && !filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_SIGNING_PRIVATE_KEY_FILE)) {
+            statuses.add(AlertFieldStatus.error(
+                "signingCertFilePath", "SAML signing private key has not been uploaded for signing certificate.")
+            );
+        }
+        if (encryptionCertFileExists && !filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_ENCRYPTION_PRIVATE_KEY_FILE)) {
+            statuses.add(AlertFieldStatus.error(
+                "verificationCertFilePath", "SAML encryption private key has not been uploaded for encryption certificate.")
+            );
+        }
 
         if (!statuses.isEmpty()) {
             return ValidationResponseModel.fromStatusCollection(statuses);

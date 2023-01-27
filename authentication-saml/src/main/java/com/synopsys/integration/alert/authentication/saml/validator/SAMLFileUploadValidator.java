@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.security.converter.RsaKeyConverters;
 import org.springframework.stereotype.Component;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
@@ -53,6 +54,14 @@ public class SAMLFileUploadValidator {
         );
     }
 
+    public ValidationResponseModel validateKeyFile(String fileName, Resource resource) {
+        return validateFile(
+            fileName,
+            resource,
+            this::validateKeyFile
+        );
+    }
+
     private ValidationResponseModel validateFile(String fileName, Resource resource, Function<File, ValidationResult> validateFunction) {
         String tempFilename = "temp_" + fileName;
         try {
@@ -93,6 +102,15 @@ public class SAMLFileUploadValidator {
             }
         } catch (IOException | CertificateException ex) {
             return ValidationResult.errors(String.format("Certificate file error: %s", ex.getMessage()));
+        }
+        return ValidationResult.success();
+    }
+
+    private ValidationResult validateKeyFile(File file) {
+        try (InputStream fileInputStream = new FileInputStream(file)) {
+            RsaKeyConverters.pkcs8().convert(fileInputStream);
+        } catch (IOException | IllegalArgumentException ex) {
+            return ValidationResult.errors(String.format("Key file error: %s", ex.getMessage()));
         }
         return ValidationResult.success();
     }

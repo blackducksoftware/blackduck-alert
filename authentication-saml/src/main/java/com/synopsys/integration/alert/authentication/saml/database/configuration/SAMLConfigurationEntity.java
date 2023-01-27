@@ -40,14 +40,14 @@ public class SAMLConfigurationEntity extends BaseEntity {
     private String roleAttributeMapping;
     @Column(name = "encryption_cert_file_path")
     private String encryptionCertFilePath;
+    @Column(name = "encryption_private_key_file_path")
+    private String encryptionPrivateKeyFilePath;
     @Column(name = "signing_cert_file_path")
     private String signingCertFilePath;
     @Column(name = "signing_private_key_file_path")
     private String signingPrivateKeyFilePath;
     @Column(name = "verification_cert_file_path")
     private String verificationCertFilePath;
-    @Column(name = "verification_private_key_file_path")
-    private String verificationPrivateKeyFilePath;
 
     public SAMLConfigurationEntity() {
     }
@@ -66,10 +66,10 @@ public class SAMLConfigurationEntity extends BaseEntity {
         Boolean wantAssertionsSigned,
         String roleAttributeMapping,
         String encryptionCertFilePath,
+        String encryptionPrivateKeyFilePath,
         String signingCertFilePath,
         String signingPrivateKeyFilePath,
-        String verificationCertFilePath,
-        String verificationPrivateKeyFilePath
+        String verificationCertFilePath
     ) {
         this.configurationId = configurationId;
         this.name = AlertRestConstants.DEFAULT_CONFIGURATION_NAME;
@@ -85,10 +85,10 @@ public class SAMLConfigurationEntity extends BaseEntity {
         this.wantAssertionsSigned = wantAssertionsSigned;
         this.roleAttributeMapping = roleAttributeMapping;
         this.encryptionCertFilePath = encryptionCertFilePath;
+        this.encryptionPrivateKeyFilePath = encryptionPrivateKeyFilePath;
         this.signingCertFilePath = signingCertFilePath;
         this.signingPrivateKeyFilePath = signingPrivateKeyFilePath;
         this.verificationCertFilePath = verificationCertFilePath;
-        this.verificationPrivateKeyFilePath = verificationPrivateKeyFilePath;
     }
 
     public UUID getConfigurationId() {
@@ -147,6 +147,10 @@ public class SAMLConfigurationEntity extends BaseEntity {
         return encryptionCertFilePath;
     }
 
+    public String getEncryptionPrivateKeyFilePath() {
+        return encryptionPrivateKeyFilePath;
+    }
+
     public String getSigningCertFilePath() {
         return signingCertFilePath;
     }
@@ -157,9 +161,5 @@ public class SAMLConfigurationEntity extends BaseEntity {
 
     public String getVerificationCertFilePath() {
         return verificationCertFilePath;
-    }
-
-    public String getVerificationPrivateKeyFilePath() {
-        return verificationPrivateKeyFilePath;
     }
 }

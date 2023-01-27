@@ -21,8 +21,10 @@ import org.springframework.web.multipart.MultipartFile;
 public class SAMLConfigController implements StaticUniqueConfigResourceController<SAMLConfigModel>, ValidateController<SAMLConfigModel> {
     private static final String METADATA_FILE_UPLOAD_PATH = "/" + AlertRestConstants.UPLOAD + "/metadata";
     private static final String ENCRYPTION_CERT_UPLOAD_PATH = "/" + AlertRestConstants.UPLOAD + "/encryption-cert";
-    private static final String VERIFICATION_CERT_UPLOAD_PATH = "/" + AlertRestConstants.UPLOAD + "/verification-cert";
+    private static final String ENCRYPTION_PRIVATE_KEY_UPLOAD_PATH = "/" + AlertRestConstants.UPLOAD + "/encryption-private-key";
     private static final String SIGNING_CERT_UPLOAD_PATH = "/" + AlertRestConstants.UPLOAD + "/signing-cert";
+    private static final String SIGNING_PRIVATE_KEY_UPLOAD_PATH = "/" + AlertRestConstants.UPLOAD + "/signing-private-key";
+    private static final String VERIFICATION_CERT_UPLOAD_PATH = "/" + AlertRestConstants.UPLOAD + "/verification-cert";
 
     private final SAMLCrudActions configActions;
     private final SAMLValidationAction validationAction;
@@ -60,6 +62,7 @@ public class SAMLConfigController implements StaticUniqueConfigResourceControlle
         return ResponseFactory.createContentResponseFromAction(validationAction.validate(requestBody));
     }
 
+    // Metadata file upload
     @GetMapping(METADATA_FILE_UPLOAD_PATH)
     public boolean checkMetadataFileExists() {
         return ResponseFactory.createContentResponseFromAction(
@@ -75,6 +78,7 @@ public class SAMLConfigController implements StaticUniqueConfigResourceControlle
         );
     }
 
+    // Encryption cert file upload
     @GetMapping(ENCRYPTION_CERT_UPLOAD_PATH)
     public boolean checkEncryptionCertFileExists() {
         return ResponseFactory.createContentResponseFromAction(
@@ -90,6 +94,23 @@ public class SAMLConfigController implements StaticUniqueConfigResourceControlle
         );
     }
 
+    // Encryption private key file upload
+    @GetMapping(ENCRYPTION_PRIVATE_KEY_UPLOAD_PATH)
+    public boolean checkEncryptionPrivateFileExists() {
+        return ResponseFactory.createContentResponseFromAction(
+            fileUploadActions.fileExists(AuthenticationDescriptor.SAML_ENCRYPTION_PRIVATE_KEY_FILE)
+        );
+    }
+
+    @PostMapping(ENCRYPTION_PRIVATE_KEY_UPLOAD_PATH)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void uploadEncryptionPrivateKeyFile(@RequestParam("file") MultipartFile file) {
+        ResponseFactory.createResponseFromAction(
+            fileUploadActions.keyFileUpload(AuthenticationDescriptor.SAML_ENCRYPTION_PRIVATE_KEY_FILE, file.getResource())
+        );
+    }
+
+    // Signing cert file upload
     @GetMapping(SIGNING_CERT_UPLOAD_PATH)
     public boolean checkSigningCertFileExists() {
         return ResponseFactory.createContentResponseFromAction(
@@ -105,6 +126,23 @@ public class SAMLConfigController implements StaticUniqueConfigResourceControlle
         );
     }
 
+    // Signing private key file upload
+    @GetMapping(SIGNING_PRIVATE_KEY_UPLOAD_PATH)
+    public boolean checkSigningPrivateKeyFileExists() {
+        return ResponseFactory.createContentResponseFromAction(
+            fileUploadActions.fileExists(AuthenticationDescriptor.SAML_SIGNING_PRIVATE_KEY_FILE)
+        );
+    }
+
+    @PostMapping(SIGNING_PRIVATE_KEY_UPLOAD_PATH)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void uploadSigningPrivateKeyFile(@RequestParam("file") MultipartFile file) {
+        ResponseFactory.createResponseFromAction(
+            fileUploadActions.keyFileUpload(AuthenticationDescriptor.SAML_SIGNING_PRIVATE_KEY_FILE, file.getResource())
+        );
+    }
+
+    // Verification cert file upload
     @GetMapping(VERIFICATION_CERT_UPLOAD_PATH)
     public boolean checkVerificationCertFileExists() {
         return ResponseFactory.createContentResponseFromAction(
