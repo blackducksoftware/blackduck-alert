@@ -19,6 +19,8 @@ import org.opensaml.saml2.core.NameID;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.saml.SAMLCredential;
 
+import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
+import com.synopsys.integration.alert.api.authentication.security.UserManagementAuthoritiesPopulator;
 import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
@@ -26,8 +28,6 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.common.security.UserPrincipal;
-import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
-import com.synopsys.integration.alert.component.authentication.security.UserManagementAuthoritiesPopulator;
 
 class UserDetailsServiceTest {
 

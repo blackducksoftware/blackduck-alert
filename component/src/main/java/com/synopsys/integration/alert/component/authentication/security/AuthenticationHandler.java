@@ -70,13 +70,14 @@ import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
+import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
+import com.synopsys.integration.alert.api.authentication.security.UserManagementAuthoritiesPopulator;
+import com.synopsys.integration.alert.api.authentication.security.event.AuthenticationEventManager;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
-import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
-import com.synopsys.integration.alert.api.authentication.security.event.AuthenticationEventManager;
 import com.synopsys.integration.alert.component.authentication.security.saml.AlertFilterChainProxy;
 import com.synopsys.integration.alert.component.authentication.security.saml.AlertSAMLEntryPoint;
 import com.synopsys.integration.alert.component.authentication.security.saml.AlertSAMLMetadataGenerator;

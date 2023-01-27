@@ -1,10 +1,3 @@
-/*
- * component
- *
- * Copyright (c) 2022 Synopsys, Inc.
- *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
- */
 package com.synopsys.integration.alert.api.authentication.descriptor;
 
 import java.util.Optional;
@@ -43,7 +36,7 @@ public class AuthenticationDescriptor extends ComponentDescriptor {
     public static final String KEY_SAML_METADATA_URL = "settings.saml.metadata.url";
     public static final String KEY_SAML_ENTITY_ID = "settings.saml.entity.id";
     public static final String KEY_SAML_ENTITY_BASE_URL = "settings.saml.entity.base.url";
-    public static final String KEY_SAML_METADATA_FILE = "settings.saml.metadata.file";
+    public static final String KEY_SAML_METADATA_FILE = "settings.saml.metadata.file";  // Field renamed to metadata_file_path for SAMLConfigModel
     public static final String KEY_SAML_WANT_ASSERTIONS_SIGNED = "settings.saml.want.assertions.signed";
 
     // SAML Role Attribute Mapping
@@ -55,6 +48,9 @@ public class AuthenticationDescriptor extends ComponentDescriptor {
     public static final String FIELD_ERROR_SAML_METADATA_FILE_MISSING = "SAML Metadata file has not been uploaded and a Metadata URL has not been specified.";
 
     public static final String SAML_METADATA_FILE = "saml_metadata.xml";
+    public static final String SAML_ENCRYPTION_CERT_FILE = "saml_encryption.cert";
+    public static final String SAML_SIGNING_CERT_FILE = "saml_signing.cert";
+    public static final String SAML_VERIFICATION_CERT_FILE = "saml_verification.cert";
 
     // Test fields
     public static final String TEST_FIELD_KEY_USERNAME = "test.field.user.name";

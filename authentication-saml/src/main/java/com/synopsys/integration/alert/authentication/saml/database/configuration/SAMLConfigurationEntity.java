@@ -1,5 +1,6 @@
 package com.synopsys.integration.alert.authentication.saml.database.configuration;
 
+import com.synopsys.integration.alert.authentication.saml.model.SAMLMetadataMode;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.database.BaseEntity;
 
@@ -31,10 +32,18 @@ public class SAMLConfigurationEntity extends BaseEntity {
     private String entityId;
     @Column(name = "entity_base_url")
     private String entityBaseUrl;
-    @Column(name = "require_assertions_signed")
-    private Boolean requireAssertionsSigned;
+    @Column(name = "want_assertions_signed")
+    private Boolean wantAssertionsSigned;
     @Column(name = "role_attribute_mapping")
     private String roleAttributeMapping;
+    @Column(name = "encryption_cert_file_path")
+    private String encryptionCertFilePath;
+    @Column(name = "signing_cert_file_path")
+    private String signingCertFilePath;
+    @Column(name = "verification_cert_file_path")
+    private String verificationCertFilePath;
+    @Column(name = "metadata_mode")
+    private SAMLMetadataMode metadataMode;
 
     public SAMLConfigurationEntity() {
     }
@@ -49,8 +58,12 @@ public class SAMLConfigurationEntity extends BaseEntity {
         String metadataFilePath,
         String entityId,
         String entityBaseUrl,
-        Boolean requireAssertionsSigned,
-        String roleAttributeMapping
+        Boolean wantAssertionsSigned,
+        String roleAttributeMapping,
+        String encryptionCertFilePath,
+        String signingCertFilePath,
+        String verificationCertFilePath,
+        SAMLMetadataMode metadataMode
     ) {
         this.configurationId = configurationId;
         this.name = AlertRestConstants.DEFAULT_CONFIGURATION_NAME;
@@ -62,8 +75,12 @@ public class SAMLConfigurationEntity extends BaseEntity {
         this.metadataFilePath = metadataFilePath;
         this.entityId = entityId;
         this.entityBaseUrl = entityBaseUrl;
-        this.requireAssertionsSigned = requireAssertionsSigned;
+        this.wantAssertionsSigned = wantAssertionsSigned;
         this.roleAttributeMapping = roleAttributeMapping;
+        this.encryptionCertFilePath = encryptionCertFilePath;
+        this.signingCertFilePath = signingCertFilePath;
+        this.verificationCertFilePath = verificationCertFilePath;
+        this.metadataMode = metadataMode;
     }
 
     public UUID getConfigurationId() {
@@ -106,11 +123,27 @@ public class SAMLConfigurationEntity extends BaseEntity {
         return entityBaseUrl;
     }
 
-    public Boolean getRequireAssertionsSigned() {
-        return requireAssertionsSigned;
+    public Boolean getWantAssertionsSigned() {
+        return wantAssertionsSigned;
     }
 
     public String getRoleAttributeMapping() {
         return roleAttributeMapping;
+    }
+
+    public String getEncryptionCertFilePath() {
+        return encryptionCertFilePath;
+    }
+
+    public String getSigningCertFilePath() {
+        return signingCertFilePath;
+    }
+
+    public String getVerificationCertFilePath() {
+        return verificationCertFilePath;
+    }
+
+    public SAMLMetadataMode getMetadataMode() {
+        return metadataMode;
     }
 }

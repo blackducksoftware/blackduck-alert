@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.database.BaseEntity;
 
 @Entity
@@ -30,8 +31,6 @@ public class LDAPConfigurationEntity extends BaseEntity {
     private String managerDn;
     @Column(name = "manager_password")
     private String managerPassword;
-    @Column(name = "is_manager_password_set")
-    private Boolean isManagerPasswordSet;
     @Column(name = "authentication_type")
     private String authenticationType;
     @Column(name = "referral")
@@ -56,14 +55,12 @@ public class LDAPConfigurationEntity extends BaseEntity {
 
     public LDAPConfigurationEntity(
         UUID configurationId,
-        String name,
         OffsetDateTime createdAt,
         OffsetDateTime lastUpdated,
         Boolean enabled,
         String serverName,
         String managerDn,
         String managerPassword,
-        Boolean isManagerPasswordSet,
         String authenticationType,
         String referral,
         String userSearchBase,
@@ -75,14 +72,13 @@ public class LDAPConfigurationEntity extends BaseEntity {
         String groupRoleAttribute
     ) {
         this.configurationId = configurationId;
-        this.name = name;
+        this.name = AlertRestConstants.DEFAULT_CONFIGURATION_NAME;
         this.createdAt = createdAt;
         this.lastUpdated = lastUpdated;
         this.enabled = enabled;
         this.serverName = serverName;
         this.managerDn = managerDn;
         this.managerPassword = managerPassword;
-        this.isManagerPasswordSet = isManagerPasswordSet;
         this.authenticationType = authenticationType;
         this.referral = referral;
         this.userSearchBase = userSearchBase;
@@ -124,10 +120,6 @@ public class LDAPConfigurationEntity extends BaseEntity {
 
     public String getManagerPassword() {
         return managerPassword;
-    }
-
-    public Boolean getManagerPasswordSet() {
-        return isManagerPasswordSet;
     }
 
     public String getAuthenticationType() {

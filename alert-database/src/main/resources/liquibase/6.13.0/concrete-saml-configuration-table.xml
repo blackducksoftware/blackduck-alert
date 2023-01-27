@@ -1,6 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="mau" id="create-saml-metadata-mode-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="saml_metadata_mode"/>
+            </not>
+        </preConditions>
+        <createTable schemaName="alert" tableName="saml_metadata_mode">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <insert schemaName="alert" tableName="saml_metadata_mode">
+            <column name="id" value="0"/>
+            <column name="name" value="file"/>
+        </insert>
+        <insert schemaName="alert" tableName="saml_metadata_mode">
+            <column name="id" value="1"/>
+            <column name="name" value="url"/>
+        </insert>
+    </changeSet>
     <changeSet author="mau" id="create-saml-configuration-table">
         <preConditions onFail="MARK_RAN">
             <not>
@@ -27,10 +50,10 @@
                 <constraints nullable="false"/>
             </column>
             <column name="metadata_url" type="VARCHAR">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column name="metadata_file_path" type="VARCHAR">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column name="entity_id" type="VARCHAR">
                 <constraints nullable="false"/>
@@ -38,12 +61,40 @@
             <column name="entity_base_url" type="VARCHAR">
                 <constraints nullable="false"/>
             </column>
-            <column name="require_assertions_signed" type="BOOLEAN" defaultValueBoolean="false">
+            <column name="want_assertions_signed" type="BOOLEAN" defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
             <column name="role_attribute_mapping" type="VARCHAR">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
+            </column>
+            <column name="encryption_cert_file_path" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+            <column name="signing_cert_file_path" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+            <column name="verification_cert_file_path" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+            <column name="metadata_mode" type="BIGINT">
+                <constraints nullable="true"/>
             </column>
         </createTable>
+    </changeSet>
+    <changeSet author="mau" id="add_saml_metadata_mode_fk">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="saml_metadata_mode_id_fk"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint
+                baseTableSchemaName="alert"
+                baseTableName="configuration_saml"
+                baseColumnNames="metadata_mode"
+                constraintName="saml_metadata_mode_id_fk"
+                referencedColumnNames="id"
+                referencedTableSchemaName="alert"
+                referencedTableName="saml_metadata_mode"
+        />
     </changeSet>
 </databaseChangeLog>
