@@ -58,6 +58,7 @@ public class IssueTrackerAsyncMessageSender<T extends Serializable> {
         if (eventList.isEmpty()) {
             // nothing further to send downstream. Channel handled message successfully.
             eventManager.sendEvent(new AuditSuccessEvent(jobExecutionId, notificationIds));
+            jobSubTaskAccessor.removeSubTaskStatus(parentEventId);
         } else {
             jobSubTaskAccessor.updateTaskCount(parentEventId, (long) eventList.size());
             eventManager.sendEvents(eventList);

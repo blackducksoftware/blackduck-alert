@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 import org.springframework.stereotype.Component;
 
@@ -30,12 +31,13 @@ public class AuditSuccessHandler implements AlertEventHandler<AuditSuccessEvent>
     @Override
     public void handle(AuditSuccessEvent event) {
         UUID jobExecutionId = event.getJobExecutionId();
-        executingJobManager.endJobWithSuccess(jobExecutionId, event.getCreatedTimestamp().toInstant());
-        Optional<ExecutingJob> executingJob = executingJobManager.getExecutingJob(jobExecutionId);
-        if (executingJob.isPresent()) {
-            jobExecutionStatusAccessor.saveExecutionStatus(createStatusModel(executingJob.get()));
-            executingJobManager.purgeJob(jobExecutionId);
-        }
+        executingJobManager.getExecutingJob(jobExecutionId)
+            .filter(Predicate.not(ExecutingJob::hasRemainingEvents))
+            .ifPresent(executingJob -> {
+                executingJobManager.endJobWithSuccess(jobExecutionId, event.getCreatedTimestamp().toInstant());
+                jobExecutionStatusAccessor.saveExecutionStatus(createStatusModel(executingJob));
+                executingJobManager.purgeJob(jobExecutionId);
+            });
     }
 
     private JobExecutionStatusModel createStatusModel(ExecutingJob executingJob) {

@@ -100,6 +100,10 @@ public class ExecutingJob {
         return remainingEvents.get();
     }
 
+    public boolean hasRemainingEvents() {
+        return remainingEvents.get() > 0;
+    }
+
     public Map<JobStage, ExecutingJobStage> getStages() {
         return stages;
     }
