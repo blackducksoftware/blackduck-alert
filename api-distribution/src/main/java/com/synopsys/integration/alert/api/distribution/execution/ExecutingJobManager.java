@@ -76,6 +76,22 @@ public class ExecutingJobManager {
         return remove;
     }
 
+    public void incrementRemainingEvents(UUID jobExecutionId, int eventCount) {
+        getExecutingJob(jobExecutionId)
+            .ifPresent(executingJob -> executingJob.incrementRemainingEventCount(eventCount));
+    }
+
+    public void decrementRemainingEvents(UUID jobExecutionId) {
+        getExecutingJob(jobExecutionId)
+            .ifPresent(ExecutingJob::decrementRemainingEventCount);
+    }
+
+    public boolean hasRemainingEvents(UUID jobExecutionId) {
+        return getExecutingJob(jobExecutionId)
+            .map(ExecutingJob::getRemainingEvents)
+            .stream().anyMatch(remainingEventCount -> remainingEventCount > 0);
+    }
+
     public AggregatedExecutionResults aggregateExecutingJobData() {
         Long pendingCount = countPendingJobs();
         Long successCount = countSuccessfulJobs();

@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 
@@ -14,8 +15,10 @@ public class ExecutingJob {
     private final Instant start;
     private Instant end;
     private AuditEntryStatus status;
-    private int processedNotificationCount;
-    private final int totalNotificationCount;
+    private final AtomicInteger processedNotificationCount;
+    private final AtomicInteger totalNotificationCount;
+
+    private final AtomicInteger remainingEvents;
     private final Map<JobStage, ExecutingJobStage> stages = new ConcurrentHashMap<>();
 
     public static ExecutingJob startJob(UUID jobConfigId, int totalNotificationCount) {
@@ -27,8 +30,9 @@ public class ExecutingJob {
         this.jobConfigId = jobConfigId;
         this.start = start;
         this.status = status;
-        this.processedNotificationCount = 0;
-        this.totalNotificationCount = totalNotificationCount;
+        this.processedNotificationCount = new AtomicInteger(0);
+        this.totalNotificationCount = new AtomicInteger(totalNotificationCount);
+        this.remainingEvents = new AtomicInteger(0);
     }
 
     public void jobSucceeded(Instant endTime) {
@@ -45,7 +49,15 @@ public class ExecutingJob {
     }
 
     public void updateNotificationCount(int notificationCount) {
-        this.processedNotificationCount += notificationCount;
+        this.processedNotificationCount.addAndGet(notificationCount);
+    }
+
+    public void incrementRemainingEventCount(int eventsToAdd) {
+        this.remainingEvents.addAndGet(eventsToAdd);
+    }
+
+    public void decrementRemainingEventCount() {
+        this.remainingEvents.decrementAndGet();
     }
 
     public void addStage(ExecutingJobStage jobStage) {
@@ -65,11 +77,11 @@ public class ExecutingJob {
     }
 
     public int getProcessedNotificationCount() {
-        return processedNotificationCount;
+        return processedNotificationCount.get();
     }
 
     public int getTotalNotificationCount() {
-        return totalNotificationCount;
+        return totalNotificationCount.get();
     }
 
     public Instant getStart() {
@@ -82,6 +94,10 @@ public class ExecutingJob {
 
     public AuditEntryStatus getStatus() {
         return status;
+    }
+
+    public int getRemainingEvents() {
+        return remainingEvents.get();
     }
 
     public Map<JobStage, ExecutingJobStage> getStages() {
