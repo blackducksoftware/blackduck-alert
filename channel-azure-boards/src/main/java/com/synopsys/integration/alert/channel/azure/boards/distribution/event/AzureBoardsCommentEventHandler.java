@@ -24,6 +24,7 @@ import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerIssueR
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerResponse;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesFactory;
@@ -60,9 +61,10 @@ public class AzureBoardsCommentEventHandler extends IssueTrackerCommentEventHand
         AzureBoardsMessageSenderFactory azureBoardsMessageSenderFactory,
         ProxyManager proxyManager,
         JobDetailsAccessor<AzureBoardsJobDetailsModel> jobDetailsAccessor,
-        IssueTrackerResponsePostProcessor responsePostProcessor
+        IssueTrackerResponsePostProcessor responsePostProcessor,
+        ExecutingJobManager executingJobManager
     ) {
-        super(eventManager, jobSubTaskAccessor, responsePostProcessor);
+        super(eventManager, jobSubTaskAccessor, responsePostProcessor, executingJobManager);
         this.gson = gson;
         this.azureBoardsPropertiesFactory = azureBoardsPropertiesFactory;
         this.azureBoardsMessageSenderFactory = azureBoardsMessageSenderFactory;

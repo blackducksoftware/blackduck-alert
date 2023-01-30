@@ -14,6 +14,7 @@ import org.springframework.amqp.core.Message;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.jira.server.distribution.event.mock.MockCorrelationToNotificationRelationRepository;
 import com.synopsys.integration.alert.channel.jira.server.distribution.event.mock.MockJobSubTaskStatusRepository;
@@ -32,6 +33,7 @@ class JiraServerCreateIssueEventListenerTest {
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
         EventManager eventManager = Mockito.mock(EventManager.class);
+        ExecutingJobManager executingJobManager = Mockito.mock(ExecutingJobManager.class);
 
         LinkableItem provider = new LinkableItem("provider", "test-provider");
         IssueCreationModel issueCreationModel = IssueCreationModel.simple("title", "description", List.of(), provider);
@@ -54,7 +56,8 @@ class JiraServerCreateIssueEventListenerTest {
             null,
             null,
             null,
-            null
+            null,
+            executingJobManager
         ));
         Mockito.doNothing().when(handler).handleEvent(event);
 

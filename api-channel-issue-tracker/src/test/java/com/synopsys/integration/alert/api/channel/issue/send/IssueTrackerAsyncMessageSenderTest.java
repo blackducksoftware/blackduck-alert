@@ -17,6 +17,7 @@ import com.synopsys.integration.alert.api.channel.issue.model.IssueCommentModel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerModelHolder;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTransitionModel;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
@@ -28,6 +29,9 @@ class IssueTrackerAsyncMessageSenderTest {
     private EventManager mockEventManager;
     @Mock
     private JobSubTaskAccessor mockJobSubTaskAccessor;
+
+    @Mock
+    private ExecutingJobManager executingJobManager;
 
     @Test
     void sendAsyncMessagesNoEventsTest() {
@@ -47,7 +51,8 @@ class IssueTrackerAsyncMessageSenderTest {
             mockJobSubTaskAccessor,
             parentEventId,
             jobExecutionId,
-            Set.of(1L, 2L, 3L)
+            Set.of(1L, 2L, 3L),
+            executingJobManager
         );
 
         sender.sendAsyncMessages(List.of(modelHolder));
@@ -85,7 +90,8 @@ class IssueTrackerAsyncMessageSenderTest {
             mockJobSubTaskAccessor,
             parentEventId,
             jobExecutionId,
-            Set.of(1L, 2L, 3L)
+            Set.of(1L, 2L, 3L),
+            executingJobManager
         );
 
         sender.sendAsyncMessages(List.of(modelHolder));

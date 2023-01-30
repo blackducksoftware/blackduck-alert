@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerModelHolder;
 import com.synopsys.integration.alert.api.distribution.audit.AuditSuccessEvent;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.distribution.execution.JobStage;
 import com.synopsys.integration.alert.api.distribution.execution.JobStageStartedEvent;
 import com.synopsys.integration.alert.api.event.AlertEvent;
@@ -28,6 +29,7 @@ public class IssueTrackerAsyncMessageSender<T extends Serializable> {
     private final UUID parentEventId;
     private final UUID jobExecutionId;
     private final Set<Long> notificationIds;
+    private final ExecutingJobManager executingJobManager;
 
     public IssueTrackerAsyncMessageSender(
         IssueTrackerCreationEventGenerator issueCreateEventGenerator,
@@ -37,7 +39,8 @@ public class IssueTrackerAsyncMessageSender<T extends Serializable> {
         JobSubTaskAccessor jobSubTaskAccessor,
         UUID parentEventId,
         UUID jobExecutionId,
-        Set<Long> notificationIds
+        Set<Long> notificationIds,
+        ExecutingJobManager executingJobManager
     ) {
         this.issueCreateEventGenerator = issueCreateEventGenerator;
         this.issueTrackerTransitionEventGenerator = issueTrackerTransitionEventGenerator;
@@ -47,6 +50,7 @@ public class IssueTrackerAsyncMessageSender<T extends Serializable> {
         this.parentEventId = parentEventId;
         this.jobExecutionId = jobExecutionId;
         this.notificationIds = notificationIds;
+        this.executingJobManager = executingJobManager;
     }
 
     public final void sendAsyncMessages(List<IssueTrackerModelHolder<T>> issueTrackerMessages) {

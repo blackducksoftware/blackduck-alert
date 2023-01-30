@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.distribution.execution.JobStage;
 import com.synopsys.integration.alert.api.distribution.mock.MockJobSubTaskRepository;
 import com.synopsys.integration.alert.api.distribution.mock.MockNotificationCorrelationToNotificationRelationRepository;
@@ -31,6 +32,7 @@ class JobSubTaskEventHandlerTest {
     private JobSubTaskAccessor jobSubTaskAccessor;
     private JobSubTaskRepository jobSubTaskRepository;
     private NotificationCorrelationToNotificationRelationRepository relationRepository;
+    private ExecutingJobManager executingJobManager;
 
     @BeforeEach
     public void init() {
@@ -38,6 +40,7 @@ class JobSubTaskEventHandlerTest {
         relationRepository = new MockNotificationCorrelationToNotificationRelationRepository(this::getRelationKey);
         eventManager = Mockito.mock(EventManager.class);
         jobSubTaskAccessor = new DefaultJobSubTaskAccessor(jobSubTaskRepository, relationRepository);
+        executingJobManager = Mockito.mock(ExecutingJobManager.class);
     }
 
     private NotificationCorrelationToNotificationRelationPK getRelationKey(NotificationCorrelationToNotificationRelation relation) {
@@ -54,7 +57,7 @@ class JobSubTaskEventHandlerTest {
 
         jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobId, jobExecutionId, 2L, notificationIds);
 
-        TestHandler handler = new TestHandler(eventManager, jobSubTaskAccessor);
+        TestHandler handler = new TestHandler(eventManager, jobSubTaskAccessor, executingJobManager);
         TestEvent event = new TestEvent(destination, parentEventId, jobExecutionId, jobId, notificationIds);
         handler.handle(event);
 
@@ -80,7 +83,7 @@ class JobSubTaskEventHandlerTest {
 
         jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobId, jobExecutionId, 2L, notificationIds);
 
-        TestHandler handler = new TestHandler(eventManager, jobSubTaskAccessor);
+        TestHandler handler = new TestHandler(eventManager, jobSubTaskAccessor, executingJobManager);
         handler.setShouldThrowException(true);
 
         TestEvent event = new TestEvent(destination, parentEventId, jobExecutionId, jobId, notificationIds);
@@ -101,7 +104,7 @@ class JobSubTaskEventHandlerTest {
 
         jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobId, jobExecutionId, 1L, notificationIds);
 
-        TestHandler handler = new TestHandler(eventManager, jobSubTaskAccessor);
+        TestHandler handler = new TestHandler(eventManager, jobSubTaskAccessor, executingJobManager);
         TestEvent event = new TestEvent(destination, parentEventId, jobExecutionId, jobId, notificationIds);
         handler.handle(event);
 
@@ -124,9 +127,10 @@ class JobSubTaskEventHandlerTest {
 
         protected TestHandler(
             EventManager eventManager,
-            JobSubTaskAccessor jobSubTaskAccessor
+            JobSubTaskAccessor jobSubTaskAccessor,
+            ExecutingJobManager executingJobManager
         ) {
-            super(eventManager, jobSubTaskAccessor, JobStage.CHANNEL_PROCESSING);
+            super(eventManager, jobSubTaskAccessor, JobStage.CHANNEL_PROCESSING, executingJobManager);
 
         }
 
