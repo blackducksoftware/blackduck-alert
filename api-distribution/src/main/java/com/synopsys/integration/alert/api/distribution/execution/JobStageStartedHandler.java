@@ -1,5 +1,6 @@
 package com.synopsys.integration.alert.api.distribution.execution;
 
+import java.time.Instant;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,6 @@ public class JobStageStartedHandler implements AlertEventHandler<JobStageStarted
         UUID jobExecutionId = event.getJobExecutionId();
         JobStage jobStage = event.getJobStage();
         executingJobManager.getExecutingJob(jobExecutionId)
-            .ifPresent(executingJob -> executingJobManager.startStage(jobExecutionId, jobStage));
+            .ifPresent(executingJob -> executingJobManager.startStage(jobExecutionId, jobStage, Instant.ofEpochMilli(event.getStartTimeMilliseconds())));
     }
 }

@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.api.channel.issue.send;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -92,7 +93,7 @@ public class IssueTrackerAsyncMessageSender<T extends Serializable> {
 
     private void addEventsAndStartStage(List<AlertEvent> allEvents, List<AlertEvent> events, JobStage jobStage) {
         if (!events.isEmpty()) {
-            eventManager.sendEvent(new JobStageStartedEvent(jobExecutionId, jobStage));
+            eventManager.sendEvent(new JobStageStartedEvent(jobExecutionId, jobStage, Instant.now().toEpochMilli()));
             allEvents.addAll(events);
         }
     }

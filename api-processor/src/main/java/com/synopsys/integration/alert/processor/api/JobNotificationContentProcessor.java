@@ -83,7 +83,7 @@ public class JobNotificationContentProcessor {
         while (jobNotificationMappings.getCurrentPage() <= jobNotificationMappings.getTotalPages()) {
             List<Long> notificationIds = extractNotificationIds(jobNotificationMappings);
             List<AlertNotificationModel> notifications = notificationAccessor.findByIds(notificationIds);
-            executingJobManager.incrementNotificationCount(jobExecutionId, notifications.size());
+            executingJobManager.incrementProcessedNotificationCount(jobExecutionId, notifications.size());
             logNotifications("Start", event, notificationIds);
             List<NotificationContentWrapper> notificationContentList = notifications
                 .stream()

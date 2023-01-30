@@ -19,6 +19,9 @@ public class ExecutingJob {
     private final AtomicInteger totalNotificationCount;
 
     private final AtomicInteger remainingEvents;
+
+    private final AtomicInteger notificationsSent;
+
     private final Map<JobStage, ExecutingJobStage> stages = new ConcurrentHashMap<>();
 
     public static ExecutingJob startJob(UUID jobConfigId, int totalNotificationCount) {
@@ -33,6 +36,7 @@ public class ExecutingJob {
         this.processedNotificationCount = new AtomicInteger(0);
         this.totalNotificationCount = new AtomicInteger(totalNotificationCount);
         this.remainingEvents = new AtomicInteger(0);
+        this.notificationsSent = new AtomicInteger(0);
     }
 
     public void jobSucceeded(Instant endTime) {
@@ -51,6 +55,8 @@ public class ExecutingJob {
     public void updateNotificationCount(int notificationCount) {
         this.processedNotificationCount.addAndGet(notificationCount);
     }
+
+    public void incrementNotificationsSentCount(int notificationCount) {this.notificationsSent.addAndGet(notificationCount);}
 
     public void incrementRemainingEventCount(int eventsToAdd) {
         this.remainingEvents.addAndGet(eventsToAdd);
@@ -84,6 +90,10 @@ public class ExecutingJob {
         return totalNotificationCount.get();
     }
 
+    public int getNotificationsSent() {
+        return notificationsSent.get();
+    }
+
     public Instant getStart() {
         return start;
     }
@@ -94,6 +104,15 @@ public class ExecutingJob {
 
     public AuditEntryStatus getStatus() {
         return status;
+    }
+
+    public boolean isCompleted() {
+        return !hasCompletedStatus() || hasRemainingEvents();
+    }
+
+    private boolean hasCompletedStatus() {
+        return AuditEntryStatus.SUCCESS == getStatus() ||
+            AuditEntryStatus.FAILURE == getStatus();
     }
 
     public int getRemainingEvents() {

@@ -40,6 +40,7 @@ public class AuditFailedHandler implements AlertEventHandler<AuditFailedEvent> {
     public void handle(AuditFailedEvent event) {
         UUID jobExecutionId = event.getJobExecutionId();
         executingJobManager.endJobWithFailure(jobExecutionId, event.getCreatedTimestamp().toInstant());
+        executingJobManager.incrementSentNotificationCount(jobExecutionId, event.getNotificationIds().size());
         Optional<ExecutingJob> executingJobOptional = executingJobManager.getExecutingJob(jobExecutionId);
         if (executingJobOptional.isPresent()) {
             ExecutingJob executingJob = executingJobOptional.get();
@@ -55,12 +56,14 @@ public class AuditFailedHandler implements AlertEventHandler<AuditFailedEvent> {
             } else {
                 processingFailedAccessor.setAuditFailure(jobConfigId, event.getNotificationIds(), event.getCreatedTimestamp(), event.getErrorMessage());
             }
-            jobExecutionStatusAccessor.saveExecutionStatus(createStatusModel(executingJob, event.getNotificationIds().size()));
+            if (executingJob.isCompleted()) {
+                jobExecutionStatusAccessor.saveExecutionStatus(createStatusModel(executingJob));
+            }
             //executingJobManager.purgeJob(jobExecutionId);
         }
     }
 
-    private JobExecutionStatusModel createStatusModel(ExecutingJob executingJob, int notificationCount) {
+    private JobExecutionStatusModel createStatusModel(ExecutingJob executingJob) {
         UUID jobConfigId = executingJob.getJobConfigId();
         JobExecutionStatusModel resultStatus;
         Optional<JobExecutionStatusModel> status = jobExecutionStatusAccessor.getJobExecutionStatus(jobConfigId);
@@ -86,7 +89,7 @@ public class AuditFailedHandler implements AlertEventHandler<AuditFailedEvent> {
             resultStatus = new JobExecutionStatusModel(
                 executingJob.getJobConfigId(),
                 Integer.valueOf(executingJob.getProcessedNotificationCount()).longValue(),
-                Integer.valueOf(notificationCount).longValue() + currentStatus.getTotalNotificationCount(),
+                Integer.valueOf(executingJob.getProcessedNotificationCount()).longValue() + currentStatus.getTotalNotificationCount(),
                 currentStatus.getSuccessCount(),
                 currentStatus.getFailureCount() + 1L,
                 AuditEntryStatus.FAILURE.name(),
@@ -106,7 +109,7 @@ public class AuditFailedHandler implements AlertEventHandler<AuditFailedEvent> {
             resultStatus = new JobExecutionStatusModel(
                 executingJob.getJobConfigId(),
                 Integer.valueOf(executingJob.getProcessedNotificationCount()).longValue(),
-                Integer.valueOf(notificationCount).longValue(),
+                Integer.valueOf(executingJob.getProcessedNotificationCount()).longValue(),
                 0L,
                 1L,
                 AuditEntryStatus.FAILURE.name(),

@@ -34,13 +34,15 @@ public class AuditSuccessHandler implements AlertEventHandler<AuditSuccessEvent>
         executingJobManager.getExecutingJob(jobExecutionId)
             .filter(Predicate.not(ExecutingJob::hasRemainingEvents))
             .ifPresent(executingJob -> {
-                executingJobManager.endJobWithSuccess(jobExecutionId, event.getCreatedTimestamp().toInstant());
-                jobExecutionStatusAccessor.saveExecutionStatus(createStatusModel(executingJob, event.getNotificationIds().size()));
+                if (executingJob.isCompleted()) {
+                    executingJobManager.endJobWithSuccess(jobExecutionId, event.getCreatedTimestamp().toInstant());
+                    jobExecutionStatusAccessor.saveExecutionStatus(createStatusModel(executingJob));
+                }
                 //executingJobManager.purgeJob(jobExecutionId);
             });
     }
 
-    private JobExecutionStatusModel createStatusModel(ExecutingJob executingJob, int notificationCount) {
+    private JobExecutionStatusModel createStatusModel(ExecutingJob executingJob) {
         UUID jobConfigId = executingJob.getJobConfigId();
         JobExecutionStatusModel resultStatus;
         Optional<JobExecutionStatusModel> status = jobExecutionStatusAccessor.getJobExecutionStatus(jobConfigId);
@@ -66,7 +68,7 @@ public class AuditSuccessHandler implements AlertEventHandler<AuditSuccessEvent>
             resultStatus = new JobExecutionStatusModel(
                 executingJob.getJobConfigId(),
                 Integer.valueOf(executingJob.getProcessedNotificationCount()).longValue(),
-                Integer.valueOf(notificationCount).longValue() + currentStatus.getTotalNotificationCount(),
+                Integer.valueOf(executingJob.getProcessedNotificationCount()).longValue() + currentStatus.getTotalNotificationCount(),
                 currentStatus.getSuccessCount() + 1L,
                 currentStatus.getFailureCount(),
                 AuditEntryStatus.SUCCESS.name(),
@@ -86,7 +88,7 @@ public class AuditSuccessHandler implements AlertEventHandler<AuditSuccessEvent>
             resultStatus = new JobExecutionStatusModel(
                 executingJob.getJobConfigId(),
                 Integer.valueOf(executingJob.getProcessedNotificationCount()).longValue(),
-                Integer.valueOf(notificationCount).longValue(),
+                Integer.valueOf(executingJob.getProcessedNotificationCount()).longValue(),
                 1L,
                 0L,
                 AuditEntryStatus.SUCCESS.name(),

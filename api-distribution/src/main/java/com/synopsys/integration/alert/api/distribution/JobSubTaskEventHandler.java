@@ -1,5 +1,6 @@
 package com.synopsys.integration.alert.api.distribution;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -42,13 +43,13 @@ public abstract class JobSubTaskEventHandler<T extends JobSubTaskEvent> implemen
             subTaskStatus.map(JobSubTaskStatusModel::getRemainingTaskCount)
                 .filter(remainingCount -> remainingCount < 1)
                 .ifPresent(ignored -> {
-                    eventManager.sendEvent(new JobStageEndedEvent(jobExecutionId, jobStage));
+                    eventManager.sendEvent(new JobStageEndedEvent(jobExecutionId, jobStage, Instant.now().toEpochMilli()));
                     // need to check if the count of the jobExecution id is 1 for this event only.
                     eventManager.sendEvent(new AuditSuccessEvent(jobExecutionId, event.getNotificationIds()));
                     jobSubTaskAccessor.removeSubTaskStatus(parentEventId);
                 });
         } catch (AlertException exception) {
-            eventManager.sendEvent(new JobStageEndedEvent(jobExecutionId, jobStage));
+            eventManager.sendEvent(new JobStageEndedEvent(jobExecutionId, jobStage, Instant.now().toEpochMilli()));
             eventManager.sendEvent(new AuditFailedEvent(
                 jobExecutionId,
                 event.getNotificationIds(),

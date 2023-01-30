@@ -34,7 +34,7 @@ public class ExecutingJobManager {
         executingJob.ifPresent(execution -> execution.jobFailed(endTime));
     }
 
-    public void incrementNotificationCount(UUID jobExecutionId, int notificationCount) {
+    public void incrementProcessedNotificationCount(UUID jobExecutionId, int notificationCount) {
         Optional<ExecutingJob> executingJob = getExecutingJob(jobExecutionId);
         executingJob.ifPresent(execution -> execution.updateNotificationCount(notificationCount));
     }
@@ -52,18 +52,18 @@ public class ExecutingJobManager {
         return new AlertPagedModel<>(pages.size(), pageNumber, pageSize, pageOfData);
     }
 
-    public void startStage(UUID executionId, JobStage stage) {
+    public void startStage(UUID executionId, JobStage stage, Instant start) {
         Optional<ExecutingJob> executingJob = Optional.ofNullable(executingJobMap.getOrDefault(executionId, null));
         executingJob.ifPresent(job -> {
-            job.addStage(ExecutingJobStage.createStage(executionId, stage));
+            job.addStage(ExecutingJobStage.createStage(executionId, stage, start));
         });
     }
 
-    public void endStage(UUID executionId, JobStage stage) {
+    public void endStage(UUID executionId, JobStage stage, Instant end) {
         Optional<ExecutingJob> executingJob = Optional.ofNullable(executingJobMap.getOrDefault(executionId, null));
         executingJob
             .flatMap(job -> job.getStage(stage))
-            .ifPresent(ExecutingJobStage::endStage);
+            .ifPresent(jobStage -> jobStage.endStage(end));
     }
 
     public void purgeJob(UUID executionId) {
@@ -84,6 +84,11 @@ public class ExecutingJobManager {
         return getExecutingJob(jobExecutionId)
             .map(ExecutingJob::getRemainingEvents)
             .stream().anyMatch(remainingEventCount -> remainingEventCount > 0);
+    }
+
+    public void incrementSentNotificationCount(UUID jobExecutionId, int notificationCount) {
+        Optional<ExecutingJob> executingJob = getExecutingJob(jobExecutionId);
+        executingJob.ifPresent(execution -> execution.incrementNotificationsSentCount(notificationCount));
     }
 
     public AggregatedExecutionResults aggregateExecutingJobData() {
