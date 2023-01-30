@@ -43,9 +43,9 @@ public class SAMLManager {
         this.filePersistenceUtil = filePersistenceUtil;
     }
 
-    public void reconfigureSAMLFromDBConfigModel() {
+    public void reconfigureSAML() {
         Optional<SAMLConfigModel> optionalSAMLConfigModel = configAccessor.getConfiguration();
-        if(optionalSAMLConfigModel.isPresent()) {
+        if (optionalSAMLConfigModel.isPresent()) {
             SAMLConfigModel samlConfigModel = optionalSAMLConfigModel.get();
             boolean samlEnabled = samlConfigModel.getEnabled().orElse(false);
 
