@@ -70,10 +70,18 @@ public class SAMLManager {
     }
 
     private RelyingPartyRegistration createRegistration(SAMLConfigModel configModel) throws CertificateException, IOException {
-        String metadataUrl = configModel.getMetadataUrl().orElse("");
+        Optional<String> optionalMetadataUrl = configModel.getMetadataUrl();
+        RelyingPartyRegistration.Builder builder;
 
-        // TODO: metadataUrl, entityId?
-        RelyingPartyRegistration.Builder builder = RelyingPartyRegistrations.fromMetadataLocation(metadataUrl).registrationId("okta");
+        if (optionalMetadataUrl.isPresent()) {
+            builder = RelyingPartyRegistrations.fromMetadataLocation(optionalMetadataUrl.get()).registrationId("default");
+        } else {
+            String metadataString = filePersistenceUtil.readFromFile(AuthenticationDescriptor.SAML_METADATA_FILE);
+            try (InputStream metadataInputStream = new ByteArrayInputStream(metadataString.getBytes())) {
+                builder = RelyingPartyRegistrations.fromMetadata(metadataInputStream);
+            }
+        }
+
         if (filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_SIGNING_CERT_FILE)) {
             signingCredentialBuilder(builder);
         }
@@ -84,8 +92,7 @@ public class SAMLManager {
             verificationCredentialBuilder(builder);
         }
 
-        builder
-            .assertingPartyDetails(party -> party.wantAuthnRequestsSigned(configModel.getWantAssertionsSigned().orElse(false)));
+        builder.assertingPartyDetails(party -> party.wantAuthnRequestsSigned(configModel.getWantAssertionsSigned().orElse(false)));
 
         return builder.build();
     }
@@ -121,8 +128,7 @@ public class SAMLManager {
         String verificationCertString = filePersistenceUtil.readFromFile(AuthenticationDescriptor.SAML_VERIFICATION_CERT_FILE);
         X509Certificate verificationCert = X509Support.decodeCertificate(verificationCertString);
         Saml2X509Credential verificationCredential = Saml2X509Credential.verification(verificationCert);
-        builder
-            .assertingPartyDetails(party -> party.verificationX509Credentials(credentials -> credentials.add(verificationCredential)));
+        builder.assertingPartyDetails(party -> party.verificationX509Credentials(credentials -> credentials.add(verificationCredential)));
     }
 
 //    private RelyingPartyRegistration createRegistration() throws CertificateException, IOException {

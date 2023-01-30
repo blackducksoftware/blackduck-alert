@@ -111,7 +111,7 @@ public class ApplicationConfiguration {
     }
 
     @Bean
-    public AlertRelyingPartyRegistrationRepository alertInRelyingPartyRegistrationRepository() {
+    public AlertRelyingPartyRegistrationRepository alertRelyingPartyRegistrationRepository() {
         return new AlertRelyingPartyRegistrationRepository();
     }
 }
