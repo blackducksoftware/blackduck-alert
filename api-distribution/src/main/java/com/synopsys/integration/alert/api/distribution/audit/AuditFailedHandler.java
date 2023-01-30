@@ -55,19 +55,19 @@ public class AuditFailedHandler implements AlertEventHandler<AuditFailedEvent> {
             } else {
                 processingFailedAccessor.setAuditFailure(jobConfigId, event.getNotificationIds(), event.getCreatedTimestamp(), event.getErrorMessage());
             }
-            jobExecutionStatusAccessor.saveExecutionStatus(createStatusModel(executingJob));
-            executingJobManager.purgeJob(jobExecutionId);
+            jobExecutionStatusAccessor.saveExecutionStatus(createStatusModel(executingJob, event.getNotificationIds().size()));
+            //executingJobManager.purgeJob(jobExecutionId);
         }
     }
 
-    private JobExecutionStatusModel createStatusModel(ExecutingJob executingJob) {
+    private JobExecutionStatusModel createStatusModel(ExecutingJob executingJob, int notificationCount) {
         UUID jobConfigId = executingJob.getJobConfigId();
         JobExecutionStatusModel resultStatus;
         Optional<JobExecutionStatusModel> status = jobExecutionStatusAccessor.getJobExecutionStatus(jobConfigId);
         if (status.isPresent()) {
             JobExecutionStatusModel currentStatus = status.get();
             JobExecutionStatusDurations currentDurations = currentStatus.getDurations();
-            Long jobDuration = calculateMillisecondDuration(executingJob.getStart(), executingJob.getEnd().orElse(Instant.now()));
+            Long jobDuration = calculateNanosecondDuration(executingJob.getStart(), executingJob.getEnd().orElse(Instant.now()));
             Long processingStageDuration = calculateJobStageDuration(executingJob, JobStage.NOTIFICATION_PROCESSING);
             Long channelProcessingStageDuration = calculateJobStageDuration(executingJob, JobStage.CHANNEL_PROCESSING);
             Long issueCreationDuration = calculateJobStageDuration(executingJob, JobStage.ISSUE_CREATION);
@@ -85,7 +85,8 @@ public class AuditFailedHandler implements AlertEventHandler<AuditFailedEvent> {
 
             resultStatus = new JobExecutionStatusModel(
                 executingJob.getJobConfigId(),
-                calculateAverage(Integer.valueOf(executingJob.getProcessedNotificationCount()).longValue(), currentStatus.getNotificationCount()),
+                Integer.valueOf(executingJob.getProcessedNotificationCount()).longValue(),
+                Integer.valueOf(notificationCount).longValue() + currentStatus.getTotalNotificationCount(),
                 currentStatus.getSuccessCount(),
                 currentStatus.getFailureCount() + 1L,
                 AuditEntryStatus.FAILURE.name(),
@@ -95,7 +96,7 @@ public class AuditFailedHandler implements AlertEventHandler<AuditFailedEvent> {
 
         } else {
             JobExecutionStatusDurations durations = new JobExecutionStatusDurations(
-                calculateMillisecondDuration(executingJob.getStart(), executingJob.getEnd().orElse(Instant.now())),
+                calculateNanosecondDuration(executingJob.getStart(), executingJob.getEnd().orElse(Instant.now())),
                 calculateJobStageDuration(executingJob, JobStage.NOTIFICATION_PROCESSING),
                 calculateJobStageDuration(executingJob, JobStage.CHANNEL_PROCESSING),
                 calculateJobStageDuration(executingJob, JobStage.ISSUE_CREATION),
@@ -105,6 +106,7 @@ public class AuditFailedHandler implements AlertEventHandler<AuditFailedEvent> {
             resultStatus = new JobExecutionStatusModel(
                 executingJob.getJobConfigId(),
                 Integer.valueOf(executingJob.getProcessedNotificationCount()).longValue(),
+                Integer.valueOf(notificationCount).longValue(),
                 0L,
                 1L,
                 AuditEntryStatus.FAILURE.name(),
@@ -126,11 +128,11 @@ public class AuditFailedHandler implements AlertEventHandler<AuditFailedEvent> {
     private Long calculateJobStageDuration(ExecutingJob executingJob, JobStage stage) {
         return executingJob.getStage(stage)
             .filter(executingJobStage -> executingJobStage.getEnd().isPresent())
-            .map(executedStage -> calculateMillisecondDuration(executedStage.getStart(), executedStage.getEnd().orElse(Instant.now())))
+            .map(executedStage -> calculateNanosecondDuration(executedStage.getStart(), executedStage.getEnd().orElse(Instant.now())))
             .orElse(0L);
     }
 
-    private Long calculateMillisecondDuration(Instant start, Instant end) {
-        return Duration.between(start, end).toMillis();
+    private Long calculateNanosecondDuration(Instant start, Instant end) {
+        return Duration.between(start, end).toNanos();
     }
 }

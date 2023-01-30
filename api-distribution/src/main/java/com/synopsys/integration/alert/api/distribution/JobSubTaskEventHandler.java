@@ -19,7 +19,6 @@ import com.synopsys.integration.alert.common.persistence.model.job.workflow.JobS
 import com.synopsys.integration.alert.common.persistence.util.AuditStackTraceUtil;
 
 public abstract class JobSubTaskEventHandler<T extends JobSubTaskEvent> implements AlertEventHandler<T> {
-
     private final EventManager eventManager;
     private final JobSubTaskAccessor jobSubTaskAccessor;
     private final JobStage jobStage;
@@ -36,6 +35,7 @@ public abstract class JobSubTaskEventHandler<T extends JobSubTaskEvent> implemen
     public final void handle(T event) {
         UUID parentEventId = event.getParentEventId();
         UUID jobExecutionId = event.getJobExecutionId();
+        executingJobManager.decrementRemainingEvents(jobExecutionId);
         try {
             handleEvent(event);
             Optional<JobSubTaskStatusModel> subTaskStatus = jobSubTaskAccessor.decrementTaskCount(parentEventId);

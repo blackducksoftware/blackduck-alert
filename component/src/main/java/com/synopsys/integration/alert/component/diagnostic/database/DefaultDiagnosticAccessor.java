@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +24,18 @@ import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobMan
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobStage;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.persistence.accessor.DiagnosticAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.JobExecutionStatusAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModelData;
+import com.synopsys.integration.alert.common.persistence.model.job.executions.JobExecutionStatusDurations;
+import com.synopsys.integration.alert.common.persistence.model.job.executions.JobExecutionStatusModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedQueryDetails;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.component.diagnostic.model.AuditDiagnosticModel;
+import com.synopsys.integration.alert.component.diagnostic.model.CompletedJobDiagnosticModel;
+import com.synopsys.integration.alert.component.diagnostic.model.CompletedJobDurationDiagnosticModel;
+import com.synopsys.integration.alert.component.diagnostic.model.CompletedJobsDiagnosticModel;
 import com.synopsys.integration.alert.component.diagnostic.model.DiagnosticModel;
 import com.synopsys.integration.alert.component.diagnostic.model.JobExecutionDiagnosticModel;
 import com.synopsys.integration.alert.component.diagnostic.model.JobExecutionsDiagnosticModel;
@@ -48,6 +56,7 @@ public class DefaultDiagnosticAccessor implements DiagnosticAccessor {
 
     private final StaticJobAccessor jobAccessor;
     private final ExecutingJobManager executingJobManager;
+    private final JobExecutionStatusAccessor completedJobStatusAccessor;
 
     @Autowired
     public DefaultDiagnosticAccessor(
@@ -55,12 +64,14 @@ public class DefaultDiagnosticAccessor implements DiagnosticAccessor {
         AuditEntryRepository auditEntryRepository,
         RabbitMQDiagnosticUtility rabbitMQDiagnosticUtility,
         StaticJobAccessor staticJobAccessor,
+        JobExecutionStatusAccessor completedJobStatusAccessor,
         ExecutingJobManager executingJobManager
     ) {
         this.notificationContentRepository = notificationContentRepository;
         this.auditEntryRepository = auditEntryRepository;
         this.rabbitMQDiagnosticUtility = rabbitMQDiagnosticUtility;
         this.jobAccessor = staticJobAccessor;
+        this.completedJobStatusAccessor = completedJobStatusAccessor;
         this.executingJobManager = executingJobManager;
     }
 
@@ -71,13 +82,15 @@ public class DefaultDiagnosticAccessor implements DiagnosticAccessor {
         AuditDiagnosticModel auditDiagnosticModel = getAuditDiagnosticInfo();
         SystemDiagnosticModel systemDiagnosticModel = getSystemInfo();
         RabbitMQDiagnosticModel rabbitMQDiagnosticModel = rabbitMQDiagnosticUtility.getRabbitMQDiagnostics();
-        JobExecutionsDiagnosticModel jobExecutionsDiagnosticModel = getJobDiagnosticModel();
+        JobExecutionsDiagnosticModel jobExecutionsDiagnosticModel = getExecutingJobModel();
+        CompletedJobsDiagnosticModel completedJobsDiagnosticModel = getCompletedJobModel();
         return new DiagnosticModel(
             LocalDateTime.now().toString(),
             notificationDiagnosticModel,
             auditDiagnosticModel,
             systemDiagnosticModel,
             rabbitMQDiagnosticModel,
+            completedJobsDiagnosticModel,
             jobExecutionsDiagnosticModel
         );
     }
@@ -106,7 +119,7 @@ public class DefaultDiagnosticAccessor implements DiagnosticAccessor {
         return new SystemDiagnosticModel(runtime.availableProcessors(), runtime.maxMemory(), runtime.totalMemory(), runtime.freeMemory());
     }
 
-    private JobExecutionsDiagnosticModel getJobDiagnosticModel() {
+    private JobExecutionsDiagnosticModel getExecutingJobModel() {
         AggregatedExecutionResults executionResults = executingJobManager.aggregateExecutingJobData();
         List<JobExecutionDiagnosticModel> jobExecutions = getExecutionData();
         return new JobExecutionsDiagnosticModel(
@@ -116,6 +129,22 @@ public class DefaultDiagnosticAccessor implements DiagnosticAccessor {
             executionResults.getFailedJobs(),
             jobExecutions
         );
+    }
+
+    private CompletedJobsDiagnosticModel getCompletedJobModel() {
+        List<CompletedJobDiagnosticModel> jobStatusData = new LinkedList<>();
+        int pageNumber = 0;
+        int pageSize = 100;
+        AlertPagedModel<JobExecutionStatusModel> page = completedJobStatusAccessor.getJobExecutionStatus(new AlertPagedQueryDetails(pageNumber, pageSize));
+        while (pageNumber < page.getTotalPages()) {
+            jobStatusData.addAll(page.getModels().stream()
+                .map(this::convertJobStatusData)
+                .collect(Collectors.toList()));
+            pageNumber++;
+            page = completedJobStatusAccessor.getJobExecutionStatus(new AlertPagedQueryDetails(pageNumber, pageSize));
+        }
+
+        return new CompletedJobsDiagnosticModel(jobStatusData);
     }
 
     private List<JobExecutionDiagnosticModel> getExecutionData() {
@@ -145,7 +174,17 @@ public class DefaultDiagnosticAccessor implements DiagnosticAccessor {
         String start = DateUtils.formatDateAsJsonString(DateUtils.fromInstantUTC(job.getStart()));
         String end = job.getEnd().map(instant -> DateUtils.formatDateAsJsonString(DateUtils.fromInstantUTC(instant))).orElse("");
 
-        return new JobExecutionDiagnosticModel(jobName, channelName, start, end, job.getStatus(), job.getProcessedNotificationCount(), job.getTotalNotificationCount(), stageData);
+        return new JobExecutionDiagnosticModel(
+            jobName,
+            channelName,
+            start,
+            end,
+            job.getStatus(),
+            job.getProcessedNotificationCount(),
+            job.getTotalNotificationCount(),
+            job.getRemainingEvents(),
+            stageData
+        );
     }
 
     private JobStageDiagnosticModel convertJobStageData(ExecutingJobStage executingJobStage) {
@@ -156,6 +195,37 @@ public class DefaultDiagnosticAccessor implements DiagnosticAccessor {
             start,
             end
         );
+    }
+
+    private String getJobName(UUID jobConfigId) {
+        Optional<DistributionJobModel> distributionJobModel = jobAccessor.getJobById(jobConfigId);
+        return distributionJobModel.map(DistributionJobModelData::getName).orElse(String.format("Unknown Job (%s)", jobConfigId));
+    }
+
+    private CompletedJobDiagnosticModel convertJobStatusData(JobExecutionStatusModel jobCompletionStatusModel) {
+        JobExecutionStatusDurations durationsModel = jobCompletionStatusModel.getDurations();
+        CompletedJobDurationDiagnosticModel durationDiagnosticModel = new CompletedJobDurationDiagnosticModel(
+            DateUtils.formatDurationFromNanos(durationsModel.getJobDurationMillisec()),
+            DateUtils.formatDurationFromNanos(durationsModel.getNotificationProcessingDuration().orElse(0L)),
+            DateUtils.formatDurationFromNanos(durationsModel.getChannelProcessingDuration().orElse(0L)),
+            DateUtils.formatDurationFromNanos(durationsModel.getIssueCreationDuration().orElse(0L)),
+            DateUtils.formatDurationFromNanos(durationsModel.getIssueCommentingDuration().orElse(0L)),
+            DateUtils.formatDurationFromNanos(durationsModel.getIssueTransitionDuration().orElse(0L))
+        );
+
+        String jobName = getJobName(jobCompletionStatusModel.getJobConfigId());
+        return new CompletedJobDiagnosticModel(
+            jobCompletionStatusModel.getJobConfigId(),
+            jobName,
+            jobCompletionStatusModel.getLatestNotificationCount(),
+            jobCompletionStatusModel.getTotalNotificationCount(),
+            jobCompletionStatusModel.getSuccessCount(),
+            jobCompletionStatusModel.getFailureCount(),
+            jobCompletionStatusModel.getLatestStatus(),
+            DateUtils.formatDateAsJsonString(jobCompletionStatusModel.getLastRun()),
+            durationDiagnosticModel
+        );
+
     }
 
 }

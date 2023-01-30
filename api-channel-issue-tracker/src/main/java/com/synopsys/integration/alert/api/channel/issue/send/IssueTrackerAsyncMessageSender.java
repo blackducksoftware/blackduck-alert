@@ -20,7 +20,6 @@ import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 
 public class IssueTrackerAsyncMessageSender<T extends Serializable> {
-
     private final IssueTrackerCreationEventGenerator issueCreateEventGenerator;
     private final IssueTrackerTransitionEventGenerator<T> issueTrackerTransitionEventGenerator;
     private final IssueTrackerCommentEventGenerator<T> issueTrackerCommentEventGenerator;
@@ -59,12 +58,14 @@ public class IssueTrackerAsyncMessageSender<T extends Serializable> {
             .flatMap(List::stream)
             .collect(Collectors.toList());
 
+
         if (eventList.isEmpty()) {
             // nothing further to send downstream. Channel handled message successfully.
             eventManager.sendEvent(new AuditSuccessEvent(jobExecutionId, notificationIds));
             jobSubTaskAccessor.removeSubTaskStatus(parentEventId);
         } else {
             jobSubTaskAccessor.updateTaskCount(parentEventId, (long) eventList.size());
+            executingJobManager.incrementRemainingEvents(jobExecutionId, eventList.size());
             eventManager.sendEvents(eventList);
         }
     }

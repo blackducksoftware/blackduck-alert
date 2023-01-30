@@ -73,7 +73,8 @@ public class DefaultJobExecutionStatusAccessor implements JobExecutionStatusAcce
             .orElseGet(() -> createEmptyDurations(entity.getJobConfigId())));
         return new JobExecutionStatusModel(
             entity.getJobConfigId(),
-            entity.getNotificationCount(),
+            entity.getLatestNotificationCount(),
+            entity.getTotalNotificationCount(),
             entity.getSuccessCount(),
             entity.getFailureCount(),
             entity.getLatestStatus(),
@@ -96,7 +97,8 @@ public class DefaultJobExecutionStatusAccessor implements JobExecutionStatusAcce
     private JobExecutionStatusEntity convertFromModel(JobExecutionStatusModel model) {
         return new JobExecutionStatusEntity(
             model.getJobConfigId(),
-            model.getNotificationCount(),
+            model.getLatestNotificationCount(),
+            model.getTotalNotificationCount(),
             model.getSuccessCount(),
             model.getFailureCount(),
             model.getLatestStatus(),

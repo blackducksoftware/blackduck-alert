@@ -52,28 +52,22 @@ public class ExecutingJobManager {
         return new AlertPagedModel<>(pages.size(), pageNumber, pageSize, pageOfData);
     }
 
-    public boolean startStage(UUID executionId, JobStage stage) {
+    public void startStage(UUID executionId, JobStage stage) {
         Optional<ExecutingJob> executingJob = Optional.ofNullable(executingJobMap.getOrDefault(executionId, null));
         executingJob.ifPresent(job -> {
             job.addStage(ExecutingJobStage.createStage(executionId, stage));
         });
-        return executingJob.isPresent();
     }
 
-    public boolean endStage(UUID executionId, JobStage stage) {
+    public void endStage(UUID executionId, JobStage stage) {
         Optional<ExecutingJob> executingJob = Optional.ofNullable(executingJobMap.getOrDefault(executionId, null));
         executingJob
             .flatMap(job -> job.getStage(stage))
             .ifPresent(ExecutingJobStage::endStage);
-        return executingJob.isPresent();
     }
 
-    public boolean purgeJob(UUID executionId) {
-        boolean remove = executingJobMap.containsKey(executionId);
-        if (remove) {
-            executingJobMap.remove(executionId);
-        }
-        return remove;
+    public void purgeJob(UUID executionId) {
+        executingJobMap.remove(executionId);
     }
 
     public void incrementRemainingEvents(UUID jobExecutionId, int eventCount) {
