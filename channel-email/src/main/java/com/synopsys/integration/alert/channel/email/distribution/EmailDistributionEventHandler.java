@@ -13,14 +13,13 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.channel.DistributionEventHandler;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.persistence.accessor.EmailJobDetailsAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 
 @Component
 public class EmailDistributionEventHandler extends DistributionEventHandler<EmailJobDetailsModel> {
     @Autowired
-    public EmailDistributionEventHandler(EmailChannel channel, EmailJobDetailsAccessor jobDetailsAccessor, ProcessingAuditAccessor auditAccessor, EventManager eventManager) {
-        super(channel, jobDetailsAccessor, auditAccessor, eventManager);
+    public EmailDistributionEventHandler(EmailChannel channel, EmailJobDetailsAccessor jobDetailsAccessor, EventManager eventManager) {
+        super(channel, jobDetailsAccessor, eventManager);
     }
 
 }

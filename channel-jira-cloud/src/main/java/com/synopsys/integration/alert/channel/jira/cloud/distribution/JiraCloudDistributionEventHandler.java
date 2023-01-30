@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.channel.DistributionEventHandler;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.persistence.accessor.JiraCloudJobDetailsAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 
 @Component
@@ -22,10 +21,9 @@ public class JiraCloudDistributionEventHandler extends DistributionEventHandler<
     public JiraCloudDistributionEventHandler(
         JiraCloudChannel channel,
         JiraCloudJobDetailsAccessor jobDetailsAccessor,
-        ProcessingAuditAccessor auditAccessor,
         EventManager eventManager
     ) {
-        super(channel, jobDetailsAccessor, auditAccessor, eventManager);
+        super(channel, jobDetailsAccessor, eventManager);
     }
 
 }
