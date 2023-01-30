@@ -49,7 +49,9 @@ public class AuthenticationDescriptor extends ComponentDescriptor {
 
     public static final String SAML_METADATA_FILE = "saml_metadata.xml";
     public static final String SAML_ENCRYPTION_CERT_FILE = "saml_encryption.cert";
+    public static final String SAML_ENCRYPTION_PRIVATE_KEY_FILE = "saml_encryption_private_key.pem";
     public static final String SAML_SIGNING_CERT_FILE = "saml_signing.cert";
+    public static final String SAML_SIGNING_PRIVATE_KEY_FILE = "saml_signing_private_key.pem";
     public static final String SAML_VERIFICATION_CERT_FILE = "saml_verification.cert";
 
     // Test fields
