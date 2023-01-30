@@ -13,14 +13,13 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.channel.DistributionEventHandler;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.persistence.accessor.MSTeamsJobDetailsAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
 
 @Component
 public class MSTeamsDistributionEventHandler extends DistributionEventHandler<MSTeamsJobDetailsModel> {
     @Autowired
-    public MSTeamsDistributionEventHandler(MSTeamsChannel channel, MSTeamsJobDetailsAccessor jobDetailsAccessor, ProcessingAuditAccessor auditAccessor, EventManager eventManager) {
-        super(channel, jobDetailsAccessor, auditAccessor, eventManager);
+    public MSTeamsDistributionEventHandler(MSTeamsChannel channel, MSTeamsJobDetailsAccessor jobDetailsAccessor, EventManager eventManager) {
+        super(channel, jobDetailsAccessor, eventManager);
     }
 
 }
