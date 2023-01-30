@@ -4,6 +4,7 @@ import com.synopsys.integration.alert.api.authentication.descriptor.Authenticati
 import com.synopsys.integration.alert.authentication.saml.database.accessor.SAMLConfigAccessor;
 import com.synopsys.integration.alert.authentication.saml.model.SAMLConfigModel;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.opensaml.security.x509.X509Support;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +71,7 @@ public class SAMLManager {
     }
 
     private RelyingPartyRegistration createRegistration(SAMLConfigModel configModel) throws CertificateException, IOException {
-        Optional<String> optionalMetadataUrl = configModel.getMetadataUrl();
+        Optional<String> optionalMetadataUrl = configModel.getMetadataUrl().filter(StringUtils::isNotBlank);
         RelyingPartyRegistration.Builder builder;
 
         if (optionalMetadataUrl.isPresent()) {
