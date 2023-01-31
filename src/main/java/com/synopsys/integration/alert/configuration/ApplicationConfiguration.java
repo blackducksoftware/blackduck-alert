@@ -7,7 +7,6 @@
  */
 package com.synopsys.integration.alert.configuration;
 
-import com.synopsys.integration.alert.authentication.saml.security.AlertRelyingPartyRegistrationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.launch.support.SimpleJobLauncher;
@@ -109,4 +108,5 @@ public class ApplicationConfiguration {
     public AuthorizationManager authorizationManager(RoleAccessor roleAccessor) {
         return new AuthorizationManager(roleAccessor);
     }
+    
 }
