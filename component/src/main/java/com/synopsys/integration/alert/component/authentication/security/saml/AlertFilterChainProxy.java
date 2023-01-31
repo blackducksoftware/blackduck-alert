@@ -18,6 +18,10 @@ import javax.servlet.ServletResponse;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
 
+/**
+ * @deprecated This class will be removed in 8.0.0.
+ */
+@Deprecated(forRemoval = true)
 public class AlertFilterChainProxy extends FilterChainProxy {
     final SAMLContext samlContext;
 

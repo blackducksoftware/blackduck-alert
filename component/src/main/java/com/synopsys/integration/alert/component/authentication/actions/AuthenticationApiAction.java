@@ -19,17 +19,14 @@ import com.synopsys.integration.alert.common.action.ApiAction;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
-import com.synopsys.integration.alert.component.authentication.security.saml.SAMLManager;
 
+/**
+ * @deprecated This class will be removed in 8.0.0.
+ */
+@Deprecated(forRemoval = true)
 @Component
 public class AuthenticationApiAction extends ApiAction {
     private final Logger logger = LoggerFactory.getLogger(AuthenticationApiAction.class);
-    private final SAMLManager samlManager;
-
-    @Autowired
-    public AuthenticationApiAction(SAMLManager samlManager) {
-        this.samlManager = samlManager;
-    }
 
     @Override
     public FieldModel afterSaveAction(FieldModel fieldModel) {
@@ -61,7 +58,6 @@ public class AuthenticationApiAction extends ApiAction {
                 String metadataURL = metadataURLFieldValueOptional.flatMap(FieldValueModel::getValue).orElse("");
                 String entityId = metadataEntityFieldValue.getValue().orElse("");
                 String baseUrl = metadataBaseUrValueModel.getValue().orElse("");
-                samlManager.updateSAMLConfiguration(samlEnabled, metadataURL, entityId, baseUrl);
             }
         } catch (Exception ex) {
             logger.error("Error adding SAML settings", ex);
