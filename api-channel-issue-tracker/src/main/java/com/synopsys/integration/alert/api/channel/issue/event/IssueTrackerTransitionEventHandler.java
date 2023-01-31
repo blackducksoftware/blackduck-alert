@@ -28,7 +28,7 @@ public abstract class IssueTrackerTransitionEventHandler<T extends JobSubTaskEve
         IssueTrackerResponsePostProcessor responsePostProcessor,
         ExecutingJobManager executingJobManager
     ) {
-        super(eventManager, jobSubTaskAccessor, JobStage.ISSUE_RESOLVING, executingJobManager);
+        super(eventManager, jobSubTaskAccessor, JobStage.ISSUE_TRANSITION, executingJobManager);
         this.responsePostProcessor = responsePostProcessor;
     }
 

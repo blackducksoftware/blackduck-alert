@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.persistence.accessor.JobExecutionStatusAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.executions.JobExecutionStatusDurations;
 import com.synopsys.integration.alert.common.persistence.model.job.executions.JobExecutionStatusModel;
@@ -63,8 +64,9 @@ public class DefaultJobExecutionStatusAccessor implements JobExecutionStatusAcce
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public void saveExecutionStatus(JobExecutionStatusModel statusModel) {
-        JobExecutionStatusDurationsEntity durations = convertDurationFromModel(statusModel.getJobConfigId(), statusModel.getDurations());
-        JobExecutionStatusEntity jobExecutionStatus = convertFromModel(statusModel);
+        JobExecutionStatusModel updatedStatusModel = updateCompletedJobStatus(statusModel);
+        JobExecutionStatusDurationsEntity durations = convertDurationFromModel(updatedStatusModel.getJobConfigId(), updatedStatusModel.getDurations());
+        JobExecutionStatusEntity jobExecutionStatus = convertFromModel(updatedStatusModel);
         jobExecutionRepository.save(jobExecutionStatus);
         jobExecutionDurationsRepository.save(durations);
     }
@@ -86,7 +88,7 @@ public class DefaultJobExecutionStatusAccessor implements JobExecutionStatusAcce
 
     private JobExecutionStatusDurations convertDurationToModel(JobExecutionStatusDurationsEntity entity) {
         return new JobExecutionStatusDurations(
-            entity.getJobDurationMillisec(),
+            entity.getJobDuration(),
             entity.getNotificationProcessingDuration(),
             entity.getChannelProcessingDuration(),
             entity.getIssueCreationDuration(),
@@ -110,7 +112,7 @@ public class DefaultJobExecutionStatusAccessor implements JobExecutionStatusAcce
     private JobExecutionStatusDurationsEntity convertDurationFromModel(UUID jobConfigId, JobExecutionStatusDurations model) {
         return new JobExecutionStatusDurationsEntity(
             jobConfigId,
-            model.getJobDurationMillisec(),
+            model.getJobDuration(),
             model.getNotificationProcessingDuration().orElse(null),
             model.getChannelProcessingDuration().orElse(null),
             model.getIssueCreationDuration().orElse(null),
@@ -129,5 +131,56 @@ public class DefaultJobExecutionStatusAccessor implements JobExecutionStatusAcce
             null,
             null
         );
+    }
+
+    private JobExecutionStatusModel updateCompletedJobStatus(JobExecutionStatusModel latestData) {
+        return getJobExecutionStatus(latestData.getJobConfigId())
+            .map(savedStatus -> updateCompletedJobStatus(savedStatus, latestData))
+            .orElse(latestData);
+    }
+
+    private JobExecutionStatusModel updateCompletedJobStatus(JobExecutionStatusModel savedStatus, JobExecutionStatusModel latestData) {
+        long successCount = savedStatus.getSuccessCount();
+        long failureCount = savedStatus.getFailureCount();
+        AuditEntryStatus jobStatus = AuditEntryStatus.valueOf(latestData.getLatestStatus());
+
+        if (jobStatus == AuditEntryStatus.SUCCESS) {
+            successCount = savedStatus.getSuccessCount() + latestData.getSuccessCount();
+        }
+
+        if (jobStatus == AuditEntryStatus.FAILURE) {
+            failureCount = savedStatus.getFailureCount() + latestData.getFailureCount();
+        }
+
+        long totalNotificationCount = savedStatus.getTotalNotificationCount() + latestData.getTotalNotificationCount();
+
+        return new JobExecutionStatusModel(
+            latestData.getJobConfigId(),
+            latestData.getLatestNotificationCount(),
+            totalNotificationCount,
+            successCount,
+            failureCount,
+            jobStatus.name(),
+            latestData.getLastRun(),
+            calculateDurations(latestData.getDurations(), savedStatus.getDurations())
+        );
+    }
+
+    private JobExecutionStatusDurations calculateDurations(JobExecutionStatusDurations latestData, JobExecutionStatusDurations savedData) {
+        return new JobExecutionStatusDurations(
+            calculateAverage(latestData.getJobDuration(), savedData.getJobDuration()),
+            calculateAverage(latestData.getNotificationProcessingDuration().orElse(0L), savedData.getNotificationProcessingDuration().orElse(0L)),
+            calculateAverage(latestData.getChannelProcessingDuration().orElse(0L), savedData.getChannelProcessingDuration().orElse(0L)),
+            calculateAverage(latestData.getIssueCreationDuration().orElse(0L), savedData.getIssueCreationDuration().orElse(0L)),
+            calculateAverage(latestData.getIssueCommentingDuration().orElse(0L), savedData.getIssueCommentingDuration().orElse(0L)),
+            calculateAverage(latestData.getIssueTransitionDuration().orElse(0L), savedData.getIssueTransitionDuration().orElse(0L))
+        );
+    }
+
+    private Long calculateAverage(Long firstValue, Long secondValue) {
+        if (firstValue == 0 && secondValue == 0) {
+            return 0L;
+        }
+        return (firstValue + secondValue) / 2;
     }
 }

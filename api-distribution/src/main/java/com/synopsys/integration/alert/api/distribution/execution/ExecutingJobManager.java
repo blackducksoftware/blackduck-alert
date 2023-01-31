@@ -1,5 +1,6 @@
 package com.synopsys.integration.alert.api.distribution.execution;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,14 +10,25 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.collections4.ListUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
+import com.synopsys.integration.alert.common.persistence.accessor.JobExecutionStatusAccessor;
+import com.synopsys.integration.alert.common.persistence.model.job.executions.JobExecutionStatusDurations;
+import com.synopsys.integration.alert.common.persistence.model.job.executions.JobExecutionStatusModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
+import com.synopsys.integration.alert.common.util.DateUtils;
 
 @Component
 public class ExecutingJobManager {
     private final Map<UUID, ExecutingJob> executingJobMap = new ConcurrentHashMap<>();
+    private final JobExecutionStatusAccessor jobCompletionStatusAccessor;
+
+    @Autowired
+    public ExecutingJobManager(JobExecutionStatusAccessor jobCompletionStatusAccessor) {
+        this.jobCompletionStatusAccessor = jobCompletionStatusAccessor;
+    }
 
     public ExecutingJob startJob(UUID jobConfigId, int totalNotificationCount) {
         ExecutingJob job = ExecutingJob.startJob(jobConfigId, totalNotificationCount);
@@ -26,12 +38,18 @@ public class ExecutingJobManager {
 
     public void endJobWithSuccess(UUID executionId, Instant endTime) {
         Optional<ExecutingJob> executingJob = Optional.ofNullable(executingJobMap.getOrDefault(executionId, null));
-        executingJob.ifPresent(execution -> execution.jobSucceeded(endTime));
+        executingJob.ifPresent(execution -> {
+            execution.jobSucceeded(endTime);
+            jobCompletionStatusAccessor.saveExecutionStatus(createStatusModel(execution, AuditEntryStatus.SUCCESS));
+        });
     }
 
     public void endJobWithFailure(UUID executionId, Instant endTime) {
         Optional<ExecutingJob> executingJob = Optional.ofNullable(executingJobMap.getOrDefault(executionId, null));
-        executingJob.ifPresent(execution -> execution.jobFailed(endTime));
+        executingJob.ifPresent(execution -> {
+            execution.jobFailed(endTime);
+            jobCompletionStatusAccessor.saveExecutionStatus(createStatusModel(execution, AuditEntryStatus.FAILURE));
+        });
     }
 
     public void incrementProcessedNotificationCount(UUID jobExecutionId, int notificationCount) {
@@ -117,5 +135,43 @@ public class ExecutingJobManager {
             .filter(executingJob -> executingJob.getStatus().equals(entryStatus))
             .count();
 
+    }
+
+    private JobExecutionStatusModel createStatusModel(ExecutingJob executingJob, AuditEntryStatus jobStatus) {
+
+        UUID jobConfigId = executingJob.getJobConfigId();
+        long successCount = AuditEntryStatus.SUCCESS == jobStatus ? 1L : 0L;
+        long failureCount = AuditEntryStatus.FAILURE == jobStatus ? 1L : 0L;
+
+        JobExecutionStatusDurations durations = new JobExecutionStatusDurations(
+            calculateNanosecondDuration(executingJob.getStart(), executingJob.getEnd().orElse(Instant.now())),
+            calculateJobStageDuration(executingJob, JobStage.NOTIFICATION_PROCESSING),
+            calculateJobStageDuration(executingJob, JobStage.CHANNEL_PROCESSING),
+            calculateJobStageDuration(executingJob, JobStage.ISSUE_CREATION),
+            calculateJobStageDuration(executingJob, JobStage.ISSUE_COMMENTING),
+            calculateJobStageDuration(executingJob, JobStage.ISSUE_TRANSITION)
+        );
+
+        return new JobExecutionStatusModel(
+            jobConfigId,
+            Integer.valueOf(executingJob.getProcessedNotificationCount()).longValue(),
+            Integer.valueOf(executingJob.getProcessedNotificationCount()).longValue(),
+            successCount,
+            failureCount,
+            jobStatus.name(),
+            executingJob.getEnd().map(DateUtils::fromInstantUTC).orElse(null),
+            durations
+        );
+    }
+
+    private Long calculateJobStageDuration(ExecutingJob executingJob, JobStage stage) {
+        return executingJob.getStage(stage)
+            .filter(executingJobStage -> executingJobStage.getEnd().isPresent())
+            .map(executedStage -> calculateNanosecondDuration(executedStage.getStart(), executedStage.getEnd().orElse(Instant.now())))
+            .orElse(0L);
+    }
+
+    private Long calculateNanosecondDuration(Instant start, Instant end) {
+        return Duration.between(start, end).toNanos();
     }
 }

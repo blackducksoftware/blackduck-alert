@@ -6,7 +6,7 @@ import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
 public class JobExecutionStatusDurations extends AlertSerializableModel {
     private static final long serialVersionUID = -5127766336418643920L;
-    private final Long jobDurationMillisec;
+    private final Long jobDuration;
     private final Long notificationProcessingDuration;
     private final Long channelProcessingDuration;
     private final Long issueCreationDuration;
@@ -14,14 +14,14 @@ public class JobExecutionStatusDurations extends AlertSerializableModel {
     private final Long issueTransitionDuration;
 
     public JobExecutionStatusDurations(
-        Long jobDurationMillisec,
+        Long jobDuration,
         Long notificationProcessingDuration,
         Long channelProcessingDuration,
         Long issueCreationDuration,
         Long issueCommentingDuration,
         Long issueTransitionDuration
     ) {
-        this.jobDurationMillisec = jobDurationMillisec;
+        this.jobDuration = jobDuration;
         this.notificationProcessingDuration = notificationProcessingDuration;
         this.channelProcessingDuration = channelProcessingDuration;
         this.issueCreationDuration = issueCreationDuration;
@@ -29,8 +29,8 @@ public class JobExecutionStatusDurations extends AlertSerializableModel {
         this.issueTransitionDuration = issueTransitionDuration;
     }
 
-    public Long getJobDurationMillisec() {
-        return jobDurationMillisec;
+    public Long getJobDuration() {
+        return jobDuration;
     }
 
     public Optional<Long> getNotificationProcessingDuration() {

@@ -39,7 +39,8 @@ class DefaultDiagnosticAccessorTest {
         rabbitMQDiagnosticUtility = Mockito.mock(RabbitMQDiagnosticUtility.class);
         staticJobAccessor = Mockito.mock(StaticJobAccessor.class);
         completedJobsAccessor = Mockito.mock(JobExecutionStatusAccessor.class);
-        executingJobManager = new ExecutingJobManager();
+        JobExecutionStatusAccessor jobExecutionStatusAccessor = Mockito.mock(JobExecutionStatusAccessor.class);
+        executingJobManager = new ExecutingJobManager(jobExecutionStatusAccessor);
     }
 
     @Test

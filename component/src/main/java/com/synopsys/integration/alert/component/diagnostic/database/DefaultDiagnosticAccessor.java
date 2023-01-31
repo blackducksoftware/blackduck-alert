@@ -205,7 +205,7 @@ public class DefaultDiagnosticAccessor implements DiagnosticAccessor {
     private CompletedJobDiagnosticModel convertJobStatusData(JobExecutionStatusModel jobCompletionStatusModel) {
         JobExecutionStatusDurations durationsModel = jobCompletionStatusModel.getDurations();
         CompletedJobDurationDiagnosticModel durationDiagnosticModel = new CompletedJobDurationDiagnosticModel(
-            DateUtils.formatDurationFromNanos(durationsModel.getJobDurationMillisec()),
+            DateUtils.formatDurationFromNanos(durationsModel.getJobDuration()),
             DateUtils.formatDurationFromNanos(durationsModel.getNotificationProcessingDuration().orElse(0L)),
             DateUtils.formatDurationFromNanos(durationsModel.getChannelProcessingDuration().orElse(0L)),
             DateUtils.formatDurationFromNanos(durationsModel.getIssueCreationDuration().orElse(0L)),

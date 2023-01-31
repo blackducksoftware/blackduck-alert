@@ -34,12 +34,11 @@ class AuditSuccessEventListenerTest {
 
     @BeforeEach
     public void init() {
-        executingJobManager = new ExecutingJobManager();
         JobExecutionDurationsRepository jobExecutionDurationsRepository = new MockJobExecutionStatusDurationsRepository();
         JobExecutionRepository jobExecutionRepository = new MockJobExecutionStatusRepository(jobExecutionDurationsRepository);
-
         jobExecutionStatusAccessor = new DefaultJobExecutionStatusAccessor(jobExecutionRepository, jobExecutionDurationsRepository);
-        handler = new AuditSuccessHandler(executingJobManager, jobExecutionStatusAccessor);
+        executingJobManager = new ExecutingJobManager(jobExecutionStatusAccessor);
+        handler = new AuditSuccessHandler(executingJobManager);
     }
 
     @Test

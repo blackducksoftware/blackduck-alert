@@ -84,7 +84,6 @@ class AuditFailedEventListenerTest {
         AuditNotificationRepository auditNotificationRepository = new MockAuditNotificationRepository(this::generateRelationKey);
         AuditEntryRepository auditEntryRepository = new MockAuditEntryRepository(this::generateEntityKey, auditNotificationRepository);
         processingAuditAccessor = new DefaultProcessingAuditAccessor(auditEntryRepository, auditNotificationRepository);
-        executingJobManager = new ExecutingJobManager();
         notificationContentRepository = new MockNotificationContentRepository(this::generateNotificationId);
         auditFailedEntryRepository = new MockAuditFailedEntryRepository(AuditFailedEntity::getId);
         auditFailedNotificationRepository = new MockAuditFailedNotificationRepository(AuditFailedNotificationEntity::getNotificationId);
@@ -94,6 +93,7 @@ class AuditFailedEventListenerTest {
         JobExecutionRepository jobExecutionRepository = new MockJobExecutionStatusRepository(jobExecutionDurationsRepository);
 
         jobExecutionStatusAccessor = new DefaultJobExecutionStatusAccessor(jobExecutionRepository, jobExecutionDurationsRepository);
+        executingJobManager = new ExecutingJobManager(jobExecutionStatusAccessor);
     }
 
     private Long generateNotificationId(NotificationEntity entity) {
@@ -137,7 +137,7 @@ class AuditFailedEventListenerTest {
             notificationAccessor,
             jobAccessor
         );
-        AuditFailedHandler handler = new AuditFailedHandler(processingFailedAccessor, executingJobManager, jobExecutionStatusAccessor);
+        AuditFailedHandler handler = new AuditFailedHandler(processingFailedAccessor, executingJobManager);
 
         notificationIds.stream()
             .map(this::createNotification)

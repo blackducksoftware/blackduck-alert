@@ -79,7 +79,7 @@ public class IssueTrackerAsyncMessageSender<T extends Serializable> {
         List<AlertEvent> commentEvents = createMessages(issueTrackerMessage.getIssueCommentModels(), issueTrackerCommentEventGenerator::generateEvent);
 
         addEventsAndStartStage(eventList, creationEvents, JobStage.ISSUE_CREATION);
-        addEventsAndStartStage(eventList, transitionEvents, JobStage.ISSUE_RESOLVING);
+        addEventsAndStartStage(eventList, transitionEvents, JobStage.ISSUE_TRANSITION);
         addEventsAndStartStage(eventList, commentEvents, JobStage.ISSUE_COMMENTING);
 
         return eventList;
