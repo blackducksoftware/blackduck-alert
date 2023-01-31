@@ -23,10 +23,6 @@ public class AuditSuccessHandler implements AlertEventHandler<AuditSuccessEvent>
         UUID jobExecutionId = event.getJobExecutionId();
         executingJobManager.getExecutingJob(jobExecutionId)
             .filter(ExecutingJob::isCompleted)
-            .ifPresent(executingJob -> {
-                if (executingJob.isCompleted()) {
-                    executingJobManager.endJobWithSuccess(jobExecutionId, event.getCreatedTimestamp().toInstant());
-                }
-            });
+            .ifPresent(executingJob -> executingJobManager.endJobWithSuccess(jobExecutionId, event.getCreatedTimestamp().toInstant()));
     }
 }

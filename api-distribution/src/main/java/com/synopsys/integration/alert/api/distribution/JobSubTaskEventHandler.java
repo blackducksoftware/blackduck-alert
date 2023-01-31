@@ -7,7 +7,6 @@ import java.util.UUID;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.distribution.audit.AuditFailedEvent;
-import com.synopsys.integration.alert.api.distribution.audit.AuditSuccessEvent;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJob;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.distribution.execution.JobStage;
@@ -49,7 +48,7 @@ public abstract class JobSubTaskEventHandler<T extends JobSubTaskEvent> implemen
             executingJobManager.endStage(jobExecutionId, jobStage, Instant.now());
             executingJobManager.getExecutingJob(jobExecutionId)
                 .filter(ExecutingJob::isCompleted)
-                .ifPresent(executingJob -> eventManager.sendEvent(new AuditSuccessEvent(jobExecutionId, event.getNotificationIds())));
+                .ifPresent(executingJob -> executingJobManager.endJobWithSuccess(jobExecutionId, Instant.now()));
         } catch (AlertException exception) {
             executingJobManager.endStage(jobExecutionId, jobStage, Instant.now());
             //eventManager.sendEvent(new JobStageEndedEvent(jobExecutionId, jobStage, Instant.now().toEpochMilli()));
