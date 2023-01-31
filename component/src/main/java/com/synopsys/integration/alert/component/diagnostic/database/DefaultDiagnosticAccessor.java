@@ -210,10 +210,10 @@ public class DefaultDiagnosticAccessor implements DiagnosticAccessor {
             DateUtils.formatDurationFromNanos(durationsModel.getJobDuration()),
             List.of(
                 createJobStageDuration(JobStage.NOTIFICATION_PROCESSING, durationsModel.getNotificationProcessingDuration().orElse(0L)),
-                createJobStageDuration(JobStage.CHANNEL_PROCESSING, durationsModel.getNotificationProcessingDuration().orElse(0L)),
-                createJobStageDuration(JobStage.ISSUE_CREATION, durationsModel.getNotificationProcessingDuration().orElse(0L)),
-                createJobStageDuration(JobStage.ISSUE_COMMENTING, durationsModel.getNotificationProcessingDuration().orElse(0L)),
-                createJobStageDuration(JobStage.ISSUE_TRANSITION, durationsModel.getNotificationProcessingDuration().orElse(0L))
+                createJobStageDuration(JobStage.CHANNEL_PROCESSING, durationsModel.getChannelProcessingDuration().orElse(0L)),
+                createJobStageDuration(JobStage.ISSUE_CREATION, durationsModel.getIssueCreationDuration().orElse(0L)),
+                createJobStageDuration(JobStage.ISSUE_COMMENTING, durationsModel.getIssueCommentingDuration().orElse(0L)),
+                createJobStageDuration(JobStage.ISSUE_TRANSITION, durationsModel.getIssueTransitionDuration().orElse(0L))
             )
         );
 
