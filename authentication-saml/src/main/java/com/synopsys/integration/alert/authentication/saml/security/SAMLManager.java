@@ -75,13 +75,14 @@ public class SAMLManager {
         RelyingPartyRegistration.Builder builder;
 
         if (optionalMetadataUrl.isPresent()) {
-            builder = RelyingPartyRegistrations.fromMetadataLocation(optionalMetadataUrl.get()).registrationId("default");
+            builder = RelyingPartyRegistrations.fromMetadataLocation(optionalMetadataUrl.get());
         } else {
             String metadataString = filePersistenceUtil.readFromFile(AuthenticationDescriptor.SAML_METADATA_FILE);
             try (InputStream metadataInputStream = new ByteArrayInputStream(metadataString.getBytes())) {
                 builder = RelyingPartyRegistrations.fromMetadata(metadataInputStream);
             }
         }
+        builder.registrationId("default");
 
         if (filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_SIGNING_CERT_FILE)) {
             signingCredentialBuilder(builder);
