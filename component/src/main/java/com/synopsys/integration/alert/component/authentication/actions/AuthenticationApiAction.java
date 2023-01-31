@@ -26,7 +26,6 @@ import com.synopsys.integration.alert.api.authentication.descriptor.Authenticati
 @Deprecated(forRemoval = true)
 @Component
 public class AuthenticationApiAction extends ApiAction {
-    private final Logger logger = LoggerFactory.getLogger(AuthenticationApiAction.class);
 
     @Override
     public FieldModel afterSaveAction(FieldModel fieldModel) {
@@ -39,28 +38,6 @@ public class AuthenticationApiAction extends ApiAction {
     }
 
     private FieldModel handleNewAndUpdatedConfig(FieldModel fieldModel) {
-        addSAMLMetadata(fieldModel);
         return fieldModel;
-    }
-
-    private void addSAMLMetadata(FieldModel fieldModel) {
-        try {
-            boolean samlEnabled = fieldModel.getFieldValueModel(AuthenticationDescriptor.KEY_SAML_ENABLED)
-                                      .flatMap(FieldValueModel::getValue)
-                                      .map(BooleanUtils::toBoolean)
-                                      .orElse(false);
-            Optional<FieldValueModel> metadataURLFieldValueOptional = fieldModel.getFieldValueModel(AuthenticationDescriptor.KEY_SAML_METADATA_URL);
-            Optional<FieldValueModel> metadataEntityFieldValueOptional = fieldModel.getFieldValueModel(AuthenticationDescriptor.KEY_SAML_ENTITY_ID);
-            Optional<FieldValueModel> metadataBaseURLFieldValueOptional = fieldModel.getFieldValueModel(AuthenticationDescriptor.KEY_SAML_ENTITY_BASE_URL);
-            if (metadataEntityFieldValueOptional.isPresent() && metadataBaseURLFieldValueOptional.isPresent()) {
-                FieldValueModel metadataEntityFieldValue = metadataEntityFieldValueOptional.get();
-                FieldValueModel metadataBaseUrValueModel = metadataBaseURLFieldValueOptional.get();
-                String metadataURL = metadataURLFieldValueOptional.flatMap(FieldValueModel::getValue).orElse("");
-                String entityId = metadataEntityFieldValue.getValue().orElse("");
-                String baseUrl = metadataBaseUrValueModel.getValue().orElse("");
-            }
-        } catch (Exception ex) {
-            logger.error("Error adding SAML settings", ex);
-        }
     }
 }
