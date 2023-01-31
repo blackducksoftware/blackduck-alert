@@ -15,6 +15,7 @@ dependencies {
     implementation project(':api-processor')
     implementation project(':api-task')
     implementation project(':authentication-ldap')
+    implementation project(':authentication-saml')
     implementation project(':service-email')
 
     implementation 'org.apache.tomcat.embed:tomcat-embed-core'

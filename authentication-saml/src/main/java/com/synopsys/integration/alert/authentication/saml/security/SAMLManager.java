@@ -131,30 +131,4 @@ public class SAMLManager {
         Saml2X509Credential verificationCredential = Saml2X509Credential.verification(verificationCert);
         builder.assertingPartyDetails(party -> party.verificationX509Credentials(credentials -> credentials.add(verificationCredential)));
     }
-
-//    private RelyingPartyRegistration createRegistration() throws CertificateException, IOException {
-//        ClassPathResource privateKeyClassPathResource = new ClassPathResource("okta-key.pem");
-//        try (InputStream privateKeyInputStream = privateKeyClassPathResource.getInputStream()) {
-//            RSAPrivateKey rsaPrivateKey = RsaKeyConverters.pkcs8().convert(privateKeyInputStream);
-//            ClassPathResource verificationClassPathResource = new ClassPathResource("okta-verification.pem");
-//            X509Certificate verificationCert = X509Support.decodeCertificate(verificationClassPathResource.getFile());
-//            ClassPathResource signingClassPathResource = new ClassPathResource("okta-signing.pem");
-//            X509Certificate signingCert = X509Support.decodeCertificate(signingClassPathResource.getFile());
-//            ClassPathResource encryptionClassPathResource = new ClassPathResource("okta-encryption.pem");
-//            X509Certificate encryptionCert = X509Support.decodeCertificate(encryptionClassPathResource.getFile());
-//            Saml2X509Credential verificationCredential = Saml2X509Credential.verification(verificationCert);
-//            Saml2X509Credential signingCredential = Saml2X509Credential.signing(rsaPrivateKey, signingCert);
-//            Saml2X509Credential encryptionCredential = Saml2X509Credential.encryption(encryptionCert);
-//            Saml2X509Credential decryptionCredential = Saml2X509Credential.decryption(rsaPrivateKey, encryptionCert);
-//            return RelyingPartyRegistrations.fromMetadataLocation("https://dev-94843441.okta.com/app/exk7fzsr4mPGWbwFW5d7/sso/saml/metadata")
-//                .registrationId("okta")
-//                .signingX509Credentials(credentials -> credentials.add(signingCredential))
-//                .decryptionX509Credentials(credentials -> credentials.add(decryptionCredential))
-//                .assertingPartyDetails(party -> party
-//                    .encryptionX509Credentials(credentials -> credentials.add(encryptionCredential))
-//                    .verificationX509Credentials(credentials -> credentials.add(verificationCredential))
-//                    .wantAuthnRequestsSigned(true))
-//                .build();
-//        }
-//    }
 }

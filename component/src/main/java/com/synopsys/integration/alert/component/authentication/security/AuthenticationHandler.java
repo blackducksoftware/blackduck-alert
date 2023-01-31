@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import com.synopsys.integration.alert.authentication.saml.security.AlertRelyingPartyRegistrationRepository;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.velocity.app.VelocityEngine;
@@ -385,4 +386,8 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
         return new SAMLProcessorImpl(bindings);
     }
 
+    @Bean
+    public AlertRelyingPartyRegistrationRepository alertRelyingPartyRegistrationRepository() {
+        return new AlertRelyingPartyRegistrationRepository();
+    }
 }
