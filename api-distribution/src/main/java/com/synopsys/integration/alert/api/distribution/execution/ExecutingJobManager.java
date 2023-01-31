@@ -41,6 +41,7 @@ public class ExecutingJobManager {
         executingJob.ifPresent(execution -> {
             execution.jobSucceeded(endTime);
             jobCompletionStatusAccessor.saveExecutionStatus(createStatusModel(execution, AuditEntryStatus.SUCCESS));
+            purgeJob(executionId);
         });
     }
 
@@ -49,6 +50,7 @@ public class ExecutingJobManager {
         executingJob.ifPresent(execution -> {
             execution.jobFailed(endTime);
             jobCompletionStatusAccessor.saveExecutionStatus(createStatusModel(execution, AuditEntryStatus.FAILURE));
+            purgeJob(executionId);
         });
     }
 
