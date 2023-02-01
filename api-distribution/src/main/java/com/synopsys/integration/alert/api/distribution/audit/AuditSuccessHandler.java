@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.api.distribution.audit;
 
 import java.util.UUID;
+import java.util.function.Predicate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,7 +23,7 @@ public class AuditSuccessHandler implements AlertEventHandler<AuditSuccessEvent>
     public void handle(AuditSuccessEvent event) {
         UUID jobExecutionId = event.getJobExecutionId();
         executingJobManager.getExecutingJob(jobExecutionId)
-            .filter(ExecutingJob::isCompleted)
+            .filter(Predicate.not(ExecutingJob::isCompleted))
             .ifPresent(executingJob -> executingJobManager.endJobWithSuccess(jobExecutionId, event.getCreatedTimestamp().toInstant()));
     }
 }

@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.distribution.audit.AuditFailedEvent;
@@ -47,7 +48,7 @@ public abstract class JobSubTaskEventHandler<T extends JobSubTaskEvent> implemen
                 });
             executingJobManager.endStage(jobExecutionId, jobStage, Instant.now());
             executingJobManager.getExecutingJob(jobExecutionId)
-                .filter(ExecutingJob::isCompleted)
+                .filter(Predicate.not(ExecutingJob::isCompleted))
                 .ifPresent(executingJob -> executingJobManager.endJobWithSuccess(jobExecutionId, Instant.now()));
         } catch (AlertException exception) {
             executingJobManager.endStage(jobExecutionId, jobStage, Instant.now());

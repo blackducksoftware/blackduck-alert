@@ -107,10 +107,10 @@ public class ExecutingJob {
     }
 
     public boolean isCompleted() {
-        return !hasCompletedStatus() || hasRemainingEvents();
+        return !hasRemainingEvents() && hasCompletedStatus();
     }
 
-    private boolean hasCompletedStatus() {
+    public boolean hasCompletedStatus() {
         return AuditEntryStatus.SUCCESS == getStatus() ||
             AuditEntryStatus.FAILURE == getStatus();
     }
