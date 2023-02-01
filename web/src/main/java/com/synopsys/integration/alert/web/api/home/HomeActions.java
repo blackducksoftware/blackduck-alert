@@ -22,7 +22,6 @@ import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.component.authentication.security.saml.SAMLContext;
 
 import java.util.Optional;
 
@@ -59,7 +58,7 @@ public class HomeActions {
         boolean enabled = false;
         Optional<SAMLConfigModel> optionalSAMLConfigModel = samlConfigAccessor.getConfiguration();
         if (optionalSAMLConfigModel.isPresent()) {
-            enabled = optionalSAMLConfigModel.get().getEnabled().orElse(false);
+            enabled = optionalSAMLConfigModel.get().getEnabled();
         }
         return new ActionResponse<>(HttpStatus.OK, new SAMLEnabledResponseModel(enabled));
     }

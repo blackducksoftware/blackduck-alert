@@ -95,12 +95,12 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
     }
 
     // Getters
-    public Optional<Boolean> getEnabled() {
-        return Optional.ofNullable(enabled);
+    public Boolean getEnabled() {
+        return enabled;
     }
 
-    public Optional<Boolean> getForceAuth() {
-        return Optional.ofNullable(forceAuth);
+    public Boolean getForceAuth() {
+        return forceAuth;
     }
 
     public Optional<String> getMetadataUrl() {
@@ -123,8 +123,8 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
         return entityBaseUrl;
     }
 
-    public Optional<Boolean> getWantAssertionsSigned() {
-        return Optional.ofNullable(wantAssertionsSigned);
+    public Boolean getWantAssertionsSigned() {
+        return wantAssertionsSigned;
     }
 
     public Optional<String> getRoleAttributeMapping() {

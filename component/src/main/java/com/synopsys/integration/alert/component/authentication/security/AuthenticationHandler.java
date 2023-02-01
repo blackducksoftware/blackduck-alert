@@ -17,7 +17,6 @@ import org.springframework.security.access.vote.AffirmativeBased;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -36,14 +35,9 @@ import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuc
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
-import com.synopsys.integration.alert.api.authentication.security.UserManagementAuthoritiesPopulator;
-import com.synopsys.integration.alert.api.authentication.security.event.AuthenticationEventManager;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
-import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
-import com.synopsys.integration.alert.component.authentication.security.saml.SAMLContext;
 import com.synopsys.integration.alert.component.authentication.security.saml.SamlAntMatcher;
 
 import java.util.HashSet;
@@ -53,35 +47,21 @@ import java.util.Set;
 @EnableWebSecurity
 @Configuration
 public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
-    public static final String SSO_PROVIDER_NAME = "Synopsys - Alert";
     private final HttpPathManager httpPathManager;
     private final CsrfTokenRepository csrfTokenRepository;
     private final AlertProperties alertProperties;
     private final RoleAccessor roleAccessor;
 
-    private final FilePersistenceUtil filePersistenceUtil;
-    private final UserManagementAuthoritiesPopulator authoritiesPopulator;
     private final SAMLConfigAccessor samlConfigAccessor;
-    private final AuthenticationDescriptorKey authenticationDescriptorKey;
-    private final AuthenticationEventManager authenticationEventManager;
 
     @Autowired
-    AuthenticationHandler(HttpPathManager httpPathManager, CsrfTokenRepository csrfTokenRepository, AlertProperties alertProperties, RoleAccessor roleAccessor,
-        FilePersistenceUtil filePersistenceUtil, UserManagementAuthoritiesPopulator authoritiesPopulator, SAMLConfigAccessor samlConfigAccessor,
-        AuthenticationDescriptorKey authenticationDescriptorKey, AuthenticationEventManager authenticationEventManager) {
+    AuthenticationHandler(HttpPathManager httpPathManager, CsrfTokenRepository csrfTokenRepository, AlertProperties alertProperties, RoleAccessor roleAccessor, SAMLConfigAccessor samlConfigAccessor) {
         this.httpPathManager = httpPathManager;
         this.csrfTokenRepository = csrfTokenRepository;
         this.alertProperties = alertProperties;
         this.roleAccessor = roleAccessor;
-        this.filePersistenceUtil = filePersistenceUtil;
-        this.authoritiesPopulator = authoritiesPopulator;
         this.samlConfigAccessor = samlConfigAccessor;
-        this.authenticationDescriptorKey = authenticationDescriptorKey;
-        this.authenticationEventManager = authenticationEventManager;
     }
-
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) { }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -118,7 +98,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
         Converter<OpenSaml4AuthenticationProvider.ResponseToken, Saml2Authentication> delegate =
             OpenSaml4AuthenticationProvider.createDefaultResponseAuthenticationConverter();
 
-        return (responseToken) -> {
+        return responseToken -> {
             Saml2Authentication authentication = delegate.convert(responseToken);
             Saml2AuthenticatedPrincipal principal = (Saml2AuthenticatedPrincipal) authentication.getPrincipal();
             List<String> groups = principal.getAttribute("groups");
@@ -202,11 +182,6 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     // ==========
     // SAML Beans
     // ==========
-
-    @Bean
-    public SAMLContext samlContext() {
-        return new SAMLContext(samlConfigAccessor);
-    }
 
     @Bean
     public AlertRelyingPartyRegistrationRepository alertRelyingPartyRegistrationRepository() {

@@ -44,7 +44,7 @@ public class SamlAntMatcher implements RequestMatcher {
 
         Optional<SAMLConfigModel> optionalSAMLConfigModel = samlConfigAccessor.getConfiguration();
         if (optionalSAMLConfigModel.isPresent()) {
-            if (optionalSAMLConfigModel.get().getEnabled().orElse(false)) {
+            if (optionalSAMLConfigModel.get().getEnabled()) {
                 requestMatchers = enabledMatchers;
             }
         }
