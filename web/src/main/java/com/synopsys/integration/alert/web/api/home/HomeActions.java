@@ -10,6 +10,8 @@ package com.synopsys.integration.alert.web.api.home;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.synopsys.integration.alert.authentication.saml.database.accessor.SAMLConfigAccessor;
+import com.synopsys.integration.alert.authentication.saml.model.SAMLConfigModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -22,16 +24,18 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.component.authentication.security.saml.SAMLContext;
 
+import java.util.Optional;
+
 @Component
 public class HomeActions {
     public static final String ROLE_ANONYMOUS = "ROLE_ANONYMOUS";
     private final HttpSessionCsrfTokenRepository csrfTokenRespository;
-    private final SAMLContext samlContext;
+    private final SAMLConfigAccessor samlConfigAccessor;
 
     @Autowired
-    public HomeActions(HttpSessionCsrfTokenRepository csrfTokenRespository, SAMLContext samlContext) {
+    public HomeActions(HttpSessionCsrfTokenRepository csrfTokenRespository, SAMLConfigAccessor samlConfigAccessor) {
         this.csrfTokenRespository = csrfTokenRespository;
-        this.samlContext = samlContext;
+        this.samlConfigAccessor = samlConfigAccessor;
     }
 
     public ActionResponse<Void> verifyAuthentication(HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
@@ -51,8 +55,12 @@ public class HomeActions {
         return new ActionResponse<>(HttpStatus.OK);
     }
 
-    public ActionResponse<SAMLEnabledResponseModel> verifySaml(HttpServletRequest request) {
-        return new ActionResponse<>(HttpStatus.OK, new SAMLEnabledResponseModel(samlContext.isSAMLEnabledForRequest(request)));
+    public ActionResponse<SAMLEnabledResponseModel> verifySaml() {
+        boolean enabled = false;
+        Optional<SAMLConfigModel> optionalSAMLConfigModel = samlConfigAccessor.getConfiguration();
+        if (optionalSAMLConfigModel.isPresent()) {
+            enabled = optionalSAMLConfigModel.get().getEnabled().orElse(false);
+        }
+        return new ActionResponse<>(HttpStatus.OK, new SAMLEnabledResponseModel(enabled));
     }
-
 }

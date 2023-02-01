@@ -7,17 +7,26 @@
  */
 package com.synopsys.integration.alert.component.authentication.security;
 
+import com.synopsys.integration.alert.authentication.saml.database.accessor.SAMLConfigAccessor;
 import com.synopsys.integration.alert.authentication.saml.security.AlertRelyingPartyRegistrationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.access.vote.AffirmativeBased;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.saml2.provider.service.authentication.OpenSaml4AuthenticationProvider;
+import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticatedPrincipal;
+import org.springframework.security.saml2.provider.service.authentication.Saml2Authentication;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
@@ -32,11 +41,14 @@ import com.synopsys.integration.alert.api.authentication.security.UserManagement
 import com.synopsys.integration.alert.api.authentication.security.event.AuthenticationEventManager;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.component.authentication.security.saml.SAMLContext;
 import com.synopsys.integration.alert.component.authentication.security.saml.SamlAntMatcher;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @EnableWebSecurity
 @Configuration
@@ -49,13 +61,13 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     private final FilePersistenceUtil filePersistenceUtil;
     private final UserManagementAuthoritiesPopulator authoritiesPopulator;
-    private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
+    private final SAMLConfigAccessor samlConfigAccessor;
     private final AuthenticationDescriptorKey authenticationDescriptorKey;
     private final AuthenticationEventManager authenticationEventManager;
 
     @Autowired
     AuthenticationHandler(HttpPathManager httpPathManager, CsrfTokenRepository csrfTokenRepository, AlertProperties alertProperties, RoleAccessor roleAccessor,
-        FilePersistenceUtil filePersistenceUtil, UserManagementAuthoritiesPopulator authoritiesPopulator, ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor,
+        FilePersistenceUtil filePersistenceUtil, UserManagementAuthoritiesPopulator authoritiesPopulator, SAMLConfigAccessor samlConfigAccessor,
         AuthenticationDescriptorKey authenticationDescriptorKey, AuthenticationEventManager authenticationEventManager) {
         this.httpPathManager = httpPathManager;
         this.csrfTokenRepository = csrfTokenRepository;
@@ -63,14 +75,13 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
         this.roleAccessor = roleAccessor;
         this.filePersistenceUtil = filePersistenceUtil;
         this.authoritiesPopulator = authoritiesPopulator;
-        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
+        this.samlConfigAccessor = samlConfigAccessor;
         this.authenticationDescriptorKey = authenticationDescriptorKey;
         this.authenticationEventManager = authenticationEventManager;
     }
 
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) {
-    }
+    protected void configure(AuthenticationManagerBuilder auth) { }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -81,12 +92,44 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
             .and().csrf().csrfTokenRepository(csrfTokenRepository).ignoringRequestMatchers(createCsrfIgnoreMatchers())
             .withObjectPostProcessor(createRoleProcessor())
             .and().logout().logoutSuccessUrl("/");
+        configureSAML(http);
     }
 
     private void configureWithSSL(HttpSecurity http) throws Exception {
         if (alertProperties.getSslEnabled()) {
             http.requiresChannel().anyRequest().requiresSecure();
         }
+    }
+
+    private void configureSAML(HttpSecurity http) throws Exception {
+        //eventually configure SAML
+        OpenSaml4AuthenticationProvider authenticationProvider = new OpenSaml4AuthenticationProvider();
+        authenticationProvider.setResponseAuthenticationConverter(groupsConverter());
+
+        http.saml2Login(saml2 -> {
+                saml2.authenticationManager(new ProviderManager(authenticationProvider));
+                saml2.loginPage("/login");
+            })
+            .saml2Logout(Customizer.withDefaults());
+    }
+
+    private Converter<OpenSaml4AuthenticationProvider.ResponseToken, Saml2Authentication> groupsConverter() {
+
+        Converter<OpenSaml4AuthenticationProvider.ResponseToken, Saml2Authentication> delegate =
+            OpenSaml4AuthenticationProvider.createDefaultResponseAuthenticationConverter();
+
+        return (responseToken) -> {
+            Saml2Authentication authentication = delegate.convert(responseToken);
+            Saml2AuthenticatedPrincipal principal = (Saml2AuthenticatedPrincipal) authentication.getPrincipal();
+            List<String> groups = principal.getAttribute("groups");
+            Set<GrantedAuthority> authorities = new HashSet<>();
+            if (groups != null) {
+                groups.stream().map(SimpleGrantedAuthority::new).forEach(authorities::add);
+            } else {
+                authorities.addAll(authentication.getAuthorities());
+            }
+            return new Saml2Authentication(principal, authentication.getSaml2Response(), authorities);
+        };
     }
 
     private RequestMatcher[] createCsrfIgnoreMatchers() {
@@ -99,7 +142,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     private RequestMatcher[] createRequestMatcherArray() {
         return new RequestMatcher[] {
-            new SamlAntMatcher(samlContext(), httpPathManager.getSamlAllowedPaths(), httpPathManager.getAllowedPaths())
+            new SamlAntMatcher(samlConfigAccessor, httpPathManager.getSamlAllowedPaths(), httpPathManager.getAllowedPaths())
         };
     }
 
@@ -156,24 +199,13 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
         return simpleUrlLogoutSuccessHandler;
     }
 
-    // TODO; See new apache HttpClient and PoolingHttpClientConnectionManager for new way to do this
-//    @Bean
-//    public HttpClient httpClient() {
-//        return new HttpClient(multiThreadedHttpConnectionManager());
-//    }
-//
-//    @Bean
-//    public MultiThreadedHttpConnectionManager multiThreadedHttpConnectionManager() {
-//        return new MultiThreadedHttpConnectionManager();
-//    }
-
     // ==========
     // SAML Beans
     // ==========
 
     @Bean
     public SAMLContext samlContext() {
-        return new SAMLContext(authenticationDescriptorKey, configurationModelConfigurationAccessor);
+        return new SAMLContext(samlConfigAccessor);
     }
 
     @Bean

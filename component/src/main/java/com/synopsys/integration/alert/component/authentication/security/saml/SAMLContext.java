@@ -13,6 +13,8 @@ import java.util.Optional;
 
 import javax.servlet.ServletRequest;
 
+import com.synopsys.integration.alert.authentication.saml.database.accessor.SAMLConfigAccessor;
+import com.synopsys.integration.alert.authentication.saml.model.SAMLConfigModel;
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,24 +35,19 @@ public class SAMLContext implements Serializable {
 
     private final transient Logger logger = LoggerFactory.getLogger(SAMLContext.class);
 
-    private final AuthenticationDescriptorKey descriptorKey;
-    private final transient ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
+    private final transient SAMLConfigAccessor samlConfigAccessor;
 
-    public SAMLContext(AuthenticationDescriptorKey descriptorKey, ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor) {
-        this.descriptorKey = descriptorKey;
-        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
+    public SAMLContext(SAMLConfigAccessor samlConfigAccessor) {
+        this.samlConfigAccessor = samlConfigAccessor;
     }
 
-    public ConfigurationModel getCurrentConfiguration() throws AlertException {
-        return configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey, ConfigContextEnum.GLOBAL).stream()
-                   .findFirst()
+    public SAMLConfigModel getCurrentConfiguration() throws AlertException {
+        return samlConfigAccessor.getConfiguration()
                    .orElseThrow(() -> new AlertConfigurationException("Settings configuration missing"));
     }
 
     public boolean isSAMLEnabled() {
-        Optional<ConfigurationModel> samlConfig = configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey, ConfigContextEnum.GLOBAL)
-                                                      .stream()
-                                                      .findFirst();
+        Optional<SAMLConfigModel> samlConfig = samlConfigAccessor.getConfiguration();
         return isSAMLEnabled(samlConfig);
     }
 
@@ -59,37 +56,9 @@ public class SAMLContext implements Serializable {
         return isSAMLEnabled() && !BooleanUtils.toBoolean(ignoreSAMLRequestParam);
     }
 
-    public void disableSAML() {
-        try {
-            ConfigurationModel configurationModel = getCurrentConfiguration();
-            Map<String, ConfigurationFieldModel> fields = configurationModel.getCopyOfKeyToFieldMap();
-            ConfigurationFieldModel enabledField = fields.get(AuthenticationDescriptor.KEY_SAML_ENABLED);
-            if (null == enabledField) {
-                enabledField = ConfigurationFieldModel.create(AuthenticationDescriptor.KEY_SAML_ENABLED);
-                fields.put(AuthenticationDescriptor.KEY_SAML_ENABLED, enabledField);
-            }
-            enabledField.setFieldValue(String.valueOf(false));
-            configurationModelConfigurationAccessor.updateConfiguration(configurationModel.getConfigurationId(), fields.values());
-        } catch (AlertException ex) {
-            logger.error("Error disabling SAML configuration.");
-        }
-    }
-
-    public boolean isSAMLEnabled(ConfigurationModel configurationModel) {
-        return getFieldValueBoolean(configurationModel, AuthenticationDescriptor.KEY_SAML_ENABLED);
-    }
-
-    public String getFieldValueOrEmpty(ConfigurationModel configurationModel, String fieldKey) {
-        return configurationModel.getField(fieldKey).flatMap(ConfigurationFieldModel::getFieldValue).orElse("");
-    }
-
-    public Boolean getFieldValueBoolean(ConfigurationModel configurationModel, String fieldKey) {
-        return configurationModel.getField(fieldKey).flatMap(ConfigurationFieldModel::getFieldValue).map(BooleanUtils::toBoolean).orElse(false);
-    }
-
-    private boolean isSAMLEnabled(Optional<ConfigurationModel> configurationModel) {
+    private boolean isSAMLEnabled(Optional<SAMLConfigModel> configurationModel) {
         if (configurationModel.isPresent()) {
-            return isSAMLEnabled(configurationModel.get());
+            return configurationModel.get().getEnabled().orElse(false);
         }
 
         return false;
