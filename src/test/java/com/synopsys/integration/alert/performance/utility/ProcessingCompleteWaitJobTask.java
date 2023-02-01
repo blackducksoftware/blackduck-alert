@@ -179,6 +179,13 @@ public class ProcessingCompleteWaitJobTask implements WaitJobCondition {
             });
         intLogger.info("Performance: Executing Job Diagnostics");
 
+        completedJobsDiagnosticModel.getCompletedJobs()
+            .stream()
+            .filter(jobDiagnostics -> expectedJobIds.contains(jobDiagnostics.getJobConfigId().toString()))
+            .forEach(jobDiagnostics -> {
+                intLogger.info(String.format(
+                    "Job: %s average time: %s", jobDiagnostics.getJobName(), jobDiagnostics.getDurations().getJobDuration()));
+            });
         auditDiagnosticModel.getAverageAuditTime().ifPresent(auditTime -> intLogger.info(String.format("Average audit time: %s", auditTime)));
     }
 }
