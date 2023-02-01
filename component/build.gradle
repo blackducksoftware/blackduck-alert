@@ -27,8 +27,6 @@ dependencies {
     implementation 'org.springframework.security:spring-security-ldap'
     implementation 'org.springframework.security:spring-security-web'
 
-    implementation 'org.springframework.security.extensions:spring-security-saml2-core'
-
     //rabbitmq
     implementation 'org.springframework.amqp:spring-amqp'
     implementation 'org.springframework.amqp:spring-rabbit'
