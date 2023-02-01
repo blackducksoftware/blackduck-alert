@@ -11,7 +11,7 @@ import java.time.OffsetDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -57,7 +57,7 @@ public class BlackDuckAccumulator extends ProviderTask {
     private final BlackDuckNotificationRetrieverFactory notificationRetrieverFactory;
     private final BlackDuckAccumulatorSearchDateManager searchDateManager;
 
-    private final AtomicBoolean accumulatingNotifications = new AtomicBoolean(false);
+    private final ReentrantLock accumulatingLock = new ReentrantLock();
 
     public BlackDuckAccumulator(
         BlackDuckProviderKey blackDuckProviderKey,
@@ -86,8 +86,7 @@ public class BlackDuckAccumulator extends ProviderTask {
     @Override
     protected void runProviderTask() {
         BlackDuckProperties blackDuckProperties = getProviderProperties();
-        if (!accumulatingNotifications.get()
-            && blackDuckSystemValidator.canConnect(blackDuckProperties, new BlackDuckApiTokenValidator(blackDuckProperties))) {
+        if (blackDuckSystemValidator.canConnect(blackDuckProperties, new BlackDuckApiTokenValidator(blackDuckProperties))) {
             accumulateNotifications();
         } else {
             logger.info("Accumulation already occurring.  Skipping this accumulation cycle.");
@@ -100,8 +99,8 @@ public class BlackDuckAccumulator extends ProviderTask {
     }
 
     private void accumulateNotifications() {
-        accumulatingNotifications.set(true);
-        logger.info("Accumulating set to true. Preventing other accumulation cycles.");
+        accumulatingLock.lock();
+        logger.info("Accumulating lock acquired. Preventing other accumulation cycles.");
         Optional<BlackDuckNotificationRetriever> optionalNotificationRetriever = notificationRetrieverFactory.createBlackDuckNotificationRetriever(getProviderProperties());
         if (optionalNotificationRetriever.isPresent()) {
             DateRange dateRange = searchDateManager.retrieveNextSearchDateRange();
@@ -112,8 +111,8 @@ public class BlackDuckAccumulator extends ProviderTask {
             );
             retrieveAndStoreNotificationsSafely(optionalNotificationRetriever.get(), dateRange);
         }
-        logger.info("Accumulating set to false. Allowing other accumulation cycles.");
-        accumulatingNotifications.set(false);
+        accumulatingLock.unlock();
+        logger.info("Accumulating released. Allowing other accumulation cycles.");
     }
 
     private void retrieveAndStoreNotificationsSafely(BlackDuckNotificationRetriever notificationRetriever, DateRange dateRange) {
