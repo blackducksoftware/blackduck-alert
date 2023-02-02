@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
@@ -37,5 +38,11 @@ public class HomeController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void checkAuthentication(HttpServletRequest request, HttpServletResponse response) {
         ResponseFactory.createResponseFromAction(actions.verifyAuthentication(request, response));
+    }
+
+    @ResponseBody
+    @GetMapping("/api/verify/saml")
+    public SAMLEnabledResponseModel checkSaml() {
+        return ResponseFactory.createContentResponseFromAction(actions.verifySaml());
     }
 }

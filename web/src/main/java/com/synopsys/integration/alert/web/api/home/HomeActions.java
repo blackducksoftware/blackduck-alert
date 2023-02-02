@@ -10,6 +10,8 @@ package com.synopsys.integration.alert.web.api.home;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.synopsys.integration.alert.authentication.saml.database.accessor.SAMLConfigAccessor;
+import com.synopsys.integration.alert.authentication.saml.model.SAMLConfigModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -21,18 +23,22 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
 
+import java.util.Optional;
+
 @Component
 public class HomeActions {
     public static final String ROLE_ANONYMOUS = "ROLE_ANONYMOUS";
-    private final HttpSessionCsrfTokenRepository csrfTokenRespository;
+    private final HttpSessionCsrfTokenRepository csrfTokenRepository;
+    private final SAMLConfigAccessor samlConfigAccessor;
 
     @Autowired
-    public HomeActions(HttpSessionCsrfTokenRepository csrfTokenRespository) {
-        this.csrfTokenRespository = csrfTokenRespository;
+    public HomeActions(HttpSessionCsrfTokenRepository csrfTokenRepository, SAMLConfigAccessor samlConfigAccessor) {
+        this.csrfTokenRepository = csrfTokenRepository;
+        this.samlConfigAccessor = samlConfigAccessor;
     }
 
     public ActionResponse<Void> verifyAuthentication(HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
-        CsrfToken csrfToken = csrfTokenRespository.loadToken(servletRequest);
+        CsrfToken csrfToken = csrfTokenRepository.loadToken(servletRequest);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         boolean isAnonymous = authentication.getAuthorities().stream()
                                   .map(GrantedAuthority::getAuthority)
@@ -46,5 +52,15 @@ public class HomeActions {
             servletResponse.addHeader(csrfToken.getHeaderName(), csrfToken.getToken());
         }
         return new ActionResponse<>(HttpStatus.OK);
+    }
+
+
+    public ActionResponse<SAMLEnabledResponseModel> verifySaml() {
+        boolean enabled = false;
+        Optional<SAMLConfigModel> optionalSAMLConfigModel = samlConfigAccessor.getConfiguration();
+        if (optionalSAMLConfigModel.isPresent()) {
+            enabled = optionalSAMLConfigModel.get().getEnabled();
+        }
+        return new ActionResponse<>(HttpStatus.OK, new SAMLEnabledResponseModel(enabled));
     }
 }
