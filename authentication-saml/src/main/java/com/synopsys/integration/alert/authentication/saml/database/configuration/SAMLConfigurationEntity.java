@@ -32,8 +32,6 @@ public class SAMLConfigurationEntity extends BaseEntity {
     private SAMLMetadataMode metadataMode;
     @Column(name = "want_assertions_signed")
     private Boolean wantAssertionsSigned;
-    @Column(name = "role_attribute_mapping")
-    private String roleAttributeMapping;
     @Column(name = "encryption_cert_file_path")
     private String encryptionCertFilePath;
     @Column(name = "encryption_private_key_file_path")
@@ -58,7 +56,6 @@ public class SAMLConfigurationEntity extends BaseEntity {
         String metadataFilePath,
         SAMLMetadataMode metadataMode,
         Boolean wantAssertionsSigned,
-        String roleAttributeMapping,
         String encryptionCertFilePath,
         String encryptionPrivateKeyFilePath,
         String signingCertFilePath,
@@ -75,7 +72,6 @@ public class SAMLConfigurationEntity extends BaseEntity {
         this.metadataFilePath = metadataFilePath;
         this.metadataMode = metadataMode;
         this.wantAssertionsSigned = wantAssertionsSigned;
-        this.roleAttributeMapping = roleAttributeMapping;
         this.encryptionCertFilePath = encryptionCertFilePath;
         this.encryptionPrivateKeyFilePath = encryptionPrivateKeyFilePath;
         this.signingCertFilePath = signingCertFilePath;
@@ -121,10 +117,6 @@ public class SAMLConfigurationEntity extends BaseEntity {
 
     public Boolean getWantAssertionsSigned() {
         return wantAssertionsSigned;
-    }
-
-    public String getRoleAttributeMapping() {
-        return roleAttributeMapping;
     }
 
     public String getEncryptionCertFilePath() {

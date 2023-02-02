@@ -19,14 +19,14 @@ import com.synopsys.integration.alert.authentication.saml.model.SAMLConfigModel;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-public class SamlAntMatcher implements RequestMatcher {
+public class SAMLAntMatcher implements RequestMatcher {
     private final SAMLConfigAccessor samlConfigAccessor;
     private final Set<String> enabledPatterns;
     private final Set<String> disabledPatterns;
     private Collection<RequestMatcher> enabledMatchers;
     private Collection<RequestMatcher> disabledMatchers;
 
-    public SamlAntMatcher(SAMLConfigAccessor samlConfigAccessor, String[] samlEnabledPatterns, String[] samlDisabledPattern) {
+    public SAMLAntMatcher(SAMLConfigAccessor samlConfigAccessor, String[] samlEnabledPatterns, String[] samlDisabledPattern) {
         this.samlConfigAccessor = samlConfigAccessor;
         this.enabledPatterns = Set.of(samlEnabledPatterns);
         this.disabledPatterns = Set.of(samlDisabledPattern);
@@ -41,7 +41,7 @@ public class SamlAntMatcher implements RequestMatcher {
     @Override
     public boolean matches(HttpServletRequest request) {
         Collection<RequestMatcher> requestMatchers = disabledMatchers;
-
+        // Use SAMLConfigAccessor instead of SAMLManager to prevent circular dependency in bean creation
         Optional<SAMLConfigModel> optionalSAMLConfigModel = samlConfigAccessor.getConfiguration();
         if (optionalSAMLConfigModel.isPresent()) {
             if (optionalSAMLConfigModel.get().getEnabled()) {

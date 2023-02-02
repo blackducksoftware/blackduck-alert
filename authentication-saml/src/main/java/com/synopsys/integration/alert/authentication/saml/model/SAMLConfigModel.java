@@ -13,7 +13,6 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
     private String metadataFilePath;
     private SAMLMetadataMode metadataMode;
     private Boolean wantAssertionsSigned;
-    private String roleAttributeMapping;
     private String encryptionCertFilePath;
     private String encryptionPrivateKeyFilePath;
     private String signingCertFilePath;
@@ -39,7 +38,6 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
         String metadataFilePath,
         SAMLMetadataMode metadataMode,
         Boolean wantAssertionsSigned,
-        String roleAttributeMapping,
         String encryptionCertFilePath,
         String encryptionPrivateKeyFilePath,
         String signingCertFilePath,
@@ -53,7 +51,6 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
         this.metadataFilePath = metadataFilePath;
         this.metadataMode = metadataMode;
         this.wantAssertionsSigned = wantAssertionsSigned;
-        this.roleAttributeMapping = roleAttributeMapping;
         this.encryptionCertFilePath = encryptionCertFilePath;
         this.encryptionPrivateKeyFilePath = encryptionPrivateKeyFilePath;
         this.signingCertFilePath = signingCertFilePath;
@@ -76,7 +73,6 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
             metadataFilePath,
             metadataMode,
             wantAssertionsSigned,
-            roleAttributeMapping,
             encryptionCertFilePath,
             encryptionPrivateKeyFilePath,
             signingCertFilePath,
@@ -110,10 +106,6 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
         return wantAssertionsSigned;
     }
 
-    public Optional<String> getRoleAttributeMapping() {
-        return Optional.ofNullable(roleAttributeMapping);
-    }
-
     public Optional<String> getEncryptionCertFilePath() {
         return Optional.ofNullable(encryptionCertFilePath);
     }
@@ -145,9 +137,5 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
 
     public void setMetadataUrl(String metadataUrl) {
         this.metadataUrl = metadataUrl;
-    }
-
-    public void setRoleAttributeMapping(String roleAttributeMapping) {
-        this.roleAttributeMapping = roleAttributeMapping;
     }
 }

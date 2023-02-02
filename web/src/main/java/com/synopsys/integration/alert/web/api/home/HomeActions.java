@@ -53,13 +53,4 @@ public class HomeActions {
         }
         return new ActionResponse<>(HttpStatus.OK);
     }
-
-    public ActionResponse<SAMLEnabledResponseModel> verifySaml() {
-        boolean enabled = false;
-        Optional<SAMLConfigModel> optionalSAMLConfigModel = samlConfigAccessor.getConfiguration();
-        if (optionalSAMLConfigModel.isPresent()) {
-            enabled = optionalSAMLConfigModel.get().getEnabled();
-        }
-        return new ActionResponse<>(HttpStatus.OK, new SAMLEnabledResponseModel(enabled));
-    }
 }

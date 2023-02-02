@@ -10,12 +10,12 @@ package com.synopsys.integration.alert.web.api.home;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.synopsys.integration.alert.authentication.saml.security.SAMLManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
@@ -25,7 +25,7 @@ public class HomeController {
     private final HomeActions actions;
 
     @Autowired
-    public HomeController(HomeActions actions) {
+    public HomeController(HomeActions actions, SAMLManager samlManager) {
         this.actions = actions;
     }
 
@@ -39,11 +39,4 @@ public class HomeController {
     public void checkAuthentication(HttpServletRequest request, HttpServletResponse response) {
         ResponseFactory.createResponseFromAction(actions.verifyAuthentication(request, response));
     }
-
-    @ResponseBody
-    @GetMapping("/api/verify/saml")
-    public SAMLEnabledResponseModel checkSaml() {
-        return ResponseFactory.createContentResponseFromAction(actions.verifySaml());
-    }
-
 }

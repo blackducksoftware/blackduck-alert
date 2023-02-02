@@ -83,8 +83,6 @@ public class SAMLEnvironmentVariableHandler extends EnvironmentVariableHandler<S
         builder.addVariableValue(SAML_FORCE_AUTH_KEY, String.valueOf(obfuscatedConfigModel.getForceAuth()));
         obfuscatedConfigModel.getMetadataUrl()
             .ifPresent(value -> builder.addVariableValue(SAML_METADATA_URL_KEY, value));
-        obfuscatedConfigModel.getRoleAttributeMapping()
-            .ifPresent(value -> builder.addVariableValue(SAML_ROLE_ATTRIBUTE_MAPPING_NAME_KEY, value));
 
         return builder.build();
     }
@@ -107,7 +105,5 @@ public class SAMLEnvironmentVariableHandler extends EnvironmentVariableHandler<S
             .ifPresent(configuration::setForceAuth);
         environmentVariableUtility.getEnvironmentValue(SAML_METADATA_URL_KEY)
             .ifPresent(configuration::setMetadataUrl);
-        environmentVariableUtility.getEnvironmentValue(SAML_ROLE_ATTRIBUTE_MAPPING_NAME_KEY)
-            .ifPresent(configuration::setRoleAttributeMapping);
     }
 }

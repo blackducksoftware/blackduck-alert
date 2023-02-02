@@ -9,6 +9,7 @@ package com.synopsys.integration.alert.component.authentication.security;
 
 import com.synopsys.integration.alert.authentication.saml.database.accessor.SAMLConfigAccessor;
 import com.synopsys.integration.alert.authentication.saml.security.AlertRelyingPartyRegistrationRepository;
+import com.synopsys.integration.alert.authentication.saml.security.SAMLGroupConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,7 +39,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
-import com.synopsys.integration.alert.component.authentication.security.saml.SamlAntMatcher;
+import com.synopsys.integration.alert.component.authentication.security.saml.SAMLAntMatcher;
 
 import java.util.HashSet;
 import java.util.List;
@@ -53,14 +54,23 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     private final RoleAccessor roleAccessor;
 
     private final SAMLConfigAccessor samlConfigAccessor;
+    private final SAMLGroupConverter samlGroupConverter;
 
     @Autowired
-    AuthenticationHandler(HttpPathManager httpPathManager, CsrfTokenRepository csrfTokenRepository, AlertProperties alertProperties, RoleAccessor roleAccessor, SAMLConfigAccessor samlConfigAccessor) {
+    AuthenticationHandler(
+        HttpPathManager httpPathManager,
+        CsrfTokenRepository csrfTokenRepository,
+        AlertProperties alertProperties,
+        RoleAccessor roleAccessor,
+        SAMLConfigAccessor samlConfigAccessor,
+        SAMLGroupConverter samlGroupConverter
+    ) {
         this.httpPathManager = httpPathManager;
         this.csrfTokenRepository = csrfTokenRepository;
         this.alertProperties = alertProperties;
         this.roleAccessor = roleAccessor;
         this.samlConfigAccessor = samlConfigAccessor;
+        this.samlGroupConverter = samlGroupConverter;
     }
 
     @Override
@@ -84,32 +94,13 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     private void configureSAML(HttpSecurity http) throws Exception {
         //eventually configure SAML
         OpenSaml4AuthenticationProvider authenticationProvider = new OpenSaml4AuthenticationProvider();
-        authenticationProvider.setResponseAuthenticationConverter(groupsConverter());
+        authenticationProvider.setResponseAuthenticationConverter(samlGroupConverter.groupsConverter());
 
         http.saml2Login(saml2 -> {
                 saml2.authenticationManager(new ProviderManager(authenticationProvider));
-                saml2.loginPage("/login");
+                saml2.loginPage("/");
             })
             .saml2Logout(Customizer.withDefaults());
-    }
-
-    private Converter<OpenSaml4AuthenticationProvider.ResponseToken, Saml2Authentication> groupsConverter() {
-
-        Converter<OpenSaml4AuthenticationProvider.ResponseToken, Saml2Authentication> delegate =
-            OpenSaml4AuthenticationProvider.createDefaultResponseAuthenticationConverter();
-
-        return responseToken -> {
-            Saml2Authentication authentication = delegate.convert(responseToken);
-            Saml2AuthenticatedPrincipal principal = (Saml2AuthenticatedPrincipal) authentication.getPrincipal();
-            List<String> groups = principal.getAttribute("groups");
-            Set<GrantedAuthority> authorities = new HashSet<>();
-            if (groups != null) {
-                groups.stream().map(SimpleGrantedAuthority::new).forEach(authorities::add);
-            } else {
-                authorities.addAll(authentication.getAuthorities());
-            }
-            return new Saml2Authentication(principal, authentication.getSaml2Response(), authorities);
-        };
     }
 
     private RequestMatcher[] createCsrfIgnoreMatchers() {
@@ -122,7 +113,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     private RequestMatcher[] createRequestMatcherArray() {
         return new RequestMatcher[] {
-            new SamlAntMatcher(samlConfigAccessor, httpPathManager.getSamlAllowedPaths(), httpPathManager.getAllowedPaths())
+            new SAMLAntMatcher(samlConfigAccessor, httpPathManager.getSamlAllowedPaths(), httpPathManager.getAllowedPaths())
         };
     }
 

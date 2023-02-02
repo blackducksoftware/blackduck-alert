@@ -59,6 +59,7 @@ public class HttpPathManager {
     };
 
     private static final String[] DEFAULT_SAML_PATHS = {
+        PATH_ROOT,
         PATH_ROOT_HASHTAG,
         PATH_FAVICON_ICO,
         PATH_FONTS,
@@ -70,6 +71,7 @@ public class HttpPathManager {
         PATH_SYSTEM_MESSAGES_LATEST,
         PATH_VERIFY,
         PATH_VERIFY_SAML,
+        PATH_LOGIN,
         PATH_LOGOUT
     };
 

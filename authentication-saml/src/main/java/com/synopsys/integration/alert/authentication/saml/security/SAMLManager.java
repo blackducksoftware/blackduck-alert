@@ -3,6 +3,7 @@ package com.synopsys.integration.alert.authentication.saml.security;
 import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
 import com.synopsys.integration.alert.authentication.saml.database.accessor.SAMLConfigAccessor;
 import com.synopsys.integration.alert.authentication.saml.model.SAMLConfigModel;
+import com.synopsys.integration.alert.authentication.saml.model.SAMLMetadataMode;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.opensaml.security.x509.X509Support;
@@ -54,7 +55,18 @@ public class SAMLManager {
             } else {
                 disableSAML();
             }
+        } else {
+            disableSAML();
         }
+    }
+
+    public boolean isSAMLEnabled() {
+        Optional<SAMLConfigModel> optionalSAMLConfigModel = configAccessor.getConfiguration();
+        if (optionalSAMLConfigModel.isPresent()) {
+            SAMLConfigModel samlConfigModel = optionalSAMLConfigModel.get();
+            return samlConfigModel.getEnabled();
+        }
+        return false;
     }
 
     private void enableSAML(SAMLConfigModel configModel) {
@@ -71,10 +83,12 @@ public class SAMLManager {
     }
 
     private RelyingPartyRegistration createRegistration(SAMLConfigModel configModel) throws CertificateException, IOException {
+        SAMLMetadataMode metadataMode = configModel.getMetadataMode().orElse(SAMLMetadataMode.URL); // Default to url
         Optional<String> optionalMetadataUrl = configModel.getMetadataUrl().filter(StringUtils::isNotBlank);
         RelyingPartyRegistration.Builder builder;
 
-        if (optionalMetadataUrl.isPresent()) {
+        // Make sure the mode for SAML metadata is url before using it
+        if (metadataMode == SAMLMetadataMode.URL && optionalMetadataUrl.isPresent()) {
             builder = RelyingPartyRegistrations.fromMetadataLocation(optionalMetadataUrl.get());
         } else {
             String metadataString = filePersistenceUtil.readFromFile(AuthenticationDescriptor.SAML_METADATA_FILE);
