@@ -10,8 +10,7 @@ package com.synopsys.integration.alert.web.api.home;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.synopsys.integration.alert.authentication.saml.database.accessor.SAMLConfigAccessor;
-import com.synopsys.integration.alert.authentication.saml.model.SAMLConfigModel;
+import com.synopsys.integration.alert.authentication.saml.security.SAMLManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -29,12 +28,12 @@ import java.util.Optional;
 public class HomeActions {
     public static final String ROLE_ANONYMOUS = "ROLE_ANONYMOUS";
     private final HttpSessionCsrfTokenRepository csrfTokenRepository;
-    private final SAMLConfigAccessor samlConfigAccessor;
+    private final SAMLManager samlManager;
 
     @Autowired
-    public HomeActions(HttpSessionCsrfTokenRepository csrfTokenRepository, SAMLConfigAccessor samlConfigAccessor) {
+    public HomeActions(HttpSessionCsrfTokenRepository csrfTokenRepository, SAMLManager samlManager) {
         this.csrfTokenRepository = csrfTokenRepository;
-        this.samlConfigAccessor = samlConfigAccessor;
+        this.samlManager = samlManager;
     }
 
     public ActionResponse<Void> verifyAuthentication(HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
@@ -53,13 +52,8 @@ public class HomeActions {
         }
         return new ActionResponse<>(HttpStatus.OK);
     }
-    
+
     public ActionResponse<SAMLEnabledResponseModel> verifySaml() {
-        boolean enabled = false;
-        Optional<SAMLConfigModel> optionalSAMLConfigModel = samlConfigAccessor.getConfiguration();
-        if (optionalSAMLConfigModel.isPresent()) {
-            enabled = optionalSAMLConfigModel.get().getEnabled();
-        }
-        return new ActionResponse<>(HttpStatus.OK, new SAMLEnabledResponseModel(enabled));
+        return new ActionResponse<>(HttpStatus.OK, new SAMLEnabledResponseModel(samlManager.isSAMLEnabled()));
     }
 }
