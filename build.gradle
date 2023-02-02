@@ -82,7 +82,7 @@ allprojects {
     }
 
     repositories {
-        // Need this repository to resolve the spring-security-saml2-core dependencies
+        // Need this repository to resolve the opensaml dependencies
         maven {
             url 'https://build.shibboleth.net/nexus/content/repositories/releases/'
         }
