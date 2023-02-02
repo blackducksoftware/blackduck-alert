@@ -104,7 +104,22 @@ dockerImagesToBuild.each { imageName ->
             logger.lifecycle('Removing docker image:: ' + fullDockerImageName)
         }
 
+        ignoreExitValue = true
+        errorOutput = new ByteArrayOutputStream()
+
         commandLine 'docker', 'image', 'rm', fullDockerImageName
+
+        doLast {
+            String stdErr = errorOutput.toString()
+
+            if (stdErr?.trim() && !stdErr.contains("Deleted: ")) {
+                if (stdErr.contains("Error: No such image")) {
+                    logger.lifecycle("Image does not exist, continuing.")
+                } else {
+                    throw new GradleException("${stdErr}")
+                }
+            }
+        }
     }
     project.tasks.findByName(dockerRemoveAllImages).dependsOn dockerImageRemoveTaskName
 
