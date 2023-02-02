@@ -10,7 +10,6 @@ package com.synopsys.integration.alert.web.api.home;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.synopsys.integration.alert.authentication.saml.security.SAMLManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,7 +24,7 @@ public class HomeController {
     private final HomeActions actions;
 
     @Autowired
-    public HomeController(HomeActions actions, SAMLManager samlManager) {
+    public HomeController(HomeActions actions) {
         this.actions = actions;
     }
 
