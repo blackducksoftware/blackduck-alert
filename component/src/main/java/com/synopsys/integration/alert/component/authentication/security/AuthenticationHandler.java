@@ -7,13 +7,11 @@
  */
 package com.synopsys.integration.alert.component.authentication.security;
 
-import com.synopsys.integration.alert.authentication.saml.database.accessor.SAMLConfigAccessor;
 import com.synopsys.integration.alert.authentication.saml.security.AlertRelyingPartyRegistrationRepository;
 import com.synopsys.integration.alert.authentication.saml.security.SAMLGroupConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.access.vote.AffirmativeBased;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.Customizer;
@@ -21,12 +19,8 @@ import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.saml2.provider.service.authentication.OpenSaml4AuthenticationProvider;
-import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticatedPrincipal;
-import org.springframework.security.saml2.provider.service.authentication.Saml2Authentication;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
@@ -34,16 +28,14 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationFa
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
-import com.synopsys.integration.alert.component.authentication.security.saml.SAMLAntMatcher;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.Arrays;
 
 @EnableWebSecurity
 @Configuration
@@ -53,7 +45,6 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     private final AlertProperties alertProperties;
     private final RoleAccessor roleAccessor;
 
-    private final SAMLConfigAccessor samlConfigAccessor;
     private final SAMLGroupConverter samlGroupConverter;
 
     @Autowired
@@ -62,14 +53,12 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
         CsrfTokenRepository csrfTokenRepository,
         AlertProperties alertProperties,
         RoleAccessor roleAccessor,
-        SAMLConfigAccessor samlConfigAccessor,
         SAMLGroupConverter samlGroupConverter
     ) {
         this.httpPathManager = httpPathManager;
         this.csrfTokenRepository = csrfTokenRepository;
         this.alertProperties = alertProperties;
         this.roleAccessor = roleAccessor;
-        this.samlConfigAccessor = samlConfigAccessor;
         this.samlGroupConverter = samlGroupConverter;
     }
 
@@ -113,7 +102,10 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     private RequestMatcher[] createRequestMatcherArray() {
         return new RequestMatcher[] {
-            new SAMLAntMatcher(samlConfigAccessor, httpPathManager.getSamlAllowedPaths(), httpPathManager.getAllowedPaths())
+            request ->
+                Arrays.stream(httpPathManager.getAllowedPaths())
+                    .map(AntPathRequestMatcher::new)
+                    .anyMatch(requestMatcher -> requestMatcher.matches(request))
         };
     }
 
