@@ -22,8 +22,6 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
 
-import java.util.Optional;
-
 @Component
 public class HomeActions {
     public static final String ROLE_ANONYMOUS = "ROLE_ANONYMOUS";
