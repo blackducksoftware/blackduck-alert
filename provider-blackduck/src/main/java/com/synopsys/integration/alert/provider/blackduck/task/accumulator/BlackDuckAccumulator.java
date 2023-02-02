@@ -57,7 +57,7 @@ public class BlackDuckAccumulator extends ProviderTask {
     private final BlackDuckNotificationRetrieverFactory notificationRetrieverFactory;
     private final BlackDuckAccumulatorSearchDateManager searchDateManager;
 
-    private final ReentrantLock accumulatingLock = new ReentrantLock();
+    private static final ReentrantLock accumulatingLock = new ReentrantLock();
 
     public BlackDuckAccumulator(
         BlackDuckProviderKey blackDuckProviderKey,
