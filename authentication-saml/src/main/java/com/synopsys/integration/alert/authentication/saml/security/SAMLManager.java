@@ -47,7 +47,7 @@ public class SAMLManager {
         Optional<SAMLConfigModel> optionalSAMLConfigModel = configAccessor.getConfiguration();
         if (optionalSAMLConfigModel.isPresent()) {
             SAMLConfigModel samlConfigModel = optionalSAMLConfigModel.get();
-            boolean samlEnabled = samlConfigModel.getEnabled().orElse(false);
+            boolean samlEnabled = samlConfigModel.getEnabled();
 
             if(samlEnabled) {
                 enableSAML(samlConfigModel);
@@ -94,7 +94,7 @@ public class SAMLManager {
             verificationCredentialBuilder(builder);
         }
 
-        builder.assertingPartyDetails(party -> party.wantAuthnRequestsSigned(configModel.getWantAssertionsSigned().orElse(false)));
+        builder.assertingPartyDetails(party -> party.wantAuthnRequestsSigned(configModel.getWantAssertionsSigned()));
 
         return builder.build();
     }

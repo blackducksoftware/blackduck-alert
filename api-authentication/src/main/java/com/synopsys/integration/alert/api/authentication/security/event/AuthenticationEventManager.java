@@ -8,15 +8,12 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.opensaml.saml2.core.impl.NameIDImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.ldap.userdetails.InetOrgPerson;
-import org.springframework.security.saml.SAMLAuthenticationToken;
-import org.springframework.security.saml.context.SAMLMessageContext;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
@@ -40,17 +37,9 @@ public class AuthenticationEventManager {
         String emailAddress = null;
         try {
             Object authPrincipal = authentication.getPrincipal();
-            if (authentication instanceof SAMLAuthenticationToken) {
-                SAMLAuthenticationToken samlAuthenticationToken = (SAMLAuthenticationToken) authentication;
-                SAMLMessageContext credentials = samlAuthenticationToken.getCredentials();
-                NameIDImpl subjectNameIdentifier = (NameIDImpl) credentials.getSubjectNameIdentifier();
-                username = subjectNameIdentifier.getValue();
-                emailAddress = username;
-            } else if (authPrincipal instanceof InetOrgPerson) {
-                username = authentication.getName();
+            username = authentication.getName();
+            if (authPrincipal instanceof InetOrgPerson) {
                 emailAddress = ((InetOrgPerson) authPrincipal).getMail();
-            } else {
-                username = authentication.getName();
             }
             sendAuthenticationEvent(username, emailAddress, authenticationType, authentication.getAuthorities());
         } catch (Exception e) {
