@@ -62,6 +62,25 @@ public class ProcessingCompleteWaitJobTask implements WaitJobCondition {
         }
         DiagnosticModel diagnosticModel = diagnosticModelOptional.get();
         logDiagnostics(diagnosticModel);
+
+        CompletedJobsDiagnosticModel jobDiagnosticModel = diagnosticModel.getCompletedJobsDiagnosticModel();
+
+        int totalNotifications = jobDiagnosticModel.getCompletedJobs()
+            .stream()
+            .filter(jobStatusDiagnosticModel -> expectedJobIds.contains(jobStatusDiagnosticModel.getJobConfigId().toString()))
+            .filter(this::isAfterSearchTime)
+            .map(CompletedJobDiagnosticModel::getTotalNotificationCount)
+            .map(Long::intValue)
+            .reduce(0, Integer::sum);
+
+        intLogger.info(String.format("Performance: Found %s notifications, expected %s. ", totalNotifications, numberOfExpectedNotifications));
+
+        boolean expectedNotifications = totalNotifications >= numberOfExpectedNotifications;
+
+        if (!expectedNotifications) {
+            return false;
+        }
+
         Set<String> jobIds = getJobIdsFromDiagnosticModel(diagnosticModel);
 
         intLogger.info(String.format("Performance: Job IDs discovered:  %s", jobIds.toString()));
@@ -76,25 +95,12 @@ public class ProcessingCompleteWaitJobTask implements WaitJobCondition {
 
             boolean allExecutingJobsEmpty = diagnosticModel.getJobExecutionsDiagnosticModel().getJobExecutions().isEmpty();
 
-            CompletedJobsDiagnosticModel jobDiagnosticModel = diagnosticModel.getCompletedJobsDiagnosticModel();
-
-            int totalNotifications = jobDiagnosticModel.getCompletedJobs()
-                .stream()
-                .filter(jobStatusDiagnosticModel -> expectedJobIds.contains(jobStatusDiagnosticModel.getJobConfigId().toString()))
-                .filter(this::isAfterSearchTime)
-                .map(CompletedJobDiagnosticModel::getTotalNotificationCount)
-                .map(Long::intValue)
-                .reduce(0, Integer::sum);
-
-            intLogger.info(String.format("Performance: Found %s notifications, expected %s. ", totalNotifications, numberOfExpectedNotifications));
             boolean allJobsHaveRun = jobDiagnosticModel.getCompletedJobs()
                 .stream()
                 .filter(jobStatusDiagnosticModel -> expectedJobIds.contains(jobStatusDiagnosticModel.getJobConfigId().toString()))
                 .allMatch(this::isAfterSearchTime);
 
-            boolean expectedNotifications = totalNotifications >= numberOfExpectedNotifications;
-
-            return expectedNotifications && allJobsHaveRun && allExecutingJobsEmpty && allQueuesEmpty;
+            return allJobsHaveRun && allExecutingJobsEmpty && allQueuesEmpty;
         }
         return false;
     }
