@@ -58,12 +58,6 @@
             <column name="metadata_mode" type="BIGINT">
                 <constraints nullable="true"/>
             </column>
-            <column name="entity_id" type="VARCHAR">
-                <constraints nullable="false"/>
-            </column>
-            <column name="entity_base_url" type="VARCHAR">
-                <constraints nullable="false"/>
-            </column>
             <column name="want_assertions_signed" type="BOOLEAN" defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
