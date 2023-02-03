@@ -156,7 +156,7 @@ public class BlackDuckAccumulator extends ProviderTask {
         List<AlertNotificationModel> alertNotifications = convertToAlertNotificationModels(notifications);
         write(alertNotifications);
         Optional<OffsetDateTime> optionalNextSearchTime = computeLatestNotificationCreatedAtDate(alertNotifications)
-            .map(latestNotification -> latestNotification.plusNanos(1000000));
+            .map(latestNotification -> latestNotification.plusNanos(1000));
         if (optionalNextSearchTime.isPresent()) {
             OffsetDateTime nextSearchTime = optionalNextSearchTime.get();
             logger.info("Notifications found; the next search time will be: {}", nextSearchTime);
@@ -206,12 +206,14 @@ public class BlackDuckAccumulator extends ProviderTask {
     }
 
     private String createContentId(NotificationView notification) {
-        String contentId = String.format("content-id-%s", UUID.randomUUID());
+        // generate new default in case the href of notification view is null.
+        String contentId = UUID.randomUUID().toString();
         if (null != notification && null != notification.getHref()) {
             try {
                 contentId = new DigestUtils("SHA3-256").digestAsHex(notification.getHref().string());
             } catch (RuntimeException ex) {
                 // do nothing use the URL
+                logger.debug("Content id hash cannot be generated for notification.", ex);
             }
         }
 

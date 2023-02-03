@@ -14,6 +14,11 @@
         </addColumn>
     </changeSet>
     <changeSet author="psantos" id="create-index-content-id">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists schemaName="alert" tableName="raw_notification_content" columnNames="content_id" indexName="notification-content-id"/>
+            </not>
+        </preConditions>
         <createIndex schemaName="alert" tableName="raw_notification_content" indexName="notification-content-id">
             <column name="content_id"/>
         </createIndex>
