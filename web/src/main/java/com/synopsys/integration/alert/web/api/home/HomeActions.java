@@ -52,6 +52,6 @@ public class HomeActions {
     }
 
     public ActionResponse<SAMLEnabledResponseModel> verifySaml() {
-        return new ActionResponse<>(HttpStatus.OK, new SAMLEnabledResponseModel(samlManager.isSAMLEnabled()));
+        return new ActionResponse<>(HttpStatus.OK, new SAMLEnabledResponseModel(false));
     }
 }
