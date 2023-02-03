@@ -8,7 +8,7 @@
             </not>
         </preConditions>
         <addColumn schemaName="alert" tableName="raw_notification_content">
-            <column name="content_id" type="VARCHAR" defaultValue="OLD-RECORD-FROM-PRIOR-VERSION">
+            <column name="content_id" type="VARCHAR" defaultValueComputed="uuid_generate_v4()::varchar">
                 <constraints nullable="false" unique="true"/>
             </column>
         </addColumn>

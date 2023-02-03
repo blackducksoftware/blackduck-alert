@@ -57,9 +57,11 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     @Override
     @Transactional
     public List<AlertNotificationModel> saveAllNotifications(Collection<AlertNotificationModel> notifications) {
+        // prevent duplicates by filtering out any notifications that have the same hash of the url
         List<NotificationEntity> entitiesToSave = notifications
             .stream()
             .map(this::fromModel)
+            .filter(entity -> !notificationContentRepository.existsByContentId(entity.getContentId()))
             .collect(Collectors.toList());
 
         return notificationContentRepository.saveAll(entitiesToSave)

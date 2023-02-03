@@ -117,4 +117,12 @@ public class MockNotificationContentRepository extends MockRepositoryContainer<L
             .filter(entity -> entity.getProcessed() == processed)
             .count();
     }
+
+    @Override
+    public boolean existsByContentId(String contentId) {
+        return findAll()
+            .stream()
+            .map(NotificationEntity::getContentId)
+            .anyMatch(contentId::equals);
+    }
 }
