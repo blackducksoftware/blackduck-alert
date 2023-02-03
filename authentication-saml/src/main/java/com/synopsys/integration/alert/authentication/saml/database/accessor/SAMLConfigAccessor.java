@@ -79,14 +79,16 @@ public class SAMLConfigAccessor implements UniqueConfigurationAccessor<SAMLConfi
             samlConfigurationEntity.getForceAuth(),
             samlConfigurationEntity.getMetadataUrl(),
             samlConfigurationEntity.getMetadataFilePath(),
+            samlConfigurationEntity.getMetadataMode(),
             samlConfigurationEntity.getEntityId(),
             samlConfigurationEntity.getEntityBaseUrl(),
             samlConfigurationEntity.getWantAssertionsSigned(),
             samlConfigurationEntity.getRoleAttributeMapping(),
             samlConfigurationEntity.getEncryptionCertFilePath(),
+            samlConfigurationEntity.getEncryptionPrivateKeyFilePath(),
             samlConfigurationEntity.getSigningCertFilePath(),
-            samlConfigurationEntity.getVerificationCertFilePath(),
-            samlConfigurationEntity.getMetadataMode()
+            samlConfigurationEntity.getSigningPrivateKeyFilePath(),
+            samlConfigurationEntity.getVerificationCertFilePath()
         );
     }
 
@@ -99,14 +101,16 @@ public class SAMLConfigAccessor implements UniqueConfigurationAccessor<SAMLConfi
             samlConfigModel.getForceAuth().orElse(Boolean.FALSE),
             samlConfigModel.getMetadataUrl().orElse(""),
             samlConfigModel.getMetadataFilePath().orElse(""),
+            samlConfigModel.getMetadataMode().orElse(null),
             samlConfigModel.getEntityId(),
             samlConfigModel.getEntityBaseUrl(),
             samlConfigModel.getWantAssertionsSigned().orElse(Boolean.FALSE),
             samlConfigModel.getRoleAttributeMapping().orElse(""),
             samlConfigModel.getEncryptionCertFilePath().orElse(""),
+            samlConfigModel.getEncryptionPrivateKeyFilePath().orElse(""),
             samlConfigModel.getSigningCertFilePath().orElse(""),
-            samlConfigModel.getVerificationCertFilePath().orElse(""),
-            samlConfigModel.getMetadataMode().orElse(null)
+            samlConfigModel.getSigningPrivateKeyFilePath().orElse(""),
+            samlConfigModel.getVerificationCertFilePath().orElse("")
         );
     }
 }

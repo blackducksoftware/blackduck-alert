@@ -11,14 +11,16 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
     private Boolean forceAuth;
     private String metadataUrl;
     private String metadataFilePath;
+    private SAMLMetadataMode metadataMode;
     private String entityId;
     private String entityBaseUrl;
     private Boolean wantAssertionsSigned;
     private String roleAttributeMapping;
     private String encryptionCertFilePath;
+    private String encryptionPrivateKeyFilePath;
     private String signingCertFilePath;
+    private String signingPrivateKeyFilePath;
     private String verificationCertFilePath;
-    private SAMLMetadataMode metadataMode;
 
     public SAMLConfigModel() {
         // For serialization
@@ -40,26 +42,30 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
         Boolean forceAuth,
         String metadataUrl,
         String metadataFilePath,
+        SAMLMetadataMode metadataMode,
         String entityId,
         String entityBaseUrl,
         Boolean wantAssertionsSigned,
         String roleAttributeMapping,
         String encryptionCertFilePath,
+        String encryptionPrivateKeyFilePath,
         String signingCertFilePath,
-        String verificationCertFilePath,
-        SAMLMetadataMode metadataMode
+        String signingPrivateKeyFilePath,
+        String verificationCertFilePath
     ) {
         this(id, entityId, entityBaseUrl);
         this.enabled = enabled;
         this.forceAuth = forceAuth;
         this.metadataUrl = metadataUrl;
         this.metadataFilePath = metadataFilePath;
+        this.metadataMode = metadataMode;
         this.wantAssertionsSigned = wantAssertionsSigned;
         this.roleAttributeMapping = roleAttributeMapping;
         this.encryptionCertFilePath = encryptionCertFilePath;
+        this.encryptionPrivateKeyFilePath = encryptionPrivateKeyFilePath;
         this.signingCertFilePath = signingCertFilePath;
+        this.signingPrivateKeyFilePath = signingPrivateKeyFilePath;
         this.verificationCertFilePath = verificationCertFilePath;
-        this.metadataMode = metadataMode;
 
         setCreatedAt(createdAt);
         setLastUpdated(lastUpdated);
@@ -75,14 +81,16 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
             forceAuth,
             metadataUrl,
             metadataFilePath,
+            metadataMode,
             entityId,
             entityBaseUrl,
             wantAssertionsSigned,
             roleAttributeMapping,
             encryptionCertFilePath,
+            encryptionPrivateKeyFilePath,
             signingCertFilePath,
-            verificationCertFilePath,
-            metadataMode
+            signingPrivateKeyFilePath,
+            verificationCertFilePath
         );
     }
 
@@ -101,6 +109,10 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
 
     public Optional<String> getMetadataFilePath() {
         return Optional.ofNullable(metadataFilePath);
+    }
+
+    public Optional<SAMLMetadataMode> getMetadataMode() {
+        return Optional.ofNullable(metadataMode);
     }
 
     public String getEntityId() {
@@ -123,16 +135,20 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
         return Optional.ofNullable(encryptionCertFilePath);
     }
 
+    public Optional<String> getEncryptionPrivateKeyFilePath() {
+        return Optional.ofNullable(encryptionPrivateKeyFilePath);
+    }
+
     public Optional<String> getSigningCertFilePath() {
         return Optional.ofNullable(signingCertFilePath);
     }
 
-    public Optional<String> getVerificationCertFilePath() {
-        return Optional.ofNullable(verificationCertFilePath);
+    public Optional<String> getSigningPrivateKeyFilePath() {
+        return Optional.ofNullable(signingPrivateKeyFilePath);
     }
 
-    public Optional<SAMLMetadataMode> getMetadataMode() {
-        return Optional.ofNullable(metadataMode);
+    public Optional<String> getVerificationCertFilePath() {
+        return Optional.ofNullable(verificationCertFilePath);
     }
 
     // Setters
