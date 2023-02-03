@@ -189,7 +189,9 @@ class JmsNotificationReceiverTestIT {
             content,
             DateUtils.createCurrentDateTimestamp(),
             DateUtils.createCurrentDateTimestamp(),
-            processed);
+            processed,
+            String.format("content-id-%s", UUID.randomUUID())
+        );
     }
 
 }

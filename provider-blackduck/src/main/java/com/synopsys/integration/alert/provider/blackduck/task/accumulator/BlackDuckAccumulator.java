@@ -11,11 +11,13 @@ import java.time.OffsetDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -188,7 +190,32 @@ public class BlackDuckAccumulator extends ProviderTask {
         String provider = blackDuckProviderKey.getUniversalKey();
         String notificationType = notification.getType().name();
         String jsonContent = notification.getJson();
-        return new AlertNotificationModel(null, getProviderProperties().getConfigId(), provider, getProviderProperties().getConfigName(), notificationType, jsonContent, createdAt, providerCreationTime, false);
+        String hashOfUrl = createContentId(notification);
+        return new AlertNotificationModel(
+            null,
+            getProviderProperties().getConfigId(),
+            provider,
+            getProviderProperties().getConfigName(),
+            notificationType,
+            jsonContent,
+            createdAt,
+            providerCreationTime,
+            false,
+            hashOfUrl
+        );
+    }
+
+    private String createContentId(NotificationView notification) {
+        String contentId = String.format("content-id-%s", UUID.randomUUID());
+        if (null != notification && null != notification.getHref()) {
+            try {
+                contentId = new DigestUtils("SHA3-256").digestAsHex(notification.getHref().string());
+            } catch (RuntimeException ex) {
+                // do nothing use the URL
+            }
+        }
+
+        return contentId;
     }
 
     // Expects that the notifications are sorted oldest to newest

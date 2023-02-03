@@ -288,7 +288,8 @@ class ProcessingJobEventHandlerTestIT {
     }
 
     private AlertNotificationModel createNotification(int minuteOffset) throws IOException {
-        String content = createVulnerabilityContent();
+        VulnerabilityNotificationView notificationView = createVulnerabilityContent();
+        String content = createVulnerabilityContent(notificationView);
 
         return new AlertNotificationModel(
             null,
@@ -299,16 +300,22 @@ class ProcessingJobEventHandlerTestIT {
             content,
             OffsetDateTime.now(),
             OffsetDateTime.now().minusMinutes(minuteOffset),
-            true
+            true,
+            notificationView.getHref().string()
+
         );
     }
 
-    private String createVulnerabilityContent() throws IOException {
+    private VulnerabilityNotificationView createVulnerabilityContent() throws IOException {
         String content = TestResourceUtils.readFileToString(VULNERABILITY_SIMPLE_JSON_PATH);
         VulnerabilityNotificationView notificationContent = gson.fromJson(content, VulnerabilityNotificationView.class);
         notificationContent.setCreatedAt(Date.from(OffsetDateTime.now(ZoneOffset.UTC).toInstant()));
         notificationContent.setType(NotificationType.VULNERABILITY);
 
+        return notificationContent;
+    }
+
+    private String createVulnerabilityContent(VulnerabilityNotificationView notificationContent) {
         return gson.toJson(notificationContent);
     }
 

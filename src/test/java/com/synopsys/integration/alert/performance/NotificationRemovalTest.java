@@ -260,7 +260,8 @@ class NotificationRemovalTest {
             notificationContent,
             notificationCreationTime,
             notificationCreationTime,
-            processed
+            processed,
+            String.format("content-id-%s", UUID.randomUUID())
         );
     }
 }

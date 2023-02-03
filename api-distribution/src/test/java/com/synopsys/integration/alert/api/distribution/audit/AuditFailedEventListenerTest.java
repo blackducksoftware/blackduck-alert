@@ -206,7 +206,8 @@ class AuditFailedEventListenerTest {
             providerCreationTime,
             "VULNERABILITY",
             content,
-            false
+            false,
+            String.format("content-id-%s", UUID.randomUUID())
         );
     }
 

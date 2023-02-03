@@ -206,7 +206,16 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     }
 
     private NotificationEntity fromModel(AlertNotificationModel model) {
-        return new NotificationEntity(model.getId(), model.getCreatedAt(), model.getProvider(), model.getProviderConfigId(), model.getProviderCreationTime(), model.getNotificationType(), model.getContent(), model.getProcessed());
+        return new NotificationEntity(model.getId(),
+            model.getCreatedAt(),
+            model.getProvider(),
+            model.getProviderConfigId(),
+            model.getProviderCreationTime(),
+            model.getNotificationType(),
+            model.getContent(),
+            model.getProcessed(),
+            model.getContentId()
+        );
     }
 
     private AlertNotificationModel toModel(NotificationEntity entity) {
@@ -218,7 +227,8 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
                 .flatMap(ConfigurationFieldModel::getFieldValue)
                 .orElse(providerConfigName);
         }
-        return new AlertNotificationModel(entity.getId(),
+        return new AlertNotificationModel(
+            entity.getId(),
             providerConfigId,
             entity.getProvider(),
             providerConfigName,
@@ -226,7 +236,9 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
             entity.getContent(),
             entity.getCreatedAt(),
             entity.getProviderCreationTime(),
-            entity.getProcessed());
+            entity.getProcessed(),
+            entity.getContentId()
+        );
     }
 
 }

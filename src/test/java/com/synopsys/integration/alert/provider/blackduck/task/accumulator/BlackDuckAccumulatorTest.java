@@ -1,11 +1,14 @@
 package com.synopsys.integration.alert.provider.blackduck.task.accumulator;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.Mockito.spy;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -102,10 +105,35 @@ class BlackDuckAccumulatorTest {
 
         NotificationAccessor notificationAccessor = Mockito.mock(NotificationAccessor.class);
 
-        BlackDuckAccumulator accumulator = new BlackDuckAccumulator(BLACK_DUCK_PROVIDER_KEY, null, notificationAccessor, taskPropertiesAccessor, blackDuckProperties, validator, null, notificationRetrieverFactory);
+        BlackDuckAccumulator accumulator = new BlackDuckAccumulator(
+            BLACK_DUCK_PROVIDER_KEY,
+            null,
+            notificationAccessor,
+            taskPropertiesAccessor,
+            blackDuckProperties,
+            validator,
+            null,
+            notificationRetrieverFactory
+        );
         accumulator.run();
 
         Mockito.verify(notificationAccessor, Mockito.times(0)).saveAllNotifications(Mockito.anyList());
+    }
+
+    @Test
+    void testContentIdGeneration() {
+        String url = "https://a-hub-server.blackduck.com/api/notifications/edea20df-02cf-467b-a98f-d0dc9637770c";
+        String sameUrl = "https://a-hub-server.blackduck.com/api/notifications/edea20df-02cf-467b-a98f-d0dc9637770c";
+        String differentUrl = "https://a-hub-server.blackduck.com/api/notifications/edfa20bf-03cf-467b-a98f-d0dc9637770c";
+        DigestUtils digestUtils = new DigestUtils("SHA3-256");
+
+        String hashOfUrl = digestUtils.digestAsHex(url);
+        String hashOfSame = digestUtils.digestAsHex(sameUrl);
+        String hashOfDifferent = digestUtils.digestAsHex(differentUrl);
+
+        assertEquals(hashOfUrl, hashOfSame);
+        assertNotEquals(hashOfUrl, hashOfDifferent);
+
     }
 
     private BlackDuckProperties createBlackDuckProperties() {

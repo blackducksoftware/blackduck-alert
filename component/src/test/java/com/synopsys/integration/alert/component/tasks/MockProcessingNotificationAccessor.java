@@ -117,7 +117,8 @@ public class MockProcessingNotificationAccessor implements NotificationAccessor 
 
     //AlertNotificationModel is immutable, this is a workaround for the unit test to set "processed" to true.
     private AlertNotificationModel createProcessedAlertNotificationModel(AlertNotificationModel alertNotificationModel) {
-        return new AlertNotificationModel(alertNotificationModel.getId(),
+        return new AlertNotificationModel(
+            alertNotificationModel.getId(),
             alertNotificationModel.getProviderConfigId(),
             alertNotificationModel.getProvider(),
             alertNotificationModel.getProviderConfigName(),
@@ -125,6 +126,8 @@ public class MockProcessingNotificationAccessor implements NotificationAccessor 
             alertNotificationModel.getContent(),
             alertNotificationModel.getCreatedAt(),
             alertNotificationModel.getProviderCreationTime(),
-            true);
+            true,
+            alertNotificationModel.getContentId()
+        );
     }
 }
