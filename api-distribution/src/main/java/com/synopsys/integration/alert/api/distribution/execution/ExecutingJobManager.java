@@ -39,7 +39,7 @@ public class ExecutingJobManager {
     public void endJobWithSuccess(UUID executionId, Instant endTime) {
         Optional<ExecutingJob> executingJob = Optional.ofNullable(executingJobMap.getOrDefault(executionId, null));
         executingJob.ifPresent(execution -> {
-            execution.jobSucceeded(endTime);
+            execution.jobSucceeded(DateUtils.fromInstantUTC(endTime).toInstant());
             jobCompletionStatusAccessor.saveExecutionStatus(createStatusModel(execution, AuditEntryStatus.SUCCESS));
             purgeJob(executionId);
         });
@@ -48,7 +48,7 @@ public class ExecutingJobManager {
     public void endJobWithFailure(UUID executionId, Instant endTime) {
         Optional<ExecutingJob> executingJob = Optional.ofNullable(executingJobMap.getOrDefault(executionId, null));
         executingJob.ifPresent(execution -> {
-            execution.jobFailed(endTime);
+            execution.jobFailed(DateUtils.fromInstantUTC(endTime).toInstant());
             jobCompletionStatusAccessor.saveExecutionStatus(createStatusModel(execution, AuditEntryStatus.FAILURE));
             purgeJob(executionId);
         });
@@ -75,7 +75,7 @@ public class ExecutingJobManager {
     public void startStage(UUID executionId, JobStage stage, Instant start) {
         Optional<ExecutingJob> executingJob = Optional.ofNullable(executingJobMap.getOrDefault(executionId, null));
         executingJob.ifPresent(job -> {
-            job.addStage(ExecutingJobStage.createStage(executionId, stage, start));
+            job.addStage(ExecutingJobStage.createStage(executionId, stage, DateUtils.fromInstantUTC(start).toInstant()));
         });
     }
 
@@ -83,7 +83,7 @@ public class ExecutingJobManager {
         Optional<ExecutingJob> executingJob = Optional.ofNullable(executingJobMap.getOrDefault(executionId, null));
         executingJob
             .flatMap(job -> job.getStage(stage))
-            .ifPresent(jobStage -> jobStage.endStage(end));
+            .ifPresent(jobStage -> jobStage.endStage(DateUtils.fromInstantUTC(end).toInstant()));
     }
 
     public void purgeJob(UUID executionId) {

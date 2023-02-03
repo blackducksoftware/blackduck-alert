@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerModelHolder;
-import com.synopsys.integration.alert.api.distribution.audit.AuditSuccessEvent;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.distribution.execution.JobStage;
 import com.synopsys.integration.alert.api.distribution.execution.JobStageStartedEvent;
@@ -61,8 +60,6 @@ public class IssueTrackerAsyncMessageSender<T extends Serializable> {
 
 
         if (eventList.isEmpty()) {
-            // nothing further to send downstream. Channel handled message successfully.
-            eventManager.sendEvent(new AuditSuccessEvent(jobExecutionId, notificationIds));
             jobSubTaskAccessor.removeSubTaskStatus(parentEventId);
         } else {
             jobSubTaskAccessor.updateTaskCount(parentEventId, (long) eventList.size());

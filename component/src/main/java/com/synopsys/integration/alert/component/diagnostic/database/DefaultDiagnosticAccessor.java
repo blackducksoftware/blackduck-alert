@@ -22,6 +22,7 @@ import com.synopsys.integration.alert.api.distribution.execution.AggregatedExecu
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJob;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobStage;
+import com.synopsys.integration.alert.api.distribution.execution.JobStage;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.persistence.accessor.DiagnosticAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobExecutionStatusAccessor;
@@ -35,6 +36,7 @@ import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.component.diagnostic.model.AuditDiagnosticModel;
 import com.synopsys.integration.alert.component.diagnostic.model.CompletedJobDiagnosticModel;
 import com.synopsys.integration.alert.component.diagnostic.model.CompletedJobDurationDiagnosticModel;
+import com.synopsys.integration.alert.component.diagnostic.model.CompletedJobStageDurationModel;
 import com.synopsys.integration.alert.component.diagnostic.model.CompletedJobsDiagnosticModel;
 import com.synopsys.integration.alert.component.diagnostic.model.DiagnosticModel;
 import com.synopsys.integration.alert.component.diagnostic.model.JobExecutionDiagnosticModel;
@@ -206,11 +208,13 @@ public class DefaultDiagnosticAccessor implements DiagnosticAccessor {
         JobExecutionStatusDurations durationsModel = jobCompletionStatusModel.getDurations();
         CompletedJobDurationDiagnosticModel durationDiagnosticModel = new CompletedJobDurationDiagnosticModel(
             DateUtils.formatDurationFromNanos(durationsModel.getJobDuration()),
-            DateUtils.formatDurationFromNanos(durationsModel.getNotificationProcessingDuration().orElse(0L)),
-            DateUtils.formatDurationFromNanos(durationsModel.getChannelProcessingDuration().orElse(0L)),
-            DateUtils.formatDurationFromNanos(durationsModel.getIssueCreationDuration().orElse(0L)),
-            DateUtils.formatDurationFromNanos(durationsModel.getIssueCommentingDuration().orElse(0L)),
-            DateUtils.formatDurationFromNanos(durationsModel.getIssueTransitionDuration().orElse(0L))
+            List.of(
+                createJobStageDuration(JobStage.NOTIFICATION_PROCESSING, durationsModel.getNotificationProcessingDuration().orElse(0L)),
+                createJobStageDuration(JobStage.CHANNEL_PROCESSING, durationsModel.getChannelProcessingDuration().orElse(0L)),
+                createJobStageDuration(JobStage.ISSUE_CREATION, durationsModel.getIssueCreationDuration().orElse(0L)),
+                createJobStageDuration(JobStage.ISSUE_COMMENTING, durationsModel.getIssueCommentingDuration().orElse(0L)),
+                createJobStageDuration(JobStage.ISSUE_TRANSITION, durationsModel.getIssueTransitionDuration().orElse(0L))
+            )
         );
 
         String jobName = getJobName(jobCompletionStatusModel.getJobConfigId());
@@ -226,6 +230,10 @@ public class DefaultDiagnosticAccessor implements DiagnosticAccessor {
             durationDiagnosticModel
         );
 
+    }
+
+    private CompletedJobStageDurationModel createJobStageDuration(JobStage jobStage, long nanosecondDuration) {
+        return new CompletedJobStageDurationModel(jobStage.name(), DateUtils.formatDurationFromNanos(nanosecondDuration));
     }
 
 }
