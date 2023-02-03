@@ -22,6 +22,7 @@ import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerRespon
 import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraMessageFormatter;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerMessageSenderFactory;
@@ -59,6 +60,7 @@ class JiraServerExternalConnectionTest {
 
         JiraServerChannelKey jiraServerChannelKey = new JiraServerChannelKey();
         EventManager eventManager = Mockito.mock(EventManager.class);
+        ExecutingJobManager executingJobManager = Mockito.mock(ExecutingJobManager.class);
         JobSubTaskAccessor jobSubTaskAccessor = Mockito.mock(JobSubTaskAccessor.class);
         JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
         Mockito.when(jiraServerGlobalConfigAccessor.getConfigurationByName(Mockito.anyString())).thenReturn(Optional.of(createJiraServerConfigModel()));
@@ -77,7 +79,8 @@ class JiraServerExternalConnectionTest {
             issueTrackerCallbackInfoCreator,
             issueCategoryRetriever,
             eventManager,
-            jobSubTaskAccessor
+            jobSubTaskAccessor,
+            executingJobManager
         );
 
         ProjectMessageToIssueModelTransformer modelTransformer = new ProjectMessageToIssueModelTransformer();

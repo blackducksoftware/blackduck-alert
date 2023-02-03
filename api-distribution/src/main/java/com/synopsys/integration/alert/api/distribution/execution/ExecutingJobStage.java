@@ -10,8 +10,8 @@ public class ExecutingJobStage {
     private final Instant start;
     private Instant end;
 
-    public static ExecutingJobStage createStage(UUID executionId, JobStage stage) {
-        return new ExecutingJobStage(executionId, stage, Instant.now());
+    public static ExecutingJobStage createStage(UUID executionId, JobStage stage, Instant start) {
+        return new ExecutingJobStage(executionId, stage, start);
     }
 
     protected ExecutingJobStage(UUID executionId, JobStage stage, Instant start) {
@@ -20,8 +20,8 @@ public class ExecutingJobStage {
         this.start = start;
     }
 
-    public void endStage() {
-        this.end = Instant.now();
+    public void endStage(Instant end) {
+        this.end = end;
     }
 
     public UUID getExecutionId() {

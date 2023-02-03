@@ -17,7 +17,10 @@ public class DiagnosticModel extends AlertSerializableModel implements Obfuscate
     private AuditDiagnosticModel auditDiagnosticModel;
     private SystemDiagnosticModel systemDiagnosticModel;
     private RabbitMQDiagnosticModel rabbitMQDiagnosticModel;
+
+    private CompletedJobsDiagnosticModel completedJobsDiagnosticModel;
     private JobExecutionsDiagnosticModel jobExecutionsDiagnosticModel;
+
     private String requestTimestamp;
 
     public DiagnosticModel() {
@@ -30,6 +33,7 @@ public class DiagnosticModel extends AlertSerializableModel implements Obfuscate
         AuditDiagnosticModel auditDiagnosticModel,
         SystemDiagnosticModel systemDiagnosticModel,
         RabbitMQDiagnosticModel rabbitMQDiagnosticModel,
+        CompletedJobsDiagnosticModel completedJobsDiagnosticModel,
         JobExecutionsDiagnosticModel jobExecutionsDiagnosticModel
     ) {
         this.requestTimestamp = requestTimestamp;
@@ -37,6 +41,7 @@ public class DiagnosticModel extends AlertSerializableModel implements Obfuscate
         this.auditDiagnosticModel = auditDiagnosticModel;
         this.systemDiagnosticModel = systemDiagnosticModel;
         this.rabbitMQDiagnosticModel = rabbitMQDiagnosticModel;
+        this.completedJobsDiagnosticModel = completedJobsDiagnosticModel;
         this.jobExecutionsDiagnosticModel = jobExecutionsDiagnosticModel;
     }
 
@@ -60,6 +65,10 @@ public class DiagnosticModel extends AlertSerializableModel implements Obfuscate
         return requestTimestamp;
     }
 
+    public CompletedJobsDiagnosticModel getCompletedJobsDiagnosticModel() {
+        return completedJobsDiagnosticModel;
+    }
+
     public JobExecutionsDiagnosticModel getJobExecutionsDiagnosticModel() {
         return jobExecutionsDiagnosticModel;
     }
@@ -72,6 +81,7 @@ public class DiagnosticModel extends AlertSerializableModel implements Obfuscate
             auditDiagnosticModel,
             systemDiagnosticModel,
             rabbitMQDiagnosticModel,
+            completedJobsDiagnosticModel,
             jobExecutionsDiagnosticModel
         );
     }

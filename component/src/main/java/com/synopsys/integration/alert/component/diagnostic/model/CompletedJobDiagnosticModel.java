@@ -1,32 +1,35 @@
-package com.synopsys.integration.alert.common.persistence.model.job.executions;
+package com.synopsys.integration.alert.component.diagnostic.model;
 
-import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
-public class JobExecutionStatusModel extends AlertSerializableModel {
-    private static final long serialVersionUID = -118491395692643581L;
+public class CompletedJobDiagnosticModel extends AlertSerializableModel {
+    private static final long serialVersionUID = -4662389084967372263L;
     private final UUID jobConfigId;
+    private final String jobName;
     private final Long latestNotificationCount;
     private final Long totalNotificationCount;
     private final Long successCount;
     private final Long failureCount;
     private final String latestStatus;
-    private final OffsetDateTime lastRun;
-    private final JobExecutionStatusDurations durations;
+    private final String lastRun;
 
-    public JobExecutionStatusModel(
+    private final CompletedJobDurationDiagnosticModel durations;
+
+    public CompletedJobDiagnosticModel(
         UUID jobConfigId,
+        String jobName,
         Long latestNotificationCount,
         Long totalNotificationCount,
         Long successCount,
         Long failureCount,
         String latestStatus,
-        OffsetDateTime lastRun,
-        JobExecutionStatusDurations durations
+        String lastRun,
+        CompletedJobDurationDiagnosticModel durations
     ) {
         this.jobConfigId = jobConfigId;
+        this.jobName = jobName;
         this.latestNotificationCount = latestNotificationCount;
         this.totalNotificationCount = totalNotificationCount;
         this.successCount = successCount;
@@ -38,6 +41,10 @@ public class JobExecutionStatusModel extends AlertSerializableModel {
 
     public UUID getJobConfigId() {
         return jobConfigId;
+    }
+
+    public String getJobName() {
+        return jobName;
     }
 
     public Long getLatestNotificationCount() {
@@ -60,11 +67,12 @@ public class JobExecutionStatusModel extends AlertSerializableModel {
         return latestStatus;
     }
 
-    public OffsetDateTime getLastRun() {
+    public String getLastRun() {
         return lastRun;
     }
 
-    public JobExecutionStatusDurations getDurations() {
+    public CompletedJobDurationDiagnosticModel getDurations() {
         return durations;
     }
 }
+

@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.api.channel.issue.send;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -11,7 +12,7 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerModelHolder;
-import com.synopsys.integration.alert.api.distribution.audit.AuditSuccessEvent;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.distribution.execution.JobStage;
 import com.synopsys.integration.alert.api.distribution.execution.JobStageStartedEvent;
 import com.synopsys.integration.alert.api.event.AlertEvent;
@@ -19,7 +20,6 @@ import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 
 public class IssueTrackerAsyncMessageSender<T extends Serializable> {
-
     private final IssueTrackerCreationEventGenerator issueCreateEventGenerator;
     private final IssueTrackerTransitionEventGenerator<T> issueTrackerTransitionEventGenerator;
     private final IssueTrackerCommentEventGenerator<T> issueTrackerCommentEventGenerator;
@@ -28,6 +28,7 @@ public class IssueTrackerAsyncMessageSender<T extends Serializable> {
     private final UUID parentEventId;
     private final UUID jobExecutionId;
     private final Set<Long> notificationIds;
+    private final ExecutingJobManager executingJobManager;
 
     public IssueTrackerAsyncMessageSender(
         IssueTrackerCreationEventGenerator issueCreateEventGenerator,
@@ -37,7 +38,8 @@ public class IssueTrackerAsyncMessageSender<T extends Serializable> {
         JobSubTaskAccessor jobSubTaskAccessor,
         UUID parentEventId,
         UUID jobExecutionId,
-        Set<Long> notificationIds
+        Set<Long> notificationIds,
+        ExecutingJobManager executingJobManager
     ) {
         this.issueCreateEventGenerator = issueCreateEventGenerator;
         this.issueTrackerTransitionEventGenerator = issueTrackerTransitionEventGenerator;
@@ -47,6 +49,7 @@ public class IssueTrackerAsyncMessageSender<T extends Serializable> {
         this.parentEventId = parentEventId;
         this.jobExecutionId = jobExecutionId;
         this.notificationIds = notificationIds;
+        this.executingJobManager = executingJobManager;
     }
 
     public final void sendAsyncMessages(List<IssueTrackerModelHolder<T>> issueTrackerMessages) {
@@ -55,11 +58,12 @@ public class IssueTrackerAsyncMessageSender<T extends Serializable> {
             .flatMap(List::stream)
             .collect(Collectors.toList());
 
+
         if (eventList.isEmpty()) {
-            // nothing further to send downstream. Channel handled message successfully.
-            eventManager.sendEvent(new AuditSuccessEvent(jobExecutionId, notificationIds));
+            jobSubTaskAccessor.removeSubTaskStatus(parentEventId);
         } else {
             jobSubTaskAccessor.updateTaskCount(parentEventId, (long) eventList.size());
+            executingJobManager.incrementRemainingEvents(jobExecutionId, eventList.size());
             eventManager.sendEvents(eventList);
         }
     }
@@ -72,7 +76,7 @@ public class IssueTrackerAsyncMessageSender<T extends Serializable> {
         List<AlertEvent> commentEvents = createMessages(issueTrackerMessage.getIssueCommentModels(), issueTrackerCommentEventGenerator::generateEvent);
 
         addEventsAndStartStage(eventList, creationEvents, JobStage.ISSUE_CREATION);
-        addEventsAndStartStage(eventList, transitionEvents, JobStage.ISSUE_RESOLVING);
+        addEventsAndStartStage(eventList, transitionEvents, JobStage.ISSUE_TRANSITION);
         addEventsAndStartStage(eventList, commentEvents, JobStage.ISSUE_COMMENTING);
 
         return eventList;
@@ -86,7 +90,7 @@ public class IssueTrackerAsyncMessageSender<T extends Serializable> {
 
     private void addEventsAndStartStage(List<AlertEvent> allEvents, List<AlertEvent> events, JobStage jobStage) {
         if (!events.isEmpty()) {
-            eventManager.sendEvent(new JobStageStartedEvent(jobExecutionId, jobStage));
+            eventManager.sendEvent(new JobStageStartedEvent(jobExecutionId, jobStage, Instant.now().toEpochMilli()));
             allEvents.addAll(events);
         }
     }

@@ -11,7 +11,10 @@
             <column name="job_config_id" type="UUID" defaultValueComputed="uuid_generate_v4()">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="notification_count" type="BIGINT" defaultValue="0">
+            <column name="latest_notification_count" type="BIGINT" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="total_notification_count" type="BIGINT" defaultValue="0">
                 <constraints nullable="false"/>
             </column>
             <column name="success_count" type="BIGINT" defaultValue="0">

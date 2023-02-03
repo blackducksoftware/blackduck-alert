@@ -28,11 +28,10 @@ class AuditSuccessHandlerTest {
 
     @BeforeEach
     public void init() {
-        executingJobManager = new ExecutingJobManager();
         JobExecutionDurationsRepository jobExecutionDurationsRepository = new MockJobExecutionStatusDurationsRepository();
         JobExecutionRepository jobExecutionRepository = new MockJobExecutionStatusRepository(jobExecutionDurationsRepository);
-
         jobExecutionStatusAccessor = new DefaultJobExecutionStatusAccessor(jobExecutionRepository, jobExecutionDurationsRepository);
+        executingJobManager = new ExecutingJobManager(jobExecutionStatusAccessor);
     }
 
     @Test
@@ -40,7 +39,7 @@ class AuditSuccessHandlerTest {
         UUID jobId = UUID.randomUUID();
         ExecutingJob executingJob = executingJobManager.startJob(jobId, 0);
         UUID jobExecutionId = executingJob.getExecutionId();
-        AuditSuccessHandler handler = new AuditSuccessHandler(executingJobManager, jobExecutionStatusAccessor);
+        AuditSuccessHandler handler = new AuditSuccessHandler(executingJobManager);
         AuditSuccessEvent event = new AuditSuccessEvent(jobExecutionId, Set.of());
         handler.handle(event);
         JobExecutionStatusModel statusModel = jobExecutionStatusAccessor.getJobExecutionStatus(jobId)
@@ -48,7 +47,7 @@ class AuditSuccessHandlerTest {
         assertEquals(AuditEntryStatus.SUCCESS.name(), statusModel.getLatestStatus());
         assertEquals(1, statusModel.getSuccessCount());
         assertEquals(0, statusModel.getFailureCount());
-        assertEquals(0, statusModel.getNotificationCount());
+        assertEquals(0, statusModel.getTotalNotificationCount());
         assertTrue(executingJobManager.getExecutingJob(jobExecutionId).isEmpty());
     }
 
@@ -57,7 +56,7 @@ class AuditSuccessHandlerTest {
         UUID jobExecutionId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
         AlertPagedQueryDetails pagedQueryDetails = new AlertPagedQueryDetails(1, 10);
-        AuditSuccessHandler handler = new AuditSuccessHandler(executingJobManager, jobExecutionStatusAccessor);
+        AuditSuccessHandler handler = new AuditSuccessHandler(executingJobManager);
         AuditSuccessEvent event = new AuditSuccessEvent(jobExecutionId, notificationIds);
         handler.handle(event);
         Optional<ExecutingJob> executingJob = executingJobManager.getExecutingJob(jobExecutionId);

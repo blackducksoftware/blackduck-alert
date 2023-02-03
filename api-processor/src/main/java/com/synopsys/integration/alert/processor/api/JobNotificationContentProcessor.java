@@ -83,7 +83,6 @@ public class JobNotificationContentProcessor {
         while (jobNotificationMappings.getCurrentPage() <= jobNotificationMappings.getTotalPages()) {
             List<Long> notificationIds = extractNotificationIds(jobNotificationMappings);
             List<AlertNotificationModel> notifications = notificationAccessor.findByIds(notificationIds);
-            executingJobManager.incrementNotificationCount(jobExecutionId, notifications.size());
             logNotifications("Start", event, notificationIds);
             List<NotificationContentWrapper> notificationContentList = notifications
                 .stream()
@@ -102,6 +101,7 @@ public class JobNotificationContentProcessor {
             if (ProcessingType.DIGEST == jobProcessingType || ProcessingType.SUMMARY == jobProcessingType) {
                 processedMessageHolder = digestProcessing(processedMessageHolder);
             }
+            executingJobManager.incrementProcessedNotificationCount(jobExecutionId, notifications.size());
             pageNumber++;
             jobNotificationMappings = jobNotificationMappingAccessor.getJobNotificationMappings(
                 correlationId,

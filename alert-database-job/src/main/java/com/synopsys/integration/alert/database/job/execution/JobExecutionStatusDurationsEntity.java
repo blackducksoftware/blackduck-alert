@@ -18,7 +18,7 @@ public class JobExecutionStatusDurationsEntity extends BaseEntity {
     private UUID jobConfigId;
 
     @Column(name = "job_duration_milliseconds")
-    private Long jobDurationMillisec;
+    private Long jobDuration;
 
     @Column(name = "notification_processing_duration_milliseconds")
     private Long notificationProcessingDuration;
@@ -41,7 +41,7 @@ public class JobExecutionStatusDurationsEntity extends BaseEntity {
 
     public JobExecutionStatusDurationsEntity(
         UUID jobConfigId,
-        Long jobDurationMillisec,
+        Long jobDuration,
         Long notificationProcessingDuration,
         Long channelProcessingDuration,
         Long issueCreationDuration,
@@ -49,7 +49,7 @@ public class JobExecutionStatusDurationsEntity extends BaseEntity {
         Long issueTransitionDuration
     ) {
         this.jobConfigId = jobConfigId;
-        this.jobDurationMillisec = jobDurationMillisec;
+        this.jobDuration = jobDuration;
         this.notificationProcessingDuration = notificationProcessingDuration;
         this.channelProcessingDuration = channelProcessingDuration;
         this.issueCreationDuration = issueCreationDuration;
@@ -61,8 +61,8 @@ public class JobExecutionStatusDurationsEntity extends BaseEntity {
         return jobConfigId;
     }
 
-    public Long getJobDurationMillisec() {
-        return jobDurationMillisec;
+    public Long getJobDuration() {
+        return jobDuration;
     }
 
     public Long getNotificationProcessingDuration() {

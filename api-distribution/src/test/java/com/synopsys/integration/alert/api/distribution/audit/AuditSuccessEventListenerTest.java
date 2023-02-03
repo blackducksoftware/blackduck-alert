@@ -34,12 +34,11 @@ class AuditSuccessEventListenerTest {
 
     @BeforeEach
     public void init() {
-        executingJobManager = new ExecutingJobManager();
         JobExecutionDurationsRepository jobExecutionDurationsRepository = new MockJobExecutionStatusDurationsRepository();
         JobExecutionRepository jobExecutionRepository = new MockJobExecutionStatusRepository(jobExecutionDurationsRepository);
-
         jobExecutionStatusAccessor = new DefaultJobExecutionStatusAccessor(jobExecutionRepository, jobExecutionDurationsRepository);
-        handler = new AuditSuccessHandler(executingJobManager, jobExecutionStatusAccessor);
+        executingJobManager = new ExecutingJobManager(jobExecutionStatusAccessor);
+        handler = new AuditSuccessHandler(executingJobManager);
     }
 
     @Test
@@ -59,7 +58,7 @@ class AuditSuccessEventListenerTest {
         assertEquals(AuditEntryStatus.SUCCESS.name(), statusModel.getLatestStatus());
         assertEquals(1, statusModel.getSuccessCount());
         assertEquals(0, statusModel.getFailureCount());
-        assertEquals(0, statusModel.getNotificationCount());
+        assertEquals(0, statusModel.getTotalNotificationCount());
         assertTrue(executingJobManager.getExecutingJob(executingJobId).isEmpty());
     }
 }

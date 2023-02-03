@@ -22,6 +22,7 @@ import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDeta
 import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
 import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueCategory;
 import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueStatus;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudProperties;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudPropertiesFactory;
@@ -50,6 +51,7 @@ class JiraCloudTransitionEventHandlerTest {
     private EventManager eventManager;
     private JobSubTaskAccessor jobSubTaskAccessor;
     private IssueTrackerResponsePostProcessor responsePostProcessor;
+    private ExecutingJobManager executingJobManager;
 
     @BeforeEach
     public void init() {
@@ -57,6 +59,7 @@ class JiraCloudTransitionEventHandlerTest {
         eventManager = Mockito.mock(EventManager.class);
         jobSubTaskAccessor = Mockito.mock(JobSubTaskAccessor.class);
         responsePostProcessor = Mockito.mock(IssueTrackerResponsePostProcessor.class);
+        executingJobManager = Mockito.mock(ExecutingJobManager.class);
     }
 
     @Test
@@ -76,7 +79,8 @@ class JiraCloudTransitionEventHandlerTest {
             callbackInfoCreator,
             issueCategoryRetriever,
             eventManager,
-            jobSubTaskAccessor
+            jobSubTaskAccessor,
+            executingJobManager
         );
         JobDetailsAccessor<JiraCloudJobDetailsModel> jobDetailsAccessor = jobId1 -> Optional.empty();
 
@@ -87,7 +91,8 @@ class JiraCloudTransitionEventHandlerTest {
             propertiesFactory,
             messageSenderFactory,
             jobDetailsAccessor,
-            responsePostProcessor
+            responsePostProcessor,
+            executingJobManager
         );
         ExistingIssueDetails<String> existingIssueDetails = new ExistingIssueDetails<>("id", "key", "summary", "link", IssueStatus.UNKNOWN, IssueCategory.BOM);
         IssueTransitionModel<String> model = new IssueTransitionModel<>(existingIssueDetails, IssueOperation.RESOLVE, List.of(), null);
@@ -141,7 +146,8 @@ class JiraCloudTransitionEventHandlerTest {
             callbackInfoCreator,
             issueCategoryRetriever,
             eventManager,
-            jobSubTaskAccessor
+            jobSubTaskAccessor,
+            executingJobManager
         );
         JobDetailsAccessor<JiraCloudJobDetailsModel> jobDetailsAccessor = jobId1 -> Optional.of(createJobDetails(jobId));
 
@@ -152,7 +158,8 @@ class JiraCloudTransitionEventHandlerTest {
             propertiesFactory,
             messageSenderFactory,
             jobDetailsAccessor,
-            responsePostProcessor
+            responsePostProcessor,
+            executingJobManager
         );
         ExistingIssueDetails<String> existingIssueDetails = new ExistingIssueDetails<>("id", "key", "summary", "link", IssueStatus.UNKNOWN, IssueCategory.BOM);
         IssueTransitionModel<String> model = new IssueTransitionModel<>(existingIssueDetails, IssueOperation.RESOLVE, List.of(), null);

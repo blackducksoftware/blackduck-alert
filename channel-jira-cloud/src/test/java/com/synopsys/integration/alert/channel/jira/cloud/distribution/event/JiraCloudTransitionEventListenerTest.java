@@ -15,6 +15,7 @@ import org.springframework.core.task.SyncTaskExecutor;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTransitionModel;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.jira.cloud.distribution.event.mock.MockCorrelationToNotificationRelationRepository;
 import com.synopsys.integration.alert.channel.jira.cloud.distribution.event.mock.MockJobSubTaskStatusRepository;
@@ -33,6 +34,7 @@ class JiraCloudTransitionEventListenerTest {
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
         EventManager eventManager = Mockito.mock(EventManager.class);
+        ExecutingJobManager executingJobManager = Mockito.mock(ExecutingJobManager.class);
 
         IssueTransitionModel<String> issueTransitionModel = new IssueTransitionModel<>(null, IssueOperation.RESOLVE, List.of(), null);
         JiraCloudTransitionEvent event = new JiraCloudTransitionEvent(
@@ -54,7 +56,8 @@ class JiraCloudTransitionEventListenerTest {
             null,
             null,
             null,
-            null
+            null,
+            executingJobManager
         ));
         Mockito.doNothing().when(handler).handleEvent(event);
 

@@ -24,6 +24,7 @@ import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessage
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSenderFactory;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerTransitionEventGenerator;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsHttpExceptionMessageImprover;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
@@ -60,6 +61,7 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
     private final IssueCategoryRetriever issueCategoryRetriever;
     private final EventManager eventManager;
     private final JobSubTaskAccessor jobSubTaskAccessor;
+    private final ExecutingJobManager executingJobManager;
 
     @Autowired
     public AzureBoardsMessageSenderFactory(
@@ -71,7 +73,8 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
         AzureBoardsHttpExceptionMessageImprover exceptionMessageImprover,
         IssueCategoryRetriever issueCategoryRetriever,
         EventManager eventManager,
-        JobSubTaskAccessor jobSubTaskAccessor
+        JobSubTaskAccessor jobSubTaskAccessor,
+        ExecutingJobManager executingJobManager
     ) {
         this.gson = gson;
         this.callbackInfoCreator = callbackInfoCreator;
@@ -82,6 +85,7 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
         this.issueCategoryRetriever = issueCategoryRetriever;
         this.eventManager = eventManager;
         this.jobSubTaskAccessor = jobSubTaskAccessor;
+        this.executingJobManager = executingJobManager;
     }
 
     @Override
@@ -190,7 +194,8 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
             jobSubTaskAccessor,
             parentEventId,
             jobExecutionId,
-            notificationIds
+            notificationIds,
+            executingJobManager
         );
     }
 

@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.api.channel;
 
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -42,7 +43,7 @@ public class DistributionEventHandler<D extends DistributionJobDetailsModel> imp
     @Override
     public final void handle(DistributionEvent event) {
         UUID jobExecutionId = event.getJobExecutionId();
-        eventManager.sendEvent(new JobStageStartedEvent(jobExecutionId, JobStage.CHANNEL_PROCESSING));
+        eventManager.sendEvent(new JobStageStartedEvent(jobExecutionId, JobStage.CHANNEL_PROCESSING, Instant.now().toEpochMilli()));
         Optional<D> details = jobDetailsAccessor.retrieveDetails(event.getJobId());
         if (details.isPresent()) {
             try {
@@ -64,7 +65,7 @@ public class DistributionEventHandler<D extends DistributionJobDetailsModel> imp
         } else {
             handleJobDetailsMissing(event);
         }
-        eventManager.sendEvent(new JobStageEndedEvent(jobExecutionId, JobStage.CHANNEL_PROCESSING));
+        eventManager.sendEvent(new JobStageEndedEvent(jobExecutionId, JobStage.CHANNEL_PROCESSING, Instant.now().toEpochMilli()));
     }
 
     protected void handleAlertException(AlertException e, DistributionEvent event) {

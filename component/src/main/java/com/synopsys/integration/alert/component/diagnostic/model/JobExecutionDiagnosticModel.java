@@ -13,6 +13,8 @@ public class JobExecutionDiagnosticModel {
     private final int processedNotificationCount;
     private final int totalNotificationCount;
 
+    private final int remainingEvents;
+
     private final List<JobStageDiagnosticModel> stages;
 
     public JobExecutionDiagnosticModel(
@@ -23,6 +25,7 @@ public class JobExecutionDiagnosticModel {
         AuditEntryStatus status,
         int processedNotificationCount,
         int totalNotificationCount,
+        int remainingEvents,
         List<JobStageDiagnosticModel> stages
     ) {
         this.jobName = jobName;
@@ -32,6 +35,7 @@ public class JobExecutionDiagnosticModel {
         this.status = status;
         this.processedNotificationCount = processedNotificationCount;
         this.totalNotificationCount = totalNotificationCount;
+        this.remainingEvents = remainingEvents;
         this.stages = stages;
     }
 
@@ -61,6 +65,10 @@ public class JobExecutionDiagnosticModel {
 
     public int getTotalNotificationCount() {
         return totalNotificationCount;
+    }
+
+    public int getRemainingEvents() {
+        return remainingEvents;
     }
 
     public List<JobStageDiagnosticModel> getStages() {

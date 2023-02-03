@@ -7,13 +7,13 @@
  */
 package com.synopsys.integration.alert.database.api;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +26,7 @@ import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.persistence.accessor.DistributionAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.DistributionWithAuditInfo;
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.distribution.DistributionRepository;
 import com.synopsys.integration.alert.database.distribution.DistributionRepository.DistributionDBResponse;
 
@@ -75,12 +76,11 @@ public class DefaultDistributionAccessor implements DistributionAccessor {
         );
     }
 
-    private String formatAuditDate(String dateTime) {
+    private String formatAuditDate(Timestamp dateTime) {
         if (dateTime == null) {
             return null;
         }
 
-        String removedDashes = StringUtils.replace(dateTime, "-", "/");
-        return StringUtils.substringBeforeLast(removedDashes, ".");
+        return DateUtils.formatDate(DateUtils.fromInstantUTC(dateTime.toInstant()), DateUtils.AUDIT_DATE_FORMAT);
     }
 }

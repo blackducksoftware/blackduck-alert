@@ -11,6 +11,8 @@ import java.time.OffsetDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -56,6 +58,9 @@ public class BlackDuckAccumulator extends ProviderTask {
     private final BlackDuckNotificationRetrieverFactory notificationRetrieverFactory;
     private final BlackDuckAccumulatorSearchDateManager searchDateManager;
 
+    private static final ReentrantLock accumulatingLock = new ReentrantLock();
+    private static final AtomicBoolean accumulatorRunning = new AtomicBoolean(false);
+
     public BlackDuckAccumulator(
         BlackDuckProviderKey blackDuckProviderKey,
         TaskScheduler taskScheduler,
@@ -94,11 +99,25 @@ public class BlackDuckAccumulator extends ProviderTask {
     }
 
     private void accumulateNotifications() {
-        Optional<BlackDuckNotificationRetriever> optionalNotificationRetriever = notificationRetrieverFactory.createBlackDuckNotificationRetriever(getProviderProperties());
-        if (optionalNotificationRetriever.isPresent()) {
-            DateRange dateRange = searchDateManager.retrieveNextSearchDateRange();
-            logger.info("Accumulating notifications between {} and {} ", DateUtils.formatDateAsJsonString(dateRange.getStart()), DateUtils.formatDateAsJsonString(dateRange.getEnd()));
-            retrieveAndStoreNotificationsSafely(optionalNotificationRetriever.get(), dateRange);
+        if (accumulatorRunning.get()) {
+            logger.info("Accumulator already running skipping run.");
+        } else {
+            accumulatingLock.lock();
+            logger.info("Accumulating lock acquired. Preventing other accumulation cycles.");
+            accumulatorRunning.set(true);
+            Optional<BlackDuckNotificationRetriever> optionalNotificationRetriever = notificationRetrieverFactory.createBlackDuckNotificationRetriever(getProviderProperties());
+            if (optionalNotificationRetriever.isPresent()) {
+                DateRange dateRange = searchDateManager.retrieveNextSearchDateRange();
+                logger.info(
+                    "Accumulating notifications between {} and {} ",
+                    DateUtils.formatDateAsJsonString(dateRange.getStart()),
+                    DateUtils.formatDateAsJsonString(dateRange.getEnd())
+                );
+                retrieveAndStoreNotificationsSafely(optionalNotificationRetriever.get(), dateRange);
+            }
+            accumulatorRunning.set(false);
+            accumulatingLock.unlock();
+            logger.info("Accumulating lock released. Allowing other accumulation cycles.");
         }
     }
 

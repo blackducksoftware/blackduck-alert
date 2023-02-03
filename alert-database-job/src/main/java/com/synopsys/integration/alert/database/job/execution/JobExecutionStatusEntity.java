@@ -18,8 +18,11 @@ public class JobExecutionStatusEntity extends BaseEntity {
     @Column(name = "job_config_id")
     private UUID jobConfigId;
 
-    @Column(name = "notification_count")
-    private Long notificationCount;
+    @Column(name = "latest_notification_count")
+    private Long latestNotificationCount;
+
+    @Column(name = "total_notification_count")
+    private Long totalNotificationCount;
     @Column(name = "success_count")
     private Long successCount;
     @Column(name = "failure_count")
@@ -36,14 +39,16 @@ public class JobExecutionStatusEntity extends BaseEntity {
 
     public JobExecutionStatusEntity(
         UUID jobConfigId,
-        Long notificationCount,
+        Long latestNotificationCount,
+        Long totalNotificationCount,
         Long successCount,
         Long failureCount,
         String latestStatus,
         OffsetDateTime lastRun
     ) {
         this.jobConfigId = jobConfigId;
-        this.notificationCount = notificationCount;
+        this.latestNotificationCount = latestNotificationCount;
+        this.totalNotificationCount = totalNotificationCount;
         this.successCount = successCount;
         this.failureCount = failureCount;
         this.latestStatus = latestStatus;
@@ -54,8 +59,12 @@ public class JobExecutionStatusEntity extends BaseEntity {
         return jobConfigId;
     }
 
-    public Long getNotificationCount() {
-        return notificationCount;
+    public Long getLatestNotificationCount() {
+        return latestNotificationCount;
+    }
+
+    public Long getTotalNotificationCount() {
+        return totalNotificationCount;
     }
 
     public Long getSuccessCount() {
