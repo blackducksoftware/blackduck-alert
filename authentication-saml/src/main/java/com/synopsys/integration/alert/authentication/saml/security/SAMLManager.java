@@ -14,6 +14,8 @@ import org.springframework.security.converter.RsaKeyConverters;
 import org.springframework.security.saml2.core.Saml2X509Credential;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistration;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrations;
+import org.springframework.security.saml2.provider.service.web.authentication.OpenSaml4AuthenticationRequestResolver;
+import org.springframework.security.saml2.provider.service.web.authentication.Saml2AuthenticationRequestResolver;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
@@ -32,16 +34,19 @@ public class SAMLManager {
 
     private final AlertRelyingPartyRegistrationRepository alertRelyingPartyRegistrationRepository;
     private final FilePersistenceUtil filePersistenceUtil;
+    private final Saml2AuthenticationRequestResolver saml2AuthenticationRequestResolver;
 
     @Autowired
     public SAMLManager(
         SAMLConfigAccessor configAccessor,
         AlertRelyingPartyRegistrationRepository alertRelyingPartyRegistrationRepository,
-        FilePersistenceUtil filePersistenceUtil
+        FilePersistenceUtil filePersistenceUtil,
+        Saml2AuthenticationRequestResolver saml2AuthenticationRequestResolver
     ) {
         this.configAccessor = configAccessor;
         this.alertRelyingPartyRegistrationRepository = alertRelyingPartyRegistrationRepository;
         this.filePersistenceUtil = filePersistenceUtil;
+        this.saml2AuthenticationRequestResolver = saml2AuthenticationRequestResolver;
     }
 
     public void reconfigureSAML() {
@@ -64,6 +69,7 @@ public class SAMLManager {
         try {
             RelyingPartyRegistration relyingPartyRegistration = createRegistration(configModel);
             alertRelyingPartyRegistrationRepository.registerRelyingPartyRegistration(relyingPartyRegistration);
+            reconfigureForceAuth(configModel.getForceAuth());
         } catch(CertificateException | IOException ex) {
             logger.error("Error enabling saml due to certificate issue.", ex);
         }
@@ -102,6 +108,12 @@ public class SAMLManager {
         builder.assertingPartyDetails(party -> party.wantAuthnRequestsSigned(configModel.getWantAssertionsSigned()));
 
         return builder.build();
+    }
+
+    private void reconfigureForceAuth(boolean forceAuth) {
+        ((OpenSaml4AuthenticationRequestResolver) saml2AuthenticationRequestResolver).setAuthnRequestCustomizer(
+            context -> context.getAuthnRequest().setForceAuthn(forceAuth)
+        );
     }
 
     private void signingCredentialBuilder(RelyingPartyRegistration.Builder builder) throws CertificateException, IOException {

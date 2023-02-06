@@ -26,12 +26,10 @@ import com.synopsys.integration.alert.common.action.ActionResponse;
 public class HomeActions {
     public static final String ROLE_ANONYMOUS = "ROLE_ANONYMOUS";
     private final HttpSessionCsrfTokenRepository csrfTokenRepository;
-    private final SAMLManager samlManager;
 
     @Autowired
-    public HomeActions(HttpSessionCsrfTokenRepository csrfTokenRepository, SAMLManager samlManager) {
+    public HomeActions(HttpSessionCsrfTokenRepository csrfTokenRepository) {
         this.csrfTokenRepository = csrfTokenRepository;
-        this.samlManager = samlManager;
     }
 
     public ActionResponse<Void> verifyAuthentication(HttpServletRequest servletRequest, HttpServletResponse servletResponse) {

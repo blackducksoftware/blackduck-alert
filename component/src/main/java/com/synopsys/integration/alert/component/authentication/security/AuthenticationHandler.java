@@ -21,6 +21,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.saml2.provider.service.authentication.OpenSaml4AuthenticationProvider;
+import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository;
+import org.springframework.security.saml2.provider.service.web.DefaultRelyingPartyRegistrationResolver;
+import org.springframework.security.saml2.provider.service.web.RelyingPartyRegistrationResolver;
+import org.springframework.security.saml2.provider.service.web.authentication.OpenSaml4AuthenticationRequestResolver;
+import org.springframework.security.saml2.provider.service.web.authentication.Saml2AuthenticationRequestResolver;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
@@ -169,5 +174,16 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     @Bean
     public AlertRelyingPartyRegistrationRepository alertRelyingPartyRegistrationRepository() {
         return new AlertRelyingPartyRegistrationRepository();
+    }
+
+    @Bean
+    Saml2AuthenticationRequestResolver authenticationRequestResolver(RelyingPartyRegistrationRepository registrations) {
+        RelyingPartyRegistrationResolver registrationResolver =
+            new DefaultRelyingPartyRegistrationResolver(registrations);
+        OpenSaml4AuthenticationRequestResolver authenticationRequestResolver =
+            new OpenSaml4AuthenticationRequestResolver(registrationResolver);
+        authenticationRequestResolver.setAuthnRequestCustomizer(context -> context
+            .getAuthnRequest().setForceAuthn(false));
+        return authenticationRequestResolver;
     }
 }
