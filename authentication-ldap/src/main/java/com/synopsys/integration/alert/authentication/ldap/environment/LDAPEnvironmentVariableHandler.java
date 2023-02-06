@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.common.model.AlertConstants;
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.authentication.ldap.database.accessor.LDAPConfigAccessor;
@@ -100,14 +101,16 @@ public class LDAPEnvironmentVariableHandler extends EnvironmentVariableHandler<L
 
         builder.addVariableValue(LDAP_ENABLED_KEY, String.valueOf(obfuscatedConfigModel.getEnabled()));
 
-        if (StringUtils.isNotBlank(obfuscatedConfigModel.getManagerDn())) {
-            builder.addVariableValue(LDAP_MANAGER_DN_KEY, obfuscatedConfigModel.getManagerDn());
-        }
         if (StringUtils.isNotBlank(obfuscatedConfigModel.getServerName())) {
             builder.addVariableValue(LDAP_SERVER_KEY, obfuscatedConfigModel.getServerName());
         }
+        if (StringUtils.isNotBlank(obfuscatedConfigModel.getManagerDn())) {
+            builder.addVariableValue(LDAP_MANAGER_DN_KEY, obfuscatedConfigModel.getManagerDn());
+        }
 
-        builder.addVariableValue(LDAP_MANAGER_PASSWORD_KEY, String.valueOf(obfuscatedConfigModel.getIsManagerPasswordSet()));
+        if (obfuscatedConfigModel.getIsManagerPasswordSet()) {
+            builder.addVariableValue(LDAP_MANAGER_PASSWORD_KEY, AlertConstants.MASKED_VALUE);
+        }
 
         obfuscatedConfigModel.getAuthenticationType()
             .ifPresent(value -> builder.addVariableValue(LDAP_AUTHENTICATION_TYPE_KEY, value));
