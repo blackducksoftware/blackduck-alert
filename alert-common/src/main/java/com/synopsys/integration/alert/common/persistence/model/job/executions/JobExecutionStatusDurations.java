@@ -13,6 +13,10 @@ public class JobExecutionStatusDurations extends AlertSerializableModel {
     private final Long issueCommentingDuration;
     private final Long issueTransitionDuration;
 
+    public static JobExecutionStatusDurations empty() {
+        return new JobExecutionStatusDurations(0L, 0L, 0L, 0L, 0L, 0L);
+    }
+
     public JobExecutionStatusDurations(
         Long jobDuration,
         Long notificationProcessingDuration,

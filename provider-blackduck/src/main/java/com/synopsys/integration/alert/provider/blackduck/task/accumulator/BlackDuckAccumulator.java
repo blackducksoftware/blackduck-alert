@@ -60,8 +60,8 @@ public class BlackDuckAccumulator extends ProviderTask {
     private final BlackDuckNotificationRetrieverFactory notificationRetrieverFactory;
     private final BlackDuckAccumulatorSearchDateManager searchDateManager;
 
-    private static final ReentrantLock accumulatingLock = new ReentrantLock();
-    private static final AtomicBoolean accumulatorRunning = new AtomicBoolean(false);
+    private final ReentrantLock accumulatingLock = new ReentrantLock();
+    private final AtomicBoolean accumulatorRunning = new AtomicBoolean(false);
 
     public BlackDuckAccumulator(
         BlackDuckProviderKey blackDuckProviderKey,
@@ -190,7 +190,7 @@ public class BlackDuckAccumulator extends ProviderTask {
         String provider = blackDuckProviderKey.getUniversalKey();
         String notificationType = notification.getType().name();
         String jsonContent = notification.getJson();
-        String hashOfUrl = createContentId(notification);
+        String hashOfUrl = createContentId(getProviderProperties().getConfigId(), notification);
         return new AlertNotificationModel(
             null,
             getProviderProperties().getConfigId(),
@@ -205,12 +205,13 @@ public class BlackDuckAccumulator extends ProviderTask {
         );
     }
 
-    private String createContentId(NotificationView notification) {
+    private String createContentId(Long providerConfigId, NotificationView notification) {
         // generate new default in case the href of notification view is null.
         String contentId = UUID.randomUUID().toString();
         if (null != notification && null != notification.getHref()) {
             try {
-                contentId = new DigestUtils("SHA3-256").digestAsHex(notification.getHref().string());
+                String providerIdAndUrl = String.format("%s-%s", providerConfigId, notification.getHref().string());
+                contentId = new DigestUtils("SHA3-256").digestAsHex(providerIdAndUrl);
             } catch (RuntimeException ex) {
                 // do nothing use the URL
                 logger.debug("Content id hash cannot be generated for notification.", ex);

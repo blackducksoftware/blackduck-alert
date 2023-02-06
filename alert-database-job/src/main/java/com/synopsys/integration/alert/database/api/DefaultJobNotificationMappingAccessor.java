@@ -56,6 +56,7 @@ public class DefaultJobNotificationMappingAccessor implements JobNotificationMap
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean hasJobMappings(UUID correlationId) {
         return jobToNotificationRelationRepository.countAllByCorrelationId(correlationId) > 0;
     }
@@ -77,7 +78,7 @@ public class DefaultJobNotificationMappingAccessor implements JobNotificationMap
 
     @Override
     @Transactional
-    public int getNotificationCountForJob(final UUID correlationId, final UUID jobId) {
+    public int getNotificationCountForJob(UUID correlationId, UUID jobId) {
         return jobToNotificationRelationRepository.countAllByCorrelationIdAndJobId(correlationId, jobId);
     }
 
