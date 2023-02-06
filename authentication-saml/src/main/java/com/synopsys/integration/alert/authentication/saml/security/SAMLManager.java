@@ -60,15 +60,6 @@ public class SAMLManager {
         }
     }
 
-    public boolean isSAMLEnabled() {
-        Optional<SAMLConfigModel> optionalSAMLConfigModel = configAccessor.getConfiguration();
-        if (optionalSAMLConfigModel.isPresent()) {
-            SAMLConfigModel samlConfigModel = optionalSAMLConfigModel.get();
-            return samlConfigModel.getEnabled();
-        }
-        return false;
-    }
-
     private void enableSAML(SAMLConfigModel configModel) {
         try {
             RelyingPartyRegistration relyingPartyRegistration = createRegistration(configModel);
@@ -91,7 +82,7 @@ public class SAMLManager {
         if (metadataMode == SAMLMetadataMode.URL && optionalMetadataUrl.isPresent()) {
             builder = RelyingPartyRegistrations.fromMetadataLocation(optionalMetadataUrl.get());
         } else {
-            String metadataString = filePersistenceUtil.readFromFile(AuthenticationDescriptor.SAML_METADATA_FILE);
+            String metadataString = filePersistenceUtil.readFromUploadsFile(AuthenticationDescriptor.SAML_METADATA_FILE);
             try (InputStream metadataInputStream = new ByteArrayInputStream(metadataString.getBytes())) {
                 builder = RelyingPartyRegistrations.fromMetadata(metadataInputStream);
             }
@@ -114,24 +105,24 @@ public class SAMLManager {
     }
 
     private void signingCredentialBuilder(RelyingPartyRegistration.Builder builder) throws CertificateException, IOException {
-        String signingCertString = filePersistenceUtil.readFromFile(AuthenticationDescriptor.SAML_SIGNING_CERT_FILE);
+        String signingCertString = filePersistenceUtil.readFromUploadsFile(AuthenticationDescriptor.SAML_SIGNING_CERT_FILE);
         // Get signing private key
-        String signingPrivateKeyString = filePersistenceUtil.readFromFile(AuthenticationDescriptor.SAML_SIGNING_PRIVATE_KEY_FILE);
+        String signingPrivateKeyString = filePersistenceUtil.readFromUploadsFile(AuthenticationDescriptor.SAML_SIGNING_PRIVATE_KEY_FILE);
         try (InputStream signingPrivateKeyInputStream = new ByteArrayInputStream(signingPrivateKeyString.getBytes())) {
             RSAPrivateKey signingRSAPrivateKey = RsaKeyConverters.pkcs8().convert(signingPrivateKeyInputStream);
-            X509Certificate signingCert = X509Support.decodeCertificate(signingCertString);
+            X509Certificate signingCert = X509Support.decodeCertificate(signingCertString.getBytes());
             Saml2X509Credential signingCredential = Saml2X509Credential.signing(signingRSAPrivateKey, signingCert);
             builder.signingX509Credentials(credentials -> credentials.add(signingCredential));
         }
     }
 
     private void encryptionCredentialBuilder(RelyingPartyRegistration.Builder builder) throws CertificateException, IOException {
-        String encryptionCertString = filePersistenceUtil.readFromFile(AuthenticationDescriptor.SAML_ENCRYPTION_CERT_FILE);
+        String encryptionCertString = filePersistenceUtil.readFromUploadsFile(AuthenticationDescriptor.SAML_ENCRYPTION_CERT_FILE);
         // Get encryption private key
-        String encryptionPrivateKeyString = filePersistenceUtil.readFromFile(AuthenticationDescriptor.SAML_ENCRYPTION_PRIVATE_KEY_FILE);
+        String encryptionPrivateKeyString = filePersistenceUtil.readFromUploadsFile(AuthenticationDescriptor.SAML_ENCRYPTION_PRIVATE_KEY_FILE);
         try (InputStream encryptionPrivateKeyInputStream = new ByteArrayInputStream(encryptionPrivateKeyString.getBytes())) {
             RSAPrivateKey encryptionRSAPrivateKey = RsaKeyConverters.pkcs8().convert(encryptionPrivateKeyInputStream);
-            X509Certificate encryptionCert = X509Support.decodeCertificate(encryptionCertString);
+            X509Certificate encryptionCert = X509Support.decodeCertificate(encryptionCertString.getBytes());
             Saml2X509Credential encryptionCredential = Saml2X509Credential.encryption(encryptionCert);
             Saml2X509Credential decryptionCredential = Saml2X509Credential.decryption(encryptionRSAPrivateKey, encryptionCert);
             builder
@@ -141,8 +132,8 @@ public class SAMLManager {
     }
 
     private void verificationCredentialBuilder(RelyingPartyRegistration.Builder builder) throws CertificateException, IOException {
-        String verificationCertString = filePersistenceUtil.readFromFile(AuthenticationDescriptor.SAML_VERIFICATION_CERT_FILE);
-        X509Certificate verificationCert = X509Support.decodeCertificate(verificationCertString);
+        String verificationCertString = filePersistenceUtil.readFromUploadsFile(AuthenticationDescriptor.SAML_VERIFICATION_CERT_FILE);
+        X509Certificate verificationCert = X509Support.decodeCertificate(verificationCertString.getBytes());
         Saml2X509Credential verificationCredential = Saml2X509Credential.verification(verificationCert);
         builder.assertingPartyDetails(party -> party.verificationX509Credentials(credentials -> credentials.add(verificationCredential)));
     }
