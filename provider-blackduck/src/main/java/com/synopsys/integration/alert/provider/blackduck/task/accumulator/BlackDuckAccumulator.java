@@ -147,7 +147,7 @@ public class BlackDuckAccumulator extends ProviderTask {
             }
         } finally {
             if (!emptyPage) {
-                eventManager.sendEvent(new NotificationReceivedEvent());
+                eventManager.sendEvent(new NotificationReceivedEvent(getProviderProperties().getConfigId()));
             }
         }
     }

@@ -109,7 +109,7 @@ class NotificationReceivedEventHandlerTestIT {
             notificationMappingProcessor,
             eventManager
         );
-        notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
+        notificationReceivedEventHandler.handle(new NotificationReceivedEvent(blackDuckGlobalConfigId));
 
         testAlertNotificationModels(savedModels);
     }
@@ -130,7 +130,7 @@ class NotificationReceivedEventHandlerTestIT {
             notificationMappingProcessor,
             eventManager
         );
-        notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
+        notificationReceivedEventHandler.handle(new NotificationReceivedEvent(blackDuckGlobalConfigId));
 
         testAlertNotificationModels(savedModels);
     }
@@ -150,7 +150,7 @@ class NotificationReceivedEventHandlerTestIT {
             notificationMappingProcessor,
             eventManager
         );
-        notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
+        notificationReceivedEventHandler.handle(new NotificationReceivedEvent(blackDuckGlobalConfigId));
 
         testAlertNotificationModels(savedModels);
     }
@@ -172,7 +172,7 @@ class NotificationReceivedEventHandlerTestIT {
             notificationMappingProcessor,
             eventManagerSpy
         );
-        notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
+        notificationReceivedEventHandler.handle(new NotificationReceivedEvent(blackDuckGlobalConfigId));
 
         assertEquals(200, defaultNotificationAccessor.getFirstPageOfNotificationsNotProcessed(200).getModels().size());
     }

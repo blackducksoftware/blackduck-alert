@@ -136,7 +136,7 @@ class JmsNotificationReceiverTestIT {
         //      Sending events: EventManager
         //      Receiving events: NotificationReceiver or DistributionChannel
         //      Processing notifications: NotificationReceiver
-        NotificationReceivedEvent notificationReceivedEvent = new NotificationReceivedEvent();
+        NotificationReceivedEvent notificationReceivedEvent = new NotificationReceivedEvent(blackDuckGlobalConfigId);
         eventManager.sendEvent(notificationReceivedEvent);
 
         Thread.sleep(120000);

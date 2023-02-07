@@ -51,12 +51,13 @@ public class NotificationReceivedEventHandler implements AlertEventHandler<Notif
     public void handle(NotificationReceivedEvent event) {
         logger.debug("Event {}", event);
         logger.info("Processing event {} for notifications.", event.getEventId());
-        processNotifications();
+        processNotifications(event);
         logger.info("Finished processing event {} for notifications.", event.getEventId());
     }
 
-    private void processNotifications() {
-        UUID correlationID = UUID.randomUUID();
+    private void processNotifications(NotificationReceivedEvent event) {
+        UUID correlationID = event.getCorrelationId();
+        long providerConfigId = event.getProviderConfigId();
         AlertPagedModel<AlertNotificationModel> pageOfAlertNotificationModels = notificationAccessor.getFirstPageOfNotificationsNotProcessed(PAGE_SIZE);
         if (!CollectionUtils.isEmpty(pageOfAlertNotificationModels.getModels())) {
             List<AlertNotificationModel> notifications = pageOfAlertNotificationModels.getModels();
@@ -65,7 +66,7 @@ public class NotificationReceivedEventHandler implements AlertEventHandler<Notif
             eventManager.sendEvent(new JobNotificationMappedEvent(correlationID));
             boolean hasMoreNotificationsToProcess = notificationAccessor.hasMoreNotificationsToProcess();
             if (hasMoreNotificationsToProcess) {
-                eventManager.sendEvent(new NotificationReceivedEvent());
+                eventManager.sendEvent(new NotificationReceivedEvent(correlationID, event.getProviderConfigId()));
             }
         }
         logger.info("Finished processing event for notifications.");

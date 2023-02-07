@@ -32,7 +32,7 @@ class NotificationReceivedEventHandlerTest {
         NotificationReceivedEventHandler eventHandler = new NotificationReceivedEventHandler(notificationAccessor, notificationMappingProcessor, eventManager);
 
         try {
-            eventHandler.handle(new NotificationReceivedEvent());
+            eventHandler.handle(new NotificationReceivedEvent(2L));
         } catch (RuntimeException e) {
             fail("Unable to handle event", e);
         }
