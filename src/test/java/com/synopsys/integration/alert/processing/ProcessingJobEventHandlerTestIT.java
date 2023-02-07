@@ -301,7 +301,7 @@ class ProcessingJobEventHandlerTestIT {
             OffsetDateTime.now(),
             OffsetDateTime.now().minusMinutes(minuteOffset),
             true,
-            notificationView.getHref().string()
+            String.format("content-id-%s", UUID.randomUUID())
 
         );
     }
