@@ -28,7 +28,7 @@ public class LDAPConfigurationValidator {
         if (StringUtils.isBlank(ldapConfigModel.getManagerDn())) {
             statuses.add(AlertFieldStatus.error("managerDn", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
         }
-        if (ldapConfigModel.getManagerPassword().isEmpty()) {
+        if (ldapConfigModel.getManagerPassword().isEmpty() && !ldapConfigModel.getIsManagerPasswordSet()) {
             statuses.add(AlertFieldStatus.error("managerPassword", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
         }
 
