@@ -173,15 +173,15 @@ public class BlackDuckAccumulator extends ProviderTask {
     }
 
     private void write(List<AlertNotificationModel> contentList) {
-        logger.info("Writing {} notifications...", contentList.size());
+        logger.info("Writing {} notifications for provider {} ...", contentList.size(), getProviderProperties().getConfigId());
         List<AlertNotificationModel> savedNotifications = notificationAccessor.saveAllNotifications(contentList);
-        logger.info("Saved {} notifications...", savedNotifications.size());
+        logger.info("Saved {} notifications for provider {} ...", savedNotifications.size(), getProviderProperties().getConfigId());
         if (logger.isDebugEnabled()) {
             List<Long> notificationIds = savedNotifications.stream()
                 .map(AlertNotificationModel::getId)
                 .collect(Collectors.toList());
             String joinedIds = StringUtils.join(notificationIds, ", ");
-            notificationLogger.info("Saved notifications: {}", joinedIds);
+            notificationLogger.debug("Saved notifications: {}", joinedIds);
         }
     }
 

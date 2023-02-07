@@ -23,6 +23,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
@@ -55,7 +56,7 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     }
 
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRED)
     public List<AlertNotificationModel> saveAllNotifications(Collection<AlertNotificationModel> notifications) {
         // prevent duplicates by filtering out any notifications that have the same hash of the url
         List<NotificationEntity> entitiesToSave = notifications
@@ -64,7 +65,7 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
             .filter(entity -> !notificationContentRepository.existsByContentId(entity.getContentId()))
             .collect(Collectors.toList());
 
-        return notificationContentRepository.saveAll(entitiesToSave)
+        return notificationContentRepository.saveAllAndFlush(entitiesToSave)
             .stream()
             .map(this::toModel)
             .collect(Collectors.toList());
