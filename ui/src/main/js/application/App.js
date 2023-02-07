@@ -22,7 +22,7 @@ IconUtility.loadIconData();
 class App extends Component {
     componentDidMount() {
         this.props.verifyLogin();
-        this.props.verifySaml();
+        //this.props.verifySaml();
     }
 
     render() {

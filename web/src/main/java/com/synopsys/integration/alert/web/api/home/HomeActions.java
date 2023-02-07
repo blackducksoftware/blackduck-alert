@@ -10,6 +10,7 @@ package com.synopsys.integration.alert.web.api.home;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.synopsys.integration.alert.authentication.saml.database.accessor.SAMLConfigAccessor;
 import com.synopsys.integration.alert.authentication.saml.security.SAMLManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,10 +27,12 @@ import com.synopsys.integration.alert.common.action.ActionResponse;
 public class HomeActions {
     public static final String ROLE_ANONYMOUS = "ROLE_ANONYMOUS";
     private final HttpSessionCsrfTokenRepository csrfTokenRepository;
+    private final SAMLManager samlManager;
 
     @Autowired
-    public HomeActions(HttpSessionCsrfTokenRepository csrfTokenRepository) {
+    public HomeActions(HttpSessionCsrfTokenRepository csrfTokenRepository, SAMLManager samlManager) {
         this.csrfTokenRepository = csrfTokenRepository;
+        this.samlManager = samlManager;
     }
 
     public ActionResponse<Void> verifyAuthentication(HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
@@ -50,6 +53,6 @@ public class HomeActions {
     }
 
     public ActionResponse<SAMLEnabledResponseModel> verifySaml() {
-        return new ActionResponse<>(HttpStatus.OK, new SAMLEnabledResponseModel(false));
+        return new ActionResponse<>(HttpStatus.OK, new SAMLEnabledResponseModel(samlManager.isSAMLEnabled()));
     }
 }

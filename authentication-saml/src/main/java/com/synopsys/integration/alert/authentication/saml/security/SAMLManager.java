@@ -65,6 +65,14 @@ public class SAMLManager {
         }
     }
 
+    public boolean isSAMLEnabled() {
+        Optional<SAMLConfigModel> optionalSAMLConfigModel = configAccessor.getConfiguration();
+        if (optionalSAMLConfigModel.isPresent()) {
+            return optionalSAMLConfigModel.get().getEnabled();
+        }
+        return false;
+    }
+
     private void enableSAML(SAMLConfigModel configModel) {
         try {
             RelyingPartyRegistration relyingPartyRegistration = createRegistration(configModel);
