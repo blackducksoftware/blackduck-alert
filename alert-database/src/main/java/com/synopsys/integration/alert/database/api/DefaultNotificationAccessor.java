@@ -166,8 +166,21 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     }
 
     @Override
+    @Deprecated(since = "6.13.0")
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public AlertPagedModel<AlertNotificationModel> getFirstPageOfNotificationsNotProcessed(int pageSize) {
+        int currentPage = 0;
+        Sort.Order sortingOrder = Sort.Order.asc(COLUMN_NAME_PROVIDER_CREATION_TIME);
+        PageRequest pageRequest = PageRequest.of(currentPage, pageSize, Sort.by(sortingOrder));
+        Page<AlertNotificationModel> pageOfNotifications = notificationContentRepository.findByProcessedFalseOrderByProviderCreationTimeAsc(pageRequest)
+            .map(this::toModel);
+        List<AlertNotificationModel> alertNotificationModels = pageOfNotifications.getContent();
+        return new AlertPagedModel<>(pageOfNotifications.getTotalPages(), currentPage, pageSize, alertNotificationModels);
+    }
+
+    @Override
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
+    public AlertPagedModel<AlertNotificationModel> getFirstPageOfNotificationsNotProcessed(long providerConfigId, int pageSize) {
         int currentPage = 0;
         Sort.Order sortingOrder = Sort.Order.asc(COLUMN_NAME_PROVIDER_CREATION_TIME);
         PageRequest pageRequest = PageRequest.of(currentPage, pageSize, Sort.by(sortingOrder));
@@ -195,8 +208,15 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     }
 
     @Override
+    @Deprecated(since = "6.13.0")
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public boolean hasMoreNotificationsToProcess() {
+        return notificationContentRepository.existsByProcessedFalse();
+    }
+
+    @Override
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
+    public boolean hasMoreNotificationsToProcess(long providerConfigId) {
         return notificationContentRepository.existsByProcessedFalse();
     }
 
@@ -208,7 +228,8 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     }
 
     private NotificationEntity fromModel(AlertNotificationModel model) {
-        return new NotificationEntity(model.getId(),
+        return new NotificationEntity(
+            model.getId(),
             model.getCreatedAt(),
             model.getProvider(),
             model.getProviderConfigId(),

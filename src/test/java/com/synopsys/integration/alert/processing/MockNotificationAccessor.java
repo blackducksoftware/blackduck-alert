@@ -69,13 +69,30 @@ public class MockNotificationAccessor implements NotificationAccessor {
     }
 
     @Override
+    @Deprecated(since = "6.13.0")
     public AlertPagedModel<AlertNotificationModel> getFirstPageOfNotificationsNotProcessed(int pageSize) {
-        ArrayList<AlertNotificationModel> notificationsNotProcessed = new ArrayList<>();
-        for (AlertNotificationModel notification : alertNotificationModels) {
-            if (!notification.getProcessed()) {
-                notificationsNotProcessed.add(notification);
-            }
+        List<AlertNotificationModel> notificationsNotProcessed = alertNotificationModels
+            .stream()
+            .filter(Predicate.not(AlertNotificationModel::getProcessed))
+            .collect(Collectors.toList());
+
+        Page<AlertNotificationModel> pageOfNotifications;
+        if (notificationsNotProcessed.size() > 0) {
+            pageOfNotifications = new PageImpl<>(notificationsNotProcessed);
+        } else {
+            pageOfNotifications = Page.empty();
         }
+        return new AlertPagedModel<>(pageOfNotifications.getTotalPages(), pageOfNotifications.getNumber(), pageOfNotifications.getSize(), pageOfNotifications.getContent());
+    }
+
+    @Override
+    public AlertPagedModel<AlertNotificationModel> getFirstPageOfNotificationsNotProcessed(long providerConfigId, int pageSize) {
+        List<AlertNotificationModel> notificationsNotProcessed = alertNotificationModels
+            .stream()
+            .filter(model -> model.getProviderConfigId().equals(providerConfigId))
+            .filter(Predicate.not(AlertNotificationModel::getProcessed))
+            .collect(Collectors.toList());
+
         Page<AlertNotificationModel> pageOfNotifications;
         if (notificationsNotProcessed.size() > 0) {
             pageOfNotifications = new PageImpl<>(notificationsNotProcessed);
@@ -110,8 +127,16 @@ public class MockNotificationAccessor implements NotificationAccessor {
     }
 
     @Override
+    @Deprecated(since = "6.13.0")
     public boolean hasMoreNotificationsToProcess() {
         return alertNotificationModels.stream()
+            .anyMatch(AlertNotificationModel::getProcessed);
+    }
+
+    @Override
+    public boolean hasMoreNotificationsToProcess(long providerConfigId) {
+        return alertNotificationModels.stream()
+            .filter(model -> model.getProviderConfigId().equals(providerConfigId))
             .anyMatch(AlertNotificationModel::getProcessed);
     }
 
