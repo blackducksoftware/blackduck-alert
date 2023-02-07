@@ -184,7 +184,10 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
         int currentPage = 0;
         Sort.Order sortingOrder = Sort.Order.asc(COLUMN_NAME_PROVIDER_CREATION_TIME);
         PageRequest pageRequest = PageRequest.of(currentPage, pageSize, Sort.by(sortingOrder));
-        Page<AlertNotificationModel> pageOfNotifications = notificationContentRepository.findByProcessedFalseOrderByProviderCreationTimeAsc(pageRequest)
+        Page<AlertNotificationModel> pageOfNotifications = notificationContentRepository.findByProviderConfigIdAndProcessedFalseOrderByProviderCreationTimeAsc(
+                providerConfigId,
+                pageRequest
+            )
             .map(this::toModel);
         List<AlertNotificationModel> alertNotificationModels = pageOfNotifications.getContent();
         return new AlertPagedModel<>(pageOfNotifications.getTotalPages(), currentPage, pageSize, alertNotificationModels);
@@ -217,7 +220,7 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public boolean hasMoreNotificationsToProcess(long providerConfigId) {
-        return notificationContentRepository.existsByProcessedFalse();
+        return notificationContentRepository.existsByProviderConfigIdAndProcessedFalse(providerConfigId);
     }
 
     private List<AlertNotificationModel> toModels(List<NotificationEntity> notificationEntities) {
