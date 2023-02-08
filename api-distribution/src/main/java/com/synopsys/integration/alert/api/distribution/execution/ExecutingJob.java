@@ -48,26 +48,40 @@ public class ExecutingJob {
     }
 
     private void completeJobWithStatus(AuditEntryStatus status, Instant endTime) {
-        this.end = endTime;
-        this.status = status;
+        synchronized (this) {
+            this.end = endTime;
+            this.status = status;
+        }
     }
 
     public void updateNotificationCount(int notificationCount) {
-        this.processedNotificationCount.addAndGet(notificationCount);
+        synchronized (this) {
+            this.processedNotificationCount.addAndGet(notificationCount);
+        }
     }
 
-    public void incrementNotificationsSentCount(int notificationCount) {this.notificationsSent.addAndGet(notificationCount);}
+    public void incrementNotificationsSentCount(int notificationCount) {
+        synchronized (this) {
+            this.notificationsSent.addAndGet(notificationCount);
+        }
+    }
 
     public void incrementRemainingEventCount(int eventsToAdd) {
-        this.remainingEvents.addAndGet(eventsToAdd);
+        synchronized (this) {
+            this.remainingEvents.addAndGet(eventsToAdd);
+        }
     }
 
     public void decrementRemainingEventCount() {
-        this.remainingEvents.decrementAndGet();
+        synchronized (this) {
+            this.remainingEvents.decrementAndGet();
+        }
     }
 
     public void addStage(ExecutingJobStage jobStage) {
-        stages.putIfAbsent(jobStage.getStage(), jobStage);
+        synchronized (this) {
+            stages.putIfAbsent(jobStage.getStage(), jobStage);
+        }
     }
 
     public Optional<ExecutingJobStage> getStage(JobStage jobStage) {

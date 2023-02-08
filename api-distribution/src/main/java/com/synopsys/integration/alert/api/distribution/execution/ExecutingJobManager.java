@@ -125,6 +125,7 @@ public class ExecutingJobManager {
     }
 
     public void incrementSentNotificationCount(UUID jobExecutionId, int notificationCount) {
+        logger.debug("Incrementing sent notification count for job execution {} by {}", jobExecutionId, notificationCount);
         Optional<ExecutingJob> executingJob = getExecutingJob(jobExecutionId);
         executingJob.ifPresent(execution -> execution.incrementNotificationsSentCount(notificationCount));
     }
@@ -187,8 +188,8 @@ public class ExecutingJobManager {
 
         return new JobExecutionStatusModel(
             jobConfigId,
-            Integer.valueOf(executingJob.getProcessedNotificationCount()).longValue(),
-            Integer.valueOf(executingJob.getProcessedNotificationCount()).longValue(),
+            Integer.valueOf(executingJob.getNotificationsSent()).longValue(),
+            Integer.valueOf(executingJob.getNotificationsSent()).longValue(),
             successCount,
             failureCount,
             jobStatus.name(),
