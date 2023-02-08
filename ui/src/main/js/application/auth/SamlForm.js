@@ -212,6 +212,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, displayTest, fileDelete, 
                     id="authentication-saml-advanced"
                     title="Advanced SAML Configuration"
                     expanded={false}
+                    isDisabled={!samlEnabled}
                 >
                     <UploadFileButtonField
                         id={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.encryptionCertFilePath}
@@ -219,10 +220,10 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, displayTest, fileDelete, 
                         fieldKey={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.encryptionCertFilePath}
                         label="Encryption Cert Metadata File"
                         description="Upload an Encryption type cert file to configure SAML."
-                        readOnly={!samlEnabled && !displayTest}
+                        readOnly={!samlEnabled}
                         permissions={{ read: fileRead, write: fileWrite, delete: fileDelete }}
                         onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
-                        buttonLabel="Upload"
+                        buttonLabel="Upload Metadata"
                         endpoint="/alert/api/authentication/saml/upload/encryption-cert"
                         customEndpoint="/alert/api/authentication/saml/upload/encryption-cert"
                         csrfToken={csrfToken}
@@ -239,15 +240,41 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, displayTest, fileDelete, 
                         errorValue={errors.fieldErrors[AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.encryptionCertFilePath]}
                     />
                     <UploadFileButtonField
+                        id={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.encryptionPrivateKeyFilePath}
+                        name={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.encryptionPrivateKeyFilePath}
+                        fieldKey={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.encryptionPrivateKeyFilePath}
+                        label="Encryption Cert Private Key File"
+                        description="Upload an Encryption private key file to configure SAML."
+                        readOnly={!samlEnabled}
+                        permissions={{ read: fileRead, write: fileWrite, delete: fileDelete }}
+                        onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
+                        buttonLabel="Upload Private Key"
+                        endpoint="/alert/api/authentication/saml/upload/encryption-private-key"
+                        customEndpoint="/alert/api/authentication/saml/upload/encryption-private-key"
+                        csrfToken={csrfToken}
+                        capture=""
+                        multiple={false}
+                        accept={[
+                            'text/xml',
+                            'application/xml',
+                            '.xml'
+                        ]}
+                        currentConfig={formData}
+                        value={FieldModelUtilities.getFieldModelSingleValue(formData, AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.encryptionPrivateKeyFilePath)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.encryptionPrivateKeyFilePath)}
+                        errorValue={errors.fieldErrors[AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.encryptionPrivateKeyFilePath]}
+                    />
+
+                    <UploadFileButtonField
                         id={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.signingCertFilePath}
                         name={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.signingCertFilePath}
                         fieldKey={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.signingCertFilePath}
                         label="Signing Cert Metadata File"
                         description="Upload a Signing type cert file to configure SAML."
-                        readOnly={!samlEnabled && !displayTest}
+                        readOnly={!samlEnabled}
                         permissions={{ read: fileRead, write: fileWrite, delete: fileDelete }}
                         onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
-                        buttonLabel="Upload"
+                        buttonLabel="Upload Metadata"
                         endpoint="/alert/api/authentication/saml/upload/signing-cert"
                         customEndpoint="/alert/api/authentication/saml/upload/signing-cert"
                         csrfToken={csrfToken}
@@ -264,15 +291,41 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, displayTest, fileDelete, 
                         errorValue={errors.fieldErrors[AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.signingCertFilePath]}
                     />
                     <UploadFileButtonField
+                        id={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.signingPrivateKeyFilePath}
+                        name={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.signingPrivateKeyFilePath}
+                        fieldKey={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.signingPrivateKeyFilePath}
+                        label="Signing Cert Private Key File"
+                        description="Upload a Signing private key file to configure SAML."
+                        readOnly={!samlEnabled}
+                        permissions={{ read: fileRead, write: fileWrite, delete: fileDelete }}
+                        onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
+                        buttonLabel="Upload Private Key"
+                        endpoint="/alert/api/authentication/saml/upload/signing-private-key"
+                        customEndpoint="/alert/api/authentication/saml/upload/signing-private-key"
+                        csrfToken={csrfToken}
+                        capture=""
+                        multiple={false}
+                        accept={[
+                            'text/xml',
+                            'application/xml',
+                            '.xml'
+                        ]}
+                        currentConfig={formData}
+                        value={FieldModelUtilities.getFieldModelSingleValue(formData, AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.signingPrivateKeyFilePath)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.signingPrivateKeyFilePath)}
+                        errorValue={errors.fieldErrors[AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.signingPrivateKeyFilePath]}
+                    />
+
+                    <UploadFileButtonField
                         id={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.verificationCertFilePath}
                         name={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.verificationCertFilePath}
                         fieldKey={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.verificationCertFilePath}
                         label="Verification Cert Metadata File"
                         description="Upload an Verification type cert file to configure SAML."
-                        readOnly={!samlEnabled && !displayTest}
+                        readOnly={!samlEnabled}
                         permissions={{ read: fileRead, write: fileWrite, delete: fileDelete }}
                         onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
-                        buttonLabel="Upload"
+                        buttonLabel="Upload Metadata"
                         endpoint="/alert/api/authentication/saml/upload/verification-cert"
                         customEndpoint="/alert/api/authentication/saml/upload/verification-cert"
                         csrfToken={csrfToken}
