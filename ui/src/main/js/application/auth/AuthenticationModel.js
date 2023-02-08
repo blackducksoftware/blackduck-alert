@@ -26,6 +26,22 @@ export const AUTHENTICATION_LDAP_FIELD_KEYS = {
     groupRoleAttribute: 'settings.ldap.group.role.attribute'
 };
 
+export const AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS = {
+    enabled: 'enabled',
+    serverName: 'serverName',
+    managerDn: 'managerDn',
+    managerPassword: 'managerPassword',
+    authenticationType: 'authenticationType',
+    referral: 'referral',
+    userSearchBase: 'userSearchBase',
+    userSearchFilter: 'userSearchFilter',
+    userDnPatterns: 'userDnPatterns',
+    userAttributes: 'userAttributes',
+    groupSearchBase: 'groupSearchBase',
+    groupSearchFilter: 'groupSearchFilter',
+    groupRoleAttribute: 'groupRoleAttribute'
+}
+
 export const AUTHENTICATION_SAML_FIELD_KEYS = {
     enabled: 'settings.saml.enabled',
     wantAssertionsSigned: 'settings.saml.want.assertions.signed',
