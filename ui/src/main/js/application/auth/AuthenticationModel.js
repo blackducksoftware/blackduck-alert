@@ -40,14 +40,11 @@ export const AUTHENTICATION_SAML_FIELD_KEYS = {
 export const AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS = {
     enabled: 'enabled',
     encryptionCertFilePath: 'encryptionCertFilePath',
-    entityBaseUrl: 'entityBaseUrl',
-    entityId: 'entityId',
     forceAuth: 'forceAuth',
     metadataFilePath: 'metadataFilePath',
     metadataMode: 'metadataMode',
     metadataUrl: 'metadataUrl',
     name: 'name',
-    roleAttributeMapping: 'roleAttributeMapping',
     signingCertFilePath: 'signingCertFilePath',
     verificationCertFilePath: 'verificationCertFilePath',
     wantAssertionsSigned: 'wantAssertionsSigned'

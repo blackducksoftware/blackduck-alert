@@ -208,39 +208,6 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, displayTest, fileDelete, 
                     errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.forceAuth)}
                     errorValue={errors.fieldErrors[AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.forceAuth]}
                 />
-                <TextInput
-                    id={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.entityId}
-                    name={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.entityId}
-                    label="Entity ID"
-                    description="The Entity ID of the Service Provider. EX: This should be the Audience defined in Okta."
-                    readOnly={!samlEnabled}
-                    onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
-                    value={formData[AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.entityId] || undefined}
-                    errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.entityId)}
-                    errorValue={errors.fieldErrors[AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.entityId]}
-                />
-                <TextInput
-                    id={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.entityBaseUrl}
-                    name={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.entityBaseUrl}
-                    label="Entity Base URL"
-                    description="This should be the URL of the Alert system."
-                    readOnly={!samlEnabled}
-                    onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
-                    value={formData[AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.entityBaseUrl] || undefined}
-                    errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.entityBaseUrl)}
-                    errorValue={errors.fieldErrors[AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.entityBaseUrl]}
-                />
-                <TextInput
-                    id={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.roleAttributeMapping}
-                    name={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.roleAttributeMapping}
-                    label="SAML Role Attribute Mapping"
-                    description="The SAML attribute in the Attribute Statements that contains the roles for the user logged into Alert. The roles contained in the Attribute Statement can be the role names defined in the mapping fields above."
-                    readOnly={!samlEnabled}
-                    onChange={FieldModelUtilities.handleChange(formData, setFormData)}
-                    value={FieldModelUtilities.getFieldModelSingleValue(formData, AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.roleAttributeMapping)}
-                    errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.roleAttributeMapping)}
-                    errorValue={errors.fieldErrors[AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.roleAttributeMapping]}
-                />
                 <CollapsiblePane
                     id="authentication-saml-advanced"
                     title="Advanced SAML Configuration"
