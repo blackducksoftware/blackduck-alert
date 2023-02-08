@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--suppress SqlNoDataSourceInspection -->
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <!-- create an initial row -->
+    <changeSet author="mau" id="create-initial-saml-config-entries">
+        <preConditions onFail="MARK_RAN">
+            <rowCount schemaName="alert" tableName="configuration_saml" expectedRows="0"/>
+        </preConditions>
+
+        <sql dbms="postgresql" stripComments="true">
+            INSERT INTO alert.configuration_saml (name, created_at, last_updated, enabled, force_auth, metadata_url, metadata_file_path,
+                                                  metadata_mode, want_assertions_signed, encryption_cert_file_path, encryption_private_key_file_path,
+                                                  signing_cert_file_path, signing_private_key_file_path, verification_cert_file_path)
+            SELECT 'default-configuration',
+                   now(),
+                   null,
+                   false,
+                   false,
+                   null,
+                   null,
+                   null,
+                   false,
+                   null,
+                   null,
+                   null,
+                   null,
+                   null
+            FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('component_authentication') configFields
+            WHERE configFields.source_key IS NOT NULL LIMIT 1;
+        </sql>
+    </changeSet>
+
+    <changeSet author="mau" id="update-initial-saml-config-entries">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*)
+                FROM alert.configuration_saml
+                WHERE name = 'default-configuration';
+            </sqlCheck>
+        </preConditions>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_saml config
+            SET created_at = configTimestamps.created_at FROM GET_GLOBAL_CONFIG_TIMESTAMPS('component_authentication') configTimestamps;
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_saml config
+            SET last_updated = configTimestamps.last_updated FROM GET_GLOBAL_CONFIG_TIMESTAMPS('component_authentication') configTimestamps;
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_saml config
+            SET enabled = cast(coalesce(configFields.field_value, 'false') as BOOLEAN) FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('component_authentication') configFields
+            WHERE config.name = 'default-configuration'
+              AND configFields.source_key = 'settings.saml.enabled';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_saml config
+            SET force_auth = cast(coalesce(configFields.field_value, 'false') as BOOLEAN) FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('component_authentication') configFields
+            WHERE config.name = 'default-configuration'
+              AND configFields.source_key = 'settings.saml.force.auth';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_saml config
+            SET metadata_url = configFields.field_value FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('component_authentication') configFields
+            WHERE config.name = 'default-configuration'
+              AND configFields.source_key = 'settings.saml.metadata.url';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_saml config
+            SET want_assertions_signed = cast(coalesce(configFields.field_value, 'false') as BOOLEAN) FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('component_authentication') configFields
+            WHERE config.name = 'default-configuration'
+              AND configFields.source_key = 'settings.saml.want.assertions.signed';
+        </sql>
+    </changeSet>
+</databaseChangeLog>
