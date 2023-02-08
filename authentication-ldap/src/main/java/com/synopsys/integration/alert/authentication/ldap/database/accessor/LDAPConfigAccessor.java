@@ -64,7 +64,7 @@ public class LDAPConfigAccessor implements UniqueConfigurationAccessor<LDAPConfi
                 .findByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
                 .orElseThrow(() -> new AlertConfigurationException("An LDAP configuration does not exist"));
 
-        if (ldapConfigModel.getIsManagerPasswordSet().isPresent() && ldapConfigModel.getIsManagerPasswordSet().get()) {
+        if (ldapConfigModel.getIsManagerPasswordSet()) {
             String decryptedPassword = encryptionUtility.decrypt(existingLDAPConfigurationEntity.getManagerPassword());
             ldapConfigModel.setManagerPassword(decryptedPassword);
         }
@@ -113,7 +113,7 @@ public class LDAPConfigAccessor implements UniqueConfigurationAccessor<LDAPConfi
             configurationId,
             createdTime,
             lastUpdated,
-            ldapConfigModel.getEnabled().orElse(Boolean.FALSE),
+            ldapConfigModel.getEnabled(),
             ldapConfigModel.getServerName(),
             ldapConfigModel.getManagerDn(),
             ldapConfigModel.getManagerPassword().orElse(""),
