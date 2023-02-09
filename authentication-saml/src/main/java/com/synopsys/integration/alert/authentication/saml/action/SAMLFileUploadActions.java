@@ -50,4 +50,10 @@ public class SAMLFileUploadActions {
             () -> fileUploadValidator.validatePrivateKeyFile(keyFileName, resource)
         );
     }
+
+    public ActionResponse<Void> fileDelete(String fileName) {
+        return fileUploadHelper.fileDelete(
+            fileName
+        );
+    }
 }
