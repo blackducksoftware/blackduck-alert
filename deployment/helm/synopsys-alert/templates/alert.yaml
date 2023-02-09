@@ -36,7 +36,7 @@ spec:
       containers:
       - env:
         - name: RUN_SECRETS_DIR
-          value: /tmp/secrets
+          value: {{ required ".Values.secretsDirectory is missing." .Values.secretsDirectory }}
         {{- if .Values.postgres.dbCredential.secretName }}
         - name: ALERT_DB_USERNAME
           valueFrom:
@@ -75,20 +75,11 @@ spec:
         {{- end }}
         {{- if (eq .Values.postgres.sslUseFiles true) }}
         - name: ALERT_DB_SSL_KEY_PATH
-          valueFrom:
-            secretKeyRef:
-              key: {{ required ".Values.postgres.sslSecrets.sslKeyKey is missing." .Values.postgres.sslSecrets.sslKeyKey }}
-              name: {{ .Values.postgres.sslSecrets.secretName }}
+          value: {{ .Values.secretsDirectory }}/{{ .Values.postgres.sslSecrets.sslKeyKey }}
         - name: ALERT_DB_SSL_CERT_PATH
-          valueFrom:
-            secretKeyRef:
-              key: {{ required ".Values.postgres.sslSecrets.sslCertKey is missing." .Values.postgres.sslSecrets.sslCertKey }}
-              name: {{ .Values.postgres.sslSecrets.secretName }}
+          value: {{ .Values.secretsDirectory }}/{{ .Values.postgres.sslSecrets.sslCertKey }}
         - name: ALERT_DB_SSL_ROOT_CERT_PATH
-          valueFrom:
-            secretKeyRef:
-              key: {{ required ".Values.postgres.sslSecrets.sslRootCertKey is missing." .Values.postgres.sslSecrets.sslRootCertKey }}
-              name: {{ .Values.postgres.sslSecrets.secretName }}
+          value: {{ .Values.secretsDirectory }}/{{ .Values.postgres.sslSecrets.sslRootCertKey }}
         {{- end }}
         {{- if .Values.rabbitmq.credential.secretName }}
         - name: ALERT_RABBITMQ_USER
@@ -139,16 +130,27 @@ spec:
         volumeMounts:
         - mountPath: /opt/blackduck/alert/alert-config
           name: dir-alert
+        {{- if .Values.postgres.sslUseFiles }}
+        - mountPath: {{ .Values.secretsDirectory }}/{{ .Values.postgres.sslSecrets.sslKeyKey }}
+          name: dbcert
+          subPath: {{ .Values.postgres.sslSecrets.sslKeyKey }}
+        - mountPath: {{ .Values.secretsDirectory }}/{{ .Values.postgres.sslSecrets.sslCertKey }}
+          name: dbcert
+          subPath: {{ .Values.postgres.sslSecrets.sslCertKey }}
+        - mountPath: {{ .Values.secretsDirectory }}/{{ .Values.postgres.sslSecrets.sslRootCertKey }}
+          name: dbcert
+          subPath: {{ .Values.postgres.sslSecrets.sslRootCertKey }}
+        {{- end }}
         {{- if .Values.webserverCustomCertificatesSecretName }}
-        - mountPath: /tmp/secrets/WEBSERVER_CUSTOM_CERT_FILE
+        - mountPath: {{ .Values.secretsDirectory }}/WEBSERVER_CUSTOM_CERT_FILE
           name: certificate
           subPath: WEBSERVER_CUSTOM_CERT_FILE
-        - mountPath: /tmp/secrets/WEBSERVER_CUSTOM_KEY_FILE
+        - mountPath: {{ .Values.secretsDirectory }}/WEBSERVER_CUSTOM_KEY_FILE
           name: certificate
           subPath: WEBSERVER_CUSTOM_KEY_FILE
         {{- end }}
         {{- if .Values.javaKeystoreSecretName }}
-        - mountPath: /tmp/secrets/cacerts
+        - mountPath: {{ .Values.secretsDirectory }}/cacerts
           name: java-keystore
           subPath: cacerts
         {{- end }}
@@ -178,6 +180,12 @@ spec:
       {{- else }}
       - emptyDir: {}
         name: dir-alert
+      {{- end }}
+      {{- if .Values.postgres.sslUseFiles }}
+      - name: dbcert
+        secret:
+          defaultMode: 0400
+          secretName: {{ .Values.postgres.sslSecrets.secretName }}
       {{- end }}
       {{- if.Values.webserverCustomCertificatesSecretName }}
       - name: certificate

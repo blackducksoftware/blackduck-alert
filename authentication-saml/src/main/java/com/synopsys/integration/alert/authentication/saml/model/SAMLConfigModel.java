@@ -7,12 +7,12 @@ import com.synopsys.integration.alert.common.rest.model.ConfigWithMetadata;
 import java.util.Optional;
 
 public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SAMLConfigModel> {
-    private Boolean enabled;
-    private Boolean forceAuth;
+    private boolean enabled;
+    private boolean forceAuth;
     private String metadataUrl;
     private String metadataFilePath;
     private SAMLMetadataMode metadataMode;
-    private Boolean wantAssertionsSigned;
+    private boolean wantAssertionsSigned;
     private String encryptionCertFilePath;
     private String encryptionPrivateKeyFilePath;
     private String signingCertFilePath;
@@ -32,12 +32,12 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
         String id,
         String createdAt,
         String lastUpdated,
-        Boolean enabled,
-        Boolean forceAuth,
+        boolean enabled,
+        boolean forceAuth,
         String metadataUrl,
         String metadataFilePath,
         SAMLMetadataMode metadataMode,
-        Boolean wantAssertionsSigned,
+        boolean wantAssertionsSigned,
         String encryptionCertFilePath,
         String encryptionPrivateKeyFilePath,
         String signingCertFilePath,
@@ -82,11 +82,11 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
     }
 
     // Getters
-    public Boolean getEnabled() {
+    public boolean getEnabled() {
         return enabled;
     }
 
-    public Boolean getForceAuth() {
+    public boolean getForceAuth() {
         return forceAuth;
     }
 
@@ -102,7 +102,7 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
         return Optional.ofNullable(metadataMode);
     }
 
-    public Boolean getWantAssertionsSigned() {
+    public boolean getWantAssertionsSigned() {
         return wantAssertionsSigned;
     }
 
@@ -127,11 +127,11 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
     }
 
     // Setters
-    public void setEnabled(Boolean enabled) {
+    public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 
-    public void setForceAuth(Boolean forceAuth) {
+    public void setForceAuth(boolean forceAuth) {
         this.forceAuth = forceAuth;
     }
 

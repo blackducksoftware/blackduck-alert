@@ -21,9 +21,9 @@ public class SAMLConfigurationEntity extends BaseEntity {
     @Column(name = "last_updated")
     private OffsetDateTime lastUpdated;
     @Column(name = "enabled")
-    private Boolean enabled;
+    private boolean enabled;
     @Column(name = "force_auth")
-    private Boolean forceAuth;
+    private boolean forceAuth;
     @Column(name = "metadata_url")
     private String metadataUrl;
     @Column(name = "metadata_file_path")
@@ -31,7 +31,7 @@ public class SAMLConfigurationEntity extends BaseEntity {
     @Column(name = "metadata_mode")
     private SAMLMetadataMode metadataMode;
     @Column(name = "want_assertions_signed")
-    private Boolean wantAssertionsSigned;
+    private boolean wantAssertionsSigned;
     @Column(name = "encryption_cert_file_path")
     private String encryptionCertFilePath;
     @Column(name = "encryption_private_key_file_path")
@@ -50,12 +50,12 @@ public class SAMLConfigurationEntity extends BaseEntity {
         UUID configurationId,
         OffsetDateTime createdAt,
         OffsetDateTime lastUpdated,
-        Boolean enabled,
-        Boolean forceAuth,
+        boolean enabled,
+        boolean forceAuth,
         String metadataUrl,
         String metadataFilePath,
         SAMLMetadataMode metadataMode,
-        Boolean wantAssertionsSigned,
+        boolean wantAssertionsSigned,
         String encryptionCertFilePath,
         String encryptionPrivateKeyFilePath,
         String signingCertFilePath,
@@ -95,11 +95,11 @@ public class SAMLConfigurationEntity extends BaseEntity {
         return lastUpdated;
     }
 
-    public Boolean getEnabled() {
+    public boolean getEnabled() {
         return enabled;
     }
 
-    public Boolean getForceAuth() {
+    public boolean getForceAuth() {
         return forceAuth;
     }
 
@@ -115,7 +115,7 @@ public class SAMLConfigurationEntity extends BaseEntity {
         return metadataMode;
     }
 
-    public Boolean getWantAssertionsSigned() {
+    public boolean getWantAssertionsSigned() {
         return wantAssertionsSigned;
     }
 
