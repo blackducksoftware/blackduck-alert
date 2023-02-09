@@ -7,18 +7,10 @@
  */
 package com.synopsys.integration.alert.component.authentication.actions;
 
-import java.util.Optional;
-
-import org.apache.commons.lang3.BooleanUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ApiAction;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
 
 /**
  * @deprecated This class will be removed in 8.0.0.
