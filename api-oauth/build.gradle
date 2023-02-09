@@ -5,8 +5,7 @@ dependencies {
     implementation project(':alert-common')
     implementation project(':api-common-model')
     implementation project(":alert-database")
-    implementation 'com.synopsys.integration:blackduck-common'
-
+    implementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
 
     api 'org.springframework.data:spring-data-jpa'
     implementation 'jakarta.persistence:jakarta.persistence-api'
