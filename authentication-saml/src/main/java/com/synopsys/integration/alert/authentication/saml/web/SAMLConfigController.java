@@ -62,7 +62,7 @@ public class SAMLConfigController implements StaticUniqueConfigResourceControlle
         return ResponseFactory.createContentResponseFromAction(validationAction.validate(requestBody));
     }
 
-    // Metadata file upload
+    // SAML_METADATA_FILE
     @GetMapping(METADATA_FILE_UPLOAD_PATH)
     public boolean checkMetadataFileExists() {
         return ResponseFactory.createContentResponseFromAction(
@@ -78,7 +78,15 @@ public class SAMLConfigController implements StaticUniqueConfigResourceControlle
         );
     }
 
-    // Encryption cert file upload
+    @DeleteMapping(METADATA_FILE_UPLOAD_PATH)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteMetadataFile() {
+        ResponseFactory.createResponseFromAction(
+            fileUploadActions.fileDelete(AuthenticationDescriptor.SAML_METADATA_FILE)
+        );
+    }
+
+    // SAML_ENCRYPTION_CERT_FILE
     @GetMapping(ENCRYPTION_CERT_UPLOAD_PATH)
     public boolean checkEncryptionCertFileExists() {
         return ResponseFactory.createContentResponseFromAction(
@@ -94,7 +102,15 @@ public class SAMLConfigController implements StaticUniqueConfigResourceControlle
         );
     }
 
-    // Encryption private key file upload
+    @DeleteMapping(ENCRYPTION_CERT_UPLOAD_PATH)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteEncryptionCertFile() {
+        ResponseFactory.createResponseFromAction(
+            fileUploadActions.fileDelete(AuthenticationDescriptor.SAML_ENCRYPTION_CERT_FILE)
+        );
+    }
+
+    // SAML_ENCRYPTION_PRIVATE_KEY_FILE
     @GetMapping(ENCRYPTION_PRIVATE_KEY_UPLOAD_PATH)
     public boolean checkEncryptionPrivateFileExists() {
         return ResponseFactory.createContentResponseFromAction(
@@ -110,7 +126,15 @@ public class SAMLConfigController implements StaticUniqueConfigResourceControlle
         );
     }
 
-    // Signing cert file upload
+    @DeleteMapping(ENCRYPTION_PRIVATE_KEY_UPLOAD_PATH)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void encryptionPrivateKeyDelete() {
+        ResponseFactory.createResponseFromAction(
+            fileUploadActions.fileDelete(AuthenticationDescriptor.SAML_ENCRYPTION_PRIVATE_KEY_FILE)
+        );
+    }
+
+    // SAML_SIGNING_CERT_FILE
     @GetMapping(SIGNING_CERT_UPLOAD_PATH)
     public boolean checkSigningCertFileExists() {
         return ResponseFactory.createContentResponseFromAction(
@@ -126,7 +150,15 @@ public class SAMLConfigController implements StaticUniqueConfigResourceControlle
         );
     }
 
-    // Signing private key file upload
+    @DeleteMapping(SIGNING_CERT_UPLOAD_PATH)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void signingCertFileDelete() {
+        ResponseFactory.createResponseFromAction(
+            fileUploadActions.fileDelete(AuthenticationDescriptor.SAML_SIGNING_CERT_FILE)
+        );
+    }
+
+    // SAML_SIGNING_PRIVATE_KEY_FILE
     @GetMapping(SIGNING_PRIVATE_KEY_UPLOAD_PATH)
     public boolean checkSigningPrivateKeyFileExists() {
         return ResponseFactory.createContentResponseFromAction(
@@ -142,7 +174,15 @@ public class SAMLConfigController implements StaticUniqueConfigResourceControlle
         );
     }
 
-    // Verification cert file upload
+    @DeleteMapping(SIGNING_PRIVATE_KEY_UPLOAD_PATH)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void uploadPrivateKeyDelete() {
+        ResponseFactory.createResponseFromAction(
+            fileUploadActions.fileDelete(AuthenticationDescriptor.SAML_SIGNING_PRIVATE_KEY_FILE)
+        );
+    }
+
+    // SAML_VERIFICATION_CERT_FILE
     @GetMapping(VERIFICATION_CERT_UPLOAD_PATH)
     public boolean checkVerificationCertFileExists() {
         return ResponseFactory.createContentResponseFromAction(
@@ -155,6 +195,14 @@ public class SAMLConfigController implements StaticUniqueConfigResourceControlle
     public void uploadVerificationCertFile(@RequestParam("file") MultipartFile file) {
         ResponseFactory.createResponseFromAction(
             fileUploadActions.certFileUpload(AuthenticationDescriptor.SAML_VERIFICATION_CERT_FILE, file.getResource())
+        );
+    }
+
+    @DeleteMapping(VERIFICATION_CERT_UPLOAD_PATH)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void verificationCertFileDelete() {
+        ResponseFactory.createResponseFromAction(
+            fileUploadActions.fileDelete(AuthenticationDescriptor.SAML_VERIFICATION_CERT_FILE)
         );
     }
 }

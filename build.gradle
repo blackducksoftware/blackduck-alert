@@ -83,7 +83,7 @@ allprojects {
     }
 
     repositories {
-        // Need this repository to resolve the spring-security-saml2-core dependencies
+        // Need this repository to resolve the opensaml dependencies
         maven {
             url 'https://build.shibboleth.net/nexus/content/repositories/releases/'
         }
@@ -182,7 +182,6 @@ dependencies {
     }
 
     testImplementation project(':api-channel-issue-tracker')
-    testImplementation 'org.springframework.security.extensions:spring-security-saml2-core'
     testImplementation 'org.springframework.security:spring-security-ldap'
     testImplementation 'jakarta.persistence:jakarta.persistence-api'
     testImplementation 'org.javassist:javassist'

@@ -40,12 +40,12 @@ public class LdapManager {
         this.inetOrgPersonContextMapper = inetOrgPersonContextMapper;
     }
 
-    public boolean isLdapEnabled() {
+    public Boolean isLdapEnabled() {
         if (getCurrentConfiguration().isEmpty()) {
             return false;
         }
 
-        return getCurrentConfiguration().get().getEnabled().orElse(false);
+        return getCurrentConfiguration().get().getEnabled();
     }
 
     public Optional<LDAPConfigModel> getCurrentConfiguration() {
@@ -63,7 +63,7 @@ public class LdapManager {
 
     public Optional<LdapAuthenticationProvider> createAuthProvider(LDAPConfigModel ldapConfigModel) throws AlertConfigurationException {
         try {
-            Boolean ldapEnabled = ldapConfigModel.getEnabled().orElse(false);
+            Boolean ldapEnabled = ldapConfigModel.getEnabled();
             if (!ldapEnabled) {
                 return Optional.empty();
             }

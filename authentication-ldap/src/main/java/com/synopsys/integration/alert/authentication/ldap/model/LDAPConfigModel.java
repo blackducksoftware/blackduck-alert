@@ -95,8 +95,8 @@ public class LDAPConfigModel extends ConfigWithMetadata implements Obfuscated<LD
         );
     }
 
-    public Optional<Boolean> getEnabled() {
-        return Optional.ofNullable(enabled);
+    public Boolean getEnabled() {
+        return enabled;
     }
 
     public void setEnabled(Boolean enabled) {
@@ -127,8 +127,8 @@ public class LDAPConfigModel extends ConfigWithMetadata implements Obfuscated<LD
         this.managerPassword = managerPassword;
     }
 
-    public Optional<Boolean> getIsManagerPasswordSet() {
-        return Optional.ofNullable(isManagerPasswordSet);
+    public Boolean getIsManagerPasswordSet() {
+        return isManagerPasswordSet;
     }
 
     public void setIsManagerPasswordSet(Boolean managerPasswordSet) {

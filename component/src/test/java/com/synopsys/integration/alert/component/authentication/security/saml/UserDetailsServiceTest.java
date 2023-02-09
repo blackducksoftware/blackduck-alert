@@ -15,9 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.opensaml.saml2.core.NameID;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.saml.SAMLCredential;
 
 import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.api.authentication.security.UserManagementAuthoritiesPopulator;
@@ -53,87 +51,10 @@ class UserDetailsServiceTest {
         authoritiesPopulator = new UserManagementAuthoritiesPopulator(key, configurationModelConfigurationAccessor, userAccessor);
     }
 
-    @Test
-    void testValidCredential() {
-        SAMLCredential credential = Mockito.mock(SAMLCredential.class);
-
-        NameID nameId = Mockito.mock(NameID.class);
-        Mockito.when(nameId.getValue()).thenReturn(USER_NAME);
-        Mockito.when(credential.getNameID()).thenReturn(nameId);
-        Mockito.when(credential.getAttributeAsString("Name")).thenReturn(USER_NAME);
-        Mockito.when(credential.getAttributeAsString("Email")).thenReturn(EMAIL);
-        Mockito.when(credential.getAttributeAsStringArray("AlertRoles")).thenReturn(VALID_ROLES);
-        UserDetailsService userDetailsService = new UserDetailsService(authoritiesPopulator);
-        Object result = userDetailsService.loadUserBySAML(credential);
-
-        assertNotNull(result);
-        assertTrue(UserPrincipal.class.isInstance(result));
-        UserPrincipal principal = (UserPrincipal) result;
-        assertEquals(USER_NAME, principal.getUsername());
-        assertTrue(StringUtils.isBlank(principal.getPassword()));
-        assertEquals(VALID_ROLES.length + VALID_DB_ROLES.length, principal.getAuthorities().size());
-        List<String> expectedRoles = new ArrayList<>();
-        expectedRoles.addAll(Arrays.asList(VALID_ROLES));
-        expectedRoles.addAll(Arrays.asList(VALID_DB_ROLES));
-        List<String> actualRoles = extractRoleNamesFromPrincipal(principal);
-        assertTrue(expectedRoles.containsAll(actualRoles));
-    }
-
-    @Test
-    void testNullRoleArray() {
-        SAMLCredential credential = Mockito.mock(SAMLCredential.class);
-
-        NameID nameId = Mockito.mock(NameID.class);
-        Mockito.when(nameId.getValue()).thenReturn(USER_NAME);
-        Mockito.when(credential.getNameID()).thenReturn(nameId);
-        Mockito.when(credential.getAttributeAsString("Name")).thenReturn(USER_NAME);
-        Mockito.when(credential.getAttributeAsString("Email")).thenReturn(EMAIL);
-        Mockito.when(credential.getAttributeAsStringArray("AlertRoles")).thenReturn(null);
-
-        UserDetailsService userDetailsService = new UserDetailsService(authoritiesPopulator);
-        Object result = userDetailsService.loadUserBySAML(credential);
-
-        assertNotNull(result);
-        assertTrue(UserPrincipal.class.isInstance(result));
-        UserPrincipal principal = (UserPrincipal) result;
-        assertEquals(USER_NAME, principal.getUsername());
-        assertTrue(StringUtils.isBlank(principal.getPassword()));
-        assertEquals(VALID_DB_ROLES.length, principal.getAuthorities().size());
-        List<String> expectedRoles = Arrays.asList(VALID_DB_ROLES);
-        List<String> actualRoles = extractRoleNamesFromPrincipal(principal);
-        assertTrue(expectedRoles.containsAll(actualRoles));
-    }
-
-    @Test
-    void testEmptyRoleArray() {
-        SAMLCredential credential = Mockito.mock(SAMLCredential.class);
-        String[] roles = new String[0];
-        NameID nameId = Mockito.mock(NameID.class);
-        Mockito.when(nameId.getValue()).thenReturn(USER_NAME);
-        Mockito.when(credential.getNameID()).thenReturn(nameId);
-        Mockito.when(credential.getAttributeAsString("Name")).thenReturn(USER_NAME);
-        Mockito.when(credential.getAttributeAsString("Email")).thenReturn(EMAIL);
-        Mockito.when(credential.getAttributeAsStringArray("AlertRoles")).thenReturn(roles);
-
-        UserDetailsService userDetailsService = new UserDetailsService(authoritiesPopulator);
-        Object result = userDetailsService.loadUserBySAML(credential);
-
-        assertNotNull(result);
-        assertTrue(UserPrincipal.class.isInstance(result));
-        UserPrincipal principal = (UserPrincipal) result;
-        assertEquals(USER_NAME, principal.getUsername());
-        assertTrue(StringUtils.isBlank(principal.getPassword()));
-        assertEquals(VALID_DB_ROLES.length, principal.getAuthorities().size());
-        List<String> expectedRoles = Arrays.asList(VALID_DB_ROLES);
-        List<String> actualRoles = extractRoleNamesFromPrincipal(principal);
-        assertTrue(expectedRoles.containsAll(actualRoles));
-    }
-
     private List<String> extractRoleNamesFromPrincipal(UserPrincipal principal) {
         return principal.getAuthorities().stream()
                    .map(GrantedAuthority::getAuthority)
                    .map(authority -> StringUtils.remove(authority, UserModel.ROLE_PREFIX))
                    .collect(Collectors.toList());
     }
-
 }

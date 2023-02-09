@@ -79,22 +79,10 @@ public class SAMLEnvironmentVariableHandler extends EnvironmentVariableHandler<S
     protected EnvironmentProcessingResult buildProcessingResult(SAMLConfigModel obfuscatedConfigModel) {
         EnvironmentProcessingResult.Builder builder = new EnvironmentProcessingResult.Builder(SAML_CONFIGURATION_KEY_SET);
 
-        obfuscatedConfigModel.getEnabled()
-            .map(String::valueOf)
-            .ifPresent(value -> builder.addVariableValue(SAML_ENABLED_KEY, value));
-        if (StringUtils.isNotBlank(obfuscatedConfigModel.getEntityBaseUrl())) {
-            builder.addVariableValue(SAML_ENTITY_BASE_URL_KEY, obfuscatedConfigModel.getEntityBaseUrl());
-        }
-        if (StringUtils.isNotBlank(obfuscatedConfigModel.getEntityId())) {
-            builder.addVariableValue(SAML_ENTITY_ID_KEY, obfuscatedConfigModel.getEntityId());
-        }
-        obfuscatedConfigModel.getForceAuth()
-            .map(String::valueOf)
-            .ifPresent(value -> builder.addVariableValue(SAML_FORCE_AUTH_KEY, value));
+        builder.addVariableValue(SAML_ENABLED_KEY, String.valueOf(obfuscatedConfigModel.getEnabled()));
+        builder.addVariableValue(SAML_FORCE_AUTH_KEY, String.valueOf(obfuscatedConfigModel.getForceAuth()));
         obfuscatedConfigModel.getMetadataUrl()
             .ifPresent(value -> builder.addVariableValue(SAML_METADATA_URL_KEY, value));
-        obfuscatedConfigModel.getRoleAttributeMapping()
-            .ifPresent(value -> builder.addVariableValue(SAML_ROLE_ATTRIBUTE_MAPPING_NAME_KEY, value));
 
         return builder.build();
     }
@@ -112,16 +100,10 @@ public class SAMLEnvironmentVariableHandler extends EnvironmentVariableHandler<S
         environmentVariableUtility.getEnvironmentValue(SAML_ENABLED_KEY)
             .map(Boolean::valueOf)
             .ifPresent(configuration::setEnabled);
-        environmentVariableUtility.getEnvironmentValue(SAML_ENTITY_BASE_URL_KEY)
-            .ifPresent(configuration::setEntityBaseUrl);
-        environmentVariableUtility.getEnvironmentValue(SAML_ENTITY_ID_KEY)
-            .ifPresent(configuration::setEntityId);
         environmentVariableUtility.getEnvironmentValue(SAML_FORCE_AUTH_KEY)
             .map(Boolean::valueOf)
             .ifPresent(configuration::setForceAuth);
         environmentVariableUtility.getEnvironmentValue(SAML_METADATA_URL_KEY)
             .ifPresent(configuration::setMetadataUrl);
-        environmentVariableUtility.getEnvironmentValue(SAML_ROLE_ATTRIBUTE_MAPPING_NAME_KEY)
-            .ifPresent(configuration::setRoleAttributeMapping);
     }
 }
