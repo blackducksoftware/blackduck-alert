@@ -11,11 +11,13 @@ import java.time.OffsetDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,8 +60,8 @@ public class BlackDuckAccumulator extends ProviderTask {
     private final BlackDuckNotificationRetrieverFactory notificationRetrieverFactory;
     private final BlackDuckAccumulatorSearchDateManager searchDateManager;
 
-    private static final ReentrantLock accumulatingLock = new ReentrantLock();
-    private static final AtomicBoolean accumulatorRunning = new AtomicBoolean(false);
+    private final ReentrantLock accumulatingLock = new ReentrantLock();
+    private final AtomicBoolean accumulatorRunning = new AtomicBoolean(false);
 
     public BlackDuckAccumulator(
         BlackDuckProviderKey blackDuckProviderKey,
@@ -145,7 +147,7 @@ public class BlackDuckAccumulator extends ProviderTask {
             }
         } finally {
             if (!emptyPage) {
-                eventManager.sendEvent(new NotificationReceivedEvent());
+                eventManager.sendEvent(new NotificationReceivedEvent(getProviderProperties().getConfigId()));
             }
         }
     }
@@ -153,8 +155,8 @@ public class BlackDuckAccumulator extends ProviderTask {
     private void storeNotifications(List<NotificationUserView> notifications) {
         List<AlertNotificationModel> alertNotifications = convertToAlertNotificationModels(notifications);
         write(alertNotifications);
-        Optional<OffsetDateTime> optionalNextSearchTime = computeLatestNotificationCreatedAtDate(alertNotifications)
-            .map(latestNotification -> latestNotification.plusNanos(1000000));
+        Optional<OffsetDateTime> optionalNextSearchTime = computeLatestNotificationCreatedAtDate(alertNotifications);
+        //.map(latestNotification -> latestNotification.plusNanos(1000));
         if (optionalNextSearchTime.isPresent()) {
             OffsetDateTime nextSearchTime = optionalNextSearchTime.get();
             logger.info("Notifications found; the next search time will be: {}", nextSearchTime);
@@ -171,8 +173,9 @@ public class BlackDuckAccumulator extends ProviderTask {
     }
 
     private void write(List<AlertNotificationModel> contentList) {
-        logger.info("Writing {} notifications...", contentList.size());
+        logger.info("Writing {} notifications for provider {} ...", contentList.size(), getProviderProperties().getConfigId());
         List<AlertNotificationModel> savedNotifications = notificationAccessor.saveAllNotifications(contentList);
+        logger.info("Saved {} notifications for provider {} ...", savedNotifications.size(), getProviderProperties().getConfigId());
         if (logger.isDebugEnabled()) {
             List<Long> notificationIds = savedNotifications.stream()
                 .map(AlertNotificationModel::getId)
@@ -188,7 +191,35 @@ public class BlackDuckAccumulator extends ProviderTask {
         String provider = blackDuckProviderKey.getUniversalKey();
         String notificationType = notification.getType().name();
         String jsonContent = notification.getJson();
-        return new AlertNotificationModel(null, getProviderProperties().getConfigId(), provider, getProviderProperties().getConfigName(), notificationType, jsonContent, createdAt, providerCreationTime, false);
+        String hashOfUrl = createContentId(getProviderProperties().getConfigId(), notification);
+        return new AlertNotificationModel(
+            null,
+            getProviderProperties().getConfigId(),
+            provider,
+            getProviderProperties().getConfigName(),
+            notificationType,
+            jsonContent,
+            createdAt,
+            providerCreationTime,
+            false,
+            hashOfUrl
+        );
+    }
+
+    private String createContentId(Long providerConfigId, NotificationView notification) {
+        // generate new default in case the href of notification view is null.
+        String contentId = UUID.randomUUID().toString();
+        if (null != notification && null != notification.getHref()) {
+            try {
+                String providerIdAndUrl = String.format("%s-%s", providerConfigId, notification.getHref().string());
+                contentId = new DigestUtils("SHA3-256").digestAsHex(providerIdAndUrl);
+            } catch (RuntimeException ex) {
+                // do nothing use the URL
+                logger.debug("Content id hash cannot be generated for notification.", ex);
+            }
+        }
+
+        return contentId;
     }
 
     // Expects that the notifications are sorted oldest to newest

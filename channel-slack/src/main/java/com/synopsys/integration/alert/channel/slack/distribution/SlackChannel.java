@@ -11,14 +11,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.channel.MessageBoardChannel;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 
 @Component
 public class SlackChannel extends MessageBoardChannel<SlackJobDetailsModel, SlackChannelMessageModel> {
     @Autowired
-    protected SlackChannel(SlackChannelMessageConverter slackChannelMessageConverter, SlackChannelMessageSender slackChannelMessageSender, EventManager eventManager) {
-        super(slackChannelMessageConverter, slackChannelMessageSender, eventManager);
+    protected SlackChannel(
+        SlackChannelMessageConverter slackChannelMessageConverter,
+        SlackChannelMessageSender slackChannelMessageSender,
+        EventManager eventManager,
+        ExecutingJobManager executingJobManager
+    ) {
+        super(slackChannelMessageConverter, slackChannelMessageSender, eventManager, executingJobManager);
     }
 
 }

@@ -21,7 +21,9 @@ public class ExecutingJobStage {
     }
 
     public void endStage(Instant end) {
-        this.end = end;
+        synchronized (this) {
+            this.end = end;
+        }
     }
 
     public UUID getExecutionId() {

@@ -65,6 +65,8 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
 
     Page<NotificationEntity> findByProcessedFalseOrderByProviderCreationTimeAsc(Pageable pageable);
 
+    Page<NotificationEntity> findByProviderConfigIdAndProcessedFalseOrderByProviderCreationTimeAsc(long providerConfigId, Pageable pageable);
+
     List<NotificationEntity> findAllByIdInOrderByProviderCreationTimeAsc(List<Long> notificationIds);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
@@ -82,5 +84,9 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
 
     boolean existsByProcessedFalse();
 
+    boolean existsByProviderConfigIdAndProcessedFalse(long providerConfigId);
+
     long countByProcessed(boolean processed);
+
+    boolean existsByContentId(String contentId);
 }

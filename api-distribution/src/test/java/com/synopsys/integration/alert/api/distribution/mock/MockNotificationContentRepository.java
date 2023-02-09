@@ -83,6 +83,26 @@ public class MockNotificationContentRepository extends MockRepositoryContainer<L
     }
 
     @Override
+    public Page<NotificationEntity> findByProviderConfigIdAndProcessedFalseOrderByProviderCreationTimeAsc(long providerConfigId, Pageable pageable) {
+        Predicate<NotificationEntity> processedFalse = Predicate.not(NotificationEntity::getProcessed);
+        Predicate<NotificationEntity> providerConfigIdEqual = notificationEntity -> notificationEntity.getProviderConfigId().equals(providerConfigId);
+        List<NotificationEntity> notifications = findAll().stream()
+            .sorted(Comparator.comparing(NotificationEntity::getProviderCreationTime))
+            .filter(providerConfigIdEqual)
+            .filter(processedFalse)
+            .collect(Collectors.toList());
+        int pageSize = pageable.getPageSize();
+        int pageNumber = pageable.getPageNumber();
+        List<List<NotificationEntity>> partitionedLists = ListUtils.partition(notifications, pageSize);
+        int totalPages = partitionedLists.size();
+        if (partitionedLists.size() >= pageNumber) {
+            return new PageImpl<>(partitionedLists.get(pageNumber), pageable, totalPages);
+        } else {
+            return new PageImpl<>(List.of());
+        }
+    }
+
+    @Override
     public List<NotificationEntity> findAllByIdInOrderByProviderCreationTimeAsc(final List<Long> notificationIds) {
         return findAllById(notificationIds).stream()
             .sorted(Comparator.comparing(NotificationEntity::getProviderCreationTime))
@@ -90,13 +110,13 @@ public class MockNotificationContentRepository extends MockRepositoryContainer<L
     }
 
     @Override
-    public void setProcessedByIds(final Set<Long> notificationIds) {
-        findAllById(notificationIds).stream()
+    public void setProcessedByIds(Set<Long> notificationIds) {
+        findAllById(notificationIds)
             .forEach(NotificationEntity::setProcessedToTrue);
     }
 
     @Override
-    public int bulkDeleteCreatedAtBefore(final OffsetDateTime date) {
+    public int bulkDeleteCreatedAtBefore(OffsetDateTime date) {
         List<Long> notificationsToDelete = findByCreatedAtBefore(date).stream()
             .map(NotificationEntity::getId)
             .collect(Collectors.toList());
@@ -112,9 +132,27 @@ public class MockNotificationContentRepository extends MockRepositoryContainer<L
     }
 
     @Override
-    public long countByProcessed(final boolean processed) {
+    public boolean existsByProviderConfigIdAndProcessedFalse(long providerConfigId) {
+        Predicate<NotificationEntity> providerConfigIdEqual = notificationEntity -> notificationEntity.getProviderConfigId().equals(providerConfigId);
+        Predicate<NotificationEntity> notProcessed = Predicate.not(NotificationEntity::getProcessed);
+        Predicate<NotificationEntity> providerAndProcessedFalse = providerConfigIdEqual.and(notProcessed);
+        return findAll()
+            .stream()
+            .anyMatch(providerAndProcessedFalse);
+    }
+
+    @Override
+    public long countByProcessed(boolean processed) {
         return findAll().stream()
             .filter(entity -> entity.getProcessed() == processed)
             .count();
+    }
+
+    @Override
+    public boolean existsByContentId(String contentId) {
+        return findAll()
+            .stream()
+            .map(NotificationEntity::getContentId)
+            .anyMatch(contentId::equals);
     }
 }

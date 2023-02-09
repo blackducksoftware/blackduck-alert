@@ -58,7 +58,9 @@ public class IssueTrackerAsyncMessageSender<T extends Serializable> {
             .flatMap(List::stream)
             .collect(Collectors.toList());
 
-
+        // the full set of notifications to be sent is here.  Each event generated is for a subset of notification ids.
+        // some notifications do not produce events which is why the check for the empty event list also exists.
+        executingJobManager.incrementSentNotificationCount(jobExecutionId, notificationIds.size());
         if (eventList.isEmpty()) {
             jobSubTaskAccessor.removeSubTaskStatus(parentEventId);
         } else {

@@ -175,7 +175,8 @@ class DefaultProcessingFailedAccessorTest {
             content,
             creationTime,
             providerCreationTime,
-            false
+            false,
+            String.format("content-id-%s", UUID.randomUUID())
         );
     }
 }

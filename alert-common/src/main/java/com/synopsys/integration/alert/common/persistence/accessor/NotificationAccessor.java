@@ -29,7 +29,10 @@ public interface NotificationAccessor {
 
     List<AlertNotificationModel> findByCreatedAtBeforeDayOffset(int dayOffset);
 
+    @Deprecated(since = "6.13.0")
     AlertPagedModel<AlertNotificationModel> getFirstPageOfNotificationsNotProcessed(int pageSize);
+
+    AlertPagedModel<AlertNotificationModel> getFirstPageOfNotificationsNotProcessed(long providerConfigId, int pageSize);
 
     void setNotificationsProcessed(List<AlertNotificationModel> notifications);
 
@@ -39,6 +42,9 @@ public interface NotificationAccessor {
 
     void deleteNotification(AlertNotificationModel notification);
 
+    @Deprecated(since = "6.13.0")
     boolean hasMoreNotificationsToProcess();
+
+    boolean hasMoreNotificationsToProcess(long providerConfigId);
 
 }

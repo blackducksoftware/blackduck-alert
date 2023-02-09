@@ -47,6 +47,9 @@ public class NotificationEntity extends BaseEntity implements DatabaseEntity {
     @Column(name = "processed")
     private boolean processed;
 
+    @Column(name = "content_id")
+    private String contentId;
+
     @OneToMany(mappedBy = "notificationContent")
     private final List<AuditNotificationRelation> auditNotificationRelations = new ArrayList<>();
 
@@ -55,7 +58,17 @@ public class NotificationEntity extends BaseEntity implements DatabaseEntity {
     }
 
     // Reserved for queries
-    public NotificationEntity(Long id, OffsetDateTime createdAt, String provider, Long providerConfigId, OffsetDateTime providerCreationTime, String notificationType, String content, boolean processed) {
+    public NotificationEntity(
+        Long id,
+        OffsetDateTime createdAt,
+        String provider,
+        Long providerConfigId,
+        OffsetDateTime providerCreationTime,
+        String notificationType,
+        String content,
+        boolean processed,
+        String contentId
+    ) {
         this.setId(id);
         this.createdAt = createdAt;
         this.provider = provider;
@@ -64,9 +77,19 @@ public class NotificationEntity extends BaseEntity implements DatabaseEntity {
         this.notificationType = notificationType;
         this.content = content;
         this.processed = processed;
+        this.contentId = contentId;
     }
 
-    public NotificationEntity(OffsetDateTime createdAt, String provider, Long providerConfigId, OffsetDateTime providerCreationTime, String notificationType, String content, boolean processed) {
+    public NotificationEntity(
+        OffsetDateTime createdAt,
+        String provider,
+        Long providerConfigId,
+        OffsetDateTime providerCreationTime,
+        String notificationType,
+        String content,
+        boolean processed,
+        String contentId
+    ) {
         this.createdAt = createdAt;
         this.provider = provider;
         this.providerConfigId = providerConfigId;
@@ -74,6 +97,7 @@ public class NotificationEntity extends BaseEntity implements DatabaseEntity {
         this.notificationType = notificationType;
         this.content = content;
         this.processed = processed;
+        this.contentId = contentId;
     }
 
     @Override
@@ -122,4 +146,11 @@ public class NotificationEntity extends BaseEntity implements DatabaseEntity {
         return auditNotificationRelations;
     }
 
+    public String getContentId() {
+        return contentId;
+    }
+
+    public void setContentId(String contentId) {
+        this.contentId = contentId;
+    }
 }

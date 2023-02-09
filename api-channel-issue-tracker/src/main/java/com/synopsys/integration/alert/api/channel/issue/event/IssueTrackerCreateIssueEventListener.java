@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.api.channel.issue.event;
 
-import org.springframework.core.task.SyncTaskExecutor;
+import org.springframework.core.task.TaskExecutor;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.distribution.JobSubTaskMessageListener;
@@ -16,11 +16,10 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 public abstract class IssueTrackerCreateIssueEventListener extends JobSubTaskMessageListener<IssueTrackerCreateIssueEvent> {
     protected IssueTrackerCreateIssueEventListener(
         Gson gson,
+        TaskExecutor taskExecutor,
         ChannelKey channelKey,
         IssueTrackerCreateIssueEventHandler eventHandler
     ) {
-        // Use the sync task executor to create issues in Jira synchronously.  This avoids creating duplicate issues concurrently.
-        // Pull one creation event off the queue at a time and create the issue.
-        super(gson, new SyncTaskExecutor(), IssueTrackerCreateIssueEvent.createDefaultEventDestination(channelKey), IssueTrackerCreateIssueEvent.class, eventHandler);
+        super(gson, taskExecutor, IssueTrackerCreateIssueEvent.createDefaultEventDestination(channelKey), IssueTrackerCreateIssueEvent.class, eventHandler);
     }
 }

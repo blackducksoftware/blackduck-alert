@@ -46,13 +46,15 @@ public abstract class JobSubTaskEventHandler<T extends JobSubTaskEvent> implemen
                     //TODO no longer need this component
                     jobSubTaskAccessor.removeSubTaskStatus(parentEventId);
                 });
-            executingJobManager.endStage(jobExecutionId, jobStage, Instant.now());
-            executingJobManager.getExecutingJob(jobExecutionId)
-                .filter(Predicate.not(ExecutingJob::isCompleted))
-                .ifPresent(executingJob -> executingJobManager.endJobWithSuccess(jobExecutionId, Instant.now()));
+            if (!executingJobManager.hasRemainingEvents(jobExecutionId)) {
+                executingJobManager.endStage(jobExecutionId, jobStage, Instant.now());
+                executingJobManager.getExecutingJob(jobExecutionId)
+                    .filter(Predicate.not(ExecutingJob::isCompleted))
+                    .ifPresent(executingJob -> executingJobManager.endJobWithSuccess(jobExecutionId, Instant.now()));
+            }
         } catch (AlertException exception) {
             executingJobManager.endStage(jobExecutionId, jobStage, Instant.now());
-            //eventManager.sendEvent(new JobStageEndedEvent(jobExecutionId, jobStage, Instant.now().toEpochMilli()));
+            executingJobManager.incrementSentNotificationCount(jobExecutionId, event.getNotificationIds().size());
             eventManager.sendEvent(new AuditFailedEvent(
                 jobExecutionId,
                 event.getNotificationIds(),

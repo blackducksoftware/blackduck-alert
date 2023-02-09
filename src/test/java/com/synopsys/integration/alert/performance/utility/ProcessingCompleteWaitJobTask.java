@@ -2,6 +2,7 @@ package com.synopsys.integration.alert.performance.utility;
 
 import java.text.ParseException;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Optional;
 import java.util.Set;
@@ -11,7 +12,6 @@ import java.util.stream.Collectors;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.component.diagnostic.model.AlertQueueInformation;
-import com.synopsys.integration.alert.component.diagnostic.model.AuditDiagnosticModel;
 import com.synopsys.integration.alert.component.diagnostic.model.CompletedJobDiagnosticModel;
 import com.synopsys.integration.alert.component.diagnostic.model.CompletedJobDurationDiagnosticModel;
 import com.synopsys.integration.alert.component.diagnostic.model.CompletedJobsDiagnosticModel;
@@ -30,7 +30,7 @@ public class ProcessingCompleteWaitJobTask implements WaitJobCondition {
     private final IntLogger intLogger;
     private final Gson gson;
     private final AlertRequestUtility alertRequestUtility;
-    private final LocalDateTime startSearchTime;
+    private final OffsetDateTime startSearchTime;
     private final int numberOfExpectedNotifications;
     private final Set<String> expectedJobIds;
 
@@ -45,7 +45,7 @@ public class ProcessingCompleteWaitJobTask implements WaitJobCondition {
         this.intLogger = intLogger;
         this.gson = gson;
         this.alertRequestUtility = alertRequestUtility;
-        this.startSearchTime = startSearchTime;
+        this.startSearchTime = DateUtils.fromInstantUTC(startSearchTime.toInstant(ZoneOffset.UTC));
         this.numberOfExpectedNotifications = numberOfExpectedNotifications;
         this.expectedJobIds = expectedJobIds;
     }
@@ -73,7 +73,12 @@ public class ProcessingCompleteWaitJobTask implements WaitJobCondition {
             .map(Long::intValue)
             .reduce(0, Integer::sum);
 
-        intLogger.info(String.format("Performance: Found %s notifications, expected %s. ", totalNotifications, numberOfExpectedNotifications));
+        intLogger.info(String.format(
+            "Performance: Found %s notifications, expected %s after time: %s. ",
+            totalNotifications,
+            numberOfExpectedNotifications,
+            DateUtils.formatDateAsJsonString(startSearchTime)
+        ));
 
         boolean expectedNotifications = totalNotifications >= numberOfExpectedNotifications;
 
@@ -99,6 +104,7 @@ public class ProcessingCompleteWaitJobTask implements WaitJobCondition {
                 .stream()
                 .filter(jobStatusDiagnosticModel -> expectedJobIds.contains(jobStatusDiagnosticModel.getJobConfigId().toString()))
                 .allMatch(this::isAfterSearchTime);
+            intLogger.info(String.format("Performance: allJobsHaveRun: %s executingJobsEmpty: %s allQueuesEmpty: %s", allJobsHaveRun, allExecutingJobsEmpty, allQueuesEmpty));
 
             return allJobsHaveRun && allExecutingJobsEmpty && allQueuesEmpty;
         }
@@ -107,8 +113,7 @@ public class ProcessingCompleteWaitJobTask implements WaitJobCondition {
 
     private boolean isAfterSearchTime(CompletedJobDiagnosticModel jobStatusDiagnosticModel) {
         try {
-            return DateUtils.parseDateFromJsonString(jobStatusDiagnosticModel.getLastRun()).isAfter(DateUtils.fromInstantUTC(startSearchTime.toInstant(
-                ZoneOffset.UTC)));
+            return DateUtils.parseDateFromJsonString(jobStatusDiagnosticModel.getLastRun()).isAfter(startSearchTime);
         } catch (ParseException e) {
             return false;
         }
@@ -135,7 +140,6 @@ public class ProcessingCompleteWaitJobTask implements WaitJobCondition {
 
     private void logDiagnostics(DiagnosticModel diagnosticModel) {
         NotificationDiagnosticModel notificationDiagnosticModel = diagnosticModel.getNotificationDiagnosticModel();
-        AuditDiagnosticModel auditDiagnosticModel = diagnosticModel.getAuditDiagnosticModel();
         RabbitMQDiagnosticModel rabbitMQDiagnosticModel = diagnosticModel.getRabbitMQDiagnosticModel();
         CompletedJobsDiagnosticModel completedJobsDiagnosticModel = diagnosticModel.getCompletedJobsDiagnosticModel();
         JobExecutionsDiagnosticModel executingJobsModel = diagnosticModel.getJobExecutionsDiagnosticModel();
@@ -143,11 +147,10 @@ public class ProcessingCompleteWaitJobTask implements WaitJobCondition {
         intLogger.info(String.format("Diagnostic Info: %s", diagnosticModel.getRequestTimestamp()));
         intLogger.info("Performance: Notification Diagnostics");
         intLogger.info(String.format("Total # Notifications: %s", notificationDiagnosticModel.getNumberOfNotifications()));
-        intLogger.info("Performance: RabbitMQ Diagnostics");
+        intLogger.trace("Performance: RabbitMQ Diagnostics");
         rabbitMQDiagnosticModel.getQueues().forEach(queueInformation ->
-            intLogger.info(String.format("Queue Name: %s, Message Count: %s", queueInformation.getName(), queueInformation.getMessageCount()))
+            intLogger.trace(String.format("Queue Name: %s, Message Count: %s", queueInformation.getName(), queueInformation.getMessageCount()))
         );
-        intLogger.info("Performance: RabbitMQ Diagnostics");
         intLogger.info("Performance: Job Diagnostics");
         completedJobsDiagnosticModel.getCompletedJobs()
             .forEach(jobStatus -> {
@@ -192,6 +195,5 @@ public class ProcessingCompleteWaitJobTask implements WaitJobCondition {
                 intLogger.info(String.format(
                     "Job: %s average time: %s", jobDiagnostics.getJobName(), jobDiagnostics.getDurations().getJobDuration()));
             });
-        auditDiagnosticModel.getAverageAuditTime().ifPresent(auditTime -> intLogger.info(String.format("Average audit time: %s", auditTime)));
     }
 }

@@ -50,7 +50,8 @@ class JobNotificationMapper2Test {
             "",
             OffsetDateTime.now(),
             OffsetDateTime.now(),
-            false
+            false,
+            String.format("content-id-%s", UUID.randomUUID())
         );
         ProjectVersionNotificationContent projectVersionNotificationContent = new ProjectVersionNotificationContent();
 
@@ -82,7 +83,8 @@ class JobNotificationMapper2Test {
             "",
             OffsetDateTime.now(),
             OffsetDateTime.now(),
-            false
+            false,
+            String.format("content-id-%s", UUID.randomUUID())
         );
         ProjectVersionNotificationContent projectVersionNotificationContent = new ProjectVersionNotificationContent();
 
@@ -115,7 +117,8 @@ class JobNotificationMapper2Test {
             "",
             OffsetDateTime.now(),
             OffsetDateTime.now(),
-            false
+            false,
+            String.format("content-id-%s", UUID.randomUUID())
         );
         ProjectVersionNotificationContent projectVersionNotificationContent = new ProjectVersionNotificationContent();
 
@@ -149,7 +152,8 @@ class JobNotificationMapper2Test {
             "",
             OffsetDateTime.now(),
             OffsetDateTime.now(),
-            false
+            false,
+            String.format("content-id-%s", UUID.randomUUID())
         );
         ProjectVersionNotificationContent projectVersionNotificationContent = new ProjectVersionNotificationContent();
 
@@ -183,7 +187,8 @@ class JobNotificationMapper2Test {
             "",
             OffsetDateTime.now(),
             OffsetDateTime.now(),
-            false
+            false,
+            String.format("content-id-%s", UUID.randomUUID())
         );
         ProjectVersionNotificationContent projectVersionNotificationContent = new ProjectVersionNotificationContent();
 
@@ -216,7 +221,8 @@ class JobNotificationMapper2Test {
             "",
             OffsetDateTime.now(),
             OffsetDateTime.now(),
-            false
+            false,
+            String.format("content-id-%s", UUID.randomUUID())
         );
         ProjectVersionNotificationContent projectVersionNotificationContent = new ProjectVersionNotificationContent();
 

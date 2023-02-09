@@ -416,7 +416,8 @@ public class JobNotificationMapperTestIT {
             "content",
             OffsetDateTime.now(),
             OffsetDateTime.now(),
-            false
+            false,
+            String.format("content-id-%s", UUID.randomUUID())
         );
     }
 

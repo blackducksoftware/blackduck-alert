@@ -10,6 +10,8 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.collections4.ListUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +24,7 @@ import com.synopsys.integration.alert.common.util.DateUtils;
 
 @Component
 public class ExecutingJobManager {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final Map<UUID, ExecutingJob> executingJobMap = new ConcurrentHashMap<>();
     private final JobExecutionStatusAccessor jobCompletionStatusAccessor;
 
@@ -31,12 +34,20 @@ public class ExecutingJobManager {
     }
 
     public ExecutingJob startJob(UUID jobConfigId, int totalNotificationCount) {
+        logger.debug("Starting job for config: {} ({} notifications)", jobConfigId, totalNotificationCount);
         ExecutingJob job = ExecutingJob.startJob(jobConfigId, totalNotificationCount);
         executingJobMap.putIfAbsent(job.getExecutionId(), job);
+        Optional<JobExecutionStatusModel> jobExecutionStatusModel = jobCompletionStatusAccessor.getJobExecutionStatus(jobConfigId);
+        if (jobExecutionStatusModel.isEmpty()) {
+            jobCompletionStatusAccessor.saveExecutionStatus(createEmptyStatusModel(jobConfigId));
+        }
+        logger.debug("Started job execution: {}", job.getExecutionId());
+
         return job;
     }
 
     public void endJobWithSuccess(UUID executionId, Instant endTime) {
+        logger.debug("Ending job execution with success {} at {}", executionId, DateUtils.formatDateAsJsonString(DateUtils.fromInstantUTC(endTime)));
         Optional<ExecutingJob> executingJob = Optional.ofNullable(executingJobMap.getOrDefault(executionId, null));
         executingJob.ifPresent(execution -> {
             execution.jobSucceeded(DateUtils.fromInstantUTC(endTime).toInstant());
@@ -46,6 +57,7 @@ public class ExecutingJobManager {
     }
 
     public void endJobWithFailure(UUID executionId, Instant endTime) {
+        logger.debug("Ending job execution with failure {} at {}", executionId, DateUtils.formatDateAsJsonString(DateUtils.fromInstantUTC(endTime)));
         Optional<ExecutingJob> executingJob = Optional.ofNullable(executingJobMap.getOrDefault(executionId, null));
         executingJob.ifPresent(execution -> {
             execution.jobFailed(DateUtils.fromInstantUTC(endTime).toInstant());
@@ -55,12 +67,16 @@ public class ExecutingJobManager {
     }
 
     public void incrementProcessedNotificationCount(UUID jobExecutionId, int notificationCount) {
+        logger.debug("Incrementing processed notifications for job execution {} by {} notification(s)", jobExecutionId, notificationCount);
         Optional<ExecutingJob> executingJob = getExecutingJob(jobExecutionId);
         executingJob.ifPresent(execution -> execution.updateNotificationCount(notificationCount));
     }
 
     public Optional<ExecutingJob> getExecutingJob(UUID jobExecutionId) {
-        return Optional.ofNullable(executingJobMap.getOrDefault(jobExecutionId, null));
+        if (executingJobMap.containsKey(jobExecutionId)) {
+            return Optional.of(executingJobMap.get(jobExecutionId));
+        }
+        return Optional.empty();
     }
 
     public AlertPagedModel<ExecutingJob> getExecutingJobs(int pageNumber, int pageSize) {
@@ -73,6 +89,7 @@ public class ExecutingJobManager {
     }
 
     public void startStage(UUID executionId, JobStage stage, Instant start) {
+        logger.debug("Starting stage {} for job execution {} at {}", stage, executionId, DateUtils.formatDateAsJsonString(DateUtils.fromInstantUTC(start)));
         Optional<ExecutingJob> executingJob = Optional.ofNullable(executingJobMap.getOrDefault(executionId, null));
         executingJob.ifPresent(job -> {
             job.addStage(ExecutingJobStage.createStage(executionId, stage, DateUtils.fromInstantUTC(start).toInstant()));
@@ -80,6 +97,7 @@ public class ExecutingJobManager {
     }
 
     public void endStage(UUID executionId, JobStage stage, Instant end) {
+        logger.debug("Ending stage {} for job execution {} at {}", stage, executionId, DateUtils.formatDateAsJsonString(DateUtils.fromInstantUTC(end)));
         Optional<ExecutingJob> executingJob = Optional.ofNullable(executingJobMap.getOrDefault(executionId, null));
         executingJob
             .flatMap(job -> job.getStage(stage))
@@ -87,15 +105,18 @@ public class ExecutingJobManager {
     }
 
     public void purgeJob(UUID executionId) {
+        logger.debug("Purging job execution {}", executionId);
         executingJobMap.remove(executionId);
     }
 
     public void incrementRemainingEvents(UUID jobExecutionId, int eventCount) {
+        logger.debug("Incrementing event count for job execution {} by {}", jobExecutionId, eventCount);
         getExecutingJob(jobExecutionId)
             .ifPresent(executingJob -> executingJob.incrementRemainingEventCount(eventCount));
     }
 
     public void decrementRemainingEvents(UUID jobExecutionId) {
+        logger.debug("Decrementing event count for job execution {}", jobExecutionId);
         getExecutingJob(jobExecutionId)
             .ifPresent(ExecutingJob::decrementRemainingEventCount);
     }
@@ -107,6 +128,7 @@ public class ExecutingJobManager {
     }
 
     public void incrementSentNotificationCount(UUID jobExecutionId, int notificationCount) {
+        logger.debug("Incrementing sent notification count for job execution {} by {}", jobExecutionId, notificationCount);
         Optional<ExecutingJob> executingJob = getExecutingJob(jobExecutionId);
         executingJob.ifPresent(execution -> execution.incrementNotificationsSentCount(notificationCount));
     }
@@ -118,6 +140,19 @@ public class ExecutingJobManager {
         Long totalJobs = Long.valueOf(executingJobMap.size());
 
         return new AggregatedExecutionResults(totalJobs, pendingCount, successCount, failedJobs);
+    }
+
+    private JobExecutionStatusModel createEmptyStatusModel(UUID jobConfigId) {
+        return new JobExecutionStatusModel(
+            jobConfigId,
+            0L,
+            0L,
+            0L,
+            0L,
+            AuditEntryStatus.PENDING.name(),
+            DateUtils.createCurrentDateTimestamp(),
+            JobExecutionStatusDurations.empty()
+        );
     }
 
     private Long countSuccessfulJobs() {
@@ -156,8 +191,8 @@ public class ExecutingJobManager {
 
         return new JobExecutionStatusModel(
             jobConfigId,
-            Integer.valueOf(executingJob.getProcessedNotificationCount()).longValue(),
-            Integer.valueOf(executingJob.getProcessedNotificationCount()).longValue(),
+            Integer.valueOf(executingJob.getNotificationsSent()).longValue(),
+            Integer.valueOf(executingJob.getNotificationsSent()).longValue(),
             successCount,
             failureCount,
             jobStatus.name(),

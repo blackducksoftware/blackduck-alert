@@ -9,6 +9,7 @@ package com.synopsys.integration.alert.database.api;
 
 import java.time.OffsetDateTime;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -17,12 +18,15 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
@@ -38,6 +42,7 @@ import com.synopsys.integration.alert.database.notification.NotificationEntity;
 
 @Component
 public class DefaultNotificationAccessor implements NotificationAccessor {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     public static final String COLUMN_NAME_PROVIDER_CREATION_TIME = "providerCreationTime";
     private final NotificationContentRepository notificationContentRepository;
     private final AuditEntryRepository auditEntryRepository;
@@ -55,14 +60,28 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     }
 
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRED)
     public List<AlertNotificationModel> saveAllNotifications(Collection<AlertNotificationModel> notifications) {
-        List<NotificationEntity> entitiesToSave = notifications
-            .stream()
-            .map(this::fromModel)
-            .collect(Collectors.toList());
+        // prevent duplicates by filtering out any notifications that have the same hash of the url
+        //        List<NotificationEntity> entitiesToSave = notifications
+        //            .stream()
+        //            .map(this::fromModel)
+        //            .filter(entity -> !notificationContentRepository.existsByContentId(entity.getContentId()))
+        //            .collect(Collectors.toList());
 
-        return notificationContentRepository.saveAll(entitiesToSave)
+        List<NotificationEntity> entitiesToSave = new LinkedList<>();
+
+        for (AlertNotificationModel model : notifications) {
+            if (notificationContentRepository.existsByContentId(model.getContentId())) {
+                logger.info("Notification already exists for provider: {} contentId: {} content:{}", model.getProviderConfigId(), model.getContentId(), model.getContent());
+            } else {
+                entitiesToSave.add(fromModel(model));
+            }
+        }
+
+        logger.info("Converted {} models to entities to save.", entitiesToSave.size());
+
+        return notificationContentRepository.saveAllAndFlush(entitiesToSave)
             .stream()
             .map(this::toModel)
             .collect(Collectors.toList());
@@ -164,12 +183,28 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     }
 
     @Override
+    @Deprecated(since = "6.13.0")
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public AlertPagedModel<AlertNotificationModel> getFirstPageOfNotificationsNotProcessed(int pageSize) {
         int currentPage = 0;
         Sort.Order sortingOrder = Sort.Order.asc(COLUMN_NAME_PROVIDER_CREATION_TIME);
         PageRequest pageRequest = PageRequest.of(currentPage, pageSize, Sort.by(sortingOrder));
         Page<AlertNotificationModel> pageOfNotifications = notificationContentRepository.findByProcessedFalseOrderByProviderCreationTimeAsc(pageRequest)
+            .map(this::toModel);
+        List<AlertNotificationModel> alertNotificationModels = pageOfNotifications.getContent();
+        return new AlertPagedModel<>(pageOfNotifications.getTotalPages(), currentPage, pageSize, alertNotificationModels);
+    }
+
+    @Override
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
+    public AlertPagedModel<AlertNotificationModel> getFirstPageOfNotificationsNotProcessed(long providerConfigId, int pageSize) {
+        int currentPage = 0;
+        Sort.Order sortingOrder = Sort.Order.asc(COLUMN_NAME_PROVIDER_CREATION_TIME);
+        PageRequest pageRequest = PageRequest.of(currentPage, pageSize, Sort.by(sortingOrder));
+        Page<AlertNotificationModel> pageOfNotifications = notificationContentRepository.findByProviderConfigIdAndProcessedFalseOrderByProviderCreationTimeAsc(
+                providerConfigId,
+                pageRequest
+            )
             .map(this::toModel);
         List<AlertNotificationModel> alertNotificationModels = pageOfNotifications.getContent();
         return new AlertPagedModel<>(pageOfNotifications.getTotalPages(), currentPage, pageSize, alertNotificationModels);
@@ -193,9 +228,16 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     }
 
     @Override
+    @Deprecated(since = "6.13.0")
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public boolean hasMoreNotificationsToProcess() {
         return notificationContentRepository.existsByProcessedFalse();
+    }
+
+    @Override
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
+    public boolean hasMoreNotificationsToProcess(long providerConfigId) {
+        return notificationContentRepository.existsByProviderConfigIdAndProcessedFalse(providerConfigId);
     }
 
     private List<AlertNotificationModel> toModels(List<NotificationEntity> notificationEntities) {
@@ -206,7 +248,17 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     }
 
     private NotificationEntity fromModel(AlertNotificationModel model) {
-        return new NotificationEntity(model.getId(), model.getCreatedAt(), model.getProvider(), model.getProviderConfigId(), model.getProviderCreationTime(), model.getNotificationType(), model.getContent(), model.getProcessed());
+        return new NotificationEntity(
+            model.getId(),
+            model.getCreatedAt(),
+            model.getProvider(),
+            model.getProviderConfigId(),
+            model.getProviderCreationTime(),
+            model.getNotificationType(),
+            model.getContent(),
+            model.getProcessed(),
+            model.getContentId()
+        );
     }
 
     private AlertNotificationModel toModel(NotificationEntity entity) {
@@ -218,7 +270,8 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
                 .flatMap(ConfigurationFieldModel::getFieldValue)
                 .orElse(providerConfigName);
         }
-        return new AlertNotificationModel(entity.getId(),
+        return new AlertNotificationModel(
+            entity.getId(),
             providerConfigId,
             entity.getProvider(),
             providerConfigName,
@@ -226,7 +279,9 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
             entity.getContent(),
             entity.getCreatedAt(),
             entity.getProviderCreationTime(),
-            entity.getProcessed());
+            entity.getProcessed(),
+            entity.getContentId()
+        );
     }
 
 }
