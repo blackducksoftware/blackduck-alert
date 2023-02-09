@@ -18,6 +18,7 @@ import org.mockito.Mockito;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.rest.ChannelRestConnectionFactory;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.slack.ChannelITTestAssertions;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
@@ -34,12 +35,14 @@ class SlackChannelTestIT {
     private Gson gson;
     private TestProperties properties;
     private EventManager eventManager;
+    private ExecutingJobManager executingJobManager;
 
     @BeforeEach
     public void init() {
         gson = new Gson();
         properties = new TestProperties();
         eventManager = Mockito.mock(EventManager.class);
+        executingJobManager = Mockito.mock(ExecutingJobManager.class);
     }
 
     @Test
@@ -53,7 +56,7 @@ class SlackChannelTestIT {
         ChannelRestConnectionFactory connectionFactory = createConnectionFactory();
         SlackChannelMessageSender slackChannelMessageSender = new SlackChannelMessageSender(ChannelKeys.SLACK, connectionFactory);
 
-        SlackChannel slackChannel = new SlackChannel(slackChannelMessageConverter, slackChannelMessageSender, eventManager);
+        SlackChannel slackChannel = new SlackChannel(slackChannelMessageConverter, slackChannelMessageSender, eventManager, executingJobManager);
 
         SlackJobDetailsModel distributionDetails = new SlackJobDetailsModel(
             null,

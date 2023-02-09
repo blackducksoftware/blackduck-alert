@@ -12,6 +12,7 @@ import org.mockito.Mockito;
 import com.synopsys.integration.alert.api.channel.convert.AbstractChannelMessageConverter;
 import com.synopsys.integration.alert.api.channel.convert.ChannelMessageFormatter;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
@@ -24,11 +25,12 @@ class MessageBoardChannelTest {
     void distributeMessagesTest() throws AlertException {
         MessageResult expectedResult = new MessageResult("Test result");
         EventManager eventManager = Mockito.mock(EventManager.class);
+        ExecutingJobManager executingJobManager = Mockito.mock(ExecutingJobManager.class);
         DistributionJobDetailsModel testDetails = new DistributionJobDetailsModel(null, null) {};
 
         AbstractChannelMessageConverter<DistributionJobDetailsModel, Object> converter = createConverter();
         ChannelMessageSender<DistributionJobDetailsModel, Object, MessageResult> sender = (x, y) -> expectedResult;
-        MessageBoardChannel<DistributionJobDetailsModel, Object> messageBoardChannel = new MessageBoardChannel<>(converter, sender, eventManager) {};
+        MessageBoardChannel<DistributionJobDetailsModel, Object> messageBoardChannel = new MessageBoardChannel<>(converter, sender, eventManager, executingJobManager) {};
 
         MessageResult testResult = messageBoardChannel.distributeMessages(testDetails, ProviderMessageHolder.empty(), "jobName", UUID.randomUUID(), UUID.randomUUID(), Set.of());
         assertEquals(expectedResult, testResult);

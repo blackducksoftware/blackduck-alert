@@ -17,6 +17,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.rest.ChannelRestConnectionFactory;
 import com.synopsys.integration.alert.api.distribution.audit.AuditFailedEvent;
 import com.synopsys.integration.alert.api.distribution.audit.AuditSuccessEvent;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.persistence.accessor.SlackJobDetailsAccessor;
@@ -46,15 +47,17 @@ class SlackDistributionEventHandlerTest {
 
     private final Gson gson = new Gson();
     private EventManager eventManager;
+    private ExecutingJobManager executingJobManager;
 
     @BeforeEach
     public void init() throws IOException {
         eventManager = Mockito.mock(EventManager.class);
+        executingJobManager = Mockito.mock(ExecutingJobManager.class);
         MarkupEncoderUtil markupEncoderUtil = new MarkupEncoderUtil();
         SlackChannelMessageFormatter slackChannelMessageFormatter = new SlackChannelMessageFormatter(markupEncoderUtil);
         SlackChannelMessageConverter slackChannelMessageConverter = new SlackChannelMessageConverter(slackChannelMessageFormatter);
         SlackChannelMessageSender slackChannelMessageSender = new SlackChannelMessageSender(ChannelKeys.SLACK, createConnectionFactory());
-        SlackChannel slackChannel = new SlackChannel(slackChannelMessageConverter, slackChannelMessageSender, eventManager);
+        SlackChannel slackChannel = new SlackChannel(slackChannelMessageConverter, slackChannelMessageSender, eventManager, executingJobManager);
         mockSlackServer.start();
         String url = mockSlackServer.url("/").toString();
 

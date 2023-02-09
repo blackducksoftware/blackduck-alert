@@ -73,7 +73,10 @@ public class ExecutingJobManager {
     }
 
     public Optional<ExecutingJob> getExecutingJob(UUID jobExecutionId) {
-        return Optional.ofNullable(executingJobMap.getOrDefault(jobExecutionId, null));
+        if (executingJobMap.containsKey(jobExecutionId)) {
+            return Optional.of(executingJobMap.get(jobExecutionId));
+        }
+        return Optional.empty();
     }
 
     public AlertPagedModel<ExecutingJob> getExecutingJobs(int pageNumber, int pageSize) {
