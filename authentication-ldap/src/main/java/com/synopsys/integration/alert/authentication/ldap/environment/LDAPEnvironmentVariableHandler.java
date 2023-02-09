@@ -108,7 +108,7 @@ public class LDAPEnvironmentVariableHandler extends EnvironmentVariableHandler<L
             builder.addVariableValue(LDAP_MANAGER_DN_KEY, obfuscatedConfigModel.getManagerDn());
         }
 
-        if (obfuscatedConfigModel.getIsManagerPasswordSet()) {
+        if (Boolean.TRUE.equals(obfuscatedConfigModel.getIsManagerPasswordSet())) {
             builder.addVariableValue(LDAP_MANAGER_PASSWORD_KEY, AlertConstants.MASKED_VALUE);
         }
 
