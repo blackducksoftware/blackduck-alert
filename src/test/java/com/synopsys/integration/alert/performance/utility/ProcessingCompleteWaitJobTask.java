@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.component.diagnostic.model.AlertQueueInformation;
-import com.synopsys.integration.alert.component.diagnostic.model.AuditDiagnosticModel;
 import com.synopsys.integration.alert.component.diagnostic.model.CompletedJobDiagnosticModel;
 import com.synopsys.integration.alert.component.diagnostic.model.CompletedJobDurationDiagnosticModel;
 import com.synopsys.integration.alert.component.diagnostic.model.CompletedJobsDiagnosticModel;
@@ -141,7 +140,6 @@ public class ProcessingCompleteWaitJobTask implements WaitJobCondition {
 
     private void logDiagnostics(DiagnosticModel diagnosticModel) {
         NotificationDiagnosticModel notificationDiagnosticModel = diagnosticModel.getNotificationDiagnosticModel();
-        AuditDiagnosticModel auditDiagnosticModel = diagnosticModel.getAuditDiagnosticModel();
         RabbitMQDiagnosticModel rabbitMQDiagnosticModel = diagnosticModel.getRabbitMQDiagnosticModel();
         CompletedJobsDiagnosticModel completedJobsDiagnosticModel = diagnosticModel.getCompletedJobsDiagnosticModel();
         JobExecutionsDiagnosticModel executingJobsModel = diagnosticModel.getJobExecutionsDiagnosticModel();
@@ -149,11 +147,10 @@ public class ProcessingCompleteWaitJobTask implements WaitJobCondition {
         intLogger.info(String.format("Diagnostic Info: %s", diagnosticModel.getRequestTimestamp()));
         intLogger.info("Performance: Notification Diagnostics");
         intLogger.info(String.format("Total # Notifications: %s", notificationDiagnosticModel.getNumberOfNotifications()));
-        intLogger.info("Performance: RabbitMQ Diagnostics");
+        intLogger.trace("Performance: RabbitMQ Diagnostics");
         rabbitMQDiagnosticModel.getQueues().forEach(queueInformation ->
-            intLogger.info(String.format("Queue Name: %s, Message Count: %s", queueInformation.getName(), queueInformation.getMessageCount()))
+            intLogger.trace(String.format("Queue Name: %s, Message Count: %s", queueInformation.getName(), queueInformation.getMessageCount()))
         );
-        intLogger.info("Performance: RabbitMQ Diagnostics");
         intLogger.info("Performance: Job Diagnostics");
         completedJobsDiagnosticModel.getCompletedJobs()
             .forEach(jobStatus -> {
@@ -198,6 +195,5 @@ public class ProcessingCompleteWaitJobTask implements WaitJobCondition {
                 intLogger.info(String.format(
                     "Job: %s average time: %s", jobDiagnostics.getJobName(), jobDiagnostics.getDurations().getJobDuration()));
             });
-        auditDiagnosticModel.getAverageAuditTime().ifPresent(auditTime -> intLogger.info(String.format("Average audit time: %s", auditTime)));
     }
 }
