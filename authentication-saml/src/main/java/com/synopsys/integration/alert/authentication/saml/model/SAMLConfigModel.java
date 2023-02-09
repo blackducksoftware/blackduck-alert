@@ -3,16 +3,17 @@ package com.synopsys.integration.alert.authentication.saml.model;
 import com.synopsys.integration.alert.api.common.model.Obfuscated;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.model.ConfigWithMetadata;
+import org.apache.commons.lang.BooleanUtils;
 
 import java.util.Optional;
 
 public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SAMLConfigModel> {
-    private boolean enabled;
-    private boolean forceAuth;
+    private Boolean enabled;
+    private Boolean forceAuth;
     private String metadataUrl;
     private String metadataFilePath;
     private SAMLMetadataMode metadataMode;
-    private boolean wantAssertionsSigned;
+    private Boolean wantAssertionsSigned;
     private String encryptionCertFilePath;
     private String encryptionPrivateKeyFilePath;
     private String signingCertFilePath;
@@ -32,12 +33,12 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
         String id,
         String createdAt,
         String lastUpdated,
-        boolean enabled,
-        boolean forceAuth,
+        Boolean enabled,
+        Boolean forceAuth,
         String metadataUrl,
         String metadataFilePath,
         SAMLMetadataMode metadataMode,
-        boolean wantAssertionsSigned,
+        Boolean wantAssertionsSigned,
         String encryptionCertFilePath,
         String encryptionPrivateKeyFilePath,
         String signingCertFilePath,
@@ -82,12 +83,12 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
     }
 
     // Getters
-    public boolean getEnabled() {
-        return enabled;
+    public Boolean getEnabled() {
+        return BooleanUtils.toBoolean(enabled);
     }
 
-    public boolean getForceAuth() {
-        return forceAuth;
+    public Boolean getForceAuth() {
+        return BooleanUtils.toBoolean(forceAuth);
     }
 
     public Optional<String> getMetadataUrl() {
@@ -102,8 +103,8 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
         return Optional.ofNullable(metadataMode);
     }
 
-    public boolean getWantAssertionsSigned() {
-        return wantAssertionsSigned;
+    public Boolean getWantAssertionsSigned() {
+        return BooleanUtils.toBoolean(wantAssertionsSigned);
     }
 
     public Optional<String> getEncryptionCertFilePath() {
@@ -127,11 +128,11 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
     }
 
     // Setters
-    public void setEnabled(boolean enabled) {
+    public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
     }
 
-    public void setForceAuth(boolean forceAuth) {
+    public void setForceAuth(Boolean forceAuth) {
         this.forceAuth = forceAuth;
     }
 
