@@ -108,5 +108,4 @@ public class ApplicationConfiguration {
     public AuthorizationManager authorizationManager(RoleAccessor roleAccessor) {
         return new AuthorizationManager(roleAccessor);
     }
-
 }

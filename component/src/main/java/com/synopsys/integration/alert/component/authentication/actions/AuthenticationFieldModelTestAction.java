@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
-import org.springframework.security.saml.metadata.ExtendedMetadataDelegate;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
@@ -33,7 +32,6 @@ import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.component.authentication.security.saml.SAMLManager;
 import com.synopsys.integration.exception.IntegrationException;
 
 /**
@@ -45,12 +43,10 @@ import com.synopsys.integration.exception.IntegrationException;
 public class AuthenticationFieldModelTestAction extends FieldModelTestAction {
     private final Logger logger = LoggerFactory.getLogger(AuthenticationFieldModelTestAction.class);
     private final LdapManager ldapManager;
-    private final SAMLManager samlManager;
 
     @Autowired
-    public AuthenticationFieldModelTestAction(LdapManager ldapManager, SAMLManager samlManager) {
+    public AuthenticationFieldModelTestAction(LdapManager ldapManager) {
         this.ldapManager = ldapManager;
-        this.samlManager = samlManager;
     }
 
     @Override
@@ -68,10 +64,6 @@ public class AuthenticationFieldModelTestAction extends FieldModelTestAction {
 
         if (ldapEnabled) {
             performLdapTest(fieldModel, registeredFieldValues);
-        }
-
-        if (samlEnabled) {
-            performSAMLTest(registeredFieldValues);
         }
 
         return new MessageResult("Successfully tested authentication configuration.");
@@ -133,41 +125,6 @@ public class AuthenticationFieldModelTestAction extends FieldModelTestAction {
             fieldUtility.getStringOrEmpty(AuthenticationDescriptor.KEY_LDAP_GROUP_SEARCH_FILTER),
             fieldUtility.getStringOrEmpty(AuthenticationDescriptor.KEY_LDAP_GROUP_ROLE_ATTRIBUTE)
         );
-    }
-
-    private void performSAMLTest(FieldUtility registeredFieldValues) throws IntegrationException {
-        List<AlertFieldStatus> errors = new ArrayList<>();
-        Optional<String> registeredEntityId = registeredFieldValues.getString(AuthenticationDescriptor.KEY_SAML_ENTITY_ID);
-        if (registeredEntityId.isEmpty()) {
-            errors.add(AlertFieldStatus.error(AuthenticationDescriptor.KEY_SAML_ENTITY_ID, "Entity ID missing."));
-        }
-        logger.info("Testing SAML Metadata URL...");
-        try {
-            Optional<ExtendedMetadataDelegate> provider = samlManager.createHttpProvider(registeredFieldValues.getStringOrEmpty(AuthenticationDescriptor.KEY_SAML_METADATA_URL));
-            if (provider.isPresent()) {
-                ExtendedMetadataDelegate extendedMetadataDelegate = provider.get();
-                extendedMetadataDelegate.initialize();
-            }
-        } catch (Exception ex) {
-            logger.error("Testing SAML Metadata URL error: ", ex);
-            errors.add(AlertFieldStatus.error(AuthenticationDescriptor.KEY_SAML_METADATA_URL, ex.getMessage()));
-        }
-
-        logger.info("Testing SAML Metadata File...");
-        try {
-            Optional<ExtendedMetadataDelegate> provider = samlManager.createFileProvider();
-            if (provider.isPresent()) {
-                ExtendedMetadataDelegate extendedMetadataDelegate = provider.get();
-                extendedMetadataDelegate.initialize();
-            }
-        } catch (Exception ex) {
-            logger.error("Testing SAML Metadata File error: ", ex);
-            errors.add(AlertFieldStatus.error(AuthenticationDescriptor.KEY_SAML_METADATA_FILE, ex.getMessage()));
-        }
-        samlManager.initializeConfiguration();
-        if (!errors.isEmpty()) {
-            throw new AlertFieldException(errors);
-        }
     }
 
 }
