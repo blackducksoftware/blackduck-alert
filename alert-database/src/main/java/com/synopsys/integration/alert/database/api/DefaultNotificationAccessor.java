@@ -9,6 +9,7 @@ package com.synopsys.integration.alert.database.api;
 
 import java.time.OffsetDateTime;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -17,6 +18,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -39,6 +42,7 @@ import com.synopsys.integration.alert.database.notification.NotificationEntity;
 
 @Component
 public class DefaultNotificationAccessor implements NotificationAccessor {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     public static final String COLUMN_NAME_PROVIDER_CREATION_TIME = "providerCreationTime";
     private final NotificationContentRepository notificationContentRepository;
     private final AuditEntryRepository auditEntryRepository;
@@ -59,11 +63,23 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     @Transactional(propagation = Propagation.REQUIRED)
     public List<AlertNotificationModel> saveAllNotifications(Collection<AlertNotificationModel> notifications) {
         // prevent duplicates by filtering out any notifications that have the same hash of the url
-        List<NotificationEntity> entitiesToSave = notifications
-            .stream()
-            .map(this::fromModel)
-            .filter(entity -> !notificationContentRepository.existsByContentId(entity.getContentId()))
-            .collect(Collectors.toList());
+        //        List<NotificationEntity> entitiesToSave = notifications
+        //            .stream()
+        //            .map(this::fromModel)
+        //            .filter(entity -> !notificationContentRepository.existsByContentId(entity.getContentId()))
+        //            .collect(Collectors.toList());
+
+        List<NotificationEntity> entitiesToSave = new LinkedList<>();
+
+        for (AlertNotificationModel model : notifications) {
+            if (notificationContentRepository.existsByContentId(model.getContentId())) {
+                logger.info("Notification already exists for provider: {} contentId: {} content:{}", model.getProviderConfigId(), model.getContentId(), model.getContent());
+            } else {
+                entitiesToSave.add(fromModel(model));
+            }
+        }
+
+        logger.info("Converted {} models to entities to save.", entitiesToSave.size());
 
         return notificationContentRepository.saveAllAndFlush(entitiesToSave)
             .stream()
