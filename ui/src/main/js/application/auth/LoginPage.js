@@ -7,6 +7,7 @@ import SubmitButton from 'common/component/button/SubmitButton';
 import Header from 'common/component/Header';
 import { login } from 'store/actions/session';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import SamlLogin from './SamlLogin';
 
 class LoginPage extends Component {
     constructor(props) {
@@ -76,6 +77,10 @@ class LoginPage extends Component {
                                 </div>
                             </div>
                         </form>
+                        {/* { this.props.samlEnabled && (
+                            <SamlLogin />
+                        )} */}
+                        <SamlLogin />
                     </div>
                 </div>
             </div>
@@ -86,7 +91,8 @@ class LoginPage extends Component {
 LoginPage.propTypes = {
     login: PropTypes.func.isRequired,
     loggingIn: PropTypes.bool.isRequired,
-    errorMessage: PropTypes.string
+    errorMessage: PropTypes.string,
+    samlEnabled: PropTypes.bool
 };
 
 LoginPage.defaultProps = {
@@ -96,7 +102,8 @@ LoginPage.defaultProps = {
 // Redux mappings to be used later....
 const mapStateToProps = (state) => ({
     loggingIn: state.session.fetching,
-    errorMessage: state.session.errorMessage
+    errorMessage: state.session.errorMessage,
+    samlEnabled: state.session.samlEnabled
 });
 
 const mapDispatchToProps = (dispatch) => ({
