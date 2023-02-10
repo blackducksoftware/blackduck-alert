@@ -22,7 +22,7 @@ IconUtility.loadIconData();
 class App extends Component {
     componentDidMount() {
         this.props.verifyLogin();
-        // this.props.verifySaml();  // TODO: Change verifyLogin to present a button on enable that POSTs to /alert/saml2/authenticate/default
+        this.props.verifySaml();
     }
 
     render() {
@@ -34,7 +34,7 @@ class App extends Component {
             return <LogoutPage />;
         }
 
-        const contentPage = (this.props.loggedIn || this.props.samlEnabled) ? <MainPage /> : <LoginPage />;
+        const contentPage = (this.props.loggedIn) ? <MainPage /> : <LoginPage />;
 
         return (
             <div>

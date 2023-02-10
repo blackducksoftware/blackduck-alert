@@ -77,10 +77,8 @@ class LoginPage extends Component {
                                 </div>
                             </div>
                         </form>
-                        {/* { this.props.samlEnabled && (
-                            <SamlLogin />
-                        )} */}
-                        <SamlLogin />
+                        {this.props.samlEnabled
+                            && (<SamlLogin />)}
                     </div>
                 </div>
             </div>

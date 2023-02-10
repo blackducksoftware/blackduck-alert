@@ -94,7 +94,7 @@ export function verifySaml() {
         const ignoreSAML = extractIgnoreSAMLParam();
 
         dispatch(initializing());
-        fetch(`/alert/api/verify/saml?${PARAM_IGNORE_SAML}=${ignoreSAML}`, {
+        fetch('/alert/api/verify/saml', {
             credentials: 'same-origin'
         }).then((response) => {
             if (!response.ok) {
