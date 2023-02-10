@@ -23,7 +23,7 @@ import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
 public class LDAPEnvironmentVariableHandler extends EnvironmentVariableHandler<LDAPConfigModel> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public static final String HANDLER_NAME = "SAML Settings";
+    public static final String HANDLER_NAME = "LDAP Settings";
     public static final String ENVIRONMENT_VARIABLE_PREFIX = "ALERT_COMPONENT_AUTHENTICATION_SETTINGS_LDAP_";
 
     public static final String LDAP_AUTHENTICATION_TYPE_KEY = ENVIRONMENT_VARIABLE_PREFIX + "AUTHENTICATION_TYPE";
@@ -108,7 +108,7 @@ public class LDAPEnvironmentVariableHandler extends EnvironmentVariableHandler<L
             builder.addVariableValue(LDAP_MANAGER_DN_KEY, obfuscatedConfigModel.getManagerDn());
         }
 
-        if (obfuscatedConfigModel.getIsManagerPasswordSet()) {
+        if (Boolean.TRUE.equals(obfuscatedConfigModel.getIsManagerPasswordSet())) {
             builder.addVariableValue(LDAP_MANAGER_PASSWORD_KEY, AlertConstants.MASKED_VALUE);
         }
 

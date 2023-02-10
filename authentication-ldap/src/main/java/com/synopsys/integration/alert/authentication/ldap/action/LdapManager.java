@@ -64,7 +64,7 @@ public class LdapManager {
     public Optional<LdapAuthenticationProvider> createAuthProvider(LDAPConfigModel ldapConfigModel) throws AlertConfigurationException {
         try {
             Boolean ldapEnabled = ldapConfigModel.getEnabled();
-            if (!ldapEnabled) {
+            if (!Boolean.TRUE.equals(ldapEnabled)) {
                 return Optional.empty();
             }
             LdapContextSource ldapContextSource = new LdapContextSource();

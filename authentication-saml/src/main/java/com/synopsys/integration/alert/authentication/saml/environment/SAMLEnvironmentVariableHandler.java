@@ -1,5 +1,12 @@
 package com.synopsys.integration.alert.authentication.saml.environment;
 
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.authentication.saml.database.accessor.SAMLConfigAccessor;
@@ -9,13 +16,6 @@ import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.environment.EnvironmentProcessingResult;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandler;
 import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.util.Set;
 
 @Component
 public class SAMLEnvironmentVariableHandler extends EnvironmentVariableHandler<SAMLConfigModel> {
