@@ -46,7 +46,7 @@ public class SAMLEnvironmentVariableHandler extends EnvironmentVariableHandler<S
         SAMLConfigurationValidator validator,
         EnvironmentVariableUtility environmentVariableUtility
     ) {
-        super(HANDLER_NAME, SAML_CONFIGURATION_KEY_SET);
+        super(HANDLER_NAME, SAML_CONFIGURATION_KEY_SET, environmentVariableUtility);
         this.configAccessor = configAccessor;
         this.validator = validator;
         this.environmentVariableUtility = environmentVariableUtility;

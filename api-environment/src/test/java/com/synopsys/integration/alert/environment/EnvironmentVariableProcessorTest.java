@@ -69,7 +69,7 @@ class EnvironmentVariableProcessorTest {
         private EnvironmentProcessingResult updatedProperties;
 
         protected EnvironmentTestHandler(EnvironmentVariableUtility environmentVariableUtility) {
-            super(HANDLER_NAME, VARIABLE_NAMES);
+            super(HANDLER_NAME, VARIABLE_NAMES, environmentVariableUtility);
             this.environmentVariableUtility = environmentVariableUtility;
         }
 

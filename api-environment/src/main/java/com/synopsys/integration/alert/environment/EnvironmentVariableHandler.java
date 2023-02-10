@@ -20,10 +20,12 @@ public abstract class EnvironmentVariableHandler<T extends Obfuscated<T>> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final String name;
     private final Set<String> environmentVariableNames;
+    private final EnvironmentVariableUtility environmentVariableUtility;
 
-    protected EnvironmentVariableHandler(String name, Set<String> environmentVariableNames) {
+    protected EnvironmentVariableHandler(String name, Set<String> environmentVariableNames, EnvironmentVariableUtility environmentVariableUtility) {
         this.name = name;
         this.environmentVariableNames = environmentVariableNames;
+        this.environmentVariableUtility = environmentVariableUtility;
     }
 
     public String getName() {
@@ -34,9 +36,19 @@ public abstract class EnvironmentVariableHandler<T extends Obfuscated<T>> {
         return environmentVariableNames;
     }
 
+    private boolean doVariablesExistInEnvironment() {
+        for (String variableName : environmentVariableNames) {
+            if (environmentVariableUtility.getEnvironmentValue(variableName).isPresent()) {
+                return true;
+            }
+        }
+        logger.info("Did not find any environment variables configured for: {}", name);
+        return false;
+    }
+
     public EnvironmentProcessingResult updateFromEnvironment() {
         boolean configurationMissing = configurationMissingCheck();
-        if (configurationMissing) {
+        if (configurationMissing && doVariablesExistInEnvironment()) {
             T configurationModel = configureModel();
             ValidationResponseModel validationResponseModel = validateConfiguration(configurationModel);
             if (validationResponseModel.hasErrors()) {
