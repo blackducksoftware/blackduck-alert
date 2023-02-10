@@ -2,6 +2,7 @@ package com.synopsys.integration.alert.authentication.ldap.model;
 
 import java.util.Optional;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.api.common.model.Obfuscated;
@@ -96,7 +97,7 @@ public class LDAPConfigModel extends ConfigWithMetadata implements Obfuscated<LD
     }
 
     public Boolean getEnabled() {
-        return enabled;
+        return BooleanUtils.toBoolean(enabled);
     }
 
     public void setEnabled(Boolean enabled) {
@@ -128,7 +129,7 @@ public class LDAPConfigModel extends ConfigWithMetadata implements Obfuscated<LD
     }
 
     public Boolean getIsManagerPasswordSet() {
-        return isManagerPasswordSet;
+        return BooleanUtils.toBoolean(isManagerPasswordSet);
     }
 
     public void setIsManagerPasswordSet(Boolean managerPasswordSet) {
