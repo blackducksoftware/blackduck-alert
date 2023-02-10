@@ -56,23 +56,14 @@ const SamlLogin = () => {
 
     // Should redirect to Okta
     function authenticateSAML() {
-        const headersUtil = new HeaderUtilities();
-
-        const request = fetch('/alert/saml2/authenticate/default', {
-            credentials: 'same-origin',
-            headers: headersUtil.getHeaders()
-        });
-
-        request.then((response) => {
-            console.log('RESPONSE', response.json());
-        })
+        window.location.replace('/alert/saml2/authenticate/default');
     }
 
     return (
         <div className={classes.samlLoginContainer}>
             <div className={classes.separator}>Or</div>
             <div className={classes.samlLoginAction}>
-                <button className={classes.loginButton} type="button" onClick={() => authenticateSAML()}>
+                <button className={classes.loginButton} type="button" onClick={authenticateSAML}>
                     Login with SAML
                 </button>
             </div>
