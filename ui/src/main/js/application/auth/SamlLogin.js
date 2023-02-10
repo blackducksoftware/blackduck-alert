@@ -1,7 +1,6 @@
 import React from 'react';
-import * as PropTypes from 'prop-types';
+import { useDispatch } from 'react-redux';
 import { createUseStyles } from 'react-jss';
-import HeaderUtilities from 'common/util/HeaderUtilities';
 
 const useStyles = createUseStyles({
     samlLoginContainer: {
@@ -53,9 +52,10 @@ const useStyles = createUseStyles({
 
 const SamlLogin = () => {
     const classes = useStyles();
+    const dispatch = useDispatch();
 
     // Should redirect to Okta
-    function authenticateSAML() {
+    function handleClick() {
         window.location.replace('/alert/saml2/authenticate/default');
     }
 
@@ -63,19 +63,12 @@ const SamlLogin = () => {
         <div className={classes.samlLoginContainer}>
             <div className={classes.separator}>Or</div>
             <div className={classes.samlLoginAction}>
-                <button className={classes.loginButton} type="button" onClick={authenticateSAML}>
+                <button className={classes.loginButton} type="button" onClick={handleClick}>
                     Login with SAML
                 </button>
             </div>
         </div>
     );
 };
-
-// AzureBoardsForm.propTypes = {
-//     csrfToken: PropTypes.string.isRequired,
-//     errorHandler: PropTypes.object.isRequired,
-//     readonly: PropTypes.bool,
-//     displayTest: PropTypes.bool,
-// };
 
 export default SamlLogin;
