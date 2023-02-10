@@ -3,6 +3,7 @@ package com.synopsys.integration.alert.authentication.saml.model;
 import com.synopsys.integration.alert.api.common.model.Obfuscated;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.model.ConfigWithMetadata;
+import org.apache.commons.lang3.BooleanUtils;
 
 import java.util.Optional;
 
@@ -83,11 +84,11 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
 
     // Getters
     public Boolean getEnabled() {
-        return enabled;
+        return BooleanUtils.toBoolean(enabled);
     }
 
     public Boolean getForceAuth() {
-        return forceAuth;
+        return BooleanUtils.toBoolean(forceAuth);
     }
 
     public Optional<String> getMetadataUrl() {
@@ -103,7 +104,7 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
     }
 
     public Boolean getWantAssertionsSigned() {
-        return wantAssertionsSigned;
+        return BooleanUtils.toBoolean(wantAssertionsSigned);
     }
 
     public Optional<String> getEncryptionCertFilePath() {
