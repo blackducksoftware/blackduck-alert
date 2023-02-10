@@ -81,6 +81,20 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, displayTest, fileDelete, 
             delete formData.error;
             delete formData.path;
         }
+
+        // // HACKY Remove after testing on Michaels branch
+        if (!formData.forceAuth) { 
+            formData.forceAuth = false;
+        }
+
+        if (!formData.enabled) {
+            formData.enabled = false;
+        }
+
+        if (!formData.wantAssertionsSigned) { 
+            formData.wantAssertionsSigned = false;
+        }
+
         setFormData(formData);
         return ConfigurationRequestBuilder.createValidateRequest(samlRequestUrl, csrfToken, formData);
     }
@@ -95,12 +109,13 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, displayTest, fileDelete, 
                 deleteRequest={deleteData}
                 updateRequest={updateData}
                 createRequest={postData}
+                testRequest={handleValidation}
                 validateRequest={handleValidation}
                 displayDelete={formData.status !== 404}
                 errorHandler={errorHandler}
                 deleteLabel="Delete SAML Configuration"
                 submitLabel="Save SAML Configuration"
-                testLabel="Test SAML Configuration"
+                testLabel="Validate SAML Configuration"
             >
                 <CheckboxInput
                     id={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.enabled}
@@ -118,7 +133,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, displayTest, fileDelete, 
                     name={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.metadataMode}
                     label="SAML Identity Provider"
                     description="Select the type of SAML authentication."
-                    readOnly={!samlEnabled}
+                    readOnly={readonly}
                     onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
                     radioOptions={radioOptions}
                     checked={formData.metadataMode}
@@ -134,7 +149,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, displayTest, fileDelete, 
                                 name={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.metadataUrl}
                                 label="Identity Provider Metadata URL"
                                 description="The Metadata URL from the external Identity Provider."
-                                readOnly={!samlEnabled}
+                                readOnly={readonly}
                                 onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
                                 value={formData[AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.metadataUrl] || undefined}
                                 errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.metadataUrl)}
@@ -142,13 +157,13 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, displayTest, fileDelete, 
                             />
                             <LabeledField label={importBlackDuckSSOConfigLabel} description={importBlackDuckSSOConfigDescription}>
                                 <div className={classes.fillForm}>
-                                    <GeneralButton id="blackduck-sso-import-button" disabled={!samlEnabled} onClick={() => setShowBlackDuckSSOImportModal(true)}>Fill Form</GeneralButton>
+                                    <GeneralButton id="blackduck-sso-import-button" disabled={readonly} onClick={() => setShowBlackDuckSSOImportModal(true)}>Fill Form</GeneralButton>
                                 </div>
                             </LabeledField>
                             <BlackDuckSSOConfigImportModal
                                 label={importBlackDuckSSOConfigLabel}
                                 csrfToken={csrfToken}
-                                readOnly={readonly || !samlEnabled}
+                                readOnly={readonly}
                                 show={showBlackDuckSSOImportModal}
                                 onHide={() => setShowBlackDuckSSOImportModal(false)}
                                 initialSSOFieldData={formData}
@@ -165,7 +180,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, displayTest, fileDelete, 
                         fieldKey={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.metadataFilePath}
                         label="Identity Provider Metadata File"
                         description="The file to upload to the server containing the Metadata from the external Identity Provider."
-                        readOnly={!samlEnabled && !displayTest}
+                        readOnly={readonly}
                         permissions={{ read: fileRead, write: fileWrite, delete: fileDelete }}
                         onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
                         buttonLabel="Upload"
@@ -191,7 +206,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, displayTest, fileDelete, 
                     name={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.wantAssertionsSigned}
                     label="Sign Assertions"
                     description="If true, signature verification will be performed in SAML when communicating with server."
-                    readOnly={!samlEnabled}
+                    readOnly={readonly}
                     onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
                     isChecked={formData.wantAssertionsSigned}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.wantAssertionsSigned)}
@@ -202,7 +217,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, displayTest, fileDelete, 
                     name={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.forceAuth}
                     label="Force Auth"
                     description="If true, the forceAuthn flag is set to true in the SAML request to the IDP. Please check the IDP if this is supported."
-                    readOnly={!samlEnabled}
+                    readOnly={readonly}
                     onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
                     isChecked={formData.forceAuth}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.forceAuth)}
@@ -212,7 +227,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, displayTest, fileDelete, 
                     id="authentication-saml-advanced"
                     title="Advanced SAML Configuration"
                     expanded={false}
-                    isDisabled={!samlEnabled}
+                    isDisabled={readonly}
                 >
                     <UploadFileButtonField
                         id={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.encryptionCertFilePath}
@@ -220,7 +235,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, displayTest, fileDelete, 
                         fieldKey={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.encryptionCertFilePath}
                         label="Encryption Cert Metadata File"
                         description="Upload an Encryption type cert file to configure SAML."
-                        readOnly={!samlEnabled}
+                        readOnly={readonly}
                         permissions={{ read: fileRead, write: fileWrite, delete: fileDelete }}
                         onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
                         buttonLabel="Upload Metadata"
@@ -245,7 +260,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, displayTest, fileDelete, 
                         fieldKey={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.encryptionPrivateKeyFilePath}
                         label="Encryption Cert Private Key File"
                         description="Upload an Encryption private key file to configure SAML."
-                        readOnly={!samlEnabled}
+                        readOnly={readonly}
                         permissions={{ read: fileRead, write: fileWrite, delete: fileDelete }}
                         onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
                         buttonLabel="Upload Private Key"
@@ -271,7 +286,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, displayTest, fileDelete, 
                         fieldKey={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.signingCertFilePath}
                         label="Signing Cert Metadata File"
                         description="Upload a Signing type cert file to configure SAML."
-                        readOnly={!samlEnabled}
+                        readOnly={readonly}
                         permissions={{ read: fileRead, write: fileWrite, delete: fileDelete }}
                         onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
                         buttonLabel="Upload Metadata"
@@ -296,7 +311,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, displayTest, fileDelete, 
                         fieldKey={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.signingPrivateKeyFilePath}
                         label="Signing Cert Private Key File"
                         description="Upload a Signing private key file to configure SAML."
-                        readOnly={!samlEnabled}
+                        readOnly={readonly}
                         permissions={{ read: fileRead, write: fileWrite, delete: fileDelete }}
                         onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
                         buttonLabel="Upload Private Key"
@@ -322,7 +337,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, displayTest, fileDelete, 
                         fieldKey={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.verificationCertFilePath}
                         label="Verification Cert Metadata File"
                         description="Upload an Verification type cert file to configure SAML."
-                        readOnly={!samlEnabled}
+                        readOnly={readonly}
                         permissions={{ read: fileRead, write: fileWrite, delete: fileDelete }}
                         onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
                         buttonLabel="Upload Metadata"

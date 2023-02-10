@@ -21,7 +21,11 @@ const AuthenticationPageLayout = ({ csrfToken, errorHandler, readonly, displayTe
             />
             <Tabs defaultActiveKey={1} id="user-management-tabs">
                 <Tab eventKey={1} title="LDAP">
-                    <LdapForm />
+                    <LdapForm 
+                        csrfToken={csrfToken}
+                        readonly={readonly}
+                        errorHandler={errorHandler}
+                    />
                 </Tab>
                 <Tab eventKey={2} title="SAML">
                     <SamlForm
