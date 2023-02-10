@@ -67,7 +67,7 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
         for (AlertNotificationModel model : notifications) {
             if (notificationContentRepository.existsByContentId(model.getContentId())) {
                 logger.info("Notification already exists for provider: {} contentId: {}", model.getProviderConfigId(), model.getContentId());
-                logger.trace("Content: {}", model.getContent());
+                logger.debug("Content: {}", model.getContent());
             } else {
                 entitiesToSave.add(fromModel(model));
             }
