@@ -81,6 +81,20 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, displayTest, fileDelete, 
             delete formData.error;
             delete formData.path;
         }
+
+        // // HACKY Remove after testing on Michaels branch
+        if (!formData.forceAuth) { 
+            formData.forceAuth = false;
+        }
+
+        if (!formData.enabled) {
+            formData.enabled = false;
+        }
+
+        if (!formData.wantAssertionsSigned) { 
+            formData.wantAssertionsSigned = false;
+        }
+
         setFormData(formData);
         return ConfigurationRequestBuilder.createValidateRequest(samlRequestUrl, csrfToken, formData);
     }
@@ -95,12 +109,13 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, displayTest, fileDelete, 
                 deleteRequest={deleteData}
                 updateRequest={updateData}
                 createRequest={postData}
+                testRequest={handleValidation}
                 validateRequest={handleValidation}
                 displayDelete={formData.status !== 404}
                 errorHandler={errorHandler}
                 deleteLabel="Delete SAML Configuration"
                 submitLabel="Save SAML Configuration"
-                testLabel="Test SAML Configuration"
+                testLabel="Validate SAML Configuration"
             >
                 <CheckboxInput
                     id={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.enabled}
