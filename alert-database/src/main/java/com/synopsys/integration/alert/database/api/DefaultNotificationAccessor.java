@@ -231,6 +231,12 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
         return notificationContentRepository.existsByProviderConfigIdAndProcessedFalse(providerConfigId);
     }
 
+    @Override
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
+    public long countNotificationsByProviderAndType(long providerConfigId, String notificationType) {
+        return notificationContentRepository.countByProviderConfigIdAndNotificationType(providerConfigId, notificationType);
+    }
+
     private List<AlertNotificationModel> toModels(List<NotificationEntity> notificationEntities) {
         return notificationEntities
             .stream()

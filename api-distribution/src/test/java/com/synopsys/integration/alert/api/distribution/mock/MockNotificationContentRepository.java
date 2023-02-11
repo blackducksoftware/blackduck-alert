@@ -155,4 +155,14 @@ public class MockNotificationContentRepository extends MockRepositoryContainer<L
             .map(NotificationEntity::getContentId)
             .anyMatch(contentId::equals);
     }
+
+    @Override
+    public long countByProviderConfigIdAndNotificationType(long providerConfigId, String notificationType) {
+        Predicate<NotificationEntity> providerEqual = model -> model.getProviderConfigId().equals(providerConfigId);
+        Predicate<NotificationEntity> notificationTypeEqual = model -> model.getNotificationType().equals(notificationType);
+        return findAll()
+            .stream()
+            .filter(providerEqual.and(notificationTypeEqual))
+            .count();
+    }
 }

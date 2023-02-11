@@ -89,4 +89,6 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
     long countByProcessed(boolean processed);
 
     boolean existsByContentId(String contentId);
+
+    long countByProviderConfigIdAndNotificationType(long providerConfigId, String notificationType);
 }

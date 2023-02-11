@@ -95,7 +95,7 @@ class DefaultDiagnosticAccessorTest {
         Mockito.when(notificationContentRepository.count()).thenReturn(numberOfNotifications);
         Mockito.when(notificationContentRepository.countByProcessed(true)).thenReturn(numberOfNotificationsProcessed);
         Mockito.when(notificationContentRepository.countByProcessed(false)).thenReturn(numberOfNotificationsUnprocessed);
-        return new NotificationDiagnosticModel(numberOfNotifications, numberOfNotificationsProcessed, numberOfNotificationsUnprocessed);
+        return new NotificationDiagnosticModel(numberOfNotifications, numberOfNotificationsProcessed, numberOfNotificationsUnprocessed, List.of());
     }
 
     private AuditDiagnosticModel createAuditDiagnosticModel() {

@@ -164,6 +164,7 @@ public class IntegrationPerformanceTestRunner {
         }
 
         WaitJobCondition waitJobCondition = createWaitJobCondition(
+            blackDuckProviderID,
             Set.of(jobId),
             startingNotificationTime,
             numberOfExpectedAuditEntries
@@ -173,6 +174,7 @@ public class IntegrationPerformanceTestRunner {
 
     public PerformanceExecutionStatusModel testManyPolicyJobsToManyProjects(
         Set<String> jobIds,
+        String blackDuckProviderID,
         String policyName,
         int numberOfExpectedAuditEntries,
         boolean waitForAuditComplete
@@ -188,6 +190,7 @@ public class IntegrationPerformanceTestRunner {
         }
 
         WaitJobCondition waitJobCondition = createWaitJobCondition(
+            blackDuckProviderID,
             jobIds,
             startingNotificationTime,
             numberOfExpectedAuditEntries
@@ -238,10 +241,19 @@ public class IntegrationPerformanceTestRunner {
     }
 
     private WaitJobCondition createWaitJobCondition(
+        String blackDuckProviderId,
         Set<String> jobIds,
         LocalDateTime startingNotificationTime,
         int numberOfExpectedAuditEntries
     ) {
-        return new ProcessingCompleteWaitJobTask(intLogger, gson, alertRequestUtility, startingNotificationTime, numberOfExpectedAuditEntries, jobIds);
+        return new ProcessingCompleteWaitJobTask(
+            intLogger,
+            gson,
+            alertRequestUtility,
+            startingNotificationTime,
+            numberOfExpectedAuditEntries,
+            jobIds,
+            Long.valueOf(blackDuckProviderId)
+        );
     }
 }

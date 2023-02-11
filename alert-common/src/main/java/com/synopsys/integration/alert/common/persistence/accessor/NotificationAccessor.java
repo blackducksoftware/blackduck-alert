@@ -47,4 +47,6 @@ public interface NotificationAccessor {
 
     boolean hasMoreNotificationsToProcess(long providerConfigId);
 
+    long countNotificationsByProviderAndType(long providerConfigId, String notificationType);
+
 }
