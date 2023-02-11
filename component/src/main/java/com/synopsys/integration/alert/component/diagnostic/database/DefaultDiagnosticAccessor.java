@@ -115,7 +115,7 @@ public class DefaultDiagnosticAccessor implements DiagnosticAccessor {
         int pageSize = 100;
         int pageNumber = 0;
         AlertPagedModel<DistributionJobModel> page = jobAccessor.getPageOfJobs(pageNumber, pageSize);
-        while (page.getCurrentPage() <= page.getTotalPages()) {
+        while (page.getCurrentPage() < page.getTotalPages()) {
             providerConfigIds.addAll(page.getModels()
                 .stream()
                 .map(DistributionJobModel::getBlackDuckGlobalConfigId)
