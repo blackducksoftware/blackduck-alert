@@ -156,7 +156,7 @@ public class BlackDuckAccumulator extends ProviderTask {
         List<AlertNotificationModel> alertNotifications = convertToAlertNotificationModels(notifications);
         write(alertNotifications);
         Optional<OffsetDateTime> optionalNextSearchTime = computeLatestNotificationCreatedAtDate(alertNotifications)
-            .map(latestNotification -> latestNotification.minusSeconds(1));
+            .map(latestNotification -> latestNotification.minusNanos(1000000));
         if (optionalNextSearchTime.isPresent()) {
             OffsetDateTime nextSearchTime = optionalNextSearchTime.get();
             logger.info("Notifications found; the next search time will be: {}", nextSearchTime);
