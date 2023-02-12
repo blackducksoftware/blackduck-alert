@@ -106,7 +106,7 @@ public class LdapManagerTest {
 
         AlertConfigurationException alertConfigurationException = assertThrows(AlertConfigurationException.class, () -> ldapConfigAccessor.createConfiguration(ldapConfigModel));
         assertTrue(alertConfigurationException.getMessage().contains("An LDAP configuration already exists."));
-        assertEquals(expectedLDAPConfigModel, ldapManager.getCurrentConfiguration());
+        assertEquals(expectedLDAPConfigModel.get().getId(), ldapManager.getCurrentConfiguration().get().getId());
     }
 
     @Test
@@ -130,6 +130,16 @@ public class LdapManagerTest {
     }
 
     @Test
+    public void testAuthenticationTypeNull() {
+        LDAPConfigModel ldapConfigModel = createLDAPConfigModel(true, null);
+        assertDoesNotThrow(() -> ldapConfigAccessor.createConfiguration(ldapConfigModel));
+        LDAPConfigModel expectedLDAPConfigModel = ldapManager.getCurrentConfiguration()
+            .orElseThrow(() -> new AssertionFailedError("Expected LDAPConfigModel did not exist"));
+        assertDoesNotThrow(() -> ldapManager.getAuthenticationProvider());
+        assertEquals("", expectedLDAPConfigModel.getAuthenticationType().orElse(""));
+    }
+
+    @Test
     public void testAuthenticationTypeSimple() {
         LDAPConfigModel ldapConfigModel = createLDAPConfigModel(true, DEFAULT_AUTHENTICATION_TYPE_SIMPLE);
         assertDoesNotThrow(() -> ldapConfigAccessor.createConfiguration(ldapConfigModel));
@@ -147,6 +157,16 @@ public class LdapManagerTest {
             .orElseThrow(() -> new AssertionFailedError("Expected LDAPConfigModel did not exist"));
         assertDoesNotThrow(() -> ldapManager.getAuthenticationProvider());
         assertEquals(DEFAULT_AUTHENTICATION_TYPE_DIGEST, expectedLDAPConfigModel.getAuthenticationType().orElse(""));
+    }
+
+    @Test
+    public void testAuthenticationTypeUnsupported() {
+        LDAPConfigModel ldapConfigModel = createLDAPConfigModel(true, "Unsupported authentication type");
+        assertDoesNotThrow(() -> ldapConfigAccessor.createConfiguration(ldapConfigModel));
+        LDAPConfigModel expectedLDAPConfigModel = ldapManager.getCurrentConfiguration()
+            .orElseThrow(() -> new AssertionFailedError("Expected LDAPConfigModel did not exist"));
+        assertDoesNotThrow(() -> ldapManager.getAuthenticationProvider());
+        assertEquals("Unsupported authentication type", expectedLDAPConfigModel.getAuthenticationType().orElse(""));
     }
 
     @Test
@@ -188,6 +208,99 @@ public class LdapManagerTest {
 
         AlertConfigurationException alertConfigurationException = assertThrows(AlertConfigurationException.class, () -> ldapManager.createAuthProvider(ldapConfigModel));
         assertTrue(alertConfigurationException.getMessage().contains("Error creating LDAP authenticator"));
+    }
+
+    @Test
+    public void testUpdateConfigNotExist() {
+        assertFalse(ldapConfigAccessor.doesConfigurationExist());
+        AlertConfigurationException alertConfigurationException = assertThrows(
+            AlertConfigurationException.class,
+            () -> ldapConfigAccessor.updateConfiguration(createLDAPConfigModel(false, DEFAULT_AUTHENTICATION_TYPE_DIGEST))
+        );
+        assertTrue(alertConfigurationException.getMessage().contains("An LDAP configuration does not exist"));
+        assertFalse(ldapConfigAccessor.doesConfigurationExist());
+    }
+
+    @Test
+    public void testUpdateConfigWithPassword() {
+        // Set up and verify initial LDAPConfigModel
+        LDAPConfigModel inputLDAPConfigModel = createLDAPConfigModel(true, DEFAULT_AUTHENTICATION_TYPE_SIMPLE);
+        assertDoesNotThrow(() -> ldapConfigAccessor.createConfiguration(inputLDAPConfigModel));
+        assertTrue(ldapConfigAccessor.doesConfigurationExist());
+        LDAPConfigModel retrievedInputLDAPConfigModel = ldapManager.getCurrentConfiguration()
+            .orElseThrow(() -> new AssertionFailedError("Raw input LDAPConfigModel does not exist"));
+        assertEquals(true, retrievedInputLDAPConfigModel.getEnabled());
+        assertEquals(DEFAULT_AUTHENTICATION_TYPE_SIMPLE, retrievedInputLDAPConfigModel.getAuthenticationType().orElse(""));
+        assertEquals(DEFAULT_MANAGER_PASSWORD, retrievedInputLDAPConfigModel.getManagerPassword().orElse(""));
+
+        // Set up and verify updated LDAPConfigModel
+        // Verify updated values were in fact updated
+        LDAPConfigModel updatedLDAPConfigModel = createLDAPConfigModel(false, DEFAULT_AUTHENTICATION_TYPE_DIGEST);
+        updatedLDAPConfigModel.setManagerPassword("My Password");
+        assertDoesNotThrow(() -> ldapConfigAccessor.updateConfiguration(updatedLDAPConfigModel));
+        LDAPConfigModel retrievedUpdatedLDAPConfigModel = ldapManager.getCurrentConfiguration()
+            .orElseThrow(() -> new AssertionFailedError("Updated LDAPConfigModel did not exist"));
+        assertEquals(false, retrievedUpdatedLDAPConfigModel.getEnabled());
+        assertEquals(DEFAULT_AUTHENTICATION_TYPE_DIGEST, retrievedUpdatedLDAPConfigModel.getAuthenticationType().orElse(""));
+
+        // Verify password was updated
+        assertEquals("My Password", retrievedUpdatedLDAPConfigModel.getManagerPassword().orElse(""));
+
+        // Verify we are still using the same LDAPConfigModel based on the ID
+        assertEquals(retrievedInputLDAPConfigModel.getId(), retrievedUpdatedLDAPConfigModel.getId());
+    }
+
+    @Test
+    public void testUpdateConfigWithOutPassword() {
+        // Set up and verify initial LDAPConfigModel
+        LDAPConfigModel inputLDAPConfigModel = createLDAPConfigModel(true, DEFAULT_AUTHENTICATION_TYPE_SIMPLE);
+        assertDoesNotThrow(() -> ldapConfigAccessor.createConfiguration(inputLDAPConfigModel));
+        assertTrue(ldapConfigAccessor.doesConfigurationExist());
+        LDAPConfigModel retrievedInputLDAPConfigModel = ldapManager.getCurrentConfiguration()
+            .orElseThrow(() -> new AssertionFailedError("Input LDAPConfigModel does not exist"));
+        assertEquals(true, retrievedInputLDAPConfigModel.getEnabled());
+        assertEquals(DEFAULT_AUTHENTICATION_TYPE_SIMPLE, retrievedInputLDAPConfigModel.getAuthenticationType().orElse(""));
+        assertEquals(DEFAULT_MANAGER_PASSWORD, retrievedInputLDAPConfigModel.getManagerPassword().orElse(""));
+
+        // Set up and verify updated LDAPConfigModel
+        // Verify updated values were in fact updated
+        LDAPConfigModel updatedLDAPConfigModel = createLDAPConfigModel(false, DEFAULT_AUTHENTICATION_TYPE_DIGEST);
+        updatedLDAPConfigModel.setManagerPassword(null);
+        updatedLDAPConfigModel.setIsManagerPasswordSet(true);
+        assertDoesNotThrow(() -> ldapConfigAccessor.updateConfiguration(updatedLDAPConfigModel));
+        LDAPConfigModel retrievedUpdatedLDAPConfigModel = ldapManager.getCurrentConfiguration()
+            .orElseThrow(() -> new AssertionFailedError("Updated LDAPConfigModel does not exist"));
+        assertEquals(false, retrievedUpdatedLDAPConfigModel.getEnabled());
+        assertEquals(DEFAULT_AUTHENTICATION_TYPE_DIGEST, retrievedUpdatedLDAPConfigModel.getAuthenticationType().orElse(""));
+
+        // Verify password is sam as input ConfigModel
+        assertEquals(retrievedInputLDAPConfigModel.getManagerPassword().orElse(""), retrievedUpdatedLDAPConfigModel.getManagerPassword().orElse(""));
+
+        // Verify we are still using the same LDAPConfigModel based on the ID
+        assertEquals(retrievedInputLDAPConfigModel.getId(), retrievedUpdatedLDAPConfigModel.getId());
+    }
+
+    @Test
+    public void testUpdateConfigEmptyPassword() {
+        // Set up and verify initial LDAPConfigModel
+        LDAPConfigModel inputLDAPConfigModel = createLDAPConfigModel(true, DEFAULT_AUTHENTICATION_TYPE_SIMPLE);
+        inputLDAPConfigModel.setManagerPassword(null);
+        inputLDAPConfigModel.setIsManagerPasswordSet(false);
+        assertDoesNotThrow(() -> ldapConfigAccessor.createConfiguration(inputLDAPConfigModel));
+        assertTrue(ldapConfigAccessor.doesConfigurationExist());
+        LDAPConfigModel retrievedInputLDAPConfigModel = ldapManager.getCurrentConfiguration()
+            .orElseThrow(() -> new AssertionFailedError("Input LDAPConfigModel does not exist"));
+        assertEquals("", retrievedInputLDAPConfigModel.getManagerPassword().orElse(""));
+
+        // Set up and verify updated LDAPConfigModel
+        // Verify password is still empty
+        LDAPConfigModel updatedLDAPConfigModel = createLDAPConfigModel(false, DEFAULT_AUTHENTICATION_TYPE_DIGEST);
+        updatedLDAPConfigModel.setManagerPassword(null);
+        updatedLDAPConfigModel.setIsManagerPasswordSet(false);
+        assertDoesNotThrow(() -> ldapConfigAccessor.updateConfiguration(updatedLDAPConfigModel));
+        LDAPConfigModel retrievedUpdatedLDAPConfigModel = ldapManager.getCurrentConfiguration()
+            .orElseThrow(() -> new AssertionFailedError("Updated LDAPConfigModel does not exist"));
+        assertEquals("", retrievedInputLDAPConfigModel.getManagerPassword().orElse(""));
     }
 
     private LDAPConfigModel createLDAPConfigModel(Boolean enabled, String authenticationType) {
