@@ -102,7 +102,7 @@ public class ProcessingCompleteWaitJobTask implements WaitJobCondition {
             DateUtils.formatDateAsJsonString(startSearchTime)
         ));
 
-        boolean expectedNotifications = totalNotifications >= numberOfExpectedNotifications;
+        boolean expectedNotifications = totalNotifications >= totalProviderNotificationCounts;
 
         if (!expectedNotifications) {
             return false;
