@@ -62,25 +62,16 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public List<AlertNotificationModel> saveAllNotifications(Collection<AlertNotificationModel> notifications) {
-        // prevent duplicates by filtering out any notifications that have the same hash of the url
-        //        List<NotificationEntity> entitiesToSave = notifications
-        //            .stream()
-        //            .map(this::fromModel)
-        //            .filter(entity -> !notificationContentRepository.existsByContentId(entity.getContentId()))
-        //            .collect(Collectors.toList());
-
         List<NotificationEntity> entitiesToSave = new LinkedList<>();
 
         for (AlertNotificationModel model : notifications) {
             if (notificationContentRepository.existsByContentId(model.getContentId())) {
-                logger.info("Notification already exists for provider: {} contentId: {} content:{}", model.getProviderConfigId(), model.getContentId(), model.getContent());
+                logger.info("Notification already exists for provider: {} contentId: {}", model.getProviderConfigId(), model.getContentId());
+                logger.debug("Content: {}", model.getContent());
             } else {
                 entitiesToSave.add(fromModel(model));
             }
         }
-
-        logger.info("Converted {} models to entities to save.", entitiesToSave.size());
-
         return notificationContentRepository.saveAllAndFlush(entitiesToSave)
             .stream()
             .map(this::toModel)
@@ -238,6 +229,12 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public boolean hasMoreNotificationsToProcess(long providerConfigId) {
         return notificationContentRepository.existsByProviderConfigIdAndProcessedFalse(providerConfigId);
+    }
+
+    @Override
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
+    public long countNotificationsByProviderAndType(long providerConfigId, String notificationType) {
+        return notificationContentRepository.countByProviderConfigIdAndNotificationType(providerConfigId, notificationType);
     }
 
     private List<AlertNotificationModel> toModels(List<NotificationEntity> notificationEntities) {

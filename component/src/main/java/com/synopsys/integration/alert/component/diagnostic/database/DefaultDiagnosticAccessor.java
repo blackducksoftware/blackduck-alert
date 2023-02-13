@@ -8,9 +8,11 @@
 package com.synopsys.integration.alert.component.diagnostic.database;
 
 import java.time.LocalDateTime;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -43,12 +45,15 @@ import com.synopsys.integration.alert.component.diagnostic.model.JobExecutionDia
 import com.synopsys.integration.alert.component.diagnostic.model.JobExecutionsDiagnosticModel;
 import com.synopsys.integration.alert.component.diagnostic.model.JobStageDiagnosticModel;
 import com.synopsys.integration.alert.component.diagnostic.model.NotificationDiagnosticModel;
+import com.synopsys.integration.alert.component.diagnostic.model.NotificationTypeCount;
+import com.synopsys.integration.alert.component.diagnostic.model.ProviderNotificationCounts;
 import com.synopsys.integration.alert.component.diagnostic.model.RabbitMQDiagnosticModel;
 import com.synopsys.integration.alert.component.diagnostic.model.SystemDiagnosticModel;
 import com.synopsys.integration.alert.component.diagnostic.utility.RabbitMQDiagnosticUtility;
 import com.synopsys.integration.alert.database.api.StaticJobAccessor;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
+import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @Component
 public class DefaultDiagnosticAccessor implements DiagnosticAccessor {
@@ -101,7 +106,33 @@ public class DefaultDiagnosticAccessor implements DiagnosticAccessor {
         long numberOfNotifications = notificationContentRepository.count();
         long numberOfNotificationsProcessed = notificationContentRepository.countByProcessed(true);
         long numberOfNotificationsUnprocessed = notificationContentRepository.countByProcessed(false);
-        return new NotificationDiagnosticModel(numberOfNotifications, numberOfNotificationsProcessed, numberOfNotificationsUnprocessed);
+        List<ProviderNotificationCounts> providerNotificationCounts = getProviderNotificationCounts();
+        return new NotificationDiagnosticModel(numberOfNotifications, numberOfNotificationsProcessed, numberOfNotificationsUnprocessed, providerNotificationCounts);
+    }
+
+    private List<ProviderNotificationCounts> getProviderNotificationCounts() {
+        Set<Long> providerConfigIds = new LinkedHashSet<>();
+        int pageSize = 100;
+        int pageNumber = 0;
+        AlertPagedModel<DistributionJobModel> page = jobAccessor.getPageOfJobs(pageNumber, pageSize);
+        while (page.getCurrentPage() < page.getTotalPages()) {
+            providerConfigIds.addAll(page.getModels()
+                .stream()
+                .map(DistributionJobModel::getBlackDuckGlobalConfigId)
+                .collect(Collectors.toSet()));
+            pageNumber++;
+            page = jobAccessor.getPageOfJobs(pageNumber, pageSize);
+        }
+        List<ProviderNotificationCounts> providerCounts = new LinkedList<>();
+        for (Long providerConfigId : providerConfigIds) {
+            List<NotificationTypeCount> notificationTypeCounts = new LinkedList<>();
+            for (NotificationType notificationType : NotificationType.values()) {
+                long count = notificationContentRepository.countByProviderConfigIdAndNotificationType(providerConfigId, notificationType.name());
+                notificationTypeCounts.add(new NotificationTypeCount(notificationType, count));
+            }
+            providerCounts.add(new ProviderNotificationCounts(providerConfigId, notificationTypeCounts));
+        }
+        return providerCounts;
     }
 
     private AuditDiagnosticModel getAuditDiagnosticInfo() {

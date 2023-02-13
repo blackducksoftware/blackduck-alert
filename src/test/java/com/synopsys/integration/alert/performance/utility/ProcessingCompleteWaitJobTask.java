@@ -4,6 +4,8 @@ import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -18,7 +20,10 @@ import com.synopsys.integration.alert.component.diagnostic.model.CompletedJobsDi
 import com.synopsys.integration.alert.component.diagnostic.model.DiagnosticModel;
 import com.synopsys.integration.alert.component.diagnostic.model.JobExecutionsDiagnosticModel;
 import com.synopsys.integration.alert.component.diagnostic.model.NotificationDiagnosticModel;
+import com.synopsys.integration.alert.component.diagnostic.model.NotificationTypeCount;
+import com.synopsys.integration.alert.component.diagnostic.model.ProviderNotificationCounts;
 import com.synopsys.integration.alert.component.diagnostic.model.RabbitMQDiagnosticModel;
+import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
@@ -33,6 +38,7 @@ public class ProcessingCompleteWaitJobTask implements WaitJobCondition {
     private final OffsetDateTime startSearchTime;
     private final int numberOfExpectedNotifications;
     private final Set<String> expectedJobIds;
+    private final Long blackduckProviderConfigId;
 
     public ProcessingCompleteWaitJobTask(
         IntLogger intLogger,
@@ -40,7 +46,8 @@ public class ProcessingCompleteWaitJobTask implements WaitJobCondition {
         AlertRequestUtility alertRequestUtility,
         LocalDateTime startSearchTime,
         int numberOfExpectedNotifications,
-        Set<String> expectedJobIds
+        Set<String> expectedJobIds,
+        Long blackduckProviderConfigId
     ) {
         this.intLogger = intLogger;
         this.gson = gson;
@@ -48,6 +55,7 @@ public class ProcessingCompleteWaitJobTask implements WaitJobCondition {
         this.startSearchTime = DateUtils.fromInstantUTC(startSearchTime.toInstant(ZoneOffset.UTC));
         this.numberOfExpectedNotifications = numberOfExpectedNotifications;
         this.expectedJobIds = expectedJobIds;
+        this.blackduckProviderConfigId = blackduckProviderConfigId;
     }
 
     @Override
@@ -73,14 +81,28 @@ public class ProcessingCompleteWaitJobTask implements WaitJobCondition {
             .map(Long::intValue)
             .reduce(0, Integer::sum);
 
+        List<NotificationTypeCount> notificationTypeCounts = diagnosticModel.getNotificationDiagnosticModel()
+            .getProviderNotificationCounts()
+            .stream()
+            .filter(providerNotificationCounts -> providerNotificationCounts.getProviderConfigId() == blackduckProviderConfigId)
+            .map(ProviderNotificationCounts::getNotificationCounts)
+            .flatMap(Collection::stream)
+            .collect(Collectors.toList());
+
+        long totalProviderNotificationCounts = notificationTypeCounts
+            .stream()
+            .filter(notificationTypeCount -> NotificationType.RULE_VIOLATION.equals(notificationTypeCount.getNotificationType()))
+            .map(NotificationTypeCount::getCount)
+            .reduce(0L, Long::sum);
+
         intLogger.info(String.format(
             "Performance: Found %s notifications, expected %s after time: %s. ",
             totalNotifications,
-            numberOfExpectedNotifications,
+            totalProviderNotificationCounts,
             DateUtils.formatDateAsJsonString(startSearchTime)
         ));
 
-        boolean expectedNotifications = totalNotifications >= numberOfExpectedNotifications;
+        boolean expectedNotifications = totalNotifications >= totalProviderNotificationCounts;
 
         if (!expectedNotifications) {
             return false;

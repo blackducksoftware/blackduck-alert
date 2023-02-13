@@ -142,6 +142,16 @@ public class MockProcessingNotificationAccessor implements NotificationAccessor 
             .anyMatch(AlertNotificationModel::getProcessed);
     }
 
+    @Override
+    public long countNotificationsByProviderAndType(long providerConfigId, String notificationType) {
+        Predicate<AlertNotificationModel> providerEqual = model -> model.getProviderConfigId().equals(providerConfigId);
+        Predicate<AlertNotificationModel> notificationTypeEqual = model -> model.getNotificationType().equals(notificationType);
+        return alertNotificationModels
+            .stream()
+            .filter(providerEqual.and(notificationTypeEqual))
+            .count();
+    }
+
     //AlertNotificationModel is immutable, this is a workaround for the unit test to set "processed" to true.
     private AlertNotificationModel createProcessedAlertNotificationModel(AlertNotificationModel alertNotificationModel) {
         return new AlertNotificationModel(
