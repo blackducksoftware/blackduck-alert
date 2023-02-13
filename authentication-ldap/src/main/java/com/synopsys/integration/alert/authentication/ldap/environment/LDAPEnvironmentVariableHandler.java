@@ -23,7 +23,7 @@ import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
 public class LDAPEnvironmentVariableHandler extends EnvironmentVariableHandler<LDAPConfigModel> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public static final String HANDLER_NAME = "SAML Settings";
+    public static final String HANDLER_NAME = "LDAP Settings";
     public static final String ENVIRONMENT_VARIABLE_PREFIX = "ALERT_COMPONENT_AUTHENTICATION_SETTINGS_LDAP_";
 
     public static final String LDAP_AUTHENTICATION_TYPE_KEY = ENVIRONMENT_VARIABLE_PREFIX + "AUTHENTICATION_TYPE";
@@ -99,20 +99,18 @@ public class LDAPEnvironmentVariableHandler extends EnvironmentVariableHandler<L
     protected EnvironmentProcessingResult buildProcessingResult(LDAPConfigModel obfuscatedConfigModel) {
         EnvironmentProcessingResult.Builder builder = new EnvironmentProcessingResult.Builder(LDAP_CONFIGURATION_KEY_SET);
 
-        obfuscatedConfigModel.getEnabled()
-            .map(String::valueOf)
-            .ifPresent(value -> builder.addVariableValue(LDAP_ENABLED_KEY, value));
+        builder.addVariableValue(LDAP_ENABLED_KEY, String.valueOf(obfuscatedConfigModel.getEnabled()));
 
-        if (StringUtils.isNotBlank(obfuscatedConfigModel.getManagerDn())) {
-            builder.addVariableValue(LDAP_MANAGER_DN_KEY, obfuscatedConfigModel.getManagerDn());
-        }
         if (StringUtils.isNotBlank(obfuscatedConfigModel.getServerName())) {
             builder.addVariableValue(LDAP_SERVER_KEY, obfuscatedConfigModel.getServerName());
         }
+        if (StringUtils.isNotBlank(obfuscatedConfigModel.getManagerDn())) {
+            builder.addVariableValue(LDAP_MANAGER_DN_KEY, obfuscatedConfigModel.getManagerDn());
+        }
 
-        obfuscatedConfigModel.getIsManagerPasswordSet()
-            .filter(Boolean::booleanValue)
-            .ifPresent(ignored -> builder.addVariableValue(LDAP_MANAGER_PASSWORD_KEY, AlertConstants.MASKED_VALUE));
+        if (Boolean.TRUE.equals(obfuscatedConfigModel.getIsManagerPasswordSet())) {
+            builder.addVariableValue(LDAP_MANAGER_PASSWORD_KEY, AlertConstants.MASKED_VALUE);
+        }
 
         obfuscatedConfigModel.getAuthenticationType()
             .ifPresent(value -> builder.addVariableValue(LDAP_AUTHENTICATION_TYPE_KEY, value));

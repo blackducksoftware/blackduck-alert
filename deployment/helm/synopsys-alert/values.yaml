@@ -3,6 +3,7 @@
 # Declare variables to be passed into your templates.
 
 registry: "docker.io/blackducksoftware"
+secretsDirectory: "/tmp/secrets"
 
 # Storage configurations
 enablePersistentStorage: true

@@ -48,7 +48,9 @@ public class JiraServerGlobalTestActionWrapper {
 
     public boolean canUserGetIssues() throws IntegrationException {
         IssueSearchService issueSearchService = jiraServerServiceFactory.createIssueSearchService();
-        IssueSearchResponseModel issueSearchResponseModel = issueSearchService.queryForIssuePage("", 0, 1);
+        // Updated the JQL to support customers using "Disable empty JQL queries" in Jira Server.
+        // https://confluence.atlassian.com/adminjiraserver0820/configuring-jira-application-options-1095777704.html#settings:~:text=Disable%20empty%20JQL%20queries
+        IssueSearchResponseModel issueSearchResponseModel = issueSearchService.queryForIssuePage("created <= now()", 0, 1);
         return !issueSearchResponseModel.getIssues().isEmpty();
     }
 
