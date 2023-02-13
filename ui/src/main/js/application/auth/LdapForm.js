@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 
 import ConcreteConfigurationForm from 'common/configuration/global/concrete/ConcreteConfigurationForm';
@@ -13,8 +13,7 @@ import * as ConfigurationRequestBuilder from 'common/util/configurationRequestBu
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
 
-import { AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS } from 'application/auth/AuthenticationModel';
-
+import { AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS, AUTHENTICATION_LDAP_GLOBAL_TEST_FIELD_KEYS } from 'application/auth/AuthenticationModel';
 
 const useStyles = createUseStyles({
     ldapForm: {
@@ -34,10 +33,12 @@ const REFERRAL_TYPES = [
     { label: 'Throw', value: 'throw' }
 ];
 
-const LdapForm = ({ csrfToken, errorHandler, readonly }) => {
+const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
     const classes = useStyles();
     const [formData, setFormData] = useState({});
+    const [showTestModal, setShowTestModal] = useState(false);
     const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
+    const [testFormData, setTestFormData] = useState({});
     const ldapRequestUrl = `${ConfigurationRequestBuilder.AUTHENTICATION_LDAP_API_URL}`;
 
     const fetchData = async () => {
@@ -45,6 +46,7 @@ const LdapForm = ({ csrfToken, errorHandler, readonly }) => {
         const data = await response.json();
         if (data) {
             setFormData(data);
+            setTestFormData({ldapConfigModel: data});
         }
     };
 
@@ -58,6 +60,10 @@ const LdapForm = ({ csrfToken, errorHandler, readonly }) => {
 
     function postData() {
         return ConfigurationRequestBuilder.createNewConfigurationRequest(ldapRequestUrl, csrfToken, formData);
+    }
+
+    function handleTestRequest() {
+        return ConfigurationRequestBuilder.createTestRequest(ldapRequestUrl, csrfToken, testFormData)
     }
 
     function handleValidation() {
@@ -84,6 +90,35 @@ const LdapForm = ({ csrfToken, errorHandler, readonly }) => {
         return ConfigurationRequestBuilder.createValidateRequest(ldapRequestUrl, csrfToken, formData);
     }
 
+    function handleShowTestModal() {
+        setShowTestModal(!showTestModal);
+    }
+
+    // Revise this to it's own modal when we overhaul the modal changes.
+    const testFields = (
+        <div>
+            <h2>LDAP Configuration</h2>
+            <TextInput
+                id={AUTHENTICATION_LDAP_GLOBAL_TEST_FIELD_KEYS.testLDAPUsername}
+                name={AUTHENTICATION_LDAP_GLOBAL_TEST_FIELD_KEYS.testLDAPUsername}
+                label="User Name"
+                description="The user name to test LDAP authentication; if LDAP authentication is enabled."
+                readOnly={false}
+                onChange={FieldModelUtilities.handleConcreteModelChange(testFormData, setTestFormData)}
+                value={testFormData[AUTHENTICATION_LDAP_GLOBAL_TEST_FIELD_KEYS.testLDAPUsername]}
+            />
+            <PasswordInput
+                id={AUTHENTICATION_LDAP_GLOBAL_TEST_FIELD_KEYS.testLDAPPassword}
+                name={AUTHENTICATION_LDAP_GLOBAL_TEST_FIELD_KEYS.testLDAPPassword}
+                label="Password"
+                description="The password to test LDAP authentication; if LDAP authentication is enabled."
+                readOnly={false}
+                onChange={FieldModelUtilities.handleConcreteModelChange(testFormData, setTestFormData)}
+                value={testFormData[AUTHENTICATION_LDAP_GLOBAL_TEST_FIELD_KEYS.testLDAPPassword]}
+            />
+        </div>
+    )
+
     return (
         <div className={classes.ldapForm}>
             <h2>LDAP Configuration</h2>
@@ -94,12 +129,15 @@ const LdapForm = ({ csrfToken, errorHandler, readonly }) => {
                 deleteRequest={deleteData}
                 updateRequest={updateData}
                 createRequest={postData}
+                testRequest={handleTestRequest}
                 validateRequest={handleValidation}
                 displayDelete={formData.status !== 404}
+                displayTest={displayTest}
                 errorHandler={errorHandler}
                 deleteLabel="Delete LDAP Configuration"
                 submitLabel="Save LDAP Configuration"
                 testLabel="Test LDAP Configuration"
+                testFields={testFields}
             >
                 <CheckboxInput
                     id={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.enabled}
@@ -254,7 +292,11 @@ const LdapForm = ({ csrfToken, errorHandler, readonly }) => {
     );
 };
 
-// LdapForm.propTypes = {
-// };
+LdapForm.propTypes = {
+    csrfToken: PropTypes.string.isRequired,
+    errorHandler: PropTypes.object.isRequired,
+    readonly: PropTypes.bool,
+    displayTest: PropTypes.bool
+};
 
 export default LdapForm;
