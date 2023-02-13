@@ -91,7 +91,7 @@ public class ProcessingCompleteWaitJobTask implements WaitJobCondition {
 
         long totalProviderNotificationCounts = notificationTypeCounts
             .stream()
-            .filter(notificationTypeCount -> notificationTypeCount.getNotificationType().equals(NotificationType.RULE_VIOLATION.name()))
+            .filter(notificationTypeCount -> NotificationType.RULE_VIOLATION.equals(notificationTypeCount.getNotificationType()))
             .map(NotificationTypeCount::getCount)
             .reduce(0L, Long::sum);
 

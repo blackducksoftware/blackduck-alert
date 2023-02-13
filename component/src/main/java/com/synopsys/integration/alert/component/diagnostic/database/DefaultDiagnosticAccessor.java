@@ -127,9 +127,8 @@ public class DefaultDiagnosticAccessor implements DiagnosticAccessor {
         for (Long providerConfigId : providerConfigIds) {
             List<NotificationTypeCount> notificationTypeCounts = new LinkedList<>();
             for (NotificationType notificationType : NotificationType.values()) {
-                String notificationTypeName = notificationType.name();
-                long count = notificationContentRepository.countByProviderConfigIdAndNotificationType(providerConfigId, notificationTypeName);
-                notificationTypeCounts.add(new NotificationTypeCount(notificationTypeName, count));
+                long count = notificationContentRepository.countByProviderConfigIdAndNotificationType(providerConfigId, notificationType.name());
+                notificationTypeCounts.add(new NotificationTypeCount(notificationType, count));
             }
             providerCounts.add(new ProviderNotificationCounts(providerConfigId, notificationTypeCounts));
         }
