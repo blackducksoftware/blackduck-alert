@@ -8,7 +8,9 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.JobExecutionStatusAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobNotificationMappingAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.processor.api.JobNotificationContentProcessor;
@@ -34,15 +36,18 @@ class ProcessingJobEventHandlerTest {
         JobAccessor jobAccessor = Mockito.mock(JobAccessor.class);
         JobNotificationMappingAccessor jobNotificationMappingAccessor = Mockito.mock(JobNotificationMappingAccessor.class);
         ProviderMessageExtractionDelegator providerMessageExtractionDelegator = Mockito.mock(ProviderMessageExtractionDelegator.class);
+        JobExecutionStatusAccessor jobExecutionStatusAccessor = Mockito.mock(JobExecutionStatusAccessor.class);
+        ExecutingJobManager executingJobManager = new ExecutingJobManager(jobExecutionStatusAccessor);
         JobNotificationContentProcessor jobNotificationContentProcessor = new JobNotificationContentProcessor(
             notificationDetailExtractionDelegator,
             notificationAccessor,
-            jobAccessor,
             jobNotificationMappingAccessor,
             providerMessageExtractionDelegator,
             new ProjectMessageDigester(),
-            new ProjectMessageSummarizer()
+            new ProjectMessageSummarizer(),
+            executingJobManager
         );
+
         ProcessingJobEventHandler eventHandler = new ProcessingJobEventHandler(
             notificationDetailExtractionDelegator,
             notificationContentProcessor,
@@ -51,7 +56,8 @@ class ProcessingJobEventHandlerTest {
             notificationAccessor,
             jobAccessor,
             jobNotificationMappingAccessor,
-            jobNotificationContentProcessor
+            jobNotificationContentProcessor,
+            executingJobManager
         );
         try {
             eventHandler.handle(new JobProcessingEvent(correlationId, jobId));

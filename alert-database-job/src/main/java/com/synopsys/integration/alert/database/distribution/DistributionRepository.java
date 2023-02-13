@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.database.distribution;
 
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -21,46 +22,29 @@ import com.synopsys.integration.alert.database.job.DistributionJobEntity;
 public interface DistributionRepository extends JpaRepository<DistributionJobEntity, UUID> {
 
     @Query(
-        value = "SELECT CAST(job.job_id as varchar) AS id, job.enabled, job.name, job.channel_descriptor_name, job.distribution_frequency, filteredAudit.time_last_sent, filteredAudit.status"
-            + " FROM alert.distribution_jobs AS job"
-            + " LEFT OUTER JOIN ("
-            + "   SELECT DISTINCT ON (auditRequirements.common_config_id) auditRequirements.time_last_sent, auditRequirements.status, auditRequirements.common_config_id"
-            + "   FROM alert.audit_entries AS auditRequirements"
-            + "   INNER JOIN ("
-            + "     SELECT initialAudit.common_config_id, MAX(initialAudit.time_last_sent) AS last_sent"
-            + "     FROM alert.audit_entries AS initialAudit"
-            + "     GROUP BY initialAudit.common_config_id"
-            + "   ) AS auditMaxDate"
-            + "   ON auditRequirements.common_config_id = auditMaxDate.common_config_id"
-            + "   AND auditRequirements.time_last_sent = auditMaxDate.last_sent"
-            + " ) AS filteredAudit"
-            + " ON filteredAudit.common_config_id = job.job_id"
-            + " WHERE job.channel_descriptor_name IN (:channelDescriptorNames)",
+        value =
+            "SELECT CAST(job.job_id as varchar) AS id, job.enabled, job.name, job.channel_descriptor_name, job.distribution_frequency, executionStatus.last_run AS time_last_sent, executionStatus.latest_status AS status"
+                + " FROM alert.distribution_jobs AS job"
+                + " LEFT JOIN alert.job_execution_status AS executionStatus ON executionStatus.job_config_id = job.job_id"
+                + " WHERE job.channel_descriptor_name IN (:channelDescriptorNames)",
         nativeQuery = true
     )
     Page<DistributionDBResponse> getDistributionWithAuditInfo(Pageable pageable, @Param("channelDescriptorNames") Collection<String> channelDescriptorNames);
 
     @Query(
         value =
-            "SELECT CAST(job.job_id as varchar) AS id, job.enabled, job.name, job.channel_descriptor_name, job.distribution_frequency, filteredAudit.time_last_sent, filteredAudit.status"
+            "SELECT CAST(job.job_id as varchar) AS id, job.enabled, job.name, job.channel_descriptor_name, job.distribution_frequency, executionStatus.last_run AS time_last_sent, executionStatus.latest_status AS status"
                 + " FROM alert.distribution_jobs AS job"
-                + " LEFT OUTER JOIN ("
-                + "   SELECT DISTINCT ON (auditRequirements.common_config_id) auditRequirements.time_last_sent, auditRequirements.status, auditRequirements.common_config_id"
-                + "   FROM alert.audit_entries AS auditRequirements"
-                + "   INNER JOIN ("
-                + "     SELECT initialAudit.common_config_id, MAX(initialAudit.time_last_sent) AS last_sent"
-                + "     FROM alert.audit_entries AS initialAudit"
-                + "     GROUP BY initialAudit.common_config_id"
-                + "   ) AS auditMaxDate"
-                + "   ON auditRequirements.common_config_id = auditMaxDate.common_config_id"
-                + "   AND auditRequirements.time_last_sent = auditMaxDate.last_sent"
-                + " ) AS filteredAudit"
-                + " ON filteredAudit.common_config_id = job.job_id"
+                + " LEFT JOIN alert.job_execution_status AS executionStatus ON executionStatus.job_config_id = job.job_id"
                 + " WHERE job.channel_descriptor_name IN (:channelDescriptorNames) AND job.name LIKE %:searchTerm%",
         nativeQuery = true
     )
-    Page<DistributionDBResponse> getDistributionWithAuditInfoWithSearch(Pageable pageable, @Param("channelDescriptorNames") Collection<String> channelDescriptorNames, @Param("searchTerm") String searchTerm);
-
+    Page<DistributionDBResponse> getDistributionWithAuditInfoWithSearch(
+        Pageable pageable,
+        @Param("channelDescriptorNames") Collection<String> channelDescriptorNames,
+        @Param("searchTerm") String searchTerm
+    );
+    
     interface DistributionDBResponse {
         String getId();
 
@@ -72,7 +56,7 @@ public interface DistributionRepository extends JpaRepository<DistributionJobEnt
 
         String getDistribution_Frequency();
 
-        String getTime_Last_Sent();
+        Timestamp getTime_Last_Sent();
 
         String getStatus();
 

@@ -8,12 +8,14 @@ public class JobSubTaskStatusModel extends AlertSerializableModel {
     private static final long serialVersionUID = -9192758155312295976L;
     private final UUID parentEventId;
     private final UUID jobId;
+    private final UUID jobExecutionId;
     private final Long remainingTaskCount;
     private final UUID notificationCorrelationId;
 
-    public JobSubTaskStatusModel(UUID parentEventId, UUID jobId, Long remainingTaskCount, UUID notificationCorrelationId) {
+    public JobSubTaskStatusModel(UUID parentEventId, UUID jobId, UUID jobExecutionId, Long remainingTaskCount, UUID notificationCorrelationId) {
         this.parentEventId = parentEventId;
         this.jobId = jobId;
+        this.jobExecutionId = jobExecutionId;
         this.remainingTaskCount = remainingTaskCount;
         this.notificationCorrelationId = notificationCorrelationId;
     }
@@ -24,6 +26,10 @@ public class JobSubTaskStatusModel extends AlertSerializableModel {
 
     public UUID getJobId() {
         return jobId;
+    }
+
+    public UUID getJobExecutionId() {
+        return jobExecutionId;
     }
 
     public Long getRemainingTaskCount() {

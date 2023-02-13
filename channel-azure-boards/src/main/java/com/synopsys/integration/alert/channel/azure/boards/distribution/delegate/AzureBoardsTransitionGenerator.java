@@ -17,21 +17,30 @@ import com.synopsys.integration.alert.channel.azure.boards.distribution.event.Az
 import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
 
 public class AzureBoardsTransitionGenerator implements IssueTrackerTransitionEventGenerator<Integer> {
-    private AzureBoardsChannelKey channelKey;
-    private UUID parentEventId;
-    private UUID jobId;
+    private final AzureBoardsChannelKey channelKey;
+    private final UUID parentEventId;
+    private final UUID jobExecutionId;
+    private final UUID jobId;
 
-    private Set<Long> notificationIds;
+    private final Set<Long> notificationIds;
 
-    public AzureBoardsTransitionGenerator(AzureBoardsChannelKey channelKey, UUID parentEventId, UUID jobId, Set<Long> notificationIds) {
+    public AzureBoardsTransitionGenerator(AzureBoardsChannelKey channelKey, UUID parentEventId, UUID jobExecutionId, UUID jobId, Set<Long> notificationIds) {
         this.channelKey = channelKey;
         this.parentEventId = parentEventId;
+        this.jobExecutionId = jobExecutionId;
         this.jobId = jobId;
         this.notificationIds = notificationIds;
     }
 
     @Override
     public IssueTrackerTransitionIssueEvent<Integer> generateEvent(IssueTransitionModel<Integer> model) {
-        return new AzureBoardsTransitionEvent(IssueTrackerTransitionIssueEvent.createDefaultEventDestination(channelKey), parentEventId, jobId, notificationIds, model);
+        return new AzureBoardsTransitionEvent(
+            IssueTrackerTransitionIssueEvent.createDefaultEventDestination(channelKey),
+            parentEventId,
+            jobExecutionId,
+            jobId,
+            notificationIds,
+            model
+        );
     }
 }

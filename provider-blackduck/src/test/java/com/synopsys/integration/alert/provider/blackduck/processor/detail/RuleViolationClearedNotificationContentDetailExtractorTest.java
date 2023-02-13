@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
@@ -81,7 +82,18 @@ public class RuleViolationClearedNotificationContentDetailExtractorTest {
         String jsonContent = TestResourceUtils.readFileToString(jsonPath);
         RuleViolationClearedNotificationView notificationView = gson.fromJson(jsonContent, RuleViolationClearedNotificationView.class);
 
-        AlertNotificationModel notification = new AlertNotificationModel(0L, 0L, "BlackDuck", "Config 1", null, null, null, null, false);
+        AlertNotificationModel notification = new AlertNotificationModel(
+            0L,
+            0L,
+            "BlackDuck",
+            "Config 1",
+            null,
+            null,
+            null,
+            null,
+            false,
+            String.format("content-id-%s", UUID.randomUUID())
+        );
 
         RuleViolationClearedNotificationDetailExtractor extractor = new RuleViolationClearedNotificationDetailExtractor();
         List<DetailedNotificationContent> detailedNotificationContents = extractor.extractDetailedContent(notification, notificationView);
