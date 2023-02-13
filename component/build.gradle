@@ -1,6 +1,12 @@
 ext.moduleName = 'com.synopsys.integration.alert.component'
 
 dependencies {
+    constraints {
+        implementation "org.opensaml:opensaml-core:4.1.1"
+        implementation "org.opensaml:opensaml-saml-api:4.1.1"
+        implementation "org.opensaml:opensaml-saml-impl:4.1.1"
+    }
+
     implementation platform(project(':alert-platform'))
 
     implementation project(':alert-common')
@@ -15,6 +21,7 @@ dependencies {
     implementation project(':api-processor')
     implementation project(':api-task')
     implementation project(':authentication-ldap')
+    implementation project(':authentication-saml')
     implementation project(':service-email')
 
     implementation 'org.apache.tomcat.embed:tomcat-embed-core'
@@ -26,7 +33,7 @@ dependencies {
     implementation 'org.springframework.security:spring-security-ldap'
     implementation 'org.springframework.security:spring-security-web'
 
-    implementation 'org.springframework.security.extensions:spring-security-saml2-core'
+    implementation 'org.springframework.security:spring-security-saml2-service-provider'
 
     //rabbitmq
     implementation 'org.springframework.amqp:spring-amqp'
@@ -35,6 +42,6 @@ dependencies {
     testImplementation 'org.springframework.data:spring-data-commons'
     testImplementation project(':test-common-channel')
     testImplementation project(':provider-blackduck')
-    testImplementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
+    testImplementation 'com.synopsys.integration:blackduck-common'
 
 }

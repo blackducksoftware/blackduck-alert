@@ -3,6 +3,7 @@ package com.synopsys.integration.alert.authentication.saml.model;
 import com.synopsys.integration.alert.api.common.model.Obfuscated;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.model.ConfigWithMetadata;
+import org.apache.commons.lang3.BooleanUtils;
 
 import java.util.Optional;
 
@@ -12,10 +13,7 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
     private String metadataUrl;
     private String metadataFilePath;
     private SAMLMetadataMode metadataMode;
-    private String entityId;
-    private String entityBaseUrl;
     private Boolean wantAssertionsSigned;
-    private String roleAttributeMapping;
     private String encryptionCertFilePath;
     private String encryptionPrivateKeyFilePath;
     private String signingCertFilePath;
@@ -27,11 +25,8 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
     }
 
     // Required
-    public SAMLConfigModel(String id, String entityId, String entityBaseUrl) {
+    public SAMLConfigModel(String id) {
         super(id, AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
-
-        this.entityId = entityId;
-        this.entityBaseUrl = entityBaseUrl;
     }
 
     public SAMLConfigModel(
@@ -43,24 +38,20 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
         String metadataUrl,
         String metadataFilePath,
         SAMLMetadataMode metadataMode,
-        String entityId,
-        String entityBaseUrl,
         Boolean wantAssertionsSigned,
-        String roleAttributeMapping,
         String encryptionCertFilePath,
         String encryptionPrivateKeyFilePath,
         String signingCertFilePath,
         String signingPrivateKeyFilePath,
         String verificationCertFilePath
     ) {
-        this(id, entityId, entityBaseUrl);
+        this(id);
         this.enabled = enabled;
         this.forceAuth = forceAuth;
         this.metadataUrl = metadataUrl;
         this.metadataFilePath = metadataFilePath;
         this.metadataMode = metadataMode;
         this.wantAssertionsSigned = wantAssertionsSigned;
-        this.roleAttributeMapping = roleAttributeMapping;
         this.encryptionCertFilePath = encryptionCertFilePath;
         this.encryptionPrivateKeyFilePath = encryptionPrivateKeyFilePath;
         this.signingCertFilePath = signingCertFilePath;
@@ -82,10 +73,7 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
             metadataUrl,
             metadataFilePath,
             metadataMode,
-            entityId,
-            entityBaseUrl,
             wantAssertionsSigned,
-            roleAttributeMapping,
             encryptionCertFilePath,
             encryptionPrivateKeyFilePath,
             signingCertFilePath,
@@ -95,12 +83,12 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
     }
 
     // Getters
-    public Optional<Boolean> getEnabled() {
-        return Optional.ofNullable(enabled);
+    public Boolean getEnabled() {
+        return BooleanUtils.toBoolean(enabled);
     }
 
-    public Optional<Boolean> getForceAuth() {
-        return Optional.ofNullable(forceAuth);
+    public Boolean getForceAuth() {
+        return BooleanUtils.toBoolean(forceAuth);
     }
 
     public Optional<String> getMetadataUrl() {
@@ -115,20 +103,8 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
         return Optional.ofNullable(metadataMode);
     }
 
-    public String getEntityId() {
-        return entityId;
-    }
-
-    public String getEntityBaseUrl() {
-        return entityBaseUrl;
-    }
-
-    public Optional<Boolean> getWantAssertionsSigned() {
-        return Optional.ofNullable(wantAssertionsSigned);
-    }
-
-    public Optional<String> getRoleAttributeMapping() {
-        return Optional.ofNullable(roleAttributeMapping);
+    public Boolean getWantAssertionsSigned() {
+        return BooleanUtils.toBoolean(wantAssertionsSigned);
     }
 
     public Optional<String> getEncryptionCertFilePath() {
@@ -162,17 +138,5 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
 
     public void setMetadataUrl(String metadataUrl) {
         this.metadataUrl = metadataUrl;
-    }
-
-    public void setEntityId(String entityId) {
-        this.entityId = entityId;
-    }
-
-    public void setEntityBaseUrl(String entityBaseUrl) {
-        this.entityBaseUrl = entityBaseUrl;
-    }
-
-    public void setRoleAttributeMapping(String roleAttributeMapping) {
-        this.roleAttributeMapping = roleAttributeMapping;
     }
 }

@@ -31,16 +31,6 @@ public class SAMLConfigurationValidator {
         Optional<String> optionalMetadataUrl = model.getMetadataUrl().filter(StringUtils::isNotBlank);
         // Just check if file is upload - filePath is for showing to user their uploaded path and may not need to validate it
         boolean metadataFileExists = filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_METADATA_FILE);
-
-        if (StringUtils.isBlank(model.getEntityId())) {
-            statuses.add(AlertFieldStatus.error(AuthenticationDescriptor.KEY_SAML_ENTITY_ID, AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
-        }
-        if (StringUtils.isBlank(model.getEntityBaseUrl())) {
-            statuses.add(AlertFieldStatus.error(AuthenticationDescriptor.KEY_SAML_ENTITY_BASE_URL, AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
-        } else {
-            addErrorStatusIfInvalidUrl(model.getEntityBaseUrl(), AuthenticationDescriptor.KEY_SAML_ENTITY_BASE_URL, statuses);
-        }
-
         // One of url or file must exist
         if (optionalMetadataUrl.isEmpty() && !metadataFileExists) {
             statuses.add(AlertFieldStatus.error(

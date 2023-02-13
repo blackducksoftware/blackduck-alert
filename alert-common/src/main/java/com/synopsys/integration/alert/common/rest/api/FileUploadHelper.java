@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.function.Supplier;
@@ -31,6 +32,7 @@ public class FileUploadHelper {
 
     private static final String ACTION_NAME_FILE_EXISTS = "fileExists";
     private static final String ACTION_NAME_FILE_UPLOAD = "fileUpload";
+    private static final String ACTION_NAME_FILE_DELETE = "fileDelete";
 
     public FileUploadHelper (AuthorizationManager authorizationManager, ConfigContextEnum context, DescriptorKey descriptorKey, FilePersistenceUtil filePersistenceUtil) {
         this.authorizationManager = authorizationManager;
@@ -73,8 +75,8 @@ public class FileUploadHelper {
         try {
             writeFile(fileName, resource);
         } catch (IOException e) {
-            logger.error(String.format("Error uploading file - file: %s, context: %s, descriptor: %s ", fileName, context, descriptorKey));
-            logger.error(String.format("Error uploading file caused by: %s", e));
+            logger.error("Error uploading file - file: {}, context: {}, descriptor: {} ", fileName, context, descriptorKey);
+            logger.error("Error uploading file caused by: ", e);
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, "Error uploading file to server.");
         }
 
@@ -85,8 +87,27 @@ public class FileUploadHelper {
         try (InputStream inputStream = resource.getInputStream()) {
             filePersistenceUtil.writeFileToUploadsDirectory(fileName, inputStream);
         } catch (IOException ex) {
-            logger.error(String.format("Error writing file to resource - file: %s", fileName));
+            logger.error("Error writing file to resource - file: {}", fileName);
             throw ex;
         }
+    }
+
+    public ActionResponse<Void> fileDelete(String fileName) {
+        logger.trace(ACTION_CALLED_TEMPLATE, descriptorKey.getUniversalKey(), ACTION_NAME_FILE_DELETE);
+        if (!authorizationManager.hasUploadDeletePermission(context, descriptorKey)) {
+            logger.trace(ACTION_MISSING_PERMISSIONS_TEMPLATE, descriptorKey.getUniversalKey(), ACTION_NAME_FILE_DELETE);
+            return ActionResponse.createForbiddenResponse();
+        }
+
+        try {
+            File fileToValidate = filePersistenceUtil.createUploadsFile(fileName);
+            filePersistenceUtil.delete(fileToValidate);
+        } catch (IOException ex) {
+            logger.error("Error deleting file - file: {}, context: {}, descriptor: {} ", fileName, context, descriptorKey);
+            logger.error("Error deleting file caused by:", ex);
+            return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, "Error deleting uploaded file from server.");
+        }
+
+        return new ActionResponse<>(HttpStatus.NO_CONTENT);
     }
 }
