@@ -4,10 +4,10 @@
     <changeSet author="psantos" id="create-job-execution-status-table">
         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists schemaName="alert" tableName="job_execution_status"/>
+                <tableExists schemaName="alert" tableName="job_completion_status"/>
             </not>
         </preConditions>
-        <createTable schemaName="alert" tableName="job_execution_status">
+        <createTable schemaName="alert" tableName="job_completion_status">
             <column name="job_config_id" type="UUID" defaultValueComputed="uuid_generate_v4()">
                 <constraints primaryKey="true"/>
             </column>
@@ -29,53 +29,53 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="psantos" id="create-job-execution-durations-table">
+    <changeSet author="psantos" id="create-job-completion-durations-table">
         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists schemaName="alert" tableName="job_execution_durations"/>
+                <tableExists schemaName="alert" tableName="job_completion_durations"/>
             </not>
         </preConditions>
-        <createTable schemaName="alert" tableName="job_execution_durations">
+        <createTable schemaName="alert" tableName="job_completion_durations">
             <column name="job_config_id" type="UUID" defaultValueComputed="uuid_generate_v4()">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="job_duration_milliseconds" type="BIGINT">
+            <column name="job_duration_nanos" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="notification_processing_duration_milliseconds" type="BIGINT"/>
-            <column name="channel_processing_duration_milliseconds" type="BIGINT"/>
-            <column name="issue_creation_duration_milliseconds" type="BIGINT"/>
-            <column name="issue_commenting_duration_milliseconds" type="BIGINT"/>
-            <column name="issue_resolving_duration_milliseconds" type="BIGINT"/>
+            <column name="notification_processing_duration_nanos" type="BIGINT"/>
+            <column name="channel_processing_duration_nanos" type="BIGINT"/>
+            <column name="issue_creation_duration_nanos" type="BIGINT"/>
+            <column name="issue_commenting_duration_nanos" type="BIGINT"/>
+            <column name="issue_resolving_duration_nanos" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="psantos" id="create-execution-tables-foreign-key">
+    <changeSet author="psantos" id="create-completion-tables-foreign-key">
         <preConditions>
             <not>
-                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="job-execution-config-id-fk"/>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="job-completion-config-id-fk"/>
             </not>
         </preConditions>
         <addForeignKeyConstraint
-                constraintName="job-execution-config-id-fk"
+                constraintName="job-completion-config-id-fk"
                 baseTableSchemaName="alert"
-                baseTableName="job_execution_durations"
+                baseTableName="job_completion_durations"
                 baseColumnNames="job_config_id"
                 referencedTableSchemaName="alert"
-                referencedTableName="job_execution_status"
+                referencedTableName="job_completion_status"
                 referencedColumnNames="job_config_id"
                 onDelete="CASCADE"
         />
     </changeSet>
-    <changeSet author="psantos" id="create-job-config-execution-tables-foreign-key">
+    <changeSet author="psantos" id="create-job-config-completion-tables-foreign-key">
         <preConditions>
             <not>
-                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="job-config-execution-status-fk"/>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="job-config-completion-status-fk"/>
             </not>
         </preConditions>
         <addForeignKeyConstraint
-                constraintName="job-config-execution-status-fk"
+                constraintName="job-config-completion-status-fk"
                 baseTableSchemaName="alert"
-                baseTableName="job_execution_status"
+                baseTableName="job_completion_status"
                 baseColumnNames="job_config_id"
                 referencedTableSchemaName="alert"
                 referencedTableName="distribution_jobs"

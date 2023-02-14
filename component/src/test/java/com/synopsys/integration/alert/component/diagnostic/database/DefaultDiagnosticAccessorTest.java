@@ -18,11 +18,10 @@ import com.synopsys.integration.alert.api.distribution.execution.JobStage;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.persistence.accessor.JobExecutionStatusAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModelBuilder;
-import com.synopsys.integration.alert.common.persistence.model.job.executions.JobExecutionStatusDurations;
-import com.synopsys.integration.alert.common.persistence.model.job.executions.JobExecutionStatusModel;
+import com.synopsys.integration.alert.common.persistence.model.job.executions.JobCompletionStatusDurations;
+import com.synopsys.integration.alert.common.persistence.model.job.executions.JobCompletionStatusModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedQueryDetails;
 import com.synopsys.integration.alert.common.util.DateUtils;
@@ -50,7 +49,7 @@ class DefaultDiagnosticAccessorTest {
     private RabbitMQDiagnosticUtility rabbitMQDiagnosticUtility;
     private ExecutingJobManager executingJobManager;
     private StaticJobAccessor staticJobAccessor;
-    private JobExecutionStatusAccessor completedJobsAccessor;
+    private com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModel completedJobsAccessor;
 
     @BeforeEach
     public void init() {
@@ -58,9 +57,9 @@ class DefaultDiagnosticAccessorTest {
         auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         rabbitMQDiagnosticUtility = Mockito.mock(RabbitMQDiagnosticUtility.class);
         staticJobAccessor = Mockito.mock(StaticJobAccessor.class);
-        completedJobsAccessor = Mockito.mock(JobExecutionStatusAccessor.class);
-        JobExecutionStatusAccessor jobExecutionStatusAccessor = Mockito.mock(JobExecutionStatusAccessor.class);
-        executingJobManager = new ExecutingJobManager(jobExecutionStatusAccessor);
+        completedJobsAccessor = Mockito.mock(com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModel.class);
+        com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModel jobCompletionStatusModel = Mockito.mock(com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModel.class);
+        executingJobManager = new ExecutingJobManager(jobCompletionStatusModel);
     }
 
     @Test
@@ -127,9 +126,9 @@ class DefaultDiagnosticAccessorTest {
         String latestStatus = AuditEntryStatus.SUCCESS.name();
         OffsetDateTime lastRun = DateUtils.createCurrentDateTimestamp();
         Long jobDuration = 100000L;
-        JobExecutionStatusDurations durations = new JobExecutionStatusDurations(jobDuration, 1000000L, 300000L, 0L, 0L, 0L);
+        JobCompletionStatusDurations durations = new JobCompletionStatusDurations(jobDuration, 1000000L, 300000L, 0L, 0L, 0L);
 
-        JobExecutionStatusModel statusModel = new JobExecutionStatusModel(
+        JobCompletionStatusModel statusModel = new JobCompletionStatusModel(
             jobConfigId,
             notificationCount,
             notificationCount,
@@ -139,7 +138,7 @@ class DefaultDiagnosticAccessorTest {
             lastRun,
             durations
         );
-        AlertPagedModel<JobExecutionStatusModel> pageModel = new AlertPagedModel<>(1, 0, 10, List.of(statusModel));
+        AlertPagedModel<JobCompletionStatusModel> pageModel = new AlertPagedModel<>(1, 0, 10, List.of(statusModel));
         Mockito.when(completedJobsAccessor.getJobExecutionStatus(Mockito.any(AlertPagedQueryDetails.class))).thenReturn(pageModel);
         DistributionJobModelBuilder jobModelBuilder = DistributionJobModel.builder()
             .jobId(UUID.randomUUID())

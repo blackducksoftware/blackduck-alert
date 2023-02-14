@@ -16,9 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
-import com.synopsys.integration.alert.common.persistence.accessor.JobExecutionStatusAccessor;
-import com.synopsys.integration.alert.common.persistence.model.job.executions.JobExecutionStatusDurations;
-import com.synopsys.integration.alert.common.persistence.model.job.executions.JobExecutionStatusModel;
+import com.synopsys.integration.alert.common.persistence.model.job.executions.JobCompletionStatusDurations;
+import com.synopsys.integration.alert.common.persistence.model.job.executions.JobCompletionStatusModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 
@@ -26,10 +25,10 @@ import com.synopsys.integration.alert.common.util.DateUtils;
 public class ExecutingJobManager {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final Map<UUID, ExecutingJob> executingJobMap = new ConcurrentHashMap<>();
-    private final JobExecutionStatusAccessor jobCompletionStatusAccessor;
+    private final com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModel jobCompletionStatusAccessor;
 
     @Autowired
-    public ExecutingJobManager(JobExecutionStatusAccessor jobCompletionStatusAccessor) {
+    public ExecutingJobManager(com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModel jobCompletionStatusAccessor) {
         this.jobCompletionStatusAccessor = jobCompletionStatusAccessor;
     }
 
@@ -37,7 +36,7 @@ public class ExecutingJobManager {
         logger.debug("Starting job for config: {} ({} notifications)", jobConfigId, totalNotificationCount);
         ExecutingJob job = ExecutingJob.startJob(jobConfigId, totalNotificationCount);
         executingJobMap.putIfAbsent(job.getExecutionId(), job);
-        Optional<JobExecutionStatusModel> jobExecutionStatusModel = jobCompletionStatusAccessor.getJobExecutionStatus(jobConfigId);
+        Optional<JobCompletionStatusModel> jobExecutionStatusModel = jobCompletionStatusAccessor.getJobExecutionStatus(jobConfigId);
         if (jobExecutionStatusModel.isEmpty()) {
             jobCompletionStatusAccessor.saveExecutionStatus(createEmptyStatusModel(jobConfigId));
         }
@@ -142,8 +141,8 @@ public class ExecutingJobManager {
         return new AggregatedExecutionResults(totalJobs, pendingCount, successCount, failedJobs);
     }
 
-    private JobExecutionStatusModel createEmptyStatusModel(UUID jobConfigId) {
-        return new JobExecutionStatusModel(
+    private JobCompletionStatusModel createEmptyStatusModel(UUID jobConfigId) {
+        return new JobCompletionStatusModel(
             jobConfigId,
             0L,
             0L,
@@ -151,7 +150,7 @@ public class ExecutingJobManager {
             0L,
             AuditEntryStatus.PENDING.name(),
             DateUtils.createCurrentDateTimestamp(),
-            JobExecutionStatusDurations.empty()
+            JobCompletionStatusDurations.empty()
         );
     }
 
@@ -174,13 +173,13 @@ public class ExecutingJobManager {
 
     }
 
-    private JobExecutionStatusModel createStatusModel(ExecutingJob executingJob, AuditEntryStatus jobStatus) {
+    private JobCompletionStatusModel createStatusModel(ExecutingJob executingJob, AuditEntryStatus jobStatus) {
 
         UUID jobConfigId = executingJob.getJobConfigId();
         long successCount = AuditEntryStatus.SUCCESS == jobStatus ? 1L : 0L;
         long failureCount = AuditEntryStatus.FAILURE == jobStatus ? 1L : 0L;
 
-        JobExecutionStatusDurations durations = new JobExecutionStatusDurations(
+        JobCompletionStatusDurations durations = new JobCompletionStatusDurations(
             calculateNanosecondDuration(executingJob.getStart(), executingJob.getEnd().orElse(Instant.now())),
             calculateJobStageDuration(executingJob, JobStage.NOTIFICATION_PROCESSING),
             calculateJobStageDuration(executingJob, JobStage.CHANNEL_PROCESSING),
@@ -189,7 +188,7 @@ public class ExecutingJobManager {
             calculateJobStageDuration(executingJob, JobStage.ISSUE_TRANSITION)
         );
 
-        return new JobExecutionStatusModel(
+        return new JobCompletionStatusModel(
             jobConfigId,
             Integer.valueOf(executingJob.getNotificationsSent()).longValue(),
             Integer.valueOf(executingJob.getNotificationsSent()).longValue(),

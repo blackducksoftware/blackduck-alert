@@ -5,26 +5,26 @@ import java.util.UUID;
 
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
-public class JobExecutionStatusModel extends AlertSerializableModel {
+public class JobCompletionStatusModel extends AlertSerializableModel {
     private static final long serialVersionUID = -118491395692643581L;
     private final UUID jobConfigId;
-    private final Long latestNotificationCount;
-    private final Long totalNotificationCount;
-    private final Long successCount;
-    private final Long failureCount;
+    private final long latestNotificationCount;
+    private final long totalNotificationCount;
+    private final long successCount;
+    private final long failureCount;
     private final String latestStatus;
     private final OffsetDateTime lastRun;
-    private final JobExecutionStatusDurations durations;
+    private final JobCompletionStatusDurations durations;
 
-    public JobExecutionStatusModel(
+    public JobCompletionStatusModel(
         UUID jobConfigId,
-        Long latestNotificationCount,
-        Long totalNotificationCount,
-        Long successCount,
-        Long failureCount,
+        long latestNotificationCount,
+        long totalNotificationCount,
+        long successCount,
+        long failureCount,
         String latestStatus,
         OffsetDateTime lastRun,
-        JobExecutionStatusDurations durations
+        JobCompletionStatusDurations durations
     ) {
         this.jobConfigId = jobConfigId;
         this.latestNotificationCount = latestNotificationCount;
@@ -40,19 +40,19 @@ public class JobExecutionStatusModel extends AlertSerializableModel {
         return jobConfigId;
     }
 
-    public Long getLatestNotificationCount() {
+    public long getLatestNotificationCount() {
         return latestNotificationCount;
     }
 
-    public Long getTotalNotificationCount() {
+    public long getTotalNotificationCount() {
         return totalNotificationCount;
     }
 
-    public Long getSuccessCount() {
+    public long getSuccessCount() {
         return successCount;
     }
 
-    public Long getFailureCount() {
+    public long getFailureCount() {
         return failureCount;
     }
 
@@ -64,7 +64,7 @@ public class JobExecutionStatusModel extends AlertSerializableModel {
         return lastRun;
     }
 
-    public JobExecutionStatusDurations getDurations() {
+    public JobCompletionStatusDurations getDurations() {
         return durations;
     }
 }

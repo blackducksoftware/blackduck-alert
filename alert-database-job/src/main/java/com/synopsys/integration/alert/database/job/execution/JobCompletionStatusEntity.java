@@ -11,38 +11,38 @@ import javax.persistence.Table;
 import com.synopsys.integration.alert.database.BaseEntity;
 
 @Entity
-@Table(schema = "alert", name = "job_execution_status")
-public class JobExecutionStatusEntity extends BaseEntity {
+@Table(schema = "alert", name = "job_completion_status")
+public class JobCompletionStatusEntity extends BaseEntity {
     private static final long serialVersionUID = -3107164032971829096L;
     @Id
     @Column(name = "job_config_id")
     private UUID jobConfigId;
 
     @Column(name = "latest_notification_count")
-    private Long latestNotificationCount;
+    private long latestNotificationCount;
 
     @Column(name = "total_notification_count")
-    private Long totalNotificationCount;
+    private long totalNotificationCount;
     @Column(name = "success_count")
-    private Long successCount;
+    private long successCount;
     @Column(name = "failure_count")
-    private Long failureCount;
+    private long failureCount;
 
     @Column(name = "latest_status")
     private String latestStatus;
     @Column(name = "last_run")
     private OffsetDateTime lastRun;
 
-    public JobExecutionStatusEntity() {
+    public JobCompletionStatusEntity() {
         // default constructor for JPA
     }
 
-    public JobExecutionStatusEntity(
+    public JobCompletionStatusEntity(
         UUID jobConfigId,
-        Long latestNotificationCount,
-        Long totalNotificationCount,
-        Long successCount,
-        Long failureCount,
+        long latestNotificationCount,
+        long totalNotificationCount,
+        long successCount,
+        long failureCount,
         String latestStatus,
         OffsetDateTime lastRun
     ) {
@@ -59,19 +59,19 @@ public class JobExecutionStatusEntity extends BaseEntity {
         return jobConfigId;
     }
 
-    public Long getLatestNotificationCount() {
+    public long getLatestNotificationCount() {
         return latestNotificationCount;
     }
 
-    public Long getTotalNotificationCount() {
+    public long getTotalNotificationCount() {
         return totalNotificationCount;
     }
 
-    public Long getSuccessCount() {
+    public long getSuccessCount() {
         return successCount;
     }
 
-    public Long getFailureCount() {
+    public long getFailureCount() {
         return failureCount;
     }
 
