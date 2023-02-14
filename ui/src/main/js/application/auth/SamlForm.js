@@ -142,6 +142,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, fileDelete, fileRead, fil
                     checked={formData.metadataMode}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.metadataMode)}
                     errorValue={errors.fieldErrors[AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.metadataMode]}
+                    required
                 />
 
                 { (formData.metadataMode === 'URL' || !formData.metadataMode) && (
@@ -156,6 +157,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, fileDelete, fileRead, fil
                             value={formData[AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.metadataUrl] || undefined}
                             errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.metadataUrl)}
                             errorValue={errors.fieldErrors[AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.metadataUrl]}
+                            required
                         />
                         <LabeledField label={importBlackDuckSSOConfigLabel} description={importBlackDuckSSOConfigDescription}>
                             <div className={classes.fillForm}>
@@ -199,6 +201,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, fileDelete, fileRead, fil
                         value={formData.metadataFilePath}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.metadataFilePath)}
                         errorValue={errors.fieldErrors[AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.metadataFilePath]}
+                        required
                     />
                 )}
 
