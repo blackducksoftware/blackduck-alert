@@ -1,19 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
+
+import { AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS } from 'application/auth/AuthenticationModel';
+
 import CollapsiblePane from 'common/component/CollapsiblePane';
 import ConcreteConfigurationForm from 'common/configuration/global/concrete/ConcreteConfigurationForm';
+
 import CheckboxInput from 'common/component/input/CheckboxInput';
-import RadioInput from '../../common/component/input/RadioInput';
+import LabeledField from 'common/component/input/field/LabeledField';
+import RadioInput from 'common/component/input/RadioInput';
 import TextInput from 'common/component/input/TextInput';
+import GeneralButton from 'common/component/button/GeneralButton';
 import UploadFileButtonField from 'common/component/input/field/UploadFileButtonField';
+
 import * as ConfigurationRequestBuilder from 'common/util/configurationRequestBuilder';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
-import { AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS } from 'application/auth/AuthenticationModel';
+
 import BlackDuckSSOConfigImportModal from './BlackDuckSSOConfigImportModal';
-import LabeledField from '../../common/component/input/field/LabeledField';
-import GeneralButton from '../../common/component/button/GeneralButton';
 
 const radioOptions = [{
     name: 'url',
@@ -23,7 +28,7 @@ const radioOptions = [{
     name: 'xml',
     value: 'FILE',
     label: 'XML File'
-}]
+}];
 
 const useStyles = createUseStyles({
     samlForm: {
@@ -35,20 +40,15 @@ const useStyles = createUseStyles({
     }
 });
 
-const SamlForm = ({ csrfToken, errorHandler, readonly, displayTest, fileDelete, fileRead, fileWrite }) => {
+const SamlForm = ({ csrfToken, errorHandler, readonly, fileDelete, fileRead, fileWrite }) => {
     const classes = useStyles();
     const [formData, setFormData] = useState({});
     const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
-    const [samlEnabled, setSamlEnabled] = useState(FieldModelUtilities.getFieldModelBooleanValue(formData, AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.enabled));
     const [showBlackDuckSSOImportModal, setShowBlackDuckSSOImportModal] = useState(false);
     const samlRequestUrl = `${ConfigurationRequestBuilder.AUTHENTICATION_SAML_API_URL}`;
 
     const importBlackDuckSSOConfigLabel = 'Retrieve Black Duck SAML Configuration';
     const importBlackDuckSSOConfigDescription = 'Fills in some of the form fields based on the SAML configuration from the chosen Black Duck server (if a SAML configuration exists).';
-
-    useEffect(() => {
-        setSamlEnabled(formData.enabled);        
-    }, [formData.enabled])
 
     const fetchData = async () => {
         const response = await ConfigurationRequestBuilder.createReadRequest(samlRequestUrl, csrfToken);
@@ -83,7 +83,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, displayTest, fileDelete, 
         }
 
         // // HACKY Remove after testing on Michaels branch
-        if (!formData.forceAuth) { 
+        if (!formData.forceAuth) {
             formData.forceAuth = false;
         }
 
@@ -91,7 +91,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, displayTest, fileDelete, 
             formData.enabled = false;
         }
 
-        if (!formData.wantAssertionsSigned) { 
+        if (!formData.wantAssertionsSigned) {
             formData.wantAssertionsSigned = false;
         }
 
@@ -128,7 +128,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, displayTest, fileDelete, 
                     errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.enabled)}
                     errorValue={errors.fieldErrors[AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.enabled]}
                 />
-                <RadioInput 
+                <RadioInput
                     id={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.metadataMode}
                     name={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.metadataMode}
                     label="SAML Identity Provider"
@@ -141,39 +141,37 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, displayTest, fileDelete, 
                     errorValue={errors.fieldErrors[AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.metadataMode]}
                 />
 
-                { (formData.metadataMode === 'URL' || !formData.metadataMode)
-                    && (
-                        <>
-                            <TextInput
-                                id={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.metadataUrl}
-                                name={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.metadataUrl}
-                                label="Identity Provider Metadata URL"
-                                description="The Metadata URL from the external Identity Provider."
-                                readOnly={readonly}
-                                onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
-                                value={formData[AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.metadataUrl] || undefined}
-                                errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.metadataUrl)}
-                                errorValue={errors.fieldErrors[AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.metadataUrl]}
-                            />
-                            <LabeledField label={importBlackDuckSSOConfigLabel} description={importBlackDuckSSOConfigDescription}>
-                                <div className={classes.fillForm}>
-                                    <GeneralButton id="blackduck-sso-import-button" disabled={readonly} onClick={() => setShowBlackDuckSSOImportModal(true)}>Fill Form</GeneralButton>
-                                </div>
-                            </LabeledField>
-                            <BlackDuckSSOConfigImportModal
-                                label={importBlackDuckSSOConfigLabel}
-                                csrfToken={csrfToken}
-                                readOnly={readonly}
-                                show={showBlackDuckSSOImportModal}
-                                onHide={() => setShowBlackDuckSSOImportModal(false)}
-                                initialSSOFieldData={formData}
-                                updateSSOFieldData={(data) => setFormData(data)}
-                            />
-                        </>
-                    )
-                }
+                { (formData.metadataMode === 'URL' || !formData.metadataMode) && (
+                    <>
+                        <TextInput
+                            id={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.metadataUrl}
+                            name={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.metadataUrl}
+                            label="Identity Provider Metadata URL"
+                            description="The Metadata URL from the external Identity Provider."
+                            readOnly={readonly}
+                            onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
+                            value={formData[AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.metadataUrl] || undefined}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.metadataUrl)}
+                            errorValue={errors.fieldErrors[AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.metadataUrl]}
+                        />
+                        <LabeledField label={importBlackDuckSSOConfigLabel} description={importBlackDuckSSOConfigDescription}>
+                            <div className={classes.fillForm}>
+                                <GeneralButton id="blackduck-sso-import-button" disabled={readonly} onClick={() => setShowBlackDuckSSOImportModal(true)}>Fill Form</GeneralButton>
+                            </div>
+                        </LabeledField>
+                        <BlackDuckSSOConfigImportModal
+                            label={importBlackDuckSSOConfigLabel}
+                            csrfToken={csrfToken}
+                            readOnly={readonly}
+                            show={showBlackDuckSSOImportModal}
+                            onHide={() => setShowBlackDuckSSOImportModal(false)}
+                            initialSSOFieldData={formData}
+                            updateSSOFieldData={(data) => setFormData(data)}
+                        />
+                    </>
+                )}
 
-                { formData.metadataMode === 'FILE' &&
+                { formData.metadataMode === 'FILE' && (
                     <UploadFileButtonField
                         id={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.metadataFilePath}
                         name={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.metadataFilePath}
@@ -199,7 +197,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, displayTest, fileDelete, 
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.metadataFilePath)}
                         errorValue={errors.fieldErrors[AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.metadataFilePath]}
                     />
-                }
+                )}
 
                 <CheckboxInput
                     id={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.wantAssertionsSigned}
@@ -366,7 +364,6 @@ SamlForm.propTypes = {
     csrfToken: PropTypes.string.isRequired,
     errorHandler: PropTypes.object.isRequired,
     readonly: PropTypes.bool,
-    displayTest: PropTypes.bool,
     fileRead: PropTypes.bool,
     fileWrite: PropTypes.bool,
     fileDelete: PropTypes.bool

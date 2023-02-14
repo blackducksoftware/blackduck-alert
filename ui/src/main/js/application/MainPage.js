@@ -23,7 +23,6 @@ import SchedulingConfiguration from 'page/scheduling/SchedulingConfiguration';
 import { SETTINGS_INFO } from 'page/settings/SettingsModel';
 import SettingsConfiguration from 'page/settings/standalone/SettingsConfiguration';
 import { AUTHENTICATION_INFO } from 'application/auth/AuthenticationModel';
-import AuthenticationConfiguration from 'application/auth/AuthenticationConfiguration';
 import AuthenticationPageLayout from 'application/auth/AuthenticationPageLayout';
 import { BLACKDUCK_INFO, BLACKDUCK_URLS } from 'page/provider/blackduck/BlackDuckModel';
 import BlackDuckProviderConfiguration from 'page/provider/blackduck/BlackDuckProviderConfiguration';
@@ -46,10 +45,6 @@ import DescriptorRoute from 'common/component/descriptor/DescriptorRoute';
 import EmailGlobalConfiguration from 'page/channel/email/EmailGlobalConfiguration';
 import ConcreteJiraServerGlobalConfiguration from 'page/channel/jira/server/ConcreteJiraServerGlobalConfiguration';
 import ConcreteJiraServerGlobalConfigurationTable from 'page/channel/jira/server/ConcreteJiraServerGlobalConfigurationTable';
-
-import BetaPage from 'common/component/beta/BetaPage';
-import BetaComponent from 'common/component/beta/BetaComponent';
-import CurrentComponent from 'common/component/beta/CurrentComponent';
 
 const MainPage = ({
     descriptors, fetching, getDescriptorsRedux, csrfToken, autoRefresh, unauthorizedFunction
@@ -234,32 +229,16 @@ const MainPage = ({
                 descriptor={globalDescriptorMap[AUTHENTICATION_INFO.key]}
                 hasTestFields
                 render={(readOnly, showTest, showSave) => (
-                    <BetaPage betaSelected>
-                        <BetaComponent>
-                            <AuthenticationPageLayout
-                                csrfToken={csrfToken}
-                                readonly={readOnly}
-                                displayTest={showTest}
-                                displaySave={showSave}
-                                errorHandler={errorHandler}
-                                fileRead={isOperationAssigned(globalDescriptorMap[AUTHENTICATION_INFO.key], OPERATIONS.UPLOAD_FILE_READ)}
-                                fileWrite={isOperationAssigned(globalDescriptorMap[AUTHENTICATION_INFO.key], OPERATIONS.UPLOAD_FILE_WRITE)}
-                                fileDelete={isOperationAssigned(globalDescriptorMap[AUTHENTICATION_INFO.key], OPERATIONS.UPLOAD_FILE_DELETE)}
-                            />
-                        </BetaComponent>
-                        <CurrentComponent>
-                            <AuthenticationConfiguration
-                                csrfToken={csrfToken}
-                                errorHandler={errorHandler}
-                                readonly={readOnly}
-                                displayTest={showTest}
-                                displaySave={showSave}
-                                fileRead={isOperationAssigned(globalDescriptorMap[AUTHENTICATION_INFO.key], OPERATIONS.UPLOAD_FILE_READ)}
-                                fileWrite={isOperationAssigned(globalDescriptorMap[AUTHENTICATION_INFO.key], OPERATIONS.UPLOAD_FILE_WRITE)}
-                                fileDelete={isOperationAssigned(globalDescriptorMap[AUTHENTICATION_INFO.key], OPERATIONS.UPLOAD_FILE_DELETE)}
-                            />
-                        </CurrentComponent>
-                    </BetaPage>
+                    <AuthenticationPageLayout
+                        csrfToken={csrfToken}
+                        readonly={readOnly}
+                        displayTest={showTest}
+                        displaySave={showSave}
+                        errorHandler={errorHandler}
+                        fileRead={isOperationAssigned(globalDescriptorMap[AUTHENTICATION_INFO.key], OPERATIONS.UPLOAD_FILE_READ)}
+                        fileWrite={isOperationAssigned(globalDescriptorMap[AUTHENTICATION_INFO.key], OPERATIONS.UPLOAD_FILE_WRITE)}
+                        fileDelete={isOperationAssigned(globalDescriptorMap[AUTHENTICATION_INFO.key], OPERATIONS.UPLOAD_FILE_DELETE)}
+                    />
                 )}
             />
             <DescriptorRoute
