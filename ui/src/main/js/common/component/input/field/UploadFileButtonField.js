@@ -38,10 +38,7 @@ const UploadFileButtonField = ({
         const request = createReadRequest((customEndpoint || `/alert${endpoint}/${fieldKey}/exists`), csrfToken);
         request.then((response) => {
             if (response.ok) {
-                response.json().then((data) => {
-                    const { exists } = data;
-                    setFileUploaded(exists);
-                });
+                setFileUploaded(true);
             } else {
                 setFileUploaded(false);
             }
