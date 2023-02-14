@@ -137,7 +137,7 @@ const UploadFileButtonField = ({
                                     {buttonLabel}
                                 </GeneralButton>
                                 {fileUploaded
-                                && <button disabled={readOnly || !permissions.read || !permissions.delete} id={`${fieldKey}-delete`} type="reset" className="btn btn-md btn-link" onClick={onDeleteClick}>Remove Uploaded File</button>}
+                                && <button disabled={readOnly || !permissions.read || !permissions.delete} id={`${fieldKey}-delete`} className="btn btn-md btn-link" onClick={onDeleteClick}>Remove Uploaded File</button>}
                             </div>
                         </div>
                     </div>
