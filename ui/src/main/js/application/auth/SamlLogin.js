@@ -1,5 +1,4 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
 import { createUseStyles } from 'react-jss';
 
 const useStyles = createUseStyles({
@@ -24,7 +23,7 @@ const useStyles = createUseStyles({
         '&:not(:empty):after': {
             marginLeft: '.5em',
             marginRight: '3em'
-        },
+        }
     },
     samlLoginAction: {
         display: 'flex',
@@ -34,7 +33,6 @@ const useStyles = createUseStyles({
     loginButton: {
         background: 'none',
         width: '200px',
-        color: 'inherit',
         border: 'solid .5px',
         padding: ['6px', '20px'],
         margin: ['10px', 'auto', '20px', 'auto'],
@@ -48,11 +46,10 @@ const useStyles = createUseStyles({
             outline: 0
         }
     }
-})
+});
 
 const SamlLogin = () => {
     const classes = useStyles();
-    const dispatch = useDispatch();
 
     // Should redirect to Okta
     function handleClick() {

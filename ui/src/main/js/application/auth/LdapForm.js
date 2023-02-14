@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 
@@ -36,7 +36,6 @@ const REFERRAL_TYPES = [
 const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
     const classes = useStyles();
     const [formData, setFormData] = useState({});
-    const [showTestModal, setShowTestModal] = useState(false);
     const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
     const [testFormData, setTestFormData] = useState({});
     const ldapRequestUrl = `${ConfigurationRequestBuilder.AUTHENTICATION_LDAP_API_URL}`;
@@ -46,7 +45,7 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
         const data = await response.json();
         if (data) {
             setFormData(data);
-            setTestFormData({ldapConfigModel: data});
+            setTestFormData({ ldapConfigModel: data });
         }
     };
 
@@ -63,7 +62,7 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
     }
 
     function handleTestRequest() {
-        return ConfigurationRequestBuilder.createTestRequest(ldapRequestUrl, csrfToken, testFormData)
+        return ConfigurationRequestBuilder.createTestRequest(ldapRequestUrl, csrfToken, testFormData);
     }
 
     function handleValidation() {
@@ -75,11 +74,11 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
         }
 
         if (formData?.authenticationType && formData?.authenticationType.length > 0) {
-            formData.authenticationType = formData.authenticationType[0]
+            formData.authenticationType = formData.authenticationType[0];
         }
 
         if (formData?.referral && formData?.referral.length > 0) {
-            formData.referral = formData.referral[0]
+            formData.referral = formData.referral[0];
         }
 
         if (formData.managerPassword && !formData.isManagerPasswordSet) {
@@ -88,10 +87,6 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
 
         setFormData(formData);
         return ConfigurationRequestBuilder.createValidateRequest(ldapRequestUrl, csrfToken, formData);
-    }
-
-    function handleShowTestModal() {
-        setShowTestModal(!showTestModal);
     }
 
     // Revise this to it's own modal when we overhaul the modal changes.
@@ -117,7 +112,7 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
                 value={testFormData[AUTHENTICATION_LDAP_GLOBAL_TEST_FIELD_KEYS.testLDAPPassword]}
             />
         </div>
-    )
+    );
 
     return (
         <div className={classes.ldapForm}>

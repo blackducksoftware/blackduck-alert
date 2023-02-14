@@ -15,16 +15,16 @@ const LoginPage = () => {
     const [loginForm, setLoginForm] = useState({
         username: '',
         password: ''
-    })
+    });
 
     function handleChange({ target }) {
         const { name, value } = target;
-        setLoginForm({...loginForm, [name]: value});
+        setLoginForm({ ...loginForm, [name]: value });
     }
 
     function handleSubmit(evt) {
         evt.preventDefault();
-        dispatch(login(loginForm.username,loginForm.password));
+        dispatch(login(loginForm.username, loginForm.password));
     }
 
     return (
@@ -77,6 +77,6 @@ const LoginPage = () => {
             </div>
         </div>
     );
-}
+};
 
 export default LoginPage;

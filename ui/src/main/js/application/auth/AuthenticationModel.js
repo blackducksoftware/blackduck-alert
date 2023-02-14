@@ -18,7 +18,7 @@ export const AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS = {
     groupSearchBase: 'groupSearchBase',
     groupSearchFilter: 'groupSearchFilter',
     groupRoleAttribute: 'groupRoleAttribute'
-}
+};
 
 export const AUTHENTICATION_LDAP_GLOBAL_TEST_FIELD_KEYS = {
     testLDAPUsername: 'testLDAPUsername',
@@ -38,4 +38,4 @@ export const AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS = {
     signingPrivateKeyFilePath: 'signingPrivateKeyFilePath',
     verificationCertFilePath: 'verificationCertFilePath',
     wantAssertionsSigned: 'wantAssertionsSigned'
-}
+};

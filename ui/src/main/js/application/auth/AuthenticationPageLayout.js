@@ -12,8 +12,9 @@ import { Tab, Tabs } from 'react-bootstrap';
 import { AUTHENTICATION_INFO } from 'application/auth/AuthenticationModel';
 import { CONTEXT_TYPE } from 'common/util/descriptorUtilities';
 
-
-const AuthenticationPageLayout = ({ csrfToken, errorHandler, readonly, displayTest, displaySave, fileRead, fileWrite, fileDelete }) => {
+const AuthenticationPageLayout = ({
+    csrfToken, errorHandler, readonly, displayTest, displaySave, fileRead, fileWrite, fileDelete
+}) => {
     const [formData, setFormData] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, AUTHENTICATION_INFO.key));
 
     const retrieveData = async () => {
@@ -25,7 +26,7 @@ const AuthenticationPageLayout = ({ csrfToken, errorHandler, readonly, displayTe
 
     useEffect(() => {
         retrieveData()
-    }, [])
+    }, []);
 
     return (
         <div>
@@ -37,7 +38,7 @@ const AuthenticationPageLayout = ({ csrfToken, errorHandler, readonly, displayTe
             />
             <Tabs defaultActiveKey={1} id="user-management-tabs">
                 <Tab eventKey={1} title="LDAP">
-                    <LdapForm 
+                    <LdapForm
                         csrfToken={csrfToken}
                         readonly={readonly}
                         errorHandler={errorHandler}
@@ -66,6 +67,7 @@ AuthenticationPageLayout.propTypes = {
     errorHandler: PropTypes.object.isRequired,
     readonly: PropTypes.bool,
     displayTest: PropTypes.bool,
+    displaySave: PropTypes.bool,
     fileRead: PropTypes.bool,
     fileWrite: PropTypes.bool,
     fileDelete: PropTypes.bool

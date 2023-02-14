@@ -23,7 +23,6 @@ import SchedulingConfiguration from 'page/scheduling/SchedulingConfiguration';
 import { SETTINGS_INFO } from 'page/settings/SettingsModel';
 import SettingsConfiguration from 'page/settings/standalone/SettingsConfiguration';
 import { AUTHENTICATION_INFO } from 'application/auth/AuthenticationModel';
-import AuthenticationConfiguration from 'application/auth/AuthenticationConfiguration';
 import AuthenticationPageLayout from 'application/auth/AuthenticationPageLayout';
 import { BLACKDUCK_INFO, BLACKDUCK_URLS } from 'page/provider/blackduck/BlackDuckModel';
 import BlackDuckProviderConfiguration from 'page/provider/blackduck/BlackDuckProviderConfiguration';
