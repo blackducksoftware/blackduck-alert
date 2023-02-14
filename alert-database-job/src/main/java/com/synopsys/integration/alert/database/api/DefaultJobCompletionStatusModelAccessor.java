@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
+import com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.executions.JobCompletionStatusDurations;
 import com.synopsys.integration.alert.common.persistence.model.job.executions.JobCompletionStatusModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
@@ -25,13 +26,13 @@ import com.synopsys.integration.alert.database.job.execution.JobCompletionStatus
 import com.synopsys.integration.alert.database.job.execution.JobCompletionStatusEntity;
 
 @Component
-public class DefaultJobCompletionStatusModel implements com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModel {
+public class DefaultJobCompletionStatusModelAccessor implements JobCompletionStatusModelAccessor {
 
     private final JobCompletionRepository jobCompletionRepository;
     private final JobCompletionDurationsRepository jobCompletionDurationsRepository;
 
     @Autowired
-    public DefaultJobCompletionStatusModel(JobCompletionRepository jobCompletionRepository, JobCompletionDurationsRepository jobCompletionDurationsRepository) {
+    public DefaultJobCompletionStatusModelAccessor(JobCompletionRepository jobCompletionRepository, JobCompletionDurationsRepository jobCompletionDurationsRepository) {
         this.jobCompletionRepository = jobCompletionRepository;
         this.jobCompletionDurationsRepository = jobCompletionDurationsRepository;
     }

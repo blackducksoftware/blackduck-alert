@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
+import com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.executions.JobCompletionStatusDurations;
 import com.synopsys.integration.alert.common.persistence.model.job.executions.JobCompletionStatusModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
@@ -25,10 +26,10 @@ import com.synopsys.integration.alert.common.util.DateUtils;
 public class ExecutingJobManager {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final Map<UUID, ExecutingJob> executingJobMap = new ConcurrentHashMap<>();
-    private final com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModel jobCompletionStatusAccessor;
+    private final JobCompletionStatusModelAccessor jobCompletionStatusAccessor;
 
     @Autowired
-    public ExecutingJobManager(com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModel jobCompletionStatusAccessor) {
+    public ExecutingJobManager(JobCompletionStatusModelAccessor jobCompletionStatusAccessor) {
         this.jobCompletionStatusAccessor = jobCompletionStatusAccessor;
     }
 

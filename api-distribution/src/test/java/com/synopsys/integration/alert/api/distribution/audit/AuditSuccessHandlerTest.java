@@ -15,22 +15,23 @@ import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobMan
 import com.synopsys.integration.alert.api.distribution.mock.MockJobCompletionStatusDurationsRepository;
 import com.synopsys.integration.alert.api.distribution.mock.MockJobCompletionStatusRepository;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
+import com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.executions.JobCompletionStatusModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedQueryDetails;
-import com.synopsys.integration.alert.database.api.DefaultJobCompletionStatusModel;
+import com.synopsys.integration.alert.database.api.DefaultJobCompletionStatusModelAccessor;
 import com.synopsys.integration.alert.database.job.execution.JobCompletionDurationsRepository;
 import com.synopsys.integration.alert.database.job.execution.JobCompletionRepository;
 
 class AuditSuccessHandlerTest {
     private ExecutingJobManager executingJobManager;
-    private com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModel jobCompletionStatusModel;
+    private JobCompletionStatusModelAccessor jobCompletionStatusModelAccessor;
 
     @BeforeEach
     public void init() {
         JobCompletionDurationsRepository jobCompletionDurationsRepository = new MockJobCompletionStatusDurationsRepository();
         JobCompletionRepository jobCompletionRepository = new MockJobCompletionStatusRepository(jobCompletionDurationsRepository);
-        jobCompletionStatusModel = new DefaultJobCompletionStatusModel(jobCompletionRepository, jobCompletionDurationsRepository);
-        executingJobManager = new ExecutingJobManager(jobCompletionStatusModel);
+        jobCompletionStatusModelAccessor = new DefaultJobCompletionStatusModelAccessor(jobCompletionRepository, jobCompletionDurationsRepository);
+        executingJobManager = new ExecutingJobManager(jobCompletionStatusModelAccessor);
     }
 
     @Test
@@ -41,7 +42,7 @@ class AuditSuccessHandlerTest {
         AuditSuccessHandler handler = new AuditSuccessHandler(executingJobManager);
         AuditSuccessEvent event = new AuditSuccessEvent(jobExecutionId, Set.of());
         handler.handle(event);
-        JobCompletionStatusModel statusModel = jobCompletionStatusModel.getJobExecutionStatus(jobId)
+        JobCompletionStatusModel statusModel = jobCompletionStatusModelAccessor.getJobExecutionStatus(jobId)
             .orElseThrow(() -> new AssertionError("Executing Job cannot be missing from the test."));
         assertEquals(AuditEntryStatus.SUCCESS.name(), statusModel.getLatestStatus());
         assertEquals(1, statusModel.getSuccessCount());
@@ -60,7 +61,7 @@ class AuditSuccessHandlerTest {
         handler.handle(event);
         Optional<ExecutingJob> executingJob = executingJobManager.getExecutingJob(jobExecutionId);
         assertTrue(executingJob.isEmpty());
-        assertTrue(jobCompletionStatusModel.getJobExecutionStatus(pagedQueryDetails).getModels().isEmpty());
+        assertTrue(jobCompletionStatusModelAccessor.getJobExecutionStatus(pagedQueryDetails).getModels().isEmpty());
         assertTrue(executingJobManager.getExecutingJob(jobExecutionId).isEmpty());
     }
 }

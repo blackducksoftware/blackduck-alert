@@ -18,6 +18,7 @@ import com.synopsys.integration.alert.api.distribution.execution.JobStage;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
+import com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModelBuilder;
 import com.synopsys.integration.alert.common.persistence.model.job.executions.JobCompletionStatusDurations;
@@ -49,7 +50,7 @@ class DefaultDiagnosticAccessorTest {
     private RabbitMQDiagnosticUtility rabbitMQDiagnosticUtility;
     private ExecutingJobManager executingJobManager;
     private StaticJobAccessor staticJobAccessor;
-    private com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModel completedJobsAccessor;
+    private JobCompletionStatusModelAccessor completedJobsAccessor;
 
     @BeforeEach
     public void init() {
@@ -57,9 +58,9 @@ class DefaultDiagnosticAccessorTest {
         auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         rabbitMQDiagnosticUtility = Mockito.mock(RabbitMQDiagnosticUtility.class);
         staticJobAccessor = Mockito.mock(StaticJobAccessor.class);
-        completedJobsAccessor = Mockito.mock(com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModel.class);
-        com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModel jobCompletionStatusModel = Mockito.mock(com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModel.class);
-        executingJobManager = new ExecutingJobManager(jobCompletionStatusModel);
+        completedJobsAccessor = Mockito.mock(JobCompletionStatusModelAccessor.class);
+        JobCompletionStatusModelAccessor jobCompletionStatusModelAccessor = Mockito.mock(JobCompletionStatusModelAccessor.class);
+        executingJobManager = new ExecutingJobManager(jobCompletionStatusModelAccessor);
     }
 
     @Test

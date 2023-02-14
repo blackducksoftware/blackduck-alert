@@ -27,6 +27,7 @@ import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobSta
 import com.synopsys.integration.alert.api.distribution.execution.JobStage;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.persistence.accessor.DiagnosticAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModelData;
 import com.synopsys.integration.alert.common.persistence.model.job.executions.JobCompletionStatusDurations;
@@ -62,7 +63,7 @@ public class DefaultDiagnosticAccessor implements DiagnosticAccessor {
 
     private final StaticJobAccessor jobAccessor;
     private final ExecutingJobManager executingJobManager;
-    private final com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModel completedJobStatusAccessor;
+    private final JobCompletionStatusModelAccessor completedJobStatusAccessor;
 
     @Autowired
     public DefaultDiagnosticAccessor(
@@ -70,7 +71,7 @@ public class DefaultDiagnosticAccessor implements DiagnosticAccessor {
         AuditEntryRepository auditEntryRepository,
         RabbitMQDiagnosticUtility rabbitMQDiagnosticUtility,
         StaticJobAccessor staticJobAccessor,
-        com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModel completedJobStatusAccessor,
+        JobCompletionStatusModelAccessor completedJobStatusAccessor,
         ExecutingJobManager executingJobManager
     ) {
         this.notificationContentRepository = notificationContentRepository;

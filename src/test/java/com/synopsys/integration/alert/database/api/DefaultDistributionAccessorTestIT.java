@@ -34,6 +34,7 @@ import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.persistence.accessor.DistributionAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
@@ -75,7 +76,7 @@ class DefaultDistributionAccessorTestIT {
     @Autowired
     private ExecutingJobManager executingJobManager;
     @Autowired
-    private com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModel jobCompletionStatusAccessor;
+    private JobCompletionStatusModelAccessor jobCompletionStatusAccessor;
 
     private final List<UUID> createdJobs = new LinkedList<>();
 
