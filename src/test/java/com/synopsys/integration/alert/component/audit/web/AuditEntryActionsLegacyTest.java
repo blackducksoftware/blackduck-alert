@@ -148,9 +148,31 @@ public class AuditEntryActionsLegacyTest {
         int currentPage = 0;
         int pageSize = 2;
         OffsetDateTime createdAt = DateUtils.createCurrentDateTimestamp();
-        AlertNotificationModel entity_1 = new AlertNotificationModel(1L, 1L, "provider", "providerConfigName", "notificationType", "{content: \"content is here...\"}", createdAt, createdAt, false);
+        AlertNotificationModel entity_1 = new AlertNotificationModel(
+            1L,
+            1L,
+            "provider",
+            "providerConfigName",
+            "notificationType",
+            "{content: \"content is here...\"}",
+            createdAt,
+            createdAt,
+            false,
+            String.format("content-id-%s", UUID.randomUUID())
+        );
         entity_1.setId(1L);
-        AlertNotificationModel entity_2 = new AlertNotificationModel(2L, 2L, "provider", "providerConfigName", "notificationType", "{content: \"content is here...\"}", createdAt, createdAt, false);
+        AlertNotificationModel entity_2 = new AlertNotificationModel(
+            2L,
+            2L,
+            "provider",
+            "providerConfigName",
+            "notificationType",
+            "{content: \"content is here...\"}",
+            createdAt,
+            createdAt,
+            false,
+            String.format("content-id-%s", UUID.randomUUID())
+        );
         entity_2.setId(2L);
         List<AlertNotificationModel> pagedEntryList = Arrays.asList(entity_1, entity_2);
         Page<AlertNotificationModel> pageResponse = Mockito.mock(Page.class);

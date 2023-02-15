@@ -8,6 +8,7 @@
 package com.synopsys.integration.alert.channel.jira.server.distribution.event;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -19,9 +20,10 @@ public class JiraServerCreateIssueEventListener extends IssueTrackerCreateIssueE
     @Autowired
     public JiraServerCreateIssueEventListener(
         Gson gson,
+        TaskExecutor taskExecutor,
         JiraServerChannelKey channelKey,
         JiraServerCreateIssueEventHandler eventHandler
     ) {
-        super(gson, channelKey, eventHandler);
+        super(gson, taskExecutor, channelKey, eventHandler);
     }
 }

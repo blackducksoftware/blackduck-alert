@@ -7,6 +7,8 @@
  */
 package com.synopsys.integration.alert.component.diagnostic.model;
 
+import java.util.List;
+
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
 public class NotificationDiagnosticModel extends AlertSerializableModel {
@@ -16,10 +18,18 @@ public class NotificationDiagnosticModel extends AlertSerializableModel {
     private final Long numberOfNotificationsProcessed;
     private final Long numberOfNotificationsUnprocessed;
 
-    public NotificationDiagnosticModel(Long numberOfNotifications, Long numberOfNotificationsProcessed, Long numberOfNotificationsUnprocessed) {
+    private final List<ProviderNotificationCounts> providerNotificationCounts;
+
+    public NotificationDiagnosticModel(
+        Long numberOfNotifications,
+        Long numberOfNotificationsProcessed,
+        Long numberOfNotificationsUnprocessed,
+        List<ProviderNotificationCounts> providerNotificationCounts
+    ) {
         this.numberOfNotifications = numberOfNotifications;
         this.numberOfNotificationsProcessed = numberOfNotificationsProcessed;
         this.numberOfNotificationsUnprocessed = numberOfNotificationsUnprocessed;
+        this.providerNotificationCounts = providerNotificationCounts;
     }
 
     public Long getNumberOfNotifications() {
@@ -32,5 +42,9 @@ public class NotificationDiagnosticModel extends AlertSerializableModel {
 
     public Long getNumberOfNotificationsUnprocessed() {
         return numberOfNotificationsUnprocessed;
+    }
+
+    public List<ProviderNotificationCounts> getProviderNotificationCounts() {
+        return providerNotificationCounts;
     }
 }

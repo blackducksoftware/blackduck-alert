@@ -20,6 +20,9 @@ public class JobSubTaskStatusEntity extends BaseEntity {
     @Column(name = "job_id")
     private UUID jobId;
 
+    @Column(name = "job_execution_id")
+    private UUID jobExecutionId;
+
     @Column(name = "remaining_event_count")
     private Long remainingEvents;
 
@@ -29,9 +32,10 @@ public class JobSubTaskStatusEntity extends BaseEntity {
     public JobSubTaskStatusEntity() {
     }
 
-    public JobSubTaskStatusEntity(UUID id, UUID jobId, Long remainingEvents, UUID notificationCorrelationId) {
+    public JobSubTaskStatusEntity(UUID id, UUID jobId, UUID jobExecutionId, Long remainingEvents, UUID notificationCorrelationId) {
         this.id = id;
         this.jobId = jobId;
+        this.jobExecutionId = jobExecutionId;
         this.remainingEvents = remainingEvents;
         this.notificationCorrelationId = notificationCorrelationId;
     }
@@ -42,6 +46,10 @@ public class JobSubTaskStatusEntity extends BaseEntity {
 
     public UUID getJobId() {
         return jobId;
+    }
+
+    public UUID getJobExecutionId() {
+        return jobExecutionId;
     }
 
     public Long getRemainingEvents() {

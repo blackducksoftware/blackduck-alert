@@ -164,17 +164,17 @@ public class IntegrationPerformanceTestRunner {
         }
 
         WaitJobCondition waitJobCondition = createWaitJobCondition(
-            waitForAuditComplete,
+            blackDuckProviderID,
             Set.of(jobId),
             startingNotificationTime,
-            numberOfExpectedAuditEntries,
-            NotificationType.RULE_VIOLATION
+            numberOfExpectedAuditEntries
         );
         return waitForJobToFinish(startingNotificationTime, waitJobCondition);
     }
 
     public PerformanceExecutionStatusModel testManyPolicyJobsToManyProjects(
         Set<String> jobIds,
+        String blackDuckProviderID,
         String policyName,
         int numberOfExpectedAuditEntries,
         boolean waitForAuditComplete
@@ -190,11 +190,10 @@ public class IntegrationPerformanceTestRunner {
         }
 
         WaitJobCondition waitJobCondition = createWaitJobCondition(
-            waitForAuditComplete,
+            blackDuckProviderID,
             jobIds,
             startingNotificationTime,
-            numberOfExpectedAuditEntries,
-            NotificationType.RULE_VIOLATION
+            numberOfExpectedAuditEntries
         );
         return waitForJobToFinish(startingNotificationTime, waitJobCondition);
     }
@@ -241,55 +240,20 @@ public class IntegrationPerformanceTestRunner {
         }
     }
 
-    private AuditCompleteWaitJobTask createAuditCompleteWaitTask(
-        Set<String> jobIds,
-        LocalDateTime startingNotificationTime,
-        int numberOfExpectedAuditEntries,
-        NotificationType notificationType
-    ) {
-        return new AuditCompleteWaitJobTask(
-            intLogger,
-            dateTimeFormatter,
-            gson,
-            alertRequestUtility,
-            startingNotificationTime,
-            numberOfExpectedAuditEntries,
-            notificationType,
-            jobIds
-        );
-    }
-
-    private AuditProcessingWaitJobTask createAuditProcessingWaitTask(
-        Set<String> jobIds,
-        LocalDateTime startingNotificationTime,
-        int numberOfExpectedAuditEntries,
-        NotificationType notificationType
-    ) {
-        return new AuditProcessingWaitJobTask(
-            intLogger,
-            dateTimeFormatter,
-            gson,
-            alertRequestUtility,
-            startingNotificationTime,
-            numberOfExpectedAuditEntries,
-            notificationType,
-            jobIds
-        );
-    }
-
     private WaitJobCondition createWaitJobCondition(
-        boolean waitForAuditComplete,
+        String blackDuckProviderId,
         Set<String> jobIds,
         LocalDateTime startingNotificationTime,
-        int numberOfExpectedAuditEntries,
-        NotificationType notificationType
+        int numberOfExpectedAuditEntries
     ) {
-        WaitJobCondition waitJobCondition;
-        if (waitForAuditComplete) {
-            waitJobCondition = createAuditCompleteWaitTask(jobIds, startingNotificationTime, numberOfExpectedAuditEntries, notificationType);
-        } else {
-            waitJobCondition = createAuditProcessingWaitTask(jobIds, startingNotificationTime, numberOfExpectedAuditEntries, notificationType);
-        }
-        return waitJobCondition;
+        return new ProcessingCompleteWaitJobTask(
+            intLogger,
+            gson,
+            alertRequestUtility,
+            startingNotificationTime,
+            numberOfExpectedAuditEntries,
+            jobIds,
+            Long.valueOf(blackDuckProviderId)
+        );
     }
 }

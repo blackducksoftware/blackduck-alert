@@ -124,7 +124,8 @@ public class NotificationProcessorTest {
             notificationContent,
             OffsetDateTime.now(),
             OffsetDateTime.now(),
-            false
+            false,
+            String.format("content-id-%s", UUID.randomUUID())
         );
     }
 

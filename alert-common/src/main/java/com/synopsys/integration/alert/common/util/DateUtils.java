@@ -9,6 +9,8 @@ package com.synopsys.integration.alert.common.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -41,7 +43,11 @@ public final class DateUtils {
     }
 
     public static OffsetDateTime fromDateUTC(Date date) {
-        return OffsetDateTime.ofInstant(date.toInstant(), ZoneOffset.UTC);
+        return fromInstantUTC(date.toInstant());
+    }
+
+    public static OffsetDateTime fromInstantUTC(Instant instant) {
+        return OffsetDateTime.ofInstant(instant, ZoneOffset.UTC);
     }
 
     public static OffsetDateTime parseDate(String dateTime, String format) throws ParseException {
@@ -56,6 +62,16 @@ public final class DateUtils {
 
     public static OffsetDateTime parseDateFromJsonString(String dateTime) throws ParseException {
         return parseDate(dateTime, RestConstants.JSON_DATE_FORMAT);
+    }
+
+    public static String formatDurationFromMilliseconds(Long milliseconds) {
+        Duration duration = Duration.ofMillis(milliseconds);
+        return String.format("%sH:%sm:%ss.%s", duration.toHoursPart(), duration.toMinutesPart(), duration.toSecondsPart(), duration.toMillisPart());
+    }
+
+    public static String formatDurationFromNanos(Long nanoseconds) {
+        Duration duration = Duration.ofNanos(nanoseconds);
+        return String.format("%sH:%sm:%ss.%s", duration.toHoursPart(), duration.toMinutesPart(), duration.toSecondsPart(), duration.toNanosPart());
     }
 
     private DateUtils() {

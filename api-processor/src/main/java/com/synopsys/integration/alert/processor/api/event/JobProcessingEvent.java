@@ -31,5 +31,4 @@ public class JobProcessingEvent extends AlertEvent {
     public UUID getJobId() {
         return jobId;
     }
-
 }

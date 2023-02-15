@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.mock.entity;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.common.util.DateUtils;
@@ -43,7 +44,16 @@ public class MockNotificationContent extends MockEntityUtil<NotificationEntity> 
 
     @Override
     public NotificationEntity createEntity() {
-        NotificationEntity notificationContent = new NotificationEntity(createdAt, provider, providerConfigId, providerCreationTime, notificationType, content, false);
+        NotificationEntity notificationContent = new NotificationEntity(
+            createdAt,
+            provider,
+            providerConfigId,
+            providerCreationTime,
+            notificationType,
+            content,
+            false,
+            String.format("content-id-%s", UUID.randomUUID())
+        );
         notificationContent.setId(id);
         return notificationContent;
     }
