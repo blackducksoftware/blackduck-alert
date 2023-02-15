@@ -13,9 +13,10 @@ class AuditEventTest {
     @Test
     void constructorTest() {
         String destination = "destination";
+        UUID jobConfigId = UUID.randomUUID();
         UUID jobExecutionId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
-        AuditEvent event = new AuditEvent(destination, jobExecutionId, notificationIds);
+        AuditEvent event = new AuditEvent(destination, jobExecutionId, jobConfigId, notificationIds);
 
         assertEquals(destination, event.getDestination());
         assertEquals(jobExecutionId, event.getJobExecutionId());

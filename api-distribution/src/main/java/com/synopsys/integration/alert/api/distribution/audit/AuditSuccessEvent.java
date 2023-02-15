@@ -8,7 +8,7 @@ public class AuditSuccessEvent extends AuditEvent {
 
     public static final String DEFAULT_DESTINATION_NAME = "audit_success_event";
 
-    public AuditSuccessEvent(UUID jobExecutionId, Set<Long> notificationIds) {
-        super(DEFAULT_DESTINATION_NAME, jobExecutionId, notificationIds);
+    public AuditSuccessEvent(UUID jobExecutionId, UUID jobConfigId, Set<Long> notificationIds) {
+        super(DEFAULT_DESTINATION_NAME, jobExecutionId, jobConfigId, notificationIds);
     }
 }

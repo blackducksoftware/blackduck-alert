@@ -48,6 +48,7 @@ public abstract class MessageBoardChannel<D extends DistributionJobDetailsModel,
         D distributionDetails,
         ProviderMessageHolder messages,
         String jobName,
+        UUID jobConfigId,
         UUID parentEventId,
         UUID jobExecutionId,
         Set<Long> notificationIds
@@ -56,7 +57,7 @@ public abstract class MessageBoardChannel<D extends DistributionJobDetailsModel,
         List<T> channelMessages = channelMessageConverter.convertToChannelMessages(distributionDetails, messages, jobName);
         MessageResult messageResult = channelMessageSender.sendMessages(distributionDetails, channelMessages);
         executingJobManager.incrementSentNotificationCount(jobExecutionId, notificationIds.size());
-        eventManager.sendEvent(new AuditSuccessEvent(jobExecutionId, notificationIds));
+        eventManager.sendEvent(new AuditSuccessEvent(jobExecutionId, jobConfigId, notificationIds));
         return messageResult;
     }
 

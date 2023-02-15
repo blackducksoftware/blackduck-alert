@@ -122,6 +122,7 @@ class AuditFailedHandlerTest {
             notificationAccessor,
             jobAccessor
         );
+        UUID jobConfigId = UUID.randomUUID();
         UUID jobExecutionId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
         ExecutingJob executingJob = executingJobManager.startJob(jobExecutionId, notificationIds.size());
@@ -133,7 +134,7 @@ class AuditFailedHandlerTest {
         notificationIds.stream()
             .map(this::createNotification)
             .forEach(notificationContentRepository::save);
-        AuditFailedEvent event = new AuditFailedEvent(executingJobId, notificationIds, errorMessage, stackTrace);
+        AuditFailedEvent event = new AuditFailedEvent(executingJobId, jobConfigId, notificationIds, errorMessage, stackTrace);
 
         handler.handle(event);
 
@@ -167,6 +168,7 @@ class AuditFailedHandlerTest {
             notificationAccessor,
             jobAccessor
         );
+        UUID jobConfigId = UUID.randomUUID();
         UUID jobExecutionId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
         String errorMessage = "Error message";
@@ -176,7 +178,7 @@ class AuditFailedHandlerTest {
             .map(this::createNotification)
             .forEach(notificationContentRepository::save);
         AuditFailedHandler handler = new AuditFailedHandler(processingFailedAccessor, executingJobManager);
-        AuditFailedEvent event = new AuditFailedEvent(jobExecutionId, notificationIds, errorMessage, stackTrace);
+        AuditFailedEvent event = new AuditFailedEvent(jobExecutionId, jobConfigId, notificationIds, errorMessage, stackTrace);
 
         handler.handle(event);
 

@@ -49,7 +49,7 @@ class AuditSuccessEventListenerTest {
         UUID executingJobId = executingJob.getExecutionId();
 
         AuditSuccessEventListener listener = new AuditSuccessEventListener(gson, taskExecutor, handler);
-        AuditSuccessEvent event = new AuditSuccessEvent(executingJobId, notificationIds);
+        AuditSuccessEvent event = new AuditSuccessEvent(executingJobId, jobId, notificationIds);
         Message message = new Message(gson.toJson(event).getBytes());
         listener.onMessage(message);
 
