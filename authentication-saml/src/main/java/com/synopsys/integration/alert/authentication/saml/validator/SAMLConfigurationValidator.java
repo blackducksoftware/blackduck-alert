@@ -5,6 +5,7 @@ import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatusMessages;
 import com.synopsys.integration.alert.authentication.saml.model.SAMLConfigModel;
+import com.synopsys.integration.alert.authentication.saml.model.SAMLMetadataMode;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,21 +32,22 @@ public class SAMLConfigurationValidator {
         Optional<String> optionalMetadataUrl = model.getMetadataUrl().filter(StringUtils::isNotBlank);
         // Just check if file is upload - filePath is for showing to user their uploaded path and may not need to validate it
         boolean metadataFileExists = filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_METADATA_FILE);
+        SAMLMetadataMode samlMetadataMode = model.getMetadataMode().orElse(SAMLMetadataMode.URL);
         // One of url or file must exist
-        if (optionalMetadataUrl.isEmpty() && !metadataFileExists) {
+        if (samlMetadataMode == SAMLMetadataMode.FILE && !metadataFileExists) {
             statuses.add(AlertFieldStatus.error(
-                "metadataFile", AuthenticationDescriptor.FIELD_ERROR_SAML_METADATA_FILE_MISSING)
+                "metadataFilePath", AuthenticationDescriptor.FIELD_ERROR_SAML_METADATA_FILE_MISSING)
             );
         }
-        // Check if valid url for present, else add missing status if metadata file is also missing
-        optionalMetadataUrl.ifPresentOrElse(
-            metaDataUrl -> addErrorStatusIfInvalidUrl(metaDataUrl, "metadataUrl", statuses),
-            () -> {
-                if (!metadataFileExists) {
-                    statuses.add(AlertFieldStatus.error("metadataUrl", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
+        // Check if valid url for present for metadata URL mode
+        if (samlMetadataMode == SAMLMetadataMode.URL) {
+            optionalMetadataUrl.ifPresentOrElse(
+                metaDataUrl -> addErrorStatusIfInvalidUrl(metaDataUrl, "metadataUrl", statuses),
+                () -> {
+                    statuses.add(AlertFieldStatus.error("metadataUrl", AuthenticationDescriptor.FIELD_ERROR_SAML_METADATA_URL_MISSING));
                 }
-            }
-        );
+            );
+        }
 
         // For advanced settings, check if the following have their private keys uploaded if the cert is
         boolean signingCertFileExists = filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_SIGNING_CERT_FILE);

@@ -44,8 +44,8 @@ public class AuthenticationDescriptor extends ComponentDescriptor {
 
     public static final String FIELD_ERROR_LDAP_SERVER_MISSING = "LDAP Server is missing";
 
-    public static final String FIELD_ERROR_SAML_METADATA_URL_MISSING = "SAML Metadata URL is missing and a Metadata file has not been uploaded.";
-    public static final String FIELD_ERROR_SAML_METADATA_FILE_MISSING = "SAML Metadata file has not been uploaded and a Metadata URL has not been specified.";
+    public static final String FIELD_ERROR_SAML_METADATA_URL_MISSING = "SAML Metadata URL is selected but missing.";
+    public static final String FIELD_ERROR_SAML_METADATA_FILE_MISSING = "SAML Metadata file is selected but has not been uploaded.";
 
     public static final String SAML_METADATA_FILE = "saml_metadata.xml";
     public static final String SAML_ENCRYPTION_CERT_FILE = "saml_encryption.cert";
