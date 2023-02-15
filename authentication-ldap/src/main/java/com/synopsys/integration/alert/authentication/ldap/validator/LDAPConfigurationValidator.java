@@ -16,20 +16,15 @@ public class LDAPConfigurationValidator {
     public ValidationResponseModel validate(LDAPConfigModel ldapConfigModel) {
         Set<AlertFieldStatus> statuses = new HashSet<>();
 
-        if (null == ldapConfigModel.getEnabled()) {
-            statuses.add(AlertFieldStatus.error("enabled", AlertFieldStatusMessages.INVALID_OPTION));
-        }
-        if (null == ldapConfigModel.getIsManagerPasswordSet()) {
-            statuses.add(AlertFieldStatus.error("isManagerPasswordSet", AlertFieldStatusMessages.INVALID_OPTION));
-        }
         if (StringUtils.isBlank(ldapConfigModel.getServerName())) {
             statuses.add(AlertFieldStatus.error("serverName", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
         }
         if (StringUtils.isBlank(ldapConfigModel.getManagerDn())) {
             statuses.add(AlertFieldStatus.error("managerDn", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
         }
-        if (ldapConfigModel.getManagerPassword().isEmpty() && !Boolean.TRUE.equals(ldapConfigModel.getIsManagerPasswordSet())) {
-            statuses.add(AlertFieldStatus.error("managerPassword", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
+      if (ldapConfigModel.getManagerPassword().isEmpty()
+            && Boolean.FALSE.equals(ldapConfigModel.getIsManagerPasswordSet())) {
+                statuses.add(AlertFieldStatus.error("managerPassword", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
         }
 
         if (!statuses.isEmpty()) {

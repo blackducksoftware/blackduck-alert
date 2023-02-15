@@ -65,8 +65,10 @@ public class LDAPConfigAccessor implements UniqueConfigurationAccessor<LDAPConfi
                 .orElseThrow(() -> new AlertConfigurationException("An LDAP configuration does not exist"));
 
         if (Boolean.TRUE.equals(ldapConfigModel.getIsManagerPasswordSet())) {
-            String decryptedPassword = encryptionUtility.decrypt(existingLDAPConfigurationEntity.getManagerPassword());
-            ldapConfigModel.setManagerPassword(decryptedPassword);
+            if (ldapConfigModel.getManagerPassword().isEmpty()) {
+                String decryptedPassword = encryptionUtility.decrypt(existingLDAPConfigurationEntity.getManagerPassword());
+                ldapConfigModel.setManagerPassword(decryptedPassword);
+            }
         }
 
         LDAPConfigurationEntity updatedLDAPConfigurationEntity = toEntity(
@@ -87,6 +89,11 @@ public class LDAPConfigAccessor implements UniqueConfigurationAccessor<LDAPConfi
     }
 
     private LDAPConfigModel toModel(LDAPConfigurationEntity ldapConfigurationEntity) {
+        String managerPassword = ldapConfigurationEntity.getManagerPassword();
+        if (StringUtils.isNotBlank(managerPassword)) {
+            managerPassword = encryptionUtility.decrypt(managerPassword);
+        }
+
         return new LDAPConfigModel(
             ldapConfigurationEntity.getConfigurationId().toString(),
             DateUtils.formatDate(ldapConfigurationEntity.getCreatedAt(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE),
@@ -94,7 +101,7 @@ public class LDAPConfigAccessor implements UniqueConfigurationAccessor<LDAPConfi
             ldapConfigurationEntity.getEnabled(),
             ldapConfigurationEntity.getServerName(),
             ldapConfigurationEntity.getManagerDn(),
-            ldapConfigurationEntity.getManagerPassword(),
+            managerPassword,
             StringUtils.isNotBlank(ldapConfigurationEntity.getManagerPassword()),
             ldapConfigurationEntity.getAuthenticationType(),
             ldapConfigurationEntity.getReferral(),
@@ -116,7 +123,7 @@ public class LDAPConfigAccessor implements UniqueConfigurationAccessor<LDAPConfi
             ldapConfigModel.getEnabled(),
             ldapConfigModel.getServerName(),
             ldapConfigModel.getManagerDn(),
-            ldapConfigModel.getManagerPassword().orElse(""),
+            ldapConfigModel.getManagerPassword().map(encryptionUtility::encrypt).orElse(null),
             ldapConfigModel.getAuthenticationType().orElse(""),
             ldapConfigModel.getReferral().orElse(""),
             ldapConfigModel.getUserSearchBase().orElse(""),

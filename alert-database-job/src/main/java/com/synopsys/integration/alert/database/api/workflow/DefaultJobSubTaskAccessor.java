@@ -39,9 +39,9 @@ public class DefaultJobSubTaskAccessor implements JobSubTaskAccessor {
 
     @Override
     @Transactional
-    public JobSubTaskStatusModel createSubTaskStatus(UUID id, UUID jobId, Long remainingTaskCount, Set<Long> notificationIds) {
+    public JobSubTaskStatusModel createSubTaskStatus(UUID id, UUID jobId, UUID jobExecutionId, Long remainingTaskCount, Set<Long> notificationIds) {
         UUID notificationCorrelationId = UUID.randomUUID();
-        JobSubTaskStatusEntity entity = new JobSubTaskStatusEntity(id, jobId, remainingTaskCount, notificationCorrelationId);
+        JobSubTaskStatusEntity entity = new JobSubTaskStatusEntity(id, jobId, jobExecutionId, remainingTaskCount, notificationCorrelationId);
         entity = jobSubTaskRepository.save(entity);
 
         for (Long notificationId : notificationIds) {
@@ -59,6 +59,7 @@ public class DefaultJobSubTaskAccessor implements JobSubTaskAccessor {
             JobSubTaskStatusEntity updatedEntity = new JobSubTaskStatusEntity(
                 currentEntity.getId(),
                 currentEntity.getJobId(),
+                currentEntity.getJobExecutionId(),
                 remainingTaskCount,
                 currentEntity.getNotificationCorrelationId()
             );
@@ -74,7 +75,13 @@ public class DefaultJobSubTaskAccessor implements JobSubTaskAccessor {
         if (entity.isPresent()) {
             JobSubTaskStatusEntity item = entity.get();
             Long remainingTaskCount = item.getRemainingEvents() - 1;
-            item = jobSubTaskRepository.save(new JobSubTaskStatusEntity(item.getId(), item.getJobId(), remainingTaskCount, item.getNotificationCorrelationId()));
+            item = jobSubTaskRepository.save(new JobSubTaskStatusEntity(
+                item.getId(),
+                item.getJobId(),
+                item.getJobExecutionId(),
+                remainingTaskCount,
+                item.getNotificationCorrelationId()
+            ));
             entity = Optional.of(item);
         }
         return entity.map(this::convertEntity);
@@ -93,6 +100,6 @@ public class DefaultJobSubTaskAccessor implements JobSubTaskAccessor {
     }
 
     private JobSubTaskStatusModel convertEntity(JobSubTaskStatusEntity entity) {
-        return new JobSubTaskStatusModel(entity.getId(), entity.getJobId(), entity.getRemainingEvents(), entity.getNotificationCorrelationId());
+        return new JobSubTaskStatusModel(entity.getId(), entity.getJobId(), entity.getJobExecutionId(), entity.getRemainingEvents(), entity.getNotificationCorrelationId());
     }
 }

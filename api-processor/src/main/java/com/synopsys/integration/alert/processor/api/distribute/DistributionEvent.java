@@ -19,18 +19,25 @@ public class DistributionEvent extends AlertEvent {
     private final String jobName;
     private final Set<Long> notificationIds;
 
+    private final UUID jobExecutionId;
+
     private final ProviderMessageHolder providerMessages;
 
-    public DistributionEvent(ChannelKey destination, UUID jobId, String jobName, Set<Long> notificationIds, ProviderMessageHolder providerMessages) {
+    public DistributionEvent(ChannelKey destination, UUID jobId, UUID jobExecutionId, String jobName, Set<Long> notificationIds, ProviderMessageHolder providerMessages) {
         super(destination.getUniversalKey());
         this.jobId = jobId;
         this.jobName = jobName;
         this.notificationIds = notificationIds;
         this.providerMessages = providerMessages;
+        this.jobExecutionId = jobExecutionId;
     }
 
     public UUID getJobId() {
         return jobId;
+    }
+
+    public UUID getJobExecutionId() {
+        return jobExecutionId;
     }
 
     public String getJobName() {
