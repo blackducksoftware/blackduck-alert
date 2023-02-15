@@ -34,15 +34,15 @@ public class SAMLConfigurationValidator {
         // One of url or file must exist
         if (optionalMetadataUrl.isEmpty() && !metadataFileExists) {
             statuses.add(AlertFieldStatus.error(
-                AuthenticationDescriptor.KEY_SAML_METADATA_FILE, AuthenticationDescriptor.FIELD_ERROR_SAML_METADATA_FILE_MISSING)
+                "metadataFile", AuthenticationDescriptor.FIELD_ERROR_SAML_METADATA_FILE_MISSING)
             );
         }
         // Check if valid url for present, else add missing status if metadata file is also missing
         optionalMetadataUrl.ifPresentOrElse(
-            metaDataUrl -> addErrorStatusIfInvalidUrl(metaDataUrl, AuthenticationDescriptor.KEY_SAML_METADATA_URL, statuses),
+            metaDataUrl -> addErrorStatusIfInvalidUrl(metaDataUrl, "metadataUrl", statuses),
             () -> {
                 if (!metadataFileExists) {
-                    statuses.add(AlertFieldStatus.error(AuthenticationDescriptor.KEY_SAML_METADATA_URL, AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
+                    statuses.add(AlertFieldStatus.error("metadataUrl", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
                 }
             }
         );
