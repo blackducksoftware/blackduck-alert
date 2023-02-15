@@ -6,4 +6,7 @@
     <include file="audit-failed-table.xml" relativeToChangelogFile="true"/>
     <include file="audit-failed-purge-config.xml" relativeToChangelogFile="true"/>
     <include file="migrate-saml-configuration.xml" relativeToChangelogFile="true"/>
+    <include file="job-sub-task-execution-id.xml" relativeToChangelogFile="true"/>
+    <include file="job-execution-status.xml" relativeToChangelogFile="true"/>
+    <include file="notification-content-id.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

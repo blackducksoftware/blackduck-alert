@@ -22,6 +22,7 @@ import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetr
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.jira.cloud.distribution.JiraCloudMessageSenderFactory;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
@@ -81,6 +82,7 @@ public class JiraCloudSummaryFieldLengthTestIT {
         IssueCategoryRetriever issueCategoryRetriever = new IssueCategoryRetriever();
         JiraCloudPropertiesFactory jiraCloudPropertiesFactory = createJiraCloudPropertiesFactory(testProperties);
         EventManager eventManager = Mockito.mock(EventManager.class);
+        ExecutingJobManager executingJobManager = Mockito.mock(ExecutingJobManager.class);
         JobSubTaskAccessor jobSubTaskAccessor = Mockito.mock(JobSubTaskAccessor.class);
 
         JiraCloudMessageSenderFactory jiraCloudMessageSenderFactory = new JiraCloudMessageSenderFactory(
@@ -90,7 +92,8 @@ public class JiraCloudSummaryFieldLengthTestIT {
             new IssueTrackerCallbackInfoCreator(),
             issueCategoryRetriever,
             eventManager,
-            jobSubTaskAccessor
+            jobSubTaskAccessor,
+            executingJobManager
         );
 
         JiraCloudJobDetailsModel jiraCloudJobDetails = createJiraCloudJobDetails(testProperties);

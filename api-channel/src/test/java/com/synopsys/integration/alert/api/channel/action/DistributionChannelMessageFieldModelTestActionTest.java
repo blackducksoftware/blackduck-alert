@@ -50,7 +50,7 @@ public class DistributionChannelMessageFieldModelTestActionTest {
     }
 
     private DistributionChannel<MockDistributionJobDetailsModel> createDistributionChannel(String expectedStatusMessage) {
-        return (distributionDetails, messages, jobName, eventId, notificationIds) -> new MessageResult(expectedStatusMessage);
+        return (distributionDetails, messages, jobName, eventId, jobExecutionId, notificationIds) -> new MessageResult(expectedStatusMessage);
     }
 
     private DistributionJobModel createDistributionJobModel() {

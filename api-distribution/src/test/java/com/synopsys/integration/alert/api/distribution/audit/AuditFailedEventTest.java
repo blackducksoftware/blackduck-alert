@@ -12,14 +12,14 @@ import org.junit.jupiter.api.Test;
 class AuditFailedEventTest {
     @Test
     void constructorTest() {
-        UUID jobId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
         String errorMessage = "Error message";
         String stackTrace = "stack trace goees here";
-        AuditFailedEvent event = new AuditFailedEvent(jobId, notificationIds, errorMessage, stackTrace);
+        AuditFailedEvent event = new AuditFailedEvent(jobExecutionId, notificationIds, errorMessage, stackTrace);
 
         assertEquals(AuditFailedEvent.DEFAULT_DESTINATION_NAME, event.getDestination());
-        assertEquals(jobId, event.getJobId());
+        assertEquals(jobExecutionId, event.getJobExecutionId());
         assertEquals(notificationIds, event.getNotificationIds());
         assertNotNull(event.getCreatedTimestamp());
         assertEquals(errorMessage, event.getErrorMessage());
@@ -35,7 +35,7 @@ class AuditFailedEventTest {
         AuditFailedEvent event = new AuditFailedEvent(jobId, notificationIds, errorMessage, null);
 
         assertEquals(AuditFailedEvent.DEFAULT_DESTINATION_NAME, event.getDestination());
-        assertEquals(jobId, event.getJobId());
+        assertEquals(jobId, event.getJobExecutionId());
         assertEquals(notificationIds, event.getNotificationIds());
         assertNotNull(event.getCreatedTimestamp());
         assertEquals(errorMessage, event.getErrorMessage());

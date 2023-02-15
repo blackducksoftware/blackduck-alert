@@ -31,6 +31,7 @@ import com.synopsys.integration.alert.api.channel.jira.distribution.JiraIssueCre
 import com.synopsys.integration.alert.api.channel.jira.distribution.custom.JiraCustomFieldResolver;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudProperties;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudPropertiesFactory;
@@ -63,9 +64,10 @@ public class JiraCloudCreateIssueEventHandler extends IssueTrackerCreateIssueEve
         JiraCloudPropertiesFactory jiraCloudPropertiesFactory,
         JiraCloudMessageSenderFactory messageSenderFactory,
         JobDetailsAccessor<JiraCloudJobDetailsModel> jobDetailsAccessor,
-        IssueTrackerResponsePostProcessor responsePostProcessor
+        IssueTrackerResponsePostProcessor responsePostProcessor,
+        ExecutingJobManager executingJobManager
     ) {
-        super(eventManager, jobSubTaskAccessor, responsePostProcessor);
+        super(eventManager, jobSubTaskAccessor, responsePostProcessor, executingJobManager);
         this.gson = gson;
         this.jiraCloudPropertiesFactory = jiraCloudPropertiesFactory;
         this.messageSenderFactory = messageSenderFactory;

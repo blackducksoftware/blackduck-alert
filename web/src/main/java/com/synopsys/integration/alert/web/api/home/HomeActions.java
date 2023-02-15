@@ -10,8 +10,6 @@ package com.synopsys.integration.alert.web.api.home;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.synopsys.integration.alert.authentication.saml.database.accessor.SAMLConfigAccessor;
-import com.synopsys.integration.alert.authentication.saml.security.SAMLManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -21,6 +19,7 @@ import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.authentication.saml.security.SAMLManager;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 
 @Component

@@ -23,8 +23,20 @@ public class AlertNotificationModel extends AlertSerializableModel {
 
     private final OffsetDateTime createdAt;
     private final OffsetDateTime providerCreationTime;
+    private final String contentId;
 
-    public AlertNotificationModel(Long id, Long providerConfigId, String provider, String providerConfigName, String notificationType, String content, OffsetDateTime createdAt, OffsetDateTime providerCreationTime, boolean processed) {
+    public AlertNotificationModel(
+        Long id,
+        Long providerConfigId,
+        String provider,
+        String providerConfigName,
+        String notificationType,
+        String content,
+        OffsetDateTime createdAt,
+        OffsetDateTime providerCreationTime,
+        boolean processed,
+        String contentId
+    ) {
         this.id = id;
         this.providerConfigId = providerConfigId;
         this.provider = provider;
@@ -34,6 +46,7 @@ public class AlertNotificationModel extends AlertSerializableModel {
         this.createdAt = createdAt;
         this.providerCreationTime = providerCreationTime;
         this.processed = processed;
+        this.contentId = contentId;
     }
 
     public Long getId() {
@@ -76,4 +89,7 @@ public class AlertNotificationModel extends AlertSerializableModel {
         return processed;
     }
 
+    public String getContentId() {
+        return contentId;
+    }
 }

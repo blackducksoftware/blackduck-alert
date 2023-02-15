@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.email.EmailITTestAssertions;
 import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFileCreator;
@@ -36,12 +37,14 @@ class EmailChannelTestIT {
     protected Gson gson;
     protected TestProperties testProperties;
     private EventManager eventManager;
+    private ExecutingJobManager executingJobManager;
 
     @BeforeEach
     public void init() {
         gson = new Gson();
         testProperties = new TestProperties();
         eventManager = Mockito.mock(EventManager.class);
+        executingJobManager = Mockito.mock(ExecutingJobManager.class);
     }
 
     @Test
@@ -73,7 +76,7 @@ class EmailChannelTestIT {
             emailAddressValidator,
             javamailPropertiesFactory
         );
-        EmailChannel emailChannel = new EmailChannel(emailChannelMessageConverter, emailChannelMessageSender, eventManager);
+        EmailChannel emailChannel = new EmailChannel(emailChannelMessageConverter, emailChannelMessageSender, eventManager, executingJobManager);
 
         List<String> emailAddresses = List.of(testEmailRecipient);
         EmailJobDetailsModel emailJobDetails = new EmailJobDetailsModel(
@@ -102,7 +105,7 @@ class EmailChannelTestIT {
         EmailChannelMessageConverter emailChannelMessageConverter = new EmailChannelMessageConverter(new EmailChannelMessageFormatter());
         EmailChannelMessageSender emailChannelMessageSender = new EmailChannelMessageSender(emailConfigurationAccessor, emailAddressGatherer, null, emailAddressValidator, null);
 
-        EmailChannel emailChannel = new EmailChannel(emailChannelMessageConverter, emailChannelMessageSender, eventManager);
+        EmailChannel emailChannel = new EmailChannel(emailChannelMessageConverter, emailChannelMessageSender, eventManager, executingJobManager);
 
         List<String> emailAddresses = List.of(testEmailRecipient);
         EmailJobDetailsModel emailJobDetails = new EmailJobDetailsModel(

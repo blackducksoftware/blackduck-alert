@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
-import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigTestModel;
 import com.synopsys.integration.alert.authentication.ldap.validator.LDAPConfigurationValidator;
 import com.synopsys.integration.alert.common.action.ActionResponse;
@@ -63,7 +62,7 @@ public class LDAPTestAction {
                 }
                 authentication.setAuthenticated(false);
             }
-        } catch (AlertConfigurationException ex) {
+        } catch (Exception ex) {
             return ConfigurationTestResult.failure("LDAP Test Configuration failed." + ex.getMessage());
         }
         return ConfigurationTestResult.success("LDAP Test Configuration successful.");

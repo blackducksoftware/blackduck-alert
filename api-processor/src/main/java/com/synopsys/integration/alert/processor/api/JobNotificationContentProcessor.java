@@ -11,9 +11,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
-import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobNotificationMappingAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
@@ -40,33 +40,33 @@ public class JobNotificationContentProcessor {
 
     private final NotificationDetailExtractionDelegator notificationDetailExtractionDelegator;
     private final NotificationAccessor notificationAccessor;
-    private final JobAccessor jobAccessor;
     private final JobNotificationMappingAccessor jobNotificationMappingAccessor;
 
     private final ProviderMessageExtractionDelegator providerMessageExtractionDelegator;
     private final ProjectMessageDigester projectMessageDigester;
     private final ProjectMessageSummarizer projectMessageSummarizer;
+    private final ExecutingJobManager executingJobManager;
 
     @Autowired
     public JobNotificationContentProcessor(
         NotificationDetailExtractionDelegator notificationDetailExtractionDelegator,
         NotificationAccessor notificationAccessor,
-        JobAccessor jobAccessor,
         JobNotificationMappingAccessor jobNotificationMappingAccessor,
         ProviderMessageExtractionDelegator providerMessageExtractionDelegator,
         ProjectMessageDigester projectMessageDigester,
-        ProjectMessageSummarizer projectMessageSummarizer
+        ProjectMessageSummarizer projectMessageSummarizer,
+        ExecutingJobManager executingJobManager
     ) {
         this.notificationDetailExtractionDelegator = notificationDetailExtractionDelegator;
         this.notificationAccessor = notificationAccessor;
-        this.jobAccessor = jobAccessor;
         this.jobNotificationMappingAccessor = jobNotificationMappingAccessor;
         this.providerMessageExtractionDelegator = providerMessageExtractionDelegator;
         this.projectMessageDigester = projectMessageDigester;
         this.projectMessageSummarizer = projectMessageSummarizer;
+        this.executingJobManager = executingJobManager;
     }
 
-    public ProcessedProviderMessageHolder processNotifications(JobProcessingEvent event, DistributionJobModel job) {
+    public ProcessedProviderMessageHolder processNotifications(JobProcessingEvent event, UUID jobExecutionId, DistributionJobModel job) {
         ProcessedProviderMessageHolder processedMessageHolder = null;
         UUID correlationId = event.getCorrelationId();
         UUID jobId = event.getJobId();
@@ -101,6 +101,7 @@ public class JobNotificationContentProcessor {
             if (ProcessingType.DIGEST == jobProcessingType || ProcessingType.SUMMARY == jobProcessingType) {
                 processedMessageHolder = digestProcessing(processedMessageHolder);
             }
+            executingJobManager.incrementProcessedNotificationCount(jobExecutionId, notifications.size());
             pageNumber++;
             jobNotificationMappings = jobNotificationMappingAccessor.getJobNotificationMappings(
                 correlationId,

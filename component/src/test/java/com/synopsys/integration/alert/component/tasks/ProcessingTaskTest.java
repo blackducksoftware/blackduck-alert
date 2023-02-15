@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,7 +48,17 @@ class ProcessingTaskTest {
     public void initTest() throws IOException {
         String notificationJson = TestResourceUtils.readFileToString("json/projectVersionNotification.json");
         AlertNotificationModel model = new AlertNotificationModel(
-            1L, 1L, "BlackDuck", "BlackDuck_1", "PROJECT_VERSION", notificationJson, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp(), false);
+            1L,
+            1L,
+            "BlackDuck",
+            "BlackDuck_1",
+            "PROJECT_VERSION",
+            notificationJson,
+            DateUtils.createCurrentDateTimestamp(),
+            DateUtils.createCurrentDateTimestamp(),
+            false,
+            String.format("content-id-%s", UUID.randomUUID())
+        );
         modelList = List.of(model);
     }
 
@@ -98,7 +109,8 @@ class ProcessingTaskTest {
                 notificationJson,
                 DateUtils.createCurrentDateTimestamp(),
                 DateUtils.createCurrentDateTimestamp(),
-                false
+                false,
+                String.format("content-id-%s", UUID.randomUUID())
             );
             allModels.add(model);
         }
@@ -190,7 +202,8 @@ class ProcessingTaskTest {
                 notificationJson,
                 DateUtils.createCurrentDateTimestamp(),
                 DateUtils.createCurrentDateTimestamp(),
-                false
+                false,
+                String.format("content-id-%s", UUID.randomUUID())
             );
             allModels.add(model);
         }

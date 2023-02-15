@@ -12,12 +12,12 @@ class AuditSuccessEventTest {
 
     @Test
     void constructorTest() {
-        UUID jobId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
-        AuditEvent event = new AuditSuccessEvent(jobId, notificationIds);
+        AuditEvent event = new AuditSuccessEvent(jobExecutionId, notificationIds);
 
         assertEquals(AuditSuccessEvent.DEFAULT_DESTINATION_NAME, event.getDestination());
-        assertEquals(jobId, event.getJobId());
+        assertEquals(jobExecutionId, event.getJobExecutionId());
         assertEquals(notificationIds, event.getNotificationIds());
         assertNotNull(event.getCreatedTimestamp());
     }

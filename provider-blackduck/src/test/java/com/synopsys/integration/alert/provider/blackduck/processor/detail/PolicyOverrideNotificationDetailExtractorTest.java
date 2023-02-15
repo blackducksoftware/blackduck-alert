@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,18 @@ public class PolicyOverrideNotificationDetailExtractorTest {
         PolicyOverrideNotificationView notificationView = gson.fromJson(notificationString, PolicyOverrideNotificationView.class);
         PolicyOverrideNotificationContent notificationContent = notificationView.getContent();
 
-        AlertNotificationModel notification = new AlertNotificationModel(0L, 0L, "BlackDuck", "Config 1", null, null, null, null, false);
+        AlertNotificationModel notification = new AlertNotificationModel(
+            0L,
+            0L,
+            "BlackDuck",
+            "Config 1",
+            null,
+            null,
+            null,
+            null,
+            false,
+            String.format("content-id-%s", UUID.randomUUID())
+        );
 
         PolicyOverrideNotificationDetailExtractor extractor = new PolicyOverrideNotificationDetailExtractor();
         List<DetailedNotificationContent> detailedNotificationContents = extractor.extractDetailedContent(notification, notificationView);
