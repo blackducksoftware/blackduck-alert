@@ -12,26 +12,26 @@ import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJob;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
-import com.synopsys.integration.alert.api.distribution.mock.MockJobExecutionStatusDurationsRepository;
-import com.synopsys.integration.alert.api.distribution.mock.MockJobExecutionStatusRepository;
+import com.synopsys.integration.alert.api.distribution.mock.MockJobCompletionStatusDurationsRepository;
+import com.synopsys.integration.alert.api.distribution.mock.MockJobCompletionStatusRepository;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
-import com.synopsys.integration.alert.common.persistence.accessor.JobExecutionStatusAccessor;
-import com.synopsys.integration.alert.common.persistence.model.job.executions.JobExecutionStatusModel;
+import com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
+import com.synopsys.integration.alert.common.persistence.model.job.executions.JobCompletionStatusModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedQueryDetails;
-import com.synopsys.integration.alert.database.api.DefaultJobExecutionStatusAccessor;
-import com.synopsys.integration.alert.database.job.execution.JobExecutionDurationsRepository;
-import com.synopsys.integration.alert.database.job.execution.JobExecutionRepository;
+import com.synopsys.integration.alert.database.api.DefaultJobCompletionStatusModelAccessor;
+import com.synopsys.integration.alert.database.job.execution.JobCompletionDurationsRepository;
+import com.synopsys.integration.alert.database.job.execution.JobCompletionRepository;
 
 class AuditSuccessHandlerTest {
     private ExecutingJobManager executingJobManager;
-    private JobExecutionStatusAccessor jobExecutionStatusAccessor;
+    private JobCompletionStatusModelAccessor jobCompletionStatusModelAccessor;
 
     @BeforeEach
     public void init() {
-        JobExecutionDurationsRepository jobExecutionDurationsRepository = new MockJobExecutionStatusDurationsRepository();
-        JobExecutionRepository jobExecutionRepository = new MockJobExecutionStatusRepository(jobExecutionDurationsRepository);
-        jobExecutionStatusAccessor = new DefaultJobExecutionStatusAccessor(jobExecutionRepository, jobExecutionDurationsRepository);
-        executingJobManager = new ExecutingJobManager(jobExecutionStatusAccessor);
+        JobCompletionDurationsRepository jobCompletionDurationsRepository = new MockJobCompletionStatusDurationsRepository();
+        JobCompletionRepository jobCompletionRepository = new MockJobCompletionStatusRepository(jobCompletionDurationsRepository);
+        jobCompletionStatusModelAccessor = new DefaultJobCompletionStatusModelAccessor(jobCompletionRepository, jobCompletionDurationsRepository);
+        executingJobManager = new ExecutingJobManager(jobCompletionStatusModelAccessor);
     }
 
     @Test
@@ -42,7 +42,7 @@ class AuditSuccessHandlerTest {
         AuditSuccessHandler handler = new AuditSuccessHandler(executingJobManager);
         AuditSuccessEvent event = new AuditSuccessEvent(jobExecutionId, Set.of());
         handler.handle(event);
-        JobExecutionStatusModel statusModel = jobExecutionStatusAccessor.getJobExecutionStatus(jobId)
+        JobCompletionStatusModel statusModel = jobCompletionStatusModelAccessor.getJobExecutionStatus(jobId)
             .orElseThrow(() -> new AssertionError("Executing Job cannot be missing from the test."));
         assertEquals(AuditEntryStatus.SUCCESS.name(), statusModel.getLatestStatus());
         assertEquals(1, statusModel.getSuccessCount());
@@ -61,7 +61,7 @@ class AuditSuccessHandlerTest {
         handler.handle(event);
         Optional<ExecutingJob> executingJob = executingJobManager.getExecutingJob(jobExecutionId);
         assertTrue(executingJob.isEmpty());
-        assertTrue(jobExecutionStatusAccessor.getJobExecutionStatus(pagedQueryDetails).getModels().isEmpty());
+        assertTrue(jobCompletionStatusModelAccessor.getJobExecutionStatus(pagedQueryDetails).getModels().isEmpty());
         assertTrue(executingJobManager.getExecutingJob(jobExecutionId).isEmpty());
     }
 }

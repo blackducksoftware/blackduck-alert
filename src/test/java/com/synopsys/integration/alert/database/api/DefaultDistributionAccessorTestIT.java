@@ -34,13 +34,13 @@ import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.persistence.accessor.DistributionAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.JobExecutionStatusAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
-import com.synopsys.integration.alert.common.persistence.model.job.executions.JobExecutionStatusModel;
+import com.synopsys.integration.alert.common.persistence.model.job.executions.JobCompletionStatusModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.DistributionWithAuditInfo;
 import com.synopsys.integration.alert.common.util.DateUtils;
@@ -76,7 +76,7 @@ class DefaultDistributionAccessorTestIT {
     @Autowired
     private ExecutingJobManager executingJobManager;
     @Autowired
-    private JobExecutionStatusAccessor jobCompletionStatusAccessor;
+    private JobCompletionStatusModelAccessor jobCompletionStatusAccessor;
 
     private final List<UUID> createdJobs = new LinkedList<>();
 
@@ -236,7 +236,7 @@ class DefaultDistributionAccessorTestIT {
 
             assertEquals(distributionJobModel.getName(), distributionWithAuditInfo.getJobName());
 
-            Optional<JobExecutionStatusModel> jobExecutionStatusModel = jobCompletionStatusAccessor.getJobExecutionStatus(distributionWithAuditInfo.getJobId());
+            Optional<JobCompletionStatusModel> jobExecutionStatusModel = jobCompletionStatusAccessor.getJobExecutionStatus(distributionWithAuditInfo.getJobId());
             if (jobExecutionStatusModel.isPresent()) {
                 assertEquals(jobExecutionStatusModel.get().getLatestStatus(), distributionWithAuditInfo.getAuditStatus());
                 String jsonFormattedString = DateUtils.formatDate(jobExecutionStatusModel.get().getLastRun(), DateUtils.AUDIT_DATE_FORMAT);

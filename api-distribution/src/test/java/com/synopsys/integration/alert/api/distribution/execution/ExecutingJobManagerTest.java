@@ -10,21 +10,21 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.api.distribution.mock.MockJobExecutionStatusDurationsRepository;
-import com.synopsys.integration.alert.api.distribution.mock.MockJobExecutionStatusRepository;
+import com.synopsys.integration.alert.api.distribution.mock.MockJobCompletionStatusDurationsRepository;
+import com.synopsys.integration.alert.api.distribution.mock.MockJobCompletionStatusRepository;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
-import com.synopsys.integration.alert.common.persistence.accessor.JobExecutionStatusAccessor;
-import com.synopsys.integration.alert.database.api.DefaultJobExecutionStatusAccessor;
-import com.synopsys.integration.alert.database.job.execution.JobExecutionRepository;
+import com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
+import com.synopsys.integration.alert.database.api.DefaultJobCompletionStatusModelAccessor;
+import com.synopsys.integration.alert.database.job.execution.JobCompletionRepository;
 
 class ExecutingJobManagerTest {
 
     @Test
     void createExecutingJobTest() {
-        MockJobExecutionStatusDurationsRepository durationsRepository = new MockJobExecutionStatusDurationsRepository();
-        JobExecutionRepository jobExecutionRepository = new MockJobExecutionStatusRepository(durationsRepository);
-        JobExecutionStatusAccessor jobExecutionStatusAccessor = new DefaultJobExecutionStatusAccessor(jobExecutionRepository, durationsRepository);
-        ExecutingJobManager jobManager = new ExecutingJobManager(jobExecutionStatusAccessor);
+        MockJobCompletionStatusDurationsRepository durationsRepository = new MockJobCompletionStatusDurationsRepository();
+        JobCompletionRepository jobCompletionRepository = new MockJobCompletionStatusRepository(durationsRepository);
+        JobCompletionStatusModelAccessor jobCompletionStatusModelAccessor = new DefaultJobCompletionStatusModelAccessor(jobCompletionRepository, durationsRepository);
+        ExecutingJobManager jobManager = new ExecutingJobManager(jobCompletionStatusModelAccessor);
         UUID jobConfigId = UUID.randomUUID();
         ExecutingJob executingJob = jobManager.startJob(jobConfigId, 0);
         assertNotNull(executingJob);
@@ -33,10 +33,10 @@ class ExecutingJobManagerTest {
 
     @Test
     void removeExecutingJobTest() {
-        MockJobExecutionStatusDurationsRepository durationsRepository = new MockJobExecutionStatusDurationsRepository();
-        JobExecutionRepository jobExecutionRepository = new MockJobExecutionStatusRepository(durationsRepository);
-        JobExecutionStatusAccessor jobExecutionStatusAccessor = new DefaultJobExecutionStatusAccessor(jobExecutionRepository, durationsRepository);
-        ExecutingJobManager jobManager = new ExecutingJobManager(jobExecutionStatusAccessor);
+        MockJobCompletionStatusDurationsRepository durationsRepository = new MockJobCompletionStatusDurationsRepository();
+        JobCompletionRepository jobCompletionRepository = new MockJobCompletionStatusRepository(durationsRepository);
+        JobCompletionStatusModelAccessor jobCompletionStatusModelAccessor = new DefaultJobCompletionStatusModelAccessor(jobCompletionRepository, durationsRepository);
+        ExecutingJobManager jobManager = new ExecutingJobManager(jobCompletionStatusModelAccessor);
         UUID jobConfigId = UUID.randomUUID();
         ExecutingJob executingJob = jobManager.startJob(jobConfigId, 0);
         jobManager.endJobWithSuccess(jobConfigId, Instant.now());
@@ -49,10 +49,10 @@ class ExecutingJobManagerTest {
 
     @Test
     void executingJobPendingTest() {
-        MockJobExecutionStatusDurationsRepository durationsRepository = new MockJobExecutionStatusDurationsRepository();
-        JobExecutionRepository jobExecutionRepository = new MockJobExecutionStatusRepository(durationsRepository);
-        JobExecutionStatusAccessor jobExecutionStatusAccessor = new DefaultJobExecutionStatusAccessor(jobExecutionRepository, durationsRepository);
-        ExecutingJobManager jobManager = new ExecutingJobManager(jobExecutionStatusAccessor);
+        MockJobCompletionStatusDurationsRepository durationsRepository = new MockJobCompletionStatusDurationsRepository();
+        JobCompletionRepository jobCompletionRepository = new MockJobCompletionStatusRepository(durationsRepository);
+        JobCompletionStatusModelAccessor jobCompletionStatusModelAccessor = new DefaultJobCompletionStatusModelAccessor(jobCompletionRepository, durationsRepository);
+        ExecutingJobManager jobManager = new ExecutingJobManager(jobCompletionStatusModelAccessor);
         UUID jobConfigId = UUID.randomUUID();
         ExecutingJob executingJob = jobManager.startJob(jobConfigId, 1);
         AggregatedExecutionResults results = jobManager.aggregateExecutingJobData();
@@ -70,10 +70,10 @@ class ExecutingJobManagerTest {
 
     @Test
     void executingJobSucceededTest() {
-        MockJobExecutionStatusDurationsRepository durationsRepository = new MockJobExecutionStatusDurationsRepository();
-        JobExecutionRepository jobExecutionRepository = new MockJobExecutionStatusRepository(durationsRepository);
-        JobExecutionStatusAccessor jobExecutionStatusAccessor = new DefaultJobExecutionStatusAccessor(jobExecutionRepository, durationsRepository);
-        ExecutingJobManager jobManager = new ExecutingJobManager(jobExecutionStatusAccessor);
+        MockJobCompletionStatusDurationsRepository durationsRepository = new MockJobCompletionStatusDurationsRepository();
+        JobCompletionRepository jobCompletionRepository = new MockJobCompletionStatusRepository(durationsRepository);
+        JobCompletionStatusModelAccessor jobCompletionStatusModelAccessor = new DefaultJobCompletionStatusModelAccessor(jobCompletionRepository, durationsRepository);
+        ExecutingJobManager jobManager = new ExecutingJobManager(jobCompletionStatusModelAccessor);
         UUID jobConfigId = UUID.randomUUID();
         ExecutingJob executingJob = jobManager.startJob(jobConfigId, 1);
         ExecutingJob savedJob = jobManager.getExecutingJob(executingJob.getExecutionId()).orElseThrow(() -> new AssertionError("Job with execution ID not found."));
@@ -92,10 +92,10 @@ class ExecutingJobManagerTest {
 
     @Test
     void executingJobFailedTest() {
-        MockJobExecutionStatusDurationsRepository durationsRepository = new MockJobExecutionStatusDurationsRepository();
-        JobExecutionRepository jobExecutionRepository = new MockJobExecutionStatusRepository(durationsRepository);
-        JobExecutionStatusAccessor jobExecutionStatusAccessor = new DefaultJobExecutionStatusAccessor(jobExecutionRepository, durationsRepository);
-        ExecutingJobManager jobManager = new ExecutingJobManager(jobExecutionStatusAccessor);
+        MockJobCompletionStatusDurationsRepository durationsRepository = new MockJobCompletionStatusDurationsRepository();
+        JobCompletionRepository jobCompletionRepository = new MockJobCompletionStatusRepository(durationsRepository);
+        JobCompletionStatusModelAccessor jobCompletionStatusModelAccessor = new DefaultJobCompletionStatusModelAccessor(jobCompletionRepository, durationsRepository);
+        ExecutingJobManager jobManager = new ExecutingJobManager(jobCompletionStatusModelAccessor);
         UUID jobConfigId = UUID.randomUUID();
         ExecutingJob executingJob = jobManager.startJob(jobConfigId, 1);
         ExecutingJob savedJob = jobManager.getExecutingJob(executingJob.getExecutionId()).orElseThrow(() -> new AssertionError("Job with execution ID not found."));
@@ -114,10 +114,10 @@ class ExecutingJobManagerTest {
 
     @Test
     void addStageTest() {
-        MockJobExecutionStatusDurationsRepository durationsRepository = new MockJobExecutionStatusDurationsRepository();
-        JobExecutionRepository jobExecutionRepository = new MockJobExecutionStatusRepository(durationsRepository);
-        JobExecutionStatusAccessor jobExecutionStatusAccessor = new DefaultJobExecutionStatusAccessor(jobExecutionRepository, durationsRepository);
-        ExecutingJobManager jobManager = new ExecutingJobManager(jobExecutionStatusAccessor);
+        MockJobCompletionStatusDurationsRepository durationsRepository = new MockJobCompletionStatusDurationsRepository();
+        JobCompletionRepository jobCompletionRepository = new MockJobCompletionStatusRepository(durationsRepository);
+        JobCompletionStatusModelAccessor jobCompletionStatusModelAccessor = new DefaultJobCompletionStatusModelAccessor(jobCompletionRepository, durationsRepository);
+        ExecutingJobManager jobManager = new ExecutingJobManager(jobCompletionStatusModelAccessor);
         UUID jobConfigId = UUID.randomUUID();
         ExecutingJob executingJob = jobManager.startJob(jobConfigId, 1);
         ExecutingJobStage executingJobStage = ExecutingJobStage.createStage(executingJob.getExecutionId(), JobStage.NOTIFICATION_PROCESSING, Instant.now());
@@ -134,10 +134,10 @@ class ExecutingJobManagerTest {
 
     @Test
     void stageMissingTest() {
-        MockJobExecutionStatusDurationsRepository durationsRepository = new MockJobExecutionStatusDurationsRepository();
-        JobExecutionRepository jobExecutionRepository = new MockJobExecutionStatusRepository(durationsRepository);
-        JobExecutionStatusAccessor jobExecutionStatusAccessor = new DefaultJobExecutionStatusAccessor(jobExecutionRepository, durationsRepository);
-        ExecutingJobManager jobManager = new ExecutingJobManager(jobExecutionStatusAccessor);
+        MockJobCompletionStatusDurationsRepository durationsRepository = new MockJobCompletionStatusDurationsRepository();
+        JobCompletionRepository jobCompletionRepository = new MockJobCompletionStatusRepository(durationsRepository);
+        JobCompletionStatusModelAccessor jobCompletionStatusModelAccessor = new DefaultJobCompletionStatusModelAccessor(jobCompletionRepository, durationsRepository);
+        ExecutingJobManager jobManager = new ExecutingJobManager(jobCompletionStatusModelAccessor);
         UUID jobConfigId = UUID.randomUUID();
         ExecutingJob executingJob = jobManager.startJob(jobConfigId, 1);
         ExecutingJobStage executingJobStage = ExecutingJobStage.createStage(executingJob.getExecutionId(), JobStage.NOTIFICATION_PROCESSING, Instant.now());
@@ -149,10 +149,10 @@ class ExecutingJobManagerTest {
 
     @Test
     void addSameStageTest() {
-        MockJobExecutionStatusDurationsRepository durationsRepository = new MockJobExecutionStatusDurationsRepository();
-        JobExecutionRepository jobExecutionRepository = new MockJobExecutionStatusRepository(durationsRepository);
-        JobExecutionStatusAccessor jobExecutionStatusAccessor = new DefaultJobExecutionStatusAccessor(jobExecutionRepository, durationsRepository);
-        ExecutingJobManager jobManager = new ExecutingJobManager(jobExecutionStatusAccessor);
+        MockJobCompletionStatusDurationsRepository durationsRepository = new MockJobCompletionStatusDurationsRepository();
+        JobCompletionRepository jobCompletionRepository = new MockJobCompletionStatusRepository(durationsRepository);
+        JobCompletionStatusModelAccessor jobCompletionStatusModelAccessor = new DefaultJobCompletionStatusModelAccessor(jobCompletionRepository, durationsRepository);
+        ExecutingJobManager jobManager = new ExecutingJobManager(jobCompletionStatusModelAccessor);
         UUID jobConfigId = UUID.randomUUID();
         ExecutingJob executingJob = jobManager.startJob(jobConfigId, 1);
         ExecutingJobStage firstStage = ExecutingJobStage.createStage(executingJob.getExecutionId(), JobStage.NOTIFICATION_PROCESSING, Instant.now());
@@ -171,10 +171,10 @@ class ExecutingJobManagerTest {
 
     @Test
     void multipleStagesTest() {
-        MockJobExecutionStatusDurationsRepository durationsRepository = new MockJobExecutionStatusDurationsRepository();
-        JobExecutionRepository jobExecutionRepository = new MockJobExecutionStatusRepository(durationsRepository);
-        JobExecutionStatusAccessor jobExecutionStatusAccessor = new DefaultJobExecutionStatusAccessor(jobExecutionRepository, durationsRepository);
-        ExecutingJobManager jobManager = new ExecutingJobManager(jobExecutionStatusAccessor);
+        MockJobCompletionStatusDurationsRepository durationsRepository = new MockJobCompletionStatusDurationsRepository();
+        JobCompletionRepository jobCompletionRepository = new MockJobCompletionStatusRepository(durationsRepository);
+        JobCompletionStatusModelAccessor jobCompletionStatusModelAccessor = new DefaultJobCompletionStatusModelAccessor(jobCompletionRepository, durationsRepository);
+        ExecutingJobManager jobManager = new ExecutingJobManager(jobCompletionStatusModelAccessor);
         UUID jobConfigId = UUID.randomUUID();
         ExecutingJob executingJob = jobManager.startJob(jobConfigId, 1);
         ExecutingJobStage mappingStage = ExecutingJobStage.createStage(executingJob.getExecutionId(), JobStage.NOTIFICATION_PROCESSING, Instant.now());

@@ -27,11 +27,11 @@ import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobSta
 import com.synopsys.integration.alert.api.distribution.execution.JobStage;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.persistence.accessor.DiagnosticAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.JobExecutionStatusAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModelData;
-import com.synopsys.integration.alert.common.persistence.model.job.executions.JobExecutionStatusDurations;
-import com.synopsys.integration.alert.common.persistence.model.job.executions.JobExecutionStatusModel;
+import com.synopsys.integration.alert.common.persistence.model.job.executions.JobCompletionStatusDurations;
+import com.synopsys.integration.alert.common.persistence.model.job.executions.JobCompletionStatusModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedQueryDetails;
 import com.synopsys.integration.alert.common.util.DateUtils;
@@ -63,7 +63,7 @@ public class DefaultDiagnosticAccessor implements DiagnosticAccessor {
 
     private final StaticJobAccessor jobAccessor;
     private final ExecutingJobManager executingJobManager;
-    private final JobExecutionStatusAccessor completedJobStatusAccessor;
+    private final JobCompletionStatusModelAccessor completedJobStatusAccessor;
 
     @Autowired
     public DefaultDiagnosticAccessor(
@@ -71,7 +71,7 @@ public class DefaultDiagnosticAccessor implements DiagnosticAccessor {
         AuditEntryRepository auditEntryRepository,
         RabbitMQDiagnosticUtility rabbitMQDiagnosticUtility,
         StaticJobAccessor staticJobAccessor,
-        JobExecutionStatusAccessor completedJobStatusAccessor,
+        JobCompletionStatusModelAccessor completedJobStatusAccessor,
         ExecutingJobManager executingJobManager
     ) {
         this.notificationContentRepository = notificationContentRepository;
@@ -168,7 +168,7 @@ public class DefaultDiagnosticAccessor implements DiagnosticAccessor {
         List<CompletedJobDiagnosticModel> jobStatusData = new LinkedList<>();
         int pageNumber = 0;
         int pageSize = 100;
-        AlertPagedModel<JobExecutionStatusModel> page = completedJobStatusAccessor.getJobExecutionStatus(new AlertPagedQueryDetails(pageNumber, pageSize));
+        AlertPagedModel<JobCompletionStatusModel> page = completedJobStatusAccessor.getJobExecutionStatus(new AlertPagedQueryDetails(pageNumber, pageSize));
         while (pageNumber < page.getTotalPages()) {
             jobStatusData.addAll(page.getModels().stream()
                 .map(this::convertJobStatusData)
@@ -235,16 +235,16 @@ public class DefaultDiagnosticAccessor implements DiagnosticAccessor {
         return distributionJobModel.map(DistributionJobModelData::getName).orElse(String.format("Unknown Job (%s)", jobConfigId));
     }
 
-    private CompletedJobDiagnosticModel convertJobStatusData(JobExecutionStatusModel jobCompletionStatusModel) {
-        JobExecutionStatusDurations durationsModel = jobCompletionStatusModel.getDurations();
+    private CompletedJobDiagnosticModel convertJobStatusData(JobCompletionStatusModel jobCompletionStatusModel) {
+        JobCompletionStatusDurations durationsModel = jobCompletionStatusModel.getDurations();
         CompletedJobDurationDiagnosticModel durationDiagnosticModel = new CompletedJobDurationDiagnosticModel(
             DateUtils.formatDurationFromNanos(durationsModel.getJobDuration()),
             List.of(
-                createJobStageDuration(JobStage.NOTIFICATION_PROCESSING, durationsModel.getNotificationProcessingDuration().orElse(0L)),
-                createJobStageDuration(JobStage.CHANNEL_PROCESSING, durationsModel.getChannelProcessingDuration().orElse(0L)),
-                createJobStageDuration(JobStage.ISSUE_CREATION, durationsModel.getIssueCreationDuration().orElse(0L)),
-                createJobStageDuration(JobStage.ISSUE_COMMENTING, durationsModel.getIssueCommentingDuration().orElse(0L)),
-                createJobStageDuration(JobStage.ISSUE_TRANSITION, durationsModel.getIssueTransitionDuration().orElse(0L))
+                createJobStageDuration(JobStage.NOTIFICATION_PROCESSING, durationsModel.getNotificationProcessingDuration()),
+                createJobStageDuration(JobStage.CHANNEL_PROCESSING, durationsModel.getChannelProcessingDuration()),
+                createJobStageDuration(JobStage.ISSUE_CREATION, durationsModel.getIssueCreationDuration()),
+                createJobStageDuration(JobStage.ISSUE_COMMENTING, durationsModel.getIssueCommentingDuration()),
+                createJobStageDuration(JobStage.ISSUE_TRANSITION, durationsModel.getIssueTransitionDuration())
             )
         );
 
