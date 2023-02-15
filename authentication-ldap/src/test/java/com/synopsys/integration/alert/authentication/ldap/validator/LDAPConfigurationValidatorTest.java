@@ -72,12 +72,14 @@ public class LDAPConfigurationValidatorTest {
     public void testInvalidManagerPassword() {
         ldapConfigModel.setServerName("valid");
         ldapConfigModel.setManagerDn("valid");
+        ldapConfigModel.setManagerPassword("");
         ldapConfigModel.setIsManagerPasswordSet(false);
 
         ValidationResponseModel validationResponseModel = ldapConfigurationValidator.validate(ldapConfigModel);
         assertEquals(ValidationResponseModel.VALIDATION_FAILURE_MESSAGE, validationResponseModel.getMessage());
-        assertEquals(1, validationResponseModel.getErrors().size());
+        assertEquals(2, validationResponseModel.getErrors().size());
         assertTrue(validationResponseModel.getErrors().containsKey("managerPassword"));
+        assertEquals(AlertFieldStatusMessages.INVALID_OPTION, validationResponseModel.getErrors().get("isManagerPasswordSet").getFieldMessage());
         assertEquals(AlertFieldStatusMessages.REQUIRED_FIELD_MISSING, validationResponseModel.getErrors().get("managerPassword").getFieldMessage());
     }
 
