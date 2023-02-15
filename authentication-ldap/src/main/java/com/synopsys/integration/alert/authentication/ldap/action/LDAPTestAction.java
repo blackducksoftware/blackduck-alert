@@ -3,6 +3,7 @@ package com.synopsys.integration.alert.authentication.ldap.action;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
+import com.synopsys.integration.alert.authentication.ldap.database.accessor.LDAPConfigAccessor;
+import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigModel;
 import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigTestModel;
 import com.synopsys.integration.alert.authentication.ldap.validator.LDAPConfigurationValidator;
 import com.synopsys.integration.alert.common.action.ActionResponse;
@@ -27,18 +30,21 @@ public class LDAPTestAction {
     private final ConfigurationTestHelper configurationTestHelper;
     private final LDAPConfigurationValidator ldapConfigurationValidator;
     private final LdapManager ldapManager;
+    private final LDAPConfigAccessor ldapConfigAccessor;
 
     @Autowired
     public LDAPTestAction(
         AuthorizationManager authorizationManager,
         AuthenticationDescriptorKey authenticationDescriptorKey,
         LDAPConfigurationValidator ldapConfigurationValidator,
-        LdapManager ldapManager
+        LdapManager ldapManager,
+        LDAPConfigAccessor ldapConfigAccessor
     ) {
         this.configurationValidationHelper = new ConfigurationValidationHelper(authorizationManager, ConfigContextEnum.GLOBAL, authenticationDescriptorKey);
         this.configurationTestHelper = new ConfigurationTestHelper(authorizationManager, ConfigContextEnum.GLOBAL, authenticationDescriptorKey);
         this.ldapConfigurationValidator = ldapConfigurationValidator;
         this.ldapManager = ldapManager;
+        this.ldapConfigAccessor = ldapConfigAccessor;
     }
 
     public ActionResponse<ValidationResponseModel> testAuthentication(LDAPConfigTestModel ldapConfigTestModel) {
@@ -50,6 +56,18 @@ public class LDAPTestAction {
         String username = ldapConfigTestModel.getTestLDAPUsername();
         String password = ldapConfigTestModel.getTestLDAPPassword();
         Authentication pendingAuthentication = new UsernamePasswordAuthenticationToken(username, password);
+
+        LDAPConfigModel ldapConfigModel = ldapConfigTestModel.getLdapConfigModel();
+        // If the Password is NOT set and IsManagerPasswordSet is true in the current model, get the PW from the DB
+        if (StringUtils.isBlank(ldapConfigModel.getManagerPassword().orElse("")) && Boolean.TRUE.equals(ldapConfigModel.getIsManagerPasswordSet())) {
+            ldapConfigAccessor.getConfiguration()
+                .flatMap(LDAPConfigModel::getManagerPassword)
+                .ifPresent(ldapConfigModel::setManagerPassword);
+        }
+
+        // ldapManager.createAuthProvider() requires LDAP to be enabled. Update model that is passed in to do this
+        //   so that we don't have to require customers to enable LDAP in the UI prior to testing
+        ldapConfigModel.setEnabled(true);
 
         try {
             Optional<LdapAuthenticationProvider> ldapAuthenticationProvider = ldapManager.createAuthProvider(ldapConfigTestModel.getLdapConfigModel());
@@ -63,7 +81,7 @@ public class LDAPTestAction {
                 authentication.setAuthenticated(false);
             }
         } catch (Exception ex) {
-            return ConfigurationTestResult.failure("LDAP Test Configuration failed." + ex.getMessage());
+            return ConfigurationTestResult.failure("LDAP Test Configuration failed. " + ex.getMessage());
         }
         return ConfigurationTestResult.success("LDAP Test Configuration successful.");
     }
