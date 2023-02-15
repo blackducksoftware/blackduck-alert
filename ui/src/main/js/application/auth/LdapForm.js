@@ -43,9 +43,12 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
     const fetchData = async () => {
         const response = await ConfigurationRequestBuilder.createReadRequest(ldapRequestUrl, csrfToken);
         const data = await response.json();
-        if (data) {
+
+        if (data.status !== 404) {
             setFormData(data);
             setTestFormData({ ldapConfigModel: data });
+        } else {
+            setFormData({});
         }
     };
 
@@ -151,6 +154,7 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
                     label="LDAP Server URL"
                     description="The URL of the LDAP Server."
                     readOnly={readonly}
+                    required
                     onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
                     value={formData[AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.serverName] || undefined}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.serverName)}
@@ -162,6 +166,7 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
                     label="LDAP Distinguished Manager Name"
                     description="The distinguished manager name of the LDAP server."
                     readOnly={readonly}
+                    required
                     onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
                     value={formData[AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.managerDn] || undefined}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.managerDn)}
@@ -172,8 +177,8 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
                     name={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.managerPassword}
                     label="LDAP Manager Password"
                     description="The password of the LDAP manager."
-                    required
                     readOnly={readonly}
+                    required
                     onChange={FieldModelUtilities.handleTestChange(formData, setFormData)}
                     value={formData.managerPassword || undefined}
                     isSet={formData.isManagerPasswordSet}
