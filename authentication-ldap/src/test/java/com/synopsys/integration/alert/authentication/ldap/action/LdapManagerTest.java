@@ -170,18 +170,22 @@ public class LdapManagerTest {
     }
 
     @Test
-    public void testCreateAuthProviderDisabled() throws AlertConfigurationException {
-        LDAPConfigModel ldapConfigModel = createLDAPConfigModel(false, DEFAULT_AUTHENTICATION_TYPE_DIGEST);
-        assertDoesNotThrow(() -> ldapConfigAccessor.createConfiguration(ldapConfigModel));
-        Optional<LdapAuthenticationProvider> expectedLDAPAuthenticationProvider = ldapManager.createAuthProvider(ldapConfigModel);
-        assertEquals(Optional.empty(), expectedLDAPAuthenticationProvider);
-    }
+    public void testCreateAuthProviderInvalidValues() {
+        LDAPConfigModel invalidConfigModel = new LDAPConfigModel();
+        Optional<LdapAuthenticationProvider> ldapAuthenticationProvider = assertDoesNotThrow(() -> ldapManager.createAuthProvider(invalidConfigModel));
+        assertEquals(Optional.empty(), ldapAuthenticationProvider);
 
-    @Test
-    public void testExceptionOnContext() {
-        LDAPConfigModel invalidConfigModel = new LDAPConfigModel("", "", "", true, "", "", "", false, "", "", "", "", "", "", "", "", "");
-        AlertConfigurationException alertConfigurationException = assertThrows(AlertConfigurationException.class, () -> ldapManager.createAuthProvider(invalidConfigModel));
-        assertTrue(alertConfigurationException.getMessage().contains("Error creating LDAP Context Source"));
+        invalidConfigModel.setEnabled(true);
+        ldapAuthenticationProvider = assertDoesNotThrow(() -> ldapManager.createAuthProvider(invalidConfigModel));
+        assertEquals(Optional.empty(), ldapAuthenticationProvider);
+
+        invalidConfigModel.setServerName("serverName");
+        ldapAuthenticationProvider = assertDoesNotThrow(() -> ldapManager.createAuthProvider(invalidConfigModel));
+        assertEquals(Optional.empty(), ldapAuthenticationProvider);
+
+        invalidConfigModel.setManagerDn("managerDn");
+        ldapAuthenticationProvider = assertDoesNotThrow(() -> ldapManager.createAuthProvider(invalidConfigModel));
+        assertEquals(Optional.empty(), ldapAuthenticationProvider);
     }
 
     @Test
