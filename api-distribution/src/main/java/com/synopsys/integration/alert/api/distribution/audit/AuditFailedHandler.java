@@ -1,7 +1,7 @@
 package com.synopsys.integration.alert.api.distribution.audit;
 
-import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJob;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.AlertEventHandler;
+import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingFailedAccessor;
 
 @Component
@@ -28,10 +29,7 @@ public class AuditFailedHandler implements AlertEventHandler<AuditFailedEvent> {
     @Override
     public void handle(AuditFailedEvent event) {
         UUID jobExecutionId = event.getJobExecutionId();
-        Optional<ExecutingJob> executingJobOptional = executingJobManager.getExecutingJob(jobExecutionId);
-        if (executingJobOptional.isPresent()) {
-            ExecutingJob executingJob = executingJobOptional.get();
-            UUID jobConfigId = executingJob.getJobConfigId();
+        UUID jobConfigId = event.getJobConfigId();
             if (event.getStackTrace().isPresent()) {
                 processingFailedAccessor.setAuditFailure(
                     jobConfigId,
@@ -43,7 +41,9 @@ public class AuditFailedHandler implements AlertEventHandler<AuditFailedEvent> {
             } else {
                 processingFailedAccessor.setAuditFailure(jobConfigId, event.getNotificationIds(), event.getCreatedTimestamp(), event.getErrorMessage());
             }
-        }
-        executingJobManager.endJobWithFailure(jobExecutionId, event.getCreatedTimestamp().toInstant());
+        executingJobManager.updateJobStatus(jobExecutionId, AuditEntryStatus.FAILURE);
+        executingJobManager.getExecutingJob(jobExecutionId)
+            .filter(Predicate.not(ExecutingJob::hasRemainingEvents))
+            .ifPresent(executingJob -> executingJobManager.endJob(jobExecutionId, event.getCreatedTimestamp().toInstant()));
     }
 }

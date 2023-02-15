@@ -52,6 +52,7 @@ public class DistributionEventHandler<D extends DistributionJobDetailsModel> imp
                     details.get(),
                     event.getProviderMessages(),
                     event.getJobName(),
+                    event.getJobId(),
                     UUID.fromString(event.getEventId()),
                     jobExecutionId,
                     event.getNotificationIds()
@@ -72,6 +73,7 @@ public class DistributionEventHandler<D extends DistributionJobDetailsModel> imp
         notificationLogger.error("An exception occurred while handling the following event: {}.", event.getEventId(), e);
         eventManager.sendEvent(new AuditFailedEvent(
             event.getJobExecutionId(),
+            event.getJobId(),
             event.getNotificationIds(),
             String.format("An exception occurred while handling the following event: %s.", event.getEventId()),
             AuditStackTraceUtil.createStackTraceString(e)
@@ -82,6 +84,7 @@ public class DistributionEventHandler<D extends DistributionJobDetailsModel> imp
         notificationLogger.error("An unexpected error occurred while handling the following event: {}.", event.getEventId(), e);
         eventManager.sendEvent(new AuditFailedEvent(
             event.getJobExecutionId(),
+            event.getJobId(),
             event.getNotificationIds(),
             "An unexpected error occurred during message distribution. Please refer to the logs for more details.",
             AuditStackTraceUtil.createStackTraceString(e)
@@ -91,6 +94,7 @@ public class DistributionEventHandler<D extends DistributionJobDetailsModel> imp
     protected void handleJobDetailsMissing(DistributionEvent event) {
         eventManager.sendEvent(new AuditFailedEvent(
             event.getJobExecutionId(),
+            event.getJobId(),
             event.getNotificationIds(),
             "Received a distribution event for a Job that no longer exists",
             null

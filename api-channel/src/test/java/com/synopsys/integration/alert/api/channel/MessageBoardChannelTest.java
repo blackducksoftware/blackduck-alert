@@ -32,7 +32,15 @@ class MessageBoardChannelTest {
         ChannelMessageSender<DistributionJobDetailsModel, Object, MessageResult> sender = (x, y) -> expectedResult;
         MessageBoardChannel<DistributionJobDetailsModel, Object> messageBoardChannel = new MessageBoardChannel<>(converter, sender, eventManager, executingJobManager) {};
 
-        MessageResult testResult = messageBoardChannel.distributeMessages(testDetails, ProviderMessageHolder.empty(), "jobName", UUID.randomUUID(), UUID.randomUUID(), Set.of());
+        MessageResult testResult = messageBoardChannel.distributeMessages(
+            testDetails,
+            ProviderMessageHolder.empty(),
+            "jobName",
+            UUID.randomUUID(),
+            UUID.randomUUID(),
+            UUID.randomUUID(),
+            Set.of()
+        );
         assertEquals(expectedResult, testResult);
     }
 

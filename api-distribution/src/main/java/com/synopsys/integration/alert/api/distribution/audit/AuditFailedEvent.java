@@ -13,8 +13,8 @@ public class AuditFailedEvent extends AuditEvent {
     private final String errorMessage;
     private final String stackTrace;
 
-    public AuditFailedEvent(UUID jobExecutionId, Set<Long> notificationIds, String errorMessage, @Nullable String stackTrace) {
-        super(DEFAULT_DESTINATION_NAME, jobExecutionId, notificationIds);
+    public AuditFailedEvent(UUID jobExecutionId, UUID jobConfigId, Set<Long> notificationIds, String errorMessage, @Nullable String stackTrace) {
+        super(DEFAULT_DESTINATION_NAME, jobExecutionId, jobConfigId, notificationIds);
         this.errorMessage = errorMessage;
         this.stackTrace = stackTrace;
     }
