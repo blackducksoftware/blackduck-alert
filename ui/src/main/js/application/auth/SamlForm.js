@@ -20,6 +20,10 @@ import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
 
 import BlackDuckSSOConfigImportModal from './BlackDuckSSOConfigImportModal';
 
+const CERT_FILE_TYPES = ['.crt', '.cer', '.der', '.cert', '.pem'];
+const PRIVATE_KEY_FILE_TYPES = ['.p8', '.p8e', '.pem'];
+const XML_FILE_TYPES = ['text/xml', 'application/xml','.xml'];
+
 const radioOptions = [{
     name: 'url',
     value: 'URL',
@@ -53,13 +57,8 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, fileDelete, fileRead, fil
     const fetchData = async () => {
         const response = await ConfigurationRequestBuilder.createReadRequest(samlRequestUrl, csrfToken);
         const data = await response.json();
-        if (data) {
-            setFormData(data);
-        }
 
-        if (data.status === 404) {
-            setFormData({ ...data, metadataMode: 'URL' });
-        }
+        data.status === 404 ? setFormData({ ...data, metadataMode: 'URL' }) : setFormData(data)
     };
 
     function updateData() {
@@ -75,32 +74,8 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, fileDelete, fileRead, fil
     }
 
     function handleValidation() {
-        if (formData.status === 404) {
-            delete formData.status;
-            delete formData.message;
-            delete formData.error;
-            delete formData.path;
-        }
-
-        // // HACKY Remove after testing on Michaels branch
-        if (!formData.forceAuth) {
-            formData.forceAuth = false;
-        }
-
-        if (!formData.enabled) {
-            formData.enabled = false;
-        }
-
-        if (!formData.wantAssertionsSigned) {
-            formData.wantAssertionsSigned = false;
-        }
-
-        setFormData(formData);
         return ConfigurationRequestBuilder.createValidateRequest(samlRequestUrl, csrfToken, formData);
     }
-
-    const certFileTypes = ['.crt', '.cer', '.der', '.cert', '.pem'];
-    const privateKeyFileTypes = ['.p8', '.p8e', '.pem'];
 
     return (
         <div className={classes.samlForm}>
@@ -192,11 +167,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, fileDelete, fileRead, fil
                         csrfToken={csrfToken}
                         capture=""
                         multiple={false}
-                        accept={[
-                            'text/xml',
-                            'application/xml',
-                            '.xml'
-                        ]}
+                        accept={XML_FILE_TYPES}
                         currentConfig={formData}
                         value={formData.metadataFilePath}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.metadataFilePath)}
@@ -248,7 +219,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, fileDelete, fileRead, fil
                         csrfToken={csrfToken}
                         capture=""
                         multiple={false}
-                        accept={certFileTypes}
+                        accept={CERT_FILE_TYPES}
                         currentConfig={formData}
                         value={formData.encryptionCertFilePath}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.encryptionCertFilePath)}
@@ -269,7 +240,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, fileDelete, fileRead, fil
                         csrfToken={csrfToken}
                         capture=""
                         multiple={false}
-                        accept={privateKeyFileTypes}
+                        accept={PRIVATE_KEY_FILE_TYPES}
                         currentConfig={formData}
                         value={formData.encryptionPrivateKeyFilePath}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.encryptionPrivateKeyFilePath)}
@@ -291,7 +262,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, fileDelete, fileRead, fil
                         csrfToken={csrfToken}
                         capture=""
                         multiple={false}
-                        accept={certFileTypes}
+                        accept={CERT_FILE_TYPES}
                         currentConfig={formData}
                         value={formData.signingCertFilePath}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.signingCertFilePath)}
@@ -312,7 +283,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, fileDelete, fileRead, fil
                         csrfToken={csrfToken}
                         capture=""
                         multiple={false}
-                        accept={privateKeyFileTypes}
+                        accept={PRIVATE_KEY_FILE_TYPES}
                         currentConfig={formData}
                         value={formData.signingPrivateKeyFilePath}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.signingPrivateKeyFilePath)}
@@ -334,7 +305,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, fileDelete, fileRead, fil
                         csrfToken={csrfToken}
                         capture=""
                         multiple={false}
-                        accept={certFileTypes}
+                        accept={CERT_FILE_TYPES}
                         currentConfig={formData}
                         value={formData.verificationCertFilePath}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.verificationCertFilePath)}

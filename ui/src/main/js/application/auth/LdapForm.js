@@ -40,6 +40,22 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
     const [testFormData, setTestFormData] = useState({});
     const ldapRequestUrl = `${ConfigurationRequestBuilder.AUTHENTICATION_LDAP_API_URL}`;
 
+    function processFormData() {
+        if (formData?.authenticationType && formData?.authenticationType.length > 0) {
+            formData.authenticationType = formData.authenticationType[0];
+        }
+
+        if (formData?.referral && formData?.referral.length > 0) {
+            formData.referral = formData.referral[0];
+        }
+
+        if (formData.managerPassword && !formData.isManagerPasswordSet) {
+            formData.isManagerPasswordSet = true;
+        }
+
+        setFormData(formData);
+    }
+
     const fetchData = async () => {
         const response = await ConfigurationRequestBuilder.createReadRequest(ldapRequestUrl, csrfToken);
         const data = await response.json();
@@ -68,27 +84,13 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
         return ConfigurationRequestBuilder.createTestRequest(ldapRequestUrl, csrfToken, testFormData);
     }
 
+    function testButtonClicked() {
+        processFormData();
+        setTestFormData({ ...testFormData, ldapConfigModel: formData});
+    }
+
     function handleValidation() {
-        if (formData.status === 404) {
-            delete formData.status;
-            delete formData.message;
-            delete formData.error;
-            delete formData.path;
-        }
-
-        if (formData?.authenticationType && formData?.authenticationType.length > 0) {
-            formData.authenticationType = formData.authenticationType[0];
-        }
-
-        if (formData?.referral && formData?.referral.length > 0) {
-            formData.referral = formData.referral[0];
-        }
-
-        if (formData.managerPassword && !formData.isManagerPasswordSet) {
-            formData.isManagerPasswordSet = true;
-        }
-
-        setFormData(formData);
+        processFormData();
         return ConfigurationRequestBuilder.createValidateRequest(ldapRequestUrl, csrfToken, formData);
     }
 
@@ -136,6 +138,7 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
                 submitLabel="Save LDAP Configuration"
                 testLabel="Test LDAP Configuration"
                 testFields={testFields}
+                testButtonClicked={testButtonClicked}
             >
                 <CheckboxInput
                     id={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.enabled}
@@ -272,7 +275,7 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
                     description="The filter used to search for group membership."
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
-                    value={formData[AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.groupSearchFilter] || 'uniquemember={0}'}
+                    value={formData[AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.groupSearchFilter]}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.groupSearchFilter)}
                     errorValue={errors.fieldErrors[AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.groupSearchFilter]}
                 />

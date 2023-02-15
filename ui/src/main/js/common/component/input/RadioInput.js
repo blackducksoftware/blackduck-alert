@@ -56,7 +56,7 @@ const RadioInput = ({
 };
 
 RadioInput.propTypes = {
-    checked: PropTypes.bool,
+    checked: PropTypes.string,
     description: PropTypes.string,
     errorName: PropTypes.string,
     errorValue: PropTypes.object,
@@ -68,7 +68,7 @@ RadioInput.propTypes = {
     readOnly: PropTypes.bool,
     required: PropTypes.bool,
     showDescriptionPlaceHolder: PropTypes.bool,
-    radioOptions: PropTypes.object
+    radioOptions: PropTypes.array
 };
 
 RadioInput.defaultProps = {

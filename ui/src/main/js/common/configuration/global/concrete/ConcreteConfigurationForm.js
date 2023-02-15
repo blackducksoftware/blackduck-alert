@@ -28,7 +28,8 @@ const ConcreteConfigurationForm = ({
     cancelLabel,
     deleteLabel,
     submitLabel,
-    testLabel
+    testLabel,
+    testButtonClicked
 }) => {
     const [showTest, setShowTest] = useState(false);
     const [errorMessage, setErrorMessage] = useState(null);
@@ -74,6 +75,7 @@ const ConcreteConfigurationForm = ({
         setErrorMessage(null);
         setErrors(HttpErrorUtilities.createEmptyErrorObject());
         setActionMessage(null);
+        testButtonClicked ? testButtonClicked() : null;
 
         if (testFields) {
             setShowTest(true);
@@ -214,7 +216,8 @@ ConcreteConfigurationForm.propTypes = {
     cancelLabel: PropTypes.string,
     deleteLabel: PropTypes.string,
     submitLabel: PropTypes.string,
-    testLabel: PropTypes.string
+    testLabel: PropTypes.string,
+    testButtonClicked: PropTypes.func
 };
 
 ConcreteConfigurationForm.defaultProps = {
