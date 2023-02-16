@@ -41,11 +41,11 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
     const ldapRequestUrl = `${ConfigurationRequestBuilder.AUTHENTICATION_LDAP_API_URL}`;
 
     function processFormData() {
-        if (formData?.authenticationType && formData?.authenticationType.length > 0) {
+        if (formData?.authenticationType && formData?.authenticationType.length > 0 && Array.isArray(formData?.authenticationType)) {
             formData.authenticationType = formData.authenticationType[0];
         }
 
-        if (formData?.referral && formData?.referral.length > 0) {
+        if (formData?.referral && formData?.referral.length > 0 && Array.isArray(formData?.referral)) {
             formData.referral = formData.referral[0];
         }
 
