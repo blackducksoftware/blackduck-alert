@@ -8,7 +8,6 @@ import { BLACKDUCK_INFO } from 'page/provider/blackduck/BlackDuckModel';
 import { createReadRequest } from 'common/util/configurationRequestBuilder';
 import * as PropTypes from 'prop-types';
 import StatusMessage from 'common/component/StatusMessage';
-import { AUTHENTICATION_SAML_FIELD_KEYS } from './AuthenticationModel';
 
 const BlackDuckSSOConfigImportModal = ({
     csrfToken, readOnly, label, show, onHide, initialSSOFieldData, updateSSOFieldData
@@ -37,9 +36,9 @@ const BlackDuckSSOConfigImportModal = ({
             if (response.ok) {
                 response.json().then((data) => {
                     if (data) {
-                        let updatedFieldData = FieldModelUtilities.updateFieldModelSingleValue(initialSSOFieldData, AUTHENTICATION_SAML_FIELD_KEYS.enabled, data.ssoEnabled);
-                        updatedFieldData = FieldModelUtilities.updateFieldModelSingleValue(updatedFieldData, AUTHENTICATION_SAML_FIELD_KEYS.metadataUrl, data.idpMetadataUrl || '');
-                        updateSSOFieldData(updatedFieldData);
+                        updateSSOFieldData({
+                            ...initialSSOFieldData, enabled: data.ssoEnabled, metadataUrl: data.idpMetadataUrl || '', metadataMode: 'URL'
+                        });
                     }
                     hideAndClearModal();
                 });

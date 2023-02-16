@@ -24,7 +24,7 @@ module.exports = merge.smart(commonConfig, {
         historyApiFallback: true,
         allowedHosts: "all",
         proxy: [{
-            context: ['/alert/api/**'],
+            context: ['/alert/api/**', '/alert/saml2/**'],
             target: 'https://localhost:8443',
             secure: false,
             cookieDomainRewrite: {

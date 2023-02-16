@@ -163,7 +163,7 @@ DynamicSelectInput.propTypes = {
     inputClass: PropTypes.string,
     selectSpacingClass: PropTypes.string,
     options: PropTypes.array,
-    value: PropTypes.array,
+    value: PropTypes.oneOf(PropTypes.string, PropTypes.array),
     placeholder: PropTypes.string,
     searchable: PropTypes.bool,
     removeSelected: PropTypes.bool,
