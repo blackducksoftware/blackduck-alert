@@ -86,9 +86,7 @@ public class ExecutingJobManager {
     public void startStage(UUID executionId, JobStage stage, Instant start) {
         logger.debug("Starting stage {} for job execution {} at {}", stage, executionId, DateUtils.formatDateAsJsonString(DateUtils.fromInstantUTC(start)));
         Optional<ExecutingJob> executingJob = Optional.ofNullable(executingJobMap.getOrDefault(executionId, null));
-        executingJob.ifPresent(job -> {
-            job.addStage(ExecutingJobStage.createStage(executionId, stage, DateUtils.fromInstantUTC(start).toInstant()));
-        });
+        executingJob.ifPresent(job -> job.addStage(ExecutingJobStage.createStage(executionId, stage, DateUtils.fromInstantUTC(start).toInstant())));
     }
 
     public void endStage(UUID executionId, JobStage stage, Instant end) {
