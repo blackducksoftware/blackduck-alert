@@ -39,6 +39,21 @@ public class ExecutingJob {
         this.notificationsSent = new AtomicInteger(0);
     }
 
+    public void endJob(Instant endTime) {
+        synchronized (this) {
+            this.end = endTime;
+        }
+    }
+
+    public void updateStatus(AuditEntryStatus status) {
+        synchronized (this) {
+            if (AuditEntryStatus.FAILURE == status
+                || !hasCompletedStatus()) {
+                this.status = status;
+            }
+        }
+    }
+
     public void jobSucceeded(Instant endTime) {
         completeJobWithStatus(AuditEntryStatus.SUCCESS, endTime);
     }

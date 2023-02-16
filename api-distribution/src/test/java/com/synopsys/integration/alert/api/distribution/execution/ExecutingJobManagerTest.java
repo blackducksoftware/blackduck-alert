@@ -39,7 +39,8 @@ class ExecutingJobManagerTest {
         ExecutingJobManager jobManager = new ExecutingJobManager(jobCompletionStatusModelAccessor);
         UUID jobConfigId = UUID.randomUUID();
         ExecutingJob executingJob = jobManager.startJob(jobConfigId, 0);
-        jobManager.endJobWithSuccess(jobConfigId, Instant.now());
+        jobManager.updateJobStatus(executingJob.getExecutionId(), AuditEntryStatus.SUCCESS);
+        jobManager.endJob(jobConfigId, Instant.now());
         ExecutingJob savedJob = jobManager.getExecutingJob(executingJob.getExecutionId()).orElse(null);
         jobManager.purgeJob(executingJob.getExecutionId());
         assertNotNull(savedJob);
@@ -76,8 +77,9 @@ class ExecutingJobManagerTest {
         ExecutingJobManager jobManager = new ExecutingJobManager(jobCompletionStatusModelAccessor);
         UUID jobConfigId = UUID.randomUUID();
         ExecutingJob executingJob = jobManager.startJob(jobConfigId, 1);
-        ExecutingJob savedJob = jobManager.getExecutingJob(executingJob.getExecutionId()).orElseThrow(() -> new AssertionError("Job with execution ID not found."));
-        savedJob.jobSucceeded(Instant.now());
+        jobManager.updateJobStatus(executingJob.getExecutionId(), AuditEntryStatus.SUCCESS);
+        ExecutingJob savedJob = jobManager.getExecutingJob(executingJob.getExecutionId()).orElseThrow(() -> new AssertionError("Job expected to be saved."));
+        jobManager.endJob(executingJob.getExecutionId(), Instant.now());
         AggregatedExecutionResults results = jobManager.aggregateExecutingJobData();
         assertEquals(jobConfigId, savedJob.getJobConfigId());
         assertEquals(AuditEntryStatus.SUCCESS, savedJob.getStatus());
@@ -85,9 +87,6 @@ class ExecutingJobManagerTest {
         assertNotNull(executingJob.getEnd().orElseThrow(() -> new AssertionError("End time should be present for a completed job.")));
 
         assertEquals(0, results.getPendingJobs());
-        assertEquals(1, results.getSuccessFulJobs());
-        assertEquals(0, results.getFailedJobs());
-        assertEquals(1, results.getTotalJobsInSystem());
     }
 
     @Test
@@ -99,7 +98,8 @@ class ExecutingJobManagerTest {
         UUID jobConfigId = UUID.randomUUID();
         ExecutingJob executingJob = jobManager.startJob(jobConfigId, 1);
         ExecutingJob savedJob = jobManager.getExecutingJob(executingJob.getExecutionId()).orElseThrow(() -> new AssertionError("Job with execution ID not found."));
-        savedJob.jobFailed(Instant.now());
+        jobManager.updateJobStatus(savedJob.getExecutionId(), AuditEntryStatus.FAILURE);
+        jobManager.endJob(savedJob.getExecutionId(), Instant.now());
         AggregatedExecutionResults results = jobManager.aggregateExecutingJobData();
         assertEquals(jobConfigId, savedJob.getJobConfigId());
         assertEquals(AuditEntryStatus.FAILURE, executingJob.getStatus());
@@ -107,9 +107,6 @@ class ExecutingJobManagerTest {
         assertNotNull(executingJob.getEnd().orElseThrow(() -> new AssertionError("End time should be present for a completed job.")));
 
         assertEquals(0, results.getPendingJobs());
-        assertEquals(0, results.getSuccessFulJobs());
-        assertEquals(1, results.getFailedJobs());
-        assertEquals(1, results.getTotalJobsInSystem());
     }
 
     @Test

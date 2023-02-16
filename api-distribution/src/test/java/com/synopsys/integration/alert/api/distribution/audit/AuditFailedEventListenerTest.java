@@ -143,7 +143,7 @@ class AuditFailedEventListenerTest {
             .map(this::createNotification)
             .forEach(notificationContentRepository::save);
         AuditFailedEventListener listener = new AuditFailedEventListener(gson, taskExecutor, handler);
-        AuditFailedEvent event = new AuditFailedEvent(executingJobId, notificationIds, errorMessage, stackTrace);
+        AuditFailedEvent event = new AuditFailedEvent(executingJobId, jobConfigId, notificationIds, errorMessage, stackTrace);
         Message message = new Message(gson.toJson(event).getBytes());
         listener.onMessage(message);
 

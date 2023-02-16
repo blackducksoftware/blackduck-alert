@@ -330,11 +330,16 @@ class DefaultDistributionAccessorTestIT {
         ExecutingJob executingJob5 = executingJobManager.startJob(fifthJobSaved.getJobId(), 5);
         ExecutingJob executingJob6 = executingJobManager.startJob(sixthJobSaved.getJobId(), 6);
 
-        executingJobManager.endJobWithSuccess(executingJob1.getExecutionId(), Instant.now());
-        executingJobManager.endJobWithSuccess(executingJob2.getExecutionId(), Instant.now());
-        executingJobManager.endJobWithFailure(executingJob4.getExecutionId(), Instant.now());
-        executingJobManager.endJobWithSuccess(executingJob5.getExecutionId(), Instant.now());
-        executingJobManager.endJobWithFailure(executingJob6.getExecutionId(), Instant.now());
+        executingJobManager.updateJobStatus(executingJob1.getExecutionId(), AuditEntryStatus.SUCCESS);
+        executingJobManager.endJob(executingJob1.getExecutionId(), Instant.now());
+        executingJobManager.updateJobStatus(executingJob2.getExecutionId(), AuditEntryStatus.SUCCESS);
+        executingJobManager.endJob(executingJob2.getExecutionId(), Instant.now());
+        executingJobManager.updateJobStatus(executingJob4.getExecutionId(), AuditEntryStatus.FAILURE);
+        executingJobManager.endJob(executingJob4.getExecutionId(), Instant.now());
+        executingJobManager.updateJobStatus(executingJob5.getExecutionId(), AuditEntryStatus.SUCCESS);
+        executingJobManager.endJob(executingJob5.getExecutionId(), Instant.now());
+        executingJobManager.updateJobStatus(executingJob6.getExecutionId(), AuditEntryStatus.FAILURE);
+        executingJobManager.endJob(executingJob6.getExecutionId(), Instant.now());
 
         return Map.of(
             firstJobSaved.getJobId(), firstJobSaved,

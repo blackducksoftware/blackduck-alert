@@ -15,6 +15,7 @@ import com.synopsys.integration.alert.api.event.AlertEvent;
 import com.synopsys.integration.alert.api.event.AlertEventHandler;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.api.event.distribution.JobSubTaskEvent;
+import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.workflow.JobSubTaskStatusModel;
 import com.synopsys.integration.alert.common.persistence.util.AuditStackTraceUtil;
@@ -50,13 +51,17 @@ public abstract class JobSubTaskEventHandler<T extends JobSubTaskEvent> implemen
                 executingJobManager.endStage(jobExecutionId, jobStage, Instant.now());
                 executingJobManager.getExecutingJob(jobExecutionId)
                     .filter(Predicate.not(ExecutingJob::isCompleted))
-                    .ifPresent(executingJob -> executingJobManager.endJobWithSuccess(jobExecutionId, Instant.now()));
+                    .ifPresent(executingJob -> {
+                        executingJobManager.updateJobStatus(jobExecutionId, AuditEntryStatus.SUCCESS);
+                        executingJobManager.endJob(jobExecutionId, Instant.now());
+                    });
             }
         } catch (AlertException exception) {
             executingJobManager.endStage(jobExecutionId, jobStage, Instant.now());
             executingJobManager.incrementSentNotificationCount(jobExecutionId, event.getNotificationIds().size());
             eventManager.sendEvent(new AuditFailedEvent(
                 jobExecutionId,
+                event.getJobId(),
                 event.getNotificationIds(),
                 exception.getMessage(),
                 AuditStackTraceUtil.createStackTraceString(exception)

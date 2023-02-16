@@ -55,6 +55,7 @@ class IssueTrackerChannelTest {
             null,
             UUID.randomUUID(),
             UUID.randomUUID(),
+            UUID.randomUUID(),
             Set.of()
         );
 

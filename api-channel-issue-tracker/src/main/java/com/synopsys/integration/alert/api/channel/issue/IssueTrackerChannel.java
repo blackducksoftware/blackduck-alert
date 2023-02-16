@@ -43,6 +43,7 @@ public abstract class IssueTrackerChannel<D extends DistributionJobDetailsModel,
         D distributionDetails,
         ProviderMessageHolder messages,
         String jobName,
+        UUID jobConfigId,
         UUID parentEventId,
         UUID jobExecutionId,
         Set<Long> notificationIds

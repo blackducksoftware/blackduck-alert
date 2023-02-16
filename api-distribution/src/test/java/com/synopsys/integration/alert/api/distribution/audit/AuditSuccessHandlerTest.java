@@ -40,7 +40,7 @@ class AuditSuccessHandlerTest {
         ExecutingJob executingJob = executingJobManager.startJob(jobId, 0);
         UUID jobExecutionId = executingJob.getExecutionId();
         AuditSuccessHandler handler = new AuditSuccessHandler(executingJobManager);
-        AuditSuccessEvent event = new AuditSuccessEvent(jobExecutionId, Set.of());
+        AuditSuccessEvent event = new AuditSuccessEvent(jobExecutionId, jobId, Set.of());
         handler.handle(event);
         JobCompletionStatusModel statusModel = jobCompletionStatusModelAccessor.getJobExecutionStatus(jobId)
             .orElseThrow(() -> new AssertionError("Executing Job cannot be missing from the test."));
@@ -53,11 +53,12 @@ class AuditSuccessHandlerTest {
 
     @Test
     void handleEventAuditMissingTest() {
+        UUID jobId = UUID.randomUUID();
         UUID jobExecutionId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
         AlertPagedQueryDetails pagedQueryDetails = new AlertPagedQueryDetails(1, 10);
         AuditSuccessHandler handler = new AuditSuccessHandler(executingJobManager);
-        AuditSuccessEvent event = new AuditSuccessEvent(jobExecutionId, notificationIds);
+        AuditSuccessEvent event = new AuditSuccessEvent(jobExecutionId, jobId, notificationIds);
         handler.handle(event);
         Optional<ExecutingJob> executingJob = executingJobManager.getExecutingJob(jobExecutionId);
         assertTrue(executingJob.isEmpty());

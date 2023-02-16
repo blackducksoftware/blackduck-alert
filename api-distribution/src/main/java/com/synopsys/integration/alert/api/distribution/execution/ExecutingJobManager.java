@@ -46,24 +46,19 @@ public class ExecutingJobManager {
         return job;
     }
 
-    public void endJobWithSuccess(UUID executionId, Instant endTime) {
+    public void endJob(UUID executionId, Instant endTime) {
         logger.debug("Ending job execution with success {} at {}", executionId, DateUtils.formatDateAsJsonString(DateUtils.fromInstantUTC(endTime)));
         Optional<ExecutingJob> executingJob = Optional.ofNullable(executingJobMap.getOrDefault(executionId, null));
         executingJob.ifPresent(execution -> {
-            execution.jobSucceeded(DateUtils.fromInstantUTC(endTime).toInstant());
-            jobCompletionStatusAccessor.saveExecutionStatus(createStatusModel(execution, AuditEntryStatus.SUCCESS));
+            execution.endJob(DateUtils.fromInstantUTC(endTime).toInstant());
+            jobCompletionStatusAccessor.saveExecutionStatus(createStatusModel(execution));
             purgeJob(executionId);
         });
     }
 
-    public void endJobWithFailure(UUID executionId, Instant endTime) {
-        logger.debug("Ending job execution with failure {} at {}", executionId, DateUtils.formatDateAsJsonString(DateUtils.fromInstantUTC(endTime)));
+    public void updateJobStatus(UUID executionId, AuditEntryStatus status) {
         Optional<ExecutingJob> executingJob = Optional.ofNullable(executingJobMap.getOrDefault(executionId, null));
-        executingJob.ifPresent(execution -> {
-            execution.jobFailed(DateUtils.fromInstantUTC(endTime).toInstant());
-            jobCompletionStatusAccessor.saveExecutionStatus(createStatusModel(execution, AuditEntryStatus.FAILURE));
-            purgeJob(executionId);
-        });
+        executingJob.ifPresent(execution -> execution.updateStatus(status));
     }
 
     public void incrementProcessedNotificationCount(UUID jobExecutionId, int notificationCount) {
@@ -174,8 +169,8 @@ public class ExecutingJobManager {
 
     }
 
-    private JobCompletionStatusModel createStatusModel(ExecutingJob executingJob, AuditEntryStatus jobStatus) {
-
+    private JobCompletionStatusModel createStatusModel(ExecutingJob executingJob) {
+        AuditEntryStatus jobStatus = executingJob.getStatus();
         UUID jobConfigId = executingJob.getJobConfigId();
         long successCount = AuditEntryStatus.SUCCESS == jobStatus ? 1L : 0L;
         long failureCount = AuditEntryStatus.FAILURE == jobStatus ? 1L : 0L;
