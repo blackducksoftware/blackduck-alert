@@ -9,4 +9,5 @@
     <include file="job-sub-task-execution-id.xml" relativeToChangelogFile="true"/>
     <include file="job-completion-status.xml" relativeToChangelogFile="true"/>
     <include file="notification-content-id.xml" relativeToChangelogFile="true"/>
+    <include file="migrate-ldap-configuration.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
