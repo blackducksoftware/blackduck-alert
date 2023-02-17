@@ -204,7 +204,6 @@ class LDAPConfigControllerTest {
 
         LDAPConfigTestModel ldapConfigTestModel = new LDAPConfigTestModel(validLDAPConfigModel, "User", "Pass");
         ValidationResponseModel validationResponseModel = assertDoesNotThrow(() -> ldapConfigController.test(ldapConfigTestModel));
-        System.out.println(validationResponseModel.toString());
     }
 
     private LDAPConfigModel createValidConfigModel() {
