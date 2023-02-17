@@ -47,11 +47,13 @@ class LDAPValidationActionTest {
         LDAPConfigModel emptyLDAPConfigModel = new LDAPConfigModel();
         ActionResponse<ValidationResponseModel> validationResponseModelActionResponse = ldapValidationAction.validate(emptyLDAPConfigModel);
 
+        ValidationResponseModel validationResponseModel = validationResponseModelActionResponse.getContent()
+            .orElseThrow(() -> new AssertionError("Expected response content not found"));
+
         assertFalse(validationResponseModelActionResponse.isError());
         assertEquals(HttpStatus.OK, validationResponseModelActionResponse.getHttpStatus());
-        assertTrue(validationResponseModelActionResponse.getContent().isPresent());
-        assertTrue(validationResponseModelActionResponse.getContent().get().hasErrors());
-        assertEquals("There were problems with the configuration", validationResponseModelActionResponse.getContent().get().getMessage());
+        assertTrue(validationResponseModel.hasErrors());
+        assertEquals("There were problems with the configuration", validationResponseModel.getMessage());
     }
 
     @Test
@@ -63,10 +65,12 @@ class LDAPValidationActionTest {
         emptyLDAPConfigModel.setIsManagerPasswordSet(true);
         ActionResponse<ValidationResponseModel> validationResponseModelActionResponse = ldapValidationAction.validate(emptyLDAPConfigModel);
 
+        ValidationResponseModel validationResponseModel = validationResponseModelActionResponse.getContent()
+            .orElseThrow(() -> new AssertionError("Expected response content not found"));
+
         assertFalse(validationResponseModelActionResponse.isError());
         assertEquals(HttpStatus.OK, validationResponseModelActionResponse.getHttpStatus());
-        assertTrue(validationResponseModelActionResponse.getContent().isPresent());
-        assertFalse(validationResponseModelActionResponse.getContent().get().hasErrors());
-        assertEquals("The configuration is valid", validationResponseModelActionResponse.getContent().get().getMessage());
+        assertFalse(validationResponseModel.hasErrors());
+        assertEquals("The configuration is valid", validationResponseModel.getMessage());
     }
 }

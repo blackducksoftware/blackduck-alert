@@ -91,10 +91,11 @@ class LDAPTestActionTest {
         assertEquals(HttpStatus.OK, validationResponseModelActionResponse.getHttpStatus());
 
         // asserts to show we failed validation
-        assertTrue(validationResponseModelActionResponse.getContent().isPresent());
-        assertTrue(validationResponseModelActionResponse.getContent().get().hasErrors());
-        assertTrue(validationResponseModelActionResponse.getContent().get().getErrors().size() > 0);
-        assertEquals("There were problems with the configuration", validationResponseModelActionResponse.getContent().get().getMessage());
+        ValidationResponseModel validationResponseModel = validationResponseModelActionResponse.getContent()
+            .orElseThrow(() -> new AssertionError("Expected response content not found"));
+        assertTrue(validationResponseModel.hasErrors());
+        assertTrue(validationResponseModel.getErrors().size() > 0);
+        assertEquals("There were problems with the configuration", validationResponseModel.getMessage());
     }
 
     @Test
@@ -105,12 +106,13 @@ class LDAPTestActionTest {
         assertEquals(HttpStatus.OK, validationResponseModelActionResponse.getHttpStatus());
 
         // assert to show we passed validation
-        assertTrue(validationResponseModelActionResponse.getContent().isPresent());
-        assertEquals(0, validationResponseModelActionResponse.getContent().get().getErrors().size());
+        ValidationResponseModel validationResponseModel = validationResponseModelActionResponse.getContent()
+            .orElseThrow(() -> new AssertionError("Expected response content not found"));
+        assertEquals(0, validationResponseModel.getErrors().size());
 
         // assert to show testConfigModelContent() caught an exception
-        assertTrue(validationResponseModelActionResponse.getContent().get().hasErrors());
-        assertEquals("LDAP Test Configuration failed. Error creating LDAP authenticator", validationResponseModelActionResponse.getContent().get().getMessage());
+        assertTrue(validationResponseModel.hasErrors());
+        assertEquals("LDAP Test Configuration failed. Error creating LDAP authenticator", validationResponseModel.getMessage());
     }
 
     @Test
@@ -127,13 +129,14 @@ class LDAPTestActionTest {
         ActionResponse<ValidationResponseModel> validationResponseModelActionResponse = ldapTestAction.testAuthentication(ldapConfigTestModel);
 
         // asserts to show validation passed as it should, with password being empty
-        assertTrue(validationResponseModelActionResponse.getContent().isPresent());
-        assertEquals(0, validationResponseModelActionResponse.getContent().get().getErrors().size());
+        ValidationResponseModel validationResponseModel = validationResponseModelActionResponse.getContent()
+            .orElseThrow(() -> new AssertionError("Expected response content not found"));
+        assertEquals(0, validationResponseModel.getErrors().size());
 
         // asserts to show testConfigModelContent() got PW from DB (spy). If it didn't get the PW from the DB
         //   the message would be different
-        assertTrue(validationResponseModelActionResponse.getContent().get().hasErrors());
-        assertEquals("LDAP Test Configuration failed. Error creating LDAP authenticator", validationResponseModelActionResponse.getContent().get().getMessage());
+        assertTrue(validationResponseModel.hasErrors());
+        assertEquals("LDAP Test Configuration failed. Error creating LDAP authenticator", validationResponseModel.getMessage());
     }
 
     @Test
@@ -147,9 +150,10 @@ class LDAPTestActionTest {
 
         // asserts to show testConfigModelContent() got PW from DB (spy). If it didn't get the PW from the DB,
         //   the message would be different
-        assertTrue(validationResponseModelActionResponse.getContent().isPresent());
-        assertTrue(validationResponseModelActionResponse.getContent().get().hasErrors());
-        assertEquals("LDAP Test Configuration failed. Please check your configuration.", validationResponseModelActionResponse.getContent().get().getMessage());
+        ValidationResponseModel validationResponseModel = validationResponseModelActionResponse.getContent()
+            .orElseThrow(() -> new AssertionError("Expected response content not found"));
+        assertTrue(validationResponseModel.hasErrors());
+        assertEquals("LDAP Test Configuration failed. Please check your configuration.", validationResponseModel.getMessage());
     }
 
     @Test
@@ -166,9 +170,10 @@ class LDAPTestActionTest {
         ldapTestAction = new LDAPTestAction(authorizationManager, authenticationDescriptorKey, ldapConfigurationValidator, spiedLdapManager, ldapConfigAccessor);
         ActionResponse<ValidationResponseModel> validationResponseModelActionResponse = ldapTestAction.testAuthentication(ldapConfigTestModel);
 
-        assertTrue(validationResponseModelActionResponse.getContent().isPresent());
-        assertTrue(validationResponseModelActionResponse.getContent().get().hasErrors());
-        assertEquals(String.format("LDAP authentication failed for test user %s.", testUser), validationResponseModelActionResponse.getContent().get().getMessage());
+        ValidationResponseModel validationResponseModel = validationResponseModelActionResponse.getContent()
+            .orElseThrow(() -> new AssertionError("Expected response content not found"));
+        assertTrue(validationResponseModel.hasErrors());
+        assertEquals(String.format("LDAP authentication failed for test user %s.", testUser), validationResponseModel.getMessage());
     }
 
     @Test
@@ -187,9 +192,10 @@ class LDAPTestActionTest {
         ldapTestAction = new LDAPTestAction(authorizationManager, authenticationDescriptorKey, ldapConfigurationValidator, spiedLdapManager, ldapConfigAccessor);
         ActionResponse<ValidationResponseModel> validationResponseModelActionResponse = ldapTestAction.testAuthentication(ldapConfigTestModel);
 
-        assertTrue(validationResponseModelActionResponse.getContent().isPresent());
-        assertFalse(validationResponseModelActionResponse.getContent().get().hasErrors());
-        assertEquals("LDAP Test Configuration successful.", validationResponseModelActionResponse.getContent().get().getMessage());
+        ValidationResponseModel validationResponseModel = validationResponseModelActionResponse.getContent()
+            .orElseThrow(() -> new AssertionError("Expected response content not found"));
+        assertFalse(validationResponseModel.hasErrors());
+        assertEquals("LDAP Test Configuration successful.", validationResponseModel.getMessage());
     }
 
 }
