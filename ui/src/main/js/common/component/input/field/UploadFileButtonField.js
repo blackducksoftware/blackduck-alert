@@ -25,9 +25,11 @@ const UploadFileButtonField = ({
     statusMessage,
     permissions,
     onChange,
-    customEndpoint
+    customEndpoint,
+    value
 }) => {
     const [fieldError, setFieldError] = useState(errorValue);
+    const [uploadedValue, setUploadedValue] = useState(value);
     const [success, setSuccess] = useState(false);
     const [progress, setProgress] = useState(false);
     const [uploadStatusMessage, setUploadStatusMessage] = useState(statusMessage);
@@ -71,6 +73,7 @@ const UploadFileButtonField = ({
                     setSuccess(true);
                     setUploadStatusMessage('Upload Metadata File Success');
                     setFileUploaded(true);
+                    setUploadedValue(value);
                 } else {
                     response.json().then((data) => {
                         setFieldError(HTTPErrorUtils.createFieldError(data.message));
@@ -100,6 +103,8 @@ const UploadFileButtonField = ({
     };
 
     const acceptedContentTypes = accept ? accept.join(',') : null;
+    // For fileUploaded
+    const removeFileUploadedText = uploadedValue ? (`Remove Uploaded File: ${uploadedValue}`) : 'Remove Uploaded File';
 
     return (
         <div>
@@ -137,7 +142,19 @@ const UploadFileButtonField = ({
                                     {buttonLabel}
                                 </GeneralButton>
                                 {fileUploaded
-                                && <button disabled={readOnly || !permissions.read || !permissions.delete} id={`${fieldKey}-delete`} className="btn btn-md btn-link" onClick={onDeleteClick}>Remove Uploaded File</button>}
+                                && (
+                                    <>
+                                        <button
+                                            type="button"
+                                            disabled={readOnly || !permissions.read || !permissions.delete}
+                                            id={`${fieldKey}-delete`}
+                                            className="btn btn-md btn-link"
+                                            onClick={onDeleteClick}
+                                        >
+                                            {removeFileUploadedText}
+                                        </button>
+                                    </>
+                                )}
                             </div>
                         </div>
                     </div>
