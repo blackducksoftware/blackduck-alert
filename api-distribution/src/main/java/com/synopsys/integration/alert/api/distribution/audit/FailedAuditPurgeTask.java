@@ -61,7 +61,7 @@ public class FailedAuditPurgeTask extends StartupScheduledTask {
 
     private Boolean purgeOldData() {
         OffsetDateTime purgeDate = DateUtils.createCurrentDateTimestamp()
-            .minusDays(10)
+            .minusDays(getConfiguredFrequency())
             .withHour(0).withMinute(0).withSecond(0).withNano(0);
         logger.info("Purging old failed Audit entries older than {}", purgeDate);
         failedAuditAccessor.deleteAuditEntriesBefore(purgeDate);
