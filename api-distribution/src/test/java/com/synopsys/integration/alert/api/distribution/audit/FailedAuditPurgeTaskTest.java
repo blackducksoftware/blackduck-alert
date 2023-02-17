@@ -135,7 +135,7 @@ class FailedAuditPurgeTaskTest {
         ));
         auditFailedEntryRepository.save(new AuditFailedEntity(
             secondExpectedId,
-            DateUtils.createCurrentDateTimestamp().minusDays(9),
+            DateUtils.createCurrentDateTimestamp().minusDays(10),
             "jobName",
             "providerKey",
             "providerName",
@@ -147,7 +147,7 @@ class FailedAuditPurgeTaskTest {
 
         auditFailedEntryRepository.save(new AuditFailedEntity(
             firstIdToBeRemoved,
-            DateUtils.createCurrentDateTimestamp().minusDays(11),
+            DateUtils.createCurrentDateTimestamp().minusDays(12),
             "jobName",
             "providerKey",
             "providerName",
