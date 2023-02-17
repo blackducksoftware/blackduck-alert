@@ -1,21 +1,21 @@
 package com.synopsys.integration.alert.authentication.saml.validator;
 
-import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
-import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
-import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatusMessages;
-import com.synopsys.integration.alert.authentication.saml.model.SAMLConfigModel;
-import com.synopsys.integration.alert.authentication.saml.model.SAMLMetadataMode;
-import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
+import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
+import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
+import com.synopsys.integration.alert.authentication.saml.model.SAMLConfigModel;
+import com.synopsys.integration.alert.authentication.saml.model.SAMLMetadataMode;
+import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 
 @Component
 public class SAMLConfigurationValidator {
@@ -43,9 +43,7 @@ public class SAMLConfigurationValidator {
         if (samlMetadataMode == SAMLMetadataMode.URL) {
             optionalMetadataUrl.ifPresentOrElse(
                 metaDataUrl -> addErrorStatusIfInvalidUrl(metaDataUrl, "metadataUrl", statuses),
-                () -> {
-                    statuses.add(AlertFieldStatus.error("metadataUrl", AuthenticationDescriptor.FIELD_ERROR_SAML_METADATA_URL_MISSING));
-                }
+                () -> statuses.add(AlertFieldStatus.error("metadataUrl", AuthenticationDescriptor.FIELD_ERROR_SAML_METADATA_URL_MISSING))
             );
         }
 

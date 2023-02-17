@@ -43,10 +43,10 @@ public abstract class JobSubTaskEventHandler<T extends JobSubTaskEvent> implemen
             Optional<JobSubTaskStatusModel> subTaskStatus = jobSubTaskAccessor.decrementTaskCount(parentEventId);
             subTaskStatus.map(JobSubTaskStatusModel::getRemainingTaskCount)
                 .filter(remainingCount -> remainingCount < 1)
-                .ifPresent(ignored -> {
+                .ifPresent(ignored ->
                     //TODO no longer need this component
-                    jobSubTaskAccessor.removeSubTaskStatus(parentEventId);
-                });
+                    jobSubTaskAccessor.removeSubTaskStatus(parentEventId)
+                );
             if (!executingJobManager.hasRemainingEvents(jobExecutionId)) {
                 executingJobManager.endStage(jobExecutionId, jobStage, Instant.now());
                 executingJobManager.getExecutingJob(jobExecutionId)
