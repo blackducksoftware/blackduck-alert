@@ -9,9 +9,9 @@
         </preConditions>
 
         <sql dbms="postgresql" stripComments="true">
-            INSERT INTO alert.configuration_saml (name, created_at, last_updated, enabled, force_auth, metadata_url, metadata_file_path,
-                                                  metadata_mode, want_assertions_signed, encryption_cert_file_path, encryption_private_key_file_path,
-                                                  signing_cert_file_path, signing_private_key_file_path, verification_cert_file_path)
+            INSERT INTO alert.configuration_saml (name, created_at, last_updated, enabled, force_auth, metadata_url, metadata_file_name,
+                                                  metadata_mode, want_assertions_signed, encryption_cert_file_name, encryption_private_key_file_name,
+                                                  signing_cert_file_name, signing_private_key_file_name, verification_cert_file_name)
             SELECT 'default-configuration',
                    now(),
                    null,
