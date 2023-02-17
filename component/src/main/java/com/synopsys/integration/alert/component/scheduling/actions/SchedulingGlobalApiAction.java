@@ -86,9 +86,9 @@ public class SchedulingGlobalApiAction extends ApiAction {
             SchedulingDescriptor.KEY_PURGE_AUDIT_FAILED_NEXT_RUN,
             new FieldValueModel(List.of(taskManager.getNextRunTime(ScheduledTask.computeTaskName(FailedAuditPurgeTask.class)).orElse("")), true)
         );
-        String purgeAuditFailedFrequency = fieldModel.getFieldValue(SchedulingDescriptor.KEY_PURGE_AUDIT_FAILED_NEXT_RUN)
+        String purgeAuditFailedFrequency = fieldModel.getFieldValue(SchedulingDescriptor.KEY_PURGE_AUDIT_FAILED_FREQUENCY_DAYS)
             .orElse(String.valueOf(FailedAuditPurgeTask.DEFAULT_FREQUENCY));
-        fieldModel.putField(SchedulingDescriptor.KEY_PURGE_AUDIT_FAILED_NEXT_RUN, new FieldValueModel(List.of(purgeAuditFailedFrequency), true));
+        fieldModel.putField(SchedulingDescriptor.KEY_PURGE_AUDIT_FAILED_FREQUENCY_DAYS, new FieldValueModel(List.of(purgeAuditFailedFrequency), true));
 
         return fieldModel;
     }
