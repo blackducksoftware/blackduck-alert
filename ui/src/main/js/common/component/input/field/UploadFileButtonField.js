@@ -52,6 +52,10 @@ const UploadFileButtonField = ({
     }, []);
 
     useEffect(() => {
+        setUploadedValue(uploadedValue || value);
+    }, [value]);
+
+    useEffect(() => {
         setFieldError(errorValue);
         setSuccess(false);
     }, [errorValue]);

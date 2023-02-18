@@ -1,5 +1,6 @@
 package com.synopsys.integration.alert.authentication.saml.action;
 
+import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
 import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.authentication.saml.database.accessor.SAMLConfigAccessor;
 import com.synopsys.integration.alert.authentication.saml.model.SAMLConfigModel;
@@ -7,17 +8,37 @@ import com.synopsys.integration.alert.authentication.saml.security.SAMLManager;
 import com.synopsys.integration.alert.authentication.saml.validator.SAMLConfigurationValidator;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.rest.api.ConfigurationCrudHelper;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 @Component
 public class SAMLCrudActions {
+    private final Logger logger = LoggerFactory.getLogger(SAMLCrudActions.class);
+
     private final ConfigurationCrudHelper configurationCrudHelper;
     private final SAMLConfigAccessor configurationAccessor;
     private final SAMLConfigurationValidator configurationValidator;
     private final SAMLManager samlManager;
+    private final SAMLFileUploadActions samlFileUploadActions;
+
+    private final List<String> SAML_FILE_UPLOADS = Arrays.asList(
+        AuthenticationDescriptor.SAML_METADATA_FILE,
+        AuthenticationDescriptor.SAML_ENCRYPTION_CERT_FILE,
+        AuthenticationDescriptor.SAML_ENCRYPTION_PRIVATE_KEY_FILE,
+        AuthenticationDescriptor.SAML_SIGNING_CERT_FILE,
+        AuthenticationDescriptor.SAML_SIGNING_PRIVATE_KEY_FILE,
+        AuthenticationDescriptor.SAML_VERIFICATION_CERT_FILE
+    );
 
     @Autowired
     public SAMLCrudActions(
@@ -25,12 +46,14 @@ public class SAMLCrudActions {
         SAMLConfigAccessor configurationAccessor,
         SAMLConfigurationValidator configurationValidator,
         AuthenticationDescriptorKey authenticationDescriptorKey,
-        SAMLManager samlManager
+        SAMLManager samlManager,
+        SAMLFileUploadActions samlFileUploadActions
     ) {
         this.configurationCrudHelper = new ConfigurationCrudHelper(authorizationManager, ConfigContextEnum.GLOBAL, authenticationDescriptorKey);
         this.configurationAccessor = configurationAccessor;
         this.configurationValidator = configurationValidator;
         this.samlManager = samlManager;
+        this.samlFileUploadActions = samlFileUploadActions;
     }
 
     public ActionResponse<SAMLConfigModel> getOne() {
@@ -74,6 +97,13 @@ public class SAMLCrudActions {
 
         if (response.isSuccessful()) {
             samlManager.reconfigureSAML();
+        }
+
+        for (String fileName : SAML_FILE_UPLOADS) {
+            boolean fileExists = samlFileUploadActions.fileExists(fileName).isSuccessful();
+            if (fileExists) {
+                samlFileUploadActions.fileDelete(fileName);
+            }
         }
 
         return response;

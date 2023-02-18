@@ -58,7 +58,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, fileDelete, fileRead, fil
         const response = await ConfigurationRequestBuilder.createReadRequest(samlRequestUrl, csrfToken);
         const data = await response.json();
 
-        data.status === 404 ? setFormData({ ...data, metadataMode: 'URL' }) : setFormData(data)
+        data.status === 404 ? setFormData({ ...data, metadataMode: 'URL' }) : setFormData(data);
     };
 
     function updateData() {
