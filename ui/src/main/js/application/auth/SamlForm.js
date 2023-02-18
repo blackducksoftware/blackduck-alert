@@ -49,6 +49,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, fileDelete, fileRead, fil
     const [formData, setFormData] = useState({});
     const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
     const [showBlackDuckSSOImportModal, setShowBlackDuckSSOImportModal] = useState(false);
+    const [triggerClearUploaded, setTriggerClearUploaded] = useState(false);
     const samlRequestUrl = `${ConfigurationRequestBuilder.AUTHENTICATION_SAML_API_URL}`;
 
     const importBlackDuckSSOConfigLabel = 'Retrieve Black Duck SAML Configuration';
@@ -77,6 +78,10 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, fileDelete, fileRead, fil
         return ConfigurationRequestBuilder.createValidateRequest(samlRequestUrl, csrfToken, formData);
     }
 
+    function clearUploadedButtonsPostDelete() {
+        setTriggerClearUploaded(!triggerClearUploaded);
+    }
+
     return (
         <div className={classes.samlForm}>
             <h2>SAML Configuration</h2>
@@ -94,6 +99,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, fileDelete, fileRead, fil
                 deleteLabel="Delete SAML Configuration"
                 submitLabel="Save SAML Configuration"
                 testLabel="Validate SAML Configuration"
+                postDeleteAction={clearUploadedButtonsPostDelete}
             >
                 <CheckboxInput
                     id={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.enabled}
@@ -173,6 +179,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, fileDelete, fileRead, fil
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.metadataFileName)}
                         errorValue={errors.fieldErrors[AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.metadataFileName]}
                         required
+                        valueToCheckFileExistsOnChange={triggerClearUploaded}
                     />
                 )}
 
@@ -224,6 +231,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, fileDelete, fileRead, fil
                         value={formData.encryptionCertFileName}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.encryptionCertFileName)}
                         errorValue={errors.fieldErrors[AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.encryptionCertFileName]}
+                        valueToCheckFileExistsOnChange={triggerClearUploaded}
                     />
                     <UploadFileButtonField
                         id={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.encryptionPrivateKeyFileName}
@@ -245,6 +253,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, fileDelete, fileRead, fil
                         value={formData.encryptionPrivateKeyFileName}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.encryptionPrivateKeyFileName)}
                         errorValue={errors.fieldErrors[AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.encryptionPrivateKeyFileName]}
+                        valueToCheckFileExistsOnChange={triggerClearUploaded}
                     />
 
                     <UploadFileButtonField
@@ -267,6 +276,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, fileDelete, fileRead, fil
                         value={formData.signingCertFileName}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.signingCertFileName)}
                         errorValue={errors.fieldErrors[AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.signingCertFileName]}
+                        valueToCheckFileExistsOnChange={triggerClearUploaded}
                     />
                     <UploadFileButtonField
                         id={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.signingPrivateKeyFileName}
@@ -288,6 +298,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, fileDelete, fileRead, fil
                         value={formData.signingPrivateKeyFileName}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.signingPrivateKeyFileName)}
                         errorValue={errors.fieldErrors[AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.signingPrivateKeyFileName]}
+                        valueToCheckFileExistsOnChange={triggerClearUploaded}
                     />
 
                     <UploadFileButtonField
@@ -310,6 +321,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, fileDelete, fileRead, fil
                         value={formData.verificationCertFileName}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.verificationCertFileName)}
                         errorValue={errors.fieldErrors[AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.verificationCertFileName]}
+                        valueToCheckFileExistsOnChange={triggerClearUploaded}
                     />
                 </CollapsiblePane>
             </ConcreteConfigurationForm>

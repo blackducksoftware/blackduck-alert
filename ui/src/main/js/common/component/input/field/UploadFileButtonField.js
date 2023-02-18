@@ -26,7 +26,8 @@ const UploadFileButtonField = ({
     permissions,
     onChange,
     customEndpoint,
-    value
+    value,
+    valueToCheckFileExistsOnChange
 }) => {
     const [fieldError, setFieldError] = useState(errorValue);
     const [uploadedValue, setUploadedValue] = useState(value);
@@ -59,6 +60,10 @@ const UploadFileButtonField = ({
         setFieldError(errorValue);
         setSuccess(false);
     }, [errorValue]);
+
+    useEffect(() => {
+        checkFileExists();
+    }, [valueToCheckFileExistsOnChange]);
 
     const onUploadClick = () => {
         const fileData = fileInputField.current.files;
@@ -191,7 +196,11 @@ UploadFileButtonField.propTypes = {
         read: PropTypes.bool,
         write: PropTypes.bool,
         delete: PropTypes.bool
-    })
+    }),
+    onChange: PropTypes.func,
+    customEndpoint: PropTypes.string,
+    value: PropTypes.any,
+    valueToCheckFileExistsOnChange: PropTypes.any
 };
 
 UploadFileButtonField.defaultProps = {
@@ -210,7 +219,11 @@ UploadFileButtonField.defaultProps = {
         read: true,
         write: true,
         delete: true
-    }
+    },
+    onChange: () => {},
+    customEndpoint: '',
+    value: '',
+    valueToCheckFileExistsOnChange: ''
 };
 
 export default UploadFileButtonField;
