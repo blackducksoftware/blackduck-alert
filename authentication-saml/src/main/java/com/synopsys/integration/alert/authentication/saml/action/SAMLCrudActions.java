@@ -29,9 +29,9 @@ public class SAMLCrudActions {
     private final SAMLConfigAccessor configurationAccessor;
     private final SAMLConfigurationValidator configurationValidator;
     private final SAMLManager samlManager;
-    private final SAMLFileUploadActions samlFileUploadActions;
+    private final FilePersistenceUtil filePersistenceUtil;
 
-    private final List<String> SAML_FILE_UPLOADS = Arrays.asList(
+    private static final List<String> SAML_FILE_UPLOADS = Arrays.asList(
         AuthenticationDescriptor.SAML_METADATA_FILE,
         AuthenticationDescriptor.SAML_ENCRYPTION_CERT_FILE,
         AuthenticationDescriptor.SAML_ENCRYPTION_PRIVATE_KEY_FILE,
@@ -47,13 +47,13 @@ public class SAMLCrudActions {
         SAMLConfigurationValidator configurationValidator,
         AuthenticationDescriptorKey authenticationDescriptorKey,
         SAMLManager samlManager,
-        SAMLFileUploadActions samlFileUploadActions
+        FilePersistenceUtil filePersistenceUtil
     ) {
         this.configurationCrudHelper = new ConfigurationCrudHelper(authorizationManager, ConfigContextEnum.GLOBAL, authenticationDescriptorKey);
         this.configurationAccessor = configurationAccessor;
         this.configurationValidator = configurationValidator;
         this.samlManager = samlManager;
-        this.samlFileUploadActions = samlFileUploadActions;
+        this.filePersistenceUtil = filePersistenceUtil;
     }
 
     public ActionResponse<SAMLConfigModel> getOne() {
@@ -97,12 +97,17 @@ public class SAMLCrudActions {
 
         if (response.isSuccessful()) {
             samlManager.reconfigureSAML();
-        }
 
-        for (String fileName : SAML_FILE_UPLOADS) {
-            boolean fileExists = samlFileUploadActions.fileExists(fileName).isSuccessful();
-            if (fileExists) {
-                samlFileUploadActions.fileDelete(fileName);
+            try {
+                for (String fileName : SAML_FILE_UPLOADS) {
+                    boolean fileExists = filePersistenceUtil.uploadFileExists(fileName);
+                    if (fileExists) {
+                        filePersistenceUtil.deleteUploadsFile(fileName);
+                    }
+                }
+            } catch (IOException e) {
+                logger.error("Error deleting file during SAML configuration delete caused by: ", e);
+                return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, "Error deleting uploaded file from server during SAML configuration delete.");
             }
         }
 
