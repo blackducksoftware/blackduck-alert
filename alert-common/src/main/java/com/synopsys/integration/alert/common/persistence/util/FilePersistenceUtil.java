@@ -111,6 +111,11 @@ public final class FilePersistenceUtil {
         FileUtils.forceDelete(file);
     }
 
+    public void deleteUploadsFile(final String fileName) throws IOException {
+        final File file = createUploadsFile(fileName);
+        FileUtils.forceDelete(file);
+    }
+
     public File createUploadsFile(String fileName) {
         return new File(uploadsDirectory, fileName);
     }

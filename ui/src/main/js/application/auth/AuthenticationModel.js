@@ -27,15 +27,15 @@ export const AUTHENTICATION_LDAP_GLOBAL_TEST_FIELD_KEYS = {
 
 export const AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS = {
     enabled: 'enabled',
-    encryptionCertFilePath: 'encryptionCertFilePath',
-    encryptionPrivateKeyFilePath: 'encryptionPrivateKeyFilePath',
+    encryptionCertFileName: 'encryptionCertFileName',
+    encryptionPrivateKeyFileName: 'encryptionPrivateKeyFileName',
     forceAuth: 'forceAuth',
-    metadataFilePath: 'metadataFilePath',
+    metadataFileName: 'metadataFileName',
     metadataMode: 'metadataMode',
     metadataUrl: 'metadataUrl',
     name: 'name',
-    signingCertFilePath: 'signingCertFilePath',
-    signingPrivateKeyFilePath: 'signingPrivateKeyFilePath',
-    verificationCertFilePath: 'verificationCertFilePath',
+    signingCertFileName: 'signingCertFileName',
+    signingPrivateKeyFileName: 'signingPrivateKeyFileName',
+    verificationCertFileName: 'verificationCertFileName',
     wantAssertionsSigned: 'wantAssertionsSigned'
 };
