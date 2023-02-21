@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.environment;
 
+import java.util.Optional;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -36,19 +37,22 @@ public abstract class EnvironmentVariableHandler<T extends Obfuscated<T>> {
         return environmentVariableNames;
     }
 
-    private boolean doVariablesExistInEnvironment() {
-        for (String variableName : environmentVariableNames) {
-            if (environmentVariableUtility.getEnvironmentValue(variableName).isPresent()) {
-                return true;
-            }
+    private boolean variablesExistCheck() {
+        boolean variablePresent = environmentVariableNames
+            .stream()
+            .map(environmentVariableUtility::getEnvironmentValue)
+            .anyMatch(Optional::isPresent);
+
+        if (!variablePresent) {
+            logger.info("Did not find any environment variables configured for: {}", name);
         }
-        logger.info("Did not find any environment variables configured for: {}", name);
-        return false;
+        return variablePresent;
     }
 
     public EnvironmentProcessingResult updateFromEnvironment() {
         boolean configurationMissing = configurationMissingCheck();
-        if (configurationMissing && doVariablesExistInEnvironment()) {
+        boolean variablesExist = variablesExistCheck();
+        if (configurationMissing && variablesExist) {
             T configurationModel = configureModel();
             ValidationResponseModel validationResponseModel = validateConfiguration(configurationModel);
             if (validationResponseModel.hasErrors()) {
