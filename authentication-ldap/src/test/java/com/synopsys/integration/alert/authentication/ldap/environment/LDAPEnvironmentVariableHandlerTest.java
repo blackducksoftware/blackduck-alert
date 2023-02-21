@@ -8,29 +8,23 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Set;
-import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
 import org.springframework.mock.env.MockEnvironment;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.common.model.AlertConstants;
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
+import com.synopsys.integration.alert.authentication.ldap.LDAPTestHelper;
 import com.synopsys.integration.alert.authentication.ldap.database.accessor.LDAPConfigAccessor;
-import com.synopsys.integration.alert.authentication.ldap.database.configuration.MockLDAPConfigurationRepository;
 import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigModel;
 import com.synopsys.integration.alert.authentication.ldap.validator.LDAPConfigurationValidator;
-import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
-import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.environment.EnvironmentProcessingResult;
 import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
-import com.synopsys.integration.alert.test.common.MockAlertProperties;
 
 class LDAPEnvironmentVariableHandlerTest {
-    private static final LDAPConfigModel basicLDAPConfigModel = new LDAPConfigModel(UUID.randomUUID().toString(), "serverName", "managerDn", "managerPassword");
+    private LDAPConfigModel validLDAPConfigModel;
 
     MockEnvironment mockEnvironment;
 
@@ -39,13 +33,7 @@ class LDAPEnvironmentVariableHandlerTest {
 
     @BeforeEach
     void initEach() {
-        Gson gson = new Gson();
-        AlertProperties alertProperties = new MockAlertProperties();
-        FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, gson);
-        EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, filePersistenceUtil);
-
-        MockLDAPConfigurationRepository mockLDAPConfigurationRepository = new MockLDAPConfigurationRepository();
-        ldapConfigAccessor = new LDAPConfigAccessor(encryptionUtility, mockLDAPConfigurationRepository);
+        ldapConfigAccessor = LDAPTestHelper.createTestLDAPConfigAccessor();
         LDAPConfigurationValidator ldapConfigurationValidator = new LDAPConfigurationValidator();
 
         mockEnvironment = new MockEnvironment();
@@ -55,12 +43,14 @@ class LDAPEnvironmentVariableHandlerTest {
             ldapConfigurationValidator,
             environmentVariableUtility
         );
+
+        validLDAPConfigModel = LDAPTestHelper.createValidLDAPConfigModel();
     }
 
     @Test
     void testConfigurationMissingCheck() {
         assertTrue(ldapEnvironmentVariableHandler.configurationMissingCheck());
-        ldapEnvironmentVariableHandler.saveConfiguration(basicLDAPConfigModel, null);
+        ldapEnvironmentVariableHandler.saveConfiguration(validLDAPConfigModel, null);
         assertFalse(ldapEnvironmentVariableHandler.configurationMissingCheck());
     }
 
@@ -99,20 +89,21 @@ class LDAPEnvironmentVariableHandlerTest {
         assertNotNull(ldapConfigModel.getCreatedAt());
         assertNotNull(ldapConfigModel.getLastUpdated());
 
-        assertEquals(LDAPEnvironmentVariableHandler.LDAP_AUTHENTICATION_TYPE_KEY, ldapConfigModel.getAuthenticationType().orElse(""));
         assertFalse(ldapConfigModel.getEnabled());
-        assertEquals(LDAPEnvironmentVariableHandler.LDAP_GROUP_ROLE_ATTRIBUTE_KEY, ldapConfigModel.getGroupRoleAttribute().orElse(""));
-        assertEquals(LDAPEnvironmentVariableHandler.LDAP_GROUP_SEARCH_BASE_KEY, ldapConfigModel.getGroupSearchBase().orElse(""));
-        assertEquals(LDAPEnvironmentVariableHandler.LDAP_GROUP_SEARCH_FILTER_KEY, ldapConfigModel.getGroupSearchFilter().orElse(""));
         assertEquals(LDAPEnvironmentVariableHandler.LDAP_MANAGER_DN_KEY, ldapConfigModel.getManagerDn());
-        assertEquals(LDAPEnvironmentVariableHandler.LDAP_MANAGER_PASSWORD_KEY, ldapConfigModel.getManagerPassword().orElse(""));
         assertTrue(ldapConfigModel.getIsManagerPasswordSet());
-        assertEquals(LDAPEnvironmentVariableHandler.LDAP_REFERRAL_KEY, ldapConfigModel.getReferral().orElse(""));
         assertEquals(LDAPEnvironmentVariableHandler.LDAP_SERVER_KEY, ldapConfigModel.getServerName());
-        assertEquals(LDAPEnvironmentVariableHandler.LDAP_USER_ATTRIBUTES_KEY, ldapConfigModel.getUserAttributes().orElse(""));
-        assertEquals(LDAPEnvironmentVariableHandler.LDAP_USER_DN_PATTERNS_KEY, ldapConfigModel.getUserDnPatterns().orElse(""));
-        assertEquals(LDAPEnvironmentVariableHandler.LDAP_USER_SEARCH_BASE_KEY, ldapConfigModel.getUserSearchBase().orElse(""));
-        assertEquals(LDAPEnvironmentVariableHandler.LDAP_USER_SEARCH_FILTER_KEY, ldapConfigModel.getUserSearchFilter().orElse(""));
+
+        LDAPTestHelper.assertOptionalField(LDAPEnvironmentVariableHandler.LDAP_AUTHENTICATION_TYPE_KEY, ldapConfigModel::getAuthenticationType);
+        LDAPTestHelper.assertOptionalField(LDAPEnvironmentVariableHandler.LDAP_GROUP_ROLE_ATTRIBUTE_KEY, ldapConfigModel::getGroupRoleAttribute);
+        LDAPTestHelper.assertOptionalField(LDAPEnvironmentVariableHandler.LDAP_GROUP_SEARCH_BASE_KEY, ldapConfigModel::getGroupSearchBase);
+        LDAPTestHelper.assertOptionalField(LDAPEnvironmentVariableHandler.LDAP_GROUP_SEARCH_FILTER_KEY, ldapConfigModel::getGroupSearchFilter);
+        LDAPTestHelper.assertOptionalField(LDAPEnvironmentVariableHandler.LDAP_MANAGER_PASSWORD_KEY, ldapConfigModel::getManagerPassword);
+        LDAPTestHelper.assertOptionalField(LDAPEnvironmentVariableHandler.LDAP_REFERRAL_KEY, ldapConfigModel::getReferral);
+        LDAPTestHelper.assertOptionalField(LDAPEnvironmentVariableHandler.LDAP_USER_ATTRIBUTES_KEY, ldapConfigModel::getUserAttributes);
+        LDAPTestHelper.assertOptionalField(LDAPEnvironmentVariableHandler.LDAP_USER_DN_PATTERNS_KEY, ldapConfigModel::getUserDnPatterns);
+        LDAPTestHelper.assertOptionalField(LDAPEnvironmentVariableHandler.LDAP_USER_SEARCH_BASE_KEY, ldapConfigModel::getUserSearchBase);
+        LDAPTestHelper.assertOptionalField(LDAPEnvironmentVariableHandler.LDAP_USER_SEARCH_FILTER_KEY, ldapConfigModel::getUserSearchFilter);
     }
 
     @Test
@@ -163,19 +154,19 @@ class LDAPEnvironmentVariableHandlerTest {
 
     @Test
     void testSaveConfigurationAlreadyExists() {
-        ldapEnvironmentVariableHandler.saveConfiguration(basicLDAPConfigModel, null);
+        ldapEnvironmentVariableHandler.saveConfiguration(validLDAPConfigModel, null);
         assertFalse(ldapEnvironmentVariableHandler.configurationMissingCheck());
         LDAPConfigModel expectedLDAPConfigModel = ldapConfigAccessor.getConfiguration()
             .orElseThrow(() -> new AssertionFailedError("Expected LDAPConfigModel did not exist"));
-        assertEquals("", expectedLDAPConfigModel.getAuthenticationType().orElse("FAIL"));
+        LDAPTestHelper.assertOptionalField(LDAPTestHelper.DEFAULT_AUTH_TYPE_SIMPLE, expectedLDAPConfigModel::getAuthenticationType);
 
-        basicLDAPConfigModel.setAuthenticationType("AUTH-TYPE");
-        ldapEnvironmentVariableHandler.saveConfiguration(basicLDAPConfigModel, null);
+        validLDAPConfigModel.setAuthenticationType(LDAPTestHelper.DEFAULT_AUTH_TYPE_DIGEST);
+        ldapEnvironmentVariableHandler.saveConfiguration(validLDAPConfigModel, null);
         LDAPConfigModel updatedLDAPConfigModel = ldapConfigAccessor.getConfiguration()
             .orElseThrow(() -> new AssertionFailedError("Updated LDAPConfigModel did not exist"));
 
         // Because it already existed, the Authentication Type should not have been updated to the new value
-        assertEquals("", updatedLDAPConfigModel.getAuthenticationType().orElse("FAIL"));
+        LDAPTestHelper.assertOptionalField(LDAPTestHelper.DEFAULT_AUTH_TYPE_SIMPLE, updatedLDAPConfigModel::getAuthenticationType);
     }
 
     private LDAPConfigModel createValidConfigModelFromEnvironment() {
