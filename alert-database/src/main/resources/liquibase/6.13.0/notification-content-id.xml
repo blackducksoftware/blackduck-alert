@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="psantos" id="create-notification-content-id-column">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists schemaName="alert" tableName="raw_notification_content" columnName="content_id"/>
+            </not>
+        </preConditions>
+        <addColumn schemaName="alert" tableName="raw_notification_content">
+            <column name="content_id" type="VARCHAR" defaultValueComputed="uuid_generate_v4()::varchar">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="psantos" id="create-index-content-id">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists schemaName="alert" tableName="raw_notification_content" columnNames="content_id" indexName="notification-content-id"/>
+            </not>
+        </preConditions>
+        <createIndex schemaName="alert" tableName="raw_notification_content" indexName="notification-content-id">
+            <column name="content_id"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

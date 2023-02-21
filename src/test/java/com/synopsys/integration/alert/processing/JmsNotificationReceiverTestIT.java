@@ -136,7 +136,7 @@ class JmsNotificationReceiverTestIT {
         //      Sending events: EventManager
         //      Receiving events: NotificationReceiver or DistributionChannel
         //      Processing notifications: NotificationReceiver
-        NotificationReceivedEvent notificationReceivedEvent = new NotificationReceivedEvent();
+        NotificationReceivedEvent notificationReceivedEvent = new NotificationReceivedEvent(blackDuckGlobalConfigId);
         eventManager.sendEvent(notificationReceivedEvent);
 
         Thread.sleep(120000);
@@ -189,7 +189,9 @@ class JmsNotificationReceiverTestIT {
             content,
             DateUtils.createCurrentDateTimestamp(),
             DateUtils.createCurrentDateTimestamp(),
-            processed);
+            processed,
+            String.format("content-id-%s", UUID.randomUUID())
+        );
     }
 
 }

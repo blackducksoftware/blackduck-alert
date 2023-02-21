@@ -14,6 +14,7 @@ import java.util.UUID;
 import com.synopsys.integration.alert.api.channel.convert.AbstractChannelMessageConverter;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.distribution.audit.AuditSuccessEvent;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
@@ -28,23 +29,35 @@ public abstract class MessageBoardChannel<D extends DistributionJobDetailsModel,
     private final AbstractChannelMessageConverter<D, T> channelMessageConverter;
     private final ChannelMessageSender<D, T, MessageResult> channelMessageSender;
     private final EventManager eventManager;
+    private final ExecutingJobManager executingJobManager;
 
     protected MessageBoardChannel(
         AbstractChannelMessageConverter<D, T> channelMessageConverter,
         ChannelMessageSender<D, T, MessageResult> channelMessageSender,
-        EventManager eventManager
+        EventManager eventManager,
+        ExecutingJobManager executingJobManager
     ) {
         this.channelMessageConverter = channelMessageConverter;
         this.channelMessageSender = channelMessageSender;
         this.eventManager = eventManager;
+        this.executingJobManager = executingJobManager;
     }
 
     @Override
-    public MessageResult distributeMessages(D distributionDetails, ProviderMessageHolder messages, String jobName, UUID eventId, Set<Long> notificationIds)
+    public MessageResult distributeMessages(
+        D distributionDetails,
+        ProviderMessageHolder messages,
+        String jobName,
+        UUID jobConfigId,
+        UUID parentEventId,
+        UUID jobExecutionId,
+        Set<Long> notificationIds
+    )
         throws AlertException {
         List<T> channelMessages = channelMessageConverter.convertToChannelMessages(distributionDetails, messages, jobName);
         MessageResult messageResult = channelMessageSender.sendMessages(distributionDetails, channelMessages);
-        eventManager.sendEvent(new AuditSuccessEvent(distributionDetails.getJobId(), notificationIds));
+        executingJobManager.incrementSentNotificationCount(jobExecutionId, notificationIds.size());
+        eventManager.sendEvent(new AuditSuccessEvent(jobExecutionId, jobConfigId, notificationIds));
         return messageResult;
     }
 

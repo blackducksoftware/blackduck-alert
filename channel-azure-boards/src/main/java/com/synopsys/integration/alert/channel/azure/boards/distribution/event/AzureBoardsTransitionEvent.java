@@ -17,10 +17,11 @@ public class AzureBoardsTransitionEvent extends IssueTrackerTransitionIssueEvent
     public AzureBoardsTransitionEvent(
         String destination,
         UUID parentEventId,
+        UUID jobExecutionId,
         UUID jobId,
         Set<Long> notificationIds,
         IssueTransitionModel<Integer> transitionModel
     ) {
-        super(destination, parentEventId, jobId, notificationIds, transitionModel);
+        super(destination, parentEventId, jobExecutionId, jobId, notificationIds, transitionModel);
     }
 }

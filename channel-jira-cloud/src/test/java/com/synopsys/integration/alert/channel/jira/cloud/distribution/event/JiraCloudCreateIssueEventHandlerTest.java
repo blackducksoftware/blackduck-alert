@@ -24,6 +24,7 @@ import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentD
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudProperties;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudPropertiesFactory;
@@ -64,11 +65,13 @@ class JiraCloudCreateIssueEventHandlerTest {
     private JobSubTaskAccessor jobSubTaskAccessor;
     private IssueTrackerResponsePostProcessor responsePostProcessor;
     private DefaultJiraCloudJobDetailsAccessor jobDetailsAccessor;
+    private ExecutingJobManager executingJobManager;
 
     @BeforeEach
     public void init() {
         issueCounter = new AtomicInteger(0);
         eventManager = Mockito.mock(EventManager.class);
+        executingJobManager = Mockito.mock(ExecutingJobManager.class);
         responsePostProcessor = new ProviderCallbackIssueTrackerResponsePostProcessor(eventManager);
 
         MockJobSubTaskStatusRepository subTaskRepository = new MockJobSubTaskStatusRepository();
@@ -86,6 +89,7 @@ class JiraCloudCreateIssueEventHandlerTest {
     @Test
     void handleUnknownJobTest() {
         UUID parentEventId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
 
@@ -99,11 +103,12 @@ class JiraCloudCreateIssueEventHandlerTest {
             callbackInfoCreator,
             issueCategoryRetriever,
             eventManager,
-            jobSubTaskAccessor
+            jobSubTaskAccessor,
+            executingJobManager
         );
 
         JiraCloudJobDetailsModel jobDetailsModel = createJobDetails(jobId);
-        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobDetailsModel.getJobId(), 1L, notificationIds);
+        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobDetailsModel.getJobId(), jobExecutionId, 1L, notificationIds);
 
         JiraCloudCreateIssueEventHandler handler = new JiraCloudCreateIssueEventHandler(
             eventManager,
@@ -112,7 +117,8 @@ class JiraCloudCreateIssueEventHandlerTest {
             propertiesFactory,
             messageSenderFactory,
             jobDetailsAccessor,
-            responsePostProcessor
+            responsePostProcessor,
+            executingJobManager
         );
 
         LinkableItem provider = new LinkableItem("provider", "test-provider");
@@ -120,6 +126,7 @@ class JiraCloudCreateIssueEventHandlerTest {
         JiraCloudCreateIssueEvent event = new JiraCloudCreateIssueEvent(
             IssueTrackerCreateIssueEvent.createDefaultEventDestination(ChannelKeys.JIRA_CLOUD),
             parentEventId,
+            jobExecutionId,
             jobId,
             notificationIds,
             issueCreationModel
@@ -133,11 +140,12 @@ class JiraCloudCreateIssueEventHandlerTest {
     @Test
     void handleIssueQueryBlankTest() throws IntegrationException {
         UUID parentEventId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
 
         JiraCloudJobDetailsModel jobDetailsModel = createJobDetails(jobId);
-        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobDetailsModel.getJobId(), 1L, notificationIds);
+        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobDetailsModel.getJobId(), jobExecutionId, 1L, notificationIds);
 
         JiraCloudPropertiesFactory propertiesFactory = Mockito.mock(JiraCloudPropertiesFactory.class);
         JiraCloudProperties jiraProperties = Mockito.mock(JiraCloudProperties.class);
@@ -172,7 +180,8 @@ class JiraCloudCreateIssueEventHandlerTest {
             callbackInfoCreator,
             issueCategoryRetriever,
             eventManager,
-            jobSubTaskAccessor
+            jobSubTaskAccessor,
+            executingJobManager
         );
 
         jobDetailsAccessor.saveJiraCloudJobDetails(jobId, jobDetailsModel);
@@ -183,7 +192,8 @@ class JiraCloudCreateIssueEventHandlerTest {
             propertiesFactory,
             messageSenderFactory,
             jobDetailsAccessor,
-            responsePostProcessor
+            responsePostProcessor,
+            executingJobManager
         );
 
         LinkableItem provider = new LinkableItem("provider", "test-provider");
@@ -191,6 +201,7 @@ class JiraCloudCreateIssueEventHandlerTest {
         JiraCloudCreateIssueEvent event = new JiraCloudCreateIssueEvent(
             IssueTrackerCreateIssueEvent.createDefaultEventDestination(ChannelKeys.JIRA_CLOUD),
             parentEventId,
+            jobExecutionId,
             jobId,
             notificationIds,
             issueCreationModel
@@ -205,11 +216,12 @@ class JiraCloudCreateIssueEventHandlerTest {
     @Test
     void handleIssueIssueDoesNotExistTest() throws IntegrationException {
         UUID parentEventId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
 
         JiraCloudJobDetailsModel jobDetailsModel = createJobDetails(jobId);
-        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobDetailsModel.getJobId(), 1L, notificationIds);
+        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobDetailsModel.getJobId(), jobExecutionId, 1L, notificationIds);
 
         JiraCloudPropertiesFactory propertiesFactory = Mockito.mock(JiraCloudPropertiesFactory.class);
         JiraCloudProperties jiraProperties = Mockito.mock(JiraCloudProperties.class);
@@ -246,7 +258,8 @@ class JiraCloudCreateIssueEventHandlerTest {
             callbackInfoCreator,
             issueCategoryRetriever,
             eventManager,
-            jobSubTaskAccessor
+            jobSubTaskAccessor,
+            executingJobManager
         );
 
         jobDetailsAccessor.saveJiraCloudJobDetails(jobId, jobDetailsModel);
@@ -257,7 +270,8 @@ class JiraCloudCreateIssueEventHandlerTest {
             propertiesFactory,
             messageSenderFactory,
             jobDetailsAccessor,
-            responsePostProcessor
+            responsePostProcessor,
+            executingJobManager
         );
 
         LinkableItem provider = new LinkableItem("provider", "test-provider");
@@ -272,6 +286,7 @@ class JiraCloudCreateIssueEventHandlerTest {
         JiraCloudCreateIssueEvent event = new JiraCloudCreateIssueEvent(
             IssueTrackerCreateIssueEvent.createDefaultEventDestination(ChannelKeys.JIRA_CLOUD),
             parentEventId,
+            jobExecutionId,
             jobId,
             notificationIds,
             issueCreationModel
@@ -286,11 +301,12 @@ class JiraCloudCreateIssueEventHandlerTest {
     @Test
     void handleIssueIssueExistsTest() throws IntegrationException {
         UUID parentEventId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
 
         JiraCloudJobDetailsModel jobDetailsModel = createJobDetails(jobId);
-        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobDetailsModel.getJobId(), 1L, notificationIds);
+        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobDetailsModel.getJobId(), jobExecutionId, 1L, notificationIds);
 
         JiraCloudPropertiesFactory propertiesFactory = Mockito.mock(JiraCloudPropertiesFactory.class);
         JiraCloudProperties jiraProperties = Mockito.mock(JiraCloudProperties.class);
@@ -325,7 +341,8 @@ class JiraCloudCreateIssueEventHandlerTest {
             callbackInfoCreator,
             issueCategoryRetriever,
             eventManager,
-            jobSubTaskAccessor
+            jobSubTaskAccessor,
+            executingJobManager
         );
 
         jobDetailsAccessor.saveJiraCloudJobDetails(jobId, jobDetailsModel);
@@ -336,7 +353,8 @@ class JiraCloudCreateIssueEventHandlerTest {
             propertiesFactory,
             messageSenderFactory,
             jobDetailsAccessor,
-            responsePostProcessor
+            responsePostProcessor,
+            executingJobManager
         );
 
         LinkableItem provider = new LinkableItem("provider", "test-provider");
@@ -346,6 +364,7 @@ class JiraCloudCreateIssueEventHandlerTest {
         JiraCloudCreateIssueEvent event = new JiraCloudCreateIssueEvent(
             IssueTrackerCreateIssueEvent.createDefaultEventDestination(ChannelKeys.JIRA_CLOUD),
             parentEventId,
+            jobExecutionId,
             jobId,
             notificationIds,
             issueCreationModel

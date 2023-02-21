@@ -13,6 +13,7 @@ import org.mockito.Mockito;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.rest.ChannelRestConnectionFactory;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
@@ -46,12 +47,14 @@ class MsTeamsChannelTest {
     protected Gson gson;
     protected TestProperties properties;
     private EventManager eventManager;
+    private ExecutingJobManager executingJobManager;
 
     @BeforeEach
     public void init() {
         gson = new Gson();
         properties = new TestProperties();
         eventManager = Mockito.mock(EventManager.class);
+        executingJobManager = Mockito.mock(ExecutingJobManager.class);
     }
 
     @Test
@@ -64,12 +67,20 @@ class MsTeamsChannelTest {
         MSTeamsChannelMessageConverter messageConverter = new MSTeamsChannelMessageConverter(new MSTeamsChannelMessageFormatter(markupEncoderUtil));
         MSTeamsChannelMessageSender messageSender = new MSTeamsChannelMessageSender(ChannelKeys.MS_TEAMS, connectionFactory);
 
-        MSTeamsChannel msTeamsChannel = new MSTeamsChannel(messageConverter, messageSender, eventManager);
+        MSTeamsChannel msTeamsChannel = new MSTeamsChannel(messageConverter, messageSender, eventManager, executingJobManager);
         MSTeamsJobDetailsModel msTeamsJobDetailsModel = new MSTeamsJobDetailsModel(UUID.randomUUID(), properties.getProperty(TestPropertyKey.TEST_MSTEAMS_WEBHOOK));
 
         MessageResult messageResult = null;
         try {
-            messageResult = msTeamsChannel.distributeMessages(msTeamsJobDetailsModel, TEST_MESSAGE_HOLDER, "jobName", UUID.randomUUID(), Set.of());
+            messageResult = msTeamsChannel.distributeMessages(
+                msTeamsJobDetailsModel,
+                TEST_MESSAGE_HOLDER,
+                "jobName",
+                UUID.randomUUID(),
+                UUID.randomUUID(),
+                UUID.randomUUID(),
+                Set.of()
+            );
         } catch (AlertException e) {
             Assertions.fail("Failed to distribute simple channel message due to an exception", e);
         }

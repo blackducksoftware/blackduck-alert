@@ -2,6 +2,8 @@ package com.synopsys.integration.alert.provider.blackduck.processor.message;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.UUID;
+
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
@@ -36,8 +38,17 @@ public class LicenseLimitNotificationMessageExtractorTest {
     }
 
     private NotificationContentWrapper createNotificationContentWrapper(LicenseLimitNotificationContent notificationContentComponent) {
-        AlertNotificationModel alertNotificationModel = new AlertNotificationModel(1L, 1L, "provider-test", "providerConfigName-test", "notificationType-test", "{content: \"content is here...\"}", DateUtils.createCurrentDateTimestamp(),
-            DateUtils.createCurrentDateTimestamp(), false);
+        AlertNotificationModel alertNotificationModel = new AlertNotificationModel(1L,
+            1L,
+            "provider-test",
+            "providerConfigName-test",
+            "notificationType-test",
+            "{content: \"content is here...\"}",
+            DateUtils.createCurrentDateTimestamp(),
+            DateUtils.createCurrentDateTimestamp(),
+            false,
+            String.format("content-id-%s", UUID.randomUUID())
+        );
         return new NotificationContentWrapper(alertNotificationModel, notificationContentComponent, LicenseLimitNotificationContent.class);
     }
 

@@ -28,4 +28,6 @@ public interface JobToNotificationRelationRepository extends JpaRepository<JobTo
     Set<UUID> findDistinctJobIdByCorrelationId(UUID correlationId);
 
     int countAllByCorrelationId(UUID correlationId);
+
+    int countAllByCorrelationIdAndJobId(UUID correlationId, UUID jobId);
 }

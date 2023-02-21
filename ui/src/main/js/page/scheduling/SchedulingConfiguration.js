@@ -75,8 +75,8 @@ const SchedulingConfiguration = ({ csrfToken, errorHandler, readonly, displaySav
                 <DynamicSelectInput
                     id={SCHEDULING_FIELD_KEYS.purgeDataFrequencyDays}
                     name={SCHEDULING_FIELD_KEYS.purgeDataFrequencyDays}
-                    label="Purge Data Frequency In Days"
-                    description="Choose a frequency for cleaning up provider data; the default value is three days. When the purge runs, it deletes all data that is older than the selected value. EX: data older than 3 days will be deleted."
+                    label="Purge Notification Data"
+                    description="Choose a frequency for cleaning up provider notification data; the default value is three days. When the purge runs, it deletes all notification data that is older than the selected value. EX: data older than 3 days will be deleted."
                     required
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleChange(formData, setFormData)}
@@ -89,8 +89,8 @@ const SchedulingConfiguration = ({ csrfToken, errorHandler, readonly, displaySav
                 <ReadOnlyField
                     id={SCHEDULING_FIELD_KEYS.purgeDataNextRun}
                     name={SCHEDULING_FIELD_KEYS.purgeDataNextRun}
-                    label="Purge Cron Next Run"
-                    description="This is the next time Alert will purge provider data."
+                    label="Purge Notification Data Cron Next Run"
+                    description="This is the next time Alert will purge provider notification data."
                     onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     value={FieldModelUtilities.getFieldModelSingleValue(formData, SCHEDULING_FIELD_KEYS.purgeDataNextRun)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(SCHEDULING_FIELD_KEYS.purgeDataNextRun)}
@@ -99,7 +99,7 @@ const SchedulingConfiguration = ({ csrfToken, errorHandler, readonly, displaySav
                 <DynamicSelectInput
                     id={SCHEDULING_FIELD_KEYS.purgeDataAuditFailedFrequencyDays}
                     name={SCHEDULING_FIELD_KEYS.purgeDataAuditFailedFrequencyDays}
-                    label="Purge Audit Failed Data Frequency In Days"
+                    label="Purge Audit Failed Data"
                     description="Choose a frequency for cleaning up failed audit data; the default value is ten days. When the purge runs, it deletes all data that is older than the selected value. EX: data older than 10 days will be deleted."
                     required
                     readOnly={readonly}

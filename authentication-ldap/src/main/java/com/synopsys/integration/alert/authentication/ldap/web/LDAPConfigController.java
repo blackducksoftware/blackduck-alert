@@ -48,7 +48,7 @@ public class LDAPConfigController implements StaticUniqueConfigResourceControlle
 
     @Override
     public void delete() {
-        ResponseFactory.createContentResponseFromAction(ldapCrudActions.delete());
+        ResponseFactory.createResponseFromAction(ldapCrudActions.delete());
     }
 
     @Override

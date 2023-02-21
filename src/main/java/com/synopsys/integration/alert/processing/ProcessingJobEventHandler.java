@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.processing;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -18,6 +19,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJob;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
+import com.synopsys.integration.alert.api.distribution.execution.JobStage;
 import com.synopsys.integration.alert.api.event.AlertEventHandler;
 import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
@@ -51,6 +55,7 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
     private final JobAccessor jobAccessor;
     private final JobNotificationMappingAccessor jobNotificationMappingAccessor;
     private final JobNotificationContentProcessor jobNotificationContentProcessor;
+    private final ExecutingJobManager executingJobManager;
 
     @Autowired
     public ProcessingJobEventHandler(
@@ -61,7 +66,8 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
         NotificationAccessor notificationAccessor,
         JobAccessor jobAccessor,
         JobNotificationMappingAccessor jobNotificationMappingAccessor,
-        JobNotificationContentProcessor jobNotificationContentProcessor
+        JobNotificationContentProcessor jobNotificationContentProcessor,
+        ExecutingJobManager executingJobManager
     ) {
         this.notificationDetailExtractionDelegator = notificationDetailExtractionDelegator;
         this.notificationContentProcessor = notificationContentProcessor;
@@ -71,6 +77,7 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
         this.jobAccessor = jobAccessor;
         this.jobNotificationMappingAccessor = jobNotificationMappingAccessor;
         this.jobNotificationContentProcessor = jobNotificationContentProcessor;
+        this.executingJobManager = executingJobManager;
     }
 
     @Override
@@ -80,14 +87,23 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
         try {
             Optional<DistributionJobModel> jobModel = jobAccessor.getJobById(jobId);
             if (jobModel.isPresent()) {
-                DistributionJobModel job = jobModel.get();
-                ProcessedProviderMessageHolder processedMessageHolder = jobNotificationContentProcessor.processNotifications(event, job);
+                int totalNotificationCount = jobNotificationMappingAccessor.getNotificationCountForJob(correlationId, jobId);
+                ExecutingJob executingJob = executingJobManager.startJob(jobId, totalNotificationCount);
+                executingJobManager.startStage(executingJob.getExecutionId(), JobStage.NOTIFICATION_PROCESSING, Instant.now());
+                DistributionJobModel jobConfiguration = jobModel.get();
+                ProcessedProviderMessageHolder processedMessageHolder = jobNotificationContentProcessor.processNotifications(
+                    event,
+                    executingJob.getExecutionId(),
+                    jobConfiguration
+                );
                 ProcessedNotificationDetails processedNotificationDetails = new ProcessedNotificationDetails(
-                    job.getJobId(),
-                    job.getChannelDescriptorName(),
-                    job.getName()
+                    executingJob.getExecutionId(),
+                    jobConfiguration.getJobId(),
+                    jobConfiguration.getChannelDescriptorName(),
+                    jobConfiguration.getName()
                 );
                 providerMessageDistributor.distribute(processedNotificationDetails, processedMessageHolder);
+                executingJobManager.endStage(executingJob.getExecutionId(), JobStage.NOTIFICATION_PROCESSING, Instant.now());
             }
         } finally {
             jobNotificationMappingAccessor.removeJobMapping(correlationId, jobId);
@@ -95,7 +111,8 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
         }
     }
 
-    private ProcessedProviderMessageHolder processNotifications(JobProcessingEvent event, DistributionJobModel job) {
+    //TODO remove this code...
+    private ProcessedProviderMessageHolder processNotifications(JobProcessingEvent event, UUID jobExecutionId, DistributionJobModel job) {
         ProcessedProviderMessageHolder processedMessageHolder = null;
         UUID correlationId = event.getCorrelationId();
         UUID jobId = event.getJobId();
@@ -111,6 +128,7 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
         while (jobNotificationMappings.getCurrentPage() <= jobNotificationMappings.getTotalPages()) {
             List<Long> notificationIds = extractNotificationIds(jobNotificationMappings);
             List<AlertNotificationModel> notifications = notificationAccessor.findByIds(notificationIds);
+            executingJobManager.incrementProcessedNotificationCount(jobExecutionId, notifications.size());
             logNotifications("Start", event, notificationIds);
             ProcessedProviderMessageHolder currentProcessedMessages = processNotifications(job, notifications);
             if (null == processedMessageHolder) {

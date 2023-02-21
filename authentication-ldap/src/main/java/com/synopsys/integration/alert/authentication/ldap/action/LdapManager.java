@@ -63,23 +63,24 @@ public class LdapManager {
 
     public Optional<LdapAuthenticationProvider> createAuthProvider(LDAPConfigModel ldapConfigModel) throws AlertConfigurationException {
         try {
-            Boolean ldapEnabled = ldapConfigModel.getEnabled();
-            if (!Boolean.TRUE.equals(ldapEnabled)) {
-                return Optional.empty();
-            }
             LdapContextSource ldapContextSource = new LdapContextSource();
 
+            Boolean ldapEnabled = ldapConfigModel.getEnabled();
             String ldapServer = ldapConfigModel.getServerName();
             String managerDN = ldapConfigModel.getManagerDn();
             String managerPassword = ldapConfigModel.getManagerPassword().orElse("");
             String ldapReferral = ldapConfigModel.getReferral().orElse("");
-            if (StringUtils.isNotBlank(ldapServer)) {
-                ldapContextSource.setUrl(ldapServer);
-                ldapContextSource.setUserDn(managerDN);
-                ldapContextSource.setPassword(managerPassword);
-                ldapContextSource.setReferral(ldapReferral);
-                ldapContextSource.setAuthenticationStrategy(createAuthenticationStrategy(ldapConfigModel));
+
+            if (Boolean.FALSE.equals(ldapEnabled) || StringUtils.isBlank(ldapServer) || StringUtils.isBlank(managerDN) || StringUtils.isBlank(managerPassword)) {
+                return Optional.empty();
             }
+
+            ldapContextSource.setUrl(ldapServer);
+            ldapContextSource.setUserDn(managerDN);
+            ldapContextSource.setPassword(managerPassword);
+            ldapContextSource.setReferral(ldapReferral);
+            ldapContextSource.setAuthenticationStrategy(createAuthenticationStrategy(ldapConfigModel));
+
             ldapContextSource.afterPropertiesSet();
             LdapAuthenticationProvider ldapAuthenticationProvider = updateAuthenticationProvider(ldapConfigModel, ldapContextSource);
             return Optional.of(ldapAuthenticationProvider);
