@@ -71,7 +71,7 @@ class IssueTrackerChannelTest {
             }
 
             @Override
-            public JobSubTaskStatusModel createSubTaskStatus(UUID id, UUID jobId, UUID jobExecutionId, Long remainingTaskCount, Set<Long> notificationIds) {
+            public JobSubTaskStatusModel createSubTaskStatus(UUID id, UUID jobId, Long remainingTaskCount, Set<Long> notificationIds) {
                 return null;
             }
 
