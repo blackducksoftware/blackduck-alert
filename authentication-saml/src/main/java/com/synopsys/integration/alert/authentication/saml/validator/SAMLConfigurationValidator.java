@@ -30,13 +30,13 @@ public class SAMLConfigurationValidator {
         Set<AlertFieldStatus> statuses = new HashSet<>();
 
         Optional<String> optionalMetadataUrl = model.getMetadataUrl().filter(StringUtils::isNotBlank);
-        // Just check if file is upload - filePath is for showing to user their uploaded path and may not need to validate it
+        // Just check if file is upload - fileName is for showing to user their uploaded name and may not need to validate it
         boolean metadataFileExists = filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_METADATA_FILE);
         SAMLMetadataMode samlMetadataMode = model.getMetadataMode().orElse(SAMLMetadataMode.URL);
         // One of url or file must exist
         if (samlMetadataMode == SAMLMetadataMode.FILE && !metadataFileExists) {
             statuses.add(AlertFieldStatus.error(
-                "metadataFilePath", AuthenticationDescriptor.FIELD_ERROR_SAML_METADATA_FILE_MISSING)
+                "metadataFileName", AuthenticationDescriptor.FIELD_ERROR_SAML_METADATA_FILE_MISSING)
             );
         }
         // Check if valid url for present for metadata URL mode
@@ -53,12 +53,12 @@ public class SAMLConfigurationValidator {
 
         if (signingCertFileExists && !filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_SIGNING_PRIVATE_KEY_FILE)) {
             statuses.add(AlertFieldStatus.error(
-                "signingPrivateKeyFilePath", "SAML signing private key has not been uploaded for signing certificate.")
+                "signingPrivateKeyFileName", "SAML signing private key has not been uploaded for signing certificate.")
             );
         }
         if (encryptionCertFileExists && !filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_ENCRYPTION_PRIVATE_KEY_FILE)) {
             statuses.add(AlertFieldStatus.error(
-                "encryptionPrivateKeyFilePath", "SAML encryption private key has not been uploaded for encryption certificate.")
+                "encryptionPrivateKeyFileName", "SAML encryption private key has not been uploaded for encryption certificate.")
             );
         }
 

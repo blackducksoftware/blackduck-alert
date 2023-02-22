@@ -45,7 +45,7 @@ public class JiraServerEnvironmentVariableHandler extends EnvironmentVariableHan
 
     @Autowired
     public JiraServerEnvironmentVariableHandler(JiraServerGlobalConfigAccessor configAccessor, EnvironmentVariableUtility environmentVariableUtility, JiraServerGlobalConfigurationValidator validator) {
-        super(ChannelKeys.JIRA_SERVER.getDisplayName(), VARIABLE_NAMES);
+        super(ChannelKeys.JIRA_SERVER.getDisplayName(), VARIABLE_NAMES, environmentVariableUtility);
         this.configAccessor = configAccessor;
         this.environmentVariableUtility = environmentVariableUtility;
         this.validator = validator;

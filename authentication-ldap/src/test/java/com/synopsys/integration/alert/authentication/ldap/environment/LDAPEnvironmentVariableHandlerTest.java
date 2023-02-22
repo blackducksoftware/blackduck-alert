@@ -1,8 +1,10 @@
 package com.synopsys.integration.alert.authentication.ldap.environment;
 
 import static com.synopsys.integration.alert.authentication.ldap.environment.LDAPEnvironmentVariableHandler.LDAP_CONFIGURATION_KEY_SET;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -113,6 +115,34 @@ class LDAPEnvironmentVariableHandlerTest {
         ValidationResponseModel validationResponseModel = ldapEnvironmentVariableHandler.validateConfiguration(ldapConfigModel);
         assertTrue(validationResponseModel.hasErrors());
 
+        EnvironmentProcessingResult environmentProcessingResult = ldapEnvironmentVariableHandler.updateFromEnvironment();
+        assertEquals(EnvironmentProcessingResult.empty(), environmentProcessingResult);
+    }
+
+    @Test
+    void testUpdateNoConfigurationNoEnvironment() {
+        EnvironmentProcessingResult environmentProcessingResult = ldapEnvironmentVariableHandler.updateFromEnvironment();
+        assertEquals(EnvironmentProcessingResult.empty(), environmentProcessingResult);
+    }
+
+    @Test
+    void testUpdateNoConfigurationValidEnvironment() {
+        createValidConfigModelFromEnvironment();
+        EnvironmentProcessingResult environmentProcessingResult = ldapEnvironmentVariableHandler.updateFromEnvironment();
+        assertNotEquals(EnvironmentProcessingResult.empty(), environmentProcessingResult);
+    }
+
+    @Test
+    void testUpdateValidConfigurationNoEnvironment() {
+        assertDoesNotThrow(() -> ldapConfigAccessor.createConfiguration(basicLDAPConfigModel));
+        EnvironmentProcessingResult environmentProcessingResult = ldapEnvironmentVariableHandler.updateFromEnvironment();
+        assertEquals(EnvironmentProcessingResult.empty(), environmentProcessingResult);
+    }
+
+    @Test
+    void testUpdateValidConfigurationValidEnvironment() {
+        createValidConfigModelFromEnvironment();
+        assertDoesNotThrow(() -> ldapConfigAccessor.createConfiguration(basicLDAPConfigModel));
         EnvironmentProcessingResult environmentProcessingResult = ldapEnvironmentVariableHandler.updateFromEnvironment();
         assertEquals(EnvironmentProcessingResult.empty(), environmentProcessingResult);
     }

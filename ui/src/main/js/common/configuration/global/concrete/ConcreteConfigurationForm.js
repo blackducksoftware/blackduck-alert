@@ -29,7 +29,8 @@ const ConcreteConfigurationForm = ({
     deleteLabel,
     submitLabel,
     testLabel,
-    testButtonClicked
+    testButtonClicked,
+    postDeleteAction
 }) => {
     const [showTest, setShowTest] = useState(false);
     const [errorMessage, setErrorMessage] = useState(null);
@@ -132,6 +133,7 @@ const ConcreteConfigurationForm = ({
             if (response.ok) {
                 await getRequest();
                 setActionMessage('Delete Successful');
+                postDeleteAction();
             } else {
                 const errorObject = errorHandler.handle(response, await response.json(), false);
                 if (errorObject && errorObject.message) {
@@ -217,7 +219,8 @@ ConcreteConfigurationForm.propTypes = {
     deleteLabel: PropTypes.string,
     submitLabel: PropTypes.string,
     testLabel: PropTypes.string,
-    testButtonClicked: PropTypes.func
+    testButtonClicked: PropTypes.func,
+    postDeleteAction: PropTypes.func
 };
 
 ConcreteConfigurationForm.defaultProps = {
@@ -231,7 +234,8 @@ ConcreteConfigurationForm.defaultProps = {
     clearTestForm: () => null,
     buttonIdPrefix: 'common-form',
     afterSuccessfulSave: () => null,
-    readonly: false
+    readonly: false,
+    postDeleteAction: () => {}
 };
 
 export default ConcreteConfigurationForm;

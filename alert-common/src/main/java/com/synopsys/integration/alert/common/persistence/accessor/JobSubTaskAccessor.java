@@ -10,7 +10,7 @@ public interface JobSubTaskAccessor {
 
     Optional<JobSubTaskStatusModel> getSubTaskStatus(UUID id);
 
-    JobSubTaskStatusModel createSubTaskStatus(UUID id, UUID jobId, UUID jobExecutionId, Long remainingTaskCount, Set<Long> notificationIds);
+    JobSubTaskStatusModel createSubTaskStatus(UUID id, UUID jobId, Long remainingTaskCount, Set<Long> notificationIds);
 
     Optional<JobSubTaskStatusModel> updateTaskCount(UUID id, Long remainingTaskCount);
 

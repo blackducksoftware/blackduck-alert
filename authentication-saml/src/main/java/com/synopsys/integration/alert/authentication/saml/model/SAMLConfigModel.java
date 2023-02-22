@@ -11,14 +11,14 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
     private Boolean enabled;
     private Boolean forceAuth;
     private String metadataUrl;
-    private String metadataFilePath;
+    private String metadataFileName;
     private SAMLMetadataMode metadataMode;
     private Boolean wantAssertionsSigned;
-    private String encryptionCertFilePath;
-    private String encryptionPrivateKeyFilePath;
-    private String signingCertFilePath;
-    private String signingPrivateKeyFilePath;
-    private String verificationCertFilePath;
+    private String encryptionCertFileName;
+    private String encryptionPrivateKeyFileName;
+    private String signingCertFileName;
+    private String signingPrivateKeyFileName;
+    private String verificationCertFileName;
 
     public SAMLConfigModel() {
         // For serialization
@@ -36,27 +36,27 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
         Boolean enabled,
         Boolean forceAuth,
         String metadataUrl,
-        String metadataFilePath,
+        String metadataFileName,
         SAMLMetadataMode metadataMode,
         Boolean wantAssertionsSigned,
-        String encryptionCertFilePath,
-        String encryptionPrivateKeyFilePath,
-        String signingCertFilePath,
-        String signingPrivateKeyFilePath,
-        String verificationCertFilePath
+        String encryptionCertFileName,
+        String encryptionPrivateKeyFileName,
+        String signingCertFileName,
+        String signingPrivateKeyFileName,
+        String verificationCertFileName
     ) {
         this(id);
         this.enabled = enabled;
         this.forceAuth = forceAuth;
         this.metadataUrl = metadataUrl;
-        this.metadataFilePath = metadataFilePath;
+        this.metadataFileName = metadataFileName;
         this.metadataMode = metadataMode;
         this.wantAssertionsSigned = wantAssertionsSigned;
-        this.encryptionCertFilePath = encryptionCertFilePath;
-        this.encryptionPrivateKeyFilePath = encryptionPrivateKeyFilePath;
-        this.signingCertFilePath = signingCertFilePath;
-        this.signingPrivateKeyFilePath = signingPrivateKeyFilePath;
-        this.verificationCertFilePath = verificationCertFilePath;
+        this.encryptionCertFileName = encryptionCertFileName;
+        this.encryptionPrivateKeyFileName = encryptionPrivateKeyFileName;
+        this.signingCertFileName = signingCertFileName;
+        this.signingPrivateKeyFileName = signingPrivateKeyFileName;
+        this.verificationCertFileName = verificationCertFileName;
 
         setCreatedAt(createdAt);
         setLastUpdated(lastUpdated);
@@ -71,14 +71,14 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
             enabled,
             forceAuth,
             metadataUrl,
-            metadataFilePath,
+            metadataFileName,
             metadataMode,
             wantAssertionsSigned,
-            encryptionCertFilePath,
-            encryptionPrivateKeyFilePath,
-            signingCertFilePath,
-            signingPrivateKeyFilePath,
-            verificationCertFilePath
+            encryptionCertFileName,
+            encryptionPrivateKeyFileName,
+            signingCertFileName,
+            signingPrivateKeyFileName,
+            verificationCertFileName
         );
     }
 
@@ -95,8 +95,8 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
         return Optional.ofNullable(metadataUrl);
     }
 
-    public Optional<String> getMetadataFilePath() {
-        return Optional.ofNullable(metadataFilePath);
+    public Optional<String> getMetadataFileName() {
+        return Optional.ofNullable(metadataFileName);
     }
 
     public Optional<SAMLMetadataMode> getMetadataMode() {
@@ -107,24 +107,24 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
         return BooleanUtils.toBoolean(wantAssertionsSigned);
     }
 
-    public Optional<String> getEncryptionCertFilePath() {
-        return Optional.ofNullable(encryptionCertFilePath);
+    public Optional<String> getEncryptionCertFileName() {
+        return Optional.ofNullable(encryptionCertFileName);
     }
 
-    public Optional<String> getEncryptionPrivateKeyFilePath() {
-        return Optional.ofNullable(encryptionPrivateKeyFilePath);
+    public Optional<String> getEncryptionPrivateKeyFileName() {
+        return Optional.ofNullable(encryptionPrivateKeyFileName);
     }
 
-    public Optional<String> getSigningCertFilePath() {
-        return Optional.ofNullable(signingCertFilePath);
+    public Optional<String> getSigningCertFileName() {
+        return Optional.ofNullable(signingCertFileName);
     }
 
-    public Optional<String> getSigningPrivateKeyFilePath() {
-        return Optional.ofNullable(signingPrivateKeyFilePath);
+    public Optional<String> getSigningPrivateKeyFileName() {
+        return Optional.ofNullable(signingPrivateKeyFileName);
     }
 
-    public Optional<String> getVerificationCertFilePath() {
-        return Optional.ofNullable(verificationCertFilePath);
+    public Optional<String> getVerificationCertFileName() {
+        return Optional.ofNullable(verificationCertFileName);
     }
 
     // Setters

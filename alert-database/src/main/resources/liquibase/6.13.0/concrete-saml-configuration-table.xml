@@ -52,7 +52,7 @@
             <column name="metadata_url" type="VARCHAR">
                 <constraints nullable="true"/>
             </column>
-            <column name="metadata_file_path" type="VARCHAR">
+            <column name="metadata_file_name" type="VARCHAR">
                 <constraints nullable="true"/>
             </column>
             <column name="metadata_mode" type="BIGINT">
@@ -61,19 +61,19 @@
             <column name="want_assertions_signed" type="BOOLEAN" defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
-            <column name="encryption_cert_file_path" type="VARCHAR">
+            <column name="encryption_cert_file_name" type="VARCHAR">
                 <constraints nullable="true"/>
             </column>
-            <column name="encryption_private_key_file_path" type="VARCHAR">
+            <column name="encryption_private_key_file_name" type="VARCHAR">
                 <constraints nullable="true"/>
             </column>
-            <column name="signing_cert_file_path" type="VARCHAR">
+            <column name="signing_cert_file_name" type="VARCHAR">
                 <constraints nullable="true"/>
             </column>
-            <column name="signing_private_key_file_path" type="VARCHAR">
+            <column name="signing_private_key_file_name" type="VARCHAR">
                 <constraints nullable="true"/>
             </column>
-            <column name="verification_cert_file_path" type="VARCHAR">
+            <column name="verification_cert_file_name" type="VARCHAR">
                 <constraints nullable="true"/>
             </column>
         </createTable>
