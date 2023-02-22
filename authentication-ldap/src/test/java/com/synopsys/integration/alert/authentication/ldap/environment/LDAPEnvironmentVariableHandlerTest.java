@@ -134,7 +134,7 @@ class LDAPEnvironmentVariableHandlerTest {
 
     @Test
     void testUpdateValidConfigurationNoEnvironment() {
-        assertDoesNotThrow(() -> ldapConfigAccessor.createConfiguration(basicLDAPConfigModel));
+        assertDoesNotThrow(() -> ldapConfigAccessor.createConfiguration(validLDAPConfigModel));
         EnvironmentProcessingResult environmentProcessingResult = ldapEnvironmentVariableHandler.updateFromEnvironment();
         assertEquals(EnvironmentProcessingResult.empty(), environmentProcessingResult);
     }
@@ -142,7 +142,7 @@ class LDAPEnvironmentVariableHandlerTest {
     @Test
     void testUpdateValidConfigurationValidEnvironment() {
         createValidConfigModelFromEnvironment();
-        assertDoesNotThrow(() -> ldapConfigAccessor.createConfiguration(basicLDAPConfigModel));
+        assertDoesNotThrow(() -> ldapConfigAccessor.createConfiguration(validLDAPConfigModel));
         EnvironmentProcessingResult environmentProcessingResult = ldapEnvironmentVariableHandler.updateFromEnvironment();
         assertEquals(EnvironmentProcessingResult.empty(), environmentProcessingResult);
     }
