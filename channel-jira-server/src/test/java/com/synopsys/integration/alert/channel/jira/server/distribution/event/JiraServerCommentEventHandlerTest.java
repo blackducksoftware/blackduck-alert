@@ -101,7 +101,7 @@ class JiraServerCommentEventHandlerTest {
         );
 
         JiraServerJobDetailsModel jobDetailsModel = createJobDetails(jobId);
-        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobDetailsModel.getJobId(), jobExecutionId, 1L, notificationIds);
+        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobDetailsModel.getJobId(), 1L, notificationIds);
 
         JiraServerCommentEventHandler handler = new JiraServerCommentEventHandler(
             eventManager,
@@ -137,7 +137,7 @@ class JiraServerCommentEventHandlerTest {
         Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
 
         JiraServerJobDetailsModel jobDetailsModel = createJobDetails(jobId);
-        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobDetailsModel.getJobId(), jobExecutionId, 1L, notificationIds);
+        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobDetailsModel.getJobId(), 1L, notificationIds);
 
         JiraServerPropertiesFactory propertiesFactory = Mockito.mock(JiraServerPropertiesFactory.class);
         JiraServerProperties jiraProperties = Mockito.mock(JiraServerProperties.class);
