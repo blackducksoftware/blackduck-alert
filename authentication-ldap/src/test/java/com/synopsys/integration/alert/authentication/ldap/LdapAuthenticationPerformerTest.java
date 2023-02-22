@@ -17,53 +17,38 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
-import org.springframework.security.ldap.userdetails.InetOrgPersonContextMapper;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.authentication.security.UserManagementAuthoritiesPopulator;
 import com.synopsys.integration.alert.api.authentication.security.event.AuthenticationEventManager;
 import com.synopsys.integration.alert.authentication.ldap.action.LdapManager;
 import com.synopsys.integration.alert.authentication.ldap.database.accessor.LDAPConfigAccessor;
-import com.synopsys.integration.alert.authentication.ldap.database.configuration.MockLDAPConfigurationRepository;
 import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigModel;
-import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
-import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
-import com.synopsys.integration.alert.common.security.EncryptionUtility;
-import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.test.common.MockAlertProperties;
 
 class LdapAuthenticationPerformerTest {
-    private LDAPConfigAccessor ldapConfigAccessor;
+    private final LDAPConfigAccessor ldapConfigAccessor = LDAPTestHelper.createTestLDAPConfigAccessor();
     private LdapManager ldapManager;
     private LdapAuthenticationPerformer ldapAuthenticationPerformer;
     private Authentication inputAuthentication;
-    private static LDAPConfigModel ldapConfigModel;
+    private LDAPConfigModel validaLDAPConfigModel;
+    private LDAPConfigModel inValidLDAPConfigModel;
 
     @Mock
-    UserManagementAuthoritiesPopulator MockUserManagementAuthoritiesPopulator;
+    UserManagementAuthoritiesPopulator mockUserManagementAuthoritiesPopulator;
     @Mock
     AuthenticationEventManager mockAuthenticationEventManager;
     @Mock
     RoleAccessor mockRoleAccessor;
-    @Mock
-    LdapAuthenticationProvider mockLdapAuthenticationProvider;
 
     @BeforeEach
     public void init() {
-        AlertProperties alertProperties = new MockAlertProperties();
-        FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, new Gson());
-        EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, filePersistenceUtil);
-        MockLDAPConfigurationRepository mockLDAPConfigurationRepository = new MockLDAPConfigurationRepository();
-        InetOrgPersonContextMapper inetOrgPersonContextMapper = new LdapConfig().ldapUserContextMapper();
-
-        ldapConfigAccessor = new LDAPConfigAccessor(encryptionUtility, mockLDAPConfigurationRepository);
-        ldapManager = new LdapManager(ldapConfigAccessor, MockUserManagementAuthoritiesPopulator, inetOrgPersonContextMapper);
+        ldapManager = new LdapManager(ldapConfigAccessor, mockUserManagementAuthoritiesPopulator, new LdapConfig().ldapUserContextMapper());
         ldapAuthenticationPerformer = new LdapAuthenticationPerformer(mockAuthenticationEventManager, mockRoleAccessor, ldapManager);
         inputAuthentication = new UsernamePasswordAuthenticationToken(UUID.randomUUID().toString(), UUID.randomUUID().toString());
 
-        ldapConfigModel = createValidConfigModel();
+        validaLDAPConfigModel = LDAPTestHelper.createValidLDAPConfigModel();
+        inValidLDAPConfigModel = LDAPTestHelper.createInValidLDAPConfigModel();
     }
 
     @Test
@@ -73,8 +58,8 @@ class LdapAuthenticationPerformerTest {
 
     @Test
     void testAuthenticateEnabledFalse() {
-        ldapConfigModel.setEnabled(false);
-        assertDoesNotThrow(() -> ldapConfigAccessor.createConfiguration(ldapConfigModel));
+        validaLDAPConfigModel.setEnabled(false);
+        assertDoesNotThrow(() -> ldapConfigAccessor.createConfiguration(validaLDAPConfigModel));
 
         Authentication returnAuthentication = ldapAuthenticationPerformer.authenticateWithProvider(inputAuthentication);
         assertEquals(inputAuthentication.getPrincipal(), returnAuthentication.getPrincipal());
@@ -82,11 +67,8 @@ class LdapAuthenticationPerformerTest {
 
     @Test
     void testAuthenticateProviderNotPresent() {
-        ldapConfigModel.setServerName("");
-        assertDoesNotThrow(() -> ldapConfigAccessor.createConfiguration(ldapConfigModel));
-
-        LdapManager spiedLDAPManager = Mockito.spy(ldapManager);
-        ldapAuthenticationPerformer = new LdapAuthenticationPerformer(mockAuthenticationEventManager, mockRoleAccessor, spiedLDAPManager);
+        validaLDAPConfigModel.setServerName("");
+        assertDoesNotThrow(() -> ldapConfigAccessor.createConfiguration(validaLDAPConfigModel));
 
         Authentication returnAuthentication = ldapAuthenticationPerformer.authenticateWithProvider(inputAuthentication);
         assertEquals(inputAuthentication.getPrincipal(), returnAuthentication.getPrincipal());
@@ -94,7 +76,7 @@ class LdapAuthenticationPerformerTest {
 
     @Test
     void testAuthenticateException() {
-        assertDoesNotThrow(() -> ldapConfigAccessor.createConfiguration(ldapConfigModel));
+        assertDoesNotThrow(() -> ldapConfigAccessor.createConfiguration(validaLDAPConfigModel));
 
         Authentication returnAuthentication = ldapAuthenticationPerformer.authenticateWithProvider(inputAuthentication);
         assertEquals(inputAuthentication.getPrincipal(), returnAuthentication.getPrincipal());
@@ -102,13 +84,12 @@ class LdapAuthenticationPerformerTest {
 
     @Test
     void testAuthenticateAlertException() {
-        LDAPConfigModel emptyLDAPConfigModel = new LDAPConfigModel();
-        emptyLDAPConfigModel.setEnabled(true);
-        emptyLDAPConfigModel.setServerName("serverName");
-        emptyLDAPConfigModel.setManagerPassword("managerPassword");
-        emptyLDAPConfigModel.setManagerDn("managerDn");
+        inValidLDAPConfigModel.setEnabled(true);
+        inValidLDAPConfigModel.setServerName("serverName");
+        inValidLDAPConfigModel.setManagerPassword("managerPassword");
+        inValidLDAPConfigModel.setManagerDn("managerDn");
         LdapManager spiedLDAPManager = Mockito.spy(ldapManager);
-        Mockito.doReturn(Optional.of(emptyLDAPConfigModel)).when(spiedLDAPManager).getCurrentConfiguration();
+        Mockito.doReturn(Optional.of(inValidLDAPConfigModel)).when(spiedLDAPManager).getCurrentConfiguration();
         ldapAuthenticationPerformer = new LdapAuthenticationPerformer(mockAuthenticationEventManager, mockRoleAccessor, spiedLDAPManager);
 
         Authentication returnAuthentication = ldapAuthenticationPerformer.authenticateWithProvider(inputAuthentication);
@@ -117,7 +98,7 @@ class LdapAuthenticationPerformerTest {
 
     @Test
     void testAuthenticateSuccess() {
-        assertDoesNotThrow(() -> ldapConfigAccessor.createConfiguration(ldapConfigModel));
+        assertDoesNotThrow(() -> ldapConfigAccessor.createConfiguration(validaLDAPConfigModel));
 
         LdapManager spiedLDAPManager = Mockito.spy(ldapManager);
         LdapAuthenticationProvider ldapAuthenticationProvider = Mockito.mock(LdapAuthenticationProvider.class);
@@ -133,29 +114,6 @@ class LdapAuthenticationPerformerTest {
         Authentication returnAuthentication = ldapAuthenticationPerformer.authenticateWithProvider(inputAuthentication);
         assertTrue(returnAuthentication.isAuthenticated());
         assertEquals("foo", returnAuthentication.getPrincipal());
-    }
-
-    private LDAPConfigModel createValidConfigModel() {
-        String dateStamp = DateUtils.formatDate(DateUtils.createCurrentDateTimestamp(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
-        return new LDAPConfigModel(
-            "",
-            dateStamp,
-            dateStamp,
-            true,
-            "ldap://alert.blackduck.synopsys.com:389",
-            "cn=Alert Manager,ou=Synopsys,ou=people,dc=blackduck,dc=com",
-            "managerPassword",
-            true,
-            "Simple",
-            "",
-            "ou=people,dc=blackduck,dc=com",
-            "cn={0}",
-            "",
-            "",
-            "ou=groups,dc=blackduck,dc=com",
-            "uniqueMember={0}",
-            "cn"
-        );
     }
 
 }

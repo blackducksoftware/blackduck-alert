@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -19,78 +18,52 @@ import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
-import org.springframework.security.ldap.userdetails.InetOrgPersonContextMapper;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.api.authentication.security.UserManagementAuthoritiesPopulator;
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
+import com.synopsys.integration.alert.authentication.ldap.LDAPTestHelper;
 import com.synopsys.integration.alert.authentication.ldap.LdapConfig;
 import com.synopsys.integration.alert.authentication.ldap.action.LDAPCrudActions;
 import com.synopsys.integration.alert.authentication.ldap.action.LDAPTestAction;
 import com.synopsys.integration.alert.authentication.ldap.action.LDAPValidationAction;
 import com.synopsys.integration.alert.authentication.ldap.action.LdapManager;
 import com.synopsys.integration.alert.authentication.ldap.database.accessor.LDAPConfigAccessor;
-import com.synopsys.integration.alert.authentication.ldap.database.configuration.MockLDAPConfigurationRepository;
 import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigModel;
 import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigTestModel;
 import com.synopsys.integration.alert.authentication.ldap.validator.LDAPConfigurationValidator;
-import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
-import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
-import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
-import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
-import com.synopsys.integration.alert.test.common.MockAlertProperties;
 
 class LDAPConfigControllerTest {
     private static final AuthenticationDescriptorKey authenticationDescriptorKey = new AuthenticationDescriptorKey();
     private static final LDAPConfigurationValidator ldapConfigurationValidator = new LDAPConfigurationValidator();
+    private static final AuthorizationManager authorizationManager = LDAPTestHelper.createAuthorizationManager();
 
-    private static AuthorizationManager authorizationManager;
     private static LdapManager ldapManager;
     private static LDAPConfigAccessor ldapConfigAccessor;
     private static LDAPValidationAction ldapValidationAction;
     private static LDAPCrudActions ldapCrudActions;
     private static LDAPConfigController ldapConfigController;
 
-    private static LDAPConfigModel invalidLDAPConfigModel;
-    private static LDAPConfigModel validLDAPConfigModel;
+    private LDAPConfigModel invalidLDAPConfigModel;
+    private LDAPConfigModel validLDAPConfigModel;
 
     @BeforeEach
     public void initAccessor() {
-        AuthenticationTestUtils authenticationTestUtils = new AuthenticationTestUtils();
-        PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), authenticationDescriptorKey.getUniversalKey());
-        Map<PermissionKey, Integer> permissions = Map.of(permissionKey, 255);
-        authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet(
-            "admin",
-            "admin",
-            () -> new PermissionMatrixModel(permissions)
-        );
-
-        InetOrgPersonContextMapper inetOrgPersonContextMapper = new LdapConfig().ldapUserContextMapper();
         UserManagementAuthoritiesPopulator userManagementAuthoritiesPopulator = Mockito.mock(UserManagementAuthoritiesPopulator.class);
-        ldapManager = new LdapManager(ldapConfigAccessor, userManagementAuthoritiesPopulator, inetOrgPersonContextMapper);
+        ldapManager = new LdapManager(ldapConfigAccessor, userManagementAuthoritiesPopulator, new LdapConfig().ldapUserContextMapper());
 
-        AlertProperties alertProperties = new MockAlertProperties();
-        FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, new Gson());
-        EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, filePersistenceUtil);
-        MockLDAPConfigurationRepository mockLDAPConfigurationRepository = new MockLDAPConfigurationRepository();
-        ldapConfigAccessor = new LDAPConfigAccessor(encryptionUtility, mockLDAPConfigurationRepository);
+        ldapConfigAccessor = LDAPTestHelper.createTestLDAPConfigAccessor();
 
         LDAPTestAction ldapTestAction = new LDAPTestAction(authorizationManager, authenticationDescriptorKey, ldapConfigurationValidator, ldapManager, ldapConfigAccessor);
         ldapValidationAction = new LDAPValidationAction(ldapConfigurationValidator, authorizationManager, authenticationDescriptorKey);
         ldapCrudActions = new LDAPCrudActions(authorizationManager, ldapConfigAccessor, ldapConfigurationValidator, authenticationDescriptorKey);
         ldapConfigController = new LDAPConfigController(ldapCrudActions, ldapValidationAction, ldapTestAction);
 
-        invalidLDAPConfigModel = createValidConfigModel();
-        invalidLDAPConfigModel.setServerName("");
+        invalidLDAPConfigModel = LDAPTestHelper.createInValidLDAPConfigModel();
 
-        validLDAPConfigModel = createValidConfigModel();
+        validLDAPConfigModel = LDAPTestHelper.createValidLDAPConfigModel();
     }
 
     @Test
@@ -107,7 +80,9 @@ class LDAPConfigControllerTest {
 
     @Test
     void testCreateGetDeleteValidModel() {
+        validLDAPConfigModel.setId("");
         LDAPConfigModel createdLDAPConfigModel = assertDoesNotThrow(() -> ldapConfigController.create(validLDAPConfigModel));
+        LDAPTestHelper.assertOptionalField(LDAPTestHelper.DEFAULT_MANAGER_PASSWORD, validLDAPConfigModel::getManagerPassword);
         assertTrue(validLDAPConfigModel.getManagerPassword().isPresent());
         assertFalse(createdLDAPConfigModel.getManagerPassword().isPresent());
         assertTrue(StringUtils.isBlank(validLDAPConfigModel.getId()));
@@ -204,28 +179,8 @@ class LDAPConfigControllerTest {
 
         LDAPConfigTestModel ldapConfigTestModel = new LDAPConfigTestModel(validLDAPConfigModel, "User", "Pass");
         ValidationResponseModel validationResponseModel = assertDoesNotThrow(() -> ldapConfigController.test(ldapConfigTestModel));
+        assertEquals("LDAP Test Configuration successful.", validationResponseModel.getMessage());
+        assertFalse(validationResponseModel.hasErrors());
     }
 
-    private LDAPConfigModel createValidConfigModel() {
-        String dateStamp = DateUtils.formatDate(DateUtils.createCurrentDateTimestamp(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
-        return new LDAPConfigModel(
-            "",
-            dateStamp,
-            dateStamp,
-            true,
-            "ldap://alert.blackduck.synopsys.com:389",
-            "cn=Alert Manager,ou=Synopsys,ou=people,dc=blackduck,dc=com",
-            "managerPassword",
-            true,
-            "Simple",
-            "",
-            "ou=people,dc=blackduck,dc=com",
-            "cn={0}",
-            "",
-            "",
-            "ou=groups,dc=blackduck,dc=com",
-            "uniqueMember={0}",
-            "cn"
-        );
-    }
 }
