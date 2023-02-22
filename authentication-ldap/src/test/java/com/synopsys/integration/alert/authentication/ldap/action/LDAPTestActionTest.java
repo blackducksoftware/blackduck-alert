@@ -184,7 +184,6 @@ class LDAPTestActionTest {
 
         assertFalse(configurationTestResult.isSuccess());
         assertEquals("LDAP Test Configuration failed. Please check your configuration.", configurationTestResult.getStatusMessage());
-
     }
 
 }
