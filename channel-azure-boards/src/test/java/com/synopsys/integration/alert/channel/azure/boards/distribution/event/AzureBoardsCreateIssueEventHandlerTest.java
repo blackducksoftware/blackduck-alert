@@ -96,7 +96,7 @@ class AzureBoardsCreateIssueEventHandlerTest {
         Mockito.when(mockProxyManager.createProxyInfoForHost(Mockito.anyString())).thenReturn(ProxyInfo.NO_PROXY_INFO);
 
         AzureBoardsJobDetailsModel jobDetailsModel = createJobDetails(jobId);
-        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobDetailsModel.getJobId(), jobExecutionId, 1L, notificationIds);
+        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobDetailsModel.getJobId(), 1L, notificationIds);
 
         AzureBoardsCreateIssueEventHandler handler = new AzureBoardsCreateIssueEventHandler(
             eventManager,
@@ -140,7 +140,7 @@ class AzureBoardsCreateIssueEventHandlerTest {
         AzureHttpRequestCreator azureHttpRequestCreator = Mockito.mock(AzureHttpRequestCreator.class);
 
         AzureBoardsJobDetailsModel jobDetailsModel = createJobDetails(jobId);
-        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobDetailsModel.getJobId(), jobExecutionId, 1L, notificationIds);
+        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobDetailsModel.getJobId(), 1L, notificationIds);
 
         //TODO: Mockito.doAnswer when we create a work item to increment the issueCounter
 

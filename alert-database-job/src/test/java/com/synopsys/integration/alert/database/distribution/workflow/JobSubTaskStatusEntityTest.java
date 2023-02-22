@@ -13,7 +13,6 @@ class JobSubTaskStatusEntityTest {
         JobSubTaskStatusEntity entity = new JobSubTaskStatusEntity();
         assertNull(entity.getId());
         assertNull(entity.getJobId());
-        assertNull(entity.getJobExecutionId());
         assertNull(entity.getNotificationCorrelationId());
         assertNull(entity.getRemainingEvents());
     }
@@ -25,7 +24,7 @@ class JobSubTaskStatusEntityTest {
         UUID jobExecutionId = UUID.randomUUID();
         UUID correlationId = UUID.randomUUID();
         Long remainingTaskCount = 5L;
-        JobSubTaskStatusEntity entity = new JobSubTaskStatusEntity(id, jobId, jobExecutionId, remainingTaskCount, correlationId);
+        JobSubTaskStatusEntity entity = new JobSubTaskStatusEntity(id, jobId, remainingTaskCount, correlationId);
         assertEquals(id, entity.getId());
         assertEquals(jobId, entity.getJobId());
         assertEquals(correlationId, entity.getNotificationCorrelationId());

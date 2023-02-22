@@ -78,14 +78,14 @@ public class SAMLConfigAccessor implements UniqueConfigurationAccessor<SAMLConfi
             samlConfigurationEntity.getEnabled(),
             samlConfigurationEntity.getForceAuth(),
             samlConfigurationEntity.getMetadataUrl(),
-            samlConfigurationEntity.getMetadataFilePath(),
+            samlConfigurationEntity.getMetadataFileName(),
             samlConfigurationEntity.getMetadataMode(),
             samlConfigurationEntity.getWantAssertionsSigned(),
-            samlConfigurationEntity.getEncryptionCertFilePath(),
-            samlConfigurationEntity.getEncryptionPrivateKeyFilePath(),
-            samlConfigurationEntity.getSigningCertFilePath(),
-            samlConfigurationEntity.getSigningPrivateKeyFilePath(),
-            samlConfigurationEntity.getVerificationCertFilePath()
+            samlConfigurationEntity.getEncryptionCertFileName(),
+            samlConfigurationEntity.getEncryptionPrivateKeyFileName(),
+            samlConfigurationEntity.getSigningCertFileName(),
+            samlConfigurationEntity.getSigningPrivateKeyFileName(),
+            samlConfigurationEntity.getVerificationCertFileName()
         );
     }
 
@@ -97,14 +97,14 @@ public class SAMLConfigAccessor implements UniqueConfigurationAccessor<SAMLConfi
             samlConfigModel.getEnabled(),
             samlConfigModel.getForceAuth(),
             samlConfigModel.getMetadataUrl().orElse(""),
-            samlConfigModel.getMetadataFilePath().orElse(""),
+            samlConfigModel.getMetadataFileName().orElse(""),
             samlConfigModel.getMetadataMode().orElse(null),
             samlConfigModel.getWantAssertionsSigned(),
-            samlConfigModel.getEncryptionCertFilePath().orElse(""),
-            samlConfigModel.getEncryptionPrivateKeyFilePath().orElse(""),
-            samlConfigModel.getSigningCertFilePath().orElse(""),
-            samlConfigModel.getSigningPrivateKeyFilePath().orElse(""),
-            samlConfigModel.getVerificationCertFilePath().orElse("")
+            samlConfigModel.getEncryptionCertFileName().orElse(""),
+            samlConfigModel.getEncryptionPrivateKeyFileName().orElse(""),
+            samlConfigModel.getSigningCertFileName().orElse(""),
+            samlConfigModel.getSigningPrivateKeyFileName().orElse(""),
+            samlConfigModel.getVerificationCertFileName().orElse("")
         );
     }
 }

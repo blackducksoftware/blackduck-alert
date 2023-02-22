@@ -100,8 +100,10 @@ public class FileUploadHelper {
         }
 
         try {
-            File fileToValidate = filePersistenceUtil.createUploadsFile(fileName);
-            filePersistenceUtil.delete(fileToValidate);
+            if (filePersistenceUtil.uploadFileExists(fileName)) {
+                File fileToValidate = filePersistenceUtil.createUploadsFile(fileName);
+                filePersistenceUtil.delete(fileToValidate);
+            }
         } catch (IOException ex) {
             logger.error("Error deleting file - file: {}, context: {}, descriptor: {} ", fileName, context, descriptorKey);
             logger.error("Error deleting file caused by:", ex);

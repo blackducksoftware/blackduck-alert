@@ -26,22 +26,22 @@ public class SAMLConfigurationEntity extends BaseEntity {
     private Boolean forceAuth;
     @Column(name = "metadata_url")
     private String metadataUrl;
-    @Column(name = "metadata_file_path")
-    private String metadataFilePath;
+    @Column(name = "metadata_file_name")
+    private String metadataFileName;
     @Column(name = "metadata_mode")
     private SAMLMetadataMode metadataMode;
     @Column(name = "want_assertions_signed")
     private Boolean wantAssertionsSigned;
-    @Column(name = "encryption_cert_file_path")
-    private String encryptionCertFilePath;
-    @Column(name = "encryption_private_key_file_path")
-    private String encryptionPrivateKeyFilePath;
-    @Column(name = "signing_cert_file_path")
-    private String signingCertFilePath;
-    @Column(name = "signing_private_key_file_path")
-    private String signingPrivateKeyFilePath;
-    @Column(name = "verification_cert_file_path")
-    private String verificationCertFilePath;
+    @Column(name = "encryption_cert_file_name")
+    private String encryptionCertFileName;
+    @Column(name = "encryption_private_key_file_name")
+    private String encryptionPrivateKeyFileName;
+    @Column(name = "signing_cert_file_name")
+    private String signingCertFileName;
+    @Column(name = "signing_private_key_file_name")
+    private String signingPrivateKeyFileName;
+    @Column(name = "verification_cert_file_name")
+    private String verificationCertFileName;
 
     public SAMLConfigurationEntity() {
     }
@@ -53,14 +53,14 @@ public class SAMLConfigurationEntity extends BaseEntity {
         Boolean enabled,
         Boolean forceAuth,
         String metadataUrl,
-        String metadataFilePath,
+        String metadataFileName,
         SAMLMetadataMode metadataMode,
         Boolean wantAssertionsSigned,
-        String encryptionCertFilePath,
-        String encryptionPrivateKeyFilePath,
-        String signingCertFilePath,
-        String signingPrivateKeyFilePath,
-        String verificationCertFilePath
+        String encryptionCertFileName,
+        String encryptionPrivateKeyFileName,
+        String signingCertFileName,
+        String signingPrivateKeyFileName,
+        String verificationCertFileName
     ) {
         this.configurationId = configurationId;
         this.name = AlertRestConstants.DEFAULT_CONFIGURATION_NAME;
@@ -69,14 +69,14 @@ public class SAMLConfigurationEntity extends BaseEntity {
         this.enabled = enabled;
         this.forceAuth = forceAuth;
         this.metadataUrl = metadataUrl;
-        this.metadataFilePath = metadataFilePath;
+        this.metadataFileName = metadataFileName;
         this.metadataMode = metadataMode;
         this.wantAssertionsSigned = wantAssertionsSigned;
-        this.encryptionCertFilePath = encryptionCertFilePath;
-        this.encryptionPrivateKeyFilePath = encryptionPrivateKeyFilePath;
-        this.signingCertFilePath = signingCertFilePath;
-        this.signingPrivateKeyFilePath = signingPrivateKeyFilePath;
-        this.verificationCertFilePath = verificationCertFilePath;
+        this.encryptionCertFileName = encryptionCertFileName;
+        this.encryptionPrivateKeyFileName = encryptionPrivateKeyFileName;
+        this.signingCertFileName = signingCertFileName;
+        this.signingPrivateKeyFileName = signingPrivateKeyFileName;
+        this.verificationCertFileName = verificationCertFileName;
     }
 
     public UUID getConfigurationId() {
@@ -107,8 +107,8 @@ public class SAMLConfigurationEntity extends BaseEntity {
         return metadataUrl;
     }
 
-    public String getMetadataFilePath() {
-        return metadataFilePath;
+    public String getMetadataFileName() {
+        return metadataFileName;
     }
 
     public SAMLMetadataMode getMetadataMode() {
@@ -119,23 +119,23 @@ public class SAMLConfigurationEntity extends BaseEntity {
         return wantAssertionsSigned;
     }
 
-    public String getEncryptionCertFilePath() {
-        return encryptionCertFilePath;
+    public String getEncryptionCertFileName() {
+        return encryptionCertFileName;
     }
 
-    public String getEncryptionPrivateKeyFilePath() {
-        return encryptionPrivateKeyFilePath;
+    public String getEncryptionPrivateKeyFileName() {
+        return encryptionPrivateKeyFileName;
     }
 
-    public String getSigningCertFilePath() {
-        return signingCertFilePath;
+    public String getSigningCertFileName() {
+        return signingCertFileName;
     }
 
-    public String getSigningPrivateKeyFilePath() {
-        return signingPrivateKeyFilePath;
+    public String getSigningPrivateKeyFileName() {
+        return signingPrivateKeyFileName;
     }
 
-    public String getVerificationCertFilePath() {
-        return verificationCertFilePath;
+    public String getVerificationCertFileName() {
+        return verificationCertFileName;
     }
 }
