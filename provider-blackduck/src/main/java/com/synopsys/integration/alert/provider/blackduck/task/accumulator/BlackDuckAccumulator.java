@@ -136,25 +136,25 @@ public class BlackDuckAccumulator extends ProviderTask {
             dateRange,
             SUPPORTED_NOTIFICATION_TYPES
         );
-        boolean emptyPage = notificationPage.isCurrentPageEmpty();
+        int storedNotifications = 0;
         try {
             while (!notificationPage.isCurrentPageEmpty()) {
                 List<NotificationUserView> currentNotifications = notificationPage.getCurrentModels();
                 logger.debug("Retrieved a page of {} notifications", currentNotifications.size());
-                storeNotifications(currentNotifications);
 
+                storedNotifications += storeNotifications(currentNotifications);
                 notificationPage = notificationPage.retrieveNextPage();
             }
         } finally {
-            if (!emptyPage) {
+            if (storedNotifications > 0) {
                 eventManager.sendEvent(new NotificationReceivedEvent(getProviderProperties().getConfigId()));
             }
         }
     }
 
-    private void storeNotifications(List<NotificationUserView> notifications) {
+    private int storeNotifications(List<NotificationUserView> notifications) {
         List<AlertNotificationModel> alertNotifications = convertToAlertNotificationModels(notifications);
-        write(alertNotifications);
+        int notificationsWritten = write(alertNotifications);
         Optional<OffsetDateTime> optionalNextSearchTime = computeLatestNotificationCreatedAtDate(alertNotifications)
             .map(latestNotification -> latestNotification.minusNanos(1000000));
         if (optionalNextSearchTime.isPresent()) {
@@ -162,6 +162,8 @@ public class BlackDuckAccumulator extends ProviderTask {
             logger.info("Notifications found; the next search time will be: {}", nextSearchTime);
             searchDateManager.saveNextSearchStart(nextSearchTime);
         }
+
+        return notificationsWritten;
     }
 
     private List<AlertNotificationModel> convertToAlertNotificationModels(List<NotificationUserView> notifications) {
@@ -172,7 +174,7 @@ public class BlackDuckAccumulator extends ProviderTask {
             .collect(Collectors.toList());
     }
 
-    private void write(List<AlertNotificationModel> contentList) {
+    private int write(List<AlertNotificationModel> contentList) {
         logger.info("Writing {} notifications for provider {} ...", contentList.size(), getProviderProperties().getConfigId());
         List<AlertNotificationModel> savedNotifications = notificationAccessor.saveAllNotifications(contentList);
         logger.info("Saved {} notifications for provider {} ...", savedNotifications.size(), getProviderProperties().getConfigId());
@@ -183,6 +185,7 @@ public class BlackDuckAccumulator extends ProviderTask {
             String joinedIds = StringUtils.join(notificationIds, ", ");
             notificationLogger.debug("Saved notifications: {}", joinedIds);
         }
+        return savedNotifications.size();
     }
 
     private AlertNotificationModel convertToAlertNotificationModel(NotificationView notification) {
