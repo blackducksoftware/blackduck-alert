@@ -10,8 +10,12 @@ import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatusMessages;
 import com.synopsys.integration.alert.authentication.ldap.LDAPTestHelper;
 import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigModel;
+import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigTestModel;
 
 public class LDAPConfigurationValidatorTest {
+    public static final String TEST_USER = "testLDAPUsername";
+    public static final String TEST_PASS = "testLDAPPassword";
+
     private LDAPConfigModel validLDAPConfigModel;
     private LDAPConfigurationValidator ldapConfigurationValidator;
 
@@ -22,14 +26,14 @@ public class LDAPConfigurationValidatorTest {
     }
 
     @Test
-    public void testNewValidModel() {
+    public void testNewValidConfigModel() {
         ValidationResponseModel validationResponseModel = ldapConfigurationValidator.validate(validLDAPConfigModel);
         assertEquals(ValidationResponseModel.VALIDATION_SUCCESS_MESSAGE, validationResponseModel.getMessage());
         assertEquals(0, validationResponseModel.getErrors().size());
     }
 
     @Test
-    public void testUpdatedValidModel() {
+    public void testUpdatedValidConfigModel() {
         // The scenario can come up when updating a configuration via the UI
         //   ldapConfigModel.getManagerPassword().isEmpty() = true
         //   ldapConfigModel.getIsManagerPasswordSet() = true
@@ -76,4 +80,33 @@ public class LDAPConfigurationValidatorTest {
         assertEquals(AlertFieldStatusMessages.REQUIRED_FIELD_MISSING, validationResponseModel.getErrors().get("managerPassword").getFieldMessage());
     }
 
+    @Test
+    public void testNullConfigModel() {
+        LDAPConfigTestModel ldapConfigTestModel = new LDAPConfigTestModel(null, TEST_USER, TEST_PASS);
+        ValidationResponseModel validationResponseModel = ldapConfigurationValidator.validate(ldapConfigTestModel);
+        assertEquals(ValidationResponseModel.VALIDATION_FAILURE_MESSAGE, validationResponseModel.getMessage());
+        assertEquals(1, validationResponseModel.getErrors().size());
+        assertTrue(validationResponseModel.getErrors().containsKey("ldapConfigModel"));
+        assertEquals(AlertFieldStatusMessages.REQUIRED_FIELD_MISSING, validationResponseModel.getErrors().get("ldapConfigModel").getFieldMessage());
+    }
+
+    @Test
+    public void testEmptyConfigModel() {
+        LDAPConfigTestModel ldapConfigTestModel = new LDAPConfigTestModel(LDAPTestHelper.createInValidLDAPConfigModel(), TEST_USER, TEST_PASS);
+        ValidationResponseModel validationResponseModel = ldapConfigurationValidator.validate(ldapConfigTestModel);
+        assertEquals(ValidationResponseModel.VALIDATION_FAILURE_MESSAGE, validationResponseModel.getMessage());
+        assertEquals(4, validationResponseModel.getErrors().size());
+    }
+
+    @Test
+    public void testInvalidTestUser() {
+        LDAPConfigTestModel ldapConfigTestModel = new LDAPConfigTestModel(validLDAPConfigModel, "", null);
+        ValidationResponseModel validationResponseModel = ldapConfigurationValidator.validate(ldapConfigTestModel);
+        assertEquals(ValidationResponseModel.VALIDATION_FAILURE_MESSAGE, validationResponseModel.getMessage());
+        assertEquals(2, validationResponseModel.getErrors().size());
+        assertTrue(validationResponseModel.getErrors().containsKey(TEST_USER));
+        assertEquals(AlertFieldStatusMessages.REQUIRED_FIELD_MISSING, validationResponseModel.getErrors().get(TEST_USER).getFieldMessage());
+        assertTrue(validationResponseModel.getErrors().containsKey(TEST_PASS));
+        assertEquals(AlertFieldStatusMessages.REQUIRED_FIELD_MISSING, validationResponseModel.getErrors().get(TEST_PASS).getFieldMessage());
+    }
 }
