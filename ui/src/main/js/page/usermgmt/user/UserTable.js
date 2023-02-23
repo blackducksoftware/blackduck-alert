@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUsers} from 'store/actions/users';
-import UserCopyRowAction from 'page/user/user/UserCopyRowAction';
-import UserEditRowAction from 'page/user/user/UserEditRowAction';
-import UserRoleCell from 'page/user/user/UserRoleCell';
+import UserCopyRowAction from 'page/usermgmt/user/UserCopyRowAction';
+import UserEditRowAction from 'page/usermgmt/user/UserEditRowAction';
+import UserRoleCell from 'page/usermgmt/user/UserRoleCell';
 import Table from 'common/component/table/Table';
-import UserTableActions from 'page/user/user/UserTableActions';
+import UserTableActions from 'page/usermgmt/user/UserTableActions';
+
 
 const COLUMNS = [{
     key: 'username',
@@ -39,7 +40,7 @@ const COLUMNS = [{
     settings: { alignment: 'center' }
 }]
 
-const UserTableConvert = ({canCreate, canDelete}) => {
+const UserTableConvert = ({ canCreate, canDelete }) => {
     const dispatch = useDispatch();
     const [search, setNewSearch] = useState("");
     const [selected, setSelected] = useState([]);
@@ -90,5 +91,10 @@ const UserTableConvert = ({canCreate, canDelete}) => {
         />
     )
 }
+
+UserTableConvert.propTypes = {
+    canCreate: PropTypes.bool,
+    canDelete: PropTypes.bool
+};
 
 export default UserTableConvert;

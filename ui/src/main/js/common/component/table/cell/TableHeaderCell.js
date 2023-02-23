@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { createUseStyles } from 'react-jss';
 
@@ -47,6 +48,12 @@ const TableHeaderCell = ({ label, sortable, settings }) => {
             
         </th>
     );
+};
+
+TableHeaderCell.propTypes = {
+    sortable: PropTypes.bool,
+    label: PropTypes.string,
+    settings:PropTypes.object
 };
 
 export default TableHeaderCell;

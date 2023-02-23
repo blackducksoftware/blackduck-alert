@@ -169,12 +169,10 @@ export function fetchUsers() {
 export function validateUser(user) {
     return (dispatch, getState) => {
         dispatch(validatingUser());
-        const { id } = user;
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => saveUserErrorMessage(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
-
         const validateRequest = ConfigRequestBuilder.createValidateRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, user);
         validateRequest.then((response) => {
             if (response.ok) {
@@ -196,6 +194,7 @@ export function validateUser(user) {
 }
 
 export function saveUser(user) {
+    console.log(user);
     return (dispatch, getState) => {
         dispatch(savingUser());
         const { id } = user;
@@ -210,6 +209,8 @@ export function saveUser(user) {
             saveRequest = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, user);
         }
         saveRequest.then((response) => {
+            console.log(response);
+
             if (response.ok) {
                 dispatch(savedUser());
                 dispatch(fetchUsers());

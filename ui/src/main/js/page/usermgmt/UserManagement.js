@@ -3,10 +3,16 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Tab, Tabs } from 'react-bootstrap';
 import PageHeader from 'common/component/navigation/PageHeader';
-import RoleTable from 'page/user/RoleTable';
-import UserTable from 'page/user/user/UserTable';
+import RoleTable from 'page/usermgmt/RoleTable';
+import UserTabler from 'page/usermgmt/user/UserTable';
 import * as DescriptorUtilities from 'common/util/descriptorUtilities';
-import { USER_MANAGEMENT_INFO } from 'page/user/UserModel';
+import { USER_MANAGEMENT_INFO } from 'page/usermgmt/UserModel';
+
+import BetaPage from 'common/component/beta/BetaPage';
+import BetaComponent from 'common/component/beta/BetaComponent';
+import CurrentComponent from 'common/component/beta/CurrentComponent';
+import UserTable from 'page/usermgmt/UserTable';
+
 
 const UserManagement = ({ descriptors }) => {
     const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_NAME.COMPONENT_USERS, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
@@ -22,7 +28,14 @@ const UserManagement = ({ descriptors }) => {
             />
             <Tabs defaultActiveKey={1} id="user-management-tabs">
                 <Tab eventKey={1} title="Users">
-                    <UserTable canCreate={canCreate} canDelete={canDelete} />
+                    <BetaPage betaSelected>
+                        <BetaComponent>
+                            <UserTabler canCreate={canCreate} canDelete={canDelete} />
+                        </BetaComponent>
+                        <CurrentComponent>
+                            <UserTable canCreate={canCreate} canDelete={canDelete} />
+                        </CurrentComponent>
+                    </BetaPage>
                 </Tab>
                 <Tab eventKey={2} title="Roles">
                     <RoleTable canCreate={canCreate} canDelete={canDelete} />

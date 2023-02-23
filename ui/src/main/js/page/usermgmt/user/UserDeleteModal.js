@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -118,6 +119,13 @@ const UserDeleteModal = ({ isOpen, toggleModal, data, selected }) => {
         </>
 
     );
+};
+
+UserDeleteModal.propTypes = {
+    data: PropTypes.object,
+    isOpen: PropTypes.bool,
+    toggleModal: PropTypes.func,
+    selected: PropTypes.array
 };
 
 export default UserDeleteModal;

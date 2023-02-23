@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 
 const useStyles = createUseStyles({
@@ -41,5 +42,11 @@ const ModalHeader = ({ title, closeModal }) => {
             </div>
     );
 };
+
+ModalHeader.propTypes = {
+    title: PropTypes.string,
+    closeModal: PropTypes.func
+};
+
 
 export default ModalHeader;

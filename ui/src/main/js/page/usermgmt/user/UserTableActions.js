@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import UserDeleteModal from 'page/user/user/UserDeleteModal';
-import UserCreateModal from 'page/user/user/UserCreateModal';
+import UserDeleteModal from 'page/usermgmt/user/UserDeleteModal';
+import UserModal from 'page/usermgmt/user/UserModal';
 
 const useStyles = createUseStyles({
     createUserBtn: {
@@ -51,6 +52,11 @@ const useStyles = createUseStyles({
 
 const UserTableActions = ({ canCreate, canDelete, data, selected }) => {
     const classes = useStyles();
+    const modalOptions = {
+        type: 'CREATE',
+        submitText: 'Create',
+        title: 'Create User'
+    };
 
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -65,40 +71,53 @@ const UserTableActions = ({ canCreate, canDelete, data, selected }) => {
 
     return (
         <>
-            { canCreate ? (
+            { canCreate && (
                 <button className={classes.createUserBtn} onClick={handleCreateUserClick}>
                     <FontAwesomeIcon icon="plus" />
                     Create User
                 </button>
-            ) : null }
+            ) }
 
-            { canDelete ? (
+            { canDelete && (
                 <button className={classes.deleteUserBtn} onClick={handleDeleteUserClick} disabled={selected.length === 0}>
                     <FontAwesomeIcon icon="trash" />
                     Delete
                 </button>
-            ) : null }
+            )}
 
-            { showCreateModal ? (
-                <UserCreateModal 
+            { showCreateModal && (
+                <UserModal 
                     data={data} 
                     isOpen={showCreateModal}
                     toggleModal={setShowCreateModal}
+                    modalOptions={modalOptions}
                 />
-            ) : null }
+                // <UserCreateModal 
+                //     data={data} 
+                //     isOpen={showCreateModal}
+                //     toggleModal={setShowCreateModal}
+                // />
+            )}
             
-            { showDeleteModal ? (
+            { showDeleteModal && (
                 <UserDeleteModal 
                     data={data}
                     isOpen={showDeleteModal} 
                     toggleModal={setShowDeleteModal}
                     selected={selected}
                 />
-            ) : null }
+            )}
             
         </>
 
     );
+};
+
+UserTableActions.propTypes = {
+    canCreate: PropTypes.bool,
+    canDelete: PropTypes.bool,
+    data: PropTypes.arrayOf(PropTypes.object),
+    selected: PropTypes.array
 };
 
 export default UserTableActions;

@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const UserRoleCell = ({ data }) => {
     const { roleNames } = data;
@@ -10,6 +11,10 @@ const UserRoleCell = ({ data }) => {
             {multiRole ? displayRole : roleNames}
         </>
     );
+};
+
+UserRoleCell.propTypes = {
+    data: PropTypes.object
 };
 
 export default UserRoleCell;

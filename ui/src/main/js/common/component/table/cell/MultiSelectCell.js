@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
+import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 
 const useStyles = createUseStyles({
@@ -34,6 +35,14 @@ const MultiSelectCell = ({ selected, onSelected, data }) => {
             />
         </td>
     );
+};
+
+MultiSelectCell.propTypes = {
+    selected: PropTypes.arrayOf(PropTypes.string),
+    onSelected: PropTypes.func,
+    data: PropTypes.shape({
+        id: PropTypes.string
+    })
 };
 
 export default MultiSelectCell;

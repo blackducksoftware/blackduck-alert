@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { useDispatch, useSelector } from 'react-redux';
 import { saveUser, validateUser } from 'store/actions/users';
@@ -9,7 +10,7 @@ import PasswordInput from 'common/component/input/PasswordInput';
 import TextInput from 'common/component/input/TextInput';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import UserEnum from 'common/util/enums/User';
+import UserFieldKeyEnum from 'page/usermgmt/user/UserModel';
 
 const useStyles = createUseStyles({
     descriptorContainer: {
@@ -65,11 +66,11 @@ const UserCopyModal = ({ data, isOpen, toggleModal, copiedUsername }) => {
     function passwordsMatch(user) {
         let passwordError = {};
         let matching = true;
-        if ((user[UserEnum.PASSWORD_KEY] || user[UserEnum.CONFIRM_PASSWORD_KEY]) && (user[UserEnum.PASSWORD_KEY] !== user[UserEnum.CONFIRM_PASSWORD_KEY])) {
+        if ((user[UserFieldKeyEnum.PASSWORD_KEY] || user[UserFieldKeyEnum.CONFIRM_PASSWORD_KEY]) && (user[UserFieldKeyEnum.PASSWORD_KEY] !== user[UserFieldKeyEnum.CONFIRM_PASSWORD_KEY])) {
             passwordError = HTTPErrorUtils.createFieldError('Passwords do not match.');
             matching = false;
         }
-        setUserData(Object.assign(user, { [UserEnum.CONFIRM_PASSWORD_ERROR_KEY]: passwordError }));
+        setUserData(Object.assign(user, { [UserFieldKeyEnum.CONFIRM_PASSWORD_ERROR_KEY]: passwordError }));
         // TODO: Why do I have to refresh roles for this validation to show?
         dispatch(fetchRoles());
         return matching;
@@ -84,8 +85,6 @@ const UserCopyModal = ({ data, isOpen, toggleModal, copiedUsername }) => {
             };
         });
     }
-
-    console.log(userData);
 
     return (
         <Modal 
@@ -105,72 +104,79 @@ const UserCopyModal = ({ data, isOpen, toggleModal, copiedUsername }) => {
             </div>
             <div>
                 <TextInput
-                    id={UserEnum.USERNAME_KEY}
-                    name={UserEnum.USERNAME_KEY}
+                    id={UserFieldKeyEnum.USERNAME_KEY}
+                    name={UserFieldKeyEnum.USERNAME_KEY}
                     label="Username"
                     description="The user's username."
                     placeholder="Enter username..."
                     readOnly={external}
                     required={!external}
-                    onChange={handleOnChange(UserEnum.USERNAME_KEY)}
-                    value={userData[UserEnum.USERNAME_KEY]}
-                    errorName={UserEnum.USERNAME_KEY}
-                    errorValue={fieldErrors[UserEnum.USERNAME_KEY]}
+                    onChange={handleOnChange(UserFieldKeyEnum.USERNAME_KEY)}
+                    value={userData[UserFieldKeyEnum.USERNAME_KEY]}
+                    errorName={UserFieldKeyEnum.USERNAME_KEY}
+                    errorValue={fieldErrors[UserFieldKeyEnum.USERNAME_KEY]}
                 />
                 <PasswordInput
-                    id={UserEnum.PASSWORD_KEY}
-                    name={UserEnum.PASSWORD_KEY}
+                    id={UserFieldKeyEnum.PASSWORD_KEY}
+                    name={UserFieldKeyEnum.PASSWORD_KEY}
                     label="Password"
                     description="The user's password."
                     readOnly={external}
                     required={!external}
-                    onChange={handleOnChange(UserEnum.PASSWORD_KEY)}
-                    value={userData[UserEnum.PASSWORD_KEY]}
+                    onChange={handleOnChange(UserFieldKeyEnum.PASSWORD_KEY)}
+                    value={userData[UserFieldKeyEnum.PASSWORD_KEY]}
                     isSet
-                    errorName={UserEnum.PASSWORD_KEY}
-                    errorValue={fieldErrors[UserEnum.PASSWORD_KEY]}
+                    errorName={UserFieldKeyEnum.PASSWORD_KEY}
+                    errorValue={fieldErrors[UserFieldKeyEnum.PASSWORD_KEY]}
                 />
                 <PasswordInput
-                    id={UserEnum.CONFIRM_PASSWORD_KEY}
-                    name={UserEnum.CONFIRM_PASSWORD_KEY}
+                    id={UserFieldKeyEnum.CONFIRM_PASSWORD_KEY}
+                    name={UserFieldKeyEnum.CONFIRM_PASSWORD_KEY}
                     label="Confirm Password"
                     description="The user's password."
                     readOnly={false}
                     required
-                    onChange={handleOnChange(UserEnum.CONFIRM_PASSWORD_KEY)}
-                    value={userData[UserEnum.CONFIRM_PASSWORD_KEY]}
+                    onChange={handleOnChange(UserFieldKeyEnum.CONFIRM_PASSWORD_KEY)}
+                    value={userData[UserFieldKeyEnum.CONFIRM_PASSWORD_KEY]}
                     isSet
-                    errorName={UserEnum.CONFIRM_PASSWORD_KEY}
-                    errorValue={userData[UserEnum.CONFIRM_PASSWORD_ERROR_KEY]}
+                    errorName={UserFieldKeyEnum.CONFIRM_PASSWORD_KEY}
+                    errorValue={userData[UserFieldKeyEnum.CONFIRM_PASSWORD_ERROR_KEY]}
                 />
                 <TextInput
-                    id={UserEnum.EMAIL_KEY}
-                    name={UserEnum.EMAIL_KEY}
+                    id={UserFieldKeyEnum.EMAIL_KEY}
+                    name={UserFieldKeyEnum.EMAIL_KEY}
                     label="Email"
                     description="The user's email."
                     placeholder="Enter email..."
                     readOnly={external}
                     required={!external}
-                    onChange={handleOnChange(UserEnum.EMAIL_KEY)}
-                    value={userData[UserEnum.EMAIL_KEY]}
-                    errorName={UserEnum.EMAIL_KEY}
-                    errorValue={fieldErrors[UserEnum.EMAIL_KEY]}
+                    onChange={handleOnChange(UserFieldKeyEnum.EMAIL_KEY)}
+                    value={userData[UserFieldKeyEnum.EMAIL_KEY]}
+                    errorName={UserFieldKeyEnum.EMAIL_KEY}
+                    errorValue={fieldErrors[UserFieldKeyEnum.EMAIL_KEY]}
                 />
                 <DynamicSelectInput
-                    name={UserEnum.ROLENAMES_KEY}
-                    id={UserEnum.ROLENAMES_KEY}
+                    name={UserFieldKeyEnum.ROLENAMES_KEY}
+                    id={UserFieldKeyEnum.ROLENAMES_KEY}
                     label="Roles"
-                    description="Select the roles you want associated with the UserEnum."
-                    onChange={handleOnChange(UserEnum.ROLENAMES_KEY)}
+                    description="Select the roles you want associated with the UserFieldKeyEnum."
+                    onChange={handleOnChange(UserFieldKeyEnum.ROLENAMES_KEY)}
                     multiSelect
                     options={getRoles()}
-                    value={userData[UserEnum.ROLENAMES_KEY]}
-                    errorName={UserEnum.ROLENAMES_KEY}
-                    errorValue={fieldErrors[UserEnum.ROLENAMES_KEY]}
+                    value={userData[UserFieldKeyEnum.ROLENAMES_KEY]}
+                    errorName={UserFieldKeyEnum.ROLENAMES_KEY}
+                    errorValue={fieldErrors[UserFieldKeyEnum.ROLENAMES_KEY]}
                 />
             </div>
         </Modal>
     );
+};
+
+UserCopyModal.propTypes = {
+    data: PropTypes.object,
+    isOpen: PropTypes.bool,
+    toggleModal: PropTypes.func,
+    copiedUsername: PropTypes.string
 };
 
 export default UserCopyModal;

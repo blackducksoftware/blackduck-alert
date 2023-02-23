@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import SearchFilter from 'common/component/table/SearchFilter';
 import TableBody from 'common/component/table/TableBody';
@@ -22,7 +23,7 @@ const useStyles = createUseStyles({
 
 
 const Table = ({ columns, multiSelect, selected, onSelected, tableData, handleSearchChange, 
-    searchBarPlaceholder, tableActions, onToggle, active,  }) => {
+    searchBarPlaceholder, tableActions, onToggle, active }) => {
     const classes = useStyles();
 
     return (
@@ -56,6 +57,23 @@ const Table = ({ columns, multiSelect, selected, onSelected, tableData, handleSe
             </table>
         </>
     );
+};
+
+Table.propTypes = {
+    columns: PropTypes.arrayOf(PropTypes.shape({
+        key: PropTypes.string,
+        label: PropTypes.string,
+        sortable: PropTypes.bool
+    })),
+    multiSelect: PropTypes.bool,
+    selected: PropTypes.arrayOf(PropTypes.string),
+    onSelected: PropTypes.func,
+    tableData: PropTypes.arrayOf(PropTypes.object),
+    handleSearchChange: PropTypes.func, 
+    searchBarPlaceholder: PropTypes.string,
+    tableActions: PropTypes.func,
+    onToggle: PropTypes.func,
+    active: PropTypes.bool 
 };
 
 export default Table;

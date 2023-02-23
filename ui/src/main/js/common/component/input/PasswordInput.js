@@ -27,7 +27,7 @@ const PasswordInput = ({
                     readOnly={readOnly} name={name} 
                     value={value} 
                     onChange={onChangeHandler} 
-                    placeholder={placeholderText ? placeholderText : placeholder} 
+                    placeholder={placeholderText || placeholder} 
                 />
             </div>
         </LabeledField>

@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef } from 'react';
+import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 
 const useStyles = createUseStyles({
@@ -49,6 +50,12 @@ const MultiSelectHeaderCell = ({ tableData, onSelected, selected }) => {
             />
         </td>
     );
+};
+
+MultiSelectHeaderCell.propTypes = {
+    tableData: PropTypes.arrayOf(PropTypes.object),
+    onSelected: PropTypes.func,
+    selected: PropTypes.arrayOf(PropTypes.string)
 };
 
 export default MultiSelectHeaderCell;

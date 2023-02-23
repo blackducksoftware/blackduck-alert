@@ -1,45 +1,52 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import UserCopyModal from 'page/user/user/UserCopyModal';
+import UserModal from 'page/usermgmt/user/UserModal';
 
 const useStyles = createUseStyles({
-    copyCell: {
+    editCell: {
         '&:hover': {
             cursor: 'pointer',
         }
     }
 });
 
-const UserCopyRowAction = ({ data }) => {
+const UserEditRowAction = ({ data }) => {
     const classes = useStyles();
     const [showModal, setShowModal] = useState(false);
     const [selectedData, setSelectedData] = useState(data);
-    const selectedUsername = data.username;
-    const email = selectedData.emailAddress ? selectedData.emailAddress : '';
-
+    const modalOptions = {
+        type: 'EDIT',
+        submitText: 'Save Edit',
+        title: 'Edit User'
+    };
+    console.log(showModal);
     function handleClick() {
         setShowModal(true);
-        setSelectedData(userData => ({...userData, id: null, username: '', password: '', emailAddress: email }))
+        setSelectedData(data);
     }
 
     return (
         <>
-            <span className={classes.copyCell} onClick={() => handleClick()}>
-                <FontAwesomeIcon icon="copy" />
+            <span className={classes.editCell} onClick={() => handleClick()}>
+                <FontAwesomeIcon icon="pencil-alt" />
             </span>
-            { showModal ? (
-                <UserCopyModal 
+            { showModal && (
+                <UserModal 
                     data={selectedData}
                     isOpen={showModal}
                     toggleModal={setShowModal}
-                    copiedUsername={selectedUsername}
+                    modalOptions={modalOptions}
                 />
-            ) : null }
-            
+            )}
         </>
 
     );
 };
 
-export default UserCopyRowAction;
+UserEditRowAction.propTypes = {
+    data: PropTypes.object
+};
+
+export default UserEditRowAction;

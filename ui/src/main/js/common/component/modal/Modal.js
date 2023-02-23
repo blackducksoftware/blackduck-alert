@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { createUseStyles } from 'react-jss';
 import ModalFooter from 'common/component/modal/ModalFooter';
@@ -41,7 +42,7 @@ const useStyles = createUseStyles({
 });
 
 
-const Modal = ({ isOpen, size, title, closeModal, children, handleCancel, handleSubmit, submitText }) => {
+const Modal = ({ isOpen, size, title, closeModal, children, handleCancel, handleSubmit, submitText, showLoader }) => {
     const classes = useStyles();
     
     const modalStyleClass = classNames(classes.modalStyle, {
@@ -71,12 +72,24 @@ const Modal = ({ isOpen, size, title, closeModal, children, handleCancel, handle
                             handleCancel={handleCancel}
                             handleSubmit={handleSubmit}
                             submitText={submitText}
+                            showLoader={showLoader}
                         />
                     </div>
                 </div>
             </div>
         </div>
     );
+};
+
+Modal.propTypes = {
+    isOpen: PropTypes.bool,
+    size: PropTypes.oneOf(['sm', 'md', 'lg']),
+    title: PropTypes.string,
+    closeModal: PropTypes.func,
+    handleCancel: PropTypes.func,
+    handleSubmit: PropTypes.func,
+    showLoader: PropTypes.bool,
+    submitText: PropTypes.string
 };
 
 export default Modal;

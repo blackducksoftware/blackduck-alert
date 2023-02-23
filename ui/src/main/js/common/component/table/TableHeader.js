@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import MultiSelectHeaderCell from 'common/component/table/cell/MultiSelectHeaderCell';
 import TableHeaderCell from 'common/component/table/cell/TableHeaderCell';
@@ -12,7 +13,7 @@ const useStyles = createUseStyles({
     }
 });
 
-const TableHeader = ({ columns, multiSelect, selected, onSelected, tableData  }) => {
+const TableHeader = ({ columns, multiSelect, selected, onSelected, tableData }) => {
     const classes = useStyles();
 
     return (
@@ -38,5 +39,17 @@ const TableHeader = ({ columns, multiSelect, selected, onSelected, tableData  })
         </thead>
     );
 };
+
+TableHeader.propTypes = {
+    columns: PropTypes.arrayOf(PropTypes.shape({
+        key: PropTypes.string,
+        label: PropTypes.string,
+        sortable: PropTypes.bool
+    })),
+    multiSelect: PropTypes.bool,
+    selected: PropTypes.array,
+    onSelected: PropTypes.func,
+    tableData: PropTypes.arrayOf(PropTypes.object)
+}
 
 export default TableHeader;
