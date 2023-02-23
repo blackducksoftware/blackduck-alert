@@ -41,6 +41,7 @@ public class AuthenticationEventManager {
                 emailAddress = ((InetOrgPerson) authPrincipal).getMail();
             } else {
                 username = authentication.getName();
+                emailAddress = StringUtils.contains(username, "@") ? username : null;
             }
             sendAuthenticationEvent(username, emailAddress, authenticationType, authentication.getAuthorities());
         } catch (Exception e) {

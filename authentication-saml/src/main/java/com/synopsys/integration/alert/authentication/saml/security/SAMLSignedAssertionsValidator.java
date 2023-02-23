@@ -12,9 +12,11 @@ import java.util.Optional;
 @Component
 public class SAMLSignedAssertionsValidator {
     private final SAMLConfigAccessor configAccessor;
+    private final AlertRelyingPartyRegistrationRepository alertRelyingPartyRegistrationRepository;
 
-    public SAMLSignedAssertionsValidator(SAMLConfigAccessor configAccessor) {
+    public SAMLSignedAssertionsValidator(SAMLConfigAccessor configAccessor, AlertRelyingPartyRegistrationRepository alertRelyingPartyRegistrationRepository) {
         this.configAccessor = configAccessor;
+        this.alertRelyingPartyRegistrationRepository = alertRelyingPartyRegistrationRepository;
     }
 
     public ValidationResult validateSignedAssertions(OpenSaml4AuthenticationProvider.AssertionToken assertionToken) {
@@ -22,12 +24,11 @@ public class SAMLSignedAssertionsValidator {
 
         if (optionalSAMLConfigModel.isPresent()) {
             boolean wantAssertionsSigned = BooleanUtils.toBoolean(optionalSAMLConfigModel.get().getWantAssertionsSigned());
-            String registeredAssertingPartyingId =
-                assertionToken.getToken().getRelyingPartyRegistration().getAssertingPartyDetails().getEntityId();
+            String alertRegisteredAssertingPartyId = alertRelyingPartyRegistrationRepository.findByRegistrationId("default").getAssertingPartyDetails().getEntityId();
 
             if (wantAssertionsSigned
                 && !(assertionToken.getAssertion().isSigned()
-                     && registeredAssertingPartyingId.equals(assertionToken.getAssertion().getIssuer().getValue()))
+                     && alertRegisteredAssertingPartyId.equals(assertionToken.getAssertion().getIssuer().getValue()))
             ) {
                 return ValidationResult.INVALID;
             }

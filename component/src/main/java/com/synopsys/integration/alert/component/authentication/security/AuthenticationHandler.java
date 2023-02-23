@@ -7,7 +7,6 @@
  */
 package com.synopsys.integration.alert.component.authentication.security;
 
-import com.synopsys.integration.alert.authentication.saml.security.AlertRelyingPartyRegistrationRepository;
 import com.synopsys.integration.alert.authentication.saml.security.SAMLGroupConverter;
 import com.synopsys.integration.alert.authentication.saml.security.SAMLSignedAssertionsValidator;
 import org.opensaml.saml.common.assertion.ValidationResult;
@@ -185,15 +184,9 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
         return simpleUrlLogoutSuccessHandler;
     }
 
-
     // ==========
     // SAML Beans
     // ==========
-
-    @Bean
-    public AlertRelyingPartyRegistrationRepository alertRelyingPartyRegistrationRepository() {
-        return new AlertRelyingPartyRegistrationRepository();
-    }
 
     @Bean
     Saml2AuthenticationRequestResolver authenticationRequestResolver(RelyingPartyRegistrationRepository registrations) {
