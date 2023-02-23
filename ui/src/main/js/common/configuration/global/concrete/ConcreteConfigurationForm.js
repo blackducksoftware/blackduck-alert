@@ -30,7 +30,10 @@ const ConcreteConfigurationForm = ({
     submitLabel,
     testLabel,
     testButtonClicked,
-    postDeleteAction
+    postDeleteAction,
+    disableTestModalSubmit,
+    modalSubmitText,
+    testModalButtonTitle
 }) => {
     const [showTest, setShowTest] = useState(false);
     const [errorMessage, setErrorMessage] = useState(null);
@@ -186,6 +189,9 @@ const ConcreteConfigurationForm = ({
                 handleCancel={handleTestCancel}
                 buttonIdPrefix={buttonIdPrefix}
                 performingAction={testing}
+                disableTestModalSubmit={disableTestModalSubmit}
+                modalSubmitText={modalSubmitText}
+                testModalButtonTitle={testModalButtonTitle}
             >
                 <div>
                     {testFields}
@@ -220,7 +226,10 @@ ConcreteConfigurationForm.propTypes = {
     submitLabel: PropTypes.string,
     testLabel: PropTypes.string,
     testButtonClicked: PropTypes.func,
-    postDeleteAction: PropTypes.func
+    postDeleteAction: PropTypes.func,
+    disableTestModalSubmit: PropTypes.func,
+    modalSubmitText: PropTypes.string,
+    testModalButtonTitle: PropTypes.string
 };
 
 ConcreteConfigurationForm.defaultProps = {
