@@ -12,11 +12,9 @@ import java.util.Optional;
 @Component
 public class SAMLSignedAssertionsValidator {
     private final SAMLConfigAccessor configAccessor;
-    private final AlertRelyingPartyRegistrationRepository alertRelyingPartyRegistrationRepository;
 
     public SAMLSignedAssertionsValidator(SAMLConfigAccessor configAccessor, AlertRelyingPartyRegistrationRepository alertRelyingPartyRegistrationRepository) {
         this.configAccessor = configAccessor;
-        this.alertRelyingPartyRegistrationRepository = alertRelyingPartyRegistrationRepository;
     }
 
     public ValidationResult validateSignedAssertions(OpenSaml4AuthenticationProvider.AssertionToken assertionToken) {
@@ -24,12 +22,9 @@ public class SAMLSignedAssertionsValidator {
 
         if (optionalSAMLConfigModel.isPresent()) {
             boolean wantAssertionsSigned = BooleanUtils.toBoolean(optionalSAMLConfigModel.get().getWantAssertionsSigned());
-            String alertRegisteredAssertingPartyId = alertRelyingPartyRegistrationRepository.findByRegistrationId("default").getAssertingPartyDetails().getEntityId();
-
-            if (wantAssertionsSigned
-                && !(assertionToken.getAssertion().isSigned()
-                     && alertRegisteredAssertingPartyId.equals(assertionToken.getAssertion().getIssuer().getValue()))
-            ) {
+            // Force assertions to be signed since some APs have to option of signing their response but not assertions
+            // See https://github.com/spring-projects/spring-security/issues/10844
+            if (wantAssertionsSigned && !assertionToken.getAssertion().isSigned()) {
                 return ValidationResult.INVALID;
             }
         }
