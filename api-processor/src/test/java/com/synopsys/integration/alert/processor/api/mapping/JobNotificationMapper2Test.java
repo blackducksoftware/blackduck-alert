@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -324,10 +325,21 @@ class JobNotificationMapper2Test {
             }
 
             @Override
-            public int getNotificationCountForJob(final UUID correlationId, final UUID jobId) {
+            public int getNotificationCountForJob(UUID correlationId, UUID jobId) {
                 return dataMap.getOrDefault(correlationId, Map.of())
                     .getOrDefault(jobId, List.of())
                     .size();
+            }
+
+            @Override
+            public int getCountByCorrelationId(UUID correlationId) {
+                return dataMap.values()
+                    .stream()
+                    .map(Map::values)
+                    .flatMap(Collection::stream)
+                    .map(Collection::size)
+                    .reduce(Integer::sum)
+                    .orElse(0);
             }
         };
     }
