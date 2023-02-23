@@ -21,6 +21,7 @@ class JobSubTaskStatusEntityTest {
     void constructorTest() {
         UUID id = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         UUID correlationId = UUID.randomUUID();
         Long remainingTaskCount = 5L;
         JobSubTaskStatusEntity entity = new JobSubTaskStatusEntity(id, jobId, remainingTaskCount, correlationId);

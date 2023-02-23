@@ -56,6 +56,7 @@ public class DefaultJobNotificationMappingAccessor implements JobNotificationMap
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean hasJobMappings(UUID correlationId) {
         return jobToNotificationRelationRepository.countAllByCorrelationId(correlationId) > 0;
     }
@@ -73,6 +74,12 @@ public class DefaultJobNotificationMappingAccessor implements JobNotificationMap
     @Transactional
     public void removeJobMapping(UUID correlationId, UUID jobId) {
         jobToNotificationRelationRepository.deleteAllByCorrelationIdAndJobId(correlationId, jobId);
+    }
+
+    @Override
+    @Transactional
+    public int getNotificationCountForJob(UUID correlationId, UUID jobId) {
+        return jobToNotificationRelationRepository.countAllByCorrelationIdAndJobId(correlationId, jobId);
     }
 
     private JobToNotificationRelation convertToEntity(JobToNotificationMappingModel model) {

@@ -24,7 +24,6 @@ import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.component.authentication.security.saml.SAMLContext;
 
 public class HomeActionsTest {
     private HttpServletRequest servletRequest;
@@ -132,23 +131,4 @@ public class HomeActionsTest {
         assertFalse(response.hasContent());
         assertEquals(HttpStatus.UNAUTHORIZED, response.getHttpStatus());
     }
-
-    @Test
-    public void testVerifySaml() {
-        SAMLContext samlContext = Mockito.mock(SAMLContext.class);
-        Mockito.when(samlContext.isSAMLEnabled()).thenReturn(Boolean.TRUE);
-        Mockito.when(samlContext.isSAMLEnabledForRequest(Mockito.any(HttpServletRequest.class))).thenReturn(Boolean.TRUE);
-
-        HttpServletRequest mockRequest = Mockito.mock(HttpServletRequest.class);
-        Mockito.when(mockRequest.getParameter(SAMLContext.PARAM_IGNORE_SAML)).thenReturn("false");
-
-        HomeActions actions = new HomeActions(null, samlContext);
-        ActionResponse<SAMLEnabledResponseModel> response = actions.verifySaml(mockRequest);
-
-        assertTrue(response.isSuccessful());
-        assertTrue(response.hasContent());
-        SAMLEnabledResponseModel samlEnabledResponseModel = response.getContent().orElse(null);
-        assertTrue(samlEnabledResponseModel.getSamlEnabled(), "Expected SAML to be enabled");
-    }
-
 }

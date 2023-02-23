@@ -11,9 +11,13 @@ import java.time.OffsetDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +60,9 @@ public class BlackDuckAccumulator extends ProviderTask {
     private final BlackDuckNotificationRetrieverFactory notificationRetrieverFactory;
     private final BlackDuckAccumulatorSearchDateManager searchDateManager;
 
+    private final ReentrantLock accumulatingLock = new ReentrantLock();
+    private final AtomicBoolean accumulatorRunning = new AtomicBoolean(false);
+
     public BlackDuckAccumulator(
         BlackDuckProviderKey blackDuckProviderKey,
         TaskScheduler taskScheduler,
@@ -94,11 +101,25 @@ public class BlackDuckAccumulator extends ProviderTask {
     }
 
     private void accumulateNotifications() {
-        Optional<BlackDuckNotificationRetriever> optionalNotificationRetriever = notificationRetrieverFactory.createBlackDuckNotificationRetriever(getProviderProperties());
-        if (optionalNotificationRetriever.isPresent()) {
-            DateRange dateRange = searchDateManager.retrieveNextSearchDateRange();
-            logger.info("Accumulating notifications between {} and {} ", DateUtils.formatDateAsJsonString(dateRange.getStart()), DateUtils.formatDateAsJsonString(dateRange.getEnd()));
-            retrieveAndStoreNotificationsSafely(optionalNotificationRetriever.get(), dateRange);
+        if (accumulatorRunning.get()) {
+            logger.info("Accumulator already running skipping run.");
+        } else {
+            accumulatingLock.lock();
+            logger.info("Accumulating lock acquired. Preventing other accumulation cycles.");
+            accumulatorRunning.set(true);
+            Optional<BlackDuckNotificationRetriever> optionalNotificationRetriever = notificationRetrieverFactory.createBlackDuckNotificationRetriever(getProviderProperties());
+            if (optionalNotificationRetriever.isPresent()) {
+                DateRange dateRange = searchDateManager.retrieveNextSearchDateRange();
+                logger.info(
+                    "Accumulating notifications between {} and {} ",
+                    DateUtils.formatDateAsJsonString(dateRange.getStart()),
+                    DateUtils.formatDateAsJsonString(dateRange.getEnd())
+                );
+                retrieveAndStoreNotificationsSafely(optionalNotificationRetriever.get(), dateRange);
+            }
+            accumulatorRunning.set(false);
+            accumulatingLock.unlock();
+            logger.info("Accumulating lock released. Allowing other accumulation cycles.");
         }
     }
 
@@ -115,32 +136,34 @@ public class BlackDuckAccumulator extends ProviderTask {
             dateRange,
             SUPPORTED_NOTIFICATION_TYPES
         );
-        boolean emptyPage = notificationPage.isCurrentPageEmpty();
+        int storedNotifications = 0;
         try {
             while (!notificationPage.isCurrentPageEmpty()) {
                 List<NotificationUserView> currentNotifications = notificationPage.getCurrentModels();
                 logger.debug("Retrieved a page of {} notifications", currentNotifications.size());
-                storeNotifications(currentNotifications);
 
+                storedNotifications += storeNotifications(currentNotifications);
                 notificationPage = notificationPage.retrieveNextPage();
             }
         } finally {
-            if (!emptyPage) {
-                eventManager.sendEvent(new NotificationReceivedEvent());
+            if (storedNotifications > 0) {
+                eventManager.sendEvent(new NotificationReceivedEvent(getProviderProperties().getConfigId()));
             }
         }
     }
 
-    private void storeNotifications(List<NotificationUserView> notifications) {
+    private int storeNotifications(List<NotificationUserView> notifications) {
         List<AlertNotificationModel> alertNotifications = convertToAlertNotificationModels(notifications);
-        write(alertNotifications);
+        int notificationsWritten = write(alertNotifications);
         Optional<OffsetDateTime> optionalNextSearchTime = computeLatestNotificationCreatedAtDate(alertNotifications)
-            .map(latestNotification -> latestNotification.plusNanos(1000000));
+            .map(latestNotification -> latestNotification.minusNanos(1000000));
         if (optionalNextSearchTime.isPresent()) {
             OffsetDateTime nextSearchTime = optionalNextSearchTime.get();
             logger.info("Notifications found; the next search time will be: {}", nextSearchTime);
             searchDateManager.saveNextSearchStart(nextSearchTime);
         }
+
+        return notificationsWritten;
     }
 
     private List<AlertNotificationModel> convertToAlertNotificationModels(List<NotificationUserView> notifications) {
@@ -151,9 +174,10 @@ public class BlackDuckAccumulator extends ProviderTask {
             .collect(Collectors.toList());
     }
 
-    private void write(List<AlertNotificationModel> contentList) {
-        logger.info("Writing {} notifications...", contentList.size());
+    private int write(List<AlertNotificationModel> contentList) {
+        logger.info("Writing {} notifications for provider {} ...", contentList.size(), getProviderProperties().getConfigId());
         List<AlertNotificationModel> savedNotifications = notificationAccessor.saveAllNotifications(contentList);
+        logger.info("Saved {} notifications for provider {} ...", savedNotifications.size(), getProviderProperties().getConfigId());
         if (logger.isDebugEnabled()) {
             List<Long> notificationIds = savedNotifications.stream()
                 .map(AlertNotificationModel::getId)
@@ -161,6 +185,7 @@ public class BlackDuckAccumulator extends ProviderTask {
             String joinedIds = StringUtils.join(notificationIds, ", ");
             notificationLogger.debug("Saved notifications: {}", joinedIds);
         }
+        return savedNotifications.size();
     }
 
     private AlertNotificationModel convertToAlertNotificationModel(NotificationView notification) {
@@ -169,7 +194,35 @@ public class BlackDuckAccumulator extends ProviderTask {
         String provider = blackDuckProviderKey.getUniversalKey();
         String notificationType = notification.getType().name();
         String jsonContent = notification.getJson();
-        return new AlertNotificationModel(null, getProviderProperties().getConfigId(), provider, getProviderProperties().getConfigName(), notificationType, jsonContent, createdAt, providerCreationTime, false);
+        String hashOfUrl = createContentId(getProviderProperties().getConfigId(), notification);
+        return new AlertNotificationModel(
+            null,
+            getProviderProperties().getConfigId(),
+            provider,
+            getProviderProperties().getConfigName(),
+            notificationType,
+            jsonContent,
+            createdAt,
+            providerCreationTime,
+            false,
+            hashOfUrl
+        );
+    }
+
+    private String createContentId(Long providerConfigId, NotificationView notification) {
+        // generate new default in case the href of notification view is null.
+        String contentId = UUID.randomUUID().toString();
+        if (null != notification && null != notification.getHref()) {
+            try {
+                String providerIdAndUrl = String.format("%s-%s", providerConfigId, notification.getHref().string());
+                contentId = new DigestUtils("SHA3-256").digestAsHex(providerIdAndUrl);
+            } catch (RuntimeException ex) {
+                // do nothing use the URL
+                logger.debug("Content id hash cannot be generated for notification.", ex);
+            }
+        }
+
+        return contentId;
     }
 
     // Expects that the notifications are sorted oldest to newest

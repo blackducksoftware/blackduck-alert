@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +18,18 @@ import com.synopsys.integration.blackduck.api.manual.component.VulnerabilityNoti
 
 public class DetailedNotificationContentTest {
     private static final String EXPECTED_NO_POLICY = "Expected no policy name";
-    private static final AlertNotificationModel ALERT_NOTIFICATION_MODEL = new AlertNotificationModel(25L, 123L, null, null, null, null, null, null, false);
+    private static final AlertNotificationModel ALERT_NOTIFICATION_MODEL = new AlertNotificationModel(
+        25L,
+        123L,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        false,
+        String.format("content-id-%s", UUID.randomUUID())
+    );
 
     @Test
     public void vulnerabilityTest() {

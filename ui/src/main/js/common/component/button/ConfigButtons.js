@@ -138,12 +138,9 @@ class ConfigButtons extends Component {
         const {
             isFixed
         } = this.props;
+        
+        const wrapperStyles = isFixed ? 'fixedButtonGroup' : `d-inline-flex offset-sm-4 col-sm-8`;
 
-        let fixedStyle = '';
-        if (isFixed) {
-            fixedStyle = 'fixedButtonGroup';
-        }
-        const wrapperStyles = `${fixedStyle} d-inline-flex offset-sm-4 col-sm-8`;
         return (
             <div className="form-group">
                 {isFixed

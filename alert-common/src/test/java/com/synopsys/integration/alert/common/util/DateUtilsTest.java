@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.text.ParseException;
+import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -75,4 +76,30 @@ import com.synopsys.integration.rest.RestConstants;
          assertEquals(parsedDate, jsonDateTime);
      }
 
-}
+     @Test
+     void formatDurationFromMillisecondsTest() {
+         OffsetDateTime start = OffsetDateTime.now();
+         OffsetDateTime end = start.plusMinutes(5);
+         Duration duration = Duration.between(start, end);
+         Long millisecDuration = duration.toMillis();
+         String expected = String.format("%sH:%sm:%ss.%s", duration.toHoursPart(), duration.toMinutesPart(), duration.toSecondsPart(), duration.toMillisPart());
+         assertEquals(expected, DateUtils.formatDurationFromMilliseconds(millisecDuration));
+     }
+
+     @Test
+     void formatDurationFromNanosecondsTest() {
+         OffsetDateTime start = OffsetDateTime.now();
+         OffsetDateTime end = start.plusMinutes(5);
+         Duration duration = Duration.between(start, end);
+         Long nanosecDuration = duration.toNanos();
+         String expected = String.format(
+             "%sH:%sm:%ss.%s",
+             duration.toHoursPart(),
+             duration.toMinutesPart(),
+             duration.toSecondsPart(),
+             duration.toNanosPart()
+         );
+         assertEquals(expected, DateUtils.formatDurationFromNanos(nanosecDuration));
+     }
+
+ }

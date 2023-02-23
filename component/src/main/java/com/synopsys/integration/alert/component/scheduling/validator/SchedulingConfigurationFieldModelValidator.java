@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.component.scheduling.validator;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -25,17 +26,28 @@ public class SchedulingConfigurationFieldModelValidator implements GlobalConfigu
         ConfigurationFieldValidator configurationFieldValidator = ConfigurationFieldValidator.fromFieldModel(fieldModel);
         configurationFieldValidator.validateRequiredFieldsAreNotBlank(List.of(
             SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY,
-            SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS
+            SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS,
+            SchedulingDescriptor.KEY_PURGE_AUDIT_FAILED_FREQUENCY_DAYS
         ));
 
         configurationFieldValidator.validateIsAValidOption(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY, getDigestHours());
         configurationFieldValidator.validateIsAValidOption(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS, getPurgeFrequency());
+        configurationFieldValidator.validateIsAValidOption(SchedulingDescriptor.KEY_PURGE_AUDIT_FAILED_FREQUENCY_DAYS, getPurgeAuditDays());
 
         return configurationFieldValidator.getValidationResults();
     }
 
     private Set<String> getDigestHours() {
         return Set.of("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23");
+    }
+
+    private Set<String> getPurgeAuditDays() {
+        Set<String> validRange = new LinkedHashSet<>();
+        for (int index = 1; index < 31; index++) {
+            validRange.add(String.valueOf(index));
+        }
+
+        return validRange;
     }
 
     private Set<String> getPurgeFrequency() {

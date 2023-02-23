@@ -1,5 +1,13 @@
 package com.synopsys.integration.alert.channel.azure.boards.environment;
 
+import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.synopsys.integration.alert.api.common.model.AlertConstants;
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
@@ -12,13 +20,6 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.environment.EnvironmentProcessingResult;
 import com.synopsys.integration.alert.environment.EnvironmentVariableHandler;
 import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.util.Set;
 
 @Component
 public class AzureBoardsEnvironmentVariableHandler extends EnvironmentVariableHandler<AzureBoardsGlobalConfigModel>  {
@@ -26,7 +27,7 @@ public class AzureBoardsEnvironmentVariableHandler extends EnvironmentVariableHa
 
     public static final String APP_ID_KEY = "ALERT_CHANNEL_AZURE_BOARDS_AZURE_BOARDS_APP_ID";
     public static final String CLIENT_SECRET_KEY = "ALERT_CHANNEL_AZURE_BOARDS_AZURE_BOARDS_CLIENT_SECRET";
-    public static final String ORGANIZATION_NAME_KEY = "ALERT_CHANNEL_AZURE_BOARDS_AZURE_BOARDS_ORGANIZATION_NAME ";
+    public static final String ORGANIZATION_NAME_KEY = "ALERT_CHANNEL_AZURE_BOARDS_AZURE_BOARDS_ORGANIZATION_NAME";
 
     public static final Set<String> VARIABLE_NAMES = Set.of(APP_ID_KEY, CLIENT_SECRET_KEY, ORGANIZATION_NAME_KEY);
 
@@ -36,7 +37,7 @@ public class AzureBoardsEnvironmentVariableHandler extends EnvironmentVariableHa
 
     @Autowired
     public AzureBoardsEnvironmentVariableHandler(AzureBoardsGlobalConfigAccessor configAccessor, EnvironmentVariableUtility environmentVariableUtility, AzureBoardsGlobalConfigurationValidator validator) {
-        super(ChannelKeys.AZURE_BOARDS.getDisplayName(), VARIABLE_NAMES);
+        super(ChannelKeys.AZURE_BOARDS.getDisplayName(), VARIABLE_NAMES, environmentVariableUtility);
         this.configAccessor = configAccessor;
         this.environmentVariableUtility = environmentVariableUtility;
         this.validator = validator;

@@ -76,6 +76,10 @@ public final class FilePersistenceUtil {
         return readFromFile(secretsDirectory, secretsFileName);
     }
 
+    public String readFromUploadsFile(final String secretsFileName) throws IOException {
+        return readFromFile(uploadsDirectory, secretsFileName);
+    }
+
     private String readFromFile(final File parentDirectory, final String fileName) throws IOException {
         return Files.readString(createFile(parentDirectory, fileName).toPath(), StandardCharsets.UTF_8);
     }
@@ -104,6 +108,11 @@ public final class FilePersistenceUtil {
     }
 
     public void delete(File file) throws IOException {
+        FileUtils.forceDelete(file);
+    }
+
+    public void deleteUploadsFile(final String fileName) throws IOException {
+        final File file = createUploadsFile(fileName);
         FileUtils.forceDelete(file);
     }
 

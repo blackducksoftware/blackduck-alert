@@ -94,6 +94,13 @@
     "no-underscore-dangle": [
       "warn"
     ],
+    "operator-linebreak": ["warn", "before"],
+    "prefer-destructuring": ["warn", {
+      "array": true,
+      "object": true
+    }, {
+      "enforceForRenamedProperties": false
+    }],
     "import/prefer-default-export": [
       "warn"
     ],

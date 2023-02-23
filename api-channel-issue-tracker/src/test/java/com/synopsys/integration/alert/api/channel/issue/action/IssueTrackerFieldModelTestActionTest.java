@@ -54,6 +54,7 @@ class IssueTrackerFieldModelTestActionTest {
                 TestJobDetails distributionDetails,
                 UUID globalId,
                 UUID parentEventId,
+                UUID jobExecutionId,
                 Set<Long> notificationIds
             )
                 throws AlertException {
@@ -82,6 +83,7 @@ class IssueTrackerFieldModelTestActionTest {
                 TestJobDetails distributionDetails,
                 UUID globalId,
                 UUID parentEventId,
+                UUID jobExecutionId,
                 Set<Long> notificationIds
             )
                 throws AlertException {
@@ -110,6 +112,7 @@ class IssueTrackerFieldModelTestActionTest {
                 TestJobDetails distributionDetails,
                 UUID globalId,
                 UUID parentEventId,
+                UUID jobExecutionId,
                 Set<Long> notificationIds
             )
                 throws AlertException {
@@ -145,6 +148,7 @@ class IssueTrackerFieldModelTestActionTest {
                 TestJobDetails distributionDetails,
                 UUID globalId,
                 UUID parentEventId,
+                UUID jobExecutionId,
                 Set<Long> notificationIds
             )
                 throws AlertException {
@@ -173,6 +177,7 @@ class IssueTrackerFieldModelTestActionTest {
                 TestJobDetails distributionDetails,
                 UUID globalId,
                 UUID parentEventId,
+                UUID jobExecutionId,
                 Set<Long> notificationIds
             )
                 throws AlertException {
@@ -187,7 +192,7 @@ class IssueTrackerFieldModelTestActionTest {
     }
 
     @Test
-    public void testConfigReopenFailure() throws AlertException {
+    void testConfigReopenFailure() throws AlertException {
         IssueTrackerMessageSender<String> messageSender = Mockito.mock(IssueTrackerMessageSender.class);
         Mockito.when(messageSender.sendMessages(Mockito.any())).thenAnswer(invocation -> {
             IssueTrackerModelHolder<String> argument = invocation.getArgument(0);
@@ -213,6 +218,7 @@ class IssueTrackerFieldModelTestActionTest {
                 TestJobDetails distributionDetails,
                 UUID globalId,
                 UUID parentEventId,
+                UUID jobExecutionId,
                 Set<Long> notificationIds
             )
                 throws AlertException {

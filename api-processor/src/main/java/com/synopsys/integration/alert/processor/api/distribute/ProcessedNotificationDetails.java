@@ -14,18 +14,26 @@ import com.synopsys.integration.alert.common.persistence.model.job.DistributionJ
 
 public final class ProcessedNotificationDetails extends AlertSerializableModel {
     private final UUID jobId;
+
+    private final UUID jobExecutionId;
     private final String channelName;
     private final String jobName;
 
     public static ProcessedNotificationDetails fromDistributionJob(DistributionJobModel distributionJobModel) {
+        return fromDistributionJob(UUID.randomUUID(), distributionJobModel);
+    }
+
+    public static ProcessedNotificationDetails fromDistributionJob(UUID jobExecutionId, DistributionJobModel distributionJobModel) {
         return new ProcessedNotificationDetails(
+            jobExecutionId,
             distributionJobModel.getJobId(),
             distributionJobModel.getChannelDescriptorName(),
             distributionJobModel.getName()
         );
     }
 
-    public ProcessedNotificationDetails(UUID jobId, String channelName, String jobName) {
+    public ProcessedNotificationDetails(UUID jobExecutionId, UUID jobId, String channelName, String jobName) {
+        this.jobExecutionId = jobExecutionId;
         this.jobId = jobId;
         this.channelName = channelName;
         this.jobName = jobName;
@@ -33,6 +41,10 @@ public final class ProcessedNotificationDetails extends AlertSerializableModel {
 
     public UUID getJobId() {
         return jobId;
+    }
+
+    public UUID getJobExecutionId() {
+        return jobExecutionId;
     }
 
     public String getChannelName() {

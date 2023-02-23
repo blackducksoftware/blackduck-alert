@@ -19,23 +19,23 @@ import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.authentication.saml.security.SAMLManager;
 import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.component.authentication.security.saml.SAMLContext;
 
 @Component
 public class HomeActions {
     public static final String ROLE_ANONYMOUS = "ROLE_ANONYMOUS";
-    private final HttpSessionCsrfTokenRepository csrfTokenRespository;
-    private final SAMLContext samlContext;
+    private final HttpSessionCsrfTokenRepository csrfTokenRepository;
+    private final SAMLManager samlManager;
 
     @Autowired
-    public HomeActions(HttpSessionCsrfTokenRepository csrfTokenRespository, SAMLContext samlContext) {
-        this.csrfTokenRespository = csrfTokenRespository;
-        this.samlContext = samlContext;
+    public HomeActions(HttpSessionCsrfTokenRepository csrfTokenRepository, SAMLManager samlManager) {
+        this.csrfTokenRepository = csrfTokenRepository;
+        this.samlManager = samlManager;
     }
 
     public ActionResponse<Void> verifyAuthentication(HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
-        CsrfToken csrfToken = csrfTokenRespository.loadToken(servletRequest);
+        CsrfToken csrfToken = csrfTokenRepository.loadToken(servletRequest);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         boolean isAnonymous = authentication.getAuthorities().stream()
                                   .map(GrantedAuthority::getAuthority)
@@ -51,8 +51,7 @@ public class HomeActions {
         return new ActionResponse<>(HttpStatus.OK);
     }
 
-    public ActionResponse<SAMLEnabledResponseModel> verifySaml(HttpServletRequest request) {
-        return new ActionResponse<>(HttpStatus.OK, new SAMLEnabledResponseModel(samlContext.isSAMLEnabledForRequest(request)));
+    public ActionResponse<SAMLEnabledResponseModel> verifySaml() {
+        return new ActionResponse<>(HttpStatus.OK, new SAMLEnabledResponseModel(samlManager.isSAMLEnabled()));
     }
-
 }

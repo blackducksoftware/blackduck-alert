@@ -13,6 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
+import com.synopsys.integration.alert.api.distribution.execution.JobStage;
 import com.synopsys.integration.alert.api.distribution.mock.MockJobSubTaskRepository;
 import com.synopsys.integration.alert.api.distribution.mock.MockNotificationCorrelationToNotificationRelationRepository;
 import com.synopsys.integration.alert.api.event.EventManager;
@@ -30,6 +32,7 @@ class JobSubTaskEventHandlerTest {
     private JobSubTaskAccessor jobSubTaskAccessor;
     private JobSubTaskRepository jobSubTaskRepository;
     private NotificationCorrelationToNotificationRelationRepository relationRepository;
+    private ExecutingJobManager executingJobManager;
 
     @BeforeEach
     public void init() {
@@ -37,6 +40,7 @@ class JobSubTaskEventHandlerTest {
         relationRepository = new MockNotificationCorrelationToNotificationRelationRepository(this::getRelationKey);
         eventManager = Mockito.mock(EventManager.class);
         jobSubTaskAccessor = new DefaultJobSubTaskAccessor(jobSubTaskRepository, relationRepository);
+        executingJobManager = Mockito.mock(ExecutingJobManager.class);
     }
 
     private NotificationCorrelationToNotificationRelationPK getRelationKey(NotificationCorrelationToNotificationRelation relation) {
@@ -47,13 +51,14 @@ class JobSubTaskEventHandlerTest {
     void testHandleEvent() {
         String destination = "destination";
         UUID parentEventId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
 
         jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobId, 2L, notificationIds);
 
-        TestHandler handler = new TestHandler(eventManager, jobSubTaskAccessor);
-        TestEvent event = new TestEvent(destination, parentEventId, jobId, notificationIds);
+        TestHandler handler = new TestHandler(eventManager, jobSubTaskAccessor, executingJobManager);
+        TestEvent event = new TestEvent(destination, parentEventId, jobExecutionId, jobId, notificationIds);
         handler.handle(event);
 
         assertTrue(handler.wasHandlerCalled());
@@ -72,15 +77,16 @@ class JobSubTaskEventHandlerTest {
 
         String destination = "destination";
         UUID parentEventId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
 
         jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobId, 2L, notificationIds);
 
-        TestHandler handler = new TestHandler(eventManager, jobSubTaskAccessor);
+        TestHandler handler = new TestHandler(eventManager, jobSubTaskAccessor, executingJobManager);
         handler.setShouldThrowException(true);
 
-        TestEvent event = new TestEvent(destination, parentEventId, jobId, notificationIds);
+        TestEvent event = new TestEvent(destination, parentEventId, jobExecutionId, jobId, notificationIds);
         handler.handle(event);
 
         assertTrue(handler.wasHandlerCalled());
@@ -92,13 +98,14 @@ class JobSubTaskEventHandlerTest {
     void testHandleEventCountToZero() {
         String destination = "destination";
         UUID parentEventId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
 
         jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobId, 1L, notificationIds);
 
-        TestHandler handler = new TestHandler(eventManager, jobSubTaskAccessor);
-        TestEvent event = new TestEvent(destination, parentEventId, jobId, notificationIds);
+        TestHandler handler = new TestHandler(eventManager, jobSubTaskAccessor, executingJobManager);
+        TestEvent event = new TestEvent(destination, parentEventId, jobExecutionId, jobId, notificationIds);
         handler.handle(event);
 
         assertTrue(handler.wasHandlerCalled());
@@ -109,8 +116,8 @@ class JobSubTaskEventHandlerTest {
     private static class TestEvent extends JobSubTaskEvent {
         private static final long serialVersionUID = -2052376174682165438L;
 
-        public TestEvent(String destination, UUID parentEventId, UUID jobId, Set<Long> notificationIds) {
-            super(destination, parentEventId, jobId, notificationIds);
+        public TestEvent(String destination, UUID parentEventId, UUID jobExecutionId, UUID jobId, Set<Long> notificationIds) {
+            super(destination, parentEventId, jobExecutionId, jobId, notificationIds);
         }
     }
 
@@ -120,9 +127,10 @@ class JobSubTaskEventHandlerTest {
 
         protected TestHandler(
             EventManager eventManager,
-            JobSubTaskAccessor jobSubTaskAccessor
+            JobSubTaskAccessor jobSubTaskAccessor,
+            ExecutingJobManager executingJobManager
         ) {
-            super(eventManager, jobSubTaskAccessor);
+            super(eventManager, jobSubTaskAccessor, JobStage.CHANNEL_PROCESSING, executingJobManager);
 
         }
 

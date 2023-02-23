@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="mau" id="create-saml-metadata-mode-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="saml_metadata_mode"/>
+            </not>
+        </preConditions>
+        <createTable schemaName="alert" tableName="saml_metadata_mode">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <insert schemaName="alert" tableName="saml_metadata_mode">
+            <column name="id" value="0"/>
+            <column name="name" value="file"/>
+        </insert>
+        <insert schemaName="alert" tableName="saml_metadata_mode">
+            <column name="id" value="1"/>
+            <column name="name" value="url"/>
+        </insert>
+    </changeSet>
+    <changeSet author="mau" id="create-saml-configuration-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="configuration_saml"/>
+            </not>
+        </preConditions>
+        <createTable schemaName="alert" tableName="configuration_saml">
+            <column name="configuration_id" type="UUID" defaultValueComputed="uuid_generate_v4()">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP WITH TIMEZONE" defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_updated" type="TIMESTAMP WITH TIMEZONE">
+                <constraints nullable="true"/>
+            </column>
+            <column name="enabled" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="force_auth" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="metadata_url" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+            <column name="metadata_file_name" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+            <column name="metadata_mode" type="BIGINT">
+                <constraints nullable="true"/>
+            </column>
+            <column name="want_assertions_signed" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="encryption_cert_file_name" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+            <column name="encryption_private_key_file_name" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+            <column name="signing_cert_file_name" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+            <column name="signing_private_key_file_name" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+            <column name="verification_cert_file_name" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="mau" id="add_saml_metadata_mode_fk">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="saml_metadata_mode_id_fk"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint
+                baseTableSchemaName="alert"
+                baseTableName="configuration_saml"
+                baseColumnNames="metadata_mode"
+                constraintName="saml_metadata_mode_id_fk"
+                referencedColumnNames="id"
+                referencedTableSchemaName="alert"
+                referencedTableName="saml_metadata_mode"
+        />
+    </changeSet>
+</databaseChangeLog>
