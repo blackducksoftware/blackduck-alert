@@ -96,6 +96,11 @@ public class EmailEnvironmentVariableHandler extends EnvironmentVariableHandler<
         ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_WRITETIMEOUT"
     );
 
+    public static final Map<String, String> BACKWARDS_COMPATIBLE_KEYS = Map.of(
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_DNS_RET",
+        ENVIRONMENT_VARIABLE_JAVAMAIL_PREFIX + "SMTP_DSN_RET"
+    );
+
     private final EmailGlobalConfigAccessor configAccessor;
     private final EnvironmentVariableUtility environmentVariableUtility;
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -113,7 +118,11 @@ public class EmailEnvironmentVariableHandler extends EnvironmentVariableHandler<
         EnvironmentVariableUtility environmentVariableUtility,
         EmailGlobalConfigurationValidator validator
     ) {
-        super(ChannelKeys.EMAIL.getDisplayName(), Stream.concat(EMAIL_CONFIGURATION_KEYSET.stream(), OLD_ADDITIONAL_PROPERTY_KEYSET.stream()).collect(Collectors.toSet()));
+        super(
+            ChannelKeys.EMAIL.getDisplayName(),
+            Stream.concat(EMAIL_CONFIGURATION_KEYSET.stream(), OLD_ADDITIONAL_PROPERTY_KEYSET.stream()).collect(Collectors.toSet()),
+            environmentVariableUtility
+        );
         this.configAccessor = configAccessor;
         this.environmentVariableUtility = environmentVariableUtility;
         this.validator = validator;
@@ -156,6 +165,8 @@ public class EmailEnvironmentVariableHandler extends EnvironmentVariableHandler<
                 builder.addVariableValue(additionalPropertyName, value);
             }
         }
+
+        handleIncorrectlyNamedKeys(builder);
 
         if (StringUtils.isNotBlank(obfuscatedConfigModel.getSmtpHost())) {
             builder.addVariableValue(EMAIL_HOST_KEY, obfuscatedConfigModel.getSmtpHost());
@@ -211,5 +222,17 @@ public class EmailEnvironmentVariableHandler extends EnvironmentVariableHandler<
             }
         }
         configuration.setAdditionalJavaMailProperties(additionalProperties);
+    }
+
+    private void handleIncorrectlyNamedKeys(EnvironmentProcessingResult.Builder builder) {
+        // If a key was named wrong and has since been corrected within our orchestration, we don't want to break existing customer implementations.
+        // If the corrected key name value is null, use the value from the bad key name for the corrected key name
+        BACKWARDS_COMPATIBLE_KEYS.forEach((badKeyName, correctKeyName) -> {
+            String badKeyNameValue = environmentVariableUtility.getEnvironmentValue(badKeyName).orElse(null);
+            String correctKeyNameValue = environmentVariableUtility.getEnvironmentValue(correctKeyName).orElse(null);
+            if (null == correctKeyNameValue) {
+                builder.addVariableValue(correctKeyName, badKeyNameValue);
+            }
+        });
     }
 }

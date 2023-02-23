@@ -18,9 +18,9 @@ alertDatabasePassword="${ALERT_DB_PASSWORD:-blackduck}"
 alertDatabaseAdminUser="${ALERT_DB_ADMIN_USERNAME:-$alertDatabaseUser}"
 alertDatabaseAdminPassword="${ALERT_DB_ADMIN_PASSWORD:-$alertDatabasePassword}"
 alertDatabaseSslMode="${ALERT_DB_SSL_MODE:-allow}"
-alertDatabaseSslKey=${ALERT_DB_SSL_KEY}
-alertDatabaseSslCert=${ALERT_DB_SSL_CERT}
-alertDatabaseSslRootCert=${ALERT_DB_SSL_ROOT_CERT}
+alertDatabaseSslKey=${ALERT_DB_SSL_KEY_PATH}
+alertDatabaseSslCert=${ALERT_DB_SSL_CERT_PATH}
+alertDatabaseSslRootCert=${ALERT_DB_SSL_ROOT_CERT_PATH}
 alertHostName="${ALERT_HOSTNAME:-localhost}"
 
 ## CERTIFICATE VARIABLES ##
@@ -237,12 +237,64 @@ liquibaseChangelockReset() {
   logIt "End releasing liquibase changeloglock."
 }
 
+liquibaseChangelockResetPostgres() {
+  logIt "Begin releasing Postgres liquibase changeloglock."
+
+## Intentionally left justified to handle multi line query
+tableExists=$(psql "${alertDatabaseAdminConfig}" -t -A <<SQL
+SELECT EXISTS (
+SELECT FROM
+pg_tables
+WHERE
+schemaname = 'public'
+AND tablename  = 'databasechangeloglock'
+)
+SQL
+)
+
+  # shellcheck disable=SC2039
+  if [[ "${tableExists}" =~ ^"t|T"* ]]
+  then
+    logIt "databasechangeloglock table exists"
+
+## Intentionally left justified to handle multi line query
+columnType=$(psql "${alertDatabaseAdminConfig}" -t -A <<SQL
+SELECT data_type FROM information_schema.columns
+WHERE table_schema = 'public'
+AND table_name = 'databasechangeloglock'
+AND column_name = 'locked'
+SQL
+)
+    checkStatus $? "Getting column from databasechangeloglock"
+
+    if [ "${columnType}" = "boolean" ]
+    then
+      psql "${alertDatabaseAdminConfig}" -c 'UPDATE databasechangeloglock SET LOCKED=false, LOCKGRANTED=null, LOCKEDBY=null where ID=1;'
+    elif [ "${columnType}" = "integer" ]
+    then
+      psql "${alertDatabaseAdminConfig}" -c 'UPDATE databasechangeloglock SET LOCKED=0, LOCKGRANTED=null, LOCKEDBY=null where ID=1;'
+    else
+      checkStatus $? "Unhandled columnType for databasechangeloglock: ${columnType}"
+    fi
+    checkStatus $? "Updating databasechangeloglock"
+  else
+    logIt "databasechangeloglock table does not exist"
+  fi
+
+  logIt "End releasing Postgres liquibase changeloglock."
+}
+
 validatePostgresConnection() {
     # Since the database is now external to the alert container verify we can connect to the database before starting.
     # https://stackoverflow.com/a/58784528/6921621
 
+    logIt "Validating postgres user connection"
     psql "${alertDatabaseConfig}" -c '\l' > /dev/null
-    checkStatus $? "Validate postgres connection"
+    checkStatus $? "Validating postgres user connection"
+
+    logIt "Validating postgres admin connection"
+    psql "${alertDatabaseAdminConfig}" -c '\l' > /dev/null
+    checkStatus $? "Validating postgres admin connection"
 }
 
 validateAlertDBExists() {
@@ -321,6 +373,7 @@ postgresPrepare600Upgrade() {
 
             logIt "Importing data from old database into new database..."
             psql "${alertDatabaseConfig}" -f ${upgradeResourcesDir}/import_postgres_tables.sql
+            checkStatus $? "Running ${upgradeResourcesDir}/import_postgres_tables.sql"
         else
             logIt "No previous database existed."
         fi
@@ -330,6 +383,7 @@ postgresPrepare600Upgrade() {
 createPostgresExtensions() {
   logIt "Creating required postgres extensions."
   psql "${alertDatabaseAdminConfig}" -f ${upgradeResourcesDir}/create_extension.sql
+  checkStatus $? "Running ${upgradeResourcesDir}/create_extension.sql"
 }
 
 setLocalVariableFromFileContents() {
@@ -360,7 +414,7 @@ setVariablesFromFilePath() {
   globalVariableName="${3}"
   if [ -s "${filename}" ];
   then
-    logIt "${globalVariableName} variables set from ${filename}"
+    logIt "${globalVariableName} variable set from ${filename}"
     eval "${localVariableName}=${filename}"
     eval "export ${globalVariableName}=${filename}"
   fi
@@ -393,16 +447,42 @@ setOverrideVariables() {
     setVariablesFromFilePath "${dockerSecretDir}/ALERT_DB_SSL_ROOT_CERT_PATH" alertDatabaseSslRootCert ALERT_DB_SSL_ROOT_CERT_PATH
 }
 
+validateEnvironment() {
+  if [ -z "${alertDatabaseAdminUser}" ] || [ -z "${alertDatabaseAdminPassword}" ];
+  then
+    checkStatus 2 "DB admin user or pass is not set"
+  fi
+  if [ -z "${alertDatabaseUser}" ] && [ -z "${alertDatabasePassword}" ];
+  then
+    checkStatus 2 "DB user or pass is not set"
+  fi
+}
+
+logIsVariableConfigured() {
+  if [ -n "${2}" ]; then
+    logIt "${1} is not configured"
+  else
+    logIt "${1} is configured"
+  fi
+}
+
 [ -z "${ALERT_HOSTNAME}" ] && logIt "Alert Host: [$alertHostName]. Wrong host name? Restart the container with the right host name configured in blackduck-alert.env"
 
 setOverrideVariables
+validateEnvironment
 
-alertDatabaseAdminConfig="host=$alertDatabaseHost port=$alertDatabasePort dbname=$alertDatabaseName user=$alertDatabaseAdminUser password=$alertDatabaseAdminPassword sslmode=$alertDatabaseSslMode sslkey=$alertDatabaseSslKey sslcert=$alertDatabaseSslCert sslrootcert=$alertDatabaseSslRootCert"
-alertDatabaseConfig="host=$alertDatabaseHost port=$alertDatabasePort dbname=$alertDatabaseName user=$alertDatabaseUser password=$alertDatabasePassword sslmode=$alertDatabaseSslMode sslkey=$alertDatabaseSslKey sslcert=$alertDatabaseSslCert sslrootcert=$alertDatabaseSslRootCert"
+alertBaseDatabaseConfig="host=$alertDatabaseHost port=$alertDatabasePort dbname=$alertDatabaseName sslmode=$alertDatabaseSslMode sslkey=$alertDatabaseSslKey sslcert=$alertDatabaseSslCert sslrootcert=$alertDatabaseSslRootCert"
+alertDatabaseAdminConfig="user=$alertDatabaseAdminUser password=$alertDatabaseAdminPassword $alertBaseDatabaseConfig"
+alertDatabaseConfig="user=$alertDatabaseUser password=$alertDatabasePassword $alertBaseDatabaseConfig"
 
 logIt "Alert max heap size: ${ALERT_MAX_HEAP_SIZE}"
 logIt "Certificate authority host: $targetCAHost"
 logIt "Certificate authority port: $targetCAPort"
+
+logIt "sslmode is set as ${alertDatabaseSslMode}"
+logIsVariableConfigured sslkey "${alertDatabaseSslKey}"
+logIsVariableConfigured sslcert "${alertDatabaseSslCert}"
+logIsVariableConfigured sssslrootcertlkey "${alertDatabaseSslRootCert}"
 
 if [ ! -f "${CERTIFICATE_MANAGER_DIR}/certificate-manager.sh" ];
 then
@@ -425,6 +505,7 @@ validatePostgresDatabase
 postgresPrepare600Upgrade
 createPostgresExtensions
 liquibaseChangelockReset
+liquibaseChangelockResetPostgres
 
 if [ -f "$truststoreFile" ];
 then

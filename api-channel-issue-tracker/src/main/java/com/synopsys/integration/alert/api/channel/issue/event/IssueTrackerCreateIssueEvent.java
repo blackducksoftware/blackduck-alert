@@ -26,11 +26,12 @@ public class IssueTrackerCreateIssueEvent extends JobSubTaskEvent {
     public IssueTrackerCreateIssueEvent(
         String destination,
         UUID parentEventId,
+        UUID jobExecutionId,
         UUID jobId,
         Set<Long> notificationIds,
         IssueCreationModel creationModel
     ) {
-        super(destination, parentEventId, jobId, notificationIds);
+        super(destination, parentEventId, jobExecutionId, jobId, notificationIds);
         this.creationModel = creationModel;
     }
 

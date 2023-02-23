@@ -18,6 +18,7 @@ import com.google.api.client.util.store.DataStore;
 import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 
+@Deprecated(forRemoval = true)
 @Component
 public class AzureBoardsCredentialDataStoreFactory extends AbstractDataStoreFactory {
     private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;

@@ -58,28 +58,11 @@ public class HttpPathManager {
         PATH_VERIFY_SAML
     };
 
-    private static final String[] DEFAULT_SAML_PATHS = {
-        PATH_ROOT_HASHTAG,
-        PATH_FAVICON_ICO,
-        PATH_FONTS,
-        PATH_JS_BUNDLE_JS,
-        PATH_JS_BUNDLE_JS_MAP,
-        PATH_CSS_STYLE_CSS,
-        PATH_SAML_ROOT,
-        PATH_ABOUT,
-        PATH_SYSTEM_MESSAGES_LATEST,
-        PATH_VERIFY,
-        PATH_VERIFY_SAML,
-        PATH_LOGOUT
-    };
-
     private final Collection<String> allowedPaths;
-    private final Collection<String> samlAllowedPaths;
 
     @Autowired
     public HttpPathManager() {
         allowedPaths = createDefaultAllowedPaths();
-        samlAllowedPaths = createSamlDefaultAllowedPaths();
     }
 
     private List<String> createDefaultPaths(String[] paths) {
@@ -92,23 +75,8 @@ public class HttpPathManager {
         return createDefaultPaths(DEFAULT_PATHS);
     }
 
-    private List<String> createSamlDefaultAllowedPaths() { return createDefaultPaths(DEFAULT_SAML_PATHS);}
-
-    public void addAllowedPath(String path) {
-        allowedPaths.add(path);
-    }
-
-    public void addSamlAllowedPath(String path) {
-        samlAllowedPaths.add(path);
-    }
-
     public String[] getAllowedPaths() {
         String[] allowedPathArray = new String[allowedPaths.size()];
         return allowedPaths.toArray(allowedPathArray);
-    }
-
-    public String[] getSamlAllowedPaths() {
-        String[] allowedPathArray = new String[samlAllowedPaths.size()];
-        return samlAllowedPaths.toArray(allowedPathArray);
     }
 }

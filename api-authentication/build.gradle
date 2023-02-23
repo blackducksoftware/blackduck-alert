@@ -1,0 +1,17 @@
+ext.moduleName = 'com.synopsys.integration.alert.api-authentication'
+
+dependencies {
+    implementation platform(project(':alert-platform'))
+
+    implementation project(':alert-common')
+    implementation project(':api-common-model')
+    implementation project(':api-descriptor')
+    implementation project(':api-event')
+
+    // Spring Security
+    implementation 'org.springframework.security:spring-security-core'
+    implementation 'org.springframework.security:spring-security-ldap'
+
+    //rabbitmq
+    implementation 'org.springframework.amqp:spring-amqp'
+}

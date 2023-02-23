@@ -16,6 +16,9 @@ services:
 #      - ALERT_SERVER_PORT=8443
 #      - ALERT_LOGGING_LEVEL=INFO
 #
+#     # uncomment the following if installing Alert with Black Duck 
+#      - PUBLIC_ALERT_WEBSERVER_PORT=443
+#
 #     # uncomment the following line if you are using a reverse proxy or load balancer
 #      - ALERT_FORWARD_HEADERS_STRATEGY=native
 #
@@ -108,7 +111,7 @@ services:
 #      - ALERT_CHANNEL_EMAIL_MAIL_SMTP_AUTH_XOAUTH2_DISABLE=
 #      - ALERT_CHANNEL_EMAIL_MAIL_SMTP_SUBMITTER=
 #      - ALERT_CHANNEL_EMAIL_MAIL_SMTP_DSN_NOTIFY=
-#      - ALERT_CHANNEL_EMAIL_MAIL_SMTP_DNS_RET=
+#      - ALERT_CHANNEL_EMAIL_MAIL_SMTP_DSN_RET=
 #      - ALERT_CHANNEL_EMAIL_MAIL_SMTP_ALLOW_8_BITMIME=
 #      - ALERT_CHANNEL_EMAIL_MAIL_SMTP_SEND_PARTIAL=
 #      - ALERT_CHANNEL_EMAIL_MAIL_SMTP_SASL_ENABLE=

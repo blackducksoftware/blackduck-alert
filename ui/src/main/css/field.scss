@@ -141,11 +141,8 @@ small {
 }
 
 .fixedButtonGroup {
-  position: fixed;
-  bottom: 29px;
-  left: 255px;
-  right: 20px;
-  z-index: 100;
+  display: flex;
+  justify-content: center;
 }
 
 .selectButton {

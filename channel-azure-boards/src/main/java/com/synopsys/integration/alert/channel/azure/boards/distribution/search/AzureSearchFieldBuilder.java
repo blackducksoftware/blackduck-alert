@@ -10,6 +10,7 @@ package com.synopsys.integration.alert.channel.azure.boards.distribution.search;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.synopsys.integration.alert.channel.azure.boards.distribution.util.AzureBoardsSearchPropertiesUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,8 +19,6 @@ import com.synopsys.integration.azure.boards.common.service.workitem.request.Wor
 import com.synopsys.integration.azure.boards.common.util.AzureFieldDefinition;
 
 public class AzureSearchFieldBuilder {
-    private static final int AZURE_CUSTOM_PROPERTY_LIMIT = 256;
-
     private final List<WorkItemElementOperationModel> customFields = new ArrayList<>(7);
 
     public static AzureSearchFieldBuilder create() {
@@ -69,7 +68,7 @@ public class AzureSearchFieldBuilder {
 
     private void addStringField(String fieldReferenceName, @Nullable String fieldValue) {
         if (null != fieldValue) {
-            String shortenedValue = StringUtils.truncate(fieldValue, AzureSearchFieldBuilder.AZURE_CUSTOM_PROPERTY_LIMIT);
+            String shortenedValue = StringUtils.truncate(fieldValue, AzureBoardsSearchPropertiesUtils.MAX_STRING_VALUE_LENGTH);
             AzureFieldDefinition<String> alertProviderKeyFieldDefinition = AzureFieldDefinition.stringField(fieldReferenceName);
             WorkItemElementOperationModel alertProviderKeyField = WorkItemElementOperationModel.fieldElement(WorkItemElementOperation.ADD, alertProviderKeyFieldDefinition, shortenedValue);
             customFields.add(alertProviderKeyField);

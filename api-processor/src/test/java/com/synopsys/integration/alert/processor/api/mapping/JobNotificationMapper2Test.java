@@ -50,7 +50,8 @@ class JobNotificationMapper2Test {
             "",
             OffsetDateTime.now(),
             OffsetDateTime.now(),
-            false
+            false,
+            String.format("content-id-%s", UUID.randomUUID())
         );
         ProjectVersionNotificationContent projectVersionNotificationContent = new ProjectVersionNotificationContent();
 
@@ -66,9 +67,10 @@ class JobNotificationMapper2Test {
     @Test
     void testMappingJobsWithoutProjectFilter() {
         UUID correlationId = UUID.randomUUID();
+        UUID jobId = UUID.randomUUID();
         String project = "project-1";
         String projectVersion = "version-1";
-        ProcessingJobAccessor2 processingJobAccessor = createProcessingAccessor(List.of(createFilteredJobResponse(false, false, "", "")));
+        ProcessingJobAccessor2 processingJobAccessor = createProcessingAccessor(List.of(createFilteredJobResponse(jobId, false, false, "", "")));
         JobNotificationMappingAccessor jobNotificationMappingAccessor = createJobNotificationMappingAccessor();
         JobNotificationMapper2 jobNotificationMapper = new JobNotificationMapper2(processingJobAccessor, jobNotificationMappingAccessor);
 
@@ -81,7 +83,8 @@ class JobNotificationMapper2Test {
             "",
             OffsetDateTime.now(),
             OffsetDateTime.now(),
-            false
+            false,
+            String.format("content-id-%s", UUID.randomUUID())
         );
         ProjectVersionNotificationContent projectVersionNotificationContent = new ProjectVersionNotificationContent();
 
@@ -98,9 +101,10 @@ class JobNotificationMapper2Test {
     @Test
     void testMappingJobsWithProjectFilter() {
         UUID correlationId = UUID.randomUUID();
+        UUID jobId = UUID.randomUUID();
         String project = "project-1";
         String projectVersion = "version-1";
-        ProcessingJobAccessor2 processingJobAccessor = createProcessingAccessor(List.of(createFilteredJobResponse(true, true, "", "")));
+        ProcessingJobAccessor2 processingJobAccessor = createProcessingAccessor(List.of(createFilteredJobResponse(jobId, true, true, "", "")));
         JobNotificationMappingAccessor jobNotificationMappingAccessor = createJobNotificationMappingAccessor();
         JobNotificationMapper2 jobNotificationMapper = new JobNotificationMapper2(processingJobAccessor, jobNotificationMappingAccessor);
 
@@ -113,7 +117,8 @@ class JobNotificationMapper2Test {
             "",
             OffsetDateTime.now(),
             OffsetDateTime.now(),
-            false
+            false,
+            String.format("content-id-%s", UUID.randomUUID())
         );
         ProjectVersionNotificationContent projectVersionNotificationContent = new ProjectVersionNotificationContent();
 
@@ -130,10 +135,11 @@ class JobNotificationMapper2Test {
     @Test
     void testMappingJobsByProjectPattern() {
         UUID correlationId = UUID.randomUUID();
+        UUID jobId = UUID.randomUUID();
         String goodProjectPattern = "^project-\\d$";
         String project = "project-1";
         String projectVersion = "version-1";
-        ProcessingJobAccessor2 processingJobAccessor = createProcessingAccessor(List.of(createFilteredJobResponse(true, false, goodProjectPattern, "")));
+        ProcessingJobAccessor2 processingJobAccessor = createProcessingAccessor(List.of(createFilteredJobResponse(jobId, true, false, goodProjectPattern, "")));
         JobNotificationMappingAccessor jobNotificationMappingAccessor = createJobNotificationMappingAccessor();
         JobNotificationMapper2 jobNotificationMapper = new JobNotificationMapper2(processingJobAccessor, jobNotificationMappingAccessor);
 
@@ -146,7 +152,8 @@ class JobNotificationMapper2Test {
             "",
             OffsetDateTime.now(),
             OffsetDateTime.now(),
-            false
+            false,
+            String.format("content-id-%s", UUID.randomUUID())
         );
         ProjectVersionNotificationContent projectVersionNotificationContent = new ProjectVersionNotificationContent();
 
@@ -163,10 +170,11 @@ class JobNotificationMapper2Test {
     @Test
     void testMappingJobsByProjectVersionPattern() {
         UUID correlationId = UUID.randomUUID();
+        UUID jobId = UUID.randomUUID();
         String goodProjectVersionPattern = "^version-\\d$";
         String project = "project-1";
         String projectVersion = "version-1";
-        ProcessingJobAccessor2 processingJobAccessor = createProcessingAccessor(List.of(createFilteredJobResponse(true, true, "", goodProjectVersionPattern)));
+        ProcessingJobAccessor2 processingJobAccessor = createProcessingAccessor(List.of(createFilteredJobResponse(jobId, true, true, "", goodProjectVersionPattern)));
         JobNotificationMappingAccessor jobNotificationMappingAccessor = createJobNotificationMappingAccessor();
         JobNotificationMapper2 jobNotificationMapper = new JobNotificationMapper2(processingJobAccessor, jobNotificationMappingAccessor);
 
@@ -179,7 +187,8 @@ class JobNotificationMapper2Test {
             "",
             OffsetDateTime.now(),
             OffsetDateTime.now(),
-            false
+            false,
+            String.format("content-id-%s", UUID.randomUUID())
         );
         ProjectVersionNotificationContent projectVersionNotificationContent = new ProjectVersionNotificationContent();
 
@@ -191,6 +200,40 @@ class JobNotificationMapper2Test {
 
         assertTrue(jobNotificationMappingAccessor.hasJobMappings(correlationId));
         assertEquals(1, jobNotificationMappingAccessor.getUniqueJobIds(correlationId).size());
+    }
+
+    @Test
+    void testTotalCountOfNotifications() {
+        UUID correlationId = UUID.randomUUID();
+        UUID jobId = UUID.randomUUID();
+        String project = "project-1";
+        String projectVersion = "version-1";
+        ProcessingJobAccessor2 processingJobAccessor = createProcessingAccessor(List.of(createFilteredJobResponse(jobId, false, false, "", "")));
+        JobNotificationMappingAccessor jobNotificationMappingAccessor = createJobNotificationMappingAccessor();
+        JobNotificationMapper2 jobNotificationMapper = new JobNotificationMapper2(processingJobAccessor, jobNotificationMappingAccessor);
+
+        AlertNotificationModel notificationModel = new AlertNotificationModel(
+            1L,
+            1L,
+            "provider",
+            "providerConfigName",
+            NotificationType.PROJECT.name(),
+            "",
+            OffsetDateTime.now(),
+            OffsetDateTime.now(),
+            false,
+            String.format("content-id-%s", UUID.randomUUID())
+        );
+        ProjectVersionNotificationContent projectVersionNotificationContent = new ProjectVersionNotificationContent();
+
+        jobNotificationMapper.mapJobsToNotifications(
+            correlationId,
+            List.of(DetailedNotificationContent.project(notificationModel, projectVersionNotificationContent, project, projectVersion)),
+            List.of(FrequencyType.REAL_TIME)
+        );
+
+        assertTrue(jobNotificationMappingAccessor.hasJobMappings(correlationId));
+        assertEquals(1, jobNotificationMappingAccessor.getNotificationCountForJob(correlationId, jobId));
     }
 
     private ProcessingJobAccessor2 createProcessingAccessor(List<SimpleFilteredDistributionJobResponseModel> results) {
@@ -208,13 +251,12 @@ class JobNotificationMapper2Test {
     }
 
     private SimpleFilteredDistributionJobResponseModel createFilteredJobResponse(
+        UUID jobId,
         boolean filterByProject,
         boolean matchedProjectNames,
         String projectNamePattern,
         String projectVersionPattern
     ) {
-        UUID jobId = UUID.randomUUID();
-
         SimpleFilteredDistributionJobResponseModel jobResponseModel = new SimpleFilteredDistributionJobResponseModel(
             notificationId.incrementAndGet(),
             jobId,
@@ -233,7 +275,7 @@ class JobNotificationMapper2Test {
             @Override
             public AlertPagedModel<JobToNotificationMappingModel> getJobNotificationMappings(UUID correlationId, UUID jobId, int page, int pageSize) {
                 List<JobToNotificationMappingModel> mappings = dataMap.getOrDefault(correlationId, Map.of())
-                    .get(jobId);
+                    .getOrDefault(jobId, List.of());
                 int total = mappings.size() / pageSize;
                 int start = page * pageSize;
                 int end = start + pageSize;
@@ -244,7 +286,7 @@ class JobNotificationMapper2Test {
                         JobToNotificationMappingModel model = mappings.get(index);
                         subList.add(model);
                     } catch (IndexOutOfBoundsException ex) {
-
+                        // ignore and create an empty page
                     }
                 }
                 return new AlertPagedModel<>(total, page, pageSize, subList);
@@ -279,6 +321,13 @@ class JobNotificationMapper2Test {
                     .clear();
                 dataMap.getOrDefault(correlationId, Map.of()).remove(jobId);
                 dataMap.remove(correlationId);
+            }
+
+            @Override
+            public int getNotificationCountForJob(final UUID correlationId, final UUID jobId) {
+                return dataMap.getOrDefault(correlationId, Map.of())
+                    .getOrDefault(jobId, List.of())
+                    .size();
             }
         };
     }

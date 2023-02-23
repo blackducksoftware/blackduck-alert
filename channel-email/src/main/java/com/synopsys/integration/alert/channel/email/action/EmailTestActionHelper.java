@@ -7,6 +7,8 @@
  */
 package com.synopsys.integration.alert.channel.email.action;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -41,25 +43,40 @@ public class EmailTestActionHelper {
     }
 
     public Set<String> createUpdatedEmailAddresses(DistributionJobModel distributionJobModel) throws AlertException {
-        Set<String> emailAddresses = new HashSet<>();
-
         DistributionJobDetailsModel distributionJobDetails = distributionJobModel.getDistributionJobDetails();
         EmailJobDetailsModel emailJobDetails = distributionJobDetails.getAs(DistributionJobDetailsModel.EMAIL);
 
-        Long providerConfigId = distributionJobModel.getBlackDuckGlobalConfigId();
-        boolean onlyAdditionalEmails = emailJobDetails.isAdditionalEmailAddressesOnly();
-
-        if (null != providerConfigId && !onlyAdditionalEmails) {
-            Set<ProviderProject> providerProjects = retrieveProviderProjects(distributionJobModel, providerConfigId);
-            if (CollectionUtils.isNotEmpty(providerProjects)) {
-                Set<String> providerEmailAddresses = addEmailAddresses(providerConfigId, providerProjects, distributionJobModel, emailJobDetails);
-                emailAddresses.addAll(providerEmailAddresses);
-            }
+        if (emailJobDetails.isAdditionalEmailAddressesOnly()) {
+            return new HashSet<>(emailJobDetails.getAdditionalEmailAddresses());
         }
+
+        Set<String> emailAddresses = new HashSet<>(getProviderEmailAddresses(emailJobDetails, distributionJobModel));
+
+        if (!emailJobDetails.isProjectOwnerOnly()) {
+            emailAddresses.addAll(emailJobDetails.getAdditionalEmailAddresses());
+        }
+
         return emailAddresses;
     }
 
-    private boolean doesProjectMatchConfiguration(Long providerConfigId, ProviderProject currentProject, String projectNamePattern, String projectVersionNamePattern, Set<String> configuredProjectNames) {
+    private List<String> getProviderEmailAddresses(EmailJobDetailsModel emailJobDetails, DistributionJobModel distributionJobModel)
+        throws AlertFieldException {
+        Long providerConfigId = distributionJobModel.getBlackDuckGlobalConfigId();
+        Set<ProviderProject> providerProjects = retrieveProviderProjects(distributionJobModel, providerConfigId);
+        if (CollectionUtils.isNotEmpty(providerProjects)) {
+            return new ArrayList<>(addEmailAddresses(providerConfigId, providerProjects, distributionJobModel, emailJobDetails));
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    private boolean doesProjectMatchConfiguration(
+        Long providerConfigId,
+        ProviderProject currentProject,
+        String projectNamePattern,
+        String projectVersionNamePattern,
+        Set<String> configuredProjectNames
+    ) {
         String currentProjectName = currentProject.getName();
         if (currentProjectName.matches(projectNamePattern) || configuredProjectNames.contains(currentProjectName)) {
             return true;

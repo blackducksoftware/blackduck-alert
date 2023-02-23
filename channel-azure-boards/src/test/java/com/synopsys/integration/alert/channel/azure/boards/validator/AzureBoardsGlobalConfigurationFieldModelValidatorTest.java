@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
@@ -19,7 +20,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
 import com.synopsys.integration.alert.test.common.channel.GlobalConfigurationValidatorAsserter;
 
-public class AzureBoardsGlobalConfigurationFieldModelValidatorTest {
+class AzureBoardsGlobalConfigurationFieldModelValidatorTest {
 
     /*
      * organizationName: required
@@ -29,36 +30,41 @@ public class AzureBoardsGlobalConfigurationFieldModelValidatorTest {
      */
 
     @Test
-    public void verifyValidConfig() {
+    void verifyValidConfig() {
         GlobalConfigurationValidatorAsserter validatorAsserter = createValidatorAsserter();
         validatorAsserter.assertValid();
     }
 
     @Test
-    public void missingOrganizationName() {
+    void missingOrganizationName() {
         GlobalConfigurationValidatorAsserter validatorAsserter = createValidatorAsserter();
         validatorAsserter.assertMissingValue(AzureBoardsDescriptor.KEY_ORGANIZATION_NAME);
     }
 
     @Test
-    public void missingClientKey() {
+    void missingClientKey() {
         GlobalConfigurationValidatorAsserter validatorAsserter = createValidatorAsserter();
         validatorAsserter.assertMissingValue(AzureBoardsDescriptor.KEY_CLIENT_ID);
     }
 
     @Test
-    public void missingclientSecret() {
+    void missingClientSecret() {
         GlobalConfigurationValidatorAsserter validatorAsserter = createValidatorAsserter();
         validatorAsserter.assertMissingValue(AzureBoardsDescriptor.KEY_CLIENT_SECRET);
     }
 
     @Test
-    public void oauthRequestIsRunningError() {
+    void oauthRequestIsRunningError() {
         OAuthRequestValidator oAuthRequestValidator = new OAuthRequestValidator();
-        oAuthRequestValidator.addAuthorizationRequest("test");
+        UUID requestKey = oAuthRequestValidator.generateRequestKey();
+        oAuthRequestValidator.addAuthorizationRequest(requestKey, UUID.randomUUID());
 
         AzureBoardsGlobalConfigurationFieldModelValidator azureBoardsGlobalConfigurationValidator = new AzureBoardsGlobalConfigurationFieldModelValidator(oAuthRequestValidator);
-        Set<AlertFieldStatus> fieldStatuses = azureBoardsGlobalConfigurationValidator.validate(new FieldModel(new AzureBoardsChannelKey().getUniversalKey(), ConfigContextEnum.GLOBAL.name(), createValidKeyToValues()));
+        Set<AlertFieldStatus> fieldStatuses = azureBoardsGlobalConfigurationValidator.validate(new FieldModel(
+            new AzureBoardsChannelKey().getUniversalKey(),
+            ConfigContextEnum.GLOBAL.name(),
+            createValidKeyToValues()
+        ));
 
         assertEquals(1, fieldStatuses.size());
 
@@ -73,7 +79,11 @@ public class AzureBoardsGlobalConfigurationFieldModelValidatorTest {
     }
 
     private GlobalConfigurationValidatorAsserter createValidatorAsserter(OAuthRequestValidator oAuthRequestValidator) {
-        return new GlobalConfigurationValidatorAsserter(new AzureBoardsChannelKey().getUniversalKey(), new AzureBoardsGlobalConfigurationFieldModelValidator(oAuthRequestValidator), createValidKeyToValues());
+        return new GlobalConfigurationValidatorAsserter(
+            new AzureBoardsChannelKey().getUniversalKey(),
+            new AzureBoardsGlobalConfigurationFieldModelValidator(oAuthRequestValidator),
+            createValidKeyToValues()
+        );
     }
 
     private Map<String, FieldValueModel> createValidKeyToValues() {

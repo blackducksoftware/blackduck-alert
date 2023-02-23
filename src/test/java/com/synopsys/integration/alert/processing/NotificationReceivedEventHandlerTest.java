@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -31,7 +32,7 @@ class NotificationReceivedEventHandlerTest {
         NotificationReceivedEventHandler eventHandler = new NotificationReceivedEventHandler(notificationAccessor, notificationMappingProcessor, eventManager);
 
         try {
-            eventHandler.handle(new NotificationReceivedEvent());
+            eventHandler.handle(new NotificationReceivedEvent(2L));
         } catch (RuntimeException e) {
             fail("Unable to handle event", e);
         }
@@ -43,9 +44,19 @@ class NotificationReceivedEventHandlerTest {
         String notificationType = "PROJECT_VERSION";
         String content = TestResourceUtils.readFileToString("json/projectVersionNotification.json");
         String providerConfigName = "providerConfigName";
+        String contentId = String.format("content-id-%s", UUID.randomUUID());
 
-        return new AlertNotificationModel(id, providerConfigId, provider, providerConfigName, notificationType, content, DateUtils.createCurrentDateTimestamp(),
-            DateUtils.createCurrentDateTimestamp(), processed
+        return new AlertNotificationModel(
+            id,
+            providerConfigId,
+            provider,
+            providerConfigName,
+            notificationType,
+            content,
+            DateUtils.createCurrentDateTimestamp(),
+            DateUtils.createCurrentDateTimestamp(),
+            processed,
+            contentId
         );
     }
 

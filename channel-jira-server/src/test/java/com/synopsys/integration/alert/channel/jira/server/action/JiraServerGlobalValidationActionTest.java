@@ -12,7 +12,6 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,9 +25,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
 public class JiraServerGlobalValidationActionTest {
-    private AuthenticationTestUtils authenticationTestUtils;
+    private final AuthenticationTestUtils authenticationTestUtils = new AuthenticationTestUtils();
     private final DescriptorKey descriptorKey = ChannelKeys.JIRA_SERVER;
-    private PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
+    private final PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
 
     @Mock
     private JiraServerGlobalConfigAccessor mockJiraServerGlobalConfigAccessor;
@@ -38,9 +37,6 @@ public class JiraServerGlobalValidationActionTest {
 
     @BeforeEach
     void init() {
-        authenticationTestUtils = new AuthenticationTestUtils();
-        permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
-
         model = new JiraServerGlobalConfigModel();
         validator = new JiraServerGlobalConfigurationValidator(mockJiraServerGlobalConfigAccessor);
     }

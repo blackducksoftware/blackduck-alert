@@ -306,7 +306,7 @@ public class BlackDuckMessageBomComponentDetailsCreator {
 
         return allOrigins.stream()
             .map(VersionBomOriginView::getOrigin)
-            .map((origin) -> createVulnerabilitiesLink(vulnerabilitiesUrl, origin))
+            .map(origin -> createVulnerabilitiesLink(vulnerabilitiesUrl, origin))
             .flatMap(Optional::stream)
             .collect(Collectors.toList());
     }

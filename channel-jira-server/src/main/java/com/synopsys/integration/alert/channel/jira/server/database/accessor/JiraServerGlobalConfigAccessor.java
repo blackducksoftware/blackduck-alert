@@ -128,8 +128,8 @@ public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<Jir
     private JiraServerGlobalConfigModel populateConfiguration(UUID configurationId, JiraServerGlobalConfigModel configuration, OffsetDateTime createdAt) {
         OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
         JiraServerConfigurationEntity configurationToSave = toEntity(configurationId, configuration, createdAt, currentTime);
-        JiraServerConfigurationEntity savedEmailConfig = jiraServerConfigurationRepository.save(configurationToSave);
-        return createConfigModel(savedEmailConfig);
+        JiraServerConfigurationEntity savedJiraServerConfig = jiraServerConfigurationRepository.save(configurationToSave);
+        return createConfigModel(savedJiraServerConfig);
     }
 
     private JiraServerConfigurationEntity toEntity(UUID configurationId, JiraServerGlobalConfigModel configuration, OffsetDateTime createdTime, OffsetDateTime lastUpdated) {

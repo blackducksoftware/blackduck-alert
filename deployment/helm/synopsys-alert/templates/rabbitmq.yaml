@@ -27,7 +27,7 @@ metadata:
     app: alert
     component: rabbitmq
     name: {{ .Release.Name }}
-  name: {{ .Release.Name }}-rabbitmq
+  name: {{ .Release.Name }}-rabbitmq-pvc
   namespace: {{ .Release.Namespace }}
 spec:
   {{- if .Values.rabbitmq.storageClass }}
@@ -110,7 +110,7 @@ spec:
         {{- else }}
         image: {{ .Values.registry }}/blackduck-alert-rabbitmq:{{ .Values.rabbitmq.imageTag }}
         {{- end }}
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         livenessProbe:
           exec:
             command:

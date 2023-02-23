@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
@@ -24,8 +25,9 @@ import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobal
 
 @Component
 public class JiraServerGlobalConfigurationValidator {
-    private JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor;
+    private final JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor;
 
+    @Autowired
     public JiraServerGlobalConfigurationValidator(JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor) {
         this.jiraServerGlobalConfigAccessor = jiraServerGlobalConfigAccessor;
     }
@@ -67,7 +69,7 @@ public class JiraServerGlobalConfigurationValidator {
     private boolean doesNameExist(String name, @Nullable String currentConfigId) {
         return jiraServerGlobalConfigAccessor.getConfigurationByName(name)
             .map(JiraServerGlobalConfigModel::getId)
-            .filter(id -> (currentConfigId != null) ? !currentConfigId.equals(id) : true)
+            .filter(id -> currentConfigId == null || !currentConfigId.equals(id))
             .isPresent();
     }
 }

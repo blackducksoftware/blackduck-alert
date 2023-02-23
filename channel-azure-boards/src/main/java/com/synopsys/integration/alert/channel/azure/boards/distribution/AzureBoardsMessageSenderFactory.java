@@ -24,6 +24,7 @@ import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessage
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSenderFactory;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerTransitionEventGenerator;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsHttpExceptionMessageImprover;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
@@ -60,6 +61,7 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
     private final IssueCategoryRetriever issueCategoryRetriever;
     private final EventManager eventManager;
     private final JobSubTaskAccessor jobSubTaskAccessor;
+    private final ExecutingJobManager executingJobManager;
 
     @Autowired
     public AzureBoardsMessageSenderFactory(
@@ -71,7 +73,8 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
         AzureBoardsHttpExceptionMessageImprover exceptionMessageImprover,
         IssueCategoryRetriever issueCategoryRetriever,
         EventManager eventManager,
-        JobSubTaskAccessor jobSubTaskAccessor
+        JobSubTaskAccessor jobSubTaskAccessor,
+        ExecutingJobManager executingJobManager
     ) {
         this.gson = gson;
         this.callbackInfoCreator = callbackInfoCreator;
@@ -82,11 +85,12 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
         this.issueCategoryRetriever = issueCategoryRetriever;
         this.eventManager = eventManager;
         this.jobSubTaskAccessor = jobSubTaskAccessor;
+        this.executingJobManager = executingJobManager;
     }
 
     @Override
     public IssueTrackerMessageSender<Integer> createMessageSender(AzureBoardsJobDetailsModel distributionDetails, UUID globalId) throws AlertException {
-        AzureBoardsProperties azureBoardsProperties = azureBoardsPropertiesFactory.createAzureBoardsProperties();
+        AzureBoardsProperties azureBoardsProperties = azureBoardsPropertiesFactory.createAzureBoardsProperties(globalId);
         azureBoardsProperties.validateProperties();
 
         // Initialize Http Service
@@ -114,9 +118,10 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
     @Override
     public IssueTrackerAsyncMessageSender<Integer> createAsyncMessageSender(
         AzureBoardsJobDetailsModel distributionDetails, UUID globalId, UUID parentEventId,
+        UUID jobExecutionId,
         Set<Long> notificationIds
     ) throws AlertException {
-        return createAsyncMessageSender(distributionDetails, parentEventId, notificationIds);
+        return createAsyncMessageSender(distributionDetails, parentEventId, jobExecutionId, notificationIds);
     }
 
     public IssueTrackerMessageSender<Integer> createMessageSender(
@@ -167,12 +172,19 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
     public IssueTrackerAsyncMessageSender<Integer> createAsyncMessageSender(
         AzureBoardsJobDetailsModel distributionDetails,
         UUID parentEventId,
+        UUID jobExecutionId,
         Set<Long> notificationIds
     ) {
         UUID jobId = distributionDetails.getJobId();
-        IssueTrackerCommentEventGenerator<Integer> commentEventGenerator = new AzureBoardsCommentGenerator(channelKey, parentEventId, jobId, notificationIds);
-        IssueTrackerCreationEventGenerator createEventGenerator = new AzureBoardsCreateEventGenerator(channelKey, parentEventId, jobId, notificationIds);
-        IssueTrackerTransitionEventGenerator<Integer> transitionEventGenerator = new AzureBoardsTransitionGenerator(channelKey, parentEventId, jobId, notificationIds);
+        IssueTrackerCommentEventGenerator<Integer> commentEventGenerator = new AzureBoardsCommentGenerator(channelKey, parentEventId, jobExecutionId, jobId, notificationIds);
+        IssueTrackerCreationEventGenerator createEventGenerator = new AzureBoardsCreateEventGenerator(channelKey, parentEventId, jobExecutionId, jobId, notificationIds);
+        IssueTrackerTransitionEventGenerator<Integer> transitionEventGenerator = new AzureBoardsTransitionGenerator(
+            channelKey,
+            parentEventId,
+            jobExecutionId,
+            jobId,
+            notificationIds
+        );
 
         return new IssueTrackerAsyncMessageSender<>(
             createEventGenerator,
@@ -181,8 +193,9 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
             eventManager,
             jobSubTaskAccessor,
             parentEventId,
-            jobId,
-            notificationIds
+            jobExecutionId,
+            notificationIds,
+            executingJobManager
         );
     }
 

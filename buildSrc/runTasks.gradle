@@ -12,7 +12,7 @@ task createTruststore(type: Copy) {
 }
 
 task runServer(type: com.synopsys.integration.alert.build.RunServerTask, dependsOn: [build, createKeystore, createTruststore]) {
-    postgresVersion = project.ext.postgresContainerVersion
+    postgresVersion = project.ext.postgresContainerVersionCurrent
 }
 
 tasks.createKeystore.onlyIf { !file("${project.buildDir}/certs/blackduck-alert.keystore").exists() }

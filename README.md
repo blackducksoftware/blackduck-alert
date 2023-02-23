@@ -67,7 +67,7 @@ All releases are on the GitHub release page. https://github.com/blackducksoftwar
 <!-- project-url-text-end -->
 
 ## Documentation ##
-Our public Confluence page: https://synopsys.atlassian.net/wiki/spaces/INTDOCS/pages/187564033/Synopsys+Alert
+Our public documentation is located here: https://community.synopsys.com/s/document-item?bundleId=synopsys-alert&topicId=topics%2Fgeneral%2Fsynopsys-alert-overview.html&_LANG=enus
 
 Installation Documentation available for the following:
  - [Docker Compose](https://github.com/blackducksoftware/blackduck-alert/blob/master/deployment/docker-compose/README.md) 

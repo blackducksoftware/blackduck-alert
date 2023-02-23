@@ -2,7 +2,13 @@ import React, { useState } from 'react';
 import CommonGlobalConfigurationForm from 'common/configuration/global/CommonGlobalConfigurationForm';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import { CONTEXT_TYPE } from 'common/util/descriptorUtilities';
-import { SCHEDULING_DIGEST_HOURS_OPTIONS, SCHEDULING_FIELD_KEYS, SCHEDULING_INFO, SCHEDULING_PURGE_FREQUENCY_OPTIONS } from 'page/scheduling/SchedulingModel';
+import {
+    SCHEDULING_DIGEST_HOURS_OPTIONS,
+    SCHEDULING_FIELD_KEYS,
+    SCHEDULING_INFO,
+    SCHEDULING_PURGE_AUDIT_FAILED_FREQUENCY_OPTIONS,
+    SCHEDULING_PURGE_FREQUENCY_OPTIONS
+} from 'page/scheduling/SchedulingModel';
 import * as PropTypes from 'prop-types';
 import PageHeader from 'common/component/navigation/PageHeader';
 import DynamicSelectInput from 'common/component/input/DynamicSelectInput';
@@ -69,8 +75,8 @@ const SchedulingConfiguration = ({ csrfToken, errorHandler, readonly, displaySav
                 <DynamicSelectInput
                     id={SCHEDULING_FIELD_KEYS.purgeDataFrequencyDays}
                     name={SCHEDULING_FIELD_KEYS.purgeDataFrequencyDays}
-                    label="Purge Data Frequency In Days"
-                    description="Choose a frequency for cleaning up provider data; the default value is three days. When the purge runs, it deletes all data that is older than the selected value. EX: data older than 3 days will be deleted."
+                    label="Purge Notification Data"
+                    description="Choose a frequency for cleaning up provider notification data; the default value is three days. When the purge runs, it deletes all notification data that is older than the selected value. EX: data older than 3 days will be deleted."
                     required
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleChange(formData, setFormData)}
@@ -83,12 +89,36 @@ const SchedulingConfiguration = ({ csrfToken, errorHandler, readonly, displaySav
                 <ReadOnlyField
                     id={SCHEDULING_FIELD_KEYS.purgeDataNextRun}
                     name={SCHEDULING_FIELD_KEYS.purgeDataNextRun}
-                    label="Purge Cron Next Run"
-                    description="This is the next time Alert will purge provider data."
+                    label="Purge Notification Data Cron Next Run"
+                    description="This is the next time Alert will purge provider notification data."
                     onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     value={FieldModelUtilities.getFieldModelSingleValue(formData, SCHEDULING_FIELD_KEYS.purgeDataNextRun)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(SCHEDULING_FIELD_KEYS.purgeDataNextRun)}
                     errorValue={errors.fieldErrors[SCHEDULING_FIELD_KEYS.purgeDataNextRun]}
+                />
+                <DynamicSelectInput
+                    id={SCHEDULING_FIELD_KEYS.purgeDataAuditFailedFrequencyDays}
+                    name={SCHEDULING_FIELD_KEYS.purgeDataAuditFailedFrequencyDays}
+                    label="Purge Audit Failed Data"
+                    description="Choose a frequency for cleaning up failed audit data; the default value is ten days. When the purge runs, it deletes all data that is older than the selected value. EX: data older than 10 days will be deleted."
+                    required
+                    readOnly={readonly}
+                    onChange={FieldModelUtilities.handleChange(formData, setFormData)}
+                    options={SCHEDULING_PURGE_AUDIT_FAILED_FREQUENCY_OPTIONS}
+                    clearable={false}
+                    value={FieldModelUtilities.getFieldModelValues(formData, SCHEDULING_FIELD_KEYS.purgeDataAuditFailedFrequencyDays)}
+                    errorName={FieldModelUtilities.createFieldModelErrorKey(SCHEDULING_FIELD_KEYS.purgeDataAuditFailedFrequencyDays)}
+                    errorValue={errors.fieldErrors[SCHEDULING_FIELD_KEYS.purgeDataAuditFailedFrequencyDays]}
+                />
+                <ReadOnlyField
+                    id={SCHEDULING_FIELD_KEYS.purgeDataAuditFailedNextRun}
+                    name={SCHEDULING_FIELD_KEYS.purgeDataAuditFailedNextRun}
+                    label="Purge Audit Failed Data Cron Next Run"
+                    description="This is the next time Alert will purge failed audit data."
+                    onChange={FieldModelUtilities.handleChange(formData, setFormData)}
+                    value={FieldModelUtilities.getFieldModelSingleValue(formData, SCHEDULING_FIELD_KEYS.purgeDataAuditFailedNextRun)}
+                    errorName={FieldModelUtilities.createFieldModelErrorKey(SCHEDULING_FIELD_KEYS.purgeDataAuditFailedNextRun)}
+                    errorValue={errors.fieldErrors[SCHEDULING_FIELD_KEYS.purgeDataAuditFailedNextRun]}
                 />
             </CommonGlobalConfigurationForm>
         </div>

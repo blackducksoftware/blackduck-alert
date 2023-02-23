@@ -277,3 +277,11 @@ export const handleTestChange = (testData, setTestData) => ({ target }) => {
     const newState = { ...testData, [name]: updatedValue };
     setTestData(newState);
 };
+
+export const handleConcreteModelChange = (data, setData) => ({ target }) => {
+    const { type, name, value } = target;
+    let updatedValue = type === 'checkbox' ? target.checked : value;
+    updatedValue = type === 'file' ? target.files[0].name : updatedValue;
+    const newState = { ...data, [name]: updatedValue };
+    setData(newState);
+};

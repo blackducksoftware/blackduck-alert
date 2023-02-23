@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
@@ -28,7 +29,12 @@ import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
+/**
+ * @deprecated This class is required for converting an old ConfigurationModel into the new GlobalConfigModel classes. This is a temporary class that should be removed once we
+ * remove unsupported REST endpoints.
+ */
 @Component
+@Deprecated(forRemoval = true)
 public class EmailGlobalConfigurationModelConverter extends GlobalConfigurationModelToConcreteConverter<EmailGlobalConfigModel> {
     private static final String EMAIL_FIELD_PREFIX = "mail.smtp.";
 
@@ -90,7 +96,8 @@ public class EmailGlobalConfigurationModelConverter extends GlobalConfigurationM
     }
 
     @Override
-    protected ValidationResponseModel validate(EmailGlobalConfigModel configModel) {
+    protected ValidationResponseModel validate(EmailGlobalConfigModel configModel, @Nullable String existingConfigurationId) {
+        //Since there is only a single email global configuration, existingConfigurationId is ignored.
         return validator.validate(configModel);
     }
 
@@ -99,7 +106,7 @@ public class EmailGlobalConfigurationModelConverter extends GlobalConfigurationM
         Map<String, ConfigurationFieldModel> keyToValue = globalConfigurationModel.getCopyOfKeyToFieldMap();
         keyToValue.entrySet().stream()
             .filter(validAdditionalPropertiesKeyTest)
-            .forEach(entry -> additionalPropertiesMap.computeIfAbsent(entry.getKey(), (key) -> globalConfigurationModel.getField(key)
+            .forEach(entry -> additionalPropertiesMap.computeIfAbsent(entry.getKey(), key -> globalConfigurationModel.getField(key)
                 .flatMap(ConfigurationFieldModel::getFieldValue)
                 .orElse(StringUtils.EMPTY)));
         return additionalPropertiesMap;

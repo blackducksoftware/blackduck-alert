@@ -1,44 +1,103 @@
-/*
- * channel-azure-boards
- *
- * Copyright (c) 2022 Synopsys, Inc.
- *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
- */
 package com.synopsys.integration.alert.channel.azure.boards;
 
+import java.util.List;
+import java.util.UUID;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
+import com.synopsys.integration.alert.api.oauth.AlertOAuthCredentialDataStoreFactory;
+import com.synopsys.integration.alert.channel.azure.boards.database.accessor.AzureBoardsGlobalConfigAccessor;
+import com.synopsys.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
+import com.synopsys.integration.azure.boards.common.oauth.AzureOAuthScopes;
 
 @Component
 public class AzureBoardsPropertiesFactory {
-    private final AzureBoardsChannelKey channelKey;
-    private final AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory;
+    private final AlertOAuthCredentialDataStoreFactory alertOAuthCredentialDataStoreFactory;
     private final AzureRedirectUrlCreator azureRedirectUrlCreator;
-    private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
+    private final AzureBoardsGlobalConfigAccessor azureBoardsGlobalConfigAccessor;
+    private final JobAccessor jobAccessor;
 
     @Autowired
-    public AzureBoardsPropertiesFactory(AzureBoardsChannelKey channelKey, AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory,
-        AzureRedirectUrlCreator azureRedirectUrlCreator, ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor) {
-        this.channelKey = channelKey;
-        this.credentialDataStoreFactory = credentialDataStoreFactory;
+    public AzureBoardsPropertiesFactory(
+        AlertOAuthCredentialDataStoreFactory alertOAuthCredentialDataStoreFactory,
+        AzureRedirectUrlCreator azureRedirectUrlCreator,
+        AzureBoardsGlobalConfigAccessor azureBoardsGlobalConfigAccessor,
+        JobAccessor jobAccessor
+    ) {
+        this.alertOAuthCredentialDataStoreFactory = alertOAuthCredentialDataStoreFactory;
         this.azureRedirectUrlCreator = azureRedirectUrlCreator;
-        this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
+        this.azureBoardsGlobalConfigAccessor = azureBoardsGlobalConfigAccessor;
+        this.jobAccessor = jobAccessor;
     }
 
-    public AzureBoardsProperties createAzureBoardsProperties() throws AlertConfigurationException {
-        ConfigurationModel azureBoardsGlobalConfiguration = configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(channelKey, ConfigContextEnum.GLOBAL)
-                                                                .stream()
-                                                                .findAny()
-                                                                .orElseThrow(() -> new AlertConfigurationException("Missing Azure Boards global configuration"));
-        return AzureBoardsProperties.fromGlobalConfig(credentialDataStoreFactory, azureRedirectUrlCreator.createOAuthRedirectUri(), azureBoardsGlobalConfiguration);
+    public AzureBoardsProperties fromGlobalConfigurationModel(
+        AlertOAuthCredentialDataStoreFactory alertOAuthCredentialDataStoreFactory,
+        String redirectUri,
+        AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModel
+    ) {
+        List<String> defaultScopes = List.of(AzureOAuthScopes.PROJECTS_READ.getScope(), AzureOAuthScopes.WORK_FULL.getScope());
+        return new AzureBoardsProperties(
+            alertOAuthCredentialDataStoreFactory,
+            azureBoardsGlobalConfigModel.getOrganizationName(),
+            azureBoardsGlobalConfigModel.getAppId().orElse(null),
+            azureBoardsGlobalConfigModel.getClientSecret().orElse(null),
+            defaultScopes,
+            redirectUri,
+            azureBoardsGlobalConfigModel.getId()
+        );
+    }
+
+    public AzureBoardsProperties createAzureBoardsProperties(UUID configurationId) throws AlertConfigurationException {
+        AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModel = azureBoardsGlobalConfigAccessor.getConfiguration(configurationId)
+            .orElseThrow(() -> new AlertConfigurationException("Missing Azure Boards global configuration"));
+        return fromGlobalConfigurationModel(
+            alertOAuthCredentialDataStoreFactory,
+            azureRedirectUrlCreator.createOAuthRedirectUri(),
+            azureBoardsGlobalConfigModel
+        );
+    }
+
+    public AzureBoardsProperties createAzureBoardsPropertiesWithJobId(UUID azureBoardsJobId) throws AlertConfigurationException {
+        DistributionJobModel azureBoardsDistributionJobConfiguration = jobAccessor.getJobById(azureBoardsJobId)
+            .orElseThrow(() -> new AlertConfigurationException("Missing Azure Boards distribution configuration"));
+        return createAzureBoardsProperties(azureBoardsDistributionJobConfiguration.getChannelGlobalConfigId());
+    }
+
+    //TODO: This is used by the old field model action services. In 8.0.0, this method can be removed.
+    public AzureBoardsProperties createAzureBoardsProperties(String organizationName, String clientId, String clientSecret) throws AlertConfigurationException {
+        AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModelSaved = azureBoardsGlobalConfigAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
+            .orElseThrow(() -> new AlertConfigurationException("Missing Azure Boards global configuration"));
+        String organization = azureBoardsGlobalConfigModelSaved.getOrganizationName();
+        String appId = azureBoardsGlobalConfigModelSaved.getAppId().orElse("");
+        String secret = azureBoardsGlobalConfigModelSaved.getClientSecret().orElse("");
+        if (StringUtils.isNotBlank(organizationName)) {
+            organization = organizationName;
+        }
+        if (StringUtils.isNotBlank(clientId)) {
+            appId = clientId;
+        }
+        if (StringUtils.isNotBlank(clientSecret)) {
+            secret = clientSecret;
+        }
+
+        AzureBoardsGlobalConfigModel azureBoardsGlobalConfigModel = new AzureBoardsGlobalConfigModel(
+            azureBoardsGlobalConfigModelSaved.getId(),
+            AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
+            organization,
+            appId,
+            secret
+        );
+        return fromGlobalConfigurationModel(
+            alertOAuthCredentialDataStoreFactory,
+            azureRedirectUrlCreator.createOAuthRedirectUri(),
+            azureBoardsGlobalConfigModel
+        );
     }
 
 }

@@ -23,9 +23,14 @@ const UploadFileButtonField = ({
     required,
     showDescriptionPlaceHolder,
     statusMessage,
-    permissions
+    permissions,
+    onChange,
+    customEndpoint,
+    value,
+    valueToCheckFileExistsOnChange
 }) => {
     const [fieldError, setFieldError] = useState(errorValue);
+    const [uploadedValue, setUploadedValue] = useState(value);
     const [success, setSuccess] = useState(false);
     const [progress, setProgress] = useState(false);
     const [uploadStatusMessage, setUploadStatusMessage] = useState(statusMessage);
@@ -33,13 +38,10 @@ const UploadFileButtonField = ({
     const fileInputField = useRef(null);
 
     const checkFileExists = () => {
-        const request = createReadRequest(`/alert${endpoint}/${fieldKey}/exists`, csrfToken);
+        const request = createReadRequest((customEndpoint || `/alert${endpoint}/${fieldKey}/exists`), csrfToken);
         request.then((response) => {
-            if (response.ok) {
-                response.json().then((data) => {
-                    const { exists } = data;
-                    setFileUploaded(exists);
-                });
+            if (response.status === 204) {
+                setFileUploaded(true);
             } else {
                 setFileUploaded(false);
             }
@@ -51,9 +53,17 @@ const UploadFileButtonField = ({
     }, []);
 
     useEffect(() => {
+        setUploadedValue(uploadedValue || value);
+    }, [value]);
+
+    useEffect(() => {
         setFieldError(errorValue);
         setSuccess(false);
     }, [errorValue]);
+
+    useEffect(() => {
+        checkFileExists();
+    }, [valueToCheckFileExistsOnChange]);
 
     const onUploadClick = () => {
         const fileData = fileInputField.current.files;
@@ -65,13 +75,14 @@ const UploadFileButtonField = ({
             setProgress(false);
             setFieldError('Please select a file to upload.');
         } else {
-            const request = createFileUploadRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, 'file', fileData);
+            const request = createFileUploadRequest((customEndpoint || `/alert${endpoint}/${fieldKey}`), csrfToken, 'file', fileData);
             request.then((response) => {
                 setProgress(false);
                 if (response.ok) {
                     setSuccess(true);
                     setUploadStatusMessage('Upload Metadata File Success');
                     setFileUploaded(true);
+                    setUploadedValue(value);
                 } else {
                     response.json().then((data) => {
                         setFieldError(HTTPErrorUtils.createFieldError(data.message));
@@ -85,7 +96,7 @@ const UploadFileButtonField = ({
         setFieldError(errorValue);
         setProgress(true);
         setSuccess(false);
-        const request = createDeleteRequest(`/alert${endpoint}/${fieldKey}`, csrfToken);
+        const request = createDeleteRequest((customEndpoint || `/alert${endpoint}/${fieldKey}`), csrfToken);
         request.then((response) => {
             setProgress(false);
             if (response.ok) {
@@ -101,6 +112,8 @@ const UploadFileButtonField = ({
     };
 
     const acceptedContentTypes = accept ? accept.join(',') : null;
+    // For fileUploaded
+    const removeFileUploadedText = uploadedValue ? (`Remove Uploaded File: ${uploadedValue}`) : 'Remove Uploaded File';
 
     return (
         <div>
@@ -124,6 +137,7 @@ const UploadFileButtonField = ({
                             disabled={readOnly || !permissions.read || !permissions.write}
                             accept={acceptedContentTypes}
                             capture={capture}
+                            onChange={onChange}
                         />
                         <div>
                             <div className="d-inline-flex">
@@ -137,7 +151,19 @@ const UploadFileButtonField = ({
                                     {buttonLabel}
                                 </GeneralButton>
                                 {fileUploaded
-                                && <button disabled={readOnly || !permissions.read || !permissions.delete} id={`${fieldKey}-delete`} className="btn btn-md btn-link" type="reset" onClick={onDeleteClick}>Remove Uploaded File</button>}
+                                && (
+                                    <>
+                                        <button
+                                            type="button"
+                                            disabled={readOnly || !permissions.read || !permissions.delete}
+                                            id={`${fieldKey}-delete`}
+                                            className="btn btn-md btn-link"
+                                            onClick={onDeleteClick}
+                                        >
+                                            {removeFileUploadedText}
+                                        </button>
+                                    </>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -170,7 +196,11 @@ UploadFileButtonField.propTypes = {
         read: PropTypes.bool,
         write: PropTypes.bool,
         delete: PropTypes.bool
-    })
+    }),
+    onChange: PropTypes.func,
+    customEndpoint: PropTypes.string,
+    value: PropTypes.any,
+    valueToCheckFileExistsOnChange: PropTypes.any
 };
 
 UploadFileButtonField.defaultProps = {
@@ -189,7 +219,11 @@ UploadFileButtonField.defaultProps = {
         read: true,
         write: true,
         delete: true
-    }
+    },
+    onChange: () => {},
+    customEndpoint: '',
+    value: '',
+    valueToCheckFileExistsOnChange: ''
 };
 
 export default UploadFileButtonField;

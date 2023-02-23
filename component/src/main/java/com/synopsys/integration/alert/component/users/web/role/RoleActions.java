@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -73,8 +73,8 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Us
     @Override
     protected ActionResponse<RolePermissionModel> deleteWithoutChecks(Long id) {
         Optional<UserRoleModel> existingRole = roleAccessor.getRoles(List.of(id))
-                                                   .stream()
-                                                   .findFirst();
+            .stream()
+            .findFirst();
         if (existingRole.isPresent()) {
             String roleName = existingRole.get().getName();
             try {
@@ -119,8 +119,8 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Us
         try {
             String roleName = resource.getRoleName();
             Optional<UserRoleModel> existingRole = roleAccessor.getRoles(List.of(id))
-                                                       .stream()
-                                                       .findFirst();
+                .stream()
+                .findFirst();
             if (existingRole.isPresent()) {
                 logger.debug(actionMessageCreator.updateStartMessage("role", existingRole.get().getName()));
                 if (!existingRole.get().getName().equals(roleName)) {
@@ -136,7 +136,7 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Us
             return new ActionResponse<>(HttpStatus.NOT_FOUND, "Role not found.");
         } catch (AlertException ex) {
             logger.error(actionMessageCreator.updateErrorMessage("role", resource.getRoleName()));
-            return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+            return new ActionResponse<>(HttpStatus.BAD_REQUEST, ex.getMessage());
         }
     }
 
@@ -155,9 +155,9 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Us
     @Override
     protected Optional<RolePermissionModel> findExisting(Long id) {
         return roleAccessor.getRoles(List.of(id))
-                   .stream()
-                   .findFirst()
-                   .map(this::convertDatabaseModelToRestModel);
+            .stream()
+            .findFirst()
+            .map(this::convertDatabaseModelToRestModel);
     }
 
     private Set<PermissionModel> convertPermissionMatrixModel(PermissionMatrixModel permissionMatrixModel) {
@@ -165,7 +165,8 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Us
         for (Map.Entry<PermissionKey, Integer> matrixRow : permissionMatrixModel.getPermissions().entrySet()) {
             Integer accessOperations = matrixRow.getValue();
             PermissionKey permissionKey = matrixRow.getKey();
-            String descriptorDisplayName = descriptorMap.getDescriptorKey(permissionKey.getDescriptorName()).map(DescriptorKey::getDisplayName).orElse(permissionKey.getDescriptorName());
+            String descriptorDisplayName = descriptorMap.getDescriptorKey(permissionKey.getDescriptorName()).map(DescriptorKey::getDisplayName)
+                .orElse(permissionKey.getDescriptorName());
 
             PermissionModel permissionModel = new PermissionModel(
                 descriptorDisplayName,
@@ -214,8 +215,14 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Us
         for (PermissionModel permissionModel : permissionModels) {
             PermissionKey pair = new PermissionKey(permissionModel.getContext(), permissionModel.getDescriptorName());
             if (descriptorContexts.contains(pair)) {
-                return Optional.of(AlertFieldStatus.error(RoleActions.FIELD_KEY_ROLE_NAME,
-                    String.format("Can't save duplicate permissions for a role. Duplicate permission for '%s' with context '%s' found.", pair.getDescriptorName(), pair.getContext())));
+                return Optional.of(AlertFieldStatus.error(
+                    RoleActions.FIELD_KEY_ROLE_NAME,
+                    String.format(
+                        "Can't save duplicate permissions for a role. Duplicate permission for '%s' with context '%s' found.",
+                        pair.getDescriptorName(),
+                        pair.getContext()
+                    )
+                ));
             } else {
                 descriptorContexts.add(pair);
             }

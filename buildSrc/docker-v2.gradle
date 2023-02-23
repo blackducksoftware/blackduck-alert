@@ -104,14 +104,37 @@ dockerImagesToBuild.each { imageName ->
             logger.lifecycle('Removing docker image:: ' + fullDockerImageName)
         }
 
+        ignoreExitValue = true
+        errorOutput = new ByteArrayOutputStream()
+
         commandLine 'docker', 'image', 'rm', fullDockerImageName
+
+        doLast {
+            String stdErr = errorOutput.toString()
+
+            if (stdErr?.trim() && !stdErr.contains("Deleted: ")) {
+                if (stdErr.contains("Error: No such image")) {
+                    logger.lifecycle("Image does not exist, continuing.")
+                } else {
+                    throw new GradleException("${stdErr}")
+                }
+            }
+        }
     }
     project.tasks.findByName(dockerRemoveAllImages).dependsOn dockerImageRemoveTaskName
 
     project.tasks.create(name: dockerImageBuildTaskName, type: Exec, group: 'Docker', description: "Build ${imageName} docker image") {
         dockerTasksCreated.add(dockerImageBuildTaskName)
         dependsOn project.tasks.findByName(dockerSetupStagingAreaDirectory)
-        def buildCommand = ['docker', 'build', '.', '-t', fullDockerImageName, '--build-arg', "VERSION=${project.version}", '--pull', '--force-rm']
+        def buildCommand = ['docker', 'build', '.', '-t', fullDockerImageName, '--pull', '--force-rm', '--build-arg', "VERSION=${project.version}"]
+
+        rootProject.ext.properties.each { key, value ->
+            if (key.startsWith('dockerBuildParam_')) {
+                String adjKey = key.substring(key.indexOf('_') + 1)
+                buildCommand.add('--build-arg')
+                buildCommand.add("${adjKey}=${value}")
+            }
+        }
 
         doFirst {
             logger.lifecycle("Building docker image:: ${fullDockerImageName}")

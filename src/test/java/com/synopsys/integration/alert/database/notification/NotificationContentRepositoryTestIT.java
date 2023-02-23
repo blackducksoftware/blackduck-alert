@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.OffsetDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Tag;
@@ -120,7 +121,8 @@ class NotificationContentRepositoryTestIT {
             providerCreationTime,
             NotificationType.VULNERABILITY.name(),
             "{\"content\": {}}",
-            processed
+            processed,
+            String.format("content-id-%s", UUID.randomUUID())
         );
     }
 

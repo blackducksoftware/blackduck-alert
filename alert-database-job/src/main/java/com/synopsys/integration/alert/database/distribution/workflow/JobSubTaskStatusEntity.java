@@ -19,7 +19,6 @@ public class JobSubTaskStatusEntity extends BaseEntity {
 
     @Column(name = "job_id")
     private UUID jobId;
-
     @Column(name = "remaining_event_count")
     private Long remainingEvents;
 

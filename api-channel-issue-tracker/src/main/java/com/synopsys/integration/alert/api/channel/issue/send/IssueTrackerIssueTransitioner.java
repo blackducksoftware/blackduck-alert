@@ -65,7 +65,7 @@ public abstract class IssueTrackerIssueTransitioner<T extends Serializable> {
 
     protected abstract boolean isTransitionRequired(ExistingIssueDetails<T> existingIssueDetails, IssueOperation issueOperation) throws AlertException;
 
-    protected abstract void findAndPerformTransition(ExistingIssueDetails<T> existingIssueDetails, String transitionName) throws AlertException, IssueMissingTransitionException;
+    protected abstract void findAndPerformTransition(ExistingIssueDetails<T> existingIssueDetails, String transitionName) throws AlertException;
 
     private void attemptTransition(IssueOperation issueOperation, ExistingIssueDetails<T> existingIssueDetails, String transitionName) throws AlertException {
         try {

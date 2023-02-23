@@ -170,8 +170,8 @@ public class BlackDuckDistributionFieldModelTestAction extends FieldModelTestAct
         if (StringUtils.isNotBlank(projectNamePattern)) {
             Pattern pattern = Pattern.compile(projectNamePattern);
             return iteratePagesAndCheck(
-                (currentPage) -> blackDuckDataAccessor.getProjectsByProviderConfigId(providerConfigId, currentPage, AlertPagedModel.DEFAULT_PAGE_SIZE, ""),
-                (providerProjects) -> providerProjects.stream().anyMatch(databaseEntity -> pattern.matcher(databaseEntity.getName()).matches()),
+                currentPage -> blackDuckDataAccessor.getProjectsByProviderConfigId(providerConfigId, currentPage, AlertPagedModel.DEFAULT_PAGE_SIZE, ""),
+                providerProjects -> providerProjects.stream().anyMatch(databaseEntity -> pattern.matcher(databaseEntity.getName()).matches()),
                 AlertFieldStatus.warning(ProviderDescriptor.KEY_PROJECT_NAME_PATTERN, "Does not match any of the Projects.")
             );
         }
@@ -220,8 +220,7 @@ public class BlackDuckDistributionFieldModelTestAction extends FieldModelTestAct
         int currentPage = AlertPagedModel.DEFAULT_PAGE_NUMBER;
         T retrievedData = getData.apply(currentPage);
         int totalPages = retrievedData.getTotalPages();
-        boolean noResult = true;
-        while (noResult && currentPage < totalPages) {
+        while (currentPage < totalPages) {
             logger.debug("Getting page {} out of {}", currentPage + 1, totalPages);
             List<U> models = retrievedData.getModels();
             if (findResult.apply(models)) {
