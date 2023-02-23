@@ -47,7 +47,7 @@ public class ExecutingJobManager {
     }
 
     public void endJob(UUID executionId, Instant endTime) {
-        logger.debug("Ending job execution with success {} at {}", executionId, DateUtils.formatDateAsJsonString(DateUtils.fromInstantUTC(endTime)));
+        logger.debug("Ending job execution {} at {}", executionId, DateUtils.formatDateAsJsonString(DateUtils.fromInstantUTC(endTime)));
         Optional<ExecutingJob> executingJob = Optional.ofNullable(executingJobMap.getOrDefault(executionId, null));
         executingJob.ifPresent(execution -> {
             execution.endJob(DateUtils.fromInstantUTC(endTime).toInstant());
@@ -57,6 +57,7 @@ public class ExecutingJobManager {
     }
 
     public void updateJobStatus(UUID executionId, AuditEntryStatus status) {
+        logger.debug("Updating status for job execution {} to {}", executionId, status.name());
         Optional<ExecutingJob> executingJob = Optional.ofNullable(executingJobMap.getOrDefault(executionId, null));
         executingJob.ifPresent(execution -> execution.updateStatus(status));
     }
