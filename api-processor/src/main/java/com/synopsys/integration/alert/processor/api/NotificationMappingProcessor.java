@@ -27,6 +27,7 @@ import com.synopsys.integration.alert.processor.api.mapping.JobNotificationMappe
 
 @Component
 public class NotificationMappingProcessor {
+    public static final int DEFAULT_BATCH_LIMIT = 10000;
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final Logger notificationLogger = AlertLoggerFactory.getNotificationLogger(getClass());
     private final NotificationDetailExtractionDelegator notificationDetailExtractionDelegator;
@@ -54,6 +55,10 @@ public class NotificationMappingProcessor {
         jobNotificationMapper.mapJobsToNotifications(correlationID, filterableNotifications, frequencies);
         notificationAccessor.setNotificationsProcessed(notifications);
         logNotifications("Finished mapping notifications: {}", notifications);
+    }
+
+    public boolean hasExceededBatchLimit(UUID correlationID) {
+        return jobNotificationMapper.hasBatchReachedSizeLimit(correlationID, DEFAULT_BATCH_LIMIT);
     }
 
     private void logNotifications(String messageFormat, List<AlertNotificationModel> notifications) {

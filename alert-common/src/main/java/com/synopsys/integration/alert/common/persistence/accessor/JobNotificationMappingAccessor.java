@@ -26,4 +26,6 @@ public interface JobNotificationMappingAccessor {
     void removeJobMapping(UUID correlationId, UUID jobId);
 
     int getNotificationCountForJob(UUID correlationId, UUID jobId);
+
+    int getCountByCorrelationId(UUID correlationId);
 }
