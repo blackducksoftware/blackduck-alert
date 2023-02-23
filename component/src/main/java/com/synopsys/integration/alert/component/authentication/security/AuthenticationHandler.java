@@ -9,6 +9,8 @@ package com.synopsys.integration.alert.component.authentication.security;
 
 import com.synopsys.integration.alert.authentication.saml.security.AlertRelyingPartyRegistrationRepository;
 import com.synopsys.integration.alert.authentication.saml.security.SAMLGroupConverter;
+import com.synopsys.integration.alert.authentication.saml.security.SAMLSignedAssertionsValidator;
+import org.opensaml.saml.common.assertion.ValidationResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +22,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.saml2.core.Saml2Error;
+import org.springframework.security.saml2.core.Saml2ResponseValidatorResult;
 import org.springframework.security.saml2.provider.service.authentication.OpenSaml4AuthenticationProvider;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository;
 import org.springframework.security.saml2.provider.service.web.DefaultRelyingPartyRegistrationResolver;
@@ -42,6 +46,8 @@ import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 
 import java.util.Arrays;
 
+import static org.springframework.security.saml2.core.Saml2ErrorCodes.INVALID_ASSERTION;
+
 @EnableWebSecurity
 @Configuration
 public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
@@ -51,6 +57,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     private final RoleAccessor roleAccessor;
 
     private final SAMLGroupConverter samlGroupConverter;
+    private final SAMLSignedAssertionsValidator samlSignedAssertionsValidator;
 
     @Autowired
     AuthenticationHandler(
@@ -58,13 +65,15 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
         CsrfTokenRepository csrfTokenRepository,
         AlertProperties alertProperties,
         RoleAccessor roleAccessor,
-        SAMLGroupConverter samlGroupConverter
+        SAMLGroupConverter samlGroupConverter,
+        SAMLSignedAssertionsValidator samlSignedAssertionsValidator
     ) {
         this.httpPathManager = httpPathManager;
         this.csrfTokenRepository = csrfTokenRepository;
         this.alertProperties = alertProperties;
         this.roleAccessor = roleAccessor;
         this.samlGroupConverter = samlGroupConverter;
+        this.samlSignedAssertionsValidator = samlSignedAssertionsValidator;
     }
 
     @Override
@@ -89,6 +98,15 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
         //eventually configure SAML
         OpenSaml4AuthenticationProvider authenticationProvider = new OpenSaml4AuthenticationProvider();
         authenticationProvider.setResponseAuthenticationConverter(samlGroupConverter.groupsConverter());
+        authenticationProvider.setAssertionValidator(assertionToken -> {
+            Saml2ResponseValidatorResult result = OpenSaml4AuthenticationProvider
+                .createDefaultAssertionValidator()
+                .convert(assertionToken);
+            if (samlSignedAssertionsValidator.validateSignedAssertions(assertionToken) == ValidationResult.VALID) {
+                return result;
+            }
+            return result.concat(new Saml2Error(INVALID_ASSERTION, "Assertion signature was not present or valid"));
+        });
 
         http.saml2Login(saml2 -> {
                 saml2.authenticationManager(new ProviderManager(authenticationProvider));
@@ -166,6 +184,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
         simpleUrlLogoutSuccessHandler.setAlwaysUseDefaultTargetUrl(true);
         return simpleUrlLogoutSuccessHandler;
     }
+
 
     // ==========
     // SAML Beans

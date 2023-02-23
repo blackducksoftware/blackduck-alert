@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 public class AlertRelyingPartyRegistrationRepository implements RelyingPartyRegistrationRepository, Iterable<RelyingPartyRegistration> {
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final Map<String, RelyingPartyRegistration> registrationMap = new ConcurrentHashMap<>();
 
     public void registerRelyingPartyRegistration(RelyingPartyRegistration relyingPartyRegistration) {
