@@ -65,7 +65,14 @@ public class NotificationReceivedEventHandler implements AlertEventHandler<Notif
             notificationMappingProcessor.processNotifications(correlationID, notifications, List.of(FrequencyType.REAL_TIME));
             boolean hasMoreNotificationsToProcess = notificationAccessor.hasMoreNotificationsToProcess(providerConfigId);
             if (hasMoreNotificationsToProcess) {
-                eventManager.sendEvent(new NotificationReceivedEvent(correlationID, providerConfigId));
+                NotificationReceivedEvent continueProcessingEvent;
+                if (notificationMappingProcessor.hasExceededBatchLimit(correlationID)) {
+                    eventManager.sendEvent(new JobNotificationMappedEvent(correlationID));
+                    continueProcessingEvent = new NotificationReceivedEvent(providerConfigId);
+                } else {
+                    continueProcessingEvent = new NotificationReceivedEvent(correlationID, providerConfigId);
+                }
+                eventManager.sendEvent(continueProcessingEvent);
             } else {
                 eventManager.sendEvent(new JobNotificationMappedEvent(correlationID));
             }
