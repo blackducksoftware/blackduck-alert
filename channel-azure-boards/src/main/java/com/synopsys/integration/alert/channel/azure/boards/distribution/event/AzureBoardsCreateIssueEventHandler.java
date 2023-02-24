@@ -113,14 +113,16 @@ public class AzureBoardsCreateIssueEventHandler extends IssueTrackerCreateIssueE
                 );
                 IssueCreationModel creationModel = event.getCreationModel();
                 String query = creationModel.getQueryString().orElse(null);
-                boolean issueDoesNotExist = checkIfIssueDoesNotExist(workItemQueryService, organizationName, projectNameOrId, query);
-                if (issueDoesNotExist) {
-                    List<IssueTrackerIssueResponseModel<Integer>> responses = messageSender.sendMessage(creationModel);
-                    postProcess(new IssueTrackerResponse<>("Success", responses));
-                    List<Integer> issueKeys = responses.stream()
-                        .map(IssueTrackerIssueResponseModel::getIssueId)
-                        .collect(Collectors.toList());
-                    logger.info("Created issues: {}", issueKeys);
+                synchronized (this) {
+                    boolean issueDoesNotExist = checkIfIssueDoesNotExist(workItemQueryService, organizationName, projectNameOrId, query);
+                    if (issueDoesNotExist) {
+                        List<IssueTrackerIssueResponseModel<Integer>> responses = messageSender.sendMessage(creationModel);
+                        postProcess(new IssueTrackerResponse<>("Success", responses));
+                        List<Integer> issueKeys = responses.stream()
+                            .map(IssueTrackerIssueResponseModel::getIssueId)
+                            .collect(Collectors.toList());
+                        logger.info("Created issues: {}", issueKeys);
+                    }
                 }
             } catch (AlertException ex) {
                 logger.error("Cannot create issue for job {}", jobId);
