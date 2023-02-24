@@ -113,8 +113,6 @@ public class SAMLManager {
             verificationCredentialBuilder(builder);
         }
 
-        builder.assertingPartyDetails(party -> party.wantAuthnRequestsSigned(configModel.getWantAssertionsSigned()));
-
         return builder.build();
     }
 
