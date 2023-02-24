@@ -53,13 +53,17 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, fileDelete, fileRead, fil
     const samlRequestUrl = `${ConfigurationRequestBuilder.AUTHENTICATION_SAML_API_URL}`;
 
     const importBlackDuckSSOConfigLabel = 'Retrieve Black Duck SAML Configuration';
-    const importBlackDuckSSOConfigDescription = 'Fills in some of the form fields based on the SAML configuration from the chosen Black Duck server (if a SAML configuration exists).';
+    const importBlackDuckSSOConfigDescription = 'Fills the following fields based on the SAML configuration from the chosen Black Duck server (if a SAML configuration exists): SAML Enabled, Identity Provider Metadata URL';
 
     const fetchData = async () => {
         const response = await ConfigurationRequestBuilder.createReadRequest(samlRequestUrl, csrfToken);
         const data = await response.json();
 
-        data.status === 404 ? setFormData({ ...data, metadataMode: 'URL' }) : setFormData(data);
+        if (data.status === 404 || !data.metadataMode) {
+            setFormData({ ...data, metadataMode: 'URL' });
+        } else {
+            setFormData(data);
+        }
     };
 
     function updateData() {
@@ -105,7 +109,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, fileDelete, fileRead, fil
                     id={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.enabled}
                     name={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.enabled}
                     label="SAML Enabled"
-                    description="If true, Alert will attempt to authenticate using the SAML configuration."
+                    description="If true, Alert will present a Login with SAML option using the SAML configuration."
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
                     isChecked={formData.enabled}
@@ -116,7 +120,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, fileDelete, fileRead, fil
                     id={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.metadataMode}
                     name={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.metadataMode}
                     label="SAML Identity Provider"
-                    description="Select the type of SAML authentication."
+                    description="Select the type of SAML metadata."
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
                     radioOptions={radioOptions}
@@ -132,7 +136,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, fileDelete, fileRead, fil
                             id={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.metadataUrl}
                             name={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.metadataUrl}
                             label="Identity Provider Metadata URL"
-                            description="The Metadata URL from the external Identity Provider."
+                            description="The Metadata URL from the Identity Provider."
                             readOnly={readonly}
                             onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
                             value={formData[AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.metadataUrl] || undefined}
@@ -163,7 +167,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, fileDelete, fileRead, fil
                         name={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.metadataFileName}
                         fieldKey={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.metadataFileName}
                         label="Identity Provider Metadata File"
-                        description="The file to upload to the server containing the Metadata from the external Identity Provider."
+                        description="The file to upload to the server containing the Metadata from the Identity Provider."
                         readOnly={readonly}
                         permissions={{ read: fileRead, write: fileWrite, delete: fileDelete }}
                         onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
@@ -187,7 +191,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, fileDelete, fileRead, fil
                     id={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.wantAssertionsSigned}
                     name={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.wantAssertionsSigned}
                     label="Sign Assertions"
-                    description="If true, signature verification will be performed in SAML when communicating with server."
+                    description="If true, Alert will check if assertions from the Identity Provider are signed. Ensure assertions from your Identity Provider are signed if enabled."
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
                     isChecked={formData.wantAssertionsSigned}
@@ -198,7 +202,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, fileDelete, fileRead, fil
                     id={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.forceAuth}
                     name={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.forceAuth}
                     label="Force Auth"
-                    description="If true, the forceAuthn flag is set to true in the SAML request to the IDP. Please check the IDP if this is supported."
+                    description="If true, the forceAuthn flag is set to true in the SAML request to the IDP. Check the Identity Provider settings to see if this is supported."
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
                     isChecked={formData.forceAuth}
@@ -238,7 +242,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, fileDelete, fileRead, fil
                         name={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.encryptionPrivateKeyFileName}
                         fieldKey={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.encryptionPrivateKeyFileName}
                         label="Encryption Cert Private Key File"
-                        description="Upload a PKCS8 Encryption private key file to configure SAML."
+                        description="Upload a PKCS8 Encryption private key file for the encryption certificate."
                         readOnly={readonly}
                         permissions={{ read: fileRead, write: fileWrite, delete: fileDelete }}
                         onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
@@ -283,7 +287,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, fileDelete, fileRead, fil
                         name={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.signingPrivateKeyFileName}
                         fieldKey={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.signingPrivateKeyFileName}
                         label="Signing Cert Private Key File"
-                        description="Upload a PKCS8 Signing private key file to configure SAML."
+                        description="Upload a PKCS8 Signing private key file for the signing certificate."
                         readOnly={readonly}
                         permissions={{ read: fileRead, write: fileWrite, delete: fileDelete }}
                         onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
