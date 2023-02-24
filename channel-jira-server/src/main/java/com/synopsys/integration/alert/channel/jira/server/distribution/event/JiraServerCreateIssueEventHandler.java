@@ -110,16 +110,18 @@ public class JiraServerCreateIssueEventHandler extends IssueTrackerCreateIssueEv
                 );
 
                 String jqlQuery = creationModel.getQueryString().orElse(null);
-                boolean issueDoesNotExist = checkIfIssueDoesNotExist(jiraServerQueryExecutor, jqlQuery);
-                if (issueDoesNotExist) {
-                    List<IssueTrackerIssueResponseModel<String>> responses = messageSender.sendMessage(creationModel);
-                    postProcess(new IssueTrackerResponse<>("Success", responses));
-                    List<String> issueKeys = responses.stream()
-                        .map(IssueTrackerIssueResponseModel::getIssueId)
-                        .collect(Collectors.toList());
-                    logger.info("Created issues: {}", issueKeys);
-                } else {
-                    logger.debug("Issue already exists for query: {}", jqlQuery);
+                synchronized (this) {
+                    boolean issueDoesNotExist = checkIfIssueDoesNotExist(jiraServerQueryExecutor, jqlQuery);
+                    if (issueDoesNotExist) {
+                        List<IssueTrackerIssueResponseModel<String>> responses = messageSender.sendMessage(creationModel);
+                        postProcess(new IssueTrackerResponse<>("Success", responses));
+                        List<String> issueKeys = responses.stream()
+                            .map(IssueTrackerIssueResponseModel::getIssueId)
+                            .collect(Collectors.toList());
+                        logger.info("Created issues: {}", issueKeys);
+                    } else {
+                        logger.debug("Issue already exists for query: {}", jqlQuery);
+                    }
                 }
             } catch (AlertException ex) {
                 logger.error("Cannot create issue for job {}", jobId);

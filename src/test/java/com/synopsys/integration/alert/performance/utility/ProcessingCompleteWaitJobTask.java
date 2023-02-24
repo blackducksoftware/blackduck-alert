@@ -94,6 +94,8 @@ public class ProcessingCompleteWaitJobTask implements WaitJobCondition {
             .filter(notificationTypeCount -> NotificationType.RULE_VIOLATION.equals(notificationTypeCount.getNotificationType()))
             .map(NotificationTypeCount::getCount)
             .reduce(0L, Long::sum);
+        // multiply be the number of expected Job IDs.
+        totalProviderNotificationCounts = totalProviderNotificationCounts * expectedJobIds.size();
 
         intLogger.info(String.format(
             "Performance: Found %s notifications, expected %s after time: %s. ",
