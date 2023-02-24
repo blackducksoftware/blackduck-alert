@@ -4,17 +4,17 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.channel.DistributionChannel;
 import com.synopsys.integration.alert.api.channel.DistributionEventHandler;
+import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.persistence.accessor.GitHubJobDetailAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.GitHubJobDetailsModel;
 
 @Component
 public class GitHubEventHandler extends DistributionEventHandler<GitHubJobDetailsModel> {
     public GitHubEventHandler(
-        final DistributionChannel<GitHubJobDetailsModel> channel,
-        final GitHubJobDetailAccessor jobDetailsAccessor,
-        final ProcessingAuditAccessor auditAccessor
+        DistributionChannel<GitHubJobDetailsModel> channel,
+        GitHubJobDetailAccessor jobDetailsAccessor,
+        EventManager eventManager
     ) {
-        super(channel, jobDetailsAccessor, auditAccessor);
+        super(channel, jobDetailsAccessor, eventManager);
     }
 }

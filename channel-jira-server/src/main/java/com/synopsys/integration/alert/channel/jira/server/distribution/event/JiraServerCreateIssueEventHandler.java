@@ -31,6 +31,7 @@ import com.synopsys.integration.alert.api.channel.jira.distribution.JiraIssueCre
 import com.synopsys.integration.alert.api.channel.jira.distribution.custom.JiraCustomFieldResolver;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
@@ -62,9 +63,10 @@ public class JiraServerCreateIssueEventHandler extends IssueTrackerCreateIssueEv
         JiraServerPropertiesFactory jiraServerPropertiesFactory,
         JiraServerMessageSenderFactory jiraServerMessageSenderFactory,
         JobDetailsAccessor<JiraServerJobDetailsModel> jobDetailsAccessor,
-        IssueTrackerResponsePostProcessor issueTrackerResponsePostProcessor
+        IssueTrackerResponsePostProcessor issueTrackerResponsePostProcessor,
+        ExecutingJobManager executingJobManager
     ) {
-        super(eventManager, jobSubTaskAccessor, issueTrackerResponsePostProcessor);
+        super(eventManager, jobSubTaskAccessor, issueTrackerResponsePostProcessor, executingJobManager);
         this.gson = gson;
         this.jiraServerPropertiesFactory = jiraServerPropertiesFactory;
         this.jiraServerMessageSenderFactory = jiraServerMessageSenderFactory;
@@ -75,7 +77,7 @@ public class JiraServerCreateIssueEventHandler extends IssueTrackerCreateIssueEv
     public void handleEvent(IssueTrackerCreateIssueEvent event) {
         UUID jobId = event.getJobId();
         IssueCreationModel creationModel = event.getCreationModel();
-        Optional<JiraServerJobDetailsModel> details = jobDetailsAccessor.retrieveDetails(event.getJobId());
+        Optional<JiraServerJobDetailsModel> details = jobDetailsAccessor.retrieveDetails(jobId);
         if (details.isPresent()) {
             try {
                 JiraServerProperties jiraProperties = jiraServerPropertiesFactory.createJiraPropertiesWithJobId(jobId);
@@ -108,16 +110,18 @@ public class JiraServerCreateIssueEventHandler extends IssueTrackerCreateIssueEv
                 );
 
                 String jqlQuery = creationModel.getQueryString().orElse(null);
-                boolean issueDoesNotExist = checkIfIssueDoesNotExist(jiraServerQueryExecutor, jqlQuery);
-                if (issueDoesNotExist) {
-                    List<IssueTrackerIssueResponseModel<String>> responses = messageSender.sendMessage(creationModel);
-                    postProcess(new IssueTrackerResponse<>("Success", responses));
-                    List<String> issueKeys = responses.stream()
-                        .map(IssueTrackerIssueResponseModel::getIssueId)
-                        .collect(Collectors.toList());
-                    logger.info("Created issues: {}", issueKeys);
-                } else {
-                    logger.debug("Issue already exists for query: {}", jqlQuery);
+                synchronized (this) {
+                    boolean issueDoesNotExist = checkIfIssueDoesNotExist(jiraServerQueryExecutor, jqlQuery);
+                    if (issueDoesNotExist) {
+                        List<IssueTrackerIssueResponseModel<String>> responses = messageSender.sendMessage(creationModel);
+                        postProcess(new IssueTrackerResponse<>("Success", responses));
+                        List<String> issueKeys = responses.stream()
+                            .map(IssueTrackerIssueResponseModel::getIssueId)
+                            .collect(Collectors.toList());
+                        logger.info("Created issues: {}", issueKeys);
+                    } else {
+                        logger.debug("Issue already exists for query: {}", jqlQuery);
+                    }
                 }
             } catch (AlertException ex) {
                 logger.error("Cannot create issue for job {}", jobId);

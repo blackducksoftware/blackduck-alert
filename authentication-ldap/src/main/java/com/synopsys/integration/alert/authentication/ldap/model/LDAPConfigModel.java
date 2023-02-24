@@ -2,6 +2,7 @@ package com.synopsys.integration.alert.authentication.ldap.model;
 
 import java.util.Optional;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.api.common.model.Obfuscated;
@@ -96,15 +97,27 @@ public class LDAPConfigModel extends ConfigWithMetadata implements Obfuscated<LD
     }
 
     public Boolean getEnabled() {
-        return enabled;
+        return BooleanUtils.toBoolean(enabled);
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
     }
 
     public String getServerName() {
         return serverName;
     }
 
+    public void setServerName(String serverName) {
+        this.serverName = serverName;
+    }
+
     public String getManagerDn() {
         return managerDn;
+    }
+
+    public void setManagerDn(String managerDn) {
+        this.managerDn = managerDn;
     }
 
     public Optional<String> getManagerPassword() {
@@ -115,8 +128,8 @@ public class LDAPConfigModel extends ConfigWithMetadata implements Obfuscated<LD
         this.managerPassword = managerPassword;
     }
 
-    public Optional<Boolean> getIsManagerPasswordSet() {
-        return Optional.ofNullable(isManagerPasswordSet);
+    public Boolean getIsManagerPasswordSet() {
+        return BooleanUtils.toBoolean(isManagerPasswordSet);
     }
 
     public void setIsManagerPasswordSet(Boolean managerPasswordSet) {
@@ -127,35 +140,72 @@ public class LDAPConfigModel extends ConfigWithMetadata implements Obfuscated<LD
         return Optional.ofNullable(authenticationType);
     }
 
+    public void setAuthenticationType(String authenticationType) {
+        this.authenticationType = authenticationType;
+    }
+
     public Optional<String> getReferral() {
         return Optional.ofNullable(referral);
+    }
+
+    public void setReferral(String referral) {
+        this.referral = referral;
     }
 
     public Optional<String> getUserSearchBase() {
         return Optional.ofNullable(userSearchBase);
     }
 
+    public void setUserSearchBase(String userSearchBase) {
+        this.userSearchBase = userSearchBase;
+    }
+
     public Optional<String> getUserSearchFilter() {
         return Optional.ofNullable(userSearchFilter);
+    }
+
+    public void setUserSearchFilter(String userSearchFilter) {
+        this.userSearchFilter = userSearchFilter;
     }
 
     public Optional<String> getUserDnPatterns() {
         return Optional.ofNullable(userDnPatterns);
     }
 
+    public void setUserDnPatterns(String userDnPatterns) {
+        this.userDnPatterns = userDnPatterns;
+    }
+
     public Optional<String> getUserAttributes() {
         return Optional.ofNullable(userAttributes);
+    }
+
+    public void setUserAttributes(String userAttributes) {
+        this.userAttributes = userAttributes;
     }
 
     public Optional<String> getGroupSearchBase() {
         return Optional.ofNullable(groupSearchBase);
     }
 
+    public void setGroupSearchBase(String groupSearchBase) {
+        this.groupSearchBase = groupSearchBase;
+    }
+
     public Optional<String> getGroupSearchFilter() {
         return Optional.ofNullable(groupSearchFilter);
+    }
+
+    public void setGroupSearchFilter(String groupSearchFilter) {
+        this.groupSearchFilter = groupSearchFilter;
     }
 
     public Optional<String> getGroupRoleAttribute() {
         return Optional.ofNullable(groupRoleAttribute);
     }
+
+    public void setGroupRoleAttribute(String groupRoleAttribute) {
+        this.groupRoleAttribute = groupRoleAttribute;
+    }
+
 }

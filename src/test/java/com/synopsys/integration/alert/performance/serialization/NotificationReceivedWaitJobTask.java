@@ -6,7 +6,7 @@ import java.time.ZoneOffset;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;

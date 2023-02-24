@@ -4,6 +4,7 @@ import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -63,7 +64,7 @@ public class LDAPConfigAccessor implements UniqueConfigurationAccessor<LDAPConfi
                 .findByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
                 .orElseThrow(() -> new AlertConfigurationException("An LDAP configuration does not exist"));
 
-        if (ldapConfigModel.getIsManagerPasswordSet().isPresent() && ldapConfigModel.getIsManagerPasswordSet().get()) {
+        if (Boolean.TRUE.equals(ldapConfigModel.getIsManagerPasswordSet()) && ldapConfigModel.getManagerPassword().isEmpty()) {
             String decryptedPassword = encryptionUtility.decrypt(existingLDAPConfigurationEntity.getManagerPassword());
             ldapConfigModel.setManagerPassword(decryptedPassword);
         }
@@ -86,6 +87,11 @@ public class LDAPConfigAccessor implements UniqueConfigurationAccessor<LDAPConfi
     }
 
     private LDAPConfigModel toModel(LDAPConfigurationEntity ldapConfigurationEntity) {
+        String managerPassword = ldapConfigurationEntity.getManagerPassword();
+        if (StringUtils.isNotBlank(managerPassword)) {
+            managerPassword = encryptionUtility.decrypt(managerPassword);
+        }
+
         return new LDAPConfigModel(
             ldapConfigurationEntity.getConfigurationId().toString(),
             DateUtils.formatDate(ldapConfigurationEntity.getCreatedAt(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE),
@@ -93,8 +99,8 @@ public class LDAPConfigAccessor implements UniqueConfigurationAccessor<LDAPConfi
             ldapConfigurationEntity.getEnabled(),
             ldapConfigurationEntity.getServerName(),
             ldapConfigurationEntity.getManagerDn(),
-            ldapConfigurationEntity.getManagerPassword(),
-            ldapConfigurationEntity.getManagerPasswordSet(),
+            managerPassword,
+            StringUtils.isNotBlank(ldapConfigurationEntity.getManagerPassword()),
             ldapConfigurationEntity.getAuthenticationType(),
             ldapConfigurationEntity.getReferral(),
             ldapConfigurationEntity.getUserSearchBase(),
@@ -110,14 +116,12 @@ public class LDAPConfigAccessor implements UniqueConfigurationAccessor<LDAPConfi
     private LDAPConfigurationEntity toEntity(UUID configurationId, LDAPConfigModel ldapConfigModel, OffsetDateTime createdTime, OffsetDateTime lastUpdated) {
         return new LDAPConfigurationEntity(
             configurationId,
-            ldapConfigModel.getName(),
             createdTime,
             lastUpdated,
             ldapConfigModel.getEnabled(),
             ldapConfigModel.getServerName(),
             ldapConfigModel.getManagerDn(),
-            ldapConfigModel.getManagerPassword().orElse(""),
-            ldapConfigModel.getIsManagerPasswordSet().orElse(Boolean.FALSE),
+            ldapConfigModel.getManagerPassword().map(encryptionUtility::encrypt).orElse(null),
             ldapConfigModel.getAuthenticationType().orElse(""),
             ldapConfigModel.getReferral().orElse(""),
             ldapConfigModel.getUserSearchBase().orElse(""),

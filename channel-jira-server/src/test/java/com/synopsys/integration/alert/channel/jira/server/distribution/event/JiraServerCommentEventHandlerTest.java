@@ -24,6 +24,7 @@ import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDeta
 import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
 import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueCategory;
 import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueStatus;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
@@ -55,6 +56,8 @@ class JiraServerCommentEventHandlerTest {
     private IssueTrackerResponsePostProcessor responsePostProcessor;
     private DefaultJiraServerJobDetailsAccessor jobDetailsAccessor;
 
+    private ExecutingJobManager executingJobManager;
+
     @BeforeEach
     public void init() {
         issueCounter = new AtomicInteger(0);
@@ -72,11 +75,14 @@ class JiraServerCommentEventHandlerTest {
             jiraServerJobDetailsRepository,
             jiraServerJobCustomFieldRepository
         );
+
+        executingJobManager = Mockito.mock(ExecutingJobManager.class);
     }
 
     @Test
     void handleUnknownJobTest() {
         UUID parentEventId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
 
@@ -90,7 +96,8 @@ class JiraServerCommentEventHandlerTest {
             callbackInfoCreator,
             issueCategoryRetriever,
             eventManager,
-            jobSubTaskAccessor
+            jobSubTaskAccessor,
+            executingJobManager
         );
 
         JiraServerJobDetailsModel jobDetailsModel = createJobDetails(jobId);
@@ -103,13 +110,15 @@ class JiraServerCommentEventHandlerTest {
             propertiesFactory,
             messageSenderFactory,
             jobDetailsAccessor,
-            responsePostProcessor
+            responsePostProcessor,
+            executingJobManager
         );
         ExistingIssueDetails<String> existingIssueDetails = new ExistingIssueDetails<>("id", "key", "summary", "link", IssueStatus.UNKNOWN, IssueCategory.BOM);
         IssueCommentModel<String> model = new IssueCommentModel<>(existingIssueDetails, List.of(), null);
         JiraServerCommentEvent event = new JiraServerCommentEvent(
             IssueTrackerCommentEvent.createDefaultEventDestination(ChannelKeys.JIRA_SERVER),
             parentEventId,
+            jobExecutionId,
             jobId,
             notificationIds,
             model
@@ -123,6 +132,7 @@ class JiraServerCommentEventHandlerTest {
     @Test
     void handleCommentTest() throws IntegrationException {
         UUID parentEventId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
 
@@ -158,7 +168,8 @@ class JiraServerCommentEventHandlerTest {
             callbackInfoCreator,
             issueCategoryRetriever,
             eventManager,
-            jobSubTaskAccessor
+            jobSubTaskAccessor,
+            executingJobManager
         );
 
         jobDetailsAccessor.saveConcreteJobDetails(jobId, jobDetailsModel);
@@ -169,13 +180,15 @@ class JiraServerCommentEventHandlerTest {
             propertiesFactory,
             messageSenderFactory,
             jobDetailsAccessor,
-            responsePostProcessor
+            responsePostProcessor,
+            executingJobManager
         );
         ExistingIssueDetails<String> existingIssueDetails = new ExistingIssueDetails<>("id", "key", "summary", "link", IssueStatus.UNKNOWN, IssueCategory.BOM);
         IssueCommentModel<String> model = new IssueCommentModel<>(existingIssueDetails, List.of("A comment"), null);
         JiraServerCommentEvent event = new JiraServerCommentEvent(
             IssueTrackerCommentEvent.createDefaultEventDestination(ChannelKeys.JIRA_SERVER),
             parentEventId,
+            jobExecutionId,
             jobId,
             notificationIds,
             model

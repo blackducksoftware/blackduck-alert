@@ -15,6 +15,7 @@ import org.springframework.core.task.SyncTaskExecutor;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCommentModel;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.jira.cloud.distribution.event.mock.MockCorrelationToNotificationRelationRepository;
 import com.synopsys.integration.alert.channel.jira.cloud.distribution.event.mock.MockJobSubTaskStatusRepository;
@@ -28,14 +29,17 @@ class JiraCloudCommentEventListenerTest {
     @Test
     void onMessageTest() {
         UUID parentEventId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
         EventManager eventManager = Mockito.mock(EventManager.class);
+        ExecutingJobManager executingJobManager = Mockito.mock(ExecutingJobManager.class);
 
         IssueCommentModel<String> issueCommentModel = new IssueCommentModel<>(null, List.of("A comment"), null);
         JiraCloudCommentEvent event = new JiraCloudCommentEvent(
             "destination",
             parentEventId,
+            jobExecutionId,
             jobId,
             notificationIds,
             issueCommentModel
@@ -51,9 +55,10 @@ class JiraCloudCommentEventListenerTest {
             null,
             null,
             null,
-            null
+            null,
+            executingJobManager
         ));
-        Mockito.doNothing().when(handler).handle(event);
+        Mockito.doNothing().when(handler).handleEvent(event);
 
         jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobId, 1L, notificationIds);
         Optional<JobSubTaskStatusModel> optionalJobSubTaskStatusModel = jobSubTaskAccessor.getSubTaskStatus(parentEventId);

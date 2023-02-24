@@ -40,6 +40,7 @@ class GithubChannelTest {
         assertNotNull(repositoryName, "Github repository name is null, set GITHUB_REPOSITORY_NAME in the environment.");
 
         String jobName = "myJobName";
+        UUID jobExecutionId = UUID.randomUUID();
         UUID eventId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
         UUID jobId = UUID.randomUUID();
@@ -66,6 +67,8 @@ class GithubChannelTest {
             distributionDetails,
             messages,
             jobName,
+            jobId,
+            jobExecutionId,
             eventId,
             notificationIds
         );

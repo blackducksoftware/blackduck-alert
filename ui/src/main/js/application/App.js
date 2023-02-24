@@ -34,7 +34,7 @@ class App extends Component {
             return <LogoutPage />;
         }
 
-        const contentPage = (this.props.loggedIn || this.props.samlEnabled) ? <MainPage /> : <LoginPage />;
+        const contentPage = (this.props.loggedIn) ? <MainPage /> : <LoginPage />;
 
         return (
             <div>
@@ -51,7 +51,6 @@ App.propTypes = {
     initializing: PropTypes.bool.isRequired,
     verifyLogin: PropTypes.func.isRequired,
     verifySaml: PropTypes.func.isRequired,
-    samlEnabled: PropTypes.bool.isRequired
 };
 
 // Redux mappings to be used later....
@@ -59,7 +58,6 @@ const mapStateToProps = (state) => ({
     loggedIn: state.session.loggedIn,
     logoutPerformed: state.session.logoutPerformed,
     initializing: state.session.initializing,
-    samlEnabled: state.session.samlEnabled
 });
 
 const mapDispatchToProps = (dispatch) => ({

@@ -23,7 +23,7 @@ import SchedulingConfiguration from 'page/scheduling/SchedulingConfiguration';
 import { SETTINGS_INFO } from 'page/settings/SettingsModel';
 import SettingsConfiguration from 'page/settings/standalone/SettingsConfiguration';
 import { AUTHENTICATION_INFO } from 'application/auth/AuthenticationModel';
-import AuthenticationConfiguration from 'application/auth/AuthenticationConfiguration';
+import AuthenticationPageLayout from 'application/auth/AuthenticationPageLayout';
 import { BLACKDUCK_INFO, BLACKDUCK_URLS } from 'page/provider/blackduck/BlackDuckModel';
 import BlackDuckProviderConfiguration from 'page/provider/blackduck/BlackDuckProviderConfiguration';
 import BlackDuckConfiguration from 'page/provider/blackduck/BlackDuckConfiguration';
@@ -247,12 +247,12 @@ const MainPage = ({
                 descriptor={globalDescriptorMap[AUTHENTICATION_INFO.key]}
                 hasTestFields
                 render={(readOnly, showTest, showSave) => (
-                    <AuthenticationConfiguration
+                    <AuthenticationPageLayout
                         csrfToken={csrfToken}
-                        errorHandler={errorHandler}
                         readonly={readOnly}
                         displayTest={showTest}
                         displaySave={showSave}
+                        errorHandler={errorHandler}
                         fileRead={isOperationAssigned(globalDescriptorMap[AUTHENTICATION_INFO.key], OPERATIONS.UPLOAD_FILE_READ)}
                         fileWrite={isOperationAssigned(globalDescriptorMap[AUTHENTICATION_INFO.key], OPERATIONS.UPLOAD_FILE_WRITE)}
                         fileDelete={isOperationAssigned(globalDescriptorMap[AUTHENTICATION_INFO.key], OPERATIONS.UPLOAD_FILE_DELETE)}

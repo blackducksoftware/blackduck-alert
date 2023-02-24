@@ -5,9 +5,10 @@ dependencies {
     implementation project(':alert-common')
     implementation project(':api-common-model')
     implementation project(':api-descriptor')
+    implementation project(':api-distribution')
     implementation project(':api-event')
 
-    implementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
+    implementation 'com.synopsys.integration:blackduck-common'
     implementation 'org.springframework:spring-context'
     implementation 'org.springframework.amqp:spring-amqp'
 

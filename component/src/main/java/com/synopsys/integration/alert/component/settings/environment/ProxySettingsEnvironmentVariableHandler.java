@@ -57,7 +57,7 @@ public class ProxySettingsEnvironmentVariableHandler extends EnvironmentVariable
         EnvironmentVariableUtility environmentVariableUtility,
         SettingsProxyValidator validator
     ) {
-        super(HANDLER_NAME, PROXY_CONFIGURATION_KEYSET);
+        super(HANDLER_NAME, PROXY_CONFIGURATION_KEYSET, environmentVariableUtility);
         this.configAccessor = configAccessor;
         this.environmentVariableUtility = environmentVariableUtility;
         this.validator = validator;

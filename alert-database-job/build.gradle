@@ -15,5 +15,5 @@ dependencies {
     implementation 'jakarta.persistence:jakarta.persistence-api'
 
     testImplementation project(':test-common')
-    testImplementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
+    testImplementation 'com.synopsys.integration:blackduck-common'
 }

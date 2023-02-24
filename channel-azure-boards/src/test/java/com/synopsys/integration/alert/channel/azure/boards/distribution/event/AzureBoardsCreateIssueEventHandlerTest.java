@@ -22,6 +22,7 @@ import com.synopsys.integration.alert.api.channel.issue.callback.ProviderCallbac
 import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCreateIssueEvent;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsHttpExceptionMessageImprover;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
@@ -50,6 +51,7 @@ class AzureBoardsCreateIssueEventHandlerTest {
     private DefaultJobSubTaskAccessor jobSubTaskAccessor;
     private IssueTrackerResponsePostProcessor responsePostProcessor;
     private DefaultAzureBoardsJobDetailsAccessor jobDetailsAccessor;
+    private ExecutingJobManager executingJobManager;
 
     @BeforeEach
     public void init() {
@@ -63,11 +65,13 @@ class AzureBoardsCreateIssueEventHandlerTest {
 
         MockAzureBoardsJobDetailsRepository azureBoardsJobDetailsRepository = new MockAzureBoardsJobDetailsRepository();
         jobDetailsAccessor = new DefaultAzureBoardsJobDetailsAccessor(azureBoardsJobDetailsRepository);
+        executingJobManager = Mockito.mock(ExecutingJobManager.class);
     }
 
     @Test
     void handleUnknownJobTest() {
         UUID parentEventId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
 
@@ -85,7 +89,8 @@ class AzureBoardsCreateIssueEventHandlerTest {
             exceptionMessageImprover,
             issueCategoryRetriever,
             eventManager,
-            jobSubTaskAccessor
+            jobSubTaskAccessor,
+            executingJobManager
         );
 
         Mockito.when(mockProxyManager.createProxyInfoForHost(Mockito.anyString())).thenReturn(ProxyInfo.NO_PROXY_INFO);
@@ -101,7 +106,8 @@ class AzureBoardsCreateIssueEventHandlerTest {
             messageSenderFactory,
             mockProxyManager,
             jobDetailsAccessor,
-            responsePostProcessor
+            responsePostProcessor,
+            executingJobManager
         );
 
         LinkableItem provider = new LinkableItem("provider", "test-provider");
@@ -109,6 +115,7 @@ class AzureBoardsCreateIssueEventHandlerTest {
         AzureBoardsCreateIssueEvent event = new AzureBoardsCreateIssueEvent(
             IssueTrackerCreateIssueEvent.createDefaultEventDestination(ChannelKeys.AZURE_BOARDS),
             parentEventId,
+            jobExecutionId,
             jobId,
             notificationIds,
             issueCreationModel
@@ -124,6 +131,7 @@ class AzureBoardsCreateIssueEventHandlerTest {
     @Disabled("Blocked by IALERT-3136")
     void handleIssueQueryBlankTest() throws IntegrationException, IOException {
         UUID parentEventId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
 
@@ -149,7 +157,8 @@ class AzureBoardsCreateIssueEventHandlerTest {
             exceptionMessageImprover,
             issueCategoryRetriever,
             eventManager,
-            jobSubTaskAccessor
+            jobSubTaskAccessor,
+            executingJobManager
         );
 
         //TODO: Mock out services required for Azure, blocked by IALERT-3136
@@ -168,7 +177,8 @@ class AzureBoardsCreateIssueEventHandlerTest {
             messageSenderFactory,
             mockProxyManager,
             jobDetailsAccessor,
-            responsePostProcessor
+            responsePostProcessor,
+            executingJobManager
         );
 
         LinkableItem provider = new LinkableItem("provider", "test-provider");
@@ -176,6 +186,7 @@ class AzureBoardsCreateIssueEventHandlerTest {
         AzureBoardsCreateIssueEvent event = new AzureBoardsCreateIssueEvent(
             IssueTrackerCreateIssueEvent.createDefaultEventDestination(ChannelKeys.AZURE_BOARDS),
             parentEventId,
+            jobExecutionId,
             jobId,
             notificationIds,
             issueCreationModel

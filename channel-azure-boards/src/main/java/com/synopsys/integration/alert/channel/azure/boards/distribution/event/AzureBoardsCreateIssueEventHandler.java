@@ -27,6 +27,7 @@ import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerIssueR
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerResponse;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesFactory;
@@ -64,9 +65,10 @@ public class AzureBoardsCreateIssueEventHandler extends IssueTrackerCreateIssueE
         AzureBoardsMessageSenderFactory azureBoardsMessageSenderFactory,
         ProxyManager proxyManager,
         JobDetailsAccessor<AzureBoardsJobDetailsModel> jobDetailsAccessor,
-        IssueTrackerResponsePostProcessor responsePostProcessor
+        IssueTrackerResponsePostProcessor responsePostProcessor,
+        ExecutingJobManager executingJobManager
     ) {
-        super(eventManager, jobSubTaskAccessor, responsePostProcessor);
+        super(eventManager, jobSubTaskAccessor, responsePostProcessor, executingJobManager);
         this.gson = gson;
         this.azureBoardsPropertiesFactory = azureBoardsPropertiesFactory;
         this.azureBoardsMessageSenderFactory = azureBoardsMessageSenderFactory;
@@ -111,14 +113,16 @@ public class AzureBoardsCreateIssueEventHandler extends IssueTrackerCreateIssueE
                 );
                 IssueCreationModel creationModel = event.getCreationModel();
                 String query = creationModel.getQueryString().orElse(null);
-                boolean issueDoesNotExist = checkIfIssueDoesNotExist(workItemQueryService, organizationName, projectNameOrId, query);
-                if (issueDoesNotExist) {
-                    List<IssueTrackerIssueResponseModel<Integer>> responses = messageSender.sendMessage(creationModel);
-                    postProcess(new IssueTrackerResponse<>("Success", responses));
-                    List<Integer> issueKeys = responses.stream()
-                        .map(IssueTrackerIssueResponseModel::getIssueId)
-                        .collect(Collectors.toList());
-                    logger.info("Created issues: {}", issueKeys);
+                synchronized (this) {
+                    boolean issueDoesNotExist = checkIfIssueDoesNotExist(workItemQueryService, organizationName, projectNameOrId, query);
+                    if (issueDoesNotExist) {
+                        List<IssueTrackerIssueResponseModel<Integer>> responses = messageSender.sendMessage(creationModel);
+                        postProcess(new IssueTrackerResponse<>("Success", responses));
+                        List<Integer> issueKeys = responses.stream()
+                            .map(IssueTrackerIssueResponseModel::getIssueId)
+                            .collect(Collectors.toList());
+                        logger.info("Created issues: {}", issueKeys);
+                    }
                 }
             } catch (AlertException ex) {
                 logger.error("Cannot create issue for job {}", jobId);

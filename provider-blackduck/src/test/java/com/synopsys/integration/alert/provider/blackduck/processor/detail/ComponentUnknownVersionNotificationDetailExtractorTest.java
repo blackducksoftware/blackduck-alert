@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
@@ -29,7 +30,18 @@ public class ComponentUnknownVersionNotificationDetailExtractorTest {
         ComponentUnknownVersionNotificationView notificationView = gson.fromJson(jsonContent, ComponentUnknownVersionNotificationView.class);
         ComponentUnknownVersionNotificationContent notificationContent = notificationView.getContent();
 
-        AlertNotificationModel notification = new AlertNotificationModel(0L, 0L, "BlackDuck", "Config 1", null, null, null, null, false);
+        AlertNotificationModel notification = new AlertNotificationModel(
+            0L,
+            0L,
+            "BlackDuck",
+            "Config 1",
+            null,
+            null,
+            null,
+            null,
+            false,
+            String.format("content-id-%s", UUID.randomUUID())
+        );
 
         ComponentUnknownVersionNotificationDetailExtractor extractor = new ComponentUnknownVersionNotificationDetailExtractor();
         List<DetailedNotificationContent> detailedNotificationContents = extractor.extractDetailedContent(notification, notificationView);

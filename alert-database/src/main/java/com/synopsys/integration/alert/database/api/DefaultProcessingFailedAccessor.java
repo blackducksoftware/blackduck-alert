@@ -99,6 +99,7 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
             auditedNotifications.put(notificationId, notificationModel.getContent());
         }
         List<AuditFailedNotificationEntity> notificationEntities = auditedNotifications.entrySet().stream()
+            .filter(notification -> !auditFailedNotificationRepository.existsById(notification.getKey()))
             .map(notification -> new AuditFailedNotificationEntity(notification.getKey(), notification.getValue()))
             .collect(Collectors.toList());
         auditFailedNotificationRepository.saveAllAndFlush(notificationEntities);
@@ -129,6 +130,7 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
         }
 
         List<AuditFailedNotificationEntity> notificationEntities = auditedNotifications.entrySet().stream()
+            .filter(notification -> !auditFailedNotificationRepository.existsById(notification.getKey()))
             .map(notification -> new AuditFailedNotificationEntity(notification.getKey(), notification.getValue()))
             .collect(Collectors.toList());
         auditFailedNotificationRepository.saveAllAndFlush(notificationEntities);
@@ -144,12 +146,17 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
         List<UUID> entryIds = auditFailedEntities.stream()
             .map(AuditFailedEntity::getId)
             .collect(Collectors.toList());
-        if (!notificationIds.isEmpty()) {
-            auditFailedNotificationRepository.deleteAllById(notificationIds);
-        }
-
         if (!entryIds.isEmpty()) {
             auditFailedEntryRepository.deleteAllById(entryIds);
+        }
+
+        Predicate<Long> notificationNoLongExists = notificationId -> !auditFailedEntryRepository.existsByNotificationId(notificationId);
+        List<Long> notificationIdsToRemove = notificationIds.stream()
+            .filter(notificationNoLongExists)
+            .collect(Collectors.toList());
+        
+        if (!notificationIdsToRemove.isEmpty()) {
+            auditFailedNotificationRepository.deleteAllById(notificationIdsToRemove);
         }
     }
 

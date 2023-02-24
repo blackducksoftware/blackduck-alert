@@ -74,7 +74,12 @@ public class DefaultJobSubTaskAccessor implements JobSubTaskAccessor {
         if (entity.isPresent()) {
             JobSubTaskStatusEntity item = entity.get();
             Long remainingTaskCount = item.getRemainingEvents() - 1;
-            item = jobSubTaskRepository.save(new JobSubTaskStatusEntity(item.getId(), item.getJobId(), remainingTaskCount, item.getNotificationCorrelationId()));
+            item = jobSubTaskRepository.save(new JobSubTaskStatusEntity(
+                item.getId(),
+                item.getJobId(),
+                remainingTaskCount,
+                item.getNotificationCorrelationId()
+            ));
             entity = Optional.of(item);
         }
         return entity.map(this::convertEntity);

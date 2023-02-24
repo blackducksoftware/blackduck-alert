@@ -39,6 +39,9 @@
       "warn",
       240
     ],
+    "object-curly-newline": ["error", {
+      "ExportDeclaration": { "minProperties": 1 }
+    }],
     "react/forbid-prop-types": [
       "warn",
       {
@@ -75,6 +78,9 @@
     "react/jsx-first-prop-new-line": [
       "warn"
     ],
+    "react/require-default-props": [
+      "warn"
+    ],
     "comma-dangle": [
       "error",
       "never"
@@ -88,6 +94,13 @@
     "no-underscore-dangle": [
       "warn"
     ],
+    "operator-linebreak": ["warn", "before"],
+    "prefer-destructuring": ["warn", {
+      "array": true,
+      "object": true
+    }, {
+      "enforceForRenamedProperties": false
+    }],
     "import/prefer-default-export": [
       "warn"
     ],

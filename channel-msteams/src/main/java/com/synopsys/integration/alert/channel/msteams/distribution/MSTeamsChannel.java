@@ -11,14 +11,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.channel.MessageBoardChannel;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
 
 @Component
 public class MSTeamsChannel extends MessageBoardChannel<MSTeamsJobDetailsModel, MSTeamsChannelMessageModel> {
     @Autowired
-    protected MSTeamsChannel(MSTeamsChannelMessageConverter msTeamsChannelMessageConverter, MSTeamsChannelMessageSender msTeamsChannelMessageSender, EventManager eventManager) {
-        super(msTeamsChannelMessageConverter, msTeamsChannelMessageSender, eventManager);
+    protected MSTeamsChannel(
+        MSTeamsChannelMessageConverter msTeamsChannelMessageConverter,
+        MSTeamsChannelMessageSender msTeamsChannelMessageSender,
+        EventManager eventManager,
+        ExecutingJobManager executingJobManager
+    ) {
+        super(msTeamsChannelMessageConverter, msTeamsChannelMessageSender, eventManager, executingJobManager);
     }
 
 }

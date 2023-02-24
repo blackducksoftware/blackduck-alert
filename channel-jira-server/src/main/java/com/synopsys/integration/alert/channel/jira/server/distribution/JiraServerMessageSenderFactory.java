@@ -30,6 +30,7 @@ import com.synopsys.integration.alert.api.channel.jira.distribution.JiraIssueCre
 import com.synopsys.integration.alert.api.channel.jira.distribution.custom.JiraCustomFieldResolver;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
@@ -62,6 +63,7 @@ public class JiraServerMessageSenderFactory implements IssueTrackerMessageSender
     private final EventManager eventManager;
 
     private final JobSubTaskAccessor jobSubTaskAccessor;
+    private final ExecutingJobManager executingJobManager;
 
     @Autowired
     public JiraServerMessageSenderFactory(
@@ -71,7 +73,8 @@ public class JiraServerMessageSenderFactory implements IssueTrackerMessageSender
         IssueTrackerCallbackInfoCreator callbackInfoCreator,
         IssueCategoryRetriever issueCategoryRetriever,
         EventManager eventManager,
-        JobSubTaskAccessor jobSubTaskAccessor
+        JobSubTaskAccessor jobSubTaskAccessor,
+        ExecutingJobManager executingJobManager
     ) {
         this.gson = gson;
         this.channelKey = channelKey;
@@ -80,6 +83,7 @@ public class JiraServerMessageSenderFactory implements IssueTrackerMessageSender
         this.issueCategoryRetriever = issueCategoryRetriever;
         this.eventManager = eventManager;
         this.jobSubTaskAccessor = jobSubTaskAccessor;
+        this.executingJobManager = executingJobManager;
     }
 
     @Override
@@ -119,9 +123,10 @@ public class JiraServerMessageSenderFactory implements IssueTrackerMessageSender
         JiraServerJobDetailsModel distributionDetails,
         UUID globalId,
         UUID parentEventId,
+        UUID jobExecutionId,
         Set<Long> notificationIds
     ) throws AlertException {
-        return createAsyncMessageSender(distributionDetails, parentEventId, notificationIds);
+        return createAsyncMessageSender(distributionDetails, parentEventId, jobExecutionId, notificationIds);
     }
 
     public IssueTrackerMessageSender<String> createMessageSender(
@@ -163,12 +168,19 @@ public class JiraServerMessageSenderFactory implements IssueTrackerMessageSender
     public IssueTrackerAsyncMessageSender<String> createAsyncMessageSender(
         JiraServerJobDetailsModel distributionDetails,
         UUID parentEventId,
+        UUID jobExecutionId,
         Set<Long> notificationIds
     ) {
         UUID jobId = distributionDetails.getJobId();
-        IssueTrackerCommentEventGenerator<String> commentEventGenerator = new JiraServerCommentGenerator(channelKey, parentEventId, jobId, notificationIds);
-        IssueTrackerCreationEventGenerator createEventGenerator = new JiraServerCreateEventGenerator(channelKey, parentEventId, jobId, notificationIds);
-        IssueTrackerTransitionEventGenerator<String> transitionEventGenerator = new JiraServerTransitionGenerator(channelKey, parentEventId, jobId, notificationIds);
+        IssueTrackerCommentEventGenerator<String> commentEventGenerator = new JiraServerCommentGenerator(channelKey, parentEventId, jobExecutionId, jobId, notificationIds);
+        IssueTrackerCreationEventGenerator createEventGenerator = new JiraServerCreateEventGenerator(channelKey, parentEventId, jobExecutionId, jobId, notificationIds);
+        IssueTrackerTransitionEventGenerator<String> transitionEventGenerator = new JiraServerTransitionGenerator(
+            channelKey,
+            parentEventId,
+            jobExecutionId,
+            jobId,
+            notificationIds
+        );
 
         return new IssueTrackerAsyncMessageSender<>(
             createEventGenerator,
@@ -177,8 +189,9 @@ public class JiraServerMessageSenderFactory implements IssueTrackerMessageSender
             eventManager,
             jobSubTaskAccessor,
             parentEventId,
-            jobId,
-            notificationIds
+            jobExecutionId,
+            notificationIds,
+            executingJobManager
         );
 
     }

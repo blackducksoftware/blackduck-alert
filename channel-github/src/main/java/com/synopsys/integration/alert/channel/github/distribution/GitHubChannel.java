@@ -53,7 +53,9 @@ public class GitHubChannel implements DistributionChannel<GitHubJobDetailsModel>
         GitHubJobDetailsModel distributionDetails,
         ProviderMessageHolder messages,
         String jobName,
-        UUID eventId,
+        UUID jobConfigId,
+        UUID parentEventId,
+        UUID jobExecutionId,
         Set<Long> notificationIds
     )
         throws AlertException {

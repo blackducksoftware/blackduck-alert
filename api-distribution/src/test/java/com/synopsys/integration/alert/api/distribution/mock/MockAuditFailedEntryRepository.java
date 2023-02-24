@@ -31,4 +31,11 @@ public class MockAuditFailedEntryRepository extends MockRepositoryContainer<UUID
             .filter(dateAfterExpiration)
             .collect(Collectors.toList());
     }
+
+    @Override
+    public boolean existsByNotificationId(Long notificationId) {
+        Predicate<AuditFailedEntity> entryContainsNotification = entry -> entry.getNotificationId().equals(notificationId);
+        return getDataMap().values().stream()
+            .anyMatch(entryContainsNotification);
+    }
 }

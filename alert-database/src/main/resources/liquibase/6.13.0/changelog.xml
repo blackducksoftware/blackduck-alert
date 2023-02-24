@@ -4,4 +4,9 @@
     <include file="concrete-saml-configuration-table.xml" relativeToChangelogFile="true"/>
     <include file="concrete-ldap-configuration-table.xml" relativeToChangelogFile="true"/>
     <include file="audit-failed-table.xml" relativeToChangelogFile="true"/>
+    <include file="audit-failed-purge-config.xml" relativeToChangelogFile="true"/>
+    <include file="migrate-saml-configuration.xml" relativeToChangelogFile="true"/>
+    <include file="job-completion-status.xml" relativeToChangelogFile="true"/>
+    <include file="notification-content-id.xml" relativeToChangelogFile="true"/>
+    <include file="migrate-ldap-configuration.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

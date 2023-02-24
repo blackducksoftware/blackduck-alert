@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
@@ -27,7 +28,18 @@ public class ProjectNotificationDetailExtractorTest {
         ProjectNotificationView projectNotificationView = gson.fromJson(jsonContent, ProjectNotificationView.class);
         ProjectNotificationContent projectNotificationContent = projectNotificationView.getContent();
 
-        AlertNotificationModel notification = new AlertNotificationModel(0L, 0L, "BlackDuck", "Config 1", null, null, null, null, false);
+        AlertNotificationModel notification = new AlertNotificationModel(
+            0L,
+            0L,
+            "BlackDuck",
+            "Config 1",
+            null,
+            null,
+            null,
+            null,
+            false,
+            String.format("content-id-%s", UUID.randomUUID())
+        );
 
         ProjectNotificationDetailExtractor extractor = new ProjectNotificationDetailExtractor();
         List<DetailedNotificationContent> detailedNotificationContents = extractor.extractDetailedContent(notification, projectNotificationView);

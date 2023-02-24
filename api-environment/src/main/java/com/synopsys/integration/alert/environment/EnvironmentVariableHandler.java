@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.environment;
 
+import java.util.Optional;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -20,10 +21,12 @@ public abstract class EnvironmentVariableHandler<T extends Obfuscated<T>> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final String name;
     private final Set<String> environmentVariableNames;
+    private final EnvironmentVariableUtility environmentVariableUtility;
 
-    protected EnvironmentVariableHandler(String name, Set<String> environmentVariableNames) {
+    protected EnvironmentVariableHandler(String name, Set<String> environmentVariableNames, EnvironmentVariableUtility environmentVariableUtility) {
         this.name = name;
         this.environmentVariableNames = environmentVariableNames;
+        this.environmentVariableUtility = environmentVariableUtility;
     }
 
     public String getName() {
@@ -34,9 +37,22 @@ public abstract class EnvironmentVariableHandler<T extends Obfuscated<T>> {
         return environmentVariableNames;
     }
 
+    private boolean variablesExistCheck() {
+        boolean variablePresent = environmentVariableNames
+            .stream()
+            .map(environmentVariableUtility::getEnvironmentValue)
+            .anyMatch(Optional::isPresent);
+
+        if (!variablePresent) {
+            logger.info("Did not find any environment variables configured for: {}", name);
+        }
+        return variablePresent;
+    }
+
     public EnvironmentProcessingResult updateFromEnvironment() {
         boolean configurationMissing = configurationMissingCheck();
-        if (configurationMissing) {
+        boolean variablesExist = variablesExistCheck();
+        if (configurationMissing && variablesExist) {
             T configurationModel = configureModel();
             ValidationResponseModel validationResponseModel = validateConfiguration(configurationModel);
             if (validationResponseModel.hasErrors()) {
