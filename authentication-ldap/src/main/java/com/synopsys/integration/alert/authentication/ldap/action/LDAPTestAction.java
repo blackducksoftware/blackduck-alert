@@ -48,7 +48,7 @@ public class LDAPTestAction {
     }
 
     public ActionResponse<ValidationResponseModel> testAuthentication(LDAPConfigTestModel ldapConfigTestModel) {
-        Supplier<ValidationActionResponse> validationSupplier = () -> configurationValidationHelper.validate(() -> ldapConfigurationValidator.validate(ldapConfigTestModel.getLdapConfigModel()));
+        Supplier<ValidationActionResponse> validationSupplier = () -> configurationValidationHelper.validate(() -> ldapConfigurationValidator.validate(ldapConfigTestModel));
         return configurationTestHelper.test(validationSupplier, () -> testConfigModelContent(ldapConfigTestModel));
     }
 
