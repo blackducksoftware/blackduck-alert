@@ -77,7 +77,7 @@ public class AzureBoardsCreateIssueEventHandler extends IssueTrackerCreateIssueE
     }
 
     @Override
-    public void handleEvent(IssueTrackerCreateIssueEvent event) {
+    public synchronized void handleEvent(IssueTrackerCreateIssueEvent event) {
         UUID jobId = event.getJobId();
         Optional<AzureBoardsJobDetailsModel> details = jobDetailsAccessor.retrieveDetails(event.getJobId());
         if (details.isPresent()) {
@@ -113,16 +113,14 @@ public class AzureBoardsCreateIssueEventHandler extends IssueTrackerCreateIssueE
                 );
                 IssueCreationModel creationModel = event.getCreationModel();
                 String query = creationModel.getQueryString().orElse(null);
-                synchronized (this) {
-                    boolean issueDoesNotExist = checkIfIssueDoesNotExist(workItemQueryService, organizationName, projectNameOrId, query);
-                    if (issueDoesNotExist) {
-                        List<IssueTrackerIssueResponseModel<Integer>> responses = messageSender.sendMessage(creationModel);
-                        postProcess(new IssueTrackerResponse<>("Success", responses));
-                        List<Integer> issueKeys = responses.stream()
-                            .map(IssueTrackerIssueResponseModel::getIssueId)
-                            .collect(Collectors.toList());
-                        logger.info("Created issues: {}", issueKeys);
-                    }
+                boolean issueDoesNotExist = checkIfIssueDoesNotExist(workItemQueryService, organizationName, projectNameOrId, query);
+                if (issueDoesNotExist) {
+                    List<IssueTrackerIssueResponseModel<Integer>> responses = messageSender.sendMessage(creationModel);
+                    postProcess(new IssueTrackerResponse<>("Success", responses));
+                    List<Integer> issueKeys = responses.stream()
+                        .map(IssueTrackerIssueResponseModel::getIssueId)
+                        .collect(Collectors.toList());
+                    logger.info("Created issues: {}", issueKeys);
                 }
             } catch (AlertException ex) {
                 logger.error("Cannot create issue for job {}", jobId);
