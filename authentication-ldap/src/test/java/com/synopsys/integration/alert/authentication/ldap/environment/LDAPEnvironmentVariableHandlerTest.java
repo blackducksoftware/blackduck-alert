@@ -20,6 +20,7 @@ import com.synopsys.integration.alert.api.common.model.AlertConstants;
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.authentication.ldap.database.accessor.LDAPConfigAccessor;
 import com.synopsys.integration.alert.authentication.ldap.database.configuration.MockLDAPConfigurationRepository;
+import com.synopsys.integration.alert.authentication.ldap.model.LDAPAuthenticationType;
 import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigModel;
 import com.synopsys.integration.alert.authentication.ldap.validator.LDAPConfigurationValidator;
 import com.synopsys.integration.alert.common.AlertProperties;
@@ -30,6 +31,7 @@ import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
 
 class LDAPEnvironmentVariableHandlerTest {
+    private static final String DEFAULT_AUTHENTICATION_TYPE_SIMPLE = LDAPAuthenticationType.simple.name();
     private static final LDAPConfigModel basicLDAPConfigModel = new LDAPConfigModel(UUID.randomUUID().toString(), "serverName", "managerDn", "managerPassword");
 
     MockEnvironment mockEnvironment;
@@ -99,7 +101,7 @@ class LDAPEnvironmentVariableHandlerTest {
         assertNotNull(ldapConfigModel.getCreatedAt());
         assertNotNull(ldapConfigModel.getLastUpdated());
 
-        assertEquals(LDAPEnvironmentVariableHandler.LDAP_AUTHENTICATION_TYPE_KEY, ldapConfigModel.getAuthenticationType().orElse(""));
+        assertEquals(DEFAULT_AUTHENTICATION_TYPE_SIMPLE, ldapConfigModel.getAuthenticationType().orElse(""));
         assertFalse(ldapConfigModel.getEnabled());
         assertEquals(LDAPEnvironmentVariableHandler.LDAP_GROUP_ROLE_ATTRIBUTE_KEY, ldapConfigModel.getGroupRoleAttribute().orElse(""));
         assertEquals(LDAPEnvironmentVariableHandler.LDAP_GROUP_SEARCH_BASE_KEY, ldapConfigModel.getGroupSearchBase().orElse(""));
@@ -132,13 +134,15 @@ class LDAPEnvironmentVariableHandlerTest {
         EnvironmentProcessingResult environmentProcessingResult = ldapEnvironmentVariableHandler.buildProcessingResult(ldapConfigModel.obfuscate());
         assertTrue(environmentProcessingResult.getVariableNames().containsAll(LDAP_CONFIGURATION_KEY_SET));
 
-        // The values for PW and ENABLED will not be the same as the key, so handle separately
+        // The values for PW, ENABLED, and auth-type will not be the same as the key, so handle separately
         assertEquals(AlertConstants.MASKED_VALUE, environmentProcessingResult.getVariableValue(LDAPEnvironmentVariableHandler.LDAP_MANAGER_PASSWORD_KEY).orElse(""));
         assertEquals("false", environmentProcessingResult.getVariableValue(LDAPEnvironmentVariableHandler.LDAP_ENABLED_KEY).orElse(""));
+        assertEquals(DEFAULT_AUTHENTICATION_TYPE_SIMPLE, environmentProcessingResult.getVariableValue(LDAPEnvironmentVariableHandler.LDAP_AUTHENTICATION_TYPE_KEY).orElse(""));
 
         Set<String> valuesToValidate = new java.util.HashSet<>(LDAP_CONFIGURATION_KEY_SET);
         valuesToValidate.remove(LDAPEnvironmentVariableHandler.LDAP_MANAGER_PASSWORD_KEY);
         valuesToValidate.remove(LDAPEnvironmentVariableHandler.LDAP_ENABLED_KEY);
+        valuesToValidate.remove(LDAPEnvironmentVariableHandler.LDAP_AUTHENTICATION_TYPE_KEY);
 
         // The values for all the remaining keys should be the same as the key
         for (String variableName : valuesToValidate) {
@@ -167,7 +171,7 @@ class LDAPEnvironmentVariableHandlerTest {
         assertFalse(ldapEnvironmentVariableHandler.configurationMissingCheck());
         LDAPConfigModel expectedLDAPConfigModel = ldapConfigAccessor.getConfiguration()
             .orElseThrow(() -> new AssertionFailedError("Expected LDAPConfigModel did not exist"));
-        assertEquals("", expectedLDAPConfigModel.getAuthenticationType().orElse("FAIL"));
+        assertEquals(DEFAULT_AUTHENTICATION_TYPE_SIMPLE, expectedLDAPConfigModel.getAuthenticationType().orElse("FAIL"));
 
         basicLDAPConfigModel.setAuthenticationType("AUTH-TYPE");
         ldapEnvironmentVariableHandler.saveConfiguration(basicLDAPConfigModel, null);
@@ -175,7 +179,7 @@ class LDAPEnvironmentVariableHandlerTest {
             .orElseThrow(() -> new AssertionFailedError("Updated LDAPConfigModel did not exist"));
 
         // Because it already existed, the Authentication Type should not have been updated to the new value
-        assertEquals("", updatedLDAPConfigModel.getAuthenticationType().orElse("FAIL"));
+        assertEquals(DEFAULT_AUTHENTICATION_TYPE_SIMPLE, updatedLDAPConfigModel.getAuthenticationType().orElse("FAIL"));
     }
 
     private LDAPConfigModel createValidConfigModelFromEnvironment() {
