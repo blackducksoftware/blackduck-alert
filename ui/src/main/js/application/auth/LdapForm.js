@@ -22,14 +22,14 @@ const useStyles = createUseStyles({
 });
 
 const AUTH_TYPES = [
-    { label: 'Simple', value: 'simple' },
+    { label: 'Digest-MD5', value: 'digest' },
     { label: 'None', value: 'none' },
-    { label: 'Digest-MD5', value: 'digest' }
+    { label: 'Simple', value: 'simple' }
 ];
 
 const REFERRAL_TYPES = [
-    { label: 'Ignore', value: 'ignore' },
     { label: 'Follow', value: 'follow' },
+    { label: 'Ignore', value: 'ignore' },
     { label: 'Throw', value: 'throw' }
 ];
 
@@ -94,7 +94,7 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
         return ConfigurationRequestBuilder.createValidateRequest(ldapRequestUrl, csrfToken, formData);
     }
 
-    // Revise this to it's own modal when we overhaul the modal changes.
+    // Revise this to its own modal when we overhaul the modal changes.
     const testFields = (
         <div>
             <h2>LDAP Configuration</h2>
