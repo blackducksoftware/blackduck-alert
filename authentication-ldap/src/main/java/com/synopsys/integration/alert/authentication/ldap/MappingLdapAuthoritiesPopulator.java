@@ -31,7 +31,7 @@ public class MappingLdapAuthoritiesPopulator extends DefaultLdapAuthoritiesPopul
         try {
             grantedAuthorities.addAll(super.getGroupMembershipRoles(userDn, userName));
         } catch (Exception ex) {
-            logger.error("Error determining LDAP group membership.", ex);
+            logger.error("Could not map any roles from the LDAP server. Check Alert LDAP configuration and LDAP server configuration concerning group roles.", ex);
         }
         return grantedAuthorities;
     }
