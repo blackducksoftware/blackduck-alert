@@ -58,7 +58,7 @@ public class LdapManagerTest {
         assertEquals(LDAPTestHelper.DEFAULT_SERVER_NAME, expectedLDAPConfigModel.getServerName());
         assertEquals(LDAPTestHelper.DEFAULT_MANAGER_DN, expectedLDAPConfigModel.getManagerDn());
         LDAPTestHelper.assertOptionalField(LDAPTestHelper.DEFAULT_MANAGER_PASSWORD, expectedLDAPConfigModel::getManagerPassword);
-        LDAPTestHelper.assertOptionalField("", expectedLDAPConfigModel::getAuthenticationType);
+        LDAPTestHelper.assertOptionalField(LDAPTestHelper.DEFAULT_AUTH_TYPE_SIMPLE, expectedLDAPConfigModel::getAuthenticationType);
         LDAPTestHelper.assertOptionalField(LDAPTestHelper.DEFAULT_REFERRAL, expectedLDAPConfigModel::getReferral);
         LDAPTestHelper.assertOptionalField(LDAPTestHelper.DEFAULT_USER_SEARCH_BASE, expectedLDAPConfigModel::getUserSearchBase);
         LDAPTestHelper.assertOptionalField(LDAPTestHelper.DEFAULT_USER_SEARCH_FILTER, expectedLDAPConfigModel::getUserSearchFilter);
@@ -112,7 +112,17 @@ public class LdapManagerTest {
         LDAPConfigModel expectedLDAPConfigModel = ldapManager.getCurrentConfiguration()
             .orElseThrow(() -> new AssertionFailedError("Expected LDAPConfigModel did not exist"));
         assertDoesNotThrow(() -> ldapManager.getAuthenticationProvider());
-        LDAPTestHelper.assertOptionalField("", expectedLDAPConfigModel::getAuthenticationType);
+        LDAPTestHelper.assertOptionalField(LDAPTestHelper.DEFAULT_AUTH_TYPE_SIMPLE, expectedLDAPConfigModel::getAuthenticationType);
+    }
+
+    @Test
+    public void testAuthenticationTypeNone() {
+        validLDAPConfigModel.setAuthenticationType(LDAPTestHelper.DEFAULT_AUTH_TYPE_NONE);
+        assertDoesNotThrow(() -> ldapConfigAccessor.createConfiguration(validLDAPConfigModel));
+        LDAPConfigModel expectedLDAPConfigModel = ldapManager.getCurrentConfiguration()
+            .orElseThrow(() -> new AssertionFailedError("Expected LDAPConfigModel did not exist"));
+        assertDoesNotThrow(() -> ldapManager.getAuthenticationProvider());
+        LDAPTestHelper.assertOptionalField(LDAPTestHelper.DEFAULT_AUTH_TYPE_NONE, expectedLDAPConfigModel::getAuthenticationType);
     }
 
     @Test
@@ -142,7 +152,7 @@ public class LdapManagerTest {
         LDAPConfigModel expectedLDAPConfigModel = ldapManager.getCurrentConfiguration()
             .orElseThrow(() -> new AssertionFailedError("Expected LDAPConfigModel did not exist"));
         assertDoesNotThrow(() -> ldapManager.getAuthenticationProvider());
-        LDAPTestHelper.assertOptionalField("Unsupported authentication type", expectedLDAPConfigModel::getAuthenticationType);
+        LDAPTestHelper.assertOptionalField(LDAPTestHelper.DEFAULT_AUTH_TYPE_SIMPLE, expectedLDAPConfigModel::getAuthenticationType);
     }
 
     @Test

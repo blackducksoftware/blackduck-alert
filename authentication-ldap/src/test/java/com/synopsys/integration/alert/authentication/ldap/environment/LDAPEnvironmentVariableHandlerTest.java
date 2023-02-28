@@ -96,7 +96,7 @@ class LDAPEnvironmentVariableHandlerTest {
         assertTrue(ldapConfigModel.getIsManagerPasswordSet());
         assertEquals(LDAPEnvironmentVariableHandler.LDAP_SERVER_KEY, ldapConfigModel.getServerName());
 
-        LDAPTestHelper.assertOptionalField(LDAPEnvironmentVariableHandler.LDAP_AUTHENTICATION_TYPE_KEY, ldapConfigModel::getAuthenticationType);
+        LDAPTestHelper.assertOptionalField(LDAPTestHelper.DEFAULT_AUTH_TYPE_SIMPLE, ldapConfigModel::getAuthenticationType);
         LDAPTestHelper.assertOptionalField(LDAPEnvironmentVariableHandler.LDAP_GROUP_ROLE_ATTRIBUTE_KEY, ldapConfigModel::getGroupRoleAttribute);
         LDAPTestHelper.assertOptionalField(LDAPEnvironmentVariableHandler.LDAP_GROUP_SEARCH_BASE_KEY, ldapConfigModel::getGroupSearchBase);
         LDAPTestHelper.assertOptionalField(LDAPEnvironmentVariableHandler.LDAP_GROUP_SEARCH_FILTER_KEY, ldapConfigModel::getGroupSearchFilter);
@@ -153,17 +153,25 @@ class LDAPEnvironmentVariableHandlerTest {
         EnvironmentProcessingResult environmentProcessingResult = ldapEnvironmentVariableHandler.buildProcessingResult(ldapConfigModel.obfuscate());
         assertTrue(environmentProcessingResult.getVariableNames().containsAll(LDAP_CONFIGURATION_KEY_SET));
 
-        // The values for PW and ENABLED will not be the same as the key, so handle separately
-        assertEquals(AlertConstants.MASKED_VALUE, environmentProcessingResult.getVariableValue(LDAPEnvironmentVariableHandler.LDAP_MANAGER_PASSWORD_KEY).orElse(""));
-        assertEquals("false", environmentProcessingResult.getVariableValue(LDAPEnvironmentVariableHandler.LDAP_ENABLED_KEY).orElse(""));
+        // The values for PW, ENABLED, and auth-type will not be the same as the key, so handle separately
+        LDAPTestHelper.assertOptionalField(
+            AlertConstants.MASKED_VALUE,
+            () -> environmentProcessingResult.getVariableValue(LDAPEnvironmentVariableHandler.LDAP_MANAGER_PASSWORD_KEY)
+        );
+        LDAPTestHelper.assertOptionalField("false", () -> environmentProcessingResult.getVariableValue(LDAPEnvironmentVariableHandler.LDAP_ENABLED_KEY));
+        LDAPTestHelper.assertOptionalField(
+            LDAPTestHelper.DEFAULT_AUTH_TYPE_SIMPLE,
+            () -> environmentProcessingResult.getVariableValue(LDAPEnvironmentVariableHandler.LDAP_AUTHENTICATION_TYPE_KEY)
+        );
 
         Set<String> valuesToValidate = new java.util.HashSet<>(LDAP_CONFIGURATION_KEY_SET);
         valuesToValidate.remove(LDAPEnvironmentVariableHandler.LDAP_MANAGER_PASSWORD_KEY);
         valuesToValidate.remove(LDAPEnvironmentVariableHandler.LDAP_ENABLED_KEY);
+        valuesToValidate.remove(LDAPEnvironmentVariableHandler.LDAP_AUTHENTICATION_TYPE_KEY);
 
         // The values for all the remaining keys should be the same as the key
         for (String variableName : valuesToValidate) {
-            assertEquals(variableName, environmentProcessingResult.getVariableValue(variableName).orElse(""));
+            LDAPTestHelper.assertOptionalField(variableName, () -> environmentProcessingResult.getVariableValue(variableName));
         }
     }
 

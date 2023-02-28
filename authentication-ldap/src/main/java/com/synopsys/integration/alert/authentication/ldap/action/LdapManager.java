@@ -3,6 +3,8 @@ package com.synopsys.integration.alert.authentication.ldap.action;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ldap.core.support.DigestMd5DirContextAuthenticationStrategy;
 import org.springframework.ldap.core.support.DirContextAuthenticationStrategy;
@@ -25,6 +27,7 @@ import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigModel;
 
 @Component
 public class LdapManager {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final LDAPConfigAccessor ldapConfigAccessor;
     private final UserManagementAuthoritiesPopulator userManagementAuthoritiesPopulator;
     private final InetOrgPersonContextMapper inetOrgPersonContextMapper;
@@ -91,13 +94,15 @@ public class LdapManager {
 
     private DirContextAuthenticationStrategy createAuthenticationStrategy(LDAPConfigModel ldapConfigModel) {
         String authenticationType = ldapConfigModel.getAuthenticationType().orElse("");
-        DirContextAuthenticationStrategy strategy = null;
-        if (StringUtils.isNotBlank(authenticationType)) {
-            if ("digest".equalsIgnoreCase(authenticationType)) {
-                strategy = new DigestMd5DirContextAuthenticationStrategy();
-            } else if ("simple".equalsIgnoreCase(authenticationType)) {
-                strategy = new SimpleDirContextAuthenticationStrategy();
-            }
+        DirContextAuthenticationStrategy strategy;
+        logger.debug("LDAP Authentication Strategy: {}", authenticationType);
+
+        if ("none".equalsIgnoreCase(authenticationType)) {
+            strategy = null;
+        } else if ("digest".equalsIgnoreCase(authenticationType)) {
+            strategy = new DigestMd5DirContextAuthenticationStrategy();
+        } else {
+            strategy = new SimpleDirContextAuthenticationStrategy();
         }
 
         return strategy;
