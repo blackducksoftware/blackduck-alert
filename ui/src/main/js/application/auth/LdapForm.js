@@ -43,6 +43,8 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
     function processFormData() {
         if (formData?.authenticationType && formData?.authenticationType.length > 0 && Array.isArray(formData?.authenticationType)) {
             formData.authenticationType = formData.authenticationType[0];
+        } else {
+            formData.authenticationType = 'simple'
         }
 
         if (formData?.referral && formData?.referral.length > 0 && Array.isArray(formData?.referral)) {

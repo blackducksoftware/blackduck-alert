@@ -59,7 +59,7 @@ public class LDAPConfigModel extends ConfigWithMetadata implements Obfuscated<LD
         this(id, serverName, managerDn, managerPassword);
         this.enabled = enabled;
         this.isManagerPasswordSet = isManagerPasswordSet;
-        this.authenticationType = authenticationType;
+        this.authenticationType = LDAPAuthenticationType.fromString(authenticationType);
         this.referral = referral;
         this.userSearchBase = userSearchBase;
         this.userSearchFilter = userSearchFilter;
@@ -141,7 +141,7 @@ public class LDAPConfigModel extends ConfigWithMetadata implements Obfuscated<LD
     }
 
     public void setAuthenticationType(String authenticationType) {
-        this.authenticationType = authenticationType;
+        this.authenticationType = LDAPAuthenticationType.fromString(authenticationType);
     }
 
     public Optional<String> getReferral() {
