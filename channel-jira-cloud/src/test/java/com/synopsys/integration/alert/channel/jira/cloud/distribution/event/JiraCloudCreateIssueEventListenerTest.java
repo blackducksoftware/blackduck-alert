@@ -11,7 +11,6 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.amqp.core.Message;
-import org.springframework.core.task.SyncTaskExecutor;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
@@ -66,7 +65,7 @@ class JiraCloudCreateIssueEventListenerTest {
         Optional<JobSubTaskStatusModel> optionalJobSubTaskStatusModel = jobSubTaskAccessor.getSubTaskStatus(parentEventId);
         assertTrue(optionalJobSubTaskStatusModel.isPresent());
 
-        JiraCloudCreateIssueEventListener listener = new JiraCloudCreateIssueEventListener(gson, new SyncTaskExecutor(), ChannelKeys.JIRA_CLOUD, handler);
+        JiraCloudCreateIssueEventListener listener = new JiraCloudCreateIssueEventListener(gson, ChannelKeys.JIRA_CLOUD, handler);
         Message message = new Message(gson.toJson(event).getBytes());
         listener.onMessage(message);
 
