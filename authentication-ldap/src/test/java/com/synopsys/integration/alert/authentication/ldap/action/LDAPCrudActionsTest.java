@@ -15,6 +15,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.authentication.ldap.database.accessor.LDAPConfigAccessor;
 import com.synopsys.integration.alert.authentication.ldap.database.configuration.MockLDAPConfigurationRepository;
+import com.synopsys.integration.alert.authentication.ldap.model.LDAPAuthenticationType;
 import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigModel;
 import com.synopsys.integration.alert.authentication.ldap.validator.LDAPConfigurationValidator;
 import com.synopsys.integration.alert.common.AlertProperties;
@@ -29,6 +30,9 @@ import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
 
 class LDAPCrudActionsTest {
+    private static final String DEFAULT_AUTHENTICATION_TYPE_SIMPLE = LDAPAuthenticationType.simple.name();
+    private static final String DEFAULT_AUTHENTICATION_TYPE_DIGEST = LDAPAuthenticationType.digest.name();
+
     private static LDAPCrudActions ldapCrudActions;
     private static LDAPConfigModel ldapConfigModel;
 
@@ -95,15 +99,15 @@ class LDAPCrudActionsTest {
         assertTrue(actionResponseCreate.isSuccessful());
         assertEquals(HttpStatus.OK, actionResponseCreate.getHttpStatus());
         assertTrue(actionResponseCreate.hasContent());
-        assertEquals("authenticationType", createdLDAPConfigModel.getAuthenticationType().orElse("FAIL"));
+        assertEquals(DEFAULT_AUTHENTICATION_TYPE_SIMPLE, createdLDAPConfigModel.getAuthenticationType().orElse("FAIL"));
 
-        ldapConfigModel.setAuthenticationType("UPDATE");
+        ldapConfigModel.setAuthenticationType(DEFAULT_AUTHENTICATION_TYPE_DIGEST);
         ActionResponse<LDAPConfigModel> actionResponseUpdate = ldapCrudActions.update(ldapConfigModel);
         LDAPConfigModel updatedLDAPConfigModel = actionResponseUpdate.getContent().orElseThrow(() -> new AssertionFailedError("Updated LDAPConfigModel did not exist"));
         assertTrue(actionResponseUpdate.isSuccessful());
         assertEquals(HttpStatus.OK, actionResponseUpdate.getHttpStatus());
         assertTrue(actionResponseUpdate.hasContent());
-        assertEquals("UPDATE", updatedLDAPConfigModel.getAuthenticationType().orElse("FAIL"));
+        assertEquals(DEFAULT_AUTHENTICATION_TYPE_DIGEST, updatedLDAPConfigModel.getAuthenticationType().orElse("FAIL"));
     }
 
     @Test
@@ -137,7 +141,7 @@ class LDAPCrudActionsTest {
             "managerDn",
             "managerPassword",
             true,
-            "authenticationType",
+            DEFAULT_AUTHENTICATION_TYPE_SIMPLE,
             "referral",
             "userSearchBase",
             "userSearchFilter",

@@ -24,6 +24,7 @@ import com.synopsys.integration.alert.api.authentication.security.UserManagement
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.authentication.ldap.database.accessor.LDAPConfigAccessor;
 import com.synopsys.integration.alert.authentication.ldap.database.configuration.MockLDAPConfigurationRepository;
+import com.synopsys.integration.alert.authentication.ldap.model.LDAPAuthenticationType;
 import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigModel;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
@@ -35,8 +36,8 @@ import com.synopsys.integration.alert.test.common.MockAlertProperties;
 public class LdapManagerTest {
     private static final String DEFAULT_CONFIG_ID = UUID.randomUUID().toString();
     private static final String DEFAULT_DATE_STRING = DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
-    private static final String DEFAULT_AUTHENTICATION_TYPE_SIMPLE = "simple";
-    private static final String DEFAULT_AUTHENTICATION_TYPE_DIGEST = "digest";
+    private static final String DEFAULT_AUTHENTICATION_TYPE_SIMPLE = LDAPAuthenticationType.simple.name();
+    private static final String DEFAULT_AUTHENTICATION_TYPE_DIGEST = LDAPAuthenticationType.digest.name();
     private static final String DEFAULT_GROUP_ROLE_ATTRIBUTE = "groupRoleAttribute";
     private static final String DEFAULT_GROUP_SEARCH_BASE = "groupSearchBase";
     private static final String DEFAULT_GROUP_SEARCH_FILTER = "groupSearchFilter";
@@ -85,7 +86,7 @@ public class LdapManagerTest {
         assertEquals(DEFAULT_MANAGER_DN, expectedLDAPConfigModel.getManagerDn());
         assertTrue(expectedLDAPConfigModel.getManagerPassword().isPresent());
         assertOptionalField(DEFAULT_MANAGER_PASSWORD, expectedLDAPConfigModel::getManagerPassword);
-        assertEquals("", expectedLDAPConfigModel.getAuthenticationType().orElse(""));
+        assertEquals(DEFAULT_AUTHENTICATION_TYPE_SIMPLE, expectedLDAPConfigModel.getAuthenticationType().orElse(""));
         assertOptionalField(DEFAULT_REFERRAL, expectedLDAPConfigModel::getReferral);
         assertOptionalField(DEFAULT_USER_SEARCH_BASE, expectedLDAPConfigModel::getUserSearchBase);
         assertOptionalField(DEFAULT_USER_SEARCH_FILTER, expectedLDAPConfigModel::getUserSearchFilter);
@@ -136,7 +137,7 @@ public class LdapManagerTest {
         LDAPConfigModel expectedLDAPConfigModel = ldapManager.getCurrentConfiguration()
             .orElseThrow(() -> new AssertionFailedError("Expected LDAPConfigModel did not exist"));
         assertDoesNotThrow(() -> ldapManager.getAuthenticationProvider());
-        assertEquals("", expectedLDAPConfigModel.getAuthenticationType().orElse(""));
+        assertEquals(DEFAULT_AUTHENTICATION_TYPE_SIMPLE, expectedLDAPConfigModel.getAuthenticationType().orElse(""));
     }
 
     @Test
@@ -166,7 +167,7 @@ public class LdapManagerTest {
         LDAPConfigModel expectedLDAPConfigModel = ldapManager.getCurrentConfiguration()
             .orElseThrow(() -> new AssertionFailedError("Expected LDAPConfigModel did not exist"));
         assertDoesNotThrow(() -> ldapManager.getAuthenticationProvider());
-        assertOptionalField("Unsupported authentication type", expectedLDAPConfigModel::getAuthenticationType);
+        assertOptionalField(DEFAULT_AUTHENTICATION_TYPE_SIMPLE, expectedLDAPConfigModel::getAuthenticationType);
     }
 
     @Test
