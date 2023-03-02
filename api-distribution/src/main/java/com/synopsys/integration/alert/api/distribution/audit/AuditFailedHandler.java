@@ -30,8 +30,10 @@ public class AuditFailedHandler implements AlertEventHandler<AuditFailedEvent> {
     public void handle(AuditFailedEvent event) {
         UUID jobExecutionId = event.getJobExecutionId();
         UUID jobConfigId = event.getJobConfigId();
+        synchronized (this) {
             if (event.getStackTrace().isPresent()) {
                 processingFailedAccessor.setAuditFailure(
+                    jobExecutionId,
                     jobConfigId,
                     event.getNotificationIds(),
                     event.getCreatedTimestamp(),
@@ -39,8 +41,9 @@ public class AuditFailedHandler implements AlertEventHandler<AuditFailedEvent> {
                     event.getStackTrace().orElse("NO STACK TRACE")
                 );
             } else {
-                processingFailedAccessor.setAuditFailure(jobConfigId, event.getNotificationIds(), event.getCreatedTimestamp(), event.getErrorMessage());
+                processingFailedAccessor.setAuditFailure(jobExecutionId, jobConfigId, event.getNotificationIds(), event.getCreatedTimestamp(), event.getErrorMessage());
             }
+        }
         executingJobManager.updateJobStatus(jobExecutionId, AuditEntryStatus.FAILURE);
         executingJobManager.getExecutingJob(jobExecutionId)
             .filter(Predicate.not(ExecutingJob::hasRemainingEvents))

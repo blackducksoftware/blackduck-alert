@@ -25,8 +25,8 @@ public class MockAuditFailedEntryRepository extends MockRepositoryContainer<UUID
     }
 
     @Override
-    public List<AuditFailedEntity> findAllByTimeCreatedBefore(final OffsetDateTime expirationDate) {
-        Predicate<AuditFailedEntity> dateAfterExpiration = entry -> entry.getTimeCreated().isBefore(expirationDate);
+    public List<AuditFailedEntity> findAllByCreatedAtBefore(OffsetDateTime expirationDate) {
+        Predicate<AuditFailedEntity> dateAfterExpiration = entry -> entry.getCreatedAt().isBefore(expirationDate);
         return getDataMap().values().stream()
             .filter(dateAfterExpiration)
             .collect(Collectors.toList());

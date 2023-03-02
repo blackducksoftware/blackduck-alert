@@ -77,26 +77,28 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
     }
 
     @Override
-    @Transactional
-    public void setAuditFailure(UUID jobId, Set<Long> notificationIds, OffsetDateTime occurrence, String errorMessage) {
+    @Transactional()
+    public void setAuditFailure(UUID jobExecutionId, UUID jobId, Set<Long> notificationIds, OffsetDateTime occurrence, String errorMessage) {
         List<AlertNotificationModel> notificationModels = notificationAccessor.findByIds(new ArrayList<>(notificationIds));
         Optional<DistributionJobModel> distributionJobModel = jobAccessor.getJobById(jobId);
         Map<Long, String> auditedNotifications = new HashMap<>();
         for (AlertNotificationModel notificationModel : notificationModels) {
             Long notificationId = notificationModel.getId();
-            AuditFailedEntity auditFailedEntity = new AuditFailedEntity(
-                UUID.randomUUID(),
-                occurrence,
-                distributionJobModel.map(DistributionJobModel::getName).orElse(UNKNOWN_JOB),
-                notificationModel.getProvider(),
-                notificationModel.getProviderConfigName(),
-                distributionJobModel.map(DistributionJobModel::getChannelDescriptorName).orElse(UNKNOWN_CHANNEL),
-                notificationModel.getNotificationType(),
-                errorMessage,
-                notificationId
-            );
-            auditFailedEntryRepository.save(auditFailedEntity);
-            auditedNotifications.put(notificationId, notificationModel.getContent());
+            if (!auditFailedEntryRepository.existsById(jobExecutionId)) {
+                AuditFailedEntity auditFailedEntity = new AuditFailedEntity(
+                    jobExecutionId,
+                    occurrence,
+                    distributionJobModel.map(DistributionJobModel::getName).orElse(UNKNOWN_JOB),
+                    notificationModel.getProvider(),
+                    notificationModel.getProviderConfigName(),
+                    distributionJobModel.map(DistributionJobModel::getChannelDescriptorName).orElse(UNKNOWN_CHANNEL),
+                    notificationModel.getNotificationType(),
+                    errorMessage,
+                    notificationId
+                );
+                auditFailedEntryRepository.save(auditFailedEntity);
+                auditedNotifications.put(notificationId, notificationModel.getContent());
+            }
         }
         List<AuditFailedNotificationEntity> notificationEntities = auditedNotifications.entrySet().stream()
             .filter(notification -> !auditFailedNotificationRepository.existsById(notification.getKey()))
@@ -107,26 +109,28 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
 
     @Override
     @Transactional
-    public void setAuditFailure(UUID jobId, Set<Long> notificationIds, OffsetDateTime occurrence, String errorMessage, String stackTrace) {
+    public void setAuditFailure(UUID jobExecutionId, UUID jobId, Set<Long> notificationIds, OffsetDateTime occurrence, String errorMessage, String stackTrace) {
         List<AlertNotificationModel> notificationModels = notificationAccessor.findByIds(new ArrayList<>(notificationIds));
         Optional<DistributionJobModel> distributionJobModel = jobAccessor.getJobById(jobId);
         Map<Long, String> auditedNotifications = new HashMap<>();
         for (AlertNotificationModel notificationModel : notificationModels) {
             Long notificationId = notificationModel.getId();
-            AuditFailedEntity auditFailedEntity = new AuditFailedEntity(
-                UUID.randomUUID(),
-                occurrence,
-                distributionJobModel.map(DistributionJobModel::getName).orElse(UNKNOWN_JOB),
-                notificationModel.getProvider(),
-                notificationModel.getProviderConfigName(),
-                distributionJobModel.map(DistributionJobModel::getChannelDescriptorName).orElse(UNKNOWN_CHANNEL),
-                notificationModel.getNotificationType(),
-                errorMessage,
-                stackTrace,
-                notificationId
-            );
-            auditFailedEntryRepository.save(auditFailedEntity);
-            auditedNotifications.put(notificationId, notificationModel.getContent());
+            if (!auditFailedEntryRepository.existsById(jobExecutionId)) {
+                AuditFailedEntity auditFailedEntity = new AuditFailedEntity(
+                    jobExecutionId,
+                    occurrence,
+                    distributionJobModel.map(DistributionJobModel::getName).orElse(UNKNOWN_JOB),
+                    notificationModel.getProvider(),
+                    notificationModel.getProviderConfigName(),
+                    distributionJobModel.map(DistributionJobModel::getChannelDescriptorName).orElse(UNKNOWN_CHANNEL),
+                    notificationModel.getNotificationType(),
+                    errorMessage,
+                    stackTrace,
+                    notificationId
+                );
+                auditFailedEntryRepository.save(auditFailedEntity);
+                auditedNotifications.put(notificationId, notificationModel.getContent());
+            }
         }
 
         List<AuditFailedNotificationEntity> notificationEntities = auditedNotifications.entrySet().stream()
@@ -139,7 +143,7 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
     @Override
     @Transactional
     public void deleteAuditEntriesBefore(OffsetDateTime expirationDate) {
-        List<AuditFailedEntity> auditFailedEntities = auditFailedEntryRepository.findAllByTimeCreatedBefore(expirationDate);
+        List<AuditFailedEntity> auditFailedEntities = auditFailedEntryRepository.findAllByCreatedAtBefore(expirationDate);
         Set<Long> notificationIds = auditFailedEntities.stream()
             .map(AuditFailedEntity::getNotificationId)
             .collect(Collectors.toSet());
@@ -166,8 +170,8 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
             List<JobAuditModel> jobAuditModels = jobAuditModelMap.computeIfAbsent(entity.getNotificationId(), ignored -> new LinkedList<>());
             AuditJobStatusModel jobStatusModel = new AuditJobStatusModel(
                 UUID.randomUUID(),
-                formatAuditDate(entity.getTimeCreated()),
-                formatAuditDate(entity.getTimeCreated()),
+                formatAuditDate(entity.getCreatedAt()),
+                formatAuditDate(entity.getCreatedAt()),
                 AuditEntryStatus.FAILURE.getDisplayName()
             );
             jobAuditModels.add(new JobAuditModel(
@@ -191,7 +195,7 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
                     notificationConfig,
                     jobAuditModelMap.getOrDefault(notificationId, List.of()),
                     AuditEntryStatus.FAILURE.getDisplayName(),
-                    formatAuditDate(entity.getTimeCreated())
+                    formatAuditDate(entity.getCreatedAt())
                 );
             });
         }
@@ -201,11 +205,11 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
     private NotificationConfig createNotificationConfig(AuditFailedEntity entity) {
         return new NotificationConfig(
             entity.getNotificationId().toString(),
-            formatAuditDate(entity.getTimeCreated()),
+            formatAuditDate(entity.getCreatedAt()),
             entity.getProviderKey(),
             0L,
             entity.getProviderName(),
-            formatAuditDate(entity.getTimeCreated()),
+            formatAuditDate(entity.getCreatedAt()),
             entity.getNotificationType(),
             entity.getNotification().getNotificationContent()
         );
@@ -218,9 +222,15 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
 
     private PageRequest getPageRequestForFailures(Integer pageNumber, Integer pageSize, @Nullable String sortField, @Nullable String sortOrder) {
         boolean sortQuery = false;
-        String sortingField = "timeCreated";
+        String inputSortField;
+        String sortingField = "createdAt";
+        if ("lastSent".equals(sortField)) {
+            inputSortField = "createdAt";
+        } else {
+            inputSortField = sortField;
+        }
         List<String> validFields = List.of(
-            "timeCreated",
+            "createdAt",
             "jobName",
             "providerName",
             "channelName",
@@ -229,11 +239,11 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
             "errorStackTrace",
             "notificationId"
         );
-        Predicate<String> sortFieldMatch = fieldName -> fieldName.equalsIgnoreCase(sortField);
+        Predicate<String> sortFieldMatch = fieldName -> fieldName.equalsIgnoreCase(inputSortField);
         // We can only modify the query for the fields that exist in NotificationContent
-        if (StringUtils.isNotBlank(sortField) && validFields.stream()
+        if (StringUtils.isNotBlank(inputSortField) && validFields.stream()
             .anyMatch(sortFieldMatch)) {
-            sortingField = sortField;
+            sortingField = inputSortField;
             sortQuery = true;
         }
         Sort.Order sortingOrder = Sort.Order.desc(sortingField);
