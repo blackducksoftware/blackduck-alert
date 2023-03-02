@@ -33,16 +33,15 @@ class SAMLValidationActionTest {
         );
 
         validSAMLConfigModel = new SAMLTestHelper.SAMLConfigModelBuilder().setMetadataUrl("https://www.metadataurl.com/metadata_url").build();
-        invalidSAMLConfigModel = new SAMLTestHelper.SAMLConfigModelBuilder().build();   // Default builder is missing metadata which is invalid
+        // Default builder has blank metadatas which makes it invalid
+        invalidSAMLConfigModel = new SAMLTestHelper.SAMLConfigModelBuilder().build();
     }
 
     @Test
     void validateInvalidConfigModelReturnsErrors() {
         ActionResponse<ValidationResponseModel> validationResponseModelActionResponse = samlValidationAction.validate(invalidSAMLConfigModel);
-
         ValidationResponseModel validationResponseModel = validationResponseModelActionResponse.getContent()
             .orElseThrow(() -> new AssertionError("Expected response content not found"));
-
         assertFalse(validationResponseModelActionResponse.isError());
         assertEquals(HttpStatus.OK, validationResponseModelActionResponse.getHttpStatus());
         assertTrue(validationResponseModel.hasErrors());
@@ -52,10 +51,8 @@ class SAMLValidationActionTest {
     @Test
     void validateValidConfigModelReturnsNoErrors() {
         ActionResponse<ValidationResponseModel> validationResponseModelActionResponse = samlValidationAction.validate(validSAMLConfigModel);
-
         ValidationResponseModel validationResponseModel = validationResponseModelActionResponse.getContent()
             .orElseThrow(() -> new AssertionError("Expected response content not found"));
-
         assertFalse(validationResponseModelActionResponse.isError());
         assertEquals(HttpStatus.OK, validationResponseModelActionResponse.getHttpStatus());
         assertFalse(validationResponseModel.hasErrors());

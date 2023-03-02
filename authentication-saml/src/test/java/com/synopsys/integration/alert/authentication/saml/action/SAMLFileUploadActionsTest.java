@@ -55,35 +55,35 @@ class SAMLFileUploadActionsTest {
     }
 
     @Test
-    void metadataFileExistsOnUpload() {
+    void metadataFileExistsAfterUpload() {
         assertEquals(HttpStatus.NOT_FOUND, samlFileUploadActions.fileExists(AuthenticationDescriptor.SAML_METADATA_FILE).getHttpStatus());
-        samlFileUploadActions.metadataFileUpload(new ByteArrayResource("Dummy data".getBytes()));
 
+        samlFileUploadActions.metadataFileUpload(new ByteArrayResource("Dummy data".getBytes()));
         assertEquals(HttpStatus.NO_CONTENT, samlFileUploadActions.fileExists(AuthenticationDescriptor.SAML_METADATA_FILE).getHttpStatus());
     }
 
     @Test
-    void certFilesExistsOnUpload() {
+    void certFilesExistsAfterUpload() {
         assertEquals(HttpStatus.NOT_FOUND, samlFileUploadActions.fileExists(AuthenticationDescriptor.SAML_ENCRYPTION_CERT_FILE).getHttpStatus());
-        samlFileUploadActions.certFileUpload(AuthenticationDescriptor.SAML_ENCRYPTION_CERT_FILE, new ByteArrayResource("Dummy data".getBytes()));
 
+        samlFileUploadActions.certFileUpload(AuthenticationDescriptor.SAML_ENCRYPTION_CERT_FILE, new ByteArrayResource("Dummy data".getBytes()));
         assertEquals(HttpStatus.NO_CONTENT, samlFileUploadActions.fileExists(AuthenticationDescriptor.SAML_ENCRYPTION_CERT_FILE).getHttpStatus());
     }
 
     @Test
-    void privateKeyFileExistsOnUpload() {
+    void privateKeyFileExistsAfterUpload() {
         assertEquals(HttpStatus.NOT_FOUND, samlFileUploadActions.fileExists(AuthenticationDescriptor.SAML_ENCRYPTION_PRIVATE_KEY_FILE).getHttpStatus());
-        samlFileUploadActions.privateKeyFileUpload(AuthenticationDescriptor.SAML_ENCRYPTION_PRIVATE_KEY_FILE, new ByteArrayResource("Dummy data".getBytes()));
 
+        samlFileUploadActions.privateKeyFileUpload(AuthenticationDescriptor.SAML_ENCRYPTION_PRIVATE_KEY_FILE, new ByteArrayResource("Dummy data".getBytes()));
         assertEquals(HttpStatus.NO_CONTENT, samlFileUploadActions.fileExists(AuthenticationDescriptor.SAML_ENCRYPTION_PRIVATE_KEY_FILE).getHttpStatus());
     }
 
     @Test
-    void fileNotFoundOnDelete() {
+    void fileNotFoundAfterDelete() {
         // Upload the file
         assertEquals(HttpStatus.NOT_FOUND, samlFileUploadActions.fileExists(AuthenticationDescriptor.SAML_ENCRYPTION_PRIVATE_KEY_FILE).getHttpStatus());
-        samlFileUploadActions.privateKeyFileUpload(AuthenticationDescriptor.SAML_ENCRYPTION_PRIVATE_KEY_FILE, new ByteArrayResource("Dummy data".getBytes()));
 
+        samlFileUploadActions.privateKeyFileUpload(AuthenticationDescriptor.SAML_ENCRYPTION_PRIVATE_KEY_FILE, new ByteArrayResource("Dummy data".getBytes()));
         assertEquals(HttpStatus.NO_CONTENT, samlFileUploadActions.fileExists(AuthenticationDescriptor.SAML_ENCRYPTION_PRIVATE_KEY_FILE).getHttpStatus());
 
         // Delete the file and verify not found
