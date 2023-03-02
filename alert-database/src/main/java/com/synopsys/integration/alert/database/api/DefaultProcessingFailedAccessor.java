@@ -198,14 +198,6 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
         return new ArrayList<>(auditEntryModelMap.values());
     }
 
-    private String formatAuditDate(OffsetDateTime dateTime) {
-        if (null != dateTime) {
-            OffsetDateTime utcDateTime = DateUtils.fromInstantUTC(dateTime.toInstant());
-            return DateUtils.formatDate(utcDateTime, DateUtils.AUDIT_DATE_FORMAT);
-        }
-        return null;
-    }
-
     private NotificationConfig createNotificationConfig(AuditFailedEntity entity) {
         return new NotificationConfig(
             entity.getNotificationId().toString(),
@@ -217,6 +209,11 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
             entity.getNotificationType(),
             entity.getNotification().getNotificationContent()
         );
+    }
+
+    private String formatAuditDate(OffsetDateTime dateTime) {
+        OffsetDateTime utcDateTime = DateUtils.fromInstantUTC(dateTime.toInstant());
+        return DateUtils.formatDate(utcDateTime, DateUtils.AUDIT_DATE_FORMAT);
     }
 
     private PageRequest getPageRequestForFailures(Integer pageNumber, Integer pageSize, @Nullable String sortField, @Nullable String sortOrder) {
