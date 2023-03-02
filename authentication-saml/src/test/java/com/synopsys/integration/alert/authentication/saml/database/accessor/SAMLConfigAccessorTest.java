@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.authentication.saml.database.mock.accessor;
+package com.synopsys.integration.alert.authentication.saml.database.accessor;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.authentication.saml.SAMLTestHelper;

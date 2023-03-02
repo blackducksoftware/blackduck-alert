@@ -38,7 +38,7 @@ class SAMLValidationActionTest {
     }
 
     @Test
-    void validateInvalidConfigModelReturnsErrors() {
+    void validateHasErrorsOnInvalidConfigModel() {
         ActionResponse<ValidationResponseModel> validationResponseModelActionResponse = samlValidationAction.validate(invalidSAMLConfigModel);
         ValidationResponseModel validationResponseModel = validationResponseModelActionResponse.getContent()
             .orElseThrow(() -> new AssertionError("Expected response content not found"));
@@ -49,7 +49,7 @@ class SAMLValidationActionTest {
     }
 
     @Test
-    void validateValidConfigModelReturnsNoErrors() {
+    void validateHasNoErrorsOnValidConfigModel() {
         ActionResponse<ValidationResponseModel> validationResponseModelActionResponse = samlValidationAction.validate(validSAMLConfigModel);
         ValidationResponseModel validationResponseModel = validationResponseModelActionResponse.getContent()
             .orElseThrow(() -> new AssertionError("Expected response content not found"));
