@@ -28,5 +28,5 @@ public interface AuditFailedEntryRepository extends JpaRepository<AuditFailedEnt
 
     boolean existsByNotificationId(Long notificationId);
 
-    boolean existsById(UUID jobExecutionId);
+    boolean existsByJobNameAndNotificationId(String jobName, Long notificationId);
 }

@@ -78,17 +78,18 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
 
     @Override
     @Transactional()
-    public void setAuditFailure(UUID jobExecutionId, UUID jobId, Set<Long> notificationIds, OffsetDateTime occurrence, String errorMessage) {
+    public void setAuditFailure(UUID jobId, Set<Long> notificationIds, OffsetDateTime occurrence, String errorMessage) {
         List<AlertNotificationModel> notificationModels = notificationAccessor.findByIds(new ArrayList<>(notificationIds));
         Optional<DistributionJobModel> distributionJobModel = jobAccessor.getJobById(jobId);
         Map<Long, String> auditedNotifications = new HashMap<>();
         for (AlertNotificationModel notificationModel : notificationModels) {
             Long notificationId = notificationModel.getId();
-            if (!auditFailedEntryRepository.existsById(jobExecutionId)) {
+            String jobName = distributionJobModel.map(DistributionJobModel::getName).orElse(UNKNOWN_JOB);
+            if (!auditFailedEntryRepository.existsByJobNameAndNotificationId(jobName, notificationId)) {
                 AuditFailedEntity auditFailedEntity = new AuditFailedEntity(
-                    jobExecutionId,
+                    UUID.randomUUID(),
                     occurrence,
-                    distributionJobModel.map(DistributionJobModel::getName).orElse(UNKNOWN_JOB),
+                    jobName,
                     notificationModel.getProvider(),
                     notificationModel.getProviderConfigName(),
                     distributionJobModel.map(DistributionJobModel::getChannelDescriptorName).orElse(UNKNOWN_CHANNEL),
@@ -109,17 +110,18 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
 
     @Override
     @Transactional
-    public void setAuditFailure(UUID jobExecutionId, UUID jobId, Set<Long> notificationIds, OffsetDateTime occurrence, String errorMessage, String stackTrace) {
+    public void setAuditFailure(UUID jobId, Set<Long> notificationIds, OffsetDateTime occurrence, String errorMessage, String stackTrace) {
         List<AlertNotificationModel> notificationModels = notificationAccessor.findByIds(new ArrayList<>(notificationIds));
         Optional<DistributionJobModel> distributionJobModel = jobAccessor.getJobById(jobId);
         Map<Long, String> auditedNotifications = new HashMap<>();
         for (AlertNotificationModel notificationModel : notificationModels) {
             Long notificationId = notificationModel.getId();
-            if (!auditFailedEntryRepository.existsById(jobExecutionId)) {
+            String jobName = distributionJobModel.map(DistributionJobModel::getName).orElse(UNKNOWN_JOB);
+            if (!auditFailedEntryRepository.existsByJobNameAndNotificationId(jobName, notificationId)) {
                 AuditFailedEntity auditFailedEntity = new AuditFailedEntity(
-                    jobExecutionId,
+                    UUID.randomUUID(),
                     occurrence,
-                    distributionJobModel.map(DistributionJobModel::getName).orElse(UNKNOWN_JOB),
+                    jobName,
                     notificationModel.getProvider(),
                     notificationModel.getProviderConfigName(),
                     distributionJobModel.map(DistributionJobModel::getChannelDescriptorName).orElse(UNKNOWN_CHANNEL),

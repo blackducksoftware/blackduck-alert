@@ -10,9 +10,9 @@ public interface ProcessingFailedAccessor {
 
     AuditEntryPageModel getPageOfAuditEntries(Integer pageNumber, Integer pageSize, String searchTerm, String sortField, String sortOrder);
 
-    void setAuditFailure(UUID jobExecutionId, UUID jobId, Set<Long> notificationIds, OffsetDateTime occurrence, String errorMessage);
+    void setAuditFailure(UUID jobId, Set<Long> notificationIds, OffsetDateTime occurrence, String errorMessage);
 
-    void setAuditFailure(UUID jobExecutionId, UUID jobId, Set<Long> notificationIds, OffsetDateTime occurrence, String errorMessage, String stackTrace);
+    void setAuditFailure(UUID jobId, Set<Long> notificationIds, OffsetDateTime occurrence, String errorMessage, String stackTrace);
 
     void deleteAuditEntriesBefore(OffsetDateTime expirationDate);
 }

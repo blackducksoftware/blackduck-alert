@@ -38,4 +38,13 @@ public class MockAuditFailedEntryRepository extends MockRepositoryContainer<UUID
         return getDataMap().values().stream()
             .anyMatch(entryContainsNotification);
     }
+
+    @Override
+    public boolean existsByJobNameAndNotificationId(String jobName, Long notificationId) {
+        Predicate<AuditFailedEntity> entryContainsId = entry -> entry.getJobName().equals(jobName);
+        Predicate<AuditFailedEntity> entryContainsNotification = entry -> entry.getNotificationId().equals(notificationId);
+        return getDataMap().values()
+            .stream()
+            .anyMatch(entryContainsId.and(entryContainsNotification));
+    }
 }

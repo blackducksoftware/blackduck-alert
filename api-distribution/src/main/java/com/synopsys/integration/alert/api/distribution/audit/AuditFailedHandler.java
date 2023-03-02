@@ -33,7 +33,6 @@ public class AuditFailedHandler implements AlertEventHandler<AuditFailedEvent> {
         synchronized (this) {
             if (event.getStackTrace().isPresent()) {
                 processingFailedAccessor.setAuditFailure(
-                    jobExecutionId,
                     jobConfigId,
                     event.getNotificationIds(),
                     event.getCreatedTimestamp(),
@@ -41,7 +40,7 @@ public class AuditFailedHandler implements AlertEventHandler<AuditFailedEvent> {
                     event.getStackTrace().orElse("NO STACK TRACE")
                 );
             } else {
-                processingFailedAccessor.setAuditFailure(jobExecutionId, jobConfigId, event.getNotificationIds(), event.getCreatedTimestamp(), event.getErrorMessage());
+                processingFailedAccessor.setAuditFailure(jobConfigId, event.getNotificationIds(), event.getCreatedTimestamp(), event.getErrorMessage());
             }
         }
         executingJobManager.updateJobStatus(jobExecutionId, AuditEntryStatus.FAILURE);

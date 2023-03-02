@@ -60,11 +60,10 @@ class DefaultProcessingFailedAccessorTest {
             jobAccessor
         );
         UUID jobId = UUID.randomUUID();
-        UUID jobExecutionId = UUID.randomUUID();
         OffsetDateTime occurence = DateUtils.createCurrentDateTimestamp();
         String errorMessage = "Error Message";
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
-        processingFailedAccessor.setAuditFailure(jobExecutionId, jobId, notificationIds, occurence, errorMessage);
+        processingFailedAccessor.setAuditFailure(jobId, notificationIds, occurence, errorMessage);
 
         assertEquals(notificationIds.size(), auditFailedEntryRepository.count(), "wrong audit failure count");
         for (AuditFailedEntity entity : auditFailedEntryRepository.findAll()) {
@@ -80,7 +79,6 @@ class DefaultProcessingFailedAccessorTest {
     @Test
     void failureWithEmptyNotificationSetErrorMessageTest() {
         UUID jobId = UUID.randomUUID();
-        UUID jobExecutionId = UUID.randomUUID();
         JobAccessor jobAccessor = createJobAccessor(this::createJobModel);
         ProcessingFailedAccessor processingFailedAccessor = new DefaultProcessingFailedAccessor(
             auditFailedEntryRepository,
@@ -90,7 +88,7 @@ class DefaultProcessingFailedAccessorTest {
         );
         OffsetDateTime occurence = DateUtils.createCurrentDateTimestamp();
         String errorMessage = "Error Message";
-        processingFailedAccessor.setAuditFailure(jobExecutionId, jobId, Set.of(), occurence, errorMessage);
+        processingFailedAccessor.setAuditFailure(jobId, Set.of(), occurence, errorMessage);
 
         assertEquals(0, auditFailedEntryRepository.count(), "wrong audit failure count");
     }
@@ -98,7 +96,6 @@ class DefaultProcessingFailedAccessorTest {
     @Test
     void failureWithStackTrace() {
         UUID jobId = UUID.randomUUID();
-        UUID jobExecutionId = UUID.randomUUID();
         JobAccessor jobAccessor = createJobAccessor(this::createJobModel);
         ProcessingFailedAccessor processingFailedAccessor = new DefaultProcessingFailedAccessor(
             auditFailedEntryRepository,
@@ -110,7 +107,7 @@ class DefaultProcessingFailedAccessorTest {
         String errorMessage = "Error Message";
         String stackTrace = "stack trace";
         Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
-        processingFailedAccessor.setAuditFailure(jobExecutionId, jobId, notificationIds, occurence, errorMessage, stackTrace);
+        processingFailedAccessor.setAuditFailure(jobId, notificationIds, occurence, errorMessage, stackTrace);
 
         assertEquals(notificationIds.size(), auditFailedEntryRepository.count(), "wrong audit failure count");
         for (AuditFailedEntity entity : auditFailedEntryRepository.findAll()) {
