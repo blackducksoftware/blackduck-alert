@@ -26,7 +26,7 @@ class SAMLCrudActionsTest {
     private SAMLManager samlManager;
 
     @BeforeEach
-    public void init() {
+    void init() {
         FilePersistenceUtil filePersistenceUtil = SAMLTestHelper.createFilePersistenceUtil();
 
         samlCrudActions = new SAMLCrudActions(
@@ -44,7 +44,7 @@ class SAMLCrudActionsTest {
     }
 
     @Test
-    void testCreateConfig() {
+    void createNewConfigSucceeds() {
         ActionResponse<SAMLConfigModel> actionResponseGetOne = samlCrudActions.getOne();
         assertFalse(actionResponseGetOne.isSuccessful());
         assertEquals(HttpStatus.NOT_FOUND, actionResponseGetOne.getHttpStatus());
@@ -57,7 +57,7 @@ class SAMLCrudActionsTest {
     }
 
     @Test
-    void testUpdateConfig() {
+    void updateExistingConfigSucceeds() {
         ActionResponse<SAMLConfigModel> actionResponseCreate = samlCrudActions.create(samlConfigModel);
         SAMLConfigModel createdSAMLConfigModel = actionResponseCreate.getContent().orElseThrow(() -> new AssertionFailedError("Updated SAMLConfigModel did not exist"));
         assertTrue(actionResponseCreate.isSuccessful());
@@ -75,7 +75,7 @@ class SAMLCrudActionsTest {
     }
 
     @Test
-    void testDeleteConfigNotExist() {
+    void deleteNonExistingConfigReturnsNotFound() {
         ActionResponse<SAMLConfigModel> actionResponseDelete = samlCrudActions.delete();
         assertFalse(actionResponseDelete.isSuccessful());
         assertEquals(HttpStatus.NOT_FOUND, actionResponseDelete.getHttpStatus());
@@ -83,7 +83,7 @@ class SAMLCrudActionsTest {
     }
 
     @Test
-    void testDeleteConfig() {
+    void deleteExistingConfigSucceeds() {
         ActionResponse<SAMLConfigModel> actionResponseCreate = samlCrudActions.create(samlConfigModel);
         assertTrue(actionResponseCreate.isSuccessful());
         assertEquals(HttpStatus.OK, actionResponseCreate.getHttpStatus());
