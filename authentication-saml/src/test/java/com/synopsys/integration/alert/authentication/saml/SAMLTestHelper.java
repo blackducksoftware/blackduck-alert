@@ -16,6 +16,7 @@ import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
 
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.UUID;
 
@@ -34,6 +35,13 @@ public class SAMLTestHelper {
 
     public static FilePersistenceUtil createFilePersistenceUtil() {
         AlertProperties alertProperties = new MockAlertProperties();
+        return new FilePersistenceUtil(alertProperties, new Gson());
+    }
+
+    public static FilePersistenceUtil createTempDirFilePersistenceUtil(Path tempDir) {
+        // Create a temp directory for mockAlertProperties for filePersistenceUtils to use
+        MockAlertProperties alertProperties = new MockAlertProperties();
+        alertProperties.setAlertConfigHome(tempDir.toAbsolutePath().toString());
         return new FilePersistenceUtil(alertProperties, new Gson());
     }
 

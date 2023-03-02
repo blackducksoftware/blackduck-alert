@@ -37,16 +37,11 @@ class SAMLFileUploadActionsTest {
 
     @BeforeEach
     void init() {
-        // Create a temp directory for mockAlertProperties for filePersistenceUtils to use
-        MockAlertProperties alertProperties = new MockAlertProperties();
-        alertProperties.setAlertConfigHome(tempDir.toAbsolutePath().toString());
-        FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, new Gson());
-
         samlFileUploadActions = new SAMLFileUploadActions(
             SAMLTestHelper.createAuthorizationManager(),
             samlFileUploadValidator,
             new AuthenticationDescriptorKey(),
-            filePersistenceUtil
+            SAMLTestHelper.createTempDirFilePersistenceUtil(tempDir)
         );
 
         when(samlFileUploadValidator.validateMetadataFile(any(Resource.class))).thenReturn(ValidationResponseModel.success());
@@ -55,7 +50,7 @@ class SAMLFileUploadActionsTest {
     }
 
     @Test
-    void fileExistsReturns404OnNonExistingFile() {
+    void fileExistsReturnsNotFoundOnNonExistingFile() {
         assertEquals(HttpStatus.NOT_FOUND, samlFileUploadActions.fileExists("Dummy_file.xml").getHttpStatus());
     }
 
