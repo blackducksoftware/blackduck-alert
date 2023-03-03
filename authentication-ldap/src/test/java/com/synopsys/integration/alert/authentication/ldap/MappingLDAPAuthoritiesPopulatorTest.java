@@ -25,8 +25,8 @@ public class MappingLDAPAuthoritiesPopulatorTest {
     public void testEmptyGroupSearchBase() {
         UserManagementAuthoritiesPopulator userManagementAuthoritiesPopulator = Mockito.mock(UserManagementAuthoritiesPopulator.class);
         ContextSource contextSource = Mockito.mock(ContextSource.class);
-        MappingLDAPAuthoritiesPopulator mappingLdapAuthoritiesPopulator = new MappingLDAPAuthoritiesPopulator(contextSource, null, userManagementAuthoritiesPopulator);
-        Set<GrantedAuthority> actualRoles = mappingLdapAuthoritiesPopulator.getGroupMembershipRoles("", "");
+        MappingLDAPAuthoritiesPopulator mappingLDAPAuthoritiesPopulator = new MappingLDAPAuthoritiesPopulator(contextSource, null, userManagementAuthoritiesPopulator);
+        Set<GrantedAuthority> actualRoles = mappingLDAPAuthoritiesPopulator.getGroupMembershipRoles("", "");
         assertTrue(actualRoles.isEmpty());
     }
 
@@ -40,13 +40,13 @@ public class MappingLDAPAuthoritiesPopulatorTest {
                 throw new JUnitException("Group Membership Roles Test Exception");
             }
         };
-        MappingLDAPAuthoritiesPopulator mappingLdapAuthoritiesPopulator = new MappingLDAPAuthoritiesPopulator(contextSource, "searchbase={0}", userManagementAuthoritiesPopulator) {
+        MappingLDAPAuthoritiesPopulator mappingLDAPAuthoritiesPopulator = new MappingLDAPAuthoritiesPopulator(contextSource, "searchbase={0}", userManagementAuthoritiesPopulator) {
             @Override
             protected SpringSecurityLdapTemplate getLdapTemplate() {
                 return ldapTemplate;
             }
         };
-        Set<GrantedAuthority> actualRoles = mappingLdapAuthoritiesPopulator.getGroupMembershipRoles(null, null);
+        Set<GrantedAuthority> actualRoles = mappingLDAPAuthoritiesPopulator.getGroupMembershipRoles(null, null);
         assertTrue(actualRoles.isEmpty());
     }
 
@@ -57,8 +57,8 @@ public class MappingLDAPAuthoritiesPopulatorTest {
             .when(userManagementAuthoritiesPopulator).addAdditionalRoles(Mockito.anyString(), Mockito.anySet());
         ContextSource contextSource = Mockito.mock(ContextSource.class);
         DirContextOperations user = Mockito.mock(DirContextOperations.class);
-        MappingLDAPAuthoritiesPopulator mappingLdapAuthoritiesPopulator = new MappingLDAPAuthoritiesPopulator(contextSource, null, userManagementAuthoritiesPopulator);
-        Set<GrantedAuthority> actualRoles = mappingLdapAuthoritiesPopulator.getAdditionalRoles(user, "");
+        MappingLDAPAuthoritiesPopulator mappingLDAPAuthoritiesPopulator = new MappingLDAPAuthoritiesPopulator(contextSource, null, userManagementAuthoritiesPopulator);
+        Set<GrantedAuthority> actualRoles = mappingLDAPAuthoritiesPopulator.getAdditionalRoles(user, "");
         boolean hasAlertUserRole = actualRoles.stream()
             .map(GrantedAuthority::getAuthority)
             .allMatch(roleName -> DefaultUserRole.ALERT_USER.name().equals(roleName));

@@ -15,7 +15,7 @@ public class LDAPConfigTestModel {
         this.testLDAPPassword = testLDAPPassword;
     }
 
-    public LDAPConfigModel getLdapConfigModel() {
+    public LDAPConfigModel getLDAPConfigModel() {
         return ldapConfigModel;
     }
 

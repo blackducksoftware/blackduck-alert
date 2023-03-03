@@ -37,7 +37,7 @@ public class LDAPAuthenticationPerformer extends AuthenticationPerformer {
     public Authentication authenticateWithProvider(Authentication pendingAuthentication) {
         logger.info("Checking ldap based authentication...");
         Authentication result = pendingAuthentication;
-        if (Boolean.TRUE.equals(ldapManager.isLdapEnabled())) {
+        if (Boolean.TRUE.equals(ldapManager.isLDAPEnabled())) {
             logger.info("LDAP authentication enabled");
             try {
                 Optional<LdapAuthenticationProvider> authenticationProvider = ldapManager.getAuthenticationProvider();

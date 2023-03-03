@@ -43,7 +43,7 @@ public class LDAPManagerTest {
     @Test
     public void testCreateConfiguration() {
         assertFalse(ldapManager.getCurrentConfiguration().isPresent());
-        assertFalse(ldapManager.isLdapEnabled());
+        assertFalse(ldapManager.isLDAPEnabled());
 
         validLDAPConfigModel.setAuthenticationType("");
         assertDoesNotThrow(() -> ldapConfigAccessor.createConfiguration(validLDAPConfigModel));
@@ -51,7 +51,7 @@ public class LDAPManagerTest {
             .orElseThrow(() -> new AssertionFailedError("Expected LDAPConfigModel did not exist"));
 
         assertEquals(AlertRestConstants.DEFAULT_CONFIGURATION_NAME, expectedLDAPConfigModel.getName());
-        assertTrue(ldapManager.isLdapEnabled());
+        assertTrue(ldapManager.isLDAPEnabled());
 
         assertNotEquals(LDAPTestHelper.DEFAULT_CONFIG_ID, expectedLDAPConfigModel.getId());
         assertTrue(expectedLDAPConfigModel.getEnabled());

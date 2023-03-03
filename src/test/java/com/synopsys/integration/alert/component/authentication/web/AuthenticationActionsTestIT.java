@@ -133,7 +133,7 @@ class AuthenticationActionsTestIT {
         LdapAuthenticationProvider ldapAuthenticationProvider = Mockito.mock(LdapAuthenticationProvider.class);
         Mockito.when(ldapAuthenticationProvider.authenticate(Mockito.any(Authentication.class))).thenReturn(authentication);
         LDAPManager mockLDAPManager = Mockito.mock(LDAPManager.class);
-        Mockito.when(mockLDAPManager.isLdapEnabled()).thenReturn(true);
+        Mockito.when(mockLDAPManager.isLDAPEnabled()).thenReturn(true);
         Mockito.when(mockLDAPManager.getAuthenticationProvider()).thenReturn(Optional.of(ldapAuthenticationProvider));
 
         AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, csrfTokenRepository);
@@ -151,7 +151,7 @@ class AuthenticationActionsTestIT {
         LdapAuthenticationProvider ldapAuthenticationProvider = Mockito.mock(LdapAuthenticationProvider.class);
         Mockito.when(ldapAuthenticationProvider.authenticate(Mockito.any(Authentication.class))).thenReturn(authentication);
         LDAPManager mockLDAPManager = Mockito.mock(LDAPManager.class);
-        Mockito.when(mockLDAPManager.isLdapEnabled()).thenReturn(true);
+        Mockito.when(mockLDAPManager.isLDAPEnabled()).thenReturn(true);
         Mockito.when(mockLDAPManager.getAuthenticationProvider()).thenThrow(new AlertConfigurationException("LDAP CONFIG EXCEPTION"));
         DaoAuthenticationProvider databaseProvider = Mockito.mock(DaoAuthenticationProvider.class);
         Mockito.when(databaseProvider.authenticate(Mockito.any(Authentication.class))).thenReturn(authentication);
