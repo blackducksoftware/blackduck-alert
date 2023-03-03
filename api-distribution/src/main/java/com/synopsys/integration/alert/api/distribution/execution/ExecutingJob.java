@@ -20,6 +20,7 @@ public class ExecutingJob {
 
     private final AtomicInteger remainingEvents;
 
+    private final AtomicInteger expectedNotificationsToSend;
     private final AtomicInteger notificationsSent;
 
     private final Map<JobStage, ExecutingJobStage> stages = new ConcurrentHashMap<>();
@@ -36,6 +37,7 @@ public class ExecutingJob {
         this.processedNotificationCount = new AtomicInteger(0);
         this.totalNotificationCount = new AtomicInteger(totalNotificationCount);
         this.remainingEvents = new AtomicInteger(0);
+        this.expectedNotificationsToSend = new AtomicInteger(0);
         this.notificationsSent = new AtomicInteger(0);
     }
 
@@ -72,6 +74,12 @@ public class ExecutingJob {
     public void updateNotificationCount(int notificationCount) {
         synchronized (this) {
             this.processedNotificationCount.addAndGet(notificationCount);
+        }
+    }
+
+    public void incrementExpectedNotificationsSent(int notificationCount) {
+        synchronized (this) {
+            this.expectedNotificationsToSend.addAndGet(notificationCount);
         }
     }
 
@@ -117,6 +125,10 @@ public class ExecutingJob {
 
     public int getTotalNotificationCount() {
         return totalNotificationCount.get();
+    }
+
+    public int getExpectedNotificationsToSend() {
+        return expectedNotificationsToSend.get();
     }
 
     public int getNotificationsSent() {

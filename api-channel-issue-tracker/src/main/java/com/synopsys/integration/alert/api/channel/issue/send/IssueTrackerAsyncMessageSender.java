@@ -17,6 +17,7 @@ import com.synopsys.integration.alert.api.distribution.execution.JobStage;
 import com.synopsys.integration.alert.api.distribution.execution.JobStageStartedEvent;
 import com.synopsys.integration.alert.api.event.AlertEvent;
 import com.synopsys.integration.alert.api.event.EventManager;
+import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 
 public class IssueTrackerAsyncMessageSender<T extends Serializable> {
@@ -63,6 +64,11 @@ public class IssueTrackerAsyncMessageSender<T extends Serializable> {
         executingJobManager.incrementSentNotificationCount(jobExecutionId, notificationIds.size());
         if (eventList.isEmpty()) {
             jobSubTaskAccessor.removeSubTaskStatus(parentEventId);
+            if (!executingJobManager.hasRemainingEvents(jobExecutionId)
+                && executingJobManager.hasSentExpectedNotifications(jobExecutionId)) {
+                executingJobManager.updateJobStatus(jobExecutionId, AuditEntryStatus.SUCCESS);
+                executingJobManager.endJob(jobExecutionId, Instant.now());
+            }
         } else {
             jobSubTaskAccessor.updateTaskCount(parentEventId, (long) eventList.size());
             executingJobManager.incrementRemainingEvents(jobExecutionId, eventList.size());
