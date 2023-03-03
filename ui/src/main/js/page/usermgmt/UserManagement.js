@@ -4,14 +4,15 @@ import PropTypes from 'prop-types';
 import { Tab, Tabs } from 'react-bootstrap';
 import PageHeader from 'common/component/navigation/PageHeader';
 import RoleTable from 'page/usermgmt/RoleTable';
-import UserTabler from 'page/usermgmt/user/UserTable';
+import { default as UserTableStagedForDelete } from 'page/usermgmt/UserTable';
 import * as DescriptorUtilities from 'common/util/descriptorUtilities';
 import { USER_MANAGEMENT_INFO } from 'page/usermgmt/UserModel';
 
 import BetaPage from 'common/component/beta/BetaPage';
 import BetaComponent from 'common/component/beta/BetaComponent';
 import CurrentComponent from 'common/component/beta/CurrentComponent';
-import UserTable from 'page/usermgmt/UserTable';
+import UserTable from 'page/usermgmt/user/UserTable';
+
 
 
 const UserManagement = ({ descriptors }) => {
@@ -30,10 +31,10 @@ const UserManagement = ({ descriptors }) => {
                 <Tab eventKey={1} title="Users">
                     <BetaPage betaSelected>
                         <BetaComponent>
-                            <UserTabler canCreate={canCreate} canDelete={canDelete} />
+                            <UserTable canCreate={canCreate} canDelete={canDelete} />
                         </BetaComponent>
                         <CurrentComponent>
-                            <UserTable canCreate={canCreate} canDelete={canDelete} />
+                            <UserTableStagedForDelete canCreate={canCreate} canDelete={canDelete} />
                         </CurrentComponent>
                     </BetaPage>
                 </Tab>

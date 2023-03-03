@@ -9,7 +9,7 @@ import Modal from 'common/component/modal/Modal';
 import PasswordInput from 'common/component/input/PasswordInput';
 import TextInput from 'common/component/input/TextInput';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
-import UserFieldKeyEnum from 'page/usermgmt/user/UserModel';
+import { USER_INPUT_FIELD_KEYS } from 'page/usermgmt/user/UserModel';
 
 const useStyles = createUseStyles({
     descriptorContainer: {
@@ -50,6 +50,20 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions }) => {
         }
     }, [saveStatus]);
 
+    function passwordsMatch(user) {
+        let passwordError = {};
+        let matching = true;
+
+        if ((user[USER_INPUT_FIELD_KEYS.PASSWORD_KEY] || user[USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_KEY]) && (user[USER_INPUT_FIELD_KEYS.PASSWORD_KEY] !== user[USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_KEY])) {
+            passwordError = HTTPErrorUtils.createFieldError('Passwords do not match.');
+            matching = false;
+        }
+        setUserModel(Object.assign(user, { [USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_ERROR_KEY]: passwordError }));
+        // TODO: Why do I have to refresh data for this validation to show?
+        dispatch(fetchUsers());
+        return matching;
+    }
+
     function handleClose() {
         toggleModal(false);
         dispatch(fetchUsers());
@@ -71,23 +85,8 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions }) => {
         }
 
         if (passwordsMatch(userModel)) {
-            console.log('here', userModel);
             dispatch(validateUser(userModel));
         }
-    }
-
-    function passwordsMatch(user) {
-        let passwordError = {};
-        let matching = true;
-
-        if ((user[UserFieldKeyEnum.PASSWORD_KEY] || user[UserFieldKeyEnum.CONFIRM_PASSWORD_KEY]) && (user[UserFieldKeyEnum.PASSWORD_KEY] !== user[UserFieldKeyEnum.CONFIRM_PASSWORD_KEY])) {
-            passwordError = HTTPErrorUtils.createFieldError('Passwords do not match.');
-            matching = false;
-        }
-        setUserModel(Object.assign(user, { [UserFieldKeyEnum.CONFIRM_PASSWORD_ERROR_KEY]: passwordError }));
-        // TODO: Why do I have to refresh data for this validation to show?
-        dispatch(fetchUsers());
-        return matching;
     }
 
     function getRoles() {
@@ -121,70 +120,70 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions }) => {
             )}
             <div>
                 <TextInput
-                    id={UserFieldKeyEnum.USERNAME_KEY}
-                    name={UserFieldKeyEnum.USERNAME_KEY}
+                    id={USER_INPUT_FIELD_KEYS.USERNAME_KEY}
+                    name={USER_INPUT_FIELD_KEYS.USERNAME_KEY}
                     label="Username"
                     description="The user's username."
                     placeholder="Enter username..."
                     readOnly={external}
                     required={!external}
-                    onChange={handleOnChange(UserFieldKeyEnum.USERNAME_KEY)}
-                    value={userModel[UserFieldKeyEnum.USERNAME_KEY]}
-                    errorName={UserFieldKeyEnum.USERNAME_KEY}
-                    errorValue={fieldErrors[UserFieldKeyEnum.USERNAME_KEY]}
+                    onChange={handleOnChange(USER_INPUT_FIELD_KEYS.USERNAME_KEY)}
+                    value={userModel[USER_INPUT_FIELD_KEYS.USERNAME_KEY]}
+                    errorName={USER_INPUT_FIELD_KEYS.USERNAME_KEY}
+                    errorValue={fieldErrors[USER_INPUT_FIELD_KEYS.USERNAME_KEY]}
                 />
                 <PasswordInput
-                    id={UserFieldKeyEnum.PASSWORD_KEY}
-                    name={UserFieldKeyEnum.PASSWORD_KEY}
+                    id={USER_INPUT_FIELD_KEYS.PASSWORD_KEY}
+                    name={USER_INPUT_FIELD_KEYS.PASSWORD_KEY}
                     label="Password"
                     description="The user's password."
                     placeholder="Enter password..."
                     readOnly={external}
                     required={!external}
-                    onChange={handleOnChange(UserFieldKeyEnum.PASSWORD_KEY)}
-                    value={userModel[UserFieldKeyEnum.PASSWORD_KEY]}
-                    isSet={userModel[UserFieldKeyEnum.IS_PASSWORD_SET] || !type==='COPY'}
-                    errorName={UserFieldKeyEnum.PASSWORD_KEY}
-                    errorValue={fieldErrors[UserFieldKeyEnum.PASSWORD_KEY]}
+                    onChange={handleOnChange(USER_INPUT_FIELD_KEYS.PASSWORD_KEY)}
+                    value={userModel[USER_INPUT_FIELD_KEYS.PASSWORD_KEY]}
+                    isSet={userModel[USER_INPUT_FIELD_KEYS.IS_PASSWORD_SET] || !type==='COPY'}
+                    errorName={USER_INPUT_FIELD_KEYS.PASSWORD_KEY}
+                    errorValue={fieldErrors[USER_INPUT_FIELD_KEYS.PASSWORD_KEY]}
                 />
                 <PasswordInput
-                    id={UserFieldKeyEnum.CONFIRM_PASSWORD_KEY}
-                    name={UserFieldKeyEnum.CONFIRM_PASSWORD_KEY}
+                    id={USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_KEY}
+                    name={USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_KEY}
                     label="Confirm Password"
                     description="The user's password."
                     placeholder="Confirm password..."
                     readOnly={false}
                     required
-                    isSet={userModel[UserFieldKeyEnum.IS_PASSWORD_SET]}
-                    onChange={handleOnChange(UserFieldKeyEnum.CONFIRM_PASSWORD_KEY)}
-                    value={userModel[UserFieldKeyEnum.CONFIRM_PASSWORD_KEY]}
-                    errorName={UserFieldKeyEnum.CONFIRM_PASSWORD_KEY}
-                    errorValue={userModel[UserFieldKeyEnum.CONFIRM_PASSWORD_ERROR_KEY]}
+                    isSet={userModel[USER_INPUT_FIELD_KEYS.IS_PASSWORD_SET]}
+                    onChange={handleOnChange(USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_KEY)}
+                    value={userModel[USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_KEY]}
+                    errorName={USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_KEY}
+                    errorValue={userModel[USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_ERROR_KEY]}
                 />
                 <TextInput
-                    id={UserFieldKeyEnum.EMAIL_KEY}
-                    name={UserFieldKeyEnum.EMAIL_KEY}
+                    id={USER_INPUT_FIELD_KEYS.EMAIL_KEY}
+                    name={USER_INPUT_FIELD_KEYS.EMAIL_KEY}
                     label="Email"
                     description="The user's email."
                     placeholder="Enter email..."
                     readOnly={external}
                     required={!external}
-                    onChange={handleOnChange(UserFieldKeyEnum.EMAIL_KEY)}
-                    value={userModel[UserFieldKeyEnum.EMAIL_KEY]}
-                    errorName={UserFieldKeyEnum.EMAIL_KEY}
-                    errorValue={fieldErrors[UserFieldKeyEnum.EMAIL_KEY]}
+                    onChange={handleOnChange(USER_INPUT_FIELD_KEYS.EMAIL_KEY)}
+                    value={userModel[USER_INPUT_FIELD_KEYS.EMAIL_KEY]}
+                    errorName={USER_INPUT_FIELD_KEYS.EMAIL_KEY}
+                    errorValue={fieldErrors[USER_INPUT_FIELD_KEYS.EMAIL_KEY]}
                 />
                 <DynamicSelectInput
-                    name={UserFieldKeyEnum.ROLENAMES_KEY}
-                    id={UserFieldKeyEnum.ROLENAMES_KEY}
+                    name={USER_INPUT_FIELD_KEYS.ROLENAMES_KEY}
+                    id={USER_INPUT_FIELD_KEYS.ROLENAMES_KEY}
                     label="Roles"
-                    description="Select the roles you want associated with the UserFieldKeyEnum."
-                    onChange={handleOnChange(UserFieldKeyEnum.ROLENAMES_KEY)}
+                    description="Select the roles you want associated with the USER_INPUT_FIELD_KEYS."
+                    onChange={handleOnChange(USER_INPUT_FIELD_KEYS.ROLENAMES_KEY)}
                     multiSelect
                     options={getRoles()}
-                    value={userModel[UserFieldKeyEnum.ROLENAMES_KEY]}
-                    errorName={UserFieldKeyEnum.ROLENAMES_KEY}
-                    errorValue={fieldErrors[UserFieldKeyEnum.ROLENAMES_KEY]}
+                    value={userModel[USER_INPUT_FIELD_KEYS.ROLENAMES_KEY]}
+                    errorName={USER_INPUT_FIELD_KEYS.ROLENAMES_KEY}
+                    errorValue={fieldErrors[USER_INPUT_FIELD_KEYS.ROLENAMES_KEY]}
                 />
             </div>
         </Modal>

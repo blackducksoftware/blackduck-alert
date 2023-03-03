@@ -39,7 +39,7 @@ const COLUMNS = [{
     settings: { alignment: 'center' }
 }]
 
-const UserTableConvert = ({ canCreate, canDelete }) => {
+const UserTable = ({ canCreate, canDelete }) => {
     const dispatch = useDispatch();
     const [search, setNewSearch] = useState("");
     const [selected, setSelected] = useState([]);
@@ -91,9 +91,9 @@ const UserTableConvert = ({ canCreate, canDelete }) => {
     )
 }
 
-UserTableConvert.propTypes = {
+UserTable.propTypes = {
     canCreate: PropTypes.bool,
     canDelete: PropTypes.bool
 };
 
-export default UserTableConvert;
+export default UserTable;

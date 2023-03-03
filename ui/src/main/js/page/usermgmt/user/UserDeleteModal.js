@@ -48,8 +48,8 @@ const UserDeleteModal = ({ isOpen, toggleModal, data, selected }) => {
     const isMultiUserDelete = selectedUsers.length > 1;
 
     function getStagedForDelete() {
-        const staged = data.filter(user => selected.includes(user.id));
-        return staged.map(user => ({ ...user, staged: true }));
+        const staged = data.filter((user) => selected.includes(user.id));
+        return staged.map((user) => ({ ...user, staged: true }));
     }
 
     useEffect(() => {

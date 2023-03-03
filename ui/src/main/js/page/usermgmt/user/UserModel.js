@@ -1,4 +1,4 @@
-const UserFieldKeyEnum = {
+export const USER_INPUT_FIELD_KEYS = {
     CONFIRM_PASSWORD_KEY: 'confirmPassword',
     CONFIRM_PASSWORD_ERROR_KEY: 'confirmPasswordError',
     EMAIL_KEY: 'emailAddress',
@@ -8,4 +8,4 @@ const UserFieldKeyEnum = {
     USERNAME_KEY: 'username'
 };
 
-export default UserFieldKeyEnum;
+export default USER_INPUT_FIELD_KEYS;

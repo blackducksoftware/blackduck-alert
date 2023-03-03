@@ -25,7 +25,7 @@ const UserCopyRowAction = ({ data }) => {
 
     function handleClick() {
         setShowModal(true);
-        setSelectedData(userData => ({
+        setSelectedData((userData) => ({
             ...userData, 
             id: null, 
             username: '', 
