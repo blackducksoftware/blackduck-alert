@@ -166,6 +166,20 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
         }
     }
 
+    @Override
+    @Transactional
+    public void deleteAuditsWithNotificationId(Long notificationId) {
+        auditFailedEntryRepository.deleteAllByNotificationId(notificationId);
+    }
+
+    @Override
+    @Transactional
+    public void deleteAuditsWithJobIdAndNotificationId(UUID jobId, Long notificationId) {
+        Optional<DistributionJobModel> distributionJobModel = jobAccessor.getJobById(jobId);
+        String jobName = distributionJobModel.map(DistributionJobModel::getName).orElse(UNKNOWN_JOB);
+        auditFailedEntryRepository.deleteAllByJobNameAndNotificationId(jobName, notificationId);
+    }
+
     private List<AuditEntryModel> convertFailedEntries(List<AuditFailedEntity> failedEntities) {
         Map<Long, List<JobAuditModel>> jobAuditModelMap = new HashMap<>();
         for (AuditFailedEntity entity : failedEntities) {
@@ -176,9 +190,13 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
                 formatAuditDate(entity.getCreatedAt()),
                 AuditEntryStatus.FAILURE.getDisplayName()
             );
+            String jobConfigId = jobAccessor.getJobByName(entity.getJobName())
+                .map(DistributionJobModel::getJobId)
+                .map(UUID::toString)
+                .orElse("");
             jobAuditModels.add(new JobAuditModel(
-                "",
-                "",
+                entity.getId().toString(),
+                jobConfigId,
                 entity.getJobName(),
                 entity.getChannelName(),
                 jobStatusModel,
@@ -193,7 +211,7 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
             auditEntryModelMap.computeIfAbsent(notificationId, ignoredKey -> {
                 NotificationConfig notificationConfig = createNotificationConfig(entity);
                 return new AuditEntryModel(
-                    entity.getId().toString(),
+                    notificationConfig.getId(),
                     notificationConfig,
                     jobAuditModelMap.getOrDefault(notificationId, List.of()),
                     AuditEntryStatus.FAILURE.getDisplayName(),
@@ -205,6 +223,7 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
     }
 
     private NotificationConfig createNotificationConfig(AuditFailedEntity entity) {
+        Optional<AuditFailedNotificationEntity> notificationEntity = auditFailedNotificationRepository.findById(entity.getNotificationId());
         return new NotificationConfig(
             entity.getNotificationId().toString(),
             formatAuditDate(entity.getCreatedAt()),
@@ -213,7 +232,7 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
             entity.getProviderName(),
             formatAuditDate(entity.getCreatedAt()),
             entity.getNotificationType(),
-            entity.getNotification().getNotificationContent()
+            notificationEntity.map(AuditFailedNotificationEntity::getNotificationContent).orElse("")
         );
     }
 
