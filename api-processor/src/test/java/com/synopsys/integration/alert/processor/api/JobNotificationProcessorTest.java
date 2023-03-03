@@ -9,6 +9,7 @@ import org.mockito.Mockito;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
@@ -80,7 +81,8 @@ class JobNotificationProcessorTest {
 
         MockProcessingAuditAccessor processingAuditAccessor = new MockProcessingAuditAccessor();
         EventManager eventManager = Mockito.mock(EventManager.class);
-        ProviderMessageDistributor providerMessageDistributor = new ProviderMessageDistributor(processingAuditAccessor, eventManager);
+        ExecutingJobManager executingJobManager = Mockito.mock(ExecutingJobManager.class);
+        ProviderMessageDistributor providerMessageDistributor = new ProviderMessageDistributor(processingAuditAccessor, eventManager, executingJobManager);
 
         NotificationExtractorBlackDuckServicesFactoryCache lifecycleCaches = createNotificationExtractorBlackDuckServicesFactoryCache();
 

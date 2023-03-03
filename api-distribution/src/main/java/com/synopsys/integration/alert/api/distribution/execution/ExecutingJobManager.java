@@ -125,6 +125,18 @@ public class ExecutingJobManager {
             .stream().anyMatch(remainingEventCount -> remainingEventCount > 0);
     }
 
+    public boolean hasSentExpectedNotifications(UUID jobExecutionId) {
+        return getExecutingJob(jobExecutionId)
+            .stream()
+            .anyMatch(executingJob -> executingJob.getExpectedNotificationsToSend() == executingJob.getNotificationsSent());
+    }
+
+    public void incrementExpectedNotificationsSent(UUID jobExecutionId, int notificationCount) {
+        logger.debug("Incrementing sent notification count for job execution {} by {}", jobExecutionId, notificationCount);
+        Optional<ExecutingJob> executingJob = getExecutingJob(jobExecutionId);
+        executingJob.ifPresent(execution -> execution.incrementExpectedNotificationsSent(notificationCount));
+    }
+
     public void incrementSentNotificationCount(UUID jobExecutionId, int notificationCount) {
         logger.debug("Incrementing sent notification count for job execution {} by {}", jobExecutionId, notificationCount);
         Optional<ExecutingJob> executingJob = getExecutingJob(jobExecutionId);
