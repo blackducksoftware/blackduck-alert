@@ -21,7 +21,7 @@ const UserEditRowAction = ({ data }) => {
         submitText: 'Save Edit',
         title: 'Edit User'
     };
-    console.log(showModal);
+
     function handleClick() {
         setShowModal(true);
         setSelectedData(data);

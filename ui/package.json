@@ -27,7 +27,7 @@
         "react": "^16.13.1",
         "react-bootstrap": "^1.5.2",
         "react-bootstrap-table": "^4.3.1",
-        "react-dom": "^16.13.1",
+        "react-dom": "^16.14.0",
         "react-jss": "^10.9.0",
         "react-redux": "^7.2.3",
         "react-router-dom": "^5.2.0",

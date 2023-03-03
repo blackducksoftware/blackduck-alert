@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import UserCopyModal from 'page/usermgmt/user/UserCopyModal';
+import UserModal from 'page/usermgmt/user/UserModal';
 
 const useStyles = createUseStyles({
     copyCell: {
@@ -16,25 +16,37 @@ const UserCopyRowAction = ({ data }) => {
     const classes = useStyles();
     const [showModal, setShowModal] = useState(false);
     const [selectedData, setSelectedData] = useState(data);
-    const selectedUsername = data.username;
-    const email = selectedData.emailAddress ? selectedData.emailAddress : '';
+    const modalOptions = {
+        type: 'COPY',
+        submitText: 'Create',
+        title: `Copy User, '${data.username}'`,
+        copiedUsername: data.username
+    };
 
     function handleClick() {
         setShowModal(true);
-        setSelectedData(userData => ({...userData, id: null, username: '', password: '', emailAddress: email }))
+        setSelectedData(userData => ({
+            ...userData, 
+            id: null, 
+            username: '', 
+            password: '', 
+            passwordSet: false,
+            emailAddress: selectedData.emailAddress || '',
+            roleNames: selectedData.roleNames
+        }));
     }
 
     return (
         <>
-            <span className={classes.copyCell} onClick={() => handleClick()}>
+            <span className={classes.copyCell} onClick={handleClick}>
                 <FontAwesomeIcon icon="copy" />
             </span>
             { showModal ? (
-                <UserCopyModal 
-                    data={selectedData}
+                <UserModal 
+                    data={selectedData} 
                     isOpen={showModal}
                     toggleModal={setShowModal}
-                    copiedUsername={selectedUsername}
+                    modalOptions={modalOptions}
                 />
             ) : null }
             

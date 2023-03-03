@@ -1,9 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import ReactDOM from 'react-dom';
 import { createUseStyles } from 'react-jss';
 import ModalFooter from 'common/component/modal/ModalFooter';
 import ModalHeader from 'common/component/modal/ModalHeader';
+
+const modalRoot = document.getElementById('alert-modal');
 
 const useStyles = createUseStyles({
     modal: {
@@ -55,8 +58,7 @@ const Modal = ({ isOpen, size, title, closeModal, children, handleCancel, handle
         return null;
     }
 
-
-    return (
+    return ReactDOM.createPortal(
         <div className={classes.modal}>
             <div className={modalStyleClass}>
                 <div className={classes.modalContent}>
@@ -77,8 +79,14 @@ const Modal = ({ isOpen, size, title, closeModal, children, handleCancel, handle
                     </div>
                 </div>
             </div>
-        </div>
+        </div>,
+        modalRoot
     );
+};
+
+Modal.defaultProps = {
+    open: true,
+    size: 'md'
 };
 
 Modal.propTypes = {

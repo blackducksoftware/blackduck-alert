@@ -1,18 +1,32 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
+import { createUseStyles } from 'react-jss';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { saveUser, validateUser, fetchUsers } from 'store/actions/users';
-import Modal from 'common/component/modal/Modal';
 import DynamicSelectInput from 'common/component/input/DynamicSelectInput';
+import Modal from 'common/component/modal/Modal';
 import PasswordInput from 'common/component/input/PasswordInput';
 import TextInput from 'common/component/input/TextInput';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 import UserFieldKeyEnum from 'page/usermgmt/user/UserModel';
 
+const useStyles = createUseStyles({
+    descriptorContainer: {
+        display: 'flex',
+        alignItems: 'center', 
+        padding: [0, 0, '20px', '60px']
+    },
+    descriptor: {
+        fontSize: '14px',
+        paddingLeft: '8px'
+    }
+});
+
 const UserModal = ({ data, isOpen, toggleModal, modalOptions }) => {
+    const classes = useStyles();
     const dispatch = useDispatch();
     const { external } = data;
-    console.log(data);
     const { submitText, title, type } = modalOptions;
     const [userModel, setUserModel] = useState(type === 'CREATE' ? {} : data);
     const [showLoader, setShowLoader] = useState(false);
@@ -20,9 +34,6 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions }) => {
     const fieldErrors = useSelector(state => state.users.error.fieldErrors);
     const roles = useSelector(state => state.roles.data);
     const { saveStatus } = useSelector(state => state.users);
-    console.log(saveStatus);
-    const meh = useSelector(state=> state.users);
-    console.log(meh);
 
     useEffect(() => {
         if ( saveStatus === 'VALIDATING' || saveStatus === 'SAVING' ) {
@@ -35,7 +46,7 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions }) => {
 
         if ( saveStatus === 'SAVED' ) { 
             setShowLoader(false);
-            // handleClose();
+            handleClose();
         }
     }, [saveStatus]);
 
@@ -60,6 +71,7 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions }) => {
         }
 
         if (passwordsMatch(userModel)) {
+            console.log('here', userModel);
             dispatch(validateUser(userModel));
         }
     }
@@ -99,6 +111,14 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions }) => {
             submitText={submitText}
             showLoader={showLoader}
         >
+            { type === 'COPY' && (
+                <div className={classes.descriptorContainer}>
+                    <FontAwesomeIcon icon="exclamation-circle" size="2x" />
+                    <span className={classes.descriptor}>
+                        Performing this action will create a new user by using the same settings as '{modalOptions.copiedUsername}'
+                    </span>
+                </div>
+            )}
             <div>
                 <TextInput
                     id={UserFieldKeyEnum.USERNAME_KEY}
@@ -123,7 +143,7 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions }) => {
                     required={!external}
                     onChange={handleOnChange(UserFieldKeyEnum.PASSWORD_KEY)}
                     value={userModel[UserFieldKeyEnum.PASSWORD_KEY]}
-                    isSet={userModel[UserFieldKeyEnum.IS_PASSWORD_SET]}
+                    isSet={userModel[UserFieldKeyEnum.IS_PASSWORD_SET] || !type==='COPY'}
                     errorName={UserFieldKeyEnum.PASSWORD_KEY}
                     errorValue={fieldErrors[UserFieldKeyEnum.PASSWORD_KEY]}
                 />

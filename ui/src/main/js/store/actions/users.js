@@ -194,7 +194,6 @@ export function validateUser(user) {
 }
 
 export function saveUser(user) {
-    console.log(user);
     return (dispatch, getState) => {
         dispatch(savingUser());
         const { id } = user;
@@ -209,8 +208,6 @@ export function saveUser(user) {
             saveRequest = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, user);
         }
         saveRequest.then((response) => {
-            console.log(response);
-
             if (response.ok) {
                 dispatch(savedUser());
                 dispatch(fetchUsers());

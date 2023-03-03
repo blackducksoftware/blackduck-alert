@@ -92,11 +92,6 @@ const UserTableActions = ({ canCreate, canDelete, data, selected }) => {
                     toggleModal={setShowCreateModal}
                     modalOptions={modalOptions}
                 />
-                // <UserCreateModal 
-                //     data={data} 
-                //     isOpen={showCreateModal}
-                //     toggleModal={setShowCreateModal}
-                // />
             )}
             
             { showDeleteModal && (
