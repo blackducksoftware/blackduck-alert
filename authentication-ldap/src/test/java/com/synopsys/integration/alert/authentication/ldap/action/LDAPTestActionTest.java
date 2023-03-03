@@ -44,7 +44,7 @@ class LDAPTestActionTest {
     private static LDAPTestAction ldapTestAction;
 
     private LDAPConfigModel validLDAPConfigModel;
-    private LDAPConfigModel inValidLDAPConfigModel;
+    private LDAPConfigModel invalidLDAPConfigModel;
 
     @BeforeEach
     public void init() {
@@ -58,12 +58,12 @@ class LDAPTestActionTest {
         validLDAPConfigModel = LDAPTestHelper.createValidLDAPConfigModel();
         validLDAPConfigModel.setEnabled(false);
 
-        inValidLDAPConfigModel = LDAPTestHelper.createInValidLDAPConfigModel();
+        invalidLDAPConfigModel = LDAPTestHelper.createInvalidLDAPConfigModel();
     }
 
     @Test
     void testAuthenticationValidationFails() {
-        LDAPConfigTestModel ldapConfigTestModel = new LDAPConfigTestModel(inValidLDAPConfigModel, testUser, testPass);
+        LDAPConfigTestModel ldapConfigTestModel = new LDAPConfigTestModel(invalidLDAPConfigModel, testUser, testPass);
         ActionResponse<ValidationResponseModel> validationResponseModelActionResponse = ldapTestAction.testAuthentication(ldapConfigTestModel);
 
         assertEquals(HttpStatus.OK, validationResponseModelActionResponse.getHttpStatus());
@@ -96,9 +96,9 @@ class LDAPTestActionTest {
 
     @Test
     void testGetPasswordFromDB() {
-        inValidLDAPConfigModel.setManagerPassword("Spy Password");
+        invalidLDAPConfigModel.setManagerPassword("Spy Password");
         LDAPConfigAccessor spiedLDAPConfigAccessor = Mockito.spy(ldapConfigAccessor);
-        Mockito.doReturn(Optional.of(inValidLDAPConfigModel)).when(spiedLDAPConfigAccessor).getConfiguration();
+        Mockito.doReturn(Optional.of(invalidLDAPConfigModel)).when(spiedLDAPConfigAccessor).getConfiguration();
 
         validLDAPConfigModel.setUserSearchFilter("");
         validLDAPConfigModel.setManagerPassword("");
@@ -179,7 +179,7 @@ class LDAPTestActionTest {
 
     @Test
     void testConfigModelContentInvalidConfig() {
-        LDAPConfigTestModel ldapConfigTestModel = new LDAPConfigTestModel(inValidLDAPConfigModel, testUser, testPass);
+        LDAPConfigTestModel ldapConfigTestModel = new LDAPConfigTestModel(invalidLDAPConfigModel, testUser, testPass);
         ConfigurationTestResult configurationTestResult = ldapTestAction.testConfigModelContent(ldapConfigTestModel);
 
         assertFalse(configurationTestResult.isSuccess());

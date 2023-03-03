@@ -61,7 +61,7 @@ class LDAPConfigControllerTest {
         ldapCrudActions = new LDAPCrudActions(authorizationManager, ldapConfigAccessor, ldapConfigurationValidator, authenticationDescriptorKey);
         ldapConfigController = new LDAPConfigController(ldapCrudActions, ldapValidationAction, ldapTestAction);
 
-        invalidLDAPConfigModel = LDAPTestHelper.createInValidLDAPConfigModel();
+        invalidLDAPConfigModel = LDAPTestHelper.createInvalidLDAPConfigModel();
 
         validLDAPConfigModel = LDAPTestHelper.createValidLDAPConfigModel();
     }

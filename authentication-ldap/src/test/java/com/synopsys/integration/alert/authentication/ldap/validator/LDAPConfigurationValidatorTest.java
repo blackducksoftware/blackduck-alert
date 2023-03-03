@@ -92,7 +92,7 @@ public class LDAPConfigurationValidatorTest {
 
     @Test
     public void testEmptyConfigModel() {
-        LDAPConfigTestModel ldapConfigTestModel = new LDAPConfigTestModel(LDAPTestHelper.createInValidLDAPConfigModel(), TEST_USER, TEST_PASS);
+        LDAPConfigTestModel ldapConfigTestModel = new LDAPConfigTestModel(LDAPTestHelper.createInvalidLDAPConfigModel(), TEST_USER, TEST_PASS);
         ValidationResponseModel validationResponseModel = ldapConfigurationValidator.validate(ldapConfigTestModel);
         assertEquals(ValidationResponseModel.VALIDATION_FAILURE_MESSAGE, validationResponseModel.getMessage());
         assertEquals(4, validationResponseModel.getErrors().size());

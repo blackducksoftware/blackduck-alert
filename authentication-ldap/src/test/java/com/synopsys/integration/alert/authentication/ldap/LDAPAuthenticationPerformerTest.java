@@ -32,7 +32,7 @@ class LDAPAuthenticationPerformerTest {
     private LDAPAuthenticationPerformer ldapAuthenticationPerformer;
     private Authentication inputAuthentication;
     private LDAPConfigModel validaLDAPConfigModel;
-    private LDAPConfigModel inValidLDAPConfigModel;
+    private LDAPConfigModel invalidLDAPConfigModel;
 
     @Mock
     UserManagementAuthoritiesPopulator mockUserManagementAuthoritiesPopulator;
@@ -48,7 +48,7 @@ class LDAPAuthenticationPerformerTest {
         inputAuthentication = new UsernamePasswordAuthenticationToken(UUID.randomUUID().toString(), UUID.randomUUID().toString());
 
         validaLDAPConfigModel = LDAPTestHelper.createValidLDAPConfigModel();
-        inValidLDAPConfigModel = LDAPTestHelper.createInValidLDAPConfigModel();
+        invalidLDAPConfigModel = LDAPTestHelper.createInvalidLDAPConfigModel();
     }
 
     @Test
@@ -84,12 +84,12 @@ class LDAPAuthenticationPerformerTest {
 
     @Test
     void testAuthenticateAlertException() {
-        inValidLDAPConfigModel.setEnabled(true);
-        inValidLDAPConfigModel.setServerName("serverName");
-        inValidLDAPConfigModel.setManagerPassword("managerPassword");
-        inValidLDAPConfigModel.setManagerDn("managerDn");
+        invalidLDAPConfigModel.setEnabled(true);
+        invalidLDAPConfigModel.setServerName("serverName");
+        invalidLDAPConfigModel.setManagerPassword("managerPassword");
+        invalidLDAPConfigModel.setManagerDn("managerDn");
         LDAPManager spiedLDAPManager = Mockito.spy(ldapManager);
-        Mockito.doReturn(Optional.of(inValidLDAPConfigModel)).when(spiedLDAPManager).getCurrentConfiguration();
+        Mockito.doReturn(Optional.of(invalidLDAPConfigModel)).when(spiedLDAPManager).getCurrentConfiguration();
         ldapAuthenticationPerformer = new LDAPAuthenticationPerformer(mockAuthenticationEventManager, mockRoleAccessor, spiedLDAPManager);
 
         Authentication returnAuthentication = ldapAuthenticationPerformer.authenticateWithProvider(inputAuthentication);
