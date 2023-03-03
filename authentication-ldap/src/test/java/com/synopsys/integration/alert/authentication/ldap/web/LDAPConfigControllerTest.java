@@ -23,12 +23,12 @@ import org.springframework.web.server.ResponseStatusException;
 import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.api.authentication.security.UserManagementAuthoritiesPopulator;
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
+import com.synopsys.integration.alert.authentication.ldap.LDAPConfig;
 import com.synopsys.integration.alert.authentication.ldap.LDAPTestHelper;
-import com.synopsys.integration.alert.authentication.ldap.LdapConfig;
 import com.synopsys.integration.alert.authentication.ldap.action.LDAPCrudActions;
+import com.synopsys.integration.alert.authentication.ldap.action.LDAPManager;
 import com.synopsys.integration.alert.authentication.ldap.action.LDAPTestAction;
 import com.synopsys.integration.alert.authentication.ldap.action.LDAPValidationAction;
-import com.synopsys.integration.alert.authentication.ldap.action.LdapManager;
 import com.synopsys.integration.alert.authentication.ldap.database.accessor.LDAPConfigAccessor;
 import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigModel;
 import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigTestModel;
@@ -40,7 +40,7 @@ class LDAPConfigControllerTest {
     private static final LDAPConfigurationValidator ldapConfigurationValidator = new LDAPConfigurationValidator();
     private static final AuthorizationManager authorizationManager = LDAPTestHelper.createAuthorizationManager();
 
-    private static LdapManager ldapManager;
+    private static LDAPManager ldapManager;
     private static LDAPConfigAccessor ldapConfigAccessor;
     private static LDAPValidationAction ldapValidationAction;
     private static LDAPCrudActions ldapCrudActions;
@@ -52,7 +52,7 @@ class LDAPConfigControllerTest {
     @BeforeEach
     public void initAccessor() {
         UserManagementAuthoritiesPopulator userManagementAuthoritiesPopulator = Mockito.mock(UserManagementAuthoritiesPopulator.class);
-        ldapManager = new LdapManager(ldapConfigAccessor, userManagementAuthoritiesPopulator, new LdapConfig().ldapUserContextMapper());
+        ldapManager = new LDAPManager(ldapConfigAccessor, userManagementAuthoritiesPopulator, new LDAPConfig().ldapUserContextMapper());
 
         ldapConfigAccessor = LDAPTestHelper.createTestLDAPConfigAccessor();
 
@@ -164,17 +164,17 @@ class LDAPConfigControllerTest {
 
     @Test
     void testTestValidModel() {
-        LdapManager spiedLdapManager = Mockito.spy(ldapManager);
+        LDAPManager spiedLDAPManager = Mockito.spy(ldapManager);
         LdapAuthenticationProvider mockLdapAuthenticationProvider = Mockito.mock(LdapAuthenticationProvider.class);
         LdapAuthenticationProvider spiedLdapAuthenticationProvider = Mockito.spy(mockLdapAuthenticationProvider);
-        assertDoesNotThrow(() -> Mockito.doReturn(Optional.of(spiedLdapAuthenticationProvider)).when(spiedLdapManager).createAuthProvider(validLDAPConfigModel));
+        assertDoesNotThrow(() -> Mockito.doReturn(Optional.of(spiedLdapAuthenticationProvider)).when(spiedLDAPManager).createAuthProvider(validLDAPConfigModel));
 
         // Create an instance of an implementation of Authentication that will return true for isAuthenticated()
         SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority("ROLE_AUTH");
         TestingAuthenticationToken authenticatedToken = new TestingAuthenticationToken("foo", "bar", List.of(simpleGrantedAuthority));
         Mockito.doReturn(authenticatedToken).when(spiedLdapAuthenticationProvider).authenticate(Mockito.any(Authentication.class));
 
-        LDAPTestAction ldapTestAction = new LDAPTestAction(authorizationManager, authenticationDescriptorKey, ldapConfigurationValidator, spiedLdapManager, ldapConfigAccessor);
+        LDAPTestAction ldapTestAction = new LDAPTestAction(authorizationManager, authenticationDescriptorKey, ldapConfigurationValidator, spiedLDAPManager, ldapConfigAccessor);
         LDAPConfigController ldapConfigController = new LDAPConfigController(ldapCrudActions, ldapValidationAction, ldapTestAction);
 
         LDAPConfigTestModel ldapConfigTestModel = new LDAPConfigTestModel(validLDAPConfigModel, "User", "Pass");

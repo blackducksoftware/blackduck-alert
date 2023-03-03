@@ -17,15 +17,15 @@ import org.springframework.security.ldap.authentication.LdapAuthenticationProvid
 
 import com.synopsys.integration.alert.api.authentication.security.UserManagementAuthoritiesPopulator;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.synopsys.integration.alert.authentication.ldap.LDAPConfig;
 import com.synopsys.integration.alert.authentication.ldap.LDAPTestHelper;
-import com.synopsys.integration.alert.authentication.ldap.LdapConfig;
 import com.synopsys.integration.alert.authentication.ldap.database.accessor.LDAPConfigAccessor;
 import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigModel;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 
-public class LdapManagerTest {
+public class LDAPManagerTest {
     private LDAPConfigAccessor ldapConfigAccessor;
-    private LdapManager ldapManager;
+    private LDAPManager ldapManager;
 
     private LDAPConfigModel validLDAPConfigModel;
     private LDAPConfigModel inValidLDAPConfigModel;
@@ -34,7 +34,7 @@ public class LdapManagerTest {
     public void initAccessor() {
         ldapConfigAccessor = LDAPTestHelper.createTestLDAPConfigAccessor();
         UserManagementAuthoritiesPopulator mockUserManagementAuthoritiesPopulator = Mockito.mock(UserManagementAuthoritiesPopulator.class);
-        ldapManager = new LdapManager(ldapConfigAccessor, mockUserManagementAuthoritiesPopulator, new LdapConfig().ldapUserContextMapper());
+        ldapManager = new LDAPManager(ldapConfigAccessor, mockUserManagementAuthoritiesPopulator, new LDAPConfig().ldapUserContextMapper());
 
         validLDAPConfigModel = LDAPTestHelper.createValidLDAPConfigModel();
         inValidLDAPConfigModel = LDAPTestHelper.createInValidLDAPConfigModel();

@@ -21,19 +21,19 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.authentication.security.UserManagementAuthoritiesPopulator;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.authentication.ldap.MappingLdapAuthoritiesPopulator;
+import com.synopsys.integration.alert.authentication.ldap.MappingLDAPAuthoritiesPopulator;
 import com.synopsys.integration.alert.authentication.ldap.database.accessor.LDAPConfigAccessor;
 import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigModel;
 
 @Component
-public class LdapManager {
+public class LDAPManager {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final LDAPConfigAccessor ldapConfigAccessor;
     private final UserManagementAuthoritiesPopulator userManagementAuthoritiesPopulator;
     private final InetOrgPersonContextMapper inetOrgPersonContextMapper;
 
     @Autowired
-    public LdapManager(
+    public LDAPManager(
         LDAPConfigAccessor ldapConfigAccessor,
         UserManagementAuthoritiesPopulator userManagementAuthoritiesPopulator,
         InetOrgPersonContextMapper inetOrgPersonContextMapper
@@ -140,7 +140,7 @@ public class LdapManager {
         String groupSearchBase = ldapConfigModel.getGroupSearchBase().orElse("");
         String groupSearchFilter = ldapConfigModel.getGroupSearchFilter().orElse("");
         String groupRoleAttribute = ldapConfigModel.getGroupRoleAttribute().orElse("");
-        MappingLdapAuthoritiesPopulator mappingLdapAuthoritiesPopulator = new MappingLdapAuthoritiesPopulator(
+        MappingLDAPAuthoritiesPopulator mappingLdapAuthoritiesPopulator = new MappingLDAPAuthoritiesPopulator(
             ldapContextSource,
             groupSearchBase,
             this.userManagementAuthoritiesPopulator

@@ -29,7 +29,7 @@ public class LDAPTestAction {
     private final ConfigurationValidationHelper configurationValidationHelper;
     private final ConfigurationTestHelper configurationTestHelper;
     private final LDAPConfigurationValidator ldapConfigurationValidator;
-    private final LdapManager ldapManager;
+    private final LDAPManager ldapManager;
     private final LDAPConfigAccessor ldapConfigAccessor;
 
     @Autowired
@@ -37,7 +37,7 @@ public class LDAPTestAction {
         AuthorizationManager authorizationManager,
         AuthenticationDescriptorKey authenticationDescriptorKey,
         LDAPConfigurationValidator ldapConfigurationValidator,
-        LdapManager ldapManager,
+        LDAPManager ldapManager,
         LDAPConfigAccessor ldapConfigAccessor
     ) {
         this.configurationValidationHelper = new ConfigurationValidationHelper(authorizationManager, ConfigContextEnum.GLOBAL, authenticationDescriptorKey);
