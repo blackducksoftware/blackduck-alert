@@ -154,7 +154,7 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
         List<Long> notificationIdsToRemove = notificationIds.stream()
             .filter(notificationNoLongExists)
             .collect(Collectors.toList());
-        
+
         if (!notificationIdsToRemove.isEmpty()) {
             auditFailedNotificationRepository.deleteAllById(notificationIdsToRemove);
         }
@@ -166,8 +166,8 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
             List<JobAuditModel> jobAuditModels = jobAuditModelMap.computeIfAbsent(entity.getNotificationId(), ignored -> new LinkedList<>());
             AuditJobStatusModel jobStatusModel = new AuditJobStatusModel(
                 UUID.randomUUID(),
-                DateUtils.formatDateAsJsonString(entity.getTimeCreated()),
-                DateUtils.formatDateAsJsonString(entity.getTimeCreated()),
+                formatAuditDate(entity.getTimeCreated()),
+                formatAuditDate(entity.getTimeCreated()),
                 AuditEntryStatus.FAILURE.getDisplayName()
             );
             jobAuditModels.add(new JobAuditModel(
@@ -191,7 +191,7 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
                     notificationConfig,
                     jobAuditModelMap.getOrDefault(notificationId, List.of()),
                     AuditEntryStatus.FAILURE.getDisplayName(),
-                    DateUtils.formatDateAsJsonString(entity.getTimeCreated())
+                    formatAuditDate(entity.getTimeCreated())
                 );
             });
         }
@@ -201,14 +201,19 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
     private NotificationConfig createNotificationConfig(AuditFailedEntity entity) {
         return new NotificationConfig(
             entity.getNotificationId().toString(),
-            DateUtils.formatDateAsJsonString(entity.getTimeCreated()),
+            formatAuditDate(entity.getTimeCreated()),
             entity.getProviderKey(),
             0L,
             entity.getProviderName(),
-            DateUtils.formatDateAsJsonString(entity.getTimeCreated()),
+            formatAuditDate(entity.getTimeCreated()),
             entity.getNotificationType(),
             entity.getNotification().getNotificationContent()
         );
+    }
+
+    private String formatAuditDate(OffsetDateTime dateTime) {
+        OffsetDateTime utcDateTime = DateUtils.fromInstantUTC(dateTime.toInstant());
+        return DateUtils.formatDate(utcDateTime, DateUtils.AUDIT_DATE_FORMAT);
     }
 
     private PageRequest getPageRequestForFailures(Integer pageNumber, Integer pageSize, @Nullable String sortField, @Nullable String sortOrder) {
