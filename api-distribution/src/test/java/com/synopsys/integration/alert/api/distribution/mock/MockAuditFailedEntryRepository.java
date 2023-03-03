@@ -25,8 +25,8 @@ public class MockAuditFailedEntryRepository extends MockRepositoryContainer<UUID
     }
 
     @Override
-    public List<AuditFailedEntity> findAllByTimeCreatedBefore(final OffsetDateTime expirationDate) {
-        Predicate<AuditFailedEntity> dateAfterExpiration = entry -> entry.getTimeCreated().isBefore(expirationDate);
+    public List<AuditFailedEntity> findAllByCreatedAtBefore(OffsetDateTime expirationDate) {
+        Predicate<AuditFailedEntity> dateAfterExpiration = entry -> entry.getCreatedAt().isBefore(expirationDate);
         return getDataMap().values().stream()
             .filter(dateAfterExpiration)
             .collect(Collectors.toList());
@@ -37,5 +37,14 @@ public class MockAuditFailedEntryRepository extends MockRepositoryContainer<UUID
         Predicate<AuditFailedEntity> entryContainsNotification = entry -> entry.getNotificationId().equals(notificationId);
         return getDataMap().values().stream()
             .anyMatch(entryContainsNotification);
+    }
+
+    @Override
+    public boolean existsByJobNameAndNotificationId(String jobName, Long notificationId) {
+        Predicate<AuditFailedEntity> entryContainsId = entry -> entry.getJobName().equals(jobName);
+        Predicate<AuditFailedEntity> entryContainsNotification = entry -> entry.getNotificationId().equals(notificationId);
+        return getDataMap().values()
+            .stream()
+            .anyMatch(entryContainsId.and(entryContainsNotification));
     }
 }

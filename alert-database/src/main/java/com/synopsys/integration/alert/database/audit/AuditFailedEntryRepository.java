@@ -18,13 +18,15 @@ public interface AuditFailedEntryRepository extends JpaRepository<AuditFailedEnt
         + "WHERE LOWER(failedAuditEntry.providerName) LIKE %:searchTerm% OR "
         + "LOWER(failedAuditEntry.notificationType) LIKE %:searchTerm% OR "
         + "LOWER(relation.notificationContent) LIKE %:searchTerm% OR "
-        + "COALESCE(to_char(failedAuditEntry.timeCreated, 'MM/DD/YYYY, HH24:MI:SS'), '') LIKE %:searchTerm% OR "
+        + "COALESCE(to_char(failedAuditEntry.createdAt, 'MM/DD/YYYY, HH24:MI:SS'), '') LIKE %:searchTerm% OR "
         + "LOWER(failedAuditEntry.jobName) LIKE %:searchTerm% OR "
         + "LOWER(failedAuditEntry.channelName) LIKE %:searchTerm%"
     )
     Page<AuditFailedEntity> findAllWithSearchTerm(@Param("searchTerm") String searchTerm, Pageable pageable);
 
-    List<AuditFailedEntity> findAllByTimeCreatedBefore(OffsetDateTime expirationDate);
+    List<AuditFailedEntity> findAllByCreatedAtBefore(OffsetDateTime expirationDate);
 
     boolean existsByNotificationId(Long notificationId);
+
+    boolean existsByJobNameAndNotificationId(String jobName, Long notificationId);
 }
