@@ -15,8 +15,8 @@ import com.synopsys.integration.alert.api.channel.DistributionChannel;
 import com.synopsys.integration.alert.api.channel.DistributionEventReceiver;
 import com.synopsys.integration.alert.api.channel.issue.action.IssueTrackerTestAction;
 import com.synopsys.integration.alert.common.channel.DistributionChannelTestAction;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
-import com.synopsys.integration.alert.descriptor.api.model.IssueTrackerChannelKey;
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKey;
+import com.synopsys.integration.alert.api.descriptor.model.IssueTrackerChannelKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 /*

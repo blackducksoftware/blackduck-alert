@@ -22,7 +22,7 @@ import com.synopsys.integration.alert.channel.jira.cloud.distribution.event.mock
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.persistence.model.job.workflow.JobSubTaskStatusModel;
 import com.synopsys.integration.alert.database.api.workflow.DefaultJobSubTaskAccessor;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 
 class JiraCloudTransitionEventListenerTest {
     private final Gson gson = new Gson();

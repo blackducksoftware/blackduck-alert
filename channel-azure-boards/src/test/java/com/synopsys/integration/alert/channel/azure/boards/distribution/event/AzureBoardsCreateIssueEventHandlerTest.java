@@ -37,7 +37,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.workflow.JobS
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.database.api.workflow.DefaultJobSubTaskAccessor;
 import com.synopsys.integration.alert.database.job.azure.boards.DefaultAzureBoardsJobDetailsAccessor;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpRequestCreator;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.proxy.ProxyInfo;

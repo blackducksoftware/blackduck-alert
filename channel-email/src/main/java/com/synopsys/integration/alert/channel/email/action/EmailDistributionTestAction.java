@@ -19,7 +19,7 @@ import com.synopsys.integration.alert.channel.email.distribution.EmailChannel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
-import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
+import com.synopsys.integration.alert.api.descriptor.EmailChannelKey;
 
 @Component
 public class EmailDistributionTestAction extends DistributionChannelMessageTestAction<EmailJobDetailsModel> {

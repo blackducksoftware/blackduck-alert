@@ -21,7 +21,7 @@ import com.synopsys.integration.alert.channel.jira.server.distribution.event.moc
 import com.synopsys.integration.alert.channel.jira.server.distribution.event.mock.MockJobSubTaskStatusRepository;
 import com.synopsys.integration.alert.common.persistence.model.job.workflow.JobSubTaskStatusModel;
 import com.synopsys.integration.alert.database.api.workflow.DefaultJobSubTaskAccessor;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 
 class JiraServerCommentEventListenerTest {
     private final Gson gson = new Gson();

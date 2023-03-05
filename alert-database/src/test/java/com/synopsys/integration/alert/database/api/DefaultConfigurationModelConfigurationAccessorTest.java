@@ -31,7 +31,7 @@ import com.synopsys.integration.alert.database.configuration.repository.DefinedF
 import com.synopsys.integration.alert.database.configuration.repository.DescriptorConfigRepository;
 import com.synopsys.integration.alert.database.configuration.repository.FieldValueRepository;
 import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
-import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
+import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 
 class DefaultConfigurationModelConfigurationAccessorTest {
     private static final String TEST_PASSWORD = "testPassword";

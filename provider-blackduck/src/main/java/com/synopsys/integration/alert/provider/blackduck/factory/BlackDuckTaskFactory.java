@@ -20,7 +20,7 @@ import com.synopsys.integration.alert.api.provider.state.ProviderProperties;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
-import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
+import com.synopsys.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.task.BlackDuckDataSyncTask;
 import com.synopsys.integration.alert.provider.blackduck.task.accumulator.BlackDuckAccumulator;
 import com.synopsys.integration.alert.provider.blackduck.task.accumulator.BlackDuckNotificationRetrieverFactory;

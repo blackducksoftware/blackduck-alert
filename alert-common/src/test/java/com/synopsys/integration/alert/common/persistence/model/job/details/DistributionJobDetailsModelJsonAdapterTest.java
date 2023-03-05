@@ -18,8 +18,8 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKey;
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 
 public class DistributionJobDetailsModelJsonAdapterTest {
     private final Gson gson = new Gson();

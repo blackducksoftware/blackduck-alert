@@ -13,7 +13,7 @@ import java.util.Set;
 import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
+import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 
 public abstract class ComponentDescriptor extends Descriptor {
     protected ComponentDescriptor(DescriptorKey descriptorKey) {

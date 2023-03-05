@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.ConcreteGlobalConfigExistsValidator;
-import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
-import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
+import com.synopsys.integration.alert.api.descriptor.EmailChannelKey;
+import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 
 @Component
 public class EmailGlobalConfigExistsValidator implements ConcreteGlobalConfigExistsValidator {

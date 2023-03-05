@@ -22,7 +22,7 @@ import com.synopsys.integration.alert.common.persistence.util.ConfigurationField
 import com.synopsys.integration.alert.common.rest.FieldModelProcessor;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
-import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
+import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 import com.synopsys.integration.alert.environment.EnvironmentVariableProcessor;
 import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
 

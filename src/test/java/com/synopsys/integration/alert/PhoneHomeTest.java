@@ -19,9 +19,9 @@ import com.synopsys.integration.alert.common.persistence.accessor.RestApiAuditAc
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.database.api.DefaultConfigurationModelConfigurationAccessor;
-import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
-import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
-import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
+import com.synopsys.integration.alert.api.descriptor.BlackDuckProviderKey;
+import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
+import com.synopsys.integration.alert.api.descriptor.model.ProviderKey;
 import com.synopsys.integration.alert.task.PhoneHomeTask;
 import com.synopsys.integration.alert.web.api.about.AboutReader;
 import com.synopsys.integration.rest.proxy.ProxyInfo;

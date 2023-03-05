@@ -46,9 +46,9 @@ import com.synopsys.integration.alert.common.rest.model.DistributionWithAuditInf
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
-import com.synopsys.integration.alert.descriptor.api.MsTeamsKey;
-import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
-import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
+import com.synopsys.integration.alert.api.descriptor.MsTeamsKey;
+import com.synopsys.integration.alert.api.descriptor.SlackChannelKey;
+import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @AlertIntegrationTest

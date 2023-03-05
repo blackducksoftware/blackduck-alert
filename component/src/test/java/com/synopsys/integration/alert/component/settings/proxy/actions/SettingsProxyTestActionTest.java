@@ -35,7 +35,7 @@ import com.synopsys.integration.alert.component.settings.proxy.validator.Setting
 import com.synopsys.integration.alert.database.settings.proxy.NonProxyHostsConfigurationRepository;
 import com.synopsys.integration.alert.database.settings.proxy.SettingsProxyConfigurationEntity;
 import com.synopsys.integration.alert.database.settings.proxy.SettingsProxyConfigurationRepository;
-import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
+import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
 
