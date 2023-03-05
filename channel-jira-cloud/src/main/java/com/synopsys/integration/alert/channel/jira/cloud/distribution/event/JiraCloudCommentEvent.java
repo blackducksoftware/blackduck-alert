@@ -10,8 +10,8 @@ package com.synopsys.integration.alert.channel.jira.cloud.distribution.event;
 import java.util.Set;
 import java.util.UUID;
 
-import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCommentEvent;
-import com.synopsys.integration.alert.api.channel.issue.model.IssueCommentModel;
+import com.synopsys.integration.alert.api.channel.issue.tracker.event.IssueTrackerCommentEvent;
+import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueCommentModel;
 
 public class JiraCloudCommentEvent extends IssueTrackerCommentEvent<String> {
 

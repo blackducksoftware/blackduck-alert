@@ -9,11 +9,11 @@ package com.synopsys.integration.alert.channel.azure.boards.distribution.search;
 
 import java.util.Objects;
 
-import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
-import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
-import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
-import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueCategory;
-import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueStatus;
+import com.synopsys.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
+import com.synopsys.integration.alert.api.channel.issue.tracker.search.ExistingIssueDetails;
+import com.synopsys.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
+import com.synopsys.integration.alert.api.channel.issue.tracker.search.enumeration.IssueCategory;
+import com.synopsys.integration.alert.api.channel.issue.tracker.search.enumeration.IssueStatus;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.util.AzureBoardsUILinkUtils;
 import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemFieldsWrapper;
 import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemResponseFields;

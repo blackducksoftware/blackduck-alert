@@ -13,7 +13,7 @@ import org.mockito.Mockito;
 import org.springframework.amqp.core.Message;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
+import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.jira.server.distribution.event.mock.MockCorrelationToNotificationRelationRepository;

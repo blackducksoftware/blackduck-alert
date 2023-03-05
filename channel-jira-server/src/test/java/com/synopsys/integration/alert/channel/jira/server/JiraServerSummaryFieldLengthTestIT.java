@@ -15,11 +15,11 @@ import org.mockito.Mockito;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCallbackInfoCreator;
-import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
-import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerModelHolder;
-import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
-import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
+import com.synopsys.integration.alert.api.channel.issue.tracker.callback.IssueTrackerCallbackInfoCreator;
+import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
+import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTrackerModelHolder;
+import com.synopsys.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
+import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;

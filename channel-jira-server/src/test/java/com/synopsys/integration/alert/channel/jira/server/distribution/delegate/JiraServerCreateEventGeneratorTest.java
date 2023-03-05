@@ -9,8 +9,8 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCreateIssueEvent;
-import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
+import com.synopsys.integration.alert.api.channel.issue.tracker.event.IssueTrackerCreateIssueEvent;
+import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
 import com.synopsys.integration.alert.channel.jira.server.distribution.event.JiraServerCreateIssueEvent;
 import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;

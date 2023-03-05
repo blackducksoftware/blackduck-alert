@@ -16,12 +16,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.channel.issue.IssueTrackerResponsePostProcessor;
-import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCallbackInfoCreator;
-import com.synopsys.integration.alert.api.channel.issue.callback.ProviderCallbackIssueTrackerResponsePostProcessor;
-import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCreateIssueEvent;
-import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
-import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
+import com.synopsys.integration.alert.api.channel.issue.tracker.IssueTrackerResponsePostProcessor;
+import com.synopsys.integration.alert.api.channel.issue.tracker.callback.IssueTrackerCallbackInfoCreator;
+import com.synopsys.integration.alert.api.channel.issue.tracker.callback.ProviderCallbackIssueTrackerResponsePostProcessor;
+import com.synopsys.integration.alert.api.channel.issue.tracker.event.IssueTrackerCreateIssueEvent;
+import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
+import com.synopsys.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsHttpExceptionMessageImprover;

@@ -9,7 +9,7 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.api.channel.issue.model.IssueTransitionModel;
+import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTransitionModel;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 
 class JiraServerTransitionEventTest {

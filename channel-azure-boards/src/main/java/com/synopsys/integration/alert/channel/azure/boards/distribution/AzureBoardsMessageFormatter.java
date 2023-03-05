@@ -9,7 +9,7 @@ package com.synopsys.integration.alert.channel.azure.boards.distribution;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.api.channel.issue.convert.IssueTrackerMessageFormatter;
+import com.synopsys.integration.alert.api.channel.issue.tracker.convert.IssueTrackerMessageFormatter;
 
 @Component
 public class AzureBoardsMessageFormatter extends IssueTrackerMessageFormatter {

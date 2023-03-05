@@ -10,9 +10,9 @@ package com.synopsys.integration.alert.channel.azure.boards.distribution.delegat
 import java.util.Set;
 import java.util.UUID;
 
-import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCommentEvent;
-import com.synopsys.integration.alert.api.channel.issue.model.IssueCommentModel;
-import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerCommentEventGenerator;
+import com.synopsys.integration.alert.api.channel.issue.tracker.event.IssueTrackerCommentEvent;
+import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueCommentModel;
+import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerCommentEventGenerator;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.event.AzureBoardsCommentEvent;
 import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
 

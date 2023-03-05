@@ -7,9 +7,9 @@
  */
 package com.synopsys.integration.alert.api.channel.jira.distribution.search;
 
-import com.synopsys.integration.alert.api.channel.issue.convert.ProjectMessageToIssueModelTransformer;
-import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
-import com.synopsys.integration.alert.api.channel.issue.search.IssueTrackerSearcher;
+import com.synopsys.integration.alert.api.channel.issue.tracker.convert.ProjectMessageToIssueModelTransformer;
+import com.synopsys.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
+import com.synopsys.integration.alert.api.channel.issue.tracker.search.IssueTrackerSearcher;
 
 public class JiraSearcherFactory {
     private final JiraIssueAlertPropertiesManager issuePropertiesManager;

@@ -14,7 +14,7 @@ import org.springframework.amqp.core.Message;
 import org.springframework.core.task.SyncTaskExecutor;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.channel.issue.model.IssueCommentModel;
+import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueCommentModel;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.jira.cloud.distribution.event.mock.MockCorrelationToNotificationRelationRepository;
