@@ -40,7 +40,7 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
 import com.synopsys.integration.alert.test.common.database.MockRepositorySorter;
-import com.synopsys.integration.azure.boards.common.service.project.AzureProjectService;
+import com.synopsys.integration.alert.azure.boards.common.service.project.AzureProjectService;
 import com.synopsys.integration.exception.IntegrationException;
 
 @ExtendWith(SpringExtension.class)

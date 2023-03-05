@@ -21,18 +21,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
-import com.synopsys.integration.azure.boards.common.model.AzureArrayResponseModel;
-import com.synopsys.integration.azure.boards.common.service.process.AzureProcessService;
-import com.synopsys.integration.azure.boards.common.service.process.ProcessFieldRequestModel;
-import com.synopsys.integration.azure.boards.common.service.process.ProcessFieldResponseModel;
-import com.synopsys.integration.azure.boards.common.service.process.ProcessWorkItemTypeFieldResponseModel;
-import com.synopsys.integration.azure.boards.common.service.process.ProcessWorkItemTypeRequestModel;
-import com.synopsys.integration.azure.boards.common.service.process.ProcessWorkItemTypesResponseModel;
-import com.synopsys.integration.azure.boards.common.service.project.AzureProjectService;
-import com.synopsys.integration.azure.boards.common.service.project.ProjectPropertyResponseModel;
-import com.synopsys.integration.azure.boards.common.service.project.ProjectWorkItemFieldModel;
-import com.synopsys.integration.azure.boards.common.service.project.TeamProjectReferenceResponseModel;
+import com.synopsys.integration.alert.azure.boards.common.http.HttpServiceException;
+import com.synopsys.integration.alert.azure.boards.common.model.AzureArrayResponseModel;
+import com.synopsys.integration.alert.azure.boards.common.service.process.AzureProcessService;
+import com.synopsys.integration.alert.azure.boards.common.service.process.ProcessFieldRequestModel;
+import com.synopsys.integration.alert.azure.boards.common.service.process.ProcessFieldResponseModel;
+import com.synopsys.integration.alert.azure.boards.common.service.process.ProcessWorkItemTypeFieldResponseModel;
+import com.synopsys.integration.alert.azure.boards.common.service.process.ProcessWorkItemTypeRequestModel;
+import com.synopsys.integration.alert.azure.boards.common.service.process.ProcessWorkItemTypesResponseModel;
+import com.synopsys.integration.alert.azure.boards.common.service.project.AzureProjectService;
+import com.synopsys.integration.alert.azure.boards.common.service.project.ProjectPropertyResponseModel;
+import com.synopsys.integration.alert.azure.boards.common.service.project.ProjectWorkItemFieldModel;
+import com.synopsys.integration.alert.azure.boards.common.service.project.TeamProjectReferenceResponseModel;
 
 public class AzureCustomFieldManager {
     public static final String ALERT_PROVIDER_KEY_FIELD_NAME = "Alert Provider Key";
