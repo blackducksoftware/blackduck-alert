@@ -25,14 +25,14 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
+import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.common.action.upload.AbstractUploadAction;
 import com.synopsys.integration.alert.common.action.upload.UploadTarget;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.ValidationResult;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
-import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
 
 /**
  * Replaced by SAMLFileUploadActions

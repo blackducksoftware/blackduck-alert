@@ -1,5 +1,15 @@
 package com.synopsys.integration.alert.authentication.saml.action;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
+
 import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
 import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.authentication.saml.database.accessor.SAMLConfigAccessor;
@@ -11,15 +21,6 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.rest.api.ConfigurationCrudHelper;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
 @Component
 public class SAMLCrudActions {
