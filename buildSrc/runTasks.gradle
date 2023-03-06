@@ -1,3 +1,5 @@
+String keystoreFile = "${project.buildDir}/certs/blackduck-alert.keystore"
+
 task createKeystore(type: com.synopsys.integration.alert.build.CreateKeystoreTask) {
     doFirst {
         mkdir "${project.buildDir}/certs"
@@ -12,10 +14,15 @@ task createTruststore(type: Copy) {
 }
 
 task runServer(type: com.synopsys.integration.alert.build.RunServerTask, dependsOn: [build, createKeystore, createTruststore]) {
+    doFirst {
+        if (!file(keystoreFile).exists()) {
+            throw new GradleException("Required keystore does not exist --> ${keystoreFile}")
+        }
+    }
     postgresVersion = project.ext.postgresContainerVersionCurrent
 }
 
-tasks.createKeystore.onlyIf { !file("${project.buildDir}/certs/blackduck-alert.keystore").exists() }
+tasks.createKeystore.onlyIf { !file(keystoreFile).exists() }
 tasks.createTruststore.onlyIf { !file("${project.buildDir}/certs/blackduck-alert.truststore").exists() }
 tasks.runServer.mustRunAfter(createKeystore)
 tasks.runServer.mustRunAfter(createTruststore)
