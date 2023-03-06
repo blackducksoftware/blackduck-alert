@@ -1,9 +1,6 @@
 package com.synopsys.integration.alert.channel.jira.server.distribution.event;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -15,11 +12,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
-import com.synopsys.integration.alert.channel.jira.server.distribution.event.mock.MockCorrelationToNotificationRelationRepository;
-import com.synopsys.integration.alert.channel.jira.server.distribution.event.mock.MockJobSubTaskStatusRepository;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.common.persistence.model.job.workflow.JobSubTaskStatusModel;
-import com.synopsys.integration.alert.database.api.workflow.DefaultJobSubTaskAccessor;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 class JiraServerCreateIssueEventListenerTest {
@@ -44,9 +37,6 @@ class JiraServerCreateIssueEventListenerTest {
             issueCreationModel
         );
 
-        MockJobSubTaskStatusRepository subTaskRepository = new MockJobSubTaskStatusRepository();
-        MockCorrelationToNotificationRelationRepository relationRepository = new MockCorrelationToNotificationRelationRepository();
-        DefaultJobSubTaskAccessor jobSubTaskAccessor = new DefaultJobSubTaskAccessor(subTaskRepository, relationRepository);
         JiraServerCreateIssueEventHandler handler = Mockito.spy(new JiraServerCreateIssueEventHandler(
             eventManager,
             gson,
@@ -57,10 +47,6 @@ class JiraServerCreateIssueEventListenerTest {
             executingJobManager
         ));
         Mockito.doNothing().when(handler).handleEvent(event);
-
-        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobId, 1L, notificationIds);
-        Optional<JobSubTaskStatusModel> optionalJobSubTaskStatusModel = jobSubTaskAccessor.getSubTaskStatus(parentEventId);
-        assertTrue(optionalJobSubTaskStatusModel.isPresent());
 
         JiraServerCreateIssueEventListener listener = new JiraServerCreateIssueEventListener(gson, ChannelKeys.JIRA_SERVER, handler);
         Message message = new Message(gson.toJson(event).getBytes());
