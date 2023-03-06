@@ -30,7 +30,7 @@ const useStyles = createUseStyles({
 });
 
 
-const TableHeaderCell = ({ label, sortable, settings }) => {
+const TableHeaderCell = ({ label, sortable, settings, onSort, name }) => {
     const classes = useStyles();
     const cellStyle = classNames(classes.headerCell, {
         [classes.sortableCell]: sortable,
@@ -41,7 +41,7 @@ const TableHeaderCell = ({ label, sortable, settings }) => {
     return (
         <th className={cellStyle} >
             { sortable ? (
-                <button>
+                <button role="button" onClick={() => onSort(name)}>
                     {label}
                 </button>
             ) : <>{label}</> }
@@ -53,7 +53,9 @@ const TableHeaderCell = ({ label, sortable, settings }) => {
 TableHeaderCell.propTypes = {
     sortable: PropTypes.bool,
     label: PropTypes.string,
-    settings:PropTypes.object
+    settings:PropTypes.object,
+    onSort: PropTypes.func,
+    name: PropTypes.string
 };
 
 export default TableHeaderCell;

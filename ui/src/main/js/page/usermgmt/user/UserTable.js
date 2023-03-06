@@ -41,9 +41,11 @@ const COLUMNS = [{
 
 const UserTable = ({ canCreate, canDelete }) => {
     const dispatch = useDispatch();
+    const [tableData, setTableData] = useState();
     const [search, setNewSearch] = useState("");
     const [selected, setSelected] = useState([]);
     const [autoRefresh, setAutoRefresh] = useState(false);
+    const [sortConfig, setSortConfig] = useState();
     const users = useSelector(state => state.users.data);
 
     useEffect(() => {
@@ -71,22 +73,56 @@ const UserTable = ({ canCreate, canDelete }) => {
         setAutoRefresh(!autoRefresh);
     }
 
-    const getUsers = () => {
-        return (!search ? users : users.filter((user) => user.username.toLowerCase().includes(search.toLowerCase())));
+    const onSort = (name) => {
+        if (name !== sortConfig?.name || !sortConfig) {
+            return setSortConfig({name, direction: 'ASC'});
+        }
+
+        if (name === sortConfig?.name && sortConfig?.direction === 'DESC') {
+            return setSortConfig();
+        }
+
+        if (name === sortConfig?.name) {
+            return setSortConfig({name, direction: 'DESC'});
+        }
+
+        return setSortConfig();
     }
+    
+    useEffect(() => {
+        let data = users;
+
+        if (sortConfig) {
+            const { name, direction } = sortConfig;
+            data = [...data].sort((a, b) => {
+                if (a[name] === null) return 1;
+                if (b[name] === null) return -1;
+                if (a[name] === null && b[name] === null) return 0;
+                return (
+                 a[name].toString().localeCompare(b[name].toString(), "en", {
+                  numeric: true,
+                 }) * (direction === 'ASC' ? 1 : -1)
+                );
+            });
+        }
+
+        setTableData(!search ? data : data.filter((user) => user.username.toLowerCase().includes(search.toLowerCase())));
+
+    }, [users, search, sortConfig]);
 
     return (
         <Table 
-            tableData={getUsers()}
+            tableData={tableData}
             columns={COLUMNS}
             multiSelect
             selected={selected}
             onSelected={onSelected}
+            onSort={onSort}
             searchBarPlaceholder="Search Users..."
             handleSearchChange={handleSearchChange}
             active={autoRefresh} 
             onToggle={handleToggle}
-            tableActions={() => <UserTableActions canCreate={canCreate} canDelete={canDelete} data={getUsers()} selected={selected}/>}
+            tableActions={() => <UserTableActions canCreate={canCreate} canDelete={canDelete} data={tableData} selected={selected}/>}
         />
     )
 }

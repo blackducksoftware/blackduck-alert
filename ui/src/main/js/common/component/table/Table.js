@@ -23,7 +23,7 @@ const useStyles = createUseStyles({
 
 
 const Table = ({ columns, multiSelect, selected, onSelected, tableData, handleSearchChange, 
-    searchBarPlaceholder, tableActions, onToggle, active }) => {
+    searchBarPlaceholder, tableActions, onToggle, active, onSort }) => {
     const classes = useStyles();
 
     return (
@@ -46,6 +46,7 @@ const Table = ({ columns, multiSelect, selected, onSelected, tableData, handleSe
                     multiSelect={multiSelect} 
                     selected={selected}
                     onSelected={onSelected}
+                    onSort={onSort}
                 />
                 <TableBody 
                     columns={columns} 
@@ -73,7 +74,8 @@ Table.propTypes = {
     searchBarPlaceholder: PropTypes.string,
     tableActions: PropTypes.func,
     onToggle: PropTypes.func,
-    active: PropTypes.bool 
+    active: PropTypes.bool,
+    onSort: PropTypes.func 
 };
 
 export default Table;

@@ -13,7 +13,7 @@ const useStyles = createUseStyles({
     }
 });
 
-const TableHeader = ({ columns, multiSelect, selected, onSelected, tableData }) => {
+const TableHeader = ({ columns, multiSelect, selected, onSelected, tableData, onSort }) => {
     const classes = useStyles();
 
     return (
@@ -33,6 +33,8 @@ const TableHeader = ({ columns, multiSelect, selected, onSelected, tableData }) 
                         label={column.label} 
                         sortable={column.sortable} 
                         settings={column.settings} 
+                        onSort={onSort}
+                        name={column.key}
                     />
                 ))}
             </tr>
@@ -49,7 +51,8 @@ TableHeader.propTypes = {
     multiSelect: PropTypes.bool,
     selected: PropTypes.array,
     onSelected: PropTypes.func,
-    tableData: PropTypes.arrayOf(PropTypes.object)
+    tableData: PropTypes.arrayOf(PropTypes.object),
+    onSort: PropTypes.func
 }
 
 export default TableHeader;
