@@ -16,12 +16,11 @@ import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel
 public class AzureBoardsCreateIssueEvent extends IssueTrackerCreateIssueEvent {
     public AzureBoardsCreateIssueEvent(
         String destination,
-        UUID parentEventId,
         UUID jobExecutionId,
         UUID jobId,
         Set<Long> notificationIds,
         IssueCreationModel creationModel
     ) {
-        super(destination, parentEventId, jobExecutionId, jobId, notificationIds, creationModel);
+        super(destination, jobExecutionId, jobId, notificationIds, creationModel);
     }
 }

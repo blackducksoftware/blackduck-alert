@@ -18,14 +18,12 @@ import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
 
 public class JiraServerCommentGenerator implements IssueTrackerCommentEventGenerator<String> {
     private final JiraServerChannelKey channelKey;
-    private final UUID parentEventId;
     private final UUID jobExecutionId;
     private final UUID jobId;
     private final Set<Long> notificationIds;
 
-    public JiraServerCommentGenerator(JiraServerChannelKey channelKey, UUID parentEventId, UUID jobExecutionId, UUID jobId, Set<Long> notificationIds) {
+    public JiraServerCommentGenerator(JiraServerChannelKey channelKey, UUID jobExecutionId, UUID jobId, Set<Long> notificationIds) {
         this.channelKey = channelKey;
-        this.parentEventId = parentEventId;
         this.jobExecutionId = jobExecutionId;
         this.jobId = jobId;
         this.notificationIds = notificationIds;
@@ -33,6 +31,6 @@ public class JiraServerCommentGenerator implements IssueTrackerCommentEventGener
 
     @Override
     public IssueTrackerCommentEvent<String> generateEvent(IssueCommentModel<String> model) {
-        return new JiraServerCommentEvent(IssueTrackerCommentEvent.createDefaultEventDestination(channelKey), parentEventId, jobExecutionId, jobId, notificationIds, model);
+        return new JiraServerCommentEvent(IssueTrackerCommentEvent.createDefaultEventDestination(channelKey), jobExecutionId, jobId, notificationIds, model);
     }
 }

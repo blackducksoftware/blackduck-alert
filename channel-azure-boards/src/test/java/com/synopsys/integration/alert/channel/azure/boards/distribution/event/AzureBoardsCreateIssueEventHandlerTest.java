@@ -89,7 +89,6 @@ class AzureBoardsCreateIssueEventHandlerTest {
             exceptionMessageImprover,
             issueCategoryRetriever,
             eventManager,
-            jobSubTaskAccessor,
             executingJobManager
         );
 
@@ -114,7 +113,6 @@ class AzureBoardsCreateIssueEventHandlerTest {
         IssueCreationModel issueCreationModel = IssueCreationModel.simple("title", "description", List.of(), provider);
         AzureBoardsCreateIssueEvent event = new AzureBoardsCreateIssueEvent(
             IssueTrackerCreateIssueEvent.createDefaultEventDestination(ChannelKeys.AZURE_BOARDS),
-            parentEventId,
             jobExecutionId,
             jobId,
             notificationIds,
@@ -157,7 +155,6 @@ class AzureBoardsCreateIssueEventHandlerTest {
             exceptionMessageImprover,
             issueCategoryRetriever,
             eventManager,
-            jobSubTaskAccessor,
             executingJobManager
         );
 
@@ -185,7 +182,6 @@ class AzureBoardsCreateIssueEventHandlerTest {
         IssueCreationModel issueCreationModel = IssueCreationModel.simple("title", "description", List.of(), provider);
         AzureBoardsCreateIssueEvent event = new AzureBoardsCreateIssueEvent(
             IssueTrackerCreateIssueEvent.createDefaultEventDestination(ChannelKeys.AZURE_BOARDS),
-            parentEventId,
             jobExecutionId,
             jobId,
             notificationIds,

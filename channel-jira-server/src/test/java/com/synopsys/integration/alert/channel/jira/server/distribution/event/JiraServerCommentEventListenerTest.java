@@ -1,6 +1,5 @@
 package com.synopsys.integration.alert.channel.jira.server.distribution.event;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -38,7 +37,6 @@ class JiraServerCommentEventListenerTest {
         IssueCommentModel<String> issueCommentModel = new IssueCommentModel<>(null, List.of("A comment"), null);
         JiraServerCommentEvent event = new JiraServerCommentEvent(
             "destination",
-            parentEventId,
             jobExecutionId,
             jobId,
             notificationIds,
@@ -68,7 +66,6 @@ class JiraServerCommentEventListenerTest {
         Message message = new Message(gson.toJson(event).getBytes());
         listener.onMessage(message);
 
-        optionalJobSubTaskStatusModel = jobSubTaskAccessor.getSubTaskStatus(parentEventId);
-        assertFalse(optionalJobSubTaskStatusModel.isPresent());
+        //TODO add assertions
     }
 }

@@ -79,7 +79,6 @@ class JiraServerExternalConnectionTest {
             issueTrackerCallbackInfoCreator,
             issueCategoryRetriever,
             eventManager,
-            jobSubTaskAccessor,
             executingJobManager
         );
 
@@ -92,7 +91,7 @@ class JiraServerExternalConnectionTest {
             modelTransformer,
             issueCategoryRetriever
         );
-        IssueTrackerProcessor<String> processor = jiraServerProcessorFactory.createProcessor(createDistributionDetails(), UUID.randomUUID(), UUID.randomUUID(), Set.of());
+        IssueTrackerProcessor<String> processor = jiraServerProcessorFactory.createProcessor(createDistributionDetails(), UUID.randomUUID(), Set.of());
 
         IssueTrackerResponse<String> response = processor.processMessages(createMessage(), "jobName");
 

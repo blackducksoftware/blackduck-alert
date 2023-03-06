@@ -1,6 +1,5 @@
 package com.synopsys.integration.alert.channel.jira.cloud.distribution.event;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -39,7 +38,6 @@ class JiraCloudCreateIssueEventListenerTest {
         IssueCreationModel issueCreationModel = IssueCreationModel.simple("title", "description", List.of(), provider);
         JiraCloudCreateIssueEvent event = new JiraCloudCreateIssueEvent(
             "destination",
-            parentEventId,
             jobExecutionId,
             jobId,
             notificationIds,
@@ -69,7 +67,5 @@ class JiraCloudCreateIssueEventListenerTest {
         Message message = new Message(gson.toJson(event).getBytes());
         listener.onMessage(message);
 
-        optionalJobSubTaskStatusModel = jobSubTaskAccessor.getSubTaskStatus(parentEventId);
-        assertFalse(optionalJobSubTaskStatusModel.isPresent());
     }
 }

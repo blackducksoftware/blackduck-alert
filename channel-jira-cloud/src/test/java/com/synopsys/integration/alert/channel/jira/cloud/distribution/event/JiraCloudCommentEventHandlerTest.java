@@ -58,7 +58,6 @@ class JiraCloudCommentEventHandlerTest {
 
     @Test
     void handleUnknownJobTest() {
-        UUID parentEventId = UUID.randomUUID();
         UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
@@ -73,7 +72,6 @@ class JiraCloudCommentEventHandlerTest {
             callbackInfoCreator,
             issueCategoryRetriever,
             eventManager,
-            jobSubTaskAccessor,
             executingJobManager
         );
         JobDetailsAccessor<JiraCloudJobDetailsModel> jobDetailsAccessor = jobId1 -> Optional.empty();
@@ -92,7 +90,6 @@ class JiraCloudCommentEventHandlerTest {
         IssueCommentModel<String> model = new IssueCommentModel<>(existingIssueDetails, List.of(), null);
         JiraCloudCommentEvent event = new JiraCloudCommentEvent(
             IssueTrackerCommentEvent.createDefaultEventDestination(ChannelKeys.JIRA_SERVER),
-            parentEventId,
             jobExecutionId,
             jobId,
             notificationIds,
@@ -104,7 +101,6 @@ class JiraCloudCommentEventHandlerTest {
 
     @Test
     void handleCommentTest() throws IntegrationException {
-        UUID parentEventId = UUID.randomUUID();
         UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
@@ -138,7 +134,6 @@ class JiraCloudCommentEventHandlerTest {
             callbackInfoCreator,
             issueCategoryRetriever,
             eventManager,
-            jobSubTaskAccessor,
             executingJobManager
         );
         JobDetailsAccessor<JiraCloudJobDetailsModel> jobDetailsAccessor = jobId1 -> Optional.of(createJobDetails(jobId));
@@ -157,7 +152,6 @@ class JiraCloudCommentEventHandlerTest {
         IssueCommentModel<String> model = new IssueCommentModel<>(existingIssueDetails, List.of("A comment"), null);
         JiraCloudCommentEvent event = new JiraCloudCommentEvent(
             IssueTrackerCommentEvent.createDefaultEventDestination(ChannelKeys.JIRA_CLOUD),
-            parentEventId,
             jobExecutionId,
             jobId,
             notificationIds,

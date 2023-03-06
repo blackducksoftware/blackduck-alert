@@ -2,7 +2,6 @@ package com.synopsys.integration.alert.api.channel.issue;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.Serializable;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -40,20 +39,14 @@ class IssueTrackerChannelTest {
         IssueTrackerAsyncMessageSender<String> messageSender = createMessageSender(jobSubTaskAccessor);
         IssueTrackerProcessor<String> processor = new IssueTrackerProcessor<>(modelExtractor, messageSender);
 
-        IssueTrackerProcessorFactory<DistributionJobDetailsModel, String> processorFactory = (v, x, y, z) -> processor;
+        IssueTrackerProcessorFactory<DistributionJobDetailsModel, String> processorFactory = (x, y, z) -> processor;
 
-        IssueTrackerResponsePostProcessor postProcessor = new IssueTrackerResponsePostProcessor() {
-            @Override
-            public <T extends Serializable> void postProcess(IssueTrackerResponse<T> response) {
-            }
-        };
-        IssueTrackerChannel<DistributionJobDetailsModel, String> issueTrackerChannel = new IssueTrackerChannel<>(processorFactory, postProcessor, jobSubTaskAccessor) {};
+        IssueTrackerChannel<DistributionJobDetailsModel, String> issueTrackerChannel = new IssueTrackerChannel<>(processorFactory) {};
 
         MessageResult testResult = issueTrackerChannel.distributeMessages(
             distributionJobDetailsModel,
             ProviderMessageHolder.empty(),
             null,
-            UUID.randomUUID(),
             UUID.randomUUID(),
             UUID.randomUUID(),
             Set.of()
@@ -104,8 +97,6 @@ class IssueTrackerChannelTest {
             transitioner,
             commenter,
             eventManager,
-            jobSubTaskAccessor,
-            UUID.randomUUID(),
             UUID.randomUUID(),
             Set.of(1L, 2L, 3L),
             executingJobManager

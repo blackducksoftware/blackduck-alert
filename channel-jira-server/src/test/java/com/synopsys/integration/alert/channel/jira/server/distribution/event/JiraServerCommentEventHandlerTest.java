@@ -1,11 +1,8 @@
 package com.synopsys.integration.alert.channel.jira.server.distribution.event;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -36,7 +33,6 @@ import com.synopsys.integration.alert.channel.jira.server.distribution.event.moc
 import com.synopsys.integration.alert.channel.jira.server.distribution.event.mock.MockJobSubTaskStatusRepository;
 import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
-import com.synopsys.integration.alert.common.persistence.model.job.workflow.JobSubTaskStatusModel;
 import com.synopsys.integration.alert.database.api.workflow.DefaultJobSubTaskAccessor;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.exception.IntegrationException;
@@ -81,7 +77,6 @@ class JiraServerCommentEventHandlerTest {
 
     @Test
     void handleUnknownJobTest() {
-        UUID parentEventId = UUID.randomUUID();
         UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
@@ -96,12 +91,8 @@ class JiraServerCommentEventHandlerTest {
             callbackInfoCreator,
             issueCategoryRetriever,
             eventManager,
-            jobSubTaskAccessor,
             executingJobManager
         );
-
-        JiraServerJobDetailsModel jobDetailsModel = createJobDetails(jobId);
-        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobDetailsModel.getJobId(), 1L, notificationIds);
 
         JiraServerCommentEventHandler handler = new JiraServerCommentEventHandler(
             eventManager,
@@ -117,7 +108,6 @@ class JiraServerCommentEventHandlerTest {
         IssueCommentModel<String> model = new IssueCommentModel<>(existingIssueDetails, List.of(), null);
         JiraServerCommentEvent event = new JiraServerCommentEvent(
             IssueTrackerCommentEvent.createDefaultEventDestination(ChannelKeys.JIRA_SERVER),
-            parentEventId,
             jobExecutionId,
             jobId,
             notificationIds,
@@ -125,8 +115,6 @@ class JiraServerCommentEventHandlerTest {
         );
         handler.handle(event);
         assertEquals(0, issueCounter.get());
-        Optional<JobSubTaskStatusModel> jobSubTaskStatusModelOptional = jobSubTaskAccessor.getSubTaskStatus(parentEventId);
-        assertTrue(jobSubTaskStatusModelOptional.isEmpty());
     }
 
     @Test
@@ -168,7 +156,6 @@ class JiraServerCommentEventHandlerTest {
             callbackInfoCreator,
             issueCategoryRetriever,
             eventManager,
-            jobSubTaskAccessor,
             executingJobManager
         );
 
@@ -187,7 +174,6 @@ class JiraServerCommentEventHandlerTest {
         IssueCommentModel<String> model = new IssueCommentModel<>(existingIssueDetails, List.of("A comment"), null);
         JiraServerCommentEvent event = new JiraServerCommentEvent(
             IssueTrackerCommentEvent.createDefaultEventDestination(ChannelKeys.JIRA_SERVER),
-            parentEventId,
             jobExecutionId,
             jobId,
             notificationIds,
@@ -195,8 +181,6 @@ class JiraServerCommentEventHandlerTest {
         );
         handler.handle(event);
         assertEquals(1, issueCounter.get());
-        Optional<JobSubTaskStatusModel> jobSubTaskStatusModelOptional = jobSubTaskAccessor.getSubTaskStatus(parentEventId);
-        assertFalse(jobSubTaskStatusModelOptional.isPresent());
     }
 
     private JiraServerJobDetailsModel createJobDetails(UUID jobId) {

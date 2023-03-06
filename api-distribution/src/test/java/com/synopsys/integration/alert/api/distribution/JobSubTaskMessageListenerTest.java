@@ -21,7 +21,7 @@ class JobSubTaskMessageListenerTest {
         Gson gson = new Gson();
         String destination = "destination";
         TestEventHandler handler = new TestEventHandler();
-        TestEvent event = new TestEvent(destination, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), Set.of());
+        TestEvent event = new TestEvent(destination, UUID.randomUUID(), UUID.randomUUID(), Set.of());
         TestEventListener listener = new TestEventListener(gson, new SyncTaskExecutor(), destination, TestEvent.class, handler);
         Message message = new Message(gson.toJson(event).getBytes());
         listener.onMessage(message);
@@ -31,8 +31,8 @@ class JobSubTaskMessageListenerTest {
     private static class TestEvent extends JobSubTaskEvent {
         private static final long serialVersionUID = -4316390923286571736L;
 
-        public TestEvent(String destination, UUID parentEventId, UUID jobExecutionId, UUID jobId, Set<Long> notificationIds) {
-            super(destination, parentEventId, jobExecutionId, jobId, notificationIds);
+        public TestEvent(String destination, UUID jobExecutionId, UUID jobId, Set<Long> notificationIds) {
+            super(destination, jobExecutionId, jobId, notificationIds);
         }
     }
 

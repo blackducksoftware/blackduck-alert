@@ -1,6 +1,5 @@
 package com.synopsys.integration.alert.channel.jira.server.distribution.event;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -39,7 +38,6 @@ class JiraServerTransitionEventListenerTest {
         IssueTransitionModel<String> issueTransitionModel = new IssueTransitionModel<>(null, IssueOperation.RESOLVE, List.of(), null);
         JiraServerTransitionEvent event = new JiraServerTransitionEvent(
             "destination",
-            parentEventId,
             jobExecutionId,
             jobId,
             notificationIds,
@@ -69,7 +67,6 @@ class JiraServerTransitionEventListenerTest {
         Message message = new Message(gson.toJson(event).getBytes());
         listener.onMessage(message);
 
-        optionalJobSubTaskStatusModel = jobSubTaskAccessor.getSubTaskStatus(parentEventId);
-        assertFalse(optionalJobSubTaskStatusModel.isPresent());
+        //TODO add assertions
     }
 }

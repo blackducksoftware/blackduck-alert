@@ -1,7 +1,6 @@
 package com.synopsys.integration.alert.api.distribution;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Optional;
@@ -13,19 +12,26 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJob;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.distribution.execution.JobStage;
+import com.synopsys.integration.alert.api.distribution.mock.MockJobCompletionStatusDurationsRepository;
+import com.synopsys.integration.alert.api.distribution.mock.MockJobCompletionStatusRepository;
 import com.synopsys.integration.alert.api.distribution.mock.MockJobSubTaskRepository;
 import com.synopsys.integration.alert.api.distribution.mock.MockNotificationCorrelationToNotificationRelationRepository;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.api.event.distribution.JobSubTaskEvent;
+import com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
+import com.synopsys.integration.alert.database.api.DefaultJobCompletionStatusModelAccessor;
 import com.synopsys.integration.alert.database.api.workflow.DefaultJobSubTaskAccessor;
 import com.synopsys.integration.alert.database.distribution.workflow.JobSubTaskRepository;
 import com.synopsys.integration.alert.database.distribution.workflow.JobSubTaskStatusEntity;
 import com.synopsys.integration.alert.database.distribution.workflow.NotificationCorrelationToNotificationRelation;
 import com.synopsys.integration.alert.database.distribution.workflow.NotificationCorrelationToNotificationRelationPK;
 import com.synopsys.integration.alert.database.distribution.workflow.NotificationCorrelationToNotificationRelationRepository;
+import com.synopsys.integration.alert.database.job.execution.JobCompletionDurationsRepository;
+import com.synopsys.integration.alert.database.job.execution.JobCompletionRepository;
 
 class JobSubTaskEventHandlerTest {
     private EventManager eventManager;
@@ -40,7 +46,10 @@ class JobSubTaskEventHandlerTest {
         relationRepository = new MockNotificationCorrelationToNotificationRelationRepository(this::getRelationKey);
         eventManager = Mockito.mock(EventManager.class);
         jobSubTaskAccessor = new DefaultJobSubTaskAccessor(jobSubTaskRepository, relationRepository);
-        executingJobManager = Mockito.mock(ExecutingJobManager.class);
+        JobCompletionDurationsRepository jobCompletionDurationsRepository = new MockJobCompletionStatusDurationsRepository();
+        JobCompletionRepository jobCompletionRepository = new MockJobCompletionStatusRepository(jobCompletionDurationsRepository);
+        JobCompletionStatusModelAccessor jobCompletionStatusModelAccessor = new DefaultJobCompletionStatusModelAccessor(jobCompletionRepository, jobCompletionDurationsRepository);
+        executingJobManager = new ExecutingJobManager(jobCompletionStatusModelAccessor);
     }
 
     private NotificationCorrelationToNotificationRelationPK getRelationKey(NotificationCorrelationToNotificationRelation relation) {
@@ -55,21 +64,24 @@ class JobSubTaskEventHandlerTest {
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
 
+        ExecutingJob job = executingJobManager.startJob(jobId, 2);
         jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobId, 2L, notificationIds);
 
         TestHandler handler = new TestHandler(eventManager, jobSubTaskAccessor, executingJobManager);
-        TestEvent event = new TestEvent(destination, parentEventId, jobExecutionId, jobId, notificationIds);
+        TestEvent event = new TestEvent(destination, jobExecutionId, jobId, notificationIds);
         handler.handle(event);
 
         assertTrue(handler.wasHandlerCalled());
-        Optional<JobSubTaskStatusEntity> entry = jobSubTaskRepository.findById(parentEventId);
+        Optional<ExecutingJob> entry = executingJobManager.getExecutingJob(job.getExecutionId());
         assertTrue(entry.isPresent());
-        JobSubTaskStatusEntity entity = entry.get();
-        assertEquals(parentEventId, entity.getId());
-        assertEquals(jobId, entity.getJobId());
-        assertEquals(1L, entity.getRemainingEvents());
-        assertNotNull(entity.getNotificationCorrelationId());
-        assertEquals(notificationIds.size(), relationRepository.count());
+        ExecutingJob savedJob = entry.get();
+        assertEquals(job.getExecutionId(), savedJob.getExecutionId());
+        assertEquals(jobId, savedJob.getJobConfigId());
+        assertEquals(2, savedJob.getTotalNotificationCount());
+        assertEquals(0, savedJob.getProcessedNotificationCount());
+        assertEquals(0L, savedJob.getRemainingEvents());
+        assertEquals(0L, savedJob.getExpectedNotificationsToSend());
+        assertEquals(0L, savedJob.getNotificationsSent());
     }
 
     @Test
@@ -86,12 +98,10 @@ class JobSubTaskEventHandlerTest {
         TestHandler handler = new TestHandler(eventManager, jobSubTaskAccessor, executingJobManager);
         handler.setShouldThrowException(true);
 
-        TestEvent event = new TestEvent(destination, parentEventId, jobExecutionId, jobId, notificationIds);
+        TestEvent event = new TestEvent(destination, jobExecutionId, jobId, notificationIds);
         handler.handle(event);
 
         assertTrue(handler.wasHandlerCalled());
-        Optional<JobSubTaskStatusEntity> entry = jobSubTaskRepository.findById(parentEventId);
-        assertTrue(entry.isEmpty());
     }
 
     @Test
@@ -105,19 +115,17 @@ class JobSubTaskEventHandlerTest {
         jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobId, 1L, notificationIds);
 
         TestHandler handler = new TestHandler(eventManager, jobSubTaskAccessor, executingJobManager);
-        TestEvent event = new TestEvent(destination, parentEventId, jobExecutionId, jobId, notificationIds);
+        TestEvent event = new TestEvent(destination, jobExecutionId, jobId, notificationIds);
         handler.handle(event);
 
         assertTrue(handler.wasHandlerCalled());
-        Optional<JobSubTaskStatusEntity> entry = jobSubTaskRepository.findById(parentEventId);
-        assertTrue(entry.isEmpty());
     }
 
     private static class TestEvent extends JobSubTaskEvent {
         private static final long serialVersionUID = -2052376174682165438L;
 
-        public TestEvent(String destination, UUID parentEventId, UUID jobExecutionId, UUID jobId, Set<Long> notificationIds) {
-            super(destination, parentEventId, jobExecutionId, jobId, notificationIds);
+        public TestEvent(String destination, UUID jobExecutionId, UUID jobId, Set<Long> notificationIds) {
+            super(destination, jobExecutionId, jobId, notificationIds);
         }
     }
 

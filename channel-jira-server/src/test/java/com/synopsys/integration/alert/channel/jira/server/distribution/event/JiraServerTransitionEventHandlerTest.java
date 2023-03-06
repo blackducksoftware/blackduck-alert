@@ -1,12 +1,9 @@
 package com.synopsys.integration.alert.channel.jira.server.distribution.event;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -38,7 +35,6 @@ import com.synopsys.integration.alert.channel.jira.server.distribution.event.moc
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
-import com.synopsys.integration.alert.common.persistence.model.job.workflow.JobSubTaskStatusModel;
 import com.synopsys.integration.alert.database.api.workflow.DefaultJobSubTaskAccessor;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.exception.IntegrationException;
@@ -101,7 +97,6 @@ class JiraServerTransitionEventHandlerTest {
             callbackInfoCreator,
             issueCategoryRetriever,
             eventManager,
-            jobSubTaskAccessor,
             executingJobManager
         );
 
@@ -122,7 +117,6 @@ class JiraServerTransitionEventHandlerTest {
         IssueTransitionModel<String> model = new IssueTransitionModel<>(existingIssueDetails, IssueOperation.RESOLVE, List.of(), null);
         JiraServerTransitionEvent event = new JiraServerTransitionEvent(
             IssueTrackerTransitionIssueEvent.createDefaultEventDestination(ChannelKeys.JIRA_SERVER),
-            parentEventId,
             jobExecutionId,
             jobId,
             notificationIds,
@@ -130,8 +124,6 @@ class JiraServerTransitionEventHandlerTest {
         );
         handler.handle(event);
         assertEquals(0, issueCounter.get());
-        Optional<JobSubTaskStatusModel> jobSubTaskStatusModelOptional = jobSubTaskAccessor.getSubTaskStatus(parentEventId);
-        assertTrue(jobSubTaskStatusModelOptional.isEmpty());
     }
 
     @Test
@@ -175,7 +167,6 @@ class JiraServerTransitionEventHandlerTest {
             callbackInfoCreator,
             issueCategoryRetriever,
             eventManager,
-            jobSubTaskAccessor,
             executingJobManager
         );
 
@@ -194,7 +185,6 @@ class JiraServerTransitionEventHandlerTest {
         IssueTransitionModel<String> model = new IssueTransitionModel<>(existingIssueDetails, IssueOperation.RESOLVE, List.of(), null);
         JiraServerTransitionEvent event = new JiraServerTransitionEvent(
             IssueTrackerTransitionIssueEvent.createDefaultEventDestination(ChannelKeys.JIRA_SERVER),
-            parentEventId,
             jobExecutionId,
             jobId,
             notificationIds,
@@ -203,8 +193,6 @@ class JiraServerTransitionEventHandlerTest {
         
         handler.handle(event);
         assertEquals(1, issueCounter.get());
-        Optional<JobSubTaskStatusModel> jobSubTaskStatusModelOptional = jobSubTaskAccessor.getSubTaskStatus(parentEventId);
-        assertFalse(jobSubTaskStatusModelOptional.isPresent());
     }
 
     private JiraServerJobDetailsModel createJobDetails(UUID jobId) {

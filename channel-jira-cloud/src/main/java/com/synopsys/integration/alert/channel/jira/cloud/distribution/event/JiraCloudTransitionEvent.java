@@ -18,12 +18,11 @@ public class JiraCloudTransitionEvent extends IssueTrackerTransitionIssueEvent<S
 
     public JiraCloudTransitionEvent(
         String destination,
-        UUID parentEventId,
         UUID jobExecutionId,
         UUID jobId,
         Set<Long> notificationIds,
         IssueTransitionModel<String> transitionModel
     ) {
-        super(destination, parentEventId, jobExecutionId, jobId, notificationIds, transitionModel);
+        super(destination, jobExecutionId, jobId, notificationIds, transitionModel);
     }
 }
