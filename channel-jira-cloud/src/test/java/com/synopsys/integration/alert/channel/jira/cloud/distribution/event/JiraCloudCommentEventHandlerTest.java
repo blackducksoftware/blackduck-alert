@@ -78,7 +78,6 @@ class JiraCloudCommentEventHandlerTest {
 
         JiraCloudCommentEventHandler handler = new JiraCloudCommentEventHandler(
             eventManager,
-            jobSubTaskAccessor,
             gson,
             propertiesFactory,
             messageSenderFactory,
@@ -140,7 +139,6 @@ class JiraCloudCommentEventHandlerTest {
 
         JiraCloudCommentEventHandler handler = new JiraCloudCommentEventHandler(
             eventManager,
-            jobSubTaskAccessor,
             gson,
             propertiesFactory,
             messageSenderFactory,

@@ -35,8 +35,7 @@ class IssueTrackerChannelTest {
             private static final long serialVersionUID = 5355069038110415471L;
         };
         IssueTrackerModelExtractor<String> modelExtractor = new IssueTrackerModelExtractor<>(createFormatter(), null);
-        JobSubTaskAccessor jobSubTaskAccessor = createJobSubTaskAccessor();
-        IssueTrackerAsyncMessageSender<String> messageSender = createMessageSender(jobSubTaskAccessor);
+        IssueTrackerAsyncMessageSender<String> messageSender = createMessageSender();
         IssueTrackerProcessor<String> processor = new IssueTrackerProcessor<>(modelExtractor, messageSender);
 
         IssueTrackerProcessorFactory<DistributionJobDetailsModel, String> processorFactory = (x, y, z) -> processor;
@@ -85,7 +84,7 @@ class IssueTrackerChannelTest {
         };
     }
 
-    private IssueTrackerAsyncMessageSender<String> createMessageSender(JobSubTaskAccessor jobSubTaskAccessor) {
+    private IssueTrackerAsyncMessageSender<String> createMessageSender() {
         IssueTrackerCommentEventGenerator<String> commenter = (model) -> null;
         IssueTrackerTransitionEventGenerator<String> transitioner = (model) -> null;
         IssueTrackerCreationEventGenerator creator = (model) -> null;

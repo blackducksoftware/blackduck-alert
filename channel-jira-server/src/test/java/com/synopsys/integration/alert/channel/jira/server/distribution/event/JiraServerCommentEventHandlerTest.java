@@ -96,7 +96,6 @@ class JiraServerCommentEventHandlerTest {
 
         JiraServerCommentEventHandler handler = new JiraServerCommentEventHandler(
             eventManager,
-            jobSubTaskAccessor,
             gson,
             propertiesFactory,
             messageSenderFactory,
@@ -162,7 +161,6 @@ class JiraServerCommentEventHandlerTest {
         jobDetailsAccessor.saveConcreteJobDetails(jobId, jobDetailsModel);
         JiraServerCommentEventHandler handler = new JiraServerCommentEventHandler(
             eventManager,
-            jobSubTaskAccessor,
             gson,
             propertiesFactory,
             messageSenderFactory,

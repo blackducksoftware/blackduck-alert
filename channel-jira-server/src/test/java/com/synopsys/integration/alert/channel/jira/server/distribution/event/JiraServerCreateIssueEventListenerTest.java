@@ -49,7 +49,6 @@ class JiraServerCreateIssueEventListenerTest {
         DefaultJobSubTaskAccessor jobSubTaskAccessor = new DefaultJobSubTaskAccessor(subTaskRepository, relationRepository);
         JiraServerCreateIssueEventHandler handler = Mockito.spy(new JiraServerCreateIssueEventHandler(
             eventManager,
-            jobSubTaskAccessor,
             gson,
             null,
             null,

@@ -1,9 +1,6 @@
 package com.synopsys.integration.alert.channel.jira.cloud.distribution.event;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -16,11 +13,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTransitionModel;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
-import com.synopsys.integration.alert.channel.jira.cloud.distribution.event.mock.MockCorrelationToNotificationRelationRepository;
-import com.synopsys.integration.alert.channel.jira.cloud.distribution.event.mock.MockJobSubTaskStatusRepository;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
-import com.synopsys.integration.alert.common.persistence.model.job.workflow.JobSubTaskStatusModel;
-import com.synopsys.integration.alert.database.api.workflow.DefaultJobSubTaskAccessor;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 class JiraCloudTransitionEventListenerTest {
@@ -44,12 +37,8 @@ class JiraCloudTransitionEventListenerTest {
             issueTransitionModel
         );
 
-        MockJobSubTaskStatusRepository subTaskRepository = new MockJobSubTaskStatusRepository();
-        MockCorrelationToNotificationRelationRepository relationRepository = new MockCorrelationToNotificationRelationRepository();
-        DefaultJobSubTaskAccessor jobSubTaskAccessor = new DefaultJobSubTaskAccessor(subTaskRepository, relationRepository);
         JiraCloudTransitionEventHandler handler = Mockito.spy(new JiraCloudTransitionEventHandler(
             eventManager,
-            jobSubTaskAccessor,
             gson,
             null,
             null,
@@ -58,10 +47,6 @@ class JiraCloudTransitionEventListenerTest {
             executingJobManager
         ));
         Mockito.doNothing().when(handler).handleEvent(event);
-
-        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobId, 1L, notificationIds);
-        Optional<JobSubTaskStatusModel> optionalJobSubTaskStatusModel = jobSubTaskAccessor.getSubTaskStatus(parentEventId);
-        assertTrue(optionalJobSubTaskStatusModel.isPresent());
 
         JiraCloudTransitionEventListener listener = new JiraCloudTransitionEventListener(gson, new SyncTaskExecutor(), ChannelKeys.JIRA_CLOUD, handler);
         Message message = new Message(gson.toJson(event).getBytes());

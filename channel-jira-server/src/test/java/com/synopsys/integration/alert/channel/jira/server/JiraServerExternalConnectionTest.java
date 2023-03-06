@@ -32,7 +32,6 @@ import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModelBuilder;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraJobCustomFieldModel;
@@ -61,7 +60,6 @@ class JiraServerExternalConnectionTest {
         JiraServerChannelKey jiraServerChannelKey = new JiraServerChannelKey();
         EventManager eventManager = Mockito.mock(EventManager.class);
         ExecutingJobManager executingJobManager = Mockito.mock(ExecutingJobManager.class);
-        JobSubTaskAccessor jobSubTaskAccessor = Mockito.mock(JobSubTaskAccessor.class);
         JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
         Mockito.when(jiraServerGlobalConfigAccessor.getConfigurationByName(Mockito.anyString())).thenReturn(Optional.of(createJiraServerConfigModel()));
         ProxyManager proxyManager = Mockito.mock(ProxyManager.class);

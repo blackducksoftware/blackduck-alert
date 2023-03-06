@@ -4,8 +4,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
@@ -15,13 +13,11 @@ import com.synopsys.integration.alert.database.distribution.workflow.JobSubTaskS
 import com.synopsys.integration.alert.database.distribution.workflow.NotificationCorrelationToNotificationRelation;
 import com.synopsys.integration.alert.database.distribution.workflow.NotificationCorrelationToNotificationRelationRepository;
 
-@Component
 public class DefaultJobSubTaskAccessor implements JobSubTaskAccessor {
 
     private JobSubTaskRepository jobSubTaskRepository;
     private NotificationCorrelationToNotificationRelationRepository notificationCorrelationToNotificationRelationRepository;
 
-    @Autowired
     public DefaultJobSubTaskAccessor(
         JobSubTaskRepository jobSubTaskRepository,
         NotificationCorrelationToNotificationRelationRepository notificationCorrelationToNotificationRelationRepository

@@ -84,7 +84,6 @@ class JiraCloudTransitionEventHandlerTest {
 
         JiraCloudTransitionEventHandler handler = new JiraCloudTransitionEventHandler(
             eventManager,
-            jobSubTaskAccessor,
             gson,
             propertiesFactory,
             messageSenderFactory,
@@ -148,7 +147,6 @@ class JiraCloudTransitionEventHandlerTest {
 
         JiraCloudTransitionEventHandler handler = new JiraCloudTransitionEventHandler(
             eventManager,
-            jobSubTaskAccessor,
             gson,
             propertiesFactory,
             messageSenderFactory,

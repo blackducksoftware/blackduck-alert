@@ -15,18 +15,15 @@ import com.synopsys.integration.alert.api.event.AlertEventHandler;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.api.event.distribution.JobSubTaskEvent;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
-import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 import com.synopsys.integration.alert.common.persistence.util.AuditStackTraceUtil;
 
 public abstract class JobSubTaskEventHandler<T extends JobSubTaskEvent> implements AlertEventHandler<T> {
     private final EventManager eventManager;
-    private final JobSubTaskAccessor jobSubTaskAccessor;
     private final JobStage jobStage;
     private final ExecutingJobManager executingJobManager;
 
-    protected JobSubTaskEventHandler(EventManager eventManager, JobSubTaskAccessor jobSubTaskAccessor, JobStage jobStage, ExecutingJobManager executingJobManager) {
+    protected JobSubTaskEventHandler(EventManager eventManager, JobStage jobStage, ExecutingJobManager executingJobManager) {
         this.eventManager = eventManager;
-        this.jobSubTaskAccessor = jobSubTaskAccessor;
         this.jobStage = jobStage;
         this.executingJobManager = executingJobManager;
     }
