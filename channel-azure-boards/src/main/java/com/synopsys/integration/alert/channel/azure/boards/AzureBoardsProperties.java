@@ -42,10 +42,10 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.oauth.AlertOAuthCredentialDataStoreFactory;
-import com.synopsys.integration.azure.boards.common.http.AzureHttpRequestCreator;
-import com.synopsys.integration.azure.boards.common.http.AzureHttpRequestCreatorFactory;
-import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
-import com.synopsys.integration.azure.boards.common.oauth.AzureAuthorizationCodeFlow;
+import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpRequestCreator;
+import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpRequestCreatorFactory;
+import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpService;
+import com.synopsys.integration.alert.azure.boards.common.oauth.AzureAuthorizationCodeFlow;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 public class AzureBoardsProperties {

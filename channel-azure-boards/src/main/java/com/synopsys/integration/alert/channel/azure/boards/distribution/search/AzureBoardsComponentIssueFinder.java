@@ -23,12 +23,12 @@ import com.synopsys.integration.alert.api.channel.issue.search.ProjectIssueSearc
 import com.synopsys.integration.alert.api.channel.issue.search.ProjectVersionComponentIssueFinder;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
-import com.synopsys.integration.alert.channel.azure.boards.distribution.util.AzureBoardsSearchPropertiesUtils;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.api.processor.extract.model.project.AbstractBomComponentDetails;
 import com.synopsys.integration.alert.api.processor.extract.model.project.BomComponentDetails;
-import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemResponseModel;
+import com.synopsys.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseModel;
+import com.synopsys.integration.alert.channel.azure.boards.distribution.util.AzureBoardsSearchPropertiesUtils;
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
 public class AzureBoardsComponentIssueFinder implements ProjectVersionComponentIssueFinder<Integer>, ExactIssueFinder<Integer> {
     private final Gson gson;
