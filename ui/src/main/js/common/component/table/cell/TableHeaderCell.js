@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { createUseStyles } from 'react-jss';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const useStyles = createUseStyles({
     headerCell: {
@@ -26,11 +27,20 @@ const useStyles = createUseStyles({
         '&:hover': {
             borderBottom: [1, 'solid', '#787884']
         }
+    },
+    buttonContainer: {
+        display: 'flex',
+        alignItems: 'center', 
+        columnGap: '3px',
+        '&:focus': {
+            border: 'none',
+            outline: 'none'
+        }
     }
 });
 
 
-const TableHeaderCell = ({ label, sortable, settings, onSort, name }) => {
+const TableHeaderCell = ({ label, sortable, settings, onSort, name, sortConfig }) => {
     const classes = useStyles();
     const cellStyle = classNames(classes.headerCell, {
         [classes.sortableCell]: sortable,
@@ -38,14 +48,20 @@ const TableHeaderCell = ({ label, sortable, settings, onSort, name }) => {
         [classes.center]: settings?.alignment === 'center'
     });
 
+    function getSortIcon(direction) {
+        return direction === 'ASC' ? 'sort-up' : 'sort-down';
+    }
+
     return (
         <th className={cellStyle} >
             { sortable ? (
-                <button role="button" onClick={() => onSort(name)}>
+                <button role="button" onClick={() => onSort(name)} className={classes.buttonContainer}>
                     {label}
+                    { sortConfig && sortConfig?.name === name ? (
+                        <FontAwesomeIcon icon={getSortIcon(sortConfig.direction)} /> 
+                    ) : <FontAwesomeIcon icon='sort' /> }
                 </button>
             ) : <>{label}</> }
-            
         </th>
     );
 };
@@ -55,7 +71,11 @@ TableHeaderCell.propTypes = {
     label: PropTypes.string,
     settings:PropTypes.object,
     onSort: PropTypes.func,
-    name: PropTypes.string
+    name: PropTypes.string,
+    sortConfig: PropTypes.shape({
+        name: PropTypes.string,
+        direction: PropTypes.string
+    })
 };
 
 export default TableHeaderCell;

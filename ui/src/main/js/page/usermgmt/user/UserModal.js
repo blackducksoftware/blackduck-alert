@@ -48,6 +48,11 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions }) => {
             setShowLoader(false);
             handleClose();
         }
+
+        if ( saveStatus === 'ERROR' ) {
+            setShowLoader(false);
+        }
+
     }, [saveStatus]);
 
     function passwordsMatch(user) {

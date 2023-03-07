@@ -8,11 +8,11 @@ const useStyles = createUseStyles({
         fontSize: '20px',
         padding: '10px',
         display: 'flex',
-        backgroundColor: '#eeeeee',
         borderBottomLeftRadius: '5px',
         borderBottomRightRadius: '5px',
-        marginTop: '40px',
-        position: 'relative'
+        position: 'relative',
+        backgroundColor: '#eeeeee',
+        borderTop: 'solid 1px #D6D6D6'
     },
     footerActions: {
         margin: [0, '5px', 0, 'auto']

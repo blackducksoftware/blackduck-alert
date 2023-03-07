@@ -118,6 +118,7 @@ const UserTable = ({ canCreate, canDelete }) => {
             selected={selected}
             onSelected={onSelected}
             onSort={onSort}
+            sortConfig={sortConfig}
             searchBarPlaceholder="Search Users..."
             handleSearchChange={handleSearchChange}
             active={autoRefresh} 

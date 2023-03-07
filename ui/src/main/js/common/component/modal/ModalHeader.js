@@ -4,10 +4,11 @@ import { createUseStyles } from 'react-jss';
 
 const useStyles = createUseStyles({
     modalHeader: {
+        display: 'flex',
         fontSize: '20px',
         padding: '10px',
-        marginBottom: '30px',
-        display: 'flex'
+        backgroundColor: '#eeeeee',
+        borderBottom: 'solid 1px #D6D6D6'
     },
     title: {
         flexBasis: '98%',
