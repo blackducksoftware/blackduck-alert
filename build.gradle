@@ -28,7 +28,7 @@ ext {
 
     // This version is also in src/test/resources/spring-test.properties for the test jdbc connection
     postgresContainerVersionMigration = '12.11'
-    postgresContainerVersionCurrent = '14.7'
+    postgresContainerVersionCurrent = '14.5'
 
     // Docker Variables
     dockerBuildParam_POSTGRESIMAGEVERSION_MIGRATION = 'postgres:' + postgresContainerVersionMigration + '-alpine'
