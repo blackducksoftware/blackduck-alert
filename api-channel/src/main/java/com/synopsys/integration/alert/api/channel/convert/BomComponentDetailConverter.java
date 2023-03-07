@@ -12,8 +12,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.processor.api.extract.model.project.AbstractBomComponentDetails;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentUpgradeGuidance;
+import com.synopsys.integration.alert.api.processor.extract.model.project.AbstractBomComponentDetails;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentUpgradeGuidance;
 
 public class BomComponentDetailConverter {
     private final ChannelMessageFormatter formatter;

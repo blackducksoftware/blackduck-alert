@@ -22,8 +22,10 @@ import com.synopsys.integration.alert.api.channel.issue.callback.ProviderCallbac
 import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCreateIssueEvent;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
+import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpRequestCreator;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsHttpExceptionMessageImprover;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesFactory;
@@ -37,8 +39,6 @@ import com.synopsys.integration.alert.common.persistence.model.job.workflow.JobS
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.database.api.workflow.DefaultJobSubTaskAccessor;
 import com.synopsys.integration.alert.database.job.azure.boards.DefaultAzureBoardsJobDetailsAccessor;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
-import com.synopsys.integration.azure.boards.common.http.AzureHttpRequestCreator;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 

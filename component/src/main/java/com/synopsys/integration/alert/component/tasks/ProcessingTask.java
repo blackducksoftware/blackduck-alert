@@ -25,8 +25,8 @@ import com.synopsys.integration.alert.common.persistence.accessor.NotificationAc
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.processor.api.NotificationMappingProcessor;
-import com.synopsys.integration.alert.processor.api.event.JobNotificationMappedEvent;
+import com.synopsys.integration.alert.api.processor.NotificationMappingProcessor;
+import com.synopsys.integration.alert.api.processor.event.JobNotificationMappedEvent;
 
 public abstract class ProcessingTask extends StartupScheduledTask {
     public static final int PAGE_SIZE = 100;

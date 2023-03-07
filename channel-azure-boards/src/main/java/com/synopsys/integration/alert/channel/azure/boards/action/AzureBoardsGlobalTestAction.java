@@ -10,7 +10,12 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.alert.api.oauth.AlertOAuthCredentialDataStoreFactory;
+import com.synopsys.integration.alert.azure.boards.common.http.AzureApiVersionAppender;
+import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpRequestCreatorFactory;
+import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpService;
+import com.synopsys.integration.alert.azure.boards.common.service.project.AzureProjectService;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesFactory;
 import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUrlCreator;
@@ -25,11 +30,6 @@ import com.synopsys.integration.alert.common.rest.api.ConfigurationTestHelper;
 import com.synopsys.integration.alert.common.rest.api.ConfigurationValidationHelper;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
-import com.synopsys.integration.azure.boards.common.http.AzureApiVersionAppender;
-import com.synopsys.integration.azure.boards.common.http.AzureHttpRequestCreatorFactory;
-import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
-import com.synopsys.integration.azure.boards.common.service.project.AzureProjectService;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 

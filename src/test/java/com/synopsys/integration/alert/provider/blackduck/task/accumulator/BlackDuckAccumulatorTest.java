@@ -14,14 +14,14 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.synopsys.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.api.event.NotificationReceivedEvent;
+import com.synopsys.integration.alert.api.processor.filter.PageRetriever;
+import com.synopsys.integration.alert.api.processor.filter.StatefulAlertPage;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedDetails;
-import com.synopsys.integration.alert.api.descriptor.BlackDuckProviderKey;
-import com.synopsys.integration.alert.processor.api.filter.PageRetriever;
-import com.synopsys.integration.alert.processor.api.filter.StatefulAlertPage;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckApiTokenValidator;
 import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckSystemValidator;

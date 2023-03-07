@@ -13,10 +13,10 @@ import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
 import com.synopsys.integration.alert.api.common.model.AlertConstants;
+import com.synopsys.integration.alert.api.environment.EnvironmentProcessingResult;
+import com.synopsys.integration.alert.api.environment.EnvironmentVariableUtility;
 import com.synopsys.integration.alert.component.settings.proxy.database.accessor.SettingsProxyConfigAccessor;
 import com.synopsys.integration.alert.component.settings.proxy.validator.SettingsProxyValidator;
-import com.synopsys.integration.alert.environment.EnvironmentProcessingResult;
-import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
 import com.synopsys.integration.alert.test.common.EnvironmentVariableMockingUtil;
 
 class ProxySettingsEnvironmentVariableHandlerTest {

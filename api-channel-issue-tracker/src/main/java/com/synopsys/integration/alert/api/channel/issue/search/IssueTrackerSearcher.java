@@ -29,11 +29,11 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
-import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
-import com.synopsys.integration.alert.processor.api.extract.model.project.MessageReason;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectOperation;
+import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
+import com.synopsys.integration.alert.api.processor.extract.model.project.BomComponentDetails;
+import com.synopsys.integration.alert.api.processor.extract.model.project.MessageReason;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ProjectMessage;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ProjectOperation;
 import com.synopsys.integration.function.ThrowingSupplier;
 
 public class IssueTrackerSearcher<T extends Serializable> {

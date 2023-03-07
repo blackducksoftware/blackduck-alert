@@ -11,8 +11,8 @@ import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
 import com.synopsys.integration.alert.api.common.model.AlertConstants;
-import com.synopsys.integration.alert.environment.EnvironmentProcessingResult;
-import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
+import com.synopsys.integration.alert.api.environment.EnvironmentProcessingResult;
+import com.synopsys.integration.alert.api.environment.EnvironmentVariableUtility;
 
 class EncryptionSettingsEnvironmentVariableHandlerTest {
     @Test

@@ -1,20 +1,22 @@
 package com.synopsys.integration.alert.common.rest.api;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.function.Supplier;
+
+import org.slf4j.Logger;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
+
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
+import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
-import org.slf4j.Logger;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpStatus;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.function.Supplier;
 
 public class FileUploadHelper {
     private final Logger logger = AlertLoggerFactory.getLogger(getClass());

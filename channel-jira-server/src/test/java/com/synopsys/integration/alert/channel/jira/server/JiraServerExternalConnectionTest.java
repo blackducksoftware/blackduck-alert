@@ -22,8 +22,12 @@ import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerRespon
 import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraMessageFormatter;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.descriptor.JiraServerChannelKey;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
+import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
+import com.synopsys.integration.alert.api.processor.extract.model.ProviderMessageHolder;
+import com.synopsys.integration.alert.api.processor.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerMessageSenderFactory;
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerProcessorFactory;
@@ -38,10 +42,6 @@ import com.synopsys.integration.alert.common.persistence.model.job.DistributionJ
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraJobCustomFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
-import com.synopsys.integration.alert.api.descriptor.JiraServerChannelKey;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
-import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.test.common.TestTags;

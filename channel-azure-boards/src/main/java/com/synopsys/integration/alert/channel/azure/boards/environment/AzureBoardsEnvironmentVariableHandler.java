@@ -11,15 +11,15 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.common.model.AlertConstants;
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
+import com.synopsys.integration.alert.api.environment.EnvironmentProcessingResult;
+import com.synopsys.integration.alert.api.environment.EnvironmentVariableHandler;
+import com.synopsys.integration.alert.api.environment.EnvironmentVariableUtility;
 import com.synopsys.integration.alert.channel.azure.boards.database.accessor.AzureBoardsGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
 import com.synopsys.integration.alert.channel.azure.boards.validator.AzureBoardsGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
-import com.synopsys.integration.alert.environment.EnvironmentProcessingResult;
-import com.synopsys.integration.alert.environment.EnvironmentVariableHandler;
-import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
 
 @Component
 public class AzureBoardsEnvironmentVariableHandler extends EnvironmentVariableHandler<AzureBoardsGlobalConfigModel>  {

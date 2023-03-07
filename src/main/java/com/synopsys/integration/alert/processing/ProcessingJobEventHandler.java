@@ -31,16 +31,16 @@ import com.synopsys.integration.alert.common.persistence.model.job.DistributionJ
 import com.synopsys.integration.alert.common.persistence.model.job.JobToNotificationMappingModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
-import com.synopsys.integration.alert.processor.api.JobNotificationContentProcessor;
-import com.synopsys.integration.alert.processor.api.NotificationContentProcessor;
-import com.synopsys.integration.alert.processor.api.NotificationProcessingLifecycleCache;
-import com.synopsys.integration.alert.processor.api.detail.DetailedNotificationContent;
-import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExtractionDelegator;
-import com.synopsys.integration.alert.processor.api.distribute.ProcessedNotificationDetails;
-import com.synopsys.integration.alert.processor.api.distribute.ProviderMessageDistributor;
-import com.synopsys.integration.alert.processor.api.event.JobProcessingEvent;
-import com.synopsys.integration.alert.processor.api.extract.model.ProcessedProviderMessageHolder;
-import com.synopsys.integration.alert.processor.api.filter.NotificationContentWrapper;
+import com.synopsys.integration.alert.api.processor.JobNotificationContentProcessor;
+import com.synopsys.integration.alert.api.processor.NotificationContentProcessor;
+import com.synopsys.integration.alert.api.processor.NotificationProcessingLifecycleCache;
+import com.synopsys.integration.alert.api.processor.detail.DetailedNotificationContent;
+import com.synopsys.integration.alert.api.processor.detail.NotificationDetailExtractionDelegator;
+import com.synopsys.integration.alert.api.processor.distribute.ProcessedNotificationDetails;
+import com.synopsys.integration.alert.api.processor.distribute.ProviderMessageDistributor;
+import com.synopsys.integration.alert.api.processor.event.JobProcessingEvent;
+import com.synopsys.integration.alert.api.processor.extract.model.ProcessedProviderMessageHolder;
+import com.synopsys.integration.alert.api.processor.filter.NotificationContentWrapper;
 
 @Component
 public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessingEvent> {

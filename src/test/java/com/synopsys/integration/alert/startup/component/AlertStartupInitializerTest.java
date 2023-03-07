@@ -7,6 +7,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
+import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
+import com.synopsys.integration.alert.api.environment.EnvironmentVariableProcessor;
+import com.synopsys.integration.alert.api.environment.EnvironmentVariableUtility;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
@@ -22,9 +25,6 @@ import com.synopsys.integration.alert.common.persistence.util.ConfigurationField
 import com.synopsys.integration.alert.common.rest.FieldModelProcessor;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
-import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
-import com.synopsys.integration.alert.environment.EnvironmentVariableProcessor;
-import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
 
 public class AlertStartupInitializerTest {
     private static final SettingsDescriptorKey SETTINGS_DESCRIPTOR_KEY = new SettingsDescriptorKey();

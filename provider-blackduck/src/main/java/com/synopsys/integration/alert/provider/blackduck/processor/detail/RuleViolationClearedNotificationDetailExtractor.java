@@ -14,8 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
-import com.synopsys.integration.alert.processor.api.detail.DetailedNotificationContent;
-import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExtractor;
+import com.synopsys.integration.alert.api.processor.detail.DetailedNotificationContent;
+import com.synopsys.integration.alert.api.processor.detail.NotificationDetailExtractor;
 import com.synopsys.integration.alert.provider.blackduck.processor.model.RuleViolationClearedUniquePolicyNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;

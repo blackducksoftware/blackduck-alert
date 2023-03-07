@@ -49,9 +49,9 @@ import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
 import com.synopsys.integration.alert.test.common.database.MockRepositorySorter;
-import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
-import com.synopsys.integration.azure.boards.common.model.AzureArrayResponseModel;
-import com.synopsys.integration.azure.boards.common.service.project.TeamProjectReferenceResponseModel;
+import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpService;
+import com.synopsys.integration.alert.azure.boards.common.model.AzureArrayResponseModel;
+import com.synopsys.integration.alert.azure.boards.common.service.project.TeamProjectReferenceResponseModel;
 
 @ExtendWith(SpringExtension.class)
 class AzureBoardsOAuthCallbackActionTest {

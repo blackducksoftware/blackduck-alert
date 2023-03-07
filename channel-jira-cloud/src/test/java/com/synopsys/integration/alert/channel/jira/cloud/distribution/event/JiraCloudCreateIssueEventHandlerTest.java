@@ -24,8 +24,10 @@ import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentD
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
+import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudProperties;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudPropertiesFactory;
 import com.synopsys.integration.alert.channel.jira.cloud.database.accessor.mock.MockJiraCloudJobCustomFieldRepository;
@@ -39,8 +41,6 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.JiraC
 import com.synopsys.integration.alert.common.persistence.model.job.workflow.JobSubTaskStatusModel;
 import com.synopsys.integration.alert.database.api.workflow.DefaultJobSubTaskAccessor;
 import com.synopsys.integration.alert.database.job.jira.cloud.DefaultJiraCloudJobDetailsAccessor;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.model.IssueCreationRequestModel;
 import com.synopsys.integration.jira.common.cloud.model.IssueSearchResponseModel;

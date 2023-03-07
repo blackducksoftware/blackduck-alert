@@ -20,14 +20,14 @@ import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerComment
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerCreationEventGenerator;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerTransitionEventGenerator;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
+import com.synopsys.integration.alert.api.processor.extract.model.ProviderMessageHolder;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.workflow.JobSubTaskStatusModel;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 class IssueTrackerChannelTest {
     @Test
     void distributeMessagesTest() throws AlertException {

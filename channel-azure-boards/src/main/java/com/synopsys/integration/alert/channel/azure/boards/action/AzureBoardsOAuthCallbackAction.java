@@ -14,7 +14,15 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.alert.api.oauth.AlertOAuthCredentialDataStoreFactory;
+import com.synopsys.integration.alert.azure.boards.common.http.AzureApiVersionAppender;
+import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpRequestCreatorFactory;
+import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpService;
+import com.synopsys.integration.alert.azure.boards.common.http.HttpServiceException;
+import com.synopsys.integration.alert.azure.boards.common.model.AzureArrayResponseModel;
+import com.synopsys.integration.alert.azure.boards.common.service.project.AzureProjectService;
+import com.synopsys.integration.alert.azure.boards.common.service.project.TeamProjectReferenceResponseModel;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesFactory;
 import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUrlCreator;
@@ -25,14 +33,6 @@ import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
-import com.synopsys.integration.azure.boards.common.http.AzureApiVersionAppender;
-import com.synopsys.integration.azure.boards.common.http.AzureHttpRequestCreatorFactory;
-import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
-import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
-import com.synopsys.integration.azure.boards.common.model.AzureArrayResponseModel;
-import com.synopsys.integration.azure.boards.common.service.project.AzureProjectService;
-import com.synopsys.integration.azure.boards.common.service.project.TeamProjectReferenceResponseModel;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 @Component

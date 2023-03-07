@@ -10,8 +10,8 @@ import org.junit.jupiter.api.Test;
 import com.synopsys.integration.alert.api.channel.issue.convert.mock.MockIssueTrackerMessageFormatter;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
-import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
+import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
+import com.synopsys.integration.alert.api.processor.extract.model.SimpleMessage;
 
 class IssueTrackerSimpleMessageConverterTest {
     private static final SimpleMessage SIMPLE_MESSAGE = SimpleMessage.original(

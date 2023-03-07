@@ -8,8 +8,8 @@ import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.api.channel.convert.mock.MockChannelMessageFormatter;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
-import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
+import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
+import com.synopsys.integration.alert.api.processor.extract.model.SimpleMessage;
 
 public class SimpleMessageConverterTest {
     @Test

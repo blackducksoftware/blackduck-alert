@@ -13,13 +13,13 @@ import com.synopsys.integration.alert.api.channel.issue.model.IssuePolicyDetails
 import com.synopsys.integration.alert.api.channel.issue.model.IssueVulnerabilityDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueVulnerabilityModel;
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
+import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcern;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernSeverity;
+import com.synopsys.integration.alert.azure.boards.common.service.workitem.request.WorkItemElementOperationModel;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.util.AzureBoardsSearchPropertiesUtils;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernSeverity;
-import com.synopsys.integration.azure.boards.common.service.workitem.request.WorkItemElementOperationModel;
 
 class AzureBoardsAlertIssuePropertiesManagerTest {
 

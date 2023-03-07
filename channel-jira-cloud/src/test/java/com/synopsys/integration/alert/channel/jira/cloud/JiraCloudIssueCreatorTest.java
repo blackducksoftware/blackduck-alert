@@ -16,10 +16,10 @@ import com.synopsys.integration.alert.api.channel.jira.distribution.JiraIssueCre
 import com.synopsys.integration.alert.api.channel.jira.distribution.custom.JiraCustomFieldResolver;
 import com.synopsys.integration.alert.api.channel.jira.distribution.custom.MessageReplacementValues;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.descriptor.JiraCloudChannelKey;
+import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.channel.jira.cloud.distribution.delegate.JiraCloudIssueCreator;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
-import com.synopsys.integration.alert.api.descriptor.JiraCloudChannelKey;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
 import com.synopsys.integration.jira.common.cloud.model.IssueCreationRequestModel;

@@ -26,6 +26,8 @@ import com.synopsys.integration.alert.api.channel.issue.search.enumeration.Issue
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSenderFactory;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.descriptor.model.IssueTrackerChannelKey;
+import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.common.channel.DistributionChannelTestAction;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
@@ -33,8 +35,6 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
-import com.synopsys.integration.alert.api.descriptor.model.IssueTrackerChannelKey;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 
 public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsModel, T extends Serializable> extends DistributionChannelTestAction {
     private final Logger logger = LoggerFactory.getLogger(getClass());
