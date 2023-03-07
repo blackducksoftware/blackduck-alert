@@ -12,10 +12,10 @@ import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.processor.api.extract.model.project.AbstractBomComponentDetails;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentPolicy;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentUpgradeGuidance;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentVulnerabilities;
+import com.synopsys.integration.alert.api.processor.extract.model.project.AbstractBomComponentDetails;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentPolicy;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentUpgradeGuidance;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentVulnerabilities;
 
 public class IssueBomComponentDetails extends AbstractBomComponentDetails {
     private static final String UNKNOWN_USAGE = "Unknown Usage";

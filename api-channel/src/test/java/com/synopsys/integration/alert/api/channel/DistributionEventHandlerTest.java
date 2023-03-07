@@ -15,7 +15,7 @@ import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
-import com.synopsys.integration.alert.processor.api.distribute.DistributionEvent;
+import com.synopsys.integration.alert.api.processor.distribute.DistributionEvent;
 
 class DistributionEventHandlerTest {
     private final ChannelKey channelKey = new ChannelKey("test universal key", "Test Universal Key");

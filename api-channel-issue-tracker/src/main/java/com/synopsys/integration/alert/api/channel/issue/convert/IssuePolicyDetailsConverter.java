@@ -13,7 +13,7 @@ import java.util.List;
 import com.synopsys.integration.alert.api.channel.convert.ChannelMessageFormatter;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.IssuePolicyDetails;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentPolicy;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentPolicy;
 
 public class IssuePolicyDetailsConverter {
     private static final String LABEL_POLICY = "Policy: ";

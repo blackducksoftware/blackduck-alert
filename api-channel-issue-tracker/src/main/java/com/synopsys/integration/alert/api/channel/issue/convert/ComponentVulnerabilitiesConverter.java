@@ -13,7 +13,7 @@ import java.util.Optional;
 
 import com.synopsys.integration.alert.api.channel.convert.ChannelMessageFormatter;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentVulnerabilities;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentVulnerabilities;
 
 public class ComponentVulnerabilitiesConverter {
     private static final String LABEL_VULNERABILITIES_SECTION = "Current Vulnerabilities: ";

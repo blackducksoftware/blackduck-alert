@@ -15,7 +15,7 @@ import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentD
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerCallbackInfo;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
+import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
 
 @Component
 public class IssueTrackerCallbackInfoCreator {

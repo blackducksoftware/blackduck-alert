@@ -24,14 +24,14 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
-import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
-import com.synopsys.integration.alert.processor.api.extract.model.project.AbstractBomComponentDetails;
-import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernSeverity;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentUpgradeGuidance;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentVulnerabilities;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
+import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
+import com.synopsys.integration.alert.api.processor.extract.model.SimpleMessage;
+import com.synopsys.integration.alert.api.processor.extract.model.project.AbstractBomComponentDetails;
+import com.synopsys.integration.alert.api.processor.extract.model.project.BomComponentDetails;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernSeverity;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentUpgradeGuidance;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentVulnerabilities;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ProjectMessage;
 
 class IssueTrackerModelExtractorTest {
     private static final ProviderDetails PROVIDER_DETAILS = new ProviderDetails(0L, new LinkableItem("Provider", "Provider Config Name", "https://provider-url"));

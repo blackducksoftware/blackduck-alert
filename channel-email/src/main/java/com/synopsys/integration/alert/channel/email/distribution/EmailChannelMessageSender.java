@@ -32,7 +32,7 @@ import com.synopsys.integration.alert.channel.email.distribution.address.Validat
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.service.email.EmailTarget;
 import com.synopsys.integration.alert.service.email.JavamailPropertiesFactory;
 import com.synopsys.integration.alert.service.email.SmtpConfig;

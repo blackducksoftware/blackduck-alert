@@ -13,8 +13,8 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernSeverity;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentPolicy;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernSeverity;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentPolicy;
 import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionExpressionsView;
 import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionView;
 import com.synopsys.integration.blackduck.api.generated.enumeration.PolicyRuleCategoryType;

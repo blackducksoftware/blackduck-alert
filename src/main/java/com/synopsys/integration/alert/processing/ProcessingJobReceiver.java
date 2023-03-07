@@ -11,8 +11,8 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.processor.api.event.JobProcessingEvent;
-import com.synopsys.integration.alert.processor.api.event.NotificationProcessingReceiver;
+import com.synopsys.integration.alert.api.processor.event.JobProcessingEvent;
+import com.synopsys.integration.alert.api.processor.event.NotificationProcessingReceiver;
 
 @Component
 public class ProcessingJobReceiver extends NotificationProcessingReceiver<JobProcessingEvent> {

@@ -23,7 +23,7 @@ import com.synopsys.integration.alert.api.channel.issue.search.IssueTrackerSearc
 import com.synopsys.integration.alert.api.channel.issue.search.ProjectIssueSearchResult;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernType;
 
 public class JiraExactIssueFinder implements ExactIssueFinder<String> {
     private final Logger logger = LoggerFactory.getLogger(getClass());

@@ -40,7 +40,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.workflow.JobS
 import com.synopsys.integration.alert.database.api.workflow.DefaultJobSubTaskAccessor;
 import com.synopsys.integration.alert.database.job.jira.cloud.DefaultJiraCloudJobDetailsAccessor;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
+import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.model.IssueCreationRequestModel;
 import com.synopsys.integration.jira.common.cloud.model.IssueSearchResponseModel;

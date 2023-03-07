@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
-import com.synopsys.integration.alert.processor.api.detail.DetailedNotificationContent;
+import com.synopsys.integration.alert.api.processor.detail.DetailedNotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.processor.model.ComponentUnknownVersionWithStatusNotificationContent;
 import com.synopsys.integration.alert.test.common.TestResourceUtils;
 import com.synopsys.integration.blackduck.api.manual.component.ComponentUnknownVersionNotificationContent;

@@ -12,7 +12,7 @@ import java.util.Map;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernSeverity;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernSeverity;
 import com.synopsys.integration.blackduck.api.generated.enumeration.PolicyRuleSeverityType;
 
 @Component

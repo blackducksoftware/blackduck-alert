@@ -14,10 +14,10 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
-import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernSeverity;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentUpgradeGuidance;
+import com.synopsys.integration.alert.api.processor.extract.model.project.BomComponentDetails;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcern;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernSeverity;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentUpgradeGuidance;
 import com.synopsys.integration.alert.provider.blackduck.processor.NotificationExtractorBlackDuckServicesFactoryCache;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.BlackDuckMessageBomComponentDetailsCreator;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.BlackDuckMessageBomComponentDetailsCreatorFactory;

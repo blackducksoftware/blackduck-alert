@@ -27,7 +27,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAcce
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.workflow.JobSubTaskStatusModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
+import com.synopsys.integration.alert.api.processor.extract.model.ProviderMessageHolder;
 class IssueTrackerChannelTest {
     @Test
     void distributeMessagesTest() throws AlertException {

@@ -12,9 +12,9 @@ import java.util.Optional;
 import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernSeverity;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcern;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernSeverity;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernType;
 
 public class IssueEstimatedRiskModel extends AlertSerializableModel {
     private static final long serialVersionUID = -8833421886887540364L;
