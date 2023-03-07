@@ -13,11 +13,11 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.AzureBoardsIssueTrackerQueryManager;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.util.AzureBoardsSearchPropertiesUtils;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.azure.boards.common.service.query.fluent.WorkItemQuery;
-import com.synopsys.integration.azure.boards.common.service.query.fluent.WorkItemQueryWhere;
-import com.synopsys.integration.azure.boards.common.service.query.fluent.WorkItemQueryWhereOperator;
-import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemResponseFields;
-import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemResponseModel;
+import com.synopsys.integration.alert.azure.boards.common.service.query.fluent.WorkItemQuery;
+import com.synopsys.integration.alert.azure.boards.common.service.query.fluent.WorkItemQueryWhere;
+import com.synopsys.integration.alert.azure.boards.common.service.query.fluent.WorkItemQueryWhereOperator;
+import com.synopsys.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseFields;
+import com.synopsys.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseModel;
 
 public class AzureBoardsWorkItemFinder {
     private final AzureBoardsIssueTrackerQueryManager queryManager;

@@ -19,7 +19,7 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernSeverity;
-import com.synopsys.integration.azure.boards.common.service.workitem.request.WorkItemElementOperationModel;
+import com.synopsys.integration.alert.azure.boards.common.service.workitem.request.WorkItemElementOperationModel;
 
 class AzureBoardsAlertIssuePropertiesManagerTest {
 

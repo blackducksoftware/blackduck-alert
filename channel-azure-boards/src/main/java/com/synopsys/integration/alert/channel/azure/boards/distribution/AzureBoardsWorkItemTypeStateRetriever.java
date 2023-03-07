@@ -11,13 +11,13 @@ import java.util.List;
 import java.util.Optional;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
-import com.synopsys.integration.azure.boards.common.model.AzureArrayResponseModel;
-import com.synopsys.integration.azure.boards.common.service.state.AzureWorkItemTypeStateService;
-import com.synopsys.integration.azure.boards.common.service.state.WorkItemTypeStateResponseModel;
-import com.synopsys.integration.azure.boards.common.service.workitem.AzureWorkItemService;
-import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemFieldsWrapper;
-import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemResponseModel;
+import com.synopsys.integration.alert.azure.boards.common.http.HttpServiceException;
+import com.synopsys.integration.alert.azure.boards.common.model.AzureArrayResponseModel;
+import com.synopsys.integration.alert.azure.boards.common.service.state.AzureWorkItemTypeStateService;
+import com.synopsys.integration.alert.azure.boards.common.service.state.WorkItemTypeStateResponseModel;
+import com.synopsys.integration.alert.azure.boards.common.service.workitem.AzureWorkItemService;
+import com.synopsys.integration.alert.azure.boards.common.service.workitem.response.WorkItemFieldsWrapper;
+import com.synopsys.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseModel;
 
 public class AzureBoardsWorkItemTypeStateRetriever {
     private final Gson gson;
