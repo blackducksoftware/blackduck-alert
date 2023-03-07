@@ -9,15 +9,15 @@ import org.junit.jupiter.api.Test;
 import com.synopsys.integration.alert.api.channel.convert.mock.MockChannelMessageFormatter;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
-import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernSeverity;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentPolicy;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentUpgradeGuidance;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentVulnerabilities;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectOperation;
+import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
+import com.synopsys.integration.alert.api.processor.extract.model.project.BomComponentDetails;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcern;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernSeverity;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentPolicy;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentUpgradeGuidance;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentVulnerabilities;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ProjectMessage;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ProjectOperation;
 
 public class ProjectMessageConverterTest {
     private static final ProviderDetails PROVIDER_DETAILS = new ProviderDetails(0L, new LinkableItem("Provider", "The provider"));

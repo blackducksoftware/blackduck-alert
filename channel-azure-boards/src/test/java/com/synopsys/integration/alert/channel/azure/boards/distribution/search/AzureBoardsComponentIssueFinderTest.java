@@ -21,17 +21,17 @@ import com.synopsys.integration.alert.api.channel.issue.search.IssueTrackerSearc
 import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueCategory;
 import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueStatus;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
+import com.synopsys.integration.alert.api.processor.extract.model.project.AbstractBomComponentDetails;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernSeverity;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentPolicy;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentUpgradeGuidance;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentVulnerabilities;
+import com.synopsys.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseFields;
+import com.synopsys.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseModel;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.AzureBoardsIssueTrackerQueryManager;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
-import com.synopsys.integration.alert.processor.api.extract.model.project.AbstractBomComponentDetails;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernSeverity;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentPolicy;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentUpgradeGuidance;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentVulnerabilities;
-import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemResponseFields;
-import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemResponseModel;
 
 class AzureBoardsComponentIssueFinderTest {
     private static final ProviderDetails PROVIDER_DETAILS = new ProviderDetails(15L, new LinkableItem("Provider", "A provider", "https://provider-url"));

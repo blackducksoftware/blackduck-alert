@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueCategory;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernType;
 
 @Component
 public class IssueCategoryRetriever {

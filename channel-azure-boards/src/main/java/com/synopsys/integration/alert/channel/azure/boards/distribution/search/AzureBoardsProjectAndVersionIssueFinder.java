@@ -22,13 +22,13 @@ import com.synopsys.integration.alert.api.channel.issue.search.ProjectIssueFinde
 import com.synopsys.integration.alert.api.channel.issue.search.ProjectIssueSearchResult;
 import com.synopsys.integration.alert.api.channel.issue.search.ProjectVersionIssueFinder;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
+import com.synopsys.integration.alert.azure.boards.common.service.workitem.response.WorkItemFieldsWrapper;
+import com.synopsys.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseModel;
+import com.synopsys.integration.alert.azure.boards.common.util.AzureFieldDefinition;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.util.AzureBoardsSearchPropertiesUtils;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.util.AzureBoardsWorkItemExtractionUtils;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
-import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemFieldsWrapper;
-import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemResponseModel;
-import com.synopsys.integration.azure.boards.common.util.AzureFieldDefinition;
 
 public class AzureBoardsProjectAndVersionIssueFinder implements ProjectIssueFinder<Integer>, ProjectVersionIssueFinder<Integer> {
     private final Gson gson;

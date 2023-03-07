@@ -20,12 +20,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentPolicy;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentUpgradeGuidance;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentVulnerabilities;
+import com.synopsys.integration.alert.api.processor.extract.model.project.BomComponentDetails;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcern;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernType;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentPolicy;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentUpgradeGuidance;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentVulnerabilities;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.BlackDuckMessageLabels;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.policy.BlackDuckComponentPolicyDetailsCreator;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.util.BlackDuckMessageAttributesUtils;

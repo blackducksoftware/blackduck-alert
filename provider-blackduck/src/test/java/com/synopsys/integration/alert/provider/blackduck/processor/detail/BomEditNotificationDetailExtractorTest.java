@@ -14,7 +14,7 @@ import org.mockito.Mockito;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
-import com.synopsys.integration.alert.processor.api.detail.DetailedNotificationContent;
+import com.synopsys.integration.alert.api.processor.detail.DetailedNotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.processor.NotificationExtractorBlackDuckServicesFactoryCache;
 import com.synopsys.integration.alert.test.common.TestResourceUtils;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;

@@ -22,7 +22,7 @@ import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFi
 import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFormat;
 import com.synopsys.integration.alert.channel.email.attachment.MessageContentGroupCsvCreator;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.service.email.EmailMessagingService;
 import com.synopsys.integration.alert.service.email.EmailTarget;
 import com.synopsys.integration.alert.service.email.SmtpConfig;

@@ -9,7 +9,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentUpgradeGuidance;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentUpgradeGuidance;
 import com.synopsys.integration.blackduck.api.core.response.LinkSingleResponse;
 import com.synopsys.integration.blackduck.api.core.response.UrlSingleResponse;
 import com.synopsys.integration.blackduck.api.generated.component.ComponentVersionUpgradeGuidanceLongTermView;

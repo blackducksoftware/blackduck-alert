@@ -18,7 +18,7 @@ import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobMan
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
+import com.synopsys.integration.alert.api.processor.extract.model.ProviderMessageHolder;
 
 /**
  * @param <D> The type of job details relevant to this channel.
