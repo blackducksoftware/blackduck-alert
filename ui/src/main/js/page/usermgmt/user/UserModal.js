@@ -23,7 +23,7 @@ const useStyles = createUseStyles({
     }
 });
 
-const UserModal = ({ data, isOpen, toggleModal, modalOptions }) => {
+const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { external } = data;
@@ -33,9 +33,10 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions }) => {
 
     const fieldErrors = useSelector(state => state.users.error.fieldErrors);
     const roles = useSelector(state => state.roles.data);
-    const { saveStatus } = useSelector(state => state.users);
+    const { saveStatus, error } = useSelector(state => state.users);
 
     useEffect(() => {
+        setStatusMessage({});
         if ( saveStatus === 'VALIDATING' || saveStatus === 'SAVING' ) {
             setShowLoader(true);
         }
@@ -47,12 +48,20 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions }) => {
         if ( saveStatus === 'SAVED' ) { 
             setShowLoader(false);
             handleClose();
+            setStatusMessage({
+                message: 'Successfully created new user.',
+                type: 'success'
+            });
         }
 
         if ( saveStatus === 'ERROR' ) {
             setShowLoader(false);
+            setStatusMessage({
+                message: error.fieldErrors.message,
+                type: 'error'
+            });
+            handleClose();
         }
-
     }, [saveStatus]);
 
     function passwordsMatch(user) {
@@ -205,7 +214,8 @@ UserModal.propTypes = {
     modalOptions: PropTypes.shape({
         type: PropTypes.string,
         submitText: PropTypes.string
-    })
+    }),
+    setStatusMessage: PropTypes.func
 };
 
 export default UserModal;

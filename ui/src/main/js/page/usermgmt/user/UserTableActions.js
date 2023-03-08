@@ -4,6 +4,7 @@ import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import UserDeleteModal from 'page/usermgmt/user/UserDeleteModal';
 import UserModal from 'page/usermgmt/user/UserModal';
+import StatusMessage from 'common/component/StatusMessage';
 
 const useStyles = createUseStyles({
     createUserBtn: {
@@ -60,23 +61,33 @@ const UserTableActions = ({ canCreate, canDelete, data, selected }) => {
 
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [statusMessage, setStatusMessage] = useState();
 
     function handleCreateUserClick() {
+        setStatusMessage();
         setShowCreateModal(true);
     }
 
     function handleDeleteUserClick() {
+        setStatusMessage();
         setShowDeleteModal(true);
     }
 
     return (
         <>
+            { statusMessage && (
+                <StatusMessage 
+                    actionMessage={statusMessage.type === 'success' ?  statusMessage.message : null}
+                    errorMessage={statusMessage.type === 'error' ?  statusMessage.message : null}
+                />
+            )}
+
             { canCreate && (
                 <button className={classes.createUserBtn} onClick={handleCreateUserClick}>
                     <FontAwesomeIcon icon="plus" />
                     Create User
                 </button>
-            ) }
+            )}
 
             { canDelete && (
                 <button className={classes.deleteUserBtn} onClick={handleDeleteUserClick} disabled={selected.length === 0}>
@@ -91,6 +102,7 @@ const UserTableActions = ({ canCreate, canDelete, data, selected }) => {
                     isOpen={showCreateModal}
                     toggleModal={setShowCreateModal}
                     modalOptions={modalOptions}
+                    setStatusMessage={setStatusMessage}
                 />
             )}
             
@@ -100,6 +112,7 @@ const UserTableActions = ({ canCreate, canDelete, data, selected }) => {
                     isOpen={showDeleteModal} 
                     toggleModal={setShowDeleteModal}
                     selected={selected}
+                    setStatusMessage={setStatusMessage}
                 />
             )}
             

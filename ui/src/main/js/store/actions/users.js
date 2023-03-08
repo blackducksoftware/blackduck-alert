@@ -1,5 +1,8 @@
 import {
     USER_MANAGEMENT_USER_CLEAR_FIELD_ERRORS,
+    USER_MANAGEMENT_USER_BULK_DELETE_FETCH,
+    USER_MANAGEMENT_USER_BULK_DELETE_SUCCESS,
+    USER_MANAGEMENT_USER_BULK_DELETE_FAIL,
     USER_MANAGEMENT_USER_DELETE_ERROR,
     USER_MANAGEMENT_USER_DELETED,
     USER_MANAGEMENT_USER_DELETING,
@@ -89,6 +92,25 @@ function deletingUserError({ message, errors }) {
     return {
         type: USER_MANAGEMENT_USER_DELETE_ERROR,
         message,
+        errors
+    };
+}
+
+function bulkDeleteUsersFetch() {
+    return {
+        type: USER_MANAGEMENT_USER_BULK_DELETE_FETCH
+    };
+}
+
+function bulkDeleteUserSuccess() {
+    return {
+        type: USER_MANAGEMENT_USER_BULK_DELETE_SUCCESS
+    };
+}
+
+function bulkDeleteUserError(errors) {
+    return {
+        type: USER_MANAGEMENT_USER_BULK_DELETE_FAIL,
         errors
     };
 }
@@ -249,6 +271,24 @@ export function deleteUser(userId) {
             }
         })
             .catch(console.error);
+    };
+}
+
+export function bulkDeleteUsers(userIdArray) {
+    return (dispatch, getState) => {
+        dispatch(bulkDeleteUsersFetch());
+        const { csrfToken } = getState().session;
+
+        Promise.all(userIdArray.map((user) => {
+            return ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, user.id);
+        })).catch((error) => {
+            dispatch(bulkDeleteUserError(error));
+            console.error
+        }).then((response) => {
+            if (response) {
+                dispatch(bulkDeleteUserSuccess());
+            }
+        });
     };
 }
 

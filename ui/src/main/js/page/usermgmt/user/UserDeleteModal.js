@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { deleteUser, fetchUsers } from 'store/actions/users';
+import { fetchUsers, bulkDeleteUsers } from 'store/actions/users';
 import Modal from 'common/component/modal/Modal';
 
 const useStyles = createUseStyles({
@@ -41,10 +41,12 @@ const useStyles = createUseStyles({
 });
 
 
-const UserDeleteModal = ({ isOpen, toggleModal, data, selected }) => {
+const UserDeleteModal = ({ isOpen, toggleModal, data, selected, setStatusMessage }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
+    const { deleteStatus, error } = useSelector(state => state.users);
     const [selectedUsers, setSelectedUsers] = useState(getStagedForDelete());
+    const [showLoader, setShowLoader] = useState(false);
     const isMultiUserDelete = selectedUsers.length > 1;
 
     function getStagedForDelete() {
@@ -56,20 +58,44 @@ const UserDeleteModal = ({ isOpen, toggleModal, data, selected }) => {
         setSelectedUsers(getStagedForDelete());
     }, [selected]);
 
-    function handleClose() {
-        toggleModal(false);
+    useEffect(() => {
+        if ( deleteStatus === 'DELETING' ) {
+            setShowLoader(true);
+        }
 
+        if ( deleteStatus === 'SUCCESS') {
+            setShowLoader(false);
+            
+            const successMessage = isMultiUserDelete 
+            ? `Successfully deleted ${selectedUsers.length} users.`
+            : 'Successfully deleted 1 user.'
+
+            setStatusMessage({
+                message: successMessage,
+                type: 'success'
+            });
+
+            handleClose();
+        }
+
+        if ( deleteStatus === 'ERROR' ) {
+            setShowLoader(false);
+            setStatusMessage({
+                message: error.fieldErrors.message,
+                type: 'error'
+            });
+            handleClose();
+        }
+
+    }, [deleteStatus])
+
+    function handleClose() {
         dispatch(fetchUsers());
+        toggleModal(false);
     }
 
     function handleDelete() {
-        selectedUsers.forEach((user) => {
-            if (user.staged) {
-                dispatch(deleteUser(user.id));
-            }
-        });
-        handleClose();
-        
+        dispatch(bulkDeleteUsers(selectedUsers));
     }
     
     function toggleSelect(selection) {
@@ -93,14 +119,15 @@ const UserDeleteModal = ({ isOpen, toggleModal, data, selected }) => {
                 handleCancel={handleClose}
                 handleSubmit={handleDelete}
                 submitText="Delete"
+                showLoader={showLoader}
             >
                 <div className={classes.deleteConfirmMessage}>
                     { isMultiUserDelete ? 'Are you sure you want to delete these users?' : 'Are you sure you want to delete this user?' }
                 </div>
                 <div>
-                    { selectedUsers?.map((user) => {
+                    { selectedUsers?.map((user, key) => {
                         return (
-                            <div className={classes.cardContainer}>
+                            <div className={classes.cardContainer} key={key}>
                                 <input type="checkbox" checked={user.staged} onChange={() => toggleSelect(user)}/>
                                 <div className={classes.userCard}>
                                     <div className={classes.userIcon}>
@@ -122,10 +149,11 @@ const UserDeleteModal = ({ isOpen, toggleModal, data, selected }) => {
 };
 
 UserDeleteModal.propTypes = {
-    data: PropTypes.object,
+    data: PropTypes.array,
     isOpen: PropTypes.bool,
     toggleModal: PropTypes.func,
-    selected: PropTypes.array
+    selected: PropTypes.array,
+    setStatusMessage: PropTypes.func
 };
 
 export default UserDeleteModal;
