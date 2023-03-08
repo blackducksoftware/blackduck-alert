@@ -234,8 +234,7 @@ public class AuthorizationManager {
             return Optional.empty();
         }
 
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        return Optional.of(userDetails.getUsername());
+        return Optional.of(authentication.getName());
     }
 
     private void loadPermissionsIntoCache() {
