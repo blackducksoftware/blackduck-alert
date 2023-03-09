@@ -21,19 +21,19 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.authentication.security.UserManagementAuthoritiesPopulator;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.authentication.ldap.MappingLdapAuthoritiesPopulator;
+import com.synopsys.integration.alert.authentication.ldap.MappingLDAPAuthoritiesPopulator;
 import com.synopsys.integration.alert.authentication.ldap.database.accessor.LDAPConfigAccessor;
 import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigModel;
 
 @Component
-public class LdapManager {
+public class LDAPManager {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final LDAPConfigAccessor ldapConfigAccessor;
     private final UserManagementAuthoritiesPopulator userManagementAuthoritiesPopulator;
     private final InetOrgPersonContextMapper inetOrgPersonContextMapper;
 
     @Autowired
-    public LdapManager(
+    public LDAPManager(
         LDAPConfigAccessor ldapConfigAccessor,
         UserManagementAuthoritiesPopulator userManagementAuthoritiesPopulator,
         InetOrgPersonContextMapper inetOrgPersonContextMapper
@@ -43,7 +43,7 @@ public class LdapManager {
         this.inetOrgPersonContextMapper = inetOrgPersonContextMapper;
     }
 
-    public Boolean isLdapEnabled() {
+    public Boolean isLDAPEnabled() {
         if (getCurrentConfiguration().isEmpty()) {
             return false;
         }
@@ -140,17 +140,17 @@ public class LdapManager {
         String groupSearchBase = ldapConfigModel.getGroupSearchBase().orElse("");
         String groupSearchFilter = ldapConfigModel.getGroupSearchFilter().orElse("");
         String groupRoleAttribute = ldapConfigModel.getGroupRoleAttribute().orElse("");
-        MappingLdapAuthoritiesPopulator mappingLdapAuthoritiesPopulator = new MappingLdapAuthoritiesPopulator(
+        MappingLDAPAuthoritiesPopulator mappingLDAPAuthoritiesPopulator = new MappingLDAPAuthoritiesPopulator(
             ldapContextSource,
             groupSearchBase,
             this.userManagementAuthoritiesPopulator
         );
-        mappingLdapAuthoritiesPopulator.setGroupSearchFilter(groupSearchFilter);
-        mappingLdapAuthoritiesPopulator.setGroupRoleAttribute(groupRoleAttribute);
+        mappingLDAPAuthoritiesPopulator.setGroupSearchFilter(groupSearchFilter);
+        mappingLDAPAuthoritiesPopulator.setGroupRoleAttribute(groupRoleAttribute);
         // expect the LDAP group name for the role to be ROLE_<ROLE_NAME> where ROLE_NAME defined in UserRoles
         // Set the prefix to the empty string because the prefix is by default set to ROLE_ we don't want the populator to create ROLE_ROLE_<ROLE_NAME> due to the default prefix
-        mappingLdapAuthoritiesPopulator.setRolePrefix("");
-        return mappingLdapAuthoritiesPopulator;
+        mappingLDAPAuthoritiesPopulator.setRolePrefix("");
+        return mappingLDAPAuthoritiesPopulator;
     }
 
     private LdapUserSearch createLdapUserSearch(LDAPConfigModel ldapConfigModel, LdapContextSource ldapContextSource) {

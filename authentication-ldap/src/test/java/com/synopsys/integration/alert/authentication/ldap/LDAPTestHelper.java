@@ -68,7 +68,7 @@ public class LDAPTestHelper {
         );
     }
 
-    public static LDAPConfigModel createInValidLDAPConfigModel() {
+    public static LDAPConfigModel createInvalidLDAPConfigModel() {
         return new LDAPConfigModel(
             "",
             "",
