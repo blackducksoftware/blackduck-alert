@@ -374,6 +374,6 @@ class ProcessingJobEventHandlerTestIT {
     private ProviderMessageDistributor createMockMessageDistributor() {
         EventManager eventManager = createMockEventManager();
         ProcessingAuditAccessor auditAccessor = createMockAuditAccessor();
-        return new ProviderMessageDistributor(auditAccessor, eventManager);
+        return new ProviderMessageDistributor(auditAccessor, eventManager, executingJobManager);
     }
 }

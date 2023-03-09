@@ -25,8 +25,8 @@ public class MockAuditFailedEntryRepository extends MockRepositoryContainer<UUID
     }
 
     @Override
-    public List<AuditFailedEntity> findAllByTimeCreatedBefore(final OffsetDateTime expirationDate) {
-        Predicate<AuditFailedEntity> dateAfterExpiration = entry -> entry.getTimeCreated().isBefore(expirationDate);
+    public List<AuditFailedEntity> findAllByCreatedAtBefore(OffsetDateTime expirationDate) {
+        Predicate<AuditFailedEntity> dateAfterExpiration = entry -> entry.getCreatedAt().isBefore(expirationDate);
         return getDataMap().values().stream()
             .filter(dateAfterExpiration)
             .collect(Collectors.toList());
@@ -35,7 +35,38 @@ public class MockAuditFailedEntryRepository extends MockRepositoryContainer<UUID
     @Override
     public boolean existsByNotificationId(Long notificationId) {
         Predicate<AuditFailedEntity> entryContainsNotification = entry -> entry.getNotificationId().equals(notificationId);
-        return getDataMap().values().stream()
+        return getDataMap().values()
+            .stream()
             .anyMatch(entryContainsNotification);
+    }
+
+    @Override
+    public boolean existsByJobNameAndNotificationId(String jobName, Long notificationId) {
+        Predicate<AuditFailedEntity> entryContainsJobName = entry -> entry.getJobName().equals(jobName);
+        Predicate<AuditFailedEntity> entryContainsNotification = entry -> entry.getNotificationId().equals(notificationId);
+        return getDataMap().values()
+            .stream()
+            .anyMatch(entryContainsJobName.and(entryContainsNotification));
+    }
+
+    @Override
+    public void deleteAllByNotificationId(Long notificationId) {
+        Predicate<AuditFailedEntity> entryContainsNotification = entry -> entry.getNotificationId().equals(notificationId);
+        List<AuditFailedEntity> entitiesToDelete = getDataMap().values()
+            .stream()
+            .filter(entryContainsNotification)
+            .collect(Collectors.toList());
+        deleteAll(entitiesToDelete);
+    }
+
+    @Override
+    public void deleteAllByJobNameAndNotificationId(String jobName, Long notificationId) {
+        Predicate<AuditFailedEntity> entryContainsJobName = entry -> entry.getJobName().equals(jobName);
+        Predicate<AuditFailedEntity> entryContainsNotification = entry -> entry.getNotificationId().equals(notificationId);
+        List<AuditFailedEntity> entitiesToDelete = getDataMap().values()
+            .stream()
+            .filter(entryContainsJobName.and(entryContainsNotification))
+            .collect(Collectors.toList());
+        deleteAll(entitiesToDelete);
     }
 }

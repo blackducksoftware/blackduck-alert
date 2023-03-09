@@ -24,6 +24,10 @@ import com.synopsys.integration.alert.api.authentication.descriptor.Authenticati
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
 import com.synopsys.integration.alert.test.common.channel.GlobalConfigurationValidatorAsserter;
 
+/**
+ * @deprecated This class will be removed in 8.0.0.
+ */
+@Deprecated(forRemoval = true)
 public class AuthenticationConfigurationValidatorTest {
 
     /*

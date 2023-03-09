@@ -15,4 +15,8 @@ public interface ProcessingFailedAccessor {
     void setAuditFailure(UUID jobId, Set<Long> notificationIds, OffsetDateTime occurrence, String errorMessage, String stackTrace);
 
     void deleteAuditEntriesBefore(OffsetDateTime expirationDate);
+
+    void deleteAuditsWithNotificationId(Long notificationId);
+
+    void deleteAuditsWithJobIdAndNotificationId(UUID jobId, Long notificationId);
 }

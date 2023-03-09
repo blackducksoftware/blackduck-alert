@@ -26,14 +26,11 @@ public class SAMLEnvironmentVariableHandler extends EnvironmentVariableHandler<S
 
     // Fields in model
     public static final String SAML_ENABLED_KEY = ENVIRONMENT_VARIABLE_PREFIX + "ENABLED";
-    public static final String SAML_ENTITY_BASE_URL_KEY = ENVIRONMENT_VARIABLE_PREFIX + "ENTITY_BASE_URL";
-    public static final String SAML_ENTITY_ID_KEY = ENVIRONMENT_VARIABLE_PREFIX + "ENTITY_ID";
     public static final String SAML_FORCE_AUTH_KEY = ENVIRONMENT_VARIABLE_PREFIX + "FORCE_AUTH";
     public static final String SAML_METADATA_URL_KEY = ENVIRONMENT_VARIABLE_PREFIX + "METADATA_URL";
-    public static final String SAML_ROLE_ATTRIBUTE_MAPPING_NAME_KEY = ENVIRONMENT_VARIABLE_PREFIX + "ROLE_ATTRIBUTE_MAPPING_NAME";
 
     public static final Set<String> SAML_CONFIGURATION_KEY_SET = Set.of(
-        SAML_ENABLED_KEY, SAML_ENTITY_BASE_URL_KEY, SAML_ENTITY_ID_KEY, SAML_FORCE_AUTH_KEY, SAML_METADATA_URL_KEY, SAML_ROLE_ATTRIBUTE_MAPPING_NAME_KEY
+        SAML_ENABLED_KEY, SAML_FORCE_AUTH_KEY, SAML_METADATA_URL_KEY
     );
 
     private final SAMLConfigAccessor configAccessor;
