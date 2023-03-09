@@ -38,4 +38,31 @@ class SAMLConfigAccessorTest {
         assertNotEquals(currentConfigId, duplicateCreateModel.getId());
         assertEquals(currentConfigId, createdId);
     }
+
+    @Test
+    void getConfigIsEmptyOnDelete() throws AlertConfigurationException {
+        assertTrue(samlConfigAccessor.getConfiguration().isEmpty());
+
+        samlConfigAccessor.createConfiguration(samlConfigModel);
+        assertFalse(samlConfigAccessor.getConfiguration().isEmpty());
+
+        samlConfigAccessor.deleteConfiguration();
+        assertTrue(samlConfigAccessor.getConfiguration().isEmpty());
+    }
+
+    @Test
+    void updateConfigReturnsSavedModel() throws AlertConfigurationException {
+        boolean updatedEnabled = true;
+        String updatedMetadataUrl = "https://www.newmetadataurl.com";
+
+        SAMLConfigModel createdModel = samlConfigAccessor.createConfiguration(samlConfigModel);
+        assertNotEquals(updatedEnabled, createdModel.getEnabled());
+        assertNotEquals(updatedMetadataUrl, createdModel.getMetadataUrl().orElse(""));
+
+        createdModel.setEnabled(updatedEnabled);
+        createdModel.setMetadataUrl(updatedMetadataUrl);
+        SAMLConfigModel updatedModel = samlConfigAccessor.updateConfiguration(createdModel);
+        assertEquals(updatedEnabled, updatedModel.getEnabled());
+        assertEquals(updatedMetadataUrl, updatedModel.getMetadataUrl().orElse(""));
+    }
 }
