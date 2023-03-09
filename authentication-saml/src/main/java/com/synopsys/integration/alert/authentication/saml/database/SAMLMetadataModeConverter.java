@@ -7,7 +7,7 @@ import javax.persistence.Converter;
 import java.util.stream.Stream;
 
 @Converter(autoApply = true)
-public class SAMLMetaDataModeConverter implements AttributeConverter<SAMLMetadataMode, Integer> {
+public class SAMLMetadataModeConverter implements AttributeConverter<SAMLMetadataMode, Integer> {
     @Override
     public Integer convertToDatabaseColumn(SAMLMetadataMode samlMetadataMode) {
         if (samlMetadataMode == null) {
