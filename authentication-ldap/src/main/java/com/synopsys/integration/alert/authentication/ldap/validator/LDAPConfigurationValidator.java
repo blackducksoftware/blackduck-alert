@@ -39,12 +39,12 @@ public class LDAPConfigurationValidator {
 
     public ValidationResponseModel validate(LDAPConfigTestModel ldapConfigTestModel) {
         Set<AlertFieldStatus> statuses = new HashSet<>();
-        LDAPConfigModel ldapConfigModel = ldapConfigTestModel.getLdapConfigModel();
+        LDAPConfigModel ldapConfigModel = ldapConfigTestModel.getLDAPConfigModel();
 
         if (null == ldapConfigModel) {
             statuses.add(AlertFieldStatus.error("ldapConfigModel", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
         } else {
-            ValidationResponseModel ldapConfigModelValidate = validate(ldapConfigTestModel.getLdapConfigModel());
+            ValidationResponseModel ldapConfigModelValidate = validate(ldapConfigTestModel.getLDAPConfigModel());
             statuses.addAll(ldapConfigModelValidate.getErrors().values());
         }
         if (StringUtils.isBlank(ldapConfigTestModel.getTestLDAPUsername())) {

@@ -12,18 +12,18 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.authentication.security.AuthenticationPerformer;
 import com.synopsys.integration.alert.api.authentication.security.event.AuthenticationEventManager;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.authentication.ldap.action.LdapManager;
+import com.synopsys.integration.alert.authentication.ldap.action.LDAPManager;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
 
 @Component
-public class LdapAuthenticationPerformer extends AuthenticationPerformer {
-    private final Logger logger = LoggerFactory.getLogger(LdapAuthenticationPerformer.class);
+public class LDAPAuthenticationPerformer extends AuthenticationPerformer {
+    private final Logger logger = LoggerFactory.getLogger(LDAPAuthenticationPerformer.class);
 
-    private final LdapManager ldapManager;
+    private final LDAPManager ldapManager;
 
     @Autowired
-    public LdapAuthenticationPerformer(AuthenticationEventManager authenticationEventManager, RoleAccessor roleAccessor, LdapManager ldapManager) {
+    public LDAPAuthenticationPerformer(AuthenticationEventManager authenticationEventManager, RoleAccessor roleAccessor, LDAPManager ldapManager) {
         super(authenticationEventManager, roleAccessor);
         this.ldapManager = ldapManager;
     }
@@ -37,7 +37,7 @@ public class LdapAuthenticationPerformer extends AuthenticationPerformer {
     public Authentication authenticateWithProvider(Authentication pendingAuthentication) {
         logger.info("Checking ldap based authentication...");
         Authentication result = pendingAuthentication;
-        if (Boolean.TRUE.equals(ldapManager.isLdapEnabled())) {
+        if (Boolean.TRUE.equals(ldapManager.isLDAPEnabled())) {
             logger.info("LDAP authentication enabled");
             try {
                 Optional<LdapAuthenticationProvider> authenticationProvider = ldapManager.getAuthenticationProvider();
