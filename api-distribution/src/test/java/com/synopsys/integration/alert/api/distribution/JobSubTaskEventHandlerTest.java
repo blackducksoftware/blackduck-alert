@@ -21,8 +21,6 @@ import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.api.event.distribution.JobSubTaskEvent;
 import com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
 import com.synopsys.integration.alert.database.api.DefaultJobCompletionStatusModelAccessor;
-import com.synopsys.integration.alert.database.distribution.workflow.NotificationCorrelationToNotificationRelation;
-import com.synopsys.integration.alert.database.distribution.workflow.NotificationCorrelationToNotificationRelationPK;
 import com.synopsys.integration.alert.database.job.execution.JobCompletionDurationsRepository;
 import com.synopsys.integration.alert.database.job.execution.JobCompletionRepository;
 
@@ -37,10 +35,6 @@ class JobSubTaskEventHandlerTest {
         JobCompletionRepository jobCompletionRepository = new MockJobCompletionStatusRepository(jobCompletionDurationsRepository);
         JobCompletionStatusModelAccessor jobCompletionStatusModelAccessor = new DefaultJobCompletionStatusModelAccessor(jobCompletionRepository, jobCompletionDurationsRepository);
         executingJobManager = new ExecutingJobManager(jobCompletionStatusModelAccessor);
-    }
-
-    private NotificationCorrelationToNotificationRelationPK getRelationKey(NotificationCorrelationToNotificationRelation relation) {
-        return new NotificationCorrelationToNotificationRelationPK(relation.getNotificationCorrelationId(), relation.getNotificationId());
     }
 
     @Test

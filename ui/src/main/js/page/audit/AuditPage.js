@@ -317,7 +317,8 @@ class AuditPage extends Component {
             <div>
                 <PageHeader
                     title={AUDIT_INFO.label}
-                    description="Audit tracks all failed distribution events that have been produced by Alert. This page offers the ability to see why the event failed."
+                    description="Audit tracks all failed distribution events that have been produced by Alert. This page offers the ability to see why the event failed. Since rows in the Audit failure table represent a grouping of data by notification, fewer rows may be displayed than the selected page size due to multiple
+                        entries appearing under each notification type."
                     icon="check"
                 />
                 <div className="pull-right">

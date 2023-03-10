@@ -68,7 +68,7 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
         PageRequest pageRequest = getPageRequestForFailures(pageNumber, pageSize, sortField, sortOrder);
         Page<AuditFailedEntity> matchingAuditEntities;
         if (StringUtils.isNotBlank(searchTerm)) {
-            matchingAuditEntities = auditFailedEntryRepository.findAllWithSearchTerm(searchTerm, pageRequest);
+            matchingAuditEntities = auditFailedEntryRepository.findAllWithSearchTerm(searchTerm.toLowerCase(), pageRequest);
         } else {
             matchingAuditEntities = auditFailedEntryRepository.findAll(pageRequest);
         }
@@ -243,15 +243,16 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
 
     private PageRequest getPageRequestForFailures(Integer pageNumber, Integer pageSize, @Nullable String sortField, @Nullable String sortOrder) {
         boolean sortQuery = false;
+        String defaultSortField = "createdAt";
         String inputSortField;
-        String sortingField = "createdAt";
-        if ("lastSent".equals(sortField)) {
-            inputSortField = "createdAt";
+        String sortingField = defaultSortField;
+        if (!"lastSent".equals(sortField)) {
+            inputSortField = defaultSortField;
         } else {
             inputSortField = sortField;
         }
         List<String> validFields = List.of(
-            "createdAt",
+            defaultSortField,
             "jobName",
             "providerName",
             "channelName",

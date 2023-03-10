@@ -18,7 +18,7 @@ import com.synopsys.integration.alert.common.action.ActionResponse;
 class LDAPValidationActionTest {
     private static LDAPValidationAction ldapValidationAction;
     private LDAPConfigModel validLDAPConfigModel;
-    private LDAPConfigModel inValidLDAPConfigModel;
+    private LDAPConfigModel invalidLDAPConfigModel;
 
     @BeforeEach
     public void init() {
@@ -29,12 +29,12 @@ class LDAPValidationActionTest {
         );
 
         validLDAPConfigModel = LDAPTestHelper.createValidLDAPConfigModel();
-        inValidLDAPConfigModel = LDAPTestHelper.createInValidLDAPConfigModel();
+        invalidLDAPConfigModel = LDAPTestHelper.createInvalidLDAPConfigModel();
     }
 
     @Test
     void testValidateInvalidConfigModel() {
-        ActionResponse<ValidationResponseModel> validationResponseModelActionResponse = ldapValidationAction.validate(inValidLDAPConfigModel);
+        ActionResponse<ValidationResponseModel> validationResponseModelActionResponse = ldapValidationAction.validate(invalidLDAPConfigModel);
 
         ValidationResponseModel validationResponseModel = validationResponseModelActionResponse.getContent()
             .orElseThrow(() -> new AssertionError("Expected response content not found"));
