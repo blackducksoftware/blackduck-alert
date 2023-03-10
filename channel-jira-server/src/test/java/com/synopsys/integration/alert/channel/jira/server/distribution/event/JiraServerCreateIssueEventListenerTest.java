@@ -28,7 +28,6 @@ class JiraServerCreateIssueEventListenerTest {
 
     @Test
     void onMessageTestJob() {
-
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
         EventManager eventManager = Mockito.mock(EventManager.class);
@@ -69,7 +68,6 @@ class JiraServerCreateIssueEventListenerTest {
 
     @Test
     void onMessageJobWithRemainingEventsFinishedTest() {
-
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
         EventManager eventManager = Mockito.mock(EventManager.class);
