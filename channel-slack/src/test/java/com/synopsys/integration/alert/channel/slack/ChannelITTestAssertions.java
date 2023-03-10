@@ -37,7 +37,7 @@ public class ChannelITTestAssertions {
     public static <D extends DistributionJobDetailsModel> void assertSendSimpleMessageSuccess(DistributionChannel<D> channel, D distributionDetails) {
         MessageResult messageResult = null;
         try {
-            messageResult = channel.distributeMessages(distributionDetails, TEST_MESSAGE_HOLDER, "jobName", UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), Set.of());
+            messageResult = channel.distributeMessages(distributionDetails, TEST_MESSAGE_HOLDER, "jobName", UUID.randomUUID(), UUID.randomUUID(), Set.of());
         } catch (AlertException e) {
             Assertions.fail("Failed to distribute simple channel message due to an exception", e);
         }
@@ -52,7 +52,7 @@ public class ChannelITTestAssertions {
 
     public static <D extends DistributionJobDetailsModel> void assertSendSimpleMessageException(DistributionChannel<D> channel, D distributionDetails, @Nullable String expectedExceptionMessage) {
         try {
-            channel.distributeMessages(distributionDetails, TEST_MESSAGE_HOLDER, "jobName", UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), Set.of());
+            channel.distributeMessages(distributionDetails, TEST_MESSAGE_HOLDER, "jobName", UUID.randomUUID(), UUID.randomUUID(), Set.of());
             Assertions.fail("Expected an exception to be thrown");
         } catch (AlertException e) {
             if (null != expectedExceptionMessage) {

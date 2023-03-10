@@ -1,11 +1,9 @@
 package com.synopsys.integration.alert.channel.azure.boards.distribution.event;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -29,13 +27,9 @@ import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesFactory;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.AzureBoardsMessageSenderFactory;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.event.mock.MockAzureBoardsJobDetailsRepository;
-import com.synopsys.integration.alert.channel.azure.boards.distribution.event.mock.MockCorrelationToNotificationRelationRepository;
-import com.synopsys.integration.alert.channel.azure.boards.distribution.event.mock.MockJobSubTaskStatusRepository;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
-import com.synopsys.integration.alert.common.persistence.model.job.workflow.JobSubTaskStatusModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
-import com.synopsys.integration.alert.database.api.workflow.DefaultJobSubTaskAccessor;
 import com.synopsys.integration.alert.database.job.azure.boards.DefaultAzureBoardsJobDetailsAccessor;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpRequestCreator;
@@ -48,7 +42,6 @@ class AzureBoardsCreateIssueEventHandlerTest {
     private Gson gson = new Gson();
     private AtomicInteger issueCounter;
     private EventManager eventManager;
-    private DefaultJobSubTaskAccessor jobSubTaskAccessor;
     private IssueTrackerResponsePostProcessor responsePostProcessor;
     private DefaultAzureBoardsJobDetailsAccessor jobDetailsAccessor;
     private ExecutingJobManager executingJobManager;
@@ -59,10 +52,6 @@ class AzureBoardsCreateIssueEventHandlerTest {
         eventManager = Mockito.mock(EventManager.class);
         responsePostProcessor = new ProviderCallbackIssueTrackerResponsePostProcessor(eventManager);
 
-        MockJobSubTaskStatusRepository subTaskRepository = new MockJobSubTaskStatusRepository();
-        MockCorrelationToNotificationRelationRepository relationRepository = new MockCorrelationToNotificationRelationRepository();
-        jobSubTaskAccessor = new DefaultJobSubTaskAccessor(subTaskRepository, relationRepository);
-
         MockAzureBoardsJobDetailsRepository azureBoardsJobDetailsRepository = new MockAzureBoardsJobDetailsRepository();
         jobDetailsAccessor = new DefaultAzureBoardsJobDetailsAccessor(azureBoardsJobDetailsRepository);
         executingJobManager = Mockito.mock(ExecutingJobManager.class);
@@ -70,7 +59,6 @@ class AzureBoardsCreateIssueEventHandlerTest {
 
     @Test
     void handleUnknownJobTest() {
-        UUID parentEventId = UUID.randomUUID();
         UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
@@ -89,18 +77,13 @@ class AzureBoardsCreateIssueEventHandlerTest {
             exceptionMessageImprover,
             issueCategoryRetriever,
             eventManager,
-            jobSubTaskAccessor,
             executingJobManager
         );
 
         Mockito.when(mockProxyManager.createProxyInfoForHost(Mockito.anyString())).thenReturn(ProxyInfo.NO_PROXY_INFO);
 
-        AzureBoardsJobDetailsModel jobDetailsModel = createJobDetails(jobId);
-        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobDetailsModel.getJobId(), 1L, notificationIds);
-
         AzureBoardsCreateIssueEventHandler handler = new AzureBoardsCreateIssueEventHandler(
             eventManager,
-            jobSubTaskAccessor,
             gson,
             propertiesFactory,
             messageSenderFactory,
@@ -114,7 +97,6 @@ class AzureBoardsCreateIssueEventHandlerTest {
         IssueCreationModel issueCreationModel = IssueCreationModel.simple("title", "description", List.of(), provider);
         AzureBoardsCreateIssueEvent event = new AzureBoardsCreateIssueEvent(
             IssueTrackerCreateIssueEvent.createDefaultEventDestination(ChannelKeys.AZURE_BOARDS),
-            parentEventId,
             jobExecutionId,
             jobId,
             notificationIds,
@@ -123,14 +105,11 @@ class AzureBoardsCreateIssueEventHandlerTest {
 
         handler.handleEvent(event);
         assertEquals(0, issueCounter.get());
-        Optional<JobSubTaskStatusModel> jobSubTaskStatusModelOptional = jobSubTaskAccessor.getSubTaskStatus(parentEventId);
-        assertTrue(jobSubTaskStatusModelOptional.isPresent());
     }
 
     @Test
     @Disabled("Blocked by IALERT-3136")
     void handleIssueQueryBlankTest() throws IntegrationException, IOException {
-        UUID parentEventId = UUID.randomUUID();
         UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
@@ -140,7 +119,6 @@ class AzureBoardsCreateIssueEventHandlerTest {
         AzureHttpRequestCreator azureHttpRequestCreator = Mockito.mock(AzureHttpRequestCreator.class);
 
         AzureBoardsJobDetailsModel jobDetailsModel = createJobDetails(jobId);
-        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobDetailsModel.getJobId(), 1L, notificationIds);
 
         //TODO: Mockito.doAnswer when we create a work item to increment the issueCounter
 
@@ -157,7 +135,6 @@ class AzureBoardsCreateIssueEventHandlerTest {
             exceptionMessageImprover,
             issueCategoryRetriever,
             eventManager,
-            jobSubTaskAccessor,
             executingJobManager
         );
 
@@ -171,7 +148,6 @@ class AzureBoardsCreateIssueEventHandlerTest {
         jobDetailsAccessor.saveAzureBoardsJobDetails(jobId, jobDetailsModel);
         AzureBoardsCreateIssueEventHandler handler = new AzureBoardsCreateIssueEventHandler(
             eventManager,
-            jobSubTaskAccessor,
             gson,
             propertiesFactory,
             messageSenderFactory,
@@ -185,7 +161,6 @@ class AzureBoardsCreateIssueEventHandlerTest {
         IssueCreationModel issueCreationModel = IssueCreationModel.simple("title", "description", List.of(), provider);
         AzureBoardsCreateIssueEvent event = new AzureBoardsCreateIssueEvent(
             IssueTrackerCreateIssueEvent.createDefaultEventDestination(ChannelKeys.AZURE_BOARDS),
-            parentEventId,
             jobExecutionId,
             jobId,
             notificationIds,
@@ -194,8 +169,6 @@ class AzureBoardsCreateIssueEventHandlerTest {
 
         handler.handle(event);
         assertEquals(0, issueCounter.get());
-        Optional<JobSubTaskStatusModel> jobSubTaskStatusModelOptional = jobSubTaskAccessor.getSubTaskStatus(parentEventId);
-        assertTrue(jobSubTaskStatusModelOptional.isPresent());
     }
 
     private AzureBoardsJobDetailsModel createJobDetails(UUID jobId) {

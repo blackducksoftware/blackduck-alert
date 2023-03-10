@@ -27,7 +27,6 @@ import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudProperties;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudPropertiesFactory;
 import com.synopsys.integration.alert.channel.jira.cloud.distribution.JiraCloudMessageSenderFactory;
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.exception.IntegrationException;
@@ -43,7 +42,6 @@ class JiraCloudCommentEventHandlerTest {
     private Gson gson = new Gson();
     private AtomicInteger issueCounter;
     private EventManager eventManager;
-    private JobSubTaskAccessor jobSubTaskAccessor;
     private IssueTrackerResponsePostProcessor responsePostProcessor;
     private ExecutingJobManager executingJobManager;
 
@@ -51,14 +49,12 @@ class JiraCloudCommentEventHandlerTest {
     public void init() {
         issueCounter = new AtomicInteger(0);
         eventManager = Mockito.mock(EventManager.class);
-        jobSubTaskAccessor = Mockito.mock(JobSubTaskAccessor.class);
         responsePostProcessor = Mockito.mock(IssueTrackerResponsePostProcessor.class);
         executingJobManager = Mockito.mock(ExecutingJobManager.class);
     }
 
     @Test
     void handleUnknownJobTest() {
-        UUID parentEventId = UUID.randomUUID();
         UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
@@ -73,14 +69,12 @@ class JiraCloudCommentEventHandlerTest {
             callbackInfoCreator,
             issueCategoryRetriever,
             eventManager,
-            jobSubTaskAccessor,
             executingJobManager
         );
         JobDetailsAccessor<JiraCloudJobDetailsModel> jobDetailsAccessor = jobId1 -> Optional.empty();
 
         JiraCloudCommentEventHandler handler = new JiraCloudCommentEventHandler(
             eventManager,
-            jobSubTaskAccessor,
             gson,
             propertiesFactory,
             messageSenderFactory,
@@ -92,7 +86,6 @@ class JiraCloudCommentEventHandlerTest {
         IssueCommentModel<String> model = new IssueCommentModel<>(existingIssueDetails, List.of(), null);
         JiraCloudCommentEvent event = new JiraCloudCommentEvent(
             IssueTrackerCommentEvent.createDefaultEventDestination(ChannelKeys.JIRA_SERVER),
-            parentEventId,
             jobExecutionId,
             jobId,
             notificationIds,
@@ -104,7 +97,6 @@ class JiraCloudCommentEventHandlerTest {
 
     @Test
     void handleCommentTest() throws IntegrationException {
-        UUID parentEventId = UUID.randomUUID();
         UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
@@ -138,14 +130,12 @@ class JiraCloudCommentEventHandlerTest {
             callbackInfoCreator,
             issueCategoryRetriever,
             eventManager,
-            jobSubTaskAccessor,
             executingJobManager
         );
         JobDetailsAccessor<JiraCloudJobDetailsModel> jobDetailsAccessor = jobId1 -> Optional.of(createJobDetails(jobId));
 
         JiraCloudCommentEventHandler handler = new JiraCloudCommentEventHandler(
             eventManager,
-            jobSubTaskAccessor,
             gson,
             propertiesFactory,
             messageSenderFactory,
@@ -157,7 +147,6 @@ class JiraCloudCommentEventHandlerTest {
         IssueCommentModel<String> model = new IssueCommentModel<>(existingIssueDetails, List.of("A comment"), null);
         JiraCloudCommentEvent event = new JiraCloudCommentEvent(
             IssueTrackerCommentEvent.createDefaultEventDestination(ChannelKeys.JIRA_CLOUD),
-            parentEventId,
             jobExecutionId,
             jobId,
             notificationIds,

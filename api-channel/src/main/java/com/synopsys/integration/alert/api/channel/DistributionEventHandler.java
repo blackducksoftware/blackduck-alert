@@ -53,7 +53,6 @@ public class DistributionEventHandler<D extends DistributionJobDetailsModel> imp
                     event.getProviderMessages(),
                     event.getJobName(),
                     event.getJobId(),
-                    UUID.fromString(event.getEventId()),
                     jobExecutionId,
                     event.getNotificationIds()
                 );
