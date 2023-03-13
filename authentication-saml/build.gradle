@@ -16,6 +16,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework:spring-web'
 
-    testImplementation project(':test-common-channel')
+    testImplementation project(':test-common')
     testImplementation project(':alert-database-job')
 }

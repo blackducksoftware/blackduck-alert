@@ -29,6 +29,8 @@ dependencies {
         api 'com.google.http-client:google-http-client-jackson2:1.36.0'
         api 'com.google.guava:guava:31.1-jre'
 
+        api 'org.mockito:mockito-core:5.2.0'
+
         api 'org.javassist:javassist:3.24.0-GA'
         api 'io.springfox:springfox-boot-starter:3.0.0'
 
