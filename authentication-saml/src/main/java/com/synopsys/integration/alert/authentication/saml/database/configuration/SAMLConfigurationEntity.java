@@ -30,8 +30,6 @@ public class SAMLConfigurationEntity extends BaseEntity {
     private String metadataFileName;
     @Column(name = "metadata_mode")
     private SAMLMetadataMode metadataMode;
-    @Column(name = "want_assertions_signed")
-    private Boolean wantAssertionsSigned;
     @Column(name = "encryption_cert_file_name")
     private String encryptionCertFileName;
     @Column(name = "encryption_private_key_file_name")
@@ -55,7 +53,6 @@ public class SAMLConfigurationEntity extends BaseEntity {
         String metadataUrl,
         String metadataFileName,
         SAMLMetadataMode metadataMode,
-        Boolean wantAssertionsSigned,
         String encryptionCertFileName,
         String encryptionPrivateKeyFileName,
         String signingCertFileName,
@@ -71,7 +68,6 @@ public class SAMLConfigurationEntity extends BaseEntity {
         this.metadataUrl = metadataUrl;
         this.metadataFileName = metadataFileName;
         this.metadataMode = metadataMode;
-        this.wantAssertionsSigned = wantAssertionsSigned;
         this.encryptionCertFileName = encryptionCertFileName;
         this.encryptionPrivateKeyFileName = encryptionPrivateKeyFileName;
         this.signingCertFileName = signingCertFileName;
@@ -113,10 +109,6 @@ public class SAMLConfigurationEntity extends BaseEntity {
 
     public SAMLMetadataMode getMetadataMode() {
         return metadataMode;
-    }
-
-    public Boolean getWantAssertionsSigned() {
-        return wantAssertionsSigned;
     }
 
     public String getEncryptionCertFileName() {
