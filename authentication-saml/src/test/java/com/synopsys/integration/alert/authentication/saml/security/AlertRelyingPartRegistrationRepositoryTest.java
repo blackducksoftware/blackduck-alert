@@ -5,9 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistration;
 
-import java.util.Iterator;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AlertRelyingPartRegistrationRepositoryTest {
     private AlertRelyingPartyRegistrationRepository alertRelyingPartyRegistrationRepository;
@@ -36,6 +37,32 @@ class AlertRelyingPartRegistrationRepositoryTest {
 
         alertRelyingPartyRegistrationRepository.unregisterRelyingPartyRegistration();
         assertNull(alertRelyingPartyRegistrationRepository.findByRegistrationId(DEFAULT_ID));
+    }
+
+    @Test
+    void iteratorAppliesToRegistered() {
+        alertRelyingPartyRegistrationRepository.registerRelyingPartyRegistration(defaultRelyingParty);
+        Iterator<RelyingPartyRegistration> itr = alertRelyingPartyRegistrationRepository.iterator();
+        assertEquals(defaultRelyingParty.getRegistrationId(), itr.next().getRegistrationId());
+        assertFalse(itr.hasNext());
+    }
+
+    @Test
+    void forEachAppliesToRegistered() {
+        Set<String> registeredIds = new HashSet<>();
+        alertRelyingPartyRegistrationRepository.registerRelyingPartyRegistration(defaultRelyingParty);
+        alertRelyingPartyRegistrationRepository.forEach(registeredParty -> registeredIds.add(registeredParty.getRegistrationId()));
+        assertTrue(registeredIds.contains(defaultRelyingParty.getRegistrationId()));
+        assertEquals(1, registeredIds.size());
+    }
+
+    @Test
+    void spliteratorAppliesToRegistered() {
+        Set<String> registeredIds = new HashSet<>();
+        alertRelyingPartyRegistrationRepository.registerRelyingPartyRegistration(defaultRelyingParty);
+        Spliterator<RelyingPartyRegistration> itr = alertRelyingPartyRegistrationRepository.spliterator();
+        itr.forEachRemaining(relyingParty -> registeredIds.add(relyingParty.getRegistrationId()));
+        assertTrue(registeredIds.contains(defaultRelyingParty.getRegistrationId()));
     }
 
     private RelyingPartyRegistration buildMockRelyingPartyRegistration(String registrationId) {
