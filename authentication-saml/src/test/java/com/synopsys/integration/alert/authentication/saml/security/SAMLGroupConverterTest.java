@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.core.GrantedAuthority;
@@ -57,22 +58,23 @@ class SAMLGroupConverterTest {
         Mockito.when(principal.getAttribute(anyString())).thenAnswer(invocation -> ATTRIBUTES.get(invocation.getArguments()[0]));
         authentication.setAuthenticated(true);
 
-        Mockito.mockStatic(OpenSaml4AuthenticationProvider.class)
-            .when(OpenSaml4AuthenticationProvider::createDefaultResponseAuthenticationConverter)
-            .thenReturn(delegate);
-        Mockito.when(delegate.convert(responseToken)).thenReturn(authentication);
+        try (MockedStatic<OpenSaml4AuthenticationProvider> openSaml4AuthenticationProvider = Mockito.mockStatic(OpenSaml4AuthenticationProvider.class)) {
+            openSaml4AuthenticationProvider.when(OpenSaml4AuthenticationProvider::createDefaultResponseAuthenticationConverter)
+                .thenReturn(delegate);
+            Mockito.when(delegate.convert(responseToken)).thenReturn(authentication);
 
-        Saml2Authentication saml2Authentication = samlGroupConverter.groupsConverter().convert(responseToken);
-        Mockito.verify(authenticationEventManager, Mockito.times(1)).sendAuthenticationEvent(any(), eq(AuthenticationType.SAML));
+            Saml2Authentication saml2Authentication = samlGroupConverter.groupsConverter().convert(responseToken);
+            Mockito.verify(authenticationEventManager, Mockito.times(1)).sendAuthenticationEvent(any(), eq(AuthenticationType.SAML));
 
-        Set<String> grantedAuthorities = saml2Authentication.getAuthorities()
-            .stream()
-            .map(GrantedAuthority::getAuthority)
-            .collect(Collectors.toSet());
-        assertEquals(2, grantedAuthorities.size());
-        assertTrue(grantedAuthorities.contains(UserModel.ROLE_PREFIX + ATTRIBUTES.get(ALERT_ROLE_KEY).get(0)));
-        assertTrue(grantedAuthorities.contains(ATTRIBUTES.get(GROUPS_ROLE_KEY).get(0)));
-        assertFalse(grantedAuthorities.contains(EXTERNAL_ROLE));
+            Set<String> grantedAuthorities = saml2Authentication.getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toSet());
+            assertEquals(2, grantedAuthorities.size());
+            assertTrue(grantedAuthorities.contains(UserModel.ROLE_PREFIX + ATTRIBUTES.get(ALERT_ROLE_KEY).get(0)));
+            assertTrue(grantedAuthorities.contains(ATTRIBUTES.get(GROUPS_ROLE_KEY).get(0)));
+            assertFalse(grantedAuthorities.contains(EXTERNAL_ROLE));
+        }
     }
 
     @Test
@@ -84,19 +86,20 @@ class SAMLGroupConverterTest {
         Mockito.when(principal.getAttribute(anyString())).thenAnswer(invocation -> EMPTY_ATTRIBUTES.get(invocation.getArguments()[0]));
         authentication.setAuthenticated(false);
 
-        Mockito.mockStatic(OpenSaml4AuthenticationProvider.class)
-            .when(OpenSaml4AuthenticationProvider::createDefaultResponseAuthenticationConverter)
-            .thenReturn(delegate);
-        Mockito.when(delegate.convert(responseToken)).thenReturn(authentication);
+        try (MockedStatic<OpenSaml4AuthenticationProvider> openSaml4AuthenticationProvider = Mockito.mockStatic(OpenSaml4AuthenticationProvider.class)) {
+            openSaml4AuthenticationProvider.when(OpenSaml4AuthenticationProvider::createDefaultResponseAuthenticationConverter)
+                .thenReturn(delegate);
+            Mockito.when(delegate.convert(responseToken)).thenReturn(authentication);
 
-        Saml2Authentication saml2Authentication = samlGroupConverter.groupsConverter().convert(responseToken);
-        Mockito.verify(authenticationEventManager, Mockito.times(0)).sendAuthenticationEvent(any(), eq(AuthenticationType.SAML));
+            Saml2Authentication saml2Authentication = samlGroupConverter.groupsConverter().convert(responseToken);
+            Mockito.verify(authenticationEventManager, Mockito.times(0)).sendAuthenticationEvent(any(), eq(AuthenticationType.SAML));
 
-        Set<String> grantedAuthorities = saml2Authentication.getAuthorities()
-            .stream()
-            .map(GrantedAuthority::getAuthority)
-            .collect(Collectors.toSet());
-        assertEquals(1, grantedAuthorities.size());
-        assertTrue(grantedAuthorities.contains(EXTERNAL_ROLE));
+            Set<String> grantedAuthorities = saml2Authentication.getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toSet());
+            assertEquals(1, grantedAuthorities.size());
+            assertTrue(grantedAuthorities.contains(EXTERNAL_ROLE));
+        }
     }
 }

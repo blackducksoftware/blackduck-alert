@@ -1,14 +1,10 @@
 package com.synopsys.integration.alert.authentication.saml.action;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
 import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.authentication.saml.SAMLTestHelper;
 import com.synopsys.integration.alert.authentication.saml.validator.SAMLFileUploadValidator;
-import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
-import com.synopsys.integration.alert.test.common.MockAlertProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
