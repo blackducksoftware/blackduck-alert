@@ -53,7 +53,7 @@ class SAMLGroupConverterTest {
     }
 
     @Test
-    void groupsConverterAuthenticatesWithAlertAndGroupAuthsOnly() {
+    void groupsConverterAuthenticatesWithAlertAndGroupAuthorities() {
         Mockito.when(principal.getAttribute(anyString())).thenAnswer(invocation -> ATTRIBUTES.get(invocation.getArguments()[0]));
         authentication.setAuthenticated(true);
 
@@ -76,7 +76,7 @@ class SAMLGroupConverterTest {
     }
 
     @Test
-    void groupsConverterAddsOtherAuthoritiesOnEmptyAtTributeValues() {
+    void groupsConverterAddsAuthoritiesOnEmptyAtTributeValues() {
         Map<String, List<String>> EMPTY_ATTRIBUTES = new HashMap<>();
         EMPTY_ATTRIBUTES.put(ALERT_ROLE_KEY, null);
         EMPTY_ATTRIBUTES.put(GROUPS_ROLE_KEY, null);
