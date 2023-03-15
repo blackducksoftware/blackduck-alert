@@ -33,7 +33,6 @@ import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesFactory;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.AzureBoardsMessageSenderFactory;
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.azure.boards.common.http.AzureApiVersionAppender;
@@ -59,7 +58,6 @@ public class AzureBoardsCreateIssueEventHandler extends IssueTrackerCreateIssueE
     @Autowired
     public AzureBoardsCreateIssueEventHandler(
         EventManager eventManager,
-        JobSubTaskAccessor jobSubTaskAccessor,
         Gson gson,
         AzureBoardsPropertiesFactory azureBoardsPropertiesFactory,
         AzureBoardsMessageSenderFactory azureBoardsMessageSenderFactory,
@@ -68,7 +66,7 @@ public class AzureBoardsCreateIssueEventHandler extends IssueTrackerCreateIssueE
         IssueTrackerResponsePostProcessor responsePostProcessor,
         ExecutingJobManager executingJobManager
     ) {
-        super(eventManager, jobSubTaskAccessor, responsePostProcessor, executingJobManager);
+        super(eventManager, responsePostProcessor, executingJobManager);
         this.gson = gson;
         this.azureBoardsPropertiesFactory = azureBoardsPropertiesFactory;
         this.azureBoardsMessageSenderFactory = azureBoardsMessageSenderFactory;

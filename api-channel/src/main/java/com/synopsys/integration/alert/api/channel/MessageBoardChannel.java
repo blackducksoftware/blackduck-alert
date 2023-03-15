@@ -49,7 +49,6 @@ public abstract class MessageBoardChannel<D extends DistributionJobDetailsModel,
         ProviderMessageHolder messages,
         String jobName,
         UUID jobConfigId,
-        UUID parentEventId,
         UUID jobExecutionId,
         Set<Long> notificationIds
     )

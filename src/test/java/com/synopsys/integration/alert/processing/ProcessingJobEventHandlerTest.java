@@ -14,7 +14,6 @@ import com.synopsys.integration.alert.common.persistence.accessor.JobCompletionS
 import com.synopsys.integration.alert.common.persistence.accessor.JobNotificationMappingAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.processor.api.JobNotificationContentProcessor;
-import com.synopsys.integration.alert.processor.api.NotificationContentProcessor;
 import com.synopsys.integration.alert.processor.api.NotificationProcessingLifecycleCache;
 import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExtractionDelegator;
 import com.synopsys.integration.alert.processor.api.digest.ProjectMessageDigester;
@@ -29,7 +28,6 @@ class ProcessingJobEventHandlerTest {
         UUID correlationId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         NotificationDetailExtractionDelegator notificationDetailExtractionDelegator = Mockito.mock(NotificationDetailExtractionDelegator.class);
-        NotificationContentProcessor notificationContentProcessor = Mockito.mock(NotificationContentProcessor.class);
         ProviderMessageDistributor providerMessageDistributor = Mockito.mock(ProviderMessageDistributor.class);
         List<NotificationProcessingLifecycleCache> lifecycleCaches = List.of();
         NotificationAccessor notificationAccessor = Mockito.mock(NotificationAccessor.class);
@@ -49,11 +47,8 @@ class ProcessingJobEventHandlerTest {
         );
 
         ProcessingJobEventHandler eventHandler = new ProcessingJobEventHandler(
-            notificationDetailExtractionDelegator,
-            notificationContentProcessor,
             providerMessageDistributor,
             lifecycleCaches,
-            notificationAccessor,
             jobAccessor,
             jobNotificationMappingAccessor,
             jobNotificationContentProcessor,

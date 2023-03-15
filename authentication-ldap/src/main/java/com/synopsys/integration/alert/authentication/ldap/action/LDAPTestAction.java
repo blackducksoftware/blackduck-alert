@@ -29,7 +29,7 @@ public class LDAPTestAction {
     private final ConfigurationValidationHelper configurationValidationHelper;
     private final ConfigurationTestHelper configurationTestHelper;
     private final LDAPConfigurationValidator ldapConfigurationValidator;
-    private final LdapManager ldapManager;
+    private final LDAPManager ldapManager;
     private final LDAPConfigAccessor ldapConfigAccessor;
 
     @Autowired
@@ -37,7 +37,7 @@ public class LDAPTestAction {
         AuthorizationManager authorizationManager,
         AuthenticationDescriptorKey authenticationDescriptorKey,
         LDAPConfigurationValidator ldapConfigurationValidator,
-        LdapManager ldapManager,
+        LDAPManager ldapManager,
         LDAPConfigAccessor ldapConfigAccessor
     ) {
         this.configurationValidationHelper = new ConfigurationValidationHelper(authorizationManager, ConfigContextEnum.GLOBAL, authenticationDescriptorKey);
@@ -57,7 +57,7 @@ public class LDAPTestAction {
         String password = ldapConfigTestModel.getTestLDAPPassword();
         Authentication pendingAuthentication = new UsernamePasswordAuthenticationToken(username, password);
 
-        LDAPConfigModel ldapConfigModel = ldapConfigTestModel.getLdapConfigModel();
+        LDAPConfigModel ldapConfigModel = ldapConfigTestModel.getLDAPConfigModel();
         // If the Password is NOT set and IsManagerPasswordSet is true in the current model, get the PW from the DB
         if (StringUtils.isBlank(ldapConfigModel.getManagerPassword().orElse("")) && Boolean.TRUE.equals(ldapConfigModel.getIsManagerPasswordSet())) {
             ldapConfigAccessor.getConfiguration()
@@ -70,7 +70,7 @@ public class LDAPTestAction {
         ldapConfigModel.setEnabled(true);
 
         try {
-            Optional<LdapAuthenticationProvider> ldapAuthenticationProvider = ldapManager.createAuthProvider(ldapConfigTestModel.getLdapConfigModel());
+            Optional<LdapAuthenticationProvider> ldapAuthenticationProvider = ldapManager.createAuthProvider(ldapConfigTestModel.getLDAPConfigModel());
             if (ldapAuthenticationProvider.isEmpty()) {
                 return ConfigurationTestResult.failure("LDAP Test Configuration failed. Please check your configuration.");
             } else {

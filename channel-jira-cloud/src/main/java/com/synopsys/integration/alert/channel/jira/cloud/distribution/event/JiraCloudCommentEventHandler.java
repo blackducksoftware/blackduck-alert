@@ -35,7 +35,6 @@ import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudPropertiesFact
 import com.synopsys.integration.alert.channel.jira.cloud.distribution.JiraCloudMessageSenderFactory;
 import com.synopsys.integration.alert.channel.jira.cloud.distribution.JiraCloudQueryExecutor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.synopsys.integration.jira.common.cloud.service.FieldService;
 import com.synopsys.integration.jira.common.cloud.service.IssueSearchService;
@@ -57,7 +56,6 @@ public class JiraCloudCommentEventHandler extends IssueTrackerCommentEventHandle
     @Autowired
     public JiraCloudCommentEventHandler(
         EventManager eventManager,
-        JobSubTaskAccessor jobSubTaskAccessor,
         Gson gson,
         JiraCloudPropertiesFactory jiraCloudPropertiesFactory,
         JiraCloudMessageSenderFactory messageSenderFactory,
@@ -65,7 +63,7 @@ public class JiraCloudCommentEventHandler extends IssueTrackerCommentEventHandle
         IssueTrackerResponsePostProcessor responsePostProcessor,
         ExecutingJobManager executingJobManager
     ) {
-        super(eventManager, jobSubTaskAccessor, responsePostProcessor, executingJobManager);
+        super(eventManager, responsePostProcessor, executingJobManager);
         this.gson = gson;
         this.jiraCloudPropertiesFactory = jiraCloudPropertiesFactory;
         this.messageSenderFactory = messageSenderFactory;

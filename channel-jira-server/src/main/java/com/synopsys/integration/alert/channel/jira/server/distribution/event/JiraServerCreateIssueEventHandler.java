@@ -38,7 +38,6 @@ import com.synopsys.integration.alert.channel.jira.server.JiraServerPropertiesFa
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerMessageSenderFactory;
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerQueryExecutor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.synopsys.integration.jira.common.rest.service.IssuePropertyService;
 import com.synopsys.integration.jira.common.server.service.FieldService;
@@ -58,7 +57,6 @@ public class JiraServerCreateIssueEventHandler extends IssueTrackerCreateIssueEv
     @Autowired
     public JiraServerCreateIssueEventHandler(
         EventManager eventManager,
-        JobSubTaskAccessor jobSubTaskAccessor,
         Gson gson,
         JiraServerPropertiesFactory jiraServerPropertiesFactory,
         JiraServerMessageSenderFactory jiraServerMessageSenderFactory,
@@ -66,7 +64,7 @@ public class JiraServerCreateIssueEventHandler extends IssueTrackerCreateIssueEv
         IssueTrackerResponsePostProcessor issueTrackerResponsePostProcessor,
         ExecutingJobManager executingJobManager
     ) {
-        super(eventManager, jobSubTaskAccessor, issueTrackerResponsePostProcessor, executingJobManager);
+        super(eventManager, issueTrackerResponsePostProcessor, executingJobManager);
         this.gson = gson;
         this.jiraServerPropertiesFactory = jiraServerPropertiesFactory;
         this.jiraServerMessageSenderFactory = jiraServerMessageSenderFactory;
