@@ -25,11 +25,12 @@ import static org.mockito.Mockito.when;
 @ExtendWith(SpringExtension.class)
 class SAMLFileUploadActionsTest {
     private SAMLFileUploadActions samlFileUploadActions;
-
     @Mock
     private SAMLFileUploadValidator samlFileUploadValidator;
+
     @TempDir
     private Path tempDir;
+    private final Resource FILE_DATA = new ByteArrayResource("Dummy data".getBytes());
 
     @BeforeEach
     void init() {
@@ -54,7 +55,7 @@ class SAMLFileUploadActionsTest {
     void metadataFileExistsAfterUpload() {
         assertEquals(HttpStatus.NOT_FOUND, samlFileUploadActions.fileExists(AuthenticationDescriptor.SAML_METADATA_FILE).getHttpStatus());
 
-        samlFileUploadActions.metadataFileUpload(new ByteArrayResource("Dummy data".getBytes()));
+        samlFileUploadActions.metadataFileUpload(FILE_DATA);
         assertEquals(HttpStatus.NO_CONTENT, samlFileUploadActions.fileExists(AuthenticationDescriptor.SAML_METADATA_FILE).getHttpStatus());
     }
 
@@ -62,7 +63,7 @@ class SAMLFileUploadActionsTest {
     void certFilesExistsAfterUpload() {
         assertEquals(HttpStatus.NOT_FOUND, samlFileUploadActions.fileExists(AuthenticationDescriptor.SAML_ENCRYPTION_CERT_FILE).getHttpStatus());
 
-        samlFileUploadActions.certFileUpload(AuthenticationDescriptor.SAML_ENCRYPTION_CERT_FILE, new ByteArrayResource("Dummy data".getBytes()));
+        samlFileUploadActions.certFileUpload(AuthenticationDescriptor.SAML_ENCRYPTION_CERT_FILE, FILE_DATA);
         assertEquals(HttpStatus.NO_CONTENT, samlFileUploadActions.fileExists(AuthenticationDescriptor.SAML_ENCRYPTION_CERT_FILE).getHttpStatus());
     }
 
@@ -70,7 +71,7 @@ class SAMLFileUploadActionsTest {
     void privateKeyFileExistsAfterUpload() {
         assertEquals(HttpStatus.NOT_FOUND, samlFileUploadActions.fileExists(AuthenticationDescriptor.SAML_ENCRYPTION_PRIVATE_KEY_FILE).getHttpStatus());
 
-        samlFileUploadActions.privateKeyFileUpload(AuthenticationDescriptor.SAML_ENCRYPTION_PRIVATE_KEY_FILE, new ByteArrayResource("Dummy data".getBytes()));
+        samlFileUploadActions.privateKeyFileUpload(AuthenticationDescriptor.SAML_ENCRYPTION_PRIVATE_KEY_FILE, FILE_DATA);
         assertEquals(HttpStatus.NO_CONTENT, samlFileUploadActions.fileExists(AuthenticationDescriptor.SAML_ENCRYPTION_PRIVATE_KEY_FILE).getHttpStatus());
     }
 
@@ -79,7 +80,7 @@ class SAMLFileUploadActionsTest {
         // Upload the file
         assertEquals(HttpStatus.NOT_FOUND, samlFileUploadActions.fileExists(AuthenticationDescriptor.SAML_ENCRYPTION_PRIVATE_KEY_FILE).getHttpStatus());
 
-        samlFileUploadActions.privateKeyFileUpload(AuthenticationDescriptor.SAML_ENCRYPTION_PRIVATE_KEY_FILE, new ByteArrayResource("Dummy data".getBytes()));
+        samlFileUploadActions.privateKeyFileUpload(AuthenticationDescriptor.SAML_ENCRYPTION_PRIVATE_KEY_FILE, FILE_DATA);
         assertEquals(HttpStatus.NO_CONTENT, samlFileUploadActions.fileExists(AuthenticationDescriptor.SAML_ENCRYPTION_PRIVATE_KEY_FILE).getHttpStatus());
 
         // Delete the file and verify not found
