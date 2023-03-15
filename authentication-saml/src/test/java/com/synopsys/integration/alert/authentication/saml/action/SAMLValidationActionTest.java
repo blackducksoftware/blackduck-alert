@@ -14,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class SAMLValidationActionTest {
     private SAMLValidationAction samlValidationAction;
@@ -38,7 +37,7 @@ class SAMLValidationActionTest {
     }
 
     @Test
-    void validateHasErrorsOnInvalidConfigModel() {
+    void validateHasErrorsForInvalidConfigModel() {
         ActionResponse<ValidationResponseModel> validationResponseModelActionResponse = samlValidationAction.validate(invalidSAMLConfigModel);
         ValidationResponseModel validationResponseModel = validationResponseModelActionResponse.getContent()
             .orElseThrow(() -> new AssertionError("Expected response content not found"));
@@ -49,7 +48,7 @@ class SAMLValidationActionTest {
     }
 
     @Test
-    void validateHasNoErrorsOnValidConfigModel() {
+    void validateHasNoErrorsForValidConfigModel() {
         ActionResponse<ValidationResponseModel> validationResponseModelActionResponse = samlValidationAction.validate(validSAMLConfigModel);
         ValidationResponseModel validationResponseModel = validationResponseModelActionResponse.getContent()
             .orElseThrow(() -> new AssertionError("Expected response content not found"));

@@ -2,7 +2,6 @@ package com.synopsys.integration.alert.authentication.saml.environment;
 
 import com.synopsys.integration.alert.authentication.saml.SAMLTestHelper;
 import com.synopsys.integration.alert.authentication.saml.database.accessor.SAMLConfigAccessor;
-import com.synopsys.integration.alert.authentication.saml.environment.SAMLEnvironmentVariableHandler;
 import com.synopsys.integration.alert.authentication.saml.model.SAMLConfigModel;
 import com.synopsys.integration.alert.authentication.saml.model.SAMLMetadataMode;
 import com.synopsys.integration.alert.authentication.saml.validator.SAMLConfigurationValidator;
@@ -34,7 +33,7 @@ class SAMLEnvironmentVariableHandlerTest {
     }
 
     @Test
-    void configurationMissingCheckIsFalseOnSave() {
+    void configurationMissingCheckIsFalseAfterSave() {
         assertTrue(samlEnvironmentVariableHandler.configurationMissingCheck());
 
         samlEnvironmentVariableHandler.saveConfiguration(samlConfigModel, null);

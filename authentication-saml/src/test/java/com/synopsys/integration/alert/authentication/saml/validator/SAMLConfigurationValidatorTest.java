@@ -10,13 +10,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -26,8 +22,6 @@ class SAMLConfigurationValidatorTest {
 
     @Mock
     private FilePersistenceUtil filePersistenceUtil;
-    @TempDir
-    private Path tempDir;
 
     @BeforeEach
     void init() {
@@ -35,7 +29,7 @@ class SAMLConfigurationValidatorTest {
     }
 
     @Test
-    void validateHasErrorsOnMetadataFileNotUploaded() {
+    void validateMetadataFileNotUploadedHasErrors() {
         Mockito.when(filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_METADATA_FILE)).thenReturn(false);
         SAMLConfigModel samlConfigModel = new SAMLTestHelper.SAMLConfigModelBuilder()
             .setMetadataMode(SAMLMetadataMode.FILE)
@@ -48,7 +42,7 @@ class SAMLConfigurationValidatorTest {
     }
 
     @Test
-    void validateHasErrorsOnMetadataModeInvalidUrl() {
+    void validateMetadataModeInvalidUrlHasErrors() {
         SAMLConfigModel samlConfigModel = new SAMLTestHelper.SAMLConfigModelBuilder()
             .setMetadataMode(SAMLMetadataMode.URL)
             .setMetadataUrl("BAD URL")
@@ -61,7 +55,7 @@ class SAMLConfigurationValidatorTest {
     }
 
     @Test
-    void validateHasErrorsOnMetadataModeEmptyUrl() {
+    void validateMetadataModeEmptyUrlHasErrors() {
         SAMLConfigModel samlConfigModel = new SAMLTestHelper.SAMLConfigModelBuilder()
             .setMetadataMode(SAMLMetadataMode.URL)
             .build();
@@ -73,7 +67,7 @@ class SAMLConfigurationValidatorTest {
     }
 
     @Test
-    void validateHasErrorOnNoSigningPrivateKey() {
+    void validateNoSigningPrivateKeyHasErrors() {
         Mockito.when(filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_SIGNING_CERT_FILE)).thenReturn(true);
         Mockito.when(filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_SIGNING_PRIVATE_KEY_FILE)).thenReturn(false);
 
@@ -87,7 +81,7 @@ class SAMLConfigurationValidatorTest {
     }
 
     @Test
-    void validateHasErrorOnNoEncryptionPrivateKey() {
+    void validateNoEncryptionPrivateKeyHasErrors() {
         Mockito.when(filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_ENCRYPTION_CERT_FILE)).thenReturn(true);
         Mockito.when(filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_ENCRYPTION_PRIVATE_KEY_FILE)).thenReturn(false);
 
@@ -101,7 +95,7 @@ class SAMLConfigurationValidatorTest {
     }
 
     @Test
-    void validateHasNoErrorsOnValidSAMLConfig() {
+    void validateValidSAMLConfigHasNoErrors() {
         SAMLConfigModel samlConfigModel = new SAMLTestHelper.SAMLConfigModelBuilder()
             .setMetadataMode(SAMLMetadataMode.URL)
             .setMetadataUrl("https://www.metadataurl.com")

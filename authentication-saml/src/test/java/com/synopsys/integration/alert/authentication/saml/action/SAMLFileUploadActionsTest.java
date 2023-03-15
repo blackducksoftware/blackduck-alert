@@ -17,7 +17,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -47,7 +47,7 @@ class SAMLFileUploadActionsTest {
     }
 
     @Test
-    void fileExistsReturnsNotFoundOnNonExistingFile() {
+    void fileExistsReturnsNotFoundForNonExistingFile() {
         assertEquals(HttpStatus.NOT_FOUND, samlFileUploadActions.fileExists("Dummy_file.xml").getHttpStatus());
     }
 

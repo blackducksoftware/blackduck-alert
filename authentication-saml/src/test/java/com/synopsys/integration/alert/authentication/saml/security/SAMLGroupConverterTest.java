@@ -55,7 +55,7 @@ class SAMLGroupConverterTest {
 
     @Test
     void groupsConverterAuthenticatesWithAlertAndGroupAuthorities() {
-        Mockito.when(principal.getAttribute(anyString())).thenAnswer(invocation -> ATTRIBUTES.get(invocation.getArguments()[0]));
+        Mockito.when(principal.getAttribute(anyString())).thenAnswer(invocation -> ATTRIBUTES.get((String) invocation.getArguments()[0]));
         authentication.setAuthenticated(true);
 
         try (MockedStatic<OpenSaml4AuthenticationProvider> openSaml4AuthenticationProvider = Mockito.mockStatic(OpenSaml4AuthenticationProvider.class)) {
@@ -66,6 +66,7 @@ class SAMLGroupConverterTest {
             Saml2Authentication saml2Authentication = samlGroupConverter.groupsConverter().convert(responseToken);
             Mockito.verify(authenticationEventManager, Mockito.times(1)).sendAuthenticationEvent(any(), eq(AuthenticationType.SAML));
 
+            assert saml2Authentication != null;
             Set<String> grantedAuthorities = saml2Authentication.getAuthorities()
                 .stream()
                 .map(GrantedAuthority::getAuthority)
@@ -83,7 +84,7 @@ class SAMLGroupConverterTest {
         EMPTY_ATTRIBUTES.put(ALERT_ROLE_KEY, null);
         EMPTY_ATTRIBUTES.put(GROUPS_ROLE_KEY, null);
 
-        Mockito.when(principal.getAttribute(anyString())).thenAnswer(invocation -> EMPTY_ATTRIBUTES.get(invocation.getArguments()[0]));
+        Mockito.when(principal.getAttribute(anyString())).thenAnswer(invocation -> EMPTY_ATTRIBUTES.get((String) invocation.getArguments()[0]));
         authentication.setAuthenticated(false);
 
         try (MockedStatic<OpenSaml4AuthenticationProvider> openSaml4AuthenticationProvider = Mockito.mockStatic(OpenSaml4AuthenticationProvider.class)) {
@@ -94,6 +95,7 @@ class SAMLGroupConverterTest {
             Saml2Authentication saml2Authentication = samlGroupConverter.groupsConverter().convert(responseToken);
             Mockito.verify(authenticationEventManager, Mockito.times(0)).sendAuthenticationEvent(any(), eq(AuthenticationType.SAML));
 
+            assert saml2Authentication != null;
             Set<String> grantedAuthorities = saml2Authentication.getAuthorities()
                 .stream()
                 .map(GrantedAuthority::getAuthority)

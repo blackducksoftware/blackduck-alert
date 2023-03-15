@@ -4,8 +4,7 @@ import com.synopsys.integration.alert.authentication.saml.database.SAMLMetadataM
 import com.synopsys.integration.alert.authentication.saml.model.SAMLMetadataMode;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class SAMLMetadataModeConverterTest {
     @Test
@@ -25,7 +24,7 @@ class SAMLMetadataModeConverterTest {
 
         assertEquals(SAMLMetadataMode.URL, samlMetadataModeConverter.convertToEntityAttribute(SAMLMetadataMode.URL.getMode()));
         assertEquals(SAMLMetadataMode.FILE, samlMetadataModeConverter.convertToEntityAttribute(SAMLMetadataMode.FILE.getMode()));
-        assertEquals(null, samlMetadataModeConverter.convertToEntityAttribute(null));
+        assertNull(samlMetadataModeConverter.convertToEntityAttribute(null));
     }
 
     @Test
