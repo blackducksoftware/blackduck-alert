@@ -88,8 +88,6 @@ public class JobNotificationContentProcessor {
                 .stream()
                 .map(notificationDetailExtractionDelegator::wrapNotification)
                 .flatMap(List::stream)
-                //TODO lambda to filter by job details (filter by policy name/severity)
-                //create a private method that takes the notification and job info and looks if Policies exist. If so, perform the filter.
                 .filter(notificationContent -> applyDistributionJobFilters(notificationContent, job))
                 .map(DetailedNotificationContent::getNotificationContentWrapper)
                 .collect(Collectors.toList());
