@@ -88,6 +88,9 @@ public class JobNotificationContentProcessor {
                 .stream()
                 .map(notificationDetailExtractionDelegator::wrapNotification)
                 .flatMap(List::stream)
+                //TODO lambda to filter by job details (filter by policy name/severity)
+                //create a private method that takes the notification and job info and looks if Policies exist. If so, perform the filter.
+                .filter(notificationContent -> applyDistributionJobFilters(notificationContent, job))
                 .map(DetailedNotificationContent::getNotificationContentWrapper)
                 .collect(Collectors.toList());
 
@@ -123,6 +126,16 @@ public class JobNotificationContentProcessor {
         return pageOfMappingData.getModels().stream()
             .map(JobToNotificationMappingModel::getNotificationId)
             .collect(Collectors.toList());
+    }
+
+    private boolean applyDistributionJobFilters(DetailedNotificationContent notificationContent, DistributionJobModel distributionJobModel) {
+        // Policy related notifications may contain multiple policies in a single notification. A second round of filtering must be performed after
+        //  extraction to ensure any policy job filters are correctly applied.
+        List<String> policyFilterPolicyNames = distributionJobModel.getPolicyFilterPolicyNames();
+        if (!policyFilterPolicyNames.isEmpty()) {
+            return policyFilterPolicyNames.contains(notificationContent.getPolicyName().orElse(""));
+        }
+        return true;
     }
 
     private void logNotifications(String messagePrefix, JobProcessingEvent event, List<Long> notificationIds) {
