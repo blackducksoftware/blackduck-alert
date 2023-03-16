@@ -161,4 +161,4 @@ dockerImagesToBuild.each { imageName ->
     project.tasks.findByName(dockerPublishAllImages).dependsOn dockerImagePublishTaskName
 }
 
-logger.lifecycle('The following Docker specific tasks were added --> ' + dockerTasksCreated)
+logger.lifecycle('\nThe following Docker specific tasks were added --> ' + dockerTasksCreated)
