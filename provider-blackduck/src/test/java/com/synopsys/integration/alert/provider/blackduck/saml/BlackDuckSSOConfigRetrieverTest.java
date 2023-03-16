@@ -70,9 +70,12 @@ public class BlackDuckSSOConfigRetrieverTest {
         String blackDuckUrl = testProperties.getBlackDuckURL();
         String blackDuckApiKey = testProperties.getBlackDuckAPIToken();
         String blackDuckTimeout = testProperties.getOptionalProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT).orElse("300");
+        boolean blackduckTrustCertificate = testProperties.getOptionalProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TRUST_HTTPS_CERT)
+            .map(Boolean::valueOf)
+            .orElse(false);
 
         MockAlertProperties mockAlertProperties = new MockAlertProperties();
-        mockAlertProperties.setAlertTrustCertificate(true);
+        mockAlertProperties.setAlertTrustCertificate(blackduckTrustCertificate);
         ProxyManager mockProxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(mockProxyManager.createProxyInfoForHost(Mockito.anyString())).thenReturn(ProxyInfo.NO_PROXY_INFO);
 
