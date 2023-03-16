@@ -29,7 +29,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Set;
 import java.util.UUID;
 
 @AlertIntegrationTest
@@ -58,8 +57,7 @@ class SAMLConfigControllerTestIT {
     @AfterEach
     public void cleanup() throws IOException {
         samlConfigAccessor.deleteConfiguration();
-
-        deleteSAMLFiles();
+        deleteMetadataFile();
     }
 
     @Test
@@ -180,21 +178,10 @@ class SAMLConfigControllerTestIT {
         return samlConfigAccessor.createConfiguration(samlConfigModel);
     }
 
-    private void deleteSAMLFiles () throws IOException {
-        Set<String> samlFiles = Set.of(
-            AuthenticationDescriptor.SAML_METADATA_FILE,
-            AuthenticationDescriptor.SAML_ENCRYPTION_CERT_FILE,
-            AuthenticationDescriptor.SAML_ENCRYPTION_PRIVATE_KEY_FILE,
-            AuthenticationDescriptor.SAML_SIGNING_CERT_FILE,
-            AuthenticationDescriptor.SAML_SIGNING_PRIVATE_KEY_FILE,
-            AuthenticationDescriptor.SAML_VERIFICATION_CERT_FILE
-        );
-
-        for (String fileName: samlFiles) {
-            if (filePersistenceUtil.uploadFileExists(fileName)) {
-                File fileToValidate = filePersistenceUtil.createUploadsFile(fileName);
-                filePersistenceUtil.delete(fileToValidate);
-            }
+    private void deleteMetadataFile() throws IOException {
+        if (filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_METADATA_FILE)) {
+            File fileToValidate = filePersistenceUtil.createUploadsFile(AuthenticationDescriptor.SAML_METADATA_FILE);
+            filePersistenceUtil.delete(fileToValidate);
         }
     }
 }
