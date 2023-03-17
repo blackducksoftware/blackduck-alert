@@ -25,10 +25,12 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.email.attachment.compatibility.MessageContentGroup;
 import com.synopsys.integration.alert.channel.email.distribution.ProjectMessageToMessageContentGroupConversionUtils;
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 
 @Component
 public class EmailAttachmentFileCreator {
+    public static final String EMAIL_ATTACHMENT_DATE_FORMAT = "yyyy-MM-dd'T'HH-mm-ss.SSSSSS'Z'";
     private final Logger logger = LoggerFactory.getLogger(EmailAttachmentFileCreator.class);
 
     private final AlertProperties alertProperties;
@@ -113,7 +115,9 @@ public class EmailAttachmentFileCreator {
     }
 
     private File createFile(String messageString, File writeDir, String fileExtension) throws IOException {
-        File messageFile = new File(writeDir, "message." + fileExtension);
+        String timeStamp = DateUtils.createCurrentDateString(EMAIL_ATTACHMENT_DATE_FORMAT);
+        String fileName = String.format("message-%s.%s", timeStamp, fileExtension);
+        File messageFile = new File(writeDir, fileName);
         FileUtils.writeStringToFile(messageFile, messageString, Charset.defaultCharset());
         return messageFile;
     }
