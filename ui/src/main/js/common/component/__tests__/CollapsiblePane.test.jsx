@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, screen, render } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Enzyme from 'enzyme';
 import renderer from 'react-test-renderer';
@@ -8,6 +8,7 @@ import CollapsiblePane from '../CollapsiblePane';
 
 // TODO: Implement this icon library in a much more dynamic way - remove this when done
 import registerFaIcons from '../../../icons';
+
 registerFaIcons();
 
 beforeAll(() => {
