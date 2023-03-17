@@ -15,7 +15,6 @@ import com.synopsys.integration.alert.api.channel.DistributionChannel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerResponse;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 
@@ -25,17 +24,11 @@ import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessag
  */
 public abstract class IssueTrackerChannel<D extends DistributionJobDetailsModel, T extends Serializable> implements DistributionChannel<D> {
     private final IssueTrackerProcessorFactory<D, T> processorFactory;
-    private final IssueTrackerResponsePostProcessor responsePostProcessor;
-    private final JobSubTaskAccessor jobSubTaskAccessor;
 
     protected IssueTrackerChannel(
-        IssueTrackerProcessorFactory<D, T> processorFactory,
-        IssueTrackerResponsePostProcessor responsePostProcessor,
-        JobSubTaskAccessor jobSubTaskAccessor
+        IssueTrackerProcessorFactory<D, T> processorFactory
     ) {
         this.processorFactory = processorFactory;
-        this.responsePostProcessor = responsePostProcessor;
-        this.jobSubTaskAccessor = jobSubTaskAccessor;
     }
 
     @Override
@@ -44,14 +37,12 @@ public abstract class IssueTrackerChannel<D extends DistributionJobDetailsModel,
         ProviderMessageHolder messages,
         String jobName,
         UUID jobConfigId,
-        UUID parentEventId,
         UUID jobExecutionId,
         Set<Long> notificationIds
     )
         throws AlertException {
 
-        jobSubTaskAccessor.createSubTaskStatus(parentEventId, distributionDetails.getJobId(), 0L, notificationIds);
-        IssueTrackerProcessor<T> processor = processorFactory.createProcessor(distributionDetails, parentEventId, jobExecutionId, notificationIds);
+        IssueTrackerProcessor<T> processor = processorFactory.createProcessor(distributionDetails, jobExecutionId, notificationIds);
         IssueTrackerResponse<T> issueTrackerResponse = processor.processMessages(messages, jobName);
 
         return new MessageResult(issueTrackerResponse.getStatusMessage());

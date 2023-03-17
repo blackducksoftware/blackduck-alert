@@ -38,7 +38,6 @@ class MessageBoardChannelTest {
             "jobName",
             UUID.randomUUID(),
             UUID.randomUUID(),
-            UUID.randomUUID(),
             Set.of()
         );
         assertEquals(expectedResult, testResult);

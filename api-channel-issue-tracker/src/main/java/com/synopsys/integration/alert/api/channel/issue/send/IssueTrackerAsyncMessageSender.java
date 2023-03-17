@@ -18,15 +18,12 @@ import com.synopsys.integration.alert.api.distribution.execution.JobStageStarted
 import com.synopsys.integration.alert.api.event.AlertEvent;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
-import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 
 public class IssueTrackerAsyncMessageSender<T extends Serializable> {
     private final IssueTrackerCreationEventGenerator issueCreateEventGenerator;
     private final IssueTrackerTransitionEventGenerator<T> issueTrackerTransitionEventGenerator;
     private final IssueTrackerCommentEventGenerator<T> issueTrackerCommentEventGenerator;
     private final EventManager eventManager;
-    private final JobSubTaskAccessor jobSubTaskAccessor;
-    private final UUID parentEventId;
     private final UUID jobExecutionId;
     private final Set<Long> notificationIds;
     private final ExecutingJobManager executingJobManager;
@@ -36,8 +33,6 @@ public class IssueTrackerAsyncMessageSender<T extends Serializable> {
         IssueTrackerTransitionEventGenerator<T> issueTrackerTransitionEventGenerator,
         IssueTrackerCommentEventGenerator<T> issueTrackerCommentEventGenerator,
         EventManager eventManager,
-        JobSubTaskAccessor jobSubTaskAccessor,
-        UUID parentEventId,
         UUID jobExecutionId,
         Set<Long> notificationIds,
         ExecutingJobManager executingJobManager
@@ -46,8 +41,6 @@ public class IssueTrackerAsyncMessageSender<T extends Serializable> {
         this.issueTrackerTransitionEventGenerator = issueTrackerTransitionEventGenerator;
         this.issueTrackerCommentEventGenerator = issueTrackerCommentEventGenerator;
         this.eventManager = eventManager;
-        this.jobSubTaskAccessor = jobSubTaskAccessor;
-        this.parentEventId = parentEventId;
         this.jobExecutionId = jobExecutionId;
         this.notificationIds = notificationIds;
         this.executingJobManager = executingJobManager;
@@ -63,14 +56,12 @@ public class IssueTrackerAsyncMessageSender<T extends Serializable> {
         // some notifications do not produce events which is why the check for the empty event list also exists.
         executingJobManager.incrementSentNotificationCount(jobExecutionId, notificationIds.size());
         if (eventList.isEmpty()) {
-            jobSubTaskAccessor.removeSubTaskStatus(parentEventId);
             if (!executingJobManager.hasRemainingEvents(jobExecutionId)
                 && executingJobManager.hasSentExpectedNotifications(jobExecutionId)) {
                 executingJobManager.updateJobStatus(jobExecutionId, AuditEntryStatus.SUCCESS);
                 executingJobManager.endJob(jobExecutionId, Instant.now());
             }
         } else {
-            jobSubTaskAccessor.updateTaskCount(parentEventId, (long) eventList.size());
             executingJobManager.incrementRemainingEvents(jobExecutionId, eventList.size());
             eventManager.sendEvents(eventList);
         }

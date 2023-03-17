@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="psantos" id="drop--relation-table-notification-correlation-to-notification">
+        <preConditions onFail="MARK_RAN">
+            <tableExists schemaName="alert" tableName="notification_correlation_to_notification_relation"/>
+        </preConditions>
+        <dropTable schemaName="alert" tableName="notification_correlation_to_notification_relation"/>
+    </changeSet>
+    <changeSet author="psantos" id="drop-table-job-sub-task-status">
+        <preConditions onFail="MARK_RAN">
+            <tableExists schemaName="alert" tableName="job_sub_task_status"/>
+        </preConditions>
+        <dropTable schemaName="alert" tableName="job_sub_task_status"/>
+    </changeSet>
+</databaseChangeLog>

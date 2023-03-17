@@ -78,7 +78,6 @@ class MsTeamsChannelTest {
                 "jobName",
                 UUID.randomUUID(),
                 UUID.randomUUID(),
-                UUID.randomUUID(),
                 Set.of()
             );
         } catch (AlertException e) {

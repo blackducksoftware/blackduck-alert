@@ -18,14 +18,12 @@ import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
 
 public class AzureBoardsCreateEventGenerator implements IssueTrackerCreationEventGenerator {
     private final AzureBoardsChannelKey channelKey;
-    private final UUID parentEventId;
     private final UUID jobExecutionId;
     private final UUID jobId;
     private final Set<Long> notificationIds;
 
-    public AzureBoardsCreateEventGenerator(AzureBoardsChannelKey channelKey, UUID parentEventId, UUID jobExecutionId, UUID jobId, Set<Long> notificationIds) {
+    public AzureBoardsCreateEventGenerator(AzureBoardsChannelKey channelKey, UUID jobExecutionId, UUID jobId, Set<Long> notificationIds) {
         this.channelKey = channelKey;
-        this.parentEventId = parentEventId;
         this.jobExecutionId = jobExecutionId;
         this.jobId = jobId;
         this.notificationIds = notificationIds;
@@ -35,7 +33,6 @@ public class AzureBoardsCreateEventGenerator implements IssueTrackerCreationEven
     public IssueTrackerCreateIssueEvent generateEvent(IssueCreationModel model) {
         return new AzureBoardsCreateIssueEvent(
             IssueTrackerCreateIssueEvent.createDefaultEventDestination(channelKey),
-            parentEventId,
             jobExecutionId,
             jobId,
             notificationIds,
