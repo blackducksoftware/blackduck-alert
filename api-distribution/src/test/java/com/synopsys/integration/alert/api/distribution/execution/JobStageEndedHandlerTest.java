@@ -26,10 +26,10 @@ class JobStageEndedHandlerTest {
         ExecutingJob executingJob = jobManager.startJob(jobConfigId, 1);
         UUID executionId = executingJob.getExecutionId();
         JobStage jobStage = JobStage.NOTIFICATION_PROCESSING;
-        executingJob.addStage(new ExecutingJobStage(executionId, jobStage, Instant.now()));
-        Instant endTime = Instant.now();
+        executingJob.addStage(new ExecutingJobStage(executionId, jobStage, Instant.now().minusSeconds(10)));
+        long endTimeMilli = Instant.now().toEpochMilli();
 
-        JobStageEndedEvent event = new JobStageEndedEvent(executionId, jobStage, endTime.toEpochMilli());
+        JobStageEndedEvent event = new JobStageEndedEvent(executionId, jobStage, endTimeMilli);
 
         handler.handle(event);
         ExecutingJobStage savedStage = jobManager.getExecutingJob(executionId)
@@ -37,8 +37,8 @@ class JobStageEndedHandlerTest {
             .orElseThrow(() -> new AssertionError("Job stage for execution not found."));
         assertEquals(jobStage, savedStage.getStage());
         assertNotNull(savedStage.getStart());
-        assertTrue(savedStage.getStart().isBefore(endTime));
-        assertEquals(endTime, savedStage.getEnd().orElse(Instant.now()));
+        assertTrue(savedStage.getStart().isBefore(Instant.ofEpochMilli(endTimeMilli)));
+        assertEquals(Instant.ofEpochMilli(endTimeMilli), savedStage.getEnd().orElse(Instant.now()));
     }
 
     @Test

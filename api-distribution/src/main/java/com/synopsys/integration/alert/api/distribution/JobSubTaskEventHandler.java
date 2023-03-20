@@ -1,7 +1,6 @@
 package com.synopsys.integration.alert.api.distribution;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.UUID;
 import java.util.function.Predicate;
 
@@ -10,7 +9,6 @@ import com.synopsys.integration.alert.api.distribution.audit.AuditFailedEvent;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJob;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.distribution.execution.JobStage;
-import com.synopsys.integration.alert.api.event.AlertEvent;
 import com.synopsys.integration.alert.api.event.AlertEventHandler;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.api.event.distribution.JobSubTaskEvent;
@@ -58,7 +56,7 @@ public abstract class JobSubTaskEventHandler<T extends JobSubTaskEvent> implemen
 
     protected abstract void handleEvent(T event) throws AlertException;
 
-    protected void postEvents(List<AlertEvent> alertEvent) {
-        eventManager.sendEvents(alertEvent);
-    }
+    //    protected void postEvents(List<AlertEvent> alertEvent) {
+    //        eventManager.sendEvents(alertEvent);
+    //    }
 }
