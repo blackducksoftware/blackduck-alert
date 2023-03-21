@@ -21,21 +21,17 @@ import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobMan
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 
 @ExtendWith(SpringExtension.class)
 class IssueTrackerAsyncMessageSenderTest {
     @Mock
     private EventManager mockEventManager;
-    @Mock
-    private JobSubTaskAccessor mockJobSubTaskAccessor;
 
     @Mock
     private ExecutingJobManager executingJobManager;
 
     @Test
     void sendAsyncMessagesNoEventsTest() {
-        UUID parentEventId = UUID.randomUUID();
         UUID jobExecutionId = UUID.randomUUID();
 
         IssueTrackerModelHolder<String> modelHolder = new IssueTrackerModelHolder<>(List.of(), List.of(), List.of());
@@ -48,8 +44,6 @@ class IssueTrackerAsyncMessageSenderTest {
             transitionEventGenerator,
             commentEventGenerator,
             mockEventManager,
-            mockJobSubTaskAccessor,
-            parentEventId,
             jobExecutionId,
             Set.of(1L, 2L, 3L),
             executingJobManager
@@ -57,13 +51,11 @@ class IssueTrackerAsyncMessageSenderTest {
 
         sender.sendAsyncMessages(List.of(modelHolder));
         Mockito.verify(mockEventManager, Mockito.times(0)).sendEvent(Mockito.any());
-        Mockito.verify(mockJobSubTaskAccessor, Mockito.times(0)).updateTaskCount(Mockito.eq(parentEventId), Mockito.anyLong());
 
     }
 
     @Test
     void sendAsyncMessageTest() {
-        UUID parentEventId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         UUID jobExecutionId = UUID.randomUUID();
 
@@ -72,23 +64,20 @@ class IssueTrackerAsyncMessageSenderTest {
         IssueCommentModel<String> commentModel = new IssueCommentModel<>(null, List.of(), null);
         IssueTrackerModelHolder<String> modelHolder = new IssueTrackerModelHolder<>(List.of(createModel), List.of(transitionModel), List.of(commentModel));
 
-        IssueTrackerCreationEventGenerator createEventGenerator = (model) -> new IssueTrackerCreateIssueEvent(null, parentEventId, jobExecutionId, jobId, null, createModel);
+        IssueTrackerCreationEventGenerator createEventGenerator = (model) -> new IssueTrackerCreateIssueEvent(null, jobExecutionId, jobId, null, createModel);
         IssueTrackerTransitionEventGenerator<String> transitionEventGenerator = (model) -> new IssueTrackerTransitionIssueEvent<>(
             null,
-            parentEventId,
             jobExecutionId,
             jobId,
             null,
             null
         );
-        IssueTrackerCommentEventGenerator<String> commentEventGenerator = (model) -> new IssueTrackerCommentEvent<>(null, parentEventId, jobExecutionId, jobId, null, null);
+        IssueTrackerCommentEventGenerator<String> commentEventGenerator = (model) -> new IssueTrackerCommentEvent<>(null, jobExecutionId, jobId, null, null);
         IssueTrackerAsyncMessageSender<String> sender = new IssueTrackerAsyncMessageSender<>(
             createEventGenerator,
             transitionEventGenerator,
             commentEventGenerator,
             mockEventManager,
-            mockJobSubTaskAccessor,
-            parentEventId,
             jobExecutionId,
             Set.of(1L, 2L, 3L),
             executingJobManager
@@ -96,6 +85,5 @@ class IssueTrackerAsyncMessageSenderTest {
 
         sender.sendAsyncMessages(List.of(modelHolder));
         Mockito.verify(mockEventManager).sendEvents(Mockito.any());
-        Mockito.verify(mockJobSubTaskAccessor, Mockito.times(1)).updateTaskCount(Mockito.eq(parentEventId), Mockito.anyLong());
     }
 }

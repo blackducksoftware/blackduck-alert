@@ -118,7 +118,11 @@ public class EmailEnvironmentVariableHandler extends EnvironmentVariableHandler<
         EnvironmentVariableUtility environmentVariableUtility,
         EmailGlobalConfigurationValidator validator
     ) {
-        super(ChannelKeys.EMAIL.getDisplayName(), Stream.concat(EMAIL_CONFIGURATION_KEYSET.stream(), OLD_ADDITIONAL_PROPERTY_KEYSET.stream()).collect(Collectors.toSet()));
+        super(
+            ChannelKeys.EMAIL.getDisplayName(),
+            Stream.concat(EMAIL_CONFIGURATION_KEYSET.stream(), OLD_ADDITIONAL_PROPERTY_KEYSET.stream()).collect(Collectors.toSet()),
+            environmentVariableUtility
+        );
         this.configAccessor = configAccessor;
         this.environmentVariableUtility = environmentVariableUtility;
         this.validator = validator;

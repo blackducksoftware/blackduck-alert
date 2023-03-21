@@ -4,58 +4,31 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Map;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
 import org.springframework.http.HttpStatus;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
-import com.synopsys.integration.alert.authentication.ldap.database.accessor.LDAPConfigAccessor;
-import com.synopsys.integration.alert.authentication.ldap.database.configuration.MockLDAPConfigurationRepository;
-import com.synopsys.integration.alert.authentication.ldap.model.LDAPAuthenticationType;
+import com.synopsys.integration.alert.authentication.ldap.LDAPTestHelper;
 import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigModel;
 import com.synopsys.integration.alert.authentication.ldap.validator.LDAPConfigurationValidator;
-import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
-import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
-import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
-import com.synopsys.integration.alert.common.security.EncryptionUtility;
-import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
-import com.synopsys.integration.alert.test.common.MockAlertProperties;
 
 class LDAPCrudActionsTest {
-    private static final String DEFAULT_AUTHENTICATION_TYPE_SIMPLE = LDAPAuthenticationType.simple.name();
-    private static final String DEFAULT_AUTHENTICATION_TYPE_DIGEST = LDAPAuthenticationType.digest.name();
-
-    private static LDAPCrudActions ldapCrudActions;
-    private static LDAPConfigModel ldapConfigModel;
+    private LDAPCrudActions ldapCrudActions;
+    private LDAPConfigModel validLDAPConfigModel;
 
     @BeforeEach
     public void init() {
-        AuthenticationTestUtils authenticationTestUtils = new AuthenticationTestUtils();
-        AuthenticationDescriptorKey authenticationDescriptorKey = new AuthenticationDescriptorKey();
-        PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), authenticationDescriptorKey.getUniversalKey());
-        Map<PermissionKey, Integer> permissions = Map.of(permissionKey, 255);
-        AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet(
-            "admin",
-            "admin",
-            () -> new PermissionMatrixModel(permissions)
+        ldapCrudActions = new LDAPCrudActions(
+            LDAPTestHelper.createAuthorizationManager(),
+            LDAPTestHelper.createTestLDAPConfigAccessor(),
+            new LDAPConfigurationValidator(),
+            new AuthenticationDescriptorKey()
         );
 
-        AlertProperties alertProperties = new MockAlertProperties();
-        FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, new Gson());
-        EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, filePersistenceUtil);
-        MockLDAPConfigurationRepository mockLDAPConfigurationRepository = new MockLDAPConfigurationRepository();
-        LDAPConfigAccessor ldapConfigAccessor = new LDAPConfigAccessor(encryptionUtility, mockLDAPConfigurationRepository);
-
-        ldapCrudActions = new LDAPCrudActions(authorizationManager, ldapConfigAccessor, new LDAPConfigurationValidator(), authenticationDescriptorKey);
-        ldapConfigModel = createValidConfigModel();
+        validLDAPConfigModel = LDAPTestHelper.createValidLDAPConfigModel();
     }
 
     @Test
@@ -65,7 +38,7 @@ class LDAPCrudActionsTest {
         assertEquals(HttpStatus.NOT_FOUND, actionResponseGetOne.getHttpStatus());
         assertFalse(actionResponseGetOne.hasContent());
 
-        ActionResponse<LDAPConfigModel> actionResponseCreate = ldapCrudActions.create(ldapConfigModel);
+        ActionResponse<LDAPConfigModel> actionResponseCreate = ldapCrudActions.create(validLDAPConfigModel);
         assertTrue(actionResponseCreate.isSuccessful());
         assertEquals(HttpStatus.OK, actionResponseCreate.getHttpStatus());
         assertTrue(actionResponseCreate.hasContent());
@@ -73,12 +46,12 @@ class LDAPCrudActionsTest {
 
     @Test
     void testCreateConfigAlreadyExists() {
-        ActionResponse<LDAPConfigModel> actionResponseCreate = ldapCrudActions.create(ldapConfigModel);
+        ActionResponse<LDAPConfigModel> actionResponseCreate = ldapCrudActions.create(validLDAPConfigModel);
         assertTrue(actionResponseCreate.isSuccessful());
         assertEquals(HttpStatus.OK, actionResponseCreate.getHttpStatus());
         assertTrue(actionResponseCreate.hasContent());
 
-        ActionResponse<LDAPConfigModel> actionResponseCreateAgain = ldapCrudActions.create(ldapConfigModel);
+        ActionResponse<LDAPConfigModel> actionResponseCreateAgain = ldapCrudActions.create(validLDAPConfigModel);
         assertFalse(actionResponseCreateAgain.isSuccessful());
         assertEquals(HttpStatus.BAD_REQUEST, actionResponseCreateAgain.getHttpStatus());
         assertFalse(actionResponseCreateAgain.hasContent());
@@ -86,7 +59,7 @@ class LDAPCrudActionsTest {
 
     @Test
     void testUpdateConfigNotExist() {
-        ActionResponse<LDAPConfigModel> actionResponseUpdate = ldapCrudActions.update(ldapConfigModel);
+        ActionResponse<LDAPConfigModel> actionResponseUpdate = ldapCrudActions.update(validLDAPConfigModel);
         assertFalse(actionResponseUpdate.isSuccessful());
         assertEquals(HttpStatus.NOT_FOUND, actionResponseUpdate.getHttpStatus());
         assertFalse(actionResponseUpdate.hasContent());
@@ -94,20 +67,20 @@ class LDAPCrudActionsTest {
 
     @Test
     void testUpdateConfig() {
-        ActionResponse<LDAPConfigModel> actionResponseCreate = ldapCrudActions.create(ldapConfigModel);
+        ActionResponse<LDAPConfigModel> actionResponseCreate = ldapCrudActions.create(validLDAPConfigModel);
         LDAPConfigModel createdLDAPConfigModel = actionResponseCreate.getContent().orElseThrow(() -> new AssertionFailedError("Updated LDAPConfigModel did not exist"));
         assertTrue(actionResponseCreate.isSuccessful());
         assertEquals(HttpStatus.OK, actionResponseCreate.getHttpStatus());
         assertTrue(actionResponseCreate.hasContent());
-        assertEquals(DEFAULT_AUTHENTICATION_TYPE_SIMPLE, createdLDAPConfigModel.getAuthenticationType().orElse("FAIL"));
+        LDAPTestHelper.assertOptionalField(validLDAPConfigModel::getAuthenticationType, createdLDAPConfigModel::getAuthenticationType);
 
-        ldapConfigModel.setAuthenticationType(DEFAULT_AUTHENTICATION_TYPE_DIGEST);
-        ActionResponse<LDAPConfigModel> actionResponseUpdate = ldapCrudActions.update(ldapConfigModel);
+        validLDAPConfigModel.setAuthenticationType(LDAPTestHelper.DEFAULT_AUTH_TYPE_DIGEST);
+        ActionResponse<LDAPConfigModel> actionResponseUpdate = ldapCrudActions.update(validLDAPConfigModel);
         LDAPConfigModel updatedLDAPConfigModel = actionResponseUpdate.getContent().orElseThrow(() -> new AssertionFailedError("Updated LDAPConfigModel did not exist"));
         assertTrue(actionResponseUpdate.isSuccessful());
         assertEquals(HttpStatus.OK, actionResponseUpdate.getHttpStatus());
         assertTrue(actionResponseUpdate.hasContent());
-        assertEquals(DEFAULT_AUTHENTICATION_TYPE_DIGEST, updatedLDAPConfigModel.getAuthenticationType().orElse("FAIL"));
+        LDAPTestHelper.assertOptionalField(LDAPTestHelper.DEFAULT_AUTH_TYPE_DIGEST, updatedLDAPConfigModel::getAuthenticationType);
     }
 
     @Test
@@ -120,7 +93,7 @@ class LDAPCrudActionsTest {
 
     @Test
     void testDeleteConfig() {
-        ActionResponse<LDAPConfigModel> actionResponseCreate = ldapCrudActions.create(ldapConfigModel);
+        ActionResponse<LDAPConfigModel> actionResponseCreate = ldapCrudActions.create(validLDAPConfigModel);
         assertTrue(actionResponseCreate.isSuccessful());
         assertEquals(HttpStatus.OK, actionResponseCreate.getHttpStatus());
         assertTrue(actionResponseCreate.hasContent());
@@ -131,25 +104,4 @@ class LDAPCrudActionsTest {
         assertFalse(actionResponseDelete.hasContent());
     }
 
-    private LDAPConfigModel createValidConfigModel() {
-        return new LDAPConfigModel(
-            "",
-            "",
-            "",
-            true,
-            "serverName",
-            "managerDn",
-            "managerPassword",
-            true,
-            DEFAULT_AUTHENTICATION_TYPE_SIMPLE,
-            "referral",
-            "userSearchBase",
-            "userSearchFilter",
-            "userDnPatterns",
-            "userAttributes",
-            "groupSearchBase",
-            "groupSearchFilter",
-            "groupRoleAttributes"
-        );
-    }
 }

@@ -11,15 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.channel.issue.IssueTrackerChannel;
-import com.synopsys.integration.alert.api.channel.issue.IssueTrackerResponsePostProcessor;
-import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 
 @Component
 public class AzureBoardsChannel extends IssueTrackerChannel<AzureBoardsJobDetailsModel, Integer> {
     @Autowired
-    public AzureBoardsChannel(AzureBoardsProcessorFactory processorFactory, IssueTrackerResponsePostProcessor responsePostProcessor, JobSubTaskAccessor jobSubTaskAccessor) {
-        super(processorFactory, responsePostProcessor, jobSubTaskAccessor);
+    public AzureBoardsChannel(AzureBoardsProcessorFactory processorFactory) {
+        super(processorFactory);
     }
 
 }

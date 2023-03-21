@@ -47,7 +47,12 @@ public class EmailChannelMessagingService {
         return sendMessageWithAttachedProjectMessage(smtpConfig, emailTarget, null, EmailAttachmentFormat.NONE);
     }
 
-    public MessageResult sendMessageWithAttachedProjectMessage(SmtpConfig smtpConfig, EmailTarget emailTarget, ProjectMessage message, EmailAttachmentFormat attachmentFormat) throws AlertException {
+    public MessageResult sendMessageWithAttachedProjectMessage(
+        SmtpConfig smtpConfig,
+        EmailTarget emailTarget,
+        ProjectMessage message,
+        EmailAttachmentFormat attachmentFormat
+    ) throws AlertException {
         sendMessageWithAttachmentAndCleanUp(smtpConfig, emailTarget, message, attachmentFormat);
 
         return new MessageResult(String.format("Successfully sent %d email(s)", emailTarget.getEmailAddresses().size()));
@@ -75,7 +80,12 @@ public class EmailChannelMessagingService {
         return new EmailTarget(gatheredEmailAddresses, FILE_NAME_MESSAGE_TEMPLATE, model, contentIdsToFilePaths);
     }
 
-    private void sendMessageWithAttachmentAndCleanUp(SmtpConfig smtpConfig, EmailTarget emailTarget, ProjectMessage projectMessage, EmailAttachmentFormat attachmentFormat) throws AlertException {
+    private void sendMessageWithAttachmentAndCleanUp(
+        SmtpConfig smtpConfig,
+        EmailTarget emailTarget,
+        ProjectMessage projectMessage,
+        EmailAttachmentFormat attachmentFormat
+    ) throws AlertException {
         Optional<File> optionalAttachmentFile = Optional.empty();
 
         if (projectMessage != null) {

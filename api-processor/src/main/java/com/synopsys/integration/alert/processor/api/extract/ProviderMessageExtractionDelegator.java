@@ -51,8 +51,8 @@ public final class ProviderMessageExtractionDelegator {
 
     private EnumMap<NotificationType, ProviderMessageExtractor> initializeExtractorMap(List<ProviderMessageExtractor> providerMessageExtractors) {
         return providerMessageExtractors
-                   .stream()
-                   .collect(DataStructureUtils.toEnumMap(ProviderMessageExtractor::getNotificationType, NotificationType.class));
+            .stream()
+            .collect(DataStructureUtils.toEnumMap(ProviderMessageExtractor::getNotificationType, NotificationType.class));
     }
 
 }

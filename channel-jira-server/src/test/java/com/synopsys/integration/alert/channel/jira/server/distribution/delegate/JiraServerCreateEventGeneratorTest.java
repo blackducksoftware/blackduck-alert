@@ -15,24 +15,22 @@ import com.synopsys.integration.alert.channel.jira.server.distribution.event.Jir
 import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
-public class JiraServerCreateEventGeneratorTest {
+class JiraServerCreateEventGeneratorTest {
     @Test
     void generateEventAttributeMatches() {
         JiraServerChannelKey testKey = ChannelKeys.JIRA_SERVER;
-        UUID testParentEventUID = UUID.randomUUID();
         UUID testJobExecutionID = UUID.randomUUID();
         UUID testJobUID = UUID.randomUUID();
         Set<Long> testNotificationIds = Set.of(1L, 2L, 3L, 5L);
         IssueCreationModel testModel = Mockito.mock(IssueCreationModel.class);
 
-        JiraServerCreateEventGenerator testGenerator = new JiraServerCreateEventGenerator(testKey, testParentEventUID, testJobExecutionID, testJobUID, testNotificationIds);
+        JiraServerCreateEventGenerator testGenerator = new JiraServerCreateEventGenerator(testKey, testJobExecutionID, testJobUID, testNotificationIds);
         IssueTrackerCreateIssueEvent generatedCreateEvent = testGenerator.generateEvent(testModel);
 
         assertEquals(generatedCreateEvent.getClass(), JiraServerCreateIssueEvent.class);
         assertAll(
             "Constructed IssueTrackerCreateIssueEvent matches generator attributes",
             () -> assertEquals(IssueTrackerCreateIssueEvent.createDefaultEventDestination(testKey), generatedCreateEvent.getDestination()),
-            () -> assertEquals(testParentEventUID, generatedCreateEvent.getParentEventId()),
             () -> assertEquals(testJobExecutionID, generatedCreateEvent.getJobExecutionId()),
             () -> assertEquals(testJobUID, generatedCreateEvent.getJobId()),
             () -> assertEquals(testNotificationIds, generatedCreateEvent.getNotificationIds()),

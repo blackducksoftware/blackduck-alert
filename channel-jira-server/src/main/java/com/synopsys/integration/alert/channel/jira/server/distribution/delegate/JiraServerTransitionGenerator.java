@@ -18,14 +18,12 @@ import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
 
 public class JiraServerTransitionGenerator implements IssueTrackerTransitionEventGenerator<String> {
     private final JiraServerChannelKey channelKey;
-    private final UUID parentEventId;
     private final UUID jobExecutionId;
     private final UUID jobId;
     private final Set<Long> notificationIds;
 
-    public JiraServerTransitionGenerator(JiraServerChannelKey channelKey, UUID parentEventId, UUID jobExecutionId, UUID jobId, Set<Long> notificationIds) {
+    public JiraServerTransitionGenerator(JiraServerChannelKey channelKey, UUID jobExecutionId, UUID jobId, Set<Long> notificationIds) {
         this.channelKey = channelKey;
-        this.parentEventId = parentEventId;
         this.jobExecutionId = jobExecutionId;
         this.jobId = jobId;
         this.notificationIds = notificationIds;
@@ -35,7 +33,6 @@ public class JiraServerTransitionGenerator implements IssueTrackerTransitionEven
     public IssueTrackerTransitionIssueEvent<String> generateEvent(IssueTransitionModel<String> model) {
         return new JiraServerTransitionEvent(
             IssueTrackerTransitionIssueEvent.createDefaultEventDestination(channelKey),
-            parentEventId,
             jobExecutionId,
             jobId,
             notificationIds,

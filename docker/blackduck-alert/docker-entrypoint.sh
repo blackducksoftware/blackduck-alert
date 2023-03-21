@@ -297,6 +297,12 @@ validatePostgresConnection() {
     checkStatus $? "Validating postgres admin connection"
 }
 
+validatePostgresAdmin() {
+    logIt "Validating postgres admin permissions"
+    adminCheck=$(psql --quiet --tuples-only --no-align --no-psqlrc "${alertDatabaseAdminConfig}" -c "select count(*) from pg_roles where rolname = '"${alertDatabaseAdminUser}"' and rolsuper is true")
+    checkStatus "$(test "${adminCheck}" = "1" && echo 0 || echo 1)" "Validating postgres admin permissions"
+}
+
 validateAlertDBExists() {
     psql "${alertDatabaseConfig}" -c '\l' | grep -q "${alertDatabaseName}"
     checkStatus $? "Validate database '${alertDatabaseName}' exists"
@@ -459,11 +465,7 @@ validateEnvironment() {
 }
 
 logIsVariableConfigured() {
-  if [ -n "${2}" ]; then
-    logIt "${1} is not configured"
-  else
-    logIt "${1} is configured"
-  fi
+  logIt "${1} is configured as -- ${2} --"
 }
 
 [ -z "${ALERT_HOSTNAME}" ] && logIt "Alert Host: [$alertHostName]. Wrong host name? Restart the container with the right host name configured in blackduck-alert.env"
@@ -490,6 +492,7 @@ then
 fi
 
 validatePostgresConnection
+validatePostgresAdmin
 createCertificateStoreDirectory
 manageCertificate
 manageBlackduckSystemClientCertificate

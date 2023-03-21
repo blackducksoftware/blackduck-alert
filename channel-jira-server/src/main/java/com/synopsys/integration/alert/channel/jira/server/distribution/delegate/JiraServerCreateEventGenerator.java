@@ -18,14 +18,12 @@ import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
 
 public class JiraServerCreateEventGenerator implements IssueTrackerCreationEventGenerator {
     private final JiraServerChannelKey channelKey;
-    private final UUID parentEventId;
     private final UUID jobExecutionId;
     private final UUID jobId;
     private Set<Long> notificationIds;
 
-    public JiraServerCreateEventGenerator(JiraServerChannelKey channelKey, UUID parentEventId, UUID jobExecutionId, UUID jobId, Set<Long> notificationIds) {
+    public JiraServerCreateEventGenerator(JiraServerChannelKey channelKey, UUID jobExecutionId, UUID jobId, Set<Long> notificationIds) {
         this.channelKey = channelKey;
-        this.parentEventId = parentEventId;
         this.jobExecutionId = jobExecutionId;
         this.jobId = jobId;
         this.notificationIds = notificationIds;
@@ -33,6 +31,6 @@ public class JiraServerCreateEventGenerator implements IssueTrackerCreationEvent
 
     @Override
     public IssueTrackerCreateIssueEvent generateEvent(IssueCreationModel model) {
-        return new JiraServerCreateIssueEvent(IssueTrackerCreateIssueEvent.createDefaultEventDestination(channelKey), parentEventId, jobExecutionId, jobId, notificationIds, model);
+        return new JiraServerCreateIssueEvent(IssueTrackerCreateIssueEvent.createDefaultEventDestination(channelKey), jobExecutionId, jobId, notificationIds, model);
     }
 }

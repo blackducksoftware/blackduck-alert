@@ -96,6 +96,12 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
         return ConfigurationRequestBuilder.createValidateRequest(ldapRequestUrl, csrfToken, formData);
     }
 
+    const isTestFormComplete = () => {
+        // This check will determine whether we enable or disable the Test Submit button within the Test Configuration modal
+        return (testFormData[AUTHENTICATION_LDAP_GLOBAL_TEST_FIELD_KEYS.testLDAPUsername]?.length > 0 &&
+            testFormData[AUTHENTICATION_LDAP_GLOBAL_TEST_FIELD_KEYS.testLDAPPassword]?.length > 0)
+    }
+
     // Revise this to its own modal when we overhaul the modal changes.
     const testFields = (
         <div>
@@ -141,6 +147,9 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
                 testLabel="Test LDAP Configuration"
                 testFields={testFields}
                 testButtonClicked={testButtonClicked}
+                disableTestModalSubmit={!isTestFormComplete()}
+                modalSubmitText="Test User Connection"
+                testModalButtonTitle="Enter Username and Password to enable test"
             >
                 <CheckboxInput
                     id={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.enabled}

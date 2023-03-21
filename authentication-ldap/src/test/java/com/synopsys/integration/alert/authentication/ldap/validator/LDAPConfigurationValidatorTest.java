@@ -3,39 +3,42 @@ package com.synopsys.integration.alert.authentication.ldap.validator;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatusMessages;
+import com.synopsys.integration.alert.authentication.ldap.LDAPTestHelper;
 import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigModel;
+import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigTestModel;
 
 public class LDAPConfigurationValidatorTest {
-    private final LDAPConfigModel ldapConfigModel = new LDAPConfigModel();
-    private final LDAPConfigurationValidator ldapConfigurationValidator = new LDAPConfigurationValidator();
+    public static final String TEST_USER = "testLDAPUsername";
+    public static final String TEST_PASS = "testLDAPPassword";
+
+    private LDAPConfigModel validLDAPConfigModel;
+    private LDAPConfigurationValidator ldapConfigurationValidator;
+
+    @BeforeEach
+    public void init() {
+        validLDAPConfigModel = LDAPTestHelper.createValidLDAPConfigModel();
+        ldapConfigurationValidator = new LDAPConfigurationValidator();
+    }
 
     @Test
-    public void testNewValidModel() {
-        ldapConfigModel.setServerName("valid");
-        ldapConfigModel.setManagerDn("valid");
-        ldapConfigModel.setManagerPassword("valid");
-        ldapConfigModel.setIsManagerPasswordSet(true);
-
-        ValidationResponseModel validationResponseModel = ldapConfigurationValidator.validate(ldapConfigModel);
+    public void testNewValidConfigModel() {
+        ValidationResponseModel validationResponseModel = ldapConfigurationValidator.validate(validLDAPConfigModel);
         assertEquals(ValidationResponseModel.VALIDATION_SUCCESS_MESSAGE, validationResponseModel.getMessage());
         assertEquals(0, validationResponseModel.getErrors().size());
     }
 
     @Test
-    public void testUpdatedValidModel() {
+    public void testUpdatedValidConfigModel() {
         // The scenario can come up when updating a configuration via the UI
         //   ldapConfigModel.getManagerPassword().isEmpty() = true
         //   ldapConfigModel.getIsManagerPasswordSet() = true
 
-        ldapConfigModel.setServerName("valid");
-        ldapConfigModel.setManagerDn("valid");
-        ldapConfigModel.setManagerPassword("valid");
-        ldapConfigModel.setIsManagerPasswordSet(true);
-        LDAPConfigModel obfuscatedLDAPConfigModel = ldapConfigModel.obfuscate();
+        LDAPConfigModel obfuscatedLDAPConfigModel = validLDAPConfigModel.obfuscate();
 
         ValidationResponseModel validationResponseModel = ldapConfigurationValidator.validate(obfuscatedLDAPConfigModel);
         assertEquals(ValidationResponseModel.VALIDATION_SUCCESS_MESSAGE, validationResponseModel.getMessage());
@@ -44,11 +47,9 @@ public class LDAPConfigurationValidatorTest {
 
     @Test
     public void testInvalidServerName() {
-        ldapConfigModel.setManagerDn("valid");
-        ldapConfigModel.setManagerPassword("valid");
-        ldapConfigModel.setIsManagerPasswordSet(true);
+        validLDAPConfigModel.setServerName("");
 
-        ValidationResponseModel validationResponseModel = ldapConfigurationValidator.validate(ldapConfigModel);
+        ValidationResponseModel validationResponseModel = ldapConfigurationValidator.validate(validLDAPConfigModel);
         assertEquals(ValidationResponseModel.VALIDATION_FAILURE_MESSAGE, validationResponseModel.getMessage());
         assertEquals(1, validationResponseModel.getErrors().size());
         assertTrue(validationResponseModel.getErrors().containsKey("serverName"));
@@ -57,11 +58,9 @@ public class LDAPConfigurationValidatorTest {
 
     @Test
     public void testInvalidManagerDn() {
-        ldapConfigModel.setServerName("valid");
-        ldapConfigModel.setManagerPassword("valid");
-        ldapConfigModel.setIsManagerPasswordSet(true);
+        validLDAPConfigModel.setManagerDn("");
 
-        ValidationResponseModel validationResponseModel = ldapConfigurationValidator.validate(ldapConfigModel);
+        ValidationResponseModel validationResponseModel = ldapConfigurationValidator.validate(validLDAPConfigModel);
         assertEquals(ValidationResponseModel.VALIDATION_FAILURE_MESSAGE, validationResponseModel.getMessage());
         assertEquals(1, validationResponseModel.getErrors().size());
         assertTrue(validationResponseModel.getErrors().containsKey("managerDn"));
@@ -70,12 +69,10 @@ public class LDAPConfigurationValidatorTest {
 
     @Test
     public void testInvalidManagerPassword() {
-        ldapConfigModel.setServerName("valid");
-        ldapConfigModel.setManagerDn("valid");
-        ldapConfigModel.setManagerPassword("");
-        ldapConfigModel.setIsManagerPasswordSet(false);
+        validLDAPConfigModel.setManagerPassword("");
+        validLDAPConfigModel.setIsManagerPasswordSet(false);
 
-        ValidationResponseModel validationResponseModel = ldapConfigurationValidator.validate(ldapConfigModel);
+        ValidationResponseModel validationResponseModel = ldapConfigurationValidator.validate(validLDAPConfigModel);
         assertEquals(ValidationResponseModel.VALIDATION_FAILURE_MESSAGE, validationResponseModel.getMessage());
         assertEquals(2, validationResponseModel.getErrors().size());
         assertTrue(validationResponseModel.getErrors().containsKey("managerPassword"));
@@ -83,4 +80,33 @@ public class LDAPConfigurationValidatorTest {
         assertEquals(AlertFieldStatusMessages.REQUIRED_FIELD_MISSING, validationResponseModel.getErrors().get("managerPassword").getFieldMessage());
     }
 
+    @Test
+    public void testNullConfigModel() {
+        LDAPConfigTestModel ldapConfigTestModel = new LDAPConfigTestModel(null, TEST_USER, TEST_PASS);
+        ValidationResponseModel validationResponseModel = ldapConfigurationValidator.validate(ldapConfigTestModel);
+        assertEquals(ValidationResponseModel.VALIDATION_FAILURE_MESSAGE, validationResponseModel.getMessage());
+        assertEquals(1, validationResponseModel.getErrors().size());
+        assertTrue(validationResponseModel.getErrors().containsKey("ldapConfigModel"));
+        assertEquals(AlertFieldStatusMessages.REQUIRED_FIELD_MISSING, validationResponseModel.getErrors().get("ldapConfigModel").getFieldMessage());
+    }
+
+    @Test
+    public void testEmptyConfigModel() {
+        LDAPConfigTestModel ldapConfigTestModel = new LDAPConfigTestModel(LDAPTestHelper.createInvalidLDAPConfigModel(), TEST_USER, TEST_PASS);
+        ValidationResponseModel validationResponseModel = ldapConfigurationValidator.validate(ldapConfigTestModel);
+        assertEquals(ValidationResponseModel.VALIDATION_FAILURE_MESSAGE, validationResponseModel.getMessage());
+        assertEquals(4, validationResponseModel.getErrors().size());
+    }
+
+    @Test
+    public void testInvalidTestUser() {
+        LDAPConfigTestModel ldapConfigTestModel = new LDAPConfigTestModel(validLDAPConfigModel, "", null);
+        ValidationResponseModel validationResponseModel = ldapConfigurationValidator.validate(ldapConfigTestModel);
+        assertEquals(ValidationResponseModel.VALIDATION_FAILURE_MESSAGE, validationResponseModel.getMessage());
+        assertEquals(2, validationResponseModel.getErrors().size());
+        assertTrue(validationResponseModel.getErrors().containsKey(TEST_USER));
+        assertEquals(AlertFieldStatusMessages.REQUIRED_FIELD_MISSING, validationResponseModel.getErrors().get(TEST_USER).getFieldMessage());
+        assertTrue(validationResponseModel.getErrors().containsKey(TEST_PASS));
+        assertEquals(AlertFieldStatusMessages.REQUIRED_FIELD_MISSING, validationResponseModel.getErrors().get(TEST_PASS).getFieldMessage());
+    }
 }

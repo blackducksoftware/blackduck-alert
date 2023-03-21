@@ -36,7 +36,6 @@ import com.synopsys.integration.alert.channel.azure.boards.distribution.delegate
 import com.synopsys.integration.alert.channel.azure.boards.distribution.delegate.AzureBoardsIssueTransitioner;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.delegate.AzureBoardsTransitionGenerator;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.search.AzureBoardsAlertIssuePropertiesManager;
-import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
@@ -60,7 +59,6 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
     private final AzureBoardsHttpExceptionMessageImprover exceptionMessageImprover;
     private final IssueCategoryRetriever issueCategoryRetriever;
     private final EventManager eventManager;
-    private final JobSubTaskAccessor jobSubTaskAccessor;
     private final ExecutingJobManager executingJobManager;
 
     @Autowired
@@ -73,7 +71,6 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
         AzureBoardsHttpExceptionMessageImprover exceptionMessageImprover,
         IssueCategoryRetriever issueCategoryRetriever,
         EventManager eventManager,
-        JobSubTaskAccessor jobSubTaskAccessor,
         ExecutingJobManager executingJobManager
     ) {
         this.gson = gson;
@@ -84,7 +81,6 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
         this.exceptionMessageImprover = exceptionMessageImprover;
         this.issueCategoryRetriever = issueCategoryRetriever;
         this.eventManager = eventManager;
-        this.jobSubTaskAccessor = jobSubTaskAccessor;
         this.executingJobManager = executingJobManager;
     }
 
@@ -117,11 +113,11 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
 
     @Override
     public IssueTrackerAsyncMessageSender<Integer> createAsyncMessageSender(
-        AzureBoardsJobDetailsModel distributionDetails, UUID globalId, UUID parentEventId,
+        AzureBoardsJobDetailsModel distributionDetails, UUID globalId,
         UUID jobExecutionId,
         Set<Long> notificationIds
     ) throws AlertException {
-        return createAsyncMessageSender(distributionDetails, parentEventId, jobExecutionId, notificationIds);
+        return createAsyncMessageSender(distributionDetails, jobExecutionId, notificationIds);
     }
 
     public IssueTrackerMessageSender<Integer> createMessageSender(
@@ -171,16 +167,14 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
 
     public IssueTrackerAsyncMessageSender<Integer> createAsyncMessageSender(
         AzureBoardsJobDetailsModel distributionDetails,
-        UUID parentEventId,
         UUID jobExecutionId,
         Set<Long> notificationIds
     ) {
         UUID jobId = distributionDetails.getJobId();
-        IssueTrackerCommentEventGenerator<Integer> commentEventGenerator = new AzureBoardsCommentGenerator(channelKey, parentEventId, jobExecutionId, jobId, notificationIds);
-        IssueTrackerCreationEventGenerator createEventGenerator = new AzureBoardsCreateEventGenerator(channelKey, parentEventId, jobExecutionId, jobId, notificationIds);
+        IssueTrackerCommentEventGenerator<Integer> commentEventGenerator = new AzureBoardsCommentGenerator(channelKey, jobExecutionId, jobId, notificationIds);
+        IssueTrackerCreationEventGenerator createEventGenerator = new AzureBoardsCreateEventGenerator(channelKey, jobExecutionId, jobId, notificationIds);
         IssueTrackerTransitionEventGenerator<Integer> transitionEventGenerator = new AzureBoardsTransitionGenerator(
             channelKey,
-            parentEventId,
             jobExecutionId,
             jobId,
             notificationIds
@@ -191,8 +185,6 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
             transitionEventGenerator,
             commentEventGenerator,
             eventManager,
-            jobSubTaskAccessor,
-            parentEventId,
             jobExecutionId,
             notificationIds,
             executingJobManager

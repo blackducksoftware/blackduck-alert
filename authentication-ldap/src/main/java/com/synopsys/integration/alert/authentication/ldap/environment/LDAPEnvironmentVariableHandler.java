@@ -66,7 +66,7 @@ public class LDAPEnvironmentVariableHandler extends EnvironmentVariableHandler<L
         LDAPConfigurationValidator ldapConfigurationValidator,
         EnvironmentVariableUtility environmentVariableUtility
     ) {
-        super(HANDLER_NAME, LDAP_CONFIGURATION_KEY_SET);
+        super(HANDLER_NAME, LDAP_CONFIGURATION_KEY_SET, environmentVariableUtility);
         this.ldapConfigAccessor = ldapConfigAccessor;
         this.ldapConfigurationValidator = ldapConfigurationValidator;
         this.environmentVariableUtility = environmentVariableUtility;

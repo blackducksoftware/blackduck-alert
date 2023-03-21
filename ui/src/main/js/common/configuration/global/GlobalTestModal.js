@@ -4,7 +4,7 @@ import { Modal } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const GlobalTestModal = ({
-    children, showTestModal, handleTest, handleCancel, buttonIdPrefix, performingAction
+    children, showTestModal, handleTest, handleCancel, buttonIdPrefix, performingAction, modalSubmitText, disableTestModalSubmit, testModalButtonTitle
 }) => (
     <Modal show={showTestModal} onHide={handleCancel}>
         <Modal.Header closeButton>
@@ -25,8 +25,10 @@ const GlobalTestModal = ({
                 type="submit"
                 className="btn btn-primary"
                 onClick={handleTest}
+                disabled={disableTestModalSubmit}
+                title={testModalButtonTitle}
             >
-                Send Test Message
+                { modalSubmitText || 'Send Test Message'}
             </button>
             <button id={`${buttonIdPrefix}-cancel`} type="button" className="btn btn-link" onClick={handleCancel}>
                 Cancel
