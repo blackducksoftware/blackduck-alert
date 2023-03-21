@@ -58,6 +58,9 @@
             <column name="metadata_mode" type="BIGINT">
                 <constraints nullable="true"/>
             </column>
+            <column name="want_assertions_signed" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
             <column name="encryption_cert_file_name" type="VARCHAR">
                 <constraints nullable="true"/>
             </column>
