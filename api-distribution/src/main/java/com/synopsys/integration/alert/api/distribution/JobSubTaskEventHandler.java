@@ -55,8 +55,4 @@ public abstract class JobSubTaskEventHandler<T extends JobSubTaskEvent> implemen
     }
 
     protected abstract void handleEvent(T event) throws AlertException;
-
-    //    protected void postEvents(List<AlertEvent> alertEvent) {
-    //        eventManager.sendEvents(alertEvent);
-    //    }
 }
