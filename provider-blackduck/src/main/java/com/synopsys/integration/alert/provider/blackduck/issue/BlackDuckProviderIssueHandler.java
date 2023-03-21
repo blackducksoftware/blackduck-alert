@@ -15,6 +15,7 @@ import java.util.Optional;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.blackduck.api.core.response.LinkMultipleResponses;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionIssuesView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.manual.temporary.component.IssueRequest;
@@ -66,11 +67,14 @@ public class BlackDuckProviderIssueHandler {
     private Optional<ProjectVersionIssuesView> retrieveExistingIssue(String projectVersionUrl, String blackDuckIssueId) throws IntegrationException {
         HttpUrl projectVersionHttpUrl = new HttpUrl(projectVersionUrl);
         ProjectVersionView projectVersion = blackDuckApiClient.getResponse(projectVersionHttpUrl, ProjectVersionView.class);
-        List<ProjectVersionIssuesView> bomComponentIssues = issueService.getIssuesForProjectVersion(projectVersion);
+        // need to update the blackduck-api library to update the issue service.
+        // this code patches the issue in the short term while all the libraries are updated.
+        LinkMultipleResponses<ProjectVersionIssuesView> issueLinkResponse = new LinkMultipleResponses<>("component-issues", ProjectVersionIssuesView.class);
+        List<ProjectVersionIssuesView> bomComponentIssues = blackDuckApiClient.getAllResponses(projectVersion.metaMultipleResponses(issueLinkResponse));
         return bomComponentIssues
-                   .stream()
-                   .filter(issue -> issue.getIssueId().equals(blackDuckIssueId))
-                   .findAny();
+            .stream()
+            .filter(issue -> issue.getIssueId().equals(blackDuckIssueId))
+            .findAny();
     }
 
     private void performRequest(HttpUrl httpUrl, HttpMethod httpMethod, IssueRequest issueRequest) throws IntegrationException {
