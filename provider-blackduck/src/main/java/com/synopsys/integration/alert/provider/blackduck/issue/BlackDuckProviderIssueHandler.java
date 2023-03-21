@@ -12,10 +12,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.blackduck.api.core.response.LinkMultipleResponses;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionIssuesView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.manual.temporary.component.IssueRequest;
@@ -30,6 +30,7 @@ import com.synopsys.integration.rest.body.BodyContentConverter;
 import com.synopsys.integration.rest.body.StringBodyContent;
 
 public class BlackDuckProviderIssueHandler {
+    public static final String COMPONENTS_SUFFIX = "/components";
     private final Gson gson;
     private final BlackDuckApiClient blackDuckApiClient;
     private final IssueService issueService;
@@ -65,12 +66,16 @@ public class BlackDuckProviderIssueHandler {
     }
 
     private Optional<ProjectVersionIssuesView> retrieveExistingIssue(String projectVersionUrl, String blackDuckIssueId) throws IntegrationException {
-        HttpUrl projectVersionHttpUrl = new HttpUrl(projectVersionUrl);
+        // the URL for project version was changed to be the components URL for the project version.  Changing the project version URL ripples all the way through the code.
+        //TODO: Create a ProjectDetails object which contains the project detailed information that can be used.
+        // issue trackers are a problem and this code snippet may be needed there.
+        String apiProjectVersionUrl = projectVersionUrl;
+        if (projectVersionUrl.trim().endsWith(COMPONENTS_SUFFIX)) {
+            apiProjectVersionUrl = StringUtils.removeEnd(apiProjectVersionUrl, COMPONENTS_SUFFIX);
+        }
+        HttpUrl projectVersionHttpUrl = new HttpUrl(apiProjectVersionUrl);
         ProjectVersionView projectVersion = blackDuckApiClient.getResponse(projectVersionHttpUrl, ProjectVersionView.class);
-        // need to update the blackduck-api library to update the issue service.
-        // this code patches the issue in the short term while all the libraries are updated.
-        LinkMultipleResponses<ProjectVersionIssuesView> issueLinkResponse = new LinkMultipleResponses<>("component-issues", ProjectVersionIssuesView.class);
-        List<ProjectVersionIssuesView> bomComponentIssues = blackDuckApiClient.getAllResponses(projectVersion.metaMultipleResponses(issueLinkResponse));
+        List<ProjectVersionIssuesView> bomComponentIssues = issueService.getIssuesForProjectVersion(projectVersion);
         return bomComponentIssues
             .stream()
             .filter(issue -> issue.getIssueId().equals(blackDuckIssueId))
