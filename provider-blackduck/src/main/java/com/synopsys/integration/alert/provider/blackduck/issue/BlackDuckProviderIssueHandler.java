@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.provider.blackduck.processor.message.util.BlackDuckMessageLinkUtils;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionIssuesView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.manual.temporary.component.IssueRequest;
@@ -30,7 +31,6 @@ import com.synopsys.integration.rest.body.BodyContentConverter;
 import com.synopsys.integration.rest.body.StringBodyContent;
 
 public class BlackDuckProviderIssueHandler {
-    public static final String COMPONENTS_SUFFIX = "/components";
     private final Gson gson;
     private final BlackDuckApiClient blackDuckApiClient;
     private final IssueService issueService;
@@ -68,10 +68,9 @@ public class BlackDuckProviderIssueHandler {
     private Optional<ProjectVersionIssuesView> retrieveExistingIssue(String projectVersionUrl, String blackDuckIssueId) throws IntegrationException {
         // the URL for project version was changed to be the components URL for the project version.  Changing the project version URL ripples all the way through the code.
         //TODO: Create a ProjectDetails object which contains the project detailed information that can be used.
-        // issue trackers are a problem and this code snippet may be needed there.
         String apiProjectVersionUrl = projectVersionUrl;
-        if (projectVersionUrl.trim().endsWith(COMPONENTS_SUFFIX)) {
-            apiProjectVersionUrl = StringUtils.removeEnd(apiProjectVersionUrl, COMPONENTS_SUFFIX);
+        if (projectVersionUrl.trim().endsWith(BlackDuckMessageLinkUtils.URI_PIECE_COMPONENTS)) {
+            apiProjectVersionUrl = StringUtils.removeEnd(apiProjectVersionUrl, BlackDuckMessageLinkUtils.URI_PIECE_COMPONENTS);
         }
         HttpUrl projectVersionHttpUrl = new HttpUrl(apiProjectVersionUrl);
         ProjectVersionView projectVersion = blackDuckApiClient.getResponse(projectVersionHttpUrl, ProjectVersionView.class);
