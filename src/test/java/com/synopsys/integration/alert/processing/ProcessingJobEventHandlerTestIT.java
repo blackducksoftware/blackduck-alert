@@ -169,11 +169,8 @@ class ProcessingJobEventHandlerTestIT {
         UUID correlationId = UUID.randomUUID();
         UUID jobId = distributionJobModel.getJobId();
         ProcessingJobEventHandler eventHandler = new ProcessingJobEventHandler(
-            notificationDetailExtractionDelegator,
-            notificationContentProcessor,
             createMockMessageDistributor(),
             lifecycleCaches,
-            notificationAccessor,
             jobAccessor,
             jobNotificationMappingAccessor,
             jobNotificationContentProcessor,
@@ -198,11 +195,8 @@ class ProcessingJobEventHandlerTestIT {
         notificationProcessor.processNotifications(correlationId, notifications, List.of(distributionJobModel.getDistributionFrequency()));
 
         ProcessingJobEventHandler eventHandler = new ProcessingJobEventHandler(
-            notificationDetailExtractionDelegator,
-            notificationContentProcessor,
             createMockMessageDistributor(),
             lifecycleCaches,
-            notificationAccessor,
             jobAccessor,
             jobNotificationMappingAccessor,
             jobNotificationContentProcessor,
@@ -374,6 +368,6 @@ class ProcessingJobEventHandlerTestIT {
     private ProviderMessageDistributor createMockMessageDistributor() {
         EventManager eventManager = createMockEventManager();
         ProcessingAuditAccessor auditAccessor = createMockAuditAccessor();
-        return new ProviderMessageDistributor(auditAccessor, eventManager);
+        return new ProviderMessageDistributor(auditAccessor, eventManager, executingJobManager);
     }
 }

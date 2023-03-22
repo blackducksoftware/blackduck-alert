@@ -12,11 +12,11 @@ import org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopul
 
 import com.synopsys.integration.alert.api.authentication.security.UserManagementAuthoritiesPopulator;
 
-public class MappingLdapAuthoritiesPopulator extends DefaultLdapAuthoritiesPopulator {
-    private final Logger logger = LoggerFactory.getLogger(MappingLdapAuthoritiesPopulator.class);
+public class MappingLDAPAuthoritiesPopulator extends DefaultLdapAuthoritiesPopulator {
+    private final Logger logger = LoggerFactory.getLogger(MappingLDAPAuthoritiesPopulator.class);
     private final UserManagementAuthoritiesPopulator userManagementAuthoritiesPopulator;
 
-    public MappingLdapAuthoritiesPopulator(ContextSource contextSource, String groupSearchBase, UserManagementAuthoritiesPopulator userManagementAuthoritiesPopulator) {
+    public MappingLDAPAuthoritiesPopulator(ContextSource contextSource, String groupSearchBase, UserManagementAuthoritiesPopulator userManagementAuthoritiesPopulator) {
         super(contextSource, groupSearchBase);
         this.userManagementAuthoritiesPopulator = userManagementAuthoritiesPopulator;
     }
@@ -31,7 +31,7 @@ public class MappingLdapAuthoritiesPopulator extends DefaultLdapAuthoritiesPopul
         try {
             grantedAuthorities.addAll(super.getGroupMembershipRoles(userDn, userName));
         } catch (Exception ex) {
-            logger.error("Error determining LDAP group membership.", ex);
+            logger.error("Could not map any roles from the LDAP server. Check Alert LDAP configuration and LDAP server configuration concerning group roles.", ex);
         }
         return grantedAuthorities;
     }

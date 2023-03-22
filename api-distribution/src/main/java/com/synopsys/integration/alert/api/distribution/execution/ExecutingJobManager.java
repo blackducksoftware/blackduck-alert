@@ -47,7 +47,8 @@ public class ExecutingJobManager {
     }
 
     public void endJob(UUID executionId, Instant endTime) {
-        logger.debug("Ending job execution with success {} at {}", executionId, DateUtils.formatDateAsJsonString(DateUtils.fromInstantUTC(endTime)));
+        String endTimeDateFormatted = DateUtils.formatDateAsJsonString(DateUtils.fromInstantUTC(endTime));
+        logger.debug("Ending job execution {} at {}", executionId, endTimeDateFormatted);
         Optional<ExecutingJob> executingJob = Optional.ofNullable(executingJobMap.getOrDefault(executionId, null));
         executingJob.ifPresent(execution -> {
             execution.endJob(DateUtils.fromInstantUTC(endTime).toInstant());
@@ -57,6 +58,8 @@ public class ExecutingJobManager {
     }
 
     public void updateJobStatus(UUID executionId, AuditEntryStatus status) {
+        String statusName = status.name();
+        logger.debug("Updating status for job execution {} to {}", executionId, statusName);
         Optional<ExecutingJob> executingJob = Optional.ofNullable(executingJobMap.getOrDefault(executionId, null));
         executingJob.ifPresent(execution -> execution.updateStatus(status));
     }
@@ -84,13 +87,15 @@ public class ExecutingJobManager {
     }
 
     public void startStage(UUID executionId, JobStage stage, Instant start) {
-        logger.debug("Starting stage {} for job execution {} at {}", stage, executionId, DateUtils.formatDateAsJsonString(DateUtils.fromInstantUTC(start)));
+        String startTimeDateFormatted = DateUtils.formatDateAsJsonString(DateUtils.fromInstantUTC(start));
+        logger.debug("Starting stage {} for job execution {} at {}", stage, executionId, startTimeDateFormatted);
         Optional<ExecutingJob> executingJob = Optional.ofNullable(executingJobMap.getOrDefault(executionId, null));
         executingJob.ifPresent(job -> job.addStage(ExecutingJobStage.createStage(executionId, stage, DateUtils.fromInstantUTC(start).toInstant())));
     }
 
     public void endStage(UUID executionId, JobStage stage, Instant end) {
-        logger.debug("Ending stage {} for job execution {} at {}", stage, executionId, DateUtils.formatDateAsJsonString(DateUtils.fromInstantUTC(end)));
+        String endTimeDateFormatted = DateUtils.formatDateAsJsonString(DateUtils.fromInstantUTC(end));
+        logger.debug("Ending stage {} for job execution {} at {}", stage, executionId, endTimeDateFormatted);
         Optional<ExecutingJob> executingJob = Optional.ofNullable(executingJobMap.getOrDefault(executionId, null));
         executingJob
             .flatMap(job -> job.getStage(stage))
@@ -118,6 +123,18 @@ public class ExecutingJobManager {
         return getExecutingJob(jobExecutionId)
             .map(ExecutingJob::getRemainingEvents)
             .stream().anyMatch(remainingEventCount -> remainingEventCount > 0);
+    }
+
+    public boolean hasSentExpectedNotifications(UUID jobExecutionId) {
+        return getExecutingJob(jobExecutionId)
+            .stream()
+            .anyMatch(executingJob -> executingJob.getExpectedNotificationsToSend() == executingJob.getNotificationsSent());
+    }
+
+    public void incrementExpectedNotificationsSent(UUID jobExecutionId, int notificationCount) {
+        logger.debug("Incrementing sent notification count for job execution {} by {}", jobExecutionId, notificationCount);
+        Optional<ExecutingJob> executingJob = getExecutingJob(jobExecutionId);
+        executingJob.ifPresent(execution -> execution.incrementExpectedNotificationsSent(notificationCount));
     }
 
     public void incrementSentNotificationCount(UUID jobExecutionId, int notificationCount) {
@@ -184,8 +201,8 @@ public class ExecutingJobManager {
 
         return new JobCompletionStatusModel(
             jobConfigId,
-            Integer.valueOf(executingJob.getNotificationsSent()).longValue(),
-            Integer.valueOf(executingJob.getNotificationsSent()).longValue(),
+            executingJob.getNotificationsSent(),
+            executingJob.getNotificationsSent(),
             successCount,
             failureCount,
             jobStatus.name(),

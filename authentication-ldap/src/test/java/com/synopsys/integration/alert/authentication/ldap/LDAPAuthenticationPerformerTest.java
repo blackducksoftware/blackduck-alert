@@ -20,19 +20,19 @@ import org.springframework.security.ldap.authentication.LdapAuthenticationProvid
 
 import com.synopsys.integration.alert.api.authentication.security.UserManagementAuthoritiesPopulator;
 import com.synopsys.integration.alert.api.authentication.security.event.AuthenticationEventManager;
-import com.synopsys.integration.alert.authentication.ldap.action.LdapManager;
+import com.synopsys.integration.alert.authentication.ldap.action.LDAPManager;
 import com.synopsys.integration.alert.authentication.ldap.database.accessor.LDAPConfigAccessor;
 import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigModel;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
 
-class LdapAuthenticationPerformerTest {
+class LDAPAuthenticationPerformerTest {
     private final LDAPConfigAccessor ldapConfigAccessor = LDAPTestHelper.createTestLDAPConfigAccessor();
-    private LdapManager ldapManager;
-    private LdapAuthenticationPerformer ldapAuthenticationPerformer;
+    private LDAPManager ldapManager;
+    private LDAPAuthenticationPerformer ldapAuthenticationPerformer;
     private Authentication inputAuthentication;
     private LDAPConfigModel validaLDAPConfigModel;
-    private LDAPConfigModel inValidLDAPConfigModel;
+    private LDAPConfigModel invalidLDAPConfigModel;
 
     @Mock
     UserManagementAuthoritiesPopulator mockUserManagementAuthoritiesPopulator;
@@ -43,12 +43,12 @@ class LdapAuthenticationPerformerTest {
 
     @BeforeEach
     public void init() {
-        ldapManager = new LdapManager(ldapConfigAccessor, mockUserManagementAuthoritiesPopulator, new LdapConfig().ldapUserContextMapper());
-        ldapAuthenticationPerformer = new LdapAuthenticationPerformer(mockAuthenticationEventManager, mockRoleAccessor, ldapManager);
+        ldapManager = new LDAPManager(ldapConfigAccessor, mockUserManagementAuthoritiesPopulator, new LDAPConfig().ldapUserContextMapper());
+        ldapAuthenticationPerformer = new LDAPAuthenticationPerformer(mockAuthenticationEventManager, mockRoleAccessor, ldapManager);
         inputAuthentication = new UsernamePasswordAuthenticationToken(UUID.randomUUID().toString(), UUID.randomUUID().toString());
 
         validaLDAPConfigModel = LDAPTestHelper.createValidLDAPConfigModel();
-        inValidLDAPConfigModel = LDAPTestHelper.createInValidLDAPConfigModel();
+        invalidLDAPConfigModel = LDAPTestHelper.createInvalidLDAPConfigModel();
     }
 
     @Test
@@ -84,13 +84,13 @@ class LdapAuthenticationPerformerTest {
 
     @Test
     void testAuthenticateAlertException() {
-        inValidLDAPConfigModel.setEnabled(true);
-        inValidLDAPConfigModel.setServerName("serverName");
-        inValidLDAPConfigModel.setManagerPassword("managerPassword");
-        inValidLDAPConfigModel.setManagerDn("managerDn");
-        LdapManager spiedLDAPManager = Mockito.spy(ldapManager);
-        Mockito.doReturn(Optional.of(inValidLDAPConfigModel)).when(spiedLDAPManager).getCurrentConfiguration();
-        ldapAuthenticationPerformer = new LdapAuthenticationPerformer(mockAuthenticationEventManager, mockRoleAccessor, spiedLDAPManager);
+        invalidLDAPConfigModel.setEnabled(true);
+        invalidLDAPConfigModel.setServerName("serverName");
+        invalidLDAPConfigModel.setManagerPassword("managerPassword");
+        invalidLDAPConfigModel.setManagerDn("managerDn");
+        LDAPManager spiedLDAPManager = Mockito.spy(ldapManager);
+        Mockito.doReturn(Optional.of(invalidLDAPConfigModel)).when(spiedLDAPManager).getCurrentConfiguration();
+        ldapAuthenticationPerformer = new LDAPAuthenticationPerformer(mockAuthenticationEventManager, mockRoleAccessor, spiedLDAPManager);
 
         Authentication returnAuthentication = ldapAuthenticationPerformer.authenticateWithProvider(inputAuthentication);
         assertEquals(inputAuthentication.getPrincipal(), returnAuthentication.getPrincipal());
@@ -100,7 +100,7 @@ class LdapAuthenticationPerformerTest {
     void testAuthenticateSuccess() {
         assertDoesNotThrow(() -> ldapConfigAccessor.createConfiguration(validaLDAPConfigModel));
 
-        LdapManager spiedLDAPManager = Mockito.spy(ldapManager);
+        LDAPManager spiedLDAPManager = Mockito.spy(ldapManager);
         LdapAuthenticationProvider ldapAuthenticationProvider = Mockito.mock(LdapAuthenticationProvider.class);
         LdapAuthenticationProvider spiedLdapAuthenticationProvider = Mockito.spy(ldapAuthenticationProvider);
         assertDoesNotThrow(() -> Mockito.doReturn(Optional.of(spiedLdapAuthenticationProvider)).when(spiedLDAPManager).createAuthProvider(Mockito.any(LDAPConfigModel.class)));
@@ -110,7 +110,7 @@ class LdapAuthenticationPerformerTest {
         TestingAuthenticationToken authenticatedToken = new TestingAuthenticationToken("foo", "bar", List.of(simpleGrantedAuthority));
         Mockito.doReturn(authenticatedToken).when(spiedLdapAuthenticationProvider).authenticate(inputAuthentication);
 
-        LdapAuthenticationPerformer ldapAuthenticationPerformer = new LdapAuthenticationPerformer(mockAuthenticationEventManager, mockRoleAccessor, spiedLDAPManager);
+        LDAPAuthenticationPerformer ldapAuthenticationPerformer = new LDAPAuthenticationPerformer(mockAuthenticationEventManager, mockRoleAccessor, spiedLDAPManager);
         Authentication returnAuthentication = ldapAuthenticationPerformer.authenticateWithProvider(inputAuthentication);
         assertTrue(returnAuthentication.isAuthenticated());
         assertEquals("foo", returnAuthentication.getPrincipal());

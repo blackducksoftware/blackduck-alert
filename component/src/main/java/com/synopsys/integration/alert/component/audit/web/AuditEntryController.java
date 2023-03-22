@@ -1,8 +1,14 @@
 package com.synopsys.integration.alert.component.audit.web;
 
+import java.util.UUID;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
@@ -38,5 +44,17 @@ public class AuditEntryController extends BaseController {
             sortOrder
         );
         return ResponseFactory.createContentResponseFromAction(response);
+    }
+
+    @PutMapping(value = "/resend/{id}/")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void resendById(@PathVariable(value = "id") Long notificationId) {
+        actions.resendNotification(notificationId);
+    }
+
+    @PutMapping(value = "/resend/{id}/job/{jobId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void resendByIdAndJobId(@PathVariable(value = "id") Long notificationId, @PathVariable(value = "jobId") UUID jobId) {
+        actions.resendNotification(notificationId, jobId);
     }
 }

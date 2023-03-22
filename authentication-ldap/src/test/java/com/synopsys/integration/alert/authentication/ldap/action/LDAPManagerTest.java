@@ -17,33 +17,33 @@ import org.springframework.security.ldap.authentication.LdapAuthenticationProvid
 
 import com.synopsys.integration.alert.api.authentication.security.UserManagementAuthoritiesPopulator;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.synopsys.integration.alert.authentication.ldap.LDAPConfig;
 import com.synopsys.integration.alert.authentication.ldap.LDAPTestHelper;
-import com.synopsys.integration.alert.authentication.ldap.LdapConfig;
 import com.synopsys.integration.alert.authentication.ldap.database.accessor.LDAPConfigAccessor;
 import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigModel;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 
-public class LdapManagerTest {
+public class LDAPManagerTest {
     private LDAPConfigAccessor ldapConfigAccessor;
-    private LdapManager ldapManager;
+    private LDAPManager ldapManager;
 
     private LDAPConfigModel validLDAPConfigModel;
-    private LDAPConfigModel inValidLDAPConfigModel;
+    private LDAPConfigModel invalidLDAPConfigModel;
 
     @BeforeEach
     public void initAccessor() {
         ldapConfigAccessor = LDAPTestHelper.createTestLDAPConfigAccessor();
         UserManagementAuthoritiesPopulator mockUserManagementAuthoritiesPopulator = Mockito.mock(UserManagementAuthoritiesPopulator.class);
-        ldapManager = new LdapManager(ldapConfigAccessor, mockUserManagementAuthoritiesPopulator, new LdapConfig().ldapUserContextMapper());
+        ldapManager = new LDAPManager(ldapConfigAccessor, mockUserManagementAuthoritiesPopulator, new LDAPConfig().ldapUserContextMapper());
 
         validLDAPConfigModel = LDAPTestHelper.createValidLDAPConfigModel();
-        inValidLDAPConfigModel = LDAPTestHelper.createInValidLDAPConfigModel();
+        invalidLDAPConfigModel = LDAPTestHelper.createInvalidLDAPConfigModel();
     }
 
     @Test
     public void testCreateConfiguration() {
         assertFalse(ldapManager.getCurrentConfiguration().isPresent());
-        assertFalse(ldapManager.isLdapEnabled());
+        assertFalse(ldapManager.isLDAPEnabled());
 
         validLDAPConfigModel.setAuthenticationType("");
         assertDoesNotThrow(() -> ldapConfigAccessor.createConfiguration(validLDAPConfigModel));
@@ -51,14 +51,14 @@ public class LdapManagerTest {
             .orElseThrow(() -> new AssertionFailedError("Expected LDAPConfigModel did not exist"));
 
         assertEquals(AlertRestConstants.DEFAULT_CONFIGURATION_NAME, expectedLDAPConfigModel.getName());
-        assertTrue(ldapManager.isLdapEnabled());
+        assertTrue(ldapManager.isLDAPEnabled());
 
         assertNotEquals(LDAPTestHelper.DEFAULT_CONFIG_ID, expectedLDAPConfigModel.getId());
         assertTrue(expectedLDAPConfigModel.getEnabled());
         assertEquals(LDAPTestHelper.DEFAULT_SERVER_NAME, expectedLDAPConfigModel.getServerName());
         assertEquals(LDAPTestHelper.DEFAULT_MANAGER_DN, expectedLDAPConfigModel.getManagerDn());
         LDAPTestHelper.assertOptionalField(LDAPTestHelper.DEFAULT_MANAGER_PASSWORD, expectedLDAPConfigModel::getManagerPassword);
-        LDAPTestHelper.assertOptionalField("", expectedLDAPConfigModel::getAuthenticationType);
+        LDAPTestHelper.assertOptionalField(LDAPTestHelper.DEFAULT_AUTH_TYPE_SIMPLE, expectedLDAPConfigModel::getAuthenticationType);
         LDAPTestHelper.assertOptionalField(LDAPTestHelper.DEFAULT_REFERRAL, expectedLDAPConfigModel::getReferral);
         LDAPTestHelper.assertOptionalField(LDAPTestHelper.DEFAULT_USER_SEARCH_BASE, expectedLDAPConfigModel::getUserSearchBase);
         LDAPTestHelper.assertOptionalField(LDAPTestHelper.DEFAULT_USER_SEARCH_FILTER, expectedLDAPConfigModel::getUserSearchFilter);
@@ -112,7 +112,17 @@ public class LdapManagerTest {
         LDAPConfigModel expectedLDAPConfigModel = ldapManager.getCurrentConfiguration()
             .orElseThrow(() -> new AssertionFailedError("Expected LDAPConfigModel did not exist"));
         assertDoesNotThrow(() -> ldapManager.getAuthenticationProvider());
-        LDAPTestHelper.assertOptionalField("", expectedLDAPConfigModel::getAuthenticationType);
+        LDAPTestHelper.assertOptionalField(LDAPTestHelper.DEFAULT_AUTH_TYPE_SIMPLE, expectedLDAPConfigModel::getAuthenticationType);
+    }
+
+    @Test
+    public void testAuthenticationTypeNone() {
+        validLDAPConfigModel.setAuthenticationType(LDAPTestHelper.DEFAULT_AUTH_TYPE_NONE);
+        assertDoesNotThrow(() -> ldapConfigAccessor.createConfiguration(validLDAPConfigModel));
+        LDAPConfigModel expectedLDAPConfigModel = ldapManager.getCurrentConfiguration()
+            .orElseThrow(() -> new AssertionFailedError("Expected LDAPConfigModel did not exist"));
+        assertDoesNotThrow(() -> ldapManager.getAuthenticationProvider());
+        LDAPTestHelper.assertOptionalField(LDAPTestHelper.DEFAULT_AUTH_TYPE_NONE, expectedLDAPConfigModel::getAuthenticationType);
     }
 
     @Test
@@ -142,24 +152,24 @@ public class LdapManagerTest {
         LDAPConfigModel expectedLDAPConfigModel = ldapManager.getCurrentConfiguration()
             .orElseThrow(() -> new AssertionFailedError("Expected LDAPConfigModel did not exist"));
         assertDoesNotThrow(() -> ldapManager.getAuthenticationProvider());
-        LDAPTestHelper.assertOptionalField("Unsupported authentication type", expectedLDAPConfigModel::getAuthenticationType);
+        LDAPTestHelper.assertOptionalField(LDAPTestHelper.DEFAULT_AUTH_TYPE_SIMPLE, expectedLDAPConfigModel::getAuthenticationType);
     }
 
     @Test
     public void testCreateAuthProviderInvalidValues() {
-        Optional<LdapAuthenticationProvider> ldapAuthenticationProvider = assertDoesNotThrow(() -> ldapManager.createAuthProvider(inValidLDAPConfigModel));
+        Optional<LdapAuthenticationProvider> ldapAuthenticationProvider = assertDoesNotThrow(() -> ldapManager.createAuthProvider(invalidLDAPConfigModel));
         assertEquals(Optional.empty(), ldapAuthenticationProvider);
 
-        inValidLDAPConfigModel.setEnabled(true);
-        ldapAuthenticationProvider = assertDoesNotThrow(() -> ldapManager.createAuthProvider(inValidLDAPConfigModel));
+        invalidLDAPConfigModel.setEnabled(true);
+        ldapAuthenticationProvider = assertDoesNotThrow(() -> ldapManager.createAuthProvider(invalidLDAPConfigModel));
         assertEquals(Optional.empty(), ldapAuthenticationProvider);
 
-        inValidLDAPConfigModel.setServerName("serverName");
-        ldapAuthenticationProvider = assertDoesNotThrow(() -> ldapManager.createAuthProvider(inValidLDAPConfigModel));
+        invalidLDAPConfigModel.setServerName("serverName");
+        ldapAuthenticationProvider = assertDoesNotThrow(() -> ldapManager.createAuthProvider(invalidLDAPConfigModel));
         assertEquals(Optional.empty(), ldapAuthenticationProvider);
 
-        inValidLDAPConfigModel.setManagerDn("managerDn");
-        ldapAuthenticationProvider = assertDoesNotThrow(() -> ldapManager.createAuthProvider(inValidLDAPConfigModel));
+        invalidLDAPConfigModel.setManagerDn("managerDn");
+        ldapAuthenticationProvider = assertDoesNotThrow(() -> ldapManager.createAuthProvider(invalidLDAPConfigModel));
         assertEquals(Optional.empty(), ldapAuthenticationProvider);
     }
 

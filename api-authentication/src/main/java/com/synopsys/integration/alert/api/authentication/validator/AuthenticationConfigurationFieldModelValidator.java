@@ -13,6 +13,10 @@ import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigur
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
+/**
+ * @deprecated This class will be removed in 8.0.0.
+ */
+@Deprecated(forRemoval = true)
 @Component
 public class AuthenticationConfigurationFieldModelValidator implements GlobalConfigurationFieldModelValidator {
     private static final String SAML_LDAP_ENABLED_ERROR = "Can't enable both SAML and LDAP authentication";

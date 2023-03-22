@@ -33,14 +33,14 @@ public class AuthenticationEventManager {
     }
 
     public void sendAuthenticationEvent(Authentication authentication, AuthenticationType authenticationType) {
-        String username = null;
-        String emailAddress = null;
+        String emailAddress;
         try {
+            String username = authentication.getName();
             Object authPrincipal = authentication.getPrincipal();
             if (authPrincipal instanceof InetOrgPerson) {
                 emailAddress = ((InetOrgPerson) authPrincipal).getMail();
             } else {
-                username = authentication.getName();
+                emailAddress = StringUtils.contains(username, "@") ? username : null;
             }
             sendAuthenticationEvent(username, emailAddress, authenticationType, authentication.getAuthorities());
         } catch (Exception e) {

@@ -109,7 +109,7 @@ export function getAuditData(pageNumber, pageSize, searchTerm, sortField, sortOr
 export function resendNotification(notificationId, commonConfigId, pageNumber, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications) {
     return (dispatch, getState) => {
         dispatch(startingAuditResend());
-        let resendUrl = `/alert/api/audit/resend/${notificationId}/`;
+        let resendUrl = `/alert/api/audit/failed/resend/${notificationId}/`;
         if (commonConfigId) {
             resendUrl += `job/${commonConfigId}/`;
         }
@@ -121,7 +121,7 @@ export function resendNotification(notificationId, commonConfigId, pageNumber, p
         headersUtil.addApplicationJsonContentType();
         headersUtil.addXCsrfToken(csrfToken);
         fetch(resendUrl, {
-            method: 'POST',
+            method: 'PUT',
             credentials: 'same-origin',
             headers: headersUtil.getHeaders()
         })

@@ -71,5 +71,23 @@
             WHERE config.name = 'default-configuration'
               AND configFields.source_key = 'settings.saml.want.assertions.signed';
         </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_saml config
+            SET metadata_mode = 0;
+        </sql>
+    </changeSet>
+    <changeSet author="mau" id="update-initial-saml-config-to-url-mode">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(configFields.field_value)
+                FROM GET_GLOBAL_CONFIG_SOURCE_KEY_AND_FIELD_VALUE('component_authentication') configFields
+                WHERE configFields.source_key = 'settings.saml.metadata.url'
+                AND configFields.field_value = '' IS FALSE;
+            </sqlCheck>
+        </preConditions>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.configuration_saml config
+            SET metadata_mode = 1;
+        </sql>
     </changeSet>
 </databaseChangeLog>

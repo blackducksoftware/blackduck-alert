@@ -1,5 +1,6 @@
 package com.synopsys.integration.alert.component.users.web.role;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -55,7 +56,6 @@ class RoleActionsTest {
         Mockito.when(authorizationManager.hasDeletePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(true);
         Mockito.when(authorizationManager.hasExecutePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(true);
         Mockito.when(authorizationManager.hasWritePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(true);
-
     }
 
     @Test
@@ -248,11 +248,11 @@ class RoleActionsTest {
     }
 
     @Test
-    void updateTest() throws Exception {
+    void updateTest() {
         String newRoleName = "newRoleName";
         Long longId = 1L;
         PermissionModel permissionModel = createPermissionModel();
-        RolePermissionModel rolePermissionModel = new RolePermissionModel(null, newRoleName, Set.of(permissionModel));
+        RolePermissionModel rolePermissionModel = new RolePermissionModel("1", newRoleName, Set.of(permissionModel));
         UserRoleModel userRoleModel = new UserRoleModel(longId, roleName, false, PermissionModelUtil.convertToPermissionMatrixModel(Set.of(permissionModel)));
 
         Mockito.when(roleAccessor.getRoles(Mockito.anyCollection())).thenReturn(Set.of(userRoleModel));
@@ -261,8 +261,8 @@ class RoleActionsTest {
         RoleActions roleActions = new RoleActions(userManagementDescriptorKey, roleAccessor, authorizationManager, descriptorMap);
         ActionResponse<RolePermissionModel> rolePermissionModelActionResponse = roleActions.update(1L, rolePermissionModel);
 
-        Mockito.verify(authorizationManager).updateRoleName(longId, newRoleName);
-        Mockito.verify(authorizationManager).updatePermissionsForRole(Mockito.anyString(), Mockito.any());
+        assertDoesNotThrow(() -> Mockito.verify(authorizationManager).updateRoleName(longId, newRoleName));
+        assertDoesNotThrow(() -> Mockito.verify(authorizationManager).updatePermissionsForRole(Mockito.anyString(), Mockito.any()));
 
         assertTrue(rolePermissionModelActionResponse.isSuccessful());
         assertFalse(rolePermissionModelActionResponse.hasContent());
@@ -286,22 +286,22 @@ class RoleActionsTest {
     }
 
     @Test
-    void
-    updateErrorTest() throws Exception {
+    void updateErrorTest() {
         String newRoleName = "newRoleName";
         Long longId = 1L;
         PermissionModel permissionModel = createPermissionModel();
-        RolePermissionModel rolePermissionModel = new RolePermissionModel(null, newRoleName, Set.of(permissionModel));
+        RolePermissionModel rolePermissionModel = new RolePermissionModel("1", newRoleName, Set.of(permissionModel));
         UserRoleModel userRoleModel = new UserRoleModel(longId, roleName, false, PermissionModelUtil.convertToPermissionMatrixModel(Set.of(permissionModel)));
 
         Mockito.when(roleAccessor.getRoles(Mockito.anyCollection())).thenReturn(Set.of(userRoleModel));
         Mockito.when(roleAccessor.getRoles()).thenReturn(Set.of());
-        Mockito.doThrow(new AlertConfigurationException("Exception for test")).when(authorizationManager).updatePermissionsForRole(Mockito.anyString(), Mockito.any());
+        assertDoesNotThrow(() -> Mockito.doThrow(new AlertConfigurationException("Exception for test")).when(authorizationManager)
+            .updatePermissionsForRole(Mockito.anyString(), Mockito.any()));
 
         RoleActions roleActions = new RoleActions(userManagementDescriptorKey, roleAccessor, authorizationManager, descriptorMap);
         ActionResponse<RolePermissionModel> rolePermissionModelActionResponse = roleActions.update(1L, rolePermissionModel);
 
-        Mockito.verify(authorizationManager).updateRoleName(longId, newRoleName);
+        assertDoesNotThrow(() -> Mockito.verify(authorizationManager).updateRoleName(longId, newRoleName));
 
         assertTrue(rolePermissionModelActionResponse.isError());
         assertFalse(rolePermissionModelActionResponse.hasContent());

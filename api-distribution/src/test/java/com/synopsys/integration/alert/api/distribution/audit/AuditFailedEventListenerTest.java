@@ -153,7 +153,7 @@ class AuditFailedEventListenerTest {
             assertNotNull(entity.getProviderName());
             assertEquals(TEST_JOB_NAME, entity.getJobName());
             assertEquals(ChannelKeys.SLACK.getUniversalKey(), entity.getChannelName());
-            assertEquals(event.getCreatedTimestamp(), entity.getTimeCreated());
+            assertEquals(event.getCreatedTimestamp(), entity.getCreatedAt());
             assertEquals(errorMessage, entity.getErrorMessage());
             assertEquals(stackTrace, entity.getErrorStackTrace().orElseThrow(() -> new AssertionError("Expected stack trace but none found")));
         }
