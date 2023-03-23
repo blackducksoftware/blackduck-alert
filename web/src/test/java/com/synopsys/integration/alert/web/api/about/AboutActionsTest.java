@@ -25,6 +25,8 @@ public class AboutActionsTest {
         String created = "date";
         String description = "description";
         String aUrl = "https://www.google.com";
+        String commitHash = "abc123xyz";
+        String copyrightYear = "year";
         boolean initialized = true;
         String startupTime = "startup time is now";
         DescriptorMetadata providerMetadata = Mockito.mock(DescriptorMetadata.class);
@@ -32,7 +34,7 @@ public class AboutActionsTest {
         Set<DescriptorMetadata> providers = Set.of(providerMetadata);
         Set<DescriptorMetadata> channels = Set.of(channelMetadata);
 
-        AboutModel model = new AboutModel(version, created, description, aUrl, aUrl, initialized, startupTime, providers, channels);
+        AboutModel model = new AboutModel(version, created, description, aUrl, commitHash, copyrightYear, aUrl, initialized, startupTime, providers, channels);
         AboutReader aboutReader = Mockito.mock(AboutReader.class);
         Mockito.when(aboutReader.getAboutModel()).thenReturn(Optional.of(model));
         AboutActions aboutActions = new AboutActions(aboutReader);

@@ -17,6 +17,8 @@ public class AboutModel extends AlertSerializableModel {
     private String created;
     private String description;
     private String projectUrl;
+    private String commitHash;
+    private String copyrightYear;
     private String documentationUrl;
     private boolean initialized;
     private String startupTime;
@@ -32,6 +34,8 @@ public class AboutModel extends AlertSerializableModel {
         String created,
         String description,
         String projectUrl,
+        String commitHash,
+        String copyrightYear,
         String documentationUrl,
         boolean initialized,
         String startupTime,
@@ -42,6 +46,8 @@ public class AboutModel extends AlertSerializableModel {
         this.created = created;
         this.description = description;
         this.projectUrl = projectUrl;
+        this.commitHash = commitHash;
+        this.copyrightYear = copyrightYear;
         this.documentationUrl = documentationUrl;
         this.initialized = initialized;
         this.startupTime = startupTime;
@@ -63,6 +69,14 @@ public class AboutModel extends AlertSerializableModel {
 
     public String getProjectUrl() {
         return projectUrl;
+    }
+
+    public String getCommitHash() {
+        return commitHash;
+    }
+
+    public String getCopyrightYear() {
+        return copyrightYear;
     }
 
     public String getDocumentationUrl() {

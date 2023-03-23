@@ -31,8 +31,16 @@ task cleanBundles(type: Delete) {
 tasks.clean.finalizedBy(cleanBundles)
 
 task createAboutText(type: Task) {
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'rev-parse', '--short', 'HEAD'
+        standardOutput = stdout
+    }
+    def commitHash = stdout.toString().trim()
+
     final def aboutFile = new File("${projectDir}/src/main/resources/about.txt")
     aboutFile.delete()
+
     def readmeContentArray = new File("${projectDir}/README.md").text.readLines()
     def descriptionStart = readmeContentArray.indexOf("<!-- description-text-start -->") + 1
     def descriptionEnd = readmeContentArray.indexOf("<!-- description-text-end -->")
@@ -45,8 +53,10 @@ task createAboutText(type: Task) {
     gitUrl = gitUrl.substring(0, gitUrl.indexOf("releases"))
 
     def time = new Date().format('yyyy-MM-dd\'T\'HH:mm:ss.SSSSSS\'Z\'');
-    final def aboutJson = JsonOutput.toJson([version: version, projectUrl: gitUrl, description: description, created: time])
-    logger.info("About text file: {} content: {}", aboutFile, aboutJson)
+    def year = new Date().format('yyyy');
+
+    final def aboutJson = JsonOutput.toJson([version: version, projectUrl: gitUrl, description: description, created: time, copyrightYear: year, commitHash: commitHash])
+    logger.lifecycle("\nAbout text file: {} content: {}\n", aboutFile, aboutJson)
     aboutFile << aboutJson
 }
 
