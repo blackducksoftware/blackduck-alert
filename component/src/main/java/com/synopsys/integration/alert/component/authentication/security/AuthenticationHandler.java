@@ -7,8 +7,10 @@
  */
 package com.synopsys.integration.alert.component.authentication.security;
 
-import com.synopsys.integration.alert.authentication.saml.security.SAMLGroupConverter;
-import com.synopsys.integration.alert.authentication.saml.security.SAMLSignedAssertionsValidator;
+import static org.springframework.security.saml2.core.Saml2ErrorCodes.INVALID_ASSERTION;
+
+import java.util.Arrays;
+
 import org.opensaml.saml.common.assertion.ValidationResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -39,13 +41,11 @@ import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
+import com.synopsys.integration.alert.authentication.saml.security.SAMLGroupConverter;
+import com.synopsys.integration.alert.authentication.saml.security.SAMLSignedAssertionsValidator;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
-
-import java.util.Arrays;
-
-import static org.springframework.security.saml2.core.Saml2ErrorCodes.INVALID_ASSERTION;
 
 @EnableWebSecurity
 @Configuration
