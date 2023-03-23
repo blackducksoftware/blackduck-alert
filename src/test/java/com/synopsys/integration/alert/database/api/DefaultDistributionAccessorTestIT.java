@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.text.ParseException;
 import java.time.Instant;
-import java.time.OffsetDateTime;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -44,8 +43,6 @@ import com.synopsys.integration.alert.common.persistence.model.job.executions.Jo
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.DistributionWithAuditInfo;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
-import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.descriptor.api.MsTeamsKey;
 import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
@@ -68,9 +65,6 @@ class DefaultDistributionAccessorTestIT {
     private JobAccessor jobAccessor;
 
     @Autowired
-    private AuditEntryRepository auditEntryRepository;
-
-    @Autowired
     private DescriptorMap descriptorMap;
 
     @Autowired
@@ -82,8 +76,34 @@ class DefaultDistributionAccessorTestIT {
 
     @AfterEach
     public void cleanupDistributions() {
-        createdJobs.forEach(jobAccessor::deleteJob);
-        createdJobs.clear();
+        cleanUpJobs();
+        cleanUpExecutions();
+    }
+
+    private void cleanUpJobs() {
+        int pageNumber = 1;
+        AlertPagedModel<DistributionJobModel> jobs = jobAccessor.getPageOfJobs(pageNumber, 100);
+        while (pageNumber <= jobs.getTotalPages()) {
+            jobs.getModels()
+                .stream()
+                .map(DistributionJobModel::getJobId)
+                .forEach(jobAccessor::deleteJob);
+            pageNumber++;
+            jobs = jobAccessor.getPageOfJobs(pageNumber, 100);
+        }
+    }
+
+    private void cleanUpExecutions() {
+        int pageNumber = 1;
+        AlertPagedModel<ExecutingJob> executingJobs = executingJobManager.getExecutingJobs(pageNumber, 100);
+        while (pageNumber <= executingJobs.getTotalPages()) {
+            executingJobs.getModels()
+                .stream()
+                .map(ExecutingJob::getExecutionId)
+                .forEach(executingJobManager::purgeJob);
+            pageNumber++;
+            executingJobs = executingJobManager.getExecutingJobs(pageNumber, 100);
+        }
     }
 
     @Test
@@ -286,18 +306,6 @@ class DefaultDistributionAccessorTestIT {
             List.of(),
             List.of(),
             jobDetailsModel
-        );
-    }
-
-    private AuditEntryEntity createAuditEntryEntity(UUID commonConfigId, OffsetDateTime timeLastSent, AuditEntryStatus auditEntryStatus) {
-        String statusName = (auditEntryStatus == null) ? null : auditEntryStatus.name();
-        return new AuditEntryEntity(
-            commonConfigId,
-            OffsetDateTime.now(),
-            timeLastSent,
-            statusName,
-            "",
-            ""
         );
     }
 

@@ -30,7 +30,7 @@ import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 public class BlackDuckSSOConfigRetrieverTest {
     @Test
-    public void retrieveExceptionTest() throws IntegrationException {
+    void retrieveExceptionTest() throws IntegrationException {
         HttpUrl baseUrl = new HttpUrl("https://a-blackduck-server");
         ApiDiscovery apiDiscovery = new ApiDiscovery(baseUrl);
 
@@ -53,7 +53,7 @@ public class BlackDuckSSOConfigRetrieverTest {
         @Tag(TestTags.DEFAULT_INTEGRATION),
         @Tag(TestTags.CUSTOM_BLACKDUCK_CONNECTION)
     })
-    public void retrieveTestIT() throws AlertException {
+    void retrieveTestIT() throws AlertException {
         BlackDuckProperties blackDuckProperties = createBlackDuckProperties();
         BlackDuckSSOConfigRetriever ssoConfigRetriever = BlackDuckSSOConfigRetriever.fromProperties(blackDuckProperties);
         try {
@@ -70,8 +70,12 @@ public class BlackDuckSSOConfigRetrieverTest {
         String blackDuckUrl = testProperties.getBlackDuckURL();
         String blackDuckApiKey = testProperties.getBlackDuckAPIToken();
         String blackDuckTimeout = testProperties.getOptionalProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT).orElse("300");
+        boolean blackduckTrustCertificate = testProperties.getOptionalProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TRUST_HTTPS_CERT)
+            .map(Boolean::valueOf)
+            .orElse(false);
 
         MockAlertProperties mockAlertProperties = new MockAlertProperties();
+        mockAlertProperties.setAlertTrustCertificate(blackduckTrustCertificate);
         ProxyManager mockProxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(mockProxyManager.createProxyInfoForHost(Mockito.anyString())).thenReturn(ProxyInfo.NO_PROXY_INFO);
 
