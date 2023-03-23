@@ -103,6 +103,7 @@ const UserTableActions = ({ canCreate, canDelete, data, selected }) => {
                     toggleModal={setShowCreateModal}
                     modalOptions={modalOptions}
                     setStatusMessage={setStatusMessage}
+                    successMessage="Successfully created 1 new user."
                 />
             )}
             

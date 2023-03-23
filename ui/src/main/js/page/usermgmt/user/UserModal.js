@@ -23,7 +23,7 @@ const useStyles = createUseStyles({
     }
 });
 
-const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage }) => {
+const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, successMessage }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { external } = data;
@@ -36,7 +36,6 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage }
     const { saveStatus, error } = useSelector(state => state.users);
 
     useEffect(() => {
-        setStatusMessage({});
         if ( saveStatus === 'VALIDATING' || saveStatus === 'SAVING' ) {
             setShowLoader(true);
         }
@@ -49,7 +48,7 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage }
             setShowLoader(false);
             handleClose();
             setStatusMessage({
-                message: 'Successfully created new user.',
+                message: successMessage,
                 type: 'success'
             });
         }
@@ -73,8 +72,7 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage }
             matching = false;
         }
         setUserModel(Object.assign(user, { [USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_ERROR_KEY]: passwordError }));
-        // TODO: Why do I have to refresh data for this validation to show?
-        dispatch(fetchUsers());
+
         return matching;
     }
 
@@ -142,7 +140,7 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage }
                     readOnly={external}
                     required={!external}
                     onChange={handleOnChange(USER_INPUT_FIELD_KEYS.USERNAME_KEY)}
-                    value={userModel[USER_INPUT_FIELD_KEYS.USERNAME_KEY]}
+                    value={userModel[USER_INPUT_FIELD_KEYS.USERNAME_KEY] || undefined}
                     errorName={USER_INPUT_FIELD_KEYS.USERNAME_KEY}
                     errorValue={fieldErrors[USER_INPUT_FIELD_KEYS.USERNAME_KEY]}
                 />
@@ -155,7 +153,7 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage }
                     readOnly={external}
                     required={!external}
                     onChange={handleOnChange(USER_INPUT_FIELD_KEYS.PASSWORD_KEY)}
-                    value={userModel[USER_INPUT_FIELD_KEYS.PASSWORD_KEY]}
+                    value={userModel[USER_INPUT_FIELD_KEYS.PASSWORD_KEY] || undefined}
                     isSet={userModel[USER_INPUT_FIELD_KEYS.IS_PASSWORD_SET] || !type==='COPY'}
                     errorName={USER_INPUT_FIELD_KEYS.PASSWORD_KEY}
                     errorValue={fieldErrors[USER_INPUT_FIELD_KEYS.PASSWORD_KEY]}
@@ -170,7 +168,7 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage }
                     required
                     isSet={userModel[USER_INPUT_FIELD_KEYS.IS_PASSWORD_SET]}
                     onChange={handleOnChange(USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_KEY)}
-                    value={userModel[USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_KEY]}
+                    value={userModel[USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_KEY] || undefined}
                     errorName={USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_KEY}
                     errorValue={userModel[USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_ERROR_KEY]}
                 />
@@ -183,7 +181,7 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage }
                     readOnly={external}
                     required={!external}
                     onChange={handleOnChange(USER_INPUT_FIELD_KEYS.EMAIL_KEY)}
-                    value={userModel[USER_INPUT_FIELD_KEYS.EMAIL_KEY]}
+                    value={userModel[USER_INPUT_FIELD_KEYS.EMAIL_KEY] || undefined}
                     errorName={USER_INPUT_FIELD_KEYS.EMAIL_KEY}
                     errorValue={fieldErrors[USER_INPUT_FIELD_KEYS.EMAIL_KEY]}
                 />
@@ -195,7 +193,7 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage }
                     onChange={handleOnChange(USER_INPUT_FIELD_KEYS.ROLENAMES_KEY)}
                     multiSelect
                     options={getRoles()}
-                    value={userModel[USER_INPUT_FIELD_KEYS.ROLENAMES_KEY]}
+                    value={userModel[USER_INPUT_FIELD_KEYS.ROLENAMES_KEY]|| undefined}
                     errorName={USER_INPUT_FIELD_KEYS.ROLENAMES_KEY}
                     errorValue={fieldErrors[USER_INPUT_FIELD_KEYS.ROLENAMES_KEY]}
                 />
@@ -215,7 +213,8 @@ UserModal.propTypes = {
         type: PropTypes.string,
         submitText: PropTypes.string
     }),
-    setStatusMessage: PropTypes.func
+    setStatusMessage: PropTypes.func,
+    successMessage: PropTypes.string
 };
 
 export default UserModal;
