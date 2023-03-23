@@ -152,7 +152,7 @@ class AboutInfoFooter extends React.Component {
     }
 
     render() {
-        const { version, projectUrl } = this.props;
+        const { version, projectUrl, copyrightYear } = this.props;
         const errorComponent = this.createErrorComponent();
         return (
             <div className="footer">
@@ -171,7 +171,7 @@ class AboutInfoFooter extends React.Component {
                     {version}
                 </span>
                 <span className="copyright">
-                    &nbsp;© 2023&nbsp;
+                    &nbsp;© {copyrightYear}&nbsp;
                     <a id="aboutLink" href="https://www.synopsys.com/">Synopsys, Inc.</a>
                     &nbsp;All rights reserved
                 </span>
@@ -188,6 +188,7 @@ AboutInfoFooter.propTypes = {
     version: PropTypes.string.isRequired,
     description: PropTypes.string,
     projectUrl: PropTypes.string.isRequired,
+    copyrightYear: PropTypes.string.isRequired,
     latestMessages: PropTypes.arrayOf(PropTypes.object)
 };
 
@@ -202,6 +203,7 @@ const mapStateToProps = (state) => ({
     version: state.about.version,
     description: state.about.description,
     projectUrl: state.about.projectUrl,
+    copyrightYear: state.about.copyrightYear,
     latestMessages: state.system.latestMessages
 });
 

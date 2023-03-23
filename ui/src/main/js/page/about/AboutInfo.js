@@ -11,7 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { EXISTING_CHANNELS, EXISTING_PROVIDERS } from 'common/DescriptorInfo';
 
 const AboutInfo = ({
-    getAbout, version, projectUrl, documentationUrl, globalDescriptorMap, distributionDescriptorMap
+    getAbout, version, projectUrl, commitHash, documentationUrl, globalDescriptorMap, distributionDescriptorMap
 }) => {
     useEffect(() => {
         getAbout();
@@ -85,6 +85,7 @@ const AboutInfo = ({
     const channelTable = createDescriptorTable('about-channels', channelData, '/alert/channels/', 'Distribution Channels');
     const providersMissing = !providerData || providerData.length <= 0;
     const channelsMissing = !channelData || channelData.length <= 0;
+    const commitHashUrl = projectUrl + "/commit/" + commitHash
 
     return (
         <div>
@@ -98,6 +99,7 @@ const AboutInfo = ({
                     value="This application provides the ability to send notifications from a provider to various distribution channels."
                 />
                 <ReadOnlyField id="about-version" label="Version" name="version" readOnly="true" value={version} />
+                <ReadOnlyField id="about-commit-hash" label="Commit Hash" name="commitHash" readOnly="true" value={commitHash} url={commitHashUrl} />
                 <ReadOnlyField
                     id="about-url"
                     label="Project URL"
@@ -149,6 +151,7 @@ AboutInfo.propTypes = {
     getAbout: PropTypes.func.isRequired,
     version: PropTypes.string.isRequired,
     projectUrl: PropTypes.string.isRequired,
+    commitHash: PropTypes.string.isRequired,
     documentationUrl: PropTypes.string.isRequired,
     globalDescriptorMap: PropTypes.object.isRequired,
     distributionDescriptorMap: PropTypes.object.isRequired
@@ -157,6 +160,7 @@ AboutInfo.propTypes = {
 const mapStateToProps = (state) => ({
     version: state.about.version,
     projectUrl: state.about.projectUrl,
+    commitHash: state.about.commitHash,
     documentationUrl: state.about.documentationUrl
 });
 

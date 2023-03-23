@@ -54,8 +54,19 @@ public class AboutReader {
             String startupDate = systemStatusAccessor.getStartupTime() != null ? DateUtils.formatDateAsJsonString(systemStatusAccessor.getStartupTime()) : "";
             Set<DescriptorMetadata> providers = getDescriptorData(DescriptorType.PROVIDER);
             Set<DescriptorMetadata> channels = getDescriptorData(DescriptorType.CHANNEL);
-            AboutModel model = new AboutModel(aboutModel.getVersion(), aboutModel.getCreated(), aboutModel.getDescription(), aboutModel.getProjectUrl(),
-                createSwaggerUrl(SwaggerConfiguration.SWAGGER_DEFAULT_PATH_SPEC), systemStatusAccessor.isSystemInitialized(), startupDate, providers, channels);
+            AboutModel model = new AboutModel(
+                aboutModel.getVersion(),
+                aboutModel.getCreated(),
+                aboutModel.getDescription(),
+                aboutModel.getProjectUrl(),
+                aboutModel.getCommitHash(),
+                aboutModel.getCopyrightYear(),
+                createSwaggerUrl(SwaggerConfiguration.SWAGGER_DEFAULT_PATH_SPEC),
+                systemStatusAccessor.isSystemInitialized(),
+                startupDate,
+                providers,
+                channels
+            );
             return Optional.of(model);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
