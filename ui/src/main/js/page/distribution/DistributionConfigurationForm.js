@@ -22,9 +22,7 @@ import CollapsiblePane from 'common/component/CollapsiblePane';
 import TableSelectInput from 'common/component/input/TableSelectInput';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
-import {
-    CONTEXT_TYPE, isOneOperationAssigned, isOperationAssigned, OPERATIONS
-} from 'common/util/descriptorUtilities';
+import { CONTEXT_TYPE, isOneOperationAssigned, isOperationAssigned, OPERATIONS } from 'common/util/descriptorUtilities';
 import CommonDistributionConfigurationForm from 'page/distribution/CommonDistributionConfigurationForm';
 import * as DistributionRequestUtility from 'page/distribution/DistributionRequestUtility';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';

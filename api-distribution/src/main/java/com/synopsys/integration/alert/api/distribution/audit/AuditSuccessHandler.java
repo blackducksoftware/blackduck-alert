@@ -1,5 +1,6 @@
 package com.synopsys.integration.alert.api.distribution.audit;
 
+import java.time.Instant;
 import java.util.UUID;
 import java.util.function.Predicate;
 
@@ -27,7 +28,7 @@ public class AuditSuccessHandler implements AlertEventHandler<AuditSuccessEvent>
             .filter(Predicate.not(ExecutingJob::isCompleted))
             .ifPresent(executingJob -> {
                 executingJobManager.updateJobStatus(jobExecutionId, AuditEntryStatus.SUCCESS);
-                executingJobManager.endJob(jobExecutionId, event.getCreatedTimestamp().toInstant());
+                executingJobManager.endJob(jobExecutionId, Instant.ofEpochMilli(event.getCreatedTimestamp()));
             });
     }
 }

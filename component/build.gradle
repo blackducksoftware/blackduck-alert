@@ -1,12 +1,6 @@
 ext.moduleName = 'com.synopsys.integration.alert.component'
 
 dependencies {
-    constraints {
-        implementation "org.opensaml:opensaml-core:4.1.1"
-        implementation "org.opensaml:opensaml-saml-api:4.1.1"
-        implementation "org.opensaml:opensaml-saml-impl:4.1.1"
-    }
-
     implementation platform(project(':alert-platform'))
 
     implementation project(':alert-common')
@@ -27,6 +21,11 @@ dependencies {
     implementation 'org.apache.tomcat.embed:tomcat-embed-core'
     implementation 'org.springframework.amqp:spring-amqp'
 
+    // SAML
+    implementation "org.opensaml:opensaml-core"
+    implementation "org.opensaml:opensaml-saml-api"
+    implementation "org.opensaml:opensaml-saml-impl"
+
     // Spring Security
     implementation 'org.springframework.security:spring-security-config'
     implementation 'org.springframework.security:spring-security-core'
@@ -34,6 +33,7 @@ dependencies {
     implementation 'org.springframework.security:spring-security-web'
 
     implementation 'org.springframework.security:spring-security-saml2-service-provider'
+
 
     //rabbitmq
     implementation 'org.springframework.amqp:spring-amqp'

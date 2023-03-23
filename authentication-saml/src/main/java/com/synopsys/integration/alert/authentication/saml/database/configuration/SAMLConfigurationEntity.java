@@ -1,12 +1,16 @@
 package com.synopsys.integration.alert.authentication.saml.database.configuration;
 
+import java.time.OffsetDateTime;
+import java.util.UUID;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 import com.synopsys.integration.alert.authentication.saml.model.SAMLMetadataMode;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.database.BaseEntity;
-
-import javax.persistence.*;
-import java.time.OffsetDateTime;
-import java.util.UUID;
 
 @Entity
 @Table(schema = "alert", name = "configuration_saml")

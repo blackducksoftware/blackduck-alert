@@ -1,6 +1,6 @@
 package com.synopsys.integration.alert.api.distribution.audit;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
 
@@ -12,18 +12,18 @@ public class AuditEvent extends AlertEvent {
     private final UUID jobExecutionId;
     private final UUID jobConfigId;
     private final Set<Long> notificationIds;
-    private final OffsetDateTime createdTimestamp;
+    private final long createdTimestamp;
 
     public AuditEvent(String destination, UUID jobExecutionId, UUID jobConfigId, Set<Long> notificationIds) {
-        this(destination, jobExecutionId, jobConfigId, notificationIds, DateUtils.createCurrentDateTimestamp());
+        this(destination, jobExecutionId, jobConfigId, notificationIds, DateUtils.createCurrentDateTimestamp().toInstant());
     }
 
-    public AuditEvent(String destination, UUID jobExecutionId, UUID jobConfigId, Set<Long> notificationIds, OffsetDateTime createdTimestamp) {
+    public AuditEvent(String destination, UUID jobExecutionId, UUID jobConfigId, Set<Long> notificationIds, Instant createdTimestamp) {
         super(destination);
         this.jobExecutionId = jobExecutionId;
         this.jobConfigId = jobConfigId;
         this.notificationIds = notificationIds;
-        this.createdTimestamp = createdTimestamp;
+        this.createdTimestamp = createdTimestamp.toEpochMilli();
     }
 
     public UUID getJobExecutionId() {
@@ -38,7 +38,7 @@ public class AuditEvent extends AlertEvent {
         return notificationIds;
     }
 
-    public OffsetDateTime getCreatedTimestamp() {
+    public long getCreatedTimestamp() {
         return createdTimestamp;
     }
 }
