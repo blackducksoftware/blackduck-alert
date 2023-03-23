@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import * as PropTypes from 'prop-types';
-import {
-    EMAIL_GLOBAL_ADVANCED_FIELD_KEYS, EMAIL_GLOBAL_FIELD_KEYS, EMAIL_INFO, EMAIL_TEST_FIELD
-} from 'page/channel/email/EmailModels';
+import { EMAIL_GLOBAL_ADVANCED_FIELD_KEYS, EMAIL_GLOBAL_FIELD_KEYS, EMAIL_INFO, EMAIL_TEST_FIELD } from 'page/channel/email/EmailModels';
 import TextInput from 'common/component/input/TextInput';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
 import CheckboxInput from 'common/component/input/CheckboxInput';

@@ -1,13 +1,14 @@
 package com.synopsys.integration.alert.authentication.saml.security;
 
-import com.synopsys.integration.alert.authentication.saml.database.accessor.SAMLConfigAccessor;
-import com.synopsys.integration.alert.authentication.saml.model.SAMLConfigModel;
+import java.util.Optional;
+
 import org.apache.commons.lang3.BooleanUtils;
 import org.opensaml.saml.common.assertion.ValidationResult;
 import org.springframework.security.saml2.provider.service.authentication.OpenSaml4AuthenticationProvider;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
+import com.synopsys.integration.alert.authentication.saml.database.accessor.SAMLConfigAccessor;
+import com.synopsys.integration.alert.authentication.saml.model.SAMLConfigModel;
 
 @Component
 public class SAMLSignedAssertionsValidator {

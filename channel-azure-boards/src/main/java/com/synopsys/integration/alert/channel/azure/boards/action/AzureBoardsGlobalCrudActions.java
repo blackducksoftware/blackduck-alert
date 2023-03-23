@@ -1,5 +1,10 @@
 package com.synopsys.integration.alert.channel.azure.boards.action;
 
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.synopsys.integration.alert.channel.azure.boards.database.accessor.AzureBoardsGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
 import com.synopsys.integration.alert.channel.azure.boards.validator.AzureBoardsGlobalConfigurationValidator;
@@ -9,10 +14,6 @@ import com.synopsys.integration.alert.common.rest.api.ConfigurationCrudHelper;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.util.UUID;
 
 @Component
 public class AzureBoardsGlobalCrudActions {
