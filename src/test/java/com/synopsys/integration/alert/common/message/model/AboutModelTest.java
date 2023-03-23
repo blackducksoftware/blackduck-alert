@@ -1,6 +1,6 @@
 package com.synopsys.integration.alert.common.message.model;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Set;
 
@@ -10,26 +10,31 @@ import org.mockito.Mockito;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.web.api.about.AboutModel;
 
-public class AboutModelTest {
-    @Test
-    public void testWithValues() {
-        String version = "1.2.3";
-        String created = "date";
-        String description = "description";
-        String projectUrl = "https://www.google.com";
-        String documentationUrl = "https://www.google.com";
-        boolean initialized = true;
-        String startupTime = "startup time is now";
-        DescriptorMetadata providerMetadata = Mockito.mock(DescriptorMetadata.class);
+ class AboutModelTest {
+     @Test
+     void testWithValues() {
+         String version = "1.2.3";
+         String created = "date";
+         String description = "description";
+         String projectUrl = "https://www.google.com";
+         String commitHash = "abc123xyz";
+         String copyrightYear = "year";
+         String documentationUrl = "https://www.google.com";
+         boolean initialized = true;
+         String startupTime = "startup time is now";
+         DescriptorMetadata providerMetadata = Mockito.mock(DescriptorMetadata.class);
         DescriptorMetadata channelMetadata = Mockito.mock(DescriptorMetadata.class);
         Set<DescriptorMetadata> providers = Set.of(providerMetadata);
         Set<DescriptorMetadata> channels = Set.of(channelMetadata);
 
-        AboutModel model = new AboutModel(version, created, description, projectUrl, documentationUrl, initialized, startupTime, providers, channels);
+         AboutModel model = new AboutModel(version, created, description, projectUrl, commitHash, copyrightYear, documentationUrl, initialized, startupTime, providers, channels);
 
         assertEquals(version, model.getVersion());
+        assertEquals(created, model.getCreated());
         assertEquals(description, model.getDescription());
         assertEquals(projectUrl, model.getProjectUrl());
+        assertEquals(commitHash, model.getCommitHash());
+        assertEquals(copyrightYear, model.getCopyrightYear());
         assertEquals(documentationUrl, model.getDocumentationUrl());
         assertEquals(initialized, model.isInitialized());
         assertEquals(startupTime, model.getStartupTime());

@@ -1,17 +1,17 @@
 package com.synopsys.integration.alert.authentication.saml.security;
 
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Spliterator;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistration;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository;
 import org.springframework.stereotype.Component;
-
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Spliterator;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 
 @Component
 public class AlertRelyingPartyRegistrationRepository implements RelyingPartyRegistrationRepository, Iterable<RelyingPartyRegistration> {
@@ -32,7 +32,7 @@ public class AlertRelyingPartyRegistrationRepository implements RelyingPartyRegi
     }
 
     @Override
-    public RelyingPartyRegistration findByRegistrationId(final String registrationId) {
+    public RelyingPartyRegistration findByRegistrationId(String registrationId) {
         logger.info("Finding registration with id {}.", registrationId);
         RelyingPartyRegistration registration =  registrationMap.get(registrationId);
         logger.info("Registration: {}", registration);
@@ -45,7 +45,7 @@ public class AlertRelyingPartyRegistrationRepository implements RelyingPartyRegi
     }
 
     @Override
-    public void forEach(final Consumer<? super RelyingPartyRegistration> action) {
+    public void forEach(Consumer<? super RelyingPartyRegistration> action) {
         registrationMap.values().forEach(action);
     }
 

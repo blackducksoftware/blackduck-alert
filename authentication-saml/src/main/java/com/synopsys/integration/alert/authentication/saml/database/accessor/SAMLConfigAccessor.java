@@ -1,5 +1,14 @@
 package com.synopsys.integration.alert.authentication.saml.database.accessor;
 
+import java.time.OffsetDateTime;
+import java.util.Optional;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.authentication.saml.database.configuration.SAMLConfigurationEntity;
 import com.synopsys.integration.alert.authentication.saml.database.configuration.SAMLConfigurationRepository;
@@ -7,14 +16,6 @@ import com.synopsys.integration.alert.authentication.saml.model.SAMLConfigModel;
 import com.synopsys.integration.alert.common.persistence.accessor.UniqueConfigurationAccessor;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.OffsetDateTime;
-import java.util.Optional;
-import java.util.UUID;
 
 @Component
 public class SAMLConfigAccessor implements UniqueConfigurationAccessor<SAMLConfigModel> {
