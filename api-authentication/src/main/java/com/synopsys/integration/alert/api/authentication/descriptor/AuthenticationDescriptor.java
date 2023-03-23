@@ -1,13 +1,12 @@
 package com.synopsys.integration.alert.api.authentication.descriptor;
 
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.synopsys.integration.alert.api.authentication.validator.AuthenticationConfigurationFieldModelValidator;
 import com.synopsys.integration.alert.common.descriptor.ComponentDescriptor;
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.Optional;
 
 @Component
 public class AuthenticationDescriptor extends ComponentDescriptor {
@@ -37,7 +36,6 @@ public class AuthenticationDescriptor extends ComponentDescriptor {
     public static final String KEY_SAML_ENTITY_ID = "settings.saml.entity.id";
     public static final String KEY_SAML_ENTITY_BASE_URL = "settings.saml.entity.base.url";
     public static final String KEY_SAML_METADATA_FILE = "settings.saml.metadata.file";  // Field renamed to metadata_file_path for SAMLConfigModel
-    public static final String KEY_SAML_WANT_ASSERTIONS_SIGNED = "settings.saml.want.assertions.signed";
 
     // SAML Role Attribute Mapping
     public static final String KEY_SAML_ROLE_ATTRIBUTE_MAPPING = "settings.saml.role.attribute.mapping.name";

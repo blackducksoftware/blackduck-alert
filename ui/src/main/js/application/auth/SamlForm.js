@@ -186,18 +186,6 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, fileDelete, fileRead, fil
                         valueToCheckFileExistsOnChange={triggerClearUploaded}
                     />
                 )}
-
-                <CheckboxInput
-                    id={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.wantAssertionsSigned}
-                    name={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.wantAssertionsSigned}
-                    label="Sign Assertions"
-                    description="If true, Alert will check if assertions from the Identity Provider are signed. Ensure assertions from your Identity Provider are signed if enabled."
-                    readOnly={readonly}
-                    onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
-                    isChecked={formData.wantAssertionsSigned}
-                    errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.wantAssertionsSigned)}
-                    errorValue={errors.fieldErrors[AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.wantAssertionsSigned]}
-                />
                 <CheckboxInput
                     id={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.forceAuth}
                     name={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.forceAuth}
