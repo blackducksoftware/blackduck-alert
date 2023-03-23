@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.authentication.ldap.action.LdapManager;
+import com.synopsys.integration.alert.authentication.ldap.action.LDAPManager;
 import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigModel;
 import com.synopsys.integration.alert.common.action.FieldModelTestAction;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
@@ -42,10 +42,10 @@ import com.synopsys.integration.exception.IntegrationException;
 @Component
 public class AuthenticationFieldModelTestAction extends FieldModelTestAction {
     private final Logger logger = LoggerFactory.getLogger(AuthenticationFieldModelTestAction.class);
-    private final LdapManager ldapManager;
+    private final LDAPManager ldapManager;
 
     @Autowired
-    public AuthenticationFieldModelTestAction(LdapManager ldapManager) {
+    public AuthenticationFieldModelTestAction(LDAPManager ldapManager) {
         this.ldapManager = ldapManager;
     }
 

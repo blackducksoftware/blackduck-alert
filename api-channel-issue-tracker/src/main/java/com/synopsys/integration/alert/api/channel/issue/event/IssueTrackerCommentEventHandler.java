@@ -16,18 +16,16 @@ import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobMan
 import com.synopsys.integration.alert.api.distribution.execution.JobStage;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.api.event.distribution.JobSubTaskEvent;
-import com.synopsys.integration.alert.common.persistence.accessor.JobSubTaskAccessor;
 
 public abstract class IssueTrackerCommentEventHandler<T extends JobSubTaskEvent> extends JobSubTaskEventHandler<T> {
     private IssueTrackerResponsePostProcessor responsePostProcessor;
 
     protected IssueTrackerCommentEventHandler(
         EventManager eventManager,
-        JobSubTaskAccessor jobSubTaskAccessor,
         IssueTrackerResponsePostProcessor responsePostProcessor,
         ExecutingJobManager executingJobManager
     ) {
-        super(eventManager, jobSubTaskAccessor, JobStage.ISSUE_COMMENTING, executingJobManager);
+        super(eventManager, JobStage.ISSUE_COMMENTING, executingJobManager);
         this.responsePostProcessor = responsePostProcessor;
     }
 

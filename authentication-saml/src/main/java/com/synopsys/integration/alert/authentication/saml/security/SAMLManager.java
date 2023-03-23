@@ -1,10 +1,13 @@
 package com.synopsys.integration.alert.authentication.saml.security;
 
-import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
-import com.synopsys.integration.alert.authentication.saml.database.accessor.SAMLConfigAccessor;
-import com.synopsys.integration.alert.authentication.saml.model.SAMLConfigModel;
-import com.synopsys.integration.alert.authentication.saml.model.SAMLMetadataMode;
-import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.security.interfaces.RSAPrivateKey;
+import java.util.Optional;
+
 import org.apache.commons.lang3.StringUtils;
 import org.opensaml.security.x509.X509Support;
 import org.slf4j.Logger;
@@ -18,13 +21,11 @@ import org.springframework.security.saml2.provider.service.web.authentication.Op
 import org.springframework.security.saml2.provider.service.web.authentication.Saml2AuthenticationRequestResolver;
 import org.springframework.stereotype.Component;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-import java.security.interfaces.RSAPrivateKey;
-import java.util.Optional;
+import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
+import com.synopsys.integration.alert.authentication.saml.database.accessor.SAMLConfigAccessor;
+import com.synopsys.integration.alert.authentication.saml.model.SAMLConfigModel;
+import com.synopsys.integration.alert.authentication.saml.model.SAMLMetadataMode;
+import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 
 @Component
 public class SAMLManager {
@@ -112,8 +113,6 @@ public class SAMLManager {
         if (filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_VERIFICATION_CERT_FILE)) {
             verificationCredentialBuilder(builder);
         }
-
-        builder.assertingPartyDetails(party -> party.wantAuthnRequestsSigned(configModel.getWantAssertionsSigned()));
 
         return builder.build();
     }

@@ -28,7 +28,7 @@ ext {
 
     // This version is also in src/test/resources/spring-test.properties for the test jdbc connection
     postgresContainerVersionMigration = '12.11'
-    postgresContainerVersionCurrent = '14.7'
+    postgresContainerVersionCurrent = '14.5'
 
     // Docker Variables
     dockerBuildParam_POSTGRESIMAGEVERSION_MIGRATION = 'postgres:' + postgresContainerVersionMigration + '-alpine'
@@ -44,7 +44,7 @@ ext {
 }
 
 mainClassName = 'com.synopsys.integration.alert.Application'
-version = '6.13.1-SNAPSHOT'
+version = '7.0.0-SNAPSHOT'
 
 ext.isSnapshot = project.version.endsWith('-SNAPSHOT')
 
@@ -55,7 +55,7 @@ apply plugin: 'com.synopsys.integration.solution'
 apply from: 'buildSrc/buildTasks.gradle'
 apply from: 'buildSrc/runTasks.gradle'
 apply from: 'buildSrc/deploymentTasks.gradle'
-apply from: 'buildSrc/docker-v2.gradle'
+apply from: 'buildSrc/docker.gradle'
 
 subprojects {
     if (project.name != 'alert-platform') {

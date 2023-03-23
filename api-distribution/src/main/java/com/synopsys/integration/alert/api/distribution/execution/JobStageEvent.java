@@ -9,7 +9,7 @@ public class JobStageEvent extends AlertEvent {
     private final UUID jobExecutionId;
     private final JobStage jobStage;
 
-    public JobStageEvent(final String destination, final UUID jobExecutionId, final JobStage jobStage) {
+    public JobStageEvent(String destination, UUID jobExecutionId, JobStage jobStage) {
         super(destination);
         this.jobExecutionId = jobExecutionId;
         this.jobStage = jobStage;

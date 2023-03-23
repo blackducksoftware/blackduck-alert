@@ -17,11 +17,11 @@ import com.synopsys.integration.alert.common.persistence.model.job.DistributionJ
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
-public class DistributionChannelMessageFieldModelTestActionTest {
+class DistributionChannelMessageFieldModelTestActionTest {
     private static final String CLASS_NAME = DistributionChannelMessageFieldModelTestActionTest.class.getSimpleName();
 
     @Test
-    public void testConfigTest() throws AlertException {
+    void testConfigTest() throws AlertException {
         String expectedStatusMessage = "Test Result";
         DistributionChannelMessageTestAction<MockDistributionJobDetailsModel> testAction = createTestAction(expectedStatusMessage);
 
@@ -31,7 +31,7 @@ public class DistributionChannelMessageFieldModelTestActionTest {
     }
 
     @Test
-    public void testConfigWithNullParamsTest() throws AlertException {
+    void testConfigWithNullParamsTest() throws AlertException {
         String expectedStatusMessage = "Test Result for null test";
         DistributionChannelMessageTestAction<MockDistributionJobDetailsModel> testAction = createTestAction(expectedStatusMessage);
 
@@ -50,7 +50,7 @@ public class DistributionChannelMessageFieldModelTestActionTest {
     }
 
     private DistributionChannel<MockDistributionJobDetailsModel> createDistributionChannel(String expectedStatusMessage) {
-        return (distributionDetails, messages, jobName, jobId, eventId, jobExecutionId, notificationIds) -> new MessageResult(expectedStatusMessage);
+        return (distributionDetails, messages, jobName, jobId, jobExecutionId, notificationIds) -> new MessageResult(expectedStatusMessage);
     }
 
     private DistributionJobModel createDistributionJobModel() {

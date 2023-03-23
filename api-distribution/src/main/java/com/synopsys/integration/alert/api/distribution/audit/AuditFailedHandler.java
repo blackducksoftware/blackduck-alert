@@ -1,5 +1,6 @@
 package com.synopsys.integration.alert.api.distribution.audit;
 
+import java.time.Instant;
 import java.util.UUID;
 import java.util.function.Predicate;
 
@@ -11,6 +12,7 @@ import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobMan
 import com.synopsys.integration.alert.api.event.AlertEventHandler;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingFailedAccessor;
+import com.synopsys.integration.alert.common.util.DateUtils;
 
 @Component
 public class AuditFailedHandler implements AlertEventHandler<AuditFailedEvent> {
@@ -30,20 +32,23 @@ public class AuditFailedHandler implements AlertEventHandler<AuditFailedEvent> {
     public void handle(AuditFailedEvent event) {
         UUID jobExecutionId = event.getJobExecutionId();
         UUID jobConfigId = event.getJobConfigId();
+        Instant eventCreatedTime = Instant.ofEpochMilli(event.getCreatedTimestamp());
+        synchronized (this) {
             if (event.getStackTrace().isPresent()) {
                 processingFailedAccessor.setAuditFailure(
                     jobConfigId,
                     event.getNotificationIds(),
-                    event.getCreatedTimestamp(),
+                    DateUtils.fromInstantUTC(eventCreatedTime),
                     event.getErrorMessage(),
                     event.getStackTrace().orElse("NO STACK TRACE")
                 );
             } else {
-                processingFailedAccessor.setAuditFailure(jobConfigId, event.getNotificationIds(), event.getCreatedTimestamp(), event.getErrorMessage());
+                processingFailedAccessor.setAuditFailure(jobConfigId, event.getNotificationIds(), DateUtils.fromInstantUTC(eventCreatedTime), event.getErrorMessage());
             }
+        }
         executingJobManager.updateJobStatus(jobExecutionId, AuditEntryStatus.FAILURE);
         executingJobManager.getExecutingJob(jobExecutionId)
             .filter(Predicate.not(ExecutingJob::hasRemainingEvents))
-            .ifPresent(executingJob -> executingJobManager.endJob(jobExecutionId, event.getCreatedTimestamp().toInstant()));
+            .ifPresent(executingJob -> executingJobManager.endJob(jobExecutionId, eventCreatedTime));
     }
 }

@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
@@ -33,11 +34,13 @@ public class ProviderMessageDistributor {
 
     private final ProcessingAuditAccessor auditAccessor;
     private final EventManager eventManager;
+    private final ExecutingJobManager executingJobManager;
 
     @Autowired
-    public ProviderMessageDistributor(ProcessingAuditAccessor auditAccessor, EventManager eventManager) {
+    public ProviderMessageDistributor(ProcessingAuditAccessor auditAccessor, EventManager eventManager, ExecutingJobManager executingJobManager) {
         this.auditAccessor = auditAccessor;
         this.eventManager = eventManager;
+        this.executingJobManager = executingJobManager;
     }
 
     public void distribute(ProcessedNotificationDetails processedNotificationDetails, ProcessedProviderMessageHolder processedMessageHolder) {
@@ -61,8 +64,7 @@ public class ProviderMessageDistributor {
 
     public void distributeIndividually(UUID jobExecutionId, UUID jobId, String jobName, ChannelKey destinationKey, ProcessedProviderMessageHolder processedMessageHolder) {
         Set<Long> notificationIds = processedMessageHolder.extractAllNotificationIds();
-        //auditAccessor.createOrUpdatePendingAuditEntryForJob(jobId, notificationIds);
-
+        executingJobManager.incrementExpectedNotificationsSent(jobExecutionId, notificationIds.size());
         DistributionEvent event = new DistributionEvent(destinationKey, jobId, jobExecutionId, jobName, notificationIds, processedMessageHolder.toProviderMessageHolder());
         logger.info("Sending {}. Event ID: {}. Job ID: {}. Destination: {}", EVENT_CLASS_NAME, event.getEventId(), jobId, destinationKey);
         if (logger.isDebugEnabled()) {

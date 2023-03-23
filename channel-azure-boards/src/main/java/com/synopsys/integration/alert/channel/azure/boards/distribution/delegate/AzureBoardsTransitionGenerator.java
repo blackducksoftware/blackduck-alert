@@ -18,15 +18,13 @@ import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
 
 public class AzureBoardsTransitionGenerator implements IssueTrackerTransitionEventGenerator<Integer> {
     private final AzureBoardsChannelKey channelKey;
-    private final UUID parentEventId;
     private final UUID jobExecutionId;
     private final UUID jobId;
 
     private final Set<Long> notificationIds;
 
-    public AzureBoardsTransitionGenerator(AzureBoardsChannelKey channelKey, UUID parentEventId, UUID jobExecutionId, UUID jobId, Set<Long> notificationIds) {
+    public AzureBoardsTransitionGenerator(AzureBoardsChannelKey channelKey, UUID jobExecutionId, UUID jobId, Set<Long> notificationIds) {
         this.channelKey = channelKey;
-        this.parentEventId = parentEventId;
         this.jobExecutionId = jobExecutionId;
         this.jobId = jobId;
         this.notificationIds = notificationIds;
@@ -36,7 +34,6 @@ public class AzureBoardsTransitionGenerator implements IssueTrackerTransitionEve
     public IssueTrackerTransitionIssueEvent<Integer> generateEvent(IssueTransitionModel<Integer> model) {
         return new AzureBoardsTransitionEvent(
             IssueTrackerTransitionIssueEvent.createDefaultEventDestination(channelKey),
-            parentEventId,
             jobExecutionId,
             jobId,
             notificationIds,

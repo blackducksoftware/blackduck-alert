@@ -12,8 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.synopsys.integration.alert.channel.azure.boards.distribution.util.AzureBoardsSearchPropertiesUtils;
 import org.apache.commons.lang3.StringUtils;
+
+import com.synopsys.integration.alert.channel.azure.boards.distribution.util.AzureBoardsSearchPropertiesUtils;
 
 public class AzureSearchFieldMappingBuilder {
     private final Map<String, String> customFieldMapping = new HashMap<>();

@@ -74,13 +74,13 @@ class LDAPCrudActionsTest {
         assertTrue(actionResponseCreate.hasContent());
         LDAPTestHelper.assertOptionalField(validLDAPConfigModel::getAuthenticationType, createdLDAPConfigModel::getAuthenticationType);
 
-        validLDAPConfigModel.setAuthenticationType("UPDATE");
+        validLDAPConfigModel.setAuthenticationType(LDAPTestHelper.DEFAULT_AUTH_TYPE_DIGEST);
         ActionResponse<LDAPConfigModel> actionResponseUpdate = ldapCrudActions.update(validLDAPConfigModel);
         LDAPConfigModel updatedLDAPConfigModel = actionResponseUpdate.getContent().orElseThrow(() -> new AssertionFailedError("Updated LDAPConfigModel did not exist"));
         assertTrue(actionResponseUpdate.isSuccessful());
         assertEquals(HttpStatus.OK, actionResponseUpdate.getHttpStatus());
         assertTrue(actionResponseUpdate.hasContent());
-        LDAPTestHelper.assertOptionalField("UPDATE", updatedLDAPConfigModel::getAuthenticationType);
+        LDAPTestHelper.assertOptionalField(LDAPTestHelper.DEFAULT_AUTH_TYPE_DIGEST, updatedLDAPConfigModel::getAuthenticationType);
     }
 
     @Test

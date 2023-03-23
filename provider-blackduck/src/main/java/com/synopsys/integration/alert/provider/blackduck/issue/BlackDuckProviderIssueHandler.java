@@ -12,9 +12,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.provider.blackduck.processor.message.util.BlackDuckMessageLinkUtils;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionIssuesView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.manual.temporary.component.IssueRequest;
@@ -64,13 +66,19 @@ public class BlackDuckProviderIssueHandler {
     }
 
     private Optional<ProjectVersionIssuesView> retrieveExistingIssue(String projectVersionUrl, String blackDuckIssueId) throws IntegrationException {
-        HttpUrl projectVersionHttpUrl = new HttpUrl(projectVersionUrl);
+        // the URL for project version was changed to be the components URL for the project version.  Changing the project version URL ripples all the way through the code.
+        //TODO: Create a ProjectDetails object which contains the project detailed information that can be used.
+        String apiProjectVersionUrl = projectVersionUrl;
+        if (projectVersionUrl.trim().endsWith(BlackDuckMessageLinkUtils.URI_PIECE_COMPONENTS)) {
+            apiProjectVersionUrl = StringUtils.removeEnd(apiProjectVersionUrl, BlackDuckMessageLinkUtils.URI_PIECE_COMPONENTS);
+        }
+        HttpUrl projectVersionHttpUrl = new HttpUrl(apiProjectVersionUrl);
         ProjectVersionView projectVersion = blackDuckApiClient.getResponse(projectVersionHttpUrl, ProjectVersionView.class);
         List<ProjectVersionIssuesView> bomComponentIssues = issueService.getIssuesForProjectVersion(projectVersion);
         return bomComponentIssues
-                   .stream()
-                   .filter(issue -> issue.getIssueId().equals(blackDuckIssueId))
-                   .findAny();
+            .stream()
+            .filter(issue -> issue.getIssueId().equals(blackDuckIssueId))
+            .findAny();
     }
 
     private void performRequest(HttpUrl httpUrl, HttpMethod httpMethod, IssueRequest issueRequest) throws IntegrationException {

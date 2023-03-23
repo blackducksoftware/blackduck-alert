@@ -53,7 +53,6 @@ class IssueTrackerFieldModelTestActionTest {
             public IssueTrackerAsyncMessageSender<String> createAsyncMessageSender(
                 TestJobDetails distributionDetails,
                 UUID globalId,
-                UUID parentEventId,
                 UUID jobExecutionId,
                 Set<Long> notificationIds
             )
@@ -82,7 +81,6 @@ class IssueTrackerFieldModelTestActionTest {
             public IssueTrackerAsyncMessageSender<String> createAsyncMessageSender(
                 TestJobDetails distributionDetails,
                 UUID globalId,
-                UUID parentEventId,
                 UUID jobExecutionId,
                 Set<Long> notificationIds
             )
@@ -111,7 +109,6 @@ class IssueTrackerFieldModelTestActionTest {
             public IssueTrackerAsyncMessageSender<String> createAsyncMessageSender(
                 TestJobDetails distributionDetails,
                 UUID globalId,
-                UUID parentEventId,
                 UUID jobExecutionId,
                 Set<Long> notificationIds
             )
@@ -147,7 +144,6 @@ class IssueTrackerFieldModelTestActionTest {
             public IssueTrackerAsyncMessageSender<String> createAsyncMessageSender(
                 TestJobDetails distributionDetails,
                 UUID globalId,
-                UUID parentEventId,
                 UUID jobExecutionId,
                 Set<Long> notificationIds
             )
@@ -176,7 +172,6 @@ class IssueTrackerFieldModelTestActionTest {
             public IssueTrackerAsyncMessageSender<String> createAsyncMessageSender(
                 TestJobDetails distributionDetails,
                 UUID globalId,
-                UUID parentEventId,
                 UUID jobExecutionId,
                 Set<Long> notificationIds
             )
@@ -217,7 +212,6 @@ class IssueTrackerFieldModelTestActionTest {
             public IssueTrackerAsyncMessageSender<String> createAsyncMessageSender(
                 TestJobDetails distributionDetails,
                 UUID globalId,
-                UUID parentEventId,
                 UUID jobExecutionId,
                 Set<Long> notificationIds
             )

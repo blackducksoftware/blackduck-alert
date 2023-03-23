@@ -1,11 +1,12 @@
 package com.synopsys.integration.alert.authentication.saml.model;
 
+import java.util.Optional;
+
+import org.apache.commons.lang3.BooleanUtils;
+
 import com.synopsys.integration.alert.api.common.model.Obfuscated;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.model.ConfigWithMetadata;
-import org.apache.commons.lang3.BooleanUtils;
-
-import java.util.Optional;
 
 public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SAMLConfigModel> {
     private Boolean enabled;
@@ -13,7 +14,6 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
     private String metadataUrl;
     private String metadataFileName;
     private SAMLMetadataMode metadataMode;
-    private Boolean wantAssertionsSigned;
     private String encryptionCertFileName;
     private String encryptionPrivateKeyFileName;
     private String signingCertFileName;
@@ -38,7 +38,6 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
         String metadataUrl,
         String metadataFileName,
         SAMLMetadataMode metadataMode,
-        Boolean wantAssertionsSigned,
         String encryptionCertFileName,
         String encryptionPrivateKeyFileName,
         String signingCertFileName,
@@ -51,7 +50,6 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
         this.metadataUrl = metadataUrl;
         this.metadataFileName = metadataFileName;
         this.metadataMode = metadataMode;
-        this.wantAssertionsSigned = wantAssertionsSigned;
         this.encryptionCertFileName = encryptionCertFileName;
         this.encryptionPrivateKeyFileName = encryptionPrivateKeyFileName;
         this.signingCertFileName = signingCertFileName;
@@ -73,7 +71,6 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
             metadataUrl,
             metadataFileName,
             metadataMode,
-            wantAssertionsSigned,
             encryptionCertFileName,
             encryptionPrivateKeyFileName,
             signingCertFileName,
@@ -101,10 +98,6 @@ public class SAMLConfigModel extends ConfigWithMetadata implements Obfuscated<SA
 
     public Optional<SAMLMetadataMode> getMetadataMode() {
         return Optional.ofNullable(metadataMode);
-    }
-
-    public Boolean getWantAssertionsSigned() {
-        return BooleanUtils.toBoolean(wantAssertionsSigned);
     }
 
     public Optional<String> getEncryptionCertFileName() {

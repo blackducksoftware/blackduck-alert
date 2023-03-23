@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -144,9 +145,53 @@ class AuditFailedHandlerTest {
             assertNotNull(entity.getProviderName());
             assertEquals(TEST_JOB_NAME, entity.getJobName());
             assertEquals(ChannelKeys.SLACK.getUniversalKey(), entity.getChannelName());
-            assertEquals(event.getCreatedTimestamp(), entity.getTimeCreated());
+            assertEquals(DateUtils.fromInstantUTC(Instant.ofEpochMilli(event.getCreatedTimestamp())), entity.getCreatedAt());
             assertEquals(errorMessage, entity.getErrorMessage());
             assertEquals(stackTrace, entity.getErrorStackTrace().orElseThrow(() -> new AssertionError("Expected stack trace but none found")));
+        }
+
+        JobCompletionStatusModel statusModel = jobCompletionStatusModelAccessor.getJobExecutionStatus(jobExecutionId)
+            .orElseThrow(() -> new AssertionError("Executing Job cannot be missing from the test."));
+        assertEquals(AuditEntryStatus.FAILURE.name(), statusModel.getLatestStatus());
+        assertEquals(0, statusModel.getSuccessCount());
+        assertEquals(1, statusModel.getFailureCount());
+        assertEquals(0, statusModel.getTotalNotificationCount());
+        assertTrue(executingJobManager.getExecutingJob(executingJobId).isEmpty());
+
+    }
+
+    @Test
+    void handleEventWithoutStackTraceTest() {
+        JobAccessor jobAccessor = createJobAccessor(this::createJobModel);
+        ProcessingFailedAccessor processingFailedAccessor = new DefaultProcessingFailedAccessor(
+            auditFailedEntryRepository,
+            auditFailedNotificationRepository,
+            notificationAccessor,
+            jobAccessor
+        );
+        UUID jobConfigId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
+        Set<Long> notificationIds = Set.of(1L, 2L, 3L);
+        ExecutingJob executingJob = executingJobManager.startJob(jobExecutionId, notificationIds.size());
+        String errorMessage = "Error message";
+        UUID executingJobId = executingJob.getExecutionId();
+
+        AuditFailedHandler handler = new AuditFailedHandler(processingFailedAccessor, executingJobManager);
+        notificationIds.stream()
+            .map(this::createNotification)
+            .forEach(notificationContentRepository::save);
+        AuditFailedEvent event = new AuditFailedEvent(executingJobId, jobConfigId, notificationIds, errorMessage, null);
+
+        handler.handle(event);
+
+        List<AuditFailedEntity> failedEntities = auditFailedEntryRepository.findAll();
+        for (AuditFailedEntity entity : failedEntities) {
+            assertNotNull(entity.getId());
+            assertNotNull(entity.getProviderName());
+            assertEquals(TEST_JOB_NAME, entity.getJobName());
+            assertEquals(ChannelKeys.SLACK.getUniversalKey(), entity.getChannelName());
+            assertEquals(DateUtils.fromInstantUTC(Instant.ofEpochMilli(event.getCreatedTimestamp())), entity.getCreatedAt());
+            assertEquals(errorMessage, entity.getErrorMessage());
         }
 
         JobCompletionStatusModel statusModel = jobCompletionStatusModelAccessor.getJobExecutionStatus(jobExecutionId)
@@ -188,7 +233,7 @@ class AuditFailedHandlerTest {
             assertNotNull(entity.getProviderName());
             assertEquals(TEST_JOB_NAME, entity.getJobName());
             assertEquals(ChannelKeys.SLACK.getUniversalKey(), entity.getChannelName());
-            assertEquals(event.getCreatedTimestamp(), entity.getTimeCreated());
+            assertEquals(DateUtils.fromInstantUTC(Instant.ofEpochMilli(event.getCreatedTimestamp())), entity.getCreatedAt());
             assertEquals(errorMessage, entity.getErrorMessage());
             assertEquals(stackTrace, entity.getErrorStackTrace().orElseThrow(() -> new AssertionError("Expected stack trace but none found")));
         }

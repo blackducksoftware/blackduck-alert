@@ -14,6 +14,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.authentication.ldap.database.accessor.LDAPConfigAccessor;
 import com.synopsys.integration.alert.authentication.ldap.database.configuration.MockLDAPConfigurationRepository;
+import com.synopsys.integration.alert.authentication.ldap.model.LDAPAuthenticationType;
 import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigModel;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -33,8 +34,9 @@ public class LDAPTestHelper {
     public static final String DEFAULT_SERVER_NAME = "ldap://alert.blackduck.synopsys.com:389";
     public static final String DEFAULT_MANAGER_DN = "cn=Alert Manager,ou=Synopsys,ou=people,dc=blackduck,dc=com";
     public static final String DEFAULT_MANAGER_PASSWORD = "managerPassword";
-    public static final String DEFAULT_AUTH_TYPE_SIMPLE = "simple";
-    public static final String DEFAULT_AUTH_TYPE_DIGEST = "digest";
+    public static final String DEFAULT_AUTH_TYPE_SIMPLE = LDAPAuthenticationType.SIMPLE.getAuthenticationType();
+    public static final String DEFAULT_AUTH_TYPE_DIGEST = LDAPAuthenticationType.DIGEST.getAuthenticationType();
+    public static final String DEFAULT_AUTH_TYPE_NONE = LDAPAuthenticationType.NONE.getAuthenticationType();
     public static final String DEFAULT_REFERRAL = "follow";
     public static final String DEFAULT_USER_SEARCH_BASE = "ou=people,dc=blackduck,dc=com";
     public static final String DEFAULT_USER_SEARCH_FILTER = "cn={0}";
@@ -66,7 +68,7 @@ public class LDAPTestHelper {
         );
     }
 
-    public static LDAPConfigModel createInValidLDAPConfigModel() {
+    public static LDAPConfigModel createInvalidLDAPConfigModel() {
         return new LDAPConfigModel(
             "",
             "",
@@ -122,4 +124,5 @@ public class LDAPTestHelper {
         assertTrue(expectedOptional.isPresent());
         assertEquals(expectedValue, expectedOptional.get());
     }
+
 }

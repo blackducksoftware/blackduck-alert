@@ -1,9 +1,7 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as PropTypes from 'prop-types';
 import CommonGlobalConfiguration from 'common/configuration/global/CommonGlobalConfiguration';
-import {
-    BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn
-} from 'react-bootstrap-table';
+import { BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn } from 'react-bootstrap-table';
 import AutoRefresh from 'common/component/table/AutoRefresh';
 import ConfirmModal from 'common/component/ConfirmModal';
 import { ProgressIcon } from 'common/component/table/ProgressIcon';

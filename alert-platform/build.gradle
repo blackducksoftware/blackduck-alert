@@ -29,8 +29,14 @@ dependencies {
         api 'com.google.http-client:google-http-client-jackson2:1.36.0'
         api 'com.google.guava:guava:31.1-jre'
 
+        api 'org.mockito:mockito-core:5.2.0'
+
         api 'org.javassist:javassist:3.24.0-GA'
         api 'io.springfox:springfox-boot-starter:3.0.0'
+
+        api "org.opensaml:opensaml-core:4.1.1"
+        api "org.opensaml:opensaml-saml-api:4.1.1"
+        api "org.opensaml:opensaml-saml-impl:4.1.1"
 
         runtime 'org.liquibase:liquibase-core:3.8.9'
         runtime 'io.springfox:springfox-swagger-ui:2.8.0'

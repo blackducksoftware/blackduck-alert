@@ -37,5 +37,4 @@ export const AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS = {
     signingCertFileName: 'signingCertFileName',
     signingPrivateKeyFileName: 'signingPrivateKeyFileName',
     verificationCertFileName: 'verificationCertFileName',
-    wantAssertionsSigned: 'wantAssertionsSigned'
 };

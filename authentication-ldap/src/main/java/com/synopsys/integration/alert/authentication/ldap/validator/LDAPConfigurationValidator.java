@@ -10,6 +10,7 @@ import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatusMessages;
 import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigModel;
+import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigTestModel;
 
 @Component
 public class LDAPConfigurationValidator {
@@ -35,4 +36,29 @@ public class LDAPConfigurationValidator {
 
         return ValidationResponseModel.success();
     }
+
+    public ValidationResponseModel validate(LDAPConfigTestModel ldapConfigTestModel) {
+        Set<AlertFieldStatus> statuses = new HashSet<>();
+        LDAPConfigModel ldapConfigModel = ldapConfigTestModel.getLDAPConfigModel();
+
+        if (null == ldapConfigModel) {
+            statuses.add(AlertFieldStatus.error("ldapConfigModel", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
+        } else {
+            ValidationResponseModel ldapConfigModelValidate = validate(ldapConfigTestModel.getLDAPConfigModel());
+            statuses.addAll(ldapConfigModelValidate.getErrors().values());
+        }
+        if (StringUtils.isBlank(ldapConfigTestModel.getTestLDAPUsername())) {
+            statuses.add(AlertFieldStatus.error("testLDAPUsername", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
+        }
+        if (StringUtils.isBlank(ldapConfigTestModel.getTestLDAPPassword())) {
+            statuses.add(AlertFieldStatus.error("testLDAPPassword", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
+        }
+
+        if (!statuses.isEmpty()) {
+            return ValidationResponseModel.fromStatusCollection(statuses);
+        }
+
+        return ValidationResponseModel.success();
+    }
+
 }

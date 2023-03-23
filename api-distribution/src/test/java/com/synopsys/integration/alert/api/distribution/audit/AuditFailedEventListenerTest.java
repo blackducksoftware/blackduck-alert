@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -153,7 +154,7 @@ class AuditFailedEventListenerTest {
             assertNotNull(entity.getProviderName());
             assertEquals(TEST_JOB_NAME, entity.getJobName());
             assertEquals(ChannelKeys.SLACK.getUniversalKey(), entity.getChannelName());
-            assertEquals(event.getCreatedTimestamp(), entity.getTimeCreated());
+            assertEquals(DateUtils.fromInstantUTC(Instant.ofEpochMilli(event.getCreatedTimestamp())), entity.getCreatedAt());
             assertEquals(errorMessage, entity.getErrorMessage());
             assertEquals(stackTrace, entity.getErrorStackTrace().orElseThrow(() -> new AssertionError("Expected stack trace but none found")));
         }

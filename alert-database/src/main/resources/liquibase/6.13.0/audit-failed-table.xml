@@ -11,7 +11,7 @@
             <column name="id" type="UUID" defaultValueComputed="uuid_generate_v4()">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="time_created" type="TIMESTAMP">
+            <column name="time_created" type="TIMESTAMP WITH TIME ZONE">
                 <constraints nullable="false"/>
             </column>
             <column name="job_name" type="VARCHAR">

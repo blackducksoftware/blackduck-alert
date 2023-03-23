@@ -1,8 +1,9 @@
 package com.synopsys.integration.alert.authentication.saml.security;
 
-import com.synopsys.integration.alert.api.authentication.security.event.AuthenticationEventManager;
-import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
-import com.synopsys.integration.alert.common.persistence.model.UserModel;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.core.GrantedAuthority;
@@ -12,9 +13,9 @@ import org.springframework.security.saml2.provider.service.authentication.Saml2A
 import org.springframework.security.saml2.provider.service.authentication.Saml2Authentication;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import com.synopsys.integration.alert.api.authentication.security.event.AuthenticationEventManager;
+import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
+import com.synopsys.integration.alert.common.persistence.model.UserModel;
 
 @Component
 public class SAMLGroupConverter {

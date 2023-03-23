@@ -21,7 +21,6 @@ public interface DistributionChannel<D extends DistributionJobDetailsModel> {
         ProviderMessageHolder messages,
         String jobName,
         UUID jobConfigId,
-        UUID parentEventId,
         UUID jobExecutionId,
         Set<Long> notificationIds
     )
