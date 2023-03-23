@@ -40,54 +40,18 @@ const useStyles = createUseStyles({
     }
 });
 
+function getStagedForDelete(data, selected) {
+    const staged = data.filter((user) => selected.includes(user.id));
+    return staged.map((user) => ({ ...user, staged: true }));
+}
 
 const UserDeleteModal = ({ isOpen, toggleModal, data, selected, setStatusMessage }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
-    const { deleteStatus, error } = useSelector(state => state.users);
-    const [selectedUsers, setSelectedUsers] = useState(getStagedForDelete());
+    const { deleteStatus, error } = useSelector((state) => state.users);
+    const [selectedUsers, setSelectedUsers] = useState(getStagedForDelete(data, selected));
     const [showLoader, setShowLoader] = useState(false);
     const isMultiUserDelete = selectedUsers.length > 1;
-
-    function getStagedForDelete() {
-        const staged = data.filter((user) => selected.includes(user.id));
-        return staged.map((user) => ({ ...user, staged: true }));
-    }
-
-    useEffect(() => {
-        setSelectedUsers(getStagedForDelete());
-    }, [selected]);
-
-    useEffect(() => {
-        if ( deleteStatus === 'DELETING' ) {
-            setShowLoader(true);
-        }
-
-        if ( deleteStatus === 'SUCCESS') {
-            setShowLoader(false);
-            
-            const successMessage = isMultiUserDelete 
-            ? `Successfully deleted ${selectedUsers.length} users.`
-            : 'Successfully deleted 1 user.'
-
-            setStatusMessage({
-                message: successMessage,
-                type: 'success'
-            });
-
-            handleClose();
-        }
-
-        if ( deleteStatus === 'ERROR' ) {
-            setShowLoader(false);
-            setStatusMessage({
-                message: error.fieldErrors.message,
-                type: 'error'
-            });
-            handleClose();
-        }
-
-    }, [deleteStatus])
 
     function handleClose() {
         dispatch(fetchUsers());
@@ -97,11 +61,45 @@ const UserDeleteModal = ({ isOpen, toggleModal, data, selected, setStatusMessage
     function handleDelete() {
         dispatch(bulkDeleteUsers(selectedUsers));
     }
-    
+
+    useEffect(() => {
+        setSelectedUsers(getStagedForDelete(data, selected));
+    }, [selected]);
+
+    useEffect(() => {
+        if (deleteStatus === 'DELETING') {
+            setShowLoader(true);
+        }
+
+        if (deleteStatus === 'SUCCESS') {
+            setShowLoader(false);
+
+            const successMessage = isMultiUserDelete
+                ? `Successfully deleted ${selectedUsers.length} users.`
+                : 'Successfully deleted 1 user.';
+
+            setStatusMessage({
+                message: successMessage,
+                type: 'success'
+            });
+
+            handleClose();
+        }
+
+        if (deleteStatus === 'ERROR') {
+            setShowLoader(false);
+            setStatusMessage({
+                message: error.fieldErrors.message,
+                type: 'error'
+            });
+            handleClose();
+        }
+    }, [deleteStatus]);
+
     function toggleSelect(selection) {
         const toggledUsers = selectedUsers.map((user) => {
             if (user.id === selection.id) {
-                return {...user, staged: !user.staged}
+                return { ...user, staged: !user.staged };
             }
             return user;
         });
@@ -111,9 +109,9 @@ const UserDeleteModal = ({ isOpen, toggleModal, data, selected, setStatusMessage
 
     return (
         <>
-            <Modal 
-                isOpen={isOpen} 
-                size="sm" 
+            <Modal
+                isOpen={isOpen}
+                size="sm"
                 title={isMultiUserDelete ? 'Delete Users' : 'Delete User'}
                 closeModal={handleClose}
                 handleCancel={handleClose}
@@ -125,22 +123,20 @@ const UserDeleteModal = ({ isOpen, toggleModal, data, selected, setStatusMessage
                     { isMultiUserDelete ? 'Are you sure you want to delete these users?' : 'Are you sure you want to delete this user?' }
                 </div>
                 <div>
-                    { selectedUsers?.map((user, key) => {
-                        return (
-                            <div className={classes.cardContainer} key={key}>
-                                <input type="checkbox" checked={user.staged} onChange={() => toggleSelect(user)}/>
-                                <div className={classes.userCard}>
-                                    <div className={classes.userIcon}>
-                                        <FontAwesomeIcon icon="user" size="3x"/>
-                                    </div>
-                                    <div className={classes.userInfo}>
-                                        <div style={{fontSize: '16px'}}>{user.username}</div>
-                                        <div>{user.emailAddress}</div>
-                                    </div>
+                    { selectedUsers?.map((user) => (
+                        <div className={classes.cardContainer} key={user.id}>
+                            <input type="checkbox" checked={user.staged} onChange={() => toggleSelect(user)} />
+                            <div className={classes.userCard}>
+                                <div className={classes.userIcon}>
+                                    <FontAwesomeIcon icon="user" size="3x" />
+                                </div>
+                                <div className={classes.userInfo}>
+                                    <div style={{ fontSize: '16px' }}>{user.username}</div>
+                                    <div>{user.emailAddress}</div>
                                 </div>
                             </div>
-                        )
-                    }) }
+                        </div>
+                    ))}
                 </div>
             </Modal>
         </>

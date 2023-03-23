@@ -37,16 +37,16 @@ const COLUMNS = [{
     sortable: false,
     customCell: UserCopyRowAction,
     settings: { alignment: 'center' }
-}]
+}];
 
 const UserTable = ({ canCreate, canDelete }) => {
     const dispatch = useDispatch();
     const [tableData, setTableData] = useState();
-    const [search, setNewSearch] = useState("");
+    const [search, setNewSearch] = useState('');
     const [selected, setSelected] = useState([]);
     const [autoRefresh, setAutoRefresh] = useState(false);
     const [sortConfig, setSortConfig] = useState();
-    const users = useSelector(state => state.users.data);
+    const users = useSelector((state) => state.users.data);
 
     useEffect(() => {
         dispatch(fetchUsers());
@@ -57,17 +57,18 @@ const UserTable = ({ canCreate, canDelete }) => {
             const refreshIntervalId = setInterval(() => dispatch(fetchUsers()), 30000);
             return function clearRefreshInterval() {
                 clearInterval(refreshIntervalId);
-            }
+            };
         }
-    }, [autoRefresh])
+        return null;
+    }, [autoRefresh]);
 
-    const onSelected = selected => {
-        setSelected(selected);
+    const onSelected = (selectedRow) => {
+        setSelected(selectedRow);
     };
 
     const handleSearchChange = (e) => {
         setNewSearch(e.target.value);
-    }
+    };
 
     function handleToggle() {
         setAutoRefresh(!autoRefresh);
@@ -75,7 +76,7 @@ const UserTable = ({ canCreate, canDelete }) => {
 
     const onSort = (name) => {
         if (name !== sortConfig?.name || !sortConfig) {
-            return setSortConfig({name, direction: 'ASC'});
+            return setSortConfig({ name, direction: 'ASC' });
         }
 
         if (name === sortConfig?.name && sortConfig?.direction === 'DESC') {
@@ -83,12 +84,12 @@ const UserTable = ({ canCreate, canDelete }) => {
         }
 
         if (name === sortConfig?.name) {
-            return setSortConfig({name, direction: 'DESC'});
+            return setSortConfig({ name, direction: 'DESC' });
         }
 
         return setSortConfig();
-    }
-    
+    };
+
     useEffect(() => {
         let data = users;
 
@@ -99,19 +100,16 @@ const UserTable = ({ canCreate, canDelete }) => {
                 if (b[name] === null) return -1;
                 if (a[name] === null && b[name] === null) return 0;
                 return (
-                 a[name].toString().localeCompare(b[name].toString(), "en", {
-                  numeric: true,
-                 }) * (direction === 'ASC' ? 1 : -1)
+                    a[name].toString().localeCompare(b[name].toString(), 'en', { numeric: true }) * (direction === 'ASC' ? 1 : -1)
                 );
             });
         }
 
         setTableData(!search ? data : data.filter((user) => user.username.toLowerCase().includes(search.toLowerCase())));
-
     }, [users, search, sortConfig]);
 
     return (
-        <Table 
+        <Table
             tableData={tableData}
             columns={COLUMNS}
             multiSelect
@@ -121,12 +119,12 @@ const UserTable = ({ canCreate, canDelete }) => {
             sortConfig={sortConfig}
             searchBarPlaceholder="Search Users..."
             handleSearchChange={handleSearchChange}
-            active={autoRefresh} 
+            active={autoRefresh}
             onToggle={handleToggle}
-            tableActions={() => <UserTableActions canCreate={canCreate} canDelete={canDelete} data={tableData} selected={selected}/>}
+            tableActions={() => <UserTableActions canCreate={canCreate} canDelete={canDelete} data={tableData} selected={selected} />}
         />
-    )
-}
+    );
+};
 
 UserTable.propTypes = {
     canCreate: PropTypes.bool,

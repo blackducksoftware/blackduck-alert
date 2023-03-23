@@ -9,7 +9,6 @@ import StatusMessage from 'common/component/StatusMessage';
 const useStyles = createUseStyles({
     createUserBtn: {
         background: 'none',
-        color: 'inherit',
         border: 'solid .5px',
         padding: ['6px', '20px'],
         font: 'inherit',
@@ -27,7 +26,6 @@ const useStyles = createUseStyles({
     },
     deleteUserBtn: {
         background: 'none',
-        color: 'inherit',
         border: 'solid .5px',
         padding: ['6px', '20px'],
         font: 'inherit',
@@ -76,29 +74,29 @@ const UserTableActions = ({ canCreate, canDelete, data, selected }) => {
     return (
         <>
             { statusMessage && (
-                <StatusMessage 
-                    actionMessage={statusMessage.type === 'success' ?  statusMessage.message : null}
-                    errorMessage={statusMessage.type === 'error' ?  statusMessage.message : null}
+                <StatusMessage
+                    actionMessage={statusMessage.type === 'success' ? statusMessage.message : null}
+                    errorMessage={statusMessage.type === 'error' ? statusMessage.message : null}
                 />
             )}
 
             { canCreate && (
-                <button className={classes.createUserBtn} onClick={handleCreateUserClick}>
+                <button className={classes.createUserBtn} onClick={handleCreateUserClick} type="button">
                     <FontAwesomeIcon icon="plus" />
                     Create User
                 </button>
             )}
 
             { canDelete && (
-                <button className={classes.deleteUserBtn} onClick={handleDeleteUserClick} disabled={selected.length === 0}>
+                <button className={classes.deleteUserBtn} onClick={handleDeleteUserClick} disabled={selected.length === 0} type="button">
                     <FontAwesomeIcon icon="trash" />
                     Delete
                 </button>
             )}
 
             { showCreateModal && (
-                <UserModal 
-                    data={data} 
+                <UserModal
+                    data={data}
                     isOpen={showCreateModal}
                     toggleModal={setShowCreateModal}
                     modalOptions={modalOptions}
@@ -106,19 +104,17 @@ const UserTableActions = ({ canCreate, canDelete, data, selected }) => {
                     successMessage="Successfully created 1 new user."
                 />
             )}
-            
+
             { showDeleteModal && (
-                <UserDeleteModal 
+                <UserDeleteModal
                     data={data}
-                    isOpen={showDeleteModal} 
+                    isOpen={showDeleteModal}
                     toggleModal={setShowDeleteModal}
                     selected={selected}
                     setStatusMessage={setStatusMessage}
                 />
             )}
-            
         </>
-
     );
 };
 

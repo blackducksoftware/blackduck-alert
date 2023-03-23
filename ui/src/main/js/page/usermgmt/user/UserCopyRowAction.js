@@ -7,9 +7,8 @@ import StatusMessage from 'common/component/StatusMessage';
 
 const useStyles = createUseStyles({
     copyCell: {
-        '&:hover': {
-            cursor: 'pointer',
-        }
+        all: 'unset',
+        cursor: 'pointer'
     }
 });
 
@@ -23,17 +22,17 @@ const UserCopyRowAction = ({ data }) => {
         type: 'COPY',
         submitText: 'Create',
         title: `Copy User, '${data.username}'`,
-        copiedUsername: data.username
+        copyDescription: `Performing this action will create a new user by using the same settings as '${data.username}'`
     };
 
     function handleClick() {
         setStatusMessage();
         setShowModal(true);
         setSelectedData((userData) => ({
-            ...userData, 
-            id: null, 
-            username: '', 
-            password: '', 
+            ...userData,
+            id: null,
+            username: '',
+            password: '',
             passwordSet: false,
             emailAddress: selectedData.emailAddress || '',
             roleNames: selectedData.roleNames
@@ -43,19 +42,19 @@ const UserCopyRowAction = ({ data }) => {
     return (
         <>
             { statusMessage && (
-                <StatusMessage 
-                    actionMessage={statusMessage.type === 'success' ?  statusMessage.message : null}
-                    errorMessage={statusMessage.type === 'error' ?  statusMessage.message : null}
+                <StatusMessage
+                    actionMessage={statusMessage.type === 'success' ? statusMessage.message : null}
+                    errorMessage={statusMessage.type === 'error' ? statusMessage.message : null}
                 />
             )}
 
-            <span className={classes.copyCell} onClick={handleClick}>
+            <button className={classes.copyCell} onClick={handleClick} type="button">
                 <FontAwesomeIcon icon="copy" />
-            </span>
+            </button>
 
             { showModal ? (
-                <UserModal 
-                    data={selectedData} 
+                <UserModal
+                    data={selectedData}
                     isOpen={showModal}
                     toggleModal={setShowModal}
                     modalOptions={modalOptions}

@@ -279,11 +279,11 @@ export function bulkDeleteUsers(userIdArray) {
         dispatch(bulkDeleteUsersFetch());
         const { csrfToken } = getState().session;
 
-        Promise.all(userIdArray.map((user) => {
+        Promise.all(userIdArray.map((user) => { // eslint-disable-line
             return ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, user.id);
         })).catch((error) => {
             dispatch(bulkDeleteUserError(error));
-            console.error
+            console.error; // eslint-disable-line
         }).then((response) => {
             if (response) {
                 dispatch(bulkDeleteUserSuccess());

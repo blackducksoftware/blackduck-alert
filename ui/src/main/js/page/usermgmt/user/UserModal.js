@@ -14,7 +14,7 @@ import { USER_INPUT_FIELD_KEYS } from 'page/usermgmt/user/UserModel';
 const useStyles = createUseStyles({
     descriptorContainer: {
         display: 'flex',
-        alignItems: 'center', 
+        alignItems: 'center',
         padding: [0, 0, '20px', '60px']
     },
     descriptor: {
@@ -27,41 +27,13 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
     const classes = useStyles();
     const dispatch = useDispatch();
     const { external } = data;
-    const { submitText, title, type } = modalOptions;
+    const { copyDescription, submitText, title, type } = modalOptions;
     const [userModel, setUserModel] = useState(type === 'CREATE' ? {} : data);
     const [showLoader, setShowLoader] = useState(false);
 
-    const fieldErrors = useSelector(state => state.users.error.fieldErrors);
-    const roles = useSelector(state => state.roles.data);
-    const { saveStatus, error } = useSelector(state => state.users);
-
-    useEffect(() => {
-        if ( saveStatus === 'VALIDATING' || saveStatus === 'SAVING' ) {
-            setShowLoader(true);
-        }
-
-        if ( saveStatus === 'VALIDATED' ) { 
-            handleSave();
-        }
-
-        if ( saveStatus === 'SAVED' ) { 
-            setShowLoader(false);
-            handleClose();
-            setStatusMessage({
-                message: successMessage,
-                type: 'success'
-            });
-        }
-
-        if ( saveStatus === 'ERROR' ) {
-            setShowLoader(false);
-            setStatusMessage({
-                message: error.fieldErrors.message,
-                type: 'error'
-            });
-            handleClose();
-        }
-    }, [saveStatus]);
+    const fieldErrors = useSelector((state) => state.users.error.fieldErrors);
+    const roles = useSelector((state) => state.roles.data);
+    const { saveStatus, error } = useSelector((state) => state.users);
 
     function passwordsMatch(user) {
         let passwordError = {};
@@ -81,11 +53,9 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
         dispatch(fetchUsers());
     }
 
-    const handleOnChange = (label) => {
-        return ({ target: { value } }) => {
-            setUserModel(userData => ({...userData, [label]: value }));
-        }
-    }
+    const handleOnChange = (label) => ({ target: { value } }) => {
+        setUserModel((userData) => ({ ...userData, [label]: value }));
+    };
 
     function handleSave() {
         dispatch(saveUser(userModel));
@@ -101,6 +71,34 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
         }
     }
 
+    useEffect(() => {
+        if (saveStatus === 'VALIDATING' || saveStatus === 'SAVING') {
+            setShowLoader(true);
+        }
+
+        if (saveStatus === 'VALIDATED') {
+            handleSave();
+        }
+
+        if (saveStatus === 'SAVED') {
+            setShowLoader(false);
+            handleClose();
+            setStatusMessage({
+                message: successMessage,
+                type: 'success'
+            });
+        }
+
+        if (saveStatus === 'ERROR') {
+            setShowLoader(false);
+            setStatusMessage({
+                message: error.fieldErrors.message,
+                type: 'error'
+            });
+            handleClose();
+        }
+    }, [saveStatus]);
+
     function getRoles() {
         return roles.map((role) => {
             const { roleName } = role;
@@ -112,9 +110,9 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
     }
 
     return (
-        <Modal 
-            isOpen={isOpen} 
-            size="lg" 
+        <Modal
+            isOpen={isOpen}
+            size="lg"
             title={title}
             closeModal={handleClose}
             handleCancel={handleClose}
@@ -126,7 +124,7 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
                 <div className={classes.descriptorContainer}>
                     <FontAwesomeIcon icon="exclamation-circle" size="2x" />
                     <span className={classes.descriptor}>
-                        Performing this action will create a new user by using the same settings as '{modalOptions.copiedUsername}'
+                        {copyDescription}
                     </span>
                 </div>
             )}
@@ -154,7 +152,7 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
                     required={!external}
                     onChange={handleOnChange(USER_INPUT_FIELD_KEYS.PASSWORD_KEY)}
                     value={userModel[USER_INPUT_FIELD_KEYS.PASSWORD_KEY] || undefined}
-                    isSet={userModel[USER_INPUT_FIELD_KEYS.IS_PASSWORD_SET] || !type==='COPY'}
+                    isSet={userModel[USER_INPUT_FIELD_KEYS.IS_PASSWORD_SET] || !type === 'COPY'}
                     errorName={USER_INPUT_FIELD_KEYS.PASSWORD_KEY}
                     errorValue={fieldErrors[USER_INPUT_FIELD_KEYS.PASSWORD_KEY]}
                 />
@@ -193,7 +191,7 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
                     onChange={handleOnChange(USER_INPUT_FIELD_KEYS.ROLENAMES_KEY)}
                     multiSelect
                     options={getRoles()}
-                    value={userModel[USER_INPUT_FIELD_KEYS.ROLENAMES_KEY]|| undefined}
+                    value={userModel[USER_INPUT_FIELD_KEYS.ROLENAMES_KEY] || undefined}
                     errorName={USER_INPUT_FIELD_KEYS.ROLENAMES_KEY}
                     errorValue={fieldErrors[USER_INPUT_FIELD_KEYS.ROLENAMES_KEY]}
                 />
@@ -211,7 +209,9 @@ UserModal.propTypes = {
     toggleModal: PropTypes.func,
     modalOptions: PropTypes.shape({
         type: PropTypes.string,
-        submitText: PropTypes.string
+        submitText: PropTypes.string,
+        title: PropTypes.string,
+        copyDescription: PropTypes.string
     }),
     setStatusMessage: PropTypes.func,
     successMessage: PropTypes.string

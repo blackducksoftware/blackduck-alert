@@ -7,9 +7,8 @@ import StatusMessage from 'common/component/StatusMessage';
 
 const useStyles = createUseStyles({
     editCell: {
-        '&:hover': {
-            cursor: 'pointer'
-        }
+        all: 'unset',
+        cursor: 'pointer'
     }
 });
 
@@ -18,8 +17,8 @@ const UserEditRowAction = ({ data }) => {
     const [showModal, setShowModal] = useState(false);
     const [selectedData, setSelectedData] = useState(data);
     const [statusMessage, setStatusMessage] = useState();
-    const successMessage = `Successfully updated ${data.username}`
-    
+    const successMessage = `Successfully updated ${data.username}`;
+
     const modalOptions = {
         type: 'EDIT',
         submitText: 'Save Edit',
@@ -31,22 +30,22 @@ const UserEditRowAction = ({ data }) => {
         setShowModal(true);
         setSelectedData(data);
     }
-    
+
     return (
         <>
             { statusMessage && (
-                <StatusMessage 
-                    actionMessage={statusMessage.type === 'success' ?  statusMessage.message : null}
-                    errorMessage={statusMessage.type === 'error' ?  statusMessage.message : null}
+                <StatusMessage
+                    actionMessage={statusMessage.type === 'success' ? statusMessage.message : null}
+                    errorMessage={statusMessage.type === 'error' ? statusMessage.message : null}
                 />
             )}
 
-            <span className={classes.editCell} onClick={() => handleClick()}>
+            <button className={classes.editCell} onClick={() => handleClick()} type="button">
                 <FontAwesomeIcon icon="pencil-alt" />
-            </span>
+            </button>
 
             { showModal && (
-                <UserModal 
+                <UserModal
                     data={selectedData}
                     isOpen={showModal}
                     toggleModal={setShowModal}
