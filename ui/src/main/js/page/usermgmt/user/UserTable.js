@@ -47,6 +47,11 @@ const UserTable = ({ canCreate, canDelete }) => {
     const [autoRefresh, setAutoRefresh] = useState(false);
     const [sortConfig, setSortConfig] = useState();
     const users = useSelector((state) => state.users.data);
+    // Disable select options for users: sysadmin, jobmanager, alertuser
+    const disableSelectOptions = {
+        key: 'username',
+        disabledItems: ['sysadmin', 'jobmanager', 'alertuser']
+    }
 
     useEffect(() => {
         dispatch(fetchUsers());
@@ -59,7 +64,7 @@ const UserTable = ({ canCreate, canDelete }) => {
                 clearInterval(refreshIntervalId);
             };
         }
-        return null;
+        return undefined;
     }, [autoRefresh]);
 
     const onSelected = (selectedRow) => {
@@ -114,6 +119,7 @@ const UserTable = ({ canCreate, canDelete }) => {
             columns={COLUMNS}
             multiSelect
             selected={selected}
+            disableSelectOptions={disableSelectOptions}
             onSelected={onSelected}
             onSort={onSort}
             sortConfig={sortConfig}

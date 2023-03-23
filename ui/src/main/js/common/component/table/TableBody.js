@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import MultiSelectCell from 'common/component/table/cell/MultiSelectCell';
 import WrapperCell from 'common/component/table/cell/WrapperCell';
 
-const TableBody = ({ columns, multiSelect, tableData, selected, onSelected }) => {
+const TableBody = ({ columns, multiSelect, tableData, selected, onSelected, disableSelectOptions }) => {
     return (
         <tbody>
             { tableData?.map((rowData, rowIndex) => (
@@ -13,6 +13,7 @@ const TableBody = ({ columns, multiSelect, tableData, selected, onSelected }) =>
                             data={rowData}
                             selected={selected}
                             onSelected={onSelected}
+                            disableSelectOptions={disableSelectOptions}
                         />
                     ) : null }
 
@@ -47,7 +48,8 @@ TableBody.propTypes = {
     multiSelect: PropTypes.bool,
     selected: PropTypes.arrayOf(PropTypes.string),
     onSelected: PropTypes.func,
-    tableData: PropTypes.arrayOf(PropTypes.object)
+    tableData: PropTypes.arrayOf(PropTypes.object),
+    disableSelectOptions: PropTypes.object
 };
 
 export default TableBody;
