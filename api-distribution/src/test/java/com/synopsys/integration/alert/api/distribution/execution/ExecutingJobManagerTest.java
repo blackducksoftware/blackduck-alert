@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.api.distribution.execution;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -183,6 +184,23 @@ class ExecutingJobManagerTest {
         assertTrue(executingJob.getStage(JobStage.NOTIFICATION_PROCESSING).isPresent());
         assertTrue(executingJob.getStage(JobStage.CHANNEL_PROCESSING).isPresent());
         assertEquals(2, executingJob.getStages().size());
+    }
+
+    @Test
+    void hasExpectedNotificationCountTest() {
+        MockJobCompletionStatusDurationsRepository durationsRepository = new MockJobCompletionStatusDurationsRepository();
+        JobCompletionRepository jobCompletionRepository = new MockJobCompletionStatusRepository(durationsRepository);
+        JobCompletionStatusModelAccessor jobCompletionStatusModelAccessor = new DefaultJobCompletionStatusModelAccessor(jobCompletionRepository, durationsRepository);
+        ExecutingJobManager jobManager = new ExecutingJobManager(jobCompletionStatusModelAccessor);
+        UUID jobConfigId = UUID.randomUUID();
+        ExecutingJob executingJob = jobManager.startJob(jobConfigId, 1);
+        UUID executionId = executingJob.getExecutionId();
+
+        jobManager.incrementExpectedNotificationsSent(executionId, 1);
+        assertFalse(jobManager.hasSentExpectedNotifications(executionId));
+
+        jobManager.incrementSentNotificationCount(executionId, 1);
+        assertTrue(jobManager.hasSentExpectedNotifications(executionId));
     }
 
 }

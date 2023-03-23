@@ -1,15 +1,16 @@
 package com.synopsys.integration.alert.channel.jira.server.validator;
 
-import com.synopsys.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import com.synopsys.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 @ExtendWith(SpringExtension.class)
 public class JiraServerGlobalConfigExistsValidatorTest {

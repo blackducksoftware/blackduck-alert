@@ -56,21 +56,6 @@ public class ExecutingJob {
         }
     }
 
-    public void jobSucceeded(Instant endTime) {
-        completeJobWithStatus(AuditEntryStatus.SUCCESS, endTime);
-    }
-
-    public void jobFailed(Instant endTime) {
-        completeJobWithStatus(AuditEntryStatus.FAILURE, endTime);
-    }
-
-    private void completeJobWithStatus(AuditEntryStatus status, Instant endTime) {
-        synchronized (this) {
-            this.end = endTime;
-            this.status = status;
-        }
-    }
-
     public void updateNotificationCount(int notificationCount) {
         synchronized (this) {
             this.processedNotificationCount.addAndGet(notificationCount);

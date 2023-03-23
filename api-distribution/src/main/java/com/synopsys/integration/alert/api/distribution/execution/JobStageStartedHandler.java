@@ -13,12 +13,12 @@ public class JobStageStartedHandler implements AlertEventHandler<JobStageStarted
     private final ExecutingJobManager executingJobManager;
 
     @Autowired
-    public JobStageStartedHandler(final ExecutingJobManager executingJobManager) {
+    public JobStageStartedHandler(ExecutingJobManager executingJobManager) {
         this.executingJobManager = executingJobManager;
     }
 
     @Override
-    public void handle(final JobStageStartedEvent event) {
+    public void handle(JobStageStartedEvent event) {
         UUID jobExecutionId = event.getJobExecutionId();
         JobStage jobStage = event.getJobStage();
         executingJobManager.getExecutingJob(jobExecutionId)

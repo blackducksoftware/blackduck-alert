@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { LabelFieldPropertyDefaults } from '../field/LabeledField';
 
 const FieldMappingRow = ({
     index,
