@@ -8,7 +8,7 @@ import javax.persistence.Converter;
 import com.synopsys.integration.alert.authentication.saml.model.SAMLMetadataMode;
 
 @Converter(autoApply = true)
-public class SAMLMetaDataModeConverter implements AttributeConverter<SAMLMetadataMode, Integer> {
+public class SAMLMetadataModeConverter implements AttributeConverter<SAMLMetadataMode, Integer> {
     @Override
     public Integer convertToDatabaseColumn(SAMLMetadataMode samlMetadataMode) {
         if (samlMetadataMode == null) {
