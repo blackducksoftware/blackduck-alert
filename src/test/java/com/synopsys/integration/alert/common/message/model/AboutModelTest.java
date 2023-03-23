@@ -10,24 +10,24 @@ import org.mockito.Mockito;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.web.api.about.AboutModel;
 
-public class AboutModelTest {
-    @Test
-    public void testWithValues() {
-        String version = "1.2.3";
-        String created = "date";
-        String description = "description";
-        String projectUrl = "https://www.google.com";
-        String commitHash = "abc123xyz";
-        String copyrightYear = "year";
-        String documentationUrl = "https://www.google.com";
-        boolean initialized = true;
-        String startupTime = "startup time is now";
-        DescriptorMetadata providerMetadata = Mockito.mock(DescriptorMetadata.class);
+ class AboutModelTest {
+     @Test
+     void testWithValues() {
+         String version = "1.2.3";
+         String created = "date";
+         String description = "description";
+         String projectUrl = "https://www.google.com";
+         String commitHash = "abc123xyz";
+         String copyrightYear = "year";
+         String documentationUrl = "https://www.google.com";
+         boolean initialized = true;
+         String startupTime = "startup time is now";
+         DescriptorMetadata providerMetadata = Mockito.mock(DescriptorMetadata.class);
         DescriptorMetadata channelMetadata = Mockito.mock(DescriptorMetadata.class);
         Set<DescriptorMetadata> providers = Set.of(providerMetadata);
         Set<DescriptorMetadata> channels = Set.of(channelMetadata);
 
-        AboutModel model = new AboutModel(version, created, description, projectUrl, copyrightYear, documentationUrl, commitHash, initialized, startupTime, providers, channels);
+         AboutModel model = new AboutModel(version, created, description, projectUrl, commitHash, copyrightYear, documentationUrl, initialized, startupTime, providers, channels);
 
         assertEquals(version, model.getVersion());
         assertEquals(created, model.getCreated());
