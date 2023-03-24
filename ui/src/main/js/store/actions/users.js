@@ -1,5 +1,8 @@
 import {
     USER_MANAGEMENT_USER_CLEAR_FIELD_ERRORS,
+    USER_MANAGEMENT_USER_BULK_DELETE_FETCH,
+    USER_MANAGEMENT_USER_BULK_DELETE_SUCCESS,
+    USER_MANAGEMENT_USER_BULK_DELETE_FAIL,
     USER_MANAGEMENT_USER_DELETE_ERROR,
     USER_MANAGEMENT_USER_DELETED,
     USER_MANAGEMENT_USER_DELETING,
@@ -93,6 +96,25 @@ function deletingUserError({ message, errors }) {
     };
 }
 
+function bulkDeleteUsersFetch() {
+    return {
+        type: USER_MANAGEMENT_USER_BULK_DELETE_FETCH
+    };
+}
+
+function bulkDeleteUserSuccess() {
+    return {
+        type: USER_MANAGEMENT_USER_BULK_DELETE_SUCCESS
+    };
+}
+
+function bulkDeleteUserError(errors) {
+    return {
+        type: USER_MANAGEMENT_USER_BULK_DELETE_FAIL,
+        errors
+    };
+}
+
 function clearFieldErrors() {
     return {
         type: USER_MANAGEMENT_USER_CLEAR_FIELD_ERRORS
@@ -169,12 +191,10 @@ export function fetchUsers() {
 export function validateUser(user) {
     return (dispatch, getState) => {
         dispatch(validatingUser());
-        const { id } = user;
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => saveUserErrorMessage(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
-
         const validateRequest = ConfigRequestBuilder.createValidateRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, user);
         validateRequest.then((response) => {
             if (response.ok) {
@@ -251,6 +271,24 @@ export function deleteUser(userId) {
             }
         })
             .catch(console.error);
+    };
+}
+
+export function bulkDeleteUsers(userIdArray) {
+    return (dispatch, getState) => {
+        dispatch(bulkDeleteUsersFetch());
+        const { csrfToken } = getState().session;
+
+        Promise.all(userIdArray.map((user) => { // eslint-disable-line
+            return ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, user.id);
+        })).catch((error) => {
+            dispatch(bulkDeleteUserError(error));
+            console.error; // eslint-disable-line
+        }).then((response) => {
+            if (response) {
+                dispatch(bulkDeleteUserSuccess());
+            }
+        });
     };
 }
 
