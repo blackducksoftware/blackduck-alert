@@ -51,6 +51,12 @@ const useStyles = createUseStyles({
     }
 });
 
+const CREATE_MODAL_OPTIONS = {
+    type: 'create',
+    title: 'Create Role',
+    submitText: 'Save'
+}
+
 const RoleTableActions = ({ canCreate, canDelete, data, selected }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -110,9 +116,7 @@ const RoleTableActions = ({ canCreate, canDelete, data, selected }) => {
                     data={data}
                     isOpen={showCreateModal}
                     toggleModal={setShowCreateModal}
-                    type="create"
-                    title="Create Role"
-                    submitText="Save"
+                    modalOptions={CREATE_MODAL_OPTIONS}
                 />
             ) : null }
 

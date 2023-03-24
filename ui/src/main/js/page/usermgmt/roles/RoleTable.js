@@ -25,7 +25,7 @@ const COLUMNS = [{
     settings: { alignment: 'center' }
 }];
 
-const RolesTable = ({ canCreate, canDelete }) => {
+const RoleTable = ({ canCreate, canDelete }) => {
     const dispatch = useDispatch();
     const [tableData, setTableData] = useState();
     const [search, setNewSearch] = useState('');
@@ -33,6 +33,11 @@ const RolesTable = ({ canCreate, canDelete }) => {
     const [autoRefresh, setAutoRefresh] = useState(false);
     const [sortConfig, setSortConfig] = useState()
     const roles = useSelector((state) => state.roles.data);
+    // Disable select options for users: sysadmin, jobmanager, alertuser
+    const disableSelectOptions = {
+        key: 'roleName',
+        disabledItems: ['ALERT_ADMIN', 'ALERT_JOB_MANAGER', 'ALERT_USER']
+    }
 
     useEffect(() => {
         dispatch(fetchRoles());
@@ -109,15 +114,16 @@ const RolesTable = ({ canCreate, canDelete }) => {
                 onToggle={handleToggle}
                 onSort={onSort}
                 sortConfig={sortConfig}
-                tableActions={() => <RoleTableActions canCreate={canCreate} canDelete={canDelete} data={roles.data} selected={selected} />}
+                disableSelectOptions={disableSelectOptions}
+                tableActions={() => <RoleTableActions canCreate={canCreate} canDelete={canDelete} data={roles} selected={selected} />}
             />
         </>
     );
 };
 
-RolesTable.propTypes = {
+RoleTable.propTypes = {
     canCreate: PropTypes.bool,
     canDelete: PropTypes.bool
 };
 
-export default RolesTable;
+export default RoleTable;

@@ -48,7 +48,7 @@ const useStyles = createUseStyles({
     }
 });
 
-const Modal = ({ isOpen, size, title, closeModal, children, handleCancel, handleSubmit, submitText }) => {
+const Modal = ({ isOpen, size, title, closeModal, children, handleCancel, handleSubmit, submitText, showLoader }) => {
     const classes = useStyles();
     
     const modalStyleClass = classNames(classes.modalStyle, {

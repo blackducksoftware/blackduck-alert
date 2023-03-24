@@ -13,7 +13,7 @@ import BetaPage from 'common/component/beta/BetaPage';
 import BetaComponent from 'common/component/beta/BetaComponent';
 import CurrentComponent from 'common/component/beta/CurrentComponent';
 import UserTable from 'page/usermgmt/user/UserTable';
-import RolesTable from 'page/usermgmt/roles/RolesTable';
+import RoleTable from 'page/usermgmt/roles/RoleTable';
 
 const UserManagement = ({ descriptors }) => {
     const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_NAME.COMPONENT_USERS, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
@@ -41,7 +41,7 @@ const UserManagement = ({ descriptors }) => {
                 <Tab eventKey={2} title="Roles">
                     <BetaPage betaSelected>
                         <BetaComponent>
-                            <RolesTable canCreate={canCreate} canDelete={canDelete} />
+                            <RoleTable canCreate={canCreate} canDelete={canDelete} />
                         </BetaComponent>
                         <CurrentComponent>
                             <RoleTableStagedForDelete canCreate={canCreate} canDelete={canDelete} />
