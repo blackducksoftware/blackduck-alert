@@ -122,6 +122,7 @@ dockerImagesToBuild.each { imageName ->
             }
         }
     }
+    project.tasks.findByName(dockerRemoveAllImages).dependsOn dockerImageRemoveTaskName
 
     project.tasks.create(name: dockerImageBuildTaskName, type: Exec, group: 'Docker', description: "Build ${imageName} docker image") {
         dockerTasksCreated.add(dockerImageBuildTaskName)
@@ -149,7 +150,6 @@ dockerImagesToBuild.each { imageName ->
     project.tasks.create(name: dockerImagePublishTaskName, type: Exec, group: 'Docker', description: "Publish ${imageName} docker image to hub.docker.com") {
         dockerTasksCreated.add(dockerImagePublishTaskName)
         dependsOn project.tasks.findByName(dockerLoginDockerHub)
-        finalizedBy project.tasks.findByName(dockerImageRemoveTaskName)
 
         doFirst {
             logger.lifecycle('Publishing docker image:: ' + fullDockerImageName)
