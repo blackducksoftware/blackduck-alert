@@ -8,6 +8,7 @@
 package com.synopsys.integration.alert.processor.api;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -93,6 +94,7 @@ public final class NotificationProcessor {
     private void processAndDistribute(FilteredJobNotificationWrapper jobNotificationWrapper) {
         List<NotificationContentWrapper> filteredNotifications = jobNotificationWrapper.getJobNotifications();
         ProcessedNotificationDetails processedNotificationDetails = new ProcessedNotificationDetails(
+            UUID.randomUUID(),
             jobNotificationWrapper.getJobId(),
             jobNotificationWrapper.getChannelName(),
             jobNotificationWrapper.getJobName()

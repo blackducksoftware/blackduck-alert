@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -108,7 +109,7 @@ class NotificationReceivedEventHandlerTestIT {
             notificationMappingProcessor,
             eventManager
         );
-        notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
+        notificationReceivedEventHandler.handle(new NotificationReceivedEvent(blackDuckGlobalConfigId));
 
         testAlertNotificationModels(savedModels);
     }
@@ -129,7 +130,7 @@ class NotificationReceivedEventHandlerTestIT {
             notificationMappingProcessor,
             eventManager
         );
-        notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
+        notificationReceivedEventHandler.handle(new NotificationReceivedEvent(blackDuckGlobalConfigId));
 
         testAlertNotificationModels(savedModels);
     }
@@ -149,7 +150,7 @@ class NotificationReceivedEventHandlerTestIT {
             notificationMappingProcessor,
             eventManager
         );
-        notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
+        notificationReceivedEventHandler.handle(new NotificationReceivedEvent(blackDuckGlobalConfigId));
 
         testAlertNotificationModels(savedModels);
     }
@@ -171,7 +172,7 @@ class NotificationReceivedEventHandlerTestIT {
             notificationMappingProcessor,
             eventManagerSpy
         );
-        notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
+        notificationReceivedEventHandler.handle(new NotificationReceivedEvent(blackDuckGlobalConfigId));
 
         assertEquals(200, defaultNotificationAccessor.getFirstPageOfNotificationsNotProcessed(200).getModels().size());
     }
@@ -198,7 +199,8 @@ class NotificationReceivedEventHandlerTestIT {
             entity.getContent(),
             entity.getCreatedAt(),
             entity.getProviderCreationTime(),
-            processed
+            processed,
+            String.format("content-id-%s", UUID.randomUUID())
         );
     }
 

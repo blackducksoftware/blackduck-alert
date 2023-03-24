@@ -19,11 +19,11 @@ public class AzureBoardsCommentEvent extends IssueTrackerCommentEvent<Integer> {
 
     public AzureBoardsCommentEvent(
         String destination,
-        UUID parentEventId,
+        UUID jobExecutionId,
         UUID jobId,
         Set<Long> notificationIds,
         IssueCommentModel<Integer> commentModel
     ) {
-        super(destination, parentEventId, jobId, notificationIds, commentModel);
+        super(destination, jobExecutionId, jobId, notificationIds, commentModel);
     }
 }

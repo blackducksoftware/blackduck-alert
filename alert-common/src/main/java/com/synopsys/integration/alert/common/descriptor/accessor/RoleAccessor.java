@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Set;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
@@ -24,7 +25,7 @@ public interface RoleAccessor {
 
     UserRoleModel createRoleWithPermissions(String roleName, PermissionMatrixModel permissionMatrix);
 
-    void updateRoleName(Long roleId, String roleName) throws AlertForbiddenOperationException;
+    void updateRoleName(Long roleId, String roleName) throws AlertException;
 
     PermissionMatrixModel updatePermissionsForRole(String roleName, PermissionMatrixModel permissionMatrix) throws AlertConfigurationException;
 

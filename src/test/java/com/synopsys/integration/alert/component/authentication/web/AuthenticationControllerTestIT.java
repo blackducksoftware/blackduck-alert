@@ -30,11 +30,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.synopsys.integration.alert.authentication.ldap.action.LDAPManager;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.component.authentication.security.ldap.LdapManager;
 import com.synopsys.integration.alert.mock.model.MockLoginRestModel;
 import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
@@ -52,7 +52,7 @@ public class AuthenticationControllerTestIT {
     @Autowired
     protected AlertProperties alertProperties;
     @Autowired
-    protected LdapManager ldapManager;
+    protected LDAPManager ldapManager;
     @Autowired
     protected AuthorizationManager authorizationManager;
     @Autowired

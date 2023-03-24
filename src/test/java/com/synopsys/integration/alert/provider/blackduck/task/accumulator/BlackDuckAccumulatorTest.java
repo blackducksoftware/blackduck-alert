@@ -1,11 +1,15 @@
 package com.synopsys.integration.alert.provider.blackduck.task.accumulator;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.Mockito.spy;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiFunction;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -102,10 +106,54 @@ class BlackDuckAccumulatorTest {
 
         NotificationAccessor notificationAccessor = Mockito.mock(NotificationAccessor.class);
 
-        BlackDuckAccumulator accumulator = new BlackDuckAccumulator(BLACK_DUCK_PROVIDER_KEY, null, notificationAccessor, taskPropertiesAccessor, blackDuckProperties, validator, null, notificationRetrieverFactory);
+        BlackDuckAccumulator accumulator = new BlackDuckAccumulator(
+            BLACK_DUCK_PROVIDER_KEY,
+            null,
+            notificationAccessor,
+            taskPropertiesAccessor,
+            blackDuckProperties,
+            validator,
+            null,
+            notificationRetrieverFactory
+        );
         accumulator.run();
 
         Mockito.verify(notificationAccessor, Mockito.times(0)).saveAllNotifications(Mockito.anyList());
+    }
+
+    @Test
+    void testContentIdGeneration() {
+        Long firstProviderId = 1L;
+        Long secondProviderId = 2L;
+        String url = "https://a-hub-server.blackduck.com/api/notifications/edea20df-02cf-467b-a98f-d0dc9637770c";
+        String sameUrl = "https://a-hub-server.blackduck.com/api/notifications/edea20df-02cf-467b-a98f-d0dc9637770c";
+        String differentUrl = "https://a-hub-server.blackduck.com/api/notifications/edfa20bf-03cf-467b-a98f-d0dc9637770c";
+
+        BiFunction<Long, String, String> providerContentIdConverter = (providerId, notificationUrl) -> String.format("%s-%s", providerId, notificationUrl);
+        String firstUrl = providerContentIdConverter.apply(firstProviderId, url);
+        String firstSameUrl = providerContentIdConverter.apply(firstProviderId, sameUrl);
+        String firstDifferentUrl = providerContentIdConverter.apply(firstProviderId, differentUrl);
+        String secondUrl = providerContentIdConverter.apply(secondProviderId, url);
+        String secondSameUrl = providerContentIdConverter.apply(secondProviderId, sameUrl);
+        String secondDifferentUrl = providerContentIdConverter.apply(secondProviderId, differentUrl);
+
+        DigestUtils digestUtils = new DigestUtils("SHA3-256");
+
+        String firstHashUrl = digestUtils.digestAsHex(firstUrl);
+        String firstHashOrSame = digestUtils.digestAsHex(firstSameUrl);
+        String firstHashOfDifferent = digestUtils.digestAsHex(firstDifferentUrl);
+
+        String secondHashUrl = digestUtils.digestAsHex(secondUrl);
+        String secondHashOrSame = digestUtils.digestAsHex(secondSameUrl);
+        String secondHashOfDifferent = digestUtils.digestAsHex(secondDifferentUrl);
+
+        assertEquals(firstHashUrl, firstHashOrSame);
+        assertNotEquals(firstHashUrl, firstHashOfDifferent);
+
+        assertEquals(secondHashUrl, secondHashOrSame);
+        assertNotEquals(secondHashUrl, secondHashOfDifferent);
+        assertNotEquals(firstHashUrl, secondHashUrl);
+
     }
 
     private BlackDuckProperties createBlackDuckProperties() {

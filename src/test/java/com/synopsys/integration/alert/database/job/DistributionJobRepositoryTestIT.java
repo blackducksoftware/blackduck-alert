@@ -1,5 +1,20 @@
 package com.synopsys.integration.alert.database.job;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.time.OffsetDateTime;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.UUID;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
@@ -15,20 +30,6 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.blackduck.api.generated.enumeration.VulnerabilitySeverityType;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.OffsetDateTime;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @AlertIntegrationTest
 class DistributionJobRepositoryTestIT {
@@ -307,7 +308,8 @@ class DistributionJobRepositoryTestIT {
             "{content: \"content is here...\"}",
             currentDateTimestamp,
             currentDateTimestamp,
-            false
+            false,
+            String.format("content-id-%s", UUID.randomUUID())
         );
     }
 

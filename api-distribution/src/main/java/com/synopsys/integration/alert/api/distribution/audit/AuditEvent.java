@@ -1,6 +1,6 @@
 package com.synopsys.integration.alert.api.distribution.audit;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
 
@@ -9,30 +9,36 @@ import com.synopsys.integration.alert.common.util.DateUtils;
 
 public class AuditEvent extends AlertEvent {
     private static final long serialVersionUID = 8821840075948290969L;
-    private final UUID jobId;
+    private final UUID jobExecutionId;
+    private final UUID jobConfigId;
     private final Set<Long> notificationIds;
-    private final OffsetDateTime createdTimestamp;
+    private final long createdTimestamp;
 
-    public AuditEvent(String destination, UUID jobId, Set<Long> notificationIds) {
-        this(destination, jobId, notificationIds, DateUtils.createCurrentDateTimestamp());
+    public AuditEvent(String destination, UUID jobExecutionId, UUID jobConfigId, Set<Long> notificationIds) {
+        this(destination, jobExecutionId, jobConfigId, notificationIds, DateUtils.createCurrentDateTimestamp().toInstant());
     }
 
-    public AuditEvent(String destination, UUID jobId, Set<Long> notificationIds, OffsetDateTime createdTimestamp) {
+    public AuditEvent(String destination, UUID jobExecutionId, UUID jobConfigId, Set<Long> notificationIds, Instant createdTimestamp) {
         super(destination);
-        this.jobId = jobId;
+        this.jobExecutionId = jobExecutionId;
+        this.jobConfigId = jobConfigId;
         this.notificationIds = notificationIds;
-        this.createdTimestamp = createdTimestamp;
+        this.createdTimestamp = createdTimestamp.toEpochMilli();
     }
 
-    public UUID getJobId() {
-        return jobId;
+    public UUID getJobExecutionId() {
+        return jobExecutionId;
+    }
+
+    public UUID getJobConfigId() {
+        return jobConfigId;
     }
 
     public Set<Long> getNotificationIds() {
         return notificationIds;
     }
 
-    public OffsetDateTime getCreatedTimestamp() {
+    public long getCreatedTimestamp() {
         return createdTimestamp;
     }
 }

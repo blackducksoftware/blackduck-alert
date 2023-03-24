@@ -26,12 +26,12 @@ public class IssueTrackerTransitionIssueEvent<T extends Serializable> extends Jo
 
     public IssueTrackerTransitionIssueEvent(
         String destination,
-        UUID parentEventId,
+        UUID jobExecutionId,
         UUID jobId,
         Set<Long> notificationIds,
         IssueTransitionModel<T> transitionModel
     ) {
-        super(destination, parentEventId, jobId, notificationIds);
+        super(destination, jobExecutionId, jobId, notificationIds);
         this.transitionModel = transitionModel;
     }
 

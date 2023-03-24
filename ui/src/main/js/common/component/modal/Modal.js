@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { createUseStyles } from 'react-jss';
 import ModalFooter from 'common/component/modal/ModalFooter';
@@ -43,7 +44,6 @@ const useStyles = createUseStyles({
     }
 });
 
-
 const Modal = ({ isOpen, size, title, closeModal, children, handleCancel, handleSubmit, submitText }) => {
     const classes = useStyles();
 
@@ -79,6 +79,22 @@ const Modal = ({ isOpen, size, title, closeModal, children, handleCancel, handle
             </div>
         </div>
     );
+};
+
+Modal.defaultProps = {
+    open: true,
+    size: 'md'
+};
+
+Modal.propTypes = {
+    isOpen: PropTypes.bool,
+    size: PropTypes.oneOf(['sm', 'md', 'lg']),
+    title: PropTypes.string,
+    closeModal: PropTypes.func,
+    handleCancel: PropTypes.func,
+    handleSubmit: PropTypes.func,
+    showLoader: PropTypes.bool,
+    submitText: PropTypes.string
 };
 
 export default Modal;

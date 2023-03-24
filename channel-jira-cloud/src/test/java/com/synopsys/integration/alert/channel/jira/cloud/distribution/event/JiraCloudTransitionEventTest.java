@@ -16,14 +16,14 @@ class JiraCloudTransitionEventTest {
     @Test
     void testObjectConstruction() {
         String destination = "destination_queue";
-        UUID parentEventId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
         IssueTransitionModel<String> model = new IssueTransitionModel<>(null, IssueOperation.UPDATE, List.of(), null);
-        JiraCloudTransitionEvent event = new JiraCloudTransitionEvent(destination, parentEventId, jobId, notificationIds, model);
+        JiraCloudTransitionEvent event = new JiraCloudTransitionEvent(destination, jobExecutionId, jobId, notificationIds, model);
 
         assertNotNull(event.getEventId());
-        assertEquals(parentEventId, event.getParentEventId());
+        assertEquals(jobExecutionId, event.getJobExecutionId());
         assertEquals(destination, event.getDestination());
         assertEquals(jobId, event.getJobId());
         assertEquals(notificationIds, event.getNotificationIds());

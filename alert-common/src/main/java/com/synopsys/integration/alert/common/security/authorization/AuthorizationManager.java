@@ -22,10 +22,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -157,7 +157,7 @@ public class AuthorizationManager {
             .anyMatch(name -> permissionCache.containsKey(name) && permissionCache.get(name).hasPermissions(permissionKey, operations));
     }
 
-    public void updateRoleName(Long roleId, String roleName) throws AlertForbiddenOperationException {
+    public void updateRoleName(Long roleId, String roleName) throws AlertException {
         roleAccessor.updateRoleName(roleId, roleName);
         loadPermissionsIntoCache();
     }
@@ -205,7 +205,13 @@ public class AuthorizationManager {
         boolean hasPermission = roleNames.stream()
             .anyMatch(name -> permissionCache.containsKey(name) && permissionCache.get(name).hasPermission(permissionKey, operation));
         if (!hasPermission) {
-            logger.debug(String.format("User %s does not have permission: %s", getCurrentUserName().orElse("UNKNOWN"), operation.name()));
+            logger.debug(String.format(
+                "User %s does not have permission: %s, for context: %s, for descriptorKey: %s",
+                getCurrentUserName().orElse("UNKNOWN"),
+                operation.name(),
+                context,
+                descriptorKey
+            ));
         }
         return hasPermission;
     }
@@ -227,8 +233,7 @@ public class AuthorizationManager {
             return Optional.empty();
         }
 
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        return Optional.of(userDetails.getUsername());
+        return Optional.of(authentication.getName());
     }
 
     private void loadPermissionsIntoCache() {

@@ -1,14 +1,4 @@
-
-buildscript {
-    repositories {
-        mavenCentral()
-        maven { url 'https://plugins.gradle.org/m2/' }
-    }
-}
-
-ext {
-    moduleName = 'com.synopsys.integration.alert.database'
-}
+ext.moduleName = 'com.synopsys.integration.alert.database'
 
 dependencies {
     implementation platform(project(':alert-platform'))
@@ -38,7 +28,7 @@ dependencies {
     runtimeOnly 'com.h2database:h2'
 
     testImplementation project(':test-common')
-    testImplementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
+    testImplementation 'com.synopsys.integration:blackduck-common'
 }
 
 task buildAll(dependsOn: [build]) {

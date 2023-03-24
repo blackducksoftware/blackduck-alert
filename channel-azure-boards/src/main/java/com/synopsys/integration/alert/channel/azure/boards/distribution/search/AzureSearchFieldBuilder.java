@@ -10,10 +10,10 @@ package com.synopsys.integration.alert.channel.azure.boards.distribution.search;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.synopsys.integration.alert.channel.azure.boards.distribution.util.AzureBoardsSearchPropertiesUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
+import com.synopsys.integration.alert.channel.azure.boards.distribution.util.AzureBoardsSearchPropertiesUtils;
 import com.synopsys.integration.azure.boards.common.service.workitem.request.WorkItemElementOperation;
 import com.synopsys.integration.azure.boards.common.service.workitem.request.WorkItemElementOperationModel;
 import com.synopsys.integration.azure.boards.common.util.AzureFieldDefinition;

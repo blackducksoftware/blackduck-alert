@@ -4,35 +4,37 @@ export const AUTHENTICATION_INFO = {
     label: 'Authentication'
 };
 
-export const AUTHENTICATION_TEST_FIELD_KEYS = {
-    username: 'test.field.user.name',
-    password: 'test.field.user.password',
-    noInput: 'test.field.saml.no.input'
+export const AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS = {
+    enabled: 'enabled',
+    serverName: 'serverName',
+    managerDn: 'managerDn',
+    managerPassword: 'managerPassword',
+    authenticationType: 'authenticationType',
+    referral: 'referral',
+    userSearchBase: 'userSearchBase',
+    userSearchFilter: 'userSearchFilter',
+    userDnPatterns: 'userDnPatterns',
+    userAttributes: 'userAttributes',
+    groupSearchBase: 'groupSearchBase',
+    groupSearchFilter: 'groupSearchFilter',
+    groupRoleAttribute: 'groupRoleAttribute'
 };
 
-export const AUTHENTICATION_LDAP_FIELD_KEYS = {
-    enabled: 'settings.ldap.enabled',
-    server: 'settings.ldap.server',
-    managerDn: 'settings.ldap.manager.dn',
-    managerPassword: 'settings.ldap.manager.password',
-    authenticationType: 'settings.ldap.authentication.type',
-    referral: 'settings.ldap.referral',
-    userSearchBase: 'settings.ldap.user.search.base',
-    userSearchFilter: 'settings.ldap.user.search.filter',
-    userDnPatterns: 'settings.ldap.user.dn.patterns',
-    userAttributes: 'settings.ldap.user.attributes',
-    groupSearchBase: 'settings.ldap.group.search.base',
-    groupSearchFilter: 'settings.ldap.group.search.filter',
-    groupRoleAttribute: 'settings.ldap.group.role.attribute'
+export const AUTHENTICATION_LDAP_GLOBAL_TEST_FIELD_KEYS = {
+    testLDAPUsername: 'testLDAPUsername',
+    testLDAPPassword: 'testLDAPPassword'
 };
 
-export const AUTHENTICATION_SAML_FIELD_KEYS = {
-    enabled: 'settings.saml.enabled',
-    wantAssertionsSigned: 'settings.saml.want.assertions.signed',
-    forceAuth: 'settings.saml.force.auth',
-    metadataUrl: 'settings.saml.metadata.url',
-    entityId: 'settings.saml.entity.id',
-    entityBaseUrl: 'settings.saml.entity.base.url',
-    metadataFile: 'settings.saml.metadata.file',
-    roleAttributeMapping: 'settings.saml.role.attribute.mapping.name'
+export const AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS = {
+    enabled: 'enabled',
+    encryptionCertFileName: 'encryptionCertFileName',
+    encryptionPrivateKeyFileName: 'encryptionPrivateKeyFileName',
+    forceAuth: 'forceAuth',
+    metadataFileName: 'metadataFileName',
+    metadataMode: 'metadataMode',
+    metadataUrl: 'metadataUrl',
+    name: 'name',
+    signingCertFileName: 'signingCertFileName',
+    signingPrivateKeyFileName: 'signingPrivateKeyFileName',
+    verificationCertFileName: 'verificationCertFileName',
 };

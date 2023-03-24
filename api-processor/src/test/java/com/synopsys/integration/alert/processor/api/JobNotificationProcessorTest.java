@@ -1,11 +1,7 @@
 package com.synopsys.integration.alert.processor.api;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -13,6 +9,7 @@ import org.mockito.Mockito;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
@@ -59,6 +56,8 @@ class JobNotificationProcessorTest {
     private final BlackDuckResponseTestUtility blackDuckResponseTestUtility = new BlackDuckResponseTestUtility();
 
     private final UUID uuid = UUID.randomUUID();
+
+    private final UUID jobExecutionId = UUID.randomUUID();
     private final Long notificationId = 123L;
 
     @Test
@@ -82,12 +81,13 @@ class JobNotificationProcessorTest {
 
         MockProcessingAuditAccessor processingAuditAccessor = new MockProcessingAuditAccessor();
         EventManager eventManager = Mockito.mock(EventManager.class);
-        ProviderMessageDistributor providerMessageDistributor = new ProviderMessageDistributor(processingAuditAccessor, eventManager);
+        ExecutingJobManager executingJobManager = Mockito.mock(ExecutingJobManager.class);
+        ProviderMessageDistributor providerMessageDistributor = new ProviderMessageDistributor(processingAuditAccessor, eventManager, executingJobManager);
 
         NotificationExtractorBlackDuckServicesFactoryCache lifecycleCaches = createNotificationExtractorBlackDuckServicesFactoryCache();
 
         //Create Requirements for processNotificationForJob
-        ProcessedNotificationDetails processedNotificationDetails = new ProcessedNotificationDetails(uuid, CHANNEL_KEY, "JobName");
+        ProcessedNotificationDetails processedNotificationDetails = new ProcessedNotificationDetails(jobExecutionId, uuid, CHANNEL_KEY, "JobName");
 
         AlertNotificationModel notificationModel = createNotification(NotificationType.RULE_VIOLATION.name());
 
@@ -96,11 +96,7 @@ class JobNotificationProcessorTest {
         JobNotificationProcessor jobNotificationProcessor = new JobNotificationProcessor(notificationDetailExtractionDelegator, notificationContentProcessor, providerMessageDistributor, List.of(lifecycleCaches));
         jobNotificationProcessor.processNotificationForJob(processedNotificationDetails, ProcessingType.DEFAULT, List.of(notificationModel));
 
-        Set<Long> auditNotificationIds = processingAuditAccessor.getNotificationIds(uuid);
-
         Mockito.verify(eventManager, Mockito.times(1)).sendEvent(Mockito.any());
-        assertEquals(1, auditNotificationIds.size());
-        assertTrue(auditNotificationIds.contains(notificationId));
     }
 
     private RuleViolationNotificationMessageExtractor createRuleViolationNotificationMessageExtractor() throws IntegrationException {
@@ -152,7 +148,8 @@ class JobNotificationProcessorTest {
             notificationContent,
             OffsetDateTime.now(),
             OffsetDateTime.now(),
-            false
+            false,
+            String.format("content-id-%s", UUID.randomUUID())
         );
     }
 }

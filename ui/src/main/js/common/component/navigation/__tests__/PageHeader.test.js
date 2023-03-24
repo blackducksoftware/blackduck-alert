@@ -5,6 +5,7 @@ import PageHeader from '../PageHeader';
 
 // TODO: Implement this icon library in a much more dynamic way - remove this when done
 import registerFaIcons from '../../../../icons';
+
 registerFaIcons();
 
 describe('Testing PageHeader rendering', () => {

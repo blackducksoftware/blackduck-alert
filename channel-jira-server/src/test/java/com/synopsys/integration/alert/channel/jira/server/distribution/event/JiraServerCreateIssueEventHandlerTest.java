@@ -1,12 +1,9 @@
 package com.synopsys.integration.alert.channel.jira.server.distribution.event;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -24,6 +21,7 @@ import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentD
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
@@ -31,12 +29,8 @@ import com.synopsys.integration.alert.channel.jira.server.database.accessor.Defa
 import com.synopsys.integration.alert.channel.jira.server.database.accessor.mock.MockJiraServerJobCustomFieldRepository;
 import com.synopsys.integration.alert.channel.jira.server.database.accessor.mock.MockJiraServerJobDetailsRepository;
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerMessageSenderFactory;
-import com.synopsys.integration.alert.channel.jira.server.distribution.event.mock.MockCorrelationToNotificationRelationRepository;
-import com.synopsys.integration.alert.channel.jira.server.distribution.event.mock.MockJobSubTaskStatusRepository;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
-import com.synopsys.integration.alert.common.persistence.model.job.workflow.JobSubTaskStatusModel;
-import com.synopsys.integration.alert.database.api.workflow.DefaultJobSubTaskAccessor;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.exception.IntegrationException;
@@ -62,19 +56,16 @@ class JiraServerCreateIssueEventHandlerTest {
     private Gson gson = new Gson();
     private AtomicInteger issueCounter;
     private EventManager eventManager;
-    private DefaultJobSubTaskAccessor jobSubTaskAccessor;
     private IssueTrackerResponsePostProcessor responsePostProcessor;
     private DefaultJiraServerJobDetailsAccessor jobDetailsAccessor;
+    private ExecutingJobManager executingJobManager;
 
     @BeforeEach
     public void init() {
         issueCounter = new AtomicInteger(0);
         eventManager = Mockito.mock(EventManager.class);
+        executingJobManager = Mockito.mock(ExecutingJobManager.class);
         responsePostProcessor = new ProviderCallbackIssueTrackerResponsePostProcessor(eventManager);
-
-        MockJobSubTaskStatusRepository subTaskRepository = new MockJobSubTaskStatusRepository();
-        MockCorrelationToNotificationRelationRepository relationRepository = new MockCorrelationToNotificationRelationRepository();
-        jobSubTaskAccessor = new DefaultJobSubTaskAccessor(subTaskRepository, relationRepository);
 
         MockJiraServerJobDetailsRepository jiraServerJobDetailsRepository = new MockJiraServerJobDetailsRepository();
         MockJiraServerJobCustomFieldRepository jiraServerJobCustomFieldRepository = new MockJiraServerJobCustomFieldRepository();
@@ -87,7 +78,7 @@ class JiraServerCreateIssueEventHandlerTest {
 
     @Test
     void handleUnknownJobTest() {
-        UUID parentEventId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
 
@@ -101,27 +92,24 @@ class JiraServerCreateIssueEventHandlerTest {
             callbackInfoCreator,
             issueCategoryRetriever,
             eventManager,
-            jobSubTaskAccessor
+            executingJobManager
         );
-
-        JiraServerJobDetailsModel jobDetailsModel = createJobDetails(jobId);
-        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobDetailsModel.getJobId(), 1L, notificationIds);
 
         JiraServerCreateIssueEventHandler handler = new JiraServerCreateIssueEventHandler(
             eventManager,
-            jobSubTaskAccessor,
             gson,
             propertiesFactory,
             messageSenderFactory,
             jobDetailsAccessor,
-            responsePostProcessor
+            responsePostProcessor,
+            executingJobManager
         );
 
         LinkableItem provider = new LinkableItem("provider", "test-provider");
         IssueCreationModel issueCreationModel = IssueCreationModel.simple("title", "description", List.of(), provider);
         JiraServerCreateIssueEvent event = new JiraServerCreateIssueEvent(
             IssueTrackerCreateIssueEvent.createDefaultEventDestination(ChannelKeys.JIRA_SERVER),
-            parentEventId,
+            jobExecutionId,
             jobId,
             notificationIds,
             issueCreationModel
@@ -129,18 +117,15 @@ class JiraServerCreateIssueEventHandlerTest {
 
         handler.handle(event);
         assertEquals(0, issueCounter.get());
-        Optional<JobSubTaskStatusModel> jobSubTaskStatusModelOptional = jobSubTaskAccessor.getSubTaskStatus(parentEventId);
-        assertTrue(jobSubTaskStatusModelOptional.isEmpty());
     }
 
     @Test
     void handleIssueQueryBlankTest() throws IntegrationException {
-        UUID parentEventId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
 
         JiraServerJobDetailsModel jobDetailsModel = createJobDetails(jobId);
-        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobDetailsModel.getJobId(), 1L, notificationIds);
 
         JiraServerPropertiesFactory propertiesFactory = Mockito.mock(JiraServerPropertiesFactory.class);
         JiraServerProperties jiraProperties = Mockito.mock(JiraServerProperties.class);
@@ -177,25 +162,25 @@ class JiraServerCreateIssueEventHandlerTest {
             callbackInfoCreator,
             issueCategoryRetriever,
             eventManager,
-            jobSubTaskAccessor
+            executingJobManager
         );
 
         jobDetailsAccessor.saveConcreteJobDetails(jobId, jobDetailsModel);
         JiraServerCreateIssueEventHandler handler = new JiraServerCreateIssueEventHandler(
             eventManager,
-            jobSubTaskAccessor,
             gson,
             propertiesFactory,
             messageSenderFactory,
             jobDetailsAccessor,
-            responsePostProcessor
+            responsePostProcessor,
+            executingJobManager
         );
 
         LinkableItem provider = new LinkableItem("provider", "test-provider");
         IssueCreationModel issueCreationModel = IssueCreationModel.simple("title", "description", List.of(), provider);
         JiraServerCreateIssueEvent event = new JiraServerCreateIssueEvent(
             IssueTrackerCreateIssueEvent.createDefaultEventDestination(ChannelKeys.JIRA_SERVER),
-            parentEventId,
+            jobExecutionId,
             jobId,
             notificationIds,
             issueCreationModel
@@ -203,18 +188,15 @@ class JiraServerCreateIssueEventHandlerTest {
 
         handler.handle(event);
         assertEquals(1, issueCounter.get());
-        Optional<JobSubTaskStatusModel> jobSubTaskStatusModelOptional = jobSubTaskAccessor.getSubTaskStatus(parentEventId);
-        assertFalse(jobSubTaskStatusModelOptional.isPresent());
     }
 
     @Test
     void handleIssueIssueDoesNotExistTest() throws IntegrationException {
-        UUID parentEventId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
 
         JiraServerJobDetailsModel jobDetailsModel = createJobDetails(jobId);
-        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobDetailsModel.getJobId(), 1L, notificationIds);
 
         JiraServerPropertiesFactory propertiesFactory = Mockito.mock(JiraServerPropertiesFactory.class);
         JiraServerProperties jiraProperties = Mockito.mock(JiraServerProperties.class);
@@ -251,18 +233,18 @@ class JiraServerCreateIssueEventHandlerTest {
             callbackInfoCreator,
             issueCategoryRetriever,
             eventManager,
-            jobSubTaskAccessor
+            executingJobManager
         );
 
         jobDetailsAccessor.saveConcreteJobDetails(jobId, jobDetailsModel);
         JiraServerCreateIssueEventHandler handler = new JiraServerCreateIssueEventHandler(
             eventManager,
-            jobSubTaskAccessor,
             gson,
             propertiesFactory,
             messageSenderFactory,
             jobDetailsAccessor,
-            responsePostProcessor
+            responsePostProcessor,
+            executingJobManager
         );
 
         LinkableItem provider = new LinkableItem("provider", "test-provider");
@@ -276,7 +258,7 @@ class JiraServerCreateIssueEventHandlerTest {
         IssueCreationModel issueCreationModel = IssueCreationModel.project("title", "description", List.of(), projectIssueModel, "JQL Query String");
         JiraServerCreateIssueEvent event = new JiraServerCreateIssueEvent(
             IssueTrackerCreateIssueEvent.createDefaultEventDestination(ChannelKeys.JIRA_SERVER),
-            parentEventId,
+            jobExecutionId,
             jobId,
             notificationIds,
             issueCreationModel
@@ -284,18 +266,15 @@ class JiraServerCreateIssueEventHandlerTest {
 
         handler.handle(event);
         assertEquals(1, issueCounter.get());
-        Optional<JobSubTaskStatusModel> jobSubTaskStatusModelOptional = jobSubTaskAccessor.getSubTaskStatus(parentEventId);
-        assertFalse(jobSubTaskStatusModelOptional.isPresent());
     }
 
     @Test
     void handleIssueIssueExistsTest() throws IntegrationException {
-        UUID parentEventId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
 
         JiraServerJobDetailsModel jobDetailsModel = createJobDetails(jobId);
-        jobSubTaskAccessor.createSubTaskStatus(parentEventId, jobDetailsModel.getJobId(), 1L, notificationIds);
 
         JiraServerPropertiesFactory propertiesFactory = Mockito.mock(JiraServerPropertiesFactory.class);
         JiraServerProperties jiraProperties = Mockito.mock(JiraServerProperties.class);
@@ -330,18 +309,18 @@ class JiraServerCreateIssueEventHandlerTest {
             callbackInfoCreator,
             issueCategoryRetriever,
             eventManager,
-            jobSubTaskAccessor
+            executingJobManager
         );
 
         jobDetailsAccessor.saveConcreteJobDetails(jobId, jobDetailsModel);
         JiraServerCreateIssueEventHandler handler = new JiraServerCreateIssueEventHandler(
             eventManager,
-            jobSubTaskAccessor,
             gson,
             propertiesFactory,
             messageSenderFactory,
             jobDetailsAccessor,
-            responsePostProcessor
+            responsePostProcessor,
+            executingJobManager
         );
 
         LinkableItem provider = new LinkableItem("provider", "test-provider");
@@ -350,7 +329,7 @@ class JiraServerCreateIssueEventHandlerTest {
         IssueCreationModel issueCreationModel = IssueCreationModel.project("title", "description", List.of(), projectIssueModel, "JQL Query String");
         JiraServerCreateIssueEvent event = new JiraServerCreateIssueEvent(
             IssueTrackerCreateIssueEvent.createDefaultEventDestination(ChannelKeys.JIRA_SERVER),
-            parentEventId,
+            jobExecutionId,
             jobId,
             notificationIds,
             issueCreationModel
@@ -358,8 +337,6 @@ class JiraServerCreateIssueEventHandlerTest {
 
         handler.handle(event);
         assertEquals(0, issueCounter.get());
-        Optional<JobSubTaskStatusModel> jobSubTaskStatusModelOptional = jobSubTaskAccessor.getSubTaskStatus(parentEventId);
-        assertFalse(jobSubTaskStatusModelOptional.isPresent());
     }
 
     // Helper Methods

@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -41,7 +42,18 @@ class BomEditNotificationDetailExtractorTest {
         NotificationExtractorBlackDuckServicesFactoryCache cache = createCache(blackDuckConfigId, projectName, projectVersionName);
         BomEditNotificationDetailExtractor extractor = new BomEditNotificationDetailExtractor(cache);
 
-        AlertNotificationModel notification = new AlertNotificationModel(0L, blackDuckConfigId, "BlackDuck", "Config 1", null, null, null, null, false);
+        AlertNotificationModel notification = new AlertNotificationModel(
+            0L,
+            blackDuckConfigId,
+            "BlackDuck",
+            "Config 1",
+            null,
+            null,
+            null,
+            null,
+            false,
+            String.format("content-id-%s", UUID.randomUUID())
+        );
 
         List<DetailedNotificationContent> detailedNotificationContents = extractor.extractDetailedContent(notification, notificationView);
         assertEquals(1, detailedNotificationContents.size());
@@ -69,7 +81,18 @@ class BomEditNotificationDetailExtractorTest {
 
         BomEditNotificationDetailExtractor extractor = new BomEditNotificationDetailExtractor(cache);
 
-        AlertNotificationModel notification = new AlertNotificationModel(0L, blackDuckConfigId, "BlackDuck", "Config 1", null, null, null, null, false);
+        AlertNotificationModel notification = new AlertNotificationModel(
+            0L,
+            blackDuckConfigId,
+            "BlackDuck",
+            "Config 1",
+            null,
+            null,
+            null,
+            null,
+            false,
+            String.format("content-id-%s", UUID.randomUUID())
+        );
 
         List<DetailedNotificationContent> detailedNotificationContents = extractor.extractDetailedContent(notification, notificationView);
 

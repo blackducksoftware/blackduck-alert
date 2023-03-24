@@ -30,7 +30,7 @@ public class EncryptionSettingsEnvironmentVariableHandler extends EnvironmentVar
 
     @Autowired
     public EncryptionSettingsEnvironmentVariableHandler(EnvironmentVariableUtility environmentVariableUtility) {
-        super(HANDLER_NAME, Set.of(ENCRYPTION_PASSWORD_KEY, ENCRYPTION_SALT_KEY));
+        super(HANDLER_NAME, Set.of(ENCRYPTION_PASSWORD_KEY, ENCRYPTION_SALT_KEY), environmentVariableUtility);
         this.environmentVariableUtility = environmentVariableUtility;
     }
 

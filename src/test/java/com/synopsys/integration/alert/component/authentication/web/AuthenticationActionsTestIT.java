@@ -38,7 +38,10 @@ import org.springframework.security.ldap.authentication.LdapAuthenticationProvid
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.api.authentication.security.event.AuthenticationEventManager;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.synopsys.integration.alert.authentication.ldap.LDAPAuthenticationPerformer;
+import com.synopsys.integration.alert.authentication.ldap.action.LDAPManager;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
@@ -46,9 +49,6 @@ import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationEx
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.component.authentication.security.AlertAuthenticationProvider;
 import com.synopsys.integration.alert.component.authentication.security.database.AlertDatabaseAuthenticationPerformer;
-import com.synopsys.integration.alert.component.authentication.security.event.AuthenticationEventManager;
-import com.synopsys.integration.alert.component.authentication.security.ldap.LdapAuthenticationPerformer;
-import com.synopsys.integration.alert.component.authentication.security.ldap.LdapManager;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 import com.synopsys.integration.alert.mock.model.MockLoginRestModel;
 import com.synopsys.integration.alert.test.common.TestProperties;
@@ -66,7 +66,7 @@ class AuthenticationActionsTestIT {
     @Autowired
     private DefaultUserAccessor userAccessor;
     @Autowired
-    private LdapManager ldapManager;
+    private LDAPManager ldapManager;
     @Autowired
     private AlertAuthenticationProvider authenticationProvider;
     @Autowired
@@ -132,9 +132,9 @@ class AuthenticationActionsTestIT {
         Mockito.when(authentication.isAuthenticated()).thenReturn(true);
         LdapAuthenticationProvider ldapAuthenticationProvider = Mockito.mock(LdapAuthenticationProvider.class);
         Mockito.when(ldapAuthenticationProvider.authenticate(Mockito.any(Authentication.class))).thenReturn(authentication);
-        LdapManager mockLdapManager = Mockito.mock(LdapManager.class);
-        Mockito.when(mockLdapManager.isLdapEnabled()).thenReturn(true);
-        Mockito.when(mockLdapManager.getAuthenticationProvider()).thenReturn(Optional.of(ldapAuthenticationProvider));
+        LDAPManager mockLDAPManager = Mockito.mock(LDAPManager.class);
+        Mockito.when(mockLDAPManager.isLDAPEnabled()).thenReturn(true);
+        Mockito.when(mockLDAPManager.getAuthenticationProvider()).thenReturn(Optional.of(ldapAuthenticationProvider));
 
         AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, csrfTokenRepository);
         ActionResponse<Void> response = authenticationActions.authenticateUser(servletRequest, servletResponse, mockLoginRestModel.createRestModel());
@@ -150,17 +150,21 @@ class AuthenticationActionsTestIT {
         Mockito.when(authentication.isAuthenticated()).thenReturn(true);
         LdapAuthenticationProvider ldapAuthenticationProvider = Mockito.mock(LdapAuthenticationProvider.class);
         Mockito.when(ldapAuthenticationProvider.authenticate(Mockito.any(Authentication.class))).thenReturn(authentication);
-        LdapManager mockLdapManager = Mockito.mock(LdapManager.class);
-        Mockito.when(mockLdapManager.isLdapEnabled()).thenReturn(true);
-        Mockito.when(mockLdapManager.getAuthenticationProvider()).thenThrow(new AlertConfigurationException("LDAP CONFIG EXCEPTION"));
+        LDAPManager mockLDAPManager = Mockito.mock(LDAPManager.class);
+        Mockito.when(mockLDAPManager.isLDAPEnabled()).thenReturn(true);
+        Mockito.when(mockLDAPManager.getAuthenticationProvider()).thenThrow(new AlertConfigurationException("LDAP CONFIG EXCEPTION"));
         DaoAuthenticationProvider databaseProvider = Mockito.mock(DaoAuthenticationProvider.class);
         Mockito.when(databaseProvider.authenticate(Mockito.any(Authentication.class))).thenReturn(authentication);
         AuthenticationEventManager authenticationEventManager = Mockito.mock(AuthenticationEventManager.class);
         Mockito.doNothing().when(authenticationEventManager).sendAuthenticationEvent(Mockito.any(), Mockito.eq(AuthenticationType.LDAP));
         RoleAccessor roleAccessor = Mockito.mock(RoleAccessor.class);
 
-        AlertDatabaseAuthenticationPerformer alertDatabaseAuthenticationPerformer = new AlertDatabaseAuthenticationPerformer(authenticationEventManager, roleAccessor, databaseProvider);
-        LdapAuthenticationPerformer ldapAuthenticationPerformer = new LdapAuthenticationPerformer(authenticationEventManager, roleAccessor, mockLdapManager);
+        AlertDatabaseAuthenticationPerformer alertDatabaseAuthenticationPerformer = new AlertDatabaseAuthenticationPerformer(
+            authenticationEventManager,
+            roleAccessor,
+            databaseProvider
+        );
+        LDAPAuthenticationPerformer ldapAuthenticationPerformer = new LDAPAuthenticationPerformer(authenticationEventManager, roleAccessor, mockLDAPManager);
         AlertAuthenticationProvider authenticationProvider = new AlertAuthenticationProvider(List.of(ldapAuthenticationPerformer, alertDatabaseAuthenticationPerformer));
 
         AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, csrfTokenRepository);
