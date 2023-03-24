@@ -100,7 +100,6 @@ export function verifyLogin() {
 
 export function verifySaml() {
     return (dispatch) => {
-
         const ignoreSAML = extractIgnoreSAMLParam();
 
         dispatch(initializing());

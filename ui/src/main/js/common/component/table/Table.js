@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import SearchFilter from 'common/component/table/SearchFilter';
 import TableBody from 'common/component/table/TableBody';
@@ -21,8 +22,8 @@ const useStyles = createUseStyles({
 });
 
 
-const Table = ({ columns, multiSelect, selected, onSelected, tableData, handleSearchChange, 
-    searchBarPlaceholder, tableActions, onToggle, active,  }) => {
+const Table = ({ columns, multiSelect, selected, onSelected, disableSelectOptions, tableData, handleSearchChange, 
+    searchBarPlaceholder, tableActions, onToggle, active, onSort, sortConfig }) => {
     const classes = useStyles();
 
     return (
@@ -45,6 +46,8 @@ const Table = ({ columns, multiSelect, selected, onSelected, tableData, handleSe
                     multiSelect={multiSelect} 
                     selected={selected}
                     onSelected={onSelected}
+                    onSort={onSort}
+                    sortConfig={sortConfig}
                 />
                 <TableBody 
                     columns={columns} 
@@ -52,10 +55,34 @@ const Table = ({ columns, multiSelect, selected, onSelected, tableData, handleSe
                     tableData={tableData} 
                     selected={selected}
                     onSelected={onSelected}
+                    disableSelectOptions={disableSelectOptions}
                 />
             </table>
         </>
     );
+};
+
+Table.propTypes = {
+    columns: PropTypes.arrayOf(PropTypes.shape({
+        key: PropTypes.string,
+        label: PropTypes.string,
+        sortable: PropTypes.bool
+    })),
+    multiSelect: PropTypes.bool,
+    selected: PropTypes.arrayOf(PropTypes.string),
+    onSelected: PropTypes.func,
+    disableSelectOptions: PropTypes.object,
+    tableData: PropTypes.arrayOf(PropTypes.object),
+    handleSearchChange: PropTypes.func, 
+    searchBarPlaceholder: PropTypes.string,
+    tableActions: PropTypes.func,
+    onToggle: PropTypes.func,
+    active: PropTypes.bool,
+    onSort: PropTypes.func,
+    sortConfig: PropTypes.shape({
+        name: PropTypes.string,
+        direction: PropTypes.string
+    })
 };
 
 export default Table;

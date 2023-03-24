@@ -17,7 +17,7 @@ import { BLACKDUCK_INFO } from 'page/provider/blackduck/BlackDuckModel';
 import { AUDIT_INFO } from 'page/audit/AuditModel';
 import { CERTIFICATE_INFO } from 'page/certificates/CertificateModel';
 import { TASK_MANAGEMENT_INFO } from 'page/task/TaskManagementModel';
-import { USER_MANAGEMENT_INFO } from 'page/user/UserModel';
+import { USER_MANAGEMENT_INFO } from 'page/usermgmt/UserModel';
 import { DESCRIPTOR_TYPE, doesDescriptorExist } from 'common/util/descriptorUtilities';
 import { DISTRIBUTION_INFO, DISTRIBUTION_URLS } from 'page/distribution/DistributionModel';
 
