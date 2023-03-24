@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import RoleDeleteModal from 'page/user/roles/RoleDeleteModal';
-import RoleModal from 'page/user/roles/RoleModal';
+import RoleDeleteModal from 'page/usermgmt/roles/RoleDeleteModal';
+import RoleModal from 'page/usermgmt/roles/RoleModal';
 import StatusMessage from 'common/component/StatusMessage';
 import { fetchRoles } from '../../../store/actions/roles';
 

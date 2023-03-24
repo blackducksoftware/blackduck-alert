@@ -113,6 +113,7 @@ const UserTable = ({ canCreate, canDelete }) => {
         setTableData(!search ? data : data.filter((user) => user.username.toLowerCase().includes(search.toLowerCase())));
     }, [users, search, sortConfig]);
 
+    console.log('users', tableData, users);
     return (
         <Table
             tableData={tableData}

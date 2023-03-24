@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import Table from 'common/component/table/Table';
-import PermissionTableActions from 'page/user/roles/PermissionTableActions';
-import PermissionCell from 'page/user/roles/PermissionCell';
-import DescriptorNameCell from 'page/user/roles/DescriptorNameCell';
-import PermissionRowAction from 'page/user/roles/PermissionRowAction';
+import PermissionTableActions from 'page/usermgmt/roles/PermissionTableActions';
+import PermissionCell from 'page/usermgmt/roles/PermissionCell';
+import DescriptorNameCell from 'page/usermgmt/roles/DescriptorNameCell';
+import PermissionRowAction from 'page/usermgmt/roles/PermissionRowAction';
 import * as DescriptorUtilities from 'common/util/descriptorUtilities';
 import { useSelector } from 'react-redux';
 

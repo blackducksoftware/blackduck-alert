@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchRoles } from 'store/actions/roles';
-import RoleCopyCell from 'page/user/roles/RoleCopyCell';
-import RoleEditCell from 'page/user/roles/RoleEditCell';
 import Table from 'common/component/table/Table';
-import RoleTableActions from 'page/user/roles/RoleTableActions';
+import RoleCopyCell from 'page/usermgmt/roles//RoleCopyCell';
+import RoleEditCell from 'page/usermgmt/roles/RoleEditCell';
+import RoleTableActions from 'page/usermgmt/roles/RoleTableActions';
 
 const COLUMNS = [{
     key: 'roleName',
@@ -27,10 +27,12 @@ const COLUMNS = [{
 
 const RolesTable = ({ canCreate, canDelete }) => {
     const dispatch = useDispatch();
+    const [tableData, setTableData] = useState();
     const [search, setNewSearch] = useState('');
     const [selected, setSelected] = useState([]);
     const [autoRefresh, setAutoRefresh] = useState(false);
-    const roles = useSelector((state) => state.roles);
+    const [sortConfig, setSortConfig] = useState()
+    const roles = useSelector((state) => state.roles.data);
 
     useEffect(() => {
         dispatch(fetchRoles());
@@ -59,10 +61,44 @@ const RolesTable = ({ canCreate, canDelete }) => {
         setAutoRefresh(!autoRefresh);
     }
 
+    const onSort = (name) => {
+        if (name !== sortConfig?.name || !sortConfig) {
+            return setSortConfig({ name, direction: 'ASC' });
+        }
+
+        if (name === sortConfig?.name && sortConfig?.direction === 'DESC') {
+            return setSortConfig();
+        }
+
+        if (name === sortConfig?.name) {
+            return setSortConfig({ name, direction: 'DESC' });
+        }
+
+        return setSortConfig();
+    };
+
+    useEffect(() => {
+        let data = roles;
+
+        if (sortConfig) {
+            const { name, direction } = sortConfig;
+            data = [...data].sort((a, b) => {
+                if (a[name] === null) return 1;
+                if (b[name] === null) return -1;
+                if (a[name] === null && b[name] === null) return 0;
+                return (
+                    a[name].toString().localeCompare(b[name].toString(), 'en', { numeric: true }) * (direction === 'ASC' ? 1 : -1)
+                );
+            });
+        }
+
+        setTableData(!search ? data : data.filter((role) => role.roleName.toLowerCase().includes(search.toLowerCase())));
+    }, [roles, search, sortConfig]);
+
     return (
         <>
             <Table
-                tableData={roles.data}
+                tableData={tableData}
                 columns={COLUMNS}
                 multiSelect
                 selected={selected}
@@ -71,6 +107,8 @@ const RolesTable = ({ canCreate, canDelete }) => {
                 handleSearchChange={handleSearchChange}
                 active={autoRefresh}
                 onToggle={handleToggle}
+                onSort={onSort}
+                sortConfig={sortConfig}
                 tableActions={() => <RoleTableActions canCreate={canCreate} canDelete={canDelete} data={roles.data} selected={selected} />}
             />
         </>

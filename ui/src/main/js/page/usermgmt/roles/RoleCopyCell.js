@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import RoleModal from 'page/user/roles/RoleModal';
+import RoleModal from 'page/usermgmt/roles/RoleModal';
 
 const useStyles = createUseStyles({
     copyCell: {
