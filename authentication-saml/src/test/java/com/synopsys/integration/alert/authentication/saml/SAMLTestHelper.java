@@ -1,5 +1,9 @@
 package com.synopsys.integration.alert.authentication.saml;
 
+import java.nio.file.Path;
+import java.util.Map;
+import java.util.UUID;
+
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.authentication.saml.database.accessor.SAMLConfigAccessor;
@@ -15,10 +19,6 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
-
-import java.nio.file.Path;
-import java.util.Map;
-import java.util.UUID;
 
 public class SAMLTestHelper {
     public static final String TEST_PRIVATE_KEY = "-----BEGIN PRIVATE KEY-----\n" +
@@ -197,7 +197,6 @@ public class SAMLTestHelper {
                 this.metadataUrl,
                 this.metadataFileName,
                 this.metadataMode,
-                this.wantAssertionsSigned,
                 this.encryptionCertFileName,
                 this.encryptionPrivateKeyFileName,
                 this.signingCertFileName,
