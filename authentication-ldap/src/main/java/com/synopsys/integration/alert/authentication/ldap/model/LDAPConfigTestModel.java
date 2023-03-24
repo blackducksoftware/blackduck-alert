@@ -1,6 +1,12 @@
 package com.synopsys.integration.alert.authentication.ldap.model;
 
-public class LDAPConfigTestModel {
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+
+public class LDAPConfigTestModel extends AlertSerializableModel {
+    private static final long serialVersionUID = 6421872579523951087L;
+
+    @JsonProperty("ldapConfigModel")
     private LDAPConfigModel ldapConfigModel;
     private String testLDAPUsername;
     private String testLDAPPassword;
