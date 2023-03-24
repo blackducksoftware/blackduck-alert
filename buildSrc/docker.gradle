@@ -23,6 +23,7 @@ clean.finalizedBy(project.tasks.findByName(dockerCleanStagingAreaDirectory))
 project.tasks.create(name: dockerRemoveAllImages, group: 'Docker', description: 'Remove docker images and staging area for project') {
     dockerTasksCreated.add(dockerRemoveAllImages)
 }
+clean.finalizedBy(project.tasks.findByName(dockerRemoveAllImages))
 
 project.tasks.create(name: dockerSetupStagingAreaDirectory, type: Copy, group: 'Docker', description: 'Populate staging area used for creating Docker images') {
     dockerTasksCreated.add(dockerSetupStagingAreaDirectory)
