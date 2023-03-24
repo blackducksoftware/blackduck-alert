@@ -47,7 +47,7 @@ task helmDryRun(type: Exec) {
 
 task helmPackage(type: Exec) {
     workingDir = "${project.buildDir}/deployment/helm/synopsys-alert/"
-    commandLine "helm", "package", "${project.buildDir}/deployment/helm/synopsys-alert/"
+    commandLine "helm", "package", "${project.buildDir}/deployment/helm/synopsys-alert/", "-d", "${project.buildDir}/helmchart"
 }
 
 task helmValidation(dependsOn: [copyDeploymentFiles, helmLint, helmDryRun, helmPackage]) {
@@ -57,7 +57,7 @@ task helmValidation(dependsOn: [copyDeploymentFiles, helmLint, helmDryRun, helmP
 }
 
 task helmPushChart(type: Exec) {
-    workingDir = "${project.buildDir}/deployment/helm/synopsys-alert/"
+    workingDir = "${project.buildDir}/helmchart/"
     standardOutput = new ByteArrayOutputStream()
     doFirst {
         if (!project.ext.isSnapshot) {
@@ -73,7 +73,7 @@ task helmPushChart(type: Exec) {
 }
 
 task helmPushChartBackup(type: Exec) {
-    workingDir = "${project.buildDir}/deployment/helm/synopsys-alert/"
+    workingDir = "${project.buildDir}/helmchart/"
     standardOutput = new ByteArrayOutputStream()
     doFirst {
         if (!project.ext.isSnapshot) {
