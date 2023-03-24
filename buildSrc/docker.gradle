@@ -122,7 +122,6 @@ dockerImagesToBuild.each { imageName ->
             }
         }
     }
-    project.tasks.findByName(dockerRemoveAllImages).dependsOn dockerImageRemoveTaskName
 
     project.tasks.create(name: dockerImageBuildTaskName, type: Exec, group: 'Docker', description: "Build ${imageName} docker image") {
         dockerTasksCreated.add(dockerImageBuildTaskName)
