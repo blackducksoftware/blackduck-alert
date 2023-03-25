@@ -59,7 +59,7 @@ project.tasks.create(name: dockerLoginDockerHub, type: Exec, group: 'Docker', de
 
     commandLine 'docker', 'login', '--username', dockerLoginUsername, '--password-stdin'
 
-    onlyIf {
+    onlyIf(envVarsNotExistMsg) {
         System.env.DOCKER_INT_BLACKDUCK_USER != null && System.env.DOCKER_INT_BLACKDUCK_PASSWORD != null
     }
 }
@@ -68,7 +68,7 @@ project.tasks.create(name: dockerPublishAllImages, group: 'Docker', description:
     dockerTasksCreated.add(dockerPublishAllImages)
     dependsOn project.tasks.findByName(dockerLoginDockerHub), project.tasks.findByName(dockerBuildAllImages)
 
-    onlyIf {
+    onlyIf(envVarsNotExistMsg) {
         System.env.DOCKER_INT_BLACKDUCK_USER != null && System.env.DOCKER_INT_BLACKDUCK_PASSWORD != null
     }
 }
