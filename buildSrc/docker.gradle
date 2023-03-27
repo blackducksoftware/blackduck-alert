@@ -203,6 +203,7 @@ dockerImagesToBuild.each { imageName ->
     project.tasks.create(name: dockerImageLoginARTTaskName, type: Exec, group: 'Docker_Artifactory', description: 'Docker login to Artifactory') {
         dockerTasksCreated.add(dockerImageLoginARTTaskName)
         outputs.upToDateWhen { false }
+        dependsOn project.tasks.findByName(dockerImageTagARTaskName)
 
         String dockerLoginUsername = System.env.ARTIFACTORY_DEPLOYER_USER ?: '<Not Set>'
         doFirst {
