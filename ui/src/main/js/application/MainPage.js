@@ -34,6 +34,7 @@ import CertificatesPage from 'page/certificates/CertificatesPage';
 import CertificatesPageLayout from 'page/certificates/CertificatesPageLayout';
 import { TASK_MANAGEMENT_INFO } from 'page/task/TaskManagementModel';
 import TaskManagement from 'page/task/TaskManagement';
+import TaskManagementLayout from 'page/task/TaskManagementLayout';
 import { USER_MANAGEMENT_INFO } from 'page/usermgmt/UserModel';
 import UserManagement from 'page/usermgmt/UserManagement';
 import { CONTEXT_TYPE, isOperationAssigned, OPERATIONS } from 'common/util/descriptorUtilities';
@@ -294,7 +295,14 @@ const MainPage = ({
                 urlName={TASK_MANAGEMENT_INFO.url}
                 descriptor={globalDescriptorMap[TASK_MANAGEMENT_INFO.key]}
                 render={() => (
-                    <TaskManagement />
+                    <BetaPage betaSelected>
+                        <BetaComponent>
+                            <TaskManagementLayout />
+                        </BetaComponent>
+                        <CurrentComponent>
+                            <TaskManagement />
+                        </CurrentComponent>
+                    </BetaPage>
                 )}
             />
             <DescriptorRoute
