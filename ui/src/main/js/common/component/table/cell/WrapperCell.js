@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { createUseStyles } from 'react-jss';
 
@@ -30,7 +31,12 @@ const WrapperCell = ({ children, settings }) => {
         <td className={cellStyle}>
             {children}
         </td>
-    )
+    );
+};
+
+WrapperCell.propTypes = {
+    settings: PropTypes.object,
+    children: PropTypes.any
 };
 
 export default WrapperCell;

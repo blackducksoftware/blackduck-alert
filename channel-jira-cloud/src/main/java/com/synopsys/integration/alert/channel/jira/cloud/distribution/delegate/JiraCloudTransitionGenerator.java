@@ -18,20 +18,26 @@ import com.synopsys.integration.alert.descriptor.api.JiraCloudChannelKey;
 
 public class JiraCloudTransitionGenerator implements IssueTrackerTransitionEventGenerator<String> {
     private JiraCloudChannelKey channelKey;
-    private UUID parentEventId;
+    private final UUID jobExecutionId;
     private UUID jobId;
 
     private Set<Long> notificationIds;
 
-    public JiraCloudTransitionGenerator(JiraCloudChannelKey channelKey, UUID parentEventId, UUID jobId, Set<Long> notificationIds) {
+    public JiraCloudTransitionGenerator(JiraCloudChannelKey channelKey, UUID jobExecutionId, UUID jobId, Set<Long> notificationIds) {
         this.channelKey = channelKey;
-        this.parentEventId = parentEventId;
+        this.jobExecutionId = jobExecutionId;
         this.jobId = jobId;
         this.notificationIds = notificationIds;
     }
 
     @Override
     public IssueTrackerTransitionIssueEvent<String> generateEvent(IssueTransitionModel<String> model) {
-        return new JiraCloudTransitionEvent(IssueTrackerTransitionIssueEvent.createDefaultEventDestination(channelKey), parentEventId, jobId, notificationIds, model);
+        return new JiraCloudTransitionEvent(
+            IssueTrackerTransitionIssueEvent.createDefaultEventDestination(channelKey),
+            jobExecutionId,
+            jobId,
+            notificationIds,
+            model
+        );
     }
 }

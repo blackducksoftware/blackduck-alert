@@ -1,5 +1,6 @@
 package com.synopsys.integration.alert.processing;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -15,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
@@ -24,10 +24,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.task.SyncTaskExecutor;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
@@ -49,17 +49,22 @@ import com.synopsys.integration.alert.database.api.DefaultConfigurationModelConf
 import com.synopsys.integration.alert.database.api.DefaultNotificationAccessor;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import com.synopsys.integration.alert.processor.api.JobNotificationContentProcessor;
 import com.synopsys.integration.alert.processor.api.NotificationContentProcessor;
 import com.synopsys.integration.alert.processor.api.NotificationMappingProcessor;
 import com.synopsys.integration.alert.processor.api.NotificationProcessingLifecycleCache;
 import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExtractionDelegator;
+import com.synopsys.integration.alert.processor.api.digest.ProjectMessageDigester;
+import com.synopsys.integration.alert.processor.api.distribute.DistributionEvent;
 import com.synopsys.integration.alert.processor.api.distribute.ProviderMessageDistributor;
 import com.synopsys.integration.alert.processor.api.event.JobProcessingEvent;
+import com.synopsys.integration.alert.processor.api.extract.ProviderMessageExtractionDelegator;
 import com.synopsys.integration.alert.processor.api.extract.model.ProcessedProviderMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.ProcessedProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.processor.api.filter.NotificationContentWrapper;
+import com.synopsys.integration.alert.processor.api.summarize.ProjectMessageSummarizer;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.BlackDuckMessageLabels;
@@ -95,14 +100,22 @@ class ProcessingJobEventHandlerTestIT {
     @Autowired
     private NotificationMappingProcessor notificationProcessor;
     @Autowired
+    private ProjectMessageDigester projectMessageDigester;
+    @Autowired
+    private ProjectMessageSummarizer projectMessageSummarizer;
+    @Autowired
     private Gson gson;
+
+    @Autowired
+    private ExecutingJobManager executingJobManager;
 
     private Long blackDuckGlobalConfigId;
     private UUID channelGlobalConfigId;
     private NotificationContentProcessor notificationContentProcessor;
+    private JobNotificationContentProcessor jobNotificationContentProcessor;
     private TestProperties properties;
 
-    private Map<UUID, Set<Long>> notificationsDistributed = new HashMap<>();
+    private final Map<UUID, Set<String>> jobExecutionIdAndEventIdMap = new HashMap<>();
 
     @BeforeEach
     public void init() throws AlertConfigurationException {
@@ -138,11 +151,12 @@ class ProcessingJobEventHandlerTestIT {
         EmailGlobalConfigModel emailGlobalConfigModel = emailGlobalConfigAccessor.createConfiguration(channelConfig);
         channelGlobalConfigId = UUID.fromString(emailGlobalConfigModel.getId());
         notificationContentProcessor = createContentProcessor();
+        jobNotificationContentProcessor = createJobContentProcessor();
     }
 
     @AfterEach
     public void cleanUpDB() {
-        if (!notificationsDistributed.isEmpty()) {
+        if (!jobExecutionIdAndEventIdMap.isEmpty()) {
             notificationAccessor.deleteNotificationsCreatedBefore(OffsetDateTime.now(ZoneOffset.UTC));
         }
         defaultConfigurationAccessor.deleteConfiguration(blackDuckGlobalConfigId);
@@ -155,17 +169,16 @@ class ProcessingJobEventHandlerTestIT {
         UUID correlationId = UUID.randomUUID();
         UUID jobId = distributionJobModel.getJobId();
         ProcessingJobEventHandler eventHandler = new ProcessingJobEventHandler(
-            notificationDetailExtractionDelegator,
-            notificationContentProcessor,
             createMockMessageDistributor(),
             lifecycleCaches,
-            notificationAccessor,
             jobAccessor,
-            jobNotificationMappingAccessor
+            jobNotificationMappingAccessor,
+            jobNotificationContentProcessor,
+            executingJobManager
         );
         JobProcessingEvent event = new JobProcessingEvent(correlationId, jobId);
         eventHandler.handle(event);
-        assertFalse(notificationsDistributed.containsKey(jobId));
+        assertFalse(jobExecutionIdAndEventIdMap.containsKey(jobId));
     }
 
     @Test
@@ -175,26 +188,25 @@ class ProcessingJobEventHandlerTestIT {
         UUID jobId = distributionJobModel.getJobId();
 
         List<AlertNotificationModel> notifications = new ArrayList<>();
-        notifications.add(createNotification());
-        notifications.add(createNotification());
+        notifications.add(createNotification(2));
+        notifications.add(createNotification(1));
         notifications = notificationAccessor.saveAllNotifications(notifications);
 
         notificationProcessor.processNotifications(correlationId, notifications, List.of(distributionJobModel.getDistributionFrequency()));
 
         ProcessingJobEventHandler eventHandler = new ProcessingJobEventHandler(
-            notificationDetailExtractionDelegator,
-            notificationContentProcessor,
             createMockMessageDistributor(),
             lifecycleCaches,
-            notificationAccessor,
             jobAccessor,
-            jobNotificationMappingAccessor
+            jobNotificationMappingAccessor,
+            jobNotificationContentProcessor,
+            executingJobManager
         );
         JobProcessingEvent event = new JobProcessingEvent(correlationId, jobId);
         eventHandler.handle(event);
-        assertTrue(notificationsDistributed.containsKey(jobId));
-        List<Long> notificationIds = notifications.stream().map(AlertNotificationModel::getId).collect(Collectors.toList());
-        assertTrue(notificationsDistributed.get(jobId).containsAll(notificationIds));
+        assertTrue(jobExecutionIdAndEventIdMap.containsKey(jobId));
+        // the events in here are Distribution Events where we don't know the ids
+        assertEquals(2, jobExecutionIdAndEventIdMap.get(jobId).size());
     }
 
     private DistributionJobRequestModel createDistributionJobRequest(NotificationType notificationType) {
@@ -215,6 +227,24 @@ class ProcessingJobEventHandlerTestIT {
             Collections.emptyList(),
             Collections.emptyList(),
             emailJobDetailsModel
+        );
+    }
+
+    private JobNotificationContentProcessor createJobContentProcessor() {
+        ProviderMessageExtractionDelegator providerMessageExtractionDelegator = Mockito.mock(ProviderMessageExtractionDelegator.class);
+        Mockito.doAnswer(invocation -> {
+                NotificationContentWrapper notifications = invocation.getArgument(0);
+                return createNotificationMessageHolder(notifications);
+            })
+            .when(providerMessageExtractionDelegator).extract(Mockito.any());
+        return new JobNotificationContentProcessor(
+            notificationDetailExtractionDelegator,
+            notificationAccessor,
+            jobNotificationMappingAccessor,
+            providerMessageExtractionDelegator,
+            projectMessageDigester,
+            projectMessageSummarizer,
+            executingJobManager
         );
     }
 
@@ -244,15 +274,16 @@ class ProcessingJobEventHandlerTestIT {
         LinkableItem project = new LinkableItem(BlackDuckMessageLabels.LABEL_PROJECT, "Test Project", null);
         LinkableItem projectVersion = new LinkableItem(
             BlackDuckMessageLabels.LABEL_PROJECT_VERSION,
-            "Project Version 1.0"
+            String.format("Project Version 1.0 %s", notificationModel.getProviderCreationTime())
         );
         ProjectMessage projectMessage = ProjectMessage.componentConcern(providerDetails, project, projectVersion, List.of());
         ProcessedProviderMessage<ProjectMessage> processedProviderMessage = ProcessedProviderMessage.singleSource(notificationModel.getId(), projectMessage);
         return new ProcessedProviderMessageHolder(List.of(processedProviderMessage), List.of());
     }
 
-    private AlertNotificationModel createNotification() throws IOException {
-        String content = createVulnerabilityContent();
+    private AlertNotificationModel createNotification(int minuteOffset) throws IOException {
+        VulnerabilityNotificationView notificationView = createVulnerabilityContent();
+        String content = createVulnerabilityContent(notificationView);
 
         return new AlertNotificationModel(
             null,
@@ -262,32 +293,43 @@ class ProcessingJobEventHandlerTestIT {
             NotificationType.VULNERABILITY.name(),
             content,
             OffsetDateTime.now(),
-            OffsetDateTime.now().minusMinutes(1),
-            true
+            OffsetDateTime.now().minusMinutes(minuteOffset),
+            true,
+            String.format("content-id-%s", UUID.randomUUID())
+
         );
     }
 
-    private String createVulnerabilityContent() throws IOException {
+    private VulnerabilityNotificationView createVulnerabilityContent() throws IOException {
         String content = TestResourceUtils.readFileToString(VULNERABILITY_SIMPLE_JSON_PATH);
         VulnerabilityNotificationView notificationContent = gson.fromJson(content, VulnerabilityNotificationView.class);
         notificationContent.setCreatedAt(Date.from(OffsetDateTime.now(ZoneOffset.UTC).toInstant()));
         notificationContent.setType(NotificationType.VULNERABILITY);
 
+        return notificationContent;
+    }
+
+    private String createVulnerabilityContent(VulnerabilityNotificationView notificationContent) {
         return gson.toJson(notificationContent);
     }
 
     private EventManager createMockEventManager() {
         RabbitTemplate rabbitTemplate = Mockito.mock(RabbitTemplate.class);
         Mockito.doNothing().when(rabbitTemplate).convertAndSend(Mockito.anyString(), Mockito.any(Object.class));
-        return new EventManager(gson, rabbitTemplate, new SyncTaskExecutor());
+        EventManager eventManager = Mockito.mock(EventManager.class);
+        Mockito.doAnswer(invocation -> {
+            DistributionEvent event = invocation.getArgument(0, DistributionEvent.class);
+            Set<String> eventIdSet = jobExecutionIdAndEventIdMap.computeIfAbsent(event.getJobId(), ignored -> new HashSet<>());
+            eventIdSet.add(event.getEventId());
+            return null;
+        }).when(eventManager).sendEvent(Mockito.any());
+        return eventManager;
     }
 
     private ProcessingAuditAccessor createMockAuditAccessor() {
         return new ProcessingAuditAccessor() {
             @Override
             public void createOrUpdatePendingAuditEntryForJob(UUID jobId, Set<Long> notificationIds) {
-                Set<Long> currentNotificationIds = notificationsDistributed.computeIfAbsent(jobId, ignored -> new HashSet<>());
-                currentNotificationIds.addAll(notificationIds);
             }
 
             @Override
@@ -326,6 +368,6 @@ class ProcessingJobEventHandlerTestIT {
     private ProviderMessageDistributor createMockMessageDistributor() {
         EventManager eventManager = createMockEventManager();
         ProcessingAuditAccessor auditAccessor = createMockAuditAccessor();
-        return new ProviderMessageDistributor(auditAccessor, eventManager);
+        return new ProviderMessageDistributor(auditAccessor, eventManager, executingJobManager);
     }
 }

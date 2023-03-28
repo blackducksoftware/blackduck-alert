@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.http.HttpStatus;
 
@@ -100,6 +101,11 @@ public abstract class AbstractResourceActions<T extends Config, D extends AlertS
         if (!authorizationManager.hasWritePermission(context, descriptorKey)) {
             logger.debug(String.format(FORBIDDEN_ACTION_FORMAT, "Update"));
             return ActionResponse.createForbiddenResponse();
+        }
+
+        String resourceId = resource.getId();
+        if (StringUtils.isBlank(resourceId) || !resourceId.equals(Long.toString(id))) {
+            return new ActionResponse<>(HttpStatus.BAD_REQUEST, "IDs in request do not match");
         }
 
         Optional<T> existingItem = findExisting(id);

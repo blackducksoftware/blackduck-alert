@@ -25,7 +25,15 @@ const ConcreteConfigurationForm = ({
     afterSuccessfulSave,
     readonly,
     errorHandler,
-    submitLabel
+    cancelLabel,
+    deleteLabel,
+    submitLabel,
+    testLabel,
+    testButtonClicked,
+    postDeleteAction,
+    disableTestModalSubmit,
+    modalSubmitText,
+    testModalButtonTitle
 }) => {
     const [showTest, setShowTest] = useState(false);
     const [errorMessage, setErrorMessage] = useState(null);
@@ -71,6 +79,7 @@ const ConcreteConfigurationForm = ({
         setErrorMessage(null);
         setErrors(HttpErrorUtilities.createEmptyErrorObject());
         setActionMessage(null);
+        testButtonClicked ? testButtonClicked() : null;
 
         if (testFields) {
             setShowTest(true);
@@ -127,6 +136,7 @@ const ConcreteConfigurationForm = ({
             if (response.ok) {
                 await getRequest();
                 setActionMessage('Delete Successful');
+                postDeleteAction();
             } else {
                 const errorObject = errorHandler.handle(response, await response.json(), false);
                 if (errorObject && errorObject.message) {
@@ -167,7 +177,10 @@ const ConcreteConfigurationForm = ({
                     onDeleteClick={performDeleteRequest}
                     confirmDeleteMessage="Are you sure you want to delete the configuration?"
                     performingAction={inProgress}
+                    cancelLabel={cancelLabel}
+                    deleteLabel={deleteLabel}
                     submitLabel={submitLabel}
+                    testLabel={testLabel}
                 />
             </form>
             <GlobalTestModal
@@ -176,6 +189,9 @@ const ConcreteConfigurationForm = ({
                 handleCancel={handleTestCancel}
                 buttonIdPrefix={buttonIdPrefix}
                 performingAction={testing}
+                disableTestModalSubmit={disableTestModalSubmit}
+                modalSubmitText={modalSubmitText}
+                testModalButtonTitle={testModalButtonTitle}
             >
                 <div>
                     {testFields}
@@ -205,7 +221,15 @@ ConcreteConfigurationForm.propTypes = {
     afterSuccessfulSave: PropTypes.func,
     readonly: PropTypes.bool,
     errorHandler: PropTypes.object.isRequired,
-    submitLabel: PropTypes.string
+    cancelLabel: PropTypes.string,
+    deleteLabel: PropTypes.string,
+    submitLabel: PropTypes.string,
+    testLabel: PropTypes.string,
+    testButtonClicked: PropTypes.func,
+    postDeleteAction: PropTypes.func,
+    disableTestModalSubmit: PropTypes.func,
+    modalSubmitText: PropTypes.string,
+    testModalButtonTitle: PropTypes.string
 };
 
 ConcreteConfigurationForm.defaultProps = {
@@ -219,7 +243,8 @@ ConcreteConfigurationForm.defaultProps = {
     clearTestForm: () => null,
     buttonIdPrefix: 'common-form',
     afterSuccessfulSave: () => null,
-    readonly: false
+    readonly: false,
+    postDeleteAction: () => {}
 };
 
 export default ConcreteConfigurationForm;

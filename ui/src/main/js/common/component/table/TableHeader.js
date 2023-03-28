@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import MultiSelectHeaderCell from 'common/component/table/cell/MultiSelectHeaderCell';
 import TableHeaderCell from 'common/component/table/cell/TableHeaderCell';
@@ -12,26 +13,51 @@ const useStyles = createUseStyles({
     }
 });
 
-const TableHeader = ({ columns, multiSelect, selected, onSelected, tableData  }) => {
+const TableHeader = ({ columns, multiSelect, selected, onSelected, tableData, onSort, sortConfig }) => {
     const classes = useStyles();
 
     return (
         <thead className={classes.tableHead}>
             <tr>
                 { multiSelect ? (
-                    <MultiSelectHeaderCell 
+                    <MultiSelectHeaderCell
                         selected={selected}
                         onSelected={onSelected}
                         tableData={tableData}
                     />
                 ) : null }
-                
-                { columns.map(column => (
-                    <TableHeaderCell key={column.key} label={column.label} sortable={column.sortable} settings={column.settings} />
+
+                { columns.map((column) => (
+                    <TableHeaderCell
+                        key={column.key}
+                        label={column.label}
+                        sortable={column.sortable}
+                        settings={column.settings}
+                        onSort={onSort}
+                        name={column.key}
+                        sortConfig={sortConfig}
+                    />
                 ))}
             </tr>
         </thead>
     );
+};
+
+TableHeader.propTypes = {
+    columns: PropTypes.arrayOf(PropTypes.shape({
+        key: PropTypes.string,
+        label: PropTypes.string,
+        sortable: PropTypes.bool
+    })),
+    multiSelect: PropTypes.bool,
+    selected: PropTypes.array,
+    onSelected: PropTypes.func,
+    tableData: PropTypes.arrayOf(PropTypes.object),
+    onSort: PropTypes.func,
+    sortConfig: PropTypes.shape({
+        name: PropTypes.string,
+        direction: PropTypes.string
+    })
 };
 
 export default TableHeader;

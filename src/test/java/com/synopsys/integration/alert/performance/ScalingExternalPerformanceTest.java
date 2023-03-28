@@ -128,7 +128,7 @@ class ScalingExternalPerformanceTest {
 
         LocalDateTime executionStartTime = LocalDateTime.now();
         PerformanceExecutionStatusModel performanceExecutionStatusModel = testRunner
-            .testManyPolicyJobsToManyProjects(policyJobIds, PERFORMANCE_POLICY_NAME, numberOfProjectsToCreate, true);
+            .testManyPolicyJobsToManyProjects(policyJobIds, blackDuckProviderID, PERFORMANCE_POLICY_NAME, numberOfProjectsToCreate, true);
 
         loggingUtility.logTimeElapsedWithMessage("Execution and processing test time: %s", executionStartTime, LocalDateTime.now());
         loggingUtility.logTimeElapsedWithMessage("Total test time: %s", startingTime, LocalDateTime.now());

@@ -23,7 +23,7 @@ import SchedulingConfiguration from 'page/scheduling/SchedulingConfiguration';
 import { SETTINGS_INFO } from 'page/settings/SettingsModel';
 import SettingsConfiguration from 'page/settings/standalone/SettingsConfiguration';
 import { AUTHENTICATION_INFO } from 'application/auth/AuthenticationModel';
-import AuthenticationConfiguration from 'application/auth/AuthenticationConfiguration';
+import AuthenticationPageLayout from 'application/auth/AuthenticationPageLayout';
 import { BLACKDUCK_INFO, BLACKDUCK_URLS } from 'page/provider/blackduck/BlackDuckModel';
 import BlackDuckProviderConfiguration from 'page/provider/blackduck/BlackDuckProviderConfiguration';
 import BlackDuckConfiguration from 'page/provider/blackduck/BlackDuckConfiguration';
@@ -35,8 +35,8 @@ import CertificatesPageLayout from 'page/certificates/CertificatesPageLayout';
 import { TASK_MANAGEMENT_INFO } from 'page/task/TaskManagementModel';
 import TaskManagement from 'page/task/TaskManagement';
 import TaskManagementLayout from 'page/task/TaskManagementLayout';
-import { USER_MANAGEMENT_INFO } from 'page/user/UserModel';
-import UserManagement from 'page/user/UserManagement';
+import { USER_MANAGEMENT_INFO } from 'page/usermgmt/UserModel';
+import UserManagement from 'page/usermgmt/UserManagement';
 import { CONTEXT_TYPE, isOperationAssigned, OPERATIONS } from 'common/util/descriptorUtilities';
 import { DISTRIBUTION_INFO, DISTRIBUTION_URLS } from 'page/distribution/DistributionModel';
 import DistributionConfiguration from 'page/distribution/DistributionConfiguration';
@@ -235,12 +235,12 @@ const MainPage = ({
                 descriptor={globalDescriptorMap[AUTHENTICATION_INFO.key]}
                 hasTestFields
                 render={(readOnly, showTest, showSave) => (
-                    <AuthenticationConfiguration
+                    <AuthenticationPageLayout
                         csrfToken={csrfToken}
-                        errorHandler={errorHandler}
                         readonly={readOnly}
                         displayTest={showTest}
                         displaySave={showSave}
+                        errorHandler={errorHandler}
                         fileRead={isOperationAssigned(globalDescriptorMap[AUTHENTICATION_INFO.key], OPERATIONS.UPLOAD_FILE_READ)}
                         fileWrite={isOperationAssigned(globalDescriptorMap[AUTHENTICATION_INFO.key], OPERATIONS.UPLOAD_FILE_WRITE)}
                         fileDelete={isOperationAssigned(globalDescriptorMap[AUTHENTICATION_INFO.key], OPERATIONS.UPLOAD_FILE_DELETE)}

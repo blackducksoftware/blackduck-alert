@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.component.authentication.security.saml.SAMLManager;
+import com.synopsys.integration.alert.authentication.saml.security.SAMLManager;
 
 @Component
 @Order(70)
@@ -29,7 +29,6 @@ public class SAMLStartupComponent extends StartupComponent {
     @Override
     protected void initialize() {
         logger.info("SAML startup initialization running.");
-        samlManager.initializeConfiguration();
+        samlManager.reconfigureSAML();
     }
-
 }

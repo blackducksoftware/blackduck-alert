@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
@@ -18,36 +19,39 @@ import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectOperation;
 
-public class ProviderMessageDistributorTest {
-    private final UUID uuid = UUID.randomUUID();
-    private final SlackChannelKey slackChannelKey = new SlackChannelKey();
+ class ProviderMessageDistributorTest {
+     private final UUID uuid = UUID.randomUUID();
+     private final UUID jobExecutionId = UUID.randomUUID();
+     private final SlackChannelKey slackChannelKey = new SlackChannelKey();
 
-    @Test
-    public void distributeTest() {
-        MockProcessingAuditAccessor processingAuditAccessor = new MockProcessingAuditAccessor();
-        EventManager eventManager = Mockito.mock(EventManager.class);
+     @Test
+     void distributeTest() {
+         MockProcessingAuditAccessor processingAuditAccessor = new MockProcessingAuditAccessor();
+         EventManager eventManager = Mockito.mock(EventManager.class);
+         ExecutingJobManager executingJobManager = Mockito.mock(ExecutingJobManager.class);
 
-        ProcessedNotificationDetails processedNotificationDetails = new ProcessedNotificationDetails(uuid, slackChannelKey.getUniversalKey(), "JobName");
-        ProcessedProviderMessageHolder processedMessageHolder = createProcessedProviderMessageHolder(2, 2);
+         ProcessedNotificationDetails processedNotificationDetails = new ProcessedNotificationDetails(jobExecutionId, uuid, slackChannelKey.getUniversalKey(), "JobName");
+         ProcessedProviderMessageHolder processedMessageHolder = createProcessedProviderMessageHolder(2, 2);
 
-        ProviderMessageDistributor providerMessageDistributor = new ProviderMessageDistributor(processingAuditAccessor, eventManager);
-        providerMessageDistributor.distribute(processedNotificationDetails, processedMessageHolder);
+         ProviderMessageDistributor providerMessageDistributor = new ProviderMessageDistributor(processingAuditAccessor, eventManager, executingJobManager);
+         providerMessageDistributor.distribute(processedNotificationDetails, processedMessageHolder);
 
-        Mockito.verify(eventManager, Mockito.times(4)).sendEvent(Mockito.any());
+         Mockito.verify(eventManager, Mockito.times(4)).sendEvent(Mockito.any());
     }
 
-    @Test
-    public void distributeMissingDestinationKeyTest() {
-        MockProcessingAuditAccessor processingAuditAccessor = new MockProcessingAuditAccessor();
-        EventManager eventManager = Mockito.mock(EventManager.class);
+     @Test
+     void distributeMissingDestinationKeyTest() {
+         MockProcessingAuditAccessor processingAuditAccessor = new MockProcessingAuditAccessor();
+         EventManager eventManager = Mockito.mock(EventManager.class);
+         ExecutingJobManager executingJobManager = Mockito.mock(ExecutingJobManager.class);
 
-        ProcessedNotificationDetails processedNotificationDetails = new ProcessedNotificationDetails(uuid, "bad channel key", "JobName");
-        ProcessedProviderMessageHolder processedMessageHolder = createProcessedProviderMessageHolder(1, 0);
+         ProcessedNotificationDetails processedNotificationDetails = new ProcessedNotificationDetails(jobExecutionId, uuid, "bad channel key", "JobName");
+         ProcessedProviderMessageHolder processedMessageHolder = createProcessedProviderMessageHolder(1, 0);
 
-        ProviderMessageDistributor providerMessageDistributor = new ProviderMessageDistributor(processingAuditAccessor, eventManager);
-        providerMessageDistributor.distribute(processedNotificationDetails, processedMessageHolder);
+         ProviderMessageDistributor providerMessageDistributor = new ProviderMessageDistributor(processingAuditAccessor, eventManager, executingJobManager);
+         providerMessageDistributor.distribute(processedNotificationDetails, processedMessageHolder);
 
-        Mockito.verify(eventManager, Mockito.times(0)).sendEvent(Mockito.any());
+         Mockito.verify(eventManager, Mockito.times(0)).sendEvent(Mockito.any());
     }
 
     private ProcessedProviderMessageHolder createProcessedProviderMessageHolder(int numberOfProjectMessages, int numberOfSimpleMessages) {

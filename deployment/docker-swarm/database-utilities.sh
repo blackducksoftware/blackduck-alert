@@ -9,12 +9,13 @@ file=
 databaseKeyword=alertdb
 databaseName=alertdb
 userName=sa
+type="plain"
 
 # functions
 usage() {
   echo "usage: database-utilities - backup or restore a database with docker."
   echo
-  echo "database-utilities.sh [-b] [-d databaseName] [-f file] [-k containerKeyword] [-p] [-r] [-u userName]"
+  echo "database-utilities.sh [-b] [-d databaseName] [-f file] [-k containerKeyword] [-p] [-r] [-t type] [-u userName]"
   echo "Options: "
   echo "  -b: backup a database to the file specified in the file option."
   echo "  -d: the name of the database."
@@ -22,14 +23,29 @@ usage() {
   echo "  -k: the keyword to search for the database container."
   echo "  -p: plain text database dump format"
   echo "  -r: restore a database from the file specified by the file option."
+  echo "  -t: the format for the backup or restore file of 'plain' or 'binary'."
   echo "  -u: database user name."
   echo "  -h: display this help."
   echo
   echo "Examples:"
-  echo "  Backup:"
+  echo " ------------------"
+  echo " Plain Text Format:"
+  echo " ------------------"
+  echo "  Backup (default):"
   echo "    database-utilities.sh -b -f ~/my-db-backup.dump"
-  echo "  Restore:"
+  echo "  Restore (default):"
   echo "    database-utilities.sh -r -f ~/my-db-backup.dump"
+  echo "  Backup:"
+  echo "    database-utilities.sh -b -t plain -f ~/my-db-backup.dump"
+  echo "  Restore:"
+  echo "    database-utilities.sh -r -t plain -f ~/my-db-backup.dump"
+  echo " ------------------"
+  echo " Binary Format:"
+  echo " ------------------"
+  echo "  Backup:"
+  echo "    database-utilities.sh -b -t binary -f ~/my-db-backup.dump"
+  echo "  Restore:"
+  echo "    database-utilities.sh -r -t binary -f ~/my-db-backup.dump"
   echo
   echo
 }
@@ -40,12 +56,31 @@ displayConfiguration() {
   echo "  Mode:"
   echo "    backup:                 $backup"
   echo "    restore:                $restore"
-  echo "  Plain Text Format:        $plainFormat"
+  echo "  Format:                   $type"
   echo "  Backup/Restore File:      $file"
   echo "  Container Search Keyword: $databaseKeyword"
   echo "  Database Name:            $databaseName"
   echo "  Database User:            $userName"
   echo "-------------------------------------"
+}
+
+checkFormat() {
+  if [ "$type" == "PLAIN" ];
+    then
+      plainFormat=true
+  elif [ "$type" == "plain" ];
+    then
+      plainFormat=true
+  elif [ "$type" == "BINARY" ];
+    then
+      plainFormat=false
+  elif [ "$type" == "binary" ];
+    then
+      plainFormat=false
+  else
+      echo "Unknown format: Only 'plain' or 'binary' are allowed."
+      exit 1
+  fi
 }
 
 checkContainerFound() {
@@ -104,7 +139,7 @@ if [ $# -eq 0 ];
     exit 0
 fi
 
-while getopts "b,d:,f:,k:,p,r,u:,h" option; do
+while getopts "b,d:,f:,k:,p,r,t:,u:,h" option; do
   case ${option} in
     b)
       backup=true
@@ -124,6 +159,9 @@ while getopts "b,d:,f:,k:,p,r,u:,h" option; do
     r)
       restore=true
       ;;
+    t)
+      type="${OPTARG}"
+      ;;
     u)
       userName="${OPTARG}"
       ;;
@@ -142,6 +180,7 @@ shift $((OPTIND -1))
 containerId=$(docker ps -q --filter name=$databaseKeyword);
 
 displayConfiguration
+checkFormat
 checkContainerFound
 
 # backup

@@ -3,6 +3,8 @@ package com.synopsys.integration.alert.provider.blackduck.processor.message;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.UUID;
+
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -67,8 +69,17 @@ public class ProjectVersionNotificationMessageExtractorTest {
     }
 
     private NotificationContentWrapper createNotificationContentWrapper(ProjectVersionNotificationContent notificationContentComponent) {
-        AlertNotificationModel alertNotificationModel = new AlertNotificationModel(1L, 1L, "provider-test", "providerConfigName-test", "notificationType-test", "{content: \"content is here...\"}", DateUtils.createCurrentDateTimestamp(),
-            DateUtils.createCurrentDateTimestamp(), false);
+        AlertNotificationModel alertNotificationModel = new AlertNotificationModel(1L,
+            1L,
+            "provider-test",
+            "providerConfigName-test",
+            "notificationType-test",
+            "{content: \"content is here...\"}",
+            DateUtils.createCurrentDateTimestamp(),
+            DateUtils.createCurrentDateTimestamp(),
+            false,
+            String.format("content-id-%s", UUID.randomUUID())
+        );
         return new NotificationContentWrapper(alertNotificationModel, notificationContentComponent, LicenseLimitNotificationContent.class);
     }
 

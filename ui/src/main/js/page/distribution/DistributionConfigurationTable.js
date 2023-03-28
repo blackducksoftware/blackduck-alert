@@ -2,9 +2,7 @@ import * as PropTypes from 'prop-types';
 import React, { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { DISTRIBUTION_AUDIT_STATUSES, DISTRIBUTION_URLS } from 'page/distribution/DistributionModel';
-import {
-    BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn
-} from 'react-bootstrap-table';
+import { BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn } from 'react-bootstrap-table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import DescriptorLabel from 'common/component/descriptor/DescriptorLabel';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';

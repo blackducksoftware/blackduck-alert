@@ -1,7 +1,7 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
 
 const useStyles = createUseStyles({
     inputContainer: {
@@ -37,8 +37,8 @@ const SearchFilter = ({ searchBarPlaceholder, handleSearchChange, search }) => {
 
     return (
         <>
-            <input 
-                className={classes.inputStyle} 
+            <input
+                className={classes.inputStyle}
                 onChange={handleSearchChange}
                 placeholder={searchBarPlaceholder}
                 value={search}
@@ -47,7 +47,13 @@ const SearchFilter = ({ searchBarPlaceholder, handleSearchChange, search }) => {
                 <FontAwesomeIcon icon="search" />
             </span>
         </>
-    )
+    );
+};
+
+SearchFilter.propTypes = {
+    searchBarPlaceholder: PropTypes.string,
+    handleSearchChange: PropTypes.func,
+    search: PropTypes.string
 };
 
 export default SearchFilter;

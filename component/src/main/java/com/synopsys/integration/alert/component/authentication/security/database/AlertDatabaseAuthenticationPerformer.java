@@ -14,10 +14,10 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.authentication.security.AuthenticationPerformer;
+import com.synopsys.integration.alert.api.authentication.security.event.AuthenticationEventManager;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
-import com.synopsys.integration.alert.component.authentication.security.AuthenticationPerformer;
-import com.synopsys.integration.alert.component.authentication.security.event.AuthenticationEventManager;
 
 @Component
 public class AlertDatabaseAuthenticationPerformer extends AuthenticationPerformer {

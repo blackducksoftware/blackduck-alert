@@ -20,7 +20,7 @@ public interface IssueTrackerMessageSenderFactory<D extends DistributionJobDetai
     IssueTrackerMessageSender<T> createMessageSender(D distributionDetails, @Nullable UUID globalId) throws AlertException;
 
     IssueTrackerAsyncMessageSender<T> createAsyncMessageSender(
-        D distributionDetails, @Nullable UUID globalId, UUID parentEventId,
+        D distributionDetails, @Nullable UUID globalId, UUID jobExecutionId,
         Set<Long> notificationIds
     ) throws AlertException;
 

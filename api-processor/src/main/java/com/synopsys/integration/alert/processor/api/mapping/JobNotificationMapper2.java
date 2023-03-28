@@ -50,6 +50,10 @@ public class JobNotificationMapper2 {
             .forEach(jobRequestModel -> retrieveResponse(correlationID, jobRequestModel));
     }
 
+    public boolean hasBatchReachedSizeLimit(UUID correlationID, int limit) {
+        return limit < jobNotificationMappingAccessor.getCountByCorrelationId(correlationID);
+    }
+
     private FilteredDistributionJobRequestModel convertToRequest(DetailedNotificationContent detailedNotificationContent, List<FrequencyType> frequencies) {
         FilteredDistributionJobRequestModel filteredDistributionJobRequestModel = new FilteredDistributionJobRequestModel(
             detailedNotificationContent.getProviderConfigId(),

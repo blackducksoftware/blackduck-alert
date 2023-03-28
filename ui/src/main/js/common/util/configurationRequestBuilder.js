@@ -1,6 +1,8 @@
 import HeaderUtilities from 'common/util/HeaderUtilities';
 
 export const ALERT_API_URL = '/alert/api';
+export const AUTHENTICATION_LDAP_API_URL = `${ALERT_API_URL}/authentication/ldap`
+export const AUTHENTICATION_SAML_API_URL = `${ALERT_API_URL}/authentication/saml`
 export const AZURE_BOARDS_API_URL = `${ALERT_API_URL}/configuration/azure-boards`;
 export const CONFIG_API_URL = `${ALERT_API_URL}/configuration`;
 export const JOB_API_URL = `${ALERT_API_URL}/configuration/job`;
@@ -89,7 +91,7 @@ export function createNewConfigurationRequest(apiUrl, csrfToken, fieldModel) {
 export function createUpdateRequest(apiUrl, csrfToken, configurationId, fieldModel) {
     const headersUtil = new HeaderUtilities();
     headersUtil.addDefaultHeaders(csrfToken);
-    const url = `${apiUrl}/${configurationId}`;
+    const url = configurationId ? `${apiUrl}/${configurationId}` : apiUrl;
     return fetch(url, {
         credentials: 'same-origin',
         method: 'PUT',
@@ -123,6 +125,23 @@ export function createDeleteRequest(apiUrl, csrfToken, configurationId = null) {
         method: 'DELETE',
         headers: headersUtil.getHeaders()
     });
+}
+
+// Params for bulk delete:
+//      baseUrl: request url without specifics (i.e. /api/configuration/role/)
+//      configurationIdArray: array of id's staged for delete (i.e. ['1', '2', '3'])
+export function createMultiDeleteRequest(baseUrl, csrfToken, configurationIdArray = null, onSuccess, onFail) {
+    const stagedDeleteUrls = configurationIdArray.map((configId) =>  baseUrl.concat(`/${configId}`));
+    const headersUtil = new HeaderUtilities();
+    headersUtil.addXCsrfToken(csrfToken);
+
+    return Promise.all(stagedDeleteUrls.map(url =>
+        fetch(url, {
+            credentials: 'same-origin',
+            method: 'DELETE',
+            headers: headersUtil.getHeaders()
+        })
+    ));
 }
 
 export function createValidateRequest(apiUrl, csrfToken, fieldModel) {

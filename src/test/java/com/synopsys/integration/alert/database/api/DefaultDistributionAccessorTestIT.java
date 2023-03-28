@@ -1,13 +1,11 @@
 package com.synopsys.integration.alert.database.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.text.ParseException;
-import java.time.OffsetDateTime;
-import java.util.Comparator;
+import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +17,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -28,29 +25,31 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJob;
+import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.persistence.accessor.DistributionAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.executions.JobCompletionStatusModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.DistributionWithAuditInfo;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
-import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.descriptor.api.MsTeamsKey;
 import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @AlertIntegrationTest
-public class DefaultDistributionAccessorTestIT {
+class DefaultDistributionAccessorTestIT {
     private final int TOTAL_NUMBER_OF_RECORDS = 6;
 
     public static final String SORT_LAST_SENT = "filteredAudit.time_last_sent";
@@ -66,24 +65,58 @@ public class DefaultDistributionAccessorTestIT {
     private JobAccessor jobAccessor;
 
     @Autowired
-    private AuditEntryRepository auditEntryRepository;
+    private DescriptorMap descriptorMap;
 
     @Autowired
-    private DescriptorMap descriptorMap;
+    private ExecutingJobManager executingJobManager;
+    @Autowired
+    private JobCompletionStatusModelAccessor jobCompletionStatusAccessor;
 
     private final List<UUID> createdJobs = new LinkedList<>();
 
     @AfterEach
     public void cleanupDistributions() {
-        createdJobs.forEach(jobAccessor::deleteJob);
-        createdJobs.clear();
+        cleanUpJobs();
+        cleanUpExecutions();
+    }
+
+    private void cleanUpJobs() {
+        int pageNumber = 1;
+        AlertPagedModel<DistributionJobModel> jobs = jobAccessor.getPageOfJobs(pageNumber, 100);
+        while (pageNumber <= jobs.getTotalPages()) {
+            jobs.getModels()
+                .stream()
+                .map(DistributionJobModel::getJobId)
+                .forEach(jobAccessor::deleteJob);
+            pageNumber++;
+            jobs = jobAccessor.getPageOfJobs(pageNumber, 100);
+        }
+    }
+
+    private void cleanUpExecutions() {
+        int pageNumber = 1;
+        AlertPagedModel<ExecutingJob> executingJobs = executingJobManager.getExecutingJobs(pageNumber, 100);
+        while (pageNumber <= executingJobs.getTotalPages()) {
+            executingJobs.getModels()
+                .stream()
+                .map(ExecutingJob::getExecutionId)
+                .forEach(executingJobManager::purgeJob);
+            pageNumber++;
+            executingJobs = executingJobManager.getExecutingJobs(pageNumber, 100);
+        }
     }
 
     @Test
     @Transactional
     @Modifying
-    public void verifyQueryBuildsTest() {
-        AlertPagedModel<DistributionWithAuditInfo> distributionWithAuditInfo = distributionAccessor.getDistributionWithAuditInfo(0, 100, "name", Direction.ASC, getAllDescriptorNames());
+    void verifyQueryBuildsTest() {
+        AlertPagedModel<DistributionWithAuditInfo> distributionWithAuditInfo = distributionAccessor.getDistributionWithAuditInfo(
+            0,
+            100,
+            "name",
+            Direction.ASC,
+            getAllDescriptorNames()
+        );
 
         assertNotNull(distributionWithAuditInfo);
     }
@@ -91,49 +124,49 @@ public class DefaultDistributionAccessorTestIT {
     @Test
     @Transactional
     @Modifying
-    public void verifyValidityOfQueryTest() throws ParseException {
+    void verifyValidityOfQueryTest() throws ParseException {
         assertValidQueryFunctionality(TOTAL_NUMBER_OF_RECORDS, () -> distributionAccessor.getDistributionWithAuditInfo(0, 100, "name", Direction.ASC, getAllDescriptorNames()));
     }
 
     @Test
     @Transactional
     @Modifying
-    public void verifyValidityOfQueryWithNullsTest() throws ParseException {
+    void verifyValidityOfQueryWithNullsTest() throws ParseException {
         assertValidQueryFunctionality(TOTAL_NUMBER_OF_RECORDS, () -> distributionAccessor.getDistributionWithAuditInfo(0, 100, null, null, getAllDescriptorNames()));
     }
 
     @Test
     @Transactional
     @Modifying
-    public void sortByNameDESCLowPageSizeTest() throws ParseException {
+    void sortByNameDESCLowPageSizeTest() throws ParseException {
         assertSorted(3, 3, SORT_NAME, Direction.DESC, DistributionWithAuditInfo::getJobName);
     }
 
     @Test
     @Transactional
     @Modifying
-    public void sortByNameDESCTest() throws ParseException {
+    void sortByNameDESCTest() throws ParseException {
         assertSorted(TOTAL_NUMBER_OF_RECORDS, 100, SORT_NAME, Direction.DESC, DistributionWithAuditInfo::getJobName);
     }
 
     @Test
     @Transactional
     @Modifying
-    public void sortByNameASCTest() throws ParseException {
+    void sortByNameASCTest() throws ParseException {
         assertSorted(TOTAL_NUMBER_OF_RECORDS, 100, SORT_NAME, Direction.ASC, DistributionWithAuditInfo::getJobName);
     }
 
     @Test
     @Transactional
     @Modifying
-    public void sortByFrequencyASCTest() throws ParseException {
+    void sortByFrequencyASCTest() throws ParseException {
         assertSorted(TOTAL_NUMBER_OF_RECORDS, 100, SORT_FREQUENCY, Direction.ASC, DistributionWithAuditInfo::getFrequencyType);
     }
 
     @Test
     @Transactional
     @Modifying
-    public void sortByFrequencyDESCTest() throws ParseException {
+    void sortByFrequencyDESCTest() throws ParseException {
         assertSorted(TOTAL_NUMBER_OF_RECORDS, 100, SORT_FREQUENCY, Direction.DESC, DistributionWithAuditInfo::getFrequencyType);
     }
 
@@ -141,7 +174,7 @@ public class DefaultDistributionAccessorTestIT {
     @Transactional
     @Modifying
     @Disabled("This feature is not currently supported due to limitations in hibernate")
-    public void sortByAuditLastTimeSentDESCTest() throws ParseException {
+    void sortByAuditLastTimeSentDESCTest() throws ParseException {
         assertAuditLastTimeSent(Direction.DESC);
     }
 
@@ -149,7 +182,7 @@ public class DefaultDistributionAccessorTestIT {
     @Transactional
     @Modifying
     @Disabled("This feature is not currently supported due to limitations in hibernate")
-    public void sortByAuditLastTimeSentASCTest() throws ParseException {
+    void sortByAuditLastTimeSentASCTest() throws ParseException {
         assertAuditLastTimeSent(Direction.ASC);
     }
 
@@ -206,7 +239,7 @@ public class DefaultDistributionAccessorTestIT {
     }
 
     private AlertPagedModel<DistributionWithAuditInfo> assertValidQueryFunctionality(int expectedNumberOfResults, Supplier<AlertPagedModel<DistributionWithAuditInfo>> dBQuery) throws ParseException {
-        Map<UUID, Pair<DistributionJobModel, List<AuditEntryEntity>>> jobAndAuditData = createAndSave6JobAndAudit();
+        Map<UUID, DistributionJobModel> jobAndAuditData = createAndSave6JobAndAudit();
         assertEquals(TOTAL_NUMBER_OF_RECORDS, jobAndAuditData.keySet().size());
 
         jobAndAuditData.keySet().stream().forEach(uuid -> {
@@ -219,24 +252,19 @@ public class DefaultDistributionAccessorTestIT {
         assertEquals(expectedNumberOfResults, queryResult.getModels().size());
 
         for (DistributionWithAuditInfo distributionWithAuditInfo : queryResult.getModels()) {
-            Pair<DistributionJobModel, List<AuditEntryEntity>> distributionJobModelListPair = jobAndAuditData.get(distributionWithAuditInfo.getJobId());
-            DistributionJobModel distributionJobModel = distributionJobModelListPair.getLeft();
+            DistributionJobModel distributionJobModel = jobAndAuditData.get(distributionWithAuditInfo.getJobId());
 
             assertEquals(distributionJobModel.getName(), distributionWithAuditInfo.getJobName());
-            assertNotEquals(AuditEntryStatus.PENDING.name(), distributionWithAuditInfo.getAuditStatus());
 
-            List<AuditEntryEntity> audits = distributionJobModelListPair.getRight();
-            if (!audits.isEmpty()) {
-                OffsetDateTime mostRecentAuditEntryTime = audits.stream().filter(auditEntryEntity -> auditEntryEntity.getTimeLastSent() != null).max(Comparator.comparing(AuditEntryEntity::getTimeLastSent))
-                    .map(AuditEntryEntity::getTimeLastSent).orElse(null);
-
-                String formattedTime = null;
-                if (null != mostRecentAuditEntryTime) {
-                    formattedTime = DateUtils.formatDate(mostRecentAuditEntryTime, DateUtils.AUDIT_DATE_FORMAT);
-                }
-
-                assertEquals(formattedTime, distributionWithAuditInfo.getAuditTimeLastSent());
+            Optional<JobCompletionStatusModel> jobExecutionStatusModel = jobCompletionStatusAccessor.getJobExecutionStatus(distributionWithAuditInfo.getJobId());
+            if (jobExecutionStatusModel.isPresent()) {
+                assertEquals(jobExecutionStatusModel.get().getLatestStatus(), distributionWithAuditInfo.getAuditStatus());
+                String jsonFormattedString = DateUtils.formatDate(jobExecutionStatusModel.get().getLastRun(), DateUtils.AUDIT_DATE_FORMAT);
+                String removedDashes = StringUtils.replace(jsonFormattedString, "-", "/");
+                String formattedTimestamp = StringUtils.substringBeforeLast(removedDashes, ".");
+                assertEquals(formattedTimestamp, distributionWithAuditInfo.getAuditTimeLastSent());
             }
+
         }
 
         return queryResult;
@@ -281,19 +309,7 @@ public class DefaultDistributionAccessorTestIT {
         );
     }
 
-    private AuditEntryEntity createAuditEntryEntity(UUID commonConfigId, OffsetDateTime timeLastSent, AuditEntryStatus auditEntryStatus) {
-        String statusName = (auditEntryStatus == null) ? null : auditEntryStatus.name();
-        return new AuditEntryEntity(
-            commonConfigId,
-            OffsetDateTime.now(),
-            timeLastSent,
-            statusName,
-            "",
-            ""
-        );
-    }
-
-    private Map<UUID, Pair<DistributionJobModel, List<AuditEntryEntity>>> createAndSave6JobAndAudit() {
+    private Map<UUID, DistributionJobModel> createAndSave6JobAndAudit() {
         DistributionJobRequestModel firstJob = createSlackJob(true);
         DistributionJobRequestModel secondJob = createSlackJob(false);
         DistributionJobRequestModel thirdJob = createSlackJob(true);
@@ -315,29 +331,31 @@ public class DefaultDistributionAccessorTestIT {
         createdJobs.add(fifthJobSaved.getJobId());
         createdJobs.add(sixthJobSaved.getJobId());
 
-        AuditEntryEntity firstAudit = createAuditEntryEntity(firstJobSaved.getJobId(), OffsetDateTime.now(), AuditEntryStatus.SUCCESS);
-        AuditEntryEntity secondAudit = createAuditEntryEntity(firstJobSaved.getJobId(), OffsetDateTime.now().minusDays(1), AuditEntryStatus.PENDING);
-        AuditEntryEntity thirdAudit = createAuditEntryEntity(secondJobSaved.getJobId(), OffsetDateTime.now().minusMinutes(1), AuditEntryStatus.FAILURE);
-        AuditEntryEntity fourthAudit = createAuditEntryEntity(fourthJobSaved.getJobId(), OffsetDateTime.now().minusHours(1), AuditEntryStatus.SUCCESS);
-        AuditEntryEntity fifthAudit = createAuditEntryEntity(fifthJobSaved.getJobId(), OffsetDateTime.now().minusHours(2), AuditEntryStatus.SUCCESS);
-        AuditEntryEntity sixthAudit = createAuditEntryEntity(fifthJobSaved.getJobId(), OffsetDateTime.now().minusMinutes(2), AuditEntryStatus.FAILURE);
-        AuditEntryEntity seventhAudit = createAuditEntryEntity(sixthJobSaved.getJobId(), null, AuditEntryStatus.SUCCESS);
-        AuditEntryEntity eighthAudit = createAuditEntryEntity(sixthJobSaved.getJobId(), OffsetDateTime.now(), AuditEntryStatus.FAILURE);
-        AuditEntryEntity ninthAudit = createAuditEntryEntity(sixthJobSaved.getJobId(), null, AuditEntryStatus.PENDING);
+        ExecutingJob executingJob1 = executingJobManager.startJob(firstJobSaved.getJobId(), 1);
+        ExecutingJob executingJob2 = executingJobManager.startJob(secondJobSaved.getJobId(), 2);
+        executingJobManager.startJob(thirdJobSaved.getJobId(), 3);
+        ExecutingJob executingJob4 = executingJobManager.startJob(fourthJobSaved.getJobId(), 4);
+        ExecutingJob executingJob5 = executingJobManager.startJob(fifthJobSaved.getJobId(), 5);
+        ExecutingJob executingJob6 = executingJobManager.startJob(sixthJobSaved.getJobId(), 6);
 
-        saveAllAudits(List.of(firstAudit, secondAudit, thirdAudit, fourthAudit, fifthAudit, sixthAudit, seventhAudit, eighthAudit, ninthAudit));
+        executingJobManager.updateJobStatus(executingJob1.getExecutionId(), AuditEntryStatus.SUCCESS);
+        executingJobManager.endJob(executingJob1.getExecutionId(), Instant.now());
+        executingJobManager.updateJobStatus(executingJob2.getExecutionId(), AuditEntryStatus.SUCCESS);
+        executingJobManager.endJob(executingJob2.getExecutionId(), Instant.now());
+        executingJobManager.updateJobStatus(executingJob4.getExecutionId(), AuditEntryStatus.FAILURE);
+        executingJobManager.endJob(executingJob4.getExecutionId(), Instant.now());
+        executingJobManager.updateJobStatus(executingJob5.getExecutionId(), AuditEntryStatus.SUCCESS);
+        executingJobManager.endJob(executingJob5.getExecutionId(), Instant.now());
+        executingJobManager.updateJobStatus(executingJob6.getExecutionId(), AuditEntryStatus.FAILURE);
+        executingJobManager.endJob(executingJob6.getExecutionId(), Instant.now());
 
         return Map.of(
-            firstJobSaved.getJobId(), Pair.of(firstJobSaved, List.of(firstAudit, secondAudit)),
-            secondJobSaved.getJobId(), Pair.of(secondJobSaved, List.of(thirdAudit)),
-            thirdJobSaved.getJobId(), Pair.of(thirdJobSaved, List.of()),
-            fourthJobSaved.getJobId(), Pair.of(fourthJobSaved, List.of(fourthAudit)),
-            fifthJobSaved.getJobId(), Pair.of(fifthJobSaved, List.of(fifthAudit, sixthAudit)),
-            sixthJobSaved.getJobId(), Pair.of(sixthJobSaved, List.of(seventhAudit, eighthAudit, ninthAudit))
+            firstJobSaved.getJobId(), firstJobSaved,
+            secondJobSaved.getJobId(), secondJobSaved,
+            thirdJobSaved.getJobId(), thirdJobSaved,
+            fourthJobSaved.getJobId(), fourthJobSaved,
+            fifthJobSaved.getJobId(), fifthJobSaved,
+            sixthJobSaved.getJobId(), sixthJobSaved
         );
-    }
-
-    private List<AuditEntryEntity> saveAllAudits(List<AuditEntryEntity> audits) {
-        return auditEntryRepository.saveAll(audits);
     }
 }

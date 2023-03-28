@@ -11,15 +11,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.channel.DistributionEventHandler;
+import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.persistence.accessor.JiraServerJobDetailsAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 
 @Component
 public class JiraServerDistributionEventHandler extends DistributionEventHandler<JiraServerJobDetailsModel> {
     @Autowired
-    public JiraServerDistributionEventHandler(JiraServerChannel channel, JiraServerJobDetailsAccessor jobDetailsAccessor, ProcessingAuditAccessor auditAccessor) {
-        super(channel, jobDetailsAccessor, auditAccessor);
+    public JiraServerDistributionEventHandler(
+        JiraServerChannel channel,
+        JiraServerJobDetailsAccessor jobDetailsAccessor,
+        EventManager eventManager
+    ) {
+        super(channel, jobDetailsAccessor, eventManager);
     }
 
 }

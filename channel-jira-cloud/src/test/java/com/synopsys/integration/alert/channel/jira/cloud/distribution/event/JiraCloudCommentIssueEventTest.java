@@ -15,14 +15,14 @@ class JiraCloudCommentIssueEventTest {
     @Test
     void testObjectConstruction() {
         String destination = "destination_queue";
-        UUID parentEventId = UUID.randomUUID();
+        UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
         IssueCommentModel<String> model = new IssueCommentModel<>(null, List.of(), null);
-        JiraCloudCommentEvent event = new JiraCloudCommentEvent(destination, parentEventId, jobId, notificationIds, model);
+        JiraCloudCommentEvent event = new JiraCloudCommentEvent(destination, jobExecutionId, jobId, notificationIds, model);
 
         assertNotNull(event.getEventId());
-        assertEquals(parentEventId, event.getParentEventId());
+        assertEquals(jobExecutionId, event.getJobExecutionId());
         assertEquals(destination, event.getDestination());
         assertEquals(jobId, event.getJobId());
         assertEquals(notificationIds, event.getNotificationIds());

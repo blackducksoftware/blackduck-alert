@@ -1,12 +1,14 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 
 const useStyles = createUseStyles({
     modalHeader: {
+        display: 'flex',
         fontSize: '20px',
         padding: '10px',
-        marginBottom: '30px',
-        display: 'flex'
+        backgroundColor: '#eeeeee',
+        borderBottom: 'solid 1px #D6D6D6'
     },
     title: {
         flexBasis: '98%',
@@ -26,20 +28,24 @@ const useStyles = createUseStyles({
     }
 });
 
-
 const ModalHeader = ({ title, closeModal }) => {
     const classes = useStyles();
 
     return (
-            <div className={classes.modalHeader}>
-                <div className={classes.title}>
-                    {title}
-                </div>
-                <button className={classes.closeBtn} onClick={closeModal}>
-                    <span>{'\u2715'}</span>
-                </button>
+        <div className={classes.modalHeader}>
+            <div className={classes.title}>
+                {title}
             </div>
+            <button className={classes.closeBtn} onClick={closeModal} type="button">
+                <span>{'\u2715'}</span>
+            </button>
+        </div>
     );
+};
+
+ModalHeader.propTypes = {
+    title: PropTypes.string,
+    closeModal: PropTypes.func
 };
 
 export default ModalHeader;

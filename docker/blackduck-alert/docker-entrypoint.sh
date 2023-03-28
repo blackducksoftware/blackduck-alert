@@ -18,9 +18,9 @@ alertDatabasePassword="${ALERT_DB_PASSWORD:-blackduck}"
 alertDatabaseAdminUser="${ALERT_DB_ADMIN_USERNAME:-$alertDatabaseUser}"
 alertDatabaseAdminPassword="${ALERT_DB_ADMIN_PASSWORD:-$alertDatabasePassword}"
 alertDatabaseSslMode="${ALERT_DB_SSL_MODE:-allow}"
-alertDatabaseSslKey=${ALERT_DB_SSL_KEY}
-alertDatabaseSslCert=${ALERT_DB_SSL_CERT}
-alertDatabaseSslRootCert=${ALERT_DB_SSL_ROOT_CERT}
+alertDatabaseSslKey=${ALERT_DB_SSL_KEY_PATH}
+alertDatabaseSslCert=${ALERT_DB_SSL_CERT_PATH}
+alertDatabaseSslRootCert=${ALERT_DB_SSL_ROOT_CERT_PATH}
 alertHostName="${ALERT_HOSTNAME:-localhost}"
 
 ## CERTIFICATE VARIABLES ##
@@ -297,6 +297,12 @@ validatePostgresConnection() {
     checkStatus $? "Validating postgres admin connection"
 }
 
+validatePostgresAdmin() {
+    logIt "Validating postgres admin permissions"
+    adminCheck=$(psql --quiet --tuples-only --no-align --no-psqlrc "${alertDatabaseAdminConfig}" -c "select count(*) from pg_roles where rolname = '"${alertDatabaseAdminUser}"' and rolsuper is true")
+    checkStatus "$(test "${adminCheck}" = "1" && echo 0 || echo 1)" "Validating postgres admin permissions"
+}
+
 validateAlertDBExists() {
     psql "${alertDatabaseConfig}" -c '\l' | grep -q "${alertDatabaseName}"
     checkStatus $? "Validate database '${alertDatabaseName}' exists"
@@ -414,7 +420,7 @@ setVariablesFromFilePath() {
   globalVariableName="${3}"
   if [ -s "${filename}" ];
   then
-    logIt "${globalVariableName} variables set from ${filename}"
+    logIt "${globalVariableName} variable set from ${filename}"
     eval "${localVariableName}=${filename}"
     eval "export ${globalVariableName}=${filename}"
   fi
@@ -458,17 +464,27 @@ validateEnvironment() {
   fi
 }
 
+logIsVariableConfigured() {
+  logIt "${1} is configured as -- ${2} --"
+}
+
 [ -z "${ALERT_HOSTNAME}" ] && logIt "Alert Host: [$alertHostName]. Wrong host name? Restart the container with the right host name configured in blackduck-alert.env"
 
 setOverrideVariables
 validateEnvironment
 
-alertDatabaseAdminConfig="host=$alertDatabaseHost port=$alertDatabasePort dbname=$alertDatabaseName user=$alertDatabaseAdminUser password=$alertDatabaseAdminPassword sslmode=$alertDatabaseSslMode sslkey=$alertDatabaseSslKey sslcert=$alertDatabaseSslCert sslrootcert=$alertDatabaseSslRootCert"
-alertDatabaseConfig="host=$alertDatabaseHost port=$alertDatabasePort dbname=$alertDatabaseName user=$alertDatabaseUser password=$alertDatabasePassword sslmode=$alertDatabaseSslMode sslkey=$alertDatabaseSslKey sslcert=$alertDatabaseSslCert sslrootcert=$alertDatabaseSslRootCert"
+alertBaseDatabaseConfig="host=$alertDatabaseHost port=$alertDatabasePort dbname=$alertDatabaseName sslmode=$alertDatabaseSslMode sslkey=$alertDatabaseSslKey sslcert=$alertDatabaseSslCert sslrootcert=$alertDatabaseSslRootCert"
+alertDatabaseAdminConfig="user=$alertDatabaseAdminUser password=$alertDatabaseAdminPassword $alertBaseDatabaseConfig"
+alertDatabaseConfig="user=$alertDatabaseUser password=$alertDatabasePassword $alertBaseDatabaseConfig"
 
 logIt "Alert max heap size: ${ALERT_MAX_HEAP_SIZE}"
 logIt "Certificate authority host: $targetCAHost"
 logIt "Certificate authority port: $targetCAPort"
+
+logIt "sslmode is set as ${alertDatabaseSslMode}"
+logIsVariableConfigured sslkey "${alertDatabaseSslKey}"
+logIsVariableConfigured sslcert "${alertDatabaseSslCert}"
+logIsVariableConfigured sssslrootcertlkey "${alertDatabaseSslRootCert}"
 
 if [ ! -f "${CERTIFICATE_MANAGER_DIR}/certificate-manager.sh" ];
 then
@@ -476,6 +492,7 @@ then
 fi
 
 validatePostgresConnection
+validatePostgresAdmin
 createCertificateStoreDirectory
 manageCertificate
 manageBlackduckSystemClientCertificate

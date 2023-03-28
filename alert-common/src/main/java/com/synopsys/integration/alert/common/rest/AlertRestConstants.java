@@ -11,6 +11,7 @@ public final class AlertRestConstants {
     public static final String API = "api";
     public static final String CALLBACKS = "callbacks";
     public static final String OAUTH = "oauth";
+    public static final String UPLOAD = "upload";
     public static final String BASE_PATH = "/" + API;
     public static final String CALLBACKS_PATH = BASE_PATH + "/" + CALLBACKS;
     public static final String OAUTH_CALLBACK_PATH = CALLBACKS_PATH + "/" + OAUTH;
@@ -23,6 +24,9 @@ public final class AlertRestConstants {
     public static final String SETTINGS_ENCRYPTION_PATH = AlertRestConstants.SETTINGS_PATH + "/encryption";
     public static final String SETTINGS_PROXY_PATH = AlertRestConstants.SETTINGS_PATH + "/proxy";
     public static final String DIAGNOSTIC_PATH = AlertRestConstants.BASE_PATH + "/diagnostic";
+    public static final String AUTHENTICATION_PATH = AlertRestConstants.BASE_PATH + "/authentication";
+    public static final String SAML_PATH = AlertRestConstants.AUTHENTICATION_PATH + "/saml";
+    public static final String LDAP_PATH = AlertRestConstants.AUTHENTICATION_PATH + "/ldap";
 
     public static final String DEFAULT_CONFIGURATION_NAME = "default-configuration";
 

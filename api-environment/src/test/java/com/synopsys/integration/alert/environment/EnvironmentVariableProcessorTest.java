@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
+import org.springframework.mock.env.MockEnvironment;
 
 import com.synopsys.integration.alert.api.common.model.Obfuscated;
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
@@ -18,12 +19,11 @@ import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 class EnvironmentVariableProcessorTest {
     @Test
     void testUpdatingHandler() {
-        Environment environment = Mockito.mock(Environment.class);
+        MockEnvironment mockEnvironment = new MockEnvironment();
         for (String variableName : EnvironmentTestHandler.VARIABLE_NAMES) {
-            Mockito.when(environment.containsProperty(variableName)).thenReturn(Boolean.TRUE);
-            Mockito.when(environment.getProperty(variableName)).thenReturn(EnvironmentTestHandler.DEFAULT_VALUE);
+            mockEnvironment.setProperty(variableName, EnvironmentTestHandler.DEFAULT_VALUE);
         }
-        EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
+        EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(mockEnvironment);
         EnvironmentTestHandler handler = new EnvironmentTestHandler(environmentVariableUtility);
         EnvironmentVariableProcessor processor = new EnvironmentVariableProcessor(List.of(handler));
         processor.updateConfigurations();
@@ -44,8 +44,7 @@ class EnvironmentVariableProcessorTest {
         processor.updateConfigurations();
         assertFalse(handler.hasUpdateOccurred());
         assertFalse(handler.hasSaveOccurred());
-        assertFalse(handler.getUpdatedProperties().stream()
-                        .allMatch(EnvironmentProcessingResult::hasValues));
+        assertFalse(handler.getUpdatedProperties().isPresent());
     }
 
     private static class TestModel implements Obfuscated<TestModel> {
@@ -69,7 +68,7 @@ class EnvironmentVariableProcessorTest {
         private EnvironmentProcessingResult updatedProperties;
 
         protected EnvironmentTestHandler(EnvironmentVariableUtility environmentVariableUtility) {
-            super(HANDLER_NAME, VARIABLE_NAMES);
+            super(HANDLER_NAME, VARIABLE_NAMES, environmentVariableUtility);
             this.environmentVariableUtility = environmentVariableUtility;
         }
 

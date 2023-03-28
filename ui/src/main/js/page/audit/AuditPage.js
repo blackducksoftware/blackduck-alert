@@ -8,7 +8,6 @@ import DescriptorLabel from 'common/component/descriptor/DescriptorLabel';
 import RefreshTableCellFormatter from 'common/component/table/RefreshTableCellFormatter';
 import NotificationTypeLegend from 'page/audit/NotificationTypeLegend';
 import AuditDetails from 'page/audit/Details';
-import CheckboxInput from 'common/component/input/CheckboxInput';
 import * as DescriptorUtilities from 'common/util/descriptorUtilities';
 import PageHeader from 'common/component/navigation/PageHeader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -318,22 +317,12 @@ class AuditPage extends Component {
             <div>
                 <PageHeader
                     title={AUDIT_INFO.label}
-                    description="Audit tracks all distribution events that have been produced by Alert and displays whether the event was successful or not. If an event fails, this page offers the ability to resend that event and see why it failed."
+                    description="Audit tracks all failed distribution events that have been produced by Alert. This page offers the ability to see why the event failed. Since rows in the Audit failure table represent a grouping of data by notification, fewer rows may be displayed than the selected page size due to multiple
+                        entries appearing under each notification type."
                     icon="check"
                 />
                 <div className="pull-right">
                     <AutoRefresh startAutoReload={this.reloadAuditEntries} autoRefresh={autoRefresh} isEnabled={shouldRefresh} />
-                </div>
-                <div className="pull-right">
-                    <CheckboxInput
-                        id="showSentNotificationsID"
-                        label="Only show sent notifications"
-                        name="onlyShowSentNotifications"
-                        showDescriptionPlaceHolder={false}
-                        labelClass="tableCheckbox"
-                        isChecked={onlyShowSentNotifications}
-                        onChange={this.onOnlyShowSentNotificationsChange}
-                    />
                 </div>
                 <div>
                     <AuditDetails

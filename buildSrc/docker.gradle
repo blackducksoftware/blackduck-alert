@@ -1,55 +1,164 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
+String dockerStagingDirectory = rootProject.ext.dockerStagingDirectory
+String baseDockerDirectory = rootProject.ext.baseDockerDirectory
 
-    dependencies {
-        classpath 'com.bmuschko:gradle-docker-plugin:6.4.0'
-    }
-}
+// Names of non-image specific Docker tasks
+String dockerCleanStagingAreaDirectory = rootProject.ext.dockerCleanStagingAreaDirectoryStageName
+String dockerRemoveAllImages = rootProject.ext.dockerRemoveAllImagesStageName
+String dockerSetupStagingAreaDirectory = rootProject.ext.dockerSetupStagingAreaDirectoryStageName
+String dockerBuildAllImages = rootProject.ext.dockerBuildAllImagesStageName
+String dockerLoginDockerHub = rootProject.ext.dockerLoginDockerHubStageName
+String dockerPublishAllImages = rootProject.ext.dockerPublishAllImagesStageName
+ArrayList<String> dockerTasksCreated = []
 
-apply plugin: com.bmuschko.gradle.docker.DockerRemoteApiPlugin
-
-task untarArchiveForDocker(type: Copy, dependsOn: [build]) {
-    from tarTree("${project.buildDir}/distributions/blackduck-alert-boot-${project.version}.tar")
-    into "${project.buildDir}/docker"
-}
-
-task stageDocker(type: Copy, dependsOn: [untarArchiveForDocker]) {
-    into "${project.buildDir}/docker"
-    from("${project.projectDir}") {
-        include 'Dockerfile'
-        include 'docker-entrypoint.sh'
-    }
-    from("${project.buildDir}/distributions") {
-        include "blackduck-alert-boot-${project.version}.tar"
-    }
-}
-
-task buildDockerImage(type: com.bmuschko.gradle.docker.tasks.image.DockerBuildImage, dependsOn: [stageDocker]) {
-    inputDir = file("${project.buildDir}/docker")
-    buildArgs = ['VERSION': "${project.version}"]
-    images.add("blackducksoftware/${project.name}:${project.version}")
-}
-
-task dockerLogin(type: Exec) {
+project.tasks.create(name: dockerCleanStagingAreaDirectory, group: 'Docker', description: 'Remove staging area used for creating Docker images') {
+    dockerTasksCreated.add(dockerCleanStagingAreaDirectory)
     doFirst {
-        def password = "${System.env.DOCKER_INT_BLACKDUCK_PASSWORD}"
-        if (password?.trim()) {
-            standardInput = new ByteArrayInputStream(password.getBytes())
+        logger.lifecycle('Removing Docker staging area:: ' + dockerStagingDirectory)
+    }
+
+    file(dockerStagingDirectory).deleteDir()
+}
+clean.finalizedBy(project.tasks.findByName(dockerCleanStagingAreaDirectory))
+
+project.tasks.create(name: dockerRemoveAllImages, group: 'Docker', description: 'Remove docker images and staging area for project') {
+    dockerTasksCreated.add(dockerRemoveAllImages)
+}
+
+project.tasks.create(name: dockerSetupStagingAreaDirectory, type: Copy, group: 'Docker', description: 'Populate staging area used for creating Docker images') {
+    dockerTasksCreated.add(dockerSetupStagingAreaDirectory)
+    dependsOn project.tasks.findByName(dockerCleanStagingAreaDirectory)
+
+    doFirst {
+        logger.lifecycle('Setting up docker staging area')
+    }
+
+    into dockerStagingDirectory
+    from(baseDockerDirectory)
+
+    into('blackduck-alert') {
+        from tarTree("${project.buildDir}/distributions/blackduck-alert-boot-${project.version}.tar")
+    }
+}
+
+project.tasks.create(name: dockerBuildAllImages, group: 'Docker', description: 'Build docker images for project') {
+    dockerTasksCreated.add(dockerBuildAllImages)
+    dependsOn project.tasks.findByName(dockerSetupStagingAreaDirectory)
+}
+
+project.tasks.create(name: dockerLoginDockerHub, type: Exec, group: 'Docker', description: 'Login to hub.docker.com prior to publish image') {
+    dockerTasksCreated.add(dockerLoginDockerHub)
+    String dockerLoginUsername = System.env.DOCKER_INT_BLACKDUCK_USER ?: '<Not Set>'
+
+    doFirst {
+        String dockerLoginPassword = System.env.DOCKER_INT_BLACKDUCK_PASSWORD
+        if (dockerLoginPassword?.trim()) {
+            standardInput = new ByteArrayInputStream(dockerLoginPassword.getBytes())
         }
     }
-    commandLine "docker", "login", "--username", "$System.env.DOCKER_INT_BLACKDUCK_USER", "--password-stdin"
+
+    commandLine 'docker', 'login', '--username', dockerLoginUsername, '--password-stdin'
+
+    onlyIf {
+        System.env.DOCKER_INT_BLACKDUCK_USER != null && System.env.DOCKER_INT_BLACKDUCK_PASSWORD != null
+    }
 }
 
-task cleanImage(type: Exec) {
-    commandLine "docker", "rmi", "blackducksoftware/${project.name}:${project.version}"
+project.tasks.create(name: dockerPublishAllImages, group: 'Docker', description: 'Publish docker images for project to hub.docker.com') {
+    dockerTasksCreated.add(dockerPublishAllImages)
+    dependsOn project.tasks.findByName(dockerLoginDockerHub), project.tasks.findByName(dockerBuildAllImages)
+
+    onlyIf {
+        System.env.DOCKER_INT_BLACKDUCK_USER != null && System.env.DOCKER_INT_BLACKDUCK_PASSWORD != null
+    }
 }
 
-task pushImage(type: Exec, dependsOn: [buildDockerImage]) {
-    commandLine "docker", "push", "blackducksoftware/${project.name}:${project.version}"
-    finalizedBy cleanImage
+/*
+  Each Dockerfile to be built should be in a subdirectory of "${project.projectDir}/${baseDockerDirectory}"
+  For each Dockerfile found within 'baseDockerDirectory', gradle tasks will be added
+  The subdirectory should be named what the image should be named
+  If the image has an ENTRYPOINT script, it should be put in the subdirectory and named docker-entrypoint.sh
+*/
+ArrayList<String> dockerImagesToBuild = []
+new File(baseDockerDirectory).eachFileRecurse() { it ->
+    if (it.isFile() && it.name == 'Dockerfile') {
+        dockerImagesToBuild.add(it.getParentFile().getName())
+    }
 }
 
+dockerImagesToBuild.each { imageName ->
+    String fullDockerImageName = 'blackducksoftware/' + imageName + ':' + project.version
+    logger.lifecycle('Creating tasks to process Docker image:: ' + fullDockerImageName)
 
+    String imageTaskNameSuffix = ''
+    for (String token : imageName.split("-")) {
+        imageTaskNameSuffix += token.substring(0, 1).toUpperCase() + token.substring(1).toLowerCase()
+    }
 
+    String dockerImageRemoveTaskName = "dockerRemove${imageTaskNameSuffix}"
+    String dockerImageBuildTaskName = "dockerBuild${imageTaskNameSuffix}"
+    String dockerImagePublishTaskName = "dockerPublish${imageTaskNameSuffix}"
+
+    project.tasks.create(name: dockerImageRemoveTaskName, type: Exec, group: 'Docker', description: "Remove ${fullDockerImageName} docker image") {
+        dockerTasksCreated.add(dockerImageRemoveTaskName)
+        doFirst {
+            logger.lifecycle('Removing docker image:: ' + fullDockerImageName)
+        }
+
+        ignoreExitValue = true
+        errorOutput = new ByteArrayOutputStream()
+
+        commandLine 'docker', 'image', 'rm', fullDockerImageName
+
+        doLast {
+            String stdErr = errorOutput.toString()
+
+            if (stdErr?.trim() && !stdErr.contains("Deleted: ")) {
+                if (stdErr.contains("Error: No such image")) {
+                    logger.lifecycle("Image does not exist, continuing.")
+                } else {
+                    throw new GradleException("${stdErr}")
+                }
+            }
+        }
+    }
+    project.tasks.findByName(dockerRemoveAllImages).dependsOn dockerImageRemoveTaskName
+
+    project.tasks.create(name: dockerImageBuildTaskName, type: Exec, group: 'Docker', description: "Build ${imageName} docker image") {
+        dockerTasksCreated.add(dockerImageBuildTaskName)
+        dependsOn project.tasks.findByName(dockerSetupStagingAreaDirectory)
+        def buildCommand = ['docker', 'build', '.', '-t', fullDockerImageName, '--pull', '--force-rm', '--build-arg', "VERSION=${project.version}"]
+
+        rootProject.ext.properties.each { key, value ->
+            if (key.startsWith('dockerBuildParam_')) {
+                String adjKey = key.substring(key.indexOf('_') + 1)
+                buildCommand.add('--build-arg')
+                buildCommand.add("${adjKey}=${value}")
+            }
+        }
+
+        doFirst {
+            logger.lifecycle("Building docker image:: ${fullDockerImageName}")
+            logger.lifecycle('Running command:: ' + buildCommand.join(" "))
+        }
+
+        workingDir "${dockerStagingDirectory}/${imageName}"
+        commandLine buildCommand
+    }
+    project.tasks.findByName(dockerBuildAllImages).dependsOn dockerImageBuildTaskName
+
+    project.tasks.create(name: dockerImagePublishTaskName, type: Exec, group: 'Docker', description: "Publish ${imageName} docker image to hub.docker.com") {
+        dockerTasksCreated.add(dockerImagePublishTaskName)
+        dependsOn project.tasks.findByName(dockerLoginDockerHub)
+        finalizedBy project.tasks.findByName(dockerImageRemoveTaskName)
+
+        doFirst {
+            logger.lifecycle('Publishing docker image:: ' + fullDockerImageName)
+        }
+
+        commandLine 'docker', 'push', fullDockerImageName
+        finalizedBy dockerImageRemoveTaskName
+    }
+    project.tasks.findByName(dockerPublishAllImages).dependsOn dockerImagePublishTaskName
+}
+
+logger.lifecycle('\nThe following Docker specific tasks were added --> ' + dockerTasksCreated)

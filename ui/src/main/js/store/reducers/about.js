@@ -5,6 +5,8 @@ const initialState = {
     version: '',
     description: '',
     projectUrl: '',
+    commitHash: '',
+    copyrightYear: '',
     documentationUrl: '',
     channelList: [],
     providerList: [],
@@ -24,10 +26,12 @@ const config = (state = initialState, action) => {
                 version: action.version,
                 description: action.description,
                 projectUrl: action.projectUrl,
+                commitHash: action.commitHash,
+                copyrightYear: action.copyrightYear,
                 documentationUrl: action.documentationUrl,
                 initialized: action.initialized,
                 startupTime: action.startupTime,
-                providerList: action.providers,
+                providerList: action.providerList,
                 channelList: action.channels
             };
         case ABOUT_INFO_FETCH_ERROR:
