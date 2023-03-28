@@ -123,7 +123,7 @@ const RoleModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
             submitText={submitText}
             showLoader={showLoader}
         >
-            { type === 'COPY' &&  (
+            { type === 'COPY' && (
                 <div className={classes.descriptorContainer}>
                     <FontAwesomeIcon icon="exclamation-circle" size="2x" />
                     <span className={classes.descriptor}>
@@ -160,7 +160,9 @@ RoleModal.propTypes = {
         type: PropTypes.string,
         submitText: PropTypes.string,
         copyDescription: PropTypes.string
-    })
+    }),
+    statusMessage: PropTypes.string,
+    setStatusMessage: PropTypes.func
 };
 
 export default RoleModal;

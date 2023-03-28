@@ -20,19 +20,19 @@ const TableHeader = ({ columns, multiSelect, selected, onSelected, tableData, on
         <thead className={classes.tableHead}>
             <tr>
                 { multiSelect ? (
-                    <MultiSelectHeaderCell 
+                    <MultiSelectHeaderCell
                         selected={selected}
                         onSelected={onSelected}
                         tableData={tableData}
                     />
                 ) : null }
-                
-                { columns.map(column => (
-                    <TableHeaderCell 
-                        key={column.key} 
-                        label={column.label} 
-                        sortable={column.sortable} 
-                        settings={column.settings} 
+
+                { columns.map((column) => (
+                    <TableHeaderCell
+                        key={column.key}
+                        label={column.label}
+                        sortable={column.sortable}
+                        settings={column.settings}
                         onSort={onSort}
                         name={column.key}
                         sortConfig={sortConfig}
@@ -58,6 +58,6 @@ TableHeader.propTypes = {
         name: PropTypes.string,
         direction: PropTypes.string
     })
-}
+};
 
 export default TableHeader;

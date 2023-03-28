@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-import { createUseStyles } from 'react-jss';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchRoles } from 'store/actions/roles';
+import { createUseStyles } from 'react-jss';
+import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { deleteRoleList } from 'store/actions/roles';
+import { deleteRoleList, fetchRoles } from 'store/actions/roles';
 import Modal from 'common/component/modal/Modal';
 
 const useStyles = createUseStyles({
@@ -45,7 +44,7 @@ const useStyles = createUseStyles({
 const RoleDeleteModal = ({ isOpen, toggleModal, data, selected, setStatusMessage }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
-    const { deleteStatus } = useSelector((state) => state.roles);
+    const { deleteStatus, error } = useSelector((state) => state.roles);
 
     function getStagedForDelete() {
         const staged = data.filter((role) => selected.includes(role.id));
@@ -161,7 +160,8 @@ RoleDeleteModal.propTypes = {
     data: PropTypes.arrayOf(PropTypes.shape({
         id: PropTypes.string
     })),
-    selected: PropTypes.arrayOf(PropTypes.string)
+    selected: PropTypes.arrayOf(PropTypes.string),
+    setStatusMessage: PropTypes.func
 };
 
 export default RoleDeleteModal;

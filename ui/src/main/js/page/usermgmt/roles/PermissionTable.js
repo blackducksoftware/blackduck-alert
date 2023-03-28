@@ -88,7 +88,8 @@ PermissionTable.propTypes = {
             }))
         })
     }),
-    sendPermissionArray: PropTypes.func
+    sendPermissionArray: PropTypes.func,
+    handleFilterPermission: PropTypes.func
 };
 
 export default PermissionTable;

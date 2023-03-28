@@ -51,7 +51,7 @@ const UserTable = ({ canCreate, canDelete }) => {
     const disableSelectOptions = {
         key: 'username',
         disabledItems: ['sysadmin', 'jobmanager', 'alertuser']
-    }
+    };
 
     useEffect(() => {
         dispatch(fetchUsers());

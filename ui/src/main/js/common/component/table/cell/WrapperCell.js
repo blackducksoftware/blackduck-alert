@@ -31,11 +31,12 @@ const WrapperCell = ({ children, settings }) => {
         <td className={cellStyle}>
             {children}
         </td>
-    )
+    );
 };
 
-WrapperCell.propTypes= {
+WrapperCell.propTypes = {
     settings: PropTypes.object,
+    children: PropTypes.any
 };
 
 export default WrapperCell;

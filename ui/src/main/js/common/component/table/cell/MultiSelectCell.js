@@ -22,7 +22,7 @@ const MultiSelectCell = ({ selected, onSelected, data, disableSelectOptions }) =
         if (evt.target.checked) {
             onSelected(selected.concat(id));
         } else {
-            onSelected(selected.filter(item => item !== id));
+            onSelected(selected.filter((item) => item !== id));
         }
     }, [onSelected, selected]);
 

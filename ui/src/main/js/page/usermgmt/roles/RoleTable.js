@@ -31,13 +31,13 @@ const RoleTable = ({ canCreate, canDelete }) => {
     const [search, setNewSearch] = useState('');
     const [selected, setSelected] = useState([]);
     const [autoRefresh, setAutoRefresh] = useState(false);
-    const [sortConfig, setSortConfig] = useState()
+    const [sortConfig, setSortConfig] = useState();
     const roles = useSelector((state) => state.roles.data);
     // Disable select options for users: sysadmin, jobmanager, alertuser
     const disableSelectOptions = {
         key: 'roleName',
         disabledItems: ['ALERT_ADMIN', 'ALERT_JOB_MANAGER', 'ALERT_USER']
-    }
+    };
 
     useEffect(() => {
         dispatch(fetchRoles());

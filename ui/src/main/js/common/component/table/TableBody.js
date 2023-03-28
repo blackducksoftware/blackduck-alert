@@ -3,42 +3,41 @@ import PropTypes from 'prop-types';
 import MultiSelectCell from 'common/component/table/cell/MultiSelectCell';
 import WrapperCell from 'common/component/table/cell/WrapperCell';
 
-const TableBody = ({ columns, multiSelect, tableData, selected, onSelected, disableSelectOptions }) => {
-    return (
-        <tbody>
-            { tableData?.map((rowData, rowIndex) => (
-                <tr key={rowIndex} > 
-                    { multiSelect ? (
-                        <MultiSelectCell 
-                            data={rowData}
-                            selected={selected}
-                            onSelected={onSelected}
-                            disableSelectOptions={disableSelectOptions}
-                        />
-                    ) : null }
+const TableBody = ({ columns, multiSelect, tableData, selected, onSelected, disableSelectOptions }) => (
+    <tbody>
+        { tableData?.map((rowData, rowIndex) => (
+            <tr key={`${rowIndex}-table-row`}>
+                { multiSelect ? (
+                    <MultiSelectCell
+                        data={rowData}
+                        selected={selected}
+                        onSelected={onSelected}
+                        disableSelectOptions={disableSelectOptions}
+                    />
+                ) : null }
 
-                    { columns.map((col, colIndex) => {
-                        const columnKey = `${col.key}-${rowIndex}-${colIndex}`;
-                        if (col.customCell) {
-                            const CustomCell = col.customCell;
+                { columns.map((col, colIndex) => {
+                    const columnKey = `${col.key}-${rowIndex}-${colIndex}`;
+                    if (col.customCell) {
+                        const CustomCell = col.customCell;
 
-                            return (
-                                <WrapperCell key={columnKey} settings={col.settings} >
-                                    <CustomCell data={rowData} settings={col.settings} customCallback={col.customCallback}/>
-                                </WrapperCell>
-                            )
-                        }
                         return (
-                            <WrapperCell key={columnKey} datakey={col.key}>
-                                {rowData[col.key] ? rowData[col.key] : '\u2014'}
+                            <WrapperCell key={columnKey} settings={col.settings} >
+                                <CustomCell data={rowData} settings={col.settings} customCallback={col.customCallback}/>
                             </WrapperCell>
-                        )
-                    })}
-                </tr>
-            ))}
-        </tbody>
-    );
-};
+                        );
+                    };
+
+                    return (
+                        <WrapperCell key={columnKey} datakey={col.key}>
+                            {rowData[col.key] ? rowData[col.key] : '\u2014'}
+                        </WrapperCell>
+                    )
+                })}
+            </tr>
+        ))}
+    </tbody>
+);
 
 TableBody.propTypes = {
     columns: PropTypes.arrayOf(PropTypes.shape({

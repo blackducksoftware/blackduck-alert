@@ -53,7 +53,7 @@ const CREATE_MODAL_OPTIONS = {
     type: 'CREATE',
     title: 'Create Role',
     submitText: 'Save'
-}
+};
 
 const RoleTableActions = ({ canCreate, canDelete, data, selected }) => {
     const classes = useStyles();

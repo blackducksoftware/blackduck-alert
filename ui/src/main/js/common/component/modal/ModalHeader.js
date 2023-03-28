@@ -28,19 +28,18 @@ const useStyles = createUseStyles({
     }
 });
 
-
 const ModalHeader = ({ title, closeModal }) => {
     const classes = useStyles();
 
     return (
-            <div className={classes.modalHeader}>
-                <div className={classes.title}>
-                    {title}
-                </div>
-                <button className={classes.closeBtn} onClick={closeModal}>
-                    <span>{'\u2715'}</span>
-                </button>
+        <div className={classes.modalHeader}>
+            <div className={classes.title}>
+                {title}
             </div>
+            <button className={classes.closeBtn} onClick={closeModal} type="button">
+                <span>{'\u2715'}</span>
+            </button>
+        </div>
     );
 };
 
@@ -48,6 +47,5 @@ ModalHeader.propTypes = {
     title: PropTypes.string,
     closeModal: PropTypes.func
 };
-
 
 export default ModalHeader;

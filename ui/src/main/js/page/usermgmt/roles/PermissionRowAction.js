@@ -160,7 +160,8 @@ PermissionRowAction.propTypes = {
                 write: PropTypes.bool
             }))
         })
-    })
+    }),
+    customCallback: PropTypes.func
 };
 
 export default PermissionRowAction;
