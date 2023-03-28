@@ -1,9 +1,8 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { createUseStyles } from 'react-jss';
+import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useDispatch, useSelector } from 'react-redux';
-import { saveRole, validateRole } from 'store/actions/roles';
 
 const useStyles = createUseStyles({
     deletePermissionBtn: {
@@ -38,6 +37,9 @@ const useStyles = createUseStyles({
         padding: ['2px', '7px'],
         backgroundColor: '#E4FEE0',
         transitionDuration: '0.3s',
+        display: 'flex',
+        alignItems: 'center',
+        columnGap: '6px',
         '&:hover': {
             cursor: 'pointer',
             backgroundColor: '#67AD5B',
@@ -50,6 +52,9 @@ const useStyles = createUseStyles({
         padding: ['2px', '7px'],
         backgroundColor: '#F9DEDE',
         transitionDuration: '0.3s',
+        display: 'flex',
+        alignItems: 'center',
+        columnGap: '6px',
         '&:hover': {
             cursor: 'pointer',
             backgroundColor: '#E15241',
@@ -58,19 +63,13 @@ const useStyles = createUseStyles({
     }
 });
 
-const PermissionRowAction = ({ data, settings }) => {
-    const dispatch = useDispatch();
+const PermissionRowAction = ({ data, settings, customCallback }) => {
     const classes = useStyles();
     const { permissionData, role } = settings;
     const descriptors = useSelector((state) => state.descriptors.items);
-    const roles = useSelector((state) => state.roles);
 
     const [showDelete, setShowDelete] = useState(false);
     const [roleData, setRoleData] = useState(role);
-
-    function handleSave() {
-        dispatch(saveRole(roleData));
-    }
 
     function handleDeletePermission() {
         const { context: selectedContext, descriptorName: selectedDescriptor } = data;
@@ -85,14 +84,12 @@ const PermissionRowAction = ({ data, settings }) => {
             });
 
         setRoleData((updatedRole) => ({ ...updatedRole, permissions: updatedPermissions }));
-        dispatch(validateRole(roleData));
+        setShowDelete(false);
     }
 
     useEffect(() => {
-        if (roles.saveStatus === 'VALIDATED' && !roles.inProgress) {
-            handleSave();
-        }
-    }, [roles.saveStatus]);
+        customCallback(roleData);
+    }, [roleData]);
 
     return (
         <>
@@ -105,7 +102,7 @@ const PermissionRowAction = ({ data, settings }) => {
                     <span className={classes.confirmMessage}>Delete Permission?</span>
                     <span className={classes.confirmContainer}>
                         <button className={classes.confirmOptionBtn} onClick={handleDeletePermission} type="button">
-                            Confirm
+                            <div className={classes.editBtn}>Confirm</div>
                             <FontAwesomeIcon icon="check" />
                         </button>
                         <div> | </div>

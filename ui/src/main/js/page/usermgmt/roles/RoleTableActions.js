@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { useDispatch, useSelector } from 'react-redux';
 import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import RoleDeleteModal from 'page/usermgmt/roles/RoleDeleteModal';
 import RoleModal from 'page/usermgmt/roles/RoleModal';
 import StatusMessage from 'common/component/StatusMessage';
-import { fetchRoles } from '../../../store/actions/roles';
 
 const useStyles = createUseStyles({
     createUserBtn: {
@@ -52,19 +50,16 @@ const useStyles = createUseStyles({
 });
 
 const CREATE_MODAL_OPTIONS = {
-    type: 'create',
+    type: 'CREATE',
     title: 'Create Role',
     submitText: 'Save'
 }
 
 const RoleTableActions = ({ canCreate, canDelete, data, selected }) => {
     const classes = useStyles();
-    const dispatch = useDispatch();
-    const { deleteStatus, error } = useSelector((state) => state.roles);
-
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(null);
+    const [statusMessage, setStatusMessage] = useState();
 
     function handleCreateRole() {
         setShowCreateModal(true);
@@ -74,28 +69,14 @@ const RoleTableActions = ({ canCreate, canDelete, data, selected }) => {
         setShowDeleteModal(true);
     }
 
-    useEffect(() => {
-        if (deleteStatus === 'SUCCESS') {
-            dispatch(fetchRoles());
-        }
-
-        if (deleteStatus === 'FAIL') {
-            setErrorMessage(error.message);
-        }
-    }, [deleteStatus]);
-
-    useEffect(() => {
-        setErrorMessage(null);
-    }, [selected]);
-
     return (
         <>
-            {errorMessage ? (
+            { statusMessage && (
                 <StatusMessage
-                    id="roles-table-status-msg"
-                    errorMessage={errorMessage}
+                    actionMessage={statusMessage.type === 'success' ? statusMessage.message : null}
+                    errorMessage={statusMessage.type === 'error' ? statusMessage.message : null}
                 />
-            ) : null }
+            )}
 
             { canCreate ? (
                 <button className={classes.createUserBtn} onClick={handleCreateRole} type="button">
@@ -111,23 +92,25 @@ const RoleTableActions = ({ canCreate, canDelete, data, selected }) => {
                 </button>
             ) : null }
 
-            { showCreateModal ? (
+            { showCreateModal && (
                 <RoleModal
-                    data={data}
                     isOpen={showCreateModal}
                     toggleModal={setShowCreateModal}
                     modalOptions={CREATE_MODAL_OPTIONS}
+                    setStatusMessage={setStatusMessage}
+                    statusMessage="Successfully created 1 role."
                 />
-            ) : null }
+            ) }
 
-            { showDeleteModal ? (
+            { showDeleteModal && (
                 <RoleDeleteModal
                     data={data}
                     isOpen={showDeleteModal}
                     toggleModal={setShowDeleteModal}
                     selected={selected}
+                    setStatusMessage={setStatusMessage}
                 />
-            ) : null }
+            ) }
 
         </>
 

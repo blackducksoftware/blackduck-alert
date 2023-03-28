@@ -21,9 +21,10 @@ const TableBody = ({ columns, multiSelect, tableData, selected, onSelected, disa
                         const columnKey = `${col.key}-${rowIndex}-${colIndex}`;
                         if (col.customCell) {
                             const CustomCell = col.customCell;
+
                             return (
                                 <WrapperCell key={columnKey} settings={col.settings} >
-                                    <CustomCell data={rowData} settings={col.settings}/>
+                                    <CustomCell data={rowData} settings={col.settings} customCallback={col.customCallback}/>
                                 </WrapperCell>
                             )
                         }

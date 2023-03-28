@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchRoles } from 'store/actions/roles';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { deleteRoleList } from 'store/actions/roles';
 import Modal from 'common/component/modal/Modal';
@@ -41,9 +42,10 @@ const useStyles = createUseStyles({
     }
 });
 
-const RoleDeleteModal = ({ isOpen, toggleModal, data, selected }) => {
+const RoleDeleteModal = ({ isOpen, toggleModal, data, selected, setStatusMessage }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
+    const { deleteStatus } = useSelector((state) => state.roles);
 
     function getStagedForDelete() {
         const staged = data.filter((role) => selected.includes(role.id));
@@ -51,6 +53,7 @@ const RoleDeleteModal = ({ isOpen, toggleModal, data, selected }) => {
     }
 
     const [selectedRoles, setSelectedRoles] = useState(getStagedForDelete());
+    const [showLoader, setShowLoader] = useState(false);
     const isMultiRoleDelete = selectedRoles.length > 1;
 
     useEffect(() => {
@@ -58,6 +61,7 @@ const RoleDeleteModal = ({ isOpen, toggleModal, data, selected }) => {
     }, [selected]);
 
     function handleClose() {
+        dispatch(fetchRoles());
         toggleModal(false);
     }
 
@@ -72,8 +76,37 @@ const RoleDeleteModal = ({ isOpen, toggleModal, data, selected }) => {
         });
 
         dispatch(deleteRoleList(selectedDeleteIds));
-        handleClose();
     }
+
+    useEffect(() => {
+        if (deleteStatus === 'PROCESSING') {
+            setShowLoader(true);
+        }
+
+        if (deleteStatus === 'SUCCESS') {
+            setShowLoader(false);
+
+            const successMessage = isMultiRoleDelete
+                ? `Successfully deleted ${selectedRoles.length} roles.`
+                : 'Successfully deleted 1 role.';
+
+            setStatusMessage({
+                message: successMessage,
+                type: 'success'
+            });
+
+            handleClose();
+        }
+
+        if (deleteStatus === 'ERROR') {
+            setShowLoader(false);
+            setStatusMessage({
+                message: error.fieldErrors.message,
+                type: 'error'
+            });
+            handleClose();
+        }
+    }, [deleteStatus]);
 
     function toggleSelect(selection) {
         const toggledRoles = selectedRoles.map((role) => {
@@ -96,6 +129,7 @@ const RoleDeleteModal = ({ isOpen, toggleModal, data, selected }) => {
                 handleCancel={handleClose}
                 handleSubmit={handleDelete}
                 submitText="Delete"
+                showLoader={showLoader}
             >
                 <div className={classes.deleteConfirmMessage}>
                     { isMultiRoleDelete ? 'Are you sure you want to delete these roles?' : 'Are you sure you want to delete this role?' }
