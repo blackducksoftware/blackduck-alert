@@ -21,8 +21,7 @@ const useStyles = createUseStyles({
     }
 });
 
-
-const Table = ({ columns, multiSelect, selected, onSelected, disableSelectOptions, tableData, handleSearchChange, 
+const Table = ({ columns, multiSelect, selected, onSelected, disableSelectOptions, tableData, handleSearchChange,
     searchBarPlaceholder, tableActions, onToggle, active, onSort, sortConfig }) => {
     const classes = useStyles();
 
@@ -30,29 +29,35 @@ const Table = ({ columns, multiSelect, selected, onSelected, disableSelectOption
         <>
             <div className={classes.tableActions}>
                 {tableActions ? tableActions() : null}
-                <SearchFilter 
-                    handleSearchChange={handleSearchChange}
-                    searchBarPlaceholder={searchBarPlaceholder}
-                />
-                <ToggleSwitch 
-                    active={active}
-                    onToggle={onToggle} 
-                />
+                { handleSearchChange ? (
+                    <SearchFilter
+                        handleSearchChange={handleSearchChange}
+                        searchBarPlaceholder={searchBarPlaceholder}
+                    />
+                ) : null }
+
+                {onToggle ? (
+                    <ToggleSwitch
+                        active={active}
+                        onToggle={onToggle}
+                    />
+                ) : null }
+
             </div>
             <table className={classes.table}>
-                <TableHeader 
+                <TableHeader
                     columns={columns}
-                    tableData={tableData} 
-                    multiSelect={multiSelect} 
+                    tableData={tableData}
+                    multiSelect={multiSelect}
                     selected={selected}
                     onSelected={onSelected}
                     onSort={onSort}
                     sortConfig={sortConfig}
                 />
-                <TableBody 
-                    columns={columns} 
-                    multiSelect={multiSelect} 
-                    tableData={tableData} 
+                <TableBody
+                    columns={columns}
+                    multiSelect={multiSelect}
+                    tableData={tableData}
                     selected={selected}
                     onSelected={onSelected}
                     disableSelectOptions={disableSelectOptions}
@@ -73,7 +78,7 @@ Table.propTypes = {
     onSelected: PropTypes.func,
     disableSelectOptions: PropTypes.object,
     tableData: PropTypes.arrayOf(PropTypes.object),
-    handleSearchChange: PropTypes.func, 
+    handleSearchChange: PropTypes.func,
     searchBarPlaceholder: PropTypes.string,
     tableActions: PropTypes.func,
     onToggle: PropTypes.func,

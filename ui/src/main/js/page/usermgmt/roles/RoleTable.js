@@ -1,69 +1,56 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchUsers } from 'store/actions/users';
-import UserCopyRowAction from 'page/usermgmt/user/UserCopyRowAction';
-import UserEditRowAction from 'page/usermgmt/user/UserEditRowAction';
-import UserRoleCell from 'page/usermgmt/user/UserRoleCell';
+import { fetchRoles } from 'store/actions/roles';
 import Table from 'common/component/table/Table';
-import UserTableActions from 'page/usermgmt/user/UserTableActions';
+import RoleCopyCell from 'page/usermgmt/roles//RoleCopyCell';
+import RoleEditCell from 'page/usermgmt/roles/RoleEditCell';
+import RoleTableActions from 'page/usermgmt/roles/RoleTableActions';
 
 const COLUMNS = [{
-    key: 'username',
-    label: 'Username',
+    key: 'roleName',
+    label: 'Name',
     sortable: true
 }, {
-    key: 'emailAddress',
-    label: 'Email',
-    sortable: true
-}, {
-    key: 'authenticationType',
-    label: 'Authentication Type',
-    sortable: true
-}, {
-    key: 'roleNames',
-    label: 'Roles',
-    sortable: false,
-    customCell: UserRoleCell
-}, {
-    key: 'editUser',
+    key: 'editRole',
     label: 'Edit',
     sortable: false,
-    customCell: UserEditRowAction,
+    customCell: RoleEditCell,
     settings: { alignment: 'center' }
 }, {
-    key: 'copyUser',
+    key: 'copyRole',
     label: 'Copy',
     sortable: false,
-    customCell: UserCopyRowAction,
+    customCell: RoleCopyCell,
     settings: { alignment: 'center' }
 }];
 
-const UserTable = ({ canCreate, canDelete }) => {
+const RoleTable = ({ canCreate, canDelete }) => {
     const dispatch = useDispatch();
     const [tableData, setTableData] = useState();
     const [search, setNewSearch] = useState('');
     const [selected, setSelected] = useState([]);
     const [autoRefresh, setAutoRefresh] = useState(false);
     const [sortConfig, setSortConfig] = useState();
-    const users = useSelector((state) => state.users.data);
+    const roles = useSelector((state) => state.roles.data);
     // Disable select options for users: sysadmin, jobmanager, alertuser
     const disableSelectOptions = {
-        key: 'username',
-        disabledItems: ['sysadmin', 'jobmanager', 'alertuser']
+        key: 'roleName',
+        disabledItems: ['ALERT_ADMIN', 'ALERT_JOB_MANAGER', 'ALERT_USER']
     };
 
     useEffect(() => {
-        dispatch(fetchUsers());
+        dispatch(fetchRoles());
     }, []);
 
     useEffect(() => {
         if (autoRefresh) {
-            const refreshIntervalId = setInterval(() => dispatch(fetchUsers()), 30000);
+            const refreshIntervalId = setInterval(() => dispatch(fetchRoles()), 30000);
             return function clearRefreshInterval() {
                 clearInterval(refreshIntervalId);
             };
         }
+
         return undefined;
     }, [autoRefresh]);
 
@@ -96,7 +83,7 @@ const UserTable = ({ canCreate, canDelete }) => {
     };
 
     useEffect(() => {
-        let data = users;
+        let data = roles;
 
         if (sortConfig) {
             const { name, direction } = sortConfig;
@@ -110,31 +97,33 @@ const UserTable = ({ canCreate, canDelete }) => {
             });
         }
 
-        setTableData(!search ? data : data.filter((user) => user.username.toLowerCase().includes(search.toLowerCase())));
-    }, [users, search, sortConfig]);
+        setTableData(!search ? data : data.filter((role) => role.roleName.toLowerCase().includes(search.toLowerCase())));
+    }, [roles, search, sortConfig]);
 
     return (
-        <Table
-            tableData={tableData}
-            columns={COLUMNS}
-            multiSelect
-            selected={selected}
-            disableSelectOptions={disableSelectOptions}
-            onSelected={onSelected}
-            onSort={onSort}
-            sortConfig={sortConfig}
-            searchBarPlaceholder="Search Users..."
-            handleSearchChange={handleSearchChange}
-            active={autoRefresh}
-            onToggle={handleToggle}
-            tableActions={() => <UserTableActions canCreate={canCreate} canDelete={canDelete} data={tableData} selected={selected} />}
-        />
+        <>
+            <Table
+                tableData={tableData}
+                columns={COLUMNS}
+                multiSelect
+                selected={selected}
+                onSelected={onSelected}
+                searchBarPlaceholder="Search Roles..."
+                handleSearchChange={handleSearchChange}
+                active={autoRefresh}
+                onToggle={handleToggle}
+                onSort={onSort}
+                sortConfig={sortConfig}
+                disableSelectOptions={disableSelectOptions}
+                tableActions={() => <RoleTableActions canCreate={canCreate} canDelete={canDelete} data={roles} selected={selected} />}
+            />
+        </>
     );
 };
 
-UserTable.propTypes = {
+RoleTable.propTypes = {
     canCreate: PropTypes.bool,
     canDelete: PropTypes.bool
 };
 
-export default UserTable;
+export default RoleTable;

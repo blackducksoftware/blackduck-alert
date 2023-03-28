@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Tab, Tabs } from 'react-bootstrap';
 import PageHeader from 'common/component/navigation/PageHeader';
-import RoleTable from 'page/usermgmt/RoleTable';
 // This line below will be deleted before merge, along with the Beta component code below
+import { default as RoleTableStagedForDelete } from 'page/usermgmt/RoleTable';
 import { default as UserTableStagedForDelete } from 'page/usermgmt/UserTable';
 import * as DescriptorUtilities from 'common/util/descriptorUtilities';
 import { USER_MANAGEMENT_INFO } from 'page/usermgmt/UserModel';
@@ -13,6 +13,7 @@ import BetaPage from 'common/component/beta/BetaPage';
 import BetaComponent from 'common/component/beta/BetaComponent';
 import CurrentComponent from 'common/component/beta/CurrentComponent';
 import UserTable from 'page/usermgmt/user/UserTable';
+import RoleTable from 'page/usermgmt/roles/RoleTable';
 
 const UserManagement = ({ descriptors }) => {
     const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_NAME.COMPONENT_USERS, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
@@ -38,7 +39,14 @@ const UserManagement = ({ descriptors }) => {
                     </BetaPage>
                 </Tab>
                 <Tab eventKey={2} title="Roles">
-                    <RoleTable canCreate={canCreate} canDelete={canDelete} />
+                    <BetaPage betaSelected>
+                        <BetaComponent>
+                            <RoleTable canCreate={canCreate} canDelete={canDelete} />
+                        </BetaComponent>
+                        <CurrentComponent>
+                            <RoleTableStagedForDelete canCreate={canCreate} canDelete={canDelete} />
+                        </CurrentComponent>
+                    </BetaPage>
                 </Tab>
             </Tabs>
         </div>

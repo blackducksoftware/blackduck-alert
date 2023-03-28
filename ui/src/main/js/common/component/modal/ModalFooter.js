@@ -19,7 +19,6 @@ const useStyles = createUseStyles({
     },
     submitBtn: {
         background: 'none',
-        color: 'inherit',
         border: 'solid .5px',
         padding: ['6px', '20px'],
         font: 'inherit',
@@ -34,7 +33,6 @@ const useStyles = createUseStyles({
     },
     cancleBtn: {
         background: 'none',
-        color: 'inherit',
         border: 'solid .5px #2E3B4E',
         padding: ['6px', '20px'],
         font: 'inherit',
@@ -46,7 +44,7 @@ const useStyles = createUseStyles({
             outline: 0
         },
         '&:hover': {
-            border: 'solid 1px #2E3B4E',
+            border: 'solid 1px #2E3B4E'
         }
     },
     loader: {
@@ -60,11 +58,11 @@ const SubmitButton = ({ handleSubmit, submitText }) => {
     const classes = useStyles();
 
     return (
-        <button className={classes.submitBtn} onClick={handleSubmit}>
+        <button className={classes.submitBtn} onClick={handleSubmit} type="submit">
             {submitText}
         </button>
-    )
-}
+    );
+};
 
 SubmitButton.propTypes = {
     handleSubmit: PropTypes.func,
@@ -89,20 +87,20 @@ const ModalFooter = ({ handleCancel, handleSubmit, submitText, showLoader }) => 
     const classes = useStyles();
 
     return (
-            <div className={classes.modalFooter}>
-                <div className={classes.footerActions}>
-                    {showLoader && (
-                        <div className={classes.loader}>
-                            <FontAwesomeIcon icon="spinner" className="alert-icon" size="2x" spin />
-                        </div>
-                    )}
+        <div className={classes.modalFooter}>
+            <div className={classes.footerActions}>
+                {showLoader && (
+                    <div className={classes.loader}>
+                        <FontAwesomeIcon icon="spinner" className="alert-icon" size="2x" spin />
+                    </div>
+                )}
 
-                    { handleCancel && (
-                        <CancelButton handleCancel={handleCancel} />
-                    )}
-                    <SubmitButton submitText={submitText} handleSubmit={handleSubmit}/>
-                </div>
+                { handleCancel && (
+                    <CancelButton handleCancel={handleCancel} />
+                )}
+                <SubmitButton submitText={submitText} handleSubmit={handleSubmit} />
             </div>
+        </div>
     );
 };
 

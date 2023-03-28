@@ -16,7 +16,7 @@ const MultiSelectHeaderCell = ({ tableData, onSelected, selected }) => {
     const classes = useStyles();
     const checkboxRef = useRef();
 
-    const ids = useMemo(() => tableData?.map(item => {
+    const ids = useMemo(() => tableData?.map((item) => {
         return item.id;
     }), [tableData]);
 
@@ -39,7 +39,7 @@ const MultiSelectHeaderCell = ({ tableData, onSelected, selected }) => {
             onSelected([]);
         }
     }
-    
+
     return (
         <td className={classes.multiSelectStyle}>
             <input

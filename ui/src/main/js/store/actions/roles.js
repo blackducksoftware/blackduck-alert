@@ -3,6 +3,9 @@ import {
     USER_MANAGEMENT_ROLE_DELETE_ERROR,
     USER_MANAGEMENT_ROLE_DELETED,
     USER_MANAGEMENT_ROLE_DELETING,
+    USER_MANAGEMENT_ROLE_DELETE_LIST_ERROR,
+    USER_MANAGEMENT_ROLE_DELETED_LIST,
+    USER_MANAGEMENT_ROLE_DELETING_LIST,
     USER_MANAGEMENT_ROLE_FETCH_ERROR_ALL,
     USER_MANAGEMENT_ROLE_FETCHED_ALL,
     USER_MANAGEMENT_ROLE_FETCHING_ALL,
@@ -95,6 +98,25 @@ function deletedRole() {
 function deletingRoleErrorMessage(message) {
     return {
         type: USER_MANAGEMENT_ROLE_DELETE_ERROR,
+        message
+    };
+}
+
+function deletingRoleList() {
+    return {
+        type: USER_MANAGEMENT_ROLE_DELETING_LIST
+    };
+}
+
+function deletedRoleList() {
+    return {
+        type: USER_MANAGEMENT_ROLE_DELETED_LIST
+    };
+}
+
+function deletingRoleListErrorMessage(message) {
+    return {
+        type: USER_MANAGEMENT_ROLE_DELETE_LIST_ERROR,
         message
     };
 }
@@ -224,6 +246,24 @@ export function deleteRole(roleId) {
             }
         })
             .catch(console.error);
+    };
+}
+
+export function deleteRoleList(roleIds) {
+    return (dispatch, getState) => {
+        dispatch(deletingRoleList());
+        const { csrfToken } = getState().session;
+        const errorHandlers = [];
+        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => deletingRoleErrorMessage(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
+
+        const request = ConfigRequestBuilder.createMultiDeleteRequest(ConfigRequestBuilder.ROLE_API_URL, csrfToken, roleIds);
+        request.then(() => {
+            dispatch(deletedRoleList());
+        })
+            .catch((error) => {
+                dispatch(deletingRoleListErrorMessage(error.message));
+            });
     };
 }
 

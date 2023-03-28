@@ -48,18 +48,13 @@ const useStyles = createUseStyles({
     }
 });
 
-<<<<<<< HEAD
-
 const Modal = ({ isOpen, size, title, closeModal, children, handleCancel, handleSubmit, submitText, showLoader }) => {
-=======
-const Modal = ({ isOpen, size, title, closeModal, children, handleCancel, handleSubmit, submitText }) => {
->>>>>>> bs_IALERT-3116_table-rewrite-overhaul
     const classes = useStyles();
-    
+
     const modalStyleClass = classNames(classes.modalStyle, {
         [classes.modalStyleLarge]: size === 'lg',
         [classes.modalStyleMedium]: size === 'md',
-        [classes.modalStyleSmall]: size === 'sm',
+        [classes.modalStyleSmall]: size === 'sm'
     });
 
     if (!isOpen) {
@@ -71,13 +66,13 @@ const Modal = ({ isOpen, size, title, closeModal, children, handleCancel, handle
             <div className={modalStyleClass}>
                 <div className={classes.modalContent}>
                     <ModalHeader
-                        title={title} 
+                        title={title}
                         closeModal={closeModal}
                     />
                     <div className={classes.modalBody}>
                         {children}
                     </div>
-                    <ModalFooter 
+                    <ModalFooter
                         handleCancel={handleCancel}
                         handleSubmit={handleSubmit}
                         submitText={submitText}

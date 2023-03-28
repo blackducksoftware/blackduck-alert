@@ -1,10 +1,23 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
 
-import { faCog, faPlus } from '@fortawesome/free-solid-svg-icons';
+import {
+    faCheck,
+    faCog,
+    faPencilAlt,
+    faPlus,
+    faTimes,
+    faTrash,
+    faUserCog
+} from '@fortawesome/free-solid-svg-icons';
 
 export default function registerIcons() {
     library.add(
+        faCheck,
+        faCog,
+        faPencilAlt,
         faPlus,
-        faCog
+        faTimes,
+        faTrash,
+        faUserCog
     );
 }

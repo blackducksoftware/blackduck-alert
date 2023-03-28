@@ -30,7 +30,7 @@ const useStyles = createUseStyles({
     },
     buttonContainer: {
         display: 'flex',
-        alignItems: 'center', 
+        alignItems: 'center',
         columnGap: '3px',
         '&:focus': {
             border: 'none',
@@ -38,7 +38,6 @@ const useStyles = createUseStyles({
         }
     }
 });
-
 
 const TableHeaderCell = ({ label, sortable, settings, onSort, name, sortConfig }) => {
     const classes = useStyles();
@@ -53,13 +52,13 @@ const TableHeaderCell = ({ label, sortable, settings, onSort, name, sortConfig }
     }
 
     return (
-        <th className={cellStyle} >
+        <th className={cellStyle}>
             { sortable ? (
-                <button role="button" onClick={() => onSort(name)} className={classes.buttonContainer}>
+                <button type="button" onClick={() => onSort(name)} className={classes.buttonContainer}>
                     {label}
                     { sortConfig && sortConfig?.name === name ? (
-                        <FontAwesomeIcon icon={getSortIcon(sortConfig.direction)} /> 
-                    ) : <FontAwesomeIcon icon='sort' /> }
+                        <FontAwesomeIcon icon={getSortIcon(sortConfig.direction)} />
+                    ) : <FontAwesomeIcon icon="sort" /> }
                 </button>
             ) : <>{label}</> }
         </th>
@@ -69,7 +68,7 @@ const TableHeaderCell = ({ label, sortable, settings, onSort, name, sortConfig }
 TableHeaderCell.propTypes = {
     sortable: PropTypes.bool,
     label: PropTypes.string,
-    settings:PropTypes.object,
+    settings: PropTypes.object,
     onSort: PropTypes.func,
     name: PropTypes.string,
     sortConfig: PropTypes.shape({
