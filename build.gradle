@@ -44,6 +44,9 @@ ext {
     dockerPublishAllImages_DHStageName = 'dockerPublishAllImages_DH'
     dockerPublishAllImages_ARTStageName = 'dockerPublishAllImages_ART'
 
+    helmArtifactoryRepos = []
+    helmPrePackagedRepoNames = []
+
     envVarsNotExistMsg = 'Skipping as dependent variable are not set or values are false'
 }
 
@@ -53,6 +56,20 @@ version = '7.0.0-SNAPSHOT'
 ext.isSnapshot = project.version.endsWith('-SNAPSHOT')
 ext.isSIGQA = project.version.contains('-SIGQA')
 ext.isRelease = (!project.ext.isSnapshot && !project.ext.isSIGQA)
+
+if (project.ext.isSIGQA && System.env.HELM_SIGQA_REPOS != null) {
+    helmArtifactoryRepos = System.env.HELM_SIGQA_REPOS.split(',').collect { it.trim() as String }
+} else if (project.ext.isSnapshot && System.env.HELM_SNAPSHOT_REPOS != null) {
+    helmArtifactoryRepos = System.env.HELM_SNAPSHOT_REPOS.split(',').collect { it.trim() as String }
+} else if (project.ext.isRelease && System.env.HELM_RELEASE_REPOS != null) {
+    helmArtifactoryRepos = System.env.HELM_RELEASE_REPOS.split(',').collect { it.trim() as String }
+} else {
+    logger.lifecycle("Helm Artifactory repositores not configured")
+}
+
+if (System.env.HELM_PREPACKAGED_REPOS != null) {
+    helmPrePackagedRepoNames = System.env.HELM_PREPACKAGED_REPOS.split(',').collect { it.trim() as String }
+}
 
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
