@@ -130,7 +130,7 @@ dockerImagesToBuild.each { imageName ->
         commandLine 'docker', 'login', '--username', "${System.env.DOCKER_INT_BLACKDUCK_USER}", '--password-stdin'
 
         onlyIf(envVarsNotExistMsg) {
-            System.env.DOCKER_INT_BLACKDUCK_USER != null && System.env.DOCKER_INT_BLACKDUCK_PASSWORD != null
+            System.env.DOCKER_INT_BLACKDUCK_USER != null && System.env.DOCKER_INT_BLACKDUCK_PASSWORD != null && project.ext.isRelease
         }
     }
 
@@ -140,7 +140,7 @@ dockerImagesToBuild.each { imageName ->
         //commandLine 'docker', 'push', fullDockerImageName
 
         onlyIf(envVarsNotExistMsg) {
-            project.ext.isRelease
+            System.env.DOCKER_INT_BLACKDUCK_USER != null && System.env.DOCKER_INT_BLACKDUCK_PASSWORD != null && project.ext.isRelease
         }
     }
     project.tasks.findByName(dockerPublishAllImages_DH).dependsOn project.tasks.findByName(dockerImagePublishDHTaskName)
@@ -156,7 +156,7 @@ dockerImagesToBuild.each { imageName ->
         commandLine 'docker', 'tag', fullDockerImageName, artifactoryDockerImageName
 
         onlyIf(envVarsNotExistMsg) {
-            System.env.DOCKER_REGISTRY_SIG != null
+            System.env.ARTIFACTORY_DEPLOYER_USER != null && System.env.ARTIFACTORY_DEPLOYER_PASSWORD != null && System.env.DOCKER_REGISTRY_SIG != null
         }
     }
 
@@ -183,7 +183,7 @@ dockerImagesToBuild.each { imageName ->
         //commandLine 'docker' , 'push' , artifactoryDockerImageName
 
         onlyIf(envVarsNotExistMsg) {
-            System.env.DOCKER_REGISTRY_SIG != null
+            System.env.ARTIFACTORY_DEPLOYER_USER != null && System.env.ARTIFACTORY_DEPLOYER_PASSWORD != null && System.env.DOCKER_REGISTRY_SIG != null
         }
     }
 
@@ -192,7 +192,7 @@ dockerImagesToBuild.each { imageName ->
         commandLine 'docker', 'image', 'rm', artifactoryDockerImageName
 
         onlyIf(envVarsNotExistMsg) {
-            System.env.DOCKER_REGISTRY_SIG != null
+            System.env.ARTIFACTORY_DEPLOYER_USER != null && System.env.ARTIFACTORY_DEPLOYER_PASSWORD != null && System.env.DOCKER_REGISTRY_SIG != null
         }
     }
     project.tasks.findByName(dockerPublishAllImages_ART).dependsOn project.tasks.findByName(dockerImageRemoveTagARTaskName)
