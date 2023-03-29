@@ -136,8 +136,7 @@ dockerImagesToBuild.each { imageName ->
 
     project.tasks.create(name: dockerImagePublishDHTaskName, type: Exec, dependsOn: [dockerImageLoginDHTaskName], group: 'Docker_DH', description: "Docker push ${imageName} to hub.docker.com. <sub-task>") {
         outputs.upToDateWhen { false }
-        commandLine 'docker', 'version'
-        //commandLine 'docker', 'push', fullDockerImageName
+        commandLine 'docker', 'push', fullDockerImageName
 
         onlyIf(envVarsNotExistMsg) {
             System.env.DOCKER_INT_BLACKDUCK_USER != null && System.env.DOCKER_INT_BLACKDUCK_PASSWORD != null && project.ext.isRelease
@@ -179,8 +178,7 @@ dockerImagesToBuild.each { imageName ->
 
     project.tasks.create(name: dockerImagePublishARTTaskName, type: Exec, dependsOn: [dockerImageLoginARTTaskName], group: 'Docker_Artifactory', description: "Docker push to Artifactory. <sub-task>") {
         outputs.upToDateWhen { false }
-        commandLine 'docker', 'version'
-        //commandLine 'docker' , 'push' , artifactoryDockerImageName
+        commandLine 'docker', 'push', artifactoryDockerImageName
 
         onlyIf(envVarsNotExistMsg) {
             System.env.ARTIFACTORY_DEPLOYER_USER != null && System.env.ARTIFACTORY_DEPLOYER_PASSWORD != null && System.env.DOCKER_REGISTRY_SIG != null
