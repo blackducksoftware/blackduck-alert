@@ -88,6 +88,18 @@ dockerImagesToBuild.each { imageName ->
                 }
             }
         }
+
+        onlyIf("Docker executable does not exist in environment") {
+            try {
+                def result = exec {
+                    ignoreExitValue = true
+                    commandLine 'docker', 'version'
+                }
+                result.exitValue != 0
+            } catch (Exception ignored) {
+                return false
+            }
+        }
     }
     project.tasks.findByName(dockerRemoveAllImages).dependsOn project.tasks.findByName(dockerImageRemoveTaskName)
 
