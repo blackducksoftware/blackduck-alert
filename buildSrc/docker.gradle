@@ -10,6 +10,42 @@ String dockerPublishAllImages_DH = rootProject.ext.dockerPublishAllImages_DHStag
 String dockerPublishAllImages_ART = rootProject.ext.dockerPublishAllImages_ARTStageName
 String dockerPublishAllImages = rootProject.ext.dockerPublishAllImagesStageName
 
+ext.createDockerRemoveTask = { removeTaskName, removeGroupName, removeImageName, primaryDependencyTaskName ->
+    project.tasks.create(name: removeTaskName, type: Exec, group: removeGroupName, description: "Docker remove tagged Artifactory image. <sub-task>") {
+        outputs.upToDateWhen { false }
+
+        ignoreExitValue = true
+        errorOutput = new ByteArrayOutputStream()
+
+        commandLine 'docker', 'image', 'rm', removeImageName
+
+        doLast {
+            String stdErr = errorOutput.toString()
+
+            if (stdErr?.trim() && !stdErr.contains("Deleted: ")) {
+                if (stdErr.contains("Error: No such image")) {
+                    logger.lifecycle("Image does not exist, continuing.")
+                } else {
+                    throw new GradleException("${stdErr}")
+                }
+            }
+        }
+
+        onlyIf("Docker executable does not exist in environment") {
+            try {
+                def result = exec {
+                    ignoreExitValue = true
+                    commandLine 'docker', '-v'
+                }
+                result.exitValue == 0
+            } catch (Exception ignored) {
+                return false
+            }
+        }
+    }
+    project.tasks.findByName(primaryDependencyTaskName).dependsOn project.tasks.findByName(removeTaskName)
+}
+
 project.tasks.create(name: dockerCleanStagingAreaDirectory, group: 'Docker', description: 'Remove staging area used for creating Docker images. <primary task>') {
     file(dockerStagingDirectory).deleteDir()
 }
@@ -62,46 +98,14 @@ dockerImagesToBuild.each { imageName ->
     logger.lifecycle('Creating tasks to process Docker image:: ' + fullDockerImageName)
 
     String imageTaskNameSuffix = ''
-    for (String token : imageName.split("-")) {
+    for (String token : imageName.split('-')) {
         imageTaskNameSuffix += token.substring(0, 1).toUpperCase() + token.substring(1).toLowerCase()
     }
 
     String dockerImageRemoveTaskName = "dockerRemove${imageTaskNameSuffix}"
     String dockerImageBuildTaskName = "dockerBuild${imageTaskNameSuffix}"
 
-    project.tasks.create(name: dockerImageRemoveTaskName, type: Exec, group: 'Docker', description: "Remove docker image. <sub-task>") {
-        outputs.upToDateWhen { false }
-
-        ignoreExitValue = true
-        errorOutput = new ByteArrayOutputStream()
-
-        commandLine 'docker', 'image', 'rm', fullDockerImageName
-
-        doLast {
-            String stdErr = errorOutput.toString()
-
-            if (stdErr?.trim() && !stdErr.contains("Deleted: ")) {
-                if (stdErr.contains("Error: No such image")) {
-                    logger.lifecycle("Image does not exist, continuing.")
-                } else {
-                    throw new GradleException("${stdErr}")
-                }
-            }
-        }
-
-        onlyIf("Docker executable does not exist in environment") {
-            try {
-                def result = exec {
-                    ignoreExitValue = true
-                    commandLine 'docker', 'version'
-                }
-                result.exitValue != 0
-            } catch (Exception ignored) {
-                return false
-            }
-        }
-    }
-    project.tasks.findByName(dockerRemoveAllImages).dependsOn project.tasks.findByName(dockerImageRemoveTaskName)
+    ext.createDockerRemoveTask(dockerImageRemoveTaskName, 'Docker', fullDockerImageName, dockerRemoveAllImages)
 
     project.tasks.create(name: dockerImageBuildTaskName, type: Exec, dependsOn: [dockerSetupStagingAreaDirectory], group: 'Docker', description: "Build docker image. <sub-task>") {
         outputs.upToDateWhen { false }
@@ -196,14 +200,7 @@ dockerImagesToBuild.each { imageName ->
             System.env.ARTIFACTORY_DEPLOYER_USER != null && System.env.ARTIFACTORY_DEPLOYER_PASSWORD != null && System.env.DOCKER_REGISTRY_SIG != null
         }
     }
+    project.tasks.findByName(dockerImagePublishARTTaskName).dependsOn project.tasks.findByName(dockerImagePublishARTTaskName)
 
-    project.tasks.create(name: dockerImageRemoveTagARTaskName, type: Exec, dependsOn: [dockerImagePublishARTTaskName], group: 'Docker_Artifactory', description: "Docker remove tagged Artifactory image. <sub-task>") {
-        outputs.upToDateWhen { false }
-        commandLine 'docker', 'image', 'rm', artifactoryDockerImageName
-
-        onlyIf(envVarsNotExistMsg) {
-            System.env.ARTIFACTORY_DEPLOYER_USER != null && System.env.ARTIFACTORY_DEPLOYER_PASSWORD != null && System.env.DOCKER_REGISTRY_SIG != null
-        }
-    }
-    project.tasks.findByName(dockerPublishAllImages_ART).dependsOn project.tasks.findByName(dockerImageRemoveTagARTaskName)
+    ext.createDockerRemoveTask(dockerImageRemoveTagARTaskName, 'Docker_Artifactory', artifactoryDockerImageName, dockerRemoveAllImages)
 }
