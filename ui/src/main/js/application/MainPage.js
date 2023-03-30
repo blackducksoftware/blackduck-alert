@@ -27,6 +27,7 @@ import AuthenticationPageLayout from 'application/auth/AuthenticationPageLayout'
 import { BLACKDUCK_INFO, BLACKDUCK_URLS } from 'page/provider/blackduck/BlackDuckModel';
 import BlackDuckProviderConfiguration from 'page/provider/blackduck/BlackDuckProviderConfiguration';
 import BlackDuckConfiguration from 'page/provider/blackduck/BlackDuckConfiguration';
+import ProviderPageLayout from 'page/provider/ProviderPageLayout';
 import { AUDIT_INFO } from 'page/audit/AuditModel';
 import AuditPage from 'page/audit/AuditPage';
 import { CERTIFICATE_INFO } from 'page/certificates/CertificateModel';
@@ -119,12 +120,25 @@ const MainPage = ({
                 urlName={BLACKDUCK_INFO.url}
                 descriptor={globalDescriptorMap[BLACKDUCK_INFO.key]}
                 render={(readonly, showTest, showSave, showDelete) => (
-                    <BlackDuckProviderConfiguration
-                        csrfToken={csrfToken}
-                        showRefreshButton={!autoRefresh}
-                        readonly={readonly}
-                        displayDelete={showDelete}
-                    />
+                    <BetaPage betaSelected>
+                        <BetaComponent>
+                            <ProviderPageLayout 
+                                csrfToken={csrfToken}
+                                showRefreshButton={!autoRefresh}
+                                readonly={readonly}
+                                displayDelete={showDelete}
+                            />
+                        </BetaComponent>
+                        <CurrentComponent>
+                            <BlackDuckProviderConfiguration
+                                csrfToken={csrfToken}
+                                showRefreshButton={!autoRefresh}
+                                readonly={readonly}
+                                displayDelete={showDelete}
+                            />
+                        </CurrentComponent>
+                    </BetaPage>
+                    
                 )}
             />
             <DescriptorRoute

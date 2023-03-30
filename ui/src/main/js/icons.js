@@ -3,6 +3,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import {
     faCheck,
     faCog,
+    faHandshake,
     faPencilAlt,
     faPlus,
     faTimes,
@@ -14,6 +15,7 @@ export default function registerIcons() {
     library.add(
         faCheck,
         faCog,
+        faHandshake,
         faPencilAlt,
         faPlus,
         faTimes,
