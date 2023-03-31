@@ -6,109 +6,18 @@ String dockerCleanStagingAreaDirectory = rootProject.ext.dockerCleanStagingAreaD
 String dockerRemoveAllImages = rootProject.ext.dockerRemoveAllImagesStageName
 String dockerSetupStagingAreaDirectory = rootProject.ext.dockerSetupStagingAreaDirectoryStageName
 String dockerBuildAllImages = rootProject.ext.dockerBuildAllImagesStageName
-String dockerLoginDockerHub = rootProject.ext.dockerLoginDockerHubStageName
+String dockerPublishAllImages_DH = rootProject.ext.dockerPublishAllImages_DHStageName
+String dockerPublishAllImages_ART = rootProject.ext.dockerPublishAllImages_ARTStageName
 String dockerPublishAllImages = rootProject.ext.dockerPublishAllImagesStageName
-ArrayList<String> dockerTasksCreated = []
 
-project.tasks.create(name: dockerCleanStagingAreaDirectory, group: 'Docker', description: 'Remove staging area used for creating Docker images') {
-    dockerTasksCreated.add(dockerCleanStagingAreaDirectory)
-    doFirst {
-        logger.lifecycle('Removing Docker staging area:: ' + dockerStagingDirectory)
-    }
-
-    file(dockerStagingDirectory).deleteDir()
-}
-clean.finalizedBy(project.tasks.findByName(dockerCleanStagingAreaDirectory))
-
-project.tasks.create(name: dockerRemoveAllImages, group: 'Docker', description: 'Remove docker images and staging area for project') {
-    dockerTasksCreated.add(dockerRemoveAllImages)
-}
-clean.finalizedBy(project.tasks.findByName(dockerRemoveAllImages))
-
-project.tasks.create(name: dockerSetupStagingAreaDirectory, type: Copy, group: 'Docker', description: 'Populate staging area used for creating Docker images') {
-    dockerTasksCreated.add(dockerSetupStagingAreaDirectory)
-    dependsOn project.tasks.findByName(dockerCleanStagingAreaDirectory)
-
-    doFirst {
-        logger.lifecycle('Setting up docker staging area')
-    }
-
-    into dockerStagingDirectory
-    from(baseDockerDirectory)
-
-    into('blackduck-alert') {
-        from tarTree("${project.buildDir}/distributions/blackduck-alert-boot-${project.version}.tar")
-    }
-}
-
-project.tasks.create(name: dockerBuildAllImages, group: 'Docker', description: 'Build docker images for project') {
-    dockerTasksCreated.add(dockerBuildAllImages)
-    dependsOn project.tasks.findByName(dockerSetupStagingAreaDirectory)
-}
-
-project.tasks.create(name: dockerLoginDockerHub, type: Exec, group: 'Docker', description: 'Login to hub.docker.com prior to publish image') {
-    dockerTasksCreated.add(dockerLoginDockerHub)
-    String dockerLoginUsername = System.env.DOCKER_INT_BLACKDUCK_USER ?: '<Not Set>'
-
-    doFirst {
-        String dockerLoginPassword = System.env.DOCKER_INT_BLACKDUCK_PASSWORD
-        if (dockerLoginPassword?.trim()) {
-            standardInput = new ByteArrayInputStream(dockerLoginPassword.getBytes())
-        }
-    }
-
-    commandLine 'docker', 'login', '--username', dockerLoginUsername, '--password-stdin'
-
-    onlyIf(envVarsNotExistMsg) {
-        System.env.DOCKER_INT_BLACKDUCK_USER != null && System.env.DOCKER_INT_BLACKDUCK_PASSWORD != null
-    }
-}
-
-project.tasks.create(name: dockerPublishAllImages, group: 'Docker', description: 'Publish docker images for project to hub.docker.com') {
-    dockerTasksCreated.add(dockerPublishAllImages)
-    dependsOn project.tasks.findByName(dockerLoginDockerHub), project.tasks.findByName(dockerBuildAllImages)
-
-    onlyIf(envVarsNotExistMsg) {
-        System.env.DOCKER_INT_BLACKDUCK_USER != null && System.env.DOCKER_INT_BLACKDUCK_PASSWORD != null
-    }
-}
-
-/*
-  Each Dockerfile to be built should be in a subdirectory of "${project.projectDir}/${baseDockerDirectory}"
-  For each Dockerfile found within 'baseDockerDirectory', gradle tasks will be added
-  The subdirectory should be named what the image should be named
-  If the image has an ENTRYPOINT script, it should be put in the subdirectory and named docker-entrypoint.sh
-*/
-ArrayList<String> dockerImagesToBuild = []
-new File(baseDockerDirectory).eachFileRecurse() { it ->
-    if (it.isFile() && it.name == 'Dockerfile') {
-        dockerImagesToBuild.add(it.getParentFile().getName())
-    }
-}
-
-dockerImagesToBuild.each { imageName ->
-    String fullDockerImageName = 'blackducksoftware/' + imageName + ':' + project.version
-    logger.lifecycle('Creating tasks to process Docker image:: ' + fullDockerImageName)
-
-    String imageTaskNameSuffix = ''
-    for (String token : imageName.split("-")) {
-        imageTaskNameSuffix += token.substring(0, 1).toUpperCase() + token.substring(1).toLowerCase()
-    }
-
-    String dockerImageRemoveTaskName = "dockerRemove${imageTaskNameSuffix}"
-    String dockerImageBuildTaskName = "dockerBuild${imageTaskNameSuffix}"
-    String dockerImagePublishTaskName = "dockerPublish${imageTaskNameSuffix}"
-
-    project.tasks.create(name: dockerImageRemoveTaskName, type: Exec, group: 'Docker', description: "Remove ${fullDockerImageName} docker image") {
-        dockerTasksCreated.add(dockerImageRemoveTaskName)
-        doFirst {
-            logger.lifecycle('Removing docker image:: ' + fullDockerImageName)
-        }
+ext.createDockerRemoveTask = { removeTaskName, removeGroupName, removeImageName, primaryDependencyTaskName ->
+    project.tasks.create(name: removeTaskName, type: Exec, group: removeGroupName, description: "Docker remove tagged Artifactory image. <sub-task>") {
+        outputs.upToDateWhen { false }
 
         ignoreExitValue = true
         errorOutput = new ByteArrayOutputStream()
 
-        commandLine 'docker', 'image', 'rm', fullDockerImageName
+        commandLine 'docker', 'image', 'rm', removeImageName
 
         doLast {
             String stdErr = errorOutput.toString()
@@ -126,21 +35,82 @@ dockerImagesToBuild.each { imageName ->
             try {
                 def result = exec {
                     ignoreExitValue = true
-                    commandLine 'docker', 'version'
+                    commandLine 'docker', '-v'
                 }
-                result.exitValue != 0
+                result.exitValue == 0
             } catch (Exception ignored) {
                 return false
             }
         }
     }
-    project.tasks.findByName(dockerRemoveAllImages).dependsOn dockerImageRemoveTaskName
+    project.tasks.findByName(primaryDependencyTaskName).dependsOn project.tasks.findByName(removeTaskName)
+}
 
-    project.tasks.create(name: dockerImageBuildTaskName, type: Exec, group: 'Docker', description: "Build ${imageName} docker image") {
-        dockerTasksCreated.add(dockerImageBuildTaskName)
-        dependsOn project.tasks.findByName(dockerSetupStagingAreaDirectory)
+project.tasks.create(name: dockerCleanStagingAreaDirectory, group: 'Docker', description: 'Remove staging area used for creating Docker images. <primary task>') {
+    file(dockerStagingDirectory).deleteDir()
+}
+clean.finalizedBy(project.tasks.findByName(dockerCleanStagingAreaDirectory))
+
+project.tasks.create(name: dockerRemoveAllImages, group: 'Docker', description: 'Remove all docker images for project. <primary task>') {}
+clean.finalizedBy(project.tasks.findByName(dockerRemoveAllImages))
+
+project.tasks.create(name: dockerSetupStagingAreaDirectory, type: Copy, dependsOn: [dockerCleanStagingAreaDirectory], group: 'Docker', description: 'Populate staging area used for creating Docker images. <primary task>') {
+    into dockerStagingDirectory
+    from(baseDockerDirectory)
+
+    into('blackduck-alert') {
+        from tarTree("${project.buildDir}/distributions/blackduck-alert-boot-${project.version}.tar")
+    }
+}
+
+project.tasks.create(name: dockerBuildAllImages, dependsOn: [dockerSetupStagingAreaDirectory], group: 'Docker', description: 'Build docker images for project. <primary task>') {}
+
+project.tasks.create(name: dockerPublishAllImages_DH, dependsOn: [dockerBuildAllImages], group: 'Docker_DH', description: 'Publish docker images for project to hub.docker.com. <primary task>') {
+    onlyIf(envVarsNotExistMsg) {
+        System.env.DOCKER_INT_BLACKDUCK_USER != null && System.env.DOCKER_INT_BLACKDUCK_PASSWORD != null && project.ext.isRelease
+    }
+}
+
+project.tasks.create(name: dockerPublishAllImages_ART, dependsOn: [dockerBuildAllImages], group: 'Docker_Artifactory', description: 'Publish docker images for project to Artifactory. <primary task>') {
+    onlyIf(envVarsNotExistMsg) {
+        System.env.ARTIFACTORY_DEPLOYER_USER != null && System.env.ARTIFACTORY_DEPLOYER_PASSWORD != null && System.env.DOCKER_REGISTRY_SIG != null
+    }
+}
+
+project.tasks.create(name: dockerPublishAllImages, dependsOn: [dockerPublishAllImages_DH, dockerPublishAllImages_ART], group: 'Docker', description: 'Publish docker images for project to Artifactory & hub.docker.com. <primary task>') {}
+
+/*
+  Each Dockerfile to be built should be in a subdirectory of "${project.projectDir}/${baseDockerDirectory}"
+  For each Dockerfile found within 'baseDockerDirectory', gradle tasks will be added
+  The subdirectory should be named what the image should be named
+  If the image has an ENTRYPOINT script, it should be put in the subdirectory and named docker-entrypoint.sh
+*/
+ArrayList<String> dockerImagesToBuild = []
+new File(baseDockerDirectory).eachFileRecurse() { it ->
+    if (it.isFile() && it.name == 'Dockerfile') {
+        dockerImagesToBuild.add(it.getParentFile().getName())
+    }
+}
+
+dockerImagesToBuild.each { imageName ->
+    String fullDockerImageName = 'blackducksoftware/' + imageName + ':' + project.version
+    String artifactoryDockerImageName = System.env.DOCKER_REGISTRY_SIG + '/' + fullDockerImageName
+    logger.lifecycle('Creating tasks to process Docker image:: ' + fullDockerImageName)
+
+    String imageTaskNameSuffix = ''
+    for (String token : imageName.split('-')) {
+        imageTaskNameSuffix += token.substring(0, 1).toUpperCase() + token.substring(1).toLowerCase()
+    }
+
+    String dockerImageRemoveTaskName = "dockerRemove${imageTaskNameSuffix}"
+    String dockerImageBuildTaskName = "dockerBuild${imageTaskNameSuffix}"
+
+    ext.createDockerRemoveTask(dockerImageRemoveTaskName, 'Docker', fullDockerImageName, dockerRemoveAllImages)
+
+    project.tasks.create(name: dockerImageBuildTaskName, type: Exec, dependsOn: [dockerSetupStagingAreaDirectory], group: 'Docker', description: "Build docker image. <sub-task>") {
+        outputs.upToDateWhen { false }
+
         def buildCommand = ['docker', 'build', '.', '-t', fullDockerImageName, '--pull', '--force-rm', '--build-arg', "VERSION=${project.version}"]
-
         rootProject.ext.properties.each { key, value ->
             if (key.startsWith('dockerBuildParam_')) {
                 String adjKey = key.substring(key.indexOf('_') + 1)
@@ -157,20 +127,80 @@ dockerImagesToBuild.each { imageName ->
         workingDir "${dockerStagingDirectory}/${imageName}"
         commandLine buildCommand
     }
-    project.tasks.findByName(dockerBuildAllImages).dependsOn dockerImageBuildTaskName
+    project.tasks.findByName(dockerBuildAllImages).dependsOn project.tasks.findByName(dockerImageBuildTaskName)
 
-    project.tasks.create(name: dockerImagePublishTaskName, type: Exec, group: 'Docker', description: "Publish ${imageName} docker image to hub.docker.com") {
-        dockerTasksCreated.add(dockerImagePublishTaskName)
-        dependsOn project.tasks.findByName(dockerLoginDockerHub)
+    // Docker Hub specific tasks
+    String dockerImageLoginDHTaskName = "dockerLogin${imageTaskNameSuffix}_DH"
+    String dockerImagePublishDHTaskName = "dockerPublish${imageTaskNameSuffix}_DH"
+
+    project.tasks.create(name: dockerImageLoginDHTaskName, type: Exec, group: 'Docker_DH', description: 'Docker login to hub.docker.com. <sub-task>') {
+        outputs.upToDateWhen { false }
 
         doFirst {
-            logger.lifecycle('Publishing docker image:: ' + fullDockerImageName)
+            String dockerLoginPassword = System.env.DOCKER_INT_BLACKDUCK_PASSWORD
+            if (dockerLoginPassword?.trim()) {
+                standardInput = new ByteArrayInputStream(dockerLoginPassword.getBytes())
+            }
         }
 
-        commandLine 'docker', 'push', fullDockerImageName
-        finalizedBy dockerImageRemoveTaskName
-    }
-    project.tasks.findByName(dockerPublishAllImages).dependsOn dockerImagePublishTaskName
-}
+        commandLine 'docker', 'login', '--username', "${System.env.DOCKER_INT_BLACKDUCK_USER}", '--password-stdin'
 
-logger.lifecycle('\nThe following Docker specific tasks were added --> ' + dockerTasksCreated)
+        onlyIf(envVarsNotExistMsg) {
+            System.env.DOCKER_INT_BLACKDUCK_USER != null && System.env.DOCKER_INT_BLACKDUCK_PASSWORD != null && project.ext.isRelease
+        }
+    }
+
+    project.tasks.create(name: dockerImagePublishDHTaskName, type: Exec, dependsOn: [dockerImageLoginDHTaskName], group: 'Docker_DH', description: "Docker push ${imageName} to hub.docker.com. <sub-task>") {
+        outputs.upToDateWhen { false }
+        commandLine 'docker', 'push', fullDockerImageName
+
+        onlyIf(envVarsNotExistMsg) {
+            System.env.DOCKER_INT_BLACKDUCK_USER != null && System.env.DOCKER_INT_BLACKDUCK_PASSWORD != null && project.ext.isRelease
+        }
+    }
+    project.tasks.findByName(dockerPublishAllImages_DH).dependsOn project.tasks.findByName(dockerImagePublishDHTaskName)
+
+    // Artifactory specific tasks
+    String dockerImageTagARTaskName = "dockerTag${imageTaskNameSuffix}_ART"
+    String dockerImageLoginARTTaskName = "dockerLogin${imageTaskNameSuffix}_ART"
+    String dockerImagePublishARTTaskName = "dockerPublish${imageTaskNameSuffix}_ART"
+    String dockerImageRemoveTagARTaskName = "dockerRemoveTag${imageTaskNameSuffix}_ART"
+
+    project.tasks.create(name: dockerImageTagARTaskName, type: Exec, group: 'Docker_Artifactory', description: "Docker tag image for push to Artifactory. <sub-task>") {
+        outputs.upToDateWhen { false }
+        commandLine 'docker', 'tag', fullDockerImageName, artifactoryDockerImageName
+
+        onlyIf(envVarsNotExistMsg) {
+            System.env.ARTIFACTORY_DEPLOYER_USER != null && System.env.ARTIFACTORY_DEPLOYER_PASSWORD != null && System.env.DOCKER_REGISTRY_SIG != null
+        }
+    }
+
+    project.tasks.create(name: dockerImageLoginARTTaskName, type: Exec, dependsOn: [dockerImageTagARTaskName], group: 'Docker_Artifactory', description: 'Docker login to Artifactory. <sub-task>') {
+        outputs.upToDateWhen { false }
+
+        doFirst {
+            String dockerLoginPassword = System.env.ARTIFACTORY_DEPLOYER_PASSWORD
+            if (dockerLoginPassword?.trim()) {
+                standardInput = new ByteArrayInputStream(dockerLoginPassword.getBytes())
+            }
+        }
+
+        commandLine 'docker', 'login', '--username', "${System.env.ARTIFACTORY_DEPLOYER_USER}", '--password-stdin', "${System.env.DOCKER_REGISTRY_SIG}"
+
+        onlyIf(envVarsNotExistMsg) {
+            System.env.ARTIFACTORY_DEPLOYER_USER != null && System.env.ARTIFACTORY_DEPLOYER_PASSWORD != null && System.env.DOCKER_REGISTRY_SIG != null
+        }
+    }
+
+    project.tasks.create(name: dockerImagePublishARTTaskName, type: Exec, dependsOn: [dockerImageLoginARTTaskName], group: 'Docker_Artifactory', description: "Docker push to Artifactory. <sub-task>") {
+        outputs.upToDateWhen { false }
+        commandLine 'docker', 'push', artifactoryDockerImageName
+
+        onlyIf(envVarsNotExistMsg) {
+            System.env.ARTIFACTORY_DEPLOYER_USER != null && System.env.ARTIFACTORY_DEPLOYER_PASSWORD != null && System.env.DOCKER_REGISTRY_SIG != null
+        }
+    }
+    project.tasks.findByName(dockerPublishAllImages_ART).dependsOn project.tasks.findByName(dockerImagePublishARTTaskName)
+
+    ext.createDockerRemoveTask(dockerImageRemoveTagARTaskName, 'Docker_Artifactory', artifactoryDockerImageName, dockerRemoveAllImages)
+}
