@@ -44,6 +44,7 @@ import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.test.common.TestTags;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
 class JiraServerExternalConnectionTest {
@@ -54,7 +55,7 @@ class JiraServerExternalConnectionTest {
     @Test
     @Disabled
     void sendJiraServerMessageTest() throws AlertException {
-        Gson gson = new Gson();
+        Gson gson = BlackDuckServicesFactory.createDefaultGson();
         JiraMessageFormatter jiraMessageFormatter = new JiraMessageFormatter();
 
         JiraServerChannelKey jiraServerChannelKey = new JiraServerChannelKey();
