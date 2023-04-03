@@ -7,10 +7,8 @@
  */
 package com.synopsys.integration.alert.component.authentication.security;
 
-import com.synopsys.integration.alert.authentication.saml.security.SAMLGroupConverter;
-import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
-import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
+import java.util.Arrays;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +18,6 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.saml2.provider.service.authentication.OpenSaml4AuthenticationProvider;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository;
@@ -28,6 +25,7 @@ import org.springframework.security.saml2.provider.service.web.DefaultRelyingPar
 import org.springframework.security.saml2.provider.service.web.RelyingPartyRegistrationResolver;
 import org.springframework.security.saml2.provider.service.web.authentication.OpenSaml4AuthenticationRequestResolver;
 import org.springframework.security.saml2.provider.service.web.authentication.Saml2AuthenticationRequestResolver;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
@@ -38,11 +36,14 @@ import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import java.util.Arrays;
+import com.synopsys.integration.alert.authentication.saml.security.SAMLGroupConverter;
+import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
+import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 
 @EnableWebSecurity
 @Configuration
-public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
+public class AuthenticationHandler {
     private final HttpPathManager httpPathManager;
     private final CsrfTokenRepository csrfTokenRepository;
     private final AlertProperties alertProperties;
@@ -65,8 +66,8 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
         this.samlGroupConverter = samlGroupConverter;
     }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         configureWithSSL(http);
         http.authorizeRequests()
             .requestMatchers(createAllowedPathMatchers()).permitAll()
@@ -75,6 +76,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
             .withObjectPostProcessor(createRoleProcessor())
             .and().logout().logoutSuccessUrl("/");
         configureSAML(http);
+        return http.build();
     }
 
     private void configureWithSSL(HttpSecurity http) throws Exception {

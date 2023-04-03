@@ -38,6 +38,7 @@ import com.synopsys.integration.alert.database.settings.proxy.SettingsProxyConfi
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 class SettingsProxyTestActionTest {
     private static final String TEST_URL = "https://testUrl";
@@ -46,7 +47,7 @@ class SettingsProxyTestActionTest {
     private static final String USERNAME = "userName";
     private static final String PASSWORD = "password";
 
-    private final Gson gson = new Gson();
+    private final Gson gson = BlackDuckServicesFactory.createDefaultGson();
     private final AlertProperties alertProperties = new MockAlertProperties();
     private final FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, gson);
     private final EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, filePersistenceUtil);
