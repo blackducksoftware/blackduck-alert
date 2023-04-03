@@ -12,10 +12,8 @@ import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.access.vote.AffirmativeBased;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -27,7 +25,6 @@ import org.springframework.security.saml2.provider.service.web.authentication.Op
 import org.springframework.security.saml2.provider.service.web.authentication.Saml2AuthenticationRequestResolver;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
-import org.springframework.security.web.access.expression.WebExpressionVoter;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -69,11 +66,13 @@ public class AuthenticationHandler {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         configureWithSSL(http);
-        http.authorizeRequests()
-            .requestMatchers(createAllowedPathMatchers()).permitAll()
-            .and().authorizeRequests().anyRequest().authenticated()
+        http.authorizeHttpRequests()
+            .anyRequest().permitAll()
+            //            .requestMatchers(createAllowedPathMatchers()).permitAll()
+            //            .requestMatchers(AnyRequestMatcher.INSTANCE).hasAnyRole(retrieveAllowedRoles())
+            //.and().authorizeHttpRequests().anyRequest().authenticated()
             .and().csrf().csrfTokenRepository(csrfTokenRepository).ignoringRequestMatchers(createCsrfIgnoreMatchers())
-            .withObjectPostProcessor(createRoleProcessor())
+            //.withObjectPostProcessor(createRoleProcessor())
             .and().logout().logoutSuccessUrl("/");
         configureSAML(http);
         return http.build();
@@ -114,29 +113,22 @@ public class AuthenticationHandler {
         };
     }
 
-    private ObjectPostProcessor<AffirmativeBased> createRoleProcessor() {
-        return new ObjectPostProcessor<>() {
-            @Override
-            public <O extends AffirmativeBased> O postProcess(O affirmativeBased) {
-                WebExpressionVoter webExpressionVoter = new WebExpressionVoter();
-                DefaultWebSecurityExpressionHandler expressionHandler = new DefaultWebSecurityExpressionHandler();
-                expressionHandler.setRoleHierarchy(authorities -> {
-                    String[] allAlertRoles = retrieveAllowedRoles();
-                    return AuthorityUtils.createAuthorityList(allAlertRoles);
-                });
-                webExpressionVoter.setExpressionHandler(expressionHandler);
-                affirmativeBased.getDecisionVoters().add(webExpressionVoter);
-                return affirmativeBased;
-            }
-        };
-    }
-
-    private String[] retrieveAllowedRoles() {
-        return roleAccessor.getRoles()
-                   .stream()
-                   .map(UserRoleModel::getName)
-                   .toArray(String[]::new);
-    }
+    //    private ObjectPostProcessor<AffirmativeBased> createRoleProcessor() {
+    //        return new ObjectPostProcessor<>() {
+    //            @Override
+    //            public <O extends AffirmativeBased> O postProcess(O affirmativeBased) {
+    //                WebExpressionVoter webExpressionVoter = new WebExpressionVoter();
+    //                DefaultWebSecurityExpressionHandler expressionHandler = new DefaultWebSecurityExpressionHandler();
+    //                expressionHandler.setRoleHierarchy(authorities -> {
+    //                    String[] allAlertRoles = retrieveAllowedRoles();
+    //                    return AuthorityUtils.createAuthorityList(allAlertRoles);
+    //                });
+    //                webExpressionVoter.setExpressionHandler(expressionHandler);
+    //                affirmativeBased.getDecisionVoters().add(webExpressionVoter);
+    //                return affirmativeBased;
+    //            }
+    //        };
+    //    }
 
     @Bean
     public SimpleUrlAuthenticationFailureHandler authenticationFailureHandler() {
@@ -165,6 +157,23 @@ public class AuthenticationHandler {
         simpleUrlLogoutSuccessHandler.setDefaultTargetUrl("/");
         simpleUrlLogoutSuccessHandler.setAlwaysUseDefaultTargetUrl(true);
         return simpleUrlLogoutSuccessHandler;
+    }
+
+    @Bean
+    public DefaultWebSecurityExpressionHandler webSecurityExpressionHandler() {
+        DefaultWebSecurityExpressionHandler expressionHandler = new DefaultWebSecurityExpressionHandler();
+        expressionHandler.setRoleHierarchy(authorities -> {
+            String[] allAlertRoles = retrieveAllowedRoles();
+            return AuthorityUtils.createAuthorityList(allAlertRoles);
+        });
+        return expressionHandler;
+    }
+
+    private String[] retrieveAllowedRoles() {
+        return roleAccessor.getRoles()
+            .stream()
+            .map(UserRoleModel::getName)
+            .toArray(String[]::new);
     }
 
     // ==========
