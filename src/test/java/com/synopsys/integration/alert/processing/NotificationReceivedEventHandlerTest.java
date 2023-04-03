@@ -19,6 +19,7 @@ import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.processor.api.NotificationMappingProcessor;
 import com.synopsys.integration.alert.test.common.TestResourceUtils;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 class NotificationReceivedEventHandlerTest {
 
@@ -63,7 +64,7 @@ class NotificationReceivedEventHandlerTest {
     private EventManager mockEventManager() {
         RabbitTemplate rabbitTemplate = Mockito.mock(RabbitTemplate.class);
         Mockito.doNothing().when(rabbitTemplate).convertAndSend(Mockito.anyString(), Mockito.any(Object.class));
-        Gson gson = new Gson();
+        Gson gson = BlackDuckServicesFactory.createDefaultGson();
 
         return new EventManager(gson, rabbitTemplate, new SyncTaskExecutor());
     }

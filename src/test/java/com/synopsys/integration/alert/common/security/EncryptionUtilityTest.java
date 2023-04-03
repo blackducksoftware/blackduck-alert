@@ -15,9 +15,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 public class EncryptionUtilityTest {
     private static final String TEST_PASSWORD = "testPassword";
@@ -40,7 +40,7 @@ public class EncryptionUtilityTest {
         Mockito.when(alertProperties.getAlertEncryptionGlobalSalt()).thenReturn(Optional.of(TEST_SALT));
         Mockito.when(alertProperties.getAlertConfigHome()).thenReturn(TEST_DIRECTORY);
         Mockito.when(alertProperties.getAlertSecretsDir()).thenReturn(TEST_SECRETS_DIRECTORY);
-        filePersistenceUtil = new FilePersistenceUtil(alertProperties, new Gson());
+        filePersistenceUtil = new FilePersistenceUtil(alertProperties, BlackDuckServicesFactory.createDefaultGson());
         encryptionUtility = new EncryptionUtility(alertProperties, filePersistenceUtil);
         File file = new File(TEST_DIRECTORY, "data");
         file.mkdirs();

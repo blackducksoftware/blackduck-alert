@@ -9,9 +9,6 @@ package com.synopsys.integration.alert.configuration;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.batch.core.launch.support.SimpleJobLauncher;
-import org.springframework.batch.core.repository.JobRepository;
-import org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean;
 import org.springframework.batch.support.transaction.ResourcelessTransactionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
@@ -63,29 +60,29 @@ public class ApplicationConfiguration {
         return new ResourcelessTransactionManager();
     }
 
-    @Bean
-    public MapJobRepositoryFactoryBean mapJobRepositoryFactory() throws Exception {
-        MapJobRepositoryFactoryBean factory = new MapJobRepositoryFactoryBean(transactionManager());
-        factory.afterPropertiesSet();
+    //    @Bean
+    //    public MapJobRepositoryFactoryBean mapJobRepositoryFactory() throws Exception {
+    //        MapJobRepositoryFactoryBean factory = new MapJobRepositoryFactoryBean(transactionManager());
+    //        factory.afterPropertiesSet();
+    //
+    //        return factory;
+    //    }
 
-        return factory;
-    }
+    //    @Bean
+    //    public JobRepository jobRepository() throws Exception {
+    //        return mapJobRepositoryFactory().getObject();
+    //    }
 
-    @Bean
-    public JobRepository jobRepository() throws Exception {
-        return mapJobRepositoryFactory().getObject();
-    }
-
-    @Bean
-    public SimpleJobLauncher jobLauncher() {
-        SimpleJobLauncher launcher = new SimpleJobLauncher();
-        try {
-            launcher.setJobRepository(jobRepository());
-        } catch (Exception ex) {
-            logger.error("Creating job launcher bean", ex);
-        }
-        return launcher;
-    }
+    //    @Bean
+    //    public SimpleJobLauncher jobLauncher() {
+    //        SimpleJobLauncher launcher = new SimpleJobLauncher();
+    //        try {
+    //            launcher.setJobRepository(jobRepository());
+    //        } catch (Exception ex) {
+    //            logger.error("Creating job launcher bean", ex);
+    //        }
+    //        return launcher;
+    //    }
 
     @Bean
     public TaskScheduler taskScheduler() {
