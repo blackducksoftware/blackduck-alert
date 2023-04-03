@@ -4,7 +4,6 @@ import java.nio.file.Path;
 import java.util.Map;
 import java.util.UUID;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.authentication.saml.database.accessor.SAMLConfigAccessor;
 import com.synopsys.integration.alert.authentication.saml.database.mock.MockSAMLConfigurationRepository;
@@ -19,6 +18,7 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 public class SAMLTestHelper {
     public static final String TEST_PRIVATE_KEY = "-----BEGIN PRIVATE KEY-----\n" +
@@ -86,14 +86,14 @@ public class SAMLTestHelper {
 
     public static FilePersistenceUtil createFilePersistenceUtil() {
         AlertProperties alertProperties = new MockAlertProperties();
-        return new FilePersistenceUtil(alertProperties, new Gson());
+        return new FilePersistenceUtil(alertProperties, BlackDuckServicesFactory.createDefaultGson());
     }
 
     public static FilePersistenceUtil createTempDirFilePersistenceUtil(Path tempDir) {
         // Create a temp directory for mockAlertProperties for filePersistenceUtils to use
         MockAlertProperties alertProperties = new MockAlertProperties();
         alertProperties.setAlertConfigHome(tempDir.toAbsolutePath().toString());
-        return new FilePersistenceUtil(alertProperties, new Gson());
+        return new FilePersistenceUtil(alertProperties, BlackDuckServicesFactory.createDefaultGson());
     }
 
     public static SAMLConfigAccessor createTestSAMLConfigAccessor() {
