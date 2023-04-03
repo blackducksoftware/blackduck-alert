@@ -44,13 +44,14 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
 import com.synopsys.integration.alert.test.common.database.MockRepositorySorter;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 class AzureBoardsOAuthAuthenticateActionTest {
     private static final String SERVER_URL = "https://localhost:8443/alert";
     private static final String ORG_NAME = "alert_test_org_name";
     private static final String CLIENT_ID = "alert_test_client_id";
     private static final String CLIENT_SECRET = "alert_test_client_secret";
-    private final Gson gson = new Gson();
+    private final Gson gson = BlackDuckServicesFactory.createDefaultGson();
     private final AlertProperties alertProperties = new MockAlertProperties();
     private final FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, gson);
     private final EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, filePersistenceUtil);
