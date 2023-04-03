@@ -19,6 +19,8 @@ plugins {
 }
 
 ext {
+    commitHash = 'UNKNOWN'
+
     // Copied from src/test/java - com.synopsys.integration.alert.TestTags
     junitPlatformCustomTestTags = 'BlackDuckConnection, DatabaseConnection, ExternalConnection'
 
@@ -40,13 +42,14 @@ ext {
     dockerRemoveAllImagesStageName = 'dockerRemoveAllImages'
     dockerSetupStagingAreaDirectoryStageName = 'dockerSetupStagingAreaDirectory'
     dockerBuildAllImagesStageName = 'dockerBuildAllImages'
-    dockerLoginDockerHubStageName = 'dockerLoginDockerHub'
     dockerPublishAllImagesStageName = 'dockerPublishAllImages'
+    dockerPublishAllImages_DHStageName = 'dockerPublishAllImages_DH'
+    dockerPublishAllImages_ARTStageName = 'dockerPublishAllImages_ART'
 
     helmArtifactoryRepos = []
     helmPrePackagedRepoNames = []
 
-    envVarsNotExistMsg = 'Skipping as dependent environment variable are not set'
+    envVarsNotExistMsg = 'Skipping as dependent variable are not set or values are false'
 }
 
 mainClassName = 'com.synopsys.integration.alert.Application'
@@ -264,10 +267,7 @@ task buildAll(dependsOn: [copyToTemplates, build, helmValidation, createDeployme
     createDeploymentZip.mustRunAfter helmValidation
 }
 
-tasks.getByName(ext.dockerLoginDockerHubStageName).mustRunAfter(helmPushChart)
-tasks.getByName(ext.dockerLoginDockerHubStageName).mustRunAfter(tasks.getByName(ext.dockerBuildAllImagesStageName))
 tasks.getByName(ext.dockerBuildAllImagesStageName).mustRunAfter(buildAll)
 tasks.getByName(ext.dockerBuildAllImagesStageName).mustRunAfter(tasks.getByName(ext.dockerSetupStagingAreaDirectoryStageName))
 tasks.getByName(ext.dockerSetupStagingAreaDirectoryStageName).mustRunAfter(buildAll)
-tasks.getByName(ext.dockerPublishAllImagesStageName).mustRunAfter(buildAll)
-tasks.getByName(ext.dockerPublishAllImagesStageName).mustRunAfter(tasks.getByName(ext.dockerLoginDockerHubStageName))
+tasks.getByName(ext.dockerPublishAllImages_DHStageName).mustRunAfter(buildAll)
