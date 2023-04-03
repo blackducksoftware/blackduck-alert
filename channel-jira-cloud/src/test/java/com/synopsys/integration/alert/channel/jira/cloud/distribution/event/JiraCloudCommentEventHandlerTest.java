@@ -29,6 +29,7 @@ import com.synopsys.integration.alert.channel.jira.cloud.distribution.JiraCloudM
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.service.FieldService;
 import com.synopsys.integration.jira.common.cloud.service.IssueSearchService;
@@ -39,7 +40,7 @@ import com.synopsys.integration.jira.common.model.request.IssueCommentRequestMod
 import com.synopsys.integration.jira.common.model.response.IssueCommentResponseModel;
 
 class JiraCloudCommentEventHandlerTest {
-    private Gson gson = new Gson();
+    private final Gson gson = BlackDuckServicesFactory.createDefaultGson();
     private AtomicInteger issueCounter;
     private EventManager eventManager;
     private IssueTrackerResponsePostProcessor responsePostProcessor;
