@@ -29,7 +29,7 @@ dependencies {
     implementation 'org.springframework.data:spring-data-commons'
 
     // Documentation
-    implementation 'io.springfox:springfox-boot-starter'
+    implementation 'org.springdoc:springdoc-openapi-ui'
 
     testImplementation project(':test-common')
     testImplementation 'com.synopsys.integration:blackduck-common'

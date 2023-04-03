@@ -117,7 +117,7 @@ allprojects {
 
 // configure the version of the JaCoCo plugin to 0.8.2 which works for Java 11 until we switch to a gradle wrapper that includes 0.8.2+ by default.
 jacoco {
-    toolVersion = "0.8.5"
+    toolVersion = "0.8.9"
 }
 
 dependencies {
