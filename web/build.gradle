@@ -32,4 +32,5 @@ dependencies {
     implementation 'io.springfox:springfox-boot-starter'
 
     testImplementation project(':test-common')
+    testImplementation 'com.synopsys.integration:blackduck-common'
 }

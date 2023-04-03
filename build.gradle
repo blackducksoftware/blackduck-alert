@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '2.7.4'
+        springBootVersion = '3.0.5'
     }
 
     apply from: 'https://raw.githubusercontent.com/blackducksoftware/integration-resources/master/gradle_common/buildscript-repositories.gradle', to: buildscript
@@ -22,8 +22,8 @@ ext {
     // Copied from src/test/java - com.synopsys.integration.alert.TestTags
     junitPlatformCustomTestTags = 'BlackDuckConnection, DatabaseConnection, ExternalConnection'
 
-    javaSourceCompatibility = JavaVersion.VERSION_11
-    javaTargetCompatibility = JavaVersion.VERSION_11
+    javaSourceCompatibility = JavaVersion.VERSION_17
+    javaTargetCompatibility = JavaVersion.VERSION_17
 
     moduleName = 'com.synopsys.integration.alert.main'
 
@@ -207,7 +207,7 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-ldap'
     testImplementation 'jakarta.persistence:jakarta.persistence-api'
     testImplementation 'org.javassist:javassist'
-    testImplementation 'javax.mail:javax.mail-api'
+    testImplementation 'jakarta.mail:jakarta.mail-api'
 }
 
 bootJar {

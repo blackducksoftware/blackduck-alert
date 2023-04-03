@@ -15,4 +15,5 @@ dependencies {
     implementation 'org.springframework:spring-web'
 
     testImplementation project(':test-common-channel')
+    testImplementation 'com.synopsys.integration:blackduck-common'
 }
