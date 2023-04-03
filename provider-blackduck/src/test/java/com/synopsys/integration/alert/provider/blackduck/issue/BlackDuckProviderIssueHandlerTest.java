@@ -15,6 +15,7 @@ import com.synopsys.integration.blackduck.api.core.ResourceMetadata;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionIssuesView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.dataservice.IssueService;
 import com.synopsys.integration.blackduck.service.request.BlackDuckResponseRequest;
 import com.synopsys.integration.exception.IntegrationException;
@@ -22,7 +23,7 @@ import com.synopsys.integration.rest.HttpUrl;
 
 @ExtendWith(SpringExtension.class)
 class BlackDuckProviderIssueHandlerTest {
-    private final Gson gson = new Gson();
+    private final Gson gson = BlackDuckServicesFactory.createDefaultGson();
 
     @Mock
     private BlackDuckApiClient blackDuckApiClient;
