@@ -12,13 +12,13 @@ import java.util.stream.Collectors;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.jira.distribution.custom.JiraCustomFieldResolver;
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.api.common.model.errors.FieldStatusSeverity;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.test.common.TestResourceUtils;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.model.components.SchemaComponent;
 import com.synopsys.integration.jira.common.model.response.CustomFieldCreationResponseModel;
@@ -31,7 +31,7 @@ class JiraErrorMessageUtilityTest {
     @Test
     void verifyReporterRestExceptionTest() throws IntegrationException, IOException {
         JiraCustomFieldResolver jiraCustomFieldResolver = new JiraCustomFieldResolver(() -> List.of());
-        JiraErrorMessageUtility jiraErrorMessageUtility = new JiraErrorMessageUtility(new Gson(), jiraCustomFieldResolver);
+        JiraErrorMessageUtility jiraErrorMessageUtility = new JiraErrorMessageUtility(BlackDuckServicesFactory.createDefaultGson(), jiraCustomFieldResolver);
 
         IntegrationRestException integrationRestException = createRestException(JsonTestResource.REPORTER_ERROR);
         String issueCreatorKey = "issueCreatorFieldKey";
@@ -66,7 +66,7 @@ class JiraErrorMessageUtilityTest {
             customFieldKey, customFieldName
         );
         JiraCustomFieldResolver jiraCustomFieldResolver = new JiraCustomFieldResolver(() -> createCustomFieldResponseModels(fieldIdsToNames));
-        JiraErrorMessageUtility jiraErrorMessageUtility = new JiraErrorMessageUtility(new Gson(), jiraCustomFieldResolver);
+        JiraErrorMessageUtility jiraErrorMessageUtility = new JiraErrorMessageUtility(BlackDuckServicesFactory.createDefaultGson(), jiraCustomFieldResolver);
 
         IntegrationRestException integrationRestException = createRestException(JsonTestResource.ERROR_MESSAGES_ERROR);
         String issueCreatorKey = "issueCreatorFieldKey";
