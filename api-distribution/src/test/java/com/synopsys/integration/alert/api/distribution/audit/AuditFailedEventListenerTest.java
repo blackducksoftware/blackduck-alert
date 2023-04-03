@@ -62,10 +62,11 @@ import com.synopsys.integration.alert.database.job.execution.JobCompletionReposi
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
 import com.synopsys.integration.alert.database.notification.NotificationEntity;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 class AuditFailedEventListenerTest {
     public static final String TEST_JOB_NAME = "Test Job";
-    private final Gson gson = new Gson();
+    private final Gson gson = BlackDuckServicesFactory.createDefaultGson();
     private final TaskExecutor taskExecutor = new SyncTaskExecutor();
     private ProcessingAuditAccessor processingAuditAccessor;
     private AuditEntryRepository auditEntryRepository;
