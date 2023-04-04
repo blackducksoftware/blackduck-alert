@@ -1,4 +1,7 @@
 import {
+    BULK_DELETE_PROVIDER_REQUEST,
+    BULK_DELETE_PROVIDER_FAIL,
+    BULK_DELETE_PROVIDER_SUCCESS,
     GET_PROVIDER_REQUEST,
     GET_PROVIDER_FAIL,
     GET_PROVIDER_SUCCESS,
@@ -51,7 +54,7 @@ function savedProvider() {
 
 function saveProviderErrorMessage(message) {
     return {
-        type: USER_MANAGEMENT_USER_SAVE_ERROR,
+        type: POST_PROVIDER_FAIL,
         message
     };
 }
@@ -85,6 +88,25 @@ function validatingProviderError(message, errors) {
     };
 }
 
+function bulkDeleteProvidersRequest() {
+    return {
+        type: BULK_DELETE_PROVIDER_REQUEST
+    };
+}
+
+function bulkDeleteProvidersSuccess() {
+    return {
+        type: BULK_DELETE_PROVIDER_SUCCESS
+    };
+}
+
+function bulkDeleteProvidersError(errors) {
+    return {
+        type: BULK_DELETE_PROVIDER_FAIL,
+        errors
+    };
+}
+
 function clearFieldErrors() {
     return {
         type: CLEAR_PROVIDER_FIELD_ERRORS
@@ -104,7 +126,7 @@ export function fetchProviders () {
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => fetchingAllUsersError(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => fetchingProviderFail(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
         const headersUtil = new HeaderUtilities();
         headersUtil.addApplicationJsonContentType();
         headersUtil.addXCsrfToken(csrfToken);
@@ -193,6 +215,24 @@ export function saveProvider(provider) {
             }
         })
             .catch(console.error);
+    };
+}
+
+export function bulkDeleteProviders(providerIdArray) {
+    return (dispatch, getState) => {
+        dispatch(bulkDeleteProvidersRequest());
+        const { csrfToken } = getState().session;
+
+        Promise.all(providerIdArray.map((provider) => { // eslint-disable-line
+            return ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, provider.id);
+        })).catch((error) => {
+            dispatch(bulkDeleteProvidersError(error));
+            console.error; // eslint-disable-line
+        }).then((response) => {
+            if (response) {
+                dispatch(bulkDeleteProvidersSuccess());
+            }
+        });
     };
 }
 

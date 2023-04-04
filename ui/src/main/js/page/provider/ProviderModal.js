@@ -66,7 +66,7 @@ const ProviderModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessa
     const { copyDescription, submitText, title, type } = modalOptions;
     const [showLoader, setShowLoader] = useState(false);
 
-    const { saveStatus, error } = useSelector(state => state.provider);
+    const { saveStatus, error } = useSelector((state) => state.provider);
     const [providerModel, setProviderModel] = useState(type === 'CREATE' ? getDefaultProviderModel() : transformData(data, type));
 
     function handleClose() {

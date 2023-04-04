@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import UserDeleteModal from 'page/usermgmt/user/UserDeleteModal';
+import ProviderDeleteModal from 'page/provider/ProviderDeleteModal';
 import ProviderModal from 'page/provider/ProviderModal';
 import StatusMessage from 'common/component/StatusMessage';
 
@@ -103,7 +103,7 @@ const PoviderTableActions = ({ data, selected, readonly }) => {
             )}
 
             { showDeleteModal && (
-                <UserDeleteModal
+                <ProviderDeleteModal
                     data={data}
                     isOpen={showDeleteModal}
                     toggleModal={setShowDeleteModal}

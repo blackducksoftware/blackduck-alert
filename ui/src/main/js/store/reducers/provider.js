@@ -1,5 +1,7 @@
 import {
-    SERIALIZE,
+    BULK_DELETE_PROVIDER_REQUEST,
+    BULK_DELETE_PROVIDER_FAIL,
+    BULK_DELETE_PROVIDER_SUCCESS,
     GET_PROVIDER_REQUEST,
     GET_PROVIDER_FAIL,
     GET_PROVIDER_SUCCESS,
@@ -9,7 +11,8 @@ import {
     VALIDATE_PROVIDER_REQUEST,
     VALIDATE_PROVIDER_FAIL,
     VALIDATE_PROVIDER_SUCCESS,
-    CLEAR_PROVIDER_FIELD_ERRORS
+    CLEAR_PROVIDER_FIELD_ERRORS,
+    SERIALIZE
 } from 'store/actions/types';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 
@@ -23,6 +26,30 @@ const initialState = {
 
 const provider = (state = initialState, action) => {
     switch (action.type) {
+        case BULK_DELETE_PROVIDER_REQUEST:
+            return {
+                ...state,
+                fetching: true,
+                error: HTTPErrorUtils.createErrorObject(action),
+                fieldErrors: action.errors || {},
+                deleteStatus: 'DELETING'
+            };
+        case BULK_DELETE_PROVIDER_SUCCESS:
+            return {
+                ...state,
+                fetching: false,
+                error: HTTPErrorUtils.createErrorObject(action),
+                fieldErrors: action.errors || {},
+                deleteStatus: 'SUCCESS'
+            };
+        case BULK_DELETE_PROVIDER_FAIL:
+            return {
+                ...state,
+                fetching: false,
+                error: HTTPErrorUtils.createErrorObject(action),
+                fieldErrors: action.errors || {},
+                deleteStatus: 'ERROR'
+            };
         case GET_PROVIDER_REQUEST:
             return {
                 ...state,
