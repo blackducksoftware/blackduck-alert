@@ -2,17 +2,15 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { createUseStyles } from 'react-jss';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { saveUser, validateUser, fetchUsers } from 'store/actions/users';
-import DynamicSelectInput from 'common/component/input/DynamicSelectInput';
 import Modal from 'common/component/modal/Modal';
 import CheckboxInput from 'common/component/input/CheckboxInput';
+import NumberInput from 'common/component/input/NumberInput';
 import PasswordInput from 'common/component/input/PasswordInput';
 import TextInput from 'common/component/input/TextInput';
-import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
-import { USER_INPUT_FIELD_KEYS } from 'page/usermgmt/user/UserModel';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { BLACKDUCK_GLOBAL_FIELD_KEYS } from './blackduck/BlackDuckModel';
+import { clearProviderFieldErrors, fetchProviders, saveProvider, validateProvider } from '../../store/actions/provider';
 
 const useStyles = createUseStyles({
     descriptorContainer: {
@@ -26,59 +24,70 @@ const useStyles = createUseStyles({
     }
 });
 
+function getDefaultProviderModel() {
+    return {
+        context: 'GLOBAL',
+        descriptorName: 'provider_blackduck',
+        keyToValues: {
+            'blackduck.timeout': { isSet: false, values: ['300'] },
+            'provider.common.config.enabled': { isSet: false, values: ['true'] }
+        }
+    }
+}
+
+function transformData(data, type) {
+    const transformedData = {
+        context: 'GLOBAL',
+        descriptorName: 'provider_blackduck',
+        keyToValues: {
+            'provider.common.config.enabled': { isSet: true, values: [data.enabled] },
+            'provider.common.config.name': { isSet: true, values: [data.name] },
+            'blackduck.url': { isSet: true, values: [data.url] },
+            'blackduck.timeout': { isSet: true, values: [data.timeout] }
+        }
+    };
+
+    if (type === 'EDIT') {
+        transformedData.id = data.id;
+        transformedData.keyToValues[BLACKDUCK_GLOBAL_FIELD_KEYS.apiKey] = {
+            isSet: true,
+            values: []
+        }
+    }
+
+    return transformedData;
+}
+
 const ProviderModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, successMessage, readonly }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
+
     const { external } = data;
     const { copyDescription, submitText, title, type } = modalOptions;
-    const [userModel, setUserModel] = useState(type === 'CREATE' ? {} : data);
     const [showLoader, setShowLoader] = useState(false);
 
-    const fieldErrors = useSelector((state) => state.users.error.fieldErrors);
-    const roles = useSelector((state) => state.roles.data);
-    const { saveStatus, error } = useSelector((state) => state.users);
-
-    function passwordsMatch(user) {
-        let passwordError = {};
-        let matching = true;
-
-        if ((user[USER_INPUT_FIELD_KEYS.PASSWORD_KEY] || user[USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_KEY]) && (user[USER_INPUT_FIELD_KEYS.PASSWORD_KEY] !== user[USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_KEY])) {
-            passwordError = HTTPErrorUtils.createFieldError('Passwords do not match.');
-            matching = false;
-        }
-        setUserModel(Object.assign(user, { [USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_ERROR_KEY]: passwordError }));
-
-        return matching;
-    }
+    const { saveStatus, error } = useSelector(state => state.provider);
+    const [providerModel, setProviderModel] = useState(type === 'CREATE' ? getDefaultProviderModel() : transformData(data, type));
 
     function handleClose() {
         toggleModal(false);
-        dispatch(fetchUsers());
+        dispatch(fetchProviders());
+        dispatch(clearProviderFieldErrors());
     }
 
-    const handleOnChange = (label) => ({ target: { value } }) => {
-        setUserModel((userData) => ({ ...userData, [label]: value }));
-    };
-
     function handleSave() {
-        dispatch(saveUser(userModel));
+        dispatch(saveProvider(providerModel));
     }
 
     function handleSubmit() {
-        if (type === 'EDIT') {
-            handleSave();
-        }
-
-        if (passwordsMatch(userModel)) {
-            dispatch(validateUser(userModel));
-        }
+        dispatch(validateProvider(providerModel));
     }
 
     useEffect(() => {
         if (saveStatus === 'VALIDATING' || saveStatus === 'SAVING') {
             setShowLoader(true);
         }
-
+        
         if (saveStatus === 'VALIDATED') {
             handleSave();
         }
@@ -94,23 +103,8 @@ const ProviderModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessa
 
         if (saveStatus === 'ERROR') {
             setShowLoader(false);
-            setStatusMessage({
-                message: error.fieldErrors.message,
-                type: 'error'
-            });
-            handleClose();
         }
     }, [saveStatus]);
-
-    function getRoles() {
-        return roles.map((role) => {
-            const { roleName } = role;
-            return {
-                label: roleName,
-                value: roleName
-            };
-        });
-    }
 
     return (
         <Modal
@@ -123,82 +117,73 @@ const ProviderModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessa
             submitText={submitText}
             showLoader={showLoader}
         >
+            { type === 'COPY' && (
+                <div className={classes.descriptorContainer}>
+                    <FontAwesomeIcon icon="exclamation-circle" size="2x" />
+                    <span className={classes.descriptor}>
+                        {copyDescription}
+                    </span>
+                </div>
+            )}
             <CheckboxInput
                 id={BLACKDUCK_GLOBAL_FIELD_KEYS.enabled}
                 name={BLACKDUCK_GLOBAL_FIELD_KEYS.enabled}
                 label="Enabled"
                 description="If selected, this provider configuration will be able to pull data into Alert and available to configure with distribution jobs, otherwise, it will not be available for those usages."
                 readOnly={readonly}
-                onChange={FieldModelUtilities.handleChange(formData, setFormData)}
-                isChecked={FieldModelUtilities.getFieldModelBooleanValue(formData, BLACKDUCK_GLOBAL_FIELD_KEYS.enabled)}
+                onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
+                isChecked={FieldModelUtilities.getFieldModelBooleanValue(providerModel, BLACKDUCK_GLOBAL_FIELD_KEYS.enabled)}
                 errorName={FieldModelUtilities.createFieldModelErrorKey(BLACKDUCK_GLOBAL_FIELD_KEYS.enabled)}
-                errorValue={errors.fieldErrors[BLACKDUCK_GLOBAL_FIELD_KEYS.enabled]}
+                errorValue={error.fieldErrors[BLACKDUCK_GLOBAL_FIELD_KEYS.enabled]}
             />
             <TextInput
-                id={USER_INPUT_FIELD_KEYS.USERNAME_KEY}
-                name={USER_INPUT_FIELD_KEYS.USERNAME_KEY}
-                label="Username"
-                description="The user's username."
-                placeholder="Enter username..."
-                readOnly={external}
-                required={!external}
-                onChange={handleOnChange(USER_INPUT_FIELD_KEYS.USERNAME_KEY)}
-                value={userModel[USER_INPUT_FIELD_KEYS.USERNAME_KEY] || undefined}
-                errorName={USER_INPUT_FIELD_KEYS.USERNAME_KEY}
-                errorValue={fieldErrors[USER_INPUT_FIELD_KEYS.USERNAME_KEY]}
-            />
-            <PasswordInput
-                id={USER_INPUT_FIELD_KEYS.PASSWORD_KEY}
-                name={USER_INPUT_FIELD_KEYS.PASSWORD_KEY}
-                label="Password"
-                description="The user's password."
-                placeholder="Enter password..."
-                readOnly={external}
-                required={!external}
-                onChange={handleOnChange(USER_INPUT_FIELD_KEYS.PASSWORD_KEY)}
-                value={userModel[USER_INPUT_FIELD_KEYS.PASSWORD_KEY] || undefined}
-                isSet={userModel[USER_INPUT_FIELD_KEYS.IS_PASSWORD_SET] || !type === 'COPY'}
-                errorName={USER_INPUT_FIELD_KEYS.PASSWORD_KEY}
-                errorValue={fieldErrors[USER_INPUT_FIELD_KEYS.PASSWORD_KEY]}
-            />
-            <PasswordInput
-                id={USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_KEY}
-                name={USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_KEY}
-                label="Confirm Password"
-                description="The user's password."
-                placeholder="Confirm password..."
-                readOnly={false}
+                id={BLACKDUCK_GLOBAL_FIELD_KEYS.name}
+                name={BLACKDUCK_GLOBAL_FIELD_KEYS.name}
+                label="Provider Configuration"
+                description="The name of this provider configuration. Must be unique."
                 required
-                isSet={userModel[USER_INPUT_FIELD_KEYS.IS_PASSWORD_SET]}
-                onChange={handleOnChange(USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_KEY)}
-                value={userModel[USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_KEY] || undefined}
-                errorName={USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_KEY}
-                errorValue={userModel[USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_ERROR_KEY]}
+                readOnly={readonly}
+                onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
+                value={FieldModelUtilities.getFieldModelSingleValue(providerModel, BLACKDUCK_GLOBAL_FIELD_KEYS.name)}
+                errorName={FieldModelUtilities.createFieldModelErrorKey(BLACKDUCK_GLOBAL_FIELD_KEYS.name)}
+                errorValue={error.fieldErrors[BLACKDUCK_GLOBAL_FIELD_KEYS.name]}
             />
             <TextInput
-                id={USER_INPUT_FIELD_KEYS.EMAIL_KEY}
-                name={USER_INPUT_FIELD_KEYS.EMAIL_KEY}
-                label="Email"
-                description="The user's email."
-                placeholder="Enter email..."
-                readOnly={external}
-                required={!external}
-                onChange={handleOnChange(USER_INPUT_FIELD_KEYS.EMAIL_KEY)}
-                value={userModel[USER_INPUT_FIELD_KEYS.EMAIL_KEY] || undefined}
-                errorName={USER_INPUT_FIELD_KEYS.EMAIL_KEY}
-                errorValue={fieldErrors[USER_INPUT_FIELD_KEYS.EMAIL_KEY]}
+                id={BLACKDUCK_GLOBAL_FIELD_KEYS.url}
+                name={BLACKDUCK_GLOBAL_FIELD_KEYS.url}
+                label="URL"
+                description="The URL of the Black Duck server."
+                required
+                readOnly={readonly}
+                onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
+                value={FieldModelUtilities.getFieldModelSingleValue(providerModel, BLACKDUCK_GLOBAL_FIELD_KEYS.url)}
+                errorName={FieldModelUtilities.createFieldModelErrorKey(BLACKDUCK_GLOBAL_FIELD_KEYS.url)}
+                errorValue={error.fieldErrors[BLACKDUCK_GLOBAL_FIELD_KEYS.url]}
             />
-            <DynamicSelectInput
-                name={USER_INPUT_FIELD_KEYS.ROLENAMES_KEY}
-                id={USER_INPUT_FIELD_KEYS.ROLENAMES_KEY}
-                label="Roles"
-                description="Select the roles you want associated with the USER_INPUT_FIELD_KEYS."
-                onChange={handleOnChange(USER_INPUT_FIELD_KEYS.ROLENAMES_KEY)}
-                multiSelect
-                options={getRoles()}
-                value={userModel[USER_INPUT_FIELD_KEYS.ROLENAMES_KEY] || undefined}
-                errorName={USER_INPUT_FIELD_KEYS.ROLENAMES_KEY}
-                errorValue={fieldErrors[USER_INPUT_FIELD_KEYS.ROLENAMES_KEY]}
+            <PasswordInput
+                id={BLACKDUCK_GLOBAL_FIELD_KEYS.apiKey}
+                name={BLACKDUCK_GLOBAL_FIELD_KEYS.apiKey}
+                label="API Token"
+                description="The API token used to retrieve data from the Black Duck server. The API token should be for a super user."
+                required
+                readOnly={readonly}
+                onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
+                value={FieldModelUtilities.getFieldModelSingleValue(providerModel, BLACKDUCK_GLOBAL_FIELD_KEYS.apiKey)}
+                isSet={FieldModelUtilities.isFieldModelValueSet(providerModel, BLACKDUCK_GLOBAL_FIELD_KEYS.apiKey)}
+                errorName={FieldModelUtilities.createFieldModelErrorKey(BLACKDUCK_GLOBAL_FIELD_KEYS.apiKey)}
+                errorValue={error.fieldErrors[BLACKDUCK_GLOBAL_FIELD_KEYS.apiKey]}
+            />
+            <NumberInput
+                id={BLACKDUCK_GLOBAL_FIELD_KEYS.timeout}
+                name={BLACKDUCK_GLOBAL_FIELD_KEYS.timeout}
+                label="Timeout"
+                description="The timeout in seconds for all connections to the Black Duck server."
+                required
+                readOnly={readonly}
+                onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
+                value={FieldModelUtilities.getFieldModelNumberValue(providerModel, BLACKDUCK_GLOBAL_FIELD_KEYS.timeout)}
+                errorName={FieldModelUtilities.createFieldModelErrorKey(BLACKDUCK_GLOBAL_FIELD_KEYS.timeout)}
+                errorValue={error.fieldErrors[BLACKDUCK_GLOBAL_FIELD_KEYS.timeout]}
             />
         </Modal>
     );

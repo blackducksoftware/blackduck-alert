@@ -2,28 +2,20 @@ import {
     GET_PROVIDER_REQUEST,
     GET_PROVIDER_FAIL,
     GET_PROVIDER_SUCCESS,
-
-    USER_MANAGEMENT_USER_CLEAR_FIELD_ERRORS,
-    USER_MANAGEMENT_USER_BULK_DELETE_FETCH,
-    USER_MANAGEMENT_USER_BULK_DELETE_SUCCESS,
-    USER_MANAGEMENT_USER_BULK_DELETE_FAIL,
-    USER_MANAGEMENT_USER_DELETE_ERROR,
-    USER_MANAGEMENT_USER_DELETED,
-    USER_MANAGEMENT_USER_DELETING,
-    USER_MANAGEMENT_USER_FETCH_ERROR_ALL,
-    USER_MANAGEMENT_USER_FETCHED_ALL,
-    USER_MANAGEMENT_USER_FETCHING_ALL,
-    USER_MANAGEMENT_USER_SAVE_ERROR,
-    USER_MANAGEMENT_USER_SAVED,
-    USER_MANAGEMENT_USER_SAVING,
-    USER_MANAGEMENT_USER_VALIDATE_ERROR,
-    USER_MANAGEMENT_USER_VALIDATED,
-    USER_MANAGEMENT_USER_VALIDATING
+    POST_PROVIDER_REQUEST,
+    POST_PROVIDER_FAIL,
+    POST_PROVIDER_SUCCESS,
+    VALIDATE_PROVIDER_REQUEST,
+    VALIDATE_PROVIDER_FAIL,
+    VALIDATE_PROVIDER_SUCCESS,
+    CLEAR_PROVIDER_FIELD_ERRORS
 } from 'store/actions/types';
 import * as ConfigRequestBuilder from 'common/util/configurationRequestBuilder';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 import { unauthorized } from 'store/actions/session';
 import HeaderUtilities from 'common/util/HeaderUtilities';
+import { createRequestUrl } from 'common/util/RequestUtilities';
+import { CONFIG_API_URL } from 'common/util/configurationRequestBuilder';
 import { BLACKDUCK_INFO } from 'page/provider/blackduck/BlackDuckModel';
 
 function fetchingProvider() {
@@ -45,171 +37,57 @@ function fetchingProviderSuccess(providers) {
     }
 }
 
-export function fetchProviders (url) {
-    return (dispatch, getState) => {
-        dispatch(fetchingProvider());
-        const { csrfToken } = getState().session;
-
-        // const errorHandlers = [];
-        // errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        // errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => fetchingAllUsersError(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
-        const headersUtil = new HeaderUtilities();
-        headersUtil.addApplicationJsonContentType();
-        headersUtil.addXCsrfToken(csrfToken);
-        fetch(url, {
-            credentials: 'same-origin',
-            headers: headersUtil.getHeaders()
-        }).then((response) => {
-            response.json()
-            .then((responseData) => {
-                if (response.ok) {
-                    dispatch(fetchingProviderSuccess(responseData.fieldModels));
-                }
-            })
-        })
-        //     .then((response) => {
-        //         response.json()
-        //             .then((responseData) => {
-        //                 if (response.ok) {
-        //                     dispatch(fetchedAllUsers(responseData.users));
-        //                 } else {
-        //                     errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
-        //                         let message = '';
-        //                         if (responseData && responseData.message) {
-        //                             // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
-        //                             message = responseData.message.toString();
-        //                         }
-        //                         return fetchingAllUsersError(message);
-        //                     }));
-        //                     const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-        //                     dispatch(handler(response.status));
-        //                 }
-        //             });
-        //     })
-        //     .catch((error) => {
-        //         console.log(error);
-        //         dispatch(fetchingAllUsersError(error));
-        //     });
-    };
-}
-
-function fetchingAllUsers() {
+function savingProvider() {
     return {
-        type: USER_MANAGEMENT_USER_FETCHING_ALL
-    };
+        type: POST_PROVIDER_REQUEST
+    }
 }
 
-function fetchedAllUsers(users) {
+function savedProvider() {
     return {
-        type: USER_MANAGEMENT_USER_FETCHED_ALL,
-        data: users
+        type: POST_PROVIDER_SUCCESS
     };
 }
 
-function fetchingAllUsersError(message) {
-    return {
-        type: USER_MANAGEMENT_USER_FETCH_ERROR_ALL,
-        message
-    };
-}
-
-function savingUser() {
-    return {
-        type: USER_MANAGEMENT_USER_SAVING
-    };
-}
-
-function savedUser() {
-    return {
-        type: USER_MANAGEMENT_USER_SAVED
-    };
-}
-
-function saveUserErrorMessage(message) {
+function saveProviderErrorMessage(message) {
     return {
         type: USER_MANAGEMENT_USER_SAVE_ERROR,
         message
     };
 }
 
-function saveUserError({ message, errors }) {
+function saveProviderError({ message, errors }) {
     return {
-        type: USER_MANAGEMENT_USER_SAVE_ERROR,
-        message,
-        errors
-
-    };
-}
-
-function deletingUser() {
-    return {
-        type: USER_MANAGEMENT_USER_DELETING
-    };
-}
-
-function deletedUser() {
-    return {
-        type: USER_MANAGEMENT_USER_DELETED
-    };
-}
-
-function deletingUserErrorMessage(message) {
-    return {
-        type: USER_MANAGEMENT_USER_DELETE_ERROR,
-        message
-    };
-}
-
-function deletingUserError({ message, errors }) {
-    return {
-        type: USER_MANAGEMENT_USER_DELETE_ERROR,
+        type: POST_PROVIDER_FAIL,
         message,
         errors
     };
 }
 
-function bulkDeleteUsersFetch() {
+function validatingProvider() {
     return {
-        type: USER_MANAGEMENT_USER_BULK_DELETE_FETCH
+        type: VALIDATE_PROVIDER_REQUEST,
+        saveStatus: 'VALIDATING'
     };
 }
 
-function bulkDeleteUserSuccess() {
+function validatingProviderSuccess() {
     return {
-        type: USER_MANAGEMENT_USER_BULK_DELETE_SUCCESS
+        type: VALIDATE_PROVIDER_SUCCESS
     };
 }
 
-function bulkDeleteUserError(errors) {
+function validatingProviderError(message, errors) {
     return {
-        type: USER_MANAGEMENT_USER_BULK_DELETE_FAIL,
+        type: VALIDATE_PROVIDER_FAIL,
+        message,
         errors
     };
 }
 
 function clearFieldErrors() {
     return {
-        type: USER_MANAGEMENT_USER_CLEAR_FIELD_ERRORS
-    };
-}
-
-function validatingUser() {
-    return {
-        type: USER_MANAGEMENT_USER_VALIDATING
-    };
-}
-
-function validatedUser() {
-    return {
-        type: USER_MANAGEMENT_USER_VALIDATED
-    };
-}
-
-function userValidationError(message, errors) {
-    return {
-        type: USER_MANAGEMENT_USER_VALIDATE_ERROR,
-        message,
-        errors
+        type: CLEAR_PROVIDER_FIELD_ERRORS
     };
 }
 
@@ -220,9 +98,9 @@ function handleValidationError(dispatch, errorHandlers, responseStatus, defaultH
     dispatch(handler(responseStatus));
 }
 
-export function fetchUsers() {
+export function fetchProviders () {
     return (dispatch, getState) => {
-        dispatch(fetchingAllUsers());
+        dispatch(fetchingProvider());
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
@@ -230,141 +108,95 @@ export function fetchUsers() {
         const headersUtil = new HeaderUtilities();
         headersUtil.addApplicationJsonContentType();
         headersUtil.addXCsrfToken(csrfToken);
-        fetch(ConfigRequestBuilder.USER_API_URL, {
+        const url = createRequestUrl(CONFIG_API_URL, 'GLOBAL', BLACKDUCK_INFO.key)
+
+        fetch(url, {
             credentials: 'same-origin',
             headers: headersUtil.getHeaders()
-        })
-            .then((response) => {
-                response.json()
-                    .then((responseData) => {
-                        if (response.ok) {
-                            dispatch(fetchedAllUsers(responseData.users));
-                        } else {
-                            errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
-                                let message = '';
-                                if (responseData && responseData.message) {
-                                    // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
-                                    message = responseData.message.toString();
-                                }
-                                return fetchingAllUsersError(message);
-                            }));
-                            const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                            dispatch(handler(response.status));
-                        }
-                    });
-            })
-            .catch((error) => {
-                console.log(error);
-                dispatch(fetchingAllUsersError(error));
-            });
-    };
-}
-
-export function validateUser(user) {
-    return (dispatch, getState) => {
-        dispatch(validatingUser());
-        const { csrfToken } = getState().session;
-        const errorHandlers = [];
-        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => saveUserErrorMessage(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
-        const validateRequest = ConfigRequestBuilder.createValidateRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, user);
-        validateRequest.then((response) => {
-            if (response.ok) {
-                response.json()
-                    .then((validationResponse) => {
-                        // FIXME figure out the best way to handle warning statuses
-                        if (!Object.keys(validationResponse.errors).length) {
-                            dispatch(validatedUser());
-                        } else {
-                            handleValidationError(dispatch, errorHandlers, response.status, () => userValidationError(validationResponse.message, validationResponse.errors));
-                        }
-                    });
-            } else {
-                handleValidationError(dispatch, errorHandlers, response.status, () => userValidationError(response.message, HTTPErrorUtils.createEmptyErrorObject()));
-            }
-        })
-            .catch(console.error);
-    };
-}
-
-export function saveUser(user) {
-    return (dispatch, getState) => {
-        dispatch(savingUser());
-        const { id } = user;
-        const { csrfToken } = getState().session;
-        const errorHandlers = [];
-        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => saveUserErrorMessage(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
-        let saveRequest;
-        if (id) {
-            saveRequest = ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, id, user);
-        } else {
-            saveRequest = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, user);
-        }
-        saveRequest.then((response) => {
-            if (response.ok) {
-                dispatch(savedUser());
-                dispatch(fetchUsers());
-            } else {
-                response.json()
-                    .then((responseData) => {
-                        const defaultHandler = () => saveUserError(responseData);
-                        errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
-                        errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
-                        const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                        dispatch(handler(response.status));
-                    });
-            }
-        })
-            .catch(console.error);
-    };
-}
-
-export function deleteUser(userId) {
-    return (dispatch, getState) => {
-        dispatch(deletingUser());
-        const { csrfToken } = getState().session;
-        const errorHandlers = [];
-        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => deletingUserErrorMessage(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
-        const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, userId);
-        request.then((response) => {
-            if (response.ok) {
-                dispatch(deletedUser());
-            } else {
-                response.json()
-                    .then((responseData) => {
-                        const defaultHandler = () => deletingUserError(responseData);
-                        errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
-                        errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
-                        const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                        dispatch(handler(response.status));
-                    });
-            }
-        })
-            .catch(console.error);
-    };
-}
-
-export function bulkDeleteUsers(userIdArray) {
-    return (dispatch, getState) => {
-        dispatch(bulkDeleteUsersFetch());
-        const { csrfToken } = getState().session;
-
-        Promise.all(userIdArray.map((user) => { // eslint-disable-line
-            return ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, user.id);
-        })).catch((error) => {
-            dispatch(bulkDeleteUserError(error));
-            console.error; // eslint-disable-line
         }).then((response) => {
-            if (response) {
-                dispatch(bulkDeleteUserSuccess());
-            }
+            response.json()
+                .then((responseData) => {
+                    if (response.ok) {
+                        dispatch(fetchingProviderSuccess(responseData.fieldModels));
+                    } else {
+                        errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
+                            let message = '';
+                            if (responseData && responseData.message) {
+                                message = responseData.message.toString();
+                            }
+                            return fetchingProviderFail(message);
+                        }));
+                        const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                        dispatch(handler(response.status));
+                    }
+                });
+        })
+        .catch((error) => {
+            console.log(error);
+            dispatch(fetchingProviderFail(error));
         });
     };
 }
 
-export function clearUserFieldErrors() {
+export function validateProvider(provider) {
+    return (dispatch, getState) => {
+        dispatch(validatingProvider());
+        const { csrfToken } = getState().session;
+        const errorHandlers = [];
+        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => saveProviderErrorMessage(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
+        const validateRequest = ConfigRequestBuilder.createValidateRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, provider);
+        validateRequest.then((response) => {
+            if (response.ok) {
+                response.json()
+                    .then((validationResponse) => {
+                        if (validationResponse.hasErrors) {
+                            handleValidationError(dispatch, errorHandlers, response.status, () => validatingProviderError(validationResponse.message, validationResponse.errors))
+                        } else {
+                            dispatch(validatingProviderSuccess());
+                        }
+                    });
+            } else {
+                handleValidationError(dispatch, errorHandlers, response.status, () => validatingProviderError(response.message, HTTPErrorUtils.createEmptyErrorObject()));
+            }
+        })
+            .catch(console.error);
+    };
+}
+
+export function saveProvider(provider) {
+    return (dispatch, getState) => {
+        dispatch(savingProvider());
+        const { id } = provider;
+        const { csrfToken } = getState().session;
+        const errorHandlers = [];
+        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => saveProviderErrorMessage(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
+        let saveRequest;
+        if (id) {
+            saveRequest = ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, id, provider);
+        } else {
+            saveRequest = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, provider);
+        }
+        saveRequest.then((response) => {
+            if (response.ok) {
+                dispatch(savedProvider());
+            } else {
+                response.json()
+                    .then((responseData) => {
+                        const defaultHandler = () => saveProviderError(responseData);
+                        errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
+                        errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
+                        const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                        dispatch(handler(response.status));
+                    });
+            }
+        })
+            .catch(console.error);
+    };
+}
+
+export function clearProviderFieldErrors() {
     return (dispatch) => {
         dispatch(clearFieldErrors());
     };
