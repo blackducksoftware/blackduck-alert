@@ -105,9 +105,9 @@ spec:
               key: ALERT_POSTGRES_USER_PASSWORD_FILE
               name: {{ .Release.Name }}-db-creds
         {{- if .Values.postgres.registry }}
-        image: { { .Values.postgres.registry } }/postgres:15.2-alpine
+        image: { { .Values.postgres.registry } }/postgres:14.7-alpine
         {{- else }}
-        image: { { .Values.registry } }/postgres:15.2-alpine
+        image: { { .Values.registry } }/postgres:114.7-alpine
         {{- end}}
         imagePullPolicy: IfNotPresent
         lifecycle:
