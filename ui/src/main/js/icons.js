@@ -1,6 +1,10 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
 
 import {
+    faAngleDoubleLeft,
+    faAngleDoubleRight,
+    faAngleLeft,
+    faAngleRight,
     faCheck,
     faCog,
     faPencilAlt,
@@ -12,6 +16,10 @@ import {
 
 export default function registerIcons() {
     library.add(
+        faAngleDoubleLeft,
+        faAngleDoubleRight,
+        faAngleLeft,
+        faAngleRight,
         faCheck,
         faCog,
         faPencilAlt,
