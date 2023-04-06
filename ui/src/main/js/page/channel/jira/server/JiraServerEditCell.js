@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import StatusMessage from 'common/component/StatusMessage';
-import AzureBoardModal from './AzureBoardModal';
+import JiraServerModal from './JiraServerModal';
 
 const useStyles = createUseStyles({
-    copyCell: {
+    editCell: {
         background: 'none',
         border: 'none',
         cursor: 'pointer',
@@ -16,16 +16,15 @@ const useStyles = createUseStyles({
     }
 });
 
-const AzureCopyCell = ({ data }) => {
+const JiraServerEditCell = ({ data }) => {
     const classes = useStyles();
     const [showModal, setShowModal] = useState(false);
     const [statusMessage, setStatusMessage] = useState();
 
     const modalOptions = {
-        type: 'COPY',
-        title: 'Copy Azure Board',
-        submitText: 'Save',
-        copyDescription: `Performing this action will create a new Azure Board by using the same settings as '${data.name}'`
+        type: 'EDIT',
+        title: 'Edit Jira Server',
+        submitText: 'Save'
     };
 
     function handleClick() {
@@ -40,25 +39,25 @@ const AzureCopyCell = ({ data }) => {
                     errorMessage={statusMessage.type === 'error' ? statusMessage.message : null}
                 />
             )}
-            <button className={classes.copyCell} onClick={() => handleClick()} type="button">
-                <FontAwesomeIcon icon="copy" />
+            <button className={classes.editCell} onClick={() => handleClick()} type="button">
+                <FontAwesomeIcon icon="pencil-alt" />
             </button>
             { showModal && (
-                <AzureBoardModal
+                <JiraServerModal
                     data={data}
                     isOpen={showModal}
                     toggleModal={setShowModal}
                     modalOptions={modalOptions}
                     setStatusMessage={setStatusMessage}
-                    statusMessage="Successfully edited 1 Azure Board."
+                    statusMessage="Successfully edited 1 Jira Server."
                 />
             )}
         </>
     );
 };
 
-AzureCopyCell.propTypes = {
+JiraServerEditCell.propTypes = {
     data: PropTypes.object
 };
 
-export default AzureCopyCell;
+export default JiraServerEditCell;

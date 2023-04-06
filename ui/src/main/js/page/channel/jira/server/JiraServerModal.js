@@ -1,0 +1,224 @@
+import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
+import { createUseStyles } from 'react-jss';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Modal from 'common/component/modal/Modal';
+import CheckboxInput from 'common/component/input/CheckboxInput';
+import PasswordInput from 'common/component/input/PasswordInput';
+import TextInput from 'common/component/input/TextInput';
+import ButtonField from 'common/component/input/field/ButtonField';
+import { clearJiraServerFieldErrors, fetchJiraServer, saveJiraServer, sendJiraServerPlugin, validateJiraServer } from 'store/actions/jira-server';
+
+import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
+import { JIRA_SERVER_GLOBAL_FIELD_KEYS } from './JiraServerModel';
+
+const useStyles = createUseStyles({
+    descriptorContainer: {
+        display: 'flex',
+        alignItems: 'center',
+        padding: [0, 0, '20px', '60px']
+    },
+    descriptor: {
+        fontSize: '14px',
+        paddingLeft: '8px'
+    }
+});
+
+const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, successMessage, readonly }) => {
+    const classes = useStyles();
+    const dispatch = useDispatch();
+    const { copyDescription, submitText, title, type } = modalOptions;
+    const [jiraServerModel, setJiraServerModel] = useState(type === 'CREATE' ? {} : data);
+    const [showLoader, setShowLoader] = useState(false);
+    const [installPluginClick, setInstallPluginClick] = useState(false);
+    const [buttonMessage, setButtonMessage] = useState('');
+    const [buttonSuccess, setButtonSuccess] = useState(false);
+    const { saveStatus, pluginStatus, oAuthLink, error } = useSelector((state) => state.jiraServer);
+
+    const installPlugin = () => {
+        setButtonSuccess(false);
+        setInstallPluginClick(true);
+        handleSubmit();
+    };
+
+    function handleClose() {
+        toggleModal(false);
+        dispatch(fetchJiraServer());
+        dispatch(clearJiraServerFieldErrors());
+    }
+
+    function handleSave() {
+        dispatch(saveJiraServer(jiraServerModel));
+    }
+
+    function handleSubmit() {
+        dispatch(validateJiraServer(jiraServerModel));
+    }
+
+    function handleOAuth() {
+        dispatch(sendJiraServerPlugin(jiraServerModel));
+    }
+
+    useEffect(() => {
+        if (pluginStatus === 'FETCHING') {
+            setShowLoader(true);
+        }
+
+        if (pluginStatus === 'SUCCESS') {
+            handleClose();
+            setStatusMessage({
+                message: successMessage,
+                type: 'success'
+            });
+        }
+
+        if (pluginStatus === 'ERROR') {
+            setShowLoader(false);
+        }
+    }, [pluginStatus, oAuthLink])
+
+    useEffect(() => {
+        if (saveStatus === 'VALIDATING' || saveStatus === 'SAVING') {
+            setShowLoader(true);
+        }
+
+        if (saveStatus === 'VALIDATED') {
+            if (installPluginClick) {
+                handleOAuth();
+            } else {
+                handleSave();
+            }
+        }
+
+        if (saveStatus === 'SAVED') {
+            setShowLoader(false);
+            setButtonMessage();
+            handleClose();
+            setStatusMessage({
+                message: successMessage,
+                type: 'success'
+            });
+        }
+
+        if (saveStatus === 'ERROR') {
+            setShowLoader(false);
+        }
+    }, [saveStatus]);
+
+    return (
+        <Modal
+            isOpen={isOpen}
+            size="lg"
+            title={title}
+            closeModal={handleClose}
+            handleCancel={handleClose}
+            handleSubmit={handleSubmit}
+            submitText={submitText}
+            showLoader={showLoader}
+        >
+            { type === 'COPY' && (
+                <div className={classes.descriptorContainer}>
+                    <FontAwesomeIcon icon="exclamation-circle" size="2x" />
+                    <span className={classes.descriptor}>
+                        {copyDescription}
+                    </span>
+                </div>
+            )}
+            <div>
+                <TextInput
+                    id={JIRA_SERVER_GLOBAL_FIELD_KEYS.name}
+                    name={JIRA_SERVER_GLOBAL_FIELD_KEYS.name}
+                    label="Name"
+                    description="The unique name for the Jira Server server."
+                    required
+                    readOnly={readonly}
+                    onChange={FieldModelUtilities.handleTestChange(jiraServerModel, setJiraServerModel)}
+                    value={jiraServerModel[JIRA_SERVER_GLOBAL_FIELD_KEYS.name] || undefined}
+                    errorName={JIRA_SERVER_GLOBAL_FIELD_KEYS.name}
+                    errorValue={error.fieldErrors.name}
+                />
+                <TextInput
+                    id={JIRA_SERVER_GLOBAL_FIELD_KEYS.url}
+                    name={JIRA_SERVER_GLOBAL_FIELD_KEYS.url}
+                    label="URL"
+                    description="The URL of the Jira Server server."
+                    required
+                    readOnly={readonly}
+                    onChange={FieldModelUtilities.handleTestChange(jiraServerModel, setJiraServerModel)}
+                    value={jiraServerModel[JIRA_SERVER_GLOBAL_FIELD_KEYS.url] || undefined}
+                    errorName={JIRA_SERVER_GLOBAL_FIELD_KEYS.url}
+                    errorValue={error.fieldErrors.url}
+                />
+                <TextInput
+                    id={JIRA_SERVER_GLOBAL_FIELD_KEYS.username}
+                    name={JIRA_SERVER_GLOBAL_FIELD_KEYS.username}
+                    label="User Name"
+                    description="The username of the Jira Server user. Note: Unless 'Disable Plugin Check' is checked, this user must be a Jira admin."
+                    required
+                    readOnly={readonly}
+                    onChange={FieldModelUtilities.handleTestChange(jiraServerModel, setJiraServerModel)}
+                    value={jiraServerModel[JIRA_SERVER_GLOBAL_FIELD_KEYS.username] || undefined}
+                    errorName={JIRA_SERVER_GLOBAL_FIELD_KEYS.username}
+                    errorValue={error.fieldErrors.userName}
+                />
+                <PasswordInput
+                    id={JIRA_SERVER_GLOBAL_FIELD_KEYS.password}
+                    name={JIRA_SERVER_GLOBAL_FIELD_KEYS.password}
+                    label="Password"
+                    description="The password of the specified Jira Server user."
+                    required
+                    readOnly={readonly}
+                    onChange={FieldModelUtilities.handleTestChange(jiraServerModel, setJiraServerModel)}
+                    value={jiraServerModel[JIRA_SERVER_GLOBAL_FIELD_KEYS.password] || undefined}
+                    isSet={jiraServerModel[JIRA_SERVER_GLOBAL_FIELD_KEYS.isPasswordSet]}
+                    errorName={JIRA_SERVER_GLOBAL_FIELD_KEYS.password}
+                    errorValue={error.fieldErrors.password}
+                />
+                <CheckboxInput
+                    id={JIRA_SERVER_GLOBAL_FIELD_KEYS.disablePluginCheck}
+                    name={JIRA_SERVER_GLOBAL_FIELD_KEYS.disablePluginCheck}
+                    label="Disable Plugin Check"
+                    description="This will disable checking whether the 'Alert Issue Property Indexer' plugin is installed on the specified Jira instance. Please ensure that the plugin is manually installed before using Alert with Jira. If not, issues created by Alert will not be updated properly, and duplicate issues may be created."
+                    readOnly={readonly}
+                    onChange={FieldModelUtilities.handleTestChange(jiraServerModel, setJiraServerModel)}
+                    isChecked={(jiraServerModel[JIRA_SERVER_GLOBAL_FIELD_KEYS.isPasswordSet] || 'false').toString().toLowerCase() === 'true'}
+                    errorName={JIRA_SERVER_GLOBAL_FIELD_KEYS.disablePluginCheck}
+                    errorValue={error.fieldErrors.disablePluginCheck}
+                />
+                <ButtonField
+                    id={JIRA_SERVER_GLOBAL_FIELD_KEYS.configurePlugin}
+                    name={JIRA_SERVER_GLOBAL_FIELD_KEYS.configurePlugin}
+                    label="Configure Jira server plugin"
+                    buttonLabel="Install Plugin Remotely"
+                    description="Installs a required plugin on the Jira server."
+                    onSendClick={installPlugin}
+                    fieldKey={JIRA_SERVER_GLOBAL_FIELD_KEYS.configurePlugin}
+                    fieldError={error.fieldErrors[JIRA_SERVER_GLOBAL_FIELD_KEYS.configurePlugin]}
+                    readOnly={readonly}
+                    success={buttonSuccess}
+                    statusMessage={buttonMessage}
+                />
+            </div>
+        </Modal>
+    );
+};
+
+JiraServerModal.propTypes = {
+    data: PropTypes.oneOfType([
+        PropTypes.arrayOf(PropTypes.object),
+        PropTypes.object
+    ]),
+    isOpen: PropTypes.bool,
+    toggleModal: PropTypes.func,
+    modalOptions: PropTypes.shape({
+        type: PropTypes.string,
+        submitText: PropTypes.string,
+        title: PropTypes.string,
+        copyDescription: PropTypes.string
+    }),
+    setStatusMessage: PropTypes.func,
+    successMessage: PropTypes.string
+};
+
+export default JiraServerModal;

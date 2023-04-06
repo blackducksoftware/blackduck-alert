@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import StatusMessage from 'common/component/StatusMessage';
-import AzureBoardModal from './AzureBoardModal';
+import JiraServerModal from './JiraServerModal';
 
 const useStyles = createUseStyles({
     copyCell: {
@@ -20,16 +20,25 @@ const AzureCopyCell = ({ data }) => {
     const classes = useStyles();
     const [showModal, setShowModal] = useState(false);
     const [statusMessage, setStatusMessage] = useState();
+    const [selectedData, setSelectedData] = useState(data);
 
     const modalOptions = {
         type: 'COPY',
-        title: 'Copy Azure Board',
+        title: 'Copy Jira Server',
         submitText: 'Save',
-        copyDescription: `Performing this action will create a new Azure Board by using the same settings as '${data.name}'`
+        copyDescription: `Performing this action will create a new Jira Server connection by using the same settings as '${data.name}'`
     };
 
     function handleClick() {
+        setStatusMessage();
         setShowModal(true);
+        setSelectedData((data) => ({
+            ...data,
+            id: null,
+            name: '',
+            password: '',
+            isPasswordSet: false
+        }));
     }
 
     return (
@@ -44,13 +53,13 @@ const AzureCopyCell = ({ data }) => {
                 <FontAwesomeIcon icon="copy" />
             </button>
             { showModal && (
-                <AzureBoardModal
-                    data={data}
+                <JiraServerModal
+                    data={selectedData}
                     isOpen={showModal}
                     toggleModal={setShowModal}
                     modalOptions={modalOptions}
                     setStatusMessage={setStatusMessage}
-                    statusMessage="Successfully edited 1 Azure Board."
+                    statusMessage="Successfully edited 1 Jira Server Board."
                 />
             )}
         </>

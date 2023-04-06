@@ -7,12 +7,13 @@ export const JIRA_SERVER_INFO = {
 };
 
 export const JIRA_SERVER_GLOBAL_FIELD_KEYS = {
-    name: 'jira.server.name',
-    url: 'jira.server.url',
-    username: 'jira.server.username',
-    password: 'jira.server.password',
-    disablePluginCheck: 'jira.server.disable.plugin.check',
-    configurePlugin: 'jira.server.configure.plugin'
+    name: 'name',
+    url: 'url',
+    username: 'userName',
+    password: 'password',
+    isPasswordSet: 'isPasswordSet',
+    disablePluginCheck: 'disablePluginCheck',
+    configurePlugin: 'configurePlugin'
 };
 
 export const JIRA_SERVER_DISTRIBUTION_FIELD_KEYS = {
@@ -29,7 +30,9 @@ export const JIRA_SERVER_DISTRIBUTION_FIELD_KEYS = {
 export const JIRA_SERVER_URLS = {
     jiraServerUrl: '/alert/channels/jira_server',
     jiraServerEditUrl: '/alert/channels/jira_server/edit',
-    jiraServerCopyUrl: '/alert/channels/jira_server/copy'
+    jiraServerCopyUrl: '/alert/channels/jira_server/copy',
+    jiraServerConfigUrl: '/alert/api/configuration/jira_server',
+    jiraServerPluginUrl: '/alert/api/configuration/jira_server/install-plugin'
 };
 
 export const JIRA_SERVER_DISTRIBUTION_GLOBAL_CONFIG_COLUMNS = [

@@ -64,7 +64,7 @@ const Table = ({ columns, multiSelect, selected, onSelected, disableSelectOption
                     disableSelectOptions={disableSelectOptions}
                 />
             </table>
-            { onPage && (
+            { data?.totalPages > 1 && (
                 <Pagination data={data} onPage={onPage} />
             )}
         </>
