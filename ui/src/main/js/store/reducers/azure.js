@@ -120,7 +120,7 @@ const azure = (state = initialState, action) => {
             return {
                 ...state,
                 fetching: false,
-                deleteStatus: 'SUCCESS',
+                deleteStatus: 'DELETED',
                 error: HTTPErrorUtils.createEmptyErrorObject(),
                 fieldErrors: {},
             };

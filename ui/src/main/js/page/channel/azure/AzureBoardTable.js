@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Table from 'common/component/table/Table';
 import AzureBoardTableActions from 'page/channel/azure/AzureBoardTableActions';
 import { fetchAzure } from '../../../store/actions/azure';
+import EditAzureBoard from 'page/channel/azure/AzureEditCell';
 
 const COLUMNS = [{
     key: 'name',
@@ -20,13 +21,19 @@ const COLUMNS = [{
     key: 'lastUpdated',
     label: 'Last Updated',
     sortable: true
+}, {
+    key: 'editAzureBoard',
+    label: 'Edit',
+    sortable: false,
+    customCell: EditAzureBoard,
+    settings: { alignment: 'center' }
 }];
 
 const AzureBoardTale = ({ readonly, allowDelete }) => {
     const dispatch = useDispatch();
     const { data } = useSelector((state) => state.azure);
-    console.log('data', data);
     const [autoRefresh, setAutoRefresh] = useState(false);
+    const [tableData, setTableData] = useState();
     const [selected, setSelected] = useState([]);
     const [pageNumber, setPageNumber] = useState(data?.currentPage);
     const [offset, setOffset] = useState(data?.pageSize);
@@ -43,7 +50,8 @@ const AzureBoardTale = ({ readonly, allowDelete }) => {
             mutatorData
         };
         dispatch(fetchAzure(params));
-    }, [pageNumber, offset, mutatorData]);
+        setTableData(data);
+    }, [pageNumber, offset, mutatorData, data]);
 
     useEffect(() => {
         if (autoRefresh) {
@@ -82,7 +90,7 @@ const AzureBoardTale = ({ readonly, allowDelete }) => {
 
     return (
         <Table
-            tableData={data?.models}
+            tableData={tableData?.models}
             columns={COLUMNS}
             multiSelect
             searchBarPlaceholder="Search Tasks..."
@@ -92,7 +100,7 @@ const AzureBoardTale = ({ readonly, allowDelete }) => {
             onSort={onSort}
             selected={selected}
             onSelected={onSelected}
-            tableActions={() => <AzureBoardTableActions data={data} readonly={readonly} allowDelete={allowDelete} selected={selected} />}
+            tableActions={() => <AzureBoardTableActions data={tableData} readonly={readonly} allowDelete={allowDelete} selected={selected} />}
         />
     );
 };

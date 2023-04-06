@@ -172,7 +172,6 @@ export function validateAzure(azureModel) {
                         if (!Object.keys(validationResponse.errors).length) {
                             dispatch(validateAzureSuccess());
                         } else {
-                            console.log(validationResponse);
                             handleValidationError(dispatch, errorHandlers, response.status, () => validateAzureFail(validationResponse.message, validationResponse.errors));
                         }
                     });
@@ -199,7 +198,6 @@ export function saveAzureBoard(azureBoard) {
             saveRequest = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.AZURE_BOARDS_API_URL, csrfToken, azureBoard);
         }
         saveRequest.then((response) => {
-            console.log('response', response);
             if (response.ok) {
                 dispatch(saveAzureSuccess());
             } else {

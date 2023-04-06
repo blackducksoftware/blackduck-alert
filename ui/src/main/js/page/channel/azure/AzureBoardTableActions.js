@@ -118,7 +118,7 @@ const AzureBoardTableActions = ({ data, readonly, allowDelete, selected }) => {
 AzureBoardTableActions.propTypes = {
     canCreate: PropTypes.bool,
     canDelete: PropTypes.bool,
-    data: PropTypes.object,
+    data: PropTypes.arrayOf(PropTypes.object),
     selected: PropTypes.array
 };
 

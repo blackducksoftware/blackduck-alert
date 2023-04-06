@@ -33,8 +33,8 @@ const AzureBoardModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
 
     function handleClose() {
         toggleModal(false);
-        dispatch(clearAzureFieldErrors());
         dispatch(fetchAzure());
+        dispatch(clearAzureFieldErrors());
     }
 
     function handleSave() {

@@ -71,7 +71,7 @@ const AzureBoardDeleteModal = ({ isOpen, toggleModal, data, selected, setStatusM
             setShowLoader(true);
         }
 
-        if (deleteStatus === 'SUCCESS') {
+        if (deleteStatus === 'DELETED') {
             setShowLoader(false);
 
             const successMessage = isMultiDelete
