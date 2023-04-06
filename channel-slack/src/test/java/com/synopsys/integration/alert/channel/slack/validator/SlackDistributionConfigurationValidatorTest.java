@@ -18,7 +18,6 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 public class SlackDistributionConfigurationValidatorTest {
-    public static final String EXPECTED_CHANNEL_NAME = "Slack Channel Name";
     public static final String EXPECTED_VALID_WEBHOOK_URL = "https://www.example.com/webhook";
     public static final String INVALID_WEBHOOK_URL = "bad_url";
 
@@ -31,12 +30,8 @@ public class SlackDistributionConfigurationValidatorTest {
                 Set.of()
             ),
             Arguments.of(
+                Map.of(),
                 Set.of(AlertFieldStatus.error(SlackDescriptor.KEY_WEBHOOK, ConfigurationFieldValidator.REQUIRED_FIELD_MISSING_MESSAGE))
-            ),
-            Arguments.of(
-                Map.of(
-                    SlackDescriptor.KEY_WEBHOOK, FieldModelUtils.createFieldValue(EXPECTED_VALID_WEBHOOK_URL)
-                )
             ),
             Arguments.of(
                 Map.of(),
