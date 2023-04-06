@@ -49,6 +49,7 @@ import DescriptorRoute from 'common/component/descriptor/DescriptorRoute';
 import EmailGlobalConfiguration from 'page/channel/email/EmailGlobalConfiguration';
 import ConcreteJiraServerGlobalConfiguration from 'page/channel/jira/server/ConcreteJiraServerGlobalConfiguration';
 import ConcreteJiraServerGlobalConfigurationTable from 'page/channel/jira/server/ConcreteJiraServerGlobalConfigurationTable';
+import JiraServerPageLayout from 'page/channel/jira/server/JiraServerPageLayout';
 
 import BetaPage from 'common/component/beta/BetaPage';
 import BetaComponent from 'common/component/beta/BetaComponent';
@@ -228,12 +229,24 @@ const MainPage = ({
                 urlName={JIRA_SERVER_INFO.url}
                 descriptor={globalDescriptorMap[JIRA_SERVER_INFO.key]}
                 render={(readOnly, showTest, showSave, showDelete) => (
-                    <ConcreteJiraServerGlobalConfigurationTable
-                        csrfToken={csrfToken}
-                        readonly={readOnly}
-                        showRefreshButton={!autoRefresh}
-                        displayDelete={showDelete}
-                    />
+                    <BetaPage betaSelected>
+                        <BetaComponent>
+                            <JiraServerPageLayout 
+                                csrfToken={csrfToken}
+                                showRefreshButton={!autoRefresh}
+                                readonly={readOnly}
+                                allowDelete={showDelete}
+                            />
+                        </BetaComponent>
+                        <CurrentComponent>
+                            <ConcreteJiraServerGlobalConfigurationTable
+                                csrfToken={csrfToken}
+                                readonly={readOnly}
+                                showRefreshButton={!autoRefresh}
+                                displayDelete={showDelete}
+                            />
+                        </CurrentComponent>
+                    </BetaPage>
                 )}
             />
             <DescriptorRoute uriPrefix={channelUri} urlName={MSTEAMS_INFO.url} descriptor={globalDescriptorMap[MSTEAMS_INFO.key]} render={() => <MSTeamsGlobalConfiguration />} />

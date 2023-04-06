@@ -1,127 +1,128 @@
 import {
-    AZURE_GET_REQUEST,
-    AZURE_GET_SUCCESS,
-    AZURE_GET_FAIL,
-    AZURE_VALIDATE_REQUEST,
-    AZURE_VALIDATE_SUCCESS,
-    AZURE_VALIDATE_FAIL,
-    AZURE_SAVE_REQUEST,
-    AZURE_SAVE_SUCCESS,
-    AZURE_SAVE_FAIL,
-    AZURE_DELETE_REQUEST,
-    AZURE_DELETE_SUCCESS,
-    AZURE_DELETE_FAIL,
-    AZURE_OAUTH_REQUEST,
-    AZURE_OAUTH_SUCCESS,
-    AZURE_OAUTH_FAIL,
-    AZURE_CLEAR_FIELD_ERRORS
+    JIRA_SERVER_GET_REQUEST,
+    JIRA_SERVER_GET_SUCCESS,
+    JIRA_SERVER_GET_FAIL,
+    JIRA_SERVER_VALIDATE_REQUEST,
+    JIRA_SERVER_VALIDATE_SUCCESS,
+    JIRA_SERVER_VALIDATE_FAIL,
+    JIRA_SERVER_SAVE_REQUEST,
+    JIRA_SERVER_SAVE_SUCCESS,
+    JIRA_SERVER_SAVE_FAIL,
+    JIRA_SERVER_DELETE_REQUEST,
+    JIRA_SERVER_DELETE_SUCCESS,
+    JIRA_SERVER_DELETE_FAIL,
+    JIRA_SERVER_PLUGIN_REQUEST,
+    JIRA_SERVER_PLUGIN_SUCCESS,
+    JIRA_SERVER_PLUGIN_FAIL,
+    JIRA_SERVER_CLEAR_FIELD_ERRORS
 } from 'store/actions/types';
 import * as ConfigRequestBuilder from 'common/util/configurationRequestBuilder';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 import { unauthorized } from 'store/actions/session';
+import { JIRA_SERVER_URLS } from 'page/channel/jira/server/JiraServerModel';
 
-function fetchAzureRequest() {
+function fetchJiraServerRequest() {
     return {
-        type: AZURE_GET_REQUEST
+        type: JIRA_SERVER_GET_REQUEST
     }
 }
 
-function fetchAzureSuccess(azure) {
+function fetchJiraServerSuccess(data) {
     return {
-        type: AZURE_GET_SUCCESS,
-        data: azure
+        type: JIRA_SERVER_GET_SUCCESS,
+        data
     }
 }
 
-function fetchAzureFail(error) {
+function fetchJiraServerFail(error) {
     return {
-        type: AZURE_GET_FAIL,
+        type: JIRA_SERVER_GET_FAIL,
         error
     }
 }
 
-function validateAzureRequest() {
+function validateJiraServerRequest() {
     return {
-        type: AZURE_VALIDATE_REQUEST
+        type: JIRA_SERVER_VALIDATE_REQUEST
     };
 }
 
-function validateAzureSuccess() {
+function validateJiraServerSuccess() {
     return {
-        type: AZURE_VALIDATE_SUCCESS
+        type: JIRA_SERVER_VALIDATE_SUCCESS
     };
 }
 
-function validateAzureFail(message, errors) {
+function validateJiraServerFail(message, errors) {
     return {
-        type: AZURE_VALIDATE_FAIL,
+        type: JIRA_SERVER_VALIDATE_FAIL,
         message,
         errors
     };
 }
 
-function saveAzureRequest() {
+function saveJiraServerRequest() {
     return {
-        type: AZURE_SAVE_REQUEST
+        type: JIRA_SERVER_SAVE_REQUEST
     };
 }
 
-function saveAzureSuccess() {
+function saveJiraServerSuccess() {
     return {
-        type: AZURE_SAVE_SUCCESS
+        type: JIRA_SERVER_SAVE_SUCCESS
     };
 }
 
-function saveAzureFail({ message, errors }) {
+function saveJiraServerFail({ message, errors }) {
     return {
-        type: AZURE_SAVE_FAIL,
+        type: JIRA_SERVER_SAVE_FAIL,
         message,
         errors
 
     };
 }
 
-function deleteProvidersRequest() {
+function deleteJiraServerRequest() {
     return {
-        type: AZURE_DELETE_REQUEST
+        type: JIRA_SERVER_DELETE_REQUEST
     };
 }
 
-function deleteProvidersSuccess() {
+function deleteJiraServerSuccess() {
     return {
-        type: AZURE_DELETE_SUCCESS
+        type: JIRA_SERVER_DELETE_SUCCESS
     };
 }
 
-function deleteProvidersError(errors) {
+function deleteJiraServerError(errors) {
     return {
-        type: AZURE_DELETE_FAIL,
+        type: JIRA_SERVER_DELETE_FAIL,
         errors
     };
 }
 
-function sendOAuthRequest() {
+function sendJiraServerPluginRequest() {
     return {
-        type: AZURE_OAUTH_REQUEST
+        type: JIRA_SERVER_PLUGIN_REQUEST
     };
 }
 
-function sendOAuthSuccess(oAuthLink) {
+function sendJiraServerPluginSuccess(message) {
     return {
-        type: AZURE_OAUTH_SUCCESS,
-        oAuthLink
+        type: JIRA_SERVER_PLUGIN_SUCCESS,
+        message
     }
 }
 
-function sendOAuthError() {
+function sendJiraServerPluginError() {
     return {
-        type: AZURE_OAUTH_FAIL
+        type: JIRA_SERVER_PLUGIN_FAIL
     }
 }
 
 function clearFieldErrors() {
     return {
-        type: AZURE_CLEAR_FIELD_ERRORS
+        type: JIRA_SERVER_CLEAR_FIELD_ERRORS
     }
 }
 
@@ -134,9 +135,9 @@ function handleValidationError(dispatch, errorHandlers, responseStatus, defaultH
     dispatch(handler(responseStatus));
 }
 
-export function fetchAzure(requestParams) {
+export function fetchJiraServer(requestParams) {
     return (dispatch, getState) => {
-        dispatch(fetchAzureRequest());
+        dispatch(fetchJiraServerRequest());
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
@@ -145,16 +146,17 @@ export function fetchAzure(requestParams) {
         let request;
         if (requestParams) {
             const { pageNumber, pageSize, mutatorData } = requestParams;
-            request = ConfigRequestBuilder.createReadPageRequest(ConfigRequestBuilder.AZURE_BOARDS_API_URL, csrfToken, pageNumber, pageSize, mutatorData);
+            request = ConfigRequestBuilder.createReadPageRequest(JIRA_SERVER_URLS.jiraServerConfigUrl, csrfToken, pageNumber, pageSize, mutatorData);
         } else {
-            request = ConfigRequestBuilder.createReadPageRequest(ConfigRequestBuilder.AZURE_BOARDS_API_URL, csrfToken, 0, 10, {});
+            request = ConfigRequestBuilder.createReadPageRequest(JIRA_SERVER_URLS.jiraServerConfigUrl, csrfToken, 0, 10, {});
         }
 
         request.then((response) => {
             response.json()
                 .then((responseData) => {
+                    console.log('responseData',responseData);
                     if (response.ok) {
-                        dispatch(fetchAzureSuccess(responseData));
+                        dispatch(fetchJiraServerSuccess(responseData));
                     } else {
                         errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
                             let message = '';
@@ -162,7 +164,7 @@ export function fetchAzure(requestParams) {
                                 // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
                                 message = responseData.message.toString();
                             }
-                            return fetchAzureFail(message);
+                            return fetchJiraServerFail(message);
                         }));
                         const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
                         dispatch(handler(response.status));
@@ -171,59 +173,59 @@ export function fetchAzure(requestParams) {
         })
         .catch((error) => {
             console.log(error);
-            dispatch(fetchAzureFail(error));
+            dispatch(fetchJiraServerFail(error));
         });
     };
 }
 
-export function validateAzure(azureModel) {
+export function validateJiraServer(jiraServerModel) {
     return (dispatch, getState) => {
-        dispatch(validateAzureRequest());
+        dispatch(validateJiraServerRequest());
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => validateAzureFail(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
-        const validateRequest = ConfigRequestBuilder.createValidateRequest(ConfigRequestBuilder.AZURE_BOARDS_API_URL, csrfToken, azureModel);
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => validateJiraServerFail(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
+        const validateRequest = ConfigRequestBuilder.createValidateRequest(JIRA_SERVER_URLS.jiraServerConfigUrl, csrfToken, jiraServerModel);
         validateRequest.then((response) => {
             if (response.ok) {
                 response.json()
                     .then((validationResponse) => {
                         // FIXME figure out the best way to handle warning statuses
                         if (!Object.keys(validationResponse.errors).length) {
-                            dispatch(validateAzureSuccess());
+                            dispatch(validateJiraServerSuccess());
                         } else {
-                            handleValidationError(dispatch, errorHandlers, response.status, () => validateAzureFail(validationResponse.message, validationResponse.errors));
+                            handleValidationError(dispatch, errorHandlers, response.status, () => validateJiraServerFail(validationResponse.message, validationResponse.errors));
                         }
                     });
             } else {
-                handleValidationError(dispatch, errorHandlers, response.status, () => validateAzureFail(response.message, HTTPErrorUtils.createEmptyErrorObject()));
+                handleValidationError(dispatch, errorHandlers, response.status, () => validateJiraServerFail(response.message, HTTPErrorUtils.createEmptyErrorObject()));
             }
         })
             .catch(console.error);
     };
 }
 
-export function saveAzureBoard(azureBoard) {
+export function saveJiraServer(jiraServerModel) {
     return (dispatch, getState) => {
-        dispatch(saveAzureRequest());
-        const { id } = azureBoard;
+        dispatch(saveJiraServerRequest());
+        const { id } = jiraServerModel;
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => saveAzureFail(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => saveJiraServerFail(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
         let saveRequest;
         if (id) {
-            saveRequest = ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.AZURE_BOARDS_API_URL, csrfToken, id, azureBoard);
+            saveRequest = ConfigRequestBuilder.createUpdateRequest(JIRA_SERVER_URLS.jiraServerConfigUrl, csrfToken, id, jiraServerModel);
         } else {
-            saveRequest = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.AZURE_BOARDS_API_URL, csrfToken, azureBoard);
+            saveRequest = ConfigRequestBuilder.createNewConfigurationRequest(JIRA_SERVER_URLS.jiraServerConfigUrl, csrfToken, jiraServerModel);
         }
         saveRequest.then((response) => {
             if (response.ok) {
-                dispatch(saveAzureSuccess());
+                dispatch(saveJiraServerSuccess());
             } else {
                 response.json()
                     .then((responseData) => {
-                        const defaultHandler = () => saveAzureFail(responseData);
+                        const defaultHandler = () => saveJiraServerFail(responseData);
                         errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
                         errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
                         const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
@@ -234,39 +236,40 @@ export function saveAzureBoard(azureBoard) {
             .catch(console.error);
     };
 }
-export function deleteAzureBoards(azureBoards) {
+
+export function deleteJiraServer(jiraServerModels) {
     return (dispatch, getState) => {
-        dispatch(deleteProvidersRequest());
+        dispatch(deleteJiraServerRequest());
         const { csrfToken } = getState().session;
 
-        Promise.all(azureBoards.map((board) => { // eslint-disable-line
-            return ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.AZURE_BOARDS_API_URL, csrfToken, board.id);
+        Promise.all(jiraServerModels.map((server) => { // eslint-disable-line
+            return ConfigRequestBuilder.createDeleteRequest(JIRA_SERVER_URLS.jiraServerConfigUrl, csrfToken, server.id);
         })).catch((error) => {
-            dispatch(deleteProvidersError(error));
+            dispatch(deleteJiraServerError(error));
             console.error; // eslint-disable-line
         }).then((response) => {
             if (response) {
-                dispatch(deleteProvidersSuccess());
+                dispatch(deleteJiraServerSuccess());
             }
         });
     };
 }
 
-export function sendOAuth(azureBoard) {
+export function sendJiraServerPlugin(azureBoard) {
     return (dispatch, getState) => {
-        dispatch(sendOAuthRequest());
+        dispatch(sendJiraServerPluginRequest());
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => saveAzureFail(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
-        const oAuthRequest = ConfigRequestBuilder.createNewConfigurationRequest('/alert/api/configuration/azure-boards/oauth/authenticate', csrfToken, azureBoard);
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => saveJiraServerFail(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
+        const oAuthRequest = ConfigRequestBuilder.createNewConfigurationRequest(JIRA_SERVER_URLS.jiraServerPluginUrl, csrfToken, azureBoard);
         oAuthRequest.then((response) => {
             response.json()
                 .then((responseData) => {
                     if (response.ok) {
-                        dispatch(sendOAuthSuccess(responseData.authorizationUrl));
+                        dispatch(sendJiraServerPluginSuccess(responseData.message));
                     } else {
-                        const defaultHandler = () => sendOAuthError(responseData);
+                        const defaultHandler = () => sendJiraServerPluginError(responseData);
                         errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
                         errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
                         const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
@@ -277,7 +280,7 @@ export function sendOAuth(azureBoard) {
     };
 }
 
-export function clearAzureFieldErrors() {
+export function clearJiraServerFieldErrors() {
     return (dispatch) => {
         dispatch(clearFieldErrors());
     };
