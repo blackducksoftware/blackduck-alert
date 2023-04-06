@@ -2,6 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import CreateButton from '../button/CreateButton';
+import ButtonCancel from '../button/ButtonCancel';
 
 const useStyles = createUseStyles({
     modalFooter: {
@@ -17,71 +19,12 @@ const useStyles = createUseStyles({
     footerActions: {
         margin: [0, '5px', 0, 'auto']
     },
-    submitBtn: {
-        background: 'none',
-        border: 'solid .5px',
-        padding: ['6px', '20px'],
-        font: 'inherit',
-        cursor: 'pointer',
-        borderRadius: '6px',
-        fontSize: '14px',
-        backgroundColor: '#2E3B4E',
-        color: 'white',
-        '&:focus': {
-            outline: 0
-        }
-    },
-    cancleBtn: {
-        background: 'none',
-        border: 'solid .5px #2E3B4E',
-        padding: ['6px', '20px'],
-        font: 'inherit',
-        cursor: 'pointer',
-        borderRadius: '6px',
-        fontSize: '14px',
-        color: '#2E3B4E',
-        '&:focus': {
-            outline: 0
-        },
-        '&:hover': {
-            border: 'solid 1px #2E3B4E'
-        }
-    },
     loader: {
         position: 'absolute',
         right: '195px',
         top: '2px'
     }
 });
-
-const SubmitButton = ({ handleSubmit, submitText }) => {
-    const classes = useStyles();
-
-    return (
-        <button className={classes.submitBtn} onClick={handleSubmit} type="submit">
-            {submitText}
-        </button>
-    );
-};
-
-SubmitButton.propTypes = {
-    handleSubmit: PropTypes.func,
-    submitText: PropTypes.string
-};
-
-const CancelButton = ({ handleCancel }) => {
-    const classes = useStyles();
-
-    return (
-        <button className={classes.cancleBtn} onClick={handleCancel}>
-            Cancel
-        </button>
-    )
-}
-
-CancelButton.propTypes = {
-    handleCancel: PropTypes.func
-};
 
 const ModalFooter = ({ handleCancel, handleSubmit, submitText, showLoader }) => {
     const classes = useStyles();
@@ -96,9 +39,9 @@ const ModalFooter = ({ handleCancel, handleSubmit, submitText, showLoader }) => 
                 )}
 
                 { handleCancel && (
-                    <CancelButton handleCancel={handleCancel} />
+                    <ButtonCancel onClick={handleCancel} text="Cancel" />
                 )}
-                <SubmitButton submitText={submitText} handleSubmit={handleSubmit} />
+                <CreateButton onClick={handleSubmit} text={submitText} />
             </div>
         </div>
     );

@@ -5,6 +5,7 @@ import SearchFilter from 'common/component/table/SearchFilter';
 import TableBody from 'common/component/table/TableBody';
 import TableHeader from 'common/component/table/TableHeader';
 import ToggleSwitch from 'common/component/input/ToggleSwitch';
+import Pagination from 'common/component/navigation/Pagination';
 
 const useStyles = createUseStyles({
     table: {
@@ -22,7 +23,7 @@ const useStyles = createUseStyles({
 });
 
 const Table = ({ columns, multiSelect, selected, onSelected, disableSelectOptions, tableData, handleSearchChange,
-    searchBarPlaceholder, tableActions, onToggle, active, onSort, sortConfig }) => {
+    searchBarPlaceholder, tableActions, onToggle, active, onSort, sortConfig, data, onPage }) => {
     const classes = useStyles();
 
     return (
@@ -63,6 +64,9 @@ const Table = ({ columns, multiSelect, selected, onSelected, disableSelectOption
                     disableSelectOptions={disableSelectOptions}
                 />
             </table>
+            { onPage && (
+                <Pagination data={data} onPage={onPage} />
+            )}
         </>
     );
 };
@@ -87,7 +91,8 @@ Table.propTypes = {
     sortConfig: PropTypes.shape({
         name: PropTypes.string,
         direction: PropTypes.string
-    })
+    }),
+    onPage: PropTypes.func
 };
 
 export default Table;

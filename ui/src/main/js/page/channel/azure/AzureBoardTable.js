@@ -1,0 +1,132 @@
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import Table from 'common/component/table/Table';
+import AzureBoardTableActions from 'page/channel/azure/AzureBoardTableActions';
+import { fetchAzure } from '../../../store/actions/azure';
+import AzureEditCell from 'page/channel/azure/AzureEditCell';
+import AzureCopyCell from 'page/channel/azure/AzureCopyCell';
+
+const COLUMNS = [{
+    key: 'name',
+    label: 'Name',
+    sortable: true
+}, {
+    key: 'organizationName',
+    label: 'Organization Name',
+    sortable: true
+}, {
+    key: 'createdAt',
+    label: 'Created At',
+    sortable: true
+}, {
+    key: 'lastUpdated',
+    label: 'Last Updated',
+    sortable: true
+}, {
+    key: 'editAzureBoard',
+    label: 'Edit',
+    sortable: false,
+    customCell: AzureEditCell,
+    settings: { alignment: 'center' }
+}, {
+    key: 'copyAzureBoard',
+    label: 'Copy',
+    sortable: false,
+    customCell: AzureCopyCell,
+    settings: { alignment: 'center' }
+}];
+
+const AzureBoardTale = ({ readonly, allowDelete }) => {
+    const dispatch = useDispatch();
+    const { data } = useSelector((state) => state.azure);
+    const [autoRefresh, setAutoRefresh] = useState(false);
+    const [selected, setSelected] = useState([]);
+    const [paramsConfig, setParamsConfig] = useState({
+        pageNumber: data?.pageNumber || 0,
+        pageSize: data?.pageSize,
+        mutatorData: {
+            searchTerm: data?.mutatorData?.searchTerm,
+            sortName: data?.mutatorData?.name,
+            sortOrder: data?.mutatorData?.direction
+        }
+    })
+
+    useEffect(() => {
+        dispatch(fetchAzure(paramsConfig));
+    }, [paramsConfig]);
+
+    useEffect(() => {
+        if (autoRefresh) {
+            const refreshIntervalId = setInterval(() => dispatch(fetchAzure()), 30000);
+            return function clearRefreshInterval() {
+                clearInterval(refreshIntervalId);
+            };
+        }
+
+        return undefined;
+    }, [autoRefresh]);
+
+    const handleSearchChange = (e) => {
+        setParamsConfig({...paramsConfig, mutatorData: {
+            ...mutatorData,
+            searchTerm: e.target.value
+        }});
+    };
+
+    function handleToggle() {
+        setAutoRefresh(!autoRefresh);
+    }
+
+    function handlePagination(page) {
+        setParamsConfig({...paramsConfig, pageNumber: page});
+    }
+
+    const onSort = (name) => {
+        const { sortName, sortOrder } = paramsConfig.mutatorData;
+        if (name !== sortName) {
+            return setParamsConfig({...paramsConfig, mutatorData: {
+                ...mutatorData,
+                sortName: name,
+                sortOrder: 'asc'
+            }});
+        }
+
+        if (name === sortName && sortOrder !== 'desc') {
+            return setParamsConfig({...paramsConfig, mutatorData: {
+                ...mutatorData,
+                sortName: name,
+                sortOrder: 'desc'
+            }});
+        }
+
+        return setParamsConfig({...paramsConfig, mutatorData: {
+            ...mutatorData,
+            sortName: '',
+            sortOrder: ''
+        }});
+    };
+
+    const onSelected = (selectedRow) => {
+        setSelected(selectedRow);
+    };
+
+    return (
+        <Table
+            tableData={data?.models}
+            columns={COLUMNS}
+            multiSelect
+            searchBarPlaceholder="Search Azure Boards..."
+            handleSearchChange={handleSearchChange}
+            active={autoRefresh}
+            onToggle={handleToggle}
+            onSort={onSort}
+            selected={selected}
+            onSelected={onSelected}
+            onPage={handlePagination}
+            data={data}
+            tableActions={() => <AzureBoardTableActions data={data} readonly={readonly} allowDelete={allowDelete} selected={selected} />}
+        />
+    );
+};
+
+export default AzureBoardTale;

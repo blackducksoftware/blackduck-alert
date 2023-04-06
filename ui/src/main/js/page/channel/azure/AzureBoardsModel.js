@@ -9,7 +9,9 @@ export const AZURE_BOARDS_GLOBAL_FIELD_KEYS = {
     appId: 'appId',
     clientSecret: 'clientSecret',
     configureOAuth: 'oAuth',
-    name: 'name'
+    name: 'name',
+    isAppIdSet: 'isAppIdSet',
+    isClientSecretSet: 'isClientSecretSet'
 };
 
 export const AZURE_BOARDS_DISTRIBUTION_FIELD_KEYS = {

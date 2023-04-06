@@ -39,29 +39,6 @@ const useStyles = createUseStyles({
             backgroundColor: '#b0b0b0'
         }
     },
-    deleteUserBtn: {
-        background: 'none',
-        border: 'solid .5px',
-        padding: ['6px', '20px'],
-        font: 'inherit',
-        cursor: 'pointer',
-        borderRadius: '6px',
-        fontSize: '14px',
-        backgroundColor: '#E03C31',
-        color: 'white',
-        '&:focus': {
-            outline: 0
-        },
-        '& > *': {
-            marginRight: '5px'
-        },
-        '&:disabled': {
-            border: ['1px', 'solid', '#D9D9D9'],
-            backgroundColor: '#D9D9D9',
-            color: '#666666',
-            cursor: 'not-allowed'
-        }
-    },
     permissionActionContainer: {
         display: 'flex',
         flexDirection: 'column',

@@ -1,32 +1,31 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import UserDeleteModal from 'page/usermgmt/user/UserDeleteModal';
-import UserModal from 'page/usermgmt/user/UserModal';
 import StatusMessage from 'common/component/StatusMessage';
+import AzureBoardModal from './AzureBoardModal';
+import AzureBoardDeleteModal from 'page/channel/azure/AzureBoardDeleteModal';
 import CreateButton from '../../../common/component/button/CreateButton';
 import DeleteButton from '../../../common/component/button/DeleteButton';
 
-const UserTableActions = ({ canCreate, canDelete, data, selected }) => {
+const AzureBoardTableActions = ({ data, readonly, allowDelete, selected }) => {
     const modalOptions = {
         type: 'CREATE',
         submitText: 'Create',
-        title: 'Create User'
+        title: 'Create Azure Board Connection'
     };
 
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [statusMessage, setStatusMessage] = useState();
 
-    function handleCreateUserClick() {
+    function handleCreateAzureBoardClick() {
         setStatusMessage();
         setShowCreateModal(true);
     }
 
-    function handleDeleteUserClick() {
+    function handleDeleteAzureBoardClick() {
         setStatusMessage();
         setShowDeleteModal(true);
     }
-
     return (
         <>
             { statusMessage && (
@@ -36,27 +35,25 @@ const UserTableActions = ({ canCreate, canDelete, data, selected }) => {
                 />
             )}
 
-            { canCreate && (
-                <CreateButton onClick={handleCreateUserClick} type="button" icon="plus" text="Create User" />
-            )}
+            <CreateButton onClick={handleCreateAzureBoardClick} type="button" icon="plus" text="Create Azure Board" />
 
-            { canDelete && (
-                <DeleteButton onClick={handleDeleteUserClick} isDisabled={selected.length === 0} type="button" icon="trash" text="Delete" />
+            { allowDelete && (
+                <DeleteButton onClick={handleDeleteAzureBoardClick} isDisabled={selected.length === 0} type="button" icon="trash" text="Delete" />
             )}
 
             { showCreateModal && (
-                <UserModal
-                    data={data}
+                <AzureBoardModal
+                    readonly={readonly}
                     isOpen={showCreateModal}
                     toggleModal={setShowCreateModal}
                     modalOptions={modalOptions}
                     setStatusMessage={setStatusMessage}
-                    successMessage="Successfully created 1 new user."
+                    successMessage="Successfully added 1 new Azure Board connection."
                 />
             )}
 
             { showDeleteModal && (
-                <UserDeleteModal
+                <AzureBoardDeleteModal
                     data={data}
                     isOpen={showDeleteModal}
                     toggleModal={setShowDeleteModal}
@@ -68,11 +65,11 @@ const UserTableActions = ({ canCreate, canDelete, data, selected }) => {
     );
 };
 
-UserTableActions.propTypes = {
+AzureBoardTableActions.propTypes = {
     canCreate: PropTypes.bool,
     canDelete: PropTypes.bool,
-    data: PropTypes.arrayOf(PropTypes.object),
+    data: PropTypes.object,
     selected: PropTypes.array
 };
 
-export default UserTableActions;
+export default AzureBoardTableActions;

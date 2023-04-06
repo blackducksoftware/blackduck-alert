@@ -3,6 +3,7 @@ import { connectRouter } from 'connected-react-router';
 
 import about from 'store/reducers/about';
 import audit from 'store/reducers/audit';
+import azure from 'store/reducers/azure';
 import certificates from 'store/reducers/certificates';
 import descriptors from 'store/reducers/descriptors';
 import provider from 'store/reducers/provider';
@@ -17,6 +18,7 @@ const rootReducer = (history) => combineReducers({
     router: connectRouter(history),
     about,
     audit,
+    azure,
     certificates,
     descriptors,
     provider,
