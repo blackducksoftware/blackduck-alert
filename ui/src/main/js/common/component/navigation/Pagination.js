@@ -88,7 +88,7 @@ const Pagination = ({ data, onPage }) => {
             { links.map((page) => {
                 const pageNumber = page + 1;
                 return (
-                    <PaginationButton pageNumber={pageNumber} isActive={page === currentPage} onClick={() => handlePageClick(page)} />
+                    <PaginationButton pageNumber={pageNumber} isActive={page === currentPage} onClick={() => handlePageClick(page)} key={page} />
                 )
             }) }
 
@@ -107,8 +107,8 @@ Pagination.defaultProps = {
 
 Pagination.propTypes = {
     data: PropTypes.shape({
-        currentPage: PropTypes.string,
-        totalPages: PropTypes.string
+        currentPage: PropTypes.number,
+        totalPages: PropTypes.number
     }),
     onPage: PropTypes.func,
 };

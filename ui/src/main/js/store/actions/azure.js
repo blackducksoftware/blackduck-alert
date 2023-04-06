@@ -11,6 +11,9 @@ import {
     AZURE_DELETE_REQUEST,
     AZURE_DELETE_SUCCESS,
     AZURE_DELETE_FAIL,
+    AZURE_OAUTH_REQUEST,
+    AZURE_OAUTH_SUCCESS,
+    AZURE_OAUTH_FAIL,
     AZURE_CLEAR_FIELD_ERRORS
 } from 'store/actions/types';
 import * as ConfigRequestBuilder from 'common/util/configurationRequestBuilder';
@@ -71,6 +74,15 @@ function saveAzureSuccess() {
     };
 }
 
+function saveAzureFail({ message, errors }) {
+    return {
+        type: AZURE_SAVE_FAIL,
+        message,
+        errors
+
+    };
+}
+
 function deleteProvidersRequest() {
     return {
         type: AZURE_DELETE_REQUEST
@@ -90,13 +102,23 @@ function deleteProvidersError(errors) {
     };
 }
 
-function saveAzureFail({ message, errors }) {
+function sendOAuthRequest() {
     return {
-        type: AZURE_SAVE_FAIL,
-        message,
-        errors
-
+        type: AZURE_OAUTH_REQUEST
     };
+}
+
+function sendOAuthSuccess(oAuthLink) {
+    return {
+        type: AZURE_OAUTH_SUCCESS,
+        oAuthLink
+    }
+}
+
+function sendOAuthError() {
+    return {
+        type: AZURE_OAUTH_FAIL
+    }
 }
 
 function clearFieldErrors() {
@@ -203,7 +225,6 @@ export function saveAzureBoard(azureBoard) {
             } else {
                 response.json()
                     .then((responseData) => {
-                        console.log('herre', responseData);
                         const defaultHandler = () => saveAzureFail(responseData);
                         errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
                         errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
@@ -215,13 +236,6 @@ export function saveAzureBoard(azureBoard) {
             .catch(console.error);
     };
 }
-
-export function clearAzureFieldErrors() {
-    return (dispatch) => {
-        dispatch(clearFieldErrors());
-    };
-}
-
 export function deleteAzureBoards(azureBoards) {
     return (dispatch, getState) => {
         dispatch(deleteProvidersRequest());
@@ -237,5 +251,36 @@ export function deleteAzureBoards(azureBoards) {
                 dispatch(deleteProvidersSuccess());
             }
         });
+    };
+}
+
+export function sendOAuth(azureBoard) {
+    return (dispatch, getState) => {
+        dispatch(sendOAuthRequest());
+        const { csrfToken } = getState().session;
+        const errorHandlers = [];
+        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => saveAzureFail(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
+        const oAuthRequest = ConfigRequestBuilder.createNewConfigurationRequest('/alert/api/configuration/azure-boards/oauth/authenticate', csrfToken, azureBoard);
+        oAuthRequest.then((response) => {
+            response.json()
+                .then((responseData) => {
+                    if (response.ok) {
+                        dispatch(sendOAuthSuccess(responseData.authorizationUrl));
+                    } else {
+                        const defaultHandler = () => sendOAuthError(responseData);
+                        errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
+                        errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
+                        const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                        dispatch(handler(response.status));
+                    }
+                })
+        }).catch(console.error);
+    };
+}
+
+export function clearAzureFieldErrors() {
+    return (dispatch) => {
+        dispatch(clearFieldErrors());
     };
 }

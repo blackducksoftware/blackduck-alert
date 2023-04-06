@@ -6,8 +6,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Modal from 'common/component/modal/Modal';
 import PasswordInput from 'common/component/input/PasswordInput';
 import TextInput from 'common/component/input/TextInput';
+import ButtonField from 'common/component/input/field/ButtonField';
 import { AZURE_BOARDS_GLOBAL_FIELD_KEYS } from 'page/channel/azure/AzureBoardsModel';
-import { clearAzureFieldErrors, fetchAzure, saveAzureBoard, validateAzure } from '../../../store/actions/azure';
+import { clearAzureFieldErrors, fetchAzure, saveAzureBoard, sendOAuth, validateAzure } from '../../../store/actions/azure';
 
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 
@@ -29,7 +30,16 @@ const AzureBoardModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
     const { copyDescription, submitText, title, type } = modalOptions;
     const [azureModel, setAzureModel] = useState(type === 'CREATE' ? {} : data);
     const [showLoader, setShowLoader] = useState(false);
-    const { saveStatus, error } = useSelector((state) => state.azure);
+    const [oAuthClick, setOAuthclick] = useState(false);
+    const [buttonMessage, setButtonMessage] = useState('');
+    const [buttonSuccess, setButtonSuccess] = useState(false);
+    const { saveStatus, oAuthStatus, oAuthLink, error } = useSelector((state) => state.azure);
+
+    const authenticateAzureForm = () => {
+        setButtonSuccess(false);
+        setOAuthclick(true);
+        handleSubmit();
+    };
 
     function handleClose() {
         toggleModal(false);
@@ -45,18 +55,40 @@ const AzureBoardModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
         dispatch(validateAzure(azureModel));
     }
 
+    function handleOAuth() {
+        dispatch(sendOAuth(azureModel));
+    }
+
     useEffect(() => {
-        console.log(saveStatus);
+        if (oAuthStatus === 'FETCHING') {
+            setShowLoader(true);
+        }
+
+        if (oAuthStatus === 'SUCCESS') {
+            window.location.replace(oAuthLink);
+        }
+
+        if (oAuthStatus === 'ERROR') {
+            setShowLoader(false);
+        }
+    }, [oAuthStatus, oAuthLink])
+
+    useEffect(() => {
         if (saveStatus === 'VALIDATING' || saveStatus === 'SAVING') {
             setShowLoader(true);
         }
 
         if (saveStatus === 'VALIDATED') {
-            handleSave();
+            if (oAuthClick) {
+                handleOAuth();
+            } else {
+                handleSave();
+            }
         }
 
         if (saveStatus === 'SAVED') {
             setShowLoader(false);
+            setButtonMessage();
             handleClose();
             setStatusMessage({
                 message: successMessage,
@@ -138,6 +170,19 @@ const AzureBoardModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
                     isSet={azureModel[AZURE_BOARDS_GLOBAL_FIELD_KEYS.isClientSecretSet]}
                     errorName={AZURE_BOARDS_GLOBAL_FIELD_KEYS.clientSecret}
                     errorValue={error.fieldErrors[AZURE_BOARDS_GLOBAL_FIELD_KEYS.clientSecret]}
+                />
+                <ButtonField
+                    id={AZURE_BOARDS_GLOBAL_FIELD_KEYS.configureOAuth}
+                    name={AZURE_BOARDS_GLOBAL_FIELD_KEYS.configureOAuth}
+                    label="Microsoft OAuth"
+                    buttonLabel="Save/Authenticate"
+                    description="This will redirect you to Microsoft's OAuth login. To clear the Oauth request cache, please delete and reconfigure the Azure fields.  Please note you will remain logged in; for security reasons you may want to logout of your Microsoft account after authenticating the application."
+                    onSendClick={authenticateAzureForm}
+                    fieldKey={AZURE_BOARDS_GLOBAL_FIELD_KEYS.configureOAuth}
+                    fieldError={error.fieldErrors[AZURE_BOARDS_GLOBAL_FIELD_KEYS.configureOAuth]}
+                    readOnly={readonly}
+                    success={buttonSuccess}
+                    statusMessage={buttonMessage}
                 />
             </div>
         </Modal>

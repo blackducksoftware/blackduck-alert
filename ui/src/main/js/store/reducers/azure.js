@@ -12,6 +12,9 @@ import {
     AZURE_DELETE_REQUEST,
     AZURE_DELETE_SUCCESS,
     AZURE_DELETE_FAIL,
+    AZURE_OAUTH_REQUEST,
+    AZURE_OAUTH_SUCCESS,
+    AZURE_OAUTH_FAIL,
     AZURE_CLEAR_FIELD_ERRORS
 } from 'store/actions/types';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
@@ -32,6 +35,8 @@ const initialState = {
     fieldErrors: {},
     saveStatus: '',
     deleteStatus: '',
+    oAuthStatus: '',
+    oAuthLink: ''
 };
 
 const azure = (state = initialState, action) => {
@@ -129,6 +134,29 @@ const azure = (state = initialState, action) => {
                 ...state,
                 fetching: false,
                 deleteStatus: 'ERROR',
+                error: HTTPErrorUtils.createErrorObject(action),
+                fieldErrors: action.errors || {},
+            };
+        case AZURE_OAUTH_REQUEST:
+            return {
+                ...state,
+                fetching: true,
+                oAuthStatus: 'FETCHING'
+            };
+        case AZURE_OAUTH_SUCCESS:
+            return {
+                ...state,
+                fetching: false,
+                oAuthStatus: 'SUCCESS',
+                oAuthLink: action.oAuthLink,
+                error: HTTPErrorUtils.createEmptyErrorObject(),
+                fieldErrors: {},
+            };
+        case AZURE_OAUTH_FAIL:
+            return {
+                ...state,
+                fetching: false,
+                oAuthStatus: 'ERROR',
                 error: HTTPErrorUtils.createErrorObject(action),
                 fieldErrors: action.errors || {},
             };

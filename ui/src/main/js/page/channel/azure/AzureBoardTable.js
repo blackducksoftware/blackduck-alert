@@ -115,7 +115,7 @@ const AzureBoardTale = ({ readonly, allowDelete }) => {
             tableData={data?.models}
             columns={COLUMNS}
             multiSelect
-            searchBarPlaceholder="Search Tasks..."
+            searchBarPlaceholder="Search Azure Boards..."
             handleSearchChange={handleSearchChange}
             active={autoRefresh}
             onToggle={handleToggle}
