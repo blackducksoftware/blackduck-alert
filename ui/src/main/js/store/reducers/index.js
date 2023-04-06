@@ -6,6 +6,7 @@ import audit from 'store/reducers/audit';
 import azure from 'store/reducers/azure';
 import certificates from 'store/reducers/certificates';
 import descriptors from 'store/reducers/descriptors';
+import provider from 'store/reducers/provider';
 import session from 'store/reducers/session';
 import system from 'store/reducers/system';
 import refresh from 'store/reducers/refresh';
@@ -20,6 +21,7 @@ const rootReducer = (history) => combineReducers({
     azure,
     certificates,
     descriptors,
+    provider,
     session,
     system,
     refresh,

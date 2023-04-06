@@ -43,3 +43,21 @@ export function createDeleteRequest(url, csrfToken) {
         headers: headersUtil.getHeaders()
     });
 }
+
+export function createRequestUrl(baseUrl, context, descriptorName) {
+    const queryParams = {
+        context,
+        descriptorName
+    };
+    const parameters = [];
+    Object.keys(queryParams)
+        .forEach((key) => {
+            const value = queryParams[key];
+            if (value) {
+                const parameterString = `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+                parameters.push(parameterString);
+            }
+        });
+    const queryString = parameters.join('&');
+    return `${baseUrl}?${queryString}`;
+}
