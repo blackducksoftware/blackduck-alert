@@ -1,22 +1,5 @@
 package com.synopsys.integration.alert.processor.api.filter;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
@@ -34,6 +17,16 @@ import com.synopsys.integration.blackduck.api.generated.enumeration.Vulnerabilit
 import com.synopsys.integration.blackduck.api.manual.component.AffectedProjectVersion;
 import com.synopsys.integration.blackduck.api.manual.component.VulnerabilityNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.OffsetDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 @AlertIntegrationTest
@@ -190,7 +183,7 @@ public class JobNotificationMapperTestIT {
                 List.of(),
                 List.of(),
                 List.of(),
-                new SlackJobDetailsModel(null, "webhook", "channelName", "username")
+                new SlackJobDetailsModel(null, "webhook", "username")
             ))
         );
 
@@ -216,7 +209,7 @@ public class JobNotificationMapperTestIT {
                 List.of(),
                 List.of(),
                 List.of(),
-                new SlackJobDetailsModel(null, "webhook", "channelName", "username")
+                new SlackJobDetailsModel(null, "webhook", "username")
             ))
         );
 
@@ -347,7 +340,7 @@ public class JobNotificationMapperTestIT {
             blackDuckProjectDetailsModels,
             policies,
             vulns,
-            new SlackJobDetailsModel(null, "webhook", "channelName", "username")
+            new SlackJobDetailsModel(null, "webhook", "username")
         );
     }
 

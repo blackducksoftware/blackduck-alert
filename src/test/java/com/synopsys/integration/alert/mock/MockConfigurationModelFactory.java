@@ -1,14 +1,5 @@
 package com.synopsys.integration.alert.mock;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import org.mockito.Mockito;
-
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
@@ -21,16 +12,17 @@ import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
+import org.mockito.Mockito;
+
+import java.util.*;
 
 public class MockConfigurationModelFactory {
     public static List<ConfigurationFieldModel> createSlackDistributionFields() {
         List<ConfigurationFieldModel> fields = new ArrayList<>();
-
-        ConfigurationFieldModel channel = createFieldModel(SlackDescriptor.KEY_CHANNEL_NAME, "Alert channel");
+        
         ConfigurationFieldModel username = createFieldModel(SlackDescriptor.KEY_CHANNEL_USERNAME, "Alert unit test");
         ConfigurationFieldModel webhook = createFieldModel(SlackDescriptor.KEY_WEBHOOK, "Webhook");
 
-        fields.add(channel);
         fields.add(username);
         fields.add(webhook);
 

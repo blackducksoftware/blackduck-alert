@@ -1,20 +1,5 @@
 package com.synopsys.integration.alert.database.api;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-
 import com.synopsys.integration.alert.channel.email.database.accessor.DefaultEmailJobDetailsAccessor;
 import com.synopsys.integration.alert.channel.email.database.job.EmailJobDetailsEntity;
 import com.synopsys.integration.alert.channel.jira.server.database.accessor.DefaultJiraServerJobDetailsAccessor;
@@ -24,13 +9,7 @@ import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.*;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.job.DistributionJobEntity;
@@ -49,6 +28,20 @@ import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class StaticJobAccessorTest {
     private DistributionJobRepository distributionJobRepository;
@@ -134,7 +127,7 @@ class StaticJobAccessorTest {
     @Test
     void createJobTest() {
         UUID jobId = UUID.randomUUID();
-        SlackJobDetailsModel slackJobDetailsModel = new SlackJobDetailsModel(jobId, null, null, null);
+        SlackJobDetailsModel slackJobDetailsModel = new SlackJobDetailsModel(jobId, null, null);
         DistributionJobRequestModel distributionJobRequestModel = createDistributionJobEntity(ChannelKeys.SLACK.getUniversalKey(), slackJobDetailsModel);
 
         SlackJobDetailsEntity slackJobDetailsEntity = new SlackJobDetailsEntity();
@@ -162,7 +155,7 @@ class StaticJobAccessorTest {
     @Test
     void updateJobTest() throws Exception {
         UUID jobId = UUID.randomUUID();
-        SlackJobDetailsModel slackJobDetailsModel = new SlackJobDetailsModel(jobId, null, null, null);
+        SlackJobDetailsModel slackJobDetailsModel = new SlackJobDetailsModel(jobId, null, null);
         DistributionJobRequestModel distributionJobRequestModel = new DistributionJobRequestModel(
             true,
             jobName,

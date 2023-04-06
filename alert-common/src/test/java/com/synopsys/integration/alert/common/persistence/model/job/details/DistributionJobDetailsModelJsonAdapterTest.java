@@ -1,25 +1,17 @@
 package com.synopsys.integration.alert.common.persistence.model.job.details;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import com.google.gson.*;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import org.apache.commons.lang3.RandomUtils;
+import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Predicate;
 
-import org.apache.commons.lang3.RandomUtils;
-import org.junit.jupiter.api.Test;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DistributionJobDetailsModelJsonAdapterTest {
     private final Gson gson = new Gson();
@@ -81,7 +73,7 @@ public class DistributionJobDetailsModelJsonAdapterTest {
     @Test
     public void serializeSlackJobDetailsModelTest() {
         UUID jobId = UUID.randomUUID();
-        SlackJobDetailsModel baseModel = new SlackJobDetailsModel(jobId, "slack_webhook_url", "a-cool-channel", "Channel Tester");
+        SlackJobDetailsModel baseModel = new SlackJobDetailsModel(jobId, "slack_webhook_url", "Channel Tester");
         JsonElement baseJson = gson.toJsonTree(baseModel);
         serializeAndAssert(baseModel, baseJson);
     }
@@ -182,14 +174,13 @@ public class DistributionJobDetailsModelJsonAdapterTest {
     @Test
     public void deserializeSlackJobDetailsModelTest() {
         UUID jobId = UUID.randomUUID();
-        SlackJobDetailsModel baseModel = new SlackJobDetailsModel(jobId, "slack_webhook_url", "a-cool-channel", "Channel Tester");
+        SlackJobDetailsModel baseModel = new SlackJobDetailsModel(jobId, "slack_webhook_url", "Channel Tester");
 
         DistributionJobDetailsModel deserializedModel = runDeserializerAndAssert(baseModel, (distributionJobDetailsModel -> distributionJobDetailsModel.isA(ChannelKeys.SLACK)));
 
         SlackJobDetailsModel jobDetails = deserializedModel.getAs(DistributionJobDetailsModel.SLACK);
         assertEquals(baseModel.getJobId(), jobDetails.getJobId());
         assertEquals(baseModel.getWebhook(), jobDetails.getWebhook());
-        assertEquals(baseModel.getChannelName(), jobDetails.getChannelName());
         assertEquals(baseModel.getChannelUsername(), jobDetails.getChannelUsername());
     }
 
