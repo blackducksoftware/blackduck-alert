@@ -16,6 +16,7 @@ import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Set;
 
 @Component
@@ -32,6 +33,7 @@ public class SlackDistributionConfigurationValidator implements DistributionConf
         ConfigurationFieldValidator configurationFieldValidator = ConfigurationFieldValidator.fromJobFieldModel(jobFieldModel);
 
         commonChannelDistributionValidator.validate(configurationFieldValidator);
+        configurationFieldValidator.validateRequiredFieldsAreNotBlank(List.of(SlackDescriptor.KEY_WEBHOOK));
         configurationFieldValidator.validateIsAURL(SlackDescriptor.KEY_WEBHOOK);
 
         return configurationFieldValidator.getValidationResults();
