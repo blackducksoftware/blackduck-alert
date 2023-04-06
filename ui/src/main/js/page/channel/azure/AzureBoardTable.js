@@ -40,25 +40,20 @@ const AzureBoardTale = ({ readonly, allowDelete }) => {
     const dispatch = useDispatch();
     const { data } = useSelector((state) => state.azure);
     const [autoRefresh, setAutoRefresh] = useState(false);
-    const [tableData, setTableData] = useState();
     const [selected, setSelected] = useState([]);
-    const [pageNumber, setPageNumber] = useState(data?.currentPage);
-    const [offset, setOffset] = useState(data?.pageSize);
-    const [mutatorData, setMutatorData] = useState({
-        searchTerm: data?.mutatorData?.searchTerm,
-        sortName: data?.mutatorData?.name,
-        sortOrder: data?.mutatorData?.direction
-    });
+    const [paramsConfig, setParamsConfig] = useState({
+        pageNumber: data?.pageNumber || 0,
+        pageSize: data?.pageSize,
+        mutatorData: {
+            searchTerm: data?.mutatorData?.searchTerm,
+            sortName: data?.mutatorData?.name,
+            sortOrder: data?.mutatorData?.direction
+        }
+    })
 
     useEffect(() => {
-        const params = {
-            pageNumber,
-            pageSize: offset,
-            mutatorData
-        };
-        dispatch(fetchAzure(params));
-        setTableData(data);
-    }, [pageNumber, offset, mutatorData, data]);
+        dispatch(fetchAzure(paramsConfig));
+    }, [paramsConfig]);
 
     useEffect(() => {
         if (autoRefresh) {
@@ -72,23 +67,43 @@ const AzureBoardTale = ({ readonly, allowDelete }) => {
     }, [autoRefresh]);
 
     const handleSearchChange = (e) => {
-        setMutatorData({...mutatorData, searchTerm: e.target.value})
+        setParamsConfig({...paramsConfig, mutatorData: {
+            ...mutatorData,
+            searchTerm: e.target.value
+        }});
     };
 
     function handleToggle() {
         setAutoRefresh(!autoRefresh);
     }
 
+    function handlePagination(page) {
+        setParamsConfig({...paramsConfig, pageNumber: page});
+    }
+
     const onSort = (name) => {
-        if (name !== mutatorData.sortName) {
-            return setMutatorData({...mutatorData, sortName: name, sortOrder: 'asc'})
+        const { sortName, sortOrder } = paramsConfig.mutatorData;
+        if (name !== sortName) {
+            return setParamsConfig({...paramsConfig, mutatorData: {
+                ...mutatorData,
+                sortName: name,
+                sortOrder: 'asc'
+            }});
         }
 
-        if (name === mutatorData.sortName && mutatorData.sortOrder !== 'desc') {
-            return setMutatorData({...mutatorData, sortName: name, sortOrder: 'desc'})
+        if (name === sortName && sortOrder !== 'desc') {
+            return setParamsConfig({...paramsConfig, mutatorData: {
+                ...mutatorData,
+                sortName: name,
+                sortOrder: 'desc'
+            }});
         }
 
-        return setMutatorData({...mutatorData, sortName: '', sortOrder: ''})
+        return setParamsConfig({...paramsConfig, mutatorData: {
+            ...mutatorData,
+            sortName: '',
+            sortOrder: ''
+        }});
     };
 
     const onSelected = (selectedRow) => {
@@ -97,7 +112,7 @@ const AzureBoardTale = ({ readonly, allowDelete }) => {
 
     return (
         <Table
-            tableData={tableData?.models}
+            tableData={data?.models}
             columns={COLUMNS}
             multiSelect
             searchBarPlaceholder="Search Tasks..."
@@ -107,7 +122,9 @@ const AzureBoardTale = ({ readonly, allowDelete }) => {
             onSort={onSort}
             selected={selected}
             onSelected={onSelected}
-            tableActions={() => <AzureBoardTableActions data={tableData} readonly={readonly} allowDelete={allowDelete} selected={selected} />}
+            onPage={handlePagination}
+            data={data}
+            tableActions={() => <AzureBoardTableActions data={data} readonly={readonly} allowDelete={allowDelete} selected={selected} />}
         />
     );
 };

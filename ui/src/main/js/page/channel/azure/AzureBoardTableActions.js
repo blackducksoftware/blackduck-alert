@@ -38,9 +38,7 @@ const AzureBoardTableActions = ({ data, readonly, allowDelete, selected }) => {
             <CreateButton onClick={handleCreateAzureBoardClick} type="button" icon="plus" text="Create Azure Board" />
 
             { allowDelete && (
-                <DeleteButton onClick={handleDeleteAzureBoardClick} isDisabled={selected.length === 0} type="button" icon="trash">
-                    Delete
-                </DeleteButton>
+                <DeleteButton onClick={handleDeleteAzureBoardClick} isDisabled={selected.length === 0} type="button" icon="trash" text="Delete" />
             )}
 
             { showCreateModal && (
@@ -70,7 +68,7 @@ const AzureBoardTableActions = ({ data, readonly, allowDelete, selected }) => {
 AzureBoardTableActions.propTypes = {
     canCreate: PropTypes.bool,
     canDelete: PropTypes.bool,
-    data: PropTypes.arrayOf(PropTypes.object),
+    data: PropTypes.object,
     selected: PropTypes.array
 };
 
