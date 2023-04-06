@@ -3,7 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import Table from 'common/component/table/Table';
 import AzureBoardTableActions from 'page/channel/azure/AzureBoardTableActions';
 import { fetchAzure } from '../../../store/actions/azure';
-import EditAzureBoard from 'page/channel/azure/AzureEditCell';
+import AzureEditCell from 'page/channel/azure/AzureEditCell';
+import AzureCopyCell from 'page/channel/azure/AzureCopyCell';
 
 const COLUMNS = [{
     key: 'name',
@@ -25,7 +26,13 @@ const COLUMNS = [{
     key: 'editAzureBoard',
     label: 'Edit',
     sortable: false,
-    customCell: EditAzureBoard,
+    customCell: AzureEditCell,
+    settings: { alignment: 'center' }
+}, {
+    key: 'copyAzureBoard',
+    label: 'Copy',
+    sortable: false,
+    customCell: AzureCopyCell,
     settings: { alignment: 'center' }
 }];
 
