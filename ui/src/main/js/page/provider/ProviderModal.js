@@ -62,7 +62,6 @@ const ProviderModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessa
     const classes = useStyles();
     const dispatch = useDispatch();
 
-    const { external } = data;
     const { copyDescription, submitText, title, type } = modalOptions;
     const [showLoader, setShowLoader] = useState(false);
 

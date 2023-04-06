@@ -1,17 +1,17 @@
 import {
-    BULK_DELETE_PROVIDER_REQUEST,
-    BULK_DELETE_PROVIDER_FAIL,
-    BULK_DELETE_PROVIDER_SUCCESS,
-    GET_PROVIDER_REQUEST,
-    GET_PROVIDER_FAIL,
-    GET_PROVIDER_SUCCESS,
-    POST_PROVIDER_REQUEST,
-    POST_PROVIDER_FAIL,
-    POST_PROVIDER_SUCCESS,
-    VALIDATE_PROVIDER_REQUEST,
-    VALIDATE_PROVIDER_FAIL,
-    VALIDATE_PROVIDER_SUCCESS,
-    CLEAR_PROVIDER_FIELD_ERRORS
+    PROVIDER_DELETE_REQUEST,
+    PROVIDER_DELETE_FAIL,
+    PROVIDER_DELETE_SUCCESS,
+    PROVIDER_GET_REQUEST,
+    PROVIDER_GET_FAIL,
+    PROVIDER_GET_SUCCESS,
+    PROVIDER_POST_REQUEST,
+    PROVIDER_POST_FAIL,
+    PROVIDER_POST_SUCCESS,
+    PROVIDER_VALIDATE_REQUEST,
+    PROVIDER_VALIDATE_FAIL,
+    PROVIDER_VALIDATE_SUCCESS,
+    PROVIDER_CLEAR_FIELD_ERRORS
 } from 'store/actions/types';
 import * as ConfigRequestBuilder from 'common/util/configurationRequestBuilder';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
@@ -23,45 +23,45 @@ import { BLACKDUCK_INFO } from 'page/provider/blackduck/BlackDuckModel';
 
 function fetchingProvider() {
     return {
-        type: GET_PROVIDER_REQUEST
+        type: PROVIDER_GET_REQUEST
     }
 }
 
 function fetchingProviderFail() {
     return {
-        type: GET_PROVIDER_FAIL
+        type: PROVIDER_GET_FAIL
     }
 }
 
 function fetchingProviderSuccess(providers) {
     return {
-        type: GET_PROVIDER_SUCCESS,
+        type: PROVIDER_GET_SUCCESS,
         data: providers
     }
 }
 
 function savingProvider() {
     return {
-        type: POST_PROVIDER_REQUEST
+        type: PROVIDER_POST_REQUEST
     }
 }
 
 function savedProvider() {
     return {
-        type: POST_PROVIDER_SUCCESS
+        type: PROVIDER_POST_SUCCESS
     };
 }
 
 function saveProviderErrorMessage(message) {
     return {
-        type: POST_PROVIDER_FAIL,
+        type: PROVIDER_POST_FAIL,
         message
     };
 }
 
 function saveProviderError({ message, errors }) {
     return {
-        type: POST_PROVIDER_FAIL,
+        type: PROVIDER_POST_FAIL,
         message,
         errors
     };
@@ -69,20 +69,20 @@ function saveProviderError({ message, errors }) {
 
 function validatingProvider() {
     return {
-        type: VALIDATE_PROVIDER_REQUEST,
+        type: PROVIDER_VALIDATE_REQUEST,
         saveStatus: 'VALIDATING'
     };
 }
 
 function validatingProviderSuccess() {
     return {
-        type: VALIDATE_PROVIDER_SUCCESS
+        type: PROVIDER_VALIDATE_SUCCESS
     };
 }
 
 function validatingProviderError(message, errors) {
     return {
-        type: VALIDATE_PROVIDER_FAIL,
+        type: PROVIDER_VALIDATE_FAIL,
         message,
         errors
     };
@@ -90,26 +90,26 @@ function validatingProviderError(message, errors) {
 
 function bulkDeleteProvidersRequest() {
     return {
-        type: BULK_DELETE_PROVIDER_REQUEST
+        type: PROVIDER_DELETE_REQUEST
     };
 }
 
 function bulkDeleteProvidersSuccess() {
     return {
-        type: BULK_DELETE_PROVIDER_SUCCESS
+        type: PROVIDER_DELETE_SUCCESS
     };
 }
 
 function bulkDeleteProvidersError(errors) {
     return {
-        type: BULK_DELETE_PROVIDER_FAIL,
+        type: PROVIDER_DELETE_FAIL,
         errors
     };
 }
 
 function clearFieldErrors() {
     return {
-        type: CLEAR_PROVIDER_FIELD_ERRORS
+        type: PROVIDER_CLEAR_FIELD_ERRORS
     };
 }
 

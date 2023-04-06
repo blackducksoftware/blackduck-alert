@@ -29,7 +29,13 @@ const ProviderCopyCell = ({ data }) => {
     function handleClick() {
         setStatusMessage();
         setShowModal(true);
-        setSelectedData(data);
+        setSelectedData((data) => ({
+            ...data,
+            id: null,
+            name: '',
+            createdAt: null,
+            lastUpdated: null,
+        }));
     }
 
     return (
