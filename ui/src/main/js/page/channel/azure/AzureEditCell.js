@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import StatusMessage from 'common/component/StatusMessage';
-import AzureBoardModal from './AzureBoardModal';
 import IconButton from 'common/component/button/IconButton';
+import AzureBoardModal from 'page/channel/azure/AzureBoardModal';
 
 const AzureEditCell = ({ data }) => {
     const [showModal, setShowModal] = useState(false);

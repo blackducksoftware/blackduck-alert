@@ -9,9 +9,8 @@ import PasswordInput from 'common/component/input/PasswordInput';
 import TextInput from 'common/component/input/TextInput';
 import ButtonField from 'common/component/input/field/ButtonField';
 import { clearJiraServerFieldErrors, fetchJiraServer, saveJiraServer, sendJiraServerPlugin, validateJiraServer } from 'store/actions/jira-server';
-
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
-import { JIRA_SERVER_GLOBAL_FIELD_KEYS } from './JiraServerModel';
+import { JIRA_SERVER_GLOBAL_FIELD_KEYS } from 'page/channel/jira/server/JiraServerModel';
 
 const useStyles = createUseStyles({
     descriptorContainer: {
@@ -36,12 +35,6 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
     const [buttonSuccess, setButtonSuccess] = useState(false);
     const { saveStatus, pluginStatus, oAuthLink, error } = useSelector((state) => state.jiraServer);
 
-    const installPlugin = () => {
-        setButtonSuccess(false);
-        setInstallPluginClick(true);
-        handleSubmit();
-    };
-
     function handleClose() {
         toggleModal(false);
         dispatch(fetchJiraServer());
@@ -60,6 +53,12 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
         dispatch(sendJiraServerPlugin(jiraServerModel));
     }
 
+    const installPlugin = () => {
+        setButtonSuccess(false);
+        setInstallPluginClick(true);
+        handleSubmit();
+    };
+
     useEffect(() => {
         if (pluginStatus === 'FETCHING') {
             setShowLoader(true);
@@ -76,7 +75,7 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
         if (pluginStatus === 'ERROR') {
             setShowLoader(false);
         }
-    }, [pluginStatus, oAuthLink])
+    }, [pluginStatus, oAuthLink]);
 
     useEffect(() => {
         if (saveStatus === 'VALIDATING' || saveStatus === 'SAVING') {
@@ -205,6 +204,7 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
 };
 
 JiraServerModal.propTypes = {
+    readonly: PropTypes.bool,
     data: PropTypes.oneOfType([
         PropTypes.arrayOf(PropTypes.object),
         PropTypes.object

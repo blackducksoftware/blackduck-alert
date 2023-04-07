@@ -46,11 +46,12 @@ const Table = ({ columns, multiSelect, selected, onSelected, disableSelectOption
                 ) : null }
 
             </div>
-            { !tableData || tableData.length === 0 && (
+
+            { (!tableData || tableData.length === 0) && (
                 <EmptyTableView emptyTableConfig={emptyTableConfig} />
             )}
-            
-            { tableData && tableData.length !== 0 &&(
+
+            { tableData && tableData.length !== 0 && (
                 <table className={classes.table}>
                     <TableHeader
                         columns={columns}
@@ -72,7 +73,6 @@ const Table = ({ columns, multiSelect, selected, onSelected, disableSelectOption
                 </table>
             )}
 
-            
             { data?.totalPages > 1 && (
                 <Pagination data={data} onPage={onPage} />
             )}
@@ -101,7 +101,13 @@ Table.propTypes = {
         name: PropTypes.string,
         direction: PropTypes.string
     }),
-    onPage: PropTypes.func
+    onPage: PropTypes.func,
+    data: PropTypes.shape({
+        totalPages: PropTypes.number
+    }),
+    emptyTableConfig: PropTypes.shape({
+        message: PropTypes.string
+    })
 };
 
 export default Table;

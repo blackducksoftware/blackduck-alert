@@ -8,24 +8,26 @@ const useStyles = createUseStyles({
         textAlign: 'center',
         fontSize: '16px'
     }
-})
+});
 
 const EmptyTableView = ({ emptyTableConfig }) => {
     const classes = useStyles();
 
     return (
-        <div className={classes.emptyView} >
+        <div className={classes.emptyView}>
             {emptyTableConfig?.message}
         </div>
     );
-}
+};
 
 EmptyTableView.defaultProps = {
     message: 'There are no records to display for this table.'
 };
 
 EmptyTableView.propTypes = {
-    message: PropTypes.string
+    emptyTableConfig: PropTypes.shape({
+        message: PropTypes.string
+    })
 };
 
 export default EmptyTableView;

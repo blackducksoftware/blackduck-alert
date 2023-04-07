@@ -5,7 +5,7 @@ import PaginationButton from '../button/PaginationButton';
 import IconButton from '../button/IconButton';
 
 function getDisplayPages(currentPage, totalPages) {
-    let links = [];
+    const links = [];
     const starterPages = [0, 1, 2];
     const tailEndPages = [totalPages - 5, totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
 
@@ -24,7 +24,7 @@ function getDisplayPages(currentPage, totalPages) {
 
     // If the current page is 1st, 2nd, or 3rd page show a pagination of up to 5
     if (starterPages.includes(currentPage)) {
-        for(let i = 0; i < 5; i++){
+        for (let i = 0; i < 5; i++) {
             links.push(i);
         }
         return links;
@@ -34,7 +34,7 @@ function getDisplayPages(currentPage, totalPages) {
     // This is more for consistency, so that we are always showing 5 pages
     if (tailEndPages.includes(currentPage)) {
         const startIndex = tailEndPages.length - 1;
-        for(let i = totalPages - startIndex; i < totalPages; i++){
+        for (let i = totalPages - startIndex; i < totalPages; i++) {
             links.push(i);
         }
         return links;
@@ -42,7 +42,7 @@ function getDisplayPages(currentPage, totalPages) {
 
     // If the current page is nth page show n-2 n-1 n n+1 n+2
     if (currentPage >= 3 && currentPage <= totalPages - 2) {
-        for(let i = currentPage - 2; i < currentPage + 3; i++) {
+        for (let i = currentPage - 2; i < currentPage + 3; i++) {
             links.push(i);
         }
         return links;
@@ -58,27 +58,27 @@ const Pagination = ({ data, onPage }) => {
 
     const handlePageClick = (selectedPage) => {
         onPage(selectedPage);
-    }
-    
+    };
+
     const handleFirstPageClick = () => {
-        onPage(0)
-    }
+        onPage(0);
+    };
 
     const handlePreviousPageclick = () => {
         if (currentPage !== 0) {
             onPage(currentPage - 1);
         }
-    }
+    };
 
     const handleNextPageclick = () => {
         if (currentPage !== totalPages - 1) {
             onPage(currentPage + 1);
         }
-    }
+    };
 
     const handleEndPageClick = () => {
         onPage(totalPages - 1);
-    }
+    };
 
     return (
         <>
@@ -89,7 +89,7 @@ const Pagination = ({ data, onPage }) => {
                 const pageNumber = page + 1;
                 return (
                     <PaginationButton pageNumber={pageNumber} isActive={page === currentPage} onClick={() => handlePageClick(page)} key={page} />
-                )
+                );
             }) }
 
             <IconButton icon="angle-right" onClick={handleNextPageclick} />
@@ -110,7 +110,7 @@ Pagination.propTypes = {
         currentPage: PropTypes.number,
         totalPages: PropTypes.number
     }),
-    onPage: PropTypes.func,
+    onPage: PropTypes.func
 };
 
 export default Pagination;

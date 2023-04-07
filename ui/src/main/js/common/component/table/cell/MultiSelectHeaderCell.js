@@ -16,9 +16,9 @@ const MultiSelectHeaderCell = ({ tableData, onSelected, selected }) => {
     const classes = useStyles();
     const checkboxRef = useRef();
 
-    const ids = useMemo(() => tableData?.map((item) => {
-        return item.id;
-    }), [tableData]);
+    const ids = useMemo(() => tableData?.map((item) => (
+        item.id
+    )), [tableData]);
 
     useEffect(() => {
         if (selected?.length === 0) {

@@ -32,7 +32,7 @@ function getDefaultProviderModel() {
             'blackduck.timeout': { isSet: false, values: ['300'] },
             'provider.common.config.enabled': { isSet: false, values: ['true'] }
         }
-    }
+    };
 }
 
 function transformData(data, type) {
@@ -52,7 +52,7 @@ function transformData(data, type) {
         transformedData.keyToValues[BLACKDUCK_GLOBAL_FIELD_KEYS.apiKey] = {
             isSet: true,
             values: []
-        }
+        };
     }
 
     return transformedData;
@@ -86,7 +86,7 @@ const ProviderModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessa
         if (saveStatus === 'VALIDATING' || saveStatus === 'SAVING') {
             setShowLoader(true);
         }
-        
+
         if (saveStatus === 'VALIDATED') {
             handleSave();
         }
@@ -189,6 +189,7 @@ const ProviderModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessa
 };
 
 ProviderModal.propTypes = {
+    readonly: PropTypes.bool,
     data: PropTypes.oneOfType([
         PropTypes.arrayOf(PropTypes.object),
         PropTypes.object

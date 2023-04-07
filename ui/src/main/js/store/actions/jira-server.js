@@ -24,21 +24,21 @@ import { JIRA_SERVER_URLS } from 'page/channel/jira/server/JiraServerModel';
 function fetchJiraServerRequest() {
     return {
         type: JIRA_SERVER_GET_REQUEST
-    }
+    };
 }
 
 function fetchJiraServerSuccess(data) {
     return {
         type: JIRA_SERVER_GET_SUCCESS,
         data
-    }
+    };
 }
 
 function fetchJiraServerFail(error) {
     return {
         type: JIRA_SERVER_GET_FAIL,
         error
-    }
+    };
 }
 
 function validateJiraServerRequest() {
@@ -111,22 +111,20 @@ function sendJiraServerPluginSuccess(message) {
     return {
         type: JIRA_SERVER_PLUGIN_SUCCESS,
         message
-    }
+    };
 }
 
 function sendJiraServerPluginError() {
     return {
         type: JIRA_SERVER_PLUGIN_FAIL
-    }
+    };
 }
 
 function clearFieldErrors() {
     return {
         type: JIRA_SERVER_CLEAR_FIELD_ERRORS
-    }
+    };
 }
-
-
 
 function handleValidationError(dispatch, errorHandlers, responseStatus, defaultHandler) {
     errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
@@ -141,7 +139,7 @@ export function fetchJiraServer(requestParams) {
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => fetchingProviderFail(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => fetchJiraServerFail(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
 
         let request;
         if (requestParams) {
@@ -154,7 +152,6 @@ export function fetchJiraServer(requestParams) {
         request.then((response) => {
             response.json()
                 .then((responseData) => {
-                    console.log('responseData',responseData);
                     if (response.ok) {
                         dispatch(fetchJiraServerSuccess(responseData));
                     } else {
@@ -170,8 +167,7 @@ export function fetchJiraServer(requestParams) {
                         dispatch(handler(response.status));
                     }
                 });
-        })
-        .catch((error) => {
+        }).catch((error) => {
             console.log(error);
             dispatch(fetchJiraServerFail(error));
         });
@@ -275,7 +271,7 @@ export function sendJiraServerPlugin(azureBoard) {
                         const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
                         dispatch(handler(response.status));
                     }
-                })
+                });
         }).catch(console.error);
     };
 }

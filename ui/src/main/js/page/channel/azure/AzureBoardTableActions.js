@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import StatusMessage from 'common/component/StatusMessage';
-import AzureBoardModal from './AzureBoardModal';
+import CreateButton from 'common/component/button/CreateButton';
+import DeleteButton from 'common/component/button/DeleteButton';
+import AzureBoardModal from 'page/channel/azure/AzureBoardModal';
 import AzureBoardDeleteModal from 'page/channel/azure/AzureBoardDeleteModal';
-import CreateButton from '../../../common/component/button/CreateButton';
-import DeleteButton from '../../../common/component/button/DeleteButton';
 
 const AzureBoardTableActions = ({ data, readonly, allowDelete, selected }) => {
     const modalOptions = {
@@ -66,10 +66,8 @@ const AzureBoardTableActions = ({ data, readonly, allowDelete, selected }) => {
 };
 
 AzureBoardTableActions.propTypes = {
-    canCreate: PropTypes.bool,
-    canDelete: PropTypes.bool,
-    data: PropTypes.object,
-    selected: PropTypes.array
+    readonly: PropTypes.bool,
+    allowDelete: PropTypes.bool
 };
 
 export default AzureBoardTableActions;

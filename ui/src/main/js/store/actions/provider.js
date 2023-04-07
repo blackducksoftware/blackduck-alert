@@ -24,26 +24,26 @@ import { BLACKDUCK_INFO } from 'page/provider/blackduck/BlackDuckModel';
 function fetchingProvider() {
     return {
         type: PROVIDER_GET_REQUEST
-    }
+    };
 }
 
 function fetchingProviderFail() {
     return {
         type: PROVIDER_GET_FAIL
-    }
+    };
 }
 
 function fetchingProviderSuccess(providers) {
     return {
         type: PROVIDER_GET_SUCCESS,
         data: providers
-    }
+    };
 }
 
 function savingProvider() {
     return {
         type: PROVIDER_POST_REQUEST
-    }
+    };
 }
 
 function savedProvider() {
@@ -120,7 +120,7 @@ function handleValidationError(dispatch, errorHandlers, responseStatus, defaultH
     dispatch(handler(responseStatus));
 }
 
-export function fetchProviders () {
+export function fetchProviders() {
     return (dispatch, getState) => {
         dispatch(fetchingProvider());
         const { csrfToken } = getState().session;
@@ -130,7 +130,7 @@ export function fetchProviders () {
         const headersUtil = new HeaderUtilities();
         headersUtil.addApplicationJsonContentType();
         headersUtil.addXCsrfToken(csrfToken);
-        const url = createRequestUrl(CONFIG_API_URL, 'GLOBAL', BLACKDUCK_INFO.key)
+        const url = createRequestUrl(CONFIG_API_URL, 'GLOBAL', BLACKDUCK_INFO.key);
 
         fetch(url, {
             credentials: 'same-origin',
@@ -152,8 +152,7 @@ export function fetchProviders () {
                         dispatch(handler(response.status));
                     }
                 });
-        })
-        .catch((error) => {
+        }).catch((error) => {
             console.log(error);
             dispatch(fetchingProviderFail(error));
         });
@@ -173,7 +172,7 @@ export function validateProvider(provider) {
                 response.json()
                     .then((validationResponse) => {
                         if (validationResponse.hasErrors) {
-                            handleValidationError(dispatch, errorHandlers, response.status, () => validatingProviderError(validationResponse.message, validationResponse.errors))
+                            handleValidationError(dispatch, errorHandlers, response.status, () => validatingProviderError(validationResponse.message, validationResponse.errors));
                         } else {
                             dispatch(validatingProviderSuccess());
                         }

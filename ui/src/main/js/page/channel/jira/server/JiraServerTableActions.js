@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import StatusMessage from 'common/component/StatusMessage';
-import JiraServerModal from './JiraServerModal';
+import JiraServerModal from 'page/channel/jira/server/JiraServerModal';
 import JiraServerDeleteModal from 'page/channel/jira/server/JiraServerDeleteModal';
 import CreateButton from 'common/component/button/CreateButton';
 import DeleteButton from 'common/component/button/DeleteButton';
@@ -66,8 +66,8 @@ const JiraServerTableActions = ({ data, readonly, allowDelete, selected }) => {
 };
 
 JiraServerTableActions.propTypes = {
-    canCreate: PropTypes.bool,
-    canDelete: PropTypes.bool,
+    readonly: PropTypes.bool,
+    allowDelete: PropTypes.bool,
     data: PropTypes.object,
     selected: PropTypes.array
 };

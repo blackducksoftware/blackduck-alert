@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { bulkDeleteProviders, fetchProviders } from '../../store/actions/provider';
+import { bulkDeleteProviders, fetchProviders } from 'store/actions/provider';
 import Modal from 'common/component/modal/Modal';
 
 const useStyles = createUseStyles({

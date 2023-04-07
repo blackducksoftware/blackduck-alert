@@ -8,13 +8,13 @@ const ProviderCopyCell = ({ data }) => {
     const [showModal, setShowModal] = useState(false);
     const [selectedData, setSelectedData] = useState(data);
     const [statusMessage, setStatusMessage] = useState();
-    const successMessage = `Successfully created 1 new provider.`;
+    const successMessage = 'Successfully created 1 new provider.';
 
     const modalOptions = {
         type: 'COPY',
         submitText: 'Save',
         title: 'Copy Provider',
-        copyDescription: `Performing this action will create a new provider by using the same settings as '${data.name}'`
+        copyDescription: `Performing this action will create a new provider by using the same settings as '${selectedData.name}'`
     };
 
     function handleClick() {
@@ -25,7 +25,7 @@ const ProviderCopyCell = ({ data }) => {
             id: null,
             name: '',
             createdAt: null,
-            lastUpdated: null,
+            lastUpdated: null
         }));
     }
 

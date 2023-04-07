@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import StatusMessage from 'common/component/StatusMessage';
-import JiraServerModal from './JiraServerModal';
 import IconButton from 'common/component/button/IconButton';
+import JiraServerModal from 'page/channel/jira/server/JiraServerModal';
 
 const JiraServerEditCell = ({ data }) => {
     const [showModal, setShowModal] = useState(false);

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import StatusMessage from 'common/component/StatusMessage';
-import JiraServerModal from './JiraServerModal';
 import IconButton from 'common/component/button/IconButton';
+import JiraServerModal from 'page/channel/jira/server/JiraServerModal';
 
 const AzureCopyCell = ({ data }) => {
     const [showModal, setShowModal] = useState(false);
@@ -13,7 +13,7 @@ const AzureCopyCell = ({ data }) => {
         type: 'COPY',
         title: 'Copy Jira Server',
         submitText: 'Save',
-        copyDescription: `Performing this action will create a new Jira Server connection by using the same settings as '${data.name}'`
+        copyDescription: `Performing this action will create a new Jira Server connection by using the same settings as '${selectedData.name}'`
     };
 
     function handleClick() {
@@ -38,7 +38,7 @@ const AzureCopyCell = ({ data }) => {
             )}
 
             <IconButton icon="copy" onClick={() => handleClick()} />
-            
+
             { showModal && (
                 <JiraServerModal
                     data={selectedData}

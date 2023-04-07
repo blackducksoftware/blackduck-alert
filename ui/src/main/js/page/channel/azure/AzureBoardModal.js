@@ -7,10 +7,9 @@ import Modal from 'common/component/modal/Modal';
 import PasswordInput from 'common/component/input/PasswordInput';
 import TextInput from 'common/component/input/TextInput';
 import ButtonField from 'common/component/input/field/ButtonField';
-import { AZURE_BOARDS_GLOBAL_FIELD_KEYS } from 'page/channel/azure/AzureBoardsModel';
-import { clearAzureFieldErrors, fetchAzure, saveAzureBoard, sendOAuth, validateAzure } from '../../../store/actions/azure';
-
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
+import { AZURE_BOARDS_GLOBAL_FIELD_KEYS } from 'page/channel/azure/AzureBoardsModel';
+import { clearAzureFieldErrors, fetchAzure, saveAzureBoard, sendOAuth, validateAzure } from 'store/actions/azure';
 
 const useStyles = createUseStyles({
     descriptorContainer: {
@@ -35,12 +34,6 @@ const AzureBoardModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
     const [buttonSuccess, setButtonSuccess] = useState(false);
     const { saveStatus, oAuthStatus, oAuthLink, error } = useSelector((state) => state.azure);
 
-    const authenticateAzureForm = () => {
-        setButtonSuccess(false);
-        setOAuthclick(true);
-        handleSubmit();
-    };
-
     function handleClose() {
         toggleModal(false);
         dispatch(fetchAzure());
@@ -59,6 +52,12 @@ const AzureBoardModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
         dispatch(sendOAuth(azureModel));
     }
 
+    const authenticateAzureForm = () => {
+        setButtonSuccess(false);
+        setOAuthclick(true);
+        handleSubmit();
+    };
+
     useEffect(() => {
         if (oAuthStatus === 'FETCHING') {
             setShowLoader(true);
@@ -71,7 +70,7 @@ const AzureBoardModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
         if (oAuthStatus === 'ERROR') {
             setShowLoader(false);
         }
-    }, [oAuthStatus, oAuthLink])
+    }, [oAuthStatus, oAuthLink]);
 
     useEffect(() => {
         if (saveStatus === 'VALIDATING' || saveStatus === 'SAVING') {
@@ -190,6 +189,7 @@ const AzureBoardModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
 };
 
 AzureBoardModal.propTypes = {
+    readonly: PropTypes.bool,
     data: PropTypes.oneOfType([
         PropTypes.arrayOf(PropTypes.object),
         PropTypes.object

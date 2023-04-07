@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchJiraServer } from '../../../../store/actions/jira-server';
+import PropTypes from 'prop-types';
 import Table from 'common/component/table/Table';
 import JiraServerEditCell from 'page/channel/jira/server/JiraServerEditCell';
-import JiraServerTableActions from './JiraServerTableActions';
+import JiraServerTableActions from 'page/channel/jira/server/JiraServerTableActions';
 import JiraServerCopyCell from 'page/channel/jira/server/JiraServerCopyCell';
+import { fetchJiraServer } from 'store/actions/jira-server';
 
 const COLUMNS = [{
     key: 'name',
@@ -53,7 +54,7 @@ const JiraServerTable = ({ readonly, allowDelete }) => {
             sortName: data?.mutatorData?.name,
             sortOrder: data?.mutatorData?.direction
         }
-    })
+    });
 
     useEffect(() => {
         dispatch(fetchJiraServer(paramsConfig));
@@ -71,10 +72,11 @@ const JiraServerTable = ({ readonly, allowDelete }) => {
     }, [autoRefresh]);
 
     const handleSearchChange = (e) => {
-        setParamsConfig({...paramsConfig, mutatorData: {
-            ...mutatorData,
-            searchTerm: e.target.value
-        }});
+        setParamsConfig({ ...paramsConfig,
+            mutatorData: {
+                ...paramsConfig.mutatorData,
+                searchTerm: e.target.value
+            } });
     };
 
     function handleToggle() {
@@ -82,32 +84,35 @@ const JiraServerTable = ({ readonly, allowDelete }) => {
     }
 
     function handlePagination(page) {
-        setParamsConfig({...paramsConfig, pageNumber: page});
+        setParamsConfig({ ...paramsConfig, pageNumber: page });
     }
 
     const onSort = (name) => {
         const { sortName, sortOrder } = paramsConfig.mutatorData;
         if (name !== sortName) {
-            return setParamsConfig({...paramsConfig, mutatorData: {
-                ...mutatorData,
-                sortName: name,
-                sortOrder: 'asc'
-            }});
+            return setParamsConfig({ ...paramsConfig,
+                mutatorData: {
+                    ...paramsConfig.mutatorData,
+                    sortName: name,
+                    sortOrder: 'asc'
+                } });
         }
 
         if (name === sortName && sortOrder !== 'desc') {
-            return setParamsConfig({...paramsConfig, mutatorData: {
-                ...mutatorData,
-                sortName: name,
-                sortOrder: 'desc'
-            }});
+            return setParamsConfig({ ...paramsConfig,
+                mutatorData: {
+                    ...mutatorData, // eslint-disable-line
+                    sortName: name,
+                    sortOrder: 'desc'
+                } });
         }
 
-        return setParamsConfig({...paramsConfig, mutatorData: {
-            ...mutatorData,
-            sortName: '',
-            sortOrder: ''
-        }});
+        return setParamsConfig({ ...paramsConfig,
+            mutatorData: {
+                ...mutatorData, // eslint-disable-line
+                sortName: '',
+                sortOrder: ''
+            } });
     };
 
     const onSelected = (selectedRow) => {
@@ -132,6 +137,11 @@ const JiraServerTable = ({ readonly, allowDelete }) => {
             tableActions={() => <JiraServerTableActions data={data} readonly={readonly} allowDelete={allowDelete} selected={selected} />}
         />
     );
+};
+
+JiraServerTable.propTypes = {
+    readonly: PropTypes.bool,
+    allowDelete: PropTypes.bool
 };
 
 export default JiraServerTable;

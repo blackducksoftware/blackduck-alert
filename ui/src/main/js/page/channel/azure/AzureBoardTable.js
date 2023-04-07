@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
 import Table from 'common/component/table/Table';
 import AzureBoardTableActions from 'page/channel/azure/AzureBoardTableActions';
-import { fetchAzure } from '../../../store/actions/azure';
 import AzureEditCell from 'page/channel/azure/AzureEditCell';
 import AzureCopyCell from 'page/channel/azure/AzureCopyCell';
+import { fetchAzure } from 'store/actions/azure';
 
 const COLUMNS = [{
     key: 'name',
@@ -53,7 +54,7 @@ const AzureBoardTale = ({ readonly, allowDelete }) => {
             sortName: data?.mutatorData?.name,
             sortOrder: data?.mutatorData?.direction
         }
-    })
+    });
 
     useEffect(() => {
         dispatch(fetchAzure(paramsConfig));
@@ -71,10 +72,11 @@ const AzureBoardTale = ({ readonly, allowDelete }) => {
     }, [autoRefresh]);
 
     const handleSearchChange = (e) => {
-        setParamsConfig({...paramsConfig, mutatorData: {
-            ...mutatorData,
-            searchTerm: e.target.value
-        }});
+        setParamsConfig({ ...paramsConfig,
+            mutatorData: {
+                ...paramsConfig.mutatorData,
+                searchTerm: e.target.value
+            } });
     };
 
     function handleToggle() {
@@ -82,32 +84,35 @@ const AzureBoardTale = ({ readonly, allowDelete }) => {
     }
 
     function handlePagination(page) {
-        setParamsConfig({...paramsConfig, pageNumber: page});
+        setParamsConfig({ ...paramsConfig, pageNumber: page });
     }
 
     const onSort = (name) => {
         const { sortName, sortOrder } = paramsConfig.mutatorData;
         if (name !== sortName) {
-            return setParamsConfig({...paramsConfig, mutatorData: {
-                ...paramsConfig.mutatorData,
-                sortName: name,
-                sortOrder: 'asc'
-            }});
+            return setParamsConfig({ ...paramsConfig,
+                mutatorData: {
+                    ...paramsConfig.mutatorData,
+                    sortName: name,
+                    sortOrder: 'asc'
+                } });
         }
 
         if (name === sortName && sortOrder !== 'desc') {
-            return setParamsConfig({...paramsConfig, mutatorData: {
-                ...paramsConfig.mutatorData,
-                sortName: name,
-                sortOrder: 'desc'
-            }});
+            return setParamsConfig({ ...paramsConfig,
+                mutatorData: {
+                    ...paramsConfig.mutatorData,
+                    sortName: name,
+                    sortOrder: 'desc'
+                } });
         }
 
-        return setParamsConfig({...paramsConfig, mutatorData: {
-            ...paramsConfig.mutatorData,
-            sortName: '',
-            sortOrder: ''
-        }});
+        return setParamsConfig({ ...paramsConfig,
+            mutatorData: {
+                ...paramsConfig.mutatorData,
+                sortName: '',
+                sortOrder: ''
+            } });
     };
 
     const onSelected = (selectedRow) => {
@@ -132,6 +137,11 @@ const AzureBoardTale = ({ readonly, allowDelete }) => {
             tableActions={() => <AzureBoardTableActions data={data} readonly={readonly} allowDelete={allowDelete} selected={selected} />}
         />
     );
+};
+
+AzureBoardTale.propTypes = {
+    readonly: PropTypes.bool,
+    allowDelete: PropTypes.bool
 };
 
 export default AzureBoardTale;

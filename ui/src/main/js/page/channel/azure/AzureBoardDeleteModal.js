@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { fetchAzure, deleteAzureBoards } from '../../../store/actions/azure';
 import Modal from 'common/component/modal/Modal';
+import { fetchAzure, deleteAzureBoards } from 'store/actions/azure';
 
 const useStyles = createUseStyles({
     deleteConfirmMessage: {

@@ -47,33 +47,33 @@ const azure = (state = initialState, action) => {
                 fetching: true,
                 error: HTTPErrorUtils.createErrorObject(action),
                 fieldErrors: action.errors || {}
-            }
+            };
         case AZURE_GET_SUCCESS:
             return {
                 ...state,
                 fetching: false,
                 data: action.data,
                 fieldErrors: action.errors || {}
-            }
+            };
         case AZURE_GET_FAIL:
             return {
                 ...state,
                 fetching: false,
                 error: HTTPErrorUtils.createErrorObject(action),
                 fieldErrors: action.errors || {}
-            }
+            };
         case AZURE_VALIDATE_REQUEST:
             return {
                 ...state,
                 fetching: true,
-                saveStatus: 'VALIDATING',
+                saveStatus: 'VALIDATING'
             };
         case AZURE_VALIDATE_SUCCESS:
             return {
                 ...state,
                 fetching: false,
                 saveStatus: 'VALIDATED',
-                error: HTTPErrorUtils.createEmptyErrorObject(),
+                error: HTTPErrorUtils.createEmptyErrorObject()
             };
         case AZURE_VALIDATE_FAIL:
             return {
@@ -90,7 +90,7 @@ const azure = (state = initialState, action) => {
                 saveStatus: 'SAVING',
                 error: HTTPErrorUtils.createErrorObject(action),
                 fieldErrors: action.errors || {}
-            }
+            };
         case AZURE_SAVE_SUCCESS:
             return {
                 ...state,
@@ -98,7 +98,7 @@ const azure = (state = initialState, action) => {
                 saveStatus: 'SAVED',
                 data: action.data,
                 fieldErrors: action.errors || {}
-            }
+            };
         case AZURE_SAVE_FAIL:
             return {
                 ...state,
@@ -106,7 +106,7 @@ const azure = (state = initialState, action) => {
                 saveStatus: 'ERROR',
                 error: HTTPErrorUtils.createErrorObject(action),
                 fieldErrors: action.errors || {}
-            }
+            };
         case AZURE_CLEAR_FIELD_ERRORS:
             return {
                 ...state,
@@ -114,7 +114,7 @@ const azure = (state = initialState, action) => {
                 deleteStatus: '',
                 error: HTTPErrorUtils.createEmptyErrorObject(),
                 fieldErrors: {}
-            }
+            };
         case AZURE_DELETE_REQUEST:
             return {
                 ...state,
@@ -127,7 +127,7 @@ const azure = (state = initialState, action) => {
                 fetching: false,
                 deleteStatus: 'DELETED',
                 error: HTTPErrorUtils.createEmptyErrorObject(),
-                fieldErrors: {},
+                fieldErrors: {}
             };
         case AZURE_DELETE_FAIL:
             return {
@@ -135,7 +135,7 @@ const azure = (state = initialState, action) => {
                 fetching: false,
                 deleteStatus: 'ERROR',
                 error: HTTPErrorUtils.createErrorObject(action),
-                fieldErrors: action.errors || {},
+                fieldErrors: action.errors || {}
             };
         case AZURE_OAUTH_REQUEST:
             return {
@@ -150,7 +150,7 @@ const azure = (state = initialState, action) => {
                 oAuthStatus: 'SUCCESS',
                 oAuthLink: action.oAuthLink,
                 error: HTTPErrorUtils.createEmptyErrorObject(),
-                fieldErrors: {},
+                fieldErrors: {}
             };
         case AZURE_OAUTH_FAIL:
             return {
@@ -158,15 +158,14 @@ const azure = (state = initialState, action) => {
                 fetching: false,
                 oAuthStatus: 'ERROR',
                 error: HTTPErrorUtils.createErrorObject(action),
-                fieldErrors: action.errors || {},
+                fieldErrors: action.errors || {}
             };
-        
         case SERIALIZE:
             return initialState;
 
         default:
             return state;
     }
-}
+};
 
 export default azure;

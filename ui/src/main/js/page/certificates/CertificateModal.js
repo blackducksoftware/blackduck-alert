@@ -44,7 +44,7 @@ const CertificateModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMe
         }
 
         if (saveStatus === 'VALIDATED') {
-                handleSave();
+            handleSave();
         }
 
         if (saveStatus === 'SAVED') {
@@ -115,13 +115,18 @@ const CertificateModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMe
 CertificateModal.propTypes = {
     isOpen: PropTypes.bool,
     toggleModal: PropTypes.func,
-    type: PropTypes.string,
     data: PropTypes.shape({
         alias: PropTypes.string,
         certificateContent: PropTypes.string,
         lastUpdated: PropTypes.string,
         id: PropTypes.string
-    })
+    }),
+    modalOptions: PropTypes.shape({
+        submitText: PropTypes.string,
+        title: PropTypes.string,
+    }),
+    setStatusMessage: PropTypes.func,
+    successMessage: PropTypes.string
 };
 
 export default CertificateModal;

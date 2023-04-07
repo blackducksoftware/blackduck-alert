@@ -6,7 +6,7 @@ import ProviderEditCell from 'page/provider/ProviderEditCell';
 import ProviderCopyCell from 'page/provider/ProviderCopyCell';
 import ProviderEnabledCell from 'page/provider/ProviderEnabledCell';
 import PoviderTableActions from 'page/provider/PoviderTableActions';
-import { fetchProviders } from '../../store/actions/provider';
+import { fetchProviders } from 'store/actions/provider';
 import { BLACKDUCK_GLOBAL_FIELD_KEYS } from 'page/provider/blackduck/BlackDuckModel';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 
@@ -61,7 +61,7 @@ function ProviderTable({ readonly }) {
 
     useEffect(() => {
         if (autoRefresh) {
-            const refreshIntervalId = setInterval(() => dispatch(fetchProviders(url)), 30000);
+            const refreshIntervalId = setInterval(() => dispatch(fetchProviders()), 30000);
             return function clearRefreshInterval() {
                 clearInterval(refreshIntervalId);
             };
@@ -114,12 +114,15 @@ function ProviderTable({ readonly }) {
         if (sortConfig) {
             const { name, direction } = sortConfig;
             convertedTableData = [...convertedTableData].sort((a, b) => {
-                if (a[name] === null)
+                if (a[name] === null) {
                     return 1;
-                if (b[name] === null)
+                }
+                if (b[name] === null) {
                     return -1;
-                if (a[name] === null && b[name] === null)
+                }
+                if (a[name] === null && b[name] === null) {
                     return 0;
+                }
                 return (
                     a[name].toString().localeCompare(b[name].toString(), 'en', { numeric: true }) * (direction === 'ASC' ? 1 : -1)
                 );
@@ -142,13 +145,13 @@ function ProviderTable({ readonly }) {
             active={autoRefresh}
             onToggle={handleToggle}
             emptyTableConfig={emptyTableConfig}
-            tableActions={() => <PoviderTableActions data={tableData} selected={selected} readonly={readonly} />} />
+            tableActions={() => <PoviderTableActions data={tableData} selected={selected} readonly={readonly} />}
+        />
     );
 }
 
 ProviderTable.propTypes = {
-    canCreate: PropTypes.bool,
-    canDelete: PropTypes.bool
+    readonly: PropTypes.bool
 };
 
 export default ProviderTable;

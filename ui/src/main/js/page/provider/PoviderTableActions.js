@@ -117,7 +117,8 @@ const PoviderTableActions = ({ data, selected, readonly }) => {
 
 PoviderTableActions.propTypes = {
     data: PropTypes.arrayOf(PropTypes.object),
-    selected: PropTypes.array
+    selected: PropTypes.array,
+    readonly: PropTypes.bool
 };
 
 export default PoviderTableActions;

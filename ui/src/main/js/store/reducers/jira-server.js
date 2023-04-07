@@ -37,33 +37,33 @@ const jiraServer = (state = initialState, action) => {
                 fetching: true,
                 error: HTTPErrorUtils.createErrorObject(action),
                 fieldErrors: action.errors || {}
-            }
+            };
         case JIRA_SERVER_GET_SUCCESS:
             return {
                 ...state,
                 fetching: false,
                 data: action.data,
                 fieldErrors: action.errors || {}
-            }
+            };
         case JIRA_SERVER_GET_FAIL:
             return {
                 ...state,
                 fetching: false,
                 error: HTTPErrorUtils.createErrorObject(action),
                 fieldErrors: action.errors || {}
-            }
+            };
         case JIRA_SERVER_VALIDATE_REQUEST:
             return {
                 ...state,
                 fetching: true,
-                saveStatus: 'VALIDATING',
+                saveStatus: 'VALIDATING'
             };
         case JIRA_SERVER_VALIDATE_SUCCESS:
             return {
                 ...state,
                 fetching: false,
                 saveStatus: 'VALIDATED',
-                error: HTTPErrorUtils.createEmptyErrorObject(),
+                error: HTTPErrorUtils.createEmptyErrorObject()
             };
         case JIRA_SERVER_VALIDATE_FAIL:
             return {
@@ -80,7 +80,7 @@ const jiraServer = (state = initialState, action) => {
                 saveStatus: 'SAVING',
                 error: HTTPErrorUtils.createErrorObject(action),
                 fieldErrors: action.errors || {}
-            }
+            };
         case JIRA_SERVER_SAVE_SUCCESS:
             return {
                 ...state,
@@ -88,7 +88,7 @@ const jiraServer = (state = initialState, action) => {
                 saveStatus: 'SAVED',
                 data: action.data,
                 fieldErrors: action.errors || {}
-            }
+            };
         case JIRA_SERVER_SAVE_FAIL:
             return {
                 ...state,
@@ -96,7 +96,7 @@ const jiraServer = (state = initialState, action) => {
                 saveStatus: 'ERROR',
                 error: HTTPErrorUtils.createErrorObject(action),
                 fieldErrors: action.errors || {}
-            }
+            };
         case JIRA_SERVER_DELETE_REQUEST:
             return {
                 ...state,
@@ -109,7 +109,7 @@ const jiraServer = (state = initialState, action) => {
                 fetching: false,
                 deleteStatus: 'DELETED',
                 error: HTTPErrorUtils.createEmptyErrorObject(),
-                fieldErrors: {},
+                fieldErrors: {}
             };
         case JIRA_SERVER_DELETE_FAIL:
             return {
@@ -117,7 +117,7 @@ const jiraServer = (state = initialState, action) => {
                 fetching: false,
                 deleteStatus: 'ERROR',
                 error: HTTPErrorUtils.createErrorObject(action),
-                fieldErrors: action.errors || {},
+                fieldErrors: action.errors || {}
             };
         case JIRA_SERVER_PLUGIN_REQUEST:
             return {
@@ -132,7 +132,7 @@ const jiraServer = (state = initialState, action) => {
                 pluginStatus: 'SUCCESS',
                 message: action.message,
                 error: HTTPErrorUtils.createEmptyErrorObject(),
-                fieldErrors: {},
+                fieldErrors: {}
             };
         case JIRA_SERVER_PLUGIN_FAIL:
             return {
@@ -140,7 +140,7 @@ const jiraServer = (state = initialState, action) => {
                 fetching: false,
                 pluginStatus: 'ERROR',
                 error: HTTPErrorUtils.createErrorObject(action),
-                fieldErrors: action.errors || {},
+                fieldErrors: action.errors || {}
             };
         case JIRA_SERVER_CLEAR_FIELD_ERRORS:
             return {
@@ -158,6 +158,6 @@ const jiraServer = (state = initialState, action) => {
         default:
             return state;
     }
-}
+};
 
 export default jiraServer;

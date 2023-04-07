@@ -6,7 +6,7 @@ import WrapperCell from 'common/component/table/cell/WrapperCell';
 const TableBody = ({ columns, multiSelect, tableData, selected, onSelected, disableSelectOptions }) => (
     <tbody>
         { tableData?.map((rowData, rowIndex) => (
-            <tr key={`${rowIndex}-table-row`}>
+            <tr key={`${rowIndex}-table-row`}> // eslint-disable-line
                 { multiSelect ? (
                     <MultiSelectCell
                         data={rowData}
@@ -22,17 +22,17 @@ const TableBody = ({ columns, multiSelect, tableData, selected, onSelected, disa
                         const CustomCell = col.customCell;
 
                         return (
-                            <WrapperCell key={columnKey} settings={col.settings} >
-                                <CustomCell data={rowData} settings={col.settings} customCallback={col.customCallback}/>
+                            <WrapperCell key={columnKey} settings={col.settings}>
+                                <CustomCell data={rowData} settings={col.settings} customCallback={col.customCallback} />
                             </WrapperCell>
                         );
-                    };
+                    }
 
                     return (
                         <WrapperCell key={columnKey} datakey={col.key}>
                             {rowData[col.key] ? rowData[col.key] : '\u2014'}
                         </WrapperCell>
-                    )
+                    );
                 })}
             </tr>
         ))}

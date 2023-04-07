@@ -23,21 +23,21 @@ import { unauthorized } from 'store/actions/session';
 function fetchAzureRequest() {
     return {
         type: AZURE_GET_REQUEST
-    }
+    };
 }
 
 function fetchAzureSuccess(azure) {
     return {
         type: AZURE_GET_SUCCESS,
         data: azure
-    }
+    };
 }
 
 function fetchAzureFail(error) {
     return {
         type: AZURE_GET_FAIL,
         error
-    }
+    };
 }
 
 function validateAzureRequest() {
@@ -110,22 +110,20 @@ function sendOAuthSuccess(oAuthLink) {
     return {
         type: AZURE_OAUTH_SUCCESS,
         oAuthLink
-    }
+    };
 }
 
 function sendOAuthError() {
     return {
         type: AZURE_OAUTH_FAIL
-    }
+    };
 }
 
 function clearFieldErrors() {
     return {
         type: AZURE_CLEAR_FIELD_ERRORS
-    }
+    };
 }
-
-
 
 function handleValidationError(dispatch, errorHandlers, responseStatus, defaultHandler) {
     errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
@@ -140,7 +138,7 @@ export function fetchAzure(requestParams) {
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => fetchingProviderFail(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => fetchAzureFail(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
 
         let request;
         if (requestParams) {
@@ -168,8 +166,7 @@ export function fetchAzure(requestParams) {
                         dispatch(handler(response.status));
                     }
                 });
-        })
-        .catch((error) => {
+        }).catch((error) => {
             console.log(error);
             dispatch(fetchAzureFail(error));
         });
@@ -198,8 +195,7 @@ export function validateAzure(azureModel) {
             } else {
                 handleValidationError(dispatch, errorHandlers, response.status, () => validateAzureFail(response.message, HTTPErrorUtils.createEmptyErrorObject()));
             }
-        })
-            .catch(console.error);
+        }).catch(console.error);
     };
 }
 
@@ -272,7 +268,7 @@ export function sendOAuth(azureBoard) {
                         const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
                         dispatch(handler(response.status));
                     }
-                })
+                });
         }).catch(console.error);
     };
 }
