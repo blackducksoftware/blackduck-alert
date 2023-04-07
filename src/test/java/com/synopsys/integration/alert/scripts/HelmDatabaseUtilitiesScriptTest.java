@@ -1,5 +1,6 @@
 package com.synopsys.integration.alert.scripts;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -55,6 +56,7 @@ class HelmDatabaseUtilitiesScriptTest {
     public void initTest() throws IOException, ExecutableRunnerException {
         podName = createPodName();
         workingDirectory = File.createTempFile("alert-test", "txt").getParentFile();
+        workingDirectory.deleteOnExit();
 
         podSearchCommand = createSearchCommand(workingDirectory, podName);
         Executable createPodCommand = createPodCommand(workingDirectory, podName);
@@ -126,7 +128,6 @@ class HelmDatabaseUtilitiesScriptTest {
         Executable cleanupNamespaceCommand = createCleanupNamespaceCommand(workingDirectory);
         processBuilderRunner.execute(cleanupCommand);
         processBuilderRunner.execute(cleanupNamespaceCommand);
-        workingDirectory.delete();
     }
 
     private Executable createCleanupCommand(File workingDirectory) {
@@ -149,8 +150,8 @@ class HelmDatabaseUtilitiesScriptTest {
 
     @ParameterizedTest
     @ValueSource(strings = { "binary", "BINARY", "plain", "PLAIN" })
-    void testBackupAndRestoreWithFormat(String formatType) throws ExecutableRunnerException, IOException {
-        File backupFile = Files.createTempFile("testAlertBackup", "dump").toFile();
+    void testBackupAndRestoreWithFormat(String formatType) throws ExecutableRunnerException {
+        File backupFile = makeTempFile();
         List<String> backupArguments = List.of("-b", "-n", TEST_NAMESPACE, "-k", podName, "-t", formatType, "-f", backupFile.getAbsolutePath());
         Executable scriptRestoreExecutable = Executable.create(workingDirectory, scriptFile, backupArguments);
         ExecutableOutput restoreOutput = processBuilderRunner.execute(scriptRestoreExecutable);
@@ -164,8 +165,8 @@ class HelmDatabaseUtilitiesScriptTest {
 
     @ParameterizedTest
     @ValueSource(strings = { "Binary", "bINARY", "Plain", "pLAIN", "bad", "unknown", "", "  ", "''", "'    '" })
-    void testBackupAndRestoreInvalidFormat(String formatType) throws ExecutableRunnerException, IOException {
-        File backupFile = Files.createTempFile("testAlertBackup", "dump").toFile();
+    void testBackupAndRestoreInvalidFormat(String formatType) throws ExecutableRunnerException {
+        File backupFile = makeTempFile();
         List<String> backupArguments = List.of("-b", "-n", TEST_NAMESPACE, "-k", podName, "-t", formatType, "-f", backupFile.getAbsolutePath());
         Executable scriptRestoreExecutable = Executable.create(workingDirectory, scriptFile, backupArguments);
         ExecutableOutput restoreOutput = processBuilderRunner.execute(scriptRestoreExecutable);
@@ -178,8 +179,8 @@ class HelmDatabaseUtilitiesScriptTest {
     }
 
     @Test
-    void testDefaultBackupAndRestore() throws ExecutableRunnerException, IOException {
-        File backupFile = Files.createTempFile("testAlertBackup", "dump").toFile();
+    void testDefaultBackupAndRestore() throws ExecutableRunnerException {
+        File backupFile = makeTempFile();
         List<String> backupArguments = List.of("-b", "-n", TEST_NAMESPACE, "-k", podName, "-f", backupFile.getAbsolutePath());
         Executable scriptRestoreExecutable = Executable.create(workingDirectory, scriptFile, backupArguments);
         ExecutableOutput restoreOutput = processBuilderRunner.execute(scriptRestoreExecutable);
@@ -192,8 +193,8 @@ class HelmDatabaseUtilitiesScriptTest {
     }
 
     @Test
-    void testPlainTextBackupAndRestore() throws ExecutableRunnerException, IOException {
-        File backupFile = Files.createTempFile("testAlertBackup", "dump").toFile();
+    void testPlainTextBackupAndRestore() throws ExecutableRunnerException {
+        File backupFile = makeTempFile();
         List<String> backupArguments = List.of("-b", "-p", "-n", TEST_NAMESPACE, "-k", podName, "-f", backupFile.getAbsolutePath());
         Executable scriptRestoreExecutable = Executable.create(workingDirectory, scriptFile, backupArguments);
         ExecutableOutput restoreOutput = processBuilderRunner.execute(scriptRestoreExecutable);
@@ -222,8 +223,8 @@ class HelmDatabaseUtilitiesScriptTest {
     }
 
     @Test
-    void testDatabaseNameValid() throws IOException, ExecutableRunnerException {
-        File backupFile = Files.createTempFile("testAlertBackup", "dump").toFile();
+    void testDatabaseNameValid() throws ExecutableRunnerException {
+        File backupFile = makeTempFile();
         List<String> backupArguments = List.of("-b", "-n", TEST_NAMESPACE, "-k", podName, "-d", "alertdb", "-f", backupFile.getAbsolutePath());
         Executable scriptBackupExecutable = Executable.create(workingDirectory, scriptFile, backupArguments);
         ExecutableOutput backupOutput = processBuilderRunner.execute(scriptBackupExecutable);
@@ -236,14 +237,14 @@ class HelmDatabaseUtilitiesScriptTest {
     }
 
     @Test
-    void testDatabaseNameInvalid() throws IOException, ExecutableRunnerException {
-        File backupFile = Files.createTempFile("testAlertBackup", "dump").toFile();
+    void testDatabaseNameInvalid() throws ExecutableRunnerException {
+        File backupFile = makeTempFile();
         List<String> backupArguments = List.of("-b", "-n", TEST_NAMESPACE, "-k", podName, "-d", "invalid-database-name", "-f", backupFile.getAbsolutePath());
         Executable scriptBackupExecutable = Executable.create(workingDirectory, scriptFile, backupArguments);
         ExecutableOutput backupOutput = processBuilderRunner.execute(scriptBackupExecutable);
         assertEquals(1, backupOutput.getReturnCode());
 
-        backupFile = Files.createTempFile("testAlertBackup", "dump").toFile();
+        backupFile = makeTempFile();
         backupArguments = List.of("-b", "-n", TEST_NAMESPACE, "-k", podName, "-d", "alertdb", "-f", backupFile.getAbsolutePath());
         scriptBackupExecutable = Executable.create(workingDirectory, scriptFile, backupArguments);
         backupOutput = processBuilderRunner.execute(scriptBackupExecutable);
@@ -256,7 +257,7 @@ class HelmDatabaseUtilitiesScriptTest {
     }
 
     @Test
-    void testHelpOption() throws IOException, ExecutableRunnerException {
+    void testHelpOption() throws ExecutableRunnerException {
         List<String> restoreArguments = List.of("-h");
         Executable scriptBackupExecutable = Executable.create(workingDirectory, scriptFile, restoreArguments);
         ExecutableOutput backupOutput = processBuilderRunner.execute(scriptBackupExecutable);
@@ -264,7 +265,7 @@ class HelmDatabaseUtilitiesScriptTest {
     }
 
     @Test
-    void testHelpOptionWithOtherParameters() throws IOException, ExecutableRunnerException {
+    void testHelpOptionWithOtherParameters() throws ExecutableRunnerException {
         List<String> restoreArguments = List.of("-h", "-k", podName, "-n", "db-name");
         Executable scriptBackupExecutable = Executable.create(workingDirectory, scriptFile, restoreArguments);
         ExecutableOutput backupOutput = processBuilderRunner.execute(scriptBackupExecutable);
@@ -277,4 +278,9 @@ class HelmDatabaseUtilitiesScriptTest {
         return Path.of(subProjectDir.getAbsolutePath(), "test", "resources", "database", fileName);
     }
 
+    private File makeTempFile() {
+        File backupFile = assertDoesNotThrow(() -> Files.createTempFile("testAlertBackup", "dump").toFile());
+        backupFile.deleteOnExit();
+        return backupFile;
+    }
 }
