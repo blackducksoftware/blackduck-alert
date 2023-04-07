@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUsers } from 'store/actions/users';
-import UserCopyRowAction from 'page/usermgmt/user/UserCopyRowAction';
-import UserEditRowAction from 'page/usermgmt/user/UserEditRowAction';
+import UserCopyCell from 'page/usermgmt/user/UserCopyCell';
+import UserEditCell from 'page/usermgmt/user/UserEditCell';
 import UserRoleCell from 'page/usermgmt/user/UserRoleCell';
 import Table from 'common/component/table/Table';
 import UserTableActions from 'page/usermgmt/user/UserTableActions';
@@ -29,13 +29,13 @@ const COLUMNS = [{
     key: 'editUser',
     label: 'Edit',
     sortable: false,
-    customCell: UserEditRowAction,
+    customCell: UserEditCell,
     settings: { alignment: 'center' }
 }, {
     key: 'copyUser',
     label: 'Copy',
     sortable: false,
-    customCell: UserCopyRowAction,
+    customCell: UserCopyCell,
     settings: { alignment: 'center' }
 }];
 

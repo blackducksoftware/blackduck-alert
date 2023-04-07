@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCertificates } from 'store/actions/certificates';
 import Table from 'common/component/table/Table';
-import EditCertificateCell from 'page/certificates/EditCertificateCell';
+import CertificatesEditCell from 'page/certificates/CertificatesEditCell';
 import CertificatesTableActions from 'page/certificates/CertificatesTableActions';
 
 const COLUMNS = [{
@@ -17,7 +17,7 @@ const COLUMNS = [{
     key: 'editCertificate',
     label: 'Edit Certificate',
     sortable: false,
-    customCell: EditCertificateCell,
+    customCell: CertificatesEditCell,
     settings: { alignment: 'right' }
 }];
 

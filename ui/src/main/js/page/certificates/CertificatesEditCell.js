@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import CertificateModal from 'page/certificates/CertificateModal';
 import IconButton from 'common/component/button/IconButton';
 
-const EditCertificateCell = ({ data }) => {
+const CertificatesEditCell = ({ data }) => {
     const [showModal, setShowModal] = useState(false);
 
     function handleClick() {
@@ -26,7 +26,7 @@ const EditCertificateCell = ({ data }) => {
     );
 };
 
-EditCertificateCell.propTypes = {
+CertificatesEditCell.propTypes = {
     data: PropTypes.shape({
         alias: PropTypes.string,
         certificateContent: PropTypes.string,
@@ -35,4 +35,4 @@ EditCertificateCell.propTypes = {
     })
 };
 
-export default EditCertificateCell;
+export default CertificatesEditCell;

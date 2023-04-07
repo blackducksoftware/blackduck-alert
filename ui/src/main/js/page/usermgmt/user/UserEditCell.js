@@ -4,30 +4,22 @@ import UserModal from 'page/usermgmt/user/UserModal';
 import StatusMessage from 'common/component/StatusMessage';
 import IconButton from 'common/component/button/IconButton';
 
-const UserCopyRowAction = ({ data }) => {
+const UserEditCell = ({ data }) => {
     const [showModal, setShowModal] = useState(false);
     const [selectedData, setSelectedData] = useState(data);
     const [statusMessage, setStatusMessage] = useState();
+    const successMessage = `Successfully updated ${data.username}`;
 
     const modalOptions = {
-        type: 'COPY',
-        submitText: 'Create',
-        title: `Copy User, '${data.username}'`,
-        copyDescription: `Performing this action will create a new user by using the same settings as '${data.username}'`
+        type: 'EDIT',
+        submitText: 'Save Edit',
+        title: 'Edit User'
     };
 
     function handleClick() {
         setStatusMessage();
         setShowModal(true);
-        setSelectedData((userData) => ({
-            ...userData,
-            id: null,
-            username: '',
-            password: '',
-            passwordSet: false,
-            emailAddress: selectedData.emailAddress || '',
-            roleNames: selectedData.roleNames
-        }));
+        setSelectedData(data);
     }
 
     return (
@@ -39,25 +31,25 @@ const UserCopyRowAction = ({ data }) => {
                 />
             )}
 
-            <IconButton icon="copy" onClick={() => handleClick()} />
+            <IconButton icon="pencil-alt" onClick={() => handleClick()} />
 
-            { showModal ? (
+            { showModal && (
                 <UserModal
                     data={selectedData}
                     isOpen={showModal}
                     toggleModal={setShowModal}
                     modalOptions={modalOptions}
                     setStatusMessage={setStatusMessage}
-                    successMessage="Successfully created one new user."
+                    successMessage={successMessage}
                 />
-            ) : null }
+            )}
         </>
 
     );
 };
 
-UserCopyRowAction.propTypes = {
+UserEditCell.propTypes = {
     data: PropTypes.object
 };
 
-export default UserCopyRowAction;
+export default UserEditCell;
