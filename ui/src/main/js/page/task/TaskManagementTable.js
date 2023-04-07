@@ -51,10 +51,6 @@ const TaskManagementTable = () => {
         setAutoRefresh(!autoRefresh);
     }
 
-    const getTasks = () => (
-        !search ? tasks : tasks.filter((task) => task.type.toLowerCase().includes(search.toLowerCase()))
-    );
-
     const onSort = (name) => {
         if (name !== sortConfig?.name || !sortConfig) {
             return setSortConfig({ name, direction: 'ASC' });

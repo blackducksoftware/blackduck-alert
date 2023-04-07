@@ -50,9 +50,7 @@ const DeleteButton = ({ id, icon, children, type, isDisabled, onClick, role, tit
 };
 
 DeleteButton.defaultProps = {
-    autoFocus: false,
     isDisabled: false,
-    style: 'default',
     type: 'button'
 };
 
@@ -63,7 +61,6 @@ DeleteButton.propTypes = {
     isDisabled: PropTypes.bool,
     role: PropTypes.string,
     title: PropTypes.string,
-    type: PropTypes.string,
     text: PropTypes.string.isRequired
 };
 

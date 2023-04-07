@@ -8,6 +8,12 @@ import DeleteButton from 'common/component/button/DeleteButton';
 const CertificatesTableActions = ({ data, selected }) => {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [statusMessage, setStatusMessage] = useState();
+
+    const modalOptions = {
+        submitText: 'Save',
+        title: 'Create Certificate'
+    };
 
     function handleCreateCertificateClick() {
         setShowCreateModal(true);
@@ -20,27 +26,26 @@ const CertificatesTableActions = ({ data, selected }) => {
     return (
         <>
             <CreateButton onClick={handleCreateCertificateClick} type="button" icon="plus" text="Create Certificate" />
-           
-            <DeleteButton onClick={handleDeleteCertificateClick} isDisabled={selected.length === 0} type="button" icon="trash">
-                Delete
-            </DeleteButton>
+            <DeleteButton onClick={handleDeleteCertificateClick} isDisabled={selected.length === 0} icon="trash" text="Delete" />
 
-            { showCreateModal ? (
+            { showCreateModal && (
                 <CertificateModal
                     isOpen={showCreateModal}
                     toggleModal={setShowCreateModal}
-                    type="create"
+                    modalOptions={modalOptions}
+                    setStatusMessage={setStatusMessage}
+                    successMessage="Successfully added 1 new Certificate."
                 />
-            ) : null }
+            )}
 
-            { showDeleteModal ? (
+            { showDeleteModal && (
                 <DeleteCertificatesModal
                     data={data}
                     isOpen={showDeleteModal}
                     toggleModal={setShowDeleteModal}
                     selected={selected}
                 />
-            ) : null }
+            )}
 
         </>
 

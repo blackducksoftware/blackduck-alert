@@ -45,9 +45,7 @@ const CreateButton = ({ id, icon, type, isDisabled, onClick, role, title, text }
 };
 
 CreateButton.defaultProps = {
-    autoFocus: false,
     isDisabled: false,
-    style: 'default',
     type: 'button'
 };
 
@@ -57,7 +55,6 @@ CreateButton.propTypes = {
     isDisabled: PropTypes.bool,
     role: PropTypes.string,
     title: PropTypes.string,
-    type: PropTypes.string,
     text: PropTypes.string.isRequired
 };
 

@@ -85,7 +85,7 @@ const AzureBoardTale = ({ readonly, allowDelete }) => {
         const { sortName, sortOrder } = paramsConfig.mutatorData;
         if (name !== sortName) {
             return setParamsConfig({...paramsConfig, mutatorData: {
-                ...mutatorData,
+                ...paramsConfig.mutatorData,
                 sortName: name,
                 sortOrder: 'asc'
             }});
@@ -93,14 +93,14 @@ const AzureBoardTale = ({ readonly, allowDelete }) => {
 
         if (name === sortName && sortOrder !== 'desc') {
             return setParamsConfig({...paramsConfig, mutatorData: {
-                ...mutatorData,
+                ...paramsConfig.mutatorData,
                 sortName: name,
                 sortOrder: 'desc'
             }});
         }
 
         return setParamsConfig({...paramsConfig, mutatorData: {
-            ...mutatorData,
+            ...paramsConfig.mutatorData,
             sortName: '',
             sortOrder: ''
         }});

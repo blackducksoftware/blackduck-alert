@@ -5,6 +5,10 @@ import IconButton from 'common/component/button/IconButton';
 
 const CertificatesEditCell = ({ data }) => {
     const [showModal, setShowModal] = useState(false);
+    const modalOptions = {
+        submitText: 'Save',
+        title: 'Edit Certificate'
+    };
 
     function handleClick() {
         setShowModal(true);
@@ -14,14 +18,14 @@ const CertificatesEditCell = ({ data }) => {
         <>
             <IconButton icon="pencil-alt" onClick={() => handleClick()} />
 
-            { showModal ? (
+            { showModal && (
                 <CertificateModal
                     data={data}
                     isOpen={showModal}
                     toggleModal={setShowModal}
-                    type="edit"
+                    modalOptions={modalOptions}
                 />
-            ) : null }
+            )}
         </>
     );
 };

@@ -24,6 +24,8 @@ const COLUMNS = [{
 const CertificatesTable = () => {
     const dispatch = useDispatch();
     const [autoRefresh, setAutoRefresh] = useState(false);
+    const [tableData, setTableData] = useState();
+    const [sortConfig, setSortConfig] = useState();
     const [search, setNewSearch] = useState('');
     const [selected, setSelected] = useState([]);
     const certificates = useSelector((state) => state.certificates.data);
@@ -56,13 +58,43 @@ const CertificatesTable = () => {
         setAutoRefresh(!autoRefresh);
     }
 
-    const getCertificates = () => (
-        !search ? certificates : certificates.filter((certificate) => certificate.alias.toLowerCase().includes(search.toLowerCase()))
-    );
+    const onSort = (name) => {
+        if (name !== sortConfig?.name || !sortConfig) {
+            return setSortConfig({ name, direction: 'ASC' });
+        }
+
+        if (name === sortConfig?.name && sortConfig?.direction === 'DESC') {
+            return setSortConfig();
+        }
+
+        if (name === sortConfig?.name) {
+            return setSortConfig({ name, direction: 'DESC' });
+        }
+
+        return setSortConfig();
+    };
+
+    useEffect(() => {
+        let data = certificates;
+
+        if (sortConfig) {
+            const { name, direction } = sortConfig;
+            data = [...data].sort((a, b) => {
+                if (a[name] === null) return 1;
+                if (b[name] === null) return -1;
+                if (a[name] === null && b[name] === null) return 0;
+                return (
+                    a[name].toString().localeCompare(b[name].toString(), 'en', { numeric: true }) * (direction === 'ASC' ? 1 : -1)
+                );
+            });
+        }
+
+        setTableData(!search ? data : data.filter((certificate) => certificate.type.toLowerCase().includes(search.toLowerCase())));
+    }, [certificates, search, sortConfig]);
 
     return (
         <Table
-            tableData={getCertificates()}
+            tableData={tableData}
             columns={COLUMNS}
             searchBarPlaceholder="Search Certificates..."
             handleSearchChange={handleSearchChange}
@@ -71,7 +103,9 @@ const CertificatesTable = () => {
             multiSelect
             selected={selected}
             onSelected={onSelected}
-            tableActions={() => <CertificatesTableActions data={getCertificates()} selected={selected} />}
+            onSort={onSort}
+            sortConfig={sortConfig}
+            tableActions={() => <CertificatesTableActions data={tableData} selected={selected} />}
         />
     );
 };

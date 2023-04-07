@@ -1,29 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
-import { createUseStyles } from 'react-jss';
 import { saveCertificate, validateCertificate } from 'store/actions/certificates';
 import Modal from 'common/component/modal/Modal';
 import ReadOnlyField from 'common/component/input/field/ReadOnlyField';
 import TextArea from 'common/component/input/TextArea';
 import TextInput from 'common/component/input/TextInput';
 
-const useStyles = createUseStyles({
-    content: {
-        display: 'flex',
-        flexDirection: 'column',
-        maxWidth: '80%'
-    }
-});
-
-const CertificateModal = ({ data, isOpen, toggleModal, type }) => {
-    const classes = useStyles();
+const CertificateModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, successMessage }) => {
     const dispatch = useDispatch();
     const [certificateData, setCertificateData] = useState();
+    const [showLoader, setShowLoader] = useState(false);
+    const { submitText, title } = modalOptions;
+    const { saveStatus, error } = useSelector((state) => state.certificates);
 
-    const fieldErrors = useSelector((state) => state.certificates.error.fieldErrors);
-    const inProgress = useSelector((state) => state.certificates.inProgress);
-    const saveStatus = useSelector((state) => state.certificates.saveStatus);
+    useEffect(() => {
+        setCertificateData(data);
+    }, [data]);
 
     function handleClose() {
         toggleModal(false);
@@ -46,14 +39,27 @@ const CertificateModal = ({ data, isOpen, toggleModal, type }) => {
     }
 
     useEffect(() => {
-        setCertificateData(data);
-    }, [data]);
-
-    useEffect(() => {
-        if (saveStatus === 'VALIDATED' && !inProgress) {
-            handleSave();
+        if (saveStatus === 'VALIDATING' || saveStatus === 'SAVING') {
+            setShowLoader(true);
         }
-    }, [saveStatus, inProgress]);
+
+        if (saveStatus === 'VALIDATED') {
+                handleSave();
+        }
+
+        if (saveStatus === 'SAVED') {
+            setShowLoader(false);
+            handleClose();
+            setStatusMessage({
+                message: successMessage,
+                type: 'success'
+            });
+        }
+
+        if (saveStatus === 'ERROR') {
+            setShowLoader(false);
+        }
+    }, [saveStatus]);
 
     const handleOnChange = (label) => (
         ({ target: { value } }) => {
@@ -65,45 +71,43 @@ const CertificateModal = ({ data, isOpen, toggleModal, type }) => {
         <Modal
             isOpen={isOpen}
             size="lg"
-            title={type === 'create' ? 'Create Certificate' : 'Edit Certificate'}
+            title={title}
+            submitText={submitText}
             closeModal={handleClose}
             handleCancel={handleClose}
             handleSubmit={handleSubmit}
-            submitText={type === 'create' ? 'Create New Certificate' : 'Confirm Edit'}
+            showLoader={showLoader}
         >
-            <div className={classes.content}>
-
-                { certificateData?.lastUpdated ? (
-                    <ReadOnlyField
-                        id="lastUpdated-readOnlyFieldId"
-                        label="Last Updated"
-                        value={getDisplayValue('lastUpdated')}
-                    />
-                ) : null}
-
-                <TextInput
-                    id="alias-textInputId"
-                    name="alias"
-                    label="Alias"
-                    description="The certificate alias name."
-                    required
-                    onChange={handleOnChange('alias')}
-                    value={getDisplayValue('alias')}
-                    errorName="alias"
-                    errorValue={fieldErrors.alias}
+            { certificateData?.lastUpdated ? (
+                <ReadOnlyField
+                    id="lastUpdated-readOnlyFieldId"
+                    label="Last Updated"
+                    value={getDisplayValue('lastUpdated')}
                 />
-                <TextArea
-                    id="certificate-textAreaId"
-                    name="certificateContent"
-                    label="Certificate Content"
-                    description="The certificate content text."
-                    required
-                    onChange={handleOnChange('certificateContent')}
-                    value={getDisplayValue('certificateContent')}
-                    errorName="certificateContent"
-                    errorValue={fieldErrors.certificateContent}
-                />
-            </div>
+            ) : null}
+
+            <TextInput
+                id="alias-textInputId"
+                name="alias"
+                label="Alias"
+                description="The certificate alias name."
+                required
+                onChange={handleOnChange('alias')}
+                value={getDisplayValue('alias')}
+                errorName="alias"
+                errorValue={error.fieldErrors.alias}
+            />
+            <TextArea
+                id="certificate-textAreaId"
+                name="certificateContent"
+                label="Certificate Content"
+                description="The certificate content text."
+                required
+                onChange={handleOnChange('certificateContent')}
+                value={getDisplayValue('certificateContent')}
+                errorName="certificateContent"
+                errorValue={error.fieldErrors.certificateContent}
+            />
         </Modal>
     );
 };
