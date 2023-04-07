@@ -36,6 +36,10 @@ const COLUMNS = [{
     settings: { alignment: 'center' }
 }];
 
+const emptyTableConfig = {
+    message: 'There are no records to display for this table.  Please create a Jira Server connection to use this table.'
+};
+
 const JiraServerTable = ({ readonly, allowDelete }) => {
     const dispatch = useDispatch();
     const { data } = useSelector((state) => state.jiraServer);
@@ -124,6 +128,7 @@ const JiraServerTable = ({ readonly, allowDelete }) => {
             onSelected={onSelected}
             onPage={handlePagination}
             data={data}
+            emptyTableConfig={emptyTableConfig}
             tableActions={() => <JiraServerTableActions data={data} readonly={readonly} allowDelete={allowDelete} selected={selected} />}
         />
     );

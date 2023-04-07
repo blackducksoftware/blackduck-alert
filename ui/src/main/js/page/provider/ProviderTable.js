@@ -42,6 +42,10 @@ const COLUMNS = [{
     settings: { alignment: 'center' }
 }];
 
+const emptyTableConfig = {
+    message: 'There are no records to display for this table.  Please create a Provider connection to use this table.'
+};
+
 function ProviderTable({ readonly }) {
     const dispatch = useDispatch();
     const [tableData, setTableData] = useState();
@@ -123,7 +127,7 @@ function ProviderTable({ readonly }) {
         }
         setTableData(!search ? convertedTableData : convertedTableData.filter((provider) => provider.name.toLowerCase().includes(search.toLowerCase())));
     }, [data, search, sortConfig]);
-
+    console.log(tableData);
     return (
         <Table
             tableData={tableData}
@@ -137,6 +141,7 @@ function ProviderTable({ readonly }) {
             handleSearchChange={handleSearchChange}
             active={autoRefresh}
             onToggle={handleToggle}
+            emptyTableConfig={emptyTableConfig}
             tableActions={() => <PoviderTableActions data={tableData} selected={selected} readonly={readonly} />} />
     );
 }

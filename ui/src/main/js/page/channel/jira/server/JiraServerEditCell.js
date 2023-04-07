@@ -5,7 +5,6 @@ import JiraServerModal from './JiraServerModal';
 import IconButton from 'common/component/button/IconButton';
 
 const JiraServerEditCell = ({ data }) => {
-    const classes = useStyles();
     const [showModal, setShowModal] = useState(false);
     const [statusMessage, setStatusMessage] = useState();
 

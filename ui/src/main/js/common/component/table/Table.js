@@ -6,6 +6,7 @@ import TableBody from 'common/component/table/TableBody';
 import TableHeader from 'common/component/table/TableHeader';
 import ToggleSwitch from 'common/component/input/ToggleSwitch';
 import Pagination from 'common/component/navigation/Pagination';
+import EmptyTableView from 'common/component/table/EmptyTableView';
 
 const useStyles = createUseStyles({
     table: {
@@ -23,7 +24,7 @@ const useStyles = createUseStyles({
 });
 
 const Table = ({ columns, multiSelect, selected, onSelected, disableSelectOptions, tableData, handleSearchChange,
-    searchBarPlaceholder, tableActions, onToggle, active, onSort, sortConfig, data, onPage }) => {
+    searchBarPlaceholder, tableActions, onToggle, active, onSort, sortConfig, data, onPage, emptyTableConfig }) => {
     const classes = useStyles();
 
     return (
@@ -45,25 +46,33 @@ const Table = ({ columns, multiSelect, selected, onSelected, disableSelectOption
                 ) : null }
 
             </div>
-            <table className={classes.table}>
-                <TableHeader
-                    columns={columns}
-                    tableData={tableData}
-                    multiSelect={multiSelect}
-                    selected={selected}
-                    onSelected={onSelected}
-                    onSort={onSort}
-                    sortConfig={sortConfig}
-                />
-                <TableBody
-                    columns={columns}
-                    multiSelect={multiSelect}
-                    tableData={tableData}
-                    selected={selected}
-                    onSelected={onSelected}
-                    disableSelectOptions={disableSelectOptions}
-                />
-            </table>
+            { !tableData || tableData.length === 0 && (
+                <EmptyTableView emptyTableConfig={emptyTableConfig} />
+            )}
+            
+            { tableData && tableData.length !== 0 &&(
+                <table className={classes.table}>
+                    <TableHeader
+                        columns={columns}
+                        tableData={tableData}
+                        multiSelect={multiSelect}
+                        selected={selected}
+                        onSelected={onSelected}
+                        onSort={onSort}
+                        sortConfig={sortConfig}
+                    />
+                    <TableBody
+                        columns={columns}
+                        multiSelect={multiSelect}
+                        tableData={tableData}
+                        selected={selected}
+                        onSelected={onSelected}
+                        disableSelectOptions={disableSelectOptions}
+                    />
+                </table>
+            )}
+
+            
             { data?.totalPages > 1 && (
                 <Pagination data={data} onPage={onPage} />
             )}

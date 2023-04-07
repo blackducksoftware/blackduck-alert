@@ -21,6 +21,10 @@ const COLUMNS = [{
     settings: { alignment: 'right' }
 }];
 
+const emptyTableConfig = {
+    message: 'There are no records to display for this table.  Please create a Certificate to use this table.'
+};
+
 const CertificatesTable = () => {
     const dispatch = useDispatch();
     const [autoRefresh, setAutoRefresh] = useState(false);
@@ -105,6 +109,7 @@ const CertificatesTable = () => {
             onSelected={onSelected}
             onSort={onSort}
             sortConfig={sortConfig}
+            emptyTableConfig={emptyTableConfig}
             tableActions={() => <CertificatesTableActions data={tableData} selected={selected} />}
         />
     );

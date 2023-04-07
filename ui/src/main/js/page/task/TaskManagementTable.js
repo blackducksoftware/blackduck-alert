@@ -20,6 +20,10 @@ const COLUMNS = [{
     settings: { alignment: 'right' }
 }];
 
+const emptyTableConfig = {
+    message: 'There are no records to display for this table.'
+};
+
 const TaskManagementTable = () => {
     const dispatch = useDispatch();
     const [tableData, setTableData] = useState();
@@ -95,6 +99,7 @@ const TaskManagementTable = () => {
             onToggle={handleToggle}
             onSort={onSort}
             sortConfig={sortConfig}
+            emptyTableConfig={emptyTableConfig}
         />
     );
 };

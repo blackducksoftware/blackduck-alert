@@ -39,6 +39,10 @@ const COLUMNS = [{
     settings: { alignment: 'center' }
 }];
 
+const emptyTableConfig = {
+    message: 'There are no records to display for this table. Please create a User to use this table.'
+};
+
 const UserTable = ({ canCreate, canDelete }) => {
     const dispatch = useDispatch();
     const [tableData, setTableData] = useState();
@@ -127,6 +131,7 @@ const UserTable = ({ canCreate, canDelete }) => {
             handleSearchChange={handleSearchChange}
             active={autoRefresh}
             onToggle={handleToggle}
+            emptyTableConfig={emptyTableConfig}
             tableActions={() => <UserTableActions canCreate={canCreate} canDelete={canDelete} data={tableData} selected={selected} />}
         />
     );

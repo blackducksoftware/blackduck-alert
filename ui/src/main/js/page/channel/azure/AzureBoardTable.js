@@ -36,6 +36,10 @@ const COLUMNS = [{
     settings: { alignment: 'center' }
 }];
 
+const emptyTableConfig = {
+    message: 'There are no records to display for this table.  Please create an Azure Board connection to use this table.'
+};
+
 const AzureBoardTale = ({ readonly, allowDelete }) => {
     const dispatch = useDispatch();
     const { data } = useSelector((state) => state.azure);
@@ -124,6 +128,7 @@ const AzureBoardTale = ({ readonly, allowDelete }) => {
             onSelected={onSelected}
             onPage={handlePagination}
             data={data}
+            emptyTableConfig={emptyTableConfig}
             tableActions={() => <AzureBoardTableActions data={data} readonly={readonly} allowDelete={allowDelete} selected={selected} />}
         />
     );

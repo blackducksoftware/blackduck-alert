@@ -25,6 +25,10 @@ const COLUMNS = [{
     settings: { alignment: 'center' }
 }];
 
+const emptyTableConfig = {
+    message: 'There are no records to display for this table. Please create a Role to use this table.'
+};
+
 const RoleTable = ({ canCreate, canDelete }) => {
     const dispatch = useDispatch();
     const [tableData, setTableData] = useState();
@@ -115,6 +119,7 @@ const RoleTable = ({ canCreate, canDelete }) => {
                 onSort={onSort}
                 sortConfig={sortConfig}
                 disableSelectOptions={disableSelectOptions}
+                emptyTableConfig={emptyTableConfig}
                 tableActions={() => <RoleTableActions canCreate={canCreate} canDelete={canDelete} data={roles} selected={selected} />}
             />
         </>
