@@ -25,7 +25,7 @@ import com.synopsys.integration.alert.common.action.ActionResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-public class HomeActionsTest {
+class HomeActionsTest {
     private HttpServletRequest servletRequest;
     private HttpServletResponse servletResponse;
     private HttpSessionCsrfTokenRepository csrfTokenRepository;
@@ -38,7 +38,7 @@ public class HomeActionsTest {
     }
 
     @Test
-    public void testVerifyAuthenticationValid() {
+    void testVerifyAuthenticationValid() {
         CsrfToken token = Mockito.mock(CsrfToken.class);
         GrantedAuthority grantedAuthority = Mockito.mock(GrantedAuthority.class);
         Collection<GrantedAuthority> grantedAuthorities = List.of(grantedAuthority);
@@ -56,13 +56,15 @@ public class HomeActionsTest {
 
         HomeActions actions = new HomeActions(csrfTokenRepository, null);
 
-        ActionResponse<Void> response = actions.verifyAuthentication(servletRequest, servletResponse);
+        ActionResponse<VerifyAuthenticationResponseModel> response = actions.verifyAuthentication(servletRequest, servletResponse);
         assertTrue(response.isSuccessful());
-        assertFalse(response.hasContent());
+        assertTrue(response.hasContent());
+        assertEquals(HttpStatus.OK, response.getHttpStatus());
+        assertTrue(response.getContent().orElseThrow(() -> new AssertionError("Content is missing from the response.")).isAuthenticated());
     }
 
     @Test
-    public void testVerifyAuthenticationInvalidAnonymousUser() {
+    void testVerifyAuthenticationInvalidAnonymousUser() {
         CsrfToken token = Mockito.mock(CsrfToken.class);
         GrantedAuthority grantedAuthority = Mockito.mock(GrantedAuthority.class);
         Collection<GrantedAuthority> grantedAuthorities = List.of(grantedAuthority);
@@ -80,14 +82,15 @@ public class HomeActionsTest {
 
         HomeActions actions = new HomeActions(csrfTokenRepository, null);
 
-        ActionResponse<Void> response = actions.verifyAuthentication(servletRequest, servletResponse);
-        assertTrue(response.isError());
-        assertFalse(response.hasContent());
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getHttpStatus());
+        ActionResponse<VerifyAuthenticationResponseModel> response = actions.verifyAuthentication(servletRequest, servletResponse);
+        assertTrue(response.isSuccessful());
+        assertTrue(response.hasContent());
+        assertEquals(HttpStatus.OK, response.getHttpStatus());
+        assertFalse(response.getContent().orElseThrow(() -> new AssertionError("Content is missing from the response.")).isAuthenticated());
     }
 
     @Test
-    public void testVerifyAuthenticationInvalidAuthentication() {
+    void testVerifyAuthenticationInvalidAuthentication() {
         CsrfToken token = Mockito.mock(CsrfToken.class);
         GrantedAuthority grantedAuthority = Mockito.mock(GrantedAuthority.class);
         Collection<GrantedAuthority> grantedAuthorities = List.of(grantedAuthority);
@@ -105,14 +108,15 @@ public class HomeActionsTest {
 
         HomeActions actions = new HomeActions(csrfTokenRepository, null);
 
-        ActionResponse<Void> response = actions.verifyAuthentication(servletRequest, servletResponse);
-        assertTrue(response.isError());
-        assertFalse(response.hasContent());
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getHttpStatus());
+        ActionResponse<VerifyAuthenticationResponseModel> response = actions.verifyAuthentication(servletRequest, servletResponse);
+        assertTrue(response.isSuccessful());
+        assertTrue(response.hasContent());
+        assertEquals(HttpStatus.OK, response.getHttpStatus());
+        assertFalse(response.getContent().orElseThrow(() -> new AssertionError("Content is missing from the response.")).isAuthenticated());
     }
 
     @Test
-    public void testVerifyAuthenticationInvalidCSRFToken() {
+    void testVerifyAuthenticationInvalidCSRFToken() {
         GrantedAuthority grantedAuthority = Mockito.mock(GrantedAuthority.class);
         Collection<GrantedAuthority> grantedAuthorities = List.of(grantedAuthority);
         Authentication authentication = Mockito.mock(Authentication.class);
@@ -126,9 +130,10 @@ public class HomeActionsTest {
 
         HomeActions actions = new HomeActions(csrfTokenRepository, null);
 
-        ActionResponse<Void> response = actions.verifyAuthentication(servletRequest, servletResponse);
-        assertTrue(response.isError());
-        assertFalse(response.hasContent());
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getHttpStatus());
+        ActionResponse<VerifyAuthenticationResponseModel> response = actions.verifyAuthentication(servletRequest, servletResponse);
+        assertTrue(response.isSuccessful());
+        assertTrue(response.hasContent());
+        assertEquals(HttpStatus.OK, response.getHttpStatus());
+        assertFalse(response.getContent().orElseThrow(() -> new AssertionError("Content is missing from the response.")).isAuthenticated());
     }
 }

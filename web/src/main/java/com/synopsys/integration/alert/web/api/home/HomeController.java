@@ -8,12 +8,10 @@
 package com.synopsys.integration.alert.web.api.home;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 
@@ -34,14 +32,14 @@ public class HomeController {
         return "index.html";
     }
 
-    @GetMapping("/api/verify")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void checkAuthentication(HttpServletRequest request, HttpServletResponse response) {
-        ResponseFactory.createResponseFromAction(actions.verifyAuthentication(request, response));
+    @ResponseBody
+    @GetMapping(value = { "/api/verify" }, produces = MediaType.APPLICATION_JSON_VALUE)
+    public VerifyAuthenticationResponseModel checkAuthentication(HttpServletRequest request, HttpServletResponse response) {
+        return ResponseFactory.createContentResponseFromAction(actions.verifyAuthentication(request, response));
     }
 
     @ResponseBody
-    @GetMapping("/api/verify/saml")
+    @GetMapping(value = { "/api/verify/saml" }, produces = MediaType.APPLICATION_JSON_VALUE)
     public SAMLEnabledResponseModel checkSaml() {
         return ResponseFactory.createContentResponseFromAction(actions.verifySaml());
     }

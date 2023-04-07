@@ -32,7 +32,10 @@ import org.springframework.security.web.authentication.SavedRequestAwareAuthenti
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
@@ -50,6 +53,7 @@ public class AuthenticationHandler {
     private final RoleAccessor roleAccessor;
 
     private final SAMLGroupConverter samlGroupConverter;
+    private final AlertAuthenticationProvider authenticationProvider;
 
     @Autowired
     AuthenticationHandler(
@@ -57,24 +61,45 @@ public class AuthenticationHandler {
         CsrfTokenRepository csrfTokenRepository,
         AlertProperties alertProperties,
         RoleAccessor roleAccessor,
-        SAMLGroupConverter samlGroupConverter
+        SAMLGroupConverter samlGroupConverter,
+        AlertAuthenticationProvider authenticationProvider
     ) {
         this.httpPathManager = httpPathManager;
         this.csrfTokenRepository = csrfTokenRepository;
         this.alertProperties = alertProperties;
         this.roleAccessor = roleAccessor;
         this.samlGroupConverter = samlGroupConverter;
+        this.authenticationProvider = authenticationProvider;
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityContextRepository securityContextRepository() {
+        return new HttpSessionSecurityContextRepository();
+    }
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http, SecurityContextRepository securityContextRepository) throws Exception {
         configureWithSSL(http);
-        http.authorizeHttpRequests()
-            .requestMatchers(createAllowedPathMatchers()).permitAll()
-            .anyRequest().authenticated()
-            .and().csrf().csrfTokenRepository(csrfTokenRepository).ignoringRequestMatchers(createCsrfIgnoreMatchers())
-            .withObjectPostProcessor(createRoleProcessor())
-            .and().logout().logoutSuccessUrl("/");
+        RequestMatcher[] allowedRequestMatchers = createAllowedPathMatchers();
+        CsrfTokenRequestAttributeHandler csrfRequestHandler = new CsrfTokenRequestAttributeHandler();
+        // set the name of the attribute the CsrfToken will be populated on
+        csrfRequestHandler.setCsrfRequestAttributeName(null);
+        http.securityContext((securityContext) -> {
+                securityContext.requireExplicitSave(true);
+                securityContext.securityContextRepository(securityContextRepository);
+            })
+            .authenticationProvider(authenticationProvider)
+            .authorizeHttpRequests()
+            .requestMatchers(allowedRequestMatchers).permitAll()
+            .and().authorizeHttpRequests().anyRequest().authenticated()
+            .and().csrf(csrf -> {
+                csrf.csrfTokenRequestHandler(csrfRequestHandler);
+                csrf.csrfTokenRepository(csrfTokenRepository);
+                csrf.ignoringRequestMatchers(allowedRequestMatchers);
+            })
+            .authorizeHttpRequests().withObjectPostProcessor(createRoleProcessor())
+            .and().logout()
+            .logoutSuccessUrl(HttpPathManager.PATH_ROOT);
         configureSAML(http);
         return http.build();
     }
@@ -115,7 +140,7 @@ public class AuthenticationHandler {
     }
 
     private ObjectPostProcessor<AffirmativeBased> createRoleProcessor() {
-        return new ObjectPostProcessor<>() {
+        return new ObjectPostProcessor<AffirmativeBased>() {
             @Override
             public <O extends AffirmativeBased> O postProcess(O affirmativeBased) {
                 WebExpressionVoter webExpressionVoter = new WebExpressionVoter();
