@@ -101,7 +101,7 @@ const JiraServerTable = ({ readonly, allowDelete }) => {
         if (name === sortName && sortOrder !== 'desc') {
             return setParamsConfig({ ...paramsConfig,
                 mutatorData: {
-                    ...mutatorData, // eslint-disable-line
+                    ...paramsConfig.mutatorData,
                     sortName: name,
                     sortOrder: 'desc'
                 } });
@@ -109,7 +109,7 @@ const JiraServerTable = ({ readonly, allowDelete }) => {
 
         return setParamsConfig({ ...paramsConfig,
             mutatorData: {
-                ...mutatorData, // eslint-disable-line
+                ...paramsConfig.mutatorData,
                 sortName: '',
                 sortOrder: ''
             } });

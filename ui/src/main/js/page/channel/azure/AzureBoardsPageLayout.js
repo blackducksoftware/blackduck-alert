@@ -14,7 +14,7 @@ const AzureBoardsLayout = ({ readonly, allowDelete }) => (
     </div>
 );
 
-AzureEditCell.propTypes = {
+AzureBoardsLayout.propTypes = {
     readonly: PropTypes.bool,
     allowDelete: PropTypes.bool
 };

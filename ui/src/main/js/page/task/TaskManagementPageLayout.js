@@ -3,7 +3,7 @@ import PageHeader from 'common/component/navigation/PageHeader';
 import TaskManagementTable from 'page/task/TaskManagementTable';
 import { TASK_MANAGEMENT_INFO } from 'page/task/TaskManagementModel';
 
-const TaskManagementLayout = () => (
+const TaskManagementPageLayout = () => (
     <div>
         <PageHeader
             title={TASK_MANAGEMENT_INFO.label}
@@ -14,4 +14,4 @@ const TaskManagementLayout = () => (
     </div>
 );
 
-export default TaskManagementLayout;
+export default TaskManagementPageLayout;

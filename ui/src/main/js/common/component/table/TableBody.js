@@ -6,7 +6,7 @@ import WrapperCell from 'common/component/table/cell/WrapperCell';
 const TableBody = ({ columns, multiSelect, tableData, selected, onSelected, disableSelectOptions }) => (
     <tbody>
         { tableData?.map((rowData, rowIndex) => (
-            <tr key={`${rowIndex}-table-row`}> // eslint-disable-line
+            <tr key={`${rowIndex}-table-row`}> 
                 { multiSelect ? (
                     <MultiSelectCell
                         data={rowData}

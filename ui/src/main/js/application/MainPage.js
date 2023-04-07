@@ -18,7 +18,7 @@ import MSTeamsGlobalConfiguration from 'page/channel/msteams/MSTeamsGlobalConfig
 import { AZURE_BOARDS_INFO, AZURE_BOARDS_URLS } from 'page/channel/azure/AzureBoardsModel';
 import AzureBoardsPageForm from 'page/channel/azure/AzureBoardsPageForm';
 import AzureBoardsTableConstructor from 'page/channel/azure/AzureBoardsTableConstructor';
-import AzureBoardsLayout from '../page/channel/azure/AzureBoardsLayout';
+import AzureBoardsPageLayout from 'page/channel/azure/AzureBoardsPageLayout';
 import { SCHEDULING_INFO } from 'page/scheduling/SchedulingModel';
 import SchedulingConfiguration from 'page/scheduling/SchedulingConfiguration';
 import { SETTINGS_INFO } from 'page/settings/SettingsModel';
@@ -36,7 +36,7 @@ import CertificatesPage from 'page/certificates/CertificatesPage';
 import CertificatesPageLayout from 'page/certificates/CertificatesPageLayout';
 import { TASK_MANAGEMENT_INFO } from 'page/task/TaskManagementModel';
 import TaskManagement from 'page/task/TaskManagement';
-import TaskManagementLayout from 'page/task/TaskManagementLayout';
+import TaskManagementPageLayout from 'page/task/TaskManagementPageLayout';
 import { USER_MANAGEMENT_INFO } from 'page/usermgmt/UserModel';
 import UserManagement from 'page/usermgmt/UserManagement';
 import { CONTEXT_TYPE, isOperationAssigned, OPERATIONS } from 'common/util/descriptorUtilities';
@@ -164,7 +164,7 @@ const MainPage = ({
                 render={(readonly, showTest, showSave, showDelete) => (
                     <BetaPage betaSelected>
                         <BetaComponent>
-                            <AzureBoardsLayout 
+                            <AzureBoardsPageLayout 
                                 readonly={readonly}
                                 allowDelete={showDelete}
                             />
@@ -335,7 +335,7 @@ const MainPage = ({
                 render={() => (
                     <BetaPage betaSelected>
                         <BetaComponent>
-                            <TaskManagementLayout />
+                            <TaskManagementPageLayout />
                         </BetaComponent>
                         <CurrentComponent>
                             <TaskManagement />
