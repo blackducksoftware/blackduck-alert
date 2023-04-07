@@ -1,23 +1,9 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { createUseStyles } from 'react-jss';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ViewTaskModal from 'page/task/ViewTaskModal';
-
-const useStyles = createUseStyles({
-    editCell: {
-        background: 'none',
-        border: 'none',
-        padding: 0,
-        cursor: 'pointer',
-        '&:focus': {
-            outline: 0
-        }
-    }
-});
+import IconButton from 'common/component/button/IconButton';
 
 const ViewTaskCell = ({ data }) => {
-    const classes = useStyles();
     const [showModal, setShowModal] = useState(false);
 
     function handleClick() {
@@ -26,9 +12,7 @@ const ViewTaskCell = ({ data }) => {
 
     return (
         <>
-            <button className={classes.editCell} onClick={() => handleClick()} type="button">
-                <FontAwesomeIcon icon="eye" />
-            </button>
+            <IconButton icon="eye" onClick={() => handleClick()} />
             { showModal ? (
                 <ViewTaskModal
                     data={data}

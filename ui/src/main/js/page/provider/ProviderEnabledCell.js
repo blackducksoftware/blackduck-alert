@@ -26,7 +26,7 @@ const ProviderEnabledCell = ({ data }) => {
 
 ProviderEnabledCell.propTypes = {
     data: PropTypes.shape({
-        enabled: PropTypes.string
+        enabled: PropTypes.bool
     })
 };
 

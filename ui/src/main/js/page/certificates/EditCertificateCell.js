@@ -1,18 +1,9 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { createUseStyles } from 'react-jss';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CertificateModal from 'page/certificates/CertificateModal';
-
-const useStyles = createUseStyles({
-    editCell: {
-        all: 'unset',
-        cursor: 'pointer'
-    }
-});
+import IconButton from 'common/component/button/IconButton';
 
 const EditCertificateCell = ({ data }) => {
-    const classes = useStyles();
     const [showModal, setShowModal] = useState(false);
 
     function handleClick() {
@@ -21,9 +12,7 @@ const EditCertificateCell = ({ data }) => {
 
     return (
         <>
-            <button className={classes.editCell} onClick={() => handleClick()} type="button">
-                <FontAwesomeIcon icon="pencil-alt" />
-            </button>
+            <IconButton icon="pencil-alt" onClick={() => handleClick()} />
 
             { showModal ? (
                 <CertificateModal

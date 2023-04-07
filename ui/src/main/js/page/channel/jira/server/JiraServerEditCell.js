@@ -1,20 +1,8 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { createUseStyles } from 'react-jss';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import StatusMessage from 'common/component/StatusMessage';
 import JiraServerModal from './JiraServerModal';
-
-const useStyles = createUseStyles({
-    editCell: {
-        background: 'none',
-        border: 'none',
-        cursor: 'pointer',
-        '&:focus': {
-            outline: 0
-        }
-    }
-});
+import IconButton from 'common/component/button/IconButton';
 
 const JiraServerEditCell = ({ data }) => {
     const classes = useStyles();
@@ -39,9 +27,9 @@ const JiraServerEditCell = ({ data }) => {
                     errorMessage={statusMessage.type === 'error' ? statusMessage.message : null}
                 />
             )}
-            <button className={classes.editCell} onClick={() => handleClick()} type="button">
-                <FontAwesomeIcon icon="pencil-alt" />
-            </button>
+
+            <IconButton icon="pencil-alt" onClick={() => handleClick()} />
+
             { showModal && (
                 <JiraServerModal
                     data={data}

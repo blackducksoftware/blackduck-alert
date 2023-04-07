@@ -1,23 +1,10 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { createUseStyles } from 'react-jss';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import RoleModal from 'page/usermgmt/roles/RoleModal';
 import StatusMessage from 'common/component/StatusMessage';
-
-const useStyles = createUseStyles({
-    copyCell: {
-        background: 'none',
-        border: 'none',
-        cursor: 'pointer',
-        '&:focus': {
-            outline: 0
-        }
-    }
-});
+import IconButton from 'common/component/button/IconButton';
 
 const RoleCopyCell = ({ data }) => {
-    const classes = useStyles();
     const [showModal, setShowModal] = useState(false);
     const [statusMessage, setStatusMessage] = useState();
     const [selectedData, setSelectedData] = useState(data);
@@ -42,9 +29,9 @@ const RoleCopyCell = ({ data }) => {
                     errorMessage={statusMessage.type === 'error' ? statusMessage.message : null}
                 />
             )}
-            <button className={classes.copyCell} onClick={() => handleClick()} type="button">
-                <FontAwesomeIcon icon="copy" />
-            </button>
+
+            <IconButton icon="copy" onClick={() => handleClick()} />
+
             { showModal && (
                 <RoleModal
                     data={selectedData}

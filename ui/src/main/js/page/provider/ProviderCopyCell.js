@@ -1,19 +1,10 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { createUseStyles } from 'react-jss';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ProviderModal from 'page/provider/ProviderModal';
 import StatusMessage from 'common/component/StatusMessage';
-
-const useStyles = createUseStyles({
-    copyCell: {
-        all: 'unset',
-        cursor: 'pointer'
-    }
-});
+import IconButton from 'common/component/button/IconButton';
 
 const ProviderCopyCell = ({ data }) => {
-    const classes = useStyles();
     const [showModal, setShowModal] = useState(false);
     const [selectedData, setSelectedData] = useState(data);
     const [statusMessage, setStatusMessage] = useState();
@@ -47,9 +38,7 @@ const ProviderCopyCell = ({ data }) => {
                 />
             )}
 
-            <button className={classes.copyCell} onClick={() => handleClick()} type="button">
-                <FontAwesomeIcon icon="copy" />
-            </button>
+            <IconButton icon="copy" onClick={() => handleClick()} />
 
             { showModal && (
                 <ProviderModal

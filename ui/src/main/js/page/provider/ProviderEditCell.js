@@ -1,19 +1,10 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { createUseStyles } from 'react-jss';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ProviderModal from 'page/provider/ProviderModal';
 import StatusMessage from 'common/component/StatusMessage';
-
-const useStyles = createUseStyles({
-    editCell: {
-        all: 'unset',
-        cursor: 'pointer'
-    }
-});
+import IconButton from 'common/component/button/IconButton';
 
 const ProviderEditCell = ({ data }) => {
-    const classes = useStyles();
     const [showModal, setShowModal] = useState(false);
     const [selectedData, setSelectedData] = useState(data);
     const [statusMessage, setStatusMessage] = useState();
@@ -40,9 +31,7 @@ const ProviderEditCell = ({ data }) => {
                 />
             )}
 
-            <button className={classes.editCell} onClick={() => handleClick()} type="button">
-                <FontAwesomeIcon icon="pencil-alt" />
-            </button>
+            <IconButton icon="pencil-alt" onClick={() => handleClick()} />
 
             { showModal && (
                 <ProviderModal
