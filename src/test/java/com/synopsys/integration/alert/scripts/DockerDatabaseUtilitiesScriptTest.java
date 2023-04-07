@@ -1,5 +1,6 @@
 package com.synopsys.integration.alert.scripts;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -57,6 +58,7 @@ class DockerDatabaseUtilitiesScriptTest {
     public void initTest() throws IOException, ExecutableRunnerException {
         containerName = createContainerName();
         workingDirectory = File.createTempFile("alert-test", "txt").getParentFile();
+        workingDirectory.deleteOnExit();
 
         dockerContainerSearchCommand = createSearchCommand(workingDirectory, containerName);
         Executable dockerCreateContainerCommand = createContainerCommand(workingDirectory, containerName);
@@ -131,7 +133,6 @@ class DockerDatabaseUtilitiesScriptTest {
             processBuilderRunner.execute(dockerContainerRemoveCommand);
             processBuilderRunner.execute(dockerVolumeRemoveCommand);
         }
-        workingDirectory.delete();
     }
 
     private Executable createStopCommand(File workingDirectory, String containerId) {
@@ -158,9 +159,9 @@ class DockerDatabaseUtilitiesScriptTest {
     }
 
     @Test
-    void testDefaultBackupAndRestore() throws ExecutableRunnerException, IOException {
+    void testDefaultBackupAndRestore() throws ExecutableRunnerException {
         // perform backup
-        File backupFile = Files.createTempFile("testAlertBackup", "dump").toFile();
+        File backupFile = makeTempFile();
         List<String> backupArguments = List.of("-b", "-k", containerName, "-f", backupFile.getAbsolutePath());
         Executable scriptRestoreExecutable = Executable.create(workingDirectory, scriptFile, backupArguments);
         ExecutableOutput restoreOutput = processBuilderRunner.execute(scriptRestoreExecutable);
@@ -175,9 +176,9 @@ class DockerDatabaseUtilitiesScriptTest {
 
     @ParameterizedTest
     @ValueSource(strings = { "binary", "BINARY", "plain", "PLAIN" })
-    void testBackupAndRestore(String formatType) throws ExecutableRunnerException, IOException {
+    void testBackupAndRestore(String formatType) throws ExecutableRunnerException {
         // perform backup
-        File backupFile = Files.createTempFile("testAlertBackup", "dump").toFile();
+        File backupFile = makeTempFile();
         List<String> backupArguments = List.of("-b", "-k", containerName, "-t", formatType, "-f", backupFile.getAbsolutePath());
         Executable scriptRestoreExecutable = Executable.create(workingDirectory, scriptFile, backupArguments);
         ExecutableOutput restoreOutput = processBuilderRunner.execute(scriptRestoreExecutable);
@@ -192,9 +193,9 @@ class DockerDatabaseUtilitiesScriptTest {
 
     @ParameterizedTest
     @ValueSource(strings = { "Binary", "bINARY", "Plain", "pLAIN", "bad", "unknown", "", "  ", "''", "'    '" })
-    void testBackupAndRestoreInvalidFormat(String formatType) throws ExecutableRunnerException, IOException {
+    void testBackupAndRestoreInvalidFormat(String formatType) throws ExecutableRunnerException {
         // perform backup
-        File backupFile = Files.createTempFile("testAlertBackup", "dump").toFile();
+        File backupFile = makeTempFile();
         List<String> backupArguments = List.of("-b", "-k", containerName, "-t", formatType, "-f", backupFile.getAbsolutePath());
         Executable scriptRestoreExecutable = Executable.create(workingDirectory, scriptFile, backupArguments);
         ExecutableOutput restoreOutput = processBuilderRunner.execute(scriptRestoreExecutable);
@@ -208,8 +209,8 @@ class DockerDatabaseUtilitiesScriptTest {
     }
 
     @Test
-    void testPlainTextBackupAndRestore() throws ExecutableRunnerException, IOException {
-        File backupFile = Files.createTempFile("testAlertBackup", "dump").toFile();
+    void testPlainTextBackupAndRestore() throws ExecutableRunnerException {
+        File backupFile = makeTempFile();
         List<String> backupArguments = List.of("-b", "-p", "-k", containerName, "-f", backupFile.getAbsolutePath());
         Executable scriptRestoreExecutable = Executable.create(workingDirectory, scriptFile, backupArguments);
         ExecutableOutput restoreOutput = processBuilderRunner.execute(scriptRestoreExecutable);
@@ -238,8 +239,8 @@ class DockerDatabaseUtilitiesScriptTest {
     }
 
     @Test
-    void testDatabaseNameValid() throws IOException, ExecutableRunnerException {
-        File backupFile = Files.createTempFile("testAlertBackup", "dump").toFile();
+    void testDatabaseNameValid() throws ExecutableRunnerException {
+        File backupFile = makeTempFile();
         List<String> backupArguments = List.of("-b", "-k", containerName, "-d", "alertdb", "-f", backupFile.getAbsolutePath());
         Executable scriptBackupExecutable = Executable.create(workingDirectory, scriptFile, backupArguments);
         ExecutableOutput backupOutput = processBuilderRunner.execute(scriptBackupExecutable);
@@ -252,14 +253,14 @@ class DockerDatabaseUtilitiesScriptTest {
     }
 
     @Test
-    void testDatabaseNameInvalid() throws IOException, ExecutableRunnerException {
-        File backupFile = Files.createTempFile("testAlertBackup", "dump").toFile();
+    void testDatabaseNameInvalid() throws ExecutableRunnerException {
+        File backupFile = makeTempFile();
         List<String> backupArguments = List.of("-b", "-k", containerName, "-d", "invalid-database-name", "-f", backupFile.getAbsolutePath());
         Executable scriptBackupExecutable = Executable.create(workingDirectory, scriptFile, backupArguments);
         ExecutableOutput backupOutput = processBuilderRunner.execute(scriptBackupExecutable);
         assertEquals(1, backupOutput.getReturnCode());
 
-        backupFile = Files.createTempFile("testAlertBackup", "dump").toFile();
+        backupFile = makeTempFile();
         backupArguments = List.of("-b", "-k", containerName, "-d", "alertdb", "-f", backupFile.getAbsolutePath());
         scriptBackupExecutable = Executable.create(workingDirectory, scriptFile, backupArguments);
         backupOutput = processBuilderRunner.execute(scriptBackupExecutable);
@@ -272,7 +273,7 @@ class DockerDatabaseUtilitiesScriptTest {
     }
 
     @Test
-    void testHelpOption() throws IOException, ExecutableRunnerException {
+    void testHelpOption() throws ExecutableRunnerException {
         List<String> restoreArguments = List.of("-h");
         Executable scriptBackupExecutable = Executable.create(workingDirectory, scriptFile, restoreArguments);
         ExecutableOutput backupOutput = processBuilderRunner.execute(scriptBackupExecutable);
@@ -280,7 +281,7 @@ class DockerDatabaseUtilitiesScriptTest {
     }
 
     @Test
-    void testHelpOptionWithOtherParameters() throws IOException, ExecutableRunnerException {
+    void testHelpOptionWithOtherParameters() throws ExecutableRunnerException {
         List<String> restoreArguments = List.of("-h", "-k", containerName, "-n", "db-name");
         Executable scriptBackupExecutable = Executable.create(workingDirectory, scriptFile, restoreArguments);
         ExecutableOutput backupOutput = processBuilderRunner.execute(scriptBackupExecutable);
@@ -291,6 +292,12 @@ class DockerDatabaseUtilitiesScriptTest {
         File buildOutputDir = new File(getClass().getProtectionDomain().getCodeSource().getLocation().getPath()).getCanonicalFile();
         File subProjectDir = TestResourceUtils.findAncestorDirectory(buildOutputDir, "src").orElse(new File("src"));
         return Path.of(subProjectDir.getAbsolutePath(), "test", "resources", "database", fileName);
+    }
+
+    private File makeTempFile() {
+        File backupFile = assertDoesNotThrow(() -> Files.createTempFile("testAlertBackup", "dump").toFile());
+        backupFile.deleteOnExit();
+        return backupFile;
     }
 
 }

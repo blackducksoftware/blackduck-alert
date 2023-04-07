@@ -1,4 +1,25 @@
-task copyDeploymentFiles(type: Copy) {
+String helmRepoAddTaskName = 'helmRepoAdd'
+String helmPushChartTaskName = 'helmPushChart'
+String copyDeploymentFilesTaskName = 'copyDeploymentFiles'
+String createDeploymentZipTaskName = 'createDeploymentZip'
+String helmLintTaskName = 'helmLint'
+String helmDryRunTaskName = 'helmDryRun'
+String helmPackageTaskName = 'helmPackage'
+String helmValidationTaskName = 'helmValidation'
+
+project.tasks.create(name: helmRepoAddTaskName, group: 'Deployment', description: 'Add all configured helm repositories. <primary task>') {
+    onlyIf(envVarsNotExistMsg) {
+        System.env.ARTIFACTORY_HOST != null
+    }
+}
+
+project.tasks.create(name: helmPushChartTaskName, dependsOn: [helmRepoAddTaskName], group: 'Deployment', description: 'Push to all configured helm repositories. <primary task>') {
+    onlyIf(envVarsNotExistMsg) {
+        System.env.ARTIFACTORY_DEPLOYER_USER != null && System.env.ARTIFACTORY_DEPLOYER_PASSWORD != null
+    }
+}
+
+project.tasks.create(name: copyDeploymentFilesTaskName, type: Copy, group: 'Deployment', description: "Copy orchestration files to ${project.buildDir}/deployment. <primary task>") {
     from('deployment') {
         include "docker-swarm/**", "helm/**"
     }
@@ -27,80 +48,66 @@ task copyDeploymentFiles(type: Copy) {
     }
 }
 
-task createDeploymentZip(type: Zip, dependsOn: [copyDeploymentFiles]) {
+project.tasks.create(name: createDeploymentZipTaskName, type: Zip, dependsOn: [copyDeploymentFilesTaskName], group: 'Deployment', description: 'Create deployment zip file. <primary task>') {
     from "${project.buildDir}/deployment"
     into "${project.name}-${project.version}-deployment"
     archiveBaseName = "${project.name}"
     classifier 'deployment'
 }
 
-
-task helmLint(type: Exec) {
+project.tasks.create(name: helmLintTaskName, type: Exec, dependsOn: [copyDeploymentFilesTaskName], group: 'Deployment', description: "Execute helm lint. <sub-task>") {
     workingDir = "${project.buildDir}/deployment/helm/synopsys-alert/"
     commandLine "helm", "lint", "${project.buildDir}/deployment/helm/synopsys-alert/"
 }
 
-task helmDryRun(type: Exec) {
+project.tasks.create(name: helmDryRunTaskName, type: Exec, dependsOn: [copyDeploymentFilesTaskName], group: 'Deployment', description: "Execute helm install with --dry-run option. <sub-task>") {
     workingDir = "${project.buildDir}/deployment/helm/synopsys-alert/"
     commandLine "helm", "install", "alert", "${project.buildDir}/deployment/helm/synopsys-alert/", "-n", "alert", "--dry-run"
 }
 
-task helmPackage(type: Exec) {
+project.tasks.create(name: helmPackageTaskName, type: Exec, dependsOn: [copyDeploymentFilesTaskName], group: 'Deployment', description: "Create helm tgz package file. <sub-task>") {
     workingDir = "${project.buildDir}/deployment/helm/synopsys-alert/"
-    commandLine "helm", "package", "${project.buildDir}/deployment/helm/synopsys-alert/"
+    commandLine "helm", "package", "${project.buildDir}/deployment/helm/synopsys-alert/", "-d", "${project.buildDir}/helmchart"
 }
 
-task helmValidation(dependsOn: [copyDeploymentFiles, helmLint, helmDryRun, helmPackage]) {
-    helmLint.mustRunAfter copyDeploymentFiles
-    helmDryRun.mustRunAfter helmLint
-    helmPackage.mustRunAfter helmDryRun
+project.tasks.create(name: helmValidationTaskName, dependsOn: [copyDeploymentFilesTaskName, helmLintTaskName, helmDryRunTaskName, helmPackageTaskName], group: 'Deployment', description: "Perform all configured helm validation steps. <primary task>") {
+    project.tasks.findByName(helmLintTaskName).mustRunAfter project.tasks.findByName(copyDeploymentFilesTaskName)
+    project.tasks.findByName(helmDryRunTaskName).mustRunAfter project.tasks.findByName(helmLintTaskName)
+    project.tasks.findByName(helmPackageTaskName) mustRunAfter project.tasks.findByName(helmDryRunTaskName)
 }
 
-task helmPushChart(type: Exec) {
-    workingDir = "${project.buildDir}/deployment/helm/synopsys-alert/"
-    standardOutput = new ByteArrayOutputStream()
-    doFirst {
-        if (!project.ext.isSnapshot) {
-            String artifactoryHostName = System.getenv("ARTIFACTORY_HOST");
-            commandLine "curl", "-u", "${project.ext.artifactoryDeployerUsername}:${project.ext.artifactoryDeployerPassword}", "-X", "PUT", "https://${artifactoryHostName}:443/artifactory/sig-cloudnative/synopsys-alert-${project.version}.tgz", "-T", "synopsys-alert-${project.version}.tgz"
-        } else {
-            throw new GradleException("'Can not push SNAPSHOT helm charts'")
+// Dynamic creation of Helm repo add and Helm push-artifactory tasks
+for (String repoName : project.ext.helmArtifactoryRepos) {
+    logger.lifecycle('Creating tasks to process helm repo:: ' + repoName)
+
+    String thisHelmRepoAddTaskName = helmRepoAddTaskName + '_' + repoName
+    String thisHelmRepoPushTaskName = helmPushChartTaskName + '_' + repoName
+
+    project.tasks.create(name: thisHelmRepoAddTaskName, type: Exec, group: 'Deployment', description: "Add ${repoName} helm repository. <sub-task>") {
+        outputs.upToDateWhen { false }
+
+        commandLine 'helm', 'repo', 'add', '--force-update', repoName, "https://${System.env.ARTIFACTORY_HOST}/artifactory/${repoName}"
+
+        onlyIf(envVarsNotExistMsg) {
+            System.env.ARTIFACTORY_HOST != null
         }
     }
-    doLast {
-        logger.lifecycle(standardOutput.toString())
-    }
-}
+    project.tasks.findByName(helmRepoAddTaskName).dependsOn project.tasks.findByName(thisHelmRepoAddTaskName)
 
-task helmPushChartBackup(type: Exec) {
-    workingDir = "${project.buildDir}/deployment/helm/synopsys-alert/"
-    standardOutput = new ByteArrayOutputStream()
-    doFirst {
-        if (!project.ext.isSnapshot) {
-            // if we need to setup helm again to push the charts please run the following command to add the repo
-            // helm repo add sig-cloudnative-local https://${System.env.ARTIFACTORY_HOST}/artifactory/sig-cloudnative-local
-            commandLine "helm", "push-artifactory", "${workingDir}/synopsys-alert-${project.version}.tgz", "sig-cloudnative-local", "-u", "${project.ext.artifactoryDeployerUsername}", "-p", "${project.ext.artifactoryDeployerPassword}"
-        } else {
-            throw new GradleException("'Can not push SNAPSHOT helm charts'")
+    project.tasks.create(name: thisHelmRepoPushTaskName, type: Exec, dependsOn: [thisHelmRepoAddTaskName, copyDeploymentFilesTaskName, helmPackageTaskName], group: 'Deployment', description: "Push to ${repoName} helm repository. <sub-task>") {
+        outputs.upToDateWhen { false }
+        String uploadArtifact = '.'
+        workingDir = "${project.buildDir}/deployment/helm/synopsys-alert/"
+
+        if (helmPrePackagedRepoNames.contains(repoName)) {
+            uploadArtifact = "synopsys-alert-${project.version}.tgz"
+            workingDir = "${project.buildDir}/helmchart"
+        }
+        commandLine 'helm', 'push-artifactory', uploadArtifact, repoName, '-u', "${System.env.ARTIFACTORY_DEPLOYER_USER}", '-p', "${System.env.ARTIFACTORY_DEPLOYER_PASSWORD}"
+
+        onlyIf(envVarsNotExistMsg) {
+            System.env.ARTIFACTORY_DEPLOYER_USER != null && System.env.ARTIFACTORY_DEPLOYER_PASSWORD != null
         }
     }
-    doLast {
-        logger.lifecycle(standardOutput.toString())
-    }
+    project.tasks.findByName(helmPushChartTaskName).dependsOn project.tasks.findByName(thisHelmRepoPushTaskName)
 }
-/**
- * If the build fails with this error, check Artifactory helm repo
- *
- * > Task :helmPushChart FAILED
- * Caching disabled for task ':helmPushChart' because:
- *   Build cache is disabled
- * Task ':helmPushChart' is not up-to-date because:
- *   Task has not declared any outputs despite executing actions.
- * :helmPushChart (Thread[Execution worker for ':' Thread 2,5,main]) completed. Took 0.003 secs.
- *
- * FAILURE: Build failed with an exception.
- *
- * * What went wrong:
- * Execution failed for task ':helmPushChart'.
- * > execCommand == null!
- **/

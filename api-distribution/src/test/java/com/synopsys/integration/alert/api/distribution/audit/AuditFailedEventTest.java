@@ -1,9 +1,9 @@
 package com.synopsys.integration.alert.api.distribution.audit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
 
@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 class AuditFailedEventTest {
     @Test
     void constructorTest() {
+        long testTime = Instant.now().toEpochMilli();
         UUID jobConfigId = UUID.randomUUID();
         UUID jobExecutionId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
@@ -23,7 +24,7 @@ class AuditFailedEventTest {
         assertEquals(jobExecutionId, event.getJobExecutionId());
         assertEquals(jobConfigId, event.getJobConfigId());
         assertEquals(notificationIds, event.getNotificationIds());
-        assertNotNull(event.getCreatedTimestamp());
+        assertTrue(testTime <= event.getCreatedTimestamp());
         assertEquals(errorMessage, event.getErrorMessage());
         assertTrue(event.getStackTrace().isPresent());
         assertEquals(stackTrace, event.getStackTrace().get());
@@ -31,6 +32,7 @@ class AuditFailedEventTest {
 
     @Test
     void constructorStackTraceNullTest() {
+        long testTime = Instant.now().toEpochMilli();
         UUID jobId = UUID.randomUUID();
         UUID jobExecutionId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
@@ -41,7 +43,7 @@ class AuditFailedEventTest {
         assertEquals(jobExecutionId, event.getJobExecutionId());
         assertEquals(jobId, event.getJobConfigId());
         assertEquals(notificationIds, event.getNotificationIds());
-        assertNotNull(event.getCreatedTimestamp());
+        assertTrue(testTime <= event.getCreatedTimestamp());
         assertEquals(errorMessage, event.getErrorMessage());
         assertTrue(event.getStackTrace().isEmpty());
     }

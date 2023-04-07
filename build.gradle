@@ -15,9 +15,12 @@ buildscript {
 
 plugins {
     id 'application'
+    id 'com.dorongold.task-tree' version '2.1.1'
 }
 
 ext {
+    commitHash = 'UNKNOWN'
+
     // Copied from src/test/java - com.synopsys.integration.alert.TestTags
     junitPlatformCustomTestTags = 'BlackDuckConnection, DatabaseConnection, ExternalConnection'
 
@@ -39,14 +42,36 @@ ext {
     dockerRemoveAllImagesStageName = 'dockerRemoveAllImages'
     dockerSetupStagingAreaDirectoryStageName = 'dockerSetupStagingAreaDirectory'
     dockerBuildAllImagesStageName = 'dockerBuildAllImages'
-    dockerLoginDockerHubStageName = 'dockerLoginDockerHub'
     dockerPublishAllImagesStageName = 'dockerPublishAllImages'
+    dockerPublishAllImages_DHStageName = 'dockerPublishAllImages_DH'
+    dockerPublishAllImages_ARTStageName = 'dockerPublishAllImages_ART'
+
+    helmArtifactoryRepos = []
+    helmPrePackagedRepoNames = []
+
+    envVarsNotExistMsg = 'Skipping as dependent variable are not set or values are false'
 }
 
 mainClassName = 'com.synopsys.integration.alert.Application'
 version = '7.0.0-SNAPSHOT'
 
 ext.isSnapshot = project.version.endsWith('-SNAPSHOT')
+ext.isSIGQA = project.version.contains('-SIGQA')
+ext.isRelease = (!project.ext.isSnapshot && !project.ext.isSIGQA)
+
+if (project.ext.isSIGQA && System.env.HELM_SIGQA_REPOS != null) {
+    helmArtifactoryRepos = System.env.HELM_SIGQA_REPOS.split(',').collect { it.trim() as String }
+} else if (project.ext.isSnapshot && System.env.HELM_SNAPSHOT_REPOS != null) {
+    helmArtifactoryRepos = System.env.HELM_SNAPSHOT_REPOS.split(',').collect { it.trim() as String }
+} else if (project.ext.isRelease && System.env.HELM_RELEASE_REPOS != null) {
+    helmArtifactoryRepos = System.env.HELM_RELEASE_REPOS.split(',').collect { it.trim() as String }
+} else {
+    logger.lifecycle("Helm Artifactory repositores not configured")
+}
+
+if (System.env.HELM_PREPACKAGED_REPOS != null) {
+    helmPrePackagedRepoNames = System.env.HELM_PREPACKAGED_REPOS.split(',').collect { it.trim() as String }
+}
 
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
@@ -242,10 +267,7 @@ task buildAll(dependsOn: [copyToTemplates, build, helmValidation, createDeployme
     createDeploymentZip.mustRunAfter helmValidation
 }
 
-tasks.getByName(ext.dockerLoginDockerHubStageName).mustRunAfter(helmPushChart)
-tasks.getByName(ext.dockerLoginDockerHubStageName).mustRunAfter(tasks.getByName(ext.dockerBuildAllImagesStageName))
 tasks.getByName(ext.dockerBuildAllImagesStageName).mustRunAfter(buildAll)
 tasks.getByName(ext.dockerBuildAllImagesStageName).mustRunAfter(tasks.getByName(ext.dockerSetupStagingAreaDirectoryStageName))
 tasks.getByName(ext.dockerSetupStagingAreaDirectoryStageName).mustRunAfter(buildAll)
-tasks.getByName(ext.dockerPublishAllImagesStageName).mustRunAfter(buildAll)
-tasks.getByName(ext.dockerPublishAllImagesStageName).mustRunAfter(tasks.getByName(ext.dockerLoginDockerHubStageName))
+tasks.getByName(ext.dockerPublishAllImages_DHStageName).mustRunAfter(buildAll)

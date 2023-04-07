@@ -10,6 +10,8 @@ import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.model.ConfigWithMetadata;
 
 public class LDAPConfigModel extends ConfigWithMetadata implements Obfuscated<LDAPConfigModel> {
+    private static final long serialVersionUID = -3340739050525348445L;
+
     private Boolean enabled;
     private String serverName;
     private String managerDn;

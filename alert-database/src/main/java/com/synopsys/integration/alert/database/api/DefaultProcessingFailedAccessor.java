@@ -246,7 +246,7 @@ public class DefaultProcessingFailedAccessor implements ProcessingFailedAccessor
         String defaultSortField = "createdAt";
         String inputSortField;
         String sortingField = defaultSortField;
-        if (!"lastSent".equals(sortField)) {
+        if ("lastSent".equals(sortField)) {
             inputSortField = defaultSortField;
         } else {
             inputSortField = sortField;
