@@ -46,6 +46,7 @@ const JiraServerTable = ({ readonly, allowDelete }) => {
     const { data } = useSelector((state) => state.jiraServer);
     const [autoRefresh, setAutoRefresh] = useState(false);
     const [selected, setSelected] = useState([]);
+    const [sortConfig, setSortConfig] = useState();
     const [paramsConfig, setParamsConfig] = useState({
         pageNumber: data?.pageNumber || 0,
         pageSize: data?.pageSize || 10,
@@ -90,6 +91,7 @@ const JiraServerTable = ({ readonly, allowDelete }) => {
     const onSort = (name) => {
         const { sortName, sortOrder } = paramsConfig.mutatorData;
         if (name !== sortName) {
+            setSortConfig({ name, direction: 'ASC' });
             return setParamsConfig({ ...paramsConfig,
                 mutatorData: {
                     ...paramsConfig.mutatorData,
@@ -99,6 +101,7 @@ const JiraServerTable = ({ readonly, allowDelete }) => {
         }
 
         if (name === sortName && sortOrder !== 'desc') {
+            setSortConfig({ name, direction: 'DESC' });
             return setParamsConfig({ ...paramsConfig,
                 mutatorData: {
                     ...paramsConfig.mutatorData,
@@ -107,6 +110,7 @@ const JiraServerTable = ({ readonly, allowDelete }) => {
                 } });
         }
 
+        setSortConfig();
         return setParamsConfig({ ...paramsConfig,
             mutatorData: {
                 ...paramsConfig.mutatorData,
@@ -129,6 +133,7 @@ const JiraServerTable = ({ readonly, allowDelete }) => {
             active={autoRefresh}
             onToggle={handleToggle}
             onSort={onSort}
+            sortConfig={sortConfig}
             selected={selected}
             onSelected={onSelected}
             onPage={handlePagination}
