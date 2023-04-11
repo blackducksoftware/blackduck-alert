@@ -8,7 +8,9 @@ import CheckboxInput from 'common/component/input/CheckboxInput';
 import PasswordInput from 'common/component/input/PasswordInput';
 import TextInput from 'common/component/input/TextInput';
 import ButtonField from 'common/component/input/field/ButtonField';
-import { clearJiraServerFieldErrors, fetchJiraServer, saveJiraServer, sendJiraServerPlugin, validateJiraServer } from 'store/actions/jira-server';
+import { clearJiraServerFieldErrors, fetchJiraServer, saveJiraServer, 
+    sendJiraServerPlugin, testJiraServer, validateJiraServer 
+} from 'store/actions/jira-server';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import { JIRA_SERVER_GLOBAL_FIELD_KEYS } from 'page/channel/jira/server/JiraServerModel';
 
@@ -30,23 +32,34 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
     const { copyDescription, submitText, title, type } = modalOptions;
     const [jiraServerModel, setJiraServerModel] = useState(type === 'CREATE' ? {} : data);
     const [showLoader, setShowLoader] = useState(false);
+    const [requestType, setRequestType] = useState();
+    const [notificationConfig, setNotificationConfig] = useState();
+    const [showNotification, setShowNotification] = useState(false);
     const [installPluginClick, setInstallPluginClick] = useState(false);
     const [buttonMessage, setButtonMessage] = useState('');
     const [buttonSuccess, setButtonSuccess] = useState(false);
-    const { saveStatus, pluginStatus, oAuthLink, error } = useSelector((state) => state.jiraServer);
+    const { pluginStatus, saveStatus, testStatus, oAuthLink, error } = useSelector((state) => state.jiraServer);
 
     function handleClose() {
         toggleModal(false);
-        dispatch(fetchJiraServer());
         dispatch(clearJiraServerFieldErrors());
+        dispatch(fetchJiraServer());
     }
 
     function handleSave() {
         dispatch(saveJiraServer(jiraServerModel));
     }
 
-    function handleSubmit() {
+    function handleSubmit(submitType) {
+        setRequestType(submitType);
+        setShowNotification(false);
+        setNotificationConfig();
+        dispatch(clearJiraServerFieldErrors());
         dispatch(validateJiraServer(jiraServerModel));
+    }
+
+    function handleTest() {
+        dispatch(testJiraServer(jiraServerModel));
     }
 
     function handleOAuth() {
@@ -78,16 +91,21 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
     }, [pluginStatus, oAuthLink]);
 
     useEffect(() => {
-        if (saveStatus === 'VALIDATING' || saveStatus === 'SAVING') {
+        console.log(saveStatus, testStatus, requestType);
+        if (saveStatus === 'VALIDATING' || saveStatus === 'SAVING' || testStatus === 'TESTING') {
             setShowLoader(true);
         }
 
-        if (saveStatus === 'VALIDATED') {
+        if (saveStatus === 'VALIDATED' && requestType === 'save' || installPluginClick) {
             if (installPluginClick) {
                 handleOAuth();
             } else {
                 handleSave();
             }
+        }
+        
+        if (saveStatus === 'VALIDATED' && requestType === 'test') {
+            handleTest();
         }
 
         if (saveStatus === 'SAVED') {
@@ -100,10 +118,31 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
             });
         }
 
+        if (testStatus === 'ERROR' && requestType === 'test') {
+            console.log(error);
+            setShowLoader(false);
+            setNotificationConfig({
+                title: 'Jira Server Test Unsuccessful.',
+                message: error?.message,
+                type: 'error'
+            })
+            setShowNotification(true);
+        }
+
+        if (testStatus === 'SUCCESS' && requestType === 'test') {
+            setShowLoader(false);
+            setRequestType();
+            setNotificationConfig({
+                title: 'Jira Server Test Successful.',
+                type: 'success'
+            })
+            setShowNotification(true);
+        }
+
         if (saveStatus === 'ERROR') {
             setShowLoader(false);
         }
-    }, [saveStatus]);
+    }, [saveStatus, testStatus]);
 
     return (
         <Modal
@@ -111,10 +150,13 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
             size="lg"
             title={title}
             closeModal={handleClose}
-            handleCancel={handleClose}
-            handleSubmit={handleSubmit}
+            handleSubmit={() => handleSubmit('save')}
+            handleTest={() => handleSubmit('test')}
+            testText="Test Jira Server"
             submitText={submitText}
             showLoader={showLoader}
+            notification={notificationConfig}
+            showNotification={showNotification}
         >
             { type === 'COPY' && (
                 <div className={classes.descriptorContainer}>

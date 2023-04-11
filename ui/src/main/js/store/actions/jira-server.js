@@ -11,6 +11,9 @@ import {
     JIRA_SERVER_DELETE_REQUEST,
     JIRA_SERVER_DELETE_SUCCESS,
     JIRA_SERVER_DELETE_FAIL,
+    JIRA_SERVER_TEST_REQUEST,
+    JIRA_SERVER_TEST_SUCCESS,
+    JIRA_SERVER_TEST_FAIL,
     JIRA_SERVER_PLUGIN_REQUEST,
     JIRA_SERVER_PLUGIN_SUCCESS,
     JIRA_SERVER_PLUGIN_FAIL,
@@ -97,6 +100,26 @@ function deleteJiraServerSuccess() {
 function deleteJiraServerError(errors) {
     return {
         type: JIRA_SERVER_DELETE_FAIL,
+        errors
+    };
+}
+
+function testJiraServerRequest() {
+    return {
+        type: JIRA_SERVER_TEST_REQUEST
+    };
+}
+
+function testJiraServerSuccess() {
+    return {
+        type: JIRA_SERVER_TEST_SUCCESS
+    };
+}
+
+function testJiraServerrFail(message, errors) {
+    return {
+        type: JIRA_SERVER_TEST_FAIL,
+        message,
         errors
     };
 }
@@ -249,6 +272,32 @@ export function deleteJiraServer(jiraServerModels) {
             }
         });
     };
+}
+
+export function testJiraServer(jiraServerModel) {
+    return (dispatch, getState) => {
+        dispatch(testJiraServerRequest());
+        const { csrfToken } = getState().session;
+        const errorHandlers = [];
+        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => testJiraServerrFail(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION, {})));
+        const testRequest = ConfigRequestBuilder.createTestRequest(JIRA_SERVER_URLS.jiraServerConfigUrl, csrfToken, jiraServerModel);
+        testRequest.then((response) => {
+            if (response.ok) {
+                response.json()
+                    .then((testResponse) => {
+                        if (testResponse.hasErrors) {
+                            handleValidationError(dispatch, errorHandlers, response.status, () => testJiraServerrFail(testResponse.message, testResponse.errors));
+                        } else {
+                            dispatch(testJiraServerSuccess());
+                        }
+                    });
+            } else {
+                handleValidationError(dispatch, errorHandlers, response.status, () => testJiraServerrFail(response.message, response.errors));
+            }
+        })
+            .catch(console.error);
+    }
 }
 
 export function sendJiraServerPlugin(azureBoard) {

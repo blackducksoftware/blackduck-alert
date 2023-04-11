@@ -12,6 +12,9 @@ import {
     JIRA_SERVER_DELETE_REQUEST,
     JIRA_SERVER_DELETE_SUCCESS,
     JIRA_SERVER_DELETE_FAIL,
+    JIRA_SERVER_TEST_REQUEST,
+    JIRA_SERVER_TEST_SUCCESS,
+    JIRA_SERVER_TEST_FAIL,
     JIRA_SERVER_PLUGIN_REQUEST,
     JIRA_SERVER_PLUGIN_SUCCESS,
     JIRA_SERVER_PLUGIN_FAIL,
@@ -26,7 +29,8 @@ const initialState = {
     fieldErrors: {},
     saveStatus: '',
     deleteStatus: '',
-    pluginStatus: ''
+    pluginStatus: '',
+    testStatus: ''
 };
 
 const jiraServer = (state = initialState, action) => {
@@ -119,6 +123,26 @@ const jiraServer = (state = initialState, action) => {
                 error: HTTPErrorUtils.createErrorObject(action),
                 fieldErrors: action.errors || {}
             };
+        case JIRA_SERVER_TEST_REQUEST:
+            return {
+                ...state,
+                fetching: true,
+                saveStatus: '',
+                testStatus: 'TESTING'
+            }
+        case JIRA_SERVER_TEST_SUCCESS:
+            return {
+                ...state,
+                fetching: false,
+                testStatus: 'SUCCESS'
+            }
+        case JIRA_SERVER_TEST_FAIL:
+            return {
+                ...state,
+                fetching: false,
+                testStatus: 'ERROR',
+                error: HTTPErrorUtils.createErrorObject(action)
+            }
         case JIRA_SERVER_PLUGIN_REQUEST:
             return {
                 ...state,
@@ -148,6 +172,7 @@ const jiraServer = (state = initialState, action) => {
                 saveStatus: '',
                 deleteStatus: '',
                 pluginStatus: '',
+                testStatus: '',
                 error: HTTPErrorUtils.createEmptyErrorObject(),
                 fieldErrors: {}
             };
