@@ -61,6 +61,7 @@ const Table = ({ columns, multiSelect, selected, onSelected, disableSelectOption
                         onSelected={onSelected}
                         onSort={onSort}
                         sortConfig={sortConfig}
+                        disableSelectOptions={disableSelectOptions}
                     />
                     <TableBody
                         columns={columns}

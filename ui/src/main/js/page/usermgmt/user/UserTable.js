@@ -54,7 +54,8 @@ const UserTable = ({ canCreate, canDelete }) => {
     // Disable select options for users: sysadmin, jobmanager, alertuser
     const disableSelectOptions = {
         key: 'username',
-        disabledItems: ['sysadmin', 'jobmanager', 'alertuser']
+        disabledItems: ['sysadmin', 'jobmanager', 'alertuser'],
+        title: 'System created user, unable to select for deletion.'
     };
 
     useEffect(() => {

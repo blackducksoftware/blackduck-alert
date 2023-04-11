@@ -8,7 +8,9 @@ const useStyles = createUseStyles({
         width: '45px'
     },
     inputStyle: {
-        cursor: 'pointer'
+        '&:disabled': {
+            cursor: 'not-allowed'
+        }
     }
 });
 
@@ -29,8 +31,9 @@ const MultiSelectCell = ({ selected, onSelected, data, disableSelectOptions }) =
     return (
         <td className={classes.multiSelectStyle}>
             <input
-                // className={classes.inputStyle}
+                className={classes.inputStyle}
                 type="checkbox"
+                title={isDisabled ? disableSelectOptions?.title : 'Select row.'}
                 onChange={toggleSelect}
                 checked={isSelected}
                 disabled={isDisabled}
@@ -47,8 +50,10 @@ MultiSelectCell.propTypes = {
     }),
     disableSelectOptions: PropTypes.shape({
         key: PropTypes.string,
-        disabledItems: PropTypes.arrayOf(PropTypes.string)
-    })
+        disabledItems: PropTypes.arrayOf(PropTypes.string),
+        title: PropTypes.string
+    }),
+    title: PropTypes.string
 };
 
 export default MultiSelectCell;

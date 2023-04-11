@@ -40,7 +40,8 @@ const RoleTable = ({ canCreate, canDelete }) => {
     // Disable select options for users: sysadmin, jobmanager, alertuser
     const disableSelectOptions = {
         key: 'roleName',
-        disabledItems: ['ALERT_ADMIN', 'ALERT_JOB_MANAGER', 'ALERT_USER']
+        disabledItems: ['ALERT_ADMIN', 'ALERT_JOB_MANAGER', 'ALERT_USER'],
+        title: 'System created role, unable to select for deletion.'
     };
 
     useEffect(() => {

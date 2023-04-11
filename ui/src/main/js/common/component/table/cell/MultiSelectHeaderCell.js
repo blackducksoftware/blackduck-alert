@@ -12,14 +12,17 @@ const useStyles = createUseStyles({
     }
 });
 
-const MultiSelectHeaderCell = ({ tableData, onSelected, selected }) => {
+const MultiSelectHeaderCell = ({ tableData, onSelected, selected, disableSelectOptions }) => {
     const classes = useStyles();
     const checkboxRef = useRef();
 
-    const ids = useMemo(() => tableData?.map((item) => (
+    // Return the ids of the rows if they are not included in the disableSelectOptions.disabledItems array
+    const ids = useMemo(() => tableData?.filter((row) => (
+        !disableSelectOptions?.disabledItems.includes(row[disableSelectOptions.key])
+    )).map((item) => (
         item.id
     )), [tableData]);
-
+    
     useEffect(() => {
         if (selected?.length === 0) {
             checkboxRef.current.checked = false;
@@ -32,7 +35,7 @@ const MultiSelectHeaderCell = ({ tableData, onSelected, selected }) => {
         }
     }, [selected, tableData]);
 
-    function toggleAll(evt) {
+    function toggleAll() {
         if (selected?.length === 0) {
             onSelected(ids);
         } else {
