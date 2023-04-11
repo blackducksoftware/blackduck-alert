@@ -93,7 +93,7 @@ const CertificatesTable = () => {
             });
         }
 
-        setTableData(!search ? data : data.filter((certificate) => certificate.type.toLowerCase().includes(search.toLowerCase())));
+        setTableData(!search ? data : data.filter((certificate) => certificate.alias.toLowerCase().includes(search.toLowerCase())));
     }, [certificates, search, sortConfig]);
 
     return (
