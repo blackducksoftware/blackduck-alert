@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PasswordInput from 'common/component/input/PasswordInput';
 import TextInput from 'common/component/input/TextInput';
-import SubmitButton from 'common/component/button/SubmitButton';
 import Header from 'common/component/Header';
 import { login } from 'store/actions/session';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import SamlLogin from './SamlLogin';
+import Button from 'common/component/button/Button';
 
 const LoginPage = () => {
     const dispatch = useDispatch();
@@ -57,7 +57,7 @@ const LoginPage = () => {
                         />
                         <div className="row">
                             <div className="col-sm-12 text-right">
-                                <SubmitButton id="loginSubmit">Login</SubmitButton>
+                                <Button id="loginSubmit" text="Login" type="submit" style="default" />
                                 <div className="progressIcon">
                                     {fetching && (
                                         <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
