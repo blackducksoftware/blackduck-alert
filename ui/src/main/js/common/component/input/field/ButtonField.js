@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import GeneralButton from 'common/component/button/GeneralButton';
 import LabeledField, { LabelFieldPropertyDefaults } from 'common/component/input/field/LabeledField';
 import StatusMessage from 'common/component/StatusMessage';
+import Button from 'common/component/button/Button';
 
 const ButtonField = ({
     id,
@@ -40,14 +40,7 @@ const ButtonField = ({
                 errorValue={fieldError}
             >
                 <div className="d-inline-flex p-2 col-sm-8">
-                    <GeneralButton
-                        id={fieldKey}
-                        onClick={callOnSendClick}
-                        disabled={readOnly}
-                        performingAction={progress}
-                    >
-                        {buttonLabel}
-                    </GeneralButton>
+                    <Button id={fieldKey} onClick={callOnSendClick} text={buttonLabel} style="default" disabled={readOnly} />
                 </div>
                 {success && <StatusMessage id={`${fieldKey}-status-message`} actionMessage={statusMessage} />}
             </LabeledField>

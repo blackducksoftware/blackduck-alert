@@ -146,6 +146,7 @@ const EmailGlobalConfiguration = ({
                     id="additional.email.properties"
                     name={additionalPropertiesName}
                     label="Additional Email Properties"
+                    buttonLabel="Add Property"
                     description="Mapping of additional properties that can be used to appropriately configure your email connection."
                     readonly={readonly}
                     value={emailConfig[additionalPropertiesName] || {}}

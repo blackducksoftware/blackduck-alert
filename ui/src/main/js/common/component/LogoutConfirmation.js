@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Modal } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { cancelLogout, logout } from 'store/actions/session';
+import Button from 'common/component/button/Button';
 
 const LogoutConfirmation = ({ cancelLogout, logout, showLogoutConfirm }) => {
     return (
@@ -14,8 +15,8 @@ const LogoutConfirmation = ({ cancelLogout, logout, showLogoutConfirm }) => {
                 Are you sure you would like to logout?
             </Modal.Body>
             <Modal.Footer>
-                <button id="logoutCancel" type="button" className="btn btn-link" onClick={cancelLogout}>Cancel</button>
-                <button id="logoutLogout" type="button" className="btn btn-danger" onClick={logout}>Logout</button>
+                <Button id="logoutCancel" onClick={cancelLogout} text="Cancel" style="transparent" />
+                <Button id="logoutLogout" onClick={logout} text="Logout" style="delete" />
             </Modal.Footer>
         </Modal>
     );

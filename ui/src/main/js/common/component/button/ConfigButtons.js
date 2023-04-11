@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import CancelButton from 'common/component/button/CancelButton';
-import SubmitButton from 'common/component/button/SubmitButton';
-import GeneralButton from 'common/component/button/GeneralButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ConfirmModal from 'common/component/ConfirmModal';
+import Button from 'common/component/button/Button';
 
 class ConfigButtons extends Component {
     constructor(props) {
@@ -30,7 +28,7 @@ class ConfigButtons extends Component {
                     borderRight: '1px solid #aaa'
                 }}
                 >
-                    <GeneralButton id={testId} onClick={onTestClick}>{testLabel}</GeneralButton>
+                    <Button id={testId} onClick={onTestClick} text={testLabel} style="default" />
                 </div>
             );
         }
@@ -40,7 +38,9 @@ class ConfigButtons extends Component {
     createSaveButton() {
         const { includeSave, submitLabel, submitId } = this.props;
         if (includeSave) {
-            return (<SubmitButton id={submitId}>{submitLabel}</SubmitButton>);
+            return (
+                <Button id={submitId} text={submitLabel} style="default" type="submit" />
+            );
         }
         return null;
     }
@@ -51,7 +51,9 @@ class ConfigButtons extends Component {
         } = this.props;
 
         if (includeCancel) {
-            return (<CancelButton id={cancelId} onClick={onCancelClick}>{cancelLabel}</CancelButton>);
+            return (
+                <Button id={cancelId} onClick={onCancelClick} text={cancelLabel} style="transparent" />
+            );
         }
         return null;
     }
@@ -69,7 +71,7 @@ class ConfigButtons extends Component {
         if (includeDelete) {
             return (
                 <div style={Object.assign(style, { borderLeft })}>
-                    <GeneralButton id={deleteId} onClick={this.handleDelete}>{deleteLabel}</GeneralButton>
+                    <Button id={deleteId} onClick={this.handleDelete} text={deleteLabel} style="default" />
                 </div>
             );
         }

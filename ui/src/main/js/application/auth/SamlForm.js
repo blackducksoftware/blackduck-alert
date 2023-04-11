@@ -11,8 +11,8 @@ import CheckboxInput from 'common/component/input/CheckboxInput';
 import LabeledField from 'common/component/input/field/LabeledField';
 import RadioInput from 'common/component/input/RadioInput';
 import TextInput from 'common/component/input/TextInput';
-import GeneralButton from 'common/component/button/GeneralButton';
 import UploadFileButtonField from 'common/component/input/field/UploadFileButtonField';
+import Button from 'common/component/button/Button';
 
 import * as ConfigurationRequestBuilder from 'common/util/configurationRequestBuilder';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
@@ -146,7 +146,12 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, fileDelete, fileRead, fil
                         />
                         <LabeledField label={importBlackDuckSSOConfigLabel} description={importBlackDuckSSOConfigDescription}>
                             <div className={classes.fillForm}>
-                                <GeneralButton id="blackduck-sso-import-button" disabled={readonly} onClick={() => setShowBlackDuckSSOImportModal(true)}>Fill Form</GeneralButton>
+                                <Button
+                                    id="blackduck-sso-import-button"
+                                    onClick={() => setShowBlackDuckSSOImportModal(true)}
+                                    text="Fill Form"
+                                    style="default"
+                                />
                             </div>
                         </LabeledField>
                         <BlackDuckSSOConfigImportModal

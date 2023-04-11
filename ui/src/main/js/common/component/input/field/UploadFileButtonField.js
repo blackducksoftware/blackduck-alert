@@ -5,6 +5,7 @@ import { createDeleteRequest, createFileUploadRequest, createReadRequest } from 
 import StatusMessage from 'common/component/StatusMessage';
 import GeneralButton from 'common/component/button/GeneralButton';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
+import Button from 'common/component/button/Button';
 
 const UploadFileButtonField = ({
     id,
@@ -141,28 +142,21 @@ const UploadFileButtonField = ({
                         />
                         <div>
                             <div className="d-inline-flex">
-                                <GeneralButton
+                                <Button
                                     id={`${fieldKey}-upload`}
-                                    className="uploadButton"
                                     onClick={onUploadClick}
+                                    text={buttonLabel}
+                                    style="default"
                                     disabled={readOnly || !permissions.read || !permissions.write}
-                                    performingAction={progress}
-                                >
-                                    {buttonLabel}
-                                </GeneralButton>
-                                {fileUploaded
-                                && (
-                                    <>
-                                        <button
-                                            type="button"
-                                            disabled={readOnly || !permissions.read || !permissions.delete}
-                                            id={`${fieldKey}-delete`}
-                                            className="btn btn-md btn-link"
-                                            onClick={onDeleteClick}
-                                        >
-                                            {removeFileUploadedText}
-                                        </button>
-                                    </>
+                                />
+                                {fileUploaded && (
+                                    <Button
+                                        id={`${fieldKey}-delete`}
+                                        onClick={onDeleteClick}
+                                        text={removeFileUploadedText}
+                                        style="default"
+                                        disabled={readOnly || !permissions.read || !permissions.delete}
+                                    />
                                 )}
                             </div>
                         </div>
