@@ -35,6 +35,7 @@ public class JiraServerGlobalConfigurationValidator {
     public ValidationResponseModel validate(JiraServerGlobalConfigModel model, String id) {
         Set<AlertFieldStatus> statuses = new HashSet<>();
 
+        // TODO: Implement access token and AuthorizationMethod
         if (StringUtils.isBlank(model.getName())) {
             statuses.add(AlertFieldStatus.error("name", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
         } else if (doesNameExist(model.getName(), id)) {
@@ -50,7 +51,7 @@ public class JiraServerGlobalConfigurationValidator {
                 statuses.add(AlertFieldStatus.error("url", e.getMessage()));
             }
         }
-        if (StringUtils.isBlank(model.getUserName())) {
+        if (model.getUserName().isEmpty() || StringUtils.isBlank(model.getUserName().get())) {
             statuses.add(AlertFieldStatus.error("userName", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
         }
 
