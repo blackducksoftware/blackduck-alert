@@ -63,7 +63,7 @@ class JiraServerGlobalConfigurationValidatorTest {
 
         ValidationResponseModel validationResponseModel = validator.validate(model, null);
         Collection<AlertFieldStatus> alertFieldStatuses = validationResponseModel.getErrors().values();
-        assertEquals(4, alertFieldStatuses.size(), "There were errors in the configuration when none were expected.");
+        assertEquals(2, alertFieldStatuses.size(), "There were errors in the configuration when none were expected.");
         for (AlertFieldStatus status : alertFieldStatuses) {
             assertEquals(ConfigurationFieldValidator.REQUIRED_FIELD_MISSING_MESSAGE, status.getFieldMessage(), "Validation had unexpected field message.");
         }

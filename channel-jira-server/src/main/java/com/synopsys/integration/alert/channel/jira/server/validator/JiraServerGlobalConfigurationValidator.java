@@ -22,6 +22,7 @@ import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatusMessages;
 import com.synopsys.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
+import com.synopsys.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 
 @Component
 public class JiraServerGlobalConfigurationValidator {
@@ -51,12 +52,15 @@ public class JiraServerGlobalConfigurationValidator {
                 statuses.add(AlertFieldStatus.error("url", e.getMessage()));
             }
         }
-        if (model.getUserName().isEmpty() || StringUtils.isBlank(model.getUserName().get())) {
-            statuses.add(AlertFieldStatus.error("userName", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
-        }
+        // TODO: Add branching validation depending on AuthorizationMethod using BASIC or BEARER
+        if (model.getAuthorizationMethod() == JiraServerAuthorizationMethod.BASIC) {
+            if (model.getUserName().isEmpty() || StringUtils.isBlank(model.getUserName().get())) {
+                statuses.add(AlertFieldStatus.error("userName", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
+            }
 
-        if (model.getPassword().isEmpty() && !model.getIsPasswordSet().orElse(Boolean.FALSE)) {
-            statuses.add(AlertFieldStatus.error("password", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
+            if (model.getPassword().isEmpty() && !model.getIsPasswordSet().orElse(Boolean.FALSE)) {
+                statuses.add(AlertFieldStatus.error("password", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
+            }
         }
 
         if (!statuses.isEmpty()) {
