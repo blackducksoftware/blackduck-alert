@@ -130,7 +130,7 @@ function ProviderTable({ readonly }) {
         }
         setTableData(!search ? convertedTableData : convertedTableData.filter((provider) => provider.name.toLowerCase().includes(search.toLowerCase())));
     }, [data, search, sortConfig]);
-    console.log(tableData);
+
     return (
         <Table
             tableData={tableData}

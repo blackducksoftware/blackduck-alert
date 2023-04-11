@@ -10,7 +10,7 @@ import TextInput from 'common/component/input/TextInput';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { BLACKDUCK_GLOBAL_FIELD_KEYS } from './blackduck/BlackDuckModel';
-import { clearProviderFieldErrors, fetchProviders, saveProvider, validateProvider } from '../../store/actions/provider';
+import { clearProviderFieldErrors, fetchProviders, saveProvider, testProvider, validateProvider } from '../../store/actions/provider';
 
 const useStyles = createUseStyles({
     descriptorContainer: {
@@ -64,8 +64,11 @@ const ProviderModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessa
 
     const { copyDescription, submitText, title, type } = modalOptions;
     const [showLoader, setShowLoader] = useState(false);
+    const [requestType, setRequestType] = useState();
+    const [notificationConfig, setNotificationConfig] = useState();
+    const [showNotification, setShowNotification] = useState(false);
 
-    const { saveStatus, error } = useSelector((state) => state.provider);
+    const { saveStatus, testStatus, error } = useSelector((state) => state.provider);
     const [providerModel, setProviderModel] = useState(type === 'CREATE' ? getDefaultProviderModel() : transformData(data, type));
 
     function handleClose() {
@@ -78,21 +81,33 @@ const ProviderModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessa
         dispatch(saveProvider(providerModel));
     }
 
-    function handleSubmit() {
+    function handleSubmit(submitType) {
+        setRequestType(submitType);
+        setShowNotification(false);
+        setNotificationConfig();
         dispatch(validateProvider(providerModel));
     }
 
+    function handleTest() {
+        dispatch(testProvider(providerModel));
+    }
+
     useEffect(() => {
-        if (saveStatus === 'VALIDATING' || saveStatus === 'SAVING') {
+        if (saveStatus === 'VALIDATING' || saveStatus === 'SAVING' || testStatus === 'TESTING') {
             setShowLoader(true);
         }
 
-        if (saveStatus === 'VALIDATED') {
+        if (saveStatus === 'VALIDATED' && requestType === 'save') {
             handleSave();
         }
+        
+        if (saveStatus === 'VALIDATED' && requestType === 'test') {
+            handleTest();
+        }
 
-        if (saveStatus === 'SAVED') {
+        if (saveStatus === 'SAVED' && requestType === 'save') {
             setShowLoader(false);
+            setRequestType();
             handleClose();
             setStatusMessage({
                 message: successMessage,
@@ -100,10 +115,31 @@ const ProviderModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessa
             });
         }
 
+        if (testStatus === 'ERROR' && requestType === 'test') {
+            setShowLoader(false);
+            setNotificationConfig({
+                title: 'Provider Test Unsuccessful.',
+                message: error.message,
+                type: 'error'
+            })
+            setShowNotification(true);
+        }
+
+        if (testStatus === 'SUCCESS' && requestType === 'test') {
+            setShowLoader(false);
+            setRequestType();
+            setNotificationConfig({
+                title: 'Provider Test Successful.',
+                type: 'success'
+            })
+            setShowNotification(true);
+            dispatch(clearProviderFieldErrors());
+        }
+
         if (saveStatus === 'ERROR') {
             setShowLoader(false);
         }
-    }, [saveStatus]);
+    }, [saveStatus, testStatus]);
 
     return (
         <Modal
@@ -111,10 +147,13 @@ const ProviderModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessa
             size="lg"
             title={title}
             closeModal={handleClose}
-            handleCancel={handleClose}
-            handleSubmit={handleSubmit}
+            handleSubmit={() => handleSubmit('save')}
+            handleTest={() => handleSubmit('test')}
             submitText={submitText}
+            testText="Test Provider"
             showLoader={showLoader}
+            notification={notificationConfig}
+            showNotification={showNotification}
         >
             { type === 'COPY' && (
                 <div className={classes.descriptorContainer}>

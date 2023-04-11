@@ -37,7 +37,11 @@ const ModalFooter = ({ handleCancel, handleSubmit, handleTest, submitText, showL
                     </div>
                 )}
 
-                { handleCancel && (
+                { handleTest && (
+                    <Button onClick={handleTest} text={testText} style="transparent" />
+                )}
+
+                { (handleCancel && !handleTest) && (
                     <Button onClick={handleCancel} text="Cancel" style="transparent" />
                 )}
                 <Button onClick={handleSubmit} text={submitText} style="default" />

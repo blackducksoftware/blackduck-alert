@@ -11,6 +11,9 @@ import {
     PROVIDER_VALIDATE_REQUEST,
     PROVIDER_VALIDATE_FAIL,
     PROVIDER_VALIDATE_SUCCESS,
+    PROVIDER_TEST_REQUEST,
+    PROVIDER_TEST_FAIL,
+    PROVIDER_TEST_SUCCESS,
     PROVIDER_CLEAR_FIELD_ERRORS
 } from 'store/actions/types';
 import * as ConfigRequestBuilder from 'common/util/configurationRequestBuilder';
@@ -40,13 +43,13 @@ function fetchingProviderSuccess(providers) {
     };
 }
 
-function savingProvider() {
+function saveProviderRequest() {
     return {
         type: PROVIDER_POST_REQUEST
     };
 }
 
-function savedProvider() {
+function saveProviderSuccess() {
     return {
         type: PROVIDER_POST_SUCCESS
     };
@@ -103,6 +106,26 @@ function bulkDeleteProvidersSuccess() {
 function bulkDeleteProvidersError(errors) {
     return {
         type: PROVIDER_DELETE_FAIL,
+        errors
+    };
+}
+
+function testProviderRequest() {
+    return {
+        type: PROVIDER_TEST_REQUEST
+    };
+}
+
+function testProviderSuccess() {
+    return {
+        type: PROVIDER_TEST_SUCCESS
+    };
+}
+
+function testProviderFail(message, errors) {
+    return {
+        type: PROVIDER_TEST_FAIL,
+        message,
         errors
     };
 }
@@ -187,7 +210,7 @@ export function validateProvider(provider) {
 
 export function saveProvider(provider) {
     return (dispatch, getState) => {
-        dispatch(savingProvider());
+        dispatch(saveProviderRequest());
         const { id } = provider;
         const { csrfToken } = getState().session;
         const errorHandlers = [];
@@ -201,7 +224,7 @@ export function saveProvider(provider) {
         }
         saveRequest.then((response) => {
             if (response.ok) {
-                dispatch(savedProvider());
+                dispatch(saveProviderSuccess());
             } else {
                 response.json()
                     .then((responseData) => {
@@ -233,6 +256,32 @@ export function bulkDeleteProviders(providerIdArray) {
             }
         });
     };
+}
+
+export function testProvider(provider) {
+    return (dispatch, getState) => {
+        dispatch(testProviderRequest());
+        const { csrfToken } = getState().session;
+        const errorHandlers = [];
+        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => testProviderFail(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION, {})));
+        const testRequest = ConfigRequestBuilder.createTestRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, provider);
+        testRequest.then((response) => {
+            if (response.ok) {
+                response.json()
+                    .then((testResponse) => {
+                        if (testResponse.hasErrors) {
+                            handleValidationError(dispatch, errorHandlers, response.status, () => testProviderFail(testResponse.message, testResponse.errors));
+                        } else {
+                            dispatch(testProviderSuccess());
+                        }
+                    });
+            } else {
+                handleValidationError(dispatch, errorHandlers, response.status, () => testProviderFail(response.message, response.errors));
+            }
+        })
+            .catch(console.error);
+    }
 }
 
 export function clearProviderFieldErrors() {

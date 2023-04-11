@@ -11,6 +11,9 @@ import {
     PROVIDER_VALIDATE_REQUEST,
     PROVIDER_VALIDATE_FAIL,
     PROVIDER_VALIDATE_SUCCESS,
+    PROVIDER_TEST_REQUEST,
+    PROVIDER_TEST_FAIL,
+    PROVIDER_TEST_SUCCESS,
     PROVIDER_CLEAR_FIELD_ERRORS,
     SERIALIZE
 } from 'store/actions/types';
@@ -20,6 +23,8 @@ const initialState = {
     data: [],
     fetching: false,
     saveStatus: '',
+    deleteStatus: '',
+    testStatus: '',
     error: HTTPErrorUtils.createEmptyErrorObject(),
     fieldErrors: {}
 };
@@ -114,12 +119,34 @@ const provider = (state = initialState, action) => {
                 fetching: false,
                 saveStatus: 'VALIDATED'
             };
+        case PROVIDER_TEST_REQUEST:
+            return {
+                ...state,
+                fetching: true,
+                saveStatus: '',
+                testStatus: 'TESTING'
+            }
+        case PROVIDER_TEST_FAIL:
+            return {
+                ...state,
+                fetching: false,
+                testStatus: 'ERROR',
+                error: HTTPErrorUtils.createErrorObject(action)
+            }
+        case PROVIDER_TEST_SUCCESS:
+            return {
+                ...state,
+                fetching: false,
+                testStatus: 'SUCCESS'
+            }
         case PROVIDER_CLEAR_FIELD_ERRORS:
             return {
                 ...state,
                 error: HTTPErrorUtils.createEmptyErrorObject(),
                 fieldErrors: {},
-                saveStatus: ''
+                saveStatus: '',
+                deleteStatus: '',
+                testStatus: ''
             };
         case SERIALIZE:
             return initialState;

@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom';
 import { createUseStyles } from 'react-jss';
 import ModalHeader from 'common/component/modal/ModalHeader';
 import ModalFooter from 'common/component/modal/ModalFooter';
+import Notification from './Notification';
 
 const modalRoot = document.getElementById('alert-modal');
 
@@ -12,7 +13,7 @@ const useStyles = createUseStyles({
     modal: {
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
         display: 'block',
-        // TODO: offset to the navigation width of 250px - hack, please fix when navigation is updated
+        // TODO: offset to the navigation width of 250px - please fix when navigation is updated
         inset: '0 0 0 250px',
         position: 'fixed',
         zIndex: '10000',
@@ -48,7 +49,9 @@ const useStyles = createUseStyles({
     }
 });
 
-const Modal = ({ isOpen, size, title, closeModal, children, handleCancel, handleSubmit, submitText, showLoader }) => {
+const Modal = ({ isOpen, size, title, closeModal, children, handleCancel, handleSubmit, 
+    handleTest, submitText, testText, showLoader, notification, showNotification
+}) => {
     const classes = useStyles();
 
     const modalStyleClass = classNames(classes.modalStyle, {
@@ -70,12 +73,17 @@ const Modal = ({ isOpen, size, title, closeModal, children, handleCancel, handle
                         closeModal={closeModal}
                     />
                     <div className={classes.modalBody}>
+                        { showNotification && (
+                            <Notification notification={notification} />
+                        )}
                         {children}
                     </div>
                     <ModalFooter
                         handleCancel={handleCancel}
                         handleSubmit={handleSubmit}
+                        handleTest={handleTest}
                         submitText={submitText}
+                        testText={testText}
                         showLoader={showLoader}
                     />
                 </div>
@@ -97,8 +105,16 @@ Modal.propTypes = {
     closeModal: PropTypes.func,
     handleCancel: PropTypes.func,
     handleSubmit: PropTypes.func,
+    handleTest: PropTypes.func,
+    notification: PropTypes.shape({
+        message: PropTypes.string,
+        title: PropTypes.string,
+        type: PropTypes.oneOf(['error', 'success'])
+    }),
+    showNotification: PropTypes.bool,
     showLoader: PropTypes.bool,
-    submitText: PropTypes.string
+    submitText: PropTypes.string,
+    testText: PropTypes.string
 };
 
 export default Modal;
