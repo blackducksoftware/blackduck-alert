@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
+import com.synopsys.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 import com.synopsys.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
@@ -69,15 +70,19 @@ class JiraServerGlobalTestActionTest {
         Mockito.when(testActionWrapper.isAppMissing()).thenReturn(false);
         Mockito.when(configurationAccessor.getConfiguration(Mockito.any())).thenReturn(Optional.of(jiraServerGlobalConfigModel));
 
+        // TODO: Implement access token and AuthorizationMethod
         JiraServerGlobalConfigModel configurationModel = new JiraServerGlobalConfigModel(
             jiraServerGlobalConfigModel.getId(),
             jiraServerGlobalConfigModel.getName(),
             jiraServerGlobalConfigModel.getCreatedAt(),
             jiraServerGlobalConfigModel.getLastUpdated(),
             jiraServerGlobalConfigModel.getUrl(),
-            jiraServerGlobalConfigModel.getUserName(),
+            JiraServerAuthorizationMethod.BASIC,
+            jiraServerGlobalConfigModel.getUserName().orElse(null),
             null,
             Boolean.TRUE,
+            null,
+            Boolean.FALSE,
             Boolean.FALSE
         );
 
@@ -229,14 +234,18 @@ class JiraServerGlobalTestActionTest {
     }
 
     private JiraServerGlobalConfigModel createValidJiraServerGlobalConfigModel() {
+        // TODO: Implement access token and AuthorizationMethod
         return new JiraServerGlobalConfigModel(
             UUID.randomUUID().toString(),
             "jiraServerConfigName",
             "createdAtTest",
             "lastUpdatedTest",
             "https://jiraServer",
+            JiraServerAuthorizationMethod.BASIC,
             "jiraUser",
             "jiraPassword",
+            Boolean.FALSE,
+            null,
             Boolean.FALSE,
             Boolean.FALSE
         );

@@ -18,6 +18,7 @@ import com.synopsys.integration.alert.api.common.model.AlertConstants;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
+import com.synopsys.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 import com.synopsys.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.model.Config;
@@ -53,7 +54,11 @@ class JiraServerEnvironmentVariableHandlerTestIT {
     void testCleanEnvironment() {
         Environment environment = setupMockedEnvironment();
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
-        JiraServerEnvironmentVariableHandler jiraServerEnvironmentVariableHandler = new JiraServerEnvironmentVariableHandler(jiraGlobalConfigAccessor, environmentVariableUtility, validator);
+        JiraServerEnvironmentVariableHandler jiraServerEnvironmentVariableHandler = new JiraServerEnvironmentVariableHandler(
+            jiraGlobalConfigAccessor,
+            environmentVariableUtility,
+            validator
+        );
         EnvironmentProcessingResult result = jiraServerEnvironmentVariableHandler.updateFromEnvironment();
         assertEquals(ChannelKeys.JIRA_SERVER.getDisplayName(), jiraServerEnvironmentVariableHandler.getName());
         assertTrue(result.hasValues());
@@ -67,13 +72,31 @@ class JiraServerEnvironmentVariableHandlerTestIT {
     @Test
     void testExistingConfig() throws AlertConfigurationException {
         String createdAt = DateUtils.formatDate(DateUtils.createCurrentDateTimestamp(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
-        JiraServerGlobalConfigModel jiraServerGlobalConfigModel = new JiraServerGlobalConfigModel(null, AlertRestConstants.DEFAULT_CONFIGURATION_NAME, createdAt, createdAt, TEST_URL, TEST_USER, TEST_PASSWORD, false, true);
+        // TODO: Implement access token and AuthorizationMethod
+        JiraServerGlobalConfigModel jiraServerGlobalConfigModel = new JiraServerGlobalConfigModel(
+            null,
+            AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
+            createdAt,
+            createdAt,
+            TEST_URL,
+            JiraServerAuthorizationMethod.BASIC,
+            TEST_USER,
+            TEST_PASSWORD,
+            false,
+            null,
+            false,
+            true
+        );
 
         jiraGlobalConfigAccessor.createConfiguration(jiraServerGlobalConfigModel);
 
         Environment environment = setupMockedEnvironment();
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
-        JiraServerEnvironmentVariableHandler jiraServerEnvironmentVariableHandler = new JiraServerEnvironmentVariableHandler(jiraGlobalConfigAccessor, environmentVariableUtility, validator);
+        JiraServerEnvironmentVariableHandler jiraServerEnvironmentVariableHandler = new JiraServerEnvironmentVariableHandler(
+            jiraGlobalConfigAccessor,
+            environmentVariableUtility,
+            validator
+        );
         EnvironmentProcessingResult result = jiraServerEnvironmentVariableHandler.updateFromEnvironment();
         assertEquals(ChannelKeys.JIRA_SERVER.getDisplayName(), jiraServerEnvironmentVariableHandler.getName());
         assertFalse(result.hasValues());
@@ -82,7 +105,12 @@ class JiraServerEnvironmentVariableHandlerTestIT {
     private Environment setupMockedEnvironment() {
         Environment environment = Mockito.mock(Environment.class);
         Predicate<String> hasEnvVarCheck = (variableName) -> !JiraServerEnvironmentVariableHandler.VARIABLE_NAMES.contains(variableName);
-        EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandler.DISABLE_PLUGIN_KEY, TEST_DISABLE_PLUGIN_CHECK);
+        EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(
+            environment,
+            hasEnvVarCheck,
+            JiraServerEnvironmentVariableHandler.DISABLE_PLUGIN_KEY,
+            TEST_DISABLE_PLUGIN_CHECK
+        );
         EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandler.URL_KEY, TEST_URL);
         EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandler.PASSWORD_KEY, TEST_PASSWORD);
         EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandler.USERNAME_KEY, TEST_USER);
