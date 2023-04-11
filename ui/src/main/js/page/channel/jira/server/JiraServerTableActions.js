@@ -3,8 +3,7 @@ import PropTypes from 'prop-types';
 import StatusMessage from 'common/component/StatusMessage';
 import JiraServerModal from 'page/channel/jira/server/JiraServerModal';
 import JiraServerDeleteModal from 'page/channel/jira/server/JiraServerDeleteModal';
-import CreateButton from 'common/component/button/CreateButton';
-import DeleteButton from 'common/component/button/DeleteButton';
+import Button from 'common/component/button/Button';
 
 const JiraServerTableActions = ({ data, readonly, allowDelete, selected }) => {
     const modalOptions = {
@@ -35,10 +34,10 @@ const JiraServerTableActions = ({ data, readonly, allowDelete, selected }) => {
                 />
             )}
 
-            <CreateButton onClick={handleCreateJiraServerClick} type="button" icon="plus" text="Create Jira Server" />
+            <Button onClick={handleCreateJiraServerClick} type="button" icon="plus" text="Create Jira Server" style="default" />
 
             { allowDelete && (
-                <DeleteButton onClick={handleJiraServerDeleteClick} isDisabled={selected.length === 0} type="button" icon="trash" text="Delete" />
+                <Button onClick={handleJiraServerDeleteClick} isDisabled={selected.length === 0} type="button" icon="trash" text="Delete" style="delete" />
             )}
 
             { showCreateModal && (

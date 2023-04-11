@@ -2,8 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import CreateButton from '../button/CreateButton';
-import ButtonCancel from '../button/ButtonCancel';
+import Button from 'common/component/button/Button';
 
 const useStyles = createUseStyles({
     modalFooter: {
@@ -26,7 +25,7 @@ const useStyles = createUseStyles({
     }
 });
 
-const ModalFooter = ({ handleCancel, handleSubmit, submitText, showLoader }) => {
+const ModalFooter = ({ handleCancel, handleSubmit, handleTest, submitText, showLoader, testText }) => {
     const classes = useStyles();
 
     return (
@@ -39,9 +38,9 @@ const ModalFooter = ({ handleCancel, handleSubmit, submitText, showLoader }) => 
                 )}
 
                 { handleCancel && (
-                    <ButtonCancel onClick={handleCancel} text="Cancel" />
+                    <Button onClick={handleCancel} text="Cancel" style="transparent" />
                 )}
-                <CreateButton onClick={handleSubmit} text={submitText} />
+                <Button onClick={handleSubmit} text={submitText} style="default" />
             </div>
         </div>
     );
@@ -50,8 +49,10 @@ const ModalFooter = ({ handleCancel, handleSubmit, submitText, showLoader }) => 
 ModalFooter.propTypes = {
     handleCancel: PropTypes.func,
     handleSubmit: PropTypes.func,
+    handleTest: PropTypes.func,
     showLoader: PropTypes.bool,
-    submitText: PropTypes.string
+    submitText: PropTypes.string,
+    testText: PropTypes.string
 };
 
 export default ModalFooter;

@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import StatusMessage from 'common/component/StatusMessage';
-import CreateButton from 'common/component/button/CreateButton';
-import DeleteButton from 'common/component/button/DeleteButton';
+import Button from 'common/component/button/Button';
 import AzureBoardModal from 'page/channel/azure/AzureBoardModal';
 import AzureBoardDeleteModal from 'page/channel/azure/AzureBoardDeleteModal';
 
@@ -35,10 +34,10 @@ const AzureBoardTableActions = ({ data, readonly, allowDelete, selected }) => {
                 />
             )}
 
-            <CreateButton onClick={handleCreateAzureBoardClick} type="button" icon="plus" text="Create Azure Board" />
+            <Button onClick={handleCreateAzureBoardClick} type="button" icon="plus" text="Create Azure Board" style="default" />
 
             { allowDelete && (
-                <DeleteButton onClick={handleDeleteAzureBoardClick} isDisabled={selected.length === 0} type="button" icon="trash" text="Delete" />
+                <Button onClick={handleDeleteAzureBoardClick} isDisabled={selected.length === 0} type="button" icon="trash" text="Delete" style="delete" />
             )}
 
             { showCreateModal && (

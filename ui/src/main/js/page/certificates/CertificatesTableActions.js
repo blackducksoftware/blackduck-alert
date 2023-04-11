@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import CertificateModal from 'page/certificates/CertificateModal';
 import DeleteCertificatesModal from 'page/certificates/DeleteCertificatesModal';
-import CreateButton from 'common/component/button/CreateButton';
-import DeleteButton from 'common/component/button/DeleteButton';
+import Button from 'common/component/button/Button';
 
 const CertificatesTableActions = ({ data, selected }) => {
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -25,8 +24,8 @@ const CertificatesTableActions = ({ data, selected }) => {
 
     return (
         <>
-            <CreateButton onClick={handleCreateCertificateClick} type="button" icon="plus" text="Create Certificate" />
-            <DeleteButton onClick={handleDeleteCertificateClick} isDisabled={selected.length === 0} icon="trash" text="Delete" />
+            <Button onClick={handleCreateCertificateClick} type="button" icon="plus" text="Create Certificate" style="default" />
+            <Button onClick={handleDeleteCertificateClick} isDisabled={selected.length === 0} icon="trash" text="Delete" style="delete" />
 
             { showCreateModal && (
                 <CertificateModal

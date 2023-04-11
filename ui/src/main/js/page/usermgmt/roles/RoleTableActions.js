@@ -3,8 +3,7 @@ import PropTypes from 'prop-types';
 import RoleDeleteModal from 'page/usermgmt/roles/RoleDeleteModal';
 import RoleModal from 'page/usermgmt/roles/RoleModal';
 import StatusMessage from 'common/component/StatusMessage';
-import CreateButton from '../../../common/component/button/CreateButton';
-import DeleteButton from '../../../common/component/button/DeleteButton';
+import Button from 'common/component/button/Button';
 
 const CREATE_MODAL_OPTIONS = {
     type: 'CREATE',
@@ -35,11 +34,11 @@ const RoleTableActions = ({ canCreate, canDelete, data, selected }) => {
             )}
 
             { canCreate && (
-                <CreateButton onClick={handleCreateRole} type="button" icon="plus" text="Create Role" />
+                <Button onClick={handleCreateRole} type="button" icon="plus" text="Create Role" style="default" />
             )}
 
             { canDelete && (
-                <DeleteButton onClick={handleDeleteRole} isDisabled={selected.length === 0} type="button" icon="trash" text="Delete" />
+                <Button onClick={handleDeleteRole} isDisabled={selected.length === 0} type="button" icon="trash" text="Delete" style="delete" />
             )}
 
             { showCreateModal && (

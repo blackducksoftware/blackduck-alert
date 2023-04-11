@@ -1,56 +1,11 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { createUseStyles } from 'react-jss';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ProviderDeleteModal from 'page/provider/ProviderDeleteModal';
 import ProviderModal from 'page/provider/ProviderModal';
 import StatusMessage from 'common/component/StatusMessage';
-
-const useStyles = createUseStyles({
-    createProviderBtn: {
-        background: 'none',
-        border: 'solid .5px',
-        padding: ['6px', '20px'],
-        font: 'inherit',
-        cursor: 'pointer',
-        borderRadius: '6px',
-        fontSize: '14px',
-        backgroundColor: '#2E3B4E',
-        color: 'white',
-        '&:focus': {
-            outline: 0
-        },
-        '& > *': {
-            marginRight: '5px'
-        }
-    },
-    deleteProviderBtn: {
-        background: 'none',
-        border: 'solid .5px',
-        padding: ['6px', '20px'],
-        font: 'inherit',
-        cursor: 'pointer',
-        borderRadius: '6px',
-        fontSize: '14px',
-        backgroundColor: '#E03C31',
-        color: 'white',
-        '&:focus': {
-            outline: 0
-        },
-        '& > *': {
-            marginRight: '5px'
-        },
-        '&:disabled': {
-            border: ['1px', 'solid', '#D9D9D9'],
-            backgroundColor: '#D9D9D9',
-            color: '#666666',
-            cursor: 'not-allowed'
-        }
-    }
-});
+import Button from 'common/component/button/Button';
 
 const PoviderTableActions = ({ data, selected, readonly }) => {
-    const classes = useStyles();
     const modalOptions = {
         type: 'CREATE',
         submitText: 'Create',
@@ -80,15 +35,9 @@ const PoviderTableActions = ({ data, selected, readonly }) => {
                 />
             )}
 
-            <button className={classes.createProviderBtn} onClick={handleCreateProviderClick} type="button">
-                <FontAwesomeIcon icon="plus" />
-                Create Provider
-            </button>
+            <Button onClick={handleCreateProviderClick} type="button" icon="plus" text="Create Provider" style="default" />
 
-            <button className={classes.deleteProviderBtn} onClick={handleDeleteProviderClick} disabled={selected.length === 0} type="button">
-                <FontAwesomeIcon icon="trash" />
-                Delete
-            </button>
+            <Button onClick={handleDeleteProviderClick} type="button" icon="trash" isDisabled={selected.length === 0} text="Delete" style="delete" />
 
             { showCreateModal && (
                 <ProviderModal

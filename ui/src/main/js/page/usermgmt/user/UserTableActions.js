@@ -3,8 +3,7 @@ import PropTypes from 'prop-types';
 import UserDeleteModal from 'page/usermgmt/user/UserDeleteModal';
 import UserModal from 'page/usermgmt/user/UserModal';
 import StatusMessage from 'common/component/StatusMessage';
-import CreateButton from '../../../common/component/button/CreateButton';
-import DeleteButton from '../../../common/component/button/DeleteButton';
+import Button from 'common/component/button/Button';
 
 const UserTableActions = ({ canCreate, canDelete, data, selected }) => {
     const modalOptions = {
@@ -37,11 +36,11 @@ const UserTableActions = ({ canCreate, canDelete, data, selected }) => {
             )}
 
             { canCreate && (
-                <CreateButton onClick={handleCreateUserClick} type="button" icon="plus" text="Create User" />
+                <Button onClick={handleCreateUserClick} type="button" icon="plus" text="Create User" style="default" />
             )}
 
             { canDelete && (
-                <DeleteButton onClick={handleDeleteUserClick} isDisabled={selected.length === 0} type="button" icon="trash" text="Delete" />
+                <Button onClick={handleDeleteUserClick} isDisabled={selected.length === 0} type="button" icon="trash" text="Delete" style="delete" />
             )}
 
             { showCreateModal && (
