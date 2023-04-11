@@ -181,7 +181,7 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
                     description="This will disable checking whether the 'Alert Issue Property Indexer' plugin is installed on the specified Jira instance. Please ensure that the plugin is manually installed before using Alert with Jira. If not, issues created by Alert will not be updated properly, and duplicate issues may be created."
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleTestChange(jiraServerModel, setJiraServerModel)}
-                    isChecked={(jiraServerModel[JIRA_SERVER_GLOBAL_FIELD_KEYS.isPasswordSet] || 'false').toString().toLowerCase() === 'true'}
+                    isChecked={jiraServerModel.disablePluginCheck === 'true'}
                     errorName={JIRA_SERVER_GLOBAL_FIELD_KEYS.disablePluginCheck}
                     errorValue={error.fieldErrors.disablePluginCheck}
                 />
