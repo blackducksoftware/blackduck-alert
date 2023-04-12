@@ -99,7 +99,7 @@ class ConfigButtons extends Component {
 
     createButtonContent() {
         const {
-            isFixed, performingAction, confirmDeleteMessage, confirmDeleteTitle
+            performingAction, confirmDeleteMessage, confirmDeleteTitle
         } = this.props;
 
         const { showDeleteConfirmation } = this.state;
@@ -107,9 +107,8 @@ class ConfigButtons extends Component {
         const saveButton = this.createSaveButton();
         const cancelButton = this.createCancelButton();
         const deleteButton = this.createDeleteButton();
-        const buttonContainerClass = isFixed ? '' : 'configButtonContainer';
         return (
-            <div className={buttonContainerClass}>
+            <div className="configButtonContainer">
                 <div className="progressContainer">
                     <div className="progressIcon">
                         {performingAction

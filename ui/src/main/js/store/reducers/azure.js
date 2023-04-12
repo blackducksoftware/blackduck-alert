@@ -12,6 +12,9 @@ import {
     AZURE_DELETE_REQUEST,
     AZURE_DELETE_SUCCESS,
     AZURE_DELETE_FAIL,
+    AZURE_TEST_REQUEST,
+    AZURE_TEST_SUCCESS,
+    AZURE_TEST_FAIL,
     AZURE_OAUTH_REQUEST,
     AZURE_OAUTH_SUCCESS,
     AZURE_OAUTH_FAIL,
@@ -35,6 +38,7 @@ const initialState = {
     fieldErrors: {},
     saveStatus: '',
     deleteStatus: '',
+    testStatus: '',
     oAuthStatus: '',
     oAuthLink: ''
 };
@@ -112,6 +116,7 @@ const azure = (state = initialState, action) => {
                 ...state,
                 saveStatus: '',
                 deleteStatus: '',
+                testStatus: '',
                 error: HTTPErrorUtils.createEmptyErrorObject(),
                 fieldErrors: {}
             };
@@ -136,6 +141,26 @@ const azure = (state = initialState, action) => {
                 deleteStatus: 'ERROR',
                 error: HTTPErrorUtils.createErrorObject(action),
                 fieldErrors: action.errors || {}
+            };
+        case AZURE_TEST_REQUEST:
+            return {
+                ...state,
+                fetching: true,
+                saveStatus: '',
+                testStatus: 'TESTING'
+            };
+        case AZURE_TEST_FAIL:
+            return {
+                ...state,
+                fetching: false,
+                testStatus: 'ERROR',
+                error: HTTPErrorUtils.createErrorObject(action)
+            };
+        case AZURE_TEST_SUCCESS:
+            return {
+                ...state,
+                fetching: false,
+                testStatus: 'SUCCESS'
             };
         case AZURE_OAUTH_REQUEST:
             return {

@@ -19,7 +19,7 @@ const useStyles = createUseStyles({
     tableActions: {
         display: 'flex',
         alignItems: 'center',
-        margin: ['10px', 0, '5px', 0]
+        margin: ['10px', 0, '2px', 0]
     }
 });
 

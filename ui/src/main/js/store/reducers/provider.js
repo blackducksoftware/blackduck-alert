@@ -125,20 +125,20 @@ const provider = (state = initialState, action) => {
                 fetching: true,
                 saveStatus: '',
                 testStatus: 'TESTING'
-            }
+            };
         case PROVIDER_TEST_FAIL:
             return {
                 ...state,
                 fetching: false,
                 testStatus: 'ERROR',
                 error: HTTPErrorUtils.createErrorObject(action)
-            }
+            };
         case PROVIDER_TEST_SUCCESS:
             return {
                 ...state,
                 fetching: false,
                 testStatus: 'SUCCESS'
-            }
+            };
         case PROVIDER_CLEAR_FIELD_ERRORS:
             return {
                 ...state,

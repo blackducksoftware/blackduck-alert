@@ -8,10 +8,15 @@ const useStyles = createUseStyles({
     button: {
         background: 'none',
         whiteSpace: 'nowrap',
-        padding: ['6px', '20px'],
+        padding: ['4px', '10px'],
         font: 'inherit',
-        cursor: 'pointer',
-        fontSize: '14px',
+        fontSize: '13px',
+        whiteSpace: 'nowrap',
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        columnGap: '4px',
         '&:focus': {
             outline: 0
         }
@@ -19,10 +24,7 @@ const useStyles = createUseStyles({
     default: {
         border: 'solid .5px',
         backgroundColor: '#2E3B4E',
-        color: 'white',
-        '& > *': {
-            marginRight: '5px'
-        }
+        color: 'white'
     },
     transparent: {
         border: 'solid .5px #2E3B4E',
@@ -44,10 +46,13 @@ const useStyles = createUseStyles({
             color: '#666666',
             cursor: 'not-allowed'
         }
+    },
+    loader: {
+        marginLeft: '5px'
     }
 });
 
-const Button = ({ id, icon, type, isDisabled, onClick, role, style = 'default', title, text }) => {
+const Button = ({ id, icon, type, isDisabled, onClick, role, style = 'default', title, text, showLoader }) => {
     const classes = useStyles();
     const btnClass = classNames(classes.button, {
         [classes.delete]: style === 'delete',
@@ -68,7 +73,14 @@ const Button = ({ id, icon, type, isDisabled, onClick, role, style = 'default', 
             { icon && (
                 <FontAwesomeIcon icon={icon} />
             )}
-            {text}
+            <div>
+                {text}
+            </div>
+            {showLoader && (
+                <div className={classes.loader}>
+                    <FontAwesomeIcon icon="spinner" size="md" spin />
+                </div>
+            )}
         </button>
     );
 };
@@ -87,6 +99,7 @@ Button.propTypes = {
     title: PropTypes.string,
     type: PropTypes.string,
     text: PropTypes.string.isRequired,
+    showLoader: PropTypes.bool
 };
 
 export default Button;

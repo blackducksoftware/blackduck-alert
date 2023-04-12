@@ -63,7 +63,7 @@ const ProviderModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessa
     const dispatch = useDispatch();
 
     const { copyDescription, submitText, title, type } = modalOptions;
-    const [showLoader, setShowLoader] = useState(false);
+    const [showLoader, setShowLoader] = useState();
     const [requestType, setRequestType] = useState();
     const [notificationConfig, setNotificationConfig] = useState();
     const [showNotification, setShowNotification] = useState(false);
@@ -94,7 +94,7 @@ const ProviderModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessa
 
     useEffect(() => {
         if (saveStatus === 'VALIDATING' || saveStatus === 'SAVING' || testStatus === 'TESTING') {
-            setShowLoader(true);
+            setShowLoader(requestType);
         }
 
         if (saveStatus === 'VALIDATED' && requestType === 'save') {
@@ -106,7 +106,7 @@ const ProviderModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessa
         }
 
         if (saveStatus === 'SAVED' && requestType === 'save') {
-            setShowLoader(false);
+            setShowLoader();
             setRequestType();
             handleClose();
             setStatusMessage({
@@ -116,7 +116,7 @@ const ProviderModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessa
         }
 
         if (testStatus === 'ERROR' && requestType === 'test') {
-            setShowLoader(false);
+            setShowLoader();
             setNotificationConfig({
                 title: 'Provider Test Unsuccessful.',
                 message: error.message,
@@ -126,7 +126,7 @@ const ProviderModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessa
         }
 
         if (testStatus === 'SUCCESS' && requestType === 'test') {
-            setShowLoader(false);
+            setShowLoader();
             setRequestType();
             setNotificationConfig({
                 title: 'Provider Test Successful.',
@@ -137,7 +137,7 @@ const ProviderModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessa
         }
 
         if (saveStatus === 'ERROR') {
-            setShowLoader(false);
+            setShowLoader();
         }
     }, [saveStatus, testStatus]);
 

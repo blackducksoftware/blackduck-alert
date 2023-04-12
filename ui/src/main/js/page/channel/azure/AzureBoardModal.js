@@ -10,6 +10,7 @@ import ButtonField from 'common/component/input/field/ButtonField';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import { AZURE_BOARDS_GLOBAL_FIELD_KEYS } from 'page/channel/azure/AzureBoardsModel';
 import { clearAzureFieldErrors, fetchAzure, saveAzureBoard, sendOAuth, validateAzure } from 'store/actions/azure';
+import { testAzureBoard } from '../../../store/actions/azure';
 
 const useStyles = createUseStyles({
     descriptorContainer: {
@@ -28,11 +29,14 @@ const AzureBoardModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
     const dispatch = useDispatch();
     const { copyDescription, submitText, title, type } = modalOptions;
     const [azureModel, setAzureModel] = useState(type === 'CREATE' ? {} : data);
-    const [showLoader, setShowLoader] = useState(false);
+    const [showLoader, setShowLoader] = useState();
     const [oAuthClick, setOAuthclick] = useState(false);
     const [buttonMessage, setButtonMessage] = useState('');
     const [buttonSuccess, setButtonSuccess] = useState(false);
-    const { saveStatus, oAuthStatus, oAuthLink, error } = useSelector((state) => state.azure);
+    const [notificationConfig, setNotificationConfig] = useState();
+    const [showNotification, setShowNotification] = useState(false);
+    const [requestType, setRequestType] = useState();
+    const { saveStatus, testStatus, oAuthStatus, oAuthLink, error } = useSelector((state) => state.azure);
 
     function handleClose() {
         toggleModal(false);
@@ -44,8 +48,15 @@ const AzureBoardModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
         dispatch(saveAzureBoard(azureModel));
     }
 
-    function handleSubmit() {
+    function handleSubmit(submitType) {
+        setRequestType(submitType);
+        setShowNotification(false);
+        setNotificationConfig();
         dispatch(validateAzure(azureModel));
+    }
+
+    function handleTest() {
+        dispatch(testAzureBoard(azureModel));
     }
 
     function handleOAuth() {
@@ -60,7 +71,7 @@ const AzureBoardModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
 
     useEffect(() => {
         if (oAuthStatus === 'FETCHING') {
-            setShowLoader(true);
+            setShowLoader(requestType);
         }
 
         if (oAuthStatus === 'SUCCESS') {
@@ -68,16 +79,16 @@ const AzureBoardModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
         }
 
         if (oAuthStatus === 'ERROR') {
-            setShowLoader(false);
+            setShowLoader();
         }
     }, [oAuthStatus, oAuthLink]);
 
     useEffect(() => {
-        if (saveStatus === 'VALIDATING' || saveStatus === 'SAVING') {
-            setShowLoader(true);
+        if (saveStatus === 'VALIDATING' || saveStatus === 'SAVING' || testStatus === 'TESTING') {
+            setShowLoader(requestType);
         }
 
-        if (saveStatus === 'VALIDATED') {
+        if (saveStatus === 'VALIDATED' && requestType === 'save') {
             if (oAuthClick) {
                 handleOAuth();
             } else {
@@ -85,8 +96,13 @@ const AzureBoardModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
             }
         }
 
-        if (saveStatus === 'SAVED') {
-            setShowLoader(false);
+        if (saveStatus === 'VALIDATED' && requestType === 'test') {
+            handleTest();
+        }
+
+        if (saveStatus === 'SAVED' && requestType === 'save') {
+            setShowLoader();
+            setRequestType();
             setButtonMessage();
             handleClose();
             setStatusMessage({
@@ -95,10 +111,31 @@ const AzureBoardModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
             });
         }
 
-        if (saveStatus === 'ERROR') {
-            setShowLoader(false);
+        if (testStatus === 'ERROR' && requestType === 'test') {
+            setShowLoader();
+            setNotificationConfig({
+                title: 'Azure Board Connection Unsuccessful.',
+                message: error.message,
+                type: 'error'
+            })
+            setShowNotification(true);
         }
-    }, [saveStatus]);
+
+        if (testStatus === 'SUCCESS' && requestType === 'test') {
+            setShowLoader();
+            setRequestType();
+            setNotificationConfig({
+                title: 'Azure Board Connection Successful.',
+                type: 'success'
+            })
+            setShowNotification(true);
+            dispatch(clearAzureFieldErrors());
+        }
+
+        if (saveStatus === 'ERROR') {
+            setShowLoader();
+        }
+    }, [saveStatus, testStatus]);
 
     return (
         <Modal
@@ -106,10 +143,13 @@ const AzureBoardModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
             size="lg"
             title={title}
             closeModal={handleClose}
-            handleCancel={handleClose}
-            handleSubmit={handleSubmit}
+            handleSubmit={() => handleSubmit('save')}
+            handleTest={() => handleSubmit('test')}
+            testText="Test Connection"
             submitText={submitText}
             showLoader={showLoader}
+            notification={notificationConfig}
+            showNotification={showNotification}
         >
             { type === 'COPY' && (
                 <div className={classes.descriptorContainer}>

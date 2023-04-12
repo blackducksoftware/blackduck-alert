@@ -16,6 +16,7 @@ const useStyles = createUseStyles({
         borderTop: 'solid 1px #D6D6D6'
     },
     footerActions: {
+        display: 'flex',
         margin: [0, '5px', 0, 'auto']
     },
     loader: {
@@ -31,20 +32,14 @@ const ModalFooter = ({ handleCancel, handleSubmit, handleTest, submitText, showL
     return (
         <div className={classes.modalFooter}>
             <div className={classes.footerActions}>
-                {showLoader && (
-                    <div className={classes.loader}>
-                        <FontAwesomeIcon icon="spinner" className="alert-icon" size="2x" spin />
-                    </div>
-                )}
-
                 { handleTest && (
-                    <Button onClick={handleTest} text={testText} style="transparent" />
+                    <Button onClick={handleTest} text={testText} style="transparent" showLoader={showLoader === 'test'} />
                 )}
 
                 { (handleCancel && !handleTest) && (
-                    <Button onClick={handleCancel} text="Cancel" style="transparent" />
+                    <Button onClick={handleCancel} text="Cancel" style="transparent" showLoader={showLoader === 'cancel'}/>
                 )}
-                <Button onClick={handleSubmit} text={submitText} style="default" />
+                <Button onClick={handleSubmit} text={submitText} style="default" showLoader={showLoader === 'save'} />
             </div>
         </div>
     );

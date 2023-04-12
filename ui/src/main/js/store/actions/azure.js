@@ -11,6 +11,9 @@ import {
     AZURE_DELETE_REQUEST,
     AZURE_DELETE_SUCCESS,
     AZURE_DELETE_FAIL,
+    AZURE_TEST_REQUEST,
+    AZURE_TEST_SUCCESS,
+    AZURE_TEST_FAIL,
     AZURE_OAUTH_REQUEST,
     AZURE_OAUTH_SUCCESS,
     AZURE_OAUTH_FAIL,
@@ -81,21 +84,41 @@ function saveAzureFail({ message, errors }) {
     };
 }
 
-function deleteProvidersRequest() {
+function deleteAzureRequest() {
     return {
         type: AZURE_DELETE_REQUEST
     };
 }
 
-function deleteProvidersSuccess() {
+function deleteAzureSuccess() {
     return {
         type: AZURE_DELETE_SUCCESS
     };
 }
 
-function deleteProvidersError(errors) {
+function deleteAzureError(errors) {
     return {
         type: AZURE_DELETE_FAIL,
+        errors
+    };
+}
+
+function testAzureRequest() {
+    return {
+        type: AZURE_TEST_REQUEST
+    };
+}
+
+function testAzureSuccess() {
+    return {
+        type: AZURE_TEST_SUCCESS
+    };
+}
+
+function testAzureFail(message, errors) {
+    return {
+        type: AZURE_TEST_FAIL,
+        message,
         errors
     };
 }
@@ -232,20 +255,46 @@ export function saveAzureBoard(azureBoard) {
 }
 export function deleteAzureBoards(azureBoards) {
     return (dispatch, getState) => {
-        dispatch(deleteProvidersRequest());
+        dispatch(deleteAzureRequest());
         const { csrfToken } = getState().session;
 
         Promise.all(azureBoards.map((board) => { // eslint-disable-line
             return ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.AZURE_BOARDS_API_URL, csrfToken, board.id);
         })).catch((error) => {
-            dispatch(deleteProvidersError(error));
+            dispatch(deleteAzureError(error));
             console.error; // eslint-disable-line
         }).then((response) => {
             if (response) {
-                dispatch(deleteProvidersSuccess());
+                dispatch(deleteAzureSuccess());
             }
         });
     };
+}
+
+export function testAzureBoard(azureBoard) {
+    return (dispatch, getState) => {
+        dispatch(testAzureRequest());
+        const { csrfToken } = getState().session;
+        const errorHandlers = [];
+        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => testAzureFail(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION, {})));
+        const testRequest = ConfigRequestBuilder.createTestRequest(ConfigRequestBuilder.AZURE_BOARDS_API_URL, csrfToken, azureBoard);
+        testRequest.then((response) => {
+            if (response.ok) {
+                response.json()
+                    .then((testResponse) => {
+                        if (testResponse.hasErrors) {
+                            handleValidationError(dispatch, errorHandlers, response.status, () => testAzureFail(testResponse.message, testResponse.errors));
+                        } else {
+                            dispatch(testAzureSuccess());
+                        }
+                    });
+            } else {
+                handleValidationError(dispatch, errorHandlers, response.status, () => testAzureFail(response.message, response.errors));
+            }
+        })
+            .catch(console.error);
+    }
 }
 
 export function sendOAuth(azureBoard) {
