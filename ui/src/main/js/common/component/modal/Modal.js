@@ -18,7 +18,7 @@ const useStyles = createUseStyles({
         position: 'fixed',
         zIndex: '10000',
         outline: 0,
-        cursor: 'default'
+        cursor: 'default',
     },
     modalStyle: {
         backgroundColor: 'white',
@@ -43,7 +43,7 @@ const useStyles = createUseStyles({
         position: 'relative'
     },
     modalBody: {
-        overflowY: 'auto',
+        overflowY: 'inherit',
         maxHeight: 'calc(100vh - 355px)',
         padding: ['16px', 0]
     }

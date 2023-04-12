@@ -29,7 +29,8 @@ const DynamicSelectInput = ({
     errorName,
     errorValue,
     required,
-    creatable
+    creatable,
+    maxMenuHeight
 }) => {
     const selectClasses = `${selectSpacingClass} d-inline-flex p-2`;
     const selectedOptions = options.filter((option) => value.includes(option.value));
@@ -109,7 +110,7 @@ const DynamicSelectInput = ({
             noOptionsMessage={() => 'No options available'}
             onFocus={onFocus}
             menuPlacement="auto"
-            maxMenuHeight={250}
+            maxMenuHeight={maxMenuHeight || 250}
             styles={selectStyles}
         />
     );
@@ -179,7 +180,8 @@ DynamicSelectInput.propTypes = {
     errorName: PropTypes.string,
     errorValue: PropTypes.object,
     required: PropTypes.bool,
-    creatable: PropTypes.bool
+    creatable: PropTypes.bool,
+    maxMenuHeight: PropTypes.number
 };
 
 DynamicSelectInput.defaultProps = {

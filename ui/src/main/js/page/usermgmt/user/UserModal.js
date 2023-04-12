@@ -20,6 +20,9 @@ const useStyles = createUseStyles({
     descriptor: {
         fontSize: '14px',
         paddingLeft: '8px'
+    },
+    userModalContent: {
+        margin: ['30px', 0, '60px']
     }
 });
 
@@ -129,7 +132,7 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
                     </span>
                 </div>
             )}
-            <div>
+            <div className={classes.userModalContent}>
                 <TextInput
                     id={USER_INPUT_FIELD_KEYS.USERNAME_KEY}
                     name={USER_INPUT_FIELD_KEYS.USERNAME_KEY}
@@ -195,6 +198,7 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
                     value={userModel[USER_INPUT_FIELD_KEYS.ROLENAMES_KEY] || undefined}
                     errorName={USER_INPUT_FIELD_KEYS.ROLENAMES_KEY}
                     errorValue={fieldErrors[USER_INPUT_FIELD_KEYS.ROLENAMES_KEY]}
+                    maxMenuHeight={115}
                 />
             </div>
         </Modal>
