@@ -151,7 +151,6 @@ export function login(username, password) {
 }
 
 export function confirmLogout() {
-    console.log('confirming logout');
     return {
         type: SESSION_CONFIRM_LOGOUT
     };

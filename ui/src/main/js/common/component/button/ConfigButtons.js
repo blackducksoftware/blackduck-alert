@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import ConfirmModal from 'common/component/ConfirmModal';
+import Modal from 'common/component/modal/Modal';
 import Button from 'common/component/button/Button';
 
 class ConfigButtons extends Component {
@@ -120,16 +120,20 @@ class ConfigButtons extends Component {
                 {deleteButton}
                 {cancelButton}
                 <div>
-                    <ConfirmModal
-                        showModal={showDeleteConfirmation}
+                    <Modal
+                        isOpen={showDeleteConfirmation}
+                        size="sm"
                         title={confirmDeleteTitle}
-                        affirmativeAction={this.handleDeleteConfirmed}
-                        negativeAction={this.handleDeleteCancelled}
+                        closeModal={this.handleDeleteCancelled}
+                        handleCancel={this.handleDeleteCancelled}
+                        handleSubmit={this.handleDeleteConfirmed}
+                        submitText="Delete"
+                        submitType="delete"
                     >
-                        <div>
+                        <div className="modal-description">
                             {confirmDeleteMessage}
                         </div>
-                    </ConfirmModal>
+                    </Modal>
                 </div>
             </div>
         );

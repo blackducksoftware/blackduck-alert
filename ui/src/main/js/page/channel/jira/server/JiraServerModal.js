@@ -91,7 +91,6 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
     }, [pluginStatus, oAuthLink]);
 
     useEffect(() => {
-        console.log(saveStatus, testStatus, requestType);
         if (saveStatus === 'VALIDATING' || saveStatus === 'SAVING' || testStatus === 'TESTING') {
             setShowLoader(true);
         }
@@ -119,7 +118,6 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
         }
 
         if (testStatus === 'ERROR' && requestType === 'test') {
-            console.log(error);
             setShowLoader(false);
             setNotificationConfig({
                 title: 'Jira Server Test Unsuccessful.',

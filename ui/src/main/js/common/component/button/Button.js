@@ -22,24 +22,27 @@ const useStyles = createUseStyles({
         }
     },
     default: {
-        border: 'solid .5px',
+        border: 'solid 1px',
         backgroundColor: '#2E3B4E',
-        color: 'white'
+        color: 'white',
+        '&:disabled': {
+            border: ['1px', 'solid', '#D9D9D9'],
+            backgroundColor: '#D9D9D9',
+            color: '#666666',
+            cursor: 'not-allowed'
+        }
     },
     transparent: {
-        border: 'solid .5px #2E3B4E',
+        border: 'solid 1px #2E3B4E',
         color: '#2E3B4E',
         '&:hover': {
             border: 'solid 1px #2E3B4E'
         }
     },
     delete: {
-        border: 'solid .5px',
+        border: 'solid 1px #d72c20',
         backgroundColor: '#E03C31',
         color: 'white',
-        '& > *': {
-            marginRight: '5px'
-        },
         '&:disabled': {
             border: ['1px', 'solid', '#D9D9D9'],
             backgroundColor: '#D9D9D9',

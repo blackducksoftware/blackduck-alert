@@ -26,20 +26,38 @@ const useStyles = createUseStyles({
     }
 });
 
-const ModalFooter = ({ handleCancel, handleSubmit, handleTest, submitText, showLoader, testText }) => {
+const ModalFooter = ({ handleCancel, handleSubmit, handleTest, submitText, submitType, 
+    showLoader, testText, disableSubmit, submitTitle
+}) => {
     const classes = useStyles();
 
     return (
         <div className={classes.modalFooter}>
             <div className={classes.footerActions}>
                 { handleTest && (
-                    <Button onClick={handleTest} text={testText} style="transparent" showLoader={showLoader === 'test'} />
+                    <Button 
+                        onClick={handleTest}
+                        text={testText}
+                        style="transparent"
+                        showLoader={showLoader === 'test'}
+                    />
                 )}
 
                 { (handleCancel && !handleTest) && (
-                    <Button onClick={handleCancel} text="Cancel" style="transparent" showLoader={showLoader === 'cancel'}/>
+                    <Button 
+                        onClick={handleCancel}
+                        text="Cancel" style="transparent"
+                        showLoader={showLoader === 'cancel'}
+                    />
                 )}
-                <Button onClick={handleSubmit} text={submitText} style="default" showLoader={showLoader === 'save'} />
+                <Button 
+                    onClick={handleSubmit}
+                    text={submitText}
+                    style={submitType}
+                    showLoader={showLoader === 'save'}
+                    isDisabled={disableSubmit}
+                    title={submitTitle}
+                />
             </div>
         </div>
     );
