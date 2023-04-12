@@ -9,6 +9,7 @@ const AzureBoardsLayout = ({ readonly, allowDelete }) => (
         <PageHeader
             title={AZURE_BOARDS_INFO.label}
             description="Configure the Azure Boards instance that Alert will send issue updates to."
+            icon={['fab', 'windows']}
         />
         <AzureBoardTale readonly={readonly} allowDelete={allowDelete} />
     </div>
