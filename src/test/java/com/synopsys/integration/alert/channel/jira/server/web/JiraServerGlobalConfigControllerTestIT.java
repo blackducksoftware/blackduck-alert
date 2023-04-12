@@ -23,6 +23,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
+import com.synopsys.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
@@ -221,13 +222,15 @@ class JiraServerGlobalConfigControllerTestIT {
     }
 
     private JiraServerGlobalConfigModel createConfigModel(UUID uuid, String url) {
+        // TODO: Implement access token and AuthorizationMethod
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel = new JiraServerGlobalConfigModel(
             (null != uuid) ? uuid.toString() : null,
             "Configuration name",
             url,
-            "username",
-            "password"
+            JiraServerAuthorizationMethod.BASIC
         );
+        jiraServerGlobalConfigModel.setUserName("username");
+        jiraServerGlobalConfigModel.setPassword("password");
         return jiraServerGlobalConfigModel;
     }
 
