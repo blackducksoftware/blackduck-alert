@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import ViewTaskModal from 'page/task/ViewTaskModal';
+import TaskModal from 'page/task/TaskModal';
 import IconButton from 'common/component/button/IconButton';
 
 const ViewTaskCell = ({ data }) => {
@@ -14,7 +14,7 @@ const ViewTaskCell = ({ data }) => {
         <>
             <IconButton icon="eye" onClick={() => handleClick()} />
             { showModal ? (
-                <ViewTaskModal
+                <TaskModal
                     data={data}
                     isOpen={showModal}
                     toggleModal={setShowModal}

@@ -14,7 +14,7 @@ const ProviderCopyCell = ({ data }) => {
         type: 'COPY',
         submitText: 'Save',
         title: 'Copy Provider',
-        copyDescription: `Performing this action will create a new provider by using the same settings as '${selectedData.name}'`
+        copyDescription: `Performing this action will create a new provider by using the same settings as '${data.name}'`
     };
 
     function handleClick() {

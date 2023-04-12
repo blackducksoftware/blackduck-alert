@@ -4,7 +4,7 @@ import StatusMessage from 'common/component/StatusMessage';
 import IconButton from 'common/component/button/IconButton';
 import JiraServerModal from 'page/channel/jira/server/JiraServerModal';
 
-const AzureCopyCell = ({ data }) => {
+const JiraServerCopyCell = ({ data }) => {
     const [showModal, setShowModal] = useState(false);
     const [statusMessage, setStatusMessage] = useState();
     const [selectedData, setSelectedData] = useState(data);
@@ -13,7 +13,7 @@ const AzureCopyCell = ({ data }) => {
         type: 'COPY',
         title: 'Copy Jira Server',
         submitText: 'Save',
-        copyDescription: `Performing this action will create a new Jira Server connection by using the same settings as '${selectedData.name}'`
+        copyDescription: `Performing this action will create a new Jira Server connection by using the same settings as '${data.name}'`
     };
 
     function handleClick() {
@@ -53,8 +53,8 @@ const AzureCopyCell = ({ data }) => {
     );
 };
 
-AzureCopyCell.propTypes = {
+JiraServerCopyCell.propTypes = {
     data: PropTypes.object
 };
 
-export default AzureCopyCell;
+export default JiraServerCopyCell;

@@ -69,7 +69,7 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
     const installPlugin = () => {
         setButtonSuccess(false);
         setInstallPluginClick(true);
-        handleSubmit();
+        handleSubmit('save');
     };
 
     useEffect(() => {
@@ -87,6 +87,12 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
 
         if (pluginStatus === 'ERROR') {
             setShowLoader(false);
+            setNotificationConfig({
+                title: 'Configure Jira Server Plugin Unsuccessful.',
+                message: error?.message,
+                type: 'error'
+            })
+            setShowNotification(true);
         }
     }, [pluginStatus, oAuthLink]);
 
@@ -95,7 +101,7 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
             setShowLoader(true);
         }
 
-        if (saveStatus === 'VALIDATED' && requestType === 'save' || installPluginClick) {
+        if (saveStatus === 'VALIDATED' && requestType === 'save') {
             if (installPluginClick) {
                 handleOAuth();
             } else {

@@ -12,7 +12,7 @@ const useStyles = createUseStyles({
     }
 });
 
-const ViewTaskModal = ({ data, isOpen, toggleModal }) => {
+const TaskModal = ({ data, isOpen, toggleModal }) => {
     const classes = useStyles();
     const { fullyQualifiedType, nextRunTime, properties, type } = data;
 
@@ -72,7 +72,7 @@ const ViewTaskModal = ({ data, isOpen, toggleModal }) => {
     );
 };
 
-ViewTaskModal.propTypes = {
+TaskModal.propTypes = {
     data: PropTypes.shape({
         fullyQualifiedType: PropTypes.string,
         nextRunTime: PropTypes.string,
@@ -83,4 +83,4 @@ ViewTaskModal.propTypes = {
     toggleModal: PropTypes.func
 };
 
-export default ViewTaskModal;
+export default TaskModal;
