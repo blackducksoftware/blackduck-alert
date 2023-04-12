@@ -50,7 +50,7 @@ const useStyles = createUseStyles({
 });
 
 const Modal = ({ isOpen, size, title, closeModal, children, handleCancel, handleSubmit, 
-    handleTest, submitText, testText, showLoader, notification, showNotification, submitType,
+    handleTest, submitText, testText, showLoader, notification, showNotification, style,
     disableSubmit, submitTitle
 }) => {
     const classes = useStyles();
@@ -83,7 +83,7 @@ const Modal = ({ isOpen, size, title, closeModal, children, handleCancel, handle
                         handleCancel={handleCancel}
                         handleSubmit={handleSubmit}
                         handleTest={handleTest}
-                        submitType={submitType}
+                        style={style}
                         submitText={submitText}
                         testText={testText}
                         showLoader={showLoader}

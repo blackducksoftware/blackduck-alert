@@ -117,6 +117,7 @@ const ProviderDeleteModal = ({ isOpen, toggleModal, data, selected, setStatusMes
                 handleCancel={handleClose}
                 handleSubmit={handleDelete}
                 submitText="Delete"
+                style="delete"
                 showLoader={showLoader}
             >
                 <div className={classes.deleteConfirmMessage}>

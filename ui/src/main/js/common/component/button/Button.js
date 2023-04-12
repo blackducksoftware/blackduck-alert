@@ -30,24 +30,38 @@ const useStyles = createUseStyles({
             backgroundColor: '#D9D9D9',
             color: '#666666',
             cursor: 'not-allowed'
+        },
+        '&:active': {
+            backgroundColor: '#5d779e',
         }
     },
     transparent: {
         border: 'solid 1px #2E3B4E',
         color: '#2E3B4E',
         '&:hover': {
-            border: 'solid 1px #2E3B4E'
+            color: 'white',
+            border: 'solid 1px',
+            backgroundColor: '#2E3B4E',
+        },
+        '&:active': {
+            color: 'white',
+            border: 'solid 1px',
+            backgroundColor: '#5d779e',
         }
     },
     delete: {
         border: 'solid 1px #d72c20',
-        backgroundColor: '#E03C31',
+        backgroundColor: '#e03c31',
         color: 'white',
         '&:disabled': {
             border: ['1px', 'solid', '#D9D9D9'],
             backgroundColor: '#D9D9D9',
             color: '#666666',
             cursor: 'not-allowed'
+        },
+        '&:active': {
+            border: 'solid 1px #ea7b73',
+            backgroundColor: '#ea7b73',
         }
     },
     loader: {

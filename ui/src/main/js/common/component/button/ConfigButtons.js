@@ -128,7 +128,7 @@ class ConfigButtons extends Component {
                         handleCancel={this.handleDeleteCancelled}
                         handleSubmit={this.handleDeleteConfirmed}
                         submitText="Delete"
-                        submitType="delete"
+                        style="delete"
                     >
                         <div className="modal-description">
                             {confirmDeleteMessage}

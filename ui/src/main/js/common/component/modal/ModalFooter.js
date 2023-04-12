@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from 'common/component/button/Button';
 
 const useStyles = createUseStyles({
@@ -26,7 +25,7 @@ const useStyles = createUseStyles({
     }
 });
 
-const ModalFooter = ({ handleCancel, handleSubmit, handleTest, submitText, submitType, 
+const ModalFooter = ({ handleCancel, handleSubmit, handleTest, submitText, style = 'default', 
     showLoader, testText, disableSubmit, submitTitle
 }) => {
     const classes = useStyles();
@@ -53,7 +52,7 @@ const ModalFooter = ({ handleCancel, handleSubmit, handleTest, submitText, submi
                 <Button 
                     onClick={handleSubmit}
                     text={submitText}
-                    style={submitType}
+                    style={style}
                     showLoader={showLoader === 'save'}
                     isDisabled={disableSubmit}
                     title={submitTitle}
@@ -69,6 +68,7 @@ ModalFooter.propTypes = {
     handleTest: PropTypes.func,
     showLoader: PropTypes.bool,
     submitText: PropTypes.string,
+    style: PropTypes.string,
     testText: PropTypes.string
 };
 

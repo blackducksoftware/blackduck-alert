@@ -15,7 +15,7 @@ const GlobalTestModal = ({
         disableSubmit={disableTestModalSubmit}
         submitTitle={testModalButtonTitle}
         submitText={ modalSubmitText || 'Send Test Message'}
-        submitType="default"
+        style="default"
         showLoader={performingAction ? 'save' : ''}
     >
         <div className="modal-description">
