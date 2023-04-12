@@ -16,7 +16,7 @@ const useStyles = createUseStyles({
         display: 'flex',
         marginLeft: '50px'
     },
-    userCard: {
+    card: {
         display: 'flex',
         border: ['1px', 'solid', '#D9D9D9'],
         borderRadius: '5px',
@@ -25,7 +25,7 @@ const useStyles = createUseStyles({
         margin: [0, '50px', '10px', '20px'],
         width: '250px'
     },
-    userIcon: {
+    icon: {
         flexBasis: '20%',
         backgroundColor: 'white',
         border: ['1px', 'solid', '#D9D9D9'],
@@ -34,7 +34,7 @@ const useStyles = createUseStyles({
         paddingTop: '5px',
         textAlign: 'center'
     },
-    userInfo: {
+    cardInfo: {
         flexGrow: 1,
         padding: ['5px', 0, 0, '15px']
     }
@@ -127,11 +127,11 @@ const ProviderDeleteModal = ({ isOpen, toggleModal, data, selected, setStatusMes
                     { selectedProviders?.map((provider) => (
                         <div className={classes.cardContainer} key={provider.id}>
                             <input type="checkbox" checked={provider.staged} onChange={() => toggleSelect(provider)} />
-                            <div className={classes.userCard}>
-                                <div className={classes.userIcon}>
-                                    <FontAwesomeIcon icon="user" size="3x" />
+                            <div className={classes.card}>
+                                <div className={classes.icon}>
+                                    <FontAwesomeIcon icon="handshake" size="3x" />
                                 </div>
-                                <div className={classes.userInfo}>
+                                <div className={classes.cardInfo}>
                                     <div style={{ fontSize: '16px' }}>{provider.name}</div>
                                 </div>
                             </div>
