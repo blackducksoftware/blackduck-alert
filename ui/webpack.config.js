@@ -1,10 +1,7 @@
 const merge = require('webpack-merge');
-const commonConfig = require("./webpack.common.config.js");
-const MinifyPlugin = require('babel-minify-webpack-plugin');
+const commonConfig = require('./webpack.common.config.js');
 
 module.exports = merge.smart(commonConfig, {
     mode: 'production',
-    plugins: [
-        new MinifyPlugin()
-    ]
+    plugins: []
 });
