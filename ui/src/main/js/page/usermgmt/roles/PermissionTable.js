@@ -8,6 +8,10 @@ import DescriptorNameCell from 'page/usermgmt/roles/DescriptorNameCell';
 import PermissionRowAction from 'page/usermgmt/roles/PermissionRowAction';
 import * as DescriptorUtilities from 'common/util/descriptorUtilities';
 
+const emptyTableConfig = {
+    message: 'There are no records to display for this table.  Please create a Permission above to use this table.'
+};
+
 const PermissionTable = ({ role, sendPermissionArray, handleFilterPermission }) => {
     const permissionData = role.permissions;
 
@@ -27,16 +31,16 @@ const PermissionTable = ({ role, sendPermissionArray, handleFilterPermission }) 
     const COLUMNS = [{
         key: 'descriptorName',
         label: 'Descriptor',
-        sortable: true,
+        sortable: false,
         customCell: DescriptorNameCell
     }, {
         key: 'context',
         label: 'Context',
-        sortable: true
+        sortable: false
     }, {
         key: 'permissions',
         label: 'Permissions',
-        sortable: true,
+        sortable: false,
         customCell: PermissionCell
     }, {
         key: 'permissionAction',
@@ -46,11 +50,12 @@ const PermissionTable = ({ role, sendPermissionArray, handleFilterPermission }) 
         settings: { alignment: 'right', permissionData, role },
         customCallback: handleRemovePermission
     }];
-
+    console.log(role);
     return (
         <Table
             tableData={role.permissions}
             columns={COLUMNS}
+            emptyTableConfig={emptyTableConfig}
             tableActions={() => <PermissionTableActions data={role} canDelete={canDelete} handleValidatePermission={handleValidatePermission} />}
         />
     );

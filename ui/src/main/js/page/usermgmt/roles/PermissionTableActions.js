@@ -1,44 +1,12 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import classNames from 'classnames';
 import Checkbox from 'common/component/input/Checkbox';
 import DynamicSelectInput from 'common/component/input/DynamicSelectInput';
-import { useSelector } from 'react-redux';
+import Button from 'common/component/button/Button';
 
 const useStyles = createUseStyles({
-    createRoleBtn: {
-        background: 'none',
-        width: '100%',
-        padding: ['6px', '20px'],
-        font: 'inherit',
-        cursor: 'pointer',
-        borderRadius: '6px',
-        fontSize: '14px',
-        '&:focus': {
-            outline: 0
-        },
-        '& > *': {
-            marginRight: '5px'
-        }
-    },
-    activeCreateBtn: {
-        border: ['solid', '.5px', '#2E3B4E'],
-        backgroundColor: '#2E3B4E',
-        color: 'white',
-        '&:hover': {
-            backgroundColor: '#37475e'
-        }
-    },
-    mutedCreateBtn: {
-        border: 'none',
-        backgroundColor: '#bdbdbd',
-        color: '#2E3B4E',
-        '&:hover': {
-            backgroundColor: '#b0b0b0'
-        }
-    },
     permissionActionContainer: {
         display: 'flex',
         flexDirection: 'column',
@@ -46,7 +14,8 @@ const useStyles = createUseStyles({
         width: '100%',
         backgroundColor: '#EDEDED',
         borderRadius: '5px',
-        marginBottom: '10px'
+        marginBottom: '10px',
+        paddingTop: '25px'
     },
     permissionOptions: {
         display: 'flex',
@@ -54,6 +23,11 @@ const useStyles = createUseStyles({
         paddingRight: '95px',
         columnGap: '35px',
         marginBottom: '5px'
+    },
+    permissionFormActions: {
+        display: 'flex',
+        justifyContent: 'flex-end',
+        padding: [0, '8px', '8px']
     }
 });
 
@@ -61,18 +35,10 @@ const PermissionTableActions = ({ handleValidatePermission }) => {
     const classes = useStyles();
     const CONTEXT = 'context';
     const DESCRIPTOR = 'descriptorName';
-    const [showCreatePermission, setShowCreatePermission] = useState(false);
-    const [newPermission, setNewPermission] = useState({ uploadDelete: undefined, uploadWrite: undefined, uploadRead: undefined });
+    const [newPermission, setNewPermission] = useState({});
     const [fieldErrors, setFieldErrors] = useState({});
-
+    const isDisabled = Object.values(newPermission).length === 0;
     const descriptors = useSelector((state) => state.descriptors.items);
-
-    function getBtnStyle(muted) {
-        return classNames(classes.createRoleBtn, {
-            [classes.activeCreateBtn]: !muted,
-            [classes.mutedCreateBtn]: muted
-        });
-    }
 
     function createDescriptorOptions(options) {
         const descriptorOptions = [];
@@ -106,9 +72,6 @@ const PermissionTableActions = ({ handleValidatePermission }) => {
             label: context,
             value: context
         }));
-    }
-    function handleCreateUserClick() {
-        setShowCreatePermission(!showCreatePermission);
     }
 
     function handleCheckboxChange(e) {
@@ -160,95 +123,86 @@ const PermissionTableActions = ({ handleValidatePermission }) => {
         } else {
             setFieldErrors({});
             handleValidatePermission(permission);
+            setNewPermission({});
         }
     }
 
     return (
         <div className={classes.permissionActionContainer}>
-            <button className={getBtnStyle(showCreatePermission)} onClick={handleCreateUserClick} type="button">
-                {showCreatePermission ? (
-                    <>
-                        <FontAwesomeIcon icon="minus" />
-                        Cancel Create Permission
-                    </>
-                ) : (
-                    <>
-                        <FontAwesomeIcon icon="plus" />
-                        Create Permission
-                    </>
-                )}
-            </button>
-
-            { showCreatePermission ? (
-                <div className={classes.createPermissionContainer}>
-                    <DynamicSelectInput
-                        name={DESCRIPTOR}
-                        id={DESCRIPTOR}
-                        label="Descriptor Name"
-                        options={createDescriptorOptions(descriptors)}
-                        clearable={false}
-                        onChange={handleDescriptorChange}
-                        value={[newPermission.label]}
-                        errorName={DESCRIPTOR}
-                        errorValue={fieldErrors[DESCRIPTOR]}
+            <div className={classes.createPermissionContainer}>
+                <DynamicSelectInput
+                    name={DESCRIPTOR}
+                    id={DESCRIPTOR}
+                    label="Descriptor Name"
+                    options={createDescriptorOptions(descriptors)}
+                    clearable={false}
+                    onChange={handleDescriptorChange}
+                    value={[newPermission.label]}
+                    errorName={DESCRIPTOR}
+                    errorValue={fieldErrors[DESCRIPTOR]}
+                />
+                <DynamicSelectInput
+                    name={CONTEXT}
+                    id={CONTEXT}
+                    label="Context"
+                    options={createContextOptions(descriptors, newPermission)}
+                    clearable={false}
+                    onChange={handleDropdownChange}
+                    value={[newPermission.context]}
+                    errorName={CONTEXT}
+                    errorValue={fieldErrors[CONTEXT]}
+                />
+                <div className={classes.permissionOptions}>
+                    <Checkbox
+                        name="create"
+                        id="create"
+                        label="Create"
+                        onChange={handleCheckboxChange}
+                        isChecked={newPermission.create}
                     />
-                    <DynamicSelectInput
-                        name={CONTEXT}
-                        id={CONTEXT}
-                        label="Context"
-                        options={createContextOptions(descriptors, newPermission)}
-                        clearable={false}
-                        onChange={handleDropdownChange}
-                        value={[newPermission.context]}
-                        errorName={CONTEXT}
-                        errorValue={fieldErrors[CONTEXT]}
+                    <Checkbox
+                        name="delete"
+                        id="delete"
+                        label="Delete"
+                        onChange={handleCheckboxChange}
+                        isChecked={newPermission.delete}
                     />
-                    <div className={classes.permissionOptions}>
-                        <Checkbox
-                            name="create"
-                            id="create"
-                            label="Create"
-                            onChange={handleCheckboxChange}
-                            isChecked={newPermission.create}
-                        />
-                        <Checkbox
-                            name="delete"
-                            id="delete"
-                            label="Delete"
-                            onChange={handleCheckboxChange}
-                            isChecked={newPermission.delete}
-                        />
-                        <Checkbox
-                            name="read"
-                            id="read"
-                            label="Read"
-                            onChange={handleCheckboxChange}
-                            isChecked={newPermission.read}
-                            description="Testing Description"
-                        />
-                        <Checkbox
-                            name="write"
-                            id="write"
-                            label="Write"
-                            onChange={handleCheckboxChange}
-                            isChecked={newPermission.write}
-                        />
-                        <Checkbox
-                            name="execute"
-                            id="execute"
-                            label="Execute"
-                            onChange={handleCheckboxChange}
-                            isChecked={newPermission.execute}
-                        />
-                    </div>
-                    <button className={getBtnStyle(false)} onClick={() => handleSave(newPermission)} type="button">
-                        <FontAwesomeIcon icon="plus" />
-                        Add Permission
-                    </button>
+                    <Checkbox
+                        name="read"
+                        id="read"
+                        label="Read"
+                        onChange={handleCheckboxChange}
+                        isChecked={newPermission.read}
+                        description="Testing Description"
+                    />
+                    <Checkbox
+                        name="write"
+                        id="write"
+                        label="Write"
+                        onChange={handleCheckboxChange}
+                        isChecked={newPermission.write}
+                    />
+                    <Checkbox
+                        name="execute"
+                        id="execute"
+                        label="Execute"
+                        onChange={handleCheckboxChange}
+                        isChecked={newPermission.execute}
+                    />
                 </div>
-            ) : null }
+                <div className={classes.permissionFormActions}>
+                    <Button
+                        onClick={() => handleSave(newPermission)}
+                        type="submit"
+                        icon="plus"
+                        text="Add Permission"
+                        style="default"
+                        isDisabled={isDisabled}
+                        title={isDisabled ? 'Configure input above to add permission' : 'Add permission'}
+                    />
+                </div>
+            </div>
         </div>
-
     );
 };
 
