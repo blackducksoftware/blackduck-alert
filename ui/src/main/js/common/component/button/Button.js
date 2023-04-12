@@ -74,7 +74,7 @@ const Button = ({ id, icon, type, isDisabled, onClick, role, style = 'default', 
             disabled={isDisabled}
         >
             { icon && (
-                <FontAwesomeIcon icon={icon} />
+                <FontAwesomeIcon icon={icon} size="sm" />
             )}
             <div>
                 {text}
