@@ -73,6 +73,7 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
     };
 
     useEffect(() => {
+        setInstallPluginClick(false);
         if (pluginStatus === 'FETCHING') {
             setShowLoader(true);
         }

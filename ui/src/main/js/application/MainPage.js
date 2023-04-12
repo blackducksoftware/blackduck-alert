@@ -12,12 +12,11 @@ import JiraCloudGlobalConfiguration from 'page/channel/jira/cloud/JiraCloudGloba
 import { JIRA_CLOUD_INFO } from 'page/channel/jira/cloud/JiraCloudModel';
 import { SLACK_INFO } from 'page/channel/slack/SlackModels';
 import { EMAIL_INFO } from 'page/channel/email/EmailModels';
-import { JIRA_SERVER_INFO, JIRA_SERVER_URLS } from 'page/channel/jira/server/JiraServerModel';
+import { JIRA_SERVER_INFO } from 'page/channel/jira/server/JiraServerModel';
+import JiraServerPageLayout from 'page/channel/jira/server/JiraServerPageLayout';
 import { MSTEAMS_INFO } from 'page/channel/msteams/MSTeamsModel';
 import MSTeamsGlobalConfiguration from 'page/channel/msteams/MSTeamsGlobalConfiguration';
-import { AZURE_BOARDS_INFO, AZURE_BOARDS_URLS } from 'page/channel/azure/AzureBoardsModel';
-import AzureBoardsPageForm from 'page/channel/azure/AzureBoardsPageForm';
-import AzureBoardsTableConstructor from 'page/channel/azure/AzureBoardsTableConstructor';
+import { AZURE_BOARDS_INFO } from 'page/channel/azure/AzureBoardsModel';
 import AzureBoardsPageLayout from 'page/channel/azure/AzureBoardsPageLayout';
 import { SCHEDULING_INFO } from 'page/scheduling/SchedulingModel';
 import SchedulingConfiguration from 'page/scheduling/SchedulingConfiguration';
@@ -25,17 +24,13 @@ import { SETTINGS_INFO } from 'page/settings/SettingsModel';
 import SettingsConfiguration from 'page/settings/standalone/SettingsConfiguration';
 import { AUTHENTICATION_INFO } from 'application/auth/AuthenticationModel';
 import AuthenticationPageLayout from 'application/auth/AuthenticationPageLayout';
-import { BLACKDUCK_INFO, BLACKDUCK_URLS } from 'page/provider/blackduck/BlackDuckModel';
-import BlackDuckProviderConfiguration from 'page/provider/blackduck/BlackDuckProviderConfiguration';
-import BlackDuckConfiguration from 'page/provider/blackduck/BlackDuckConfiguration';
+import { BLACKDUCK_INFO } from 'page/provider/blackduck/BlackDuckModel';
 import ProviderPageLayout from 'page/provider/ProviderPageLayout';
 import { AUDIT_INFO } from 'page/audit/AuditModel';
 import AuditPage from 'page/audit/AuditPage';
 import { CERTIFICATE_INFO } from 'page/certificates/CertificateModel';
-import CertificatesPage from 'page/certificates/CertificatesPage';
 import CertificatesPageLayout from 'page/certificates/CertificatesPageLayout';
 import { TASK_MANAGEMENT_INFO } from 'page/task/TaskManagementModel';
-import TaskManagement from 'page/task/TaskManagement';
 import TaskManagementPageLayout from 'page/task/TaskManagementPageLayout';
 import { USER_MANAGEMENT_INFO } from 'page/usermgmt/UserModel';
 import UserManagement from 'page/usermgmt/UserManagement';
@@ -47,13 +42,6 @@ import { unauthorized } from 'store/actions/session';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 import DescriptorRoute from 'common/component/descriptor/DescriptorRoute';
 import EmailGlobalConfiguration from 'page/channel/email/EmailGlobalConfiguration';
-import ConcreteJiraServerGlobalConfiguration from 'page/channel/jira/server/ConcreteJiraServerGlobalConfiguration';
-import ConcreteJiraServerGlobalConfigurationTable from 'page/channel/jira/server/ConcreteJiraServerGlobalConfigurationTable';
-import JiraServerPageLayout from 'page/channel/jira/server/JiraServerPageLayout';
-
-import BetaPage from 'common/component/beta/BetaPage';
-import BetaComponent from 'common/component/beta/BetaComponent';
-import CurrentComponent from 'common/component/beta/CurrentComponent';
 
 const MainPage = ({
     descriptors, fetching, getDescriptorsRedux, csrfToken, autoRefresh, unauthorizedFunction
@@ -104,56 +92,12 @@ const MainPage = ({
                 )}
             />
             <DescriptorRoute
-                descriptor={globalDescriptorMap[BLACKDUCK_INFO.key]}
-                urlName={BLACKDUCK_INFO.url}
-                paths={[`${BLACKDUCK_URLS.blackDuckConfigUrl}/:id?`, `${BLACKDUCK_URLS.blackDuckConfigCopyUrl}/:id?`]}
-                render={(readonly, showTest, showSave) => (
-                    <BlackDuckConfiguration
-                        csrfToken={csrfToken}
-                        errorHandler={errorHandler}
-                        readonly={readonly}
-                        displayTest={showTest}
-                        displaySave={showSave}
-                    />
-                )}
-            />
-            <DescriptorRoute
                 uriPrefix={providerUri}
                 urlName={BLACKDUCK_INFO.url}
                 descriptor={globalDescriptorMap[BLACKDUCK_INFO.key]}
-                render={(readonly, showTest, showSave, showDelete) => (
-                    <BetaPage betaSelected>
-                        <BetaComponent>
-                            <ProviderPageLayout 
-                                csrfToken={csrfToken}
-                                showRefreshButton={!autoRefresh}
-                                readonly={readonly}
-                                displayDelete={showDelete}
-                            />
-                        </BetaComponent>
-                        <CurrentComponent>
-                            <BlackDuckProviderConfiguration
-                                csrfToken={csrfToken}
-                                showRefreshButton={!autoRefresh}
-                                readonly={readonly}
-                                displayDelete={showDelete}
-                            />
-                        </CurrentComponent>
-                    </BetaPage>
-                    
-                )}
-            />
-            <DescriptorRoute
-                descriptor={globalDescriptorMap[AZURE_BOARDS_INFO.key]}
-                urlName={AZURE_BOARDS_INFO.url}
-                paths={[`${AZURE_BOARDS_URLS.editUrl}/:id?`, `${AZURE_BOARDS_URLS.copyUrl}/:id?`]}
-                render={(readonly, showTest, showSave) => (
-                    <AzureBoardsPageForm
-                        errorHandler={errorHandler}
-                        csrfToken={csrfToken}
+                render={(readonly) => (
+                    <ProviderPageLayout 
                         readonly={readonly}
-                        displayTest={showTest}
-                        displaySave={showSave}
                     />
                 )}
             />
@@ -161,23 +105,11 @@ const MainPage = ({
                 uriPrefix={channelUri}
                 urlName={AZURE_BOARDS_INFO.url}
                 descriptor={globalDescriptorMap[AZURE_BOARDS_INFO.key]}
-                render={(readonly, showTest, showSave, showDelete) => (
-                    <BetaPage betaSelected>
-                        <BetaComponent>
-                            <AzureBoardsPageLayout 
-                                readonly={readonly}
-                                allowDelete={showDelete}
-                            />
-                        </BetaComponent>
-                        <CurrentComponent>
-                            <AzureBoardsTableConstructor
-                                csrfToken={csrfToken}
-                                readonly={readonly}
-                                showRefreshButton={!autoRefresh}
-                                displayDelete={showDelete}
-                            />
-                        </CurrentComponent>
-                    </BetaPage>
+                render={(readonly, showDelete) => (
+                    <AzureBoardsPageLayout 
+                        readonly={readonly}
+                        allowDelete={showDelete}
+                    />
                 )}
             />
             <DescriptorRoute
@@ -211,42 +143,16 @@ const MainPage = ({
                 )}
             />
             <DescriptorRoute
-                descriptor={globalDescriptorMap[JIRA_SERVER_INFO.key]}
-                urlName={JIRA_SERVER_INFO.url}
-                paths={[`${JIRA_SERVER_URLS.jiraServerEditUrl}/:id?`, `${JIRA_SERVER_URLS.jiraServerCopyUrl}/:id?`]}
-                render={(readonly, showTest, showSave) => (
-                    <ConcreteJiraServerGlobalConfiguration
-                        errorHandler={errorHandler}
-                        csrfToken={csrfToken}
-                        readonly={readonly}
-                        displayTest={showTest}
-                        displaySave={showSave}
-                    />
-                )}
-            />
-            <DescriptorRoute
                 uriPrefix={channelUri}
                 urlName={JIRA_SERVER_INFO.url}
                 descriptor={globalDescriptorMap[JIRA_SERVER_INFO.key]}
-                render={(readOnly, showTest, showSave, showDelete) => (
-                    <BetaPage betaSelected>
-                        <BetaComponent>
-                            <JiraServerPageLayout 
-                                csrfToken={csrfToken}
-                                showRefreshButton={!autoRefresh}
-                                readonly={readOnly}
-                                allowDelete={showDelete}
-                            />
-                        </BetaComponent>
-                        <CurrentComponent>
-                            <ConcreteJiraServerGlobalConfigurationTable
-                                csrfToken={csrfToken}
-                                readonly={readOnly}
-                                showRefreshButton={!autoRefresh}
-                                displayDelete={showDelete}
-                            />
-                        </CurrentComponent>
-                    </BetaPage>
+                render={(readOnly, showDelete) => (
+                    <JiraServerPageLayout 
+                        csrfToken={csrfToken}
+                        showRefreshButton={!autoRefresh}
+                        readonly={readOnly}
+                        allowDelete={showDelete}
+                    />
                 )}
             />
             <DescriptorRoute uriPrefix={channelUri} urlName={MSTEAMS_INFO.url} descriptor={globalDescriptorMap[MSTEAMS_INFO.key]} render={() => <MSTeamsGlobalConfiguration />} />
@@ -290,14 +196,7 @@ const MainPage = ({
                 urlName={CERTIFICATE_INFO.url}
                 descriptor={globalDescriptorMap[CERTIFICATE_INFO.key]}
                 render={() => (
-                    <BetaPage betaSelected>
-                        <BetaComponent>
-                            <CertificatesPageLayout />
-                        </BetaComponent>
-                        <CurrentComponent>
-                            <CertificatesPage />
-                        </CurrentComponent>
-                    </BetaPage>
+                    <CertificatesPageLayout />
                 )}
             />
             <DescriptorRoute
@@ -333,14 +232,7 @@ const MainPage = ({
                 urlName={TASK_MANAGEMENT_INFO.url}
                 descriptor={globalDescriptorMap[TASK_MANAGEMENT_INFO.key]}
                 render={() => (
-                    <BetaPage betaSelected>
-                        <BetaComponent>
-                            <TaskManagementPageLayout />
-                        </BetaComponent>
-                        <CurrentComponent>
-                            <TaskManagement />
-                        </CurrentComponent>
-                    </BetaPage>
+                    <TaskManagementPageLayout />
                 )}
             />
             <DescriptorRoute

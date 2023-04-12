@@ -70,6 +70,8 @@ const AzureBoardModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
     };
 
     useEffect(() => {
+        setOAuthclick(false);
+
         if (oAuthStatus === 'FETCHING') {
             setShowLoader(requestType);
         }
@@ -89,11 +91,11 @@ const AzureBoardModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
         }
 
         if (saveStatus === 'VALIDATED' && requestType === 'save') {
-            if (oAuthClick) {
-                handleOAuth();
-            } else {
-                handleSave();
-            }
+            handleSave();
+        }
+
+        if (saveStatus === 'VALIDATED' && oAuthClick) {
+            handleOAuth();
         }
 
         if (saveStatus === 'VALIDATED' && requestType === 'test') {

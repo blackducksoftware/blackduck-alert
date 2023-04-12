@@ -116,7 +116,7 @@ Modal.propTypes = {
         type: PropTypes.oneOf(['error', 'success'])
     }),
     showNotification: PropTypes.bool,
-    showLoader: PropTypes.bool,
+    showLoader: PropTypes.string,
     submitText: PropTypes.string,
     testText: PropTypes.string
 };
