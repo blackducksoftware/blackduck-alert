@@ -32,7 +32,7 @@ const useStyles = createUseStyles({
             cursor: 'not-allowed'
         },
         '&:active': {
-            backgroundColor: '#5d779e',
+            backgroundColor: '#646E81',
         }
     },
     transparent: {
@@ -46,7 +46,7 @@ const useStyles = createUseStyles({
         '&:active': {
             color: 'white',
             border: 'solid 1px',
-            backgroundColor: '#5d779e',
+            backgroundColor: '#646E81',
         }
     },
     delete: {

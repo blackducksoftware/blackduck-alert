@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { saveUser, validateUser, fetchUsers } from 'store/actions/users';
+import { saveUser, validateUser, fetchUsers, clearUserFieldErrors } from 'store/actions/users';
 import DynamicSelectInput from 'common/component/input/DynamicSelectInput';
 import Modal from 'common/component/modal/Modal';
 import PasswordInput from 'common/component/input/PasswordInput';
@@ -50,6 +50,7 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
 
     function handleClose() {
         toggleModal(false);
+        dispatch(clearUserFieldErrors());
         dispatch(fetchUsers());
     }
 
@@ -62,6 +63,7 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
     }
 
     function handleSubmit() {
+        dispatch(clearUserFieldErrors());
         if (type === 'EDIT') {
             handleSave();
         }
@@ -95,7 +97,6 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
                 message: error.fieldErrors.message,
                 type: 'error'
             });
-            handleClose();
         }
     }, [saveStatus]);
 
