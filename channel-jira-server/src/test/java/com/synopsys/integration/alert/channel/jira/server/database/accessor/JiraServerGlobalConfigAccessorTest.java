@@ -23,6 +23,7 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurat
 import com.synopsys.integration.alert.channel.jira.server.database.configuration.JiraServerConfigurationEntity;
 import com.synopsys.integration.alert.channel.jira.server.database.configuration.JiraServerConfigurationRepository;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
+import com.synopsys.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
@@ -65,7 +66,7 @@ class JiraServerGlobalConfigAccessorTest {
             .orElseThrow(() -> new AlertConfigurationException("Cannot find expected configuration"));
         assertEquals(id.toString(), configModel.getId());
         assertEquals(TEST_URL, configModel.getUrl());
-        assertEquals(TEST_USERNAME, configModel.getUserName());
+        assertEquals(TEST_USERNAME, configModel.getUserName().orElse("Username missing"));
         assertTrue(configModel.getIsPasswordSet().orElse(Boolean.FALSE));
         assertEquals(TEST_PASSWORD, configModel.getPassword().orElse(null));
         assertTrue(configModel.getDisablePluginCheck().orElse(Boolean.FALSE));
@@ -89,7 +90,7 @@ class JiraServerGlobalConfigAccessorTest {
             .orElseThrow(() -> new AlertConfigurationException("Cannot find expected configuration"));
         assertEquals(id.toString(), configModel.getId());
         assertEquals(TEST_URL, configModel.getUrl());
-        assertEquals(TEST_USERNAME, configModel.getUserName());
+        assertEquals(TEST_USERNAME, configModel.getUserName().orElse("Username missing"));
         assertTrue(configModel.getIsPasswordSet().orElse(Boolean.FALSE));
         assertEquals(TEST_PASSWORD, configModel.getPassword().orElse(null));
         assertTrue(configModel.getDisablePluginCheck().orElse(Boolean.FALSE));
@@ -212,14 +213,18 @@ class JiraServerGlobalConfigAccessorTest {
     void createConfigurationTest() throws AlertConfigurationException {
         UUID id = UUID.randomUUID();
         JiraServerConfigurationEntity entity = createEntity(id, OffsetDateTime.now(), OffsetDateTime.now());
+        // TODO: Implement access token and AuthorizationMethod
         JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(
             null,
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
             DateUtils.formatDate(entity.getCreatedAt(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE),
             DateUtils.formatDate(entity.getLastUpdated(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE),
             TEST_URL,
+            JiraServerAuthorizationMethod.BASIC,
             TEST_USERNAME,
             TEST_PASSWORD,
+            false,
+            null,
             false,
             true
         );
@@ -229,7 +234,7 @@ class JiraServerGlobalConfigAccessorTest {
         JiraServerGlobalConfigModel createdModel = jiraServerGlobalConfigAccessor.createConfiguration(model);
         assertEquals(entity.getConfigurationId().toString(), createdModel.getId());
         assertEquals(entity.getUrl(), createdModel.getUrl());
-        assertEquals(entity.getUsername(), createdModel.getUserName());
+        assertEquals(entity.getUsername(), createdModel.getUserName().orElse("Username missing"));
         assertTrue(createdModel.getIsPasswordSet().orElse(Boolean.FALSE));
         assertEquals(TEST_PASSWORD, createdModel.getPassword().orElse(null));
         assertEquals(entity.getDisablePluginCheck(), createdModel.getDisablePluginCheck().orElse(null));
@@ -241,7 +246,8 @@ class JiraServerGlobalConfigAccessorTest {
         String updatedName = "updatedName";
         String newUrl = "https://updated.example.com";
         JiraServerConfigurationEntity entity = createEntity(id, OffsetDateTime.now(), OffsetDateTime.now());
-        JiraServerConfigurationEntity updatedEntity = new JiraServerConfigurationEntity(entity.getConfigurationId(),
+        JiraServerConfigurationEntity updatedEntity = new JiraServerConfigurationEntity(
+            entity.getConfigurationId(),
             updatedName,
             entity.getCreatedAt(),
             entity.getLastUpdated(),
@@ -250,14 +256,18 @@ class JiraServerGlobalConfigAccessorTest {
             entity.getPassword(),
             entity.getDisablePluginCheck()
         );
+        // TODO: Implement access token and AuthorizationMethod
         JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(
             null,
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
             DateUtils.formatDate(entity.getCreatedAt(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE),
             DateUtils.formatDate(entity.getLastUpdated(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE),
             TEST_URL,
+            JiraServerAuthorizationMethod.BASIC,
             TEST_USERNAME,
             TEST_PASSWORD,
+            false,
+            null,
             false,
             true
         );
@@ -267,7 +277,7 @@ class JiraServerGlobalConfigAccessorTest {
         JiraServerGlobalConfigModel updatedModel = jiraServerGlobalConfigAccessor.updateConfiguration(id, model);
         assertEquals(updatedEntity.getConfigurationId().toString(), updatedModel.getId());
         assertEquals(updatedEntity.getUrl(), updatedModel.getUrl());
-        assertEquals(updatedEntity.getUsername(), updatedModel.getUserName());
+        assertEquals(updatedEntity.getUsername(), updatedModel.getUserName().orElse("Username missing"));
         assertTrue(updatedModel.getIsPasswordSet().orElse(Boolean.FALSE));
         assertEquals(TEST_PASSWORD, updatedModel.getPassword().orElse(null));
         assertEquals(updatedEntity.getDisablePluginCheck(), updatedModel.getDisablePluginCheck().orElse(null));
@@ -279,7 +289,8 @@ class JiraServerGlobalConfigAccessorTest {
         String updatedName = "updatedName";
         String newUrl = "https://updated.example.com";
         JiraServerConfigurationEntity entity = createEntity(id, OffsetDateTime.now(), OffsetDateTime.now());
-        JiraServerConfigurationEntity updatedEntity = new JiraServerConfigurationEntity(entity.getConfigurationId(),
+        JiraServerConfigurationEntity updatedEntity = new JiraServerConfigurationEntity(
+            entity.getConfigurationId(),
             updatedName,
             entity.getCreatedAt(),
             entity.getLastUpdated(),
@@ -288,15 +299,19 @@ class JiraServerGlobalConfigAccessorTest {
             entity.getPassword(),
             entity.getDisablePluginCheck()
         );
+        // TODO: Implement access token and AuthorizationMethod
         JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(
             null,
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
             DateUtils.formatDate(entity.getCreatedAt(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE),
             DateUtils.formatDate(entity.getLastUpdated(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE),
             TEST_URL,
+            JiraServerAuthorizationMethod.BASIC,
             TEST_USERNAME,
             null,
             true,
+            null,
+            false,
             true
         );
         Mockito.when(jiraServerConfigurationRepository.findById(id)).thenReturn(Optional.of(entity));
@@ -305,7 +320,7 @@ class JiraServerGlobalConfigAccessorTest {
         JiraServerGlobalConfigModel updatedModel = jiraServerGlobalConfigAccessor.updateConfiguration(id, model);
         assertEquals(updatedEntity.getConfigurationId().toString(), updatedModel.getId());
         assertEquals(updatedEntity.getUrl(), updatedModel.getUrl());
-        assertEquals(updatedEntity.getUsername(), updatedModel.getUserName());
+        assertEquals(updatedEntity.getUsername(), updatedModel.getUserName().orElse("Username missing"));
         assertTrue(updatedModel.getIsPasswordSet().orElse(Boolean.FALSE));
         assertEquals(TEST_PASSWORD, updatedModel.getPassword().orElse(null));
         assertEquals(updatedEntity.getDisablePluginCheck(), updatedModel.getDisablePluginCheck().orElse(null));
@@ -322,8 +337,11 @@ class JiraServerGlobalConfigAccessorTest {
             DateUtils.formatDate(entity.getCreatedAt(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE),
             DateUtils.formatDate(entity.getLastUpdated(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE),
             TEST_URL,
+            JiraServerAuthorizationMethod.BASIC,
             TEST_USERNAME,
             TEST_PASSWORD,
+            false,
+            null,
             false,
             true
         );

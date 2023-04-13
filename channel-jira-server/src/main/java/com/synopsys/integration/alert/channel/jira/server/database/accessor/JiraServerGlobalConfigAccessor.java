@@ -27,6 +27,7 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurat
 import com.synopsys.integration.alert.channel.jira.server.database.configuration.JiraServerConfigurationEntity;
 import com.synopsys.integration.alert.channel.jira.server.database.configuration.JiraServerConfigurationRepository;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
+import com.synopsys.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
@@ -142,7 +143,7 @@ public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<Jir
             createdTime,
             lastUpdated,
             configuration.getUrl(),
-            configuration.getUserName(),
+            configuration.getUserName().orElse(null),
             password,
             disablePluginCheck
         );
@@ -165,6 +166,20 @@ public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<Jir
         if (doesPasswordExist) {
             password = encryptionUtility.decrypt(password);
         }
-        return new JiraServerGlobalConfigModel(id, name, createdAtFormatted, lastUpdatedFormatted, url, username, password, doesPasswordExist, disablePluginCheck);
+        // TODO: Implement access token and AuthorizationMethod
+        return new JiraServerGlobalConfigModel(
+            id,
+            name,
+            createdAtFormatted,
+            lastUpdatedFormatted,
+            url,
+            JiraServerAuthorizationMethod.BASIC,
+            username,
+            password,
+            doesPasswordExist,
+            null,
+            null,
+            disablePluginCheck
+        );
     }
 }

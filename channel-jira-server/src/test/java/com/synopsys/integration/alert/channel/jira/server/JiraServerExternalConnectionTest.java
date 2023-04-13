@@ -28,6 +28,7 @@ import com.synopsys.integration.alert.channel.jira.server.database.accessor.Jira
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerMessageSenderFactory;
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerProcessorFactory;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
+import com.synopsys.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
@@ -105,13 +106,16 @@ class JiraServerExternalConnectionTest {
     }
 
     private JiraServerGlobalConfigModel createJiraServerConfigModel() {
-        return new JiraServerGlobalConfigModel(
+        // TODO: Implement access token and AuthorizationMethod
+        JiraServerGlobalConfigModel configModel = new JiraServerGlobalConfigModel(
             UUID.randomUUID().toString(),
             "name",
             testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_URL),
-            testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_USERNAME),
-            testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_PASSWORD)
+            JiraServerAuthorizationMethod.BASIC
         );
+        configModel.setUserName(testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_USERNAME));
+        configModel.setPassword(testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_PASSWORD));
+        return configModel;
     }
 
     private DistributionJobModel createDistributionJobModel() {
@@ -133,7 +137,8 @@ class JiraServerExternalConnectionTest {
         //This test requires that the JIRA server has 2 components associated with the project: "component1" and "component2"
         customFields.add(new JiraJobCustomFieldModel("Component/s", "component1 component2"));
 
-        return new JiraServerJobDetailsModel(uuid,
+        return new JiraServerJobDetailsModel(
+            uuid,
             Boolean.parseBoolean(testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_ADD_COMMENTS)),
             testProperties.getOptionalProperty(TestPropertyKey.TEST_JIRA_SERVER_ISSUE_CREATOR).orElse(null),
             testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_PROJECT_NAME),

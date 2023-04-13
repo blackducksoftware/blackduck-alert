@@ -20,6 +20,7 @@ import com.synopsys.integration.alert.channel.jira.server.JiraServerPropertiesFa
 import com.synopsys.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
+import com.synopsys.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 import com.synopsys.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationFieldModelValidator;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -66,9 +67,10 @@ class JiraServerCustomFunctionActionTest {
             jiraGlobalConfigId.toString(),
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
             "http://jira.server.example.com/jira",
-            "user",
-            "password"
+            JiraServerAuthorizationMethod.BASIC
         );
+        configModel.setUserName("user");
+        configModel.setPassword("password");
         DistributionJobModel jobModel = DistributionJobModel.builder()
             .jobId(UUID.randomUUID())
             .enabled(true)
@@ -120,9 +122,10 @@ class JiraServerCustomFunctionActionTest {
             jiraGlobalConfigId.toString(),
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
             "http://jira.server.example.com/jira",
-            "user",
-            "password"
+            JiraServerAuthorizationMethod.BASIC
         );
+        configModel.setUserName("user");
+        configModel.setPassword("password");
         DistributionJobModel jobModel = DistributionJobModel.builder()
             .jobId(UUID.randomUUID())
             .enabled(true)
@@ -175,9 +178,10 @@ class JiraServerCustomFunctionActionTest {
             jiraGlobalConfigId.toString(),
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
             "http://jira.server.example.com/jira",
-            "user",
-            "password"
+            JiraServerAuthorizationMethod.BASIC
         );
+        configModel.setUserName("user");
+        configModel.setPassword("password");
         DistributionJobModel jobModel = DistributionJobModel.builder()
             .jobId(UUID.randomUUID())
             .enabled(true)
@@ -230,9 +234,10 @@ class JiraServerCustomFunctionActionTest {
             jiraGlobalConfigId.toString(),
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
             "http://jira.server.example.com/jira",
-            "user",
-            "password"
+            JiraServerAuthorizationMethod.BASIC
         );
+        configModel.setUserName("user");
+        configModel.setPassword("password");
         DistributionJobModel jobModel = DistributionJobModel.builder()
             .jobId(UUID.randomUUID())
             .enabled(true)
@@ -286,9 +291,10 @@ class JiraServerCustomFunctionActionTest {
             jiraGlobalConfigId.toString(),
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
             "http://jira.server.example.com/jira",
-            "user",
-            "password"
+            JiraServerAuthorizationMethod.BASIC
         );
+        configModel.setUserName("user");
+        configModel.setPassword("password");
         DistributionJobModel jobModel = DistributionJobModel.builder()
             .jobId(UUID.randomUUID())
             .enabled(true)
@@ -342,9 +348,10 @@ class JiraServerCustomFunctionActionTest {
             jiraGlobalConfigId.toString(),
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
             "http://jira.server.example.com/jira",
-            "user",
-            "password"
+            JiraServerAuthorizationMethod.BASIC
         );
+        configModel.setUserName("user");
+        configModel.setPassword("password");
         DistributionJobModel jobModel = DistributionJobModel.builder()
             .jobId(UUID.randomUUID())
             .enabled(true)

@@ -40,7 +40,8 @@ public class JiraServerPropertiesFactory {
     }
 
     public JiraServerProperties createJiraPropertiesWithJobId(UUID jiraServerJobId) throws AlertConfigurationException {
-        DistributionJobModel jiraServerDistributionJobConfiguration = jobAccessor.getJobById(jiraServerJobId).orElseThrow(() -> new AlertConfigurationException("Missing Jira Server distribution configuration"));
+        DistributionJobModel jiraServerDistributionJobConfiguration = jobAccessor.getJobById(jiraServerJobId)
+            .orElseThrow(() -> new AlertConfigurationException("Missing Jira Server distribution configuration"));
         return createJiraProperties(jiraServerDistributionJobConfiguration.getChannelGlobalConfigId());
     }
 
@@ -48,7 +49,7 @@ public class JiraServerPropertiesFactory {
         return createJiraProperties(
             jiraServerGlobalConfigModel.getUrl(),
             jiraServerGlobalConfigModel.getPassword().orElse(null),
-            jiraServerGlobalConfigModel.getUserName(),
+            jiraServerGlobalConfigModel.getUserName().orElse(null),
             jiraServerGlobalConfigModel.getDisablePluginCheck().orElse(false)
         );
     }
