@@ -20,7 +20,6 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
@@ -43,7 +42,6 @@ import com.synopsys.integration.alert.component.users.UserManagementDescriptorKe
 import com.synopsys.integration.alert.component.users.UserSystemValidator;
 
 @Component
-@Transactional
 public class UserActions extends AbstractResourceActions<UserConfig, UserModel, MultiUserConfigResponseModel> {
     public static final String FIELD_KEY_USER_MGMT_USERNAME = "username";
     public static final String FIELD_KEY_USER_MGMT_PASSWORD = "password";
