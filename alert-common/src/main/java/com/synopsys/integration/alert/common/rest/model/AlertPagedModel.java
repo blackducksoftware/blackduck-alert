@@ -29,7 +29,6 @@ public class AlertPagedModel<M> extends AlertPagedDetails<M> implements Serializ
     }
 
     @Override
-    @JsonIgnore
     public List<M> getModels() {
         return super.getModels();
     }
