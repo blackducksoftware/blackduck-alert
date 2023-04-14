@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingJobAccessor2;
 import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModel;
@@ -36,7 +35,6 @@ public class DefaultProcessingJobAccessor2 implements ProcessingJobAccessor2 {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public AlertPagedModel<SimpleFilteredDistributionJobResponseModel> getMatchingEnabledJobsForNotifications(
         FilteredDistributionJobRequestModel filteredDistributionJobRequestModel,
         int pageNumber,

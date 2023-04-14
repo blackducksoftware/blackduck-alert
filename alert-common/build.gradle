@@ -17,6 +17,7 @@ dependencies {
     implementation 'org.springframework.security:spring-security-config'
     implementation 'jakarta.activation:jakarta.activation-api'
     implementation 'jakarta.servlet:jakarta.servlet-api'
+    implementation 'net.minidev:json-smart'
 
     // XML
     implementation 'com.fasterxml.jackson.core:jackson-databind'
