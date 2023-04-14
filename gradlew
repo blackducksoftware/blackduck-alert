@@ -237,4 +237,4 @@ eval "set -- $(
         tr '\n' ' '
     )" '"$@"'
 
-exec "$JAVACMD" --add-opens java.base/java.lang=ALL-UNNAMED "$@"
+exec "$JAVACMD" "$@"
