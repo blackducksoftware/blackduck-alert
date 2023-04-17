@@ -163,7 +163,7 @@ export function login(username, password) {
             headers: headersUtil.getHeaders(),
             body: JSON.stringify(body)
         }).then((response) => {
-            if (response.ok) {
+            if (response.ok && response.headers.get('X-CSRF-TOKEN')) {
                 const token = response.headers.get('X-CSRF-TOKEN');
                 dispatch(loggedIn({ csrfToken: token }));
             } else {
