@@ -67,9 +67,4 @@ All releases are on the GitHub release page. https://github.com/blackducksoftwar
 <!-- project-url-text-end -->
 
 ## Documentation ##
-Our public documentation is located here: https://community.synopsys.com/s/document-item?bundleId=synopsys-alert&topicId=topics%2Fgeneral%2Fsynopsys-alert-overview.html&_LANG=enus
-
-Installation Documentation available for the following:
- - [Docker Compose](https://github.com/blackducksoftware/blackduck-alert/blob/master/deployment/docker-compose/README.md) 
- - [Docker Swarm](https://github.com/blackducksoftware/blackduck-alert/blob/master/deployment/docker-swarm/README.md)
- - [Kubernetes](https://synopsys.atlassian.net/wiki/spaces/BDLM/pages/153583626/Synopsys+Alert+Installation+Guide+for+Synopsys+Operator)
+Our public documentation, including installation instructions, is located here: https://sig-product-docs.synopsys.com/bundle/synopsys-alert/page/topics/general/synopsys-alert-overview.html

@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 
 import com.synopsys.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
+import com.synopsys.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 import com.synopsys.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -234,13 +235,15 @@ class JiraServerGlobalCrudActionsTestIT {
         assertTrue(createActionResponse.getContent().isPresent());
 
         UUID uuid = UUID.fromString(createActionResponse.getContent().get().getId());
+        // TODO: Implement access token and AuthorizationMethod
         JiraServerGlobalConfigModel updatedJiraServerGlobalConfigModel = new JiraServerGlobalConfigModel(
             uuid.toString(),
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
             "https://aNewURL",
-            "a-different-username",
-            "newPassword"
+            JiraServerAuthorizationMethod.BASIC
         );
+        updatedJiraServerGlobalConfigModel.setUserName("a-different-username");
+        updatedJiraServerGlobalConfigModel.setPassword("newPassword");
         ActionResponse<JiraServerGlobalConfigModel> actionResponse = crudActions.update(uuid, updatedJiraServerGlobalConfigModel);
 
         assertTrue(createActionResponse.isSuccessful());
@@ -271,13 +274,14 @@ class JiraServerGlobalCrudActionsTestIT {
         assertTrue(createActionResponse.getContent().isPresent());
 
         UUID uuid = UUID.fromString(createActionResponse.getContent().get().getId());
+        // TODO: Implement access token and AuthorizationMethod
         JiraServerGlobalConfigModel updatedJiraServerGlobalConfigModel = new JiraServerGlobalConfigModel(
             null,
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
             "https://aNewURL",
-            "a-different-username",
-            null
+            JiraServerAuthorizationMethod.BASIC
         );
+        updatedJiraServerGlobalConfigModel.setUserName("a-different-username");
         ActionResponse<JiraServerGlobalConfigModel> actionResponse = crudActions.update(uuid, updatedJiraServerGlobalConfigModel);
 
         assertTrue(actionResponse.isError());
@@ -318,18 +322,27 @@ class JiraServerGlobalCrudActionsTestIT {
     }
 
     private JiraServerGlobalConfigModel createBasicJiraModel() {
+        // TODO: Implement access token and AuthorizationMethod
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel = new JiraServerGlobalConfigModel(
             null,
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
             "https://url",
-            "name",
-            "password"
+            JiraServerAuthorizationMethod.BASIC
         );
+        jiraServerGlobalConfigModel.setUserName("name");
+        jiraServerGlobalConfigModel.setPassword("password");
         return jiraServerGlobalConfigModel;
     }
 
     private JiraServerGlobalConfigModel createJiraModelWithName(String name) {
-        JiraServerGlobalConfigModel jiraServerGlobalConfigModel = new JiraServerGlobalConfigModel(null, name, "https://url", "name", "password");
+        JiraServerGlobalConfigModel jiraServerGlobalConfigModel = new JiraServerGlobalConfigModel(
+            null,
+            name,
+            "https://url",
+            JiraServerAuthorizationMethod.BASIC
+        );
+        jiraServerGlobalConfigModel.setUserName("name");
+        jiraServerGlobalConfigModel.setPassword("password");
         return jiraServerGlobalConfigModel;
     }
 

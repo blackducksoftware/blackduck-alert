@@ -20,6 +20,7 @@ import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
+import com.synopsys.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 import com.synopsys.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.util.DateUtils;
@@ -44,7 +45,11 @@ public class JiraServerEnvironmentVariableHandler extends EnvironmentVariableHan
     private final JiraServerGlobalConfigurationValidator validator;
 
     @Autowired
-    public JiraServerEnvironmentVariableHandler(JiraServerGlobalConfigAccessor configAccessor, EnvironmentVariableUtility environmentVariableUtility, JiraServerGlobalConfigurationValidator validator) {
+    public JiraServerEnvironmentVariableHandler(
+        JiraServerGlobalConfigAccessor configAccessor,
+        EnvironmentVariableUtility environmentVariableUtility,
+        JiraServerGlobalConfigurationValidator validator
+    ) {
         super(ChannelKeys.JIRA_SERVER.getDisplayName(), VARIABLE_NAMES, environmentVariableUtility);
         this.configAccessor = configAccessor;
         this.environmentVariableUtility = environmentVariableUtility;
@@ -63,9 +68,12 @@ public class JiraServerEnvironmentVariableHandler extends EnvironmentVariableHan
         String userName = environmentVariableUtility.getEnvironmentValue(USERNAME_KEY).orElse(null);
         String password = environmentVariableUtility.getEnvironmentValue(PASSWORD_KEY).orElse(null);
         String createdAt = DateUtils.formatDate(DateUtils.createCurrentDateTimestamp(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
-        JiraServerGlobalConfigModel configModel = new JiraServerGlobalConfigModel(null, name, url, userName, password);
+        // TODO: Implement access token and AuthorizationMethod
+        JiraServerGlobalConfigModel configModel = new JiraServerGlobalConfigModel(null, name, url, JiraServerAuthorizationMethod.BASIC);
         configModel.setCreatedAt(createdAt);
         configModel.setLastUpdated(createdAt);
+        configModel.setUserName(userName);
+        configModel.setPassword(password);
         environmentVariableUtility.getEnvironmentValue(DISABLE_PLUGIN_KEY)
             .map(Boolean::valueOf)
             .ifPresent(configModel::setDisablePluginCheck);
@@ -86,9 +94,8 @@ public class JiraServerEnvironmentVariableHandler extends EnvironmentVariableHan
             builder.addVariableValue(URL_KEY, obfuscatedConfigModel.getUrl());
         }
 
-        if (StringUtils.isNotBlank(obfuscatedConfigModel.getUserName())) {
-            builder.addVariableValue(USERNAME_KEY, obfuscatedConfigModel.getUserName());
-        }
+        obfuscatedConfigModel.getUserName()
+            .ifPresent(username -> builder.addVariableValue(USERNAME_KEY, username));
 
         obfuscatedConfigModel.getDisablePluginCheck()
             .map(String::valueOf)
