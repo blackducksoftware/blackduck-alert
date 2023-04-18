@@ -19,14 +19,14 @@ const TableHeader = ({ columns, multiSelect, selected, onSelected, tableData, on
     return (
         <thead className={classes.tableHead}>
             <tr>
-                { multiSelect ? (
+                { multiSelect && (
                     <MultiSelectHeaderCell
                         selected={selected}
                         onSelected={onSelected}
                         tableData={tableData}
                         disableSelectOptions={disableSelectOptions}
                     />
-                ) : null }
+                )}
 
                 { columns.map((column) => (
                     <TableHeaderCell

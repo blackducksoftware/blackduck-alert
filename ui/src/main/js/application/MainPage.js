@@ -27,7 +27,7 @@ import AuthenticationPageLayout from 'application/auth/AuthenticationPageLayout'
 import { BLACKDUCK_INFO } from 'page/provider/blackduck/BlackDuckModel';
 import ProviderPageLayout from 'page/provider/ProviderPageLayout';
 import { AUDIT_INFO } from 'page/audit/AuditModel';
-import AuditPage from 'page/audit/AuditPage';
+import AuditPageLayout from 'page/audit/AuditPageLayout';
 import { CERTIFICATE_INFO } from 'page/certificates/CertificateModel';
 import CertificatesPageLayout from 'page/certificates/CertificatesPageLayout';
 import { TASK_MANAGEMENT_INFO } from 'page/task/TaskManagementModel';
@@ -170,7 +170,7 @@ const MainPage = ({
                 urlName={AUDIT_INFO.url}
                 descriptor={globalDescriptorMap[AUDIT_INFO.key]}
                 render={() => (
-                    <AuditPage />
+                    <AuditPageLayout />
                 )}
             />
             <DescriptorRoute

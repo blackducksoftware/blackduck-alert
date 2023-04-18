@@ -1,6 +1,7 @@
 import HeaderUtilities from 'common/util/HeaderUtilities';
 
 export const ALERT_API_URL = '/alert/api';
+export const AUDIT_API_URL = `${ALERT_API_URL}/audit/failed`;
 export const AUTHENTICATION_LDAP_API_URL = `${ALERT_API_URL}/authentication/ldap`;
 export const AUTHENTICATION_SAML_API_URL = `${ALERT_API_URL}/authentication/saml`;
 export const AZURE_BOARDS_API_URL = `${ALERT_API_URL}/configuration/azure-boards`;

@@ -31,20 +31,19 @@ const Table = ({ columns, multiSelect, selected, onSelected, disableSelectOption
         <>
             <div className={classes.tableActions}>
                 {tableActions ? tableActions() : null}
-                { handleSearchChange ? (
+                { handleSearchChange && (
                     <SearchFilter
                         handleSearchChange={handleSearchChange}
                         searchBarPlaceholder={searchBarPlaceholder}
                     />
-                ) : null }
+                )}
 
-                {onToggle ? (
+                {onToggle && (
                     <ToggleSwitch
                         active={active}
                         onToggle={onToggle}
                     />
-                ) : null }
-
+                )}
             </div>
 
             { (!tableData || tableData.length === 0) && (

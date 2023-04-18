@@ -7,14 +7,14 @@ const TableBody = ({ columns, multiSelect, tableData, selected, onSelected, disa
     <tbody>
         { tableData?.map((rowData, rowIndex) => (
             <tr key={`${rowIndex}-table-row`}> 
-                { multiSelect ? (
+                { multiSelect && (
                     <MultiSelectCell
                         data={rowData}
                         selected={selected}
                         onSelected={onSelected}
                         disableSelectOptions={disableSelectOptions}
                     />
-                ) : null }
+                )}
 
                 { columns.map((col, colIndex) => {
                     const columnKey = `${col.key}-${rowIndex}-${colIndex}`;

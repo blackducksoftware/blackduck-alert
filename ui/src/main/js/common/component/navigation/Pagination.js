@@ -4,6 +4,12 @@ import { createUseStyles } from 'react-jss';
 import PaginationButton from '../button/PaginationButton';
 import IconButton from '../button/IconButton';
 
+const useStyles = createUseStyles({
+    pagination: {
+        padding: ['5px', 0, '25px']
+    }
+})
+
 function getDisplayPages(currentPage, totalPages) {
     const links = [];
     const starterPages = [0, 1, 2];
@@ -52,6 +58,7 @@ function getDisplayPages(currentPage, totalPages) {
 }
 
 const Pagination = ({ data, onPage }) => {
+    const classes = useStyles();
     const { currentPage, totalPages } = data;
 
     const links = getDisplayPages(currentPage, totalPages);
@@ -81,7 +88,7 @@ const Pagination = ({ data, onPage }) => {
     };
 
     return (
-        <>
+        <div className={classes.pagination}>
             <IconButton icon="angle-double-left" onClick={handleFirstPageClick} />
             <IconButton icon="angle-left" onClick={handlePreviousPageclick} />
 
@@ -94,7 +101,7 @@ const Pagination = ({ data, onPage }) => {
 
             <IconButton icon="angle-right" onClick={handleNextPageclick} />
             <IconButton icon="angle-double-right" onClick={handleEndPageClick} />
-        </>
+        </div>
     );
 };
 
