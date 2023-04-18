@@ -54,14 +54,12 @@ public class ScalingPerformanceTest {
     private final DateTimeFormatter dateTimeFormatter = IntegrationPerformanceTestRunnerLegacy.createDateTimeFormatter();
 
     private static String SLACK_CHANNEL_WEBHOOK;
-    private static String SLACK_CHANNEL_NAME;
     private static String SLACK_CHANNEL_USERNAME;
 
     @BeforeAll
     public static void initTest() {
         TestProperties testProperties = new TestProperties();
         SLACK_CHANNEL_WEBHOOK = testProperties.getProperty(TestPropertyKey.TEST_SLACK_WEBHOOK);
-        SLACK_CHANNEL_NAME = testProperties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME);
         SLACK_CHANNEL_USERNAME = testProperties.getProperty(TestPropertyKey.TEST_SLACK_USERNAME);
     }
 
@@ -181,7 +179,6 @@ public class ScalingPerformanceTest {
             slackKeyToValues.put(ChannelDescriptor.KEY_PROVIDER_TYPE, new FieldValueModel(List.of(blackDuckProviderKey), true));
 
             slackKeyToValues.put(SlackDescriptor.KEY_WEBHOOK, new FieldValueModel(List.of(SLACK_CHANNEL_WEBHOOK), true));
-            slackKeyToValues.put(SlackDescriptor.KEY_CHANNEL_NAME, new FieldValueModel(List.of(SLACK_CHANNEL_NAME), true));
             slackKeyToValues.put(SlackDescriptor.KEY_CHANNEL_USERNAME, new FieldValueModel(List.of(SLACK_CHANNEL_USERNAME), true));
             String jobId = configurationManager.createJob(slackKeyToValues, jobName, blackDuckProviderID, blackDuckProjectName);
             jobIds.add(jobId);

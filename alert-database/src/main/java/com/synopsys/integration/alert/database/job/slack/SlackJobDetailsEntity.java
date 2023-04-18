@@ -7,12 +7,11 @@
  */
 package com.synopsys.integration.alert.database.job.slack;
 
-import java.util.UUID;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.UUID;
 
 @Entity
 @Table(schema = "alert", name = "slack_job_details")
@@ -24,19 +23,15 @@ public class SlackJobDetailsEntity {
     @Column(name = "webhook")
     private String webhook;
 
-    @Column(name = "channel_name")
-    private String channelName;
-
     @Column(name = "channel_username")
     private String channelUsername;
 
     public SlackJobDetailsEntity() {
     }
 
-    public SlackJobDetailsEntity(UUID jobId, String webhook, String channelName, String channelUsername) {
+    public SlackJobDetailsEntity(UUID jobId, String webhook, String channelUsername) {
         this.jobId = jobId;
         this.webhook = webhook;
-        this.channelName = channelName;
         this.channelUsername = channelUsername;
     }
 
@@ -54,14 +49,6 @@ public class SlackJobDetailsEntity {
 
     public void setWebhook(String webhook) {
         this.webhook = webhook;
-    }
-
-    public String getChannelName() {
-        return channelName;
-    }
-
-    public void setChannelName(String channelName) {
-        this.channelName = channelName;
     }
 
     public String getChannelUsername() {

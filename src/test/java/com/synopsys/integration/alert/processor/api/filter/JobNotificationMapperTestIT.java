@@ -190,7 +190,7 @@ public class JobNotificationMapperTestIT {
                 List.of(),
                 List.of(),
                 List.of(),
-                new SlackJobDetailsModel(null, "webhook", "channelName", "username")
+                new SlackJobDetailsModel(null, "webhook", "username")
             ))
         );
 
@@ -216,7 +216,7 @@ public class JobNotificationMapperTestIT {
                 List.of(),
                 List.of(),
                 List.of(),
-                new SlackJobDetailsModel(null, "webhook", "channelName", "username")
+                new SlackJobDetailsModel(null, "webhook", "username")
             ))
         );
 
@@ -347,7 +347,7 @@ public class JobNotificationMapperTestIT {
             blackDuckProjectDetailsModels,
             policies,
             vulns,
-            new SlackJobDetailsModel(null, "webhook", "channelName", "username")
+            new SlackJobDetailsModel(null, "webhook", "username")
         );
     }
 

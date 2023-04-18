@@ -248,7 +248,7 @@ public class NotificationContentRepositoryIT {
     }
 
     private DistributionJobRequestModel createJobRequestModel() {
-        SlackJobDetailsModel details = new SlackJobDetailsModel(null, "test_webhook", "#test-channel", null);
+        SlackJobDetailsModel details = new SlackJobDetailsModel(null, "test_webhook", null);
         return new DistributionJobRequestModel(
             true,
             "Test Slack Job",

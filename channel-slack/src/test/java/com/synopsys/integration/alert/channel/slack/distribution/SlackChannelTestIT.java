@@ -11,11 +11,6 @@
  */
 package com.synopsys.integration.alert.channel.slack.distribution;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.rest.ChannelRestConnectionFactory;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
@@ -30,6 +25,10 @@ import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.test.common.TestTags;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 class SlackChannelTestIT {
     private Gson gson;
@@ -61,7 +60,6 @@ class SlackChannelTestIT {
         SlackJobDetailsModel distributionDetails = new SlackJobDetailsModel(
             null,
             properties.getProperty(TestPropertyKey.TEST_SLACK_WEBHOOK),
-            properties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME),
             properties.getProperty(TestPropertyKey.TEST_SLACK_USERNAME)
         );
 

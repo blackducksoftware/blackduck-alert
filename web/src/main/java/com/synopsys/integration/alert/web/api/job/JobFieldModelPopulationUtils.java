@@ -189,7 +189,6 @@ public final class JobFieldModelPopulationUtils {
     private static void populateSlackFields(FieldModel channelFieldModel, SlackJobDetailsModel slackJobDetails) {
         if (null != slackJobDetails) {
             putField(channelFieldModel, SlackDescriptor.KEY_WEBHOOK, slackJobDetails.getWebhook());
-            putField(channelFieldModel, SlackDescriptor.KEY_CHANNEL_NAME, slackJobDetails.getChannelName());
             putField(channelFieldModel, SlackDescriptor.KEY_CHANNEL_USERNAME, slackJobDetails.getChannelUsername());
         }
     }

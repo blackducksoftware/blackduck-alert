@@ -33,7 +33,6 @@ public enum TestPropertyKey {
     TEST_PERFORMANCE_ALERT_SERVER_URL("alert.performance.alert.server.url"),
     TEST_PERFORMANCE_WAIT_TIMEOUT_SECONDS("alert.performance.wait.timeout.seconds"),
 
-    TEST_SLACK_CHANNEL_NAME("slack.channel.name"),
     TEST_SLACK_USERNAME("slack.username"),
     TEST_SLACK_WEBHOOK("slack.web.hook"),
 

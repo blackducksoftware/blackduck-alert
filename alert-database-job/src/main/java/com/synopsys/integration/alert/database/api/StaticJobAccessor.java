@@ -280,7 +280,6 @@ public class StaticJobAccessor implements JobAccessor {
             distributionJobDetailsModel = new SlackJobDetailsModel(
                 jobId,
                 slackJobDetails.getWebhook(),
-                slackJobDetails.getChannelName(),
                 slackJobDetails.getChannelUsername()
             );
         }

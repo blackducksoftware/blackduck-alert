@@ -22,19 +22,6 @@ const SlackDistributionConfiguration = ({
             errorValue={errors.fieldErrors[SLACK_DISTRIBUTION_FIELD_KEYS.webhook]}
         />
         <TextInput
-            id={SLACK_DISTRIBUTION_FIELD_KEYS.channelName}
-            key={SLACK_DISTRIBUTION_FIELD_KEYS.channelName}
-            name={SLACK_DISTRIBUTION_FIELD_KEYS.channelName}
-            label="Channel Name"
-            description="The name of the Slack channel."
-            required
-            readOnly={readonly}
-            onChange={FieldModelUtilities.handleChange(data, setData)}
-            value={FieldModelUtilities.getFieldModelSingleValue(data, SLACK_DISTRIBUTION_FIELD_KEYS.channelName)}
-            errorName={FieldModelUtilities.createFieldModelErrorKey(SLACK_DISTRIBUTION_FIELD_KEYS.channelName)}
-            errorValue={errors.fieldErrors[SLACK_DISTRIBUTION_FIELD_KEYS.channelName]}
-        />
-        <TextInput
             id={SLACK_DISTRIBUTION_FIELD_KEYS.channelUser}
             key={SLACK_DISTRIBUTION_FIELD_KEYS.channelUser}
             name={SLACK_DISTRIBUTION_FIELD_KEYS.channelUser}
