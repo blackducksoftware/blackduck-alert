@@ -3,4 +3,5 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
     <include file="drop-saml-sign-assertions-column.xml" relativeToChangelogFile="true"/>
     <include file="add-jira-server-auth-type-column.xml" relativeToChangelogFile="true"/>
+    <include file="migrate-jira-server-auth-method.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
