@@ -8,7 +8,7 @@
             </not>
         </preConditions>
         <addColumn schemaName="alert" tableName="configuration_jira_server">
-            <column name="authorization_method" type="VARCHAR">
+            <column name="authorization_method" type="VARCHAR" defaultValue="BASIC">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
