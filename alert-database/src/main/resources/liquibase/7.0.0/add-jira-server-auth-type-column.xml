@@ -13,4 +13,8 @@
             </column>
         </addColumn>
     </changeSet>
+    <changeSet author="mau" id="drop-not-null-constraint-username-password">
+        <dropNotNullConstraint schemaName="alert" tableName="configuration_jira_server" columnName="username"/>
+        <dropNotNullConstraint schemaName="alert" tableName="configuration_jira_server" columnName="password"/>
+    </changeSet>
 </databaseChangeLog>
