@@ -1,17 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
-    <changeSet author="mau" id="create-global-channel-id-column">
+    <changeSet author="mau" id="create-jira-server-authorization-method-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="jira_server_authorization_method"/>
+            </not>
+        </preConditions>
+        <createTable schemaName="alert" tableName="jira_server_authorization_method">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <insert schemaName="alert" tableName="jira_server_authorization_method">
+            <column name="id" value="0"/>
+            <column name="name" value="Basic"/>
+        </insert>
+        <insert schemaName="alert" tableName="jira_server_authorization_method">
+            <column name="id" value="1"/>
+            <column name="name" value="Personal Access Token"/>
+        </insert>
+    </changeSet>
+    <changeSet author="mau" id="add-jira-server-authorization-method-column">
         <preConditions onFail="MARK_RAN">
             <not>
                 <columnExists schemaName="alert" tableName="configuration_jira_server" columnName="authorization_method"/>
             </not>
         </preConditions>
         <addColumn schemaName="alert" tableName="configuration_jira_server">
-            <column name="authorization_method" type="VARCHAR" defaultValue="BASIC">
+            <column name="authorization_method" type="BIGINT" defaultValue="0">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
+    </changeSet>
+        <changeSet author="mau" id="add_jira_server_authorization_method_fk">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="jira_server_authorization_method_id_fk"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint
+                baseTableSchemaName="alert"
+                baseTableName="configuration_jira_server"
+                baseColumnNames="authorization_method"
+                constraintName="jira_server_authorization_method_id_fk"
+                referencedColumnNames="id"
+                referencedTableSchemaName="alert"
+                referencedTableName="jira_server_authorization_method"
+        />
     </changeSet>
     <changeSet author="mau" id="drop-not-null-constraint-username-password">
         <dropNotNullConstraint schemaName="alert" tableName="configuration_jira_server" columnName="username"/>
