@@ -39,6 +39,8 @@ public class JiraServerConfigurationEntity extends BaseEntity {
     private String username;
     @Column(name = "password")
     private String password;
+    @Column(name = "access_token")
+    private String accessToken;
     @Column(name = "disable_plugin_check")
     private Boolean disablePluginCheck;
 
@@ -47,7 +49,7 @@ public class JiraServerConfigurationEntity extends BaseEntity {
 
     public JiraServerConfigurationEntity(
         UUID configurationId, String name, OffsetDateTime createdAt, OffsetDateTime lastUpdated, String url, JiraServerAuthorizationMethod jiraServerAuthorizationMethod,
-        String username, String password, Boolean disablePluginCheck
+        String username, String password, String accessToken, Boolean disablePluginCheck
     ) {
         this.configurationId = configurationId;
         this.name = name;
@@ -57,6 +59,7 @@ public class JiraServerConfigurationEntity extends BaseEntity {
         this.jiraServerAuthorizationMethod = jiraServerAuthorizationMethod;
         this.username = username;
         this.password = password;
+        this.accessToken = accessToken;
         this.disablePluginCheck = disablePluginCheck;
     }
 
@@ -90,6 +93,10 @@ public class JiraServerConfigurationEntity extends BaseEntity {
 
     public String getPassword() {
         return password;
+    }
+
+    public String getAccessToken() {
+        return accessToken;
     }
 
     public Boolean getDisablePluginCheck() {

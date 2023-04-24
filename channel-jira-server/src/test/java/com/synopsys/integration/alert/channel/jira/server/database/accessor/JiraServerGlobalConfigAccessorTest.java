@@ -36,6 +36,7 @@ class JiraServerGlobalConfigAccessorTest {
     static final String TEST_URL = "url";
     static final String TEST_USERNAME = "username";
     static final String TEST_PASSWORD = "password";
+    static final String TEST_ACCESS_TOKEN = "access_token";
     private final Gson gson = new Gson();
     private final AlertProperties alertProperties = new MockAlertProperties();
     private final FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, gson);
@@ -147,6 +148,7 @@ class JiraServerGlobalConfigAccessorTest {
             JiraServerAuthorizationMethod.BASIC,
             TEST_USERNAME,
             encryptionUtility.encrypt(TEST_PASSWORD),
+            encryptionUtility.encrypt(TEST_ACCESS_TOKEN),
             true
         );
         Page<JiraServerConfigurationEntity> jiraConfigurations = new PageImpl<>(List.of(entity2, entity));
@@ -180,6 +182,7 @@ class JiraServerGlobalConfigAccessorTest {
             JiraServerAuthorizationMethod.BASIC,
             TEST_USERNAME,
             encryptionUtility.encrypt(TEST_PASSWORD),
+            encryptionUtility.encrypt(TEST_ACCESS_TOKEN),
             true
         );
         Page<JiraServerConfigurationEntity> jiraConfigurations = new PageImpl<>(List.of(entity, entity2));
@@ -256,6 +259,7 @@ class JiraServerGlobalConfigAccessorTest {
             JiraServerAuthorizationMethod.BASIC,
             entity.getUsername(),
             entity.getPassword(),
+            encryptionUtility.encrypt(TEST_ACCESS_TOKEN),
             entity.getDisablePluginCheck()
         );
         // TODO: Implement access token and AuthorizationMethod
@@ -300,6 +304,7 @@ class JiraServerGlobalConfigAccessorTest {
             JiraServerAuthorizationMethod.BASIC,
             entity.getUsername(),
             entity.getPassword(),
+            encryptionUtility.encrypt(TEST_ACCESS_TOKEN),
             entity.getDisablePluginCheck()
         );
         // TODO: Implement access token and AuthorizationMethod
@@ -385,6 +390,7 @@ class JiraServerGlobalConfigAccessorTest {
             JiraServerAuthorizationMethod.BASIC,
             TEST_USERNAME,
             encryptionUtility.encrypt(TEST_PASSWORD),
+            encryptionUtility.encrypt(TEST_ACCESS_TOKEN),
             true
         );
     }

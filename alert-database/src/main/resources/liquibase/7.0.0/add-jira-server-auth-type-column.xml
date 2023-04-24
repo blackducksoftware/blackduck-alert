@@ -36,7 +36,19 @@
             </column>
         </addColumn>
     </changeSet>
-        <changeSet author="mau" id="add_jira_server_authorization_method_fk">
+    <changeSet author="mau" id="add-jira-server-access-token-column">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists schemaName="alert" tableName="configuration_jira_server" columnName="access_token"/>
+            </not>
+        </preConditions>
+        <addColumn schemaName="alert" tableName="configuration_jira_server">
+            <column name="access_token" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="mau" id="add_jira_server_authorization_method_fk">
         <preConditions onFail="MARK_RAN">
             <not>
                 <foreignKeyConstraintExists schemaName="alert" foreignKeyName="jira_server_authorization_method_id_fk"/>

@@ -27,7 +27,6 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurat
 import com.synopsys.integration.alert.channel.jira.server.database.configuration.JiraServerConfigurationEntity;
 import com.synopsys.integration.alert.channel.jira.server.database.configuration.JiraServerConfigurationRepository;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
-import com.synopsys.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
@@ -135,6 +134,7 @@ public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<Jir
 
     private JiraServerConfigurationEntity toEntity(UUID configurationId, JiraServerGlobalConfigModel configuration, OffsetDateTime createdTime, OffsetDateTime lastUpdated) {
         String password = configuration.getPassword().map(encryptionUtility::encrypt).orElse(null);
+        String accessToken = configuration.getAccessToken().map(encryptionUtility::encrypt).orElse(null);
         Boolean disablePluginCheck = configuration.getDisablePluginCheck().orElse(Boolean.FALSE);
 
         return new JiraServerConfigurationEntity(
@@ -146,6 +146,7 @@ public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<Jir
             configuration.getAuthorizationMethod(),
             configuration.getUserName().orElse(null),
             password,
+            accessToken,
             disablePluginCheck
         );
     }
@@ -161,11 +162,16 @@ public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<Jir
         String url = jiraConfiguration.getUrl();
         String username = jiraConfiguration.getUsername();
         String password = jiraConfiguration.getPassword();
+        String accessToken = jiraConfiguration.getAccessToken();
         Boolean disablePluginCheck = jiraConfiguration.getDisablePluginCheck();
 
         boolean doesPasswordExist = StringUtils.isNotBlank(password);
         if (doesPasswordExist) {
             password = encryptionUtility.decrypt(password);
+        }
+        boolean doesAccessTokenExist = StringUtils.isNotBlank(accessToken);
+        if (doesAccessTokenExist) {
+            accessToken = encryptionUtility.decrypt(accessToken);
         }
         // TODO: Implement access token and AuthorizationMethod
         return new JiraServerGlobalConfigModel(
@@ -174,12 +180,12 @@ public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<Jir
             createdAtFormatted,
             lastUpdatedFormatted,
             url,
-            JiraServerAuthorizationMethod.BASIC,
+            jiraConfiguration.getJiraServerAuthorizationMethod(),
             username,
             password,
             doesPasswordExist,
-            null,
-            null,
+            accessToken,
+            doesAccessTokenExist,
             disablePluginCheck
         );
     }
