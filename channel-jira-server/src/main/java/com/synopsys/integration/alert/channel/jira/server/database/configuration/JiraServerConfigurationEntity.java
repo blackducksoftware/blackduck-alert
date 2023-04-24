@@ -15,6 +15,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.synopsys.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 import com.synopsys.integration.alert.database.BaseEntity;
 
 @Entity
@@ -32,6 +33,8 @@ public class JiraServerConfigurationEntity extends BaseEntity {
     private OffsetDateTime lastUpdated;
     @Column(name = "url")
     private String url;
+    @Column(name = "jira_server_authorization_method")
+    private JiraServerAuthorizationMethod jiraServerAuthorizationMethod;
     @Column(name = "username")
     private String username;
     @Column(name = "password")
@@ -42,13 +45,16 @@ public class JiraServerConfigurationEntity extends BaseEntity {
     public JiraServerConfigurationEntity() {
     }
 
-    public JiraServerConfigurationEntity(UUID configurationId, String name, OffsetDateTime createdAt, OffsetDateTime lastUpdated, String url, String username, String password,
-        Boolean disablePluginCheck) {
+    public JiraServerConfigurationEntity(
+        UUID configurationId, String name, OffsetDateTime createdAt, OffsetDateTime lastUpdated, String url, JiraServerAuthorizationMethod jiraServerAuthorizationMethod,
+        String username, String password, Boolean disablePluginCheck
+    ) {
         this.configurationId = configurationId;
         this.name = name;
         this.createdAt = createdAt;
         this.lastUpdated = lastUpdated;
         this.url = url;
+        this.jiraServerAuthorizationMethod = jiraServerAuthorizationMethod;
         this.username = username;
         this.password = password;
         this.disablePluginCheck = disablePluginCheck;
@@ -72,6 +78,10 @@ public class JiraServerConfigurationEntity extends BaseEntity {
 
     public String getUrl() {
         return url;
+    }
+
+    public JiraServerAuthorizationMethod getJiraServerAuthorizationMethod() {
+        return jiraServerAuthorizationMethod;
     }
 
     public String getUsername() {

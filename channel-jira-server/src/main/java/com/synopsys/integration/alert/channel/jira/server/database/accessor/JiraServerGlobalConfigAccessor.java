@@ -143,6 +143,7 @@ public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<Jir
             createdTime,
             lastUpdated,
             configuration.getUrl(),
+            configuration.getAuthorizationMethod(),
             configuration.getUserName().orElse(null),
             password,
             disablePluginCheck
