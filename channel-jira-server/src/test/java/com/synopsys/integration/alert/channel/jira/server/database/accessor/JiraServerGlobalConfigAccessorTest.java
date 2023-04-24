@@ -144,6 +144,7 @@ class JiraServerGlobalConfigAccessorTest {
             OffsetDateTime.now(),
             OffsetDateTime.now(),
             TEST_URL,
+            JiraServerAuthorizationMethod.BASIC,
             TEST_USERNAME,
             encryptionUtility.encrypt(TEST_PASSWORD),
             true
@@ -176,6 +177,7 @@ class JiraServerGlobalConfigAccessorTest {
             OffsetDateTime.now(),
             OffsetDateTime.now(),
             TEST_URL,
+            JiraServerAuthorizationMethod.BASIC,
             TEST_USERNAME,
             encryptionUtility.encrypt(TEST_PASSWORD),
             true
@@ -251,6 +253,7 @@ class JiraServerGlobalConfigAccessorTest {
             entity.getCreatedAt(),
             entity.getLastUpdated(),
             newUrl,
+            JiraServerAuthorizationMethod.BASIC,
             entity.getUsername(),
             entity.getPassword(),
             entity.getDisablePluginCheck()
@@ -294,6 +297,7 @@ class JiraServerGlobalConfigAccessorTest {
             entity.getCreatedAt(),
             entity.getLastUpdated(),
             newUrl,
+            JiraServerAuthorizationMethod.BASIC,
             entity.getUsername(),
             entity.getPassword(),
             entity.getDisablePluginCheck()
@@ -378,6 +382,7 @@ class JiraServerGlobalConfigAccessorTest {
             createdAt,
             lastUpdated,
             TEST_URL,
+            JiraServerAuthorizationMethod.BASIC,
             TEST_USERNAME,
             encryptionUtility.encrypt(TEST_PASSWORD),
             true
