@@ -33,7 +33,7 @@ public class JiraServerConfigurationEntity extends BaseEntity {
     private OffsetDateTime lastUpdated;
     @Column(name = "url")
     private String url;
-    @Column(name = "jira_server_authorization_method")
+    @Column(name = "authorization_method")
     private JiraServerAuthorizationMethod jiraServerAuthorizationMethod;
     @Column(name = "username")
     private String username;
