@@ -1,13 +1,19 @@
 package com.synopsys.integration.alert.channel.jira.server.model.enumeration;
 
 public enum JiraServerAuthorizationMethod {
-    BASIC("Basic"),
-    PERSONAL_ACCESS_TOKEN("Personal Access Token");
+    BASIC(0, "Basic"),
+    PERSONAL_ACCESS_TOKEN(1, "Personal Access Token");
 
+    private final Integer mode;
     private final String displayName;
 
-    JiraServerAuthorizationMethod(String displayName) {
+    JiraServerAuthorizationMethod(Integer mode, String displayName) {
+        this.mode = mode;
         this.displayName = displayName;
+    }
+
+    public Integer getMode() {
+        return mode;
     }
 
     public String getDisplayName() {
