@@ -132,6 +132,7 @@ restoreDatabase() {
       cat "$file" | kubectl -n $deploymentNamespace exec $podId -i -- pg_restore -U $userName -Fc --verbose --clean --if-exists -d $databaseName
   fi
   echo "Database $databaseName restored."
+  echo "You must restart Alert in order for it to function properly."
 }
 
 # script execution detail
