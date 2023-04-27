@@ -6,6 +6,7 @@ import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import TextInput from 'common/component/input/TextInput';
 import CollapsiblePane from 'common/component/CollapsiblePane';
 import FieldMappingField from 'common/component/input/FieldMappingField';
+import JiraCloudDistributionTable from 'page/channel/jira/cloud/JiraCloudDistributionTable';
 
 const JiraCloudDistributionConfiguration = ({
     data, setData, errors, readonly
@@ -13,7 +14,10 @@ const JiraCloudDistributionConfiguration = ({
     if (!FieldModelUtilities.hasValue(data, JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.issueType)) {
         setData(FieldModelUtilities.updateFieldModelSingleValue(data, JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.issueType, 'Task'));
     }
-
+    // console.log(FieldModelUtilities.getFieldModelValues(data, JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.fieldMapping), data);
+    const storedMappings = FieldModelUtilities.getFieldModelValues(data, JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.fieldMapping);
+    const tableData = storedMappings.map((mapping) => JSON.parse(mapping));
+    console.log(tableData);
     return (
         <>
             <CheckboxInput
@@ -100,6 +104,7 @@ const JiraCloudDistributionConfiguration = ({
                 title="Advanced Jira Configuration"
                 expanded={false}
             >
+                <JiraCloudDistributionTable cloudTableData={tableData} />
                 <FieldMappingField
                     id={JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.fieldMapping}
                     label="Field Mapping"

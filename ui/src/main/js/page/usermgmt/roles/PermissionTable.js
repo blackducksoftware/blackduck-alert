@@ -50,7 +50,7 @@ const PermissionTable = ({ role, sendPermissionArray, handleFilterPermission }) 
         settings: { alignment: 'right', permissionData, role },
         customCallback: handleRemovePermission
     }];
-    console.log(role);
+
     return (
         <Table
             tableData={role.permissions}

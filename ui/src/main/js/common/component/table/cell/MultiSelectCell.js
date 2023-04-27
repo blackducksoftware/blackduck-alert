@@ -16,15 +16,17 @@ const useStyles = createUseStyles({
 
 const MultiSelectCell = ({ selected, onSelected, data, disableSelectOptions }) => {
     const classes = useStyles();
-    const { id } = data;
-    const isSelected = useMemo(() => selected.includes(id), [selected, data]);
+    // fieldName added for distribution tables
+    const { id, fieldName } = data;
+    const identifier = id || fieldName;
+    const isSelected = useMemo(() => selected.includes(identifier), [selected, data]);
     const isDisabled = disableSelectOptions?.disabledItems.includes(data[disableSelectOptions.key]);
 
     const toggleSelect = useCallback((evt) => {
         if (evt.target.checked) {
-            onSelected(selected.concat(id));
+            onSelected(selected.concat(identifier));
         } else {
-            onSelected(selected.filter((item) => item !== id));
+            onSelected(selected.filter((item) => item !== identifier));
         }
     }, [onSelected, selected]);
 

@@ -318,6 +318,14 @@ const DistributionConfigurationForm = ({
                 createDataToTest={createTestData}
                 errorHandler={errorHandler}
             >
+                {/* 
+                    Enabled [x]
+                    Name [x]
+                    Provider [ ]
+                    Provider Config [ ]
+                    Channel [ ]
+                    Channel Config [ ]
+                 */}
                 <CheckboxInput
                     id={DISTRIBUTION_COMMON_FIELD_KEYS.enabled}
                     name={DISTRIBUTION_COMMON_FIELD_KEYS.enabled}
@@ -328,20 +336,6 @@ const DistributionConfigurationForm = ({
                     isChecked={FieldModelUtilities.getFieldModelBooleanValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.enabled)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.enabled)}
                     errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.enabled]}
-                />
-                <SelectInput
-                    id={DISTRIBUTION_COMMON_FIELD_KEYS.channelName}
-                    name={DISTRIBUTION_COMMON_FIELD_KEYS.channelName}
-                    label="Channel"
-                    description="Select the channel. Notifications generated through Alert will be sent through this channel."
-                    options={DISTRIBUTION_CHANNEL_OPTIONS}
-                    clearable={false}
-                    readOnly={readonly}
-                    required
-                    onChange={onChannelSelectChange}
-                    value={FieldModelUtilities.getFieldModelValues(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName)}
-                    errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.channelName)}
-                    errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.channelName]}
                 />
                 <TextInput
                     id={DISTRIBUTION_COMMON_FIELD_KEYS.name}
@@ -398,7 +392,7 @@ const DistributionConfigurationForm = ({
                     errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId)}
                     errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId]}
                 />
-                {renderChannelFields()}
+                
                 {FieldModelUtilities.hasValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName)
                     && FieldModelUtilities.hasValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId)
                     && (
@@ -529,6 +523,21 @@ const DistributionConfigurationForm = ({
                             />
                         </CollapsiblePane>
                     )}
+                    <SelectInput
+                        id={DISTRIBUTION_COMMON_FIELD_KEYS.channelName}
+                        name={DISTRIBUTION_COMMON_FIELD_KEYS.channelName}
+                        label="Channel"
+                        description="Select the channel. Notifications generated through Alert will be sent through this channel."
+                        options={DISTRIBUTION_CHANNEL_OPTIONS}
+                        clearable={false}
+                        readOnly={readonly}
+                        required
+                        onChange={onChannelSelectChange}
+                        value={FieldModelUtilities.getFieldModelValues(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.channelName)}
+                        errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.channelName]}
+                    />
+                    {renderChannelFields()}
             </CommonDistributionConfigurationForm>
         </CommonGlobalConfiguration>
     );
