@@ -9,9 +9,14 @@ const emptyTableConfig = {
 };
 
 function JiraCloudDistributionTable({ cloudTableData }) {
-    const [tableData, setTableData] = useState();
+    const [tableData, setTableData] = useState(cloudTableData);
     const [selected, setSelected] = useState([]);
     const [sortConfig, setSortConfig] = useState();
+    const [data, setData] = useState();
+
+    function handleEditData(data) {
+        setData(data);
+    }
 
     const COLUMNS = [{
         key: 'fieldName',
@@ -26,8 +31,8 @@ function JiraCloudDistributionTable({ cloudTableData }) {
         label: 'Edit',
         sortable: false,
         customCell: JiraCloudEditCell,
-        settings: { alignment: 'center', tableData, setTableData },
-        customCallback: setTableData
+        settings: { alignment: 'center', tableData },
+        customCallback: handleEditData
     }];
     
     const onSelected = (selectedRow) => {
@@ -51,7 +56,7 @@ function JiraCloudDistributionTable({ cloudTableData }) {
     };
 
     useEffect(() => {
-        let data = cloudTableData;
+        let data = tableData;
 
         if (sortConfig) {
             const { name, direction } = sortConfig;
@@ -71,7 +76,7 @@ function JiraCloudDistributionTable({ cloudTableData }) {
             });
         }
         setTableData(data);
-    }, [cloudTableData, sortConfig]);
+    }, [sortConfig, tableData]);
 
     return (
         <Table
