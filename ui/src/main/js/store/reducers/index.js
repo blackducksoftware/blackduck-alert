@@ -6,6 +6,7 @@ import audit from 'store/reducers/audit';
 import azure from 'store/reducers/azure';
 import certificates from 'store/reducers/certificates';
 import descriptors from 'store/reducers/descriptors';
+import distribution from 'store/reducers/distribution';
 import jiraServer from 'store/reducers/jira-server';
 import provider from 'store/reducers/provider';
 import session from 'store/reducers/session';
@@ -22,6 +23,7 @@ const rootReducer = (history) => combineReducers({
     azure,
     certificates,
     descriptors,
+    distribution,
     jiraServer,
     provider,
     session,

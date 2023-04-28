@@ -7,6 +7,7 @@ import {
     DISTRIBUTION_CHANNEL_OPTIONS,
     DISTRIBUTION_COMMON_FIELD_KEYS,
     DISTRIBUTION_FREQUENCY_OPTIONS,
+    DISTRIBUTION_INFO,
     DISTRIBUTION_NOTIFICATION_TYPE_OPTIONS,
     DISTRIBUTION_POLICY_SELECT_COLUMNS,
     DISTRIBUTION_PROCESSING_DESCRIPTIONS,
@@ -39,6 +40,8 @@ import JiraCloudDistributionConfiguration from 'page/channel/jira/cloud/JiraClou
 import JiraServerDistributionConfiguration from 'page/channel/jira/server/JiraServerDistributionConfiguration';
 import MsTeamsDistributionConfiguration from 'page/channel/msteams/MsTeamsDistributionConfiguration';
 import SlackDistributionConfiguration from 'page/channel/slack/SlackDistributionConfiguration';
+import PageHeader from 'common/component/navigation/PageHeader';
+
 
 const DistributionConfigurationForm = ({
     csrfToken, errorHandler, descriptors, lastUpdated
@@ -296,11 +299,12 @@ const DistributionConfigurationForm = ({
 
     // TODO need to provide finer grain control with permissions.
     return (
-        <CommonGlobalConfiguration
-            label="Distribution Configuration"
-            description="Configure the Distribution Job for Alert to send updates."
-            lastUpdated={lastUpdated}
-        >
+        <>
+            <PageHeader
+                title={DISTRIBUTION_INFO.label}
+                description={DISTRIBUTION_INFO.description}
+                icon={['fas', 'tasks']}
+            />
             <CommonDistributionConfigurationForm
                 setErrors={setErrors}
                 formData={formData}
@@ -539,7 +543,7 @@ const DistributionConfigurationForm = ({
                     />
                     {renderChannelFields()}
             </CommonDistributionConfigurationForm>
-        </CommonGlobalConfiguration>
+        </>
     );
 };
 
