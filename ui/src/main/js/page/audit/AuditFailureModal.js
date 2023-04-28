@@ -61,7 +61,6 @@ const AuditFailureModal = ({ data, isOpen, toggleModal }) => {
     function handleClose() {
         toggleModal(false);
     }
-    console.log('data', data);
 
     return (
         <Modal

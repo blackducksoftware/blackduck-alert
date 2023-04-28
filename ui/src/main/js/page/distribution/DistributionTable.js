@@ -76,7 +76,7 @@ const DistributionTable = ({ readonly }) => {
             sortOrder: data?.mutatorData?.direction
         }
     });
-    console.log(data);
+
     useEffect(() => {
         dispatch(fetchDistibution(paramsConfig));
     }, [paramsConfig]);

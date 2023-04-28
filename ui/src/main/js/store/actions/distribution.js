@@ -94,7 +94,6 @@ export function deleteDistribution(distributions) {
     return (dispatch, getState) => {
         dispatch(deleteDistributionRequest());
         const { csrfToken } = getState().session;
-        console.log('distributions', distributions);
         Promise.all(distributions.map((distro) => { // eslint-disable-line
             return ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, distro.jobId);
         })).catch((error) => {
