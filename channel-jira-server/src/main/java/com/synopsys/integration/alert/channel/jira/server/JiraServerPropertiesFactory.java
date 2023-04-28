@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
+import com.synopsys.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
@@ -48,13 +49,22 @@ public class JiraServerPropertiesFactory {
     public JiraServerProperties createJiraProperties(JiraServerGlobalConfigModel jiraServerGlobalConfigModel) {
         return createJiraProperties(
             jiraServerGlobalConfigModel.getUrl(),
+            jiraServerGlobalConfigModel.getAuthorizationMethod(),
             jiraServerGlobalConfigModel.getPassword().orElse(null),
             jiraServerGlobalConfigModel.getUserName().orElse(null),
+            jiraServerGlobalConfigModel.getAccessToken().orElse(null),
             jiraServerGlobalConfigModel.getDisablePluginCheck().orElse(false)
         );
     }
 
-    public JiraServerProperties createJiraProperties(String url, String password, String username, boolean pluginCheckDisabled) {
-        return new JiraServerProperties(url, password, username, pluginCheckDisabled, proxyManager.createProxyInfoForHost(url));
+    public JiraServerProperties createJiraProperties(
+        String url,
+        JiraServerAuthorizationMethod authorizationMethod,
+        String password,
+        String username,
+        String accessToken,
+        boolean pluginCheckDisabled
+    ) {
+        return new JiraServerProperties(url, authorizationMethod, password, username, accessToken, pluginCheckDisabled, proxyManager.createProxyInfoForHost(url));
     }
 }
