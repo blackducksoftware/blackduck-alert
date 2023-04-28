@@ -10,6 +10,7 @@ package com.synopsys.integration.alert.channel.jira.server.database.configuratio
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+import com.synopsys.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 import com.synopsys.integration.alert.database.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -32,25 +33,33 @@ public class JiraServerConfigurationEntity extends BaseEntity {
     private OffsetDateTime lastUpdated;
     @Column(name = "url")
     private String url;
+    @Column(name = "authorization_method")
+    private JiraServerAuthorizationMethod jiraServerAuthorizationMethod;
     @Column(name = "username")
     private String username;
     @Column(name = "password")
     private String password;
+    @Column(name = "access_token")
+    private String accessToken;
     @Column(name = "disable_plugin_check")
     private Boolean disablePluginCheck;
 
     public JiraServerConfigurationEntity() {
     }
 
-    public JiraServerConfigurationEntity(UUID configurationId, String name, OffsetDateTime createdAt, OffsetDateTime lastUpdated, String url, String username, String password,
-        Boolean disablePluginCheck) {
+    public JiraServerConfigurationEntity(
+        UUID configurationId, String name, OffsetDateTime createdAt, OffsetDateTime lastUpdated, String url, JiraServerAuthorizationMethod jiraServerAuthorizationMethod,
+        String username, String password, String accessToken, Boolean disablePluginCheck
+    ) {
         this.configurationId = configurationId;
         this.name = name;
         this.createdAt = createdAt;
         this.lastUpdated = lastUpdated;
         this.url = url;
+        this.jiraServerAuthorizationMethod = jiraServerAuthorizationMethod;
         this.username = username;
         this.password = password;
+        this.accessToken = accessToken;
         this.disablePluginCheck = disablePluginCheck;
     }
 
@@ -74,12 +83,20 @@ public class JiraServerConfigurationEntity extends BaseEntity {
         return url;
     }
 
+    public JiraServerAuthorizationMethod getJiraServerAuthorizationMethod() {
+        return jiraServerAuthorizationMethod;
+    }
+
     public String getUsername() {
         return username;
     }
 
     public String getPassword() {
         return password;
+    }
+
+    public String getAccessToken() {
+        return accessToken;
     }
 
     public Boolean getDisablePluginCheck() {
