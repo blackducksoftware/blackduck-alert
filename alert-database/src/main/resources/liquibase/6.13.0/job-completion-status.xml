@@ -50,9 +50,9 @@
         </createTable>
     </changeSet>
     <changeSet author="psantos" id="create-completion-tables-foreign-key">
-        <preConditions>
+        <preConditions onFail="MARK_RAN">
             <not>
-                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="job-completion-config-id-fk"/>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyTableName="job_completion_durations" foreignKeyName="job-completion-config-id-fk"/>
             </not>
         </preConditions>
         <addForeignKeyConstraint
@@ -67,9 +67,9 @@
         />
     </changeSet>
     <changeSet author="psantos" id="create-job-config-completion-tables-foreign-key">
-        <preConditions>
+        <preConditions onFail="MARK_RAN">
             <not>
-                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="job-config-completion-status-fk"/>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyTableName="job_completion_status" foreignKeyName="job-config-completion-status-fk"/>
             </not>
         </preConditions>
         <addForeignKeyConstraint
