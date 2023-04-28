@@ -81,7 +81,7 @@
     <changeSet author="mau" id="add_saml_metadata_mode_fk">
         <preConditions onFail="MARK_RAN">
             <not>
-                <foreignKeyConstraintExists schemaName="alert" foreignKeyTableName="configuration_saml" foreignKeyName="saml_metadata_mode_id_fk"/>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="saml_metadata_mode_id_fk"/>
             </not>
         </preConditions>
         <addForeignKeyConstraint
@@ -92,7 +92,6 @@
                 referencedColumnNames="id"
                 referencedTableSchemaName="alert"
                 referencedTableName="saml_metadata_mode"
-                onDelete="CASCADE"
         />
     </changeSet>
 </databaseChangeLog>
