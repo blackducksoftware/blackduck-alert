@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { createUseStyles } from 'react-jss';
 import PasswordInput from 'common/component/input/PasswordInput';
 import TextInput from 'common/component/input/TextInput';
 import Header from 'common/component/Header';
@@ -8,8 +9,17 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import SamlLogin from './SamlLogin';
 import Button from 'common/component/button/Button';
 
+const useStyles = createUseStyles({
+    loginButton: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'flex-end'
+    }
+})
+
 const LoginPage = () => {
     const dispatch = useDispatch();
+    const classes = useStyles();
     const { errorMessage, fetching, samlEnabled } = useSelector((state) => state.session);
     const [loginForm, setLoginForm] = useState({
         username: '',
@@ -57,14 +67,16 @@ const LoginPage = () => {
                         />
                         <div className="row">
                             <div className="col-sm-12 text-right">
-                                <Button id="loginSubmit" text="Login" type="submit" style="default" />
-                                <div className="progressIcon">
-                                    {fetching && (
-                                        <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
-                                    )}
-                                    {!fetching && (
-                                        <span>&nbsp;&nbsp;</span>
-                                    )}
+                                <div className={classes.loginButton}>
+                                    <Button id="loginSubmit" text="Login" type="submit" style="default" />
+                                    <div className="progressIcon">
+                                        {fetching && (
+                                            <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
+                                        )}
+                                        {!fetching && (
+                                            <span>&nbsp;&nbsp;</span>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </div>
