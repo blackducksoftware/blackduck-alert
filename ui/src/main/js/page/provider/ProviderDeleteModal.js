@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { useDispatch, useSelector } from 'react-redux';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { bulkDeleteProviders, fetchProviders } from 'store/actions/provider';
 import Modal from 'common/component/modal/Modal';
+import Card from 'common/component/Card';
 
-const useStyles = createUseStyles((theme) => ({
+const useStyles = createUseStyles({
     deleteConfirmMessage: {
         margin: [0, 0, '20px', '30px'],
         fontSize: '16px',
@@ -15,30 +15,8 @@ const useStyles = createUseStyles((theme) => ({
     cardContainer: {
         display: 'flex',
         marginLeft: '50px'
-    },
-    card: {
-        display: 'flex',
-        border: `solid 1px ${theme.colors.grey.lightGrey}`,
-        borderRadius: '5px',
-        backgroundColor: theme.colors.grey.lighterGrey,
-        padding: '8px',
-        margin: [0, '50px', '10px', '20px'],
-        width: '250px'
-    },
-    icon: {
-        flexBasis: '20%',
-        backgroundColor: theme.colors.white.default,
-        border: `solid 1px ${theme.colors.grey.lightGrey}`,
-        borderRadius: '5px',
-        height: '50px',
-        paddingTop: '5px',
-        textAlign: 'center'
-    },
-    cardInfo: {
-        flexGrow: 1,
-        padding: ['5px', 0, 0, '15px']
     }
-}));
+});
 
 function getStagedForDelete(data, selected) {
     const staged = data.filter((provider) => selected.includes(provider.id));
@@ -127,14 +105,7 @@ const ProviderDeleteModal = ({ isOpen, toggleModal, data, selected, setStatusMes
                     { selectedProviders?.map((provider) => (
                         <div className={classes.cardContainer} key={provider.id}>
                             <input type="checkbox" checked={provider.staged} onChange={() => toggleSelect(provider)} />
-                            <div className={classes.card}>
-                                <div className={classes.icon}>
-                                    <FontAwesomeIcon icon="handshake" size="3x" />
-                                </div>
-                                <div className={classes.cardInfo}>
-                                    <div style={{ fontSize: '16px' }}>{provider.name}</div>
-                                </div>
-                            </div>
+                            <Card icon="handshake" label={provider.name} />
                         </div>
                     ))}
                 </div>

@@ -10,7 +10,7 @@ import ButtonField from 'common/component/input/field/ButtonField';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import { AZURE_BOARDS_GLOBAL_FIELD_KEYS } from 'page/channel/azure/AzureBoardsModel';
 import { clearAzureFieldErrors, fetchAzure, saveAzureBoard, sendOAuth, validateAzure } from 'store/actions/azure';
-import { testAzureBoard } from '../../../store/actions/azure';
+import { testAzureBoard } from 'store/actions/azure';
 
 const useStyles = createUseStyles({
     descriptorContainer: {

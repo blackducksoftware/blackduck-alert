@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { useDispatch, useSelector } from 'react-redux';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Modal from 'common/component/modal/Modal';
-import { deleteDistribution, fetchDistibution } from '../../store/actions/distribution';
+import { deleteDistribution, fetchDistibution } from 'store/actions/distribution';
+import Card from 'common/component/Card';
+import { channelTranslation } from 'page/distribution/DistributionModel';
 
-const useStyles = createUseStyles((theme) => ({
+const useStyles = createUseStyles({
     deleteConfirmMessage: {
         margin: [0, 0, '20px', '30px'],
         fontSize: '16px',
@@ -18,30 +19,8 @@ const useStyles = createUseStyles((theme) => ({
     },
     deleteOptions: {
         overflowY: 'auto'
-    },
-    card: {
-        display: 'flex',
-        border: `solid 1px ${theme.colors.grey.lightGrey}`,
-        borderRadius: '5px',
-        backgroundColor: theme.colors.grey.lighterGrey,
-        padding: '8px',
-        margin: [0, '50px', '10px', '20px'],
-        width: '250px'
-    },
-    icon: {
-        flexBasis: '20%',
-        backgroundColor: theme.colors.white.default,
-        border: `solid 1px ${theme.colors.grey.lightGrey}`,
-        borderRadius: '5px',
-        height: '50px',
-        paddingTop: '5px',
-        textAlign: 'center'
-    },
-    cardInfo: {
-        flexGrow: 1,
-        padding: ['5px', 0, 0, '15px']
     }
-}));
+});
 
 function getStagedForDelete(data, selected) {
     const staged = data.models.filter((distribution) => selected.includes(distribution.id));
@@ -78,8 +57,8 @@ const DistributionDeleteModal = ({ isOpen, toggleModal, data, selected, setStatu
             setShowLoader(false);
 
             const successMessage = isMultiDelete
-                ? `Successfully deleted ${selectedJobs.length} Azure distributions.`
-                : 'Successfully deleted 1 Azure distribution.';
+                ? `Successfully deleted ${selectedJobs.length} distributions.`
+                : 'Successfully deleted 1 distribution.';
 
             setStatusMessage({
                 message: successMessage,
@@ -129,14 +108,7 @@ const DistributionDeleteModal = ({ isOpen, toggleModal, data, selected, setStatu
                     { selectedJobs?.map((distribution) => (
                         <div className={classes.cardContainer} key={distribution.id}>
                             <input type="checkbox" checked={distribution.staged} onChange={() => toggleSelect(distribution)} />
-                            <div className={classes.card}>
-                                <div className={classes.icon}>
-                                    <FontAwesomeIcon icon={['fas', 'tasks']} size="3x" />
-                                </div>
-                                <div className={classes.cardInfo}>
-                                    <div style={{ fontSize: '16px' }}>{distribution.jobName}</div>
-                                </div>
-                            </div>
+                            <Card icon={['fas', 'tasks']} label={distribution.jobName} description={channelTranslation.label(distribution.channelName)} />
                         </div>
                     ))}
                 </div>

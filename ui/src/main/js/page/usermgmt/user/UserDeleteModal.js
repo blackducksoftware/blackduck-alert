@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { useDispatch, useSelector } from 'react-redux';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { fetchUsers, bulkDeleteUsers } from 'store/actions/users';
 import Modal from 'common/component/modal/Modal';
+import Card from 'common/component/Card';
 
-const useStyles = createUseStyles((theme) => ({
+const useStyles = createUseStyles({
     deleteConfirmMessage: {
         margin: [0, 0, '20px', '30px'],
         fontSize: '16px',
@@ -15,30 +15,8 @@ const useStyles = createUseStyles((theme) => ({
     cardContainer: {
         display: 'flex',
         marginLeft: '50px'
-    },
-    userCard: {
-        display: 'flex',
-        border: `solid 1px ${theme.colors.grey.lightGrey}`,
-        borderRadius: '5px',
-        backgroundColor: theme.colors.grey.lighterGrey,
-        padding: '8px',
-        margin: [0, '50px', '10px', '20px'],
-        width: '250px'
-    },
-    userIcon: {
-        flexBasis: '20%',
-        backgroundColor: theme.colors.white.default,
-        border: `solid 1px ${theme.colors.grey.lightGrey}`,
-        borderRadius: '5px',
-        height: '50px',
-        paddingTop: '5px',
-        textAlign: 'center'
-    },
-    userInfo: {
-        flexGrow: 1,
-        padding: ['5px', 0, 0, '15px']
     }
-}));
+});
 
 function getStagedForDelete(data, selected) {
     const staged = data.filter((user) => selected.includes(user.id));
@@ -126,15 +104,7 @@ const UserDeleteModal = ({ isOpen, toggleModal, data, selected, setStatusMessage
                     { selectedUsers?.map((user) => (
                         <div className={classes.cardContainer} key={user.id}>
                             <input type="checkbox" checked={user.staged} onChange={() => toggleSelect(user)} />
-                            <div className={classes.userCard}>
-                                <div className={classes.userIcon}>
-                                    <FontAwesomeIcon icon="user" size="3x" />
-                                </div>
-                                <div className={classes.userInfo}>
-                                    <div style={{ fontSize: '16px' }}>{user.username}</div>
-                                    <div>{user.emailAddress}</div>
-                                </div>
-                            </div>
+                            <Card icon="user" label={user.username} description={user.emailAddress} />
                         </div>
                     ))}
                 </div>

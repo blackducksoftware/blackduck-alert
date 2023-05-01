@@ -105,3 +105,16 @@ export const DISTRIBUTION_PROJECT_SELECT_COLUMNS = [
 export const DISTRIBUTION_POLICY_SELECT_COLUMNS = [
     createTableSelectColumn('name', 'Name', true, true, true)
 ];
+
+export const CHANNEL_OPTIONS = [
+    { label: 'Azure Boards', value: 'channel_azure_boards' },
+    { label: 'Email', value: 'channel_email' },
+    { label: 'Jira Cloud', value: 'channel_jira_cloud' },
+    { label: 'Jira Server', value: 'channel_jira_server' },
+    { label: 'Slack', value: 'channel_slack' },
+    { label: 'MS Teams', value: 'msteamskey' }
+];
+
+export const channelTranslation = {
+    label: (value) => CHANNEL_OPTIONS.find((obj) => obj.value === value)?.label,
+};

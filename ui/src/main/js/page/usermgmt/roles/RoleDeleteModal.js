@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createUseStyles } from 'react-jss';
 import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { deleteRoleList, fetchRoles } from 'store/actions/roles';
 import Modal from 'common/component/modal/Modal';
+import Card from 'common/component/Card';
 
-const useStyles = createUseStyles((theme) => ({
+const useStyles = createUseStyles({
     deleteConfirmMessage: {
         margin: [0, 0, '20px', '30px'],
         fontSize: '16px',
@@ -15,31 +15,8 @@ const useStyles = createUseStyles((theme) => ({
     cardContainer: {
         display: 'flex',
         marginLeft: '50px'
-    },
-    roleCard: {
-        display: 'flex',
-        border: `solid 1px ${theme.colors.grey.lightGrey}`,
-        borderRadius: '5px',
-        backgroundColor: theme.colors.grey.lighterGrey,
-        padding: '8px',
-        margin: [0, '50px', '10px', '20px'],
-        width: '250px'
-    },
-    roleIcon: {
-        flexBasis: '20%',
-        backgroundColor: theme.colors.white.default,
-        border: `solid 1px ${theme.colors.grey.lightGrey}`,
-        borderRadius: '5px',
-        height: '50px',
-        paddingTop: '5px',
-        textAlign: 'center'
-    },
-    roleInfo: {
-        flexGrow: 1,
-        paddingLeft: '15px',
-        margin: 'auto'
     }
-}));
+});
 
 const RoleDeleteModal = ({ isOpen, toggleModal, data, selected, setStatusMessage }) => {
     const classes = useStyles();
@@ -137,14 +114,7 @@ const RoleDeleteModal = ({ isOpen, toggleModal, data, selected, setStatusMessage
                     { selectedRoles?.map((role) => (
                         <div className={classes.cardContainer}>
                             <input type="checkbox" checked={role.staged} onChange={() => toggleSelect(role)} />
-                            <div className={classes.roleCard}>
-                                <div className={classes.roleIcon}>
-                                    <FontAwesomeIcon icon="user-cog" size="3x" />
-                                </div>
-                                <div className={classes.roleInfo}>
-                                    <div style={{ fontSize: '16px' }}>{role.roleName}</div>
-                                </div>
-                            </div>
+                            <Card icon="user-cog" label={role.roleName} />
                         </div>
                     )) }
                 </div>

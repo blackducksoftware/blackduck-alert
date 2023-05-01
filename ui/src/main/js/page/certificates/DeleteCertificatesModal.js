@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { useDispatch } from 'react-redux';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { fetchCertificates, deleteCertificate } from 'store/actions/certificates';
 import Modal from 'common/component/modal/Modal';
+import Card from 'common/component/Card';
 
-const useStyles = createUseStyles((theme) => ({
+const useStyles = createUseStyles({
     deleteConfirmMessage: {
         margin: [0, 0, '20px', '30px'],
         fontSize: '14px',
@@ -15,31 +15,8 @@ const useStyles = createUseStyles((theme) => ({
     cardContainer: {
         display: 'flex',
         marginLeft: '50px'
-    },
-    certCard: {
-        display: 'flex',
-        border: `solid 1px ${theme.colors.grey.lightGrey}`,
-        borderRadius: '5px',
-        backgroundColor: theme.colors.grey.lighterGrey,
-        padding: '8px',
-        margin: [0, '50px', '10px', '20px'],
-        width: '250px'
-    },
-    certIcon: {
-        flexBasis: '20%',
-        backgroundColor: theme.colors.white.default,
-        border: `solid 1px ${theme.colors.grey.lightGrey}`,
-        borderRadius: '5px',
-        height: '50px',
-        paddingTop: '5px',
-        textAlign: 'center'
-    },
-    certInfo: {
-        flexGrow: 1,
-        alignSelf: 'center',
-        margin: [0, '15px']
     }
-}));
+});
 
 const DeleteCertificatesModal = ({ isOpen, toggleModal, data, selected }) => {
     const classes = useStyles();
@@ -100,14 +77,7 @@ const DeleteCertificatesModal = ({ isOpen, toggleModal, data, selected }) => {
                     { selectedCertificates?.map((cert) => (
                         <div className={classes.cardContainer} key={cert.alias}>
                             <input type="checkbox" checked={cert.staged} onChange={() => toggleSelect(cert)} />
-                            <div className={classes.certCard}>
-                                <div className={classes.certIcon}>
-                                    <FontAwesomeIcon icon="award" size="3x" />
-                                </div>
-                                <div className={classes.certInfo}>
-                                    <div style={{ fontSize: '16px' }}>{cert.alias}</div>
-                                </div>
-                            </div>
+                            <Card icon="award" label={cert.alias} />
                         </div>
                     )) }
                 </div>

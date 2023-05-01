@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { useDispatch, useSelector } from 'react-redux';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Modal from 'common/component/modal/Modal';
 import { fetchAzure, deleteAzureBoards } from 'store/actions/azure';
+import Card from 'common/component/Card';
 
-const useStyles = createUseStyles((theme) => ({
+const useStyles = createUseStyles({
     deleteConfirmMessage: {
         margin: [0, 0, '20px', '30px'],
         fontSize: '16px',
@@ -18,30 +18,8 @@ const useStyles = createUseStyles((theme) => ({
     },
     deleteOptions: {
         overflowY: 'auto'
-    },
-    card: {
-        display: 'flex',
-        border: `solid 1px ${theme.colors.grey.lightGrey}`,
-        borderRadius: '5px',
-        backgroundColor: theme.colors.grey.lighterGrey,
-        padding: '8px',
-        margin: [0, '50px', '10px', '20px'],
-        width: '250px'
-    },
-    icon: {
-        flexBasis: '20%',
-        backgroundColor: theme.colors.white.default,
-        border: `solid 1px ${theme.colors.grey.lightGrey}`,
-        borderRadius: '5px',
-        height: '50px',
-        paddingTop: '5px',
-        textAlign: 'center'
-    },
-    cardInfo: {
-        flexGrow: 1,
-        padding: ['5px', 0, 0, '15px']
     }
-}));
+});
 
 function getStagedForDelete(data, selected) {
     const staged = data.models.filter((board) => selected.includes(board.id));
@@ -129,14 +107,7 @@ const AzureBoardDeleteModal = ({ isOpen, toggleModal, data, selected, setStatusM
                     { selectedAzureBoards?.map((board) => (
                         <div className={classes.cardContainer} key={board.id}>
                             <input type="checkbox" checked={board.staged} onChange={() => toggleSelect(board)} />
-                            <div className={classes.card}>
-                                <div className={classes.icon}>
-                                    <FontAwesomeIcon icon={['fab', 'windows']} size="3x" />
-                                </div>
-                                <div className={classes.cardInfo}>
-                                    <div style={{ fontSize: '16px' }}>{board.name}</div>
-                                </div>
-                            </div>
+                            <Card icon={['fab', 'windows']} label={board.name} description={board.organizationName} />
                         </div>
                     ))}
                 </div>
