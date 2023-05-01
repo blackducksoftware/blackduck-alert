@@ -7,6 +7,7 @@ import Button from 'common/component/button/Button';
 const ButtonField = ({
     id,
     buttonLabel,
+    customDescription,
     description,
     fieldError,
     fieldKey,
@@ -32,6 +33,7 @@ const ButtonField = ({
             <LabeledField
                 id={id}
                 labelClass={labelClass}
+                customDescription={customDescription}
                 description={description}
                 showDescriptionPlaceHolder={showDescriptionPlaceHolder}
                 label={label}
@@ -62,7 +64,8 @@ ButtonField.propTypes = {
     required: PropTypes.bool,
     showDescriptionPlaceHolder: PropTypes.bool,
     success: PropTypes.bool.isRequired,
-    statusMessage: PropTypes.string
+    statusMessage: PropTypes.string,
+    customDescription: PropTypes.string
 };
 
 ButtonField.defaultProps = {

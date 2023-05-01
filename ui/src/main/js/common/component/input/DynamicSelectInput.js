@@ -23,6 +23,7 @@ const DynamicSelectInput = ({
     clearable,
     onFocus,
     labelClass,
+    customDescription,
     description,
     showDescriptionPlaceHolder,
     label,
@@ -143,6 +144,7 @@ const DynamicSelectInput = ({
     return (
         <LabeledField
             id={id}
+            customDescription={customDescription}
             description={description}
             errorName={errorName}
             errorValue={errorValue}
@@ -181,7 +183,8 @@ DynamicSelectInput.propTypes = {
     errorValue: PropTypes.object,
     required: PropTypes.bool,
     creatable: PropTypes.bool,
-    maxMenuHeight: PropTypes.number
+    maxMenuHeight: PropTypes.number,
+    customDescription: PropTypes.string
 };
 
 DynamicSelectInput.defaultProps = {

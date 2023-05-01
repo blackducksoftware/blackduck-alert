@@ -3,13 +3,15 @@ import PropTypes from 'prop-types';
 import LabeledField, { LabelFieldPropertyDefaults } from 'common/component/input/field/LabeledField';
 
 const TextArea = ({
-    id, description, errorName, errorValue, inputClass, label, labelClass, name, onChange, readOnly, required, showDescriptionPlaceHolder, sizeClass, value
+    id, description, errorName, errorValue, inputClass, label, labelClass, name, onChange, readOnly, required, showDescriptionPlaceHolder, 
+    sizeClass, value, customDescription
 }) => {
     const divClasses = `${sizeClass} d-inline-flex`;
     const onChangeHandler = readOnly ? null : onChange;
     return (
         <LabeledField
             labelClass={labelClass}
+            customDescription={customDescription}
             description={description}
             showDescriptionPlaceHolder={showDescriptionPlaceHolder}
             label={label}
@@ -38,7 +40,8 @@ TextArea.propTypes = {
     label: PropTypes.string.isRequired,
     labelClass: PropTypes.string,
     required: PropTypes.bool,
-    showDescriptionPlaceHolder: PropTypes.bool
+    showDescriptionPlaceHolder: PropTypes.bool,
+    customDescription: PropTypes.string
 };
 
 TextArea.defaultProps = {

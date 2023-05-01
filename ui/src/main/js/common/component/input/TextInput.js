@@ -5,7 +5,7 @@ import LabeledField, { LabelFieldPropertyDefaults } from 'common/component/input
 const TextInput = ({
     id, autoFocus, description, errorName, errorValue, inputClass, label, labelClass, 
     name, onChange, optionList, readOnly, required, showDescriptionPlaceHolder, value,
-    placeholder
+    placeholder, customDescription
 }) => {
     const listId = optionList ? 'listOptions' : null;
     const dataListOptionObjects = !optionList ? null : optionList.map((currentOption) => (<option key={`${currentOption}Key`} value={currentOption} />));
@@ -20,6 +20,7 @@ const TextInput = ({
             errorName={errorName}
             errorValue={errorValue}
             required={required}
+            customDescription={customDescription}
         >
             <div className="d-inline-flex flex-column p-2 col-sm-8">
                 <input
@@ -61,8 +62,8 @@ TextInput.propTypes = {
     labelClass: PropTypes.string,
     required: PropTypes.bool,
     showDescriptionPlaceHolder: PropTypes.bool,
-    placeholder: PropTypes.string
-
+    placeholder: PropTypes.string,
+    customDescription: PropTypes.string
 };
 
 TextInput.defaultProps = {

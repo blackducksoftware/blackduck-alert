@@ -90,7 +90,7 @@ const CertificateModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMe
                 id="alias-textInputId"
                 name="alias"
                 label="Alias"
-                description="The certificate alias name."
+                customDescription="The certificate alias name."
                 required
                 onChange={handleOnChange('alias')}
                 value={getDisplayValue('alias')}
@@ -101,7 +101,7 @@ const CertificateModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMe
                 id="certificate-textAreaId"
                 name="certificateContent"
                 label="Certificate Content"
-                description="The certificate content text."
+                customDescription="The certificate content text."
                 required
                 onChange={handleOnChange('certificateContent')}
                 value={getDisplayValue('certificateContent')}

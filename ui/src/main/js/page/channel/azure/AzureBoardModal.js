@@ -180,7 +180,7 @@ const AzureBoardModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
                     id={AZURE_BOARDS_GLOBAL_FIELD_KEYS.name}
                     name={AZURE_BOARDS_GLOBAL_FIELD_KEYS.name}
                     label="Name"
-                    description="The name of the Azure Board for your identification purposes."
+                    customDescription="The name of the Azure Board for your identification purposes."
                     required
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleTestChange(azureModel, setAzureModel)}
@@ -192,7 +192,7 @@ const AzureBoardModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
                     id={AZURE_BOARDS_GLOBAL_FIELD_KEYS.organization}
                     name={AZURE_BOARDS_GLOBAL_FIELD_KEYS.organization}
                     label="Organization Name"
-                    description="The name of the Azure DevOps organization."
+                    customDescription="The name of the Azure DevOps organization."
                     required
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleTestChange(azureModel, setAzureModel)}
@@ -204,7 +204,7 @@ const AzureBoardModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
                     id={AZURE_BOARDS_GLOBAL_FIELD_KEYS.appId}
                     name={AZURE_BOARDS_GLOBAL_FIELD_KEYS.appId}
                     label="App ID"
-                    description="The App ID created for Alert when registering your Azure DevOps Client Application."
+                    customDescription="The App ID created for Alert when registering your Azure DevOps Client Application."
                     required
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleTestChange(azureModel, setAzureModel)}
@@ -217,7 +217,7 @@ const AzureBoardModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
                     id={AZURE_BOARDS_GLOBAL_FIELD_KEYS.clientSecret}
                     name={AZURE_BOARDS_GLOBAL_FIELD_KEYS.clientSecret}
                     label="Client Secret"
-                    description="The Client secret created for Alert when registering your Azure DevOps Application."
+                    customDescription="The Client secret created for Alert when registering your Azure DevOps Application."
                     required
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleTestChange(azureModel, setAzureModel)}
@@ -231,7 +231,7 @@ const AzureBoardModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
                     name={AZURE_BOARDS_GLOBAL_FIELD_KEYS.configureOAuth}
                     label="Microsoft OAuth"
                     buttonLabel="Save/Authenticate"
-                    description="This will redirect you to Microsoft's OAuth login. To clear the Oauth request cache, please delete and reconfigure the Azure fields.  Please note you will remain logged in; for security reasons you may want to logout of your Microsoft account after authenticating the application."
+                    customDescription="This will redirect you to Microsoft's OAuth login. To clear the Oauth request cache, please delete and reconfigure the Azure fields.  Please note you will remain logged in; for security reasons you may want to logout of your Microsoft account after authenticating the application."
                     onSendClick={authenticateAzureForm}
                     fieldKey={AZURE_BOARDS_GLOBAL_FIELD_KEYS.configureOAuth}
                     fieldError={error.fieldErrors[AZURE_BOARDS_GLOBAL_FIELD_KEYS.configureOAuth]}
