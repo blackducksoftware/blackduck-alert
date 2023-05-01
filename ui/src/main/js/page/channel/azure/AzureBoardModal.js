@@ -32,9 +32,9 @@ function getInitialData(type, data) {
         return {
             name,
             organizationName
-        }
+        };
     } else {
-        return {}
+        return {};
     }
 }
 
