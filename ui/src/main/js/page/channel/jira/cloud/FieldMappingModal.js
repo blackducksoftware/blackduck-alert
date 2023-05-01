@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import Modal from 'common/component/modal/Modal';
 import TextInput from 'common/component/input/TextInput';
@@ -18,8 +18,12 @@ const FieldMappingModal = ({ tableData, selectedData, selectedIndex, isOpen, tog
         }
 
         if (type === 'CREATE') {
+            console.log(model);
             updateTableData([...tableData, model]);
+            tableDataCallback()
         }
+
+        handleClose();
     }
 
     const handleChange = (e) => {
@@ -32,8 +36,9 @@ const FieldMappingModal = ({ tableData, selectedData, selectedIndex, isOpen, tog
             size="lg"
             title={title}
             closeModal={handleClose}
+            handleCancel={handleClose}
             handleSubmit={() => handleSubmit()}
-            submitText="Save"
+            submitText="Add"
         >
             <TextInput
                 id="jira-field-input"

@@ -5,18 +5,21 @@ import JiraCloudEditCell from 'page/channel/jira/cloud/JiraCloudEditCell';
 import JiraCloudDistributionTableActions from 'page/channel/jira/cloud/JiraCloudDistributionTableActions';
 
 const emptyTableConfig = {
-    message: 'There are no records to display for this table.  Please create a Provider connection to use this table.'
+    message: 'There are no records to display for this table.  Please add a Jira Cloud field mapping to use this table.'
 };
 
-function JiraCloudDistributionTable({ cloudTableData }) {
+function JiraCloudDistributionTable({ cloudTableData, onFieldMappingUpdate }) {
     const [tableData, setTableData] = useState(cloudTableData);
     const [selected, setSelected] = useState([]);
-    const [sortConfig, setSortConfig] = useState();
     const [data, setData] = useState();
 
     function handleEditData(data) {
         setData(data);
     }
+
+    useEffect(() => {
+        onFieldMappingUpdate(tableData);
+    }, [tableData]);
 
     const COLUMNS = [{
         key: 'fieldName',
@@ -39,45 +42,6 @@ function JiraCloudDistributionTable({ cloudTableData }) {
         setSelected(selectedRow);
     };
 
-    const onSort = (name) => {
-        if (name !== sortConfig?.name || !sortConfig) {
-            return setSortConfig({ name, direction: 'ASC' });
-        }
-
-        if (name === sortConfig?.name && sortConfig?.direction === 'DESC') {
-            return setSortConfig();
-        }
-
-        if (name === sortConfig?.name) {
-            return setSortConfig({ name, direction: 'DESC' });
-        }
-
-        return setSortConfig();
-    };
-
-    useEffect(() => {
-        let data = tableData;
-
-        if (sortConfig) {
-            const { name, direction } = sortConfig;
-            data = [...data].sort((a, b) => {
-                if (a[name] === null) {
-                    return 1;
-                }
-                if (b[name] === null) {
-                    return -1;
-                }
-                if (a[name] === null && b[name] === null) {
-                    return 0;
-                }
-                return (
-                    a[name].toString().localeCompare(b[name].toString(), 'en', { numeric: true }) * (direction === 'ASC' ? 1 : -1)
-                );
-            });
-        }
-        setTableData(data);
-    }, [sortConfig, tableData]);
-
     return (
         <Table
             tableData={tableData}
@@ -85,8 +49,6 @@ function JiraCloudDistributionTable({ cloudTableData }) {
             multiSelect
             selected={selected}
             onSelected={onSelected}
-            onSort={onSort}
-            sortConfig={sortConfig}
             emptyTableConfig={emptyTableConfig}
             tableActions={() => <JiraCloudDistributionTableActions data={tableData} selected={selected} updateTableData={setTableData} />}
         />

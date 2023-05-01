@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import ProviderDeleteModal from 'page/provider/ProviderDeleteModal';
+import FieldMappingDeleteModal from 'page/channel/jira/cloud/FieldMappingDeleteModal';
 import FieldMappingModal from 'page/channel/jira/cloud/FieldMappingModal';
 import Button from 'common/component/button/Button';
 
@@ -38,12 +38,12 @@ const JiraCloudDistributionTableActions = ({ data, selected, updateTableData }) 
             )}
 
             { showDeleteModal && (
-                <ProviderDeleteModal
+                <FieldMappingDeleteModal
                     data={data}
                     isOpen={showDeleteModal}
                     toggleModal={setShowDeleteModal}
                     selected={selected}
-                    setStatusMessage={setStatusMessage}
+                    updateTableData={updateTableData}
                 />
             )}
         </>
