@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import * as PropTypes from 'prop-types';
-import CommonGlobalConfiguration from 'common/configuration/global/CommonGlobalConfiguration';
 import CheckboxInput from 'common/component/input/CheckboxInput';
 import SelectInput from 'common/component/input/DynamicSelectInput';
 import {
