@@ -24,11 +24,25 @@ const useStyles = createUseStyles({
     }
 });
 
+function getInitialData(type, data) {
+    if (type === 'EDIT') {
+        return data;
+    } else if (type === 'COPY') {
+        const { name, organizationName } = data;
+        return {
+            name,
+            organizationName
+        }
+    } else {
+        return {}
+    }
+}
+
 const AzureBoardModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, successMessage, readonly }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { copyDescription, submitText, title, type } = modalOptions;
-    const [azureModel, setAzureModel] = useState(type === 'CREATE' ? {} : data);
+    const [azureModel, setAzureModel] = useState(getInitialData(type, data));
     const [showLoader, setShowLoader] = useState();
     const [oAuthClick, setOAuthclick] = useState(false);
     const [buttonMessage, setButtonMessage] = useState('');
