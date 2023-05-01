@@ -26,7 +26,7 @@ const initialState = {
     deleteStatus: '',
 };
 
-const azure = (state = initialState, action) => {
+const distribution = (state = initialState, action) => {
     switch (action.type) {
         case DISTRIBUTION_GET_REQUEST:
             return {
@@ -79,4 +79,4 @@ const azure = (state = initialState, action) => {
     }
 };
 
-export default azure;
+export default distribution;

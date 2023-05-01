@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import ReadOnlyField from 'common/component/input/field/ReadOnlyField';
 import { getAboutInfo } from 'store/actions/about';
 import ConfigurationLabel from 'common/component/ConfigurationLabel';
