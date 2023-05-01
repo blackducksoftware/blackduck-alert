@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import FieldMappingDeleteModal from 'page/channel/jira/cloud/FieldMappingDeleteModal';
-import FieldMappingModal from 'page/channel/jira/cloud/FieldMappingModal';
+import FieldMappingDeleteModal from 'page/channel/jira/common/FieldMappingDeleteModal';
+import FieldMappingModal from 'page/channel/jira/common/FieldMappingModal';
 import Button from 'common/component/button/Button';
 
-const JiraCloudDistributionTableActions = ({ data, selected, updateTableData }) => {
+const JiraFieldMapTableActions = ({ data, selected, updateTableData }) => {
     const modalOptions = {
         type: 'CREATE',
         title: 'Create a New Mapping'
@@ -50,9 +50,9 @@ const JiraCloudDistributionTableActions = ({ data, selected, updateTableData }) 
     );
 };
 
-JiraCloudDistributionTableActions.propTypes = {
+JiraFieldMapTableActions.propTypes = {
     data: PropTypes.arrayOf(PropTypes.object),
     selected: PropTypes.array
 };
 
-export default JiraCloudDistributionTableActions;
+export default JiraFieldMapTableActions;

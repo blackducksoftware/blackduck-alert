@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import CheckboxInput from 'common/component/input/CheckboxInput';
 import { JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS } from 'page/channel/jira/cloud/JiraCloudModel';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import TextInput from 'common/component/input/TextInput';
 import CollapsiblePane from 'common/component/CollapsiblePane';
-import JiraCloudDistributionTable from 'page/channel/jira/cloud/JiraCloudDistributionTable';
+import JiraFieldMapDistributionTable from 'page/channel/jira/common/JiraFieldMapDistributionTable';
 
 const JiraCloudDistributionConfiguration = ({
     data, setData, errors, readonly
@@ -107,7 +107,7 @@ const JiraCloudDistributionConfiguration = ({
                 title="Advanced Jira Configuration"
                 expanded={false}
             >
-                <JiraCloudDistributionTable cloudTableData={tableData} onFieldMappingUpdate={updateModel} />
+                <JiraFieldMapDistributionTable cloudTableData={tableData} onFieldMappingUpdate={updateModel} />
             </CollapsiblePane>
         </>
     );

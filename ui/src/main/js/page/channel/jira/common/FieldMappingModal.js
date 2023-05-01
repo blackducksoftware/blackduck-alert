@@ -18,9 +18,7 @@ const FieldMappingModal = ({ tableData, selectedData, selectedIndex, isOpen, tog
         }
 
         if (type === 'CREATE') {
-            console.log(model);
             updateTableData([...tableData, model]);
-            tableDataCallback()
         }
 
         handleClose();

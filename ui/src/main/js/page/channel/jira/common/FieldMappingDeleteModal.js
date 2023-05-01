@@ -60,14 +60,14 @@ const FieldMappingDeleteModal = ({ isOpen, toggleModal, data, selected, updateTa
             <Modal
                 isOpen={isOpen}
                 size="sm"
-                title={isMultiDelete ? 'Delete Jira Cloud Fields' : 'Delete Jira Cloud Field'}
+                title={isMultiDelete ? 'Delete Jira Fields' : 'Delete Jira Field'}
                 closeModal={handleClose}
                 handleCancel={handleClose}
                 handleSubmit={handleDelete}
                 submitText="Delete"
             >
                 <div className={classes.deleteConfirmMessage}>
-                    { isMultiDelete ? 'Are you sure you want to delete these Jira Cloud Field?' : 'Are you sure you want to delete this Jira Cloud Field?' }
+                    { isMultiDelete ? 'Are you sure you want to delete these Jira Field?' : 'Are you sure you want to delete this Jira Field?' }
                 </div>
                 <div>
                     { selectedFieldModels?.map((fieldModel) => (

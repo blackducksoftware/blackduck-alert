@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import FieldMappingModal from 'page/channel/jira/cloud/FieldMappingModal';
+import FieldMappingModal from 'page/channel/jira/common/FieldMappingModal';
 import IconButton from 'common/component/button/IconButton';
 
-const JiraCloudEditCell = ({ data, settings, customCallback }) => {
+const JiraFieldMapEditCell = ({ data, settings, customCallback }) => {
     const [showModal, setShowModal] = useState(false);
     const { tableData } = settings;
     const selectedIndex = tableData.indexOf(data);
@@ -37,8 +37,8 @@ const JiraCloudEditCell = ({ data, settings, customCallback }) => {
     );
 };
 
-JiraCloudEditCell.propTypes = {
+JiraFieldMapEditCell.propTypes = {
     data: PropTypes.object
 };
 
-export default JiraCloudEditCell;
+export default JiraFieldMapEditCell;

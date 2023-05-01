@@ -1,25 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import Table from 'common/component/table/Table';
-import JiraCloudEditCell from 'page/channel/jira/cloud/JiraCloudEditCell';
-import JiraCloudDistributionTableActions from 'page/channel/jira/cloud/JiraCloudDistributionTableActions';
+import JiraFieldMapEditCell from 'page/channel/jira/common/JiraFieldMapEditCell';
+import JiraFieldMapTableActions from 'page/channel/jira/common/JiraFieldMapTableActions';
 
 const emptyTableConfig = {
     message: 'There are no records to display for this table.  Please add a Jira Cloud field mapping to use this table.'
 };
 
-function JiraCloudDistributionTable({ cloudTableData, onFieldMappingUpdate }) {
+function JiraFieldMapDistributionTable({ cloudTableData, onFieldMappingUpdate }) {
     const [tableData, setTableData] = useState(cloudTableData);
     const [selected, setSelected] = useState([]);
     const [data, setData] = useState();
 
-    function handleEditData(data) {
-        setData(data);
-    }
-
     useEffect(() => {
         onFieldMappingUpdate(tableData);
     }, [tableData]);
+
+    function handleEditData(data) {
+        setData(data);
+    }
 
     const COLUMNS = [{
         key: 'fieldName',
@@ -33,7 +33,7 @@ function JiraCloudDistributionTable({ cloudTableData, onFieldMappingUpdate }) {
         key: 'editJiraCloudFieldMapping',
         label: 'Edit',
         sortable: false,
-        customCell: JiraCloudEditCell,
+        customCell: JiraFieldMapEditCell,
         settings: { alignment: 'center', tableData },
         customCallback: handleEditData
     }];
@@ -50,13 +50,13 @@ function JiraCloudDistributionTable({ cloudTableData, onFieldMappingUpdate }) {
             selected={selected}
             onSelected={onSelected}
             emptyTableConfig={emptyTableConfig}
-            tableActions={() => <JiraCloudDistributionTableActions data={tableData} selected={selected} updateTableData={setTableData} />}
+            tableActions={() => <JiraFieldMapTableActions data={tableData} selected={selected} updateTableData={setTableData} />}
         />
     );
 }
 
-JiraCloudDistributionTable.propTypes = {
+JiraFieldMapDistributionTable.propTypes = {
     tableData: PropTypes.object
 };
 
-export default JiraCloudDistributionTable;
+export default JiraFieldMapDistributionTable;
