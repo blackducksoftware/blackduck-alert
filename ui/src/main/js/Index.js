@@ -7,6 +7,8 @@ import createHistory from 'history/createBrowserHistory';
 import App from 'application/App';
 import { ConnectedRouter, routerMiddleware } from 'connected-react-router';
 import rootReducer from 'store/reducers';
+import { ThemeProvider } from 'react-jss';
+import theme from '_theme';
 
 // export synopsys_black from '../img/synopsys_black.png';
 // export synopsys_purple from '../img/synopsys_purple.png';
@@ -22,7 +24,9 @@ const store = createStore(rootReducer(history), initialState, applyMiddleware(th
 ReactDOM.render(
     <Provider store={store}>
         <ConnectedRouter history={history}>
-            <App />
+            <ThemeProvider theme={theme}>
+                <App />
+            </ThemeProvider>
         </ConnectedRouter>
     </Provider>,
     document.getElementById('react')

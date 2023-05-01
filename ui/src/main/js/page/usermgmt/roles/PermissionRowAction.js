@@ -4,7 +4,7 @@ import { createUseStyles } from 'react-jss';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-const useStyles = createUseStyles({
+const useStyles = createUseStyles((theme) => ({
     deletePermissionBtn: {
         borderRadius: '3px',
         border: 'none',
@@ -43,7 +43,7 @@ const useStyles = createUseStyles({
         '&:hover': {
             cursor: 'pointer',
             backgroundColor: '#67AD5B',
-            color: 'white'
+            color: theme.colors.white.default
         }
     },
     cancelOptionBtn: {
@@ -58,10 +58,10 @@ const useStyles = createUseStyles({
         '&:hover': {
             cursor: 'pointer',
             backgroundColor: '#E15241',
-            color: 'white'
+            color: theme.colors.white.default
         }
     }
-});
+}));
 
 const PermissionRowAction = ({ data, settings, customCallback }) => {
     const classes = useStyles();

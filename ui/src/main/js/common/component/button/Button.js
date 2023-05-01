@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-const useStyles = createUseStyles({
+const useStyles = createUseStyles((theme) => ({
     button: {
         background: 'none',
         whiteSpace: 'nowrap',
@@ -22,52 +22,52 @@ const useStyles = createUseStyles({
         }
     },
     default: {
-        border: 'solid 1px',
-        backgroundColor: '#2E3B4E',
-        color: 'white',
+        border: `solid 1px ${theme.colors.defaultAlertColor}`,
+        backgroundColor: theme.colors.defaultAlertColor,
+        color: theme.colors.white.default,
         '&:disabled': {
-            border: ['1px', 'solid', '#D9D9D9'],
-            backgroundColor: '#D9D9D9',
-            color: '#666666',
+            border: `solid 1px ${theme.colors.grey.lightGrey}`,
+            backgroundColor: theme.colors.grey.lightGrey,
+            color: theme.colors.grey.darkGrey,
             cursor: 'not-allowed'
         },
         '&:active': {
-            backgroundColor: '#646E81',
+            backgroundColor: theme.colors.darkGreyAlertColor,
         }
     },
     transparent: {
-        border: 'solid 1px #2E3B4E',
-        color: '#2E3B4E',
+        border: `solid 1px ${theme.colors.defaultAlertColor}`,
+        color: theme.colors.defaultAlertColor,
         '&:hover': {
-            color: 'white',
+            color: theme.colors.white.default,
             border: 'solid 1px',
-            backgroundColor: '#2E3B4E',
+            backgroundColor: theme.colors.defaultAlertColor,
         },
         '&:active': {
-            color: 'white',
+            color: theme.colors.white.default,
             border: 'solid 1px',
-            backgroundColor: '#646E81',
+            backgroundColor: theme.colors.darkGreyAlertColor,
         }
     },
     delete: {
-        border: 'solid 1px #d72c20',
-        backgroundColor: '#e03c31',
-        color: 'white',
+        border: `solid 1px ${theme.colors.red.default}`,
+        backgroundColor: theme.colors.red.lightRed,
+        color: theme.colors.white.default,
         '&:disabled': {
-            border: ['1px', 'solid', '#D9D9D9'],
-            backgroundColor: '#D9D9D9',
-            color: '#666666',
+            border: `solid 1px ${theme.colors.grey.lightGrey}`,
+            backgroundColor: theme.colors.grey.lightGrey,
+            color: theme.colors.grey.darkGrey,
             cursor: 'not-allowed'
         },
         '&:active': {
-            border: 'solid 1px #ea7b73',
-            backgroundColor: '#ea7b73',
+            border: `solid 1px ${theme.colors.red.lighterRed}`,
+            backgroundColor: theme.colors.red.lighterRed,
         }
     },
     loader: {
         marginLeft: '5px'
     }
-});
+}));
 
 const Button = ({ id, icon, type, isDisabled, onClick, role, style = 'default', title, text, showLoader }) => {
     const classes = useStyles();

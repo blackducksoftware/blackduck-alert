@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { bulkDeleteProviders, fetchProviders } from 'store/actions/provider';
 import Modal from 'common/component/modal/Modal';
 
-const useStyles = createUseStyles({
+const useStyles = createUseStyles((theme) => ({
     deleteConfirmMessage: {
         margin: [0, 0, '20px', '30px'],
         fontSize: '16px',
@@ -18,17 +18,17 @@ const useStyles = createUseStyles({
     },
     card: {
         display: 'flex',
-        border: ['1px', 'solid', '#D9D9D9'],
+        border: `solid 1px ${theme.colors.grey.lightGrey}`,
         borderRadius: '5px',
-        backgroundColor: '#e8e6e6',
+        backgroundColor: theme.colors.grey.lighterGrey,
         padding: '8px',
         margin: [0, '50px', '10px', '20px'],
         width: '250px'
     },
     icon: {
         flexBasis: '20%',
-        backgroundColor: 'white',
-        border: ['1px', 'solid', '#D9D9D9'],
+        backgroundColor: theme.colors.white.default,
+        border: `solid 1px ${theme.colors.grey.lightGrey}`,
         borderRadius: '5px',
         height: '50px',
         paddingTop: '5px',
@@ -38,7 +38,7 @@ const useStyles = createUseStyles({
         flexGrow: 1,
         padding: ['5px', 0, 0, '15px']
     }
-});
+}));
 
 function getStagedForDelete(data, selected) {
     const staged = data.filter((provider) => selected.includes(provider.id));

@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { fetchCertificates, deleteCertificate } from 'store/actions/certificates';
 import Modal from 'common/component/modal/Modal';
 
-const useStyles = createUseStyles({
+const useStyles = createUseStyles((theme) => ({
     deleteConfirmMessage: {
         margin: [0, 0, '20px', '30px'],
         fontSize: '14px',
@@ -18,17 +18,17 @@ const useStyles = createUseStyles({
     },
     certCard: {
         display: 'flex',
-        border: ['1px', 'solid', '#D9D9D9'],
+        border: `solid 1px ${theme.colors.grey.lightGrey}`,
         borderRadius: '5px',
-        backgroundColor: '#e8e6e6',
+        backgroundColor: theme.colors.grey.lighterGrey,
         padding: '8px',
         margin: [0, '50px', '10px', '20px'],
         width: '250px'
     },
     certIcon: {
         flexBasis: '20%',
-        backgroundColor: 'white',
-        border: ['1px', 'solid', '#D9D9D9'],
+        backgroundColor: theme.colors.white.default,
+        border: `solid 1px ${theme.colors.grey.lightGrey}`,
         borderRadius: '5px',
         height: '50px',
         paddingTop: '5px',
@@ -39,7 +39,7 @@ const useStyles = createUseStyles({
         alignSelf: 'center',
         margin: [0, '15px']
     }
-});
+}));
 
 const DeleteCertificatesModal = ({ isOpen, toggleModal, data, selected }) => {
     const classes = useStyles();

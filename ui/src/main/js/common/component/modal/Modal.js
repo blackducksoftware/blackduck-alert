@@ -9,7 +9,7 @@ import Notification from './Notification';
 
 const modalRoot = document.getElementById('alert-modal');
 
-const useStyles = createUseStyles({
+const useStyles = createUseStyles((theme) => ({
     modal: {
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
         display: 'block',
@@ -21,7 +21,7 @@ const useStyles = createUseStyles({
         cursor: 'default',
     },
     modalStyle: {
-        backgroundColor: 'white',
+        backgroundColor: theme.colors.white.default,
         borderRadius: '5px',
         position: 'relative',
         width: '90%',
@@ -47,7 +47,7 @@ const useStyles = createUseStyles({
         maxHeight: 'calc(100vh - 355px)',
         padding: ['16px', 0]
     }
-});
+}));
 
 const Modal = ({ isOpen, size, title, closeModal, children, handleCancel, handleSubmit, 
     handleTest, submitText, testText, showLoader, notification, showNotification, style,

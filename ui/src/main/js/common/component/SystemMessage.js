@@ -4,20 +4,20 @@ import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import classNames from 'classnames';
 
-const useStyles = createUseStyles({
+const useStyles = createUseStyles((theme) => ({
     alertIcon: {
         padding: '3px'
     },
     errorStatus: {
-        color: '#E03C31'
+        color: theme.colors.red.lightRed
     },
     warningStatus: {
-        color: '#E07C05'
+        color: theme.colors.warning
     },
     validStatus: {
-        color: '#3B7D3C'
+        color: theme.colors.green.darkGreen
     }
-});
+}));
 
 const SystemMessage = ({ createdAt, content, severity, id }) => {
     const classes = useStyles();

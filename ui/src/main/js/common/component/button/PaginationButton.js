@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 
-const useStyles = createUseStyles({
+const useStyles = createUseStyles((theme) => ({
     paginationBtn: {
         background: 'none',
         whiteSpace: 'nowrap',
@@ -11,7 +11,7 @@ const useStyles = createUseStyles({
         font: 'inherit',
         cursor: 'pointer',
         fontSize: '14px',
-        color: 'white',
+        color: theme.colors.white.default,
         '&:focus': {
             outline: 0
         },
@@ -20,18 +20,18 @@ const useStyles = createUseStyles({
         }
     },
     activePage: {
-        backgroundColor: '#2E3B4E',
+        backgroundColor: theme.colors.defaultAlertColor,
         border: 'solid .5px'
     },
     inactivePage: {
         background: 'none',
-        color: '#2E3B4E',
+        color: theme.colors.defaultAlertColor,
         border: 'none',
         '&:hover': {
-            backgroundColor: '#D9D9D9'
+            backgroundColor: theme.colors.grey.lightGrey
         }
     }
-});
+}));
 
 const PaginationButton = ({ id, type, onClick, role, title, pageNumber, isActive }) => {
     const classes = useStyles();
