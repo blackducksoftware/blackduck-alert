@@ -16,6 +16,9 @@ const useStyles = createUseStyles({
             width: '100%'
         }
     },
+    cell: {
+        padding: ['1px', '6px']
+    },
     right: {
         textAlign: 'right',
         paddingRight: '15px'
@@ -60,7 +63,7 @@ const TableHeaderCell = ({ label, sortable, settings, onSort, name, sortConfig }
                         <FontAwesomeIcon icon={getSortIcon(sortConfig.direction)} />
                     ) : <FontAwesomeIcon icon="sort" /> }
                 </button>
-            ) : <>{label}</> }
+            ) : <div className={classes.cell}>{label}</div> }
         </th>
     );
 };

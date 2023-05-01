@@ -1,5 +1,9 @@
 import { createTableSelectColumn } from 'common/component/input/TableSelectInput';
 
+export const EMAIL_URLS = {
+    mainUrl: '/alert/channels/email'
+}
+
 export const EMAIL_DISTRIBUTION_FIELD_KEYS = {
     additionalAddresses: 'email.additional.addresses',
     additionalAddressesOnly: 'email.additional.addresses.only',

@@ -9,3 +9,8 @@ export const SLACK_DISTRIBUTION_FIELD_KEYS = {
     channelUser: 'channel.slack.channel.username',
     webhook: 'channel.slack.webhook'
 };
+
+export const SLACK_URLS = {
+    mainUrl: '/alert/channels/slack'
+};
+

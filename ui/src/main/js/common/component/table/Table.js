@@ -29,22 +29,24 @@ const Table = ({ columns, multiSelect, selected, onSelected, disableSelectOption
 
     return (
         <>
-            <div className={classes.tableActions}>
-                {tableActions ? tableActions() : null}
-                { handleSearchChange && (
-                    <SearchFilter
-                        handleSearchChange={handleSearchChange}
-                        searchBarPlaceholder={searchBarPlaceholder}
-                    />
-                )}
+            { (tableActions || handleSearchChange || onToggle) && (
+                <div className={classes.tableActions}>
+                    {tableActions ? tableActions() : null}
+                    { handleSearchChange && (
+                        <SearchFilter
+                            handleSearchChange={handleSearchChange}
+                            searchBarPlaceholder={searchBarPlaceholder}
+                        />
+                    )}
 
-                {onToggle && (
-                    <ToggleSwitch
-                        active={active}
-                        onToggle={onToggle}
-                    />
-                )}
-            </div>
+                    {onToggle && (
+                        <ToggleSwitch
+                            active={active}
+                            onToggle={onToggle}
+                        />
+                    )}
+                </div>
+            ) }
 
             { (!tableData || tableData.length === 0) && (
                 <EmptyTableView emptyTableConfig={emptyTableConfig} />
