@@ -100,7 +100,6 @@ const azure = (state = initialState, action) => {
                 ...state,
                 fetching: false,
                 saveStatus: 'SAVED',
-                data: action.data,
                 fieldErrors: action.errors || {}
             };
         case AZURE_SAVE_FAIL:
