@@ -58,6 +58,10 @@ public class JiraServerProperties {
     }
 
     private JiraServerRestConfig setAuthorizationConfig() {
+        if (authorizationMethod == null) {
+            return createJiraServerBasicAuthConfig();
+        }
+
         switch (authorizationMethod) {
             case PERSONAL_ACCESS_TOKEN:
                 return createJiraServerBearerAuthConfig();

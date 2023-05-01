@@ -21,7 +21,7 @@ class JiraServerPropertiesTest {
     @Test
     void testBuildConfigException() {
         try {
-            JiraServerProperties properties = new JiraServerProperties(null, JiraServerAuthorizationMethod.BASIC, null, null, null, false, ProxyInfo.NO_PROXY_INFO);
+            JiraServerProperties properties = new JiraServerProperties(null, null, null, null, null, false, ProxyInfo.NO_PROXY_INFO);
             properties.createJiraServerConfig();
             assertNull(properties.getUrl());
             assertNull(properties.getPassword());
