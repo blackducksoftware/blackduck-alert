@@ -124,7 +124,7 @@ public class RunServerTask extends Exec {
         Map<String, String> envVars = new HashMap<>();
         envVars.put("ALERT_ENCRYPTION_PASSWORD", encryptionPassword);
         envVars.put("ALERT_ENCRYPTION_GLOBAL_SALT", encryptionSalt);
-        envVars.put("ALERT_TRUST_CERT", "true");
+        envVars.put("ALERT_TRUST_CERT", "false");
         envVars.put("ALERT_LOG_FILE_PATH", "log");
         getEnvironment().putAll(envVars);
 
@@ -154,12 +154,19 @@ public class RunServerTask extends Exec {
     }
 
     public List<String> getJMXVariables(String buildDirectory) {
-        return List.of("-Dcom.sun.management.jmxremote",
+        return List.of(
+            "-Dcom.sun.management.jmxremote",
             "-Dcom.sun.management.jmxremote.port=9045",
             "-Dcom.sun.management.jmxremote.local.only=false",
             "-Dcom.sun.management.jmxremote.authenticate=false",
             "-Dcom.sun.management.jmxremote.ssl=false",
-            String.format("-Djavax.net.ssl.trustStore=%s/certs/blackduck-alert.truststore", buildDirectory));
+            String.format("-Djavax.net.ssl.keyStore=%s/certs/blackduck-alert.keystore", buildDirectory),
+            "-Djavax.net.ssl.keyStoreType=PKCS12",
+            "-Djavax.net.ssl.keyStorePassword=changeit",
+            String.format("-Djavax.net.ssl.trustStore=%s/certs/blackduck-alert.truststore", buildDirectory),
+            "-Djavax.net.ssl.trustStorePassword=changeit",
+            "-Djavax.net.ssl.trustStoreType=JKS"
+        );
     }
 
     public List<String> getApplicationVariables(String buildDirectory) {
