@@ -15,7 +15,6 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 
 @Configuration
-//@EnableOpenApi
 public class SwaggerConfiguration {
     public static final String SWAGGER_DEFAULT_PATH_SPEC = "swagger-ui";
 
