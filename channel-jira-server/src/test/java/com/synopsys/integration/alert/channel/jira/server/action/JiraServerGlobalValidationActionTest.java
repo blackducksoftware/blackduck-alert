@@ -25,7 +25,7 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
 
 @ExtendWith(SpringExtension.class)
-public class JiraServerGlobalValidationActionTest {
+class JiraServerGlobalValidationActionTest {
     private final AuthenticationTestUtils authenticationTestUtils = new AuthenticationTestUtils();
     private final DescriptorKey descriptorKey = ChannelKeys.JIRA_SERVER;
     private final PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
@@ -46,7 +46,7 @@ public class JiraServerGlobalValidationActionTest {
     void validateReturnsSuccessOnFullPermissions() {
         Map<PermissionKey, Integer> permissions = Map.of(permissionKey, AuthenticationTestUtils.FULL_PERMISSIONS);
         AuthorizationManager authManager = authenticationTestUtils
-                .createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
+            .createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
 
         JiraServerGlobalValidationAction validationAction = new JiraServerGlobalValidationAction(validator, authManager);
 
@@ -58,7 +58,7 @@ public class JiraServerGlobalValidationActionTest {
     void validateReturnsForbiddenOnNoPermissions() {
         Map<PermissionKey, Integer> permissions = Map.of(permissionKey, AuthenticationTestUtils.NO_PERMISSIONS);
         AuthorizationManager authManager = authenticationTestUtils
-                .createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
+            .createAuthorizationManagerWithCurrentUserSet("admin", "admin", () -> new PermissionMatrixModel(permissions));
 
         JiraServerGlobalValidationAction validationAction = new JiraServerGlobalValidationAction(validator, authManager);
 
