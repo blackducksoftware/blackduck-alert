@@ -2,9 +2,11 @@ FROM blackducksoftware/hub-docker-common:1.0.6 as docker-common
 FROM alpine:3.17
 
 ARG VERSION
+ARG COMMITHASH
 
 LABEL com.blackducksoftware.integration.alert.vendor="Black Duck Software, Inc." \
-      com.blackducksoftware.integration.alert.version="$VERSION"
+      com.blackducksoftware.integration.alert.version="$VERSION" \
+      com.blackducksoftware.integration.alert.commitHash="$COMMITHASH"
 
 ENV ALERT_HOME /opt/blackduck/alert
 ENV ALERT_TAR_HOME $ALERT_HOME/alert-tar
