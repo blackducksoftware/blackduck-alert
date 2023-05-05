@@ -11,6 +11,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,6 @@ public class JiraServerGlobalConfigurationValidator {
     public ValidationResponseModel validate(JiraServerGlobalConfigModel model, String id) {
         Set<AlertFieldStatus> statuses = new HashSet<>();
 
-        // TODO: Implement access token and AuthorizationMethod
         if (StringUtils.isBlank(model.getName())) {
             statuses.add(AlertFieldStatus.error("name", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
         } else if (doesNameExist(model.getName(), id)) {
@@ -52,22 +52,36 @@ public class JiraServerGlobalConfigurationValidator {
                 statuses.add(AlertFieldStatus.error("url", e.getMessage()));
             }
         }
-        // TODO: Add branching validation depending on AuthorizationMethod using BASIC or BEARER
-        if (model.getAuthorizationMethod() == JiraServerAuthorizationMethod.BASIC) {
-            if (model.getUserName().isEmpty() || StringUtils.isBlank(model.getUserName().get())) {
-                statuses.add(AlertFieldStatus.error("userName", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
-            }
 
-            if (model.getPassword().isEmpty() && !model.getIsPasswordSet().orElse(Boolean.FALSE)) {
-                statuses.add(AlertFieldStatus.error("password", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
-            }
-        }
+        validateAuthenticationFields(model, statuses);
 
         if (!statuses.isEmpty()) {
             return ValidationResponseModel.fromStatusCollection(statuses);
         }
 
         return ValidationResponseModel.success();
+    }
+
+    private void validateAuthenticationFields(JiraServerGlobalConfigModel model, Set<AlertFieldStatus> statuses) {
+        if (model.getAuthorizationMethod() == null) {
+            statuses.add(AlertFieldStatus.error("authorizationMethod", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
+            return;
+        }
+
+        if (model.getAuthorizationMethod() == JiraServerAuthorizationMethod.PERSONAL_ACCESS_TOKEN) {
+            if (model.getAccessToken().isEmpty() && !model.getIsAccessTokenSet().orElse(Boolean.FALSE)) {
+                statuses.add(AlertFieldStatus.error("accessToken", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
+            }
+            //If access token is used, do not evaluate basic auth credentials
+            return;
+        }
+        if (model.getUserName().filter(Predicate.not(String::isEmpty)).isEmpty()) {
+            statuses.add(AlertFieldStatus.error("userName", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
+        }
+
+        if (model.getPassword().isEmpty() && !model.getIsPasswordSet().orElse(Boolean.FALSE)) {
+            statuses.add(AlertFieldStatus.error("password", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
+        }
     }
 
     //Checks if a configuration already exists then checks if we're updating the found configuration
