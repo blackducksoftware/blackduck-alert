@@ -31,6 +31,8 @@ public class RunServerTask extends Exec {
     private String externalRabbitPassword = "blackduck";
     private String externalRabbitVirtualHost = "blackduck-alert";
 
+    private boolean sslTrustCertDisabled = false;
+
     @Option(option = "suspend", description = "Suspends the server until a debug connection is made")
     public void setSuspend(boolean suspend) {
         this.suspend = suspend;
@@ -115,6 +117,11 @@ public class RunServerTask extends Exec {
         this.externalRabbitVirtualHost = externalRabbitVirtualHost;
     }
 
+    @Option(option = "ssl-trust-disabled", description = "Disable always trusting SSL certs.")
+    public void setSslTrustCertDisabled(boolean sslTrustCertDisabled) {
+        this.sslTrustCertDisabled = sslTrustCertDisabled;
+    }
+
     @Override
     protected void exec() {
         if (null == postgresVersion || postgresVersion.trim().length() == 0) {
@@ -124,7 +131,7 @@ public class RunServerTask extends Exec {
         Map<String, String> envVars = new HashMap<>();
         envVars.put("ALERT_ENCRYPTION_PASSWORD", encryptionPassword);
         envVars.put("ALERT_ENCRYPTION_GLOBAL_SALT", encryptionSalt);
-        envVars.put("ALERT_TRUST_CERT", "false");
+        envVars.put("ALERT_TRUST_CERT", String.valueOf(!sslTrustCertDisabled));
         envVars.put("ALERT_LOG_FILE_PATH", "log");
         getEnvironment().putAll(envVars);
 
