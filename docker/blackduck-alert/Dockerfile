@@ -17,6 +17,7 @@ ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk
 ENV PATH $JAVA_HOME/bin:$ALERT_TAR_HOME/bin:$PATH
 ENV CERTIFICATE_MANAGER_DIR $ALERT_HOME/bin
 ENV SECURITY_DIR $ALERT_HOME/security
+ENV BLACKDUCK_ALERT_OPTS -Djavax.net.ssl.keyStore=$SECURITY_DIR/blackduck-alert.keystore -Djavax.net.ssl.keyStoreType=PKCS12 -Djavax.net.ssl.keyStorePassword=changeit
 ENV DEFAULT_BLACKDUCK_ALERT_OPTS -Djava.security.properties=${SECURITY_DIR}/java.security
 ENV APPLICATION_NAME blackduck-alert
 
