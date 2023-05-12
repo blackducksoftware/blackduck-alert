@@ -34,11 +34,13 @@ public class JiraServerEnvironmentVariableHandler extends EnvironmentVariableHan
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public static final String DISABLE_PLUGIN_KEY = "ALERT_CHANNEL_JIRA_SERVER_JIRA_SERVER_DISABLE_PLUGIN_CHECK";
-    public static final String PASSWORD_KEY = "ALERT_CHANNEL_JIRA_SERVER_JIRA_SERVER_PASSWORD";
     public static final String URL_KEY = "ALERT_CHANNEL_JIRA_SERVER_JIRA_SERVER_URL";
+    public static final String AUTHORIZATION_METHOD_KEY = "ALERT_CHANNEL_JIRA_SERVER_JIRA_AUTHORIZATION_METHOD";
     public static final String USERNAME_KEY = "ALERT_CHANNEL_JIRA_SERVER_JIRA_SERVER_USERNAME";
+    public static final String PASSWORD_KEY = "ALERT_CHANNEL_JIRA_SERVER_JIRA_SERVER_PASSWORD";
+    public static final String ACCESS_TOKEN_KEY = "ALERT_CHANNEL_JIRA_SERVER_JIRA_SERVER_PERSONAL_ACCESS_TOKEN";
 
-    public static final Set<String> VARIABLE_NAMES = Set.of(DISABLE_PLUGIN_KEY, PASSWORD_KEY, URL_KEY, USERNAME_KEY);
+    public static final Set<String> VARIABLE_NAMES = Set.of(DISABLE_PLUGIN_KEY, URL_KEY, AUTHORIZATION_METHOD_KEY, USERNAME_KEY, PASSWORD_KEY, ACCESS_TOKEN_KEY);
 
     private final JiraServerGlobalConfigAccessor configAccessor;
     private final EnvironmentVariableUtility environmentVariableUtility;
@@ -68,12 +70,18 @@ public class JiraServerEnvironmentVariableHandler extends EnvironmentVariableHan
         String userName = environmentVariableUtility.getEnvironmentValue(USERNAME_KEY).orElse(null);
         String password = environmentVariableUtility.getEnvironmentValue(PASSWORD_KEY).orElse(null);
         String createdAt = DateUtils.formatDate(DateUtils.createCurrentDateTimestamp(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
-        // TODO: Implement access token and AuthorizationMethod
-        JiraServerGlobalConfigModel configModel = new JiraServerGlobalConfigModel(null, name, url, JiraServerAuthorizationMethod.BASIC);
+        String accessToken = environmentVariableUtility.getEnvironmentValue(ACCESS_TOKEN_KEY).orElse(null);
+
+        JiraServerAuthorizationMethod jiraServerAuthorizationMethod = JiraServerAuthorizationMethod.valueOf(environmentVariableUtility.getEnvironmentValue(AUTHORIZATION_METHOD_KEY)
+            .orElse(JiraServerAuthorizationMethod.BASIC.name())
+        );
+
+        JiraServerGlobalConfigModel configModel = new JiraServerGlobalConfigModel(null, name, url, jiraServerAuthorizationMethod);
         configModel.setCreatedAt(createdAt);
         configModel.setLastUpdated(createdAt);
         configModel.setUserName(userName);
         configModel.setPassword(password);
+        configModel.setAccessToken(accessToken);
         environmentVariableUtility.getEnvironmentValue(DISABLE_PLUGIN_KEY)
             .map(Boolean::valueOf)
             .ifPresent(configModel::setDisablePluginCheck);
@@ -94,6 +102,10 @@ public class JiraServerEnvironmentVariableHandler extends EnvironmentVariableHan
             builder.addVariableValue(URL_KEY, obfuscatedConfigModel.getUrl());
         }
 
+        if (StringUtils.isNotBlank(obfuscatedConfigModel.getAuthorizationMethod().getDisplayName())) {
+            builder.addVariableValue(AUTHORIZATION_METHOD_KEY, obfuscatedConfigModel.getAuthorizationMethod().name());
+        }
+
         obfuscatedConfigModel.getUserName()
             .ifPresent(username -> builder.addVariableValue(USERNAME_KEY, username));
 
@@ -104,6 +116,10 @@ public class JiraServerEnvironmentVariableHandler extends EnvironmentVariableHan
         obfuscatedConfigModel.getIsPasswordSet()
             .filter(Boolean::booleanValue)
             .ifPresent(ignored -> builder.addVariableValue(PASSWORD_KEY, AlertConstants.MASKED_VALUE));
+
+        obfuscatedConfigModel.getIsAccessTokenSet()
+            .filter(Boolean::booleanValue)
+            .ifPresent(ignored -> builder.addVariableValue(ACCESS_TOKEN_KEY, AlertConstants.MASKED_VALUE));
 
         return builder.build();
     }
