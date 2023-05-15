@@ -8,10 +8,8 @@ import {
     DISTRIBUTION_FREQUENCY_OPTIONS,
     DISTRIBUTION_INFO,
     DISTRIBUTION_NOTIFICATION_TYPE_OPTIONS,
-    DISTRIBUTION_POLICY_SELECT_COLUMNS,
     DISTRIBUTION_PROCESSING_DESCRIPTIONS,
     DISTRIBUTION_PROCESSING_TYPES,
-    DISTRIBUTION_PROJECT_SELECT_COLUMNS,
     DISTRIBUTION_TEST_FIELD_KEYS,
     DISTRIBUTION_URLS,
     DISTRIBUTION_VULNERABILITY_SEVERITY_OPTIONS
@@ -19,7 +17,6 @@ import {
 import EndpointSelectField from 'common/component/input/EndpointSelectField';
 import TextInput from 'common/component/input/TextInput';
 import CollapsiblePane from 'common/component/CollapsiblePane';
-import TableSelectInput from 'common/component/input/TableSelectInput';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import { CONTEXT_TYPE, isOneOperationAssigned, isOperationAssigned, OPERATIONS } from 'common/util/descriptorUtilities';
@@ -40,7 +37,7 @@ import JiraServerDistributionConfiguration from 'page/channel/jira/server/JiraSe
 import MsTeamsDistributionConfiguration from 'page/channel/msteams/MsTeamsDistributionConfiguration';
 import SlackDistributionConfiguration from 'page/channel/slack/SlackDistributionConfiguration';
 import PageHeader from 'common/component/navigation/PageHeader';
-
+import { createNewConfigurationRequest } from 'common/util/configurationRequestBuilder';
 
 const DistributionConfigurationForm = ({
     csrfToken, errorHandler, descriptors, lastUpdated
@@ -295,6 +292,54 @@ const DistributionConfigurationForm = ({
     );
 
     const processingFieldDescription = `Select the way messages will be processed: ${getProcessingDescription(FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.processingType))}`;
+    
+    const getProjectsRequest = () => {
+        const apiUrl = '/alert/api/function/channel.common.configured.project?pageNumber=0&pageSize=1000&searchTerm=';
+        return createNewConfigurationRequest(apiUrl, csrfToken, createAdditionalEmailRequestBody());
+    };
+
+    const getPolicyFiltersRequest = () => {
+        const apiUrl = '/alert/api/function/blackduck.policy.notification.filter?pageNumber=0&pageSize=1000&searchTerm=';
+        return createNewConfigurationRequest(apiUrl, csrfToken, createProviderRequestBody());
+    };
+
+    const convertPolicyDataToOptions = (responseData) => {
+        const { models } = responseData;
+        return models.map((model) => {
+            const { name } = model;
+            return {
+                label: name,
+                value: name
+            };
+        });
+    }
+
+    const convertDataToOptions = (responseData) => {
+        const { models } = responseData;
+        return models.map((model) => {
+            const { name, href } = model;
+            return {
+                key: name,
+                label: name,
+                value: {
+                    href,
+                    name
+                }
+            };
+        });
+    };
+    
+    function getSelectedProjects() {
+        const values = FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects);
+        const selectedProjects = values.map((model) => {
+            return {
+                label: model.name,
+                value: model,
+                missing: model.missing
+            }
+        });
+        return selectedProjects;
+    }
 
     // TODO need to provide finer grain control with permissions.
     return (
@@ -467,23 +512,22 @@ const DistributionConfigurationForm = ({
                             errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.projectVersionNamePattern)}
                             errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.projectVersionNamePattern]}
                         />
-                        <TableSelectInput
+                        <EndpointSelectField
+                            searchable
                             id={DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects}
                             csrfToken={csrfToken}
                             endpoint={DISTRIBUTION_URLS.endpointSelectPath}
                             fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects}
-                            columns={DISTRIBUTION_PROJECT_SELECT_COLUMNS}
                             label="Projects"
                             description="Select a project or projects that will be used to retrieve notifications from your provider."
+                            multiSelect
                             readOnly={readonly}
-                            paged
-                            searchable
-                            useRowAsValue
-                            createRequestBody={createProviderRequestBody}
+                            readOptionsRequest={getProjectsRequest}
+                            convertDataToOptions={convertDataToOptions}
                             onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
-                            value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects)}
                             errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects)}
                             errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects]}
+                            customVal={getSelectedProjects()}
                         />
                     </div>
                 )}
@@ -494,18 +538,18 @@ const DistributionConfigurationForm = ({
                             title="Black Duck Notification Filtering"
                             expanded={false}
                         >
-                            <TableSelectInput
+                            <EndpointSelectField
                                 id={DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter}
                                 csrfToken={csrfToken}
                                 endpoint={DISTRIBUTION_URLS.endpointSelectPath}
                                 fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter}
-                                columns={DISTRIBUTION_POLICY_SELECT_COLUMNS}
-                                label="Policy Notification Type Filter"
+                                label="POLICY"
                                 description="Filter which notifications you want sent via this job (You must have the policy notification type selected for this filter to apply)."
-                                readOnly={readonly}
-                                paged
                                 searchable
-                                createRequestBody={createProviderRequestBody}
+                                multiSelect
+                                readOnly={readonly}
+                                readOptionsRequest={getPolicyFiltersRequest}
+                                convertDataToOptions={convertPolicyDataToOptions}
                                 onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
                                 value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter)}
                                 errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter)}

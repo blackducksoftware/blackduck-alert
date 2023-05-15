@@ -31,7 +31,8 @@ const DynamicSelectInput = ({
     errorValue,
     required,
     creatable,
-    maxMenuHeight
+    maxMenuHeight,
+    customVal
 }) => {
     const selectClasses = `${selectSpacingClass} d-inline-flex p-2`;
     const selectedOptions = options.filter((option) => value.includes(option.value));
@@ -103,7 +104,7 @@ const DynamicSelectInput = ({
             removeSelected={removeSelected}
             options={options}
             placeholder={placeholder}
-            value={selectedOptions}
+            value={customVal || selectedOptions}
             isMulti={multiSelect}
             closeMenuOnSelect={!multiSelect}
             components={selectInputComponents}
@@ -184,7 +185,8 @@ DynamicSelectInput.propTypes = {
     required: PropTypes.bool,
     creatable: PropTypes.bool,
     maxMenuHeight: PropTypes.number,
-    customDescription: PropTypes.string
+    customDescription: PropTypes.string,
+    customVal: PropTypes.oneOfType([ PropTypes.array, PropTypes.object ])
 };
 
 DynamicSelectInput.defaultProps = {

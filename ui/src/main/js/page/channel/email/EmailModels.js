@@ -1,7 +1,6 @@
-import { createTableSelectColumn } from 'common/component/input/TableSelectInput';
-
 export const EMAIL_URLS = {
-    mainUrl: '/alert/channels/email'
+    mainUrl: '/alert/channels/email',
+    emailModelUrl: '/alert/api/function/email.additional.addresses'
 }
 
 export const EMAIL_DISTRIBUTION_FIELD_KEYS = {
@@ -17,10 +16,6 @@ export const EMAIL_DISTRIBUTION_ATTACHMENT_OPTIONS = [
     { label: 'Json', value: 'JSON' },
     { label: 'Xml', value: 'XML' },
     { label: 'Csv', value: 'CSV' }
-];
-
-export const EMAIL_DISTRIBUTION_ADDITIONAL_EMAIL_COLUMNS = [
-    createTableSelectColumn('emailAddress', 'Email Address', true, true, true)
 ];
 
 export const EMAIL_INFO = {
