@@ -48,7 +48,7 @@ const UserTable = ({ canCreate, canDelete }) => {
     const [tableData, setTableData] = useState();
     const [search, setNewSearch] = useState('');
     const [selected, setSelected] = useState([]);
-    const [autoRefresh, setAutoRefresh] = useState(false);
+    const [autoRefresh, setAutoRefresh] = useState(true);
     const [sortConfig, setSortConfig] = useState();
     const users = useSelector((state) => state.users.data);
     // Disable select options for users: sysadmin, jobmanager, alertuser

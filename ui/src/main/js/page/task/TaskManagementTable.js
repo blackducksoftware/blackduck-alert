@@ -29,7 +29,7 @@ const TaskManagementTable = () => {
     const [tableData, setTableData] = useState();
     const [search, setNewSearch] = useState('');
     const [sortConfig, setSortConfig] = useState();
-    const [autoRefresh, setAutoRefresh] = useState(false);
+    const [autoRefresh, setAutoRefresh] = useState(true);
     const tasks = useSelector((state) => state.tasks.data);
 
     useEffect(() => {

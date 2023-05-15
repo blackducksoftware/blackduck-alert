@@ -51,7 +51,7 @@ function ProviderTable({ readonly }) {
     const [tableData, setTableData] = useState();
     const [search, setNewSearch] = useState('');
     const [selected, setSelected] = useState([]);
-    const [autoRefresh, setAutoRefresh] = useState(false);
+    const [autoRefresh, setAutoRefresh] = useState(true);
     const [sortConfig, setSortConfig] = useState();
     const { data } = useSelector((state) => state.provider);
 

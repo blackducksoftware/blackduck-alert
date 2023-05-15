@@ -44,7 +44,7 @@ const emptyTableConfig = {
 const AzureBoardTale = ({ readonly, allowDelete }) => {
     const dispatch = useDispatch();
     const { data } = useSelector((state) => state.azure);
-    const [autoRefresh, setAutoRefresh] = useState(false);
+    const [autoRefresh, setAutoRefresh] = useState(true);
     const [selected, setSelected] = useState([]);
     const [sortConfig, setSortConfig] = useState();
     const [paramsConfig, setParamsConfig] = useState({

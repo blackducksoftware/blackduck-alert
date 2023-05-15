@@ -27,7 +27,7 @@ const emptyTableConfig = {
 
 const CertificatesTable = () => {
     const dispatch = useDispatch();
-    const [autoRefresh, setAutoRefresh] = useState(false);
+    const [autoRefresh, setAutoRefresh] = useState(true);
     const [tableData, setTableData] = useState();
     const [sortConfig, setSortConfig] = useState();
     const [search, setNewSearch] = useState('');

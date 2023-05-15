@@ -44,7 +44,7 @@ const emptyTableConfig = {
 const JiraServerTable = ({ readonly, allowDelete }) => {
     const dispatch = useDispatch();
     const { data } = useSelector((state) => state.jiraServer);
-    const [autoRefresh, setAutoRefresh] = useState(false);
+    const [autoRefresh, setAutoRefresh] = useState(true);
     const [selected, setSelected] = useState([]);
     const [sortConfig, setSortConfig] = useState();
     const [paramsConfig, setParamsConfig] = useState({

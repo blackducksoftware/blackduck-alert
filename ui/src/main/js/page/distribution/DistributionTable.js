@@ -64,7 +64,7 @@ const emptyTableConfig = {
 const DistributionTable = ({ readonly }) => {
     const dispatch = useDispatch();
     const { data } = useSelector((state) => state.distribution);
-    const [autoRefresh, setAutoRefresh] = useState(false);
+    const [autoRefresh, setAutoRefresh] = useState(true);
     const [selected, setSelected] = useState([]);
     const [sortConfig, setSortConfig] = useState();
     const [paramsConfig, setParamsConfig] = useState({

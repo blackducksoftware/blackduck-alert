@@ -16,7 +16,7 @@ const emptyTableConfig = {
 const AuditFailureTable = () => {
     const dispatch = useDispatch();
     const { data } = useSelector((state) => state.audit);
-    const [autoRefresh, setAutoRefresh] = useState(false);
+    const [autoRefresh, setAutoRefresh] = useState(true);
     const [sortConfig, setSortConfig] = useState();
     const [paramsConfig, setParamsConfig] = useState({
         pageNumber: data?.pageNumber || 0,
