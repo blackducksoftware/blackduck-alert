@@ -1,5 +1,3 @@
-import { createTableSelectColumn } from 'common/component/input/TableSelectInput';
-
 export const JIRA_SERVER_INFO = {
     key: 'channel_jira_server',
     url: 'jira_server',
@@ -34,8 +32,3 @@ export const JIRA_SERVER_URLS = {
     jiraServerConfigUrl: '/alert/api/configuration/jira_server',
     jiraServerPluginUrl: '/alert/api/configuration/jira_server/install-plugin'
 };
-
-export const JIRA_SERVER_DISTRIBUTION_GLOBAL_CONFIG_COLUMNS = [
-    createTableSelectColumn('id', 'Jira Server Config Id', false, false, false),
-    createTableSelectColumn('name', 'Jira Server Name', true, true, true)
-];
