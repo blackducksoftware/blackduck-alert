@@ -300,7 +300,25 @@ validatePostgresConnection() {
 validatePostgresAdmin() {
     logIt "Validating postgres admin permissions"
     adminCheck=$(psql --quiet --tuples-only --no-align --no-psqlrc "${alertDatabaseAdminConfig}" -c "select count(*) from pg_roles where rolname = '"${alertDatabaseAdminUser}"' and rolsuper is true")
-    checkStatus "$(test "${adminCheck}" = "1" && echo 0 || echo 1)" "Validating postgres admin permissions"
+
+    if [ "${adminCheck}" != 1 ]
+    then
+      extensionExists=$(psql --quiet --tuples-only --no-align --no-psqlrc "${alertDatabaseAdminConfig}" -c "select count(*) from pg_extension where extname = 'uuid-ossp'")
+      checkStatus "$(test "${extensionExists}" = "1" && echo 0 || echo 1)" "Extension 'uuid-ossp' must be installed OR super user privileges granted to your admin user"
+
+      tableExists=$(psql --quiet --tuples-only --no-align --no-psqlrc "${alertDatabaseAdminConfig}" -c "select count(*) from pg_tables where schemaname = 'public' and tablename  = 'databasechangeloglock'")
+      if [ "${tableExists}" = 1 ]
+      then
+        permissionCheck=$(psql --quiet --tuples-only --no-align --no-psqlrc "${alertDatabaseAdminConfig}" -c "select count(*) FROM information_schema.table_privileges where grantee = '"${alertDatabaseAdminUser}"' and table_name = 'databasechangeloglock' and privilege_type in ('SELECT', 'UPDATE')")
+        checkStatus "$(test "${permissionCheck}" = "2" && echo 0 || echo 1)" "Postgres admin requires SELECT & UPDATE for databasechangeloglock table"
+      else
+        logIt "Table 'databasechangeloglock' does not exist, assuming new install"
+      fi
+    else
+      logIt "Postgres admin has super user privileges"
+    fi
+
+    checkStatus 0 "Validating postgres admin permissions"
 }
 
 validateAlertDBExists() {

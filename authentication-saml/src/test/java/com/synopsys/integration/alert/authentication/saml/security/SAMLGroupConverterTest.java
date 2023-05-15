@@ -1,8 +1,19 @@
 package com.synopsys.integration.alert.authentication.saml.security;
 
-import com.synopsys.integration.alert.api.authentication.security.event.AuthenticationEventManager;
-import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
-import com.synopsys.integration.alert.common.persistence.model.UserModel;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,16 +23,16 @@ import org.mockito.Mockito;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.saml2.provider.service.authentication.OpenSaml4AuthenticationProvider;
 import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticatedPrincipal;
 import org.springframework.security.saml2.provider.service.authentication.Saml2Authentication;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import com.synopsys.integration.alert.api.authentication.security.event.AuthenticationEventManager;
+import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
+import com.synopsys.integration.alert.common.persistence.model.UserModel;
 
 @ExtendWith(SpringExtension.class)
 class SAMLGroupConverterTest {
@@ -33,6 +44,10 @@ class SAMLGroupConverterTest {
     private Saml2AuthenticatedPrincipal principal;
     @Mock
     private OpenSaml4AuthenticationProvider.ResponseToken responseToken;
+    @Mock
+    private UserDetailsService userDetailsService;
+    @Mock
+    private UserDetails userDetails;
 
     private final String ALERT_ROLE_KEY = "AlertRoles";
     private final String GROUPS_ROLE_KEY = "groups";
@@ -47,7 +62,9 @@ class SAMLGroupConverterTest {
 
     @BeforeEach
     void init() {
-        samlGroupConverter = new SAMLGroupConverter(authenticationEventManager);
+        Mockito.when(userDetailsService.loadUserByUsername(any())).thenReturn(userDetails);
+        Mockito.when(userDetails.getAuthorities()).thenReturn(new ArrayList<>());
+        samlGroupConverter = new SAMLGroupConverter(userDetailsService, authenticationEventManager);
         authentication = new Saml2Authentication(principal, "response",
             Set.of(new SimpleGrantedAuthority(EXTERNAL_ROLE))
         );
