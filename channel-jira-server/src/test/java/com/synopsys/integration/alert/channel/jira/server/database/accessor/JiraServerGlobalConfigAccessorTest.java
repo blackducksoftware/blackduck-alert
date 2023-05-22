@@ -60,7 +60,7 @@ class JiraServerGlobalConfigAccessorTest {
     @Test
     void getByConfigurationIdTest() throws AlertConfigurationException {
         UUID id = UUID.randomUUID();
-        JiraServerConfigurationEntity entity = createEntity(id);
+        JiraServerConfigurationEntity entity = createBasicAuthEntity(id);
         Mockito.when(jiraServerConfigurationRepository.findById(id)).thenReturn(Optional.of(entity));
         JiraServerGlobalConfigModel configModel = jiraServerGlobalConfigAccessor.getConfiguration(id)
             .orElseThrow(() -> new AlertConfigurationException("Cannot find expected configuration"));
@@ -75,7 +75,7 @@ class JiraServerGlobalConfigAccessorTest {
     @Test
     void getByConfigurationIdNotFoundTest() {
         UUID id = UUID.randomUUID();
-        JiraServerConfigurationEntity entity = createEntity(id);
+        JiraServerConfigurationEntity entity = createBasicAuthEntity(id);
         Mockito.when(jiraServerConfigurationRepository.findById(id)).thenReturn(Optional.of(entity));
         Optional<JiraServerGlobalConfigModel> configModel = jiraServerGlobalConfigAccessor.getConfiguration(UUID.randomUUID());
         assertTrue(configModel.isEmpty());
@@ -84,7 +84,7 @@ class JiraServerGlobalConfigAccessorTest {
     @Test
     void getByConfigurationNameTest() throws AlertConfigurationException {
         UUID id = UUID.randomUUID();
-        JiraServerConfigurationEntity entity = createEntity(id);
+        JiraServerConfigurationEntity entity = createBasicAuthEntity(id);
         Mockito.when(jiraServerConfigurationRepository.findByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)).thenReturn(Optional.of(entity));
         JiraServerGlobalConfigModel configModel = jiraServerGlobalConfigAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
             .orElseThrow(() -> new AlertConfigurationException("Cannot find expected configuration"));
@@ -105,7 +105,7 @@ class JiraServerGlobalConfigAccessorTest {
     @Test
     void getPageTest() {
         UUID id = UUID.randomUUID();
-        JiraServerConfigurationEntity entity = createEntity(id);
+        JiraServerConfigurationEntity entity = createBasicAuthEntity(id);
         Page<JiraServerConfigurationEntity> jiraConfigurations = new PageImpl<>(List.of(entity));
         Mockito.when(jiraServerConfigurationRepository.findAll(Mockito.any(PageRequest.class))).thenReturn(jiraConfigurations);
         AlertPagedModel<JiraServerGlobalConfigModel> pagedModel = jiraServerGlobalConfigAccessor.getConfigurationPage(0, 10, null, null, null);
@@ -118,7 +118,7 @@ class JiraServerGlobalConfigAccessorTest {
     @Test
     void getPageWithSearchTermTest() {
         UUID id = UUID.randomUUID();
-        JiraServerConfigurationEntity entity = createEntity(id);
+        JiraServerConfigurationEntity entity = createBasicAuthEntity(id);
         Page<JiraServerConfigurationEntity> jiraConfigurations = new PageImpl<>(List.of(entity));
         Mockito.when(jiraServerConfigurationRepository.findBySearchTerm(Mockito.eq(AlertRestConstants.DEFAULT_CONFIGURATION_NAME), Mockito.any(PageRequest.class)))
             .thenReturn(jiraConfigurations);
@@ -138,7 +138,7 @@ class JiraServerGlobalConfigAccessorTest {
     @Test
     void getPageSortAscendingTest() {
         UUID id = UUID.randomUUID();
-        JiraServerConfigurationEntity entity = createEntity(id);
+        JiraServerConfigurationEntity entity = createBasicAuthEntity(id);
         JiraServerConfigurationEntity entity2 = new JiraServerConfigurationEntity(
             id,
             "Another Jira Config",
@@ -172,7 +172,7 @@ class JiraServerGlobalConfigAccessorTest {
     @Test
     void getPageSortDescendingTest() {
         UUID id = UUID.randomUUID();
-        JiraServerConfigurationEntity entity = createEntity(id);
+        JiraServerConfigurationEntity entity = createBasicAuthEntity(id);
         JiraServerConfigurationEntity entity2 = new JiraServerConfigurationEntity(
             id,
             "Another Jira Config",
@@ -214,10 +214,9 @@ class JiraServerGlobalConfigAccessorTest {
     }
 
     @Test
-    void createConfigurationTest() throws AlertConfigurationException {
+    void createBasicConfigurationTest() throws AlertConfigurationException {
         UUID id = UUID.randomUUID();
-        JiraServerConfigurationEntity entity = createEntity(id, OffsetDateTime.now(), OffsetDateTime.now());
-        // TODO: Implement access token and AuthorizationMethod
+        JiraServerConfigurationEntity entity = createBasicAuthEntity(id, OffsetDateTime.now(), OffsetDateTime.now());
         JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(
             null,
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
@@ -245,11 +244,42 @@ class JiraServerGlobalConfigAccessorTest {
     }
 
     @Test
-    void updateConfigurationTest() throws AlertConfigurationException {
+    void createPersonalAccessTokenConfigurationTest() throws AlertConfigurationException {
+        UUID id = UUID.randomUUID();
+        JiraServerConfigurationEntity entity = createPersonalAccessTokenAuthEntity(id, OffsetDateTime.now(), OffsetDateTime.now());
+        JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(
+            null,
+            AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
+            DateUtils.formatDate(entity.getCreatedAt(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE),
+            DateUtils.formatDate(entity.getLastUpdated(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE),
+            TEST_URL,
+            JiraServerAuthorizationMethod.PERSONAL_ACCESS_TOKEN,
+            null,
+            null,
+            false,
+            TEST_ACCESS_TOKEN,
+            false,
+            true
+        );
+        Mockito.when(jiraServerConfigurationRepository.save(Mockito.any())).thenReturn(entity);
+
+        JiraServerGlobalConfigModel createdModel = jiraServerGlobalConfigAccessor.createConfiguration(model);
+        assertEquals(entity.getConfigurationId().toString(), createdModel.getId());
+        assertEquals(entity.getUrl(), createdModel.getUrl());
+        assertTrue(createdModel.getUserName().isEmpty());
+        assertTrue(createdModel.getPassword().isEmpty());
+        assertTrue(createdModel.getIsAccessTokenSet().orElse(Boolean.FALSE));
+        assertEquals(TEST_ACCESS_TOKEN, createdModel.getAccessToken().orElse("No access token saved"));
+
+        assertEquals(entity.getDisablePluginCheck(), createdModel.getDisablePluginCheck().orElse(null));
+    }
+
+    @Test
+    void updateBasicAuthConfigurationTest() throws AlertConfigurationException {
         UUID id = UUID.randomUUID();
         String updatedName = "updatedName";
         String newUrl = "https://updated.example.com";
-        JiraServerConfigurationEntity entity = createEntity(id, OffsetDateTime.now(), OffsetDateTime.now());
+        JiraServerConfigurationEntity entity = createBasicAuthEntity(id, OffsetDateTime.now(), OffsetDateTime.now());
         JiraServerConfigurationEntity updatedEntity = new JiraServerConfigurationEntity(
             entity.getConfigurationId(),
             updatedName,
@@ -259,10 +289,9 @@ class JiraServerGlobalConfigAccessorTest {
             JiraServerAuthorizationMethod.BASIC,
             entity.getUsername(),
             entity.getPassword(),
-            encryptionUtility.encrypt(TEST_ACCESS_TOKEN),
+            null,
             entity.getDisablePluginCheck()
         );
-        // TODO: Implement access token and AuthorizationMethod
         JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(
             null,
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
@@ -290,11 +319,56 @@ class JiraServerGlobalConfigAccessorTest {
     }
 
     @Test
+    void updatePersonalAccessTokenAuthConfigurationTest() throws AlertConfigurationException {
+        UUID id = UUID.randomUUID();
+        String updatedName = "updatedName";
+        String newUrl = "https://updated.example.com";
+        JiraServerConfigurationEntity entity = createPersonalAccessTokenAuthEntity(id, OffsetDateTime.now(), OffsetDateTime.now());
+        JiraServerConfigurationEntity updatedEntity = new JiraServerConfigurationEntity(
+            entity.getConfigurationId(),
+            updatedName,
+            entity.getCreatedAt(),
+            entity.getLastUpdated(),
+            newUrl,
+            JiraServerAuthorizationMethod.BASIC,
+            null,
+            null,
+            encryptionUtility.encrypt(TEST_ACCESS_TOKEN),
+            entity.getDisablePluginCheck()
+        );
+        JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(
+            null,
+            AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
+            DateUtils.formatDate(entity.getCreatedAt(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE),
+            DateUtils.formatDate(entity.getLastUpdated(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE),
+            TEST_URL,
+            JiraServerAuthorizationMethod.BASIC,
+            null,
+            null,
+            false,
+            TEST_ACCESS_TOKEN,
+            false,
+            true
+        );
+        Mockito.when(jiraServerConfigurationRepository.findById(id)).thenReturn(Optional.of(entity));
+        Mockito.when(jiraServerConfigurationRepository.save(Mockito.any())).thenReturn(updatedEntity);
+
+        JiraServerGlobalConfigModel updatedModel = jiraServerGlobalConfigAccessor.updateConfiguration(id, model);
+        assertEquals(updatedEntity.getConfigurationId().toString(), updatedModel.getId());
+        assertEquals(updatedEntity.getUrl(), updatedModel.getUrl());
+        assertTrue(updatedModel.getUserName().isEmpty());
+        assertTrue(updatedModel.getPassword().isEmpty());
+        assertTrue(updatedModel.getIsAccessTokenSet().orElse(Boolean.FALSE));
+        assertEquals(TEST_ACCESS_TOKEN, updatedModel.getAccessToken().orElse(null));
+        assertEquals(updatedEntity.getDisablePluginCheck(), updatedModel.getDisablePluginCheck().orElse(null));
+    }
+
+    @Test
     void updateConfigurationPasswordSavedTest() throws AlertConfigurationException {
         UUID id = UUID.randomUUID();
         String updatedName = "updatedName";
         String newUrl = "https://updated.example.com";
-        JiraServerConfigurationEntity entity = createEntity(id, OffsetDateTime.now(), OffsetDateTime.now());
+        JiraServerConfigurationEntity entity = createBasicAuthEntity(id, OffsetDateTime.now(), OffsetDateTime.now());
         JiraServerConfigurationEntity updatedEntity = new JiraServerConfigurationEntity(
             entity.getConfigurationId(),
             updatedName,
@@ -307,7 +381,6 @@ class JiraServerGlobalConfigAccessorTest {
             encryptionUtility.encrypt(TEST_ACCESS_TOKEN),
             entity.getDisablePluginCheck()
         );
-        // TODO: Implement access token and AuthorizationMethod
         JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(
             null,
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
@@ -335,9 +408,54 @@ class JiraServerGlobalConfigAccessorTest {
     }
 
     @Test
+    void updateConfigurationAccessTokenSavedTest() throws AlertConfigurationException {
+        UUID id = UUID.randomUUID();
+        String updatedName = "updatedName";
+        String newUrl = "https://updated.example.com";
+        JiraServerConfigurationEntity entity = createPersonalAccessTokenAuthEntity(id, OffsetDateTime.now(), OffsetDateTime.now());
+        JiraServerConfigurationEntity updatedEntity = new JiraServerConfigurationEntity(
+            entity.getConfigurationId(),
+            updatedName,
+            entity.getCreatedAt(),
+            entity.getLastUpdated(),
+            newUrl,
+            JiraServerAuthorizationMethod.BASIC,
+            entity.getUsername(),
+            entity.getPassword(),
+            encryptionUtility.encrypt(TEST_ACCESS_TOKEN),
+            entity.getDisablePluginCheck()
+        );
+        JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(
+            null,
+            AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
+            DateUtils.formatDate(entity.getCreatedAt(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE),
+            DateUtils.formatDate(entity.getLastUpdated(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE),
+            TEST_URL,
+            JiraServerAuthorizationMethod.PERSONAL_ACCESS_TOKEN,
+            TEST_USERNAME,
+            null,
+            false,
+            null,
+            true,
+            true
+        );
+        Mockito.when(jiraServerConfigurationRepository.findById(id)).thenReturn(Optional.of(entity));
+        Mockito.when(jiraServerConfigurationRepository.save(Mockito.any())).thenReturn(updatedEntity);
+
+        JiraServerGlobalConfigModel updatedModel = jiraServerGlobalConfigAccessor.updateConfiguration(id, model);
+        assertEquals(updatedEntity.getConfigurationId().toString(), updatedModel.getId());
+        assertEquals(updatedEntity.getUrl(), updatedModel.getUrl());
+        assertTrue(updatedModel.getUserName().isEmpty());
+        assertTrue(updatedModel.getPassword().isEmpty());
+        assertTrue(updatedModel.getIsAccessTokenSet().orElse(Boolean.FALSE));
+        assertEquals(TEST_ACCESS_TOKEN, updatedModel.getAccessToken().orElse(null));
+        assertEquals(updatedEntity.getDisablePluginCheck(), updatedModel.getDisablePluginCheck().orElse(null));
+    }
+
+    @Test
     void updateConfigurationNotFoundTest() {
         UUID id = UUID.randomUUID();
-        JiraServerConfigurationEntity entity = createEntity(id, OffsetDateTime.now(), OffsetDateTime.now());
+        JiraServerConfigurationEntity entity = createBasicAuthEntity(id, OffsetDateTime.now(), OffsetDateTime.now());
 
         JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(
             null,
@@ -376,11 +494,11 @@ class JiraServerGlobalConfigAccessorTest {
         Mockito.verify(jiraServerConfigurationRepository, Mockito.times(0)).deleteById(Mockito.any());
     }
 
-    private JiraServerConfigurationEntity createEntity(UUID id) {
-        return createEntity(id, OffsetDateTime.now(), OffsetDateTime.now());
+    private JiraServerConfigurationEntity createBasicAuthEntity(UUID id) {
+        return createBasicAuthEntity(id, OffsetDateTime.now(), OffsetDateTime.now());
     }
 
-    private JiraServerConfigurationEntity createEntity(UUID id, OffsetDateTime createdAt, OffsetDateTime lastUpdated) {
+    private JiraServerConfigurationEntity createBasicAuthEntity(UUID id, OffsetDateTime createdAt, OffsetDateTime lastUpdated) {
         return new JiraServerConfigurationEntity(
             id,
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
@@ -390,6 +508,21 @@ class JiraServerGlobalConfigAccessorTest {
             JiraServerAuthorizationMethod.BASIC,
             TEST_USERNAME,
             encryptionUtility.encrypt(TEST_PASSWORD),
+            null,
+            true
+        );
+    }
+
+    private JiraServerConfigurationEntity createPersonalAccessTokenAuthEntity(UUID id, OffsetDateTime createdAt, OffsetDateTime lastUpdated) {
+        return new JiraServerConfigurationEntity(
+            id,
+            AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
+            createdAt,
+            lastUpdated,
+            TEST_URL,
+            JiraServerAuthorizationMethod.PERSONAL_ACCESS_TOKEN,
+            null,
+            null,
             encryptionUtility.encrypt(TEST_ACCESS_TOKEN),
             true
         );
