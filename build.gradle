@@ -184,6 +184,7 @@ dependencies {
     // =============
     testImplementation 'org.testcontainers:postgresql'
     testImplementation 'org.testcontainers:rabbitmq'
+    testRuntimeOnly 'org.dbunit:dbunit'
     testRuntimeOnly 'com.playtika.testcontainers:embedded-postgresql'
     testRuntimeOnly 'com.playtika.testcontainers:embedded-rabbitmq'
     testRuntimeOnly 'org.springframework.cloud:spring-cloud-starter-bootstrap'
