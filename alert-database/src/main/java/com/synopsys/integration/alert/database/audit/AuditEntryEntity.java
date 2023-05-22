@@ -51,7 +51,6 @@ public class AuditEntryEntity extends BaseEntity implements DatabaseEntity {
     private String errorMessage;
 
     @Lob
-    //@Type(type = "org.hibernate.type.TextType")
     @Column(name = "error_stack_trace", length = STACK_TRACE_CHAR_LIMIT)
     private String errorStackTrace;
 
