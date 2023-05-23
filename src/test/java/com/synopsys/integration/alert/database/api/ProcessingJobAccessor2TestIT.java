@@ -42,6 +42,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.SimpleFiltere
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedDetails;
+import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.job.DistributionJobRepository;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
@@ -78,6 +79,8 @@ class ProcessingJobAccessor2TestIT {
     public JobNotificationMappingAccessor jobNotificationMappingAccessor;
     @Autowired
     public JobNotificationMapper2 jobNotificationMapper;
+    @Autowired
+    public EncryptionUtility encryptionUtility;
 
     @BeforeEach
     public void createProvider() {
@@ -89,7 +92,7 @@ class ProcessingJobAccessor2TestIT {
         ConfigurationFieldModel blackduckUrl = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_URL);
         blackduckUrl.setFieldValue("https://a-blackduck-server");
         ConfigurationFieldModel blackduckApiKey = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY);
-        blackduckApiKey.setFieldValue("123456789012345678901234567890123456789012345678901234567890");
+        blackduckApiKey.setFieldValue(encryptionUtility.encrypt("123456789012345678901234567890123456789012345678901234567890"));
         ConfigurationFieldModel blackduckTimeout = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT);
         blackduckTimeout.setFieldValue("300");
 
