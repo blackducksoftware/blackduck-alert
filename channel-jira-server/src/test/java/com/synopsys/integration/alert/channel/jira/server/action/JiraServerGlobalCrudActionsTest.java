@@ -36,6 +36,7 @@ class JiraServerGlobalCrudActionsTest {
     private final String URL = "https://someUrl";
     private final String USER_NAME = "username";
     private final String PASSWORD = "password";
+    private final String ACCESS_TOKEN = "accessToken";
 
     private final UUID id = UUID.randomUUID();
 
@@ -180,7 +181,6 @@ class JiraServerGlobalCrudActionsTest {
     @Test
     void getPagedSortDescendingTest() {
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel = createJiraServerGlobalConfigModel(id);
-        // TODO: Implement access token and AuthorizationMethod
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel2 = new JiraServerGlobalConfigModel(
             String.valueOf(UUID.randomUUID()),
             "Another Job",
@@ -228,6 +228,21 @@ class JiraServerGlobalCrudActionsTest {
     @Test
     void createTest() throws AlertConfigurationException {
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel = createJiraServerGlobalConfigModel(id);
+        JiraServerGlobalConfigAccessor configAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
+        Mockito.when(configAccessor.createConfiguration(Mockito.any())).thenReturn(jiraServerGlobalConfigModel);
+
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, createValidator());
+        ActionResponse<JiraServerGlobalConfigModel> actionResponse = crudActions.create(jiraServerGlobalConfigModel);
+
+        assertTrue(actionResponse.isSuccessful());
+        assertTrue(actionResponse.hasContent());
+        assertEquals(HttpStatus.OK, actionResponse.getHttpStatus());
+        assertModelObfuscated(actionResponse);
+    }
+
+    @Test
+    void createWithPersonalAccessTokenTesT() throws AlertConfigurationException {
+        JiraServerGlobalConfigModel jiraServerGlobalConfigModel = createJiraServerGlobalConfigModelWithAccessToken(id);
         JiraServerGlobalConfigAccessor configAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
         Mockito.when(configAccessor.createConfiguration(Mockito.any())).thenReturn(jiraServerGlobalConfigModel);
 
@@ -293,7 +308,6 @@ class JiraServerGlobalCrudActionsTest {
     }
 
     private JiraServerGlobalConfigModel createJiraServerGlobalConfigModel(UUID id) {
-        // TODO: Implement access token and AuthorizationMethod
         return new JiraServerGlobalConfigModel(
             String.valueOf(id),
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
@@ -310,6 +324,23 @@ class JiraServerGlobalCrudActionsTest {
         );
     }
 
+    private JiraServerGlobalConfigModel createJiraServerGlobalConfigModelWithAccessToken(UUID id) {
+        return new JiraServerGlobalConfigModel(
+            String.valueOf(id),
+            AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
+            CREATED_AT,
+            UPDATED_AT,
+            URL,
+            JiraServerAuthorizationMethod.PERSONAL_ACCESS_TOKEN,
+            null,
+            null,
+            Boolean.FALSE,
+            ACCESS_TOKEN,
+            Boolean.TRUE,
+            Boolean.TRUE
+        );
+    }
+
     private void assertModelObfuscated(ActionResponse<JiraServerGlobalConfigModel> actionResponse) {
         Optional<JiraServerGlobalConfigModel> optionalJiraServerGlobalConfigModel = actionResponse.getContent();
         assertTrue(optionalJiraServerGlobalConfigModel.isPresent());
@@ -321,12 +352,20 @@ class JiraServerGlobalCrudActionsTest {
         assertEquals(CREATED_AT, jiraServerGlobalConfigModel.getCreatedAt());
         assertEquals(UPDATED_AT, jiraServerGlobalConfigModel.getLastUpdated());
         assertEquals(URL, jiraServerGlobalConfigModel.getUrl());
-        assertEquals(USER_NAME, jiraServerGlobalConfigModel.getUserName().orElse("Username missing"));
 
-        assertTrue(jiraServerGlobalConfigModel.getPassword().isEmpty());
-        assertTrue(jiraServerGlobalConfigModel.getIsPasswordSet().isPresent());
-        assertEquals(Boolean.TRUE, jiraServerGlobalConfigModel.getIsPasswordSet().get());
-        assertTrue(jiraServerGlobalConfigModel.getDisablePluginCheck().isPresent());
-        assertEquals(Boolean.TRUE, jiraServerGlobalConfigModel.getDisablePluginCheck().get());
+        if (jiraServerGlobalConfigModel.getAuthorizationMethod() == JiraServerAuthorizationMethod.PERSONAL_ACCESS_TOKEN) {
+            assertTrue(jiraServerGlobalConfigModel.getUserName().isEmpty());
+            assertTrue(jiraServerGlobalConfigModel.getPassword().isEmpty());
+            assertFalse(jiraServerGlobalConfigModel.getIsPasswordSet().orElse(Boolean.TRUE));
+            assertTrue(jiraServerGlobalConfigModel.getAccessToken().isEmpty());
+            assertTrue(jiraServerGlobalConfigModel.getIsAccessTokenSet().orElse(Boolean.FALSE));
+        } else {
+            assertEquals(USER_NAME, jiraServerGlobalConfigModel.getUserName().orElse("Username missing"));
+            assertTrue(jiraServerGlobalConfigModel.getPassword().isEmpty());
+            assertTrue(jiraServerGlobalConfigModel.getIsPasswordSet().orElse(Boolean.FALSE));
+            assertTrue(jiraServerGlobalConfigModel.getAccessToken().isEmpty());
+            assertFalse(jiraServerGlobalConfigModel.getIsAccessTokenSet().orElse(Boolean.TRUE));
+        }
+        assertTrue(jiraServerGlobalConfigModel.getDisablePluginCheck().orElse(Boolean.FALSE));
     }
 }
