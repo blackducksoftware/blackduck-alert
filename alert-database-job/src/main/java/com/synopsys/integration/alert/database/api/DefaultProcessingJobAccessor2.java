@@ -49,14 +49,20 @@ public class DefaultProcessingJobAccessor2 implements ProcessingJobAccessor2 {
 
         Set<String> projectNames = filteredDistributionJobRequestModel.getProjectName();
 
+        // If no policies and/or vulnerabilitySeverities exist the repository query expects a null to be passed
+        Set<String> policyNames = filteredDistributionJobRequestModel.getPolicyNames().isEmpty() ? null : filteredDistributionJobRequestModel.getPolicyNames();
+        Set<String> vulnerabilitySeverities = filteredDistributionJobRequestModel.getVulnerabilitySeverities().isEmpty() ?
+            null :
+            filteredDistributionJobRequestModel.getVulnerabilitySeverities();
+
         PageRequest pageRequest = PageRequest.of(pageNumber, pageLimit);
         Page<FilteredDistributionJob> pageOfDistributionJobEntities = distributionJobRepository.findAndSortMatchingEnabledJobsByFilteredNotification(
             filteredDistributionJobRequestModel.getNotificationId().orElse(null),
             filteredDistributionJobRequestModel.getProviderConfigId(),
             frequencyTypes,
             projectNames,
-            filteredDistributionJobRequestModel.getPolicyNames(),
-            filteredDistributionJobRequestModel.getVulnerabilitySeverities(),
+            policyNames,
+            vulnerabilitySeverities,
             pageRequest
         );
         List<SimpleFilteredDistributionJobResponseModel> distributionJobResponseModels = new ArrayList<>(pageOfDistributionJobEntities.getNumberOfElements());
