@@ -80,7 +80,7 @@ class DefaultDistributionAccessorTestIT {
     }
 
     private void cleanUpJobs() {
-        int pageNumber = 1;
+        int pageNumber = 0;
         AlertPagedModel<DistributionJobModel> jobs = jobAccessor.getPageOfJobs(pageNumber, 100);
         while (pageNumber <= jobs.getTotalPages()) {
             jobs.getModels()
@@ -247,7 +247,7 @@ class DefaultDistributionAccessorTestIT {
 
         return queryResult;
     }
-    ./
+
     private DistributionJobRequestModel createSlackJob(boolean realTime) {
         SlackJobDetailsModel slackJobDetailsModel = new SlackJobDetailsModel(
             null,

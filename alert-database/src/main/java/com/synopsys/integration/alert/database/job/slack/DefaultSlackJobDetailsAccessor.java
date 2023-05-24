@@ -12,6 +12,8 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.persistence.accessor.SlackJobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
@@ -25,6 +27,7 @@ public class DefaultSlackJobDetailsAccessor implements SlackJobDetailsAccessor {
         this.slackJobDetailsRepository = slackJobDetailsRepository;
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     public SlackJobDetailsEntity saveSlackJobDetails(UUID jobId, SlackJobDetailsModel slackJobDetails) {
         SlackJobDetailsEntity jobDetailsToSave = new SlackJobDetailsEntity(jobId, slackJobDetails.getWebhook(), slackJobDetails.getChannelName(), slackJobDetails.getChannelUsername());
         return slackJobDetailsRepository.save(jobDetailsToSave);
