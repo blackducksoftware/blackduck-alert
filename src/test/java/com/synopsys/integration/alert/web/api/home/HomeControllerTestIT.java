@@ -1,5 +1,8 @@
 package com.synopsys.integration.alert.web.api.home;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -17,22 +20,24 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 
-@Transactional
 @AlertIntegrationTest
 public class HomeControllerTestIT {
     private static final String HOME_VERIFY_URL = AlertRestConstants.BASE_PATH + "/verify";
     private static final String HOME_URL = "/";
     private static final String HOME_SAML_VERIFY_URL = AlertRestConstants.BASE_PATH + "/verify/saml";
+
+    private final Gson gson = BlackDuckServicesFactory.createDefaultGson();
 
     @Autowired
     protected WebApplicationContext webApplicationContext;
@@ -53,13 +58,15 @@ public class HomeControllerTestIT {
         MockHttpSession session = new MockHttpSession();
         ServletContext servletContext = webApplicationContext.getServletContext();
 
-        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(HOME_VERIFY_URL).with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN));
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(HOME_VERIFY_URL)
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN));
         request.session(session);
         HttpServletRequest httpServletRequest = request.buildRequest(servletContext);
         CsrfToken csrfToken = csrfTokenRepository.generateToken(httpServletRequest);
         csrfTokenRepository.saveToken(csrfToken, httpServletRequest, null);
         headers.add(csrfToken.getHeaderName(), csrfToken.getToken());
-        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNoContent());
+        VerifyAuthenticationResponseModel model = gson.fromJson(mockMvc.perform(request).andReturn().getResponse().getContentAsString(), VerifyAuthenticationResponseModel.class);
+        assertTrue(model.isAuthenticated());
     }
 
     @Test
@@ -68,31 +75,34 @@ public class HomeControllerTestIT {
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-CSRF-TOKEN", UUID.randomUUID().toString());
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(HOME_VERIFY_URL)
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
-                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf());
         request.headers(headers);
-        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isUnauthorized());
+        VerifyAuthenticationResponseModel model = gson.fromJson(mockMvc.perform(request).andReturn().getResponse().getContentAsString(), VerifyAuthenticationResponseModel.class);
+        assertFalse(model.isAuthenticated());
     }
 
     @Test
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void testVerifyMissingCSRFToken() throws Exception {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(HOME_VERIFY_URL)
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
-                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
-        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isUnauthorized());
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf());
+        VerifyAuthenticationResponseModel model = gson.fromJson(mockMvc.perform(request).andReturn().getResponse().getContentAsString(), VerifyAuthenticationResponseModel.class);
+        assertFalse(model.isAuthenticated());
     }
 
     @Test
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void testVerifyNullStringCSRFToken() throws Exception {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(HOME_VERIFY_URL)
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
-                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf());
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-CSRF-TOKEN", "null");
         request.headers(headers);
-        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isUnauthorized());
+        VerifyAuthenticationResponseModel model = gson.fromJson(mockMvc.perform(request).andReturn().getResponse().getContentAsString(), VerifyAuthenticationResponseModel.class);
+        assertFalse(model.isAuthenticated());
     }
 
     @Test

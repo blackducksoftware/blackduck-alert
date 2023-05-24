@@ -22,7 +22,6 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.google.gson.Gson;
@@ -48,7 +47,6 @@ import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 import com.synopsys.integration.alert.util.DatabaseConfiguredFieldTest;
 
-@Transactional
 public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     private static final String DEFAULT_BLACK_DUCK_CONFIG = "Default Black Duck Config";
     private static final MediaType MEDIA_TYPE = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), StandardCharsets.UTF_8);
