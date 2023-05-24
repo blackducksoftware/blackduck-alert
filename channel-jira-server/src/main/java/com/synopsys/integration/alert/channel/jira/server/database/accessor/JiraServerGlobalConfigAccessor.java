@@ -11,6 +11,8 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.BooleanUtils;
@@ -27,6 +29,7 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurat
 import com.synopsys.integration.alert.channel.jira.server.database.configuration.JiraServerConfigurationEntity;
 import com.synopsys.integration.alert.channel.jira.server.database.configuration.JiraServerConfigurationRepository;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
+import com.synopsys.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
@@ -110,10 +113,18 @@ public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<Jir
     public JiraServerGlobalConfigModel updateConfiguration(UUID configurationId, JiraServerGlobalConfigModel configuration) throws AlertConfigurationException {
         JiraServerConfigurationEntity configurationEntity = jiraServerConfigurationRepository.findById(configurationId)
             .orElseThrow(() -> new AlertConfigurationException(String.format("Config with id '%s' did not exist", configurationId.toString())));
-        if (BooleanUtils.toBoolean(configuration.getIsPasswordSet().orElse(Boolean.FALSE)) && configuration.getPassword().isEmpty()) {
-            String decryptedPassword = encryptionUtility.decrypt(configurationEntity.getPassword());
-            configuration.setPassword(decryptedPassword);
-        }
+        extractSavedFieldFromEntity(
+            configuration::getIsPasswordSet,
+            configuration::getPassword,
+            configurationEntity::getPassword,
+            configuration::setPassword
+        );
+        extractSavedFieldFromEntity(
+            configuration::getIsAccessTokenSet,
+            configuration::getAccessToken,
+            configurationEntity::getAccessToken,
+            configuration::setAccessToken
+        );
         return populateConfiguration(configurationId, configuration, configurationEntity.getCreatedAt());
     }
 
@@ -127,6 +138,7 @@ public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<Jir
 
     private JiraServerGlobalConfigModel populateConfiguration(UUID configurationId, JiraServerGlobalConfigModel configuration, OffsetDateTime createdAt) {
         OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
+        removeUnusedAuthCredentials(configuration);
         JiraServerConfigurationEntity configurationToSave = toEntity(configurationId, configuration, createdAt, currentTime);
         JiraServerConfigurationEntity savedJiraServerConfig = jiraServerConfigurationRepository.save(configurationToSave);
         return createConfigModel(savedJiraServerConfig);
@@ -173,7 +185,6 @@ public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<Jir
         if (doesAccessTokenExist) {
             accessToken = encryptionUtility.decrypt(accessToken);
         }
-        // TODO: Implement access token and AuthorizationMethod
         return new JiraServerGlobalConfigModel(
             id,
             name,
@@ -188,5 +199,32 @@ public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<Jir
             doesAccessTokenExist,
             disablePluginCheck
         );
+    }
+
+    private void extractSavedFieldFromEntity(
+        Supplier<Optional<Boolean>> isSetFieldSupplier,
+        Supplier<Optional<String>> getFieldSupplier,
+        Supplier<String> getEntitySupplier,
+        Consumer<String> setFieldSupplier
+    ) {
+        if (BooleanUtils.toBoolean(isSetFieldSupplier.get().orElse(Boolean.FALSE)) && getFieldSupplier.get().isEmpty()) {
+            String decryptedField = encryptionUtility.decrypt(getEntitySupplier.get());
+            setFieldSupplier.accept(decryptedField);
+        }
+    }
+
+    /**
+     * Persist only the credentials used by the AuthorizationMethod. Switching between authorization methods will require users to reauthenticate their credentials.
+     * @param configuration - The model passed in when creating or updating the configuration
+     */
+    private void removeUnusedAuthCredentials(JiraServerGlobalConfigModel configuration) {
+        if (configuration.getAuthorizationMethod() == JiraServerAuthorizationMethod.PERSONAL_ACCESS_TOKEN) {
+            configuration.setUserName(null);
+            configuration.setPassword(null);
+            configuration.setIsPasswordSet(null);
+        } else {
+            configuration.setAccessToken(null);
+            configuration.setIsAccessTokenSet(null);
+        }
     }
 }
