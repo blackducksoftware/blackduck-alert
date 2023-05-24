@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.google.gson.Gson;
@@ -179,6 +180,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     }
 
     @Test
+    @Transactional
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void testSaveConfig() throws Exception {
         ConfigurationModel providerGlobalConfig = addGlobalConfiguration(blackDuckProviderKey, Map.of(
