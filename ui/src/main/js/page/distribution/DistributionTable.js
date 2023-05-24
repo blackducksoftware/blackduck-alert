@@ -64,7 +64,8 @@ const emptyTableConfig = {
 const DistributionTable = ({ readonly }) => {
     const dispatch = useDispatch();
     const { data } = useSelector((state) => state.distribution);
-    const [autoRefresh, setAutoRefresh] = useState(true);
+    const refreshStatus = JSON.parse(window.localStorage.getItem('DISTRIBUTION_REFRESH_STATUS') || true);
+    const [autoRefresh, setAutoRefresh] = useState(refreshStatus);
     const [selected, setSelected] = useState([]);
     const [sortConfig, setSortConfig] = useState();
     const [paramsConfig, setParamsConfig] = useState({
@@ -82,6 +83,8 @@ const DistributionTable = ({ readonly }) => {
     }, [paramsConfig]);
 
     useEffect(() => {
+        localStorage.setItem('DISTRIBUTION_REFRESH_STATUS', JSON.stringify(autoRefresh));
+
         if (autoRefresh) {
             const refreshIntervalId = setInterval(() => dispatch(fetchDistibution()), 30000);
             return function clearRefreshInterval() {

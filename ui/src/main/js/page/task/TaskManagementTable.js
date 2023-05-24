@@ -26,10 +26,11 @@ const emptyTableConfig = {
 
 const TaskManagementTable = () => {
     const dispatch = useDispatch();
+    const refreshStatus = JSON.parse(window.localStorage.getItem('TASK_MANAGEMENT_REFRESH_STATUS') || true);
+    const [autoRefresh, setAutoRefresh] = useState(refreshStatus);
     const [tableData, setTableData] = useState();
     const [search, setNewSearch] = useState('');
     const [sortConfig, setSortConfig] = useState();
-    const [autoRefresh, setAutoRefresh] = useState(true);
     const tasks = useSelector((state) => state.tasks.data);
 
     useEffect(() => {
@@ -37,6 +38,8 @@ const TaskManagementTable = () => {
     }, []);
 
     useEffect(() => {
+        localStorage.setItem('TASK_MANAGEMENT_REFRESH_STATUS', JSON.stringify(autoRefresh));
+
         if (autoRefresh) {
             const refreshIntervalId = setInterval(() => dispatch(fetchUsers()), 30000);
             return function clearRefreshInterval() {

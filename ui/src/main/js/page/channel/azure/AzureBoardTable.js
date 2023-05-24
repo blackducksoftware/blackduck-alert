@@ -44,7 +44,8 @@ const emptyTableConfig = {
 const AzureBoardTale = ({ readonly, allowDelete }) => {
     const dispatch = useDispatch();
     const { data } = useSelector((state) => state.azure);
-    const [autoRefresh, setAutoRefresh] = useState(true);
+    const refreshStatus = JSON.parse(window.localStorage.getItem('AZURE_BOARD_REFRESH_STATUS'));
+    const [autoRefresh, setAutoRefresh] = useState(refreshStatus);
     const [selected, setSelected] = useState([]);
     const [sortConfig, setSortConfig] = useState();
     const [paramsConfig, setParamsConfig] = useState({
@@ -62,6 +63,8 @@ const AzureBoardTale = ({ readonly, allowDelete }) => {
     }, [paramsConfig]);
 
     useEffect(() => {
+        localStorage.setItem('AZURE_BOARD_REFRESH_STATUS', JSON.stringify(autoRefresh));
+
         if (autoRefresh) {
             const refreshIntervalId = setInterval(() => dispatch(fetchAzure()), 30000);
             return function clearRefreshInterval() {

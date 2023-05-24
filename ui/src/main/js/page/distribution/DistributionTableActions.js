@@ -29,7 +29,7 @@ const DistributionTableActions = ({ data, selected }) => {
                 />
             )}
 
-            <Button onClick={handleCreateProviderClick} type="button" icon="plus" text="Create Provider" style="default" />
+            <Button onClick={handleCreateProviderClick} type="button" icon="plus" text="Create Job" style="default" />
 
             <Button onClick={handleDeleteProviderClick} type="button" icon="trash" isDisabled={selected.length === 0} text="Delete" style="delete" />
 

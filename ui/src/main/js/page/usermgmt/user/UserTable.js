@@ -45,10 +45,11 @@ const emptyTableConfig = {
 
 const UserTable = ({ canCreate, canDelete }) => {
     const dispatch = useDispatch();
+    const refreshStatus = JSON.parse(window.localStorage.getItem('USER_MANAGEMENT_REFRESH_STATUS') || true);
+    const [autoRefresh, setAutoRefresh] = useState(refreshStatus);
     const [tableData, setTableData] = useState();
     const [search, setNewSearch] = useState('');
     const [selected, setSelected] = useState([]);
-    const [autoRefresh, setAutoRefresh] = useState(true);
     const [sortConfig, setSortConfig] = useState();
     const users = useSelector((state) => state.users.data);
     // Disable select options for users: sysadmin, jobmanager, alertuser
@@ -63,6 +64,8 @@ const UserTable = ({ canCreate, canDelete }) => {
     }, []);
 
     useEffect(() => {
+        localStorage.setItem('USER_MANAGEMENT_REFRESH_STATUS', JSON.stringify(autoRefresh));
+
         if (autoRefresh) {
             const refreshIntervalId = setInterval(() => dispatch(fetchUsers()), 30000);
             return function clearRefreshInterval() {

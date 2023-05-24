@@ -48,10 +48,11 @@ const emptyTableConfig = {
 
 function ProviderTable({ readonly }) {
     const dispatch = useDispatch();
+    const refreshStatus = JSON.parse(window.localStorage.getItem('PROVIDER_REFRESH_STATUS') || true);
+    const [autoRefresh, setAutoRefresh] = useState(refreshStatus);
     const [tableData, setTableData] = useState();
     const [search, setNewSearch] = useState('');
     const [selected, setSelected] = useState([]);
-    const [autoRefresh, setAutoRefresh] = useState(true);
     const [sortConfig, setSortConfig] = useState();
     const { data } = useSelector((state) => state.provider);
 
@@ -60,6 +61,8 @@ function ProviderTable({ readonly }) {
     }, []);
 
     useEffect(() => {
+        localStorage.setItem('PROVIDER_REFRESH_STATUS', JSON.stringify(autoRefresh));
+
         if (autoRefresh) {
             const refreshIntervalId = setInterval(() => dispatch(fetchProviders()), 30000);
             return function clearRefreshInterval() {

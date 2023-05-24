@@ -27,7 +27,8 @@ const emptyTableConfig = {
 
 const CertificatesTable = () => {
     const dispatch = useDispatch();
-    const [autoRefresh, setAutoRefresh] = useState(true);
+    const refreshStatus = JSON.parse(window.localStorage.getItem('CERTIFICATES_REFRESH_STATUS') || true);
+    const [autoRefresh, setAutoRefresh] = useState(refreshStatus);
     const [tableData, setTableData] = useState();
     const [sortConfig, setSortConfig] = useState();
     const [search, setNewSearch] = useState('');
@@ -39,6 +40,8 @@ const CertificatesTable = () => {
     }, []);
 
     useEffect(() => {
+        localStorage.setItem('CERTIFICATES_REFRESH_STATUS', JSON.stringify(autoRefresh));
+
         if (autoRefresh) {
             const refreshIntervalId = setInterval(() => dispatch(fetchCertificates()), 30000);
             return function clearRefreshInterval() {

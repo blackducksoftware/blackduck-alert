@@ -543,7 +543,7 @@ const DistributionConfigurationForm = ({
                                 csrfToken={csrfToken}
                                 endpoint={DISTRIBUTION_URLS.endpointSelectPath}
                                 fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter}
-                                label="POLICY"
+                                label="Policy Notification Type Filter"
                                 description="Filter which notifications you want sent via this job (You must have the policy notification type selected for this filter to apply)."
                                 searchable
                                 multiSelect

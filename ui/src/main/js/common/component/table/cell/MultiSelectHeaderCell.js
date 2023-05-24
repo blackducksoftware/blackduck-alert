@@ -8,13 +8,17 @@ const useStyles = createUseStyles({
         width: '45px'
     },
     inputStyle: {
-        cursor: 'pointer'
+        '&:disabled': {
+            cursor: 'not-allowed'
+        }
     }
 });
 
 const MultiSelectHeaderCell = ({ tableData, onSelected, selected, disableSelectOptions }) => {
     const classes = useStyles();
     const checkboxRef = useRef();
+
+    const selectableData = tableData.filter(row => !disableSelectOptions?.disabledItems.includes(row[disableSelectOptions.key]));
 
     // Return the ids of the rows if they are not included in the disableSelectOptions.disabledItems array
     const ids = useMemo(() => tableData?.filter((row) => (
@@ -51,6 +55,7 @@ const MultiSelectHeaderCell = ({ tableData, onSelected, selected, disableSelectO
                 type="checkbox"
                 onChange={toggleAll}
                 ref={checkboxRef}
+                disabled={selectableData.length === 0}
             />
         </td>
     );

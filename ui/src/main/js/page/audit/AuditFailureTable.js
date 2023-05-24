@@ -16,7 +16,8 @@ const emptyTableConfig = {
 const AuditFailureTable = () => {
     const dispatch = useDispatch();
     const { data } = useSelector((state) => state.audit);
-    const [autoRefresh, setAutoRefresh] = useState(true);
+    const refreshStatus = JSON.parse(window.localStorage.getItem('AUDIT_FAILURE_REFRESH_STATUS') || true);
+    const [autoRefresh, setAutoRefresh] = useState(refreshStatus);
     const [sortConfig, setSortConfig] = useState();
     const [paramsConfig, setParamsConfig] = useState({
         pageNumber: data?.pageNumber || 0,
@@ -33,6 +34,8 @@ const AuditFailureTable = () => {
     }, [paramsConfig]);
 
     useEffect(() => {
+        localStorage.setItem('AUDIT_FAILURE_REFRESH_STATUS', JSON.stringify(autoRefresh));
+
         if (autoRefresh) {
             const refreshIntervalId = setInterval(() => dispatch(fetchAuditData()), 30000);
             return function clearRefreshInterval() {

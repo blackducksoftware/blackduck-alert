@@ -44,7 +44,8 @@ const emptyTableConfig = {
 const JiraServerTable = ({ readonly, allowDelete }) => {
     const dispatch = useDispatch();
     const { data } = useSelector((state) => state.jiraServer);
-    const [autoRefresh, setAutoRefresh] = useState(true);
+    const refreshStatus = JSON.parse(window.localStorage.getItem('JIRA_SERVER_REFRESH_STATUS') || true);
+    const [autoRefresh, setAutoRefresh] = useState(refreshStatus);
     const [selected, setSelected] = useState([]);
     const [sortConfig, setSortConfig] = useState();
     const [paramsConfig, setParamsConfig] = useState({
@@ -62,6 +63,8 @@ const JiraServerTable = ({ readonly, allowDelete }) => {
     }, [paramsConfig]);
 
     useEffect(() => {
+        localStorage.setItem('JIRA_SERVER_REFRESH_STATUS', JSON.stringify(autoRefresh));
+
         if (autoRefresh) {
             const refreshIntervalId = setInterval(() => dispatch(fetchJiraServer(paramsConfig)), 30000);
             return function clearRefreshInterval() {

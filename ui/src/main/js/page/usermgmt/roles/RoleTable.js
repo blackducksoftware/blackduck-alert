@@ -31,10 +31,11 @@ const emptyTableConfig = {
 
 const RoleTable = ({ canCreate, canDelete }) => {
     const dispatch = useDispatch();
+    const refreshStatus = JSON.parse(window.localStorage.getItem('ROLE_MANAGEMENT_REFRESH_STATUS') || true);
+    const [autoRefresh, setAutoRefresh] = useState(refreshStatus);
     const [tableData, setTableData] = useState();
     const [search, setNewSearch] = useState('');
     const [selected, setSelected] = useState([]);
-    const [autoRefresh, setAutoRefresh] = useState(true);
     const [sortConfig, setSortConfig] = useState();
     const roles = useSelector((state) => state.roles.data);
     // Disable select options for users: sysadmin, jobmanager, alertuser
@@ -49,6 +50,8 @@ const RoleTable = ({ canCreate, canDelete }) => {
     }, []);
 
     useEffect(() => {
+        localStorage.setItem('ROLE_MANAGEMENT_REFRESH_STATUS', JSON.stringify(autoRefresh));
+
         if (autoRefresh) {
             const refreshIntervalId = setInterval(() => dispatch(fetchRoles()), 30000);
             return function clearRefreshInterval() {

@@ -66,7 +66,7 @@ ModalFooter.propTypes = {
     handleCancel: PropTypes.func,
     handleSubmit: PropTypes.func,
     handleTest: PropTypes.func,
-    showLoader: PropTypes.string,
+    showLoader: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
     submitText: PropTypes.string,
     style: PropTypes.string,
     testText: PropTypes.string

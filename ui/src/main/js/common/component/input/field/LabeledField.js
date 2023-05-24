@@ -95,7 +95,7 @@ const LabeledField = ({
 
 LabeledField.propTypes = {
     id: PropTypes.string,
-    children: PropTypes.element,
+    children: PropTypes.oneOfType([PropTypes.element, PropTypes.array]),
     description: PropTypes.string,
     errorName: PropTypes.string,
     errorValue: PropTypes.object,
